@@ -18,10 +18,11 @@
 	<description>A collection of built-in plugins for ImageJ.</description>
 
 	<modules>
-		<!--<module>debug</module>-->
-		<!--<module>display</module>-->
+		<module>app</module>
+		<module>data</module>
+		<module>debug</module>
+		<module>display</module>
 		<module>io</module>
-		<module>math</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
