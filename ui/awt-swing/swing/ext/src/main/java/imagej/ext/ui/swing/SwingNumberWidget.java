@@ -37,6 +37,7 @@ package imagej.ext.ui.swing;
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.util.ClassUtils;
 
 import java.awt.Adjustable;
 import java.awt.Dimension;
@@ -90,8 +91,9 @@ public class SwingNumberWidget extends SwingInputWidget implements
 			slider.addChangeListener(this);
 		}
 
+		final Number zero = ClassUtils.toNumber("0", model.getItem().getType());
 		final SpinnerNumberModel spinnerModel =
-			new SpinnerNumberModel(min, (Comparable<?>) min, (Comparable<?>) max,
+			new SpinnerNumberModel(zero, (Comparable<?>) min, (Comparable<?>) max,
 				stepSize);
 		spinner = new JSpinner(spinnerModel);
 		setToolTip(spinner);
