@@ -49,19 +49,6 @@ public final class ClassUtils {
 		// prevent instantiation of utility class
 	}
 
-	// -- Class loading --
-
-	/** Loads the class with the given name, or null if it cannot be loaded. */
-	public static Class<?> loadClass(final String className) {
-		try {
-			return Class.forName(className);
-		}
-		catch (final ClassNotFoundException e) {
-			Log.warn("Could not load class: " + className, e);
-			return null;
-		}
-	}
-
 	// -- Type conversion and casting --
 
 	/**
@@ -184,7 +171,34 @@ public final class ClassUtils {
 		return result;
 	}
 
-	// -- Reflection --
+	// -- Class loading and reflection --
+
+	/** Loads the class with the given name, or null if it cannot be loaded. */
+	public static Class<?> loadClass(final String className) {
+		try {
+			return Class.forName(className);
+		}
+		catch (final ClassNotFoundException e) {
+			Log.error("Could not load class: " + className, e);
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the specified field of the given class, or null if it does not exist.
+	 */
+	public static Field getField(final String className, final String fieldName)
+	{
+		final Class<?> c = loadClass(className);
+		if (c == null) return null;
+		try {
+			return c.getField(fieldName);
+		}
+		catch (final NoSuchFieldException e) {
+			Log.error("No such field: " + fieldName, e);
+			return null;
+		}
+	}
 
 	/**
 	 * Gets the given field's value of the specified object instance, or null if
