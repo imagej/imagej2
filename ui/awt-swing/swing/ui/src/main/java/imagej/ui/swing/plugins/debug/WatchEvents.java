@@ -1,5 +1,5 @@
 //
-// EvtListener.java
+// WatchEvents.java
 //
 
 /*
@@ -63,51 +63,7 @@ import java.util.Locale;
 
 /**
  * Listens for all events. Useful for logging, history, macro recording,
- * perhaps. An eagerly initialized singleton. * All Event Types
- * ----------------------------------------------- Grouped by package
- * ImageJEvent StatusEvent OutputEvent AppAboutEvent AppFocusEvent
- * ApplicationEvent AppMenusCreatedEvent AppPreferencesEvent AppPrintEvent
- * AppQuitEvent AppReOpenEvent AppScreenSleepEvent AppSystemSleepEvent
- * AppUserSessionEvent AppVisibleEvent ObjectEvent ObjectChangedEvent
- * ObjectCreatedEvent ObjectDeletedEvent ObjectsUpdatedEvent (pub'd after add or
- * remove) DataObjectChangedEvent DataObjectCreatedEvent DataObjectDeletedEvent
- * DataObjectRestructuredEvent DataObjectUpdatedEvent DatasetCreatedEvent
- * DatasetDeletedEvent DatasetRestructuredEvent DatasetRGBChangedEvent
- * DatasetTypeChangedEvent DatasetUpdatedEvent OverlayCreatedEvent
- * OverlayDeletedEvent OverlayRestructuredEvent OverlayUpdatedEvent CanvasEvent
- * DisplayEvent DisplayCreatedEvent DisplayDeletedEvent DisplayViewEvent
- * DisplayViewDeselectedEvent DisplayViewSelectedEvent DisplayViewSelectionEvent
- * KyEvent KyPressedEvent KyReleasedEvent KyTypedEvent MsEvent MsButtonEvent
- * MsClickedEvent MsDraggedEvent MsEnteredEvent MsExitedEvent MsMovedEvent
- * MsPressedEvent MsReleasedEvent MsWheelEvent WinEvent WinActivatedEvent
- * WinClosedEvent WinClosingEvent WinDeactivatedEvent WinDeiconifiedEvent
- * WinIconifiedEvent WinOpenedEvent ZoomEvent PluginEvent PluginCanceledEvent
- * PluginExecutionEvent PluginFinishedEvent PluginPostprocessEvent
- * PluginPreprocessEvent PluginProcessEvent PluginRunEvent PluginStartedEvent
- * ToolEvent ToolActivatedEvent ToolDeactivatedEvent
- * ------------------------------------------------------- Event Hierarchy All
- * decend from ImageJEvent: StatusEvent OutputEvent FileOpenedEvent
- * FileSavedEvent ApplicationEvent AppAboutEvent AppFocusEvent
- * AppMenusCreatedEvent AppPreferencesEvent AppPrintEvent AppQuitEvent
- * AppReOpenEvent AppScreenSleepEvent AppSystemSleepEvent AppUserSessionEvent
- * AppVisibleEvent ObjectEvent ObjectChangedEvent DataObjectChangedEvent
- * DataObjectRestructuredEvent DatasetRestructuredEvent OverlayRestructuredEvent
- * DataObjectUpdatedEvent DatasetUpdatedEvent DatasetRGBChangedEvent
- * DatasetTypeChangedEvent OverlayUpdatedEvent ObjectCreatedEvent
- * DataObjectCreatedEvent DatasetCreatedEvent DisplayCreatedEvent
- * OverlayCreatedEvent ObjectDeletedEvent DataObjectDeletedEvent
- * DatasetDeletedEvent DisplayDeletedEvent OverlayDeletedEvent
- * ObjectsUpdatedEvent (pub'd after add or remove) PluginEvent
- * PluginExecutionEvent PluginRunEvent PluginStartedEvent PluginFinishedEvent
- * PluginProcessEvent PluginPostprocessEvent PluginPreprocessEvent
- * PluginCanceledEvent ToolEvent ToolActivatedEvent ToolDeactivatedEvent
- * CanvasEvent ZoomEvent DisplayEvent AxisPositionEvent DisplayViewEvent
- * DisplayViewDeselectedEvent DisplayViewSelectedEvent DisplayViewSelectionEvent
- * KyEvent KyPressedEvent KyReleasedEvent KyTypedEvent MsEvent MsButtonEvent
- * MsClickedEvent MsDraggedEvent MsEnteredEvent MsExitedEvent MsMovedEvent
- * MsPressedEvent MsReleasedEvent MsWheelEvent WinEvent WinActivatedEvent
- * WinClosedEvent WinClosingEvent WinDeactivatedEvent WinDeiconifiedEvent
- * WinIconifiedEvent WinOpenedEvent
+ * perhaps.
  * 
  * @author GBH
  */
