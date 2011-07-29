@@ -88,8 +88,10 @@ public abstract class AbstractPreviewPlugin
 
 	@Override
 	public void preview() {
-		if (dataBackup == null)
+		if (dataBackup == null) {
+			initialize();
 			saveViewedPlane();
+		}
 		else
 			restoreViewedPlane();
 		if (previewOn())
@@ -117,7 +119,7 @@ public abstract class AbstractPreviewPlugin
 	// - so we opt for copying to an array of doubles. However this could
 	// cause precision loss for long data
 	
-	private void saveViewedPlane() {
+	private void initialize() {
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
@@ -173,10 +175,14 @@ public abstract class AbstractPreviewPlugin
 		RandomAccess<? extends RealType<?>> accessor =
 			dataset.getImgPlus().randomAccess();
 		iter = new RegionIterator(accessor, planeOrigin, planeSpan);
+		dataBackup = new double[(int)(w*h)];
+	}
+
+	private void saveViewedPlane() {
 
 		// copy data to a double[]
-		dataBackup = new double[(int)(w*h)];
 		int index = 0;
+		iter.reset();
 		while (iter.hasNext()) {
 			iter.next();
 			dataBackup[index++] = iter.getValue();
