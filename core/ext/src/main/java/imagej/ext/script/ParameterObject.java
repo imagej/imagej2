@@ -1,3 +1,6 @@
+//
+// ParameterObject.java
+//
 
 /*
 ImageJ software for multidimensional image processing and analysis.
@@ -33,11 +36,14 @@ package imagej.ext.script;
 
 /**
  * Holds a parameter for a recorded macro.
- * @author GBH
+ * 
+ * @author Grant Harris
  */
 public class ParameterObject {
 
-	public ParameterObject(String param, Class<?> type, Object value) {
+	public ParameterObject(final String param, final Class<?> type,
+		final Object value)
+	{
 		this.param = param;
 		this.type = type;
 		this.value = value;
@@ -46,4 +52,5 @@ public class ParameterObject {
 	public String param;
 	public Class<?> type;
 	public Object value;
+
 }

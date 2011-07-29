@@ -1,3 +1,6 @@
+//
+// CodeGenerator.java
+//
 
 /*
 ImageJ software for multidimensional image processing and analysis.
@@ -34,7 +37,7 @@ package imagej.ext.script;
 /**
  * Code Generator Interface
  * 
- * @author GBH
+ * @author Grant Harris
  */
 public interface CodeGenerator {
 
@@ -51,5 +54,5 @@ public interface CodeGenerator {
 	void invokeStatementEnd();
 
 	void statementTerminate();
-	
+
 }

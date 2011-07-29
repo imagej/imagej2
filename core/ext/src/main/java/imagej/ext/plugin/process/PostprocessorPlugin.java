@@ -1,5 +1,5 @@
 //
-// PluginPostprocessor.java
+// PostprocessorPlugin.java
 //
 
 /*

@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module.ui;
 
-
 /**
  * Widget interface for boolean toggles.
  *

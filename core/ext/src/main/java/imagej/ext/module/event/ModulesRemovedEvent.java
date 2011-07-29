@@ -1,5 +1,5 @@
 //
-// ModulesDeletedEvent.java
+// ModulesRemovedEvent.java
 //
 
 /*
