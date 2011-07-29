@@ -36,7 +36,11 @@ package imagej.util;
 
 import java.io.Serializable;
 
-/** A color with red, green and blue color components. */
+/**
+ * A color with red, green and blue color components.
+ * 
+ * @author Curtis Rueden
+ */
 public class ColorRGB implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -107,13 +111,13 @@ public class ColorRGB implements Serializable {
 	}
 
 	// -- Helper methods --
-	
+
 	private int parse(final String[] s, final int index) {
 		if (s == null || index >= s.length) return 0;
 		try {
 			return Integer.parseInt(s[index]);
 		}
-		catch (NumberFormatException exc) {
+		catch (final NumberFormatException exc) {
 			return 0;
 		}
 	}

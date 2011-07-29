@@ -34,7 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.util;
 
-/** A color with red, green, blue and alpha color components. */
+/**
+ * A color with red, green, blue and alpha color components.
+ * 
+ * @author Curtis Rueden
+ */
 public class ColorRGBA extends ColorRGB {
 
 	private static final long serialVersionUID = 1L;
