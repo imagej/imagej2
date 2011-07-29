@@ -34,20 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
-// TODO - minX, minY, maxX, maxY are treated as harvested variables (for simple testing). Should make them passed
-//        in parameters to constructor
+// TODO - the IJ1 crop plugin can do a lot more than this can.
+// Investigate its abilities and replicate them as needed.
 
-// TODO - the IJ1 crop plugin can do a lot more than this can. Investigate its abilities and replicate them as needed
+//TODO - add correct weight to @Plugin annotation.
 
 /**
  * Creates an output Dataset by cropping an input Dataset in X & Y. Works on
@@ -56,38 +61,30 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Crop", accelerator = "shift control X")})  // TODO - add correct weight
-@SuppressWarnings({"rawtypes","synthetic-access","unchecked"})
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Crop", accelerator = "shift control X") })
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class CropImage implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Dataset input;
-
-	@Parameter
-	private int minX;
-
-	@Parameter
-	private int minY;
-
-	@Parameter
-	private int maxX;
-
-	@Parameter
-	private int maxY;
+	private Display display;
 
 	// -- public interface --
 
-	/**
-	 * Runs the crop process and returns the output as a Dataset */
+	/** Runs the crop process on the given display's active dataset. */
 	@Override
 	public void run() {
-		OutputAlgorithm algorithm = new CropAlgorithm();
-		ImglibDataTransform runner =
-			new ImglibDataTransform(input, algorithm);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final OverlayService overlayService = ImageJ.get(OverlayService.class);
+
+		final Dataset dataset = displayService.getActiveDataset(display);
+		final RealRect bounds = overlayService.getSelectionBounds(display);
+
+		final OutputAlgorithm algorithm = new CropAlgorithm(dataset, bounds);
+		final ImglibDataTransform runner =
+			new ImglibDataTransform(dataset, algorithm);
 		runner.run();
 	}
 
@@ -99,47 +96,51 @@ public class CropImage implements ImageJPlugin {
 	 */
 	private class CropAlgorithm implements OutputAlgorithm {
 
-		private String errMessage = "No error";
-		private Img inputImage;  // TODO - had to make this raw to avoid compiler errors
+		// TODO - had to make this raw to avoid compiler errors
+		private final Img inputImage;
+		private final long minX, maxX, minY, maxY;
+
+		private final String errMessage = "No error";
 		private Img<? extends RealType<?>> outputImage;
 
-		/**
-		 * Returns false if there is any problem with the input data. returns true
-		 * otherwise.
-		 */
+		public CropAlgorithm(final Dataset dataset, final RealRect bounds) {
+			inputImage = dataset.getImgPlus();
+			minX = (long) bounds.x;
+			minY = (long) bounds.y;
+			maxX = (long) (bounds.x + bounds.width);
+			maxY = (long) (bounds.y + bounds.height);
+		}
+
 		@Override
 		public boolean checkInput() {
-			inputImage = input.getImgPlus();
-
-			long[] newDimensions = new long[inputImage.numDimensions()];
+			final long[] newDimensions = new long[inputImage.numDimensions()];
 
 			inputImage.dimensions(newDimensions);
 			newDimensions[0] = maxX - minX + 1;
 			newDimensions[1] = maxY - minY + 1;
 
 			// TODO - in inputImage not a raw type this won't compile
-			outputImage = inputImage.factory().create(newDimensions,inputImage.firstElement());
+			outputImage =
+				inputImage.factory().create(newDimensions, inputImage.firstElement());
 
 			return true;
 		}
 
-		/**
-		 * Returns the current error message */
 		@Override
 		public String getErrorMessage() {
 			return errMessage;
 		}
 
-		/**
-		 * Runs the cropping process */
+		/** Runs the cropping process. */
 		@Override
 		public boolean process() {
-			RandomAccess<? extends RealType<?>> inputAccessor =
+			final RandomAccess<? extends RealType<?>> inputAccessor =
 				inputImage.randomAccess();
 
-			Cursor<? extends RealType<?>> outputCursor = outputImage.localizingCursor();
+			final Cursor<? extends RealType<?>> outputCursor =
+				outputImage.localizingCursor();
 
-			long[] tmpPosition = new long[outputImage.numDimensions()];
+			final long[] tmpPosition = new long[outputImage.numDimensions()];
 
 			while (outputCursor.hasNext()) {
 				outputCursor.next();
@@ -151,7 +152,7 @@ public class CropImage implements ImageJPlugin {
 
 				inputAccessor.setPosition(tmpPosition);
 
-				double value = inputAccessor.get().getRealDouble();
+				final double value = inputAccessor.get().getRealDouble();
 
 				outputCursor.get().setReal(value);
 			}
@@ -159,14 +160,11 @@ public class CropImage implements ImageJPlugin {
 			return true;
 		}
 
-		/**
-		 * Returns the resulting output image. not valid before checkInput() and
-		 * process() have been called.
-		 */
 		@Override
 		public Img<? extends RealType<?>> getResult() {
 			return outputImage;
 		}
 
 	}
+
 }
