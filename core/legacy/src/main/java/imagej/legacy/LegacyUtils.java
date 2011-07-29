@@ -32,11 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-// TODO - the methods are not entirely consistent on whose responsibility
-// it is to ensure the input data is correct. Either make them all check
-// or all not check. Since the methods are package access we should be
-// able to relax error checking if needed.
-
 package imagej.legacy;
 
 import ij.CompositeImage;
@@ -74,6 +69,11 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+
+//TODO - the methods are not entirely consistent on whose responsibility
+//it is to ensure the input data is correct. Either make them all check
+//or all not check. Since the methods are package access we should be
+//able to relax error checking if needed.
 
 /**
  * Collection of static methods used by the various ImageTranslators and the
@@ -114,8 +114,7 @@ public final class LegacyUtils {
 		if (ij1Window == null) Interpreter.removeBatchModeImage(imp);
 		else {
 			imp.changes = false;
-			if (!ij1Window.isClosed())
-				ij1Window.close();
+			if (!ij1Window.isClosed()) ij1Window.close();
 		}
 	}
 
@@ -609,18 +608,18 @@ public final class LegacyUtils {
 		final ImageStack stack = imp.getStack();
 
 		final long[] fullDims = ds.getDims();
-		final long[] planeDims = new long[fullDims.length-2];
+		final long[] planeDims = new long[fullDims.length - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = fullDims[i+2];
+			planeDims[i] = fullDims[i + 2];
 		final Extents extents = new Extents(planeDims);
 		final Position planePos = extents.createPosition();
 
 		for (int t = 0; t < tCount; t++) {
-			if (tIndex >= 0) planePos.setPosition(t, tIndex-2);
+			if (tIndex >= 0) planePos.setPosition(t, tIndex - 2);
 			for (int z = 0; z < zCount; z++) {
-				if (zIndex >= 0) planePos.setPosition(z, zIndex-2);
+				if (zIndex >= 0) planePos.setPosition(z, zIndex - 2);
 				for (int c = 0; c < cCount; c++) {
-					if (cIndex >= 0) planePos.setPosition(c, cIndex-2);
+					if (cIndex >= 0) planePos.setPosition(c, cIndex - 2);
 					final int planeNum = (int) planePos.getIndex();
 					final Object plane = ds.getPlane(planeNum, false);
 					if (plane == null) {
@@ -649,19 +648,19 @@ public final class LegacyUtils {
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
 
 		final long[] fullDims = ds.getDims();
-		final long[] planeDims = new long[fullDims.length-2];
+		final long[] planeDims = new long[fullDims.length - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = fullDims[i+2];
+			planeDims[i] = fullDims[i + 2];
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
 		int p = 1;
 		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) planePos.setPosition(ti, tIndex-2);
+			if (tIndex >= 0) planePos.setPosition(ti, tIndex - 2);
 			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) planePos.setPosition(zi, zIndex-2);
+				if (zIndex >= 0) planePos.setPosition(zi, zIndex - 2);
 				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) planePos.setPosition(ci, cIndex-2);
+					if (cIndex >= 0) planePos.setPosition(ci, cIndex - 2);
 					final Object plane = imp.getStack().getPixels(p++);
 					if (plane == null) {
 						Log.error("Could not extract plane from ImageStack: " + (p - 1));
@@ -745,8 +744,8 @@ public final class LegacyUtils {
 	}
 
 	/**
-	 * Sets the ColorTables of the active view of an IJ2 Display from the LUTs
-	 * of a given ImagePlus or CompositeImage.
+	 * Sets the ColorTables of the active view of an IJ2 Display from the LUTs of
+	 * a given ImagePlus or CompositeImage.
 	 */
 	static void setDisplayLuts(final Display disp, final ImagePlus imp) {
 		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
@@ -756,17 +755,16 @@ public final class LegacyUtils {
 
 	/**
 	 * Sets LUTs of an ImagePlus or CompositeImage. If given an ImagePlus this
-	 * method sets it's single LUT from the first ColorTable of the active
-	 * Dataset of the given Display.  If given a CompositeImage this method sets
-	 * all it's LUTs from the ColorTables of the active view of the given Display.
-	 * If there is no such view the LUTs are assigned with default values.
+	 * method sets it's single LUT from the first ColorTable of the active Dataset
+	 * of the given Display. If given a CompositeImage this method sets all it's
+	 * LUTs from the ColorTables of the active view of the given Display. If there
+	 * is no such view the LUTs are assigned with default values.
 	 */
 	static void setImagePlusLuts(final Display disp, final ImagePlus imp) {
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
-			DisplayView activeView = disp.getActiveView(); 
-			if (activeView == null)
-				setCompositeImageLutsToDefault(ci);
+			final DisplayView activeView = disp.getActiveView();
+			if (activeView == null) setCompositeImageLutsToDefault(ci);
 			else {
 				final DatasetView view = (DatasetView) activeView;
 				setCompositeImageLuts(ci, view.getColorTables());
