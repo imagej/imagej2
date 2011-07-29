@@ -1,5 +1,5 @@
 //
-// ImageDisplayWindow.java
+// DisplayWindow.java
 //
 
 /*

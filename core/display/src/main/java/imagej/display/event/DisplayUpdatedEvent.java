@@ -1,5 +1,5 @@
 //
-// DisplayActivatedEvent.java
+// DisplayUpdatedEvent.java
 //
 
 /*
