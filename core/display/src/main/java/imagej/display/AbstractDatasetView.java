@@ -215,6 +215,12 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		img.dimensions(dims);
 		setDimensions(dims);
 
+		// Make sure any calls to updateLUTs are ignored. If they happen before
+		// the converters are correctly defined (in createProjector) an exception
+		// can get thrown. Basically if you add a channel to an image the converter
+		// size() can be out of sync.
+		converters.clear();
+		
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
 			resetColorTables(false);
