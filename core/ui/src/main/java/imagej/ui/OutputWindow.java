@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 /**
- * UI-independent scrolling text output window
+ * UI-independent scrolling text output window.
  * 
- * @author GBH
+ * @author Grant Harris
  */
 public interface OutputWindow {
 
