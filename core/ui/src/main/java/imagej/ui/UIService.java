@@ -38,6 +38,7 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.ext.plugin.PluginService;
+import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
 import imagej.util.Log;
 
@@ -56,6 +57,7 @@ import net.java.sezpoz.IndexItem;
 @Service
 public final class UIService extends AbstractService {
 
+	private final PlatformService platformService;
 	private final PluginService pluginService;
 	private final ToolService toolService;
 
@@ -73,13 +75,20 @@ public final class UIService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public UIService(final ImageJ context, final PluginService pluginService, final ToolService toolService) {
+	public UIService(final ImageJ context, final PlatformService platformService,
+		final PluginService pluginService, final ToolService toolService)
+	{
 		super(context);
+		this.platformService = platformService;
 		this.pluginService = pluginService;
 		this.toolService = toolService;
 	}
 
 	// -- UIService methods --
+
+	public PlatformService getPlatformService() {
+		return platformService;
+	}
 
 	public PluginService getPluginService() {
 		return pluginService;
