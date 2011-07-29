@@ -1,5 +1,5 @@
 //
-// RecentFileManager.java
+// RecentFileService.java
 //
 
 /*
@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,52 +30,51 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.ui;
 
 import imagej.AbstractService;
-import imagej.Service;
 import imagej.event.EventSubscriber;
-//import imagej.event.FileOpenedEvent;
-
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-/**
- * MRUManager
- * Manager component for managing the Recently Used Files menu.
- * 
- * Behavior:
- * There is a limited number of files presented (maxFilesShown), regardless of the list length.
- * When a file is opened, its path is added to the top of the list.
- * If an image has been saved as a new file, its path is added to the top of the list upon
- * 
- * add(String path)
- * remove(String path)
- * @author Grant Harris
- */
-
 //TODO Enable...
 // @Service
 
+/**
+ * Service for managing the Recently Used Files menu.
+ * <p>
+ * Behavior: There is a limited number of files presented (maxFilesShown),
+ * regardless of the list length. When a file is opened, its path is added to
+ * the top of the list. If an image has been saved as a new file, its path is
+ * added to the top of the list upon
+ * </p>
+ * <ul>
+ * <li>add(String path)</li>
+ * <li>remove(String path)</li>
+ * </ul>
+ * 
+ * @author Grant Harris
+ */
 public final class RecentFileService extends AbstractService {
 
 	private static final int maxFilesShown = 10;
-	int maxDisplayLength = 40;  // max. pathname length shown.
+	int maxDisplayLength = 40; // max. pathname length shown.
 	private static final String recentMenuName = "Recent Files";
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 	List<String> recentFiles = new ArrayList<String>();
 
-		public RecentFileService() {
+	public RecentFileService() {
 		// NB: Required by SezPoz.
 		super(null);
 		throw new UnsupportedOperationException();
 	}
 
-	//private final JMenuBar menuBar;
+	// private final JMenuBar menuBar;
 //	SwingRecentFileMgr(JMenuBar menuBar) {
 //		this.menuBar = menuBar;
 //		subscribeToEvents();
@@ -105,31 +104,30 @@ public final class RecentFileService extends AbstractService {
 //		subscribers.add(fileOpenedSubscriber);
 //		Events.subscribe(FileOpenedEvent.class, fileOpenedSubscriber);
 
-		// TODO 
+		// TODO
 		// FileSavedEvent
 		// ?? FileClosedEvent
 		// DisplayCreatedEvent
 		// DisplayDeletedEvent
 
-
 	}
 
-	private void updateFilesRecentlyOpened(String path) {
+	private void updateFilesRecentlyOpened(final String path) {
 //		JMenu menu = new JMenu(recentMenuName);
 //		for (String file : recentFiles) {
 //			addOpenAction(file, menu);
 //		}
 	}
 
-	public void add(String path) {
+	public void add(final String path) {
 		// already there, remove it
 		remove(path);
 		// add it to the end
 		recentFiles.add(path);
 	}
 
-	public void remove(String path) {
-		int idx = recentFiles.indexOf(path);
+	public void remove(final String path) {
+		final int idx = recentFiles.indexOf(path);
 		if (idx > -1) {
 			recentFiles.remove(idx);
 		}
@@ -139,17 +137,18 @@ public final class RecentFileService extends AbstractService {
 	 * returns list of file paths no longer than maxFilesShown
 	 * 
 	 */
-	
+
 	public List<String> getList() {
-		List<String> list = new ArrayList();
+		final List<String> list = new ArrayList();
 		int n = 0;
 
-		for (ListIterator<String> it = recentFiles.listIterator(recentFiles.size());
-				it.hasPrevious();) {
+		for (final ListIterator<String> it =
+			recentFiles.listIterator(recentFiles.size()); it.hasPrevious();)
+		{
 			if (n++ > maxFilesShown) {
 				break;
 			}
-			String t = it.previous();
+			final String t = it.previous();
 			list.add(t);
 		}
 		return list;
@@ -175,7 +174,7 @@ public final class RecentFileService extends AbstractService {
 	public List getRecentFileList() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
+
 //private <T extends BasePlugin> PluginEntry<T> createEntry(
 //		final IndexItem<Plugin, BasePlugin> item)
 //	{
@@ -222,16 +221,16 @@ public final class RecentFileService extends AbstractService {
 //		return entry;
 //	}
 
-
-	public static void main(String[] args) {
-		RecentFileService r = new RecentFileService();
+	public static void main(final String[] args) {
+		final RecentFileService r = new RecentFileService();
 		for (int i = 0; i < 20; i++) {
-			String t = "C:\\Documents and Settings\\All Users\\Application Data\\Apple Computer\\iTunes\\SC Info\\SCInfo" + i +".txt";
+			final String t =
+				"C:\\Documents and Settings\\All Users\\Application Data\\Apple Computer\\iTunes\\SC Info\\SCInfo" +
+					i + ".txt";
 			r.add(t);
 		}
-		
-		
-		int n = 0;
+
+		final int n = 0;
 //		for (String file : r.recentFiles) {
 //			if(n++>r.maxFilesShown) break; 
 //			System.out.println(file);
@@ -241,8 +240,8 @@ public final class RecentFileService extends AbstractService {
 //			if(n++>r.maxFilesShown) break; 
 //			System.out.println(file);
 //		}
-		List<String> list = r.getList();
-		for (String string : list) {
+		final List<String> list = r.getList();
+		for (final String string : list) {
 			System.out.println(string);
 		}
 
