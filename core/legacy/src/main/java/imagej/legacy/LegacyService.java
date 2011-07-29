@@ -151,9 +151,11 @@ public final class LegacyService extends AbstractService {
 			Log.warn("Failed to instantiate IJ1.", t);
 		}
 
-		// TODO - FIXME
-		// call optionsSynchronizer.update() here? Need to determine when the
-		// IJ2 settings file has been read/initialized and then call update() once.
+		// TODO
+		// is this the correct place to do this? Need to determine when the
+		// IJ2 Parameter settings can be safely read/initialized before calling
+		// update().
+		optionsSynchronizer.update();
 
 		subscribeToEvents();
 	}
