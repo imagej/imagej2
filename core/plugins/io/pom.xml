@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-core</artifactId>
+		<artifactId>imagej-pom-core-plugins</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-io</artifactId>
+	<artifactId>ij-plugins-io</artifactId>
 
-	<name>ImageJ I/O library</name>
-	<description>ImageJ data IO (create, open, save, revert), based on ImgLib.</description>
+	<name>ImageJ Core Plugins: I/O</name>
+	<description>Core image input/output routines for ImageJ.</description>
 
 	<dependencies>
 		<dependency>

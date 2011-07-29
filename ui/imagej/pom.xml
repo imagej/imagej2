@@ -36,12 +36,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-io</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-legacy</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
@@ -49,6 +43,32 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-platform-macosx</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!--
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-debug</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-display</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-io</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-math</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>

@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-core</artifactId>
+		<artifactId>imagej-pom-core-plugins</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-core-plugins</artifactId>
+	<artifactId>ij-plugins-math</artifactId>
 
-	<name>ImageJ Core Plugins</name>
-	<description>A collection of built-in plugins for ImageJ.</description>
+	<name>ImageJ Core Plugins: Math</name>
+	<description>Core image processing routines for ImageJ.</description>
 
 	<dependencies>
 		<dependency>
