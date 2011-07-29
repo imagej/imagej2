@@ -23,7 +23,9 @@ else {
 }
 
 # read copyright file
-my @copyright = readFile("scripts/copyright.txt");
+my @copyright = readFile("LICENSE.txt");
+push(@copyright, '*/');
+push(@copyright, '');
 
 # find source files
 my $cmd = "find @args -name '*.java'";
@@ -60,7 +62,7 @@ sub process {
 
   # check header comment
   my $i = 0;
-  my @header = ('//', "// $base", '//', '');
+  my @header = ('//', "// $base", '//', '', '/*');
   if (!match(\@header, \@data, $i)) {
     print "$file: invalid header\n";
     return;
