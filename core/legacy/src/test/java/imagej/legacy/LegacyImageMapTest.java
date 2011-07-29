@@ -1,3 +1,37 @@
+//
+// LegacyImageMapTest.java
+//
+
+/*
+ImageJ software for multidimensional image processing and analysis.
+
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package imagej.legacy;
 
 import ij.ImagePlus;
@@ -11,58 +45,67 @@ import net.imglib2.type.numeric.RealType;
 
 import org.junit.Test;
 
-
+/**
+ * Unit tests for {@link LegacyImageMap}.
+ * 
+ * @author Barry DeZonia
+ */
 public class LegacyImageMapTest {
 
 	// -- instance variables --
-	
-	private LegacyImageMap map = new LegacyImageMap();
+
+	private final LegacyImageMap map = new LegacyImageMap();
 
 	// -- private interface --
-	
-	private void fill(Dataset ds) {
-		Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
+
+	private void fill(final Dataset ds) {
+		final Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
 		int val = 0;
-		while(cursor.hasNext()) {
+		while (cursor.hasNext()) {
 			cursor.next();
 			cursor.get().setReal(val++ % 256);
 		}
 	}
-	
+
 	// -- public tests --
-	
+
 	@Test
 	public void testRegisterDataset() {
 		Dataset ds0;
-		ImagePlus imp1, imp2;
-		Axis[] axes = new Axis[]{ Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+		final ImagePlus imp1, imp2;
+		final Axis[] axes =
+			new Axis[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 
 		// register a gray dataset
-		ds0 = Dataset.create(new long[]{1,2,3,4,5}, "temp", axes, 16, false, false);
+		ds0 =
+			Dataset.create(new long[] { 1, 2, 3, 4, 5 }, "temp", axes, 16, false,
+				false);
 		fill(ds0);
-		ds0.getImgPlus().setCalibration(5,0);
-		ds0.getImgPlus().setCalibration(6,1);
-		ds0.getImgPlus().setCalibration(1,2);
-		ds0.getImgPlus().setCalibration(7,3);
-		ds0.getImgPlus().setCalibration(8,4);
+		ds0.getImgPlus().setCalibration(5, 0);
+		ds0.getImgPlus().setCalibration(6, 1);
+		ds0.getImgPlus().setCalibration(1, 2);
+		ds0.getImgPlus().setCalibration(7, 3);
+		ds0.getImgPlus().setCalibration(8, 4);
 		// CTR FIXME - Fix comparison tests.
 //		imp1 = map.registerDataset(ds0);
 //		Utils.testSame(ds0, imp1);
-		
+
 		// try again
 		// CTR FIXME - Fix comparison tests.
 //		imp2 = map.registerDataset(ds0);
 //		assertSame(imp1, imp2);
 //		Utils.testSame(ds0, imp2);
-		
+
 		// register a color dataset
-		ds0 = Dataset.create(new long[]{1,2,3,4,5}, "temp", axes, 8, false, false);
+		ds0 =
+			Dataset.create(new long[] { 1, 2, 3, 4, 5 }, "temp", axes, 8, false,
+				false);
 		fill(ds0);
-		ds0.getImgPlus().setCalibration(5,0);
-		ds0.getImgPlus().setCalibration(6,1);
-		ds0.getImgPlus().setCalibration(1,2);
-		ds0.getImgPlus().setCalibration(7,3);
-		ds0.getImgPlus().setCalibration(8,4);
+		ds0.getImgPlus().setCalibration(5, 0);
+		ds0.getImgPlus().setCalibration(6, 1);
+		ds0.getImgPlus().setCalibration(1, 2);
+		ds0.getImgPlus().setCalibration(7, 3);
+		ds0.getImgPlus().setCalibration(8, 4);
 		ds0.setRGBMerged(true);
 		// CTR FIXME - Fix comparison tests.
 //		imp1 = map.registerDataset(ds0);
@@ -78,18 +121,21 @@ public class LegacyImageMapTest {
 	@Test
 	public void testRegisterLegacyImage() {
 		ImagePlus imp;
-		Dataset ds0,ds1;
-		ImgPlus<?> imgPlus0;
-		int c,z,t;
-		
+		final Dataset ds0, ds1;
+		final ImgPlus<?> imgPlus0;
+		int c, z, t;
+
 		// dataset that was not existing
-		c = 3; z = 4; t = 5;
-		imp = NewImage.createShortImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
+		c = 3;
+		z = 4;
+		t = 5;
+		imp =
+			NewImage.createShortImage("name", 4, 7, c * z * t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		// CTR FIXME - Fix comparison tests.
 //		ds0 = map.registerLegacyImage(imp);
 //		Utils.testSame(ds0,imp);
-		
+
 		// dataset that exists and no changes
 		// CTR FIXME - Fix comparison tests.
 //		imgPlus0 = ds0.getImgPlus();
@@ -101,21 +147,25 @@ public class LegacyImageMapTest {
 
 	@Test
 	public void testReconciliation() {
-		DatasetHarmonizer harmonizer = new DatasetHarmonizer(map.getTranslator());
+		final DatasetHarmonizer harmonizer =
+			new DatasetHarmonizer(map.getTranslator());
 		ImagePlus imp;
-		Dataset ds0,ds1;
-		ImgPlus<?> imgPlus0;
-		int c,z,t;
-		
+		final Dataset ds0, ds1;
+		final ImgPlus<?> imgPlus0;
+		int c, z, t;
+
 		// dataset that was not existing
-		c = 3; z = 4; t = 5;
-		imp = NewImage.createShortImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
+		c = 3;
+		z = 4;
+		t = 5;
+		imp =
+			NewImage.createShortImage("name", 4, 7, c * z * t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		// CTR FIXME - Fix comparison tests.
 //		ds0 = map.registerLegacyImage(imp);
 //		//map.reconcileDifferences(ds0, imp);
 //		Utils.testSame(ds0,imp);
-		
+
 		// dataset that exists and no changes
 		// CTR FIXME - Fix comparison tests.
 //		imgPlus0 = ds0.getImgPlus();
@@ -126,7 +176,7 @@ public class LegacyImageMapTest {
 //		Utils.testSame(ds1,imp);
 
 		// dataset exists and some changes
-		
+
 		// CTR FIXME - Fix comparison tests.
 
 //		//   some change and not backed by planar access
