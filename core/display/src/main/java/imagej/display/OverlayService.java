@@ -139,8 +139,8 @@ public final class OverlayService extends AbstractService {
 			if (!(dataObject instanceof Dataset)) continue;
 			final Dataset dataset = (Dataset) dataObject;
 			final Extents extents = dataset.getExtents();
-			final double w = extents.dimension(0);
-			final double h = extents.dimension(1);
+			final double w = extents.dimension(0) - 1;
+			final double h = extents.dimension(1) - 1;
 			if (w > width) width = w;
 			if (h > height) height = h;
 		}
@@ -168,13 +168,27 @@ public final class OverlayService extends AbstractService {
 			if (min0 < xMin) xMin = min0;
 			if (max0 > xMax) xMax = max0;
 			if (min1 < yMin) yMin = min1;
-			if (max1 < yMax) yMax = max1;
+			if (max1 > yMax) yMax = max1;
 		}
-		if (xMin > xMax || yMin > yMax) return null;
-		if (xMin < 0) xMin = 0;
-		if (yMin < 0) yMin = 0;
-		if (xMax > width) xMax = width;
-		if (yMax > height) yMax = height;
+
+		// use entire XY extents if values are out of bounds 
+		if (xMin < 0 || xMin > width) xMin = 0;
+		if (xMax < 0 || xMax > width) xMax = width;
+		if (yMin < 0 || yMin > height) yMin = 0;
+		if (yMax < 0 || yMax > height) yMax = height;
+
+		// swap reversed bounds
+		if (xMin > xMax) {
+			final double temp = xMin;
+			xMin = xMax;
+			xMax = temp;
+		}
+		if (yMin > yMax) {
+			final double temp = yMin;
+			yMin = yMax;
+			yMax = temp;
+		}
+
 		return new RealRect(xMin, yMin, xMax - xMin, yMax - yMin);
 	}
 
