@@ -43,7 +43,7 @@ sub process {
   chop $dir;
   my $base = `basename "$file"`;
   chop $base;
-  my $class = substr($file, 0, length($file) - 5);
+  my $class = substr($base, 0, length($base) - 5);
 
   # read in source file
   my @data = readFile($file);
@@ -119,9 +119,14 @@ sub process {
     return;
   }
 
+  # skip annotations
+  while ($data[$i] =~ /^\@/ || $data[$i] =~ /^\t/) {
+    $i++;
+  }
+
   # check type declaration
   if ($data[$i++] !~
-    /^public ((abstract)|(final) )*(class)|(interface) $class .* {$/)
+    /^public (abstract )?(final )?(class)|(interface) $class[ <]/)
   {
     print "$file: invalid type declaration at line #$i\n";
     return;
