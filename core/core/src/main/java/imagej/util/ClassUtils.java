@@ -259,7 +259,7 @@ public final class ClassUtils {
 		if (isLong(type)) return Long.MIN_VALUE;
 		if (isFloat(type)) return -Float.MAX_VALUE;
 		if (isDouble(type)) return -Double.MAX_VALUE;
-		return Double.NEGATIVE_INFINITY;
+		return null;
 	}
 
 	public static Number getMaximumNumber(final Class<?> type) {
@@ -269,7 +269,7 @@ public final class ClassUtils {
 		if (isLong(type)) return Long.MAX_VALUE;
 		if (isFloat(type)) return Float.MAX_VALUE;
 		if (isDouble(type)) return Double.MAX_VALUE;
-		return Double.POSITIVE_INFINITY;
+		return null;
 	}
 
 	// -- Type querying --
