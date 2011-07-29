@@ -1,5 +1,5 @@
 //
-// RectangleROI.java
+// RectangleOverlay.java
 //
 
 /*
@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
 
 import java.io.IOException;
@@ -41,27 +42,30 @@ import net.imglib2.img.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
- * @author leek
- *
- * A rectangular region of interest
+ * A rectangular region of interest.
+ * 
+ * @author Lee Kamentsky
  */
-public class RectangleOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
+public class RectangleOverlay extends
+	AbstractROIOverlay<RectangleRegionOfInterest>
+{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	public RectangleOverlay() {
-		super(new RectangleRegionOfInterest(new double [] { 0, 0}, new double [] {0,0}));
+		super(new RectangleRegionOfInterest(new double[] { 0, 0 }, new double[] {
+			0, 0 }));
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());
 	}
 
 	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
+	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		RectangleRegionOfInterest roi = getRegionOfInterest();
+		final RectangleRegionOfInterest roi = getRegionOfInterest();
 		out.writeDouble(roi.getOrigin(0));
 		out.writeDouble(roi.getOrigin(1));
 		out.writeDouble(roi.getExtent(0));
@@ -69,9 +73,11 @@ public class RectangleOverlay extends AbstractROIOverlay<RectangleRegionOfIntere
 	}
 
 	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
 		super.readExternal(in);
-		RectangleRegionOfInterest roi = getRegionOfInterest();
+		final RectangleRegionOfInterest roi = getRegionOfInterest();
 		roi.setOrigin(in.readDouble(), 0);
 		roi.setOrigin(in.readDouble(), 1);
 		roi.setExtent(in.readDouble(), 0);

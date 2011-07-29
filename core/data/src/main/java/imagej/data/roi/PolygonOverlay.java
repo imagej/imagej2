@@ -1,6 +1,7 @@
+//
 // PolygonOverlay.java
 //
-//
+
 /*
 ImageJ software for multidimensional image processing and analysis.
 
@@ -30,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
 
 import java.io.IOException;
@@ -42,43 +44,48 @@ import net.imglib2.img.Axes;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
 /**
+ * TODO
+ * 
  * @author Lee Kamentsky
- *
  */
-public class PolygonOverlay extends AbstractROIOverlay<PolygonRegionOfInterest> {
+public class PolygonOverlay extends
+	AbstractROIOverlay<PolygonRegionOfInterest>
+{
 
 	public PolygonOverlay() {
 		super(new PolygonRegionOfInterest());
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());
 	}
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
+	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		PolygonRegionOfInterest roi = getRegionOfInterest();
-		final int vertexCount = roi.getVertexCount(); 
+		final PolygonRegionOfInterest roi = getRegionOfInterest();
+		final int vertexCount = roi.getVertexCount();
 		out.writeInt(vertexCount);
-		for (int i=0; i<vertexCount; i++) {
+		for (int i = 0; i < vertexCount; i++) {
 			final RealLocalizable vertex = roi.getVertex(i);
 			out.writeDouble(vertex.getDoublePosition(0));
 			out.writeDouble(vertex.getDoublePosition(1));
 		}
 	}
+
 	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
 		super.readExternal(in);
-		PolygonRegionOfInterest roi = getRegionOfInterest();
-		while( roi.getVertexCount() > 0) {
+		final PolygonRegionOfInterest roi = getRegionOfInterest();
+		while (roi.getVertexCount() > 0) {
 			roi.removeVertex(0);
 		}
 		final int vertexCount = in.readInt();
-		for (int i=0; i<vertexCount; i++) {
-			RealPoint vertex = new RealPoint(
-					new double [] {
-							in.readDouble(), in.readDouble()
-					});
+		for (int i = 0; i < vertexCount; i++) {
+			final RealPoint vertex =
+				new RealPoint(new double[] { in.readDouble(), in.readDouble() });
 			roi.addVertex(i, vertex);
 		}
 	}

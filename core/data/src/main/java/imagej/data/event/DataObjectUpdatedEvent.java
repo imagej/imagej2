@@ -1,5 +1,5 @@
 //
-// DatasetUpdatedEvent.java
+// DataObjectUpdatedEvent.java
 //
 
 /*
