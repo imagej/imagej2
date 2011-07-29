@@ -3,6 +3,16 @@ use strict;
 
 # check-headers.pl - Verifies existence and correctness of source code headers.
 
+my %knownAuthors = (
+  "Aivar Grislis" => 1,
+  "Barry DeZonia" => 1,
+  "Curtis Rueden" => 1,
+  "Grant Harris" => 1,
+  "Johannes Schindelin" => 1,
+  "Lee Kamentsky" => 1,
+  "Rick Lentz" => 1,
+);
+
 # parse command line arguments
 my @args;
 if (scalar @ARGV == 0) {
@@ -76,7 +86,7 @@ sub process {
     my $line = trim($data[$i++]);
     if ($line =~ /^$/) {
       if ($blank) {
-        print "$file: duplicate blank lines at line #$i\n";
+        print "$file: duplicate blank line at line #$i\n";
         return;
       }
       $blank = 1;
@@ -86,7 +96,7 @@ sub process {
       if ($line eq '/**') {
         last;
       }
-      elsif ($line !~ /^import /) {
+      elsif ($line !~ /\/\// && $line !~ /^import /) {
         print "$file: unexpected text at line #$i\n";
         return;
       }
@@ -109,7 +119,12 @@ sub process {
       print "$file: malformed class comment at line #$i\n";
       return;
     }
-    if ($line =~ /^ \* \@author /) {
+    if ($line =~ /^ \* \@author (.*)$/) {
+      my $authorName = $1;
+      if (!exists($knownAuthors{$authorName})) {
+        print "$file: unknown author: $authorName\n";
+        return;
+      }
       $author = 1;
     }
   }
@@ -126,7 +141,7 @@ sub process {
 
   # check type declaration
   if ($data[$i++] !~
-    /^public (abstract )?(final )?(class)|(interface) $class[ <]/)
+    /^public (abstract )?(final )?(class)|(enum)|(interface) $class[ <]/)
   {
     print "$file: invalid type declaration at line #$i\n";
     return;
