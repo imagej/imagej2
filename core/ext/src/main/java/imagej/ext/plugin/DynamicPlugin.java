@@ -42,7 +42,7 @@ import imagej.ext.module.ModuleItem;
  * A class which can be extended to provide an ImageJ plugin with a variable
  * number of inputs and outputs. This class provides greater configurability,
  * but also greater complexity, than implementing the {@link ImageJPlugin}
- * interface and using the @ {@link Parameter} annotations on instance fields.
+ * interface and using only @{@link Parameter} annotations on instance fields.
  * 
  * @author Curtis Rueden
  */
