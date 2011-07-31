@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.UIDetails;
 import imagej.ext.module.AbstractModuleInfo;
+import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleInfo;
@@ -60,7 +61,7 @@ import imagej.ext.module.ModuleItem;
 public class DynamicPluginInfo extends AbstractModuleInfo {
 
 	private DynamicPlugin module;
-	private PluginInfo<? extends DynamicPlugin> info;
+	private PluginModuleInfo<? extends DynamicPlugin> info;
 
 	protected DynamicPluginInfo() {
 		super(null);
@@ -71,7 +72,8 @@ public class DynamicPluginInfo extends AbstractModuleInfo {
 	protected void setModule(final DynamicPlugin module) {
 		this.module = module;
 		final PluginService pluginService = ImageJ.get(PluginService.class);
-		info = pluginService.getPluginsOfClass(module.getClass()).get(0);
+		info = pluginService.getRunnablePlugin(module.getClass());
+		populateItems();
 	}
 
 	// -- ModuleInfo methods --
@@ -193,6 +195,27 @@ public class DynamicPluginInfo extends AbstractModuleInfo {
 	@Override
 	public void setDescription(final String description) {
 		info.setDescription(description);
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Copies any inputs from the adapted {@link PluginInfo}. This step allows
+	 * {@link DynamicPlugin}s to mix and match @{@link Parameter} annotations with
+	 * inputs dynamically generated at runtime.
+	 */
+	private void populateItems() {
+		for (final ModuleItem<?> item : info.inputs()) {
+			addInput(copy(item));
+		}
+		for (final ModuleItem<?> item : info.outputs()) {
+			addOutput(copy(item));
+		}
+	}
+
+	/** Creates a mutable copy of the given module item. */
+	private <T> DefaultModuleItem<T> copy(final ModuleItem<T> item) {
+		return new DefaultModuleItem<T>(this, item);
 	}
 
 }
