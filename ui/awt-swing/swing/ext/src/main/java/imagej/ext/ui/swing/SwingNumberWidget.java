@@ -91,9 +91,10 @@ public class SwingNumberWidget extends SwingInputWidget implements
 			slider.addChangeListener(this);
 		}
 
-		final Number zero = ClassUtils.toNumber("0", model.getItem().getType());
+		final Class<?> type = model.getItem().getType();
+		final Number value = ClassUtils.getDefaultValue(min, type);
 		final SpinnerNumberModel spinnerModel =
-			new SpinnerNumberModel(zero, (Comparable<?>) min, (Comparable<?>) max,
+			new SpinnerNumberModel(value, (Comparable<?>) min, (Comparable<?>) max,
 				stepSize);
 		spinner = new JSpinner(spinnerModel);
 		setToolTip(spinner);
