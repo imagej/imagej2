@@ -76,7 +76,6 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		super(info);
 		this.name = name;
 		this.type = type;
-
 		visibility = super.getVisibility();
 		required = super.isRequired();
 		persisted = super.isPersisted();
@@ -91,6 +90,27 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		if (superChoices != null) choices.addAll(superChoices);
 		label = super.getLabel();
 		description = super.getDescription();
+	}
+
+	/** Creates a new module item with the same values as the given item. */
+	public DefaultModuleItem(final ModuleInfo info, final ModuleItem<T> item) {
+		super(info);
+		name = item.getName();
+		type = item.getType();
+		visibility = item.getVisibility();
+		required = item.isRequired();
+		persisted = item.isPersisted();
+		persistKey = item.getPersistKey();
+		callback = item.getCallback();
+		widgetStyle = item.getWidgetStyle();
+		minimumValue = item.getMinimumValue();
+		maximumValue = item.getMaximumValue();
+		stepSize = item.getStepSize();
+		columnCount = item.getColumnCount();
+		final List<T> itemChoices = item.getChoices();
+		if (itemChoices != null) choices.addAll(itemChoices);
+		label = item.getLabel();
+		description = item.getDescription();
 	}
 
 	// -- DefaultModuleItem methods --
