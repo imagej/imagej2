@@ -52,7 +52,8 @@ import java.awt.event.KeyEvent;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Pan", description = "Pans the display",
+@Tool(name = "Pan",
+	description = "Scrolling tool (or press space bar and drag)",
 	iconPath = "/icons/tools/pan.png", priority = PanTool.PRIORITY)
 public class PanTool extends AbstractTool {
 

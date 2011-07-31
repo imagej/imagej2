@@ -68,8 +68,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Probe", iconPath = "/icons/tools/probe.png",
-	description = "Probe Pixel Tool", priority = ProbeTool.PRIORITY)
+@Tool(name = "Probe", description = "Pixel probe",
+	iconPath = "/icons/tools/probe.png", priority = ProbeTool.PRIORITY)
 public class ProbeTool extends AbstractTool {
 
 	// -- constants --
@@ -82,14 +82,15 @@ public class ProbeTool extends AbstractTool {
 	private RandomAccess<? extends RealType<?>> randomAccess;
 	private long[] position;
 	private ArrayList<EventSubscriber<?>> subscribers;
-	private DisplayService displayService;
-	
+	private final DisplayService displayService;
+
 	// -- constructor --
-	
+
 	public ProbeTool() {
 		displayService = ImageJ.get(DisplayService.class);
 		subscribeToEvents();
 	}
+
 	// -- ITool methods --
 
 	@Override
@@ -161,51 +162,51 @@ public class ProbeTool extends AbstractTool {
 			position[i] = planePos.getLongPosition(i - 2);
 		}
 	}
-	
+
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 
 		subscribers = new ArrayList<EventSubscriber<?>>();
-		
+
 		// it is possible that underlying data is changed in such a way that
 		// probe gets out of sync. force a resync
-		
-		EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
+
+		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
 			new EventSubscriber<DatasetUpdatedEvent>() {
 
 				@Override
-				public void onEvent(DatasetUpdatedEvent event) {
+				public void onEvent(final DatasetUpdatedEvent event) {
 					if (event.getObject() == dataset) {
 						clearWorkingVariables();
 					}
 				}
-		};
+			};
 		subscribers.add(updateSubscriber);
 		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
 
-		EventSubscriber<DatasetDeletedEvent> deleteSubscriber =
+		final EventSubscriber<DatasetDeletedEvent> deleteSubscriber =
 			new EventSubscriber<DatasetDeletedEvent>() {
 
 				@Override
-				public void onEvent(DatasetDeletedEvent event) {
+				public void onEvent(final DatasetDeletedEvent event) {
 					if (event.getObject() == dataset) {
 						clearWorkingVariables();
 					}
 				}
-		};
+			};
 		subscribers.add(deleteSubscriber);
 		Events.subscribe(DatasetDeletedEvent.class, deleteSubscriber);
 
-		EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
+		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>() {
 
 				@Override
-				public void onEvent(DatasetRestructuredEvent event) {
+				public void onEvent(final DatasetRestructuredEvent event) {
 					if (event.getObject() == dataset) {
 						clearWorkingVariables();
 					}
 				}
-		};
+			};
 		subscribers.add(restructureSubscriber);
 		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 	}

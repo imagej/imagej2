@@ -44,7 +44,8 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Paintbrush", iconPath = "/icons/tools/paintbrush.png",
+@Tool(name = "Paintbrush", description = "Paintbrush Tool",
+	iconPath = "/icons/tools/paintbrush.png",
 	priority = PaintBrushTool.PRIORITY, enabled = false)
 public class PaintBrushTool extends AbstractTool {
 

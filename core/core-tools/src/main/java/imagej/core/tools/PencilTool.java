@@ -43,8 +43,9 @@ import imagej.tool.Tool;
  * @author Rick Lentz
  * @author Grant Harris
  */
-@Tool(name = "Pencil", iconPath = "/icons/tools/pencil.png",
-	priority = PencilTool.PRIORITY, enabled = false)
+@Tool(name = "Pencil", description = "Pencil Tool",
+	iconPath = "/icons/tools/pencil.png", priority = PencilTool.PRIORITY,
+	enabled = false)
 public class PencilTool extends AbstractTool {
 
 	public static final int PRIORITY = 301;

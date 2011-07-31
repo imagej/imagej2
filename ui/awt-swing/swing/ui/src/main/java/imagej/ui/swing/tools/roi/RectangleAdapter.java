@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools.roi;
 
 import imagej.data.roi.Overlay;
@@ -50,25 +51,28 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
 
 /**
+ * TODO
+ * 
  * @author Lee Kamentsky
- *
  */
+@Tool(name = "Rectangle", description = "Rectangular overlays",
+	iconPath = "/icons/tools/rectangle.png",
+	priority = RectangleAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = RectangleAdapter.PRIORITY)
-@Tool(name = "Rectangle", iconPath = "/icons/tools/rectangle.png",
-		priority = RectangleAdapter.PRIORITY, enabled = true)
-public class RectangleAdapter extends AbstractJHotDrawOverlayAdapter<RectangleOverlay> {
+public class RectangleAdapter extends
+	AbstractJHotDrawOverlayAdapter<RectangleOverlay>
+{
 
 	public static final int PRIORITY = SelectionTool.PRIORITY + 1;
-	
-	protected static RectangleOverlay downcastOverlay(Overlay roi) {
-		assert(roi instanceof RectangleOverlay);
-		return (RectangleOverlay)roi;
+
+	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
+		assert (roi instanceof RectangleOverlay);
+		return (RectangleOverlay) roi;
 	}
-	
+
 	@Override
-	public boolean supports(Overlay overlay, Figure figure) {
-		if ((figure != null) && (!(figure instanceof RectangleFigure)))
-			return false;
+	public boolean supports(final Overlay overlay, final Figure figure) {
+		if ((figure != null) && (!(figure instanceof RectangleFigure))) return false;
 		if (overlay instanceof RectangleOverlay) return true;
 		return false;
 	}
@@ -80,32 +84,35 @@ public class RectangleAdapter extends AbstractJHotDrawOverlayAdapter<RectangleOv
 
 	@Override
 	public Figure createDefaultFigure() {
-		RectangleFigure figure = new RectangleFigure();
-		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		final RectangleFigure figure = new RectangleFigure();
+		figure.set(AttributeKeys.FILL_COLOR, new Color(255, 255, 255, 0));
 		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(Overlay overlay, Figure f, DisplayView view) {
+	public void updateFigure(final Overlay overlay, final Figure f,
+		final DisplayView view)
+	{
 		super.updateFigure(overlay, f, view);
-		RectangleOverlay rectangleOverlay = downcastOverlay(overlay);
-		RectangleRegionOfInterest roi = rectangleOverlay.getRegionOfInterest();
-		double x0 = roi.getOrigin(0);
-		double w = roi.getExtent(0);
-		double y0 = roi.getOrigin(1);
-		double h = roi.getExtent(1);
-		Point2D.Double anchor = new Point2D.Double(x0, y0);
-		Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
+		final RectangleOverlay rectangleOverlay = downcastOverlay(overlay);
+		final RectangleRegionOfInterest roi =
+			rectangleOverlay.getRegionOfInterest();
+		final double x0 = roi.getOrigin(0);
+		final double w = roi.getExtent(0);
+		final double y0 = roi.getOrigin(1);
+		final double h = roi.getExtent(1);
+		final Point2D.Double anchor = new Point2D.Double(x0, y0);
+		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
 		f.setBounds(anchor, lead);
 	}
 
 	@Override
-	public void updateOverlay(Figure figure, Overlay overlay) {
+	public void updateOverlay(final Figure figure, final Overlay overlay) {
 		super.updateOverlay(figure, overlay);
-		RectangleOverlay rOverlay = downcastOverlay(overlay);
-		RectangleRegionOfInterest roi = rOverlay.getRegionOfInterest();
-		Rectangle2D.Double bounds = figure.getBounds();
+		final RectangleOverlay rOverlay = downcastOverlay(overlay);
+		final RectangleRegionOfInterest roi = rOverlay.getRegionOfInterest();
+		final Rectangle2D.Double bounds = figure.getBounds();
 		roi.setOrigin(bounds.getMinX(), 0);
 		roi.setOrigin(bounds.getMinY(), 1);
 		roi.setExtent(bounds.getWidth(), 0);
