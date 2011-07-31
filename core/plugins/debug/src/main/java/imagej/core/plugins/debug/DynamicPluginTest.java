@@ -40,6 +40,7 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 
@@ -56,9 +57,13 @@ import net.imglib2.img.Axis;
 @Plugin(menuPath = "Plugins>Sandbox>Dynamic Plugin")
 public class DynamicPluginTest extends DynamicPlugin {
 
+	@Parameter
+	private boolean create = true;
+
 	public DynamicPluginTest() {
 		// add one input and one output per available display
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		int displayCount = 0;
 		for (final Display display : displayService.getDisplays()) {
 			final String name = display.getName();
 			final DefaultModuleItem<Integer> input =
@@ -68,30 +73,44 @@ public class DynamicPluginTest extends DynamicPlugin {
 			final DefaultModuleItem<Dataset> output =
 				new DefaultModuleItem<Dataset>(this, name + "-data", Dataset.class);
 			addOutput(output);
+			displayCount++;
 		}
+
+		// modify a statically defined input
+		final DefaultModuleItem<?> createItem =
+			(DefaultModuleItem<?>) getInfo().getInput("create");
+		createItem.setLabel("Create " + displayCount + " new datasets");
 	}
 
 	@Override
 	public void run() {
 		Log.info("DynamicPlugin results:");
-		final Map<String, Object> inputs = getInputs();
-		for (final String name : inputs.keySet()) {
-			// harvest input value
-			final int value = (Integer) inputs.get(name);
+		if (create) {
+			final Map<String, Object> inputs = getInputs();
+			for (final String name : inputs.keySet()) {
+				if (name.equals("create")) continue;
 
-			// print some debugging information
-			Log.info("\t" + name + " = " + value);
+				// harvest input value
+				final int value = (Integer) inputs.get(name);
 
-			// create dataset and assign to the corresponding output
-			final String outputName = name + "-data";
-			final long[] dims = { value, value };
-			final Axis[] axes = { Axes.X, Axes.Y };
-			final int bitsPerPixel = 8;
-			final boolean signed = false;
-			final boolean floating = false;
-			final Dataset dataset =
-				Dataset.create(dims, outputName, axes, bitsPerPixel, signed, floating);
-			setOutput(outputName, dataset);
+				// print some debugging information
+				Log.info("\t" + name + " = " + value);
+
+				// create dataset and assign to the corresponding output
+				final String outputName = name + "-data";
+				final long[] dims = { value, value };
+				final Axis[] axes = { Axes.X, Axes.Y };
+				final int bitsPerPixel = 8;
+				final boolean signed = false;
+				final boolean floating = false;
+				final Dataset dataset =
+					Dataset.create(dims, outputName, axes, bitsPerPixel, signed,
+						floating);
+				setOutput(outputName, dataset);
+			}
+		}
+		else {
+			Log.info("Nothing to do.");
 		}
 	}
 
