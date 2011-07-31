@@ -43,8 +43,9 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Text", iconPath = "/icons/tools/text.png", description = "Text",
-	priority = TextTool.PRIORITY, enabled = false)
+@Tool(name = "Text", description = "Text tool",
+	iconPath = "/icons/tools/text.png", priority = TextTool.PRIORITY,
+	enabled = false)
 public class TextTool extends AbstractTool {
 
 	public static final int PRIORITY = 115;

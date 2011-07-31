@@ -30,6 +30,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools.roi;
 
 import imagej.data.roi.Overlay;
@@ -58,26 +59,30 @@ import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.BezierPath.Node;
 
 /**
+ * TODO
+ * 
  * @author Lee Kamentsky
- *
  */
-@Tool(name = "Polygon", iconPath = "/icons/tools/polygon.png",
-		priority = PolygonAdapter.PRIORITY, enabled = true)
+@Tool(name = "Polygon", description = "Polygon overlays",
+	iconPath = "/icons/tools/polygon.png", priority = PolygonAdapter.PRIORITY,
+	enabled = true)
 @JHotDrawOverlayAdapter(priority = PolygonAdapter.PRIORITY)
-public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverlay> {
+public class PolygonAdapter extends
+	AbstractJHotDrawOverlayAdapter<PolygonOverlay>
+{
 
 	public static final int PRIORITY = EllipseAdapter.PRIORITY + 1;
 
-	static private BezierFigure downcastFigure(Figure figure) {
+	static private BezierFigure downcastFigure(final Figure figure) {
 		assert figure instanceof BezierFigure;
 		return (BezierFigure) figure;
 	}
-	
-	static private PolygonOverlay downcastOverlay(Overlay overlay) {
+
+	static private PolygonOverlay downcastOverlay(final Overlay overlay) {
 		assert overlay instanceof PolygonOverlay;
-		return (PolygonOverlay)overlay;
+		return (PolygonOverlay) overlay;
 	}
-	
+
 	/*
 	 * The BezierFigure uses a BezierNodeHandle which can change the curve
 	 * connecting vertices from a line to a Bezier curve. We subclass both 
@@ -85,48 +90,60 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	 */
 	public static class PolygonNodeHandle extends BezierNodeHandle {
 
-		public PolygonNodeHandle(BezierFigure owner, int index, Figure transformOwner) {
+		public PolygonNodeHandle(final BezierFigure owner, final int index,
+			final Figure transformOwner)
+		{
 			super(owner, index, transformOwner);
 		}
-		public PolygonNodeHandle(BezierFigure owner, int index) {
+
+		public PolygonNodeHandle(final BezierFigure owner, final int index) {
 			super(owner, index);
 		}
-	    @Override
-	    public void trackEnd(Point anchor, Point lead, int modifiersEx) {
-	    	// Remove the behavior associated with the shift keys
-	    	super.trackEnd(anchor, lead, modifiersEx & ~(InputEvent.META_DOWN_MASK | InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-	    }
-		
+
+		@Override
+		public void trackEnd(final Point anchor, final Point lead,
+			final int modifiersEx)
+		{
+			// Remove the behavior associated with the shift keys
+			super.trackEnd(anchor, lead, modifiersEx &
+				~(InputEvent.META_DOWN_MASK | InputEvent.CTRL_DOWN_MASK |
+					InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+		}
+
 	}
+
 	public static class PolygonFigure extends BezierFigure {
+
 		public PolygonFigure() {
 			// The constructor makes the BezierFigure a closed figure.
 			super(true);
 		}
+
 		/* (non-Javadoc)
 		 * @see org.jhotdraw.draw.BezierFigure#createHandles(int)
 		 */
 		@Override
-		public Collection<Handle> createHandles(int detailLevel) {
-	        LinkedList<Handle> handles = new LinkedList<Handle>();
+		public Collection<Handle> createHandles(final int detailLevel) {
+			final LinkedList<Handle> handles = new LinkedList<Handle>();
 			if (detailLevel != 0) {
 				return super.createHandles(detailLevel);
 			}
-            handles.add(new BezierOutlineHandle(this));
-            for (int i = 0, n = path.size(); i < n; i++) {
-                handles.add(new PolygonNodeHandle(this, i));
-            }
-            return handles;
+			handles.add(new BezierOutlineHandle(this));
+			for (int i = 0, n = path.size(); i < n; i++) {
+				handles.add(new PolygonNodeHandle(this, i));
+			}
+			return handles;
 		}
 
 		private static final long serialVersionUID = 1L;
-		
+
 	}
+
 	/* (non-Javadoc)
 	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#supports(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
 	 */
 	@Override
-	public boolean supports(Overlay overlay, Figure figure) {
+	public boolean supports(final Overlay overlay, final Figure figure) {
 		if ((figure != null) && (!(figure instanceof PolygonFigure))) return false;
 		return overlay instanceof PolygonOverlay;
 	}
@@ -136,7 +153,7 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	 */
 	@Override
 	public Overlay createNewOverlay() {
-		PolygonOverlay o = new PolygonOverlay();
+		final PolygonOverlay o = new PolygonOverlay();
 		return o;
 	}
 
@@ -146,7 +163,7 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	@Override
 	public Figure createDefaultFigure() {
 		final BezierFigure figure = new PolygonFigure();
-		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		figure.set(AttributeKeys.FILL_COLOR, new Color(255, 255, 255, 0));
 		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
 		return figure;
 	}
@@ -155,26 +172,29 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#updateOverlay(org.jhotdraw.draw.Figure, imagej.data.roi.Overlay)
 	 */
 	@Override
-	public void updateOverlay(Figure figure, Overlay overlay) {
+	public void updateOverlay(final Figure figure, final Overlay overlay) {
 		super.updateOverlay(figure, overlay);
-		BezierFigure b = downcastFigure(figure);
-		PolygonOverlay poverlay = downcastOverlay(overlay);
-		PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
-		int nodeCount = b.getNodeCount();
-		while(roi.getVertexCount() > nodeCount) {
+		final BezierFigure b = downcastFigure(figure);
+		final PolygonOverlay poverlay = downcastOverlay(overlay);
+		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
+		final int nodeCount = b.getNodeCount();
+		while (roi.getVertexCount() > nodeCount) {
 			roi.removeVertex(nodeCount);
 			Log.debug("Removed node from overlay.");
 		}
-		for (int i=0; i < nodeCount; i++) {
-			Node node = b.getNode(i);
-			double [] position = new double[] { node.x[0], node.y[0] };
+		for (int i = 0; i < nodeCount; i++) {
+			final Node node = b.getNode(i);
+			final double[] position = new double[] { node.x[0], node.y[0] };
 			if (roi.getVertexCount() == i) {
 				roi.addVertex(i, new RealPoint(position));
 				Log.debug("Added node to overlay");
-			} else {
+			}
+			else {
 				if ((position[0] != roi.getVertex(i).getDoublePosition(0)) ||
-					(position[1] != roi.getVertex(i).getDoublePosition(1))) {
-					Log.debug(String.format("Vertex # %d moved to %f,%f", i+1, position[0], position[1] ));
+					(position[1] != roi.getVertex(i).getDoublePosition(1)))
+				{
+					Log.debug(String.format("Vertex # %d moved to %f,%f", i + 1,
+						position[0], position[1]));
 				}
 				roi.setVertexPosition(i, position);
 			}
@@ -185,21 +205,25 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#updateFigure(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
 	 */
 	@Override
-	public void updateFigure(Overlay overlay, Figure figure, DisplayView view) {
+	public void updateFigure(final Overlay overlay, final Figure figure,
+		final DisplayView view)
+	{
 		super.updateFigure(overlay, figure, view);
-		BezierFigure b = downcastFigure(figure);
-		PolygonOverlay pOverlay = downcastOverlay(overlay);
-		PolygonRegionOfInterest roi = pOverlay.getRegionOfInterest();
-		int vertexCount = roi.getVertexCount();
-		while(b.getNodeCount() > vertexCount) b.removeNode(vertexCount);
-		for (int i=0; i<vertexCount; i++) {
-			RealLocalizable vertex = roi.getVertex(i);
+		final BezierFigure b = downcastFigure(figure);
+		final PolygonOverlay pOverlay = downcastOverlay(overlay);
+		final PolygonRegionOfInterest roi = pOverlay.getRegionOfInterest();
+		final int vertexCount = roi.getVertexCount();
+		while (b.getNodeCount() > vertexCount)
+			b.removeNode(vertexCount);
+		for (int i = 0; i < vertexCount; i++) {
+			final RealLocalizable vertex = roi.getVertex(i);
 			if (b.getNodeCount() == i) {
-				Node node = new Node(vertex.getDoublePosition(0),
-									 vertex.getDoublePosition(1));
+				final Node node =
+					new Node(vertex.getDoublePosition(0), vertex.getDoublePosition(1));
 				b.addNode(node);
-			} else {
-				Node node = b.getNode(i);
+			}
+			else {
+				final Node node = b.getNode(i);
 				node.mask = 0;
 				Arrays.fill(node.x, vertex.getDoublePosition(0));
 				Arrays.fill(node.y, vertex.getDoublePosition(1));

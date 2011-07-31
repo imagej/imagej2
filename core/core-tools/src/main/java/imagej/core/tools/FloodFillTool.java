@@ -45,8 +45,8 @@ import imagej.tool.Tool;
  * @author Curtis Rueden
  */
 @Tool(name = "FloodFill", label = "Flood Fill",
-	iconPath = "/icons/tools/flood-fill.png", priority = FloodFillTool.PRIORITY,
-	enabled = false)
+	description = "Flood Fill Tool", iconPath = "/icons/tools/flood-fill.png",
+	priority = FloodFillTool.PRIORITY, enabled = false)
 public class FloodFillTool extends AbstractTool {
 
 	public static final int PRIORITY = 304;

@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools.roi;
 
 import imagej.data.roi.EllipseOverlay;
@@ -54,27 +55,29 @@ import org.jhotdraw.draw.Figure;
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = "Oval", iconPath = "/icons/tools/oval.png",
-		priority = EllipseAdapter.PRIORITY, enabled = true)
+@Tool(name = "Oval", description = "Oval selections",
+	iconPath = "/icons/tools/oval.png", priority = EllipseAdapter.PRIORITY,
+	enabled = true)
 @JHotDrawOverlayAdapter(priority = EllipseAdapter.PRIORITY)
-public class EllipseAdapter extends AbstractJHotDrawOverlayAdapter<EllipseOverlay> {
+public class EllipseAdapter extends
+	AbstractJHotDrawOverlayAdapter<EllipseOverlay>
+{
 
 	public static final int PRIORITY = RectangleAdapter.PRIORITY + 1;
-	
-	static protected EllipseOverlay downcastOverlay(Overlay roi) {
-		assert(roi instanceof EllipseOverlay);
-		return (EllipseOverlay)roi;
+
+	static protected EllipseOverlay downcastOverlay(final Overlay roi) {
+		assert (roi instanceof EllipseOverlay);
+		return (EllipseOverlay) roi;
 	}
-	
-	static protected EllipseFigure downcastFigure(Figure figure) {
-		assert(figure instanceof EllipseFigure);
-		return (EllipseFigure)figure;
+
+	static protected EllipseFigure downcastFigure(final Figure figure) {
+		assert (figure instanceof EllipseFigure);
+		return (EllipseFigure) figure;
 	}
-	
-	
+
 	@Override
-	public boolean supports(Overlay overlay, Figure figure) {
-		if ((figure != null) && (!(figure instanceof EllipseFigure))){
+	public boolean supports(final Overlay overlay, final Figure figure) {
+		if ((figure != null) && (!(figure instanceof EllipseFigure))) {
 			return false;
 		}
 		return overlay instanceof EllipseOverlay;
@@ -87,37 +90,38 @@ public class EllipseAdapter extends AbstractJHotDrawOverlayAdapter<EllipseOverla
 
 	@Override
 	public Figure createDefaultFigure() {
-		EllipseFigure figure = new EllipseFigure();
-		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		final EllipseFigure figure = new EllipseFigure();
+		figure.set(AttributeKeys.FILL_COLOR, new Color(255, 255, 255, 0));
 		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(Overlay o, Figure f, DisplayView view) {
+	public void updateFigure(final Overlay o, final Figure f,
+		final DisplayView view)
+	{
 		super.updateFigure(o, f, view);
-		EllipseOverlay overlay = downcastOverlay(o);
-		EllipseFigure figure = downcastFigure(f);
-		EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
-		double centerX = eRoi.getOrigin(0);
-		double centerY = eRoi.getOrigin(1);
-		double radiusX = eRoi.getRadius(0);
-		double radiusY = eRoi.getRadius(1);
-		
-		figure.setBounds(
-				new Point2D.Double(centerX - radiusX, centerY - radiusY),
-				new Point2D.Double(centerX + radiusX, centerY + radiusY));
+		final EllipseOverlay overlay = downcastOverlay(o);
+		final EllipseFigure figure = downcastFigure(f);
+		final EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
+		final double centerX = eRoi.getOrigin(0);
+		final double centerY = eRoi.getOrigin(1);
+		final double radiusX = eRoi.getRadius(0);
+		final double radiusY = eRoi.getRadius(1);
+
+		figure.setBounds(new Point2D.Double(centerX - radiusX, centerY - radiusY),
+			new Point2D.Double(centerX + radiusX, centerY + radiusY));
 	}
 
 	@Override
-	public void updateOverlay(Figure figure, Overlay roi) {
+	public void updateOverlay(final Figure figure, final Overlay roi) {
 		super.updateOverlay(figure, roi);
-		EllipseOverlay overlay = downcastOverlay(roi);
-		EllipseFigure eFigure = downcastFigure(figure);
-		Rectangle2D.Double r = eFigure.getBounds();
-		RealPoint ptCenter = new RealPoint(
-				new double[] { r.x + r.width/2, r.y + r.height/2 });
-		EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
+		final EllipseOverlay overlay = downcastOverlay(roi);
+		final EllipseFigure eFigure = downcastFigure(figure);
+		final Rectangle2D.Double r = eFigure.getBounds();
+		final RealPoint ptCenter =
+			new RealPoint(new double[] { r.x + r.width / 2, r.y + r.height / 2 });
+		final EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
 		eRoi.setOrigin(ptCenter);
 		eRoi.setRadius(r.width / 2, 0);
 		eRoi.setRadius(r.height / 2, 1);

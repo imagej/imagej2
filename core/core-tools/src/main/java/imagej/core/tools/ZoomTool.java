@@ -51,7 +51,8 @@ import imagej.util.IntCoords;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Tool(name = "Zoom", description = "Image Zoom Tool",
+@Tool(name = "Zoom",
+	description = "Magnifying glass (or use \"+\" and \"-\" keys)",
 	iconPath = "/icons/tools/zoom.png", priority = ZoomTool.PRIORITY)
 public class ZoomTool extends AbstractTool {
 
@@ -59,9 +60,9 @@ public class ZoomTool extends AbstractTool {
 
 	private static final int DRAG_THRESHOLD = 8;
 
-	private IntCoords mousePos = new IntCoords(0, 0);
-	private IntCoords mouseDown = new IntCoords(0, 0);
-	private IntCoords mouseUp = new IntCoords(0, 0);
+	private final IntCoords mousePos = new IntCoords(0, 0);
+	private final IntCoords mouseDown = new IntCoords(0, 0);
+	private final IntCoords mouseUp = new IntCoords(0, 0);
 
 	// -- ITool methods --
 
@@ -92,8 +93,7 @@ public class ZoomTool extends AbstractTool {
 		final int yDist = Math.abs(mouseUp.y - mouseDown.y);
 
 		// ensure mouse movement exceeds threshold
-		if (xDist > DRAG_THRESHOLD || yDist > DRAG_THRESHOLD)
-		{
+		if (xDist > DRAG_THRESHOLD || yDist > DRAG_THRESHOLD) {
 			// over threshold: zoom to rectangle
 			if (mouseUp.x < mouseDown.x) {
 				// swap X coordinates
@@ -121,7 +121,7 @@ public class ZoomTool extends AbstractTool {
 	}
 
 	@Override
-	public void onMouseMove(MsMovedEvent evt) {
+	public void onMouseMove(final MsMovedEvent evt) {
 		mousePos.x = evt.getX();
 		mousePos.y = evt.getY();
 	}

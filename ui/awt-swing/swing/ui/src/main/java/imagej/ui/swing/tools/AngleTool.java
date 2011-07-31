@@ -43,8 +43,9 @@ import imagej.ui.swing.tools.roi.LineAdapter;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Angle", iconPath = "/icons/tools/angle.png",
-	description = "Angle", priority = AngleTool.PRIORITY, enabled = false)
+@Tool(name = "Angle", description = "Angle tool",
+	iconPath = "/icons/tools/angle.png", priority = AngleTool.PRIORITY,
+	enabled = false)
 public class AngleTool extends AbstractTool {
 
 	public static final int PRIORITY = LineAdapter.PRIORITY + 1;

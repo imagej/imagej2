@@ -46,9 +46,9 @@ import org.jhotdraw.draw.tool.DelegationSelectionTool;
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = "Selection", iconPath = "/icons/tools/selection.png",
-	priority = SelectionTool.PRIORITY, label = "Selection tool",
-	description = "Adjust the shape and position of an overlay via handles.")
+@Tool(name = "Selection", description = "Selection Tool: "
+	+ "adjusts the shape and position of an overlay via handles.",
+	iconPath = "/icons/tools/selection.png", priority = SelectionTool.PRIORITY)
 public class SelectionTool extends AbstractTool {
 
 	public final static int PRIORITY = 100;

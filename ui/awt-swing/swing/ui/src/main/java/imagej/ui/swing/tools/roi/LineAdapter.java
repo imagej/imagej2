@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools.roi;
 
 import imagej.data.roi.LineOverlay;
@@ -49,21 +50,24 @@ import org.jhotdraw.draw.LineFigure;
 import org.jhotdraw.geom.BezierPath.Node;
 
 /**
+ * TODO
+ * 
  * @author Lee Kamentsky
- *
  */
-@Tool(name = "Line", iconPath = "/icons/tools/line.png",
-		priority = LineAdapter.PRIORITY, enabled = true)
+@Tool(name = "Line", description = "Straight line overlays",
+	iconPath = "/icons/tools/line.png", priority = LineAdapter.PRIORITY,
+	enabled = true)
 @JHotDrawOverlayAdapter(priority = LineAdapter.PRIORITY)
 public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
+
 	public static final int PRIORITY = FreehandTool.PRIORITY + 1;
 
 	/* (non-Javadoc)
 	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#supports(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
 	 */
 	@Override
-	public boolean supports(Overlay overlay, Figure figure) {
-		if (! (overlay instanceof LineOverlay)) return false;
+	public boolean supports(final Overlay overlay, final Figure figure) {
+		if (!(overlay instanceof LineOverlay)) return false;
 		return (figure == null) || (figure instanceof LineFigure);
 	}
 
@@ -80,7 +84,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	 */
 	@Override
 	public Figure createDefaultFigure() {
-		LineFigure figure = new LineFigure();
+		final LineFigure figure = new LineFigure();
 		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
 		return figure;
 	}
@@ -89,39 +93,37 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	 * @see imagej.ui.swing.tools.roi.AbstractJHotDrawOverlayAdapter#updateFigure(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure, imagej.display.DisplayView)
 	 */
 	@Override
-	public void updateFigure(Overlay overlay, Figure figure, DisplayView view) {
+	public void updateFigure(final Overlay overlay, final Figure figure,
+		final DisplayView view)
+	{
 		super.updateFigure(overlay, figure, view);
 		assert figure instanceof LineFigure;
-		LineFigure line = (LineFigure)figure;
+		final LineFigure line = (LineFigure) figure;
 		assert overlay instanceof LineOverlay;
-		LineOverlay loverlay = (LineOverlay)overlay;
-		line.setStartPoint(new Point2D.Double(
-				loverlay.getLineStart().getDoublePosition(0),
-				loverlay.getLineStart().getDoublePosition(1))); 
-		line.setEndPoint(new Point2D.Double(
-				loverlay.getLineEnd().getDoublePosition(0),
-				loverlay.getLineEnd().getDoublePosition(1))); 
+		final LineOverlay loverlay = (LineOverlay) overlay;
+		line.setStartPoint(new Point2D.Double(loverlay.getLineStart()
+			.getDoublePosition(0), loverlay.getLineStart().getDoublePosition(1)));
+		line.setEndPoint(new Point2D.Double(loverlay.getLineEnd()
+			.getDoublePosition(0), loverlay.getLineEnd().getDoublePosition(1)));
 	}
 
 	/* (non-Javadoc)
 	 * @see imagej.ui.swing.tools.roi.AbstractJHotDrawOverlayAdapter#updateOverlay(org.jhotdraw.draw.Figure, imagej.data.roi.Overlay)
 	 */
 	@Override
-	public void updateOverlay(Figure figure, Overlay overlay) {
+	public void updateOverlay(final Figure figure, final Overlay overlay) {
 		// TODO Auto-generated method stub
 		super.updateOverlay(figure, overlay);
 		assert figure instanceof LineFigure;
-		LineFigure line = (LineFigure)figure;
+		final LineFigure line = (LineFigure) figure;
 		assert overlay instanceof LineOverlay;
-		LineOverlay loverlay = (LineOverlay)overlay;
+		final LineOverlay loverlay = (LineOverlay) overlay;
 		final Node startNode = line.getNode(0);
-		loverlay.setLineStart(new RealPoint( new double [] {
-				startNode.getControlPoint(0).x,
-				startNode.getControlPoint(0).y }) );
+		loverlay.setLineStart(new RealPoint(new double[] {
+			startNode.getControlPoint(0).x, startNode.getControlPoint(0).y }));
 		final Node endNode = line.getNode(1);
-		loverlay.setLineEnd(new RealPoint( new double [] {
-				endNode.getControlPoint(0).x,
-				endNode.getControlPoint(0).y }) );
+		loverlay.setLineEnd(new RealPoint(new double[] {
+			endNode.getControlPoint(0).x, endNode.getControlPoint(0).y }));
 	}
 
 }

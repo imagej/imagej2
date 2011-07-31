@@ -44,8 +44,9 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Eraser", iconPath = "/icons/tools/eraser.png",
-	priority = EraserTool.PRIORITY, enabled = false)
+@Tool(name = "Eraser", description = "Eraser Tool",
+	iconPath = "/icons/tools/eraser.png", priority = EraserTool.PRIORITY,
+	enabled = false)
 public class EraserTool extends AbstractTool {
 
 	public static final int PRIORITY = 302;
