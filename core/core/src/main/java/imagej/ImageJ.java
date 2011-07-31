@@ -38,10 +38,9 @@ import imagej.util.Log;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Top-level application context for ImageJ, which initializes and maintains a
@@ -53,11 +52,11 @@ import java.util.WeakHashMap;
 public class ImageJ {
 
 	/** Version of the ImageJ software. */
-	public static final String VERSION = "2.0.0-alpha3";
+	public static final String VERSION = "2.0.0-alpha4";
 
 	/** Table of ImageJ application contexts. */
-	private static Map<Integer, ImageJ> contexts = Collections
-		.synchronizedMap(new WeakHashMap<Integer, ImageJ>());
+	private static Map<Integer, ImageJ> contexts =
+		new ConcurrentHashMap<Integer, ImageJ>();
 
 	/** The next available application context ID. */
 	private static int nextID = 0;
