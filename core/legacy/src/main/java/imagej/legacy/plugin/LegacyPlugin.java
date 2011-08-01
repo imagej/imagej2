@@ -182,13 +182,18 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// the IJ1 plugin may not have any outputs but just changes current
 		// ImagePlus make sure we catch any changes via harmonization
+		final List<Display> displays = new ArrayList<Display>();
 		final ImagePlus currImp = IJ.getImage();
 		Display display = map.lookupDisplay(currImp);
-		if (display != null) harmonizer.updateDisplay(display, currImp);
+		if (display != null) { 
+			harmonizer.updateDisplay(display, currImp);
+		} else {
+			display = map.registerLegacyImage(currImp);
+			displays.add(display);
+		}
 
 		// also harmonize any outputs
 
-		final List<Display> displays = new ArrayList<Display>();
 
 		final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
 		for (final ImagePlus imp : imps) {
@@ -198,7 +203,11 @@ public class LegacyPlugin implements ImageJPlugin {
 			else { // image plus is not totally empty
 				display = map.lookupDisplay(imp);
 				if (display == null) {
-					display = map.registerLegacyImage(imp);
+					if (imp.getWindow() != null) {
+						display = map.registerLegacyImage(imp);
+					} else {
+						continue;
+					}
 				} else {
 					if (imp == currImp) {
 						// we harmonized this earlier
