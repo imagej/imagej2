@@ -65,6 +65,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -160,11 +161,17 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 	@Override
 	public void redoLayout() {
-		createSliders();
-		sliders.setVisible(sliders.getComponentCount() > 0);
-		setTitle(getDisplay().getName());
-		pack();
-		setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void run() {
+				createSliders();
+				sliders.setVisible(sliders.getComponentCount() > 0);
+				setTitle(getDisplay().getName());
+				pack();
+				setVisible(true);
+			}
+		});
 	}
 
 	@Override
