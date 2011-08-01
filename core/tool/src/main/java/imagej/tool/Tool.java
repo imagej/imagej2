@@ -76,4 +76,7 @@ public @interface Tool {
 	/** When false, grays out the tool in the user interface. */
 	boolean enabled() default true;
 
+	/** When true, tool has no button but rather is active all the time. */
+	boolean global() default false;
+
 }
