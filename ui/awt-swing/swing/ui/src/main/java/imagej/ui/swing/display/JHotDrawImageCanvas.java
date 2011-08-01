@@ -154,6 +154,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
+		final ITool activeTool = ImageJ.get(ToolService.class).getActiveTool();
+		activateTool(activeTool);
 		Events.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
 		Events.subscribe(DisplayViewSelectedEvent.class, displayViewSelectedEvent);
 		Events.subscribe(DisplayViewDeselectedEvent.class, displayViewDeselectedEvent);
@@ -212,6 +214,10 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	
 	protected void onToolActivatedEvent(ToolActivatedEvent event) {
 		final ITool iTool = event.getTool();
+		activateTool(iTool);
+	}
+	
+	protected void activateTool(final ITool iTool) {
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter)iTool;
 			final IJCreationTool creationTool = new IJCreationTool(adapter);
@@ -222,7 +228,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 				@Override
 				public void toolDone(final ToolEvent e) {
 					final ToolService toolService = ImageJ.get(ToolService.class);
-					toolService.setActiveTool(new SelectionTool());
+					toolService.setActiveTool(toolService.getTool(SelectionTool.class));
 				}
 			});
 

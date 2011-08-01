@@ -108,6 +108,22 @@ public class ToolService extends AbstractService {
 		if (globalTool != null) return globalTool;
 		return tools.get(name);
 	}
+	
+	/**
+	 * Get a tool given its class
+	 * @param <T> the tool's type
+	 * @param toolClass the class of the tool to fetch
+	 * @return the tool, taken from the global tools list or null if not present / supported
+	 */
+	public <T extends ITool> T getTool(final Class<T> toolClass) {
+		for (ITool tool: globalToolList) {
+			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
+		}
+		for (ITool tool: toolList) {
+			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
+		}
+		return null;
+	}
 
 	public List<ITool> getTools() {
 		return toolList;
