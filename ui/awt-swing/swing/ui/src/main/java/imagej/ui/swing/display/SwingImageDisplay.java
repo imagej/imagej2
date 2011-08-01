@@ -54,6 +54,8 @@ import imagej.ui.common.awt.AWTEventDispatcher;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
@@ -154,25 +156,31 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public void update() {
-		if (!willRebuildImgWindow) {
-			imgWindow.update();
-		}
-		else { // rebuild image window
-			// NB - if pan to be reset below we'll be zoomed on wrong part of image
-			imgCanvas.setZoom(0); // original scale
-			// NB - if x or y dims change without this image panned incorrectly
-			// Must happen after setZoom() call
-			imgCanvas.panReset();
-			imgWindow.redoLayout();
-			imgWindow.update();
-			willRebuildImgWindow = false;
-		}
-		for (final DisplayView view : getViews()) {
-			view.update();
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void run() {
+				if (!willRebuildImgWindow) {
+					imgWindow.update();
+				}
+				else { // rebuild image window
+					// NB - if pan to be reset below we'll be zoomed on wrong part of image
+					imgCanvas.setZoom(0); // original scale
+					// NB - if x or y dims change without this image panned incorrectly
+					// Must happen after setZoom() call
+					imgCanvas.panReset();
+					imgWindow.redoLayout();
+					imgWindow.update();
+					willRebuildImgWindow = false;
+				}
+				for (final DisplayView view : getViews()) {
+					view.update();
+				}
+			}
+		});
 	}
 
 	@Override
