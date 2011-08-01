@@ -55,6 +55,7 @@ import imagej.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,9 @@ public class ToolService extends AbstractService {
 
 	private Map<String, ITool> globalTools;
 	private Map<String, ITool> tools;
+
+	private List<ITool> globalToolList;
+	private List<ITool> toolList;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
@@ -105,12 +109,12 @@ public class ToolService extends AbstractService {
 		return tools.get(name);
 	}
 
-	public Collection<ITool> getTools() {
-		return tools.values();
+	public List<ITool> getTools() {
+		return toolList;
 	}
 
-	public Collection<ITool> getGlobalTools() {
-		return globalTools.values();
+	public List<ITool> getGlobalTools() {
+		return globalToolList;
 	}
 
 	public ITool getActiveTool() {
@@ -170,6 +174,17 @@ public class ToolService extends AbstractService {
 				tools.put(info.getName(), tool);
 			}
 		}
+
+		// sort tools by priority
+		final Comparator<ITool> toolComparator = new Comparator<ITool>() {
+
+			@Override
+			public int compare(final ITool tool1, final ITool tool2) {
+				return tool1.getInfo().compareTo(tool2.getInfo());
+			}
+		};
+		globalToolList = createSortedList(globalTools.values(), toolComparator);
+		toolList = createSortedList(tools.values(), toolComparator);
 	}
 
 	/** Discovers tools using SezPoz. */
@@ -188,6 +203,14 @@ public class ToolService extends AbstractService {
 		return new ToolInfo(className, tool);
 	}
 
+	private <T> List<T> createSortedList(final Collection<T> c,
+		final Comparator<? super T> comparator)
+	{
+		final ArrayList<T> list = new ArrayList<T>(c);
+		Collections.sort(list, comparator);
+		return Collections.unmodifiableList(list);
+	}
+
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
@@ -197,7 +220,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final KyPressedEvent event) {
 					getActiveTool().onKeyDown(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onKeyDown(event);
 					}
 				}
@@ -211,7 +234,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final KyReleasedEvent event) {
 					getActiveTool().onKeyUp(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onKeyUp(event);
 					}
 				}
@@ -225,7 +248,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsPressedEvent event) {
 					getActiveTool().onMouseDown(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onMouseDown(event);
 					}
 				}
@@ -239,7 +262,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsReleasedEvent event) {
 					getActiveTool().onMouseUp(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onMouseUp(event);
 					}
 				}
@@ -253,7 +276,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsClickedEvent event) {
 					getActiveTool().onMouseClick(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onMouseClick(event);
 					}
 				}
@@ -267,7 +290,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsMovedEvent event) {
 					getActiveTool().onMouseMove(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onMouseMove(event);
 					}
 				}
@@ -281,7 +304,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsDraggedEvent event) {
 					getActiveTool().onMouseDrag(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onMouseDrag(event);
 					}
 				}
@@ -295,7 +318,7 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsWheelEvent event) {
 					getActiveTool().onMouseWheel(event);
-					for (ITool tool : getGlobalTools()) {
+					for (final ITool tool : getGlobalTools()) {
 						tool.onMouseWheel(event);
 					}
 				}
