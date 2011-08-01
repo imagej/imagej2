@@ -88,9 +88,10 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 	private void populateToolBar() {
 		int lastPriority = Integer.MAX_VALUE;
-		for (final ToolInfo entry : toolService.getToolEntries()) {
+		for (final ITool tool : toolService.getTools()) {
+			final ToolInfo entry = tool.getInfo();
 			try {
-				final Button button = createButton(entry);
+				final Button button = createButton(tool);
 				toolButtons.put(entry.getName(), button);
 				add(button);
 
@@ -105,12 +106,10 @@ public class AWTToolBar extends Panel implements ToolBar {
 		}
 	}
 
-	private Button createButton(final ToolInfo entry)
+	private Button createButton(final ITool tool)
 		throws InstantiableException
 	{
-		final ITool tool = entry.createInstance();
-		// TODO - consider alternatives to assigning the entry manually
-		tool.setInfo(entry);
+		final ToolInfo entry = tool.getInfo();
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();

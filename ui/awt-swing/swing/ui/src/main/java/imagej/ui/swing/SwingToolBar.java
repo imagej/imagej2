@@ -121,10 +121,11 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	private void populateToolBar() {
 		int lastPriority = Integer.MAX_VALUE;
-		for (final ToolInfo entry : toolService.getToolEntries()) {
+		for (final ITool tool : toolService.getTools()) {
+			final ToolInfo entry = tool.getInfo();
 			try {
-				final AbstractButton button = createButton(entry);
-				toolButtons.put(entry.getName(), button);
+				final AbstractButton button = createButton(tool);
+				toolButtons.put(tool.getInfo().getName(), button);
 
 				// add a separator between tools with clustered priorities
 				final int priority = entry.getPriority();
@@ -139,12 +140,10 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		}
 	}
 
-	private AbstractButton createButton(final ToolInfo entry)
+	private AbstractButton createButton(final ITool tool)
 		throws InstantiableException
 	{
-		final ITool tool = entry.createInstance();
-		// TODO - consider alternatives to assigning the entry manually
-		tool.setInfo(entry);
+		final ToolInfo entry = tool.getInfo();
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();
