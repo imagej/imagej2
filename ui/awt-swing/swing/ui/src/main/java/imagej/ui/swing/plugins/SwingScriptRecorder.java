@@ -44,6 +44,7 @@ import imagej.ext.module.ModuleItem;
 import imagej.ext.module.event.ModuleEvent;
 import imagej.ext.module.event.ModuleExecutedEvent;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.script.CodeGenerator;
 import imagej.ext.script.CodeGeneratorJava;
@@ -73,13 +74,15 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 /**
- * MacroRecorder
- * @author GBH
+ * Script Recorder.
+ * 
+ * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Recorder")
+@Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Macros"),
+	@Menu(label = "Record...", weight = 4) })
 public class SwingScriptRecorder implements ImageJPlugin {
 
-	//private static SwingOutputWindow window;
+	// private static SwingOutputWindow window;
 	JTextArea textArea = new JTextArea();
 
 	@Override
@@ -93,17 +96,18 @@ public class SwingScriptRecorder implements ImageJPlugin {
 		return recording;
 	}
 
-	void setRecording(boolean t) {
+	void setRecording(final boolean t) {
 		recording = t;
 	}
 
 	void createFrame() {
-		JFrame frame = new JFrame("Recorder");
+		final JFrame frame = new JFrame("Recorder");
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		textArea.setEditable(false);
 		textArea.setRows(20);
 		textArea.setColumns(50);
-		java.awt.Font font = new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12);
+		final java.awt.Font font =
+			new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12);
 		textArea.setFont(font);
 		frame.getContentPane().add(new JScrollPane(textArea), BorderLayout.CENTER);
 
@@ -114,13 +118,14 @@ public class SwingScriptRecorder implements ImageJPlugin {
 
 			@Override
 			@SuppressWarnings("synthetic-access")
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				if (!isRecording()) {
 					startRecording();
 					button.setText("Stop");
 					setRecording(true);
 					emitMessage("Started recording...");
-				} else {
+				}
+				else {
 					setRecording(false);
 					stopRecording();
 					emitMessage("Stopped recording.");
@@ -130,7 +135,8 @@ public class SwingScriptRecorder implements ImageJPlugin {
 		});
 		frame.getContentPane().add(button, BorderLayout.NORTH);
 		frame.pack();
-		frame.setVisible(true);  // BDZ says why are we calling this twice in 3 lines?
+		frame.setVisible(true); // BDZ says why are we calling this twice in 3
+														// lines?
 		frame.setBounds(new Rectangle(400, 400, 700, 300));
 		frame.setVisible(true);
 		StaticSwingUtils.locateUpperRight(frame);
@@ -148,14 +154,14 @@ public class SwingScriptRecorder implements ImageJPlugin {
 	}
 
 	final EventSubscriber<ImageJEvent> imageJEventSubscriber =
-			new EventSubscriber<ImageJEvent>() {
+		new EventSubscriber<ImageJEvent>() {
 
-				@Override
-				public void onEvent(final ImageJEvent event) {
-					processEvent(event);
-				}
+			@Override
+			public void onEvent(final ImageJEvent event) {
+				processEvent(event);
+			}
 
-			};
+		};
 
 	private void subscribeToEvents() {
 		Events.subscribe(ImageJEvent.class, imageJEventSubscriber);
@@ -165,7 +171,7 @@ public class SwingScriptRecorder implements ImageJPlugin {
 		Events.unsubscribe(ImageJEvent.class, imageJEventSubscriber);
 	}
 
-	public void append(String text) {
+	public void append(final String text) {
 		textArea.append(text);
 		// Make sure the last line is always visible
 		textArea.setCaretPosition(textArea.getDocument().getLength());
@@ -219,14 +225,15 @@ public class SwingScriptRecorder implements ImageJPlugin {
 //		}
 	}
 
-	ArrayList<InvocationObject> invocationList = new ArrayList<InvocationObject>();
+	ArrayList<InvocationObject> invocationList =
+		new ArrayList<InvocationObject>();
 
-	public void processModuleExecuted(ModuleExecutedEvent evt) {
+	public void processModuleExecuted(final ModuleExecutedEvent evt) {
 		final Module module = evt.getModule();
 		final ModuleInfo info = module.getInfo();
-		String pluginCalled = info.getDelegateClassName();
+		final String pluginCalled = info.getDelegateClassName();
 		emitMessage("  >> Module: " + pluginCalled);
-		InvocationObject invocation = new InvocationObject(pluginCalled);
+		final InvocationObject invocation = new InvocationObject(pluginCalled);
 		// parameter inputs
 		final Iterable<ModuleItem<?>> inputs = info.inputs();
 		for (final ModuleItem<?> moduleItem : inputs) {
@@ -235,8 +242,8 @@ public class SwingScriptRecorder implements ImageJPlugin {
 			final Class<?> type = moduleItem.getType();
 			final Object value = module.getInput(param);
 			invocation.addParameter(param, type, value);
-			emitMessage("    " + param + " = " + value.toString() + "  {"
-					+ type.getSimpleName() + "}");
+			emitMessage("    " + param + " = " + value.toString() + "  {" +
+				type.getSimpleName() + "}");
 		}
 		addToInvocationList(invocation);
 	}
@@ -257,15 +264,17 @@ public class SwingScriptRecorder implements ImageJPlugin {
 //		}
 //	}
 
-	public void addToInvocationList(InvocationObject invocation) {
+	public void addToInvocationList(final InvocationObject invocation) {
 		invocationList.add(invocation);
 	}
 
 	private void promptForGenerate() {
 		final UserInterface ui = ImageJ.get(UIService.class).getUI();
-		DialogPrompt dialog = ui.dialogPrompt("Generate Code?", "Code Generator",
-				DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
-		DialogPrompt.Result result = dialog.prompt();
+		final DialogPrompt dialog =
+			ui.dialogPrompt("Generate Code?", "Code Generator",
+				DialogPrompt.MessageType.QUESTION_MESSAGE,
+				DialogPrompt.OptionType.YES_NO_OPTION);
+		final DialogPrompt.Result result = dialog.prompt();
 		if (result == DialogPrompt.Result.YES_OPTION) {
 			System.out.println("That's a YES");
 			generateCode();
@@ -273,16 +282,16 @@ public class SwingScriptRecorder implements ImageJPlugin {
 	}
 
 	private void generateCode() {
-		for (InvocationObject invoked : invocationList) {
+		for (final InvocationObject invoked : invocationList) {
 			// which script/language to translate to...
-			//String scriptLang = Prefs.get(SettingsKeys.SCRIPT_LANG);
-			CodeGenerator cg = new CodeGeneratorJava();
+			// String scriptLang = Prefs.get(SettingsKeys.SCRIPT_LANG);
+			final CodeGenerator cg = new CodeGeneratorJava();
 
 			cg.invokeStatementBegin();
 			cg.addModuleCalled(invoked.moduleCalled);
 
-			List<ParameterObject> params = invoked.parameterObjects;
-			for (ParameterObject parameterObject : params) {
+			final List<ParameterObject> params = invoked.parameterObjects;
+			for (final ParameterObject parameterObject : params) {
 				cg.addArgDelimiter();
 				cg.addArgument(parameterObject);
 			}
@@ -300,7 +309,7 @@ public class SwingScriptRecorder implements ImageJPlugin {
 
 	public static String timeStamp() {
 		final SimpleDateFormat formatter =
-				new SimpleDateFormat("mm:ss.SS", Locale.getDefault());
+			new SimpleDateFormat("mm:ss.SS", Locale.getDefault());
 		final Date currentDate = new Date();
 		final String dateStr = formatter.format(currentDate);
 		return dateStr;
@@ -319,7 +328,8 @@ public class SwingScriptRecorder implements ImageJPlugin {
 				// emitMessage("    " + fld.getName() + "[" + fld.getType() + "] = " +
 				// fld.get(evt).toString());
 			}
-		} catch (final Throwable e) {
+		}
+		catch (final Throwable e) {
 			System.err.println(e);
 		}
 	}
@@ -332,7 +342,8 @@ public class SwingScriptRecorder implements ImageJPlugin {
 	}
 
 	private ArrayList<Field> getAllFieldsRec(final Class<?> clazz,
-			final ArrayList<Field> ArrayList) {
+		final ArrayList<Field> ArrayList)
+	{
 		final Class<?> superClazz = clazz.getSuperclass();
 		if (superClazz != null) {
 			getAllFieldsRec(superClazz, ArrayList);
