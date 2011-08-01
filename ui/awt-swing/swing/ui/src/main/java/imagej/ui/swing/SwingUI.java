@@ -198,8 +198,8 @@ public class SwingUI implements UserInterface {
 		final String readmeText = loadReadmeFile();
 		text.setText(readmeText);
 
+		readmeFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		readmeFrame.setVisible(true);
-		readmeFrame.dispose();
 	}
 
 	private String loadReadmeFile() {
@@ -235,7 +235,8 @@ public class SwingUI implements UserInterface {
 			while (dir != null && !dir.getName().equals("target")) {
 				dir = up(dir);
 			}
-			baseDir = up(up(up(dir)));
+			// NB: Base directory is 5 levels up from ui/awt-swing/swing/ui/target.
+			baseDir = up(up(up(up(up(dir)))));
 		}
 		else if (path.endsWith(".jar")) {
 			// assume class is in a library folder of the distribution
