@@ -51,7 +51,7 @@ import org.bushe.swing.event.ThreadSafeEventService;
 @Service
 public final class EventService extends AbstractService {
 
-	private ThreadSafeEventService eventBus;
+	private org.bushe.swing.event.EventService eventBus;
 
 	// -- Constructors --
 
