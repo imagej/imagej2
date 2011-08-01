@@ -85,10 +85,12 @@ public class LegacyInjector {
 				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter(imp2);");
 		hacker.loadClass("ij.macro.Functions");
 
-		// override behavior of MacAdapter
-		hacker.replaceMethod("MacAdapter",
-			"public void run(java.lang.String arg)", ";");
-		hacker.loadClass("MacAdapter");
+		// override behavior of MacAdapter on Mac OS X
+		if (System.getProperty("os.name").equals("Mac OS X")) {
+			hacker.replaceMethod("MacAdapter",
+				"public void run(java.lang.String arg)", ";");
+			hacker.loadClass("MacAdapter");
+		}
 	}
 
 }
