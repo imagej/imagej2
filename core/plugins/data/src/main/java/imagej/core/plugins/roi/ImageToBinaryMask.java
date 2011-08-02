@@ -64,66 +64,70 @@ import net.imglib2.type.numeric.RealType;
  */
 @Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Binary", mnemonic = 'b'),
-	@Menu(label = "Convert to Mask", weight = 1)})
+	@Menu(label = "Convert to Mask", weight = 1) })
 public class ImageToBinaryMask implements ImageJPlugin {
-	@Parameter(
-			label="Threshold",
-			description = "The threshold that separates background (mask) from foreground (region of interest).")
-	double threshold;
-	@Parameter(
-			label = "Input image",
-			description = "The image to be converted to a binary mask.")
-	private Dataset input;
-	
-	@Parameter(
-			label = "Output mask",
-			description = "The overlay that is the result of the operation",
-			output = true)
-	private Overlay output;
-	@Parameter(label = "Overlay color",
-			description = "The color used to display the overlay")
-	private ColorRGB color = new ColorRGB(255,0,0);
 
-	@Parameter(label = "Overlay alpha", description = "The transparency (transparent = 0) or opacity (opaque=255) of the overlay",min="0", max="255")
-	private int alpha = 128;
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
+	@Parameter(label = "Threshold", description = "The threshold that "
+		+ "separates background (mask) from foreground (region of interest).")
+	double threshold;
+
+	@Parameter(label = "Input image",
+		description = "The image to be converted to a binary mask.")
+	private Dataset input;
+
+	@Parameter(label = "Output mask",
+		description = "The overlay that is the result of the operation",
+		output = true)
+	private Overlay output;
+
+	@Parameter(label = "Overlay color",
+		description = "The color used to display the overlay")
+	private final ColorRGB color = new ColorRGB(255, 0, 0);
+
+	@Parameter(label = "Overlay alpha", description = "The transparency "
+		+ "(transparent = 0) or opacity (opaque=255) of the overlay", min = "0",
+		max = "255")
+	private final int alpha = 128;
+
 	@Override
 	public void run() {
-		ImgPlus<? extends RealType<?>> imgplus = input.getImgPlus();
-		Img<? extends RealType<?>> img = imgplus.getImg();
-		long [] dimensions = new long[img.numDimensions()];
-		long [] position = new long[img.numDimensions()];
-		long [] min = new long[img.numDimensions()];
-		long [] max = new long[img.numDimensions()];
+		final ImgPlus<? extends RealType<?>> imgplus = input.getImgPlus();
+		final Img<? extends RealType<?>> img = imgplus.getImg();
+		final long[] dimensions = new long[img.numDimensions()];
+		final long[] position = new long[img.numDimensions()];
+		final long[] min = new long[img.numDimensions()];
+		final long[] max = new long[img.numDimensions()];
 		Arrays.fill(min, Long.MAX_VALUE);
 		Arrays.fill(max, Long.MIN_VALUE);
 		/*
 		 * First pass - find minima and maxima so we can use a shrunken image in some cases.
 		 */
-		Cursor<? extends RealType<?>> c = img.localizingCursor();
-		while(c.hasNext()) {
+		final Cursor<? extends RealType<?>> c = img.localizingCursor();
+		while (c.hasNext()) {
 			c.next();
 			if (c.get().getRealDouble() >= threshold) {
-				for (int i=0; i<img.numDimensions(); i++) {
-					long p = c.getLongPosition(i);
+				for (int i = 0; i < img.numDimensions(); i++) {
+					final long p = c.getLongPosition(i);
 					if (p < min[i]) min[i] = p;
 					if (p > max[i]) max[i] = p;
 				}
 			}
 		}
 		if (min[0] == Long.MAX_VALUE) {
-			throw new IllegalStateException("The threshold value is lower than that of any pixel");
+			throw new IllegalStateException(
+				"The threshold value is lower than that of any pixel");
 		}
-		for (int i=0; i< img.numDimensions(); i++) {
+		for (int i = 0; i < img.numDimensions(); i++) {
 			dimensions[i] = max[i] - min[i] + 1;
 		}
-		NativeImg<BitType,BitAccess> nativeMask = new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
-		BitType t = new BitType(nativeMask);
+		final NativeImg<BitType, BitAccess> nativeMask =
+			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
+		final BitType t = new BitType(nativeMask);
 		nativeMask.setLinkedType(t);
-		Img<BitType> mask = new ImgTranslationAdapter<BitType, NativeImg<BitType, BitAccess>>(nativeMask, min);
-		RandomAccess<BitType> raMask = mask.randomAccess();
+		final Img<BitType> mask =
+			new ImgTranslationAdapter<BitType, NativeImg<BitType, BitAccess>>(
+				nativeMask, min);
+		final RandomAccess<BitType> raMask = mask.randomAccess();
 		c.reset();
 		while (c.hasNext()) {
 			if (c.next().getRealDouble() >= threshold) {
@@ -132,11 +136,14 @@ public class ImageToBinaryMask implements ImageJPlugin {
 				raMask.get().set(true);
 			}
 		}
-		output = new BinaryMaskOverlay(new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(mask));
+		output =
+			new BinaryMaskOverlay(
+				new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(mask));
 		output.setAlpha(alpha);
 		output.setFillColor(color);
-		for (int i=0; i<imgplus.numDimensions(); i++) {
+		for (int i = 0; i < imgplus.numDimensions(); i++) {
 			output.setAxis(imgplus.axis(i), i);
 		}
 	}
+
 }

@@ -41,8 +41,8 @@ import imagej.data.Dataset;
 /**
  * Convolve3x3Operation is used for general 3x3 convolution. It takes a 3x3
  * kernel as input. Kernel is actually stored as a 1-D array such that
- * {0,1,2,3,4,5,6,7,8} implies this shape: {{0,1,2},{3,4,5},{6,7,8}}. This
- * class is used by the various Shadow implementations, SharpenDataValues,
+ * {0,1,2,3,4,5,6,7,8} implies this shape: {{0,1,2},{3,4,5},{6,7,8}}. This class
+ * is used by the various Shadow implementations, SharpenDataValues,
  * SmoothDataValues, etc.
  * 
  * @author Barry DeZonia
@@ -52,14 +52,15 @@ public class Convolve3x3Operation {
 	// -- instance variables --
 
 	/**
-	 * The kernel to convolve an input Dataset by */
-	private double[] kernel;
+	 * The kernel to convolve an input Dataset by
+	 */
+	private final double[] kernel;
 
 	/**
 	 * The 3x3 operation that will run on the input Dataset and call back this
 	 * class as needed
 	 */
-	private Neighborhood3x3Operation neighOperation;
+	private final Neighborhood3x3Operation neighOperation;
 
 	// -- constructor --
 
@@ -67,7 +68,7 @@ public class Convolve3x3Operation {
 	 * Constructor. takes an input Dataset and a kernel that will be used to
 	 * calculate data values.
 	 */
-	public Convolve3x3Operation(Dataset input, double[] kernel) {
+	public Convolve3x3Operation(final Dataset input, final double[] kernel) {
 		this.kernel = kernel;
 		this.neighOperation =
 			new Neighborhood3x3Operation(input, new ConvolveWatcher(input));
@@ -99,18 +100,17 @@ public class Convolve3x3Operation {
 
 		private double scale;
 		private double sum;
-		private boolean integerDataset;
-		private double typeMinValue;
-		private double typeMaxValue;
+		private final boolean integerDataset;
+		private final double typeMinValue;
+		private final double typeMaxValue;
 
-		public ConvolveWatcher(Dataset ds) {
+		public ConvolveWatcher(final Dataset ds) {
 			integerDataset = ds.isInteger();
 			typeMinValue = ds.getType().getMinValue();
 			typeMaxValue = ds.getType().getMaxValue();
 		}
-		
-		/**
-		 * Precalculates the kernel scale for use later */
+
+		/** Precalculates the kernel scale for use later. */
 		@Override
 		public void setup() {
 			scale = 0;
@@ -119,31 +119,30 @@ public class Convolve3x3Operation {
 			if (scale == 0) scale = 1;
 		}
 
-		/**
-		 * At each new neighborhood reset it's value sum to 0 */
+		/** At each new neighborhood reset its value sum to 0. */
 		@Override
-		public void initializeNeighborhood(long[] position) {
+		public void initializeNeighborhood(final long[] position) {
 			sum = 0;
 		}
 
 		/**
 		 * For each pixel visited in the 3x3 neighborhood add the kernel scaled
-		 * value
+		 * value.
 		 */
 		@Override
-		public void visitLocation(int dx, int dy, double value) {
-			int index = (dy + 1) * (3) + (dx + 1);
+		public void visitLocation(final int dx, final int dy, final double value) {
+			final int index = (dy + 1) * (3) + (dx + 1);
 			sum += value * kernel[index];
 		}
 
 		/**
 		 * Called after all pixels in neighborhood visited - divide the sum by the
-		 * kernel scale
+		 * kernel scale.
 		 */
 		@Override
 		public double calcOutputValue() {
 			double value;
-			
+
 			if (integerDataset) {
 				value = (sum + (scale / 2)) / scale;
 				if (value < typeMinValue) value = typeMinValue;
@@ -156,4 +155,5 @@ public class Convolve3x3Operation {
 		}
 
 	}
+
 }
