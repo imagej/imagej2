@@ -1,5 +1,5 @@
 //
-// OptionsAppearence.java
+// OptionsAppearance.java
 //
 
 /*
@@ -40,11 +40,10 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.SettingsKeys;
 
 /**
- * Runs the Edit::Options::Appearance... dialog
+ * Runs the Edit::Options::Appearance dialog.
  * 
  * @author Barry DeZonia
  */
-
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),

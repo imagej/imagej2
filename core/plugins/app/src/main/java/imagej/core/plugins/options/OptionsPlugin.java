@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.core.plugins.options;
 
 import imagej.event.Events;
@@ -41,7 +42,6 @@ import imagej.ext.plugin.ImageJPlugin;
  * Base class for all options oriented plugins.
  * 
  * @author Barry DeZonia
- *
  */
 public class OptionsPlugin implements ImageJPlugin {
 

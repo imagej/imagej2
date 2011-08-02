@@ -1,5 +1,5 @@
 //
-// OptionsFont.java
+// OptionsScript.java
 //
 
 /*
@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.core.plugins.options;
 
 import imagej.ext.plugin.Menu;
@@ -39,7 +40,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.SettingsKeys;
 
 /**
- * Runs the Plugins::Script::Options... dialog
+ * Runs the Plugins::Script::Options dialog.
  * 
  * @author Grant Harris
  */
@@ -47,7 +48,6 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Plugins", mnemonic = 'p'),
 	@Menu(label = "Script", mnemonic = 's'),
 	@Menu(label = "Options...", weight = 3) })
-
 public class OptionsScript extends OptionsPlugin {
 
 	/*
