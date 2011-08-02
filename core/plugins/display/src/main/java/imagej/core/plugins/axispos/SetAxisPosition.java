@@ -41,29 +41,28 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 /**
-* Sets the position of the current axis to a user specified value
-* 
-* @author Barry DeZonia
-*/
-@Plugin(menu = {
-@Menu(label = "Image", mnemonic = 'i'),
-@Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Set Axis Position...") })
+ * Sets the position of the current axis to a user specified value
+ * 
+ * @author Barry DeZonia
+ */
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Stacks", mnemonic = 's'),
+	@Menu(label = "Set Axis Position...") })
 public class SetAxisPosition implements ImageJPlugin {
 
 	// TODO - want to set max value to that of correct axis of correct Dataset
-	//   Might need to make this a Dynamic plugin. Waiting for multistep
-	//   initialization code to be put in place.
+	// Might need to make this a Dynamic plugin. Waiting for multistep
+	// initialization code to be put in place.
 
 	@Parameter
 	private Display display;
 
-	@Parameter(label="Position", min="1")
+	@Parameter(label = "Position", min = "1")
 	private long oneBasedPosition;
 
 	@Override
 	public void run() {
-		long newPosition = oneBasedPosition - 1;
+		final long newPosition = oneBasedPosition - 1;
 		AxisUtils.changeCurrentAxisPosition(display, newPosition, false);
 	}
 

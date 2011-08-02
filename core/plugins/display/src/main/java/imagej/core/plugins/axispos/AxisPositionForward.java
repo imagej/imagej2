@@ -40,23 +40,20 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-// TODO - accelerator may not work with all keyboard layouts
-//   making it "GREATER" did not work
+// TODO - Accelerator of "shift PERIOD" will not work on some keyboard layouts.
+// Making it "GREATER" does not work; it appears correctly in the menu
+// but can never be fired. I believe this is a Java bug.
+// Using "shift PERIOD" is a hacky workaround that may be unintuitive
+// for users without US keyboards. See bug #625 for more information.
 
 /**
-* Updates the current display to show the next plane along an axis
-* 
-* @author Barry DeZonia
-*/
-@Plugin(menu = {
-@Menu(label = "Image", mnemonic = 'i'),
-@Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Axis Position Forward", accelerator = "shift PERIOD") })
-//TODO - this next line disabled. If enabled the accelerator appears
-//  correctly in the menu but can never be fired. I believe this is a
-//  Java bug. The above line is a hacky workaround that may be unintuitive
-//  for users without US keyboards. See bug #625 for more information.
-//@Menu(label = "Axis Position Forward", accelerator = "GREATER") })
+ * Updates the current display to show the next plane along an axis
+ * 
+ * @author Barry DeZonia
+ */
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Stacks", mnemonic = 's'),
+	@Menu(label = "Axis Position Forward", accelerator = "shift PERIOD") })
 public class AxisPositionForward implements ImageJPlugin {
 
 	@Parameter
