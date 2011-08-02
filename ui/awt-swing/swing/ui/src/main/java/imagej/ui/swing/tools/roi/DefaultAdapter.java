@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools.roi;
 
 import imagej.data.roi.Overlay;
@@ -56,16 +57,19 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
 
 /**
+ * The default adapter handles any kind of overlay. It uses the fill color and
+ * alpha of the overlay to draw the mask and leaves the rest of the figure
+ * transparent.
+ * 
  * @author Lee Kamentsky
- *
- *The default adapter handles any kind of overlay. It uses the fill color
- *and alpha of the overlay to draw the mask and leaves the rest of the figure transparent. 
  */
 @JHotDrawOverlayAdapter(priority = DefaultAdapter.PRIORITY)
 public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
+
 	static public final int PRIORITY = 0;
+
 	@Override
-	public boolean supports(Overlay overlay, Figure figure) {
+	public boolean supports(final Overlay overlay, final Figure figure) {
 		return ((figure == null) || (figure instanceof ImageFigure));
 	}
 
@@ -76,62 +80,63 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 
 	@Override
 	public Figure createDefaultFigure() {
-		ImageFigure figure = new ImageFigure();
+		final ImageFigure figure = new ImageFigure();
 		figure.setTransformable(false);
-		figure.set(AttributeKeys.FILL_COLOR, new Color(0,0,0,0));
+		figure.set(AttributeKeys.FILL_COLOR, new Color(0, 0, 0, 0));
 		return figure;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.AbstractJHotDrawOverlayAdapter#updateFigure(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
-	 */
 	@Override
-	public void updateFigure(Overlay overlay, Figure figure, DisplayView view) {
+	public void updateFigure(final Overlay overlay, final Figure figure,
+		final DisplayView view)
+	{
 		super.updateFigure(overlay, figure, view);
-		/*
-		 * Override the base: set the fill color to transparent.
-		 */
-		figure.set(AttributeKeys.FILL_COLOR, new Color(0,0,0,0));
+
+		// Override the base: set the fill color to transparent.
+		figure.set(AttributeKeys.FILL_COLOR, new Color(0, 0, 0, 0));
 		assert figure instanceof ImageFigure;
-		ImageFigure imgf = (ImageFigure)figure;
-		RegionOfInterest roi = overlay.getRegionOfInterest();
+		final ImageFigure imgf = (ImageFigure) figure;
+		final RegionOfInterest roi = overlay.getRegionOfInterest();
 		if (roi != null) {
-			long minX = (long)Math.floor(roi.realMin(0));
-			long maxX = (long)Math.ceil(roi.realMax(0)) + 1;
-			long minY = (long)Math.floor(roi.realMin(1));
-			long maxY = (long)Math.ceil(roi.realMax(1)) + 1;
-			ColorRGB color = overlay.getFillColor();
-			IndexColorModel cm = new IndexColorModel(1, 2, 
-					new byte[] { 0, (byte)color.getRed()},
-					new byte[] { 0, (byte)color.getGreen()},
-					new byte[] { 0, (byte)color.getBlue() },
-					new byte[] { 0, (byte)overlay.getAlpha() });
-			int w = (int)(maxX - minX);
-			int h = (int)(maxY - minY);
-			BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_INDEXED, cm);
-			SampleModel sm = new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, w, h, new int [] {1});
-			DataBuffer dbuncast = sm.createDataBuffer();
+			final long minX = (long) Math.floor(roi.realMin(0));
+			final long maxX = (long) Math.ceil(roi.realMax(0)) + 1;
+			final long minY = (long) Math.floor(roi.realMin(1));
+			final long maxY = (long) Math.ceil(roi.realMax(1)) + 1;
+			final ColorRGB color = overlay.getFillColor();
+			final IndexColorModel cm =
+				new IndexColorModel(1, 2, new byte[] { 0, (byte) color.getRed() },
+					new byte[] { 0, (byte) color.getGreen() }, new byte[] { 0,
+						(byte) color.getBlue() }, new byte[] { 0,
+						(byte) overlay.getAlpha() });
+			final int w = (int) (maxX - minX);
+			final int h = (int) (maxY - minY);
+			final BufferedImage img =
+				new BufferedImage(w, h, BufferedImage.TYPE_BYTE_INDEXED, cm);
+			final SampleModel sm =
+				new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, w, h,
+					new int[] { 1 });
+			final DataBuffer dbuncast = sm.createDataBuffer();
 			assert dbuncast instanceof DataBufferByte;
-			DataBufferByte db = (DataBufferByte)dbuncast;
-			byte [] bankData = db.getData();
-			RealRandomAccess<BitType> ra = roi.realRandomAccess();
-			for (int i=2; i < ra.numDimensions(); i++) {
-				long position = view.getPlanePosition().getLongPosition(i-2);
+			final DataBufferByte db = (DataBufferByte) dbuncast;
+			final byte[] bankData = db.getData();
+			final RealRandomAccess<BitType> ra = roi.realRandomAccess();
+			for (int i = 2; i < ra.numDimensions(); i++) {
+				final long position = view.getPlanePosition().getLongPosition(i - 2);
 				ra.setPosition(position, i);
 			}
 			int index = 0;
-			for (int j=0; j<h; j++) {
+			for (int j = 0; j < h; j++) {
 				ra.setPosition(minY + j, 1);
-				for (int i=0; i<w; i++) {
+				for (int i = 0; i < w; i++) {
 					ra.setPosition(minX + i, 0);
-					if (ra.get().get()) 
-						bankData[index] = -1;
+					if (ra.get().get()) bankData[index] = -1;
 					index++;
 				}
 			}
-			Raster raster = Raster.createRaster(sm, db, new java.awt.Point(0,0));
+			final Raster raster =
+				Raster.createRaster(sm, db, new java.awt.Point(0, 0));
 			img.setData(raster);
-			imgf.setBounds(new Rectangle2D.Double(minX,minY,w, h));
+			imgf.setBounds(new Rectangle2D.Double(minX, minY, w, h));
 			imgf.setBufferedImage(img);
 		}
 	}

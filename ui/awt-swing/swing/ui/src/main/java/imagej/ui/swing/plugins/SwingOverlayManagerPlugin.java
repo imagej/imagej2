@@ -39,13 +39,18 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.SwingOverlayManager;
 
+/**
+ * Plugin to pop up the {@link SwingOverlayManager}.
+ * 
+ * @author Adam Fraser
+ */
 @Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
-		@Menu(label = "Overlay Manager") })
+	@Menu(label = "Overlay Manager") })
 public class SwingOverlayManagerPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		SwingOverlayManager overlaymgr = new SwingOverlayManager();
+		final SwingOverlayManager overlaymgr = new SwingOverlayManager();
 		overlaymgr.setVisible(true);
 	}
 

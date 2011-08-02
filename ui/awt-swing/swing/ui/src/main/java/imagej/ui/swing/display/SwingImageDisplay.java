@@ -55,7 +55,6 @@ import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
  * composite color.
@@ -77,35 +76,26 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 //	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
 //	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
 //	private EventSubscriber<WinActivatedEvent> winActivatedSubscriber;
+
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
-	//
+
 	private String name;
 
 	public SwingImageDisplay() {
-
-		//final DisplayService displayService = ImageJ.get(DisplayService.class);
-		//displayService.setActiveDisplay(this);
-
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgWindow = new SwingDisplayWindow(this);
 
-		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this, false);
+		final EventDispatcher eventDispatcher =
+			new AWTEventDispatcher(this, false);
 		imgCanvas.addEventDispatcher(eventDispatcher);
 		imgWindow.addEventDispatcher(eventDispatcher);
 		subscribeToEvents();
-		
+
 		willRebuildImgWindow = false;
 		thisDisplay = this;
 	}
-	
-	/* Unused
-	private void redoLayout()
-	{
-		imgWindow.redoLayout();
-	}
-	*/
-	
+
 	// -- Display methods --
 
 	@Override
@@ -113,13 +103,11 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		return true;
 	}
 
-	/*
-	 * GBH: Regarding naming/id of the display...
-	 * For now, we will use the original (first) dataset name
-	 */
-	
 	@Override
 	public void display(final Dataset dataset) {
+		// GBH: Regarding naming/id of the display...
+		// For now, we will use the original (first) dataset name
+
 		final String datasetName = dataset.getName();
 		createName(datasetName);
 		imgWindow.setTitle(this.getName());
@@ -129,36 +117,14 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 	@Override
 	public void display(final Overlay overlay) {
-		addView(new SwingOverlayView(this, overlay));		
+		addView(new SwingOverlayView(this, overlay));
 		update();
-	}
-	
-			
-	// Name this display with unique id
-	private void createName(String baseName) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		String theName = baseName;
-		int n = 0;
-		while (!displayService.isUniqueName(theName)) {
-			n++;
-			theName = baseName + "-" + n;
-		}
-		this.setName(theName);
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	@Override
 	public void update() {
 		EventQueue.invokeLater(new Runnable() {
+
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
@@ -166,7 +132,8 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 					imgWindow.update();
 				}
 				else { // rebuild image window
-					// NB - if pan to be reset below we'll be zoomed on wrong part of image
+					// NB - if pan to be reset below we'll be zoomed on wrong part of
+					// image
 					imgCanvas.setZoom(0); // original scale
 					// NB - if x or y dims change without this image panned incorrectly
 					// Must happen after setZoom() call
@@ -192,60 +159,79 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		return imgCanvas;
 	}
 
-	// -- Helper methods --
-
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents(){
-		
-		subscribers = new ArrayList<EventSubscriber<?>>();
-		
-		// CTR TODO - listen for imgWindow windowClosing and send
-		// DisplayDeletedEvent. Think about how best this should work...
-		// Is a display always deleted when its window is closed?
-		//  BDZ note - I added some code to winCloseSubscriber below
-		//    to do some cleanup work. Fix if needed.
-
-		 EventSubscriber<WinActivatedEvent> winActivatedSubscriber = 
-				 new EventSubscriber<WinActivatedEvent>() {
-			@Override
-			public void onEvent(final WinActivatedEvent event) {
-				if (event.getDisplay() != thisDisplay) return;
-				//final UserInterface ui = ImageJ.get(UIService.class).getUI();
-				//final ToolService toolMgr = ui.getToolBar().getToolService();
-				final ToolService toolService = ImageJ.get(ToolService.class);
-				imgCanvas.setCursor(toolService.getActiveTool().getCursor());
-			}
-		};
-		subscribers.add(winActivatedSubscriber);
-		Events.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
-
-		EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
-			new EventSubscriber<DatasetRestructuredEvent>()
-		{
-			@Override
-			public void onEvent(final DatasetRestructuredEvent event) {
-				final Dataset dataset = event.getObject();
-				for (final DisplayView view : getViews()) {
-					if (dataset == view.getDataObject()) {
-						willRebuildImgWindow = true;
-						return;
-					}
-				}
-			}
-		};
-		subscribers.add(restructureSubscriber);
-		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
-	}
-
 	@Override
 	public void redoWindowLayout() {
 		imgWindow.redoLayout();
 	}
 
-	//@Override
-	//public void close() {
-	//	imgWindow.close();
-	//}
+	// -- Named methods --
 
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	// -- Helper methods --
+
+	@SuppressWarnings("synthetic-access")
+	private void subscribeToEvents() {
+
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		// CTR TODO - listen for imgWindow windowClosing and send
+		// DisplayDeletedEvent. Think about how best this should work...
+		// Is a display always deleted when its window is closed?
+		// BDZ note - I added some code to winCloseSubscriber below
+		// to do some cleanup work. Fix if needed.
+
+		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
+			new EventSubscriber<WinActivatedEvent>() {
+
+				@Override
+				public void onEvent(final WinActivatedEvent event) {
+					if (event.getDisplay() != thisDisplay) return;
+					// final UserInterface ui = ImageJ.get(UIService.class).getUI();
+					// final ToolService toolMgr = ui.getToolBar().getToolService();
+					final ToolService toolService = ImageJ.get(ToolService.class);
+					imgCanvas.setCursor(toolService.getActiveTool().getCursor());
+				}
+			};
+		subscribers.add(winActivatedSubscriber);
+		Events.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
+
+		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
+			new EventSubscriber<DatasetRestructuredEvent>() {
+
+				@Override
+				public void onEvent(final DatasetRestructuredEvent event) {
+					final Dataset dataset = event.getObject();
+					for (final DisplayView view : getViews()) {
+						if (dataset == view.getDataObject()) {
+							willRebuildImgWindow = true;
+							return;
+						}
+					}
+				}
+			};
+		subscribers.add(restructureSubscriber);
+		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+	}
+
+	/** Name this display with unique id. */
+	private void createName(final String baseName) {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		String theName = baseName;
+		int n = 0;
+		while (!displayService.isUniqueName(theName)) {
+			n++;
+			theName = baseName + "-" + n;
+		}
+		this.setName(theName);
+	}
 
 }

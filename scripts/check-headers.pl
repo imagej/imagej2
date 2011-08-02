@@ -4,6 +4,7 @@ use strict;
 # check-headers.pl - Verifies existence and correctness of source code headers.
 
 my %knownAuthors = (
+  "Adam Fraser" => 1,
   "Aivar Grislis" => 1,
   "Albert Cardona" => 1,
   "Barry DeZonia" => 1,

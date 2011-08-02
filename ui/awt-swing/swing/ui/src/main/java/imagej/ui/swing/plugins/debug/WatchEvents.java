@@ -65,7 +65,7 @@ import java.util.Locale;
  * Listens for all events. Useful for logging, history, macro recording,
  * perhaps.
  * 
- * @author GBH
+ * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
 public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
