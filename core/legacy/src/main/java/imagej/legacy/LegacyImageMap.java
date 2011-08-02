@@ -180,14 +180,16 @@ public class LegacyImageMap {
 		//System.out.println("CREATE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
 		
 		// Must remove old mappings to avoid memory leaks
-		//  Removal is tricky for the displayTable because a Display can get mapped
-		//  to different ImagePluses/CompsiteImages over time. To avoid a memory
-		//  leak we find the current mapping and remove it.
+		//  Removal is tricky for the displayTable. Without removal different
+		//  ImagePluses and CompositeImages can point to the same Display. To
+		//  avoid a memory leak and to stay consistent in our mappings we find
+		//  all current mappings and remove them before inserting new ones. This
+		//  ensures that a Display is only linked with one ImagePlus or
+		//  CompositeImage.
 		imagePlusTable.remove(display);
 		for (Entry<ImagePlus, Display> entry : displayTable.entrySet()) {
 			if (entry.getValue() == display) {
 				displayTable.remove(entry.getKey());
-				break;
 			}
 		}
 		imagePlusTable.put(display, imp);
