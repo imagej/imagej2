@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.core.tools.global;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
@@ -68,13 +68,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Probe", description = "Pixel probe",
-	iconPath = "/icons/tools/probe.png", priority = ProbeTool.PRIORITY)
+@Tool(name = "Probe", global = true)
 public class ProbeTool extends AbstractTool {
-
-	// -- constants --
-
-	public static final int PRIORITY = 200;
 
 	// -- private instance variables --
 
