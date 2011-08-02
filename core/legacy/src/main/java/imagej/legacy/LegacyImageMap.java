@@ -44,11 +44,11 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.legacy.patches.ImageWindowMethods;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -178,12 +178,25 @@ public class LegacyImageMap {
 
 	private void addMapping(Display display, ImagePlus imp) {
 		//System.out.println("CREATE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
+		
+		// Must remove old mappings to avoid memory leaks
+		//  Removal is tricky for the displayTable because a Display can get mapped
+		//  to different ImagePluses/CompsiteImages over time. To avoid a memory
+		//  leak we find the current mapping and remove it.
+		imagePlusTable.remove(display);
+		for (Entry<ImagePlus, Display> entry : displayTable.entrySet()) {
+			if (entry.getValue() == display) {
+				displayTable.remove(entry.getKey());
+				break;
+			}
+		}
 		imagePlusTable.put(display, imp);
 		displayTable.put(imp, display);
 	}
 	
 	private void removeMapping(Display display, ImagePlus imp) {
-		//System.out.println("REMOVE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
+		// System.out.println("REMOVE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
+		
 		if (display != null) {
 			imagePlusTable.remove(display);
 		}
@@ -210,33 +223,23 @@ public class LegacyImageMap {
 
 				@Override
 				public void onEvent(final DisplayDeletedEvent event) {
+
+					// Need to make sure:
+					//   IJ2 Windows always close when IJ1 close expected
+					//     Stack to Images, Split Channels, etc.
+					//   No ImagePlus/Display mapping becomes a zombie in the
+					//     LegacyImageMap failing to get garbage collected.
+					//   That IJ2 does not think IJ1 initiated the ij1.close()
 					
-					// FIXME - HACK
+					ImagePlus imp = lookupImagePlus(event.getObject());
 					
-					// A hack is needed here to avoid memory leaks. This event is
-					// initiated by IJ2. It eventually calls deleteImagePlus(). That
-					// method closes the IJ1 window. The legacy layer thinks this is
-					// a close initiated by an IJ1 plugin. It records the fact. That
-					// keeps a HashSet sitting around with all ImagePluses that have
-					// ever been closed. If we could track whether we were in a plugin
-					// in the ImageWindowMethods::close() we could avoid recording it
-					// as a closed ImagePlus there or in LegacyPutputTracker. For now
-					// just remember the state of the set of closed imps and restore
-					// that state after the unregisterDisplay() call.
-					
-					// HACK part 1
-					// 
-					HashSet<ImagePlus> savedStatus = new HashSet<ImagePlus>();
-					savedStatus.addAll(LegacyOutputTracker.getClosedImps());
-					
-					// correct code
+					if (imp != null)
+						ImageWindowMethods.closeInitiatedByIJ2(imp);
+
 					unregisterDisplay(event.getObject());
 					
-					// HACK part 2
-					// 
-					Set<ImagePlus> closedImps = LegacyOutputTracker.getClosedImps();
-					closedImps.clear();
-					closedImps.addAll(savedStatus);
+					if (imp != null)
+						ImageWindowMethods.closeCompletedByIJ2(imp);
 				}
 			};
 		subscribers.add(deletionSubscriber);
