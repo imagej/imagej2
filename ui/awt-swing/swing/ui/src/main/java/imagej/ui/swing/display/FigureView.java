@@ -31,16 +31,18 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.display;
 
 import org.jhotdraw.draw.Figure;
 
 /**
+ * A figure view has an associated figure.
+ * 
  * @author Lee Kamentsky
- *
- *A figure view has an associated figure.
  */
 public interface FigureView {
+
 	/**
 	 * @return the figure associated with this view
 	 */

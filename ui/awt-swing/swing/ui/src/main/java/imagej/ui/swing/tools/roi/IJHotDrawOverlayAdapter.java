@@ -1,5 +1,5 @@
 //
-// IJHotDrawROIAdapter.java
+// IJHotDrawOverlayAdapter.java
 //
 
 /*
@@ -48,33 +48,33 @@ import org.jhotdraw.draw.Figure;
 public interface IJHotDrawOverlayAdapter {
 
 	/**
-	 * @return the priority of this adapter: higher priority adapters will be chosen over lower
+	 * @return the priority of this adapter: higher priority adapters will be
+	 *         chosen over lower
 	 */
 	public int getPriority();
-	
+
 	/**
 	 * Set the adapter's priority
+	 * 
 	 * @param priority
 	 */
 	public void setPriority(int priority);
+
 	/**
-	 * Determines whether the adapter can handle a particular 
-	 * overlay, or overlay / figure combination.
+	 * Determines whether the adapter can handle a particular overlay, or overlay
+	 * / figure combination.
 	 * 
 	 * @param overlay - an overlay that might be editable
-	 * @param figure - a figure that will be either updated by
-	 *                 the overlay or will update the overlay.
-	 *                 The figure can be null: this indicates
-	 *                 that the adapter is capable of creating
-	 *                 the figure associated with the overlay/
+	 * @param figure - a figure that will be either updated by the overlay or will
+	 *          update the overlay. The figure can be null: this indicates that
+	 *          the adapter is capable of creating the figure associated with the
+	 *          overlay/
 	 */
 	boolean supports(Overlay overlay, Figure figure);
 
 	/**
-	 * Creates a new ROI of the type indicated by the given name. The name must be
-	 * from those returned by getROITypeNames
+	 * Creates a new overlay.
 	 * 
-	 * @param name the name of a ROI that this adapter can create
 	 * @return a ROI of the associated type in the default initial state
 	 */
 	Overlay createNewOverlay();
@@ -84,16 +84,20 @@ public interface IJHotDrawOverlayAdapter {
 
 	/**
 	 * Update the overlay to match the appearance of the figure
+	 * 
 	 * @param figure the figure that holds the current correct appearance
-	 * @param overlay the overlay that needs to be changed to bring it in-sync with the figure.
+	 * @param overlay the overlay that needs to be changed to bring it in-sync
+	 *          with the figure.
 	 */
 	void updateOverlay(Figure figure, Overlay overlay);
-	
+
 	/**
 	 * Update the appearance of the figure to match the overlay
+	 * 
 	 * @param overlay the overlay to be represented by the figure
 	 * @param figure the figure that is to be made to look like the overlay
 	 * @param view the view into which the figure is rendered
 	 */
 	void updateFigure(Overlay overlay, Figure figure, DisplayView view);
+
 }

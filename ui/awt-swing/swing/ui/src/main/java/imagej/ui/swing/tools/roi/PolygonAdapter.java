@@ -1,6 +1,7 @@
+//
 // PolygonAdapter.java
 //
-//
+
 /*
 ImageJ software for multidimensional image processing and analysis.
 
@@ -119,9 +120,6 @@ public class PolygonAdapter extends
 			super(true);
 		}
 
-		/* (non-Javadoc)
-		 * @see org.jhotdraw.draw.BezierFigure#createHandles(int)
-		 */
 		@Override
 		public Collection<Handle> createHandles(final int detailLevel) {
 			final LinkedList<Handle> handles = new LinkedList<Handle>();
@@ -139,27 +137,18 @@ public class PolygonAdapter extends
 
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#supports(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
-	 */
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if ((figure != null) && (!(figure instanceof PolygonFigure))) return false;
 		return overlay instanceof PolygonOverlay;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#createNewOverlay()
-	 */
 	@Override
 	public Overlay createNewOverlay() {
 		final PolygonOverlay o = new PolygonOverlay();
 		return o;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#createDefaultFigure()
-	 */
 	@Override
 	public Figure createDefaultFigure() {
 		final BezierFigure figure = new PolygonFigure();
@@ -168,9 +157,6 @@ public class PolygonAdapter extends
 		return figure;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#updateOverlay(org.jhotdraw.draw.Figure, imagej.data.roi.Overlay)
-	 */
 	@Override
 	public void updateOverlay(final Figure figure, final Overlay overlay) {
 		super.updateOverlay(figure, overlay);
@@ -201,9 +187,6 @@ public class PolygonAdapter extends
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#updateFigure(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
-	 */
 	@Override
 	public void updateFigure(final Overlay overlay, final Figure figure,
 		final DisplayView view)

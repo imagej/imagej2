@@ -32,8 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-// TODO - see TODOs below
-
 package imagej.ui.swing;
 
 import imagej.ImageJ;
@@ -55,6 +53,7 @@ import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.display.SwingDisplayWindow;
+import imagej.util.Log;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -268,8 +267,7 @@ public class SwingUI implements UserInterface {
 			path = URLDecoder.decode(path, "UTF-8");
 		}
 		catch (final UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.warn("Cannot parse class: " + className, e);
 		}
 		String slash = File.separator;
 		if (slash.equals("\\")) slash = "\\\\";
