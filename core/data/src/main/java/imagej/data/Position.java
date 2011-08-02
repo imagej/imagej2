@@ -206,7 +206,8 @@ public class Position implements Localizable, Positionable, Iterator {
 		long newValue = position[d] + 1;
 		if (newValue > parentSpace.max(d))
 			throw new IllegalArgumentException(
-				"cannot move specified dimension forward");
+				"cannot move specified dimension forward -"+
+				" it would take position outside defined extents");
 		position[d]++;
 	}
 
@@ -223,7 +224,8 @@ public class Position implements Localizable, Positionable, Iterator {
 		long newValue = position[d] - 1;
 		if (newValue < parentSpace.min(d))
 			throw new IllegalArgumentException(
-				"cannot move specified dimension back");
+				"cannot move specified dimension backward -"+
+				" it would take position outside defined extents");
 		position[d]--;
 	}
 
@@ -247,6 +249,28 @@ public class Position implements Localizable, Positionable, Iterator {
 		}
 		final long currPos = getIndex();
 		final long newPos = currPos + stepsLeft;
+		setIndex(newPos);
+	}
+
+	/**
+	 * Moves the {@link Position} backward the given number of steps.
+	 */
+	public void jumpBck(long steps) {
+		
+		// brain dead method
+		
+		//for (int i = 0; i < steps; i++)
+		//	bck();
+		
+		// method that could be faster if steps larger
+		
+		long stepsLeft = steps;
+		if (this.isInvalid) {
+			last();
+			stepsLeft--;
+		}
+		final long currPos = getIndex();
+		final long newPos = currPos - stepsLeft;
 		setIndex(newPos);
 	}
 
@@ -408,7 +432,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	}
 
 	/**
-	 * Populates a given int[] with the current {@link Position}'s coordinates 
+	 * Populates a given int[] with the current {@link Position}'s coordinates
 	 */
 	@Override
 	public void localize(int[] pos) {
@@ -503,7 +527,8 @@ public class Position implements Localizable, Positionable, Iterator {
 	
 	private boolean isInvalid() {
 		for (int i = 0; i < position.length; i++)
-			if ((position[i] < parentSpace.min(i)) || (position[i] > parentSpace.max(i)))
+			if ((position[i] < parentSpace.min(i)) ||
+					(position[i] > parentSpace.max(i)))
 				return true;
 		return false;
 	}
