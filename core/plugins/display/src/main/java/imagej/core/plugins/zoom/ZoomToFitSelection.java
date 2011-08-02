@@ -38,12 +38,14 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;
+import imagej.util.RealRect;
 
 /**
  * Zooms in on the currently selected region.
@@ -60,16 +62,20 @@ public class ZoomToFitSelection implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Dataset dataset = displayService.getActiveDataset(display);
+		final OverlayService overlayService = ImageJ.get(OverlayService.class);
+		final RealRect selection = overlayService.getSelectionBounds(display);
 
-		// NOTE - must be in panel/canvas coords!
-		final IntRect sel = dataset.getSelection();
-
-		if (sel.width > 0 && sel.height > 0) {
-			final IntCoords topLeft = new IntCoords(sel.x, sel.y);
+		double scale = display.getImageCanvas().getZoomFactor();
+		
+		int panelOX = (int) (selection.x / scale);
+		int panelOY = (int) (selection.y / scale);
+		int width = (int) (selection.width / scale);
+		int height = (int) (selection.height / scale);
+		
+		if (width > 0 && height > 0) {
+			final IntCoords topLeft =	new IntCoords(panelOX, panelOY);
 			final IntCoords bottomRight =
-				new IntCoords(sel.x + sel.width, sel.y + sel.height);
+				new IntCoords(panelOX+width, panelOY+height);
 			display.getImageCanvas().zoomToFit(topLeft, bottomRight);
 		}
 	}
