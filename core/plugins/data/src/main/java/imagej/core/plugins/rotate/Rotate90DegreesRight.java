@@ -34,9 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
+import imagej.ImageJ;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -59,15 +62,16 @@ public class Rotate90DegreesRight implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	private Display display;
 
 	// -- public interface --
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void run() {
+		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
 		FlipCoordinateTransformer flipTransformer = new NinetyRightTransformer();
-		XYFlipper flipper = new XYFlipper(input, flipTransformer);
+		XYFlipper flipper = new XYFlipper(display, flipTransformer);
 		ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
 		runner.run();
 	}

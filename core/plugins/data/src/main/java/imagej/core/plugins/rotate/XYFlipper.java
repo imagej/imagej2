@@ -34,11 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
+import imagej.ImageJ;
 import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.util.IntRect;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
+import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
@@ -58,7 +62,9 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- instance variables --
 
-	private Dataset input;
+	private Display display;
+	
+	private Dataset dataset;
 
 	private String errMessage = "No error";
 
@@ -100,8 +106,9 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- constructor --
 
-	public XYFlipper(Dataset input, FlipCoordinateTransformer flipper) {
-		this.input = input;
+	public XYFlipper(Display display, FlipCoordinateTransformer flipper) {
+		this.display = display;
+		this.dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
 		this.flipper = flipper;
 	}
 
@@ -111,7 +118,7 @@ public class XYFlipper implements OutputAlgorithm {
 	 * Makes sure input is okay and creates output image */
 	@Override
 	public boolean checkInput() {
-		Img inputImage = input.getImgPlus();  // TODO - raw type required here
+		Img inputImage = dataset.getImgPlus();  // TODO - raw type required here
 		
 		inputDimensions = new long[inputImage.numDimensions()];
 
@@ -138,7 +145,7 @@ public class XYFlipper implements OutputAlgorithm {
 	 */
 	@Override
 	public boolean process() {
-		Img<? extends RealType<?>> inputImage = input.getImgPlus();
+		Img<? extends RealType<?>> inputImage = dataset.getImgPlus();
 
 		inputAccessor = inputImage.randomAccess();
 		outputAccessor = outputImage.randomAccess();
@@ -146,23 +153,24 @@ public class XYFlipper implements OutputAlgorithm {
 		long width = inputDimensions[0];
 		long height = inputDimensions[1];
 		
-		IntRect selectedRegion = input.getSelection();
+		RealRect selectedRegion =
+			ImageJ.get(OverlayService.class).getSelectionBounds(display);
 		
-		int rx, ry, rw, rh;
+		long rx, ry, rw, rh;
 		
 		if (flipper.isShapePreserving() &&
 				(selectedRegion.width > 0) &&
 				(selectedRegion.height > 0)) {
-			rx = selectedRegion.x;
-			ry = selectedRegion.y;
-			rw = selectedRegion.width;
-			rh = selectedRegion.height;
+			rx = (long) selectedRegion.x;
+			ry = (long) selectedRegion.y;
+			rw = (long) selectedRegion.width;
+			rh = (long) selectedRegion.height;
 		}
 		else {
 			rx = 0;
 			ry = 0;
-			rw = (int)width;
-			rh = (int)height;
+			rw = width;
+			rh = height;
 		}
 
 		long[] planeDims = new long[inputImage.numDimensions()-2];
@@ -190,7 +198,7 @@ public class XYFlipper implements OutputAlgorithm {
 		return outputImage;
 	}
 	
-	private void processPlane(Position planePos, int rx, int ry, int rw, int rh) {
+	private void processPlane(Position planePos, long rx, long ry, long rw, long rh) {
 		
 		long[] inputPosition = new long[planePos.numDimensions()+2];
 		long[] outputPosition = new long[planePos.numDimensions()+2];
@@ -198,10 +206,10 @@ public class XYFlipper implements OutputAlgorithm {
 		for (int i = 2; i < inputPosition.length; i++)
 			inputPosition[i] = planePos.getLongPosition(i-2);
 		
-		for (int y = ry; y < rh; y++) {
+		for (long y = ry; y < ry+rh; y++) {
 			inputPosition[1] = y;
 
-			for (int x = rx; x < rw; x++) {
+			for (long x = rx; x < rx+rw; x++) {
 				inputPosition[0] = x;
 
 				flipper.calcOutputPosition(inputDimensions, inputPosition,

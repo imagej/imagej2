@@ -34,14 +34,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
-import imagej.core.plugins.imglib.ImglibDataTransform;
-import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
+import net.imglib2.RandomAccess;
+import net.imglib2.img.Axes;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.RealType;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.Extents;
+import imagej.data.Position;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.IntRect;
+import imagej.util.RealRect;
 
 /**
  * Creates an output Dataset that is a duplicate of an input Dataset flipped
@@ -55,53 +63,117 @@ import imagej.util.IntRect;
 	@Menu(label = "Flip Horizontally", weight = 1) })
 public class FlipHorizontally implements ImageJPlugin {
 
+
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	private Display display;
 
 	// -- public interface --
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void run() {
-		FlipCoordinateTransformer flipTransformer = new HorzFlipTransformer(input);
-		XYFlipper flipper = new XYFlipper(input, flipTransformer);
-		ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
-		runner.run();
+		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		RealRect selection =
+			ImageJ.get(OverlayService.class).getSelectionBounds(display);
+		flipPixels(input, selection);
 	}
 
 	// -- private interface --
 
-	private class HorzFlipTransformer implements FlipCoordinateTransformer {
+	private void flipPixels(Dataset input, RealRect selection) {
+		
+		long[] dims = input.getDims();
+		int xAxis = input.getAxisIndex(Axes.X);
+		int yAxis = input.getAxisIndex(Axes.Y);
+		if ((xAxis < 0) || (yAxis < 0))
+			throw new IllegalArgumentException(
+				"cannot flip image that does not have XY planes");
+		
+		long oX = 0;
+		long oY = 0;
+		long width = dims[xAxis];
+		long height = dims[yAxis];
+		
+		if ((selection.width >= 1) && (selection.height >= 1)) {
+			oX = (long) selection.x;
+			oY = (long) selection.y;
+			width = (long) selection.width;
+			height = (long) selection.height;
+		}
 
-		private long maxX;
-		
-		HorzFlipTransformer(Dataset input) {
-			maxX = input.getImgPlus().dimension(0);
-			IntRect currentSelection = input.getSelection();
-			if (currentSelection.width > 0)
-				maxX = currentSelection.x + currentSelection.width;
+		long[] planeDims = new long[dims.length-2];
+		int d = 0;
+		for (int i = 0; i < dims.length; i++) {
+			if (i == xAxis) continue;
+			if (i == yAxis) continue;
+			planeDims[d++] = dims[i];
 		}
 		
-		@Override
-		public void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
-			long[] outputPosition)
-		{
-			outputPosition[0] = maxX - inputPosition[0] - 1;
-			outputPosition[1] = inputPosition[1];
-			for (int i = 2; i < inputDimensions.length; i++)
-				outputPosition[i] = inputPosition[i];
+		Position planePos = new Extents(planeDims).createPosition();
+
+		if (dims.length == 2) { // a single plane
+			flipPlane(input, xAxis, yAxis, new long[]{}, oX, oY, width, height);
+		}
+		else { // has multiple planes
+			long[] planeIndex = new long[planeDims.length];
+			while (planePos.hasNext()) {
+				planePos.fwd();
+				planePos.localize(planeIndex);
+				flipPlane(input, xAxis, yAxis, planeIndex, oX, oY, width, height);
+			}
+		}
+		input.update();
+	}
+	
+	private void flipPlane(Dataset input, int xAxis, int yAxis,
+		long[] planeIndex, long oX, long oY, long width, long height)
+	{
+		if (height == 1) return;
+		
+		ImgPlus<? extends RealType<?>> imgPlus = input.getImgPlus();
+		
+		RandomAccess<? extends RealType<?>> acc1 = imgPlus.randomAccess();
+		RandomAccess<? extends RealType<?>> acc2 = imgPlus.randomAccess();
+		
+		long[] pos1 = new long[planeIndex.length+2];
+		long[] pos2 = new long[planeIndex.length+2];
+
+		int d = 0;
+		for (int i = 0; i < pos1.length; i++) {
+			if (i == xAxis) continue;
+			if (i == yAxis) continue;
+			pos1[i] = planeIndex[d];
+			pos2[i] = planeIndex[d];
+			d++;
 		}
 
-		@Override
-		public long[] calcOutputDimensions(long[] inputDimensions) {
-			return inputDimensions.clone();
+		long col1, col2;
+		
+		if ((height & 1) == 0) { // even number of cols
+			col2 = width/2;
+			col1 = col2 - 1;
+		}
+		else { // odd number of cols
+			col2 = width/2 + 1;
+			col1 = col2 - 2;
 		}
 		
-		@Override
-		public boolean isShapePreserving() {
-			return true;
+		while (col1 >= 0) {
+			pos1[xAxis] = oX + col1;
+			pos2[xAxis] = oX + col2;
+			for (long y = oY; y < oY+height; y++) {
+				pos1[yAxis] = y;
+				pos2[yAxis] = y;
+				acc1.setPosition(pos1);
+				acc2.setPosition(pos2);
+				double value1 = acc1.get().getRealDouble();
+				double value2 = acc2.get().getRealDouble();
+				acc1.get().setReal(value2);
+				acc2.get().setReal(value1);
+			}
+			col1--;
+			col2++;
 		}
 	}
 }
