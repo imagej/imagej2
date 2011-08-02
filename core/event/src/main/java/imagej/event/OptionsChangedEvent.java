@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.event;
 
-
 /**
  * Fired when an IJ2 plugin has changed an option. Used by the legacy layer
  * keep IJ1 and IJ2 options in sync.
