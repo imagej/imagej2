@@ -43,44 +43,43 @@ import net.imglib2.ops.operator.UnaryOperator;
  * Helper class for use by many plugins that apply a UnaryOperator to some input
  * image. the run() method returns the output image that is the result of such a
  * pixel by pixel application.
+ * 
+ * @author Barry DeZonia
  */
 public class UnaryTransformation {
 
 	// -- instance variables --
 
-	private NAryOperation operation;
+	private final NAryOperation operation;
 
 	// -- constructor --
 
-	public UnaryTransformation(Dataset input, Dataset output,
-		UnaryOperator operator)
+	public UnaryTransformation(final Dataset input, final Dataset output,
+		final UnaryOperator operator)
 	{
-		UnaryOperatorFunction function = new UnaryOperatorFunction(operator);
+		final UnaryOperatorFunction function = new UnaryOperatorFunction(operator);
 		operation = new NAryOperation(input, function);
 		operation.setOutput(output);
-		IntRect selection = input.getSelection();
-		long[] dimensions = new long[input.getImgPlus().numDimensions()];
+		final IntRect selection = input.getSelection();
+		final long[] dimensions = new long[input.getImgPlus().numDimensions()];
 		input.getImgPlus().dimensions(dimensions);
 		setRegion(dimensions, selection);
 	}
 
 	// -- public interface --
 
-	public void setRegion(long[] fullDimensions, IntRect selection)
-	{
+	public void setRegion(final long[] fullDimensions, final IntRect selection) {
 		if (selection == null) return;
-		long[] origin = new long[fullDimensions.length];
+		final long[] origin = new long[fullDimensions.length];
 		origin[0] = selection.x;
 		origin[1] = selection.y;
-		long[] span = fullDimensions.clone();
-		if (selection.width > 0)
-			span[0] = selection.width;
-		if (selection.height > 0)
-			span[1] = selection.height;
+		final long[] span = fullDimensions.clone();
+		if (selection.width > 0) span[0] = selection.width;
+		if (selection.height > 0) span[1] = selection.height;
 		operation.setInputRegion(0, origin, span);
 		operation.setOutputRegion(origin, span);
 	}
-	
+
 	public void run() {
 		operation.run();
 	}

@@ -54,14 +54,13 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 /**
-* Deletes hyperplanes of data from an input Dataset along a user specified axis
-* 
-* @author Barry DeZonia
-*/
-@Plugin(menu = {
-@Menu(label = "Image", mnemonic = 'i'),
-@Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Delete Data...") })
+ * Deletes hyperplanes of data from an input Dataset along a user specified
+ * axis.
+ * 
+ * @author Barry DeZonia
+ */
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Data...") })
 public class DeleteHyperplanes extends DynamicPlugin {
 
 	private static final String NAME_KEY = "Axis to modify";
@@ -80,14 +79,14 @@ public class DeleteHyperplanes extends DynamicPlugin {
 		final Display display = displayService.getActiveDisplay();
 		if (display == null) return;
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		
+
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
-		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
-		ArrayList<String> choices = new ArrayList<String>();
-		for (Axis candidateAxis : Axes.values()) {
-			if (datasetAxes.contains(candidateAxis))
-				choices.add(candidateAxis.getLabel());
+		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Axis candidateAxis : Axes.values()) {
+			if (datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
+				.getLabel());
 		}
 		name.setChoices(choices);
 		addInput(name);
@@ -95,16 +94,18 @@ public class DeleteHyperplanes extends DynamicPlugin {
 		final DefaultModuleItem<Long> pos =
 			new DefaultModuleItem<Long>(this, POSITION_KEY, Long.class);
 		pos.setMinimumValue(1L);
-		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		// TODO - figure some way to set max val based on chosen Dataset's curr
+		// values
 		addInput(pos);
-		
+
 		final DefaultModuleItem<Long> quantity =
 			new DefaultModuleItem<Long>(this, QUANTITY_KEY, Long.class);
 		quantity.setMinimumValue(1L);
-		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		// TODO - figure some way to set max val based on chosen Dataset's curr
+		// values
 		addInput(quantity);
 	}
-	
+
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
@@ -115,14 +116,14 @@ public class DeleteHyperplanes extends DynamicPlugin {
 		axisToModify = (String) inputs.get(NAME_KEY);
 		oneBasedDelPos = (Long) inputs.get(POSITION_KEY);
 		numDeleting = (Long) inputs.get(QUANTITY_KEY);
-		
-		deletePosition = oneBasedDelPos - 1; 
-		Axis axis = Axes.get(axisToModify);
+
+		deletePosition = oneBasedDelPos - 1;
+		final Axis axis = Axes.get(axisToModify);
 		if (inputBad(axis)) return;
-		Axis[] axes = dataset.getAxes();
-		long[] newDimensions =
+		final Axis[] axes = dataset.getAxes();
+		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, -numDeleting);
-		ImgPlus<? extends RealType<?>> dstImgPlus =
+		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
@@ -130,32 +131,28 @@ public class DeleteHyperplanes extends DynamicPlugin {
 	}
 
 	/**
-	 * Detects if user specified data is invalid */
-	private boolean inputBad(Axis axis) {
+	 * Detects if user specified data is invalid
+	 */
+	private boolean inputBad(final Axis axis) {
 		// axis not determined by dialog
-		if (axis == null)
-			return true;
-		
-		// setup some working variables
-		int axisIndex = dataset.getAxisIndex(axis);
-		long axisSize = dataset.getImgPlus().dimension(axisIndex);
+		if (axis == null) return true;
 
-	  // axis not present in Dataset
-		if (axisIndex < 0)
-			return true;
-		
+		// setup some working variables
+		final int axisIndex = dataset.getAxisIndex(axis);
+		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
+
+		// axis not present in Dataset
+		if (axisIndex < 0) return true;
+
 		// bad value for startPosition
-		if ((deletePosition < 0)  || (deletePosition >= axisSize))
-			return true;
-		
+		if ((deletePosition < 0) || (deletePosition >= axisSize)) return true;
+
 		// bad value for numDeleting
-		if (numDeleting <= 0)
-			return true;
-		
+		if (numDeleting <= 0) return true;
+
 		// trying to delete all hyperplanes along axis
-		if (numDeleting >= axisSize)
-			return true;
-		
+		if (numDeleting >= axisSize) return true;
+
 		// if here everything is okay
 		return false;
 	}
@@ -164,21 +161,21 @@ public class DeleteHyperplanes extends DynamicPlugin {
 	 * Fills the newly created ImgPlus with data values from a larger source
 	 * image. Copies data from those hyperplanes not being cut.
 	 */
-	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,
-		ImgPlus<? extends RealType<?>> dstImgPlus, Axis modifiedAxis)
+	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
+		final ImgPlus<? extends RealType<?>> dstImgPlus, final Axis modifiedAxis)
 	{
-		long[] dimensions = dataset.getDims();
-		int axisIndex = dataset.getAxisIndex(modifiedAxis);
-		long axisSize = dimensions[axisIndex];
-		long numBeforeCut = deletePosition;
+		final long[] dimensions = dataset.getDims();
+		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
+		final long axisSize = dimensions[axisIndex];
+		final long numBeforeCut = deletePosition;
 		long numInCut = numDeleting;
-		if (numBeforeCut + numInCut > axisSize)
-			numInCut = axisSize - numBeforeCut;
-		long numAfterCut = axisSize -	(numBeforeCut + numInCut);
-		
+		if (numBeforeCut + numInCut > axisSize) numInCut = axisSize - numBeforeCut;
+		final long numAfterCut = axisSize - (numBeforeCut + numInCut);
+
+		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis, 0, 0,
+			numBeforeCut);
 		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis,
-			0, 0, numBeforeCut);
-		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis,
-			numBeforeCut+numInCut, numBeforeCut, numAfterCut);
+			numBeforeCut + numInCut, numBeforeCut, numAfterCut);
 	}
+
 }

@@ -1,5 +1,5 @@
 //
-// ChangetoINT8.java
+// ChangeToINT8.java
 //
 
 /*

@@ -49,12 +49,10 @@ import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
  * Base class for the various math plugins. They are previewable.
  * 
  * @author Barry DeZonia
- *
  */
 public abstract class AbstractPreviewPlugin
 	implements ImageJPlugin, PreviewPlugin

@@ -1,5 +1,5 @@
 //
-// ShadowsEast.java
+// ShadowsDemo.java
 //
 
 /*
@@ -59,17 +59,16 @@ import net.imglib2.img.Axis;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Shadows", mnemonic = 's'),
-	@Menu(label = "Shadows Demo", weight=200)})
+	@Menu(label = "Shadows Demo", weight = 200) })
 public class ShadowsDemo implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
-	
+
 	// -- private instance variables --
 
 	private static final double[][] KERNELS = new double[][] {
@@ -80,13 +79,13 @@ public class ShadowsDemo implements ImageJPlugin {
 		new double[] { -1, -2, -1, 0, 1, 0, 1, 2, 1 }, // south
 		new double[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 }, // southwest
 		new double[] { 1, 0, -1, 2, 1, -2, 1, 0, -1 }, // west
-		new double[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 }  // northwest
-	};
+		new double[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 } // northwest
+		};
 	private boolean userHasQuit = false;
 	private Display currDisplay;
 	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
-	
+
 	// -- public interface --
 
 	/**
@@ -102,15 +101,17 @@ public class ShadowsDemo implements ImageJPlugin {
 		subscribeToEvents();
 		Events.publish(new StatusEvent("Press ESC to terminate"));
 		currDisplay = ImageJ.get(DisplayService.class).getActiveDisplay();
-		Dataset originalData = input.duplicate();
+		final Dataset originalData = input.duplicate();
 		userHasQuit = false;
 		while (!userHasQuit) {
 			for (int i = 0; i < KERNELS.length; i++) {
-				Convolve3x3Operation operation =
+				final Convolve3x3Operation operation =
 					new Convolve3x3Operation(input, KERNELS[i]);
 				operation.run();
-				try {	Thread.sleep(100); }
-				catch (Exception e) {
+				try {
+					Thread.sleep(100);
+				}
+				catch (final Exception e) {
 					// do nothing
 				}
 				originalData.copyInto(input);
@@ -121,15 +122,15 @@ public class ShadowsDemo implements ImageJPlugin {
 		unsubscribeFromEvents();
 	}
 
-	/** 
+	/**
 	 * Returns true if image cannot be represented as a single plane for display.
 	 * This mirrors IJ1's behavior.
 	 */
 	private boolean unsupportedImage() {
-		Axis[] axes = input.getAxes();
-		long[] dims = input.getDims();
+		final Axis[] axes = input.getAxes();
+		final long[] dims = input.getDims();
 		for (int i = 0; i < axes.length; i++) {
-			Axis axis = axes[i];
+			final Axis axis = axes[i];
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
 			if ((axis == Axes.CHANNEL) && input.isRGBMerged()) continue;
@@ -144,28 +145,31 @@ public class ShadowsDemo implements ImageJPlugin {
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		kyPressSubscriber = new EventSubscriber<KyPressedEvent>() {
+
 			@Override
-			public void onEvent(KyPressedEvent event) {
-				if (event.getDisplay() == currDisplay)
-					if (event.getCode() == KeyEvent.VK_ESCAPE)
-						userHasQuit = true;
+			public void onEvent(final KyPressedEvent event) {
+				if (event.getDisplay() == currDisplay &&
+					event.getCode() == KeyEvent.VK_ESCAPE)
+				{
+					userHasQuit = true;
+				}
 			}
 		};
 		Events.subscribe(KyPressedEvent.class, kyPressSubscriber);
-		
+
 		displaySubscriber = new EventSubscriber<DisplayDeletedEvent>() {
+
 			@Override
-			public void onEvent(DisplayDeletedEvent event) {
-				if (event.getObject() == currDisplay)
-					userHasQuit = true;
+			public void onEvent(final DisplayDeletedEvent event) {
+				if (event.getObject() == currDisplay) userHasQuit = true;
 			}
 		};
 		Events.subscribe(DisplayDeletedEvent.class, displaySubscriber);
 	}
 
 	/**
-	 *  Unsubscribes from events. this keeps IJ2 from maintaining dangling
-	 *  references to obsolete event listeners
+	 * Unsubscribes from events. this keeps IJ2 from maintaining dangling
+	 * references to obsolete event listeners
 	 */
 	private void unsubscribeFromEvents() {
 		Events.unsubscribe(KyPressedEvent.class, kyPressSubscriber);

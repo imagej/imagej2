@@ -54,85 +54,81 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 /**
-* Adds a new axis to an input Dataset
-* 
-* @author Barry DeZonia
-*/
-@Plugin(menu = {
-@Menu(label = "Image", mnemonic = 'i'),
-@Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Add Axis...") })
+ * Adds a new axis to an input Dataset.
+ * 
+ * @author Barry DeZonia
+ */
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Axis...") })
 public class AddAxis extends DynamicPlugin {
-	
+
 	private static final String NAME_KEY = "Axis to add";
 	private static final String SIZE_KEY = "Axis size";
-	
+
 	private Dataset dataset;
 	private String axisName;
 	private long axisSize;
-	
+
 	public AddAxis() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display display = displayService.getActiveDisplay();
 		if (display == null) return;
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		
+
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
-		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
-		ArrayList<String> choices = new ArrayList<String>();
-		for (Axis candidateAxis : Axes.values()) {
-			if (!datasetAxes.contains(candidateAxis))
-				choices.add(candidateAxis.getLabel());
+		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Axis candidateAxis : Axes.values()) {
+			if (!datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
+				.getLabel());
 		}
 		name.setChoices(choices);
 		addInput(name);
-		
+
 		final DefaultModuleItem<Long> size =
 			new DefaultModuleItem<Long>(this, SIZE_KEY, Long.class);
 		size.setMinimumValue(1L);
 		addInput(size);
 	}
-	
 
 	// private long axisSize;
 
 	/**
 	 * Creates new ImgPlus data with an additonal axis. sets pixels of 1st
-	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus
-	 * to the input Dataset.
+	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus to
+	 * the input Dataset.
 	 */
 	@Override
 	public void run() {
 		final Map<String, Object> inputs = getInputs();
 		axisName = (String) inputs.get(NAME_KEY);
 		axisSize = (Long) inputs.get(SIZE_KEY);
-		Axis axis = Axes.get(axisName);
+		final Axis axis = Axes.get(axisName);
 		if (inputBad(axis)) return;
-		Axis[] newAxes = getNewAxes(dataset, axis);
-		long[] newDimensions = getNewDimensions(dataset, axisSize);
-		ImgPlus<? extends RealType<?>> dstImgPlus =
+		final Axis[] newAxes = getNewAxes(dataset, axis);
+		final long[] newDimensions = getNewDimensions(dataset, axisSize);
+		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		// TODO - colorTables, metadata, etc.?
 		dataset.setImgPlus(dstImgPlus);
 	}
+
 	/**
-	 * Detects if user specified data is invalid */
-	private boolean inputBad(Axis axis) {
+	 * Detects if user specified data is invalid
+	 */
+	private boolean inputBad(final Axis axis) {
 		// axis not determined by dialog
-		if (axis == null)
-			return true;
-		
-	  // axis already present in Dataset
-		int axisIndex = dataset.getAxisIndex(axis);
-		if (axisIndex >= 0)
-			return true;
-		
+		if (axis == null) return true;
+
+		// axis already present in Dataset
+		final int axisIndex = dataset.getAxisIndex(axis);
+		if (axisIndex >= 0) return true;
+
 		// axis size invalid
-		if (axisSize <= 0)
-			return true;
-		
+		if (axisSize <= 0) return true;
+
 		return false;
 	}
 
@@ -140,45 +136,49 @@ public class AddAxis extends DynamicPlugin {
 	 * Creates an Axis[] that consists of all the axes from a Dataset and an
 	 * additional axis appended.
 	 */
-	private Axis[] getNewAxes(Dataset ds, Axis axis) {
-		Axis[] origAxes = ds.getAxes();
-		Axis[] newAxes = new Axis[origAxes.length+1];
+	private Axis[] getNewAxes(final Dataset ds, final Axis axis) {
+		final Axis[] origAxes = ds.getAxes();
+		final Axis[] newAxes = new Axis[origAxes.length + 1];
 		for (int i = 0; i < origAxes.length; i++)
 			newAxes[i] = origAxes[i];
-		newAxes[newAxes.length-1] = axis;
+		newAxes[newAxes.length - 1] = axis;
 		return newAxes;
 	}
-	
+
 	/**
-	 * Creates a long[] that consists of all the dimensions from a Dataset and
-	 * an additional value appended.
+	 * Creates a long[] that consists of all the dimensions from a Dataset and an
+	 * additional value appended.
 	 */
-	private long[] getNewDimensions(Dataset ds, long lastDimensionSize) {
-		long[] origDims = ds.getDims();
-		long[] newDims = new long[origDims.length+1];
+	private long[] getNewDimensions(final Dataset ds,
+		final long lastDimensionSize)
+	{
+		final long[] origDims = ds.getDims();
+		final long[] newDims = new long[origDims.length + 1];
 		for (int i = 0; i < origDims.length; i++)
 			newDims[i] = origDims[i];
-		newDims[newDims.length-1] = lastDimensionSize;
+		newDims[newDims.length - 1] = lastDimensionSize;
 		return newDims;
 	}
-	
+
 	/**
-	 * Fills the 1st hyperplane in the new Dataset with the entire contents
-	 * of the original image
+	 * Fills the 1st hyperplane in the new Dataset with the entire contents of the
+	 * original image
 	 */
-	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,
-		ImgPlus<? extends RealType<?>> dstImgPlus)
+	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
+		final ImgPlus<? extends RealType<?>> dstImgPlus)
 	{
-		long[] srcOrigin = new long[srcImgPlus.numDimensions()];
-		long[] dstOrigin = new long[dstImgPlus.numDimensions()];
-		
-		long[] srcSpan = new long[srcOrigin.length];
-		long[] dstSpan = new long[dstOrigin.length];
+		final long[] srcOrigin = new long[srcImgPlus.numDimensions()];
+		final long[] dstOrigin = new long[dstImgPlus.numDimensions()];
+
+		final long[] srcSpan = new long[srcOrigin.length];
+		final long[] dstSpan = new long[dstOrigin.length];
 
 		srcImgPlus.dimensions(srcSpan);
 		dstImgPlus.dimensions(dstSpan);
-		dstSpan[dstSpan.length-1] = 1;
-		
-		RestructureUtils.copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin, dstSpan);
+		dstSpan[dstSpan.length - 1] = 1;
+
+		RestructureUtils.copyHyperVolume(srcImgPlus, srcOrigin, srcSpan,
+			dstImgPlus, dstOrigin, dstSpan);
 	}
+
 }
