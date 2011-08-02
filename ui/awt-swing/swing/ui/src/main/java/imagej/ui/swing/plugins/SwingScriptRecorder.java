@@ -297,8 +297,9 @@ public class SwingScriptRecorder implements ImageJPlugin {
 			}
 			cg.invokeStatementEnd();
 			cg.statementTerminate();
-
-			System.out.println(cg.getResult());
+			append("Code generated: \n");
+			append(cg.getResult());
+			//System.out.println(cg.getResult());
 		}
 	}
 
