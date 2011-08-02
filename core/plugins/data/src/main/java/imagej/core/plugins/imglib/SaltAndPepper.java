@@ -34,14 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.IntRect;
+import imagej.util.RealRect;
 
 import java.util.Random;
 
@@ -65,11 +69,12 @@ public class SaltAndPepper implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	private Display display;
 
 	// -- other instance variables --
-	
-	private IntRect selection;
+
+	private Dataset input;
+	private RealRect selection;
 	private Img<? extends RealType<?>> inputImage;
 	private RandomAccess<? extends RealType<?>> accessor;
 	private long[] position;
@@ -78,6 +83,7 @@ public class SaltAndPepper implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		initializeMembers();
 		checkInput();
 		setupWorkingData();
 		assignPixels();
@@ -87,7 +93,15 @@ public class SaltAndPepper implements ImageJPlugin {
 
 	// -- private interface --
 
+	private void initializeMembers() {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final OverlayService overlayService = ImageJ.get(OverlayService.class);
+		input = displayService.getActiveDataset(display);
+		selection = overlayService.getSelectionBounds(display);
+	}
+	
 	private void checkInput() {
+		input = ImageJ.get(DisplayService.class).getActiveDataset(display);
 		if (input == null)
 			throw new IllegalArgumentException("input Dataset is null");
 		
@@ -97,7 +111,6 @@ public class SaltAndPepper implements ImageJPlugin {
 
 	private void setupWorkingData() {
 		inputImage = input.getImgPlus();
-		selection = input.getSelection();
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
 	}
@@ -123,6 +136,10 @@ public class SaltAndPepper implements ImageJPlugin {
 		}
 	}
 
+	private void cleanup() {
+		// nothing to do
+	}
+
 	private void assignPixelsInXYPlane(Position planePos, Random rng) {
 		for (int i = 2; i < position.length; i++)
 			position[i] = planePos.getLongPosition(i-2);
@@ -132,42 +149,43 @@ public class SaltAndPepper implements ImageJPlugin {
 		long[] dimensions = new long[inputImage.numDimensions()];
 		inputImage.dimensions(dimensions);
 		
-		int ox = selection.x;
-		int oy = selection.y;
-		int w = selection.width;
-		int h = selection.height;
+		long ox = (long) selection.x;
+		long oy = (long) selection.y;
+		long w = (long) selection.width;
+		long h = (long) selection.height;
 		
-		if (w <= 0) w = (int) dimensions[0];
-		if (h <= 0) h = (int) dimensions[1];
+		if (w <= 0) w = dimensions[0];
+		if (h <= 0) h = dimensions[1];
 		
 		long numPixels = (long) (percentToChange * w * h);
 
 		for (long p = 0; p < numPixels / 2; p++) {
-			int randomX, randomY;
+			long randomX, randomY;
 
-			randomX = ox + rng.nextInt(w);
-			randomY = oy + rng.nextInt(h);
+			randomX = ox + nextLong(rng,w);
+			randomY = oy + nextLong(rng,h);
 			setPixel(randomX, randomY, 255);
 
-			randomX = ox + rng.nextInt(w);
-			randomY = oy + rng.nextInt(h);
+			randomX = ox + nextLong(rng,w);
+			randomY = oy + nextLong(rng,h);
 			setPixel(randomX, randomY, 0);
 		}
+	}
+	
+	private long nextLong(Random rng, long bound) {
+		double val = rng.nextDouble();
+		return (long) (val * bound);
 	}
 	
 	/**
 	 * Sets a value at a specific (x,y) location in the image to a given value
 	 */
-	private void setPixel(int x, int y, double value) {
+	private void setPixel(long x, long y, double value) {
 		position[0] = x;
 		position[1] = y;
 
 		accessor.setPosition(position);
 
 		accessor.get().setReal(value);
-	}
-
-	private void cleanup() {
-		// nothing to do
 	}
 }
