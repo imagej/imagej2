@@ -34,12 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.io.plugins;
 
-import javax.swing.JOptionPane;
-
 import imagej.data.Dataset;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
+
+import javax.swing.JOptionPane;
+
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -48,27 +49,29 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Revert", weight = 20, mnemonic = 'r'
-//	 , accelerator = "control R"
-	) })
+@Plugin(menu = {
+	@Menu(label = "File", mnemonic = 'f'),
+	@Menu(label = "Revert", weight = 20, mnemonic = 'r',
+		accelerator = "control R") })
 public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
-	//@Parameter
-	//private Dataset dataset;
+
+	// @Parameter
+	// private Dataset dataset;
 
 	@Override
 	public void run() {
-		JOptionPane.showMessageDialog(null, "This feature has not been implemented");
+		JOptionPane.showMessageDialog(null,
+			"This feature has not been implemented");
 
 		/*
 		// TODO - enable this in ImgLib
-//		final String id = currDataset.getImgPlus().getSource();
-//		if (id == null) {
-//			throw new IllegalArgumentException("Dataset " + currDataset.getName() +
-//				" does not have an external source");
-//		}
+		//		final String id = currDataset.getImgPlus().getSource();
+		//		if (id == null) {
+		//			throw new IllegalArgumentException("Dataset " + currDataset.getName() +
+		//				" does not have an external source");
+		//		}
 		final String id = null; // do nothing right now
 
 		// open image
