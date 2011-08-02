@@ -40,11 +40,10 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.SettingsKeys;
 
 /**
- * Runs the Edit::Options::Colors... dialog
+ * Runs the Edit::Options::Colors dialog.
  * 
  * @author Barry DeZonia
  */
-
 @Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Colors...", weight = 9) })

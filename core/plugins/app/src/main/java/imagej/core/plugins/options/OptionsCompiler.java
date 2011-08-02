@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.core.plugins.options;
 
 import imagej.ext.plugin.Menu;
@@ -39,7 +40,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.SettingsKeys;
 
 /**
- * Runs the Edit::Options::Compiler... dialog
+ * Runs the Edit::Options::Compiler dialog.
  * 
  * @author Barry DeZonia
  */

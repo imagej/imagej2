@@ -1,5 +1,5 @@
 //
-// AboutImageJ.java
+// ShowPrefs.java
 //
 
 /*
