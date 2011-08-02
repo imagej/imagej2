@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.patches;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.ImageJ;
@@ -49,8 +52,19 @@ import imagej.util.Log;
  */
 public final class ImageWindowMethods {
 
+	private static final Map<ImagePlus,Boolean> closeInitiatedByIJ2 =
+		new ConcurrentHashMap<ImagePlus,Boolean>();
+
 	private ImageWindowMethods() {
 		// prevent instantiation of utility class
+	}
+
+	public static void closeInitiatedByIJ2(ImagePlus imp) {
+		closeInitiatedByIJ2.put(imp, true);
+	}
+
+	public static void closeCompletedByIJ2(ImagePlus imp) {
+		closeInitiatedByIJ2.remove(imp);
 	}
 
 	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
@@ -69,8 +83,7 @@ public final class ImageWindowMethods {
 	/** Appends {@link ImageWindow#close()}. */
 	public static void close(ImageWindow obj) {
 		ImagePlus imp = obj.getImagePlus();
-		if (imp != null)
+		if ((imp != null) && (closeInitiatedByIJ2.get(imp) == null))
 			LegacyOutputTracker.getClosedImps().add(imp);
 	}
-
 }
