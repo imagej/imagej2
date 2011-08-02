@@ -65,6 +65,8 @@ public class LegacyInjector {
 		// override behavior of ij.ImagePlus
 		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
 		hacker.insertAfterMethod("ij.ImagePlus", "public void repaintWindow()");
+		hacker.insertAfterMethod("ij.ImagePlus", "public void show(java.lang.String statusMessage)");
+		hacker.insertAfterMethod("ij.ImagePlus", "public void hide()");
 		hacker.loadClass("ij.ImagePlus");
 
 		// override behavior of ij.gui.ImageWindow
