@@ -51,10 +51,9 @@ import imagej.tool.ToolService;
 import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTEventDispatcher;
 
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.SwingUtilities;
 
 
 /**
@@ -159,7 +158,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 	@Override
 	public void update() {
-		SwingUtilities.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable() {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
