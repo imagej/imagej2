@@ -36,6 +36,7 @@ package imagej.legacy.patches;
 
 import ij.ImagePlus;
 import imagej.ImageJ;
+import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.util.Log;
 
@@ -64,4 +65,17 @@ public final class ImagePlusMethods {
 		legacyService.legacyImageChanged(obj);
 	}
 
+	/** Appends {@link ImagePlus#show(String message)}. */
+	public static void show(final ImagePlus obj, final String message) {
+		Log.debug("ImagePlus.show(): " + obj);
+		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		legacyService.legacyImageChanged(obj);
+	}
+
+	/** Appends {@link ImagePlus#hide()}. */
+	public static void hide(final ImagePlus obj) {
+		Log.debug("ImagePlus.hide(): " + obj);
+		LegacyOutputTracker.getOutputImps().remove(obj);
+		LegacyOutputTracker.getClosedImps().add(obj);
+	}
 }
