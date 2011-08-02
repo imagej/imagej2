@@ -53,6 +53,7 @@ import imagej.ui.swing.StaticSwingUtils;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.Arrays;
@@ -65,7 +66,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -161,7 +161,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 	@Override
 	public void redoLayout() {
-		SwingUtilities.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable() {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
