@@ -133,14 +133,11 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 
 		for (ImagePlus imp : closedSet) {
-			ImageWindow win = imp.getWindow();
-			if ((win == null) || (win.isClosed())) {
-				Display disp = map.lookupDisplay(imp);
-				if (disp != null) {
-					outputs.remove(disp);
-					DisplayWindow dispWin = disp.getDisplayWindow();
-					if (dispWin != null) dispWin.close();
-				}
+			Display disp = map.lookupDisplay(imp);
+			if (disp != null) {
+				outputs.remove(disp);
+				DisplayWindow dispWin = disp.getDisplayWindow();
+				if (dispWin != null) dispWin.close();
 			}
 		}
 		
