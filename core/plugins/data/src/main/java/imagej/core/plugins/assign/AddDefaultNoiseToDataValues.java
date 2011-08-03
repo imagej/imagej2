@@ -34,7 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -55,13 +58,14 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Dataset input;
+	Display display;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		AddNoiseToDataValues noiseAdder = new AddNoiseToDataValues(input);
+		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		AddNoiseToDataValues noiseAdder = new AddNoiseToDataValues(display);
 		noiseAdder.setOutput(input);
 		noiseAdder.setStdDev(25.0);
 		noiseAdder.run();

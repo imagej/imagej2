@@ -34,7 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
+import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.ops.operator.unary.AddNoise;
@@ -69,20 +74,23 @@ public class AddNoiseToDataValues {
 
 	/**
 	 * Maximum allowable values - varies by underlying data type. For instance
-	 * (0,255) for 8 bit and (0,65535) for 16 bit. used to make sure that
-	 * perturned values do not leave the allowable range for the underlying data
+	 * (0,255) for 8 bit and (0,65535) for 16 bit. Used to make sure that
+	 * returned values do not leave the allowable range for the underlying data
 	 * type.
 	 */
 	private double rangeMin, rangeMax;
 
+	private RealRect selection;
+	
 	// -- constructor --
 
 	/**
 	 * Constructor - takes an input Dataset as the baseline data to compute
 	 * perturbed values from.
 	 */
-	public AddNoiseToDataValues(Dataset input) {
-		this.input = input;
+	public AddNoiseToDataValues(Display display) {
+		this.input = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		this.selection = ImageJ.get(OverlayService.class).getSelectionBounds(display);
 	}
 
 	// -- public interface --
@@ -111,7 +119,7 @@ public class AddNoiseToDataValues {
 
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
 
-		UnaryTransformation transform = new UnaryTransformation(input, output, op);
+		UnaryTransformation transform = new UnaryTransformation(input, output, op, selection);
 
 		transform.run();
 	}
