@@ -46,7 +46,7 @@ import javax.swing.JMenuItem;
  * 
  * @author Curtis Rueden
  */
-public class JMenuBarCreator extends SwingMenuCreator<JMenuBar> {
+public class SwingJMenuBarCreator extends AbstractSwingMenuCreator<JMenuBar> {
 
 	@Override
 	protected void addLeafToTop(final ShadowMenu shadow, final JMenuBar target) {

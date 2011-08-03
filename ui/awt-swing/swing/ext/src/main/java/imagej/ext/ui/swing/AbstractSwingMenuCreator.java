@@ -57,7 +57,7 @@ import javax.swing.KeyStroke;
  * 
  * @author Curtis Rueden
  */
-public abstract class SwingMenuCreator<T> extends
+public abstract class AbstractSwingMenuCreator<T> extends
 	AbstractMenuCreator<T, JMenu>
 {
 

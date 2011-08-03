@@ -41,9 +41,9 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.ui.swing.JMenuBarCreator;
+import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.DialogPrompt;
@@ -92,8 +92,6 @@ public class SwingUI implements UserInterface {
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
 
-	private ShadowMenu rootMenu;
-
 	private ArrayList<EventSubscriber<?>> subscribers;
 
 	// -- UserInterface methods --
@@ -103,7 +101,7 @@ public class SwingUI implements UserInterface {
 		frame = new JFrame("ImageJ");
 		toolBar = new SwingToolBar();
 		statusBar = new SwingStatusBar();
-		initializeMenus();
+		createMenus();
 
 		final JPanel pane = new JPanel();
 		frame.setContentPane(pane);
@@ -145,26 +143,21 @@ public class SwingUI implements UserInterface {
 
 	// -- Helper methods --
 
-	/**
-	 * Creates the master {@link ShadowMenu} structure from which {@link JMenuBar}
-	 * s are generated.
-	 */
-	private void initializeMenus() {
-		// CTR FIXME - rework this
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		rootMenu = new ShadowMenu(pluginService);
-		createMenuBar(frame);
-		Events.publish(new AppMenusCreatedEvent(frame.getJMenuBar()));
+	private void createMenus() {
+		final JMenuBar menuBar = createMenuBar(frame);
+		Events.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 	/**
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
 	 * and adds it to the given {@link JFrame}.
 	 */
-	private void createMenuBar(final JFrame f) {
-		final JMenuBar menuBar = new JMenuBar();
-		new JMenuBarCreator().createMenus(rootMenu, menuBar);
+	private JMenuBar createMenuBar(final JFrame f) {
+		final MenuService menuService = ImageJ.get(MenuService.class);
+		final JMenuBar menuBar =
+			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		f.setJMenuBar(menuBar);
+		return menuBar;
 	}
 
 	private void deleteMenuBar(final JFrame f) {
