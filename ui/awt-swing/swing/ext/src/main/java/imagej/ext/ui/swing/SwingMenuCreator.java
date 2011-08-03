@@ -118,11 +118,11 @@ public abstract class SwingMenuCreator<T> extends
 	// -- Helper methods --
 
 	private boolean isSelected(final ShadowMenu shadow) {
-		return shadow.getInfo().isSelected();
+		return shadow.getModuleInfo().isSelected();
 	}
 
 	private ButtonGroup getButtonGroup(final ShadowMenu shadow) {
-		final String selectionGroup = shadow.getInfo().getSelectionGroup();
+		final String selectionGroup = shadow.getModuleInfo().getSelectionGroup();
 		ButtonGroup buttonGroup = buttonGroups.get(selectionGroup);
 		if (buttonGroup == null) {
 			buttonGroup = new ButtonGroup();
@@ -172,7 +172,7 @@ public abstract class SwingMenuCreator<T> extends
 				shadow.run();
 			}
 		});
-		menuItem.setEnabled(shadow.getInfo().isEnabled());
+		menuItem.setEnabled(shadow.getModuleInfo().isEnabled());
 	}
 
 	private boolean isMac() {

@@ -63,7 +63,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		addLeafToMenu(final ShadowMenu shadow, final MenuButton target)
 	{
 		final Menu.Item item = new Menu.Item(shadow.getMenuEntry().getName());
-		linkAction(shadow.getInfo(), item);
+		linkAction(shadow.getModuleInfo(), item);
 		getLastSection(target).add(item);
 	}
 
@@ -72,7 +72,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		Log.debug("PivotMenuCreator: Adding leaf item: " + shadow);
 		final PushButton button = new PushButton();
 		button.setButtonData(shadow.getMenuEntry().getName());
-		linkAction(shadow.getInfo(), button);
+		linkAction(shadow.getModuleInfo(), button);
 		target.add(button);
 	}
 
