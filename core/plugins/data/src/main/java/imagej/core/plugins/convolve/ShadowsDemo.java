@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.display.OverlayService;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.event.EventSubscriber;
@@ -48,6 +49,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
+import imagej.util.RealRect;
 
 import java.awt.event.KeyEvent;
 
@@ -101,12 +103,14 @@ public class ShadowsDemo implements ImageJPlugin {
 		subscribeToEvents();
 		Events.publish(new StatusEvent("Press ESC to terminate"));
 		currDisplay = ImageJ.get(DisplayService.class).getActiveDisplay();
+		RealRect selection =
+			ImageJ.get(OverlayService.class).getSelectionBounds(currDisplay);
 		final Dataset originalData = input.duplicate();
 		userHasQuit = false;
 		while (!userHasQuit) {
 			for (int i = 0; i < KERNELS.length; i++) {
 				final Convolve3x3Operation operation =
-					new Convolve3x3Operation(input, KERNELS[i]);
+					new Convolve3x3Operation(input, selection, KERNELS[i]);
 				operation.run();
 				try {
 					Thread.sleep(100);

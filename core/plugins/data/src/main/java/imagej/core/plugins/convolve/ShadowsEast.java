@@ -34,11 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.convolve;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.RealRect;
 
 /**
  * Implements IJ1's Shadows East plugin functionality
@@ -54,14 +59,16 @@ public class ShadowsEast implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	private Display display;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
+		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		RealRect selection = ImageJ.get(OverlayService.class).getSelectionBounds(display);
 		Convolve3x3Operation operation =
-			new Convolve3x3Operation(input,
+			new Convolve3x3Operation(input, selection,
 				new double[] { -1, 0, 1, -2, 1, 2, -1, 0, 1 });
 		operation.run();
 	}
