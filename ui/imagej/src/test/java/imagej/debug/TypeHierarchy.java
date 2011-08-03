@@ -34,8 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.debug;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Dumps the type hierarchy of the classes given as arguments.
@@ -52,14 +56,22 @@ public class TypeHierarchy {
 	}
 
 	public void printTree() {
-		for (final TypeNode node : classes.values()) {
+		for (final TypeNode node : sort(classes.values())) {
 			if (node.isRoot()) System.out.println(node);
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		final TypeHierarchy typeHierarchy = new TypeHierarchy(args);
 		typeHierarchy.printTree();
+	}
+
+	public static <T extends Comparable<? super T>> List<T> sort(
+		final Collection<T> c)
+	{
+		final ArrayList<T> sortedList = new ArrayList<T>(c);
+		Collections.sort(sortedList);
+		return sortedList;
 	}
 
 	// -- Helper methods --
@@ -71,7 +83,7 @@ public class TypeHierarchy {
 				final Class<?> c = Class.forName(className);
 				list.put(c, new TypeNode(c));
 			}
-			catch (ClassNotFoundException exc) {
+			catch (final ClassNotFoundException exc) {
 				System.err.println("Ignoring invalid class: " + className);
 			}
 		}
@@ -95,14 +107,14 @@ public class TypeHierarchy {
 		}
 		if (child != null) node.addChild(child);
 		parseAncestors(node, c.getSuperclass());
-		for (Class<?> iface : c.getInterfaces()) {
+		for (final Class<?> iface : c.getInterfaces()) {
 			parseAncestors(node, iface);
 		}
 	}
 
 	// -- Helper classes --
 
-	public class TypeNode {
+	public class TypeNode implements Comparable<TypeNode> {
 
 		private final Class<?> c;
 		private final HashSet<TypeNode> children = new HashSet<TypeNode>();
@@ -141,10 +153,15 @@ public class TypeHierarchy {
 			}
 			sb.append(c.getName());
 			sb.append("\n");
-			for (final TypeNode child : children) {
+			for (final TypeNode child : sort(children)) {
 				sb.append(child.toString(indent + 2));
 			}
 			return sb.toString();
+		}
+
+		@Override
+		public int compareTo(final TypeNode o) {
+			return c.getName().compareTo(o.c.getName());
 		}
 
 	}
