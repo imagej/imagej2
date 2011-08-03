@@ -35,9 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.ext.module.Module;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
+import java.util.Map;
+import net.imglib2.img.ImgPlus;
 
 /**
  * A test of {@link PluginService#run}.
@@ -62,8 +66,10 @@ public class InvokePluginTest implements ImageJPlugin {
 		final String fillType = "Ramp";
 		final int width = 512;
 		final int height = 512;
-		pluginService.run("imagej.io.plugins.NewImage", true, name, bitDepth,
+		Module module  = pluginService.run("imagej.io.plugins.NewImage", true, name, bitDepth,
 			signed, floating, fillType, width, height);
+		Dataset dataset = (Dataset) module.getOutput("dataset");
+		ImgPlus imp = dataset.getImgPlus();
 	}
 
 }
