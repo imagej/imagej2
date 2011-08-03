@@ -128,10 +128,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-				if (!willRebuildImgWindow) {
-					imgWindow.update();
-				}
-				else { // rebuild image window
+				if (willRebuildImgWindow) {
 					// NB - if pan to be reset below we'll be zoomed on wrong part of
 					// image
 					imgCanvas.setZoom(0); // original scale
@@ -139,9 +136,9 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 					// Must happen after setZoom() call
 					imgCanvas.panReset();
 					imgWindow.redoLayout();
-					imgWindow.update();
 					willRebuildImgWindow = false;
 				}
+				imgWindow.update();
 				for (final DisplayView view : getViews()) {
 					view.update();
 				}
