@@ -41,7 +41,6 @@ import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.Events;
-import imagej.util.IntRect;
 import imagej.util.Log;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -99,30 +98,10 @@ public class Dataset extends AbstractDataObject implements
 	private boolean isDirty;
 	private Extents extents;
 
-	// FIXME TEMP - the current selection for this Dataset. Temporarily located
-	// here for plugin testing purposes. Really should be viewcentric.
-	private IntRect selection;
-
-	public void setSelection(final int minX, final int minY, final int maxX,
-		final int maxY)
-	{
-		selection.x = minX;
-		selection.y = minY;
-		selection.width = maxX - minX + 1;
-		selection.height = maxY - minY + 1;
-	}
-
-	public IntRect getSelection() {
-		return selection;
-	}
-
-	// END FIXME TEMP
-
 	public Dataset(final ImgPlus<? extends RealType<?>> imgPlus) {
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;
-		selection = new IntRect();
 		extents = extents(imgPlus);
 	}
 
@@ -154,7 +133,6 @@ public class Dataset extends AbstractDataObject implements
 		
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
-		selection = new IntRect();
 
 		if (wasRgbMerged) {
 			if ((isSigned()) ||
