@@ -34,11 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.neigh;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.RealRect;
 
 /**
  * Runs the Find Edges plugin
@@ -53,7 +58,7 @@ public class FindEdges implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	private Display display;
 
 	// -- public interface --
 
@@ -61,8 +66,10 @@ public class FindEdges implements ImageJPlugin {
 	 * Sets the output Dataset to the result of the find edges operation */
 	@Override
 	public void run() {
+		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		RealRect selection = ImageJ.get(OverlayService.class).getSelectionBounds(display);
 		Neighborhood3x3Operation operation =
-			new Neighborhood3x3Operation(input, new FindEdgesWatcher(input));
+			new Neighborhood3x3Operation(input, selection, new FindEdgesWatcher(input));
 		operation.run();
 	}
 

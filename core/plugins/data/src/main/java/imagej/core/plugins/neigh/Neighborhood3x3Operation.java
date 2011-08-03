@@ -38,6 +38,7 @@ import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.util.IntRect;
+import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
@@ -59,15 +60,16 @@ public class Neighborhood3x3Operation {
 	private Dataset input;
 	private Img<? extends RealType<?>> inputImage;
 	private Img<? extends RealType<?>> inputImageCopy;
-	private IntRect selection;
+	private RealRect selection;
 	private Neighborhood3x3Watcher watcher;
 
 	// -- constructor --
 
-	public Neighborhood3x3Operation(Dataset input, Neighborhood3x3Watcher watcher)
+	public Neighborhood3x3Operation(Dataset input, RealRect selection, Neighborhood3x3Watcher watcher)
 	{
 		this.input = input;
 		this.watcher = watcher;
+		this.selection = selection;
 
 		if (watcher == null) throw new IllegalArgumentException(
 			"neighborhood watcher cannot be null!");
@@ -103,7 +105,6 @@ public class Neighborhood3x3Operation {
 	{
 		inputImage = input.getImgPlus();
 		inputImageCopy = cloneImage(inputImage);
-		selection = input.getSelection();
 	}
 
 	private void runAssignment()
@@ -158,9 +159,13 @@ public class Neighborhood3x3Operation {
 			localInputPosition[i] = planePos.getLongPosition(i-2);
 		}
 
-		for (long y = selection.y; y < selection.height; y++) {
+		long minX = (long) selection.x;
+		long minY = (long) selection.y;
+		long width = (long) selection.width;
+		long height = (long) selection.height;
+		for (long y = minY; y < minY+height; y++) {
 			inputPosition[1] = y;
-			for (long x = selection.x; x < selection.width; x++) {
+			for (long x = minX; x < minX+width; x++) {
 				inputPosition[0] = x;
 				watcher.initializeNeighborhood(inputPosition);
 	

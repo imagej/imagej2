@@ -37,6 +37,7 @@ package imagej.core.plugins.convolve;
 import imagej.core.plugins.neigh.Neighborhood3x3Operation;
 import imagej.core.plugins.neigh.Neighborhood3x3Watcher;
 import imagej.data.Dataset;
+import imagej.util.RealRect;
 
 /**
  * Convolve3x3Operation is used for general 3x3 convolution. It takes a 3x3
@@ -68,10 +69,10 @@ public class Convolve3x3Operation {
 	 * Constructor. takes an input Dataset and a kernel that will be used to
 	 * calculate data values.
 	 */
-	public Convolve3x3Operation(final Dataset input, final double[] kernel) {
+	public Convolve3x3Operation(final Dataset input, RealRect selection, final double[] kernel) {
 		this.kernel = kernel;
 		this.neighOperation =
-			new Neighborhood3x3Operation(input, new ConvolveWatcher(input));
+			new Neighborhood3x3Operation(input, selection, new ConvolveWatcher(input));
 
 		if (kernel.length != 9) throw new IllegalArgumentException(
 			"kernel must contain nine elements (shaped 3x3)");
