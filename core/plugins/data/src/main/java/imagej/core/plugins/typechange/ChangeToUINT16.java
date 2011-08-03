@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -49,7 +48,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Unsigned 16-bit", weight = 204) })
-public class ChangeToUINT16 extends TypeChanger implements ImageJPlugin {
+public class ChangeToUINT16 extends TypeChanger {
 
 	@Override
 	public void run() {

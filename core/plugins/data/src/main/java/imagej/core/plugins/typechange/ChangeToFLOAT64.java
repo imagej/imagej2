@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -48,7 +47,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Float 64-bit", weight = 207) })
-public class ChangeToFLOAT64 extends TypeChanger implements ImageJPlugin {
+public class ChangeToFLOAT64 extends TypeChanger {
 
 	@Override
 	public void run() {

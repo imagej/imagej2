@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.integer.ByteType;
@@ -48,7 +47,7 @@ import net.imglib2.type.numeric.integer.ByteType;
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Signed 8-bit", weight = 208) })
-public class ChangeToINT8 extends TypeChanger implements ImageJPlugin {
+public class ChangeToINT8 extends TypeChanger {
 
 	@Override
 	public void run() {

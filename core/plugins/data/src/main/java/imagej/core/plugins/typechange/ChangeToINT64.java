@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.integer.LongType;
@@ -49,7 +48,7 @@ import net.imglib2.type.numeric.integer.LongType;
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Signed 64-bit", weight = 211) })
-public class ChangeToINT64 extends TypeChanger implements ImageJPlugin {
+public class ChangeToINT64 extends TypeChanger {
 
 	@Override
 	public void run() {
