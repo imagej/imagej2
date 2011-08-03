@@ -40,6 +40,7 @@ import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,13 +56,15 @@ import java.util.Map;
  * @author Curtis Rueden
  * @see MenuCreator
  */
-public class ShadowMenu implements Comparable<ShadowMenu> {
+public class ShadowMenu implements Comparable<ShadowMenu>,
+	Collection<ModuleInfo>
+{
 
 	private static final String DEFAULT_ICON_PATH = "/icons/plugin.png";
 
 	private final PluginService pluginService;
 
-	private final ModuleInfo info;
+	private final ModuleInfo moduleInfo;
 
 	private final int menuDepth;
 
@@ -77,28 +80,33 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		final Collection<? extends ModuleInfo> modules)
 	{
 		this(pluginService, null, -1);
-		for (final ModuleInfo entry : modules) {
-			addChild(entry);
-		}
+		addAll(modules);
 	}
 
 	private ShadowMenu(final PluginService pluginService, final ModuleInfo info,
 		final int menuDepth)
 	{
 		this.pluginService = pluginService;
-		this.info = info;
+		this.moduleInfo = info;
 		this.menuDepth = menuDepth;
 		children = new HashMap<String, ShadowMenu>();
 	}
 
+	// -- ShadowMenu methods --
+
+	/**
+	 * Gets the {@link PluginService} used to execute this menu's linked module.
+	 */
 	public PluginService getPluginService() {
 		return pluginService;
 	}
 
-	public ModuleInfo getInfo() {
-		return info;
+	/** Gets the module linked to this menu. */
+	public ModuleInfo getModuleInfo() {
+		return moduleInfo;
 	}
 
+	/** Gets this menu's index into its linked module's {@link MenuEntry}. */
 	public int getMenuDepth() {
 		return menuDepth;
 	}
@@ -111,43 +119,44 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		return childMenus;
 	}
 
+	/** Returns true if this menu has no children. */
 	public boolean isLeaf() {
 		return children.isEmpty();
 	}
 
+	/** Returns true if this menu is selectable (checkbox or radio button). */
 	public boolean isToggle() {
-		if (info == null) return false;
-		return info.isSelectable();
+		if (moduleInfo == null) return false;
+		return moduleInfo.isSelectable();
 	}
 
+	/** Returns true if this menu is a checkbox. */
 	public boolean isCheckBox() {
 		if (!isToggle()) return false;
-		final String selectionGroup = info.getSelectionGroup();
+		final String selectionGroup = moduleInfo.getSelectionGroup();
 		return selectionGroup == null || selectionGroup.isEmpty();
 	}
 
+	/** Returns true if this menu is a radio button. */
 	public boolean isRadioButton() {
 		if (!isToggle()) return false;
-		final String selectionGroup = info.getSelectionGroup();
+		final String selectionGroup = moduleInfo.getSelectionGroup();
 		return selectionGroup != null && !selectionGroup.isEmpty();
 	}
 
-	public void addChild(final ModuleInfo child) {
-		if (child.getMenuPath().isEmpty()) return; // no menu
-		addChild(child, 0);
-	}
-
+	/** Gets the {@link MenuEntry} associated with this menu. */
 	public MenuEntry getMenuEntry() {
-		return info.getMenuPath().get(menuDepth);
+		return moduleInfo.getMenuPath().get(menuDepth);
 	}
 
+	/** Gets the URL of the icon associated with this menu's {@link MenuEntry}. */
 	public URL getIconURL() {
 		String iconPath = getMenuEntry().getIconPath();
 		if (iconPath == null || iconPath.isEmpty()) {
 			if (isLeaf()) iconPath = DEFAULT_ICON_PATH;
 			else return null;
 		}
-		final String className = info.getDelegateClassName();
+		final String className = moduleInfo.getDelegateClassName();
 		final Class<?> c = ClassUtils.loadClass(className);
 		if (c == null) return null;
 		final URL iconURL = c.getResource(iconPath);
@@ -157,8 +166,9 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		return iconURL;
 	}
 
+	/** Executes the module linked to this menu. */
 	public void run() {
-		pluginService.run(info, true);
+		pluginService.run(moduleInfo, true);
 	}
 
 	// -- Object methods --
@@ -178,6 +188,138 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 	@Override
 	public String toString() {
 		return getMenuEntry().getName();
+	}
+
+	// -- Collection methods --
+
+	@Override
+	public boolean add(final ModuleInfo o) {
+		if (o.getMenuPath().isEmpty()) return false; // no menu
+		addChild(o, 0);
+		return true;
+	}
+
+	@Override
+	public boolean addAll(final Collection<? extends ModuleInfo> c) {
+		boolean changed = false;
+		for (final ModuleInfo info : c) {
+			final boolean success = add(info);
+			if (success) changed = true;
+		}
+		return changed;
+	}
+
+	@Override
+	public void clear() {
+		children.clear();
+	}
+
+	@Override
+	public boolean contains(final Object o) {
+		if (o == moduleInfo) return true;
+		for (final ShadowMenu node : children.values()) {
+			if (node.contains(o)) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containsAll(final Collection<?> c) {
+		for (final Object o : c) {
+			if (!contains(o)) return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return children.isEmpty();
+	}
+
+	@Override
+	public ShadowMenuIterator iterator() {
+		return new ShadowMenuIterator(this);
+	}
+
+	@Override
+	public boolean remove(final Object o) {
+		if (!(o instanceof ModuleInfo)) return false;
+		final ModuleInfo info = (ModuleInfo) o;
+
+		// remove directly from children
+		if (children.remove(info) != null) return true;
+
+		// recursively remove from descendants
+		for (final ShadowMenu menu : children.values()) {
+			if (menu.remove(o)) return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean removeAll(final Collection<?> c) {
+		boolean changed = false;
+		for (final Object o : c) {
+			final boolean success = remove(o);
+			if (success) changed = true;
+		}
+		return changed;
+	}
+
+	@Override
+	public boolean retainAll(final Collection<?> c) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int size() {
+		int sum = 1;
+		for (final ShadowMenu child : children.values()) {
+			sum += child.size();
+		}
+		return sum;
+	}
+
+	@Override
+	public Object[] toArray() {
+		final Object[] a = new Object[size()];
+		return toArray(a);
+	}
+
+	@Override
+	public <T> T[] toArray(final T[] a) {
+		// ensure that the type of the specified array is valid
+		final Class<?> componentType = a.getClass().getComponentType();
+		if (!ModuleInfo.class.isAssignableFrom(componentType)) {
+			throw new ArrayStoreException();
+		}
+
+		// ensure that the destination array is of sufficient size
+		final int size = size();
+		final T[] result;
+		if (a.length >= size) {
+			// given array is big enough; use it
+			result = a;
+		}
+		else {
+			// allocate new array of sufficient size
+			final Object newArray = Array.newInstance(componentType, size);
+			@SuppressWarnings("unchecked")
+			final T[] typedArray = (T[]) newArray;
+			result = typedArray;
+		}
+
+		// copy elements into destination array
+		int index = 0;
+		final ShadowMenuIterator iter = iterator();
+		while (iter.hasNext()) {
+			@SuppressWarnings("unchecked")
+			final T element = (T) iter.next();
+			result[index++] = element;
+		}
+
+		return result;
 	}
 
 	// -- Helper methods --
