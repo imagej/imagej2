@@ -76,11 +76,7 @@ public interface Display extends IPlugin, Named, LabeledAxes, EuclideanSpace {
 	/** Updates and redraws the display onscreen. */
 	void update();
 
-	/**
-	 * Adds a view to this display.
-	 * 
-	 * @see DisplayView
-	 */
+	/** Adds a view to this display. */
 	void addView(DisplayView view);
 
 	/** Removes a view from this display. */
