@@ -35,14 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.util.IntRect;
+import imagej.util.RealRect;
 import net.imglib2.ops.function.p1.UnaryOperatorFunction;
 import net.imglib2.ops.operator.UnaryOperator;
 
 /**
- * Helper class for use by many plugins that apply a UnaryOperator to some input
- * image. the run() method returns the output image that is the result of such a
- * pixel by pixel application.
+ * Helper class for use by some plugins that apply a UnaryOperator to an input
+ * image and store results in an output image. The output image values are set
+ * via pixel by pixel application of the operator to the input image.
  * 
  * @author Barry DeZonia
  */
@@ -54,13 +54,12 @@ public class UnaryTransformation {
 
 	// -- constructor --
 
-	public UnaryTransformation(final Dataset input, final Dataset output,
-		final UnaryOperator operator)
+	public UnaryTransformation(Dataset input, Dataset output,
+		UnaryOperator operator, RealRect selection)
 	{
 		final UnaryOperatorFunction function = new UnaryOperatorFunction(operator);
 		operation = new NAryOperation(input, function);
 		operation.setOutput(output);
-		final IntRect selection = input.getSelection();
 		final long[] dimensions = new long[input.getImgPlus().numDimensions()];
 		input.getImgPlus().dimensions(dimensions);
 		setRegion(dimensions, selection);
@@ -68,14 +67,17 @@ public class UnaryTransformation {
 
 	// -- public interface --
 
-	public void setRegion(final long[] fullDimensions, final IntRect selection) {
+	public void setRegion(long[] fullDimensions, RealRect selection)
+	{
 		if (selection == null) return;
 		final long[] origin = new long[fullDimensions.length];
-		origin[0] = selection.x;
-		origin[1] = selection.y;
-		final long[] span = fullDimensions.clone();
-		if (selection.width > 0) span[0] = selection.width;
-		if (selection.height > 0) span[1] = selection.height;
+		origin[0] = (long) selection.x;
+		origin[1] = (long) selection.y;
+		long[] span = fullDimensions.clone();
+		if (selection.width > 0)
+			span[0] = (long) selection.width;
+		if (selection.height > 0)
+			span[1] = (long) selection.height;
 		operation.setInputRegion(0, origin, span);
 		operation.setOutputRegion(origin, span);
 	}
