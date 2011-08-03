@@ -36,7 +36,7 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.ImageWindow;
+import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -180,13 +180,15 @@ public class LegacyPlugin implements ImageJPlugin {
 		// the IJ1 plugin may not have any outputs but just changes current
 		// ImagePlus make sure we catch any changes via harmonization
 		final List<Display> displays = new ArrayList<Display>();
-		final ImagePlus currImp = IJ.getImage();
-		Display display = map.lookupDisplay(currImp);
-		if (display != null) { 
-			harmonizer.updateDisplay(display, currImp);
-		} else {
-			display = map.registerLegacyImage(currImp);
-			displays.add(display);
+		final ImagePlus currImp = WindowManager.getCurrentImage();
+		if (currImp != null) {
+			Display display = map.lookupDisplay(currImp);
+			if (display != null) { 
+				harmonizer.updateDisplay(display, currImp);
+			} else {
+				display = map.registerLegacyImage(currImp);
+				displays.add(display);
+			}
 		}
 
 		// also harmonize any outputs
@@ -198,7 +200,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				// TODO - do we need to delete display or is it already done?
 			}
 			else { // image plus is not totally empty
-				display = map.lookupDisplay(imp);
+				Display display = map.lookupDisplay(imp);
 				if (display == null) {
 					if (imp.getWindow() != null) {
 						display = map.registerLegacyImage(imp);
