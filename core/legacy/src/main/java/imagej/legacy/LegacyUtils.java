@@ -1183,6 +1183,14 @@ public final class LegacyUtils {
 		final DisplayView dispView = disp.getActiveView();
 		if (dispView == null) return;
 		final DatasetView dsView = (DatasetView) dispView;
+		boolean grayscale = true;
+		for (ColorTable<?> table : colorTables) {
+			if (!isGray(table)) {
+				grayscale = false;
+				break;
+			}
+		}
+		dsView.resetColorTables(grayscale);
 		for (int i = 0; i < colorTables.size(); i++)
 			dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 	}
@@ -1348,4 +1356,15 @@ public final class LegacyUtils {
 		}
 	}
 
+	private static boolean isGray(ColorTable<?> table) {
+		int numChannels = table.getComponentCount();
+		int tableLen = table.getLength();
+		for (int c = 0; c < numChannels; c++) {
+			for (int i = 0; i < tableLen; i++) {
+				if (table.get(c, i) != i)
+					return false;
+			}
+		}
+		return true;
+	}
 }
