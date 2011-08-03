@@ -87,8 +87,18 @@ public class MenuService extends AbstractService {
 	// -- MenuService methods --
 
 	/** Gets the root node of the menu structure. */
-	public ShadowMenu getMenuRoot() {
+	public ShadowMenu getMenu() {
 		return rootMenu;
+	}
+
+	/**
+	 * Populates a UI-specific menu structure.
+	 * @param creator the {@link MenuCreator} to use to populate the menus.
+	 * @param menu the destination menu structure to populate.
+	 */
+	public <T> T createMenus(final MenuCreator<T> creator, T menu) {
+		creator.createMenus(rootMenu, menu);
+		return menu;
 	}
 
 	/** Selects or deselects the given module in the menu structure. */
@@ -123,6 +133,7 @@ public class MenuService extends AbstractService {
 	/** Selects or deselects the given module in the menu structure. */
 	public void setSelected(final ModuleInfo info, final boolean selected) {
 		info.setSelected(selected);
+		info.update();
 	}
 
 	// -- IService methods --

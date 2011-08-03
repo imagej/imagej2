@@ -43,7 +43,7 @@ import javax.swing.JMenu;
  * 
  * @author Curtis Rueden
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public class SwingJMenuCreator extends AbstractSwingMenuCreator<JMenu> {
 
 	@Override
 	protected void addLeafToTop(final ShadowMenu shadow, final JMenu target) {

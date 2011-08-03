@@ -37,6 +37,7 @@ package imagej.ui;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.PluginService;
 import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
@@ -59,6 +60,7 @@ public final class UIService extends AbstractService {
 
 	private final PlatformService platformService;
 	private final PluginService pluginService;
+	private final MenuService menuService;
 	private final ToolService toolService;
 
 	/** The active user interface. */
@@ -75,12 +77,14 @@ public final class UIService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public UIService(final ImageJ context, final PlatformService platformService,
-		final PluginService pluginService, final ToolService toolService)
+	public UIService(final ImageJ context,
+		final PlatformService platformService, final PluginService pluginService,
+		final MenuService menuService, final ToolService toolService)
 	{
 		super(context);
 		this.platformService = platformService;
 		this.pluginService = pluginService;
+		this.menuService = menuService;
 		this.toolService = toolService;
 	}
 
@@ -92,6 +96,10 @@ public final class UIService extends AbstractService {
 
 	public PluginService getPluginService() {
 		return pluginService;
+	}
+
+	public MenuService getMenuService() {
+		return menuService;
 	}
 
 	public ToolService getToolService() {

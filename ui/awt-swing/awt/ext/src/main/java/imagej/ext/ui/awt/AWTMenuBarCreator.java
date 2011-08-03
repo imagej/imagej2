@@ -1,5 +1,5 @@
 //
-// MenuCreator.java
+// MenuBarCreator.java
 //
 
 /*
@@ -35,31 +35,35 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.ui.awt;
 
 import imagej.ext.menu.ShadowMenu;
+import imagej.util.Log;
 
 import java.awt.Menu;
-
-// CTR TODO - Rename to avoid conflict with imagej.module.ui.menu.MenuCreator.
+import java.awt.MenuBar;
 
 /**
- * Populates an AWT {@link Menu} with menu items from a {@link ShadowMenu}.
+ * Populates an AWT {@link MenuBar} with menu items from a {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
  */
-public class MenuCreator extends AWTMenuCreator<Menu> {
+public class AWTMenuBarCreator extends AbstractAWTMenuCreator<MenuBar> {
 
 	@Override
-	protected void addLeafToTop(final ShadowMenu shadow, final Menu target) {
-		addLeafToMenu(shadow, target);
+	protected void addLeafToTop(final ShadowMenu shadow, final MenuBar target) {
+		Log.warn("MenuBarCreator: Ignoring top-level leaf: " + shadow);
 	}
 
 	@Override
-	protected Menu addNonLeafToTop(final ShadowMenu shadow, final Menu target) {
-		return addNonLeafToMenu(shadow, target);
+	protected Menu
+		addNonLeafToTop(final ShadowMenu shadow, final MenuBar target)
+	{
+		final Menu menu = createNonLeaf(shadow);
+		target.add(menu);
+		return menu;
 	}
 
 	@Override
-	protected void addSeparatorToTop(final Menu target) {
-		addSeparatorToMenu(target);
+	protected void addSeparatorToTop(final MenuBar target) {
+		Log.warn("MenuBarCreator: Ignoring top-level separator");
 	}
 
 }

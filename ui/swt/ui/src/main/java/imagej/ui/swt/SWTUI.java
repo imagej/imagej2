@@ -36,8 +36,7 @@ package imagej.ui.swt;
 
 import imagej.ImageJ;
 import imagej.event.Events;
-import imagej.ext.menu.ShadowMenu;
-import imagej.ext.plugin.PluginService;
+import imagej.ext.menu.MenuService;
 import imagej.ext.ui.swt.SWTMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.DialogPrompt;
@@ -76,7 +75,7 @@ public class SWTUI implements UserInterface, Runnable {
 		shell.setText("ImageJ");
 		toolBar = new SWTToolBar(display, shell);
 		statusBar = new SWTStatusBar(shell);
-		createMenuBar();
+		createMenus();
 
 		shell.pack();
 		shell.open();
@@ -123,12 +122,10 @@ public class SWTUI implements UserInterface, Runnable {
 
 	// -- Helper methods --
 
-	private void createMenuBar() {
-		// CTR FIXME - rework this
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		final ShadowMenu rootMenu = new ShadowMenu(pluginService);
-		final Menu menuBar = new Menu(shell);
-		new SWTMenuCreator().createMenus(rootMenu, menuBar);
+	private void createMenus() {
+		final MenuService menuService = ImageJ.get(MenuService.class);
+		final Menu menuBar =
+			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
 		shell.setMenuBar(menuBar); // TODO - is this necessary?
 		Events.publish(new AppMenusCreatedEvent(menuBar));
 	}

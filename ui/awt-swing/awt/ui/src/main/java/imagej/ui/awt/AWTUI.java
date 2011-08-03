@@ -36,9 +36,8 @@ package imagej.ui.awt;
 
 import imagej.ImageJ;
 import imagej.event.Events;
-import imagej.ext.menu.ShadowMenu;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.ui.awt.MenuBarCreator;
+import imagej.ext.menu.MenuService;
+import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -72,7 +71,7 @@ public class AWTUI implements UserInterface {
 		frame = new Frame("ImageJ");
 		toolBar = new AWTToolBar();
 		statusBar = new AWTStatusBar();
-		createMenuBar();
+		createMenus();
 
 		frame.setLayout(new BorderLayout());
 		frame.addWindowListener(new WindowAdapter() {
@@ -119,12 +118,10 @@ public class AWTUI implements UserInterface {
 
 	// -- Helper methods --
 
-	private void createMenuBar() {
-		// CTR FIXME - rework this
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		final ShadowMenu rootMenu = new ShadowMenu(pluginService);
-		final MenuBar menuBar = new MenuBar();
-		new MenuBarCreator().createMenus(rootMenu, menuBar);
+	private void createMenus() {
+		final MenuService menuService = ImageJ.get(MenuService.class);
+		final MenuBar menuBar =
+			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
 		frame.setMenuBar(menuBar);
 		Events.publish(new AppMenusCreatedEvent(menuBar));
 	}
