@@ -34,7 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.ext.menu.MenuService;
+import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -53,7 +56,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class TypeChanger {
+public abstract class TypeChanger implements ImageJPlugin {
 
 	@Parameter(required = true)
 	protected Dataset input;
@@ -62,6 +65,7 @@ public class TypeChanger {
 		final T newType)
 	{
 		changeType(input, newType);
+		ImageJ.get(MenuService.class).setSelected(this, true);
 	}
 
 	/**
@@ -75,8 +79,8 @@ public class TypeChanger {
 		final Class<?> currTypeClass = dataset.getType().getClass();
 		final Class<?> newTypeClass = newType.getClass();
 		if ((currTypeClass != newTypeClass) || (dataset.isRGBMerged())) {
-			boolean wasRGBMerged = dataset.isRGBMerged();
-			dataset.setImgPlus(copyToType(inputImg,newType));
+			final boolean wasRGBMerged = dataset.isRGBMerged();
+			dataset.setImgPlus(copyToType(inputImg, newType));
 			if (wasRGBMerged) {
 				dataset.setRGBMerged(false);
 				dataset.setCompositeChannelCount(1);
@@ -89,20 +93,21 @@ public class TypeChanger {
 	 * output {@link Img}'s data from the input {@link Img} (which is likely of a
 	 * different data type). Output data is range clamped.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends RealType<T> & NativeType<T>>
-	ImgPlus<? extends RealType<?>> copyToType(
-		final ImgPlus<? extends RealType<?>> inputImg, final T newType)
+		ImgPlus<? extends RealType<?>> copyToType(
+			final ImgPlus<? extends RealType<?>> inputImg, final T newType)
 	{
-		ImgFactory<? extends RealType<?>> factory = inputImg.factory();
-		return copyToType(inputImg, newType, (ImgFactory<T>)factory);
+		final ImgFactory<? extends RealType<?>> factory = inputImg.factory();
+		@SuppressWarnings("unchecked")
+		final ImgFactory<T> typedFactory = (ImgFactory<T>) factory;
+		return copyToType(inputImg, newType, typedFactory);
 	}
 
 	/**
 	 * Creates an ImgLib {@link Img} of the given type using the specified
 	 * {@link ImgFactory}. It populates the output {@link Img}'s data from the
-	 * input {@link Img} (which is likely of a different data type). Output
-	 * data is range clamped.
+	 * input {@link Img} (which is likely of a different data type). Output data
+	 * is range clamped.
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> copyToType(
 		final ImgPlus<? extends RealType<?>> inputImg, final T newType,
@@ -117,9 +122,9 @@ public class TypeChanger {
 
 		final double outTypeMin = out.get().getMinValue();
 		final double outTypeMax = out.get().getMaxValue();
-		
-		final boolean inputIs1bit = in.get().getBitsPerPixel() == 1;
-		
+
+		final boolean inputIs1Bit = in.get().getBitsPerPixel() == 1;
+
 		final long[] pos = new long[dims.length];
 		while (in.hasNext()) {
 			in.fwd();
@@ -128,8 +133,7 @@ public class TypeChanger {
 			double value = in.get().getRealDouble();
 			if (value < outTypeMin) value = outTypeMin;
 			if (value > outTypeMax) value = outTypeMax;
-			if ((inputIs1bit) && (value > 0))
-				value = outTypeMax;
+			if (inputIs1Bit && value > 0) value = outTypeMax;
 			out.get().setReal(value);
 		}
 
