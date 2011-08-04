@@ -23,6 +23,7 @@
 		<module>data</module>
 		<module>display</module>
 		<module>ext</module>
+		<module>io</module>
 		<module>legacy</module>
 		<module>platform</module>
 		<module>plugins</module>
