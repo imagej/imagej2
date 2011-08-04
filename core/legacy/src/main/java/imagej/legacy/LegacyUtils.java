@@ -47,7 +47,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.display.ColorMode;
 import imagej.display.ColorTables;
 import imagej.display.DatasetView;
 import imagej.display.Display;
@@ -1149,7 +1148,7 @@ public final class LegacyUtils {
 	}
 
 	/** Returns true if an {@link ImagePlus} is of type GRAY32. */
-	private static boolean isGray32(final ImagePlus imp) {
+	private static boolean isGray32PixelType(final ImagePlus imp) {
 		final int type = imp.getType();
 		return type == ImagePlus.GRAY32;
 	}
@@ -1157,12 +1156,12 @@ public final class LegacyUtils {
 	/** Returns true if an {@link ImagePlus} is backed by a signed type. */
 	private static boolean isSigned(final ImagePlus imp) {
 		// TODO - ignores IJ1's support of signed 16 bit. OK?
-		return isGray32(imp);
+		return isGray32PixelType(imp);
 	}
 
 	/** Returns true if an {@link ImagePlus} is backed by a floating type. */
 	private static boolean isFloating(final ImagePlus imp) {
-		return isGray32(imp);
+		return isGray32PixelType(imp);
 	}
 
 	/** Formats an error message. */
@@ -1188,7 +1187,7 @@ public final class LegacyUtils {
 		final DatasetView dsView = (DatasetView) dispView;
 		boolean grayscale = true;
 		for (ColorTable<?> table : colorTables) {
-			if (!isGray(table)) {
+			if (!isGrayColorTable(table)) {
 				grayscale = false;
 				break;
 			}
@@ -1212,12 +1211,15 @@ public final class LegacyUtils {
 		if (luts == null) { // not a CompositeImage
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
 				for (int i = 0; i < imp.getNChannels(); i++) {
-					colorTables.add(ColorTables.RED);
-					colorTables.add(ColorTables.GREEN);
-					colorTables.add(ColorTables.BLUE);
+					ColorTable<?> cTable = ColorTables.getDefaultColorTable(i);
+					//if (isGrayColorTable(cTable))
+					//	System.out.println("colorTablesFromImagePlus() - COLOR_RGB case : gray color table for channel "+i);
+					colorTables.add(cTable);
 				}
 			}
 			else { // not a direct color model image
+				//if (imp.getProcessor().getColorModel() != imp.getProcessor().getCurrentColorModel())
+				//	System.out.println("must decide correct call to get color model");
 				final IndexColorModel icm =
 					(IndexColorModel) imp.getProcessor().getColorModel();
 				ColorTable<?> cTable;
@@ -1225,6 +1227,8 @@ public final class LegacyUtils {
 //					cTable = make16BitColorTable(icm);
 //				else // 8 bit color table
 				cTable = make8BitColorTable(icm);
+				//if (isGrayColorTable(cTable))
+				//	System.out.println("colorTablesFromImagePlus() - Single LUT case : gray color table");
 				colorTables.add(cTable);
 			}
 		}
@@ -1235,6 +1239,8 @@ public final class LegacyUtils {
 //					cTable = make16BitColorTable(luts[i]);
 //				else // 8 bit color table
 				cTable = make8BitColorTable(luts[i]);
+				//if (isGrayColorTable(cTable))
+				//	System.out.println("colorTablesFromImagePlus() - CompositeImage case : gray color table for channel "+i);
 				colorTables.add(cTable);
 			}
 		}
@@ -1297,7 +1303,7 @@ public final class LegacyUtils {
 			boolean allGrayLuts = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable8 cTable = cTables.get(i);
-				if ((allGrayLuts) && (!isGray(cTable))) allGrayLuts = false;
+				if ((allGrayLuts) && (!isGrayColorTable(cTable))) allGrayLuts = false;
 				final LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
@@ -1322,7 +1328,7 @@ public final class LegacyUtils {
 	}
 
 	/** Tests whether a ColorTable is a gray ramp */
-	private static boolean isGray(ColorTable<?> table) {
+	private static boolean isGrayColorTable(ColorTable<?> table) {
 		if (table == ColorTables.GRAYS) return true;
 		int numChannels = table.getComponentCount();
 		int tableLen = table.getLength();
