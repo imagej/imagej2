@@ -78,7 +78,6 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display display = displayService.createDisplay(ds);
 
-		// TODO operate on display instead of dataset here
 		LegacyUtils.setDisplayLuts(display, imp);
 
 		return display;
