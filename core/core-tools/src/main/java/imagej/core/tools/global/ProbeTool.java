@@ -57,6 +57,7 @@ import imagej.util.RealCoords;
 import java.util.ArrayList;
 
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Axes;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
@@ -78,6 +79,7 @@ public class ProbeTool extends AbstractTool {
 	private long[] position;
 	private ArrayList<EventSubscriber<?>> subscribers;
 	private final DisplayService displayService;
+	private int xAxis, yAxis;
 
 	// -- constructor --
 
@@ -104,12 +106,23 @@ public class ProbeTool extends AbstractTool {
 			final Dataset d = displayService.getActiveDataset(display);
 			setWorkingVariables(d);
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
+			// note - can't use getIntX() and getIntY() since they round and can
+			// take the integer coords out of the image bounds. Exceptions happen
+			//final int cx = (int) Math.floor(coords.x);
+			//final int cy = (int) Math.floor(coords.y);
+			// The previous attempt did not fix things. There is a scaling issue
+			// in the canvas that needs to be figured out.
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
 			final Position planePos = activeView.getPlanePosition();
-			fillCurrentPosition(cx, cy, planePos);
+			fillCurrentPosition(position, cx, cy, planePos);
 			randomAccess.setPosition(position);
-			final double doubleValue = randomAccess.get().getRealDouble();
+			double doubleValue = 0;
+			try {
+				doubleValue = randomAccess.get().getRealDouble();
+			} catch (Exception e) {
+				System.out.println("Exception happened with position "+position[xAxis]+","+position[yAxis]+","+planePos.getLongPosition(0));
+			}
 			final String statusMessage;
 			if (dataset.isInteger()) {
 				statusMessage =
@@ -134,6 +147,8 @@ public class ProbeTool extends AbstractTool {
 		position = null;
 		randomAccess = null;
 		dataset = null;
+		xAxis = Integer.MIN_VALUE;
+		yAxis = Integer.MIN_VALUE;
 	}
 
 	private void setWorkingVariables(final Dataset d) {
@@ -144,17 +159,20 @@ public class ProbeTool extends AbstractTool {
 			randomAccess = image.randomAccess();
 			position = new long[image.numDimensions()];
 			randomAccess.localize(position);
+			xAxis = dataset.getAxisIndex(Axes.X);
+			yAxis = dataset.getAxisIndex(Axes.Y);
 		}
 	}
 
-	private void fillCurrentPosition(final long x, final long y,
+	private void fillCurrentPosition(final long[] pos,
+		final long x, final long y,
 		final Position planePos)
 	{
-		// TODO - FIXME - assumes x & y axes are first two
-		position[0] = x;
-		position[1] = y;
-		for (int i = 2; i < position.length; i++) {
-			position[i] = planePos.getLongPosition(i - 2);
+		int d = 0;
+		for (int i = 0; i < pos.length; i++) {
+			if (i == xAxis) pos[i] = x;
+			else if (i == yAxis) pos[i] = y;
+			else pos[i] = planePos.getLongPosition(d++);
 		}
 	}
 
