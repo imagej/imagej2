@@ -36,6 +36,7 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.event.Events;
+import imagej.event.FileOpenedEvent;
 import imagej.event.StatusEvent;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -82,6 +83,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 			imageOpener.addStatusListener(this);
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
 			dataset = new Dataset(imgPlus);
+			Events.publish(new FileOpenedEvent(id));
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);
