@@ -88,7 +88,7 @@ public class AddAxis extends DynamicPlugin {
 
 		final DefaultModuleItem<Long> size =
 			new DefaultModuleItem<Long>(this, SIZE_KEY, Long.class);
-		size.setMinimumValue(1L);
+		size.setMinimumValue(2L);
 		addInput(size);
 	}
 
