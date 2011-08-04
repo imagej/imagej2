@@ -61,7 +61,7 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * TODO
+ * Displays pixel values under the cursor.
  * 
  * @author Barry DeZonia
  * @author Rick Lentz
