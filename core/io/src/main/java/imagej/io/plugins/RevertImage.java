@@ -51,7 +51,7 @@ import net.imglib2.type.numeric.RealType;
  */
 @Plugin(menu = {
 	@Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Revert", weight = 20, mnemonic = 'r',
+	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
 		accelerator = "control R") })
 public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
