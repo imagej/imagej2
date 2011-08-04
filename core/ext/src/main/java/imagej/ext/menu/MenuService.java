@@ -86,6 +86,14 @@ public class MenuService extends AbstractService {
 
 	// -- MenuService methods --
 
+	public EventService getEventService() {
+		return eventService;
+	}
+
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
 	/** Gets the root node of the menu structure. */
 	public ShadowMenu getMenu() {
 		return rootMenu;
@@ -140,7 +148,7 @@ public class MenuService extends AbstractService {
 
 	@Override
 	public void initialize() {
-		rootMenu = new ShadowMenu(pluginService);
+		rootMenu = new ShadowMenu(this);
 		subscribeToEvents();
 	}
 
@@ -154,7 +162,7 @@ public class MenuService extends AbstractService {
 
 				@Override
 				public void onEvent(final ModulesAddedEvent event) {
-					// TODO
+					getMenu().addAll(event.getItems());
 				}
 			};
 		subscribers.add(modulesAddedSubscriber);
@@ -165,7 +173,7 @@ public class MenuService extends AbstractService {
 
 				@Override
 				public void onEvent(final ModulesRemovedEvent event) {
-					// TODO
+					getMenu().removeAll(event.getItems());
 				}
 			};
 		subscribers.add(modulesRemovedSubscriber);
@@ -177,7 +185,7 @@ public class MenuService extends AbstractService {
 
 				@Override
 				public void onEvent(final ModuleUpdatedEvent event) {
-					// TODO
+					getMenu().update(event.getModule());
 				}
 			};
 		subscribers.add(moduleUpdatedSubscriber);
