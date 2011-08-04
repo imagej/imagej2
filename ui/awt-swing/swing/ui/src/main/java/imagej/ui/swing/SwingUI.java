@@ -132,6 +132,12 @@ public class SwingUI implements UserInterface {
 	}
 
 	@Override
+	public void createMenus() {
+		final JMenuBar menuBar = createMenuBar(frame);
+		Events.publish(new AppMenusCreatedEvent(menuBar));
+	}
+
+	@Override
 	public SwingToolBar getToolBar() {
 		return toolBar;
 	}
@@ -142,11 +148,6 @@ public class SwingUI implements UserInterface {
 	}
 
 	// -- Helper methods --
-
-	private void createMenus() {
-		final JMenuBar menuBar = createMenuBar(frame);
-		Events.publish(new AppMenusCreatedEvent(menuBar));
-	}
 
 	/**
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
