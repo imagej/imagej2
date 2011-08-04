@@ -38,9 +38,11 @@ import imagej.display.event.DisplayEvent;
 import imagej.display.event.DisplayViewEvent;
 import imagej.display.event.key.KyEvent;
 import imagej.display.event.mouse.MsEvent;
+import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
+import imagej.event.StatusEvent;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
@@ -83,12 +85,10 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 
 	@Override
 	public void onEvent(final ImageJEvent evt) {
-//		if (evt instanceof ImageJEvent) {
-//			emitMessage("Event: " + evt.getClass());
-//			showFields(evt);
-//		} 
+		if (!(evt instanceof StatusEvent) && !(evt instanceof MsMovedEvent)) {
+			showClass(evt);
+		}
 		if (ModuleEvent.class.isAssignableFrom(evt.getClass())) {
-			emitMessage(evt.getClass().getSimpleName());
 			if (evt instanceof ModulePreprocessEvent) {
 				final ModulePreprocessEvent e = (ModulePreprocessEvent) evt;
 				emitMessage("  >> PreProcessor: " +
@@ -112,22 +112,18 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 		}
 		if (evt instanceof DisplayEvent) {
 			if (!(evt instanceof MsEvent) && !(evt instanceof KyEvent)) {
-				showClass(evt);
 				showFields(evt);
 				emitMessage("    DisplayName: " +
 					((DisplayEvent) evt).getDisplay().getName());
 			}
 		}
 		if (evt instanceof DisplayViewEvent) {
-			showClass(evt);
 			showFields(evt);
 		}
 		if (evt instanceof ObjectEvent) {
-			showClass(evt);
 			showFields(evt);
 		}
 		if (evt instanceof ToolEvent) {
-			showClass(evt);
 			showFields(evt);
 		}
 	}
