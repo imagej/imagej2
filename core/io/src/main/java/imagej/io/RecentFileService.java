@@ -130,6 +130,8 @@ public final class RecentFileService extends AbstractService {
 
 	/** Removes a path from the list of recent files. */
 	public boolean remove(final String path) {
+		final ModuleInfo info = recentModules.remove(path);
+		if (info != null) moduleService.removeModule(info);
 		return recentFiles.remove(path);
 	}
 
