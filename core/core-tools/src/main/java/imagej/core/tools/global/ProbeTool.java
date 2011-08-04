@@ -45,6 +45,7 @@ import imagej.display.DisplayView;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
 import imagej.display.event.mouse.MsMovedEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
@@ -91,13 +92,16 @@ public class ProbeTool extends AbstractTool {
 	public void onMouseMove(final MsMovedEvent evt) {
 		final DisplayService displayService =
 			evt.getContext().getService(DisplayService.class);
+		final EventService eventService =
+			evt.getContext().getService(EventService.class);
+
 		final Display display = evt.getDisplay();
 		final ImageCanvas canvas = display.getImageCanvas();
 		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
 		// mouse not in image ?
 		if (!canvas.isInImage(mousePos)) {
 			clearWorkingVariables();
-			Events.publish(new StatusEvent(""));
+			eventService.publish(new StatusEvent(""));
 		}
 		else { // mouse is over image
 			// CTR TODO - update tool to probe more than just the active view
@@ -134,7 +138,7 @@ public class ProbeTool extends AbstractTool {
 				statusMessage =
 					String.format("x=%d, y=%d, value=%f", cx, cy, doubleValue);
 			}
-			Events.publish(new StatusEvent(statusMessage));
+			eventService.publish(new StatusEvent(statusMessage));
 		}
 	}
 
