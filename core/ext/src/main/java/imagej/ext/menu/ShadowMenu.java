@@ -345,12 +345,15 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	}
 
 	private ShadowMenu removeInternal(final ModuleInfo o) {
-		// remove directly from children
-		final ShadowMenu child = children.remove(o);
-		if (child != null) return child;
+		for (final String menuName : children.keySet()) {
+			final ShadowMenu menu = children.get(menuName);
+			// remove directly from children
+			if (menu.getModuleInfo() == o) {
+				children.remove(menuName);
+				return menu;
+			}
 
-		// recursively remove from descendants
-		for (final ShadowMenu menu : children.values()) {
+			// recursively remove from descendants
 			final ShadowMenu removed = menu.removeInternal(o);
 			if (removed != null) return removed;
 		}
