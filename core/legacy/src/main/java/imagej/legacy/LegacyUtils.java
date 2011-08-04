@@ -47,6 +47,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
+import imagej.display.ColorMode;
 import imagej.display.ColorTables;
 import imagej.display.DatasetView;
 import imagej.display.Display;
@@ -1195,6 +1196,9 @@ public final class LegacyUtils {
 		dsView.resetColorTables(grayscale);
 		for (int i = 0; i < colorTables.size(); i++)
 			dsView.setColorTable((ColorTable8) colorTables.get(i), i);
+		// force current plane to redraw
+		//ColorMode colorMode = dsView.getColorMode();
+		//dsView.setColorMode(colorMode);
 		// maybe?
 		//disp.update();
 	}
@@ -1319,6 +1323,7 @@ public final class LegacyUtils {
 
 	/** Tests whether a ColorTable is a gray ramp */
 	private static boolean isGray(ColorTable<?> table) {
+		if (table == ColorTables.GRAYS) return true;
 		int numChannels = table.getComponentCount();
 		int tableLen = table.getLength();
 		for (int c = 0; c < numChannels; c++) {
