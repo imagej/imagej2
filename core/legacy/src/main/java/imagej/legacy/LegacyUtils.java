@@ -764,7 +764,9 @@ public final class LegacyUtils {
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
 			final DisplayView activeView = disp.getActiveView();
-			if (activeView == null) setCompositeImageLutsToDefault(ci);
+			if (activeView == null) {
+				setCompositeImageLutsToDefault(ci);
+			}
 			else {
 				final DatasetView view = (DatasetView) activeView;
 				setCompositeImageLuts(ci, view.getColorTables());
@@ -1193,6 +1195,8 @@ public final class LegacyUtils {
 		dsView.resetColorTables(grayscale);
 		for (int i = 0; i < colorTables.size(); i++)
 			dsView.setColorTable((ColorTable8) colorTables.get(i), i);
+		// maybe?
+		//disp.update();
 	}
 
 	/** Creates a list of ColorTables from an ImagePlus. */
@@ -1286,15 +1290,19 @@ public final class LegacyUtils {
 			ci.setMode(CompositeImage.COMPOSITE);
 		}
 		else {
-			boolean allGreyLuts = true;
+			boolean allGrayLuts = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable8 cTable = cTables.get(i);
-				if (cTable != ColorTables.GRAYS) allGreyLuts = false;
+				if ((allGrayLuts) && (!isGray(cTable))) allGrayLuts = false;
 				final LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
-			if (allGreyLuts) ci.setMode(CompositeImage.GRAYSCALE);
-			else ci.setMode(CompositeImage.COLOR);
+			if (allGrayLuts) {
+				ci.setMode(CompositeImage.GRAYSCALE);
+			}
+			else {
+				ci.setMode(CompositeImage.COLOR);
+			}
 		}
 	}
 
@@ -1307,6 +1315,19 @@ public final class LegacyUtils {
 		final LUT lut = make8BitLut(cTable);
 		imp.getProcessor().setColorModel(lut);
 		// or imp.getStack().setColorModel(lut);
+	}
+
+	/** Tests whether a ColorTable is a gray ramp */
+	private static boolean isGray(ColorTable<?> table) {
+		int numChannels = table.getComponentCount();
+		int tableLen = table.getLength();
+		for (int c = 0; c < numChannels; c++) {
+			for (int i = 0; i < tableLen; i++) {
+				if (table.get(c, i) != i)
+					return false;
+			}
+		}
+		return true;
 	}
 
 	// -- helper classes --
@@ -1354,17 +1375,5 @@ public final class LegacyUtils {
 		public Object makePlane(final int w, final int h) {
 			return new float[w * h];
 		}
-	}
-
-	private static boolean isGray(ColorTable<?> table) {
-		int numChannels = table.getComponentCount();
-		int tableLen = table.getLength();
-		for (int c = 0; c < numChannels; c++) {
-			for (int i = 0; i < tableLen; i++) {
-				if (table.get(c, i) != i)
-					return false;
-			}
-		}
-		return true;
 	}
 }
