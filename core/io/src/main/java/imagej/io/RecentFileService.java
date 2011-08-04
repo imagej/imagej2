@@ -186,23 +186,29 @@ public final class RecentFileService extends AbstractService {
 			new PluginModuleInfo<ImageJPlugin>("imagej.io.plugins.OpenImage",
 				ImageJPlugin.class);
 
+		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();
 		presets.put("inputFile", path);
 		info.setPresets(presets);
+
+		// set menu path
+		final MenuPath menuPath = new MenuPath();
+		menuPath.add(new MenuEntry("File"));
+		menuPath.add(new MenuEntry(RECENT_MENU_NAME));
+		final MenuEntry leaf = new MenuEntry(shortPath(path));
+		menuPath.add(leaf);
+		info.setMenuPath(menuPath);
+
+		// set menu position
+		leaf.setWeight(0); // TODO - do this properly
 
 		// use the same icon as File > Open
 		final PluginService pluginService = ImageJ.get(PluginService.class);
 		final PluginModuleInfo<RunnablePlugin> fileOpen =
 			pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
 		final String iconPath = fileOpen.getIconPath();
-
-		final MenuPath menuPath = new MenuPath();
-		menuPath.add(new MenuEntry("File"));
-		menuPath.add(new MenuEntry(RECENT_MENU_NAME));
-		final MenuEntry leaf = new MenuEntry(shortPath(path));
+		info.setIconPath(iconPath);
 		leaf.setIconPath(iconPath);
-		menuPath.add(leaf);
-		info.setMenuPath(menuPath);
 
 		// register the module with the module service
 		moduleService.addModule(info);
