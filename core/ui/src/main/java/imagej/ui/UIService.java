@@ -37,7 +37,10 @@ package imagej.ui;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventService;
+import imagej.event.EventSubscriber;
 import imagej.ext.menu.MenuService;
+import imagej.ext.menu.event.MenusChangedEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
@@ -58,6 +61,7 @@ import net.java.sezpoz.IndexItem;
 @Service
 public final class UIService extends AbstractService {
 
+	private final EventService eventService;
 	private final PlatformService platformService;
 	private final PluginService pluginService;
 	private final MenuService menuService;
@@ -69,6 +73,9 @@ public final class UIService extends AbstractService {
 	/** Available user interfaces. */
 	private List<UserInterface> availableUIs;
 
+	/** Maintain list of subscribers, to avoid garbage collection. */
+	private List<EventSubscriber<?>> subscribers;
+
 	// -- Constructors --
 
 	public UIService() {
@@ -77,11 +84,12 @@ public final class UIService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public UIService(final ImageJ context,
+	public UIService(final ImageJ context, final EventService eventService,
 		final PlatformService platformService, final PluginService pluginService,
 		final MenuService menuService, final ToolService toolService)
 	{
 		super(context);
+		this.eventService = eventService;
 		this.platformService = platformService;
 		this.pluginService = pluginService;
 		this.menuService = menuService;
@@ -128,6 +136,14 @@ public final class UIService extends AbstractService {
 
 	@Override
 	public void initialize() {
+		launchUI();
+		subscribeToEvents();
+	}
+
+	// -- Helper methods --
+
+	/** Discovers and launches the user interface. */
+	private void launchUI() {
 		final List<UserInterface> uis = discoverUIs();
 		availableUIs = Collections.unmodifiableList(uis);
 		if (uis.size() > 0) {
@@ -141,8 +157,6 @@ public final class UIService extends AbstractService {
 			userInterface = null;
 		}
 	}
-
-	// -- Helper methods --
 
 	/** Discovers user interfaces using SezPoz. */
 	private List<UserInterface> discoverUIs() {
@@ -160,6 +174,26 @@ public final class UIService extends AbstractService {
 			}
 		}
 		return uis;
+	}
+
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		final EventSubscriber<MenusChangedEvent> menusChangedSubscriber =
+			new EventSubscriber<MenusChangedEvent>() {
+
+				@Override
+				public void onEvent(final MenusChangedEvent event) {
+					// TODO - This rebuilds the entire menu structure whenever the
+					// menus change at all. Better would be to listen to MenusAddedEvent,
+					// MenusRemovedEvent and MenusUpdatedEvent separately and surgically
+					// adjust the menus accordingly. But this would require updates to
+					// the MenuCreator API to be more powerful.
+					getUI().createMenus();
+				}
+			};
+		subscribers.add(menusChangedSubscriber);
+		eventService.subscribe(MenusChangedEvent.class, menusChangedSubscriber);
 	}
 
 }

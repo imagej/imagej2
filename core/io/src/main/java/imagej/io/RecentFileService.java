@@ -143,6 +143,7 @@ public final class RecentFileService extends AbstractService {
 	@Override
 	public void initialize() {
 		recentFiles = new ArrayList<String>();
+		recentModules = new HashMap<String, ModuleInfo>();
 		subscribeToEvents();
 	}
 
