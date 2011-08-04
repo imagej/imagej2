@@ -139,9 +139,13 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 					willRebuildImgWindow = false;
 				}
 				imgWindow.update();
-				for (final DisplayView view : getViews()) {
-					view.update();
-				}
+
+				// the following code is also done in SwingDisplayWindow::update()
+				// (which was just called) so commenting out
+				
+				//for (final DisplayView view : getViews()) {
+				//	view.update();
+				//}
 			}
 		});
 	}
