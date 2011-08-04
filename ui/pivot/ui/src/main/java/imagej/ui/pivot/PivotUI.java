@@ -120,6 +120,15 @@ public class PivotUI implements Application, UserInterface {
 	}
 
 	@Override
+	public void createMenus() {
+		final MenuService menuService = ImageJ.get(MenuService.class);
+		final BoxPane menuPane =
+			menuService.createMenus(new PivotMenuCreator(), new BoxPane());
+		contentPane.add(menuPane);
+		Events.publish(new AppMenusCreatedEvent(menuPane));
+	}
+
+	@Override
 	public PivotToolBar getToolBar() {
 		return toolBar;
 	}
@@ -139,16 +148,6 @@ public class PivotUI implements Application, UserInterface {
 		final MessageType msg, final OptionType option)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	// -- Helper methods --
-
-	private void createMenus() {
-		final MenuService menuService = ImageJ.get(MenuService.class);
-		final BoxPane menuPane =
-			menuService.createMenus(new PivotMenuCreator(), new BoxPane());
-		contentPane.add(menuPane);
-		Events.publish(new AppMenusCreatedEvent(menuPane));
 	}
 
 }

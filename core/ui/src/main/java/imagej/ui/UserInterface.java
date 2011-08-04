@@ -45,6 +45,8 @@ public interface UserInterface {
 
 	void processArgs(final String[] args);
 
+	void createMenus();
+
 	ToolBar getToolBar();
 
 	StatusBar getStatusBar();

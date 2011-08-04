@@ -152,6 +152,11 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 	}
 
 	@Override
+	public void createMenus() {
+		// TODO
+	}
+
+	@Override
 	public ToolBar getToolBar() {
 		return null;
 	}

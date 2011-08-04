@@ -89,6 +89,15 @@ public class SWTUI implements UserInterface, Runnable {
 	}
 
 	@Override
+	public void createMenus() {
+		final MenuService menuService = ImageJ.get(MenuService.class);
+		final Menu menuBar =
+			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
+		shell.setMenuBar(menuBar); // TODO - is this necessary?
+		Events.publish(new AppMenusCreatedEvent(menuBar));
+	}
+
+	@Override
 	public SWTToolBar getToolBar() {
 		return toolBar;
 	}
@@ -118,16 +127,6 @@ public class SWTUI implements UserInterface, Runnable {
 			if (!display.readAndDispatch()) display.sleep();
 		}
 		display.dispose();
-	}
-
-	// -- Helper methods --
-
-	private void createMenus() {
-		final MenuService menuService = ImageJ.get(MenuService.class);
-		final Menu menuBar =
-			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
-		shell.setMenuBar(menuBar); // TODO - is this necessary?
-		Events.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 }

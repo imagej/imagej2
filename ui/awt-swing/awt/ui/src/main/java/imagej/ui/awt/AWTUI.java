@@ -95,6 +95,15 @@ public class AWTUI implements UserInterface {
 	}
 
 	@Override
+	public void createMenus() {
+		final MenuService menuService = ImageJ.get(MenuService.class);
+		final MenuBar menuBar =
+			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
+		frame.setMenuBar(menuBar);
+		Events.publish(new AppMenusCreatedEvent(menuBar));
+	}
+
+	@Override
 	public AWTToolBar getToolBar() {
 		return toolBar;
 	}
@@ -114,16 +123,6 @@ public class AWTUI implements UserInterface {
 		final MessageType msg, final OptionType option)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	// -- Helper methods --
-
-	private void createMenus() {
-		final MenuService menuService = ImageJ.get(MenuService.class);
-		final MenuBar menuBar =
-			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
-		frame.setMenuBar(menuBar);
-		Events.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 }
