@@ -1,5 +1,5 @@
 //
-// SwingMenuCreator.java
+// AbstractSwingMenuCreator.java
 //
 
 /*

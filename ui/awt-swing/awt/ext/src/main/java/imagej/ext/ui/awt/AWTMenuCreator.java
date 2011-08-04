@@ -1,5 +1,5 @@
 //
-// MenuCreator.java
+// AWTMenuCreator.java
 //
 
 /*

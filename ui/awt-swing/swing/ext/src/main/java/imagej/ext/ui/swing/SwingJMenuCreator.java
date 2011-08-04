@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// SwingJMenuCreator.java
 //
 
 /*

@@ -1,5 +1,5 @@
 //
-// MenusModifiedEvent.java
+// MenusUpdatedEvent.java
 //
 
 /*
