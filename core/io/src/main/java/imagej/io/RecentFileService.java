@@ -135,6 +135,13 @@ public final class RecentFileService extends AbstractService {
 		return recentFiles.remove(path);
 	}
 
+	/** Clears the list of recent files. */
+	public void clear() {
+		recentFiles.clear();
+		moduleService.removeModules(recentModules.values());
+		recentModules.clear();
+	}
+
 	/** Gets the list of recent files. */
 	public List<String> getRecentFiles() {
 		return Collections.unmodifiableList(recentFiles);
