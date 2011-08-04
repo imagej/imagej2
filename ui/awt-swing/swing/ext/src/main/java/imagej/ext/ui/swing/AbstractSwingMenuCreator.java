@@ -95,11 +95,9 @@ public abstract class AbstractSwingMenuCreator<T> extends
 		final String name = shadow.getMenuEntry().getName();
 		final JMenuItem menuItem;
 		if (shadow.isCheckBox()) {
-			// NB: Call to isSelected(shadow) instantiates the plugin (slow!).
 			menuItem = new JCheckBoxMenuItem(name, isSelected(shadow));
 		}
 		else if (shadow.isRadioButton()) {
-			// NB: Call to isSelected(shadow) instantiates the plugin (slow!).
 			menuItem = new JRadioButtonMenuItem(name, isSelected(shadow));
 			getButtonGroup(shadow).add(menuItem);
 		}
