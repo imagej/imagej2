@@ -35,8 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.menu;
 
 import imagej.ext.MenuEntry;
+import imagej.ext.menu.event.MenusAddedEvent;
+import imagej.ext.menu.event.MenusRemovedEvent;
+import imagej.ext.menu.event.MenusUpdatedEvent;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +65,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	private static final String DEFAULT_ICON_PATH = "/icons/plugin.png";
 
-	private final PluginService pluginService;
+	private final MenuService menuService;
 
 	private final ModuleInfo moduleInfo;
 
@@ -71,22 +74,23 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	private final Map<String, ShadowMenu> children;
 
 	/** Constructs a root menu node populated with all available modules. */
-	public ShadowMenu(final PluginService pluginService) {
-		this(pluginService, pluginService.getModuleService().getModules());
+	public ShadowMenu(final MenuService menuService) {
+		this(menuService, menuService.getPluginService().getModuleService()
+			.getModules());
 	}
 
 	/** Constructs a root menu node populated with the given modules. */
-	public ShadowMenu(final PluginService pluginService,
+	public ShadowMenu(final MenuService menuService,
 		final Collection<? extends ModuleInfo> modules)
 	{
-		this(pluginService, null, -1);
+		this(menuService, null, -1);
 		addAll(modules);
 	}
 
-	private ShadowMenu(final PluginService pluginService, final ModuleInfo info,
+	private ShadowMenu(final MenuService menuService, final ModuleInfo info,
 		final int menuDepth)
 	{
-		this.pluginService = pluginService;
+		this.menuService = menuService;
 		this.moduleInfo = info;
 		this.menuDepth = menuDepth;
 		children = new HashMap<String, ShadowMenu>();
@@ -94,11 +98,9 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	// -- ShadowMenu methods --
 
-	/**
-	 * Gets the {@link PluginService} used to execute this menu's linked module.
-	 */
-	public PluginService getPluginService() {
-		return pluginService;
+	/** Gets the {@link MenuService} associated with this menu. */
+	public MenuService getMenuService() {
+		return menuService;
 	}
 
 	/** Gets the module linked to this menu. */
@@ -166,9 +168,21 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		return iconURL;
 	}
 
+	/**
+	 * Updates the menu structure to reflect changes in the given module. Does
+	 * nothing unless the module is already in the menu structure.
+	 */
+	public void update(final ModuleInfo module) {
+		final ShadowMenu removed = removeInternal(module);
+		if (removed == null) return; // was not in menu structure
+		final ShadowMenu menu = addInternal(module);
+		if (menu == null) return;
+		menuService.getEventService().publish(new MenusUpdatedEvent(menu));
+	}
+
 	/** Executes the module linked to this menu. */
 	public void run() {
-		pluginService.run(moduleInfo, true);
+		menuService.getPluginService().run(moduleInfo, true);
 	}
 
 	// -- Object methods --
@@ -194,19 +208,22 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	@Override
 	public boolean add(final ModuleInfo o) {
-		if (o.getMenuPath().isEmpty()) return false; // no menu
-		addChild(o, 0);
+		final ShadowMenu menu = addInternal(o);
+		if (menu == null) return false;
+		menuService.getEventService().publish(new MenusAddedEvent(menu));
 		return true;
 	}
 
 	@Override
 	public boolean addAll(final Collection<? extends ModuleInfo> c) {
-		boolean changed = false;
+		final HashSet<ShadowMenu> menus = new HashSet<ShadowMenu>();
 		for (final ModuleInfo info : c) {
-			final boolean success = add(info);
-			if (success) changed = true;
+			final ShadowMenu menu = addInternal(info);
+			if (menu != null) menus.add(menu);
 		}
-		return changed;
+		if (menus.isEmpty()) return false;
+		menuService.getEventService().publish(new MenusAddedEvent(menus));
+		return true;
 	}
 
 	@Override
@@ -245,26 +262,24 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	public boolean remove(final Object o) {
 		if (!(o instanceof ModuleInfo)) return false;
 		final ModuleInfo info = (ModuleInfo) o;
-
-		// remove directly from children
-		if (children.remove(info) != null) return true;
-
-		// recursively remove from descendants
-		for (final ShadowMenu menu : children.values()) {
-			if (menu.remove(o)) return true;
-		}
-
-		return false;
+		final ShadowMenu menu = removeInternal(info);
+		if (menu == null) return false;
+		menuService.getEventService().publish(new MenusRemovedEvent(menu));
+		return true;
 	}
 
 	@Override
 	public boolean removeAll(final Collection<?> c) {
-		boolean changed = false;
+		final HashSet<ShadowMenu> menus = new HashSet<ShadowMenu>();
 		for (final Object o : c) {
-			final boolean success = remove(o);
-			if (success) changed = true;
+			if (!(o instanceof ModuleInfo)) continue;
+			final ModuleInfo info = (ModuleInfo) o;
+			final ShadowMenu menu = removeInternal(info);
+			if (menu != null) menus.add(menu);
 		}
-		return changed;
+		if (menus.isEmpty()) return false;
+		menuService.getEventService().publish(new MenusRemovedEvent(menus));
+		return true;
 	}
 
 	@Override
@@ -324,11 +339,26 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	// -- Helper methods --
 
-	private ShadowMenu getChild(final MenuEntry menuEntry) {
-		return children.get(menuEntry.getName());
+	private ShadowMenu addInternal(final ModuleInfo o) {
+		if (o.getMenuPath().isEmpty()) return null; // no menu
+		return addChild(o, 0);
 	}
 
-	private void addChild(final ModuleInfo child, final int depth) {
+	private ShadowMenu removeInternal(final ModuleInfo o) {
+		// remove directly from children
+		final ShadowMenu child = children.remove(o);
+		if (child != null) return child;
+
+		// recursively remove from descendants
+		for (final ShadowMenu menu : children.values()) {
+			final ShadowMenu removed = menu.removeInternal(o);
+			if (removed != null) return removed;
+		}
+
+		return null;
+	}
+
+	private ShadowMenu addChild(final ModuleInfo child, final int depth) {
 		// retrieve existing child
 		final MenuEntry menuEntry = child.getMenuPath().get(depth);
 		final ShadowMenu existingChild = getChild(menuEntry);
@@ -337,7 +367,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		if (existingChild == null) {
 			// create new child and add to table
 			final String menuName = menuEntry.getName();
-			final ShadowMenu newChild = new ShadowMenu(pluginService, child, depth);
+			final ShadowMenu newChild = new ShadowMenu(menuService, child, depth);
 			children.put(menuName, newChild);
 			childMenu = newChild;
 		}
@@ -355,6 +385,11 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		else if (existingChild != null) {
 			Log.warn("ShadowMenu: leaf item already exists: " + existingChild);
 		}
+		return childMenu;
+	}
+
+	private ShadowMenu getChild(final MenuEntry menuEntry) {
+		return children.get(menuEntry.getName());
 	}
 
 }
