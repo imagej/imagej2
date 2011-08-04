@@ -106,6 +106,7 @@ public class ProbeTool extends AbstractTool {
 			final Dataset d = displayService.getActiveDataset(display);
 			setWorkingVariables(d);
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
+			// Re: bug #639
 			// note - can't use getIntX() and getIntY() since they round and can
 			// take the integer coords out of the image bounds. Exceptions happen
 			//final int cx = (int) Math.floor(coords.x);
@@ -118,11 +119,13 @@ public class ProbeTool extends AbstractTool {
 			fillCurrentPosition(position, cx, cy, planePos);
 			randomAccess.setPosition(position);
 			double doubleValue = 0;
-			try {
+			//try {
 				doubleValue = randomAccess.get().getRealDouble();
-			} catch (Exception e) {
-				System.out.println("Exception happened with position "+position[xAxis]+","+position[yAxis]+","+planePos.getLongPosition(0));
-			}
+			// Re: bug #639
+			//} catch (Exception e) {
+			//	System.out.println("Exception happened with position "+
+			//		position[xAxis]+","+position[yAxis]);
+			//}
 			final String statusMessage;
 			if (dataset.isInteger()) {
 				statusMessage =
