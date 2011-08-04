@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools.global;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.event.DatasetDeletedEvent;
@@ -78,13 +77,11 @@ public class ProbeTool extends AbstractTool {
 	private RandomAccess<? extends RealType<?>> randomAccess;
 	private long[] position;
 	private ArrayList<EventSubscriber<?>> subscribers;
-	private final DisplayService displayService;
 	private int xAxis, yAxis;
 
 	// -- constructor --
 
 	public ProbeTool() {
-		displayService = ImageJ.get(DisplayService.class);
 		subscribeToEvents();
 	}
 
@@ -92,6 +89,8 @@ public class ProbeTool extends AbstractTool {
 
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
+		final DisplayService displayService =
+			evt.getContext().getService(DisplayService.class);
 		final Display display = evt.getDisplay();
 		final ImageCanvas canvas = display.getImageCanvas();
 		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
