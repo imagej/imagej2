@@ -75,7 +75,7 @@ import java.util.Map;
 @Service
 public final class RecentFileService extends AbstractService {
 
-	private static final int MAX_FILES_SHOWN = 10;
+	public static final int MAX_FILES_SHOWN = 10;
 
 	/** Maximum pathname length shown. */
 	private static final int MAX_DISPLAY_LENGTH = 40;
