@@ -16,8 +16,8 @@ SilentInstall silent
 AutoCloseWindow true
 ShowInstDetails nevershow
 
-!define CLASSPATH "plugins;jar\imagej-2.0-SNAPSHOT.jar"
-!define CLASS "imagej.ImageJ"
+!define CLASSPATH "plugins;plugins\*;jar\*"
+!define CLASS "imagej.Main"
 !define JVM_ARGS "-mx512m"
 
 Section ""
