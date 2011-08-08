@@ -112,8 +112,10 @@ public class DeleteAxis extends DynamicPlugin {
 		final long[] newDimensions = getNewDimensions(dataset, axis);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
+		int compositeCount = compositeStatus(dataset.getCompositeChannelCount(), dstImgPlus);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		// TODO - colorTables, metadata, etc.?
+		dstImgPlus.setCompositeChannelCount(compositeCount);
 		dataset.setImgPlus(dstImgPlus);
 	}
 
@@ -189,4 +191,10 @@ public class DeleteAxis extends DynamicPlugin {
 			dstImgPlus, dstOrigin, dstSpan);
 	}
 
+	private int compositeStatus(int compositeCount, ImgPlus<?> output) {
+		if (output.getAxisIndex(Axes.CHANNEL) < 0)
+			return 1;
+		return compositeCount;
+			
+	}
 }
