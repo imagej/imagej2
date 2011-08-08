@@ -125,8 +125,11 @@ public class DeleteHyperplanes extends DynamicPlugin {
 			RestructureUtils.getDimensions(dataset, axis, -numDeleting);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
+		int compositeChannelCount =
+			compositeStatus(dataset.getCompositeChannelCount(), dstImgPlus, axis);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
+		dstImgPlus.setCompositeChannelCount(compositeChannelCount);
 		dataset.setImgPlus(dstImgPlus);
 	}
 
@@ -178,4 +181,13 @@ public class DeleteHyperplanes extends DynamicPlugin {
 			numBeforeCut + numInCut, numBeforeCut, numAfterCut);
 	}
 
+	private int compositeStatus(int compositeCount, ImgPlus<?> output, Axis axis) {
+		if (axis == Axes.CHANNEL) {
+			int axisIndex = output.getAxisIndex(Axes.CHANNEL);
+			long numChannels = output.dimension(axisIndex);
+			if (numChannels < compositeCount)
+				return (int) numChannels;
+		}
+		return compositeCount;
+	}
 }

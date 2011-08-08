@@ -839,8 +839,8 @@ public final class LegacyUtils {
 	static void setDatasetCompositeVariables(final Dataset ds,
 		final ImagePlus imp)
 	{
-		if (imp instanceof CompositeImage &&
-			((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE)
+		if ((imp instanceof CompositeImage) &&
+			(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE))
 		{
 			ds.setCompositeChannelCount(imp.getNChannels());
 		}
