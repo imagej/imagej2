@@ -131,7 +131,9 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	public void setColorTable(final ColorTable8 colorTable, final int channel) {
 		defaultLUTs.set(channel, colorTable);
 		updateLUTs();
-		// TODO - temp hacks
+		// TODO - temp hacks towards fixing bug #668
+		//   For now we'll keep this method lightweight and dumb and require
+		//   callers to map() and update()
 		//projector.map();
 		//getDisplay().update();
 	}
