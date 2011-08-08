@@ -1187,7 +1187,7 @@ public final class LegacyUtils {
 		final DatasetView dsView = (DatasetView) dispView;
 		for (int i = 0; i < colorTables.size(); i++)
 			dsView.setColorTable((ColorTable8) colorTables.get(i), i);
-		// force current plane to redraw
+		// force current plane to redraw : HACK to fix bug #668
 		dsView.getProjector().map();
 		disp.update();
 	}
