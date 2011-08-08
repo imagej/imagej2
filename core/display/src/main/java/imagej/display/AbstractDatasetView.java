@@ -131,6 +131,9 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	public void setColorTable(final ColorTable8 colorTable, final int channel) {
 		defaultLUTs.set(channel, colorTable);
 		updateLUTs();
+		// TODO - temp hacks
+		//projector.map();
+		//getDisplay().update();
 	}
 
 	@Override
@@ -159,6 +162,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		}
 		final List<ColorTable8> colorTables = getColorTables();
 		for (final ColorTable8 colorTable : colorTables) {
+			// TODO - replace with !ColorTables.isGrayColorTable(colorTable)
 			if (colorTable != ColorTables.GRAYS) {
 				return ColorMode.COLOR;
 			}
