@@ -173,9 +173,22 @@ public final class LegacyUtils {
 		final Axis[] axes = orderedAxes(preferredOrder, inputDims);
 		final long[] dims = orderedDims(axes, inputDims);
 		final String name = imp.getTitle();
-		final int bitsPerPixel = imp.getBitDepth();
-		final boolean signed = isSigned(imp);
-		final boolean floating = isFloating(imp);
+		
+		final boolean signed;
+		final boolean floating;
+		final int bitsPerPixel;
+		
+		if (isBinary(imp)) {
+			bitsPerPixel = 1;
+			signed = false;
+			floating = false;
+		}
+		else { // not binary
+			bitsPerPixel = imp.getBitDepth();
+			signed = isSigned(imp);
+			floating = isFloating(imp);
+		}
+		
 		final Dataset ds =
 			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
 
@@ -1310,6 +1323,22 @@ public final class LegacyUtils {
 		// or imp.getStack().setColorModel(lut);
 	}
 
+	/**
+	 * Determines whether an ImagePlus is an IJ1 binary image (i.e. it is
+	 *  unsigned 8 bit data with only values 0 & 255 present)
+	 */
+	private static boolean isBinary(ImagePlus imp) {
+		int numSlices = imp.getStackSize();
+		if (numSlices == 1)
+			return imp.getProcessor().isBinary();
+		ImageStack stack = imp.getStack();
+		for (int i = 1; i <= numSlices; i++) {
+			if (!stack.getProcessor(i).isBinary())
+				return false;
+		}
+		return true;
+	}
+	
 	// -- helper classes --
 
 	/** Helper class to simplify the making of planes of different type data. */
