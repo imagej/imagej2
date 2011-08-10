@@ -141,22 +141,20 @@ public class SaltAndPepper implements ImageJPlugin {
 	}
 
 	private void assignPixelsInXYPlane(Position planePos, Random rng) {
+		
+		// set non-XY coordinate values once
 		for (int i = 2; i < position.length; i++)
 			position[i] = planePos.getLongPosition(i-2);
 
-		double percentToChange = 0.05;
-
-		long[] dimensions = new long[inputImage.numDimensions()];
-		inputImage.dimensions(dimensions);
-		
 		long ox = (long) selection.x;
 		long oy = (long) selection.y;
 		long w = (long) selection.width;
 		long h = (long) selection.height;
 		
-		if (w <= 0) w = dimensions[0];
-		if (h <= 0) h = dimensions[1];
-		
+		if (w <= 0) w = inputImage.dimension(0);
+		if (h <= 0) h = inputImage.dimension(1);
+
+		double percentToChange = 0.05;
 		long numPixels = (long) (percentToChange * w * h);
 
 		for (long p = 0; p < numPixels / 2; p++) {
