@@ -124,6 +124,8 @@ public class AddHyperplanes extends DynamicPlugin {
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
+		int compositeChannelCount = compositeStatus(dataset, dstImgPlus, axis);
+		dstImgPlus.setCompositeChannelCount(compositeChannelCount);
 		// TODO - colorTables, metadata, etc.?
 		dataset.setImgPlus(dstImgPlus);
 	}
@@ -172,4 +174,40 @@ public class AddHyperplanes extends DynamicPlugin {
 			numBeforeInsert, numBeforeInsert + numInInsertion, numAfterInsertion);
 	}
 
+	private int compositeStatus(
+		Dataset origData, ImgPlus<?> dstImgPlus, Axis axis)
+	{
+		
+		// adding along non-channel axis
+		if (axis != Axes.CHANNEL) {
+			return origData.getCompositeChannelCount();
+		}
+
+		// else adding hyperplanes along channel axis
+
+		// calc working data
+		int currComposCount = dataset.getCompositeChannelCount();
+		int origAxisPos = origData.getAxisIndex(Axes.CHANNEL);
+		long numOrigChannels = origData.getImgPlus().dimension(origAxisPos);
+		long numNewChannels = dstImgPlus.dimension(origAxisPos);
+
+		// was "composite" on 1 channel
+		if (currComposCount == 1) {
+			return 1;
+		}
+		
+		// was composite on all channels
+		if (numOrigChannels == currComposCount) {
+			return (int) numNewChannels;  // in future be composite on all channels
+		}
+
+		// was composite on a subset of channels that divides channels evenly
+		if (((numOrigChannels % currComposCount) == 0) && 
+				((numNewChannels % currComposCount) == 0)) {
+			return currComposCount;
+		}
+
+		// cannot figure out a good count - no longer composite
+		return 1;
+	}
 }
