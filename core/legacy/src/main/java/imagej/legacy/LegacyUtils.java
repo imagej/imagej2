@@ -1198,8 +1198,19 @@ public final class LegacyUtils {
 		final DisplayView dispView = disp.getActiveView();
 		if (dispView == null) return;
 		final DatasetView dsView = (DatasetView) dispView;
-		for (int i = 0; i < colorTables.size(); i++)
-			dsView.setColorTable((ColorTable8) colorTables.get(i), i);
+		
+		// either we're given one color table for whole dataset
+		if (colorTables.size() == 1) {
+			ColorTable8 newTable = (ColorTable8) colorTables.get(0);
+			List<ColorTable8> existingColorTables = dsView.getColorTables();
+			for (int i = 0; i < existingColorTables.size(); i++)
+				dsView.setColorTable(newTable, i);
+		}
+		else {  // or we're given one per channel
+			for (int i = 0; i < colorTables.size(); i++)
+				dsView.setColorTable((ColorTable8) colorTables.get(i), i);
+		}
+		
 		// force current plane to redraw : HACK to fix bug #668
 		dsView.getProjector().map();
 		disp.update();
