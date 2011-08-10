@@ -1213,7 +1213,7 @@ public final class LegacyUtils {
 		final LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
-				for (int i = 0; i < imp.getNChannels(); i++) {
+				for (int i = 0; i < imp.getNChannels()*3; i++) {
 					ColorTable<?> cTable = ColorTables.getDefaultColorTable(i);
 					colorTables.add(cTable);
 				}
