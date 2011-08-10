@@ -139,8 +139,8 @@ public final class OverlayService extends AbstractService {
 			if (!(dataObject instanceof Dataset)) continue;
 			final Dataset dataset = (Dataset) dataObject;
 			final Extents extents = dataset.getExtents();
-			final double w = extents.dimension(0) - 1;
-			final double h = extents.dimension(1) - 1;
+			final double w = extents.dimension(0);
+			final double h = extents.dimension(1);
 			if (w > width) width = w;
 			if (h > height) height = h;
 		}
