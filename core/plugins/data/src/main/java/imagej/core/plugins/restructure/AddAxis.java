@@ -111,6 +111,7 @@ public class AddAxis extends DynamicPlugin {
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
+		dstImgPlus.setCompositeChannelCount(dataset.getCompositeChannelCount());
 		// TODO - colorTables, metadata, etc.?
 		dataset.setImgPlus(dstImgPlus);
 	}
