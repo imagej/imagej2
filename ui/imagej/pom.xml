@@ -149,13 +149,14 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
+						<descriptor>src/main/assembly/all.xml</descriptor>
 						<descriptor>src/main/assembly/application.xml</descriptor>
 					</descriptors>
-					<!--
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					-->
+					<archive>
+						<manifest>
+							<mainClass>imagej.Main</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 				<executions>
 					<execution>
