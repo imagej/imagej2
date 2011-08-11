@@ -121,7 +121,7 @@ public class CombineAnnotations {
 					final ZipEntry zipEntry = zis.getNextEntry();
 					if (zipEntry == null) break;
 					final String name = zipEntry.getName();
-					if (!name.matches(Pattern.quote(PREFIX + "/") + ".")) continue;
+					if (!name.matches(Pattern.quote(PREFIX + "/") + ".+")) continue;
 					add(files, name);
 				}
 			}
