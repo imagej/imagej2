@@ -75,6 +75,8 @@ public class CombineAnnotations {
 		log("");
 		log("Writing annotations to " + new File(OUTPUT_DIR).getAbsolutePath());
 
+		new File(OUTPUT_DIR, PREFIX).mkdirs();
+
 		for (final String annotationFile : annotationFiles) {
 			annotations.clear();
 
