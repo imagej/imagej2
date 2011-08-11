@@ -141,6 +141,36 @@
 				</dependency>
 			</dependencies>
 		</profile>
+
+		<profile>
+			<id>deps</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/all.xml</descriptor>
+							</descriptors>
+							<archive>
+								<manifest>
+									<mainClass>imagej.Main</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+						<executions>
+							<execution>
+								<id>make-assembly</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<build>
@@ -149,14 +179,8 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
-						<descriptor>src/main/assembly/all.xml</descriptor>
 						<descriptor>src/main/assembly/application.xml</descriptor>
 					</descriptors>
-					<archive>
-						<manifest>
-							<mainClass>imagej.Main</mainClass>
-						</manifest>
-					</archive>
 				</configuration>
 				<executions>
 					<execution>
