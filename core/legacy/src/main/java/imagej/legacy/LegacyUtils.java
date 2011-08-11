@@ -47,6 +47,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
+import imagej.display.ColorMode;
 import imagej.display.ColorTables;
 import imagej.display.DatasetView;
 import imagej.display.Display;
@@ -1198,6 +1199,10 @@ public final class LegacyUtils {
 		final DisplayView dispView = disp.getActiveView();
 		if (dispView == null) return;
 		final DatasetView dsView = (DatasetView) dispView;
+		
+		ColorMode currMode = dsView.getColorMode();
+		
+		if (currMode == ColorMode.GRAYSCALE) return;
 		
 		// either we're given one color table for whole dataset
 		if (colorTables.size() == 1) {
