@@ -104,7 +104,7 @@ public abstract class AbstractAWTMenuCreator<T> extends AbstractMenuCreator<T, M
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				ImageJ.get(PluginService.class).run(info, true);
+				ImageJ.get(PluginService.class).run(info);
 			}
 		});
 	}

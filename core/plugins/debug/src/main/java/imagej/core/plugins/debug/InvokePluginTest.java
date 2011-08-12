@@ -40,8 +40,10 @@ import imagej.ext.module.Module;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
-import java.util.Map;
-import net.imglib2.img.ImgPlus;
+import imagej.util.Log;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * A test of {@link PluginService#run}.
@@ -55,10 +57,18 @@ public class InvokePluginTest implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		testRun();
+		try {
+			testRun();
+		}
+		catch (ExecutionException e) {
+			Log.error(e);
+		}
+		catch (InterruptedException e) {
+			Log.error(e);
+		}
 	}
 
-	void testRun() {
+	void testRun() throws ExecutionException, InterruptedException {
 		final String name = "Untitled";
 		final String bitDepth = "8-bit";
 		final boolean signed = false;
@@ -66,10 +76,12 @@ public class InvokePluginTest implements ImageJPlugin {
 		final String fillType = "Ramp";
 		final int width = 512;
 		final int height = 512;
-		Module module  = pluginService.run("imagej.io.plugins.NewImage", true, name, bitDepth,
-			signed, floating, fillType, width, height);
-		Dataset dataset = (Dataset) module.getOutput("dataset");
-		ImgPlus imp = dataset.getImgPlus();
+		final Future<Module> future =
+			pluginService.run("imagej.io.plugins.NewImage", name, bitDepth, signed,
+				floating, fillType, width, height);
+		final Module module = future.get();
+		final Dataset dataset = (Dataset) module.getOutput("dataset");
+		Log.info("InvokePluginTest: dataset = " + dataset);
 	}
 
 }

@@ -50,6 +50,7 @@ import imagej.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
@@ -110,8 +111,7 @@ public class PluginService extends AbstractService {
 		{
 			try {
 				final IPluginFinder finder = item.instance();
-				final ArrayList<PluginInfo<?>> plugins =
-					new ArrayList<PluginInfo<?>>();
+				final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
 				finder.findPlugins(plugins);
 				pluginIndex.addAll(plugins);
 			}
@@ -286,40 +286,40 @@ public class PluginService extends AbstractService {
 	 * Executes the first runnable plugin of the given class name.
 	 * 
 	 * @param className Class name of the plugin to execute.
-	 * @param separateThread Whether to execute the plugin in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the plugin. Passing a number of values that differs
 	 *          from the number of input parameters is allowed, but will issue a
 	 *          warning. Passing a value of a type incompatible with the
 	 *          associated input parameter will issue an error and ignore that
 	 *          value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Module run(final String className, final boolean separateThread,
-		final Object... inputValues)
+	public Future<Module>
+		run(final String className, final Object... inputValues)
 	{
 		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
 		if (!checkPlugin(plugin, className)) return null;
-		return run(plugin, separateThread, inputValues);
+		return run(plugin, inputValues);
 	}
 
 	/**
 	 * Executes the first runnable plugin of the given class name.
 	 * 
 	 * @param className Class name of the plugin to execute.
-	 * @param separateThread Whether to execute the plugin in a new thread.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          plugin's input parameter names. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
 	 *          error and ignore that value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Module run(final String className, final boolean separateThread,
+	public Future<Module> run(final String className,
 		final Map<String, Object> inputMap)
 	{
 		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
 		if (!checkPlugin(plugin, className)) return null;
-		return run(plugin, separateThread, inputMap);
+		return run(plugin, inputMap);
 	}
 
 	/**
@@ -327,21 +327,21 @@ public class PluginService extends AbstractService {
 	 * 
 	 * @param <R> Class of the plugin to execute.
 	 * @param pluginClass Class object of the plugin to execute.
-	 * @param separateThread Whether to execute the plugin in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the plugin. Passing a number of values that differs
 	 *          from the number of input parameters is allowed, but will issue a
 	 *          warning. Passing a value of a type incompatible with the
 	 *          associated input parameter will issue an error and ignore that
 	 *          value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public <R extends RunnablePlugin> Module run(final Class<R> pluginClass,
-		final boolean separateThread, final Object... inputValues)
+	public <R extends RunnablePlugin> Future<Module> run(
+		final Class<R> pluginClass, final Object... inputValues)
 	{
 		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
 		if (!checkPlugin(plugin, pluginClass.getName())) return null;
-		return run(plugin, separateThread, inputValues);
+		return run(plugin, inputValues);
 	}
 
 	/**
@@ -349,19 +349,19 @@ public class PluginService extends AbstractService {
 	 * 
 	 * @param <R> Class of the plugin to execute.
 	 * @param pluginClass Class object of the plugin to execute.
-	 * @param separateThread Whether to execute the plugin in a new thread.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          plugin's input parameter names. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
 	 *          error and ignore that value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public <R extends RunnablePlugin> Module run(final Class<R> pluginClass,
-		final boolean separateThread, final Map<String, Object> inputMap)
+	public <R extends RunnablePlugin> Future<Module> run(
+		final Class<R> pluginClass, final Map<String, Object> inputMap)
 	{
 		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
 		if (!checkPlugin(plugin, pluginClass.getName())) return null;
-		return run(plugin, separateThread, inputMap);
+		return run(plugin, inputMap);
 	}
 
 	/**
@@ -370,19 +370,18 @@ public class PluginService extends AbstractService {
 	 * the plugin index.
 	 * 
 	 * @param info The module to instantiate and run.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the {@link ModuleInfo}. Passing a number of values
 	 *          that differs from the number of input parameters is allowed, but
 	 *          will issue a warning. Passing a value of a type incompatible with
 	 *          the associated input parameter will issue an error and ignore that
 	 *          value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Module run(final ModuleInfo info, final boolean separateThread,
-		final Object... inputValues)
+	public Future<Module> run(final ModuleInfo info, final Object... inputValues)
 	{
-		return moduleService.run(info, pre(), post(), separateThread, inputValues);
+		return moduleService.run(info, pre(), post(), inputValues);
 	}
 
 	/**
@@ -391,17 +390,17 @@ public class PluginService extends AbstractService {
 	 * the plugin index.
 	 * 
 	 * @param info The module to instantiate and run.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
 	 *          type incompatible with the associated input parameter will issue
 	 *          an error and ignore that value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Module run(final ModuleInfo info, final boolean separateThread,
+	public Future<Module> run(final ModuleInfo info,
 		final Map<String, Object> inputMap)
 	{
-		return moduleService.run(info, pre(), post(), separateThread, inputMap);
+		return moduleService.run(info, pre(), post(), inputMap);
 	}
 
 	/**
@@ -410,18 +409,17 @@ public class PluginService extends AbstractService {
 	 * the plugin index.
 	 * 
 	 * @param module The module to run.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the module's {@link ModuleInfo}. Passing a number of
 	 *          values that differs from the number of input parameters is
 	 *          allowed, but will issue a warning. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
 	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public void run(final Module module, final boolean separateThread,
-		final Object... inputValues)
-	{
-		moduleService.run(module, pre(), post(), separateThread, inputValues);
+	public Future<Module> run(final Module module, final Object... inputValues) {
+		return moduleService.run(module, pre(), post(), inputValues);
 	}
 
 	/**
@@ -430,16 +428,17 @@ public class PluginService extends AbstractService {
 	 * the plugin index.
 	 * 
 	 * @param module The module to run.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          module's {@link ModuleInfo}'s input parameter names. Passing a
 	 *          value of a type incompatible with the associated input parameter
 	 *          will issue an error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public void run(final Module module, final boolean separateThread,
+	public Future<Module> run(final Module module,
 		final Map<String, Object> inputMap)
 	{
-		moduleService.run(module, pre(), post(), separateThread, inputMap);
+		return moduleService.run(module, pre(), post(), inputMap);
 	}
 
 	// -- IService methods --

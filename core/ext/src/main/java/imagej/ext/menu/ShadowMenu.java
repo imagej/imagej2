@@ -182,7 +182,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	/** Executes the module linked to this menu. */
 	public void run() {
-		menuService.getPluginService().run(moduleInfo, true);
+		menuService.getPluginService().run(moduleInfo);
 	}
 
 	// -- Object methods --

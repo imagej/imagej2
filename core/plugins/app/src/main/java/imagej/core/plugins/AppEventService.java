@@ -97,7 +97,7 @@ public final class AppEventService extends AbstractService {
 
 				@Override
 				public void onEvent(final AppAboutEvent event) {
-					pluginService.run(AboutImageJ.class, true);
+					pluginService.run(AboutImageJ.class);
 				}
 			};
 		subscribers.add(appAboutSubscriber);
@@ -108,7 +108,7 @@ public final class AppEventService extends AbstractService {
 
 				@Override
 				public void onEvent(final AppPreferencesEvent event) {
-					pluginService.run(ShowPrefs.class, true);
+					pluginService.run(ShowPrefs.class);
 				}
 			};
 		subscribers.add(appPreferencesSubscriber);
@@ -120,7 +120,7 @@ public final class AppEventService extends AbstractService {
 
 				@Override
 				public void onEvent(final AppQuitEvent event) {
-					pluginService.run(QuitProgram.class, true);
+					pluginService.run(QuitProgram.class);
 				}
 			};
 		subscribers.add(appQuitSubscriber);
