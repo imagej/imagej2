@@ -48,14 +48,21 @@ import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * Helper class for executing a {@link Module}, including pre- and
  * post-processing and event notification.
+ * <p>
+ * This class implements both {@link Runnable} and {@link Callable}, to make it
+ * easier to invoke in a variety of ways, such as with the
+ * {@link java.util.concurrent} package.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public class ModuleRunner {
+public class ModuleRunner implements Callable<Map<String, Object>>, Runnable {
 
 	private final Module module;
 	private final List<? extends ModulePreprocessor> pre;
@@ -70,29 +77,7 @@ public class ModuleRunner {
 		this.post = post;
 	}
 
-	/**
-	 * Executes the module, including pre- and post-processing and event
-	 * notification.
-	 */
-	public void run() {
-		if (module == null) return;
-		final EventService eventService = ImageJ.get(EventService.class);
-
-		// execute module
-		eventService.publish(new ModuleStartedEvent(module));
-		final boolean ok = preProcess();
-		if (!ok) {
-			// execution canceled
-			module.cancel();
-			eventService.publish(new ModuleCanceledEvent(module));
-			return;
-		}
-		eventService.publish(new ModuleExecutingEvent(module));
-		module.run();
-		eventService.publish(new ModuleExecutedEvent(module));
-		postProcess();
-		eventService.publish(new ModuleFinishedEvent(module));
-	}
+	// -- ModuleRunner methods --
 
 	/** Feeds the module through the {@link ModulePreprocessor}s. */
 	public boolean preProcess() {
@@ -123,6 +108,41 @@ public class ModuleRunner {
 			p.process(module);
 			eventService.publish(new ModulePostprocessEvent(module, p));
 		}
+	}
+
+	// -- Callable methods --
+
+	@Override
+	public Map<String, Object> call() throws Exception {
+		run();
+		return module.getOutputs();
+	}
+
+	// -- Runnable methods --
+
+	/**
+	 * Executes the module, including pre- and post-processing and event
+	 * notification.
+	 */
+	@Override
+	public void run() {
+		if (module == null) return;
+		final EventService eventService = ImageJ.get(EventService.class);
+
+		// execute module
+		eventService.publish(new ModuleStartedEvent(module));
+		final boolean ok = preProcess();
+		if (!ok) {
+			// execution canceled
+			module.cancel();
+			eventService.publish(new ModuleCanceledEvent(module));
+			return;
+		}
+		eventService.publish(new ModuleExecutingEvent(module));
+		module.run();
+		eventService.publish(new ModuleExecutedEvent(module));
+		postProcess();
+		eventService.publish(new ModuleFinishedEvent(module));
 	}
 
 }
