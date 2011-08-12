@@ -37,12 +37,12 @@ package imagej.core.plugins.debug;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.ext.module.Module;
+import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.util.Log;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -53,22 +53,15 @@ import java.util.concurrent.Future;
 @Plugin(menuPath = "Plugins>Sandbox>InvokePluginTest")
 public class InvokePluginTest implements ImageJPlugin {
 
+	private final ModuleService moduleService = ImageJ.get(ModuleService.class);
 	private final PluginService pluginService = ImageJ.get(PluginService.class);
 
 	@Override
 	public void run() {
-		try {
-			testRun();
-		}
-		catch (ExecutionException e) {
-			Log.error(e);
-		}
-		catch (InterruptedException e) {
-			Log.error(e);
-		}
+		testRun();
 	}
 
-	void testRun() throws ExecutionException, InterruptedException {
+	void testRun() {
 		final String name = "Untitled";
 		final String bitDepth = "8-bit";
 		final boolean signed = false;
@@ -79,7 +72,7 @@ public class InvokePluginTest implements ImageJPlugin {
 		final Future<Module> future =
 			pluginService.run("imagej.io.plugins.NewImage", name, bitDepth, signed,
 				floating, fillType, width, height);
-		final Module module = future.get();
+		final Module module = moduleService.waitFor(future);
 		final Dataset dataset = (Dataset) module.getOutput("dataset");
 		Log.info("InvokePluginTest: dataset = " + dataset);
 	}
