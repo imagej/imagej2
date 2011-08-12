@@ -155,4 +155,57 @@ public class SettingsKeys
 	
 	// Scripting Options
 	public static final String SCRIPT_LANG = "settings.script.lang";
+	
+	// miscellaneous settings from IJ1
+	public static final String SETTINGS_FILTERS_NOISE_SD = "settings.ij1.filters.NoiseSD";
+	public static final String SETTINGS_ANIMATOR_FPS = "settings.ij1.animator.FPS";
+	public static final String SETTINGS_PROXY_USER = "settings.ij1.proxy.User";
+	public static final String SETTINGS_TEXTWINDOW_WIDTH = "settings.ij1.textwindow.Width";
+	public static final String SETTINGS_TEXTWINDOW_HEIGHT = "settings.ij1.textwindow.Height";
+	public static final String SETTINGS_TEXTWINDOW_FONT_ANTIALIASED = "settings.ij1.textwindow.font.Antialiased";
+	public static final String SETTINGS_TEXTWINDOW_FONT_SIZE = "settings.ij1.textwindow.font.Size";
+	public static final String SETTINGS_PREFERRED_X_LOC = "settings.ij1.preferred.location.X";
+	public static final String SETTINGS_PREFERRED_Y_LOC = "settings.ij1.preferred.location.Y";
+	public static final String SETTINGS_PARTICLE_ANALYZER_OPTIONS = "settings.ij1.particle.analyzer.Options";
+	public static final String SETTINGS_ANALYZER_MEASUREMENTS = "settings.ij1.analyzer.Measurements";
+	public static final String SETTINGS_ANALYZER_MARK_WIDTH = "settings.ij1.analyzer.MarkWidth";
+	public static final String SETTINGS_ANALYZER_PRECISION = "settings.ij1.analyzer.Precision";
+	public static final String SETTINGS_IMPORT_TYPE = "settings.ij1.import.raw.Type";
+	public static final String SETTINGS_IMPORT_WIDTH = "settings.ij1.import.raw.Width";
+	public static final String SETTINGS_IMPORT_HEIGHT = "settings.ij1.import.raw.Height";
+	public static final String SETTINGS_IMPORT_OFFSET = "settings.ij1.import.raw.Offset";
+	public static final String SETTINGS_IMPORT_N = "settings.ij1.import.raw.N";
+	public static final String SETTINGS_IMPORT_GAP = "settings.ij1.import.raw.Gap";
+	public static final String SETTINGS_IMPORT_OPTIONS = "settings.ij1.import.raw.Options";
+	public static final String SETTINGS_PLOTWINDOW_MIN = "settings.ij1.plotwindow.Min";
+	public static final String SETTINGS_PLOTWINDOW_MAX = "settings.ij1.plotwindow.Max";
+	public static final String SETTINGS_PLOTWINDOW_PLOT_WIDTH = "settings.ij1.plotwindow.Width";
+	public static final String SETTINGS_PLOTWINDOW_PLOT_HEIGHT = "settings.ij1.plotwindow.Height";
+	public static final String SETTINGS_PLOTWINDOW_OPTIONS = "settings.ij1.plotwindow.Options";
+	public static final String SETTINGS_NEWIMAGE_TYPE = "settings.ij1.newimage.Type";
+	public static final String SETTINGS_NEWIMAGE_FILL = "settings.ij1.newimage.Fill";
+	public static final String SETTINGS_NEWIMAGE_WIDTH = "settings.ij1.newimage.Width";
+	public static final String SETTINGS_NEWIMAGE_HEIGHT = "settings.ij1.newimage.Height";
+	public static final String SETTINGS_NEWIMAGE_SLICES = "settings.ij1.newimage.Slices";
+	public static final String SETTINGS_PREFS_OPTIONS = "settings.ij1.prefs.Options";
+	public static final String SETTINGS_TOOLBAR_LAST_BRUSH_SIZE = "settings.ij1.toolbar.LastBrushSize";
+	public static final String SETTINGS_BACKGROUND_SUBTRACTER_BACKGROUND = "settings.ij1.background.subtracter.Background";
+	public static final String SETTINGS_IMAGE_MATH_MACRO_VALUE = "settings.ij1.imagemath.MacroValue";
+	public static final String SETTINGS_STACKLABELER_LABEL_FORMAT = "settings.ij1.stacklabeler.LabelFormat";
+	public static final String SETTINGS_COLOR_THRESHOLDER_DARK = "settings.ij1.colorthresholder.Dark";
+	public static final String SETTINGS_EDITOR_FONT_SIZE = "settings.ij1.editor.FontSize";
+	public static final String SETTINGS_EDITOR_FONT_MONO = "settings.ij1.editor.FontMono";
+	public static final String SETTINGS_EDITOR_CASE_SENSITIVE = "settings.ij1.editor.CaseSensitive";
+	public static final String SETTINGS_RECORDER_MODE = "settings.ij1.recorder.Mode";
+	public static final String SETTINGS_THRESHOLD_ADJUSTER_MODE_KEY = "settings.ij1.threshold.adjuster.ModeKey";
+	public static final String SETTINGS_THRESHOLD_ADJUSTER_DARK_BACKGROUND = "settings.ij1.threshold.adjuster.DarkBackground";
+	public static final String SETTINGS_BATCH_INPUT = "settings.ij1.batch.Input";
+	public static final String SETTINGS_BATCH_OUTPUT = "settings.ij1.batch.Output";
+	public static final String SETTINGS_BATCH_FORMAT = "settings.ij1.batch.Format";
+	public static final String SETTINGS_CANVAS_RESIZER_ZERO = "settings.ij1.canvas.resizer.Zero";
+	public static final String SETTINGS_COMMAND_FINDER_CLOSE = "settings.ij1.command.finder.Close";
+	public static final String SETTINGS_GEL_ANALYZER_OPTIONS = "settings.ij1.gel.analyzer.Options"; 
+	public static final String SETTINGS_GEL_ANALYZER_VSCALE = "settings.ij1.gel.analyzer.VScale";
+	public static final String SETTINGS_GEL_ANALYZER_HSCALE = "settings.ij1.gel.analyzer.HScale";
+	public static final String SETTINGS_ZPROJECTOR_METHOD = "settings.ij1.zprojector.Method";
 }
