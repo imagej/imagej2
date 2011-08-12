@@ -50,6 +50,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Service for keeping track of and executing available modules.
@@ -123,19 +124,18 @@ public class ModuleService extends AbstractService {
 	 * Executes the given module, without any pre- or postprocessing.
 	 * 
 	 * @param info The module to instantiate and run.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the {@link ModuleInfo}. Passing a number of values
 	 *          that differs from the number of input parameters is allowed, but
 	 *          will issue a warning. Passing a value of a type incompatible with
 	 *          the associated input parameter will issue an error and ignore that
 	 *          value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Module run(final ModuleInfo info, final boolean separateThread,
-		final Object... inputValues)
+	public Future<Module> run(final ModuleInfo info, final Object... inputValues)
 	{
-		return run(info, null, null, separateThread, inputValues);
+		return run(info, null, null, inputValues);
 	}
 
 	/**
@@ -144,21 +144,21 @@ public class ModuleService extends AbstractService {
 	 * @param info The module to instantiate and run.
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the {@link ModuleInfo}. Passing a number of values
 	 *          that differs from the number of input parameters is allowed, but
 	 *          will issue a warning. Passing a value of a type incompatible with
 	 *          the associated input parameter will issue an error and ignore that
 	 *          value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Module run(final ModuleInfo info,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final boolean separateThread, final Object... inputValues)
+	public Future<Module>
+		run(final ModuleInfo info, final List<? extends ModulePreprocessor> pre,
+			final List<? extends ModulePostprocessor> post,
+			final Object... inputValues)
 	{
-		return run(info, pre, post, separateThread, createMap(info, inputValues));
+		return run(info, pre, post, createMap(info, inputValues));
 	}
 
 	/**
@@ -167,22 +167,21 @@ public class ModuleService extends AbstractService {
 	 * @param info The module to instantiate and run.
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
 	 *          type incompatible with the associated input parameter will issue
 	 *          an error and ignore that value.
-	 * @return module instance that was executed
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Module run(final ModuleInfo info,
+	public Future<Module> run(final ModuleInfo info,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
-		final boolean separateThread, final Map<String, Object> inputMap)
+		final Map<String, Object> inputMap)
 	{
 		try {
 			final Module module = info.createModule();
-			run(module, pre, post, separateThread, inputMap);
-			return module;
+			return run(module, pre, post, inputMap);
 		}
 		catch (final ModuleException e) {
 			Log.error("Could not execute module: " + info, e);
@@ -194,18 +193,17 @@ public class ModuleService extends AbstractService {
 	 * Executes the given module, without any pre- or postprocessing.
 	 * 
 	 * @param module The module to run.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the module's {@link ModuleInfo}. Passing a number of
 	 *          values that differs from the number of input parameters is
 	 *          allowed, but will issue a warning. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
 	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public void run(final Module module, final boolean separateThread,
-		final Object... inputValues)
-	{
-		run(module, null, null, separateThread, inputValues);
+	public Future<Module> run(final Module module, final Object... inputValues) {
+		return run(module, null, null, inputValues);
 	}
 
 	/**
@@ -214,21 +212,21 @@ public class ModuleService extends AbstractService {
 	 * @param module The module to run.
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputValues List of input parameter values, in the same order
 	 *          declared by the module's {@link ModuleInfo}. Passing a number of
 	 *          values that differs from the number of input parameters is
 	 *          allowed, but will issue a warning. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
 	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public void run(final Module module,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final boolean separateThread, final Object... inputValues)
+	public Future<Module>
+		run(final Module module, final List<? extends ModulePreprocessor> pre,
+			final List<? extends ModulePostprocessor> post,
+			final Object... inputValues)
 	{
-		run(module, pre, post, separateThread, createMap(module.getInfo(),
-			inputValues));
+		return run(module, pre, post, createMap(module.getInfo(), inputValues));
 	}
 
 	/**
@@ -237,21 +235,21 @@ public class ModuleService extends AbstractService {
 	 * @param module The module to run.
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
-	 * @param separateThread Whether to execute the module in a new thread.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          module's {@link ModuleInfo}'s input parameter names. Passing a
 	 *          value of a type incompatible with the associated input parameter
 	 *          will issue an error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public void run(final Module module,
+	public Future<Module> run(final Module module,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
-		final boolean separateThread, final Map<String, Object> inputMap)
+		final Map<String, Object> inputMap)
 	{
 		assignInputs(module, inputMap);
-		final ModuleRunner runner = new ModuleRunner(module, pre, post); 
-		if (separateThread) threadService.run(runner);
-		else runner.run();
+		final ModuleRunner runner = new ModuleRunner(module, pre, post);
+		return threadService.run(runner);
 	}
 
 	// -- IService methods --

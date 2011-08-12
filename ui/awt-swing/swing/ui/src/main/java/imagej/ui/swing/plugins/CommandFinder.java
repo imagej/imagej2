@@ -67,7 +67,7 @@ public class CommandFinder implements ImageJPlugin {
 		if (info == null) return; // no command selected
 
 		// execute selected command
-		ImageJ.get(PluginService.class).run(info, true);
+		ImageJ.get(PluginService.class).run(info);
 	}
 
 }

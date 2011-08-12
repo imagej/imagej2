@@ -48,7 +48,6 @@ import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -62,7 +61,7 @@ import java.util.concurrent.Callable;
  * 
  * @author Curtis Rueden
  */
-public class ModuleRunner implements Callable<Map<String, Object>>, Runnable {
+public class ModuleRunner implements Callable<Module>, Runnable {
 
 	private final Module module;
 	private final List<? extends ModulePreprocessor> pre;
@@ -113,9 +112,9 @@ public class ModuleRunner implements Callable<Map<String, Object>>, Runnable {
 	// -- Callable methods --
 
 	@Override
-	public Map<String, Object> call() throws Exception {
+	public Module call() throws Exception {
 		run();
-		return module.getOutputs();
+		return module;
 	}
 
 	// -- Runnable methods --

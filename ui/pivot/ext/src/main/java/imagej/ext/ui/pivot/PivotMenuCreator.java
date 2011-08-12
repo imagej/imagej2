@@ -128,7 +128,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 
 			@Override
 			public void perform() {
-				ImageJ.get(PluginService.class).run(info, true);
+				ImageJ.get(PluginService.class).run(info);
 			}
 		});
 		button.setEnabled(info.isEnabled());
