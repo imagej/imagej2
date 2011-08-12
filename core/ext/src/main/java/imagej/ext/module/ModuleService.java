@@ -42,6 +42,7 @@ import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
+import imagej.thread.ThreadService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
@@ -61,6 +62,7 @@ import java.util.Map;
 public class ModuleService extends AbstractService {
 
 	private final EventService eventService;
+	private final ThreadService threadService;
 
 	/** Index of registered modules. */
 	private final ModuleIndex moduleIndex = new ModuleIndex();
@@ -73,9 +75,12 @@ public class ModuleService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public ModuleService(final ImageJ context, final EventService eventService) {
+	public ModuleService(final ImageJ context, final EventService eventService,
+		final ThreadService threadService)
+	{
 		super(context);
 		this.eventService = eventService;
+		this.threadService = threadService;
 	}
 
 	// -- ModuleService methods --
@@ -244,24 +249,9 @@ public class ModuleService extends AbstractService {
 		final boolean separateThread, final Map<String, Object> inputMap)
 	{
 		assignInputs(module, inputMap);
-
-		// TODO - Implement a better threading mechanism for launching modules.
-		// Perhaps a ThreadService so that the UI can query currently
-		// running modules and so forth?
-		if (separateThread) {
-			final String className = module.getInfo().getDelegateClassName();
-			final String threadName =
-				"ImageJ-" + getContext().getID() + "-ModuleRunner-" + className;
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					new ModuleRunner(module, pre, post).run();
-				}
-
-			}, threadName).start();
-		}
-		else module.run();
+		final ModuleRunner runner = new ModuleRunner(module, pre, post); 
+		if (separateThread) threadService.run(runner);
+		else runner.run();
 	}
 
 	// -- IService methods --

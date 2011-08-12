@@ -37,6 +37,7 @@ package imagej.ext.plugin;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.module.ModuleService;
+import imagej.thread.ThreadService;
 
 import java.util.List;
 
@@ -55,8 +56,9 @@ public class PluginDiscovery {
 		System.out.println("Scanning for plugins:");
 		final ImageJ context = null;
 		final EventService eventService = new EventService(context);
+		final ThreadService threadService = new ThreadService(context);
 		final ModuleService moduleService =
-			new ModuleService(context, eventService);
+			new ModuleService(context, eventService, threadService);
 		final PluginService pluginService =
 			new PluginService(context, moduleService);
 		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
