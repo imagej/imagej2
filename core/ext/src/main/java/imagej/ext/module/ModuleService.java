@@ -50,6 +50,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -250,6 +251,20 @@ public class ModuleService extends AbstractService {
 		assignInputs(module, inputMap);
 		final ModuleRunner runner = new ModuleRunner(module, pre, post);
 		return threadService.run(runner);
+	}
+
+	/** Blocks until the given module is finished executing. */
+	public Module waitFor(final Future<Module> future) {
+		try {
+			return future.get();
+		}
+		catch (InterruptedException e) {
+			Log.error("Module execution interrupted", e);
+		}
+		catch (ExecutionException e) {
+			Log.error("Error during module execution", e);
+		}
+		return null;
 	}
 
 	// -- IService methods --
