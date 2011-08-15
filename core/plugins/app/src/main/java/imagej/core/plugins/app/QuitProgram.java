@@ -35,9 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.app;
 
 import imagej.ImageJ;
-import imagej.ext.module.ItemVisibility;
 import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
@@ -46,36 +44,34 @@ import imagej.ui.UserInterface;
 /**
  * Quits ImageJ.
  * 
+ * @author Grant Harris
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
 @Plugin(iconPath = "/icons/plugins/door_in.png", menuPath = "File>Quit")
 public class QuitProgram implements ImageJPlugin {
 
-	//@Parameter(visibility = ItemVisibility.MESSAGE)
 	public static final String MESSAGE = "Really quit ImageJ?";
 
 	@Override
 	public void run() {
-		// TODO - save existing data
-		// TODO - close windows
-		// TODO - call ImageJ.getContext().shutdown() or some such, rather than
-		// using System.exit(0), which kills the entire JVM.
-		// System.exit(0);
-		promptForQuit();
+		if (promptForQuit()) {
+			// TODO - save existing data
+			// TODO - close windows
+			// TODO - call ImageJ.getContext().shutdown() or some such, rather than
+			// using System.exit(0), which kills the entire JVM.
+			System.exit(0);
+		}
 	}
-	
-		private void promptForQuit() {
+
+	private boolean promptForQuit() {
 		final UserInterface ui = ImageJ.get(UIService.class).getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt(MESSAGE, "Quit",
 				DialogPrompt.MessageType.QUESTION_MESSAGE,
 				DialogPrompt.OptionType.YES_NO_OPTION);
 		final DialogPrompt.Result result = dialog.prompt();
-		if (result == DialogPrompt.Result.YES_OPTION) {
-			//System.out.println("That's a YES");
-			System.exit(0);
-		}
+		return result == DialogPrompt.Result.YES_OPTION;
 	}
 
 }
