@@ -245,7 +245,7 @@ public class Dataset extends AbstractDataObject implements
 		final int bitsPerPixel = getType().getBitsPerPixel();
 		final String category =
 			isInteger() ? isSigned() ? "int" : "uint" : "float";
-		return category + " " + bitsPerPixel;		
+		return category + bitsPerPixel;		
 	}
 
 	/** Gets the full string description of the dataset's pixel type. */
