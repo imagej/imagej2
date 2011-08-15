@@ -44,6 +44,7 @@ import imagej.event.Events;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
+import imagej.platform.PlatformService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.DialogPrompt;
@@ -120,7 +121,13 @@ public class SwingUI implements UserInterface {
 
 		frame.pack();
 		frame.setVisible(true);
-
+		
+		// Only for MacOX
+		// PlatformService pService =   ImageJ.get(PlatformService.class);
+		// pService.isTargetPlatform(final Platform p) ;
+		// @Platform(osName = "Mac OS X")
+		// ??????????
+		
 		subscribeToEvents();
 
 		displayReadme();
@@ -158,6 +165,7 @@ public class SwingUI implements UserInterface {
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		f.setJMenuBar(menuBar);
+		f.validate();
 		return menuBar;
 	}
 
