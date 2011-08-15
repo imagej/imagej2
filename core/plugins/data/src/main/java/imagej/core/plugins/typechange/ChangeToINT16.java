@@ -44,10 +44,11 @@ import net.imglib2.type.numeric.integer.ShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(selectable = true, selectionGroup = "typechange", menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Signed 16-bit", weight = 209) })
+@Plugin(type = TypeChanger.class, selectable = true,
+	selectionGroup = "typechange", menu = {
+		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = "Type", mnemonic = 't'),
+		@Menu(label = "Signed 16-bit", weight = 209) })
 public class ChangeToINT16 extends TypeChanger {
 
 	@Override

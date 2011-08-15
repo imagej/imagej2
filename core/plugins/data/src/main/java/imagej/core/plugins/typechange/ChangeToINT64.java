@@ -44,10 +44,11 @@ import net.imglib2.type.numeric.integer.LongType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(selectable = true, selectionGroup = "typechange", menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Signed 64-bit", weight = 211) })
+@Plugin(type = TypeChanger.class, selectable = true,
+	selectionGroup = "typechange", menu = {
+		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = "Type", mnemonic = 't'),
+		@Menu(label = "Signed 64-bit", weight = 211) })
 public class ChangeToINT64 extends TypeChanger {
 
 	@Override
