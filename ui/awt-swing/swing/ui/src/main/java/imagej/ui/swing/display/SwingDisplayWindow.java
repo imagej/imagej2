@@ -413,7 +413,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] + "; ");
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-		sb.append(dataset.getTypeLabel());
+		sb.append(dataset.getTypeLabelLong());
 		double zoomPercent = getDisplay().getImageCanvas().getZoomFactor() * 100.0;
 		if (Math.abs(100.0-zoomPercent) >= 0.01)
 			sb.append(String.format(" [%.2f%%]", zoomPercent));
