@@ -171,13 +171,36 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	/**
 	 * Updates the menu structure to reflect changes in the given module. Does
 	 * nothing unless the module is already in the menu structure.
+	 * 
+	 * @return true if the module was successfully updated
 	 */
-	public void update(final ModuleInfo module) {
+	public boolean update(final ModuleInfo module) {
 		final ShadowMenu removed = removeInternal(module);
-		if (removed == null) return; // was not in menu structure
+		if (removed == null) return false; // was not in menu structure
 		final ShadowMenu menu = addInternal(module);
-		if (menu == null) return;
+		if (menu == null) return false;
 		menuService.getEventService().publish(new MenusUpdatedEvent(menu));
+		return true;
+	}
+
+	/**
+	 * Updates the menu structure to reflect changes in the given modules. Does
+	 * nothing unless at least one of the modules is already in the menu
+	 * structure.
+	 * 
+	 * @return true if at least one module was successfully updated
+	 */
+	public boolean updateAll(final Collection<? extends ModuleInfo> c) {
+		final HashSet<ShadowMenu> menus = new HashSet<ShadowMenu>();
+		for (final ModuleInfo info : c) {
+			final ShadowMenu removed = removeInternal(info);
+			if (removed == null) continue; // was not in menu structure
+			final ShadowMenu menu = addInternal(info);
+			if (menu != null) menus.add(menu);
+		}
+		if (menus.isEmpty()) return false;
+		menuService.getEventService().publish(new MenusUpdatedEvent(menus));
+		return true;
 	}
 
 	/** Executes the module linked to this menu. */
