@@ -44,10 +44,11 @@ import net.imglib2.type.numeric.integer.Unsigned12BitType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(selectable = true, selectionGroup = "typechange", menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Unsigned 12-bit", weight = 203) })
+@Plugin(type = TypeChanger.class, selectable = true,
+	selectionGroup = "typechange", menu = {
+		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = "Type", mnemonic = 't'),
+		@Menu(label = "Unsigned 12-bit", weight = 203) })
 public class ChangeToUINT12 extends TypeChanger {
 
 	@Override

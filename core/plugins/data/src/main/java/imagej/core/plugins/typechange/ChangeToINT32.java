@@ -44,10 +44,11 @@ import net.imglib2.type.numeric.integer.IntType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(selectable = true, selectionGroup = "typechange", menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Signed 32-bit", weight = 210) })
+@Plugin(type = TypeChanger.class, selectable = true,
+	selectionGroup = "typechange", menu = {
+		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = "Type", mnemonic = 't'),
+		@Menu(label = "Signed 32-bit", weight = 210) })
 public class ChangeToINT32 extends TypeChanger {
 
 	@Override

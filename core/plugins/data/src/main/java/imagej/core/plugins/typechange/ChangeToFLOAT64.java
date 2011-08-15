@@ -43,10 +43,11 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(selectable = true, selectionGroup = "typechange", menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Float 64-bit", weight = 207) })
+@Plugin(type = TypeChanger.class, selectable = true,
+	selectionGroup = "typechange", menu = {
+		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = "Type", mnemonic = 't'),
+		@Menu(label = "Float 64-bit", weight = 207) })
 public class ChangeToFLOAT64 extends TypeChanger {
 
 	@Override

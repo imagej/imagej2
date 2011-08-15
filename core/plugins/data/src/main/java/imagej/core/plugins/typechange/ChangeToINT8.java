@@ -43,10 +43,11 @@ import net.imglib2.type.numeric.integer.ByteType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(selectable = true, selectionGroup = "typechange", menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Signed 8-bit", weight = 208) })
+@Plugin(type = TypeChanger.class, selectable = true,
+	selectionGroup = "typechange", menu = {
+		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = "Type", mnemonic = 't'),
+		@Menu(label = "Signed 8-bit", weight = 208) })
 public class ChangeToINT8 extends TypeChanger {
 
 	@Override
