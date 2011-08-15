@@ -1,5 +1,5 @@
 //
-// ModuleUpdatedEvent.java
+// ModulesUpdatedEvent.java
 //
 
 /*
@@ -34,24 +34,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module.event;
 
-import imagej.event.ImageJEvent;
 import imagej.ext.module.ModuleInfo;
 
+import java.util.Collection;
+
 /**
- * An event indicating a module's details have been updated.
+ * An event indicating one or more module details have been updated.
  * 
  * @author Curtis Rueden
  */
-public class ModuleUpdatedEvent extends ImageJEvent {
+public class ModulesUpdatedEvent extends ModulesChangedEvent {
 
-	private final ModuleInfo info;
-
-	public ModuleUpdatedEvent(final ModuleInfo info) {
-		this.info = info;
+	public ModulesUpdatedEvent(final ModuleInfo o) {
+		super(o);
 	}
 
-	public ModuleInfo getModule() {
-		return info;
+	public ModulesUpdatedEvent(final Collection<? extends ModuleInfo> c) {
+		super(c);
 	}
 
 }

@@ -41,7 +41,7 @@ import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.event.ModuleUpdatedEvent;
+import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.plugin.PluginService;
@@ -180,16 +180,16 @@ public class MenuService extends AbstractService {
 		eventService
 			.subscribe(ModulesRemovedEvent.class, modulesRemovedSubscriber);
 
-		final EventSubscriber<ModuleUpdatedEvent> moduleUpdatedSubscriber =
-			new EventSubscriber<ModuleUpdatedEvent>() {
+		final EventSubscriber<ModulesUpdatedEvent> modulesUpdatedSubscriber =
+			new EventSubscriber<ModulesUpdatedEvent>() {
 
 				@Override
-				public void onEvent(final ModuleUpdatedEvent event) {
-					getMenu().update(event.getModule());
+				public void onEvent(final ModulesUpdatedEvent event) {
+					getMenu().updateAll(event.getItems());
 				}
 			};
-		subscribers.add(moduleUpdatedSubscriber);
-		eventService.subscribe(ModuleUpdatedEvent.class, moduleUpdatedSubscriber);
+		subscribers.add(modulesUpdatedSubscriber);
+		eventService.subscribe(ModulesUpdatedEvent.class, modulesUpdatedSubscriber);
 	}
 
 }
