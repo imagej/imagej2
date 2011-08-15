@@ -59,7 +59,7 @@ import java.util.List;
 public final class AppEventService extends AbstractService {
 
 	private final EventService eventService;
-	protected final PluginService pluginService;
+	private final PluginService pluginService;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
@@ -80,6 +80,16 @@ public final class AppEventService extends AbstractService {
 		this.pluginService = pluginService;
 	}
 
+	// -- AppEventService methods --
+
+	public EventService getEventService() {
+		return eventService;
+	}
+
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
 	// -- IService methods --
 
 	@Override
@@ -97,7 +107,7 @@ public final class AppEventService extends AbstractService {
 
 				@Override
 				public void onEvent(final AppAboutEvent event) {
-					pluginService.run(AboutImageJ.class);
+					getPluginService().run(AboutImageJ.class);
 				}
 			};
 		subscribers.add(appAboutSubscriber);
@@ -108,7 +118,7 @@ public final class AppEventService extends AbstractService {
 
 				@Override
 				public void onEvent(final AppPreferencesEvent event) {
-					pluginService.run(ShowPrefs.class);
+					getPluginService().run(ShowPrefs.class);
 				}
 			};
 		subscribers.add(appPreferencesSubscriber);
@@ -120,7 +130,7 @@ public final class AppEventService extends AbstractService {
 
 				@Override
 				public void onEvent(final AppQuitEvent event) {
-					pluginService.run(QuitProgram.class);
+					getPluginService().run(QuitProgram.class);
 				}
 			};
 		subscribers.add(appQuitSubscriber);
