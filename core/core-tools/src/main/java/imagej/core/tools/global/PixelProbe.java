@@ -1,5 +1,5 @@
 //
-// ProbeTool.java
+// PixelProbe.java
 //
 
 /*
@@ -70,7 +70,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Tool(name = "Probe", global = true)
-public class ProbeTool extends AbstractTool {
+public class PixelProbe extends AbstractTool {
 
 	// -- private instance variables --
 
@@ -82,7 +82,7 @@ public class ProbeTool extends AbstractTool {
 
 	// -- constructor --
 
-	public ProbeTool() {
+	public PixelProbe() {
 		subscribeToEvents();
 	}
 
