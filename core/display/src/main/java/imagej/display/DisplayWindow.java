@@ -1,4 +1,4 @@
-//
+ //
 // DisplayWindow.java
 //
 
@@ -58,6 +58,12 @@ public interface DisplayWindow {
 	void setTitle(String s);
 
 	void addEventDispatcher(EventDispatcher dispatcher);
+	
+	/*
+	 * Make this the active window/frame (or top-level component)
+	 */
+	void makeActive();
 
 	void close();
+
 }
