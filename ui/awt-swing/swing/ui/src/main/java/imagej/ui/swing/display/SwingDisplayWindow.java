@@ -143,6 +143,11 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	public SwingImageDisplay getDisplay() {
 		return display;
 	}
+	
+	@Override
+	public void makeActive() {
+		this.requestFocus();
+	}
 
 	@Override
 	public void update() {
