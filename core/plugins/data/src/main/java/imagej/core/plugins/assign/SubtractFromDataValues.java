@@ -38,8 +38,9 @@ import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.SubtractConstant;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealSubtractConstant;
 
 /**
  * Fills an output Dataset by subtracting a user defined constant value from an
@@ -62,7 +63,7 @@ public class SubtractFromDataValues extends AbstractPreviewPlugin {
 	Display display;
 
 	@Parameter(label = "Value")
-	private long constant;
+	private double constant;
 
 	@Parameter(label = "Preview")
 	private boolean preview;
@@ -70,8 +71,8 @@ public class SubtractFromDataValues extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperator getOperator() {
-		return new SubtractConstant(constant);
+	public UnaryOperation<Real> getOperation() {
+		return new RealSubtractConstant(constant);
 	}
 
 	@Override

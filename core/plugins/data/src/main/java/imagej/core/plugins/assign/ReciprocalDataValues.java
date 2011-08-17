@@ -34,14 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.Dataset;
+import imagej.display.Display;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.Copy;
-import net.imglib2.ops.operator.unary.Reciprocal;
+import imagej.util.Prefs;
+import imagej.util.SettingsKeys;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealReciprocal;
 
 /**
  * Fills an output Dataset by taking reciprocal values of an input Dataset. IJ1
@@ -58,16 +60,15 @@ public class ReciprocalDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	Display display;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		UnaryOperator op = new Reciprocal();
-		if (input.isInteger()) // This is similar to what IJ1 does
-			op = new Copy();
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
+		double dbzVal = Prefs.getDouble(SettingsKeys.OPTIONS_MISC_DBZ_VALUE, Double.POSITIVE_INFINITY);
+		UnaryOperation<Real> op = new RealReciprocal(dbzVal);
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
 

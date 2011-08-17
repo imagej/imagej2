@@ -34,12 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealDivideConstant;
 import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.DivideByConstant;
+import imagej.util.Prefs;
+import imagej.util.SettingsKeys;
 
 /**
  * Fills an output Dataset by dividing an input Dataset by a user defined
@@ -59,7 +62,7 @@ public class DivideDataValuesBy extends AbstractPreviewPlugin {
 	Display display;
 
 	@Parameter(label = "Value")
-	private long constant;
+	private double constant;
 
 	@Parameter(label = "Preview")
 	private boolean preview;
@@ -67,8 +70,9 @@ public class DivideDataValuesBy extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperator getOperator() {
-		return new DivideByConstant(constant);
+	public UnaryOperation<Real> getOperation() {
+		double dbzVal = Prefs.getDouble(SettingsKeys.OPTIONS_MISC_DBZ_VALUE, Double.POSITIVE_INFINITY);
+		return new RealDivideConstant(constant, dbzVal);
 	}
 
 	@Override

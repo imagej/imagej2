@@ -34,13 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.Dataset;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealAbs;
+import imagej.display.Display;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.Abs;
 
 /**
  * Fills an output Dataset by applying the absolute value function to an input
@@ -57,14 +58,14 @@ public class AbsDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Dataset input;
+	Display display;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		UnaryOperator op = new Abs();
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
+		UnaryOperation<Real> op = new RealAbs();
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
 }

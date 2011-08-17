@@ -42,27 +42,26 @@ import imagej.ext.plugin.Plugin;
 
 import java.util.HashMap;
 
-import net.imglib2.ops.function.p2.BinaryOperatorFunction;
-import net.imglib2.ops.operator.BinaryOperator;
-import net.imglib2.ops.operator.binary.Add;
-import net.imglib2.ops.operator.binary.And;
-import net.imglib2.ops.operator.binary.Average;
-import net.imglib2.ops.operator.binary.Copy;
-import net.imglib2.ops.operator.binary.CopyTransparentZero;
-import net.imglib2.ops.operator.binary.Difference;
-import net.imglib2.ops.operator.binary.Divide;
-import net.imglib2.ops.operator.binary.Max;
-import net.imglib2.ops.operator.binary.Min;
-import net.imglib2.ops.operator.binary.Multiply;
-import net.imglib2.ops.operator.binary.Or;
-import net.imglib2.ops.operator.binary.Subtract;
-import net.imglib2.ops.operator.binary.Xor;
-
-// NOTE - attempted to use the ImageCalculator in Imglib using
-// ImglibOutputAlgorithmRunner but could not solve compiler errors and
-// warnings. That test implementation saved below commented out. For now
-// I'll do this via imglib-ops and hatch binary ops as needed. Even with
-// ImageCalculator attempt I'd need to hatch multiple Functions somewhere.
+import net.imglib2.ops.BinaryOperation;
+import net.imglib2.ops.DiscreteNeigh;
+import net.imglib2.ops.Function;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.function.general.GeneralBinaryFunction;
+import net.imglib2.ops.function.real.RealImageFunction;
+import net.imglib2.ops.image.RealImageAssignment;
+import net.imglib2.ops.operation.binary.real.RealAdd;
+import net.imglib2.ops.operation.binary.real.RealAnd;
+import net.imglib2.ops.operation.binary.real.RealAvg;
+import net.imglib2.ops.operation.binary.real.RealCopyRight;
+import net.imglib2.ops.operation.binary.real.RealCopyZeroTransparent;
+import net.imglib2.ops.operation.binary.real.RealDifference;
+import net.imglib2.ops.operation.binary.real.RealDivide;
+import net.imglib2.ops.operation.binary.real.RealMax;
+import net.imglib2.ops.operation.binary.real.RealMin;
+import net.imglib2.ops.operation.binary.real.RealMultiply;
+import net.imglib2.ops.operation.binary.real.RealOr;
+import net.imglib2.ops.operation.binary.real.RealSubtract;
+import net.imglib2.ops.operation.binary.real.RealXor;
 
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
@@ -93,7 +92,7 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- other instance variables --
 
-	private final HashMap<String, BinaryOperator> operators;
+	private final HashMap<String, BinaryOperation<Real>> operators;
 
 	// -- constructor --
 
@@ -102,21 +101,21 @@ public class ImageMath implements ImageJPlugin {
 	 * avaialable.
 	 */
 	public ImageMath() {
-		operators = new HashMap<String, BinaryOperator>();
+		operators = new HashMap<String, BinaryOperation<Real>>();
 
-		operators.put("Add", new Add());
-		operators.put("Subtract", new Subtract());
-		operators.put("Multiply", new Multiply());
-		operators.put("Divide", new Divide());
-		operators.put("AND", new And());
-		operators.put("OR", new Or());
-		operators.put("XOR", new Xor());
-		operators.put("Min", new Min());
-		operators.put("Max", new Max());
-		operators.put("Average", new Average());
-		operators.put("Difference", new Difference());
-		operators.put("Copy", new Copy());
-		operators.put("Transparent-zero", new CopyTransparentZero());
+		operators.put("Add", new RealAdd());
+		operators.put("Subtract", new RealSubtract());
+		operators.put("Multiply", new RealMultiply());
+		operators.put("Divide", new RealDivide());
+		operators.put("AND", new RealAnd());
+		operators.put("OR", new RealOr());
+		operators.put("XOR", new RealXor());
+		operators.put("Min", new RealMin());
+		operators.put("Max", new RealMax());
+		operators.put("Average", new RealAvg());
+		operators.put("Difference", new RealDifference());
+		operators.put("Copy", new RealCopyRight());
+		operators.put("Transparent-zero", new RealCopyZeroTransparent());
 	}
 
 	// -- public interface --
@@ -127,89 +126,23 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		final BinaryOperator binOp = operators.get(operatorName);
-
-		final BinaryOperatorFunction binaryFunction =
-			new BinaryOperatorFunction(binOp);
-
-		final NAryOperation operation =
-			new NAryOperation(input1, input2, binaryFunction);
-
-		operation.setOutput(output);
-
-		output = operation.run();
+		final BinaryOperation<Real> binOp = operators.get(operatorName);
+		final Function<DiscreteNeigh,Real> f1 =
+			new RealImageFunction(input1.getImgPlus().getImg());
+		final Function<DiscreteNeigh,Real> f2 =
+			new RealImageFunction(input2.getImgPlus().getImg());
+		final GeneralBinaryFunction<DiscreteNeigh,Real> binFunc =
+			new GeneralBinaryFunction<DiscreteNeigh,Real>(f1, f2, binOp);
+		output = input1.duplicateBlank();
+		int numDims = output.getImgPlus().numDimensions();
+		long[] posOffs = new long[numDims];
+		for (int i = 0; i < numDims; i++) {
+			posOffs[i] = input1.getImgPlus().dimension(i) - 1;
+		}
+		DiscreteNeigh neigh = new DiscreteNeigh(new long[numDims], new long[numDims], posOffs);
+		final RealImageAssignment assigner =
+			new RealImageAssignment(output.getImgPlus().getImg(), neigh, binFunc);
+		assigner.assign();
 	}
 
 }
-
-//import imagej.plugin.Parameter;
-//import net.imglib2.algorithm.OutputAlgorithm;
-//import net.imglib2.algorithm.math.ImageCalculator;
-//import net.imglib2.function.Function;
-//import net.imglib2.type.numeric.RealType;
-//
-//public class ImageMath extends ImglibOutputAlgorithmPlugin {
-//
-//	@Parameter(label = "Operation to do between the two input images",
-//		choices = { "Add", "Subtract", "Multiply", "Divide", "AND", "OR", "XOR",
-//			"Min", "Max", "Average", "Difference", "Copy", "Transparent-zero" })
-//	String operator;
-//
-//	@Parameter
-//	Dataset input1;
-//
-//	@Parameter
-//	Dataset input2;
-//	private ImageCalculator<? extends RealType<?>, ? extends RealType<?>, ? extends RealType<?>> calculator;
-//
-//	@Override
-//	public void run() {
-//		// TODO - temp hack for testing purposes if (in == null) { //TODO - set in
-//		// to an arraylist of two datasets backed with same final size images of
-//		// final same type
-//		setupCalculator();
-//		setAlgorithm(calculator);
-//		super.run();
-//	}
-//
-//	private void setupCalculator() {
-//		Function function;
-//
-//		if (operator.equals("Add")) function = new BinaryAddFunction();
-//		else if (operator.equals("Subtract")) function = new BinaryAddFunction();
-//		else if (operator.equals("Multiply")) function = new BinaryAddFunction();
-//		else if (operator.equals("Divide")) function = new BinaryAddFunction();
-//		else if (operator.equals("AND")) function = new BinaryAddFunction();
-//		else if (operator.equals("OR")) function = new BinaryAddFunction();
-//		else if (operator.equals("XOR")) function = new BinaryAddFunction();
-//		else if (operator.equals("Min")) function = new BinaryAddFunction();
-//		else if (operator.equals("Max")) function = new BinaryAddFunction();
-//		else if (operator.equals("Average")) function = new BinaryAddFunction();
-//		else if (operator.equals("Difference")) function = new BinaryAddFunction();
-//		else if (operator.equals("Copy")) function = new BinaryAddFunction();
-//		else if (operator.equals("Transparent-zero")) function =
-//			new BinaryAddFunction();
-//		else throw new IllegalArgumentException("unknown operator type : " +
-//			operator);
-//
-//		calculator =
-//			new ImageCalculator(input1.getImage(), input2.getImage(), output
-//				.getImage(), function);
-//	}
-//
-//	private class BinaryAddFunction
-//		implements
-//		Function<? extends RealType<?>, ? extends RealType<?>, ? extends RealType<?>>
-//	{
-//
-//		@Override
-//		public void compute(final RealType input1, final RealType input2,
-//			final RealType output)
-//		{
-//			final double value = input1.getRealDouble() + input2.getRealDouble();
-//
-//			output.setReal(value);
-//		}
-//	}
-//
-//}

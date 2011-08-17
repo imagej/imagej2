@@ -34,10 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.display.OverlayService;
+import imagej.util.RealRect;
+import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.operation.TransformOperation;
-import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.DiscreteNeigh;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.function.general.GeneralUnaryFunction;
+import net.imglib2.ops.function.real.RealImageFunction;
+import net.imglib2.ops.image.RealImageAssignment;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -53,30 +63,62 @@ public class InplaceUnaryTransform {
 
 	private final Dataset dataset;
 
-	private final TransformOperation operation;
-
+	private RealImageAssignment assigner;
+	
 	// -- constructor --
 
-	public InplaceUnaryTransform(final Dataset input,
-		final UnaryOperator operator)
+	public InplaceUnaryTransform(final Display display,
+		final UnaryOperation<Real> operation)
 	{
-		dataset = input;
-		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-		operation = new TransformOperation(imgPlus, operator);
-		final long[] origin = new long[imgPlus.numDimensions()];
-		final long[] span = new long[imgPlus.numDimensions()];
-		imgPlus.dimensions(span);
-		operation.setRegion(origin, span);
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
+		RealImageFunction f1 = new RealImageFunction(imgPlus.getImg());
+		GeneralUnaryFunction<DiscreteNeigh,Real> function =
+			new GeneralUnaryFunction<DiscreteNeigh,Real>(f1, operation);
+		DiscreteNeigh neigh = getNeighborhood(display);
+		assigner = new RealImageAssignment(imgPlus.getImg(), neigh, function);
 	}
 
 	// -- public interface --
 
-	public void setRegion(final long[] origin, final long[] span) {
-		operation.setRegion(origin, span);
-	}
-
 	public void run() {
-		operation.execute();
+		assigner.assign();
 		dataset.update();
 	}
+
+	// -- private helpers --
+	
+	private DiscreteNeigh getNeighborhood(Display disp) {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final OverlayService overlayService = ImageJ.get(OverlayService.class);
+
+		Dataset ds = displayService.getActiveDataset(disp);
+		RealRect bounds = overlayService.getSelectionBounds(disp);
+
+		// check dimensions of Dataset
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
+		if ((xIndex < 0) || (yIndex < 0))
+			throw new IllegalArgumentException("display does not have XY planes");
+		long[] dims = ds.getDims();
+		long w = (long) bounds.width;
+		long h = (long) bounds.height;
+		
+		// calc origin of image for actual data changes
+		long[] imageOrigin = new long[dims.length];
+		for (int i = 0; i < imageOrigin.length; i++)
+			imageOrigin[i] = 0;
+		imageOrigin[xIndex] = (long) bounds.x;
+		imageOrigin[yIndex] = (long) bounds.y;
+
+		// calc span of image for actual data changes
+		long[] imageOffsets = new long[dims.length];
+		for (int i = 0; i < imageOffsets.length; i++)
+			imageOffsets[i] = dims[i]-1;
+		imageOffsets[xIndex] = w-1;
+		imageOffsets[yIndex] = h-1;
+		
+		return new DiscreteNeigh(imageOrigin, new long[imageOrigin.length], imageOffsets);
+	}
+	
 }

@@ -38,11 +38,10 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.display.OverlayService;
-import imagej.util.RealRect;
 import net.imglib2.Cursor;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.AddNoise;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealAddNoise;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -58,14 +57,8 @@ public class AddNoiseToDataValues {
 
 	// -- instance variables --
 
-	/**
-	 * The input Dataset that contains original values */
-	private Dataset input;
-
-	/**
-	 * The output Dataset that will contain perturbed values */
-	private Dataset output;
-
+	private Display display;
+	
 	/**
 	 * The stand deviation of the gaussian random value used to create perturbed
 	 * values
@@ -80,8 +73,6 @@ public class AddNoiseToDataValues {
 	 */
 	private double rangeMin, rangeMax;
 
-	private RealRect selection;
-	
 	// -- constructor --
 
 	/**
@@ -89,20 +80,10 @@ public class AddNoiseToDataValues {
 	 * perturbed values from.
 	 */
 	public AddNoiseToDataValues(Display display) {
-		this.input = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		this.selection = ImageJ.get(OverlayService.class).getSelectionBounds(display);
+		this.display = display;
 	}
 
 	// -- public interface --
-
-	/**
-	 * Use this method to specify the output Dataset that will hold output data.
-	 * if this method is not called then the add noise operation defaults to
-	 * creating a new output Dataset and returning it from the run() method.
-	 */
-	public void setOutput(Dataset output) {
-		this.output = output;
-	}
 
 	/**
 	 * Specify the standard deviation of the gaussian range desired. affects the
@@ -117,9 +98,9 @@ public class AddNoiseToDataValues {
 	public void run() {
 		calcTypeMinAndMax();
 
-		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
+		UnaryOperation<Real> op = new RealAddNoise(rangeMin, rangeMax, rangeStdDev);
 
-		UnaryTransformation transform = new UnaryTransformation(input, output, op, selection);
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 
 		transform.run();
 	}
@@ -131,6 +112,7 @@ public class AddNoiseToDataValues {
 	 * upon its underlying data type
 	 */
 	private void calcTypeMinAndMax() {
+		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
 		Cursor<? extends RealType<?>> cursor = input.getImgPlus().cursor();
 		rangeMin = cursor.get().getMinValue();
 		rangeMax = cursor.get().getMaxValue();

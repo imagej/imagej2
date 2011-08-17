@@ -34,14 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.Cursor;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.Invert;
+import net.imglib2.ops.operation.unary.real.RealInvert;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -60,10 +64,11 @@ public class InvertDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	private Display display;
 
 	// -- instance variables --
 
+	private Dataset dataset;
 	private double min, max;
 
 	// -- public interface --
@@ -72,16 +77,17 @@ public class InvertDataValues implements ImageJPlugin {
 	 * Fills the output image from the input image */
 	@Override
 	public void run() {
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
 		// this is similar to IJ1
-		if (input.isInteger() && !input.isSigned() &&
-				input.getType().getBitsPerPixel() == 8) {
+		if (dataset.isInteger() && !dataset.isSigned() &&
+				dataset.getType().getBitsPerPixel() == 8) {
 			min = 0;
 			max = 255;
 		}
 		else
 			calcValueRange();
-		UnaryOperator op = new Invert(min, max);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
+		UnaryOperation<Real> op = new RealInvert(min, max);
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
 
@@ -95,7 +101,7 @@ public class InvertDataValues implements ImageJPlugin {
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 
-		Cursor<? extends RealType<?>> cursor = input.getImgPlus().cursor();
+		Cursor<? extends RealType<?>> cursor = dataset.getImgPlus().cursor();
 
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();
