@@ -103,8 +103,8 @@ public class ReorderAxes extends DynamicPlugin {
 		if (inputBad()) return;
 		setupPermutationVars();
 		final ImgPlus<? extends RealType<?>> newImgPlus = getReorganizedData();
-		// reportDims(dataset.getImgPlus());
-		// reportDims(newImgPlus);
+		//reportDims(dataset.getImgPlus());
+		//reportDims(newImgPlus);
 		final int count = dataset.getCompositeChannelCount();
 		dataset.setImgPlus(newImgPlus);
 		dataset.setCompositeChannelCount(count);
@@ -218,6 +218,7 @@ public class ReorderAxes extends DynamicPlugin {
 		final Axis[] newAxes = getNewAxes(origAxes);
 		final ImgPlus<? extends RealType<?>> newImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDims, newAxes);
+		newImgPlus.setCompositeChannelCount(dataset.getCompositeChannelCount());
 		final RandomAccess<? extends RealType<?>> outputAccessor =
 			newImgPlus.randomAccess();
 		final long[] permutedPos = new long[inputOrigin.length];
