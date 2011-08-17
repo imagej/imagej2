@@ -34,16 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreviewPlugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.Constant;
-import net.imglib2.ops.operator.unary.OrConstant;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealOrConstant;
 
 /**
  * Fills an output Dataset by ORing an input Dataset with a user defined
@@ -71,8 +68,8 @@ public class OrDataValuesWith extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperator getOperator() {
-		return new OrConstant(constant);
+	public UnaryOperation<Real> getOperation() {
+		return new RealOrConstant(constant);
 	}
 
 	@Override

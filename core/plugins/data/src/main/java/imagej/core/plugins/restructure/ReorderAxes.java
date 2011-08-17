@@ -51,7 +51,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.operation.RegionIterator;
+import net.imglib2.ops.DiscreteIterator;
 import net.imglib2.type.numeric.RealType;
 
 // TODO
@@ -68,8 +68,6 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Axes...") })
 public class ReorderAxes extends DynamicPlugin {
-
-	private RegionIterator iter;
 
 	private Dataset dataset;
 
@@ -205,9 +203,15 @@ public class ReorderAxes extends DynamicPlugin {
 		final RandomAccess<? extends RealType<?>> inputAccessor =
 			dataset.getImgPlus().randomAccess();
 		final long[] inputOrigin = new long[dataset.getImgPlus().numDimensions()];
-		final long[] inputSpan = new long[inputOrigin.length];
-		dataset.getImgPlus().dimensions(inputSpan);
-		iter = new RegionIterator(inputAccessor, inputOrigin, inputSpan);
+		final long[] inputOffsets = new long[inputOrigin.length];
+		dataset.getImgPlus().dimensions(inputOffsets);
+		for (int i = 0; i < inputOffsets.length; i++)
+			inputOffsets[i]--;
+		DiscreteIterator iter =
+			new DiscreteIterator(
+				inputOrigin,
+				new long[inputOrigin.length],
+				inputOffsets);
 		final long[] origDims = dataset.getDims();
 		final Axis[] origAxes = dataset.getAxes();
 		final long[] newDims = getNewDims(origDims);
@@ -216,12 +220,13 @@ public class ReorderAxes extends DynamicPlugin {
 			RestructureUtils.createNewImgPlus(dataset, newDims, newAxes);
 		final RandomAccess<? extends RealType<?>> outputAccessor =
 			newImgPlus.randomAccess();
-		final long[] currPos = new long[inputOrigin.length];
 		final long[] permutedPos = new long[inputOrigin.length];
+		long[] currPos;
 		while (iter.hasNext()) {
-			iter.next();
-			final double value = iter.getValue();
-			iter.getPosition(currPos);
+			iter.fwd();
+			currPos = iter.getPosition();
+			inputAccessor.setPosition(currPos);
+			final double value = inputAccessor.get().getRealDouble();
 			permute(currPos, permutedPos);
 			outputAccessor.setPosition(permutedPos);
 			outputAccessor.get().setReal(value);

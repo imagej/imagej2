@@ -38,8 +38,9 @@ import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.AndConstant;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealAndConstant;
 
 /**
  * Fills an output Dataset by ANDing an input Dataset with a user defined
@@ -67,8 +68,8 @@ public class AndDataValuesWith extends AbstractPreviewPlugin {
 	// -- public interface --
 	
 	@Override
-	public UnaryOperator getOperator() {
-		return new AndConstant(constant);
+	public UnaryOperation<Real> getOperation() {
+		return new RealAndConstant(constant);
 	}
 	
 	@Override

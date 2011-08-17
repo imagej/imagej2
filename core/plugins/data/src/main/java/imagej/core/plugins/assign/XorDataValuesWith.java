@@ -34,12 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealXorConstant;
 import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.XorConstant;
 
 /**
  * Fills an output Dataset by XORing an input Dataset with a user defined
@@ -67,8 +68,8 @@ public class XorDataValuesWith extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperator getOperator() {
-		return new XorConstant(constant);
+	public UnaryOperation<Real> getOperation() {
+		return new RealXorConstant(constant);
 	}
 
 	@Override

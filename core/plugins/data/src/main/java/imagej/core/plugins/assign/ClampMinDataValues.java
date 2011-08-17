@@ -34,12 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealMinConstant;
 import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.Min;
 
 /**
  * Fills an output Dataset by clamping an input Dataset such that no values are
@@ -59,7 +60,7 @@ public class ClampMinDataValues extends AbstractPreviewPlugin {
 	Display display;
 
 	@Parameter(label = "Value")
-	private long constant;
+	private double constant;
 
 	@Parameter(label = "Preview")
 	private boolean preview;
@@ -67,8 +68,8 @@ public class ClampMinDataValues extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperator getOperator() {
-		return new Min(constant);
+	public UnaryOperation<Real> getOperation() {
+		return new RealMinConstant(constant);
 	}
 
 	@Override

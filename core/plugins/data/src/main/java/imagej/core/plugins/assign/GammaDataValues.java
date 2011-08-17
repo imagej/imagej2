@@ -34,12 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealGammaConstant;
 import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.Gamma;
 
 /**
  * Fills an output Dataset with the result of applying the gamma function to an
@@ -60,7 +61,7 @@ public class GammaDataValues extends AbstractPreviewPlugin {
 	Display display;
 
 	@Parameter(label = "Value", min="0.05", max = "5.00", stepSize = "0.05")
-	private long constant;
+	private double constant;
 
 	@Parameter(label = "Preview")
 	private boolean preview;
@@ -68,8 +69,8 @@ public class GammaDataValues extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperator getOperator() {
-		return new Gamma(constant);
+	public UnaryOperation<Real> getOperation() {
+		return new RealGammaConstant(constant);
 	}
 
 	@Override

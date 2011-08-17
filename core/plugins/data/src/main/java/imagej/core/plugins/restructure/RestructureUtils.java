@@ -35,12 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.restructure;
 
 import imagej.data.Dataset;
+import imagej.data.Extents;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.operation.MultiImageIterator;
-import net.imglib2.ops.operation.RegionIterator;
+import net.imglib2.ops.DiscreteIterator;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -109,25 +110,31 @@ public class RestructureUtils {
 	/**
 	 * Copies a hypervolume from a source {@link ImgPlus} to a destination
 	 * {@link ImgPlus}. Spans may have different number of dimensions but must be
-	 * shape compatible with axes in same relative order. Span checking is done
-	 * within a {@link MultiImageIterator}.
+	 * shape compatible with axes in same relative order.
 	 */
-	@SuppressWarnings({"rawtypes","unchecked"})
 	public static void copyHyperVolume(ImgPlus<? extends RealType<?>> srcImgPlus,
 		long[] srcOrigin, long[] srcSpan,
 		ImgPlus<? extends RealType<?>> dstImgPlus,
 		long[] dstOrigin, long[] dstSpan)
 	{
-		ImgPlus[] images = new ImgPlus[]{srcImgPlus, dstImgPlus};
-		MultiImageIterator iter =	new MultiImageIterator(images);
-		iter.setRegion(0, srcOrigin, srcSpan);
-		iter.setRegion(1, dstOrigin, dstSpan);
-		iter.initialize();
-		RegionIterator[] subIters = iter.getIterators();
-		while (iter.hasNext()) {
-			iter.next();
-			double value = subIters[0].getValue();
-			subIters[1].setValue(value);
+		checkSpanShapes(srcSpan, dstSpan);
+		RandomAccess<? extends RealType<?>> srcAccessor = srcImgPlus.getImg().randomAccess();
+		RandomAccess<? extends RealType<?>> dstAccessor = dstImgPlus.getImg().randomAccess();
+		long[] srcOffsets = new long[srcOrigin.length];
+		for (int i = 0; i < srcOffsets.length; i++)
+			srcOffsets[i] = srcSpan[i]-1;
+		long[] dstOffsets = new long[dstOrigin.length];
+		for (int i = 0; i < dstOffsets.length; i++)
+			dstOffsets[i] = dstSpan[i]-1;
+		DiscreteIterator iterS = new DiscreteIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
+		DiscreteIterator iterD = new DiscreteIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
+		while (iterS.hasNext() && iterD.hasNext()) {
+			iterS.fwd();
+			iterD.fwd();
+			srcAccessor.setPosition(iterS.getPosition());
+			dstAccessor.setPosition(iterD.getPosition());
+			double value = srcAccessor.get().getRealDouble();
+			dstAccessor.get().setReal(value);
 		}
 	}
 
@@ -155,5 +162,17 @@ public class RestructureUtils {
 		int axisIndex = imgPlus.getAxisIndex(axis);
 		origin[axisIndex] = startPos;
 		return origin;
+	}
+	
+	private static void checkSpanShapes(long[] srcSpan, long[] dstSpan) {
+		Extents srcExtents = new Extents(srcSpan);
+		Extents dstExtents = new Extents(dstSpan);
+		if (srcExtents.numElements() != dstExtents.numElements())
+			throw new IllegalArgumentException("hypervolume regions not shape compatible");
+		// TODO
+		// we could do a lot more checking but won't for now
+		//   checks would be that all axes are the same ones and any missing ones
+		//   in span I have size==1 in other span J. and test the axes are in the
+		//   same relative order.
 	}
 }

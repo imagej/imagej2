@@ -38,8 +38,9 @@ import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.AddConstant;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealAddConstant;
 
 /**
  * Fills an output Dataset by adding a user defined constant value to an input
@@ -58,7 +59,7 @@ public class AddToDataValues extends AbstractPreviewPlugin {
 	Display display;
 
 	@Parameter(label = "Value")
-	private long constant;
+	private double constant;
 
 	@Parameter(label = "Preview")
 	private boolean preview;
@@ -66,8 +67,8 @@ public class AddToDataValues extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperator getOperator() {
-		return new AddConstant(constant);
+	public UnaryOperation<Real> getOperation() {
+		return new RealAddConstant(constant);
 	}
 
 	@Override

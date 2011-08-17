@@ -34,13 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.Dataset;
+import imagej.display.Display;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operator.UnaryOperator;
-import net.imglib2.ops.operator.unary.Constant;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealSetConstant;
 
 /**
  * Fills an output Dataset with a user defined constant value.
@@ -55,8 +56,7 @@ public class FillDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input; // TODO - does this make sense? used for dimensions
-	// only I think. Or do we want in place changing?
+	private Display display;
 
 	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
 	private double constant;
@@ -65,8 +65,8 @@ public class FillDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperator op = new Constant(constant);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
+		UnaryOperation<Real> op = new RealSetConstant(constant);
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
 }
