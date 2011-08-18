@@ -1,5 +1,5 @@
 //
-// AppUserSessionEvent.java
+// AppSleepEvent.java
 //
 
 /*
@@ -35,28 +35,31 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.platform.event;
 
 /**
- * An event sent when the the user session has been changed via Fast User
- * Switching.
+ * An event sent when a device enters or exist power save sleep.
  * 
  * @author Curtis Rueden
  */
-public class AppUserSessionEvent extends ApplicationEvent {
+public class AppSleepEvent extends ApplicationEvent {
 
-	private final boolean activated;
+	private boolean sleep;
 
-	public AppUserSessionEvent(final boolean activated) {
-		this.activated = activated;
+	public AppSleepEvent(final boolean sleep) {
+		this.sleep = sleep;
 	}
 
-	public boolean isActivated() {
-		return activated;
+	public boolean isSleeping() {
+		return sleep;
+	}
+
+	public boolean isWaking() {
+		return !sleep;
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tactivated = " + activated;
+		return super.toString() + "\n\tsleep = " + sleep;
 	}
 
 }

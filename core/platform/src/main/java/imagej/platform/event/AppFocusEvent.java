@@ -56,4 +56,11 @@ public class AppFocusEvent extends ApplicationEvent {
 		return !focus;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tfocus = " + focus;
+	}
+
 }

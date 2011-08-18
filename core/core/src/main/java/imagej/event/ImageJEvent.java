@@ -53,4 +53,11 @@ public class ImageJEvent {
 		this.context = context;
 	}
 
+	// Object methods --
+
+	@Override
+	public String toString() {
+		return "\n\tcontext=" + context.getID();
+	}
+
 }

@@ -66,4 +66,13 @@ public class ZoomEvent extends CanvasEvent {
 	public double getScale() {
 		return scale;
 	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tscale = " + scale + "\n\tcenterX = " +
+			centerX + "\n\tcenterY = " + centerY;
+	}
+
 }

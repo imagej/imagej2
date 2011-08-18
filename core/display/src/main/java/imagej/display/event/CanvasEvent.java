@@ -54,4 +54,11 @@ public class CanvasEvent extends ImageJEvent {
 		return canvas;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tcanvas = " + canvas;
+	}
+
 }

@@ -39,17 +39,17 @@ import imagej.display.event.DisplayEvent;
 
 /**
  * An event indicating keyboard activity in a display.
- *
+ * 
  * @author Curtis Rueden
  */
 public class KyEvent extends DisplayEvent {
 
-	private char character;
-	private int code;
-	private int modifiers;
+	private final char character;
+	private final int code;
+	private final int modifiers;
 
-	public KyEvent(final Display display, final char character,
-		final int code, final int modifiers)
+	public KyEvent(final Display display, final char character, final int code,
+		final int modifiers)
 	{
 		super(display);
 		this.character = character;
@@ -67,6 +67,14 @@ public class KyEvent extends DisplayEvent {
 
 	public int getModifiers() {
 		return modifiers;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tcharacter = " + character + "\n\tcode = " +
+			code + "\n\tmodifiers = " + modifiers;
 	}
 
 }

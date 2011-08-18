@@ -55,9 +55,11 @@ public class FileEvent extends ImageJEvent {
 		return path;
 	}
 
+	// -- Object methods --
+
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + ": " + path;
+		return super.toString() + "\n\tpath = " + path;
 	}
 
 }

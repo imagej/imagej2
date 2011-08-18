@@ -38,7 +38,7 @@ import imagej.display.Display;
 
 /**
  * An event indicating mouse button activity in a display.
- *
+ * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
@@ -70,6 +70,14 @@ public class MsButtonEvent extends MsEvent {
 
 	public boolean isPopupTrigger() {
 		return isPopupTrigger;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tbutton = " + button + "\n\tnumClicks = " +
+			numClicks + "\n\tisPopupTrigger = " + isPopupTrigger;
 	}
 
 }
