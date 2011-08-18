@@ -132,6 +132,11 @@ public final class UIService extends AbstractService {
 		return availableUIs;
 	}
 
+	/** Creates a new output window. */
+	public OutputWindow createOutputWindow(final String title) {
+		return userInterface.newOutputWindow(title);
+	}
+
 	// -- IService methods --
 
 	@Override
