@@ -37,8 +37,8 @@ package imagej.io;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.FileOpenedEvent;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
@@ -82,6 +82,7 @@ public final class RecentFileService extends AbstractService {
 
 	private static final String RECENT_MENU_NAME = "Open Recent";
 
+	private EventService eventService;
 	private MenuService menuService;
 	private ModuleService moduleService;
 
@@ -98,14 +99,20 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	public RecentFileService(final ImageJ context,
-		final MenuService menuService, final ModuleService moduleService)
+		final EventService eventService, final MenuService menuService,
+		final ModuleService moduleService)
 	{
 		super(context);
+		this.eventService = eventService;
 		this.menuService = menuService;
 		this.moduleService = moduleService;
 	}
 
 	// -- RecentFileService methods --
+
+	public EventService getEventService() {
+		return eventService;
+	}
 
 	public MenuService getMenuService() {
 		return menuService;
@@ -171,7 +178,7 @@ public final class RecentFileService extends AbstractService {
 
 			};
 		subscribers.add(fileOpenedSubscriber);
-		Events.subscribe(FileOpenedEvent.class, fileOpenedSubscriber);
+		eventService.subscribe(FileOpenedEvent.class, fileOpenedSubscriber);
 
 		// TODO
 		// FileSavedEvent
