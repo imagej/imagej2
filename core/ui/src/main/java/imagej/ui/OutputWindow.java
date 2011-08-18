@@ -44,5 +44,7 @@ public interface OutputWindow {
 	void append(String text);
 
 	void clear();
-	
+
+	void setVisible(boolean visible);
+
 }
