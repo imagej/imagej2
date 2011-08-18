@@ -104,7 +104,6 @@ public final class TypeChangeService extends AbstractService {
 		for (final PluginModuleInfo<TypeChanger> info : plugins) {
 			final boolean selected = info.getDelegateClassName().endsWith(suffix);
 			info.setSelected(selected);
-			info.update();
 		}
 
 		// notify interested parties that the TypeChanger plugins have changed
