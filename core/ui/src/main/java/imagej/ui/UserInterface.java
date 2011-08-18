@@ -41,11 +41,13 @@ package imagej.ui;
  */
 public interface UserInterface {
 
-	void initialize();
+	void initialize(UIService uiService);
 
 	void processArgs(final String[] args);
 
 	void createMenus();
+
+	UIService getUIService();
 
 	Object getApplicationFrame();
 
