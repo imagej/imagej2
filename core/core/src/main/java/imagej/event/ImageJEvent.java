@@ -45,6 +45,8 @@ public class ImageJEvent {
 
 	private ImageJ context;
 
+	// -- ImageJEvent methods --
+
 	public ImageJ getContext() {
 		return context;
 	}
@@ -57,7 +59,7 @@ public class ImageJEvent {
 
 	@Override
 	public String toString() {
-		return "\n\tcontext=" + context.getID();
+		return "\n\tcontext = " + context.getID();
 	}
 
 }

@@ -77,7 +77,7 @@ public class KyEvent extends DisplayEvent {
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tcharacter = " + character + "\n\tcode = " +
+		return super.toString() + "\n\tcharacter = '" + character + "'\n\tcode = " +
 			code + "\n\tmodifiers = " + modifiers;
 	}
 

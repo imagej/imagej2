@@ -54,4 +54,11 @@ public class ToolEvent extends ImageJEvent {
 		return tool;
 	}
 
+	// Object methods --
+
+	@Override
+	public String toString() {
+		return "\n\ttool = " + tool;
+	}
+
 }
