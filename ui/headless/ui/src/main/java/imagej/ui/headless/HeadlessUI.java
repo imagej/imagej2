@@ -157,6 +157,11 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 	}
 
 	@Override
+	public Object getApplicationFrame() {
+		return null;
+	}
+
+	@Override
 	public ToolBar getToolBar() {
 		return null;
 	}

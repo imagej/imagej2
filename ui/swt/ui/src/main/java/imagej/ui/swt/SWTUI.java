@@ -98,6 +98,11 @@ public class SWTUI implements UserInterface, Runnable {
 	}
 
 	@Override
+	public Shell getApplicationFrame() {
+		return shell;
+	}
+
+	@Override
 	public SWTToolBar getToolBar() {
 		return toolBar;
 	}

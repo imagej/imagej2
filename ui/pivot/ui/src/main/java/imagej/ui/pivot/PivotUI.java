@@ -129,6 +129,11 @@ public class PivotUI implements Application, UserInterface {
 	}
 
 	@Override
+	public Frame getApplicationFrame() {
+		return frame;
+	}
+
+	@Override
 	public PivotToolBar getToolBar() {
 		return toolBar;
 	}
