@@ -35,18 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display.event;
 
 import imagej.display.DisplayView;
-import imagej.event.ImageJEvent;
 
 /**
  * An event on a display view.
  * 
  * @author Lee Kamentsky
  */
-public class DisplayViewEvent extends ImageJEvent {
+public class DisplayViewEvent extends DisplayEvent {
 
 	private final DisplayView displayView;
 
 	public DisplayViewEvent(final DisplayView displayView) {
+		super(displayView.getDisplay());
 		this.displayView = displayView;
 	}
 
