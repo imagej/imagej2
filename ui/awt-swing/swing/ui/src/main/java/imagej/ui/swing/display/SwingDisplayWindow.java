@@ -93,7 +93,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	// nobody but the single call to createSliders() is accessing the
 	// axisSliders instance variable. I can find no evidence of a concurrent
 	// access let alone modification. Making hashmap concurrent makes issue go
-	// way;
+	// away. BDZ 8-18-11
 	private final Map<Axis, JScrollBar> axisSliders = 
 		new ConcurrentHashMap<Axis, JScrollBar>();
 	private final Map<Axis, Integer> axisPositions =
