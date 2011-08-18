@@ -203,8 +203,8 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 					//   So make this do a rebuild. In some cases update() will be
 					//   called twice. Not sure if avoiding this was the reason to
 					//   just record and do work in update. Or if that code was to
-					//   avoid some other bug. Changing on 8-18-11. Fixed bug #627.
-					//   BDZ
+					//   avoid some other bug. Changing on 8-18-11. Fixed bug #627
+					//   and bug #605. BDZ
 					final Dataset dataset = event.getObject();
 					for (final DisplayView view : getViews()) {
 						if (dataset == view.getDataObject()) {
