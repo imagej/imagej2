@@ -78,6 +78,12 @@ public final class EventService extends AbstractService {
 		eventBus.subscribe(c, subscriber);
 	}
 
+	public <E extends ImageJEvent> void subscribeStrongly(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		eventBus.subscribeStrongly(c, subscriber);
+	}
+
 	public <E extends ImageJEvent> void unsubscribe(final Class<E> c,
 		final EventSubscriber<E> subscriber)
 	{
