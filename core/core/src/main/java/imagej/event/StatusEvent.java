@@ -36,76 +36,77 @@ package imagej.event;
 
 /**
  * An event indicating a status update.
- *
+ * 
  * @author Curtis Rueden
  */
 public class StatusEvent extends ImageJEvent {
 
-  /** Current progress value. */
-  private final int progress;
+	/** Current progress value. */
+	private final int progress;
 
-  /** Current progress maximum. */
-  private final int maximum;
+	/** Current progress maximum. */
+	private final int maximum;
 
-  /** Current status message. */
-  private final String status;
+	/** Current status message. */
+	private final String status;
 
-  /** Whether or not this is a warning event. */
-  private final boolean warning;
+	/** Whether or not this is a warning event. */
+	private final boolean warning;
 
-  /** Constructs a status event. */
-  public StatusEvent(final String message) {
-    this(-1, -1, message);
-  }
+	public StatusEvent(final String message) {
+		this(-1, -1, message);
+	}
 
-  /** Constructs a status event. */
-  public StatusEvent(final String message, final boolean warn) {
-    this(-1, -1, message, warn);
-  }
+	public StatusEvent(final String message, final boolean warn) {
+		this(-1, -1, message, warn);
+	}
 
-  /** Constructs a status event. */
-  public StatusEvent(final int progress, final int maximum) {
-    this(progress, maximum, null);
-  }
+	public StatusEvent(final int progress, final int maximum) {
+		this(progress, maximum, null);
+	}
 
-  /** Constructs a status event. */
-  public StatusEvent(final int progress, final int maximum,
-  	final String message)
-  {
-    this(progress, maximum, message, false);
-  }
+	public StatusEvent(final int progress, final int maximum, final String message)
+	{
+		this(progress, maximum, message, false);
+	}
 
-  /** Constructs a status event. */
-  public StatusEvent(final int progress, final int maximum,
-  	final String message, final boolean warn)
-  {
-    this.progress = progress;
-    this.maximum = maximum;
-    status = message;
-    warning = warn;
-  }
+	public StatusEvent(final int progress, final int maximum,
+		final String message, final boolean warn)
+	{
+		this.progress = progress;
+		this.maximum = maximum;
+		status = message;
+		warning = warn;
+	}
 
-  /** Gets progress value. Returns -1 if progress is unknown. */
-  public int getProgressValue() { return progress; }
+	// -- StatusEvent methods --
 
-  /** Gets progress maximum. Returns -1 if progress is unknown. */
-  public int getProgressMaximum() { return maximum; }
+	/** Gets progress value. Returns -1 if progress is unknown. */
+	public int getProgressValue() {
+		return progress;
+	}
 
-  /** Gets status message. */
-  public String getStatusMessage() { return status; }
+	/** Gets progress maximum. Returns -1 if progress is unknown. */
+	public int getProgressMaximum() {
+		return maximum;
+	}
 
-  /** Returns whether or not this is a warning event. */
-  public boolean isWarning() { return warning; }
+	/** Gets status message. */
+	public String getStatusMessage() {
+		return status;
+	}
 
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Status");
-    sb.append(": progress=" + progress);
-    sb.append(", maximum=" + maximum);
-    sb.append(", warning=" + warning);
-    sb.append(", status='" + status + "'");
-    return sb.toString();
-  }
+	/** Returns whether or not this is a warning event. */
+	public boolean isWarning() {
+		return warning;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tprogress = " + progress + "\n\tmaximum = " +
+			maximum + "\n\tstatus = " + status + "\n\twarning = " + warning;
+	}
 
 }
