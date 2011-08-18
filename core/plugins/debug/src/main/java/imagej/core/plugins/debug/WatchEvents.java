@@ -202,7 +202,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 
 	private String timeStamp() {
 		final SimpleDateFormat formatter =
-			new SimpleDateFormat("mm:ss.SS", Locale.getDefault());
+			new SimpleDateFormat("hh:mm:ss.SS", Locale.getDefault());
 		final Date currentDate = new Date();
 		final String dateStr = formatter.format(currentDate);
 		return dateStr;
