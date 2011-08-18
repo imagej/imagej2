@@ -48,8 +48,8 @@ import imagej.ext.plugin.Plugin;
 //TODO - IJ1 updates the calibration so that pixel width & depth swap after this operation. Must implement here.
 
 /**
- * Creates an output Dataset that is a duplicate of an input Dataset rotated 90
- * degrees to the right
+ * Modifies an input Dataset by rotating its pixels 90 degrees to the right.
+ * Rotates all image pixels regardless of selection region.
  * 
  * @author Barry DeZonia
  */
