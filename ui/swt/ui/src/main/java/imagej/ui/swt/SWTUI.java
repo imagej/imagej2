@@ -44,6 +44,7 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.UI;
+import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import net.miginfocom.swt.MigLayout;
 
@@ -59,6 +60,8 @@ import org.eclipse.swt.widgets.Shell;
 @UI
 public class SWTUI implements UserInterface, Runnable {
 
+	private UIService uiService;
+
 	private Display display;
 	private Shell shell;
 	private SWTToolBar toolBar;
@@ -67,7 +70,9 @@ public class SWTUI implements UserInterface, Runnable {
 	// -- UserInterface methods --
 
 	@Override
-	public void initialize() {
+	public void initialize(final UIService service) {
+		uiService = service;
+
 		display = new Display();
 
 		shell = new Shell(display, 0);
@@ -95,6 +100,11 @@ public class SWTUI implements UserInterface, Runnable {
 			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
 		shell.setMenuBar(menuBar); // TODO - is this necessary?
 		Events.publish(new AppMenusCreatedEvent(menuBar));
+	}
+
+	@Override
+	public UIService getUIService() {
+		return uiService;
 	}
 
 	@Override

@@ -41,6 +41,7 @@ import imagej.ui.OutputWindow;
 import imagej.ui.StatusBar;
 import imagej.ui.ToolBar;
 import imagej.ui.UI;
+import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -64,6 +65,8 @@ import javax.script.ScriptException;
 @UI
 public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 {
+
+	private UIService uiService;
 
 	private ScriptEngine engine;
 	private BufferedReader in;
@@ -112,7 +115,8 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 	// -- UserInterface methods --
 
 	@Override
-	public void initialize() {
+	public void initialize(final UIService service) {
+		uiService = service;
 		setLanguage("JavaScript");
 	}
 
@@ -154,6 +158,11 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 	@Override
 	public void createMenus() {
 		// TODO
+	}
+
+	@Override
+	public UIService getUIService() {
+		return uiService;
 	}
 
 	@Override

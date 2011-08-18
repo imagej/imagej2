@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.awt;
 
 import imagej.ImageJ;
-import imagej.event.Events;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -44,6 +43,7 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.UI;
+import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 
 import java.awt.BorderLayout;
@@ -60,6 +60,7 @@ import java.awt.event.WindowEvent;
 @UI
 public class AWTUI implements UserInterface {
 
+	private UIService uiService;
 	private Frame frame;
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
@@ -67,7 +68,9 @@ public class AWTUI implements UserInterface {
 	// -- UserInterface methods --
 
 	@Override
-	public void initialize() {
+	public void initialize(final UIService service) {
+		uiService = service;
+
 		frame = new Frame("ImageJ");
 		toolBar = new AWTToolBar();
 		statusBar = new AWTStatusBar();
@@ -100,7 +103,12 @@ public class AWTUI implements UserInterface {
 		final MenuBar menuBar =
 			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
 		frame.setMenuBar(menuBar);
-		Events.publish(new AppMenusCreatedEvent(menuBar));
+		uiService.getEventService().publish(new AppMenusCreatedEvent(menuBar));
+	}
+
+	@Override
+	public UIService getUIService() {
+		return uiService;
 	}
 
 	@Override
