@@ -121,13 +121,7 @@ public class SwingUI implements UserInterface {
 
 		frame.pack();
 		frame.setVisible(true);
-		
-		// Only for MacOX
-		// PlatformService pService =   ImageJ.get(PlatformService.class);
-		// pService.isTargetPlatform(final Platform p) ;
-		// @Platform(osName = "Mac OS X")
-		// ??????????
-		
+
 		subscribeToEvents();
 
 		displayReadme();
