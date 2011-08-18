@@ -69,8 +69,6 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayWindow imgWindow;
 
-	private boolean willRebuildImgWindow;
-
 	private final Display thisDisplay;
 
 //	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
@@ -92,7 +90,6 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		imgWindow.addEventDispatcher(eventDispatcher);
 		subscribeToEvents();
 
-		willRebuildImgWindow = false;
 		thisDisplay = this;
 	}
 
@@ -128,16 +125,6 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-				if (willRebuildImgWindow) {
-					// NB - if pan to be reset below we'll be zoomed on wrong part of
-					// image
-					imgCanvas.setZoom(0); // original scale
-					// NB - if x or y dims change without this image panned incorrectly
-					// Must happen after setZoom() call
-					imgCanvas.panReset();
-					imgWindow.redoLayout();
-					willRebuildImgWindow = false;
-				}
 				imgWindow.update();
 
 				// the following code is also done in SwingDisplayWindow::update()
@@ -210,10 +197,24 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 				@Override
 				public void onEvent(final DatasetRestructuredEvent event) {
+					// NOTE - this code used to just note that a rebuild was necessary
+					//   and had the rebuild done in update(). But due to timing of
+					//   events it possible to get the update() before this call.
+					//   So make this do a rebuild. In some cases update() will be
+					//   called twice. Not sure if avoiding this was the reason to
+					//   just record and do work in update. Or if that code was to
+					//   avoid some other bug. Changing on 8-18-11. BDZ
 					final Dataset dataset = event.getObject();
 					for (final DisplayView view : getViews()) {
 						if (dataset == view.getDataObject()) {
-							willRebuildImgWindow = true;
+							// NB - if just panReset() we'll be zoomed on wrong part of image
+							imgCanvas.setZoom(0); // original scale
+							// NB - if x or y dims change without panReset() image panned
+							// incorrectly. The panReset() call must happen after the
+							// setZoom() call
+							imgCanvas.panReset();
+							SwingImageDisplay.this.redoWindowLayout();
+							SwingImageDisplay.this.update();
 							return;
 						}
 					}
