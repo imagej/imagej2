@@ -184,7 +184,7 @@ public final class UIService extends AbstractService {
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		final EventSubscriber<MenuEvent> menusChangedSubscriber =
+		final EventSubscriber<MenuEvent> menuSubscriber =
 			new EventSubscriber<MenuEvent>() {
 
 				@Override
@@ -197,8 +197,8 @@ public final class UIService extends AbstractService {
 					getUI().createMenus();
 				}
 			};
-		subscribers.add(menusChangedSubscriber);
-		eventService.subscribe(MenuEvent.class, menusChangedSubscriber);
+		subscribers.add(menuSubscriber);
+		eventService.subscribe(MenuEvent.class, menuSubscriber);
 	}
 
 }
