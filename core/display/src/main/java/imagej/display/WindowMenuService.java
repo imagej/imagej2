@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,7 +30,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.display;
 
 import imagej.AbstractService;
@@ -39,9 +40,6 @@ import imagej.Service;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.window.WinActivatedEvent;
-import imagej.display.event.window.WinClosedEvent;
-import imagej.display.event.window.WinOpenedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.MenuEntry;
@@ -51,8 +49,7 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +57,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service for managing the Open Windows menu.
+ * Service for keeping track of open windows, including management of the
+ * Windows menu.
  * <p>
  * <ul>
  * <li>add(String path)</li>
@@ -72,16 +70,23 @@ import java.util.Map;
 @Service
 public final class WindowMenuService extends AbstractService {
 
-	//===========================================
 	public static final int MAX_FILES_SHOWN = 10;
-	/** Maximum title  length shown. */
+
+	/** Maximum title length shown. */
 	private static final int MAX_DISPLAY_LENGTH = 40;
+
 	private static final String WINDOW_MENU_NAME = "Window";
-	private MenuService menuService;
-	private ModuleService moduleService;
-	protected final EventService eventService;
+
+	private final MenuService menuService;
+
+	private final ModuleService moduleService;
+
+	private final EventService eventService;
+
 	private List<String> openWindows;
+
 	private Map<String, ModuleInfo> windowModules;
+
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
@@ -91,15 +96,17 @@ public final class WindowMenuService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public WindowMenuService(final ImageJ context,
-			final MenuService menuService, final ModuleService moduleService, final EventService eventService) {
+	public WindowMenuService(final ImageJ context, final MenuService menuService,
+		final ModuleService moduleService, final EventService eventService)
+	{
 		super(context);
 		this.eventService = eventService;
 		this.menuService = menuService;
 		this.moduleService = moduleService;
 	}
 
-	// -- openWindowService methods --
+	// -- WindowService methods --
+
 	public MenuService getMenuService() {
 		return menuService;
 	}
@@ -118,7 +125,8 @@ public final class WindowMenuService extends AbstractService {
 		if (present) {
 			remove(displayName);
 			updateInfo(displayName);
-		} else {
+		}
+		else {
 			windowModules.put(displayName, createInfo(displayName));
 		}
 		openWindows.add(displayName);
@@ -156,7 +164,7 @@ public final class WindowMenuService extends AbstractService {
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String displayName) {
 		final PluginModuleInfo<ImageJPlugin> info =
-				new PluginModuleInfo<ImageJPlugin>("imagej.display.SelectWindow",
+			new PluginModuleInfo<ImageJPlugin>("imagej.display.SelectWindow",
 				ImageJPlugin.class);
 
 		// hard code path to open as a preset
@@ -208,47 +216,47 @@ public final class WindowMenuService extends AbstractService {
 
 		// Created
 		final EventSubscriber<DisplayCreatedEvent> displayCreatedSubscriber =
-				new EventSubscriber<DisplayCreatedEvent>() {
+			new EventSubscriber<DisplayCreatedEvent>() {
 
-					@Override
-					public void onEvent(final DisplayCreatedEvent event) {
-						final Display display  = event.getObject();
-						add(display.getName());
-					}
+				@Override
+				public void onEvent(final DisplayCreatedEvent event) {
+					final Display display = event.getObject();
+					add(display.getName());
+				}
 
-				};
+			};
 		subscribers.add(displayCreatedSubscriber);
 		eventService.subscribe(DisplayCreatedEvent.class, displayCreatedSubscriber);
-		
+
 		// Activated
 		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
-				new EventSubscriber<DisplayActivatedEvent>() {
+			new EventSubscriber<DisplayActivatedEvent>() {
 
-					@Override
-					public void onEvent(final DisplayActivatedEvent event) {
-						final Object obj = event.getDisplay();
-						// @TODO - needs checkbox menu functionality
-						//setActiveWindow(display);
-					}
+				@Override
+				public void onEvent(final DisplayActivatedEvent event) {
+					final Object obj = event.getDisplay();
+					// @TODO - needs checkbox menu functionality
+					// setActiveWindow(display);
+				}
 
-				};
+			};
 		subscribers.add(displayActivatedSubscriber);
-		eventService.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
-		
+		eventService.subscribe(DisplayActivatedEvent.class,
+			displayActivatedSubscriber);
+
 		// Deleted
 		final EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber =
-				new EventSubscriber<DisplayDeletedEvent>() {
+			new EventSubscriber<DisplayDeletedEvent>() {
 
-					@Override
-					public void onEvent(final DisplayDeletedEvent event) {
-						final Display  obj = event.getObject();
-						remove(obj.getName());
-					}
+				@Override
+				public void onEvent(final DisplayDeletedEvent event) {
+					final Display obj = event.getObject();
+					remove(obj.getName());
+				}
 
-				};
+			};
 		subscribers.add(displayDeletedSubscriber);
 		eventService.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
 	}
-	
 
 }
