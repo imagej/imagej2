@@ -36,13 +36,9 @@ package imagej.platform.macosx;
 
 import com.apple.eawt.Application;
 
-import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.platform.Platform;
 import imagej.platform.PlatformHandler;
-import imagej.platform.event.AppMenusCreatedEvent;
-
-import javax.swing.JMenuBar;
+import imagej.platform.PlatformService;
 
 /**
  * A platform implementation for handling Mac OS X platform issues:
@@ -55,40 +51,29 @@ import javax.swing.JMenuBar;
  * @author Curtis Rueden
  */
 @Platform(osName = "Mac OS X")
-public class MacOSXPlatform implements PlatformHandler,
-	EventSubscriber<AppMenusCreatedEvent>
-{
+public class MacOSXPlatform implements PlatformHandler {
 
 	private MacOSXAppListener appListener;
+
+	// -- MacOSXPlatform methods --
+
+	public MacOSXAppListener getAppListener() {
+		return appListener;
+	}
 
 	// -- PlatformHandler methods --
 
 	@Override
-	public void configure() {
-		// set Mac OS X-specific system properties
+	public void configure(final PlatformService platformService) {
+		// use Mac OS X screen menu bar
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		// translate Mac OS X application events into ImageJ events
 		final Application app = Application.getApplication();
 		appListener = new MacOSXAppListener(app);
 
-		Events.subscribe(AppMenusCreatedEvent.class, this);
-	}
-
-	// -- EventSubscriber methods --
-
-	@Override
-	public void onEvent(final AppMenusCreatedEvent event) {
-		final Object menus = event.getMenus();
-		if (!(menus instanceof JMenuBar)) return;
-
-		// TODO - fix problem where the default menu bar replicates the File menu,
-		// and no menu accelerators work.
-//		final JMenuBar menuBar = (JMenuBar) menus;
-//		final Application app = Application.getApplication();
-//		app.setDefaultMenuBar(menuBar);
-
-		// TODO - remove About, Preferences and Quit menu items from the menu bar?
+		// duplicate menu bar across all window frames
+		platformService.setMenuBarDuplicated(true);
 	}
 
 }

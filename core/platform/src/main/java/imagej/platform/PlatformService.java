@@ -57,10 +57,8 @@ public final class PlatformService extends AbstractService {
 	/** Platform handlers applicable to this platform. */
 	private List<PlatformHandler> targetPlatforms;
 
-	/** Gets the platform handlers applicable to this platform. */
-	public List<PlatformHandler> getTargetPlatforms() {
-		return targetPlatforms;
-	}
+	/** Whether the menu bar should be duplicated for every window frame. */
+	private boolean menuBarDuplicated;
 
 	// -- Constructors --
 
@@ -74,6 +72,27 @@ public final class PlatformService extends AbstractService {
 		super(context);
 	}
 
+	// -- PlatformService methods --
+
+	/** Gets the platform handlers applicable to this platform. */
+	public List<PlatformHandler> getTargetPlatforms() {
+		return targetPlatforms;
+	}
+
+	/**
+	 * Returns true if the menu bar should be duplicated for every window frame.
+	 * If false, the menu bar should be present on the main ImageJ application
+	 * frame only.
+	 */
+	public boolean isMenuBarDuplicated() {
+		return menuBarDuplicated;
+	}
+
+	/** Sets whether the menu bar should be duplicated for every window frame. */
+	public void setMenuBarDuplicated(final boolean menuBarDuplicated) {
+		this.menuBarDuplicated = menuBarDuplicated;
+	}
+
 	// -- IService methods --
 
 	@Override
@@ -82,7 +101,7 @@ public final class PlatformService extends AbstractService {
 		targetPlatforms = Collections.unmodifiableList(platforms);
 		for (final PlatformHandler platform : platforms) {
 			Log.info("Configuring platform: " + platform.getClass().getName());
-			platform.configure();
+			platform.configure(this);
 		}
 		if (platforms.size() == 0) Log.info("No platforms to configure.");
 	}
