@@ -1,5 +1,5 @@
 //
-// FileOpenedEvent.java
+// FileEvent.java
 //
 
 /*
@@ -34,15 +34,30 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.event;
 
-/**
- * An event indicating a file has been opened.
- *
- * @author Grant Harris
- */
-public class FileOpenedEvent extends FileEvent {
+import imagej.event.ImageJEvent;
 
-	public FileOpenedEvent(final String path) {
-		super(path);
+/**
+ * An event indicating something has happened to a file.
+ *
+ * @author Curtis Rueden
+ */
+public class FileEvent extends ImageJEvent {
+
+	/** The path of the file. */
+	private final String path;
+
+	public FileEvent(final String path) {
+		this.path = path;
+	}
+
+	/** Gets the file path. */
+	public String getPath() {
+		return path;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ": " + path;
 	}
 
 }

@@ -34,34 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.event;
 
-import imagej.event.ImageJEvent;
-
 /**
  * An event indicating a file has been saved.
  *
  * @author Grant Harris
  */
-public class FileSavedEvent extends ImageJEvent {
+public class FileSavedEvent extends FileEvent {
 
-	/** the path of the file. */
-	private final String path;
-
-	/** Constructs a file opened event. */
 	public FileSavedEvent(final String path) {
-		this.path = path;
-	}
-
-	/** Gets file path */
-	public String getPath() {
-		return path;
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("File saved: ");
-		sb.append(path);
-		return sb.toString();
+		super(path);
 	}
 
 }
