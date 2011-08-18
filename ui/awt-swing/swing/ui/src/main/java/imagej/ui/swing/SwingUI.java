@@ -168,7 +168,7 @@ public class SwingUI implements UserInterface {
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
 	 * and adds it to the given {@link JFrame}.
 	 */
-	private JMenuBar createMenuBar(final JFrame f) {
+	protected JMenuBar createMenuBar(final JFrame f) {
 		final MenuService menuService = ImageJ.get(MenuService.class);
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
@@ -177,7 +177,7 @@ public class SwingUI implements UserInterface {
 		return menuBar;
 	}
 
-	private void deleteMenuBar(final JFrame f) {
+	protected void deleteMenuBar(final JFrame f) {
 		f.setJMenuBar(null);
 		// HACK - w/o this next call the JMenuBars do not get garbage collected.
 		// At least its true on the Mac. This might be a Java bug. Update:
@@ -290,40 +290,46 @@ public class SwingUI implements UserInterface {
 		return file.getParentFile();
 	}
 
-	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
+		final EventService eventService = getUIService().getEventService();
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		final EventSubscriber<DisplayCreatedEvent> createSubscriber =
-			new EventSubscriber<DisplayCreatedEvent>() {
+		if (uiService.getPlatformService().isMenuBarDuplicated()) {
+			// NB: If menu bars are supposed to be duplicated across all window
+			// frames, listen for display creations and deletions and clone the menu
+			// bar accordingly.
 
-				@Override
-				public void onEvent(final DisplayCreatedEvent event) {
-					final Display display = event.getObject();
-					final DisplayWindow window = display.getDisplayWindow();
-					if (!(window instanceof SwingDisplayWindow)) return;
-					final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
-					// add a copy of the JMenuBar to the new display
-					if (swingWindow.getJMenuBar() == null) createMenuBar(swingWindow);
-				}
-			};
-		subscribers.add(createSubscriber);
-		Events.subscribe(DisplayCreatedEvent.class, createSubscriber);
+			final EventSubscriber<DisplayCreatedEvent> createSubscriber =
+				new EventSubscriber<DisplayCreatedEvent>() {
 
-		final EventSubscriber<DisplayDeletedEvent> deleteSubscriber =
-			new EventSubscriber<DisplayDeletedEvent>() {
+					@Override
+					public void onEvent(final DisplayCreatedEvent event) {
+						final Display display = event.getObject();
+						final DisplayWindow window = display.getDisplayWindow();
+						if (!(window instanceof SwingDisplayWindow)) return;
+						final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
+						// add a copy of the JMenuBar to the new display
+						if (swingWindow.getJMenuBar() == null) createMenuBar(swingWindow);
+					}
+				};
+			subscribers.add(createSubscriber);
+			eventService.subscribe(DisplayCreatedEvent.class, createSubscriber);
 
-				@Override
-				public void onEvent(final DisplayDeletedEvent event) {
-					final Display display = event.getObject();
-					final DisplayWindow window = display.getDisplayWindow();
-					if (!(window instanceof SwingDisplayWindow)) return;
-					final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
-					deleteMenuBar(swingWindow);
-				}
-			};
-		subscribers.add(deleteSubscriber);
-		Events.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
+			final EventSubscriber<DisplayDeletedEvent> deleteSubscriber =
+				new EventSubscriber<DisplayDeletedEvent>() {
+
+					@Override
+					public void onEvent(final DisplayDeletedEvent event) {
+						final Display display = event.getObject();
+						final DisplayWindow window = display.getDisplayWindow();
+						if (!(window instanceof SwingDisplayWindow)) return;
+						final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
+						deleteMenuBar(swingWindow);
+					}
+				};
+			subscribers.add(deleteSubscriber);
+			eventService.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
+		}
 	}
 
 	@Override
