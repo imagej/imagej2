@@ -35,18 +35,19 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display.event;
 
 import imagej.display.ImageCanvas;
-import imagej.event.ImageJEvent;
 
 /**
  * An event indicating something has happened to an {@link ImageCanvas}.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public class CanvasEvent extends ImageJEvent {
+public class CanvasEvent extends DisplayEvent {
 
 	private final ImageCanvas canvas;
 
 	public CanvasEvent(final ImageCanvas canvas) {
+		super(canvas.getDisplay());
 		this.canvas = canvas;
 	}
 
