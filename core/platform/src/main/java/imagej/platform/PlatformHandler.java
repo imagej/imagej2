@@ -41,6 +41,6 @@ package imagej.platform;
  */
 public interface PlatformHandler {
 
-	void configure();
+	void configure(PlatformService platformService);
 
 }
