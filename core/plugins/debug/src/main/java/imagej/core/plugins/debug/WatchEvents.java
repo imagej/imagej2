@@ -37,8 +37,8 @@ package imagej.core.plugins.debug;
 import imagej.ImageJ;
 import imagej.display.event.DisplayEvent;
 import imagej.display.event.mouse.MsMovedEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.FileEvent;
 import imagej.event.ImageJEvent;
 import imagej.event.OptionsEvent;
@@ -69,11 +69,9 @@ import java.util.Locale;
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
 public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 
-	// TODO - Eliminate usage of static here; it breaks multiple app contexts.
+	private EventService eventService;
 
-	private final static WatchEvents listener = new WatchEvents();
-
-	private static OutputWindow window;
+	private OutputWindow window;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	@SuppressWarnings("unused")
@@ -163,7 +161,10 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 	@Override
 	public void run() {
 		window = ImageJ.get(UIService.class).createOutputWindow("Event Watcher");
-		Events.subscribe(ImageJEvent.class, listener);
+		window.setVisible(true);
+		eventService = ImageJ.get(EventService.class);
+		eventService.subscribeStrongly(ImageJEvent.class, this);
+		// TODO - unsubscribe when the output window is closed
 	}
 
 	// -- EventSubscriber methods --
