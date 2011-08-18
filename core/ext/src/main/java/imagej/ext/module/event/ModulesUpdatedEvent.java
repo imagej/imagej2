@@ -43,7 +43,7 @@ import java.util.Collection;
  * 
  * @author Curtis Rueden
  */
-public class ModulesUpdatedEvent extends ModulesChangedEvent {
+public class ModulesUpdatedEvent extends ModulesListEvent {
 
 	public ModulesUpdatedEvent(final ModuleInfo o) {
 		super(o);

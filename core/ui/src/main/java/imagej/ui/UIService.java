@@ -40,7 +40,7 @@ import imagej.Service;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.menu.MenuService;
-import imagej.ext.menu.event.MenusChangedEvent;
+import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
@@ -179,11 +179,11 @@ public final class UIService extends AbstractService {
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		final EventSubscriber<MenusChangedEvent> menusChangedSubscriber =
-			new EventSubscriber<MenusChangedEvent>() {
+		final EventSubscriber<MenuEvent> menusChangedSubscriber =
+			new EventSubscriber<MenuEvent>() {
 
 				@Override
-				public void onEvent(final MenusChangedEvent event) {
+				public void onEvent(final MenuEvent event) {
 					// TODO - This rebuilds the entire menu structure whenever the
 					// menus change at all. Better would be to listen to MenusAddedEvent,
 					// MenusRemovedEvent and MenusUpdatedEvent separately and surgically
@@ -193,7 +193,7 @@ public final class UIService extends AbstractService {
 				}
 			};
 		subscribers.add(menusChangedSubscriber);
-		eventService.subscribe(MenusChangedEvent.class, menusChangedSubscriber);
+		eventService.subscribe(MenuEvent.class, menusChangedSubscriber);
 	}
 
 }

@@ -1,5 +1,5 @@
 //
-// ModulesChangedEvent.java
+// ModulesListEvent.java
 //
 
 /*
@@ -36,23 +36,23 @@ package imagej.ext.module.event;
 
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.object.event.ItemsChangedEvent;
+import imagej.object.event.ListEvent;
 
 import java.util.Collection;
 
 /**
- * An event indicating the list of modules registered with the
- * {@link ModuleService} has changed.
+ * An event indicating something has happened to the list of modules registered
+ * with the {@link ModuleService}.
  * 
  * @author Curtis Rueden
  */
-public class ModulesChangedEvent extends ItemsChangedEvent<ModuleInfo> {
+public class ModulesListEvent extends ListEvent<ModuleInfo> {
 
-	public ModulesChangedEvent(final ModuleInfo o) {
+	public ModulesListEvent(final ModuleInfo o) {
 		super(o);
 	}
 
-	public ModulesChangedEvent(final Collection<? extends ModuleInfo> c) {
+	public ModulesListEvent(final Collection<? extends ModuleInfo> c) {
 		super(c);
 	}
 

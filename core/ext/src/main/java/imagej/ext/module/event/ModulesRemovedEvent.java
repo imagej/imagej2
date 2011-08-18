@@ -45,7 +45,7 @@ import java.util.Collection;
  * 
  * @author Curtis Rueden
  */
-public class ModulesRemovedEvent extends ModulesChangedEvent {
+public class ModulesRemovedEvent extends ModulesListEvent {
 
 	public ModulesRemovedEvent(final ModuleInfo o) {
 		super(o);

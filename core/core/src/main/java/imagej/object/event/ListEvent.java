@@ -1,5 +1,5 @@
 //
-// MenusChangedEvent.java
+// ListEvent.java
 //
 
 /*
@@ -32,27 +32,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.menu.event;
+package imagej.object.event;
 
-import imagej.ext.menu.MenuService;
-import imagej.ext.menu.ShadowMenu;
-import imagej.object.event.ItemsChangedEvent;
+import imagej.event.ImageJEvent;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * An event indicating the {@link MenuService}'s {@link ShadowMenu} has changed.
+ * An event indicating something has happened to a list of items.
  * 
  * @author Curtis Rueden
  */
-public class MenusChangedEvent extends ItemsChangedEvent<ShadowMenu> {
+public class ListEvent<T> extends ImageJEvent {
 
-	public MenusChangedEvent(final ShadowMenu o) {
-		super(o);
+	private final List<T> list = new ArrayList<T>();
+
+	public ListEvent(final T o) {
+		list.add(o);
 	}
 
-	public MenusChangedEvent(final Collection<? extends ShadowMenu> c) {
-		super(c);
+	public ListEvent(final Collection<? extends T> c) {
+		list.addAll(c);
+	}
+
+	/** Gets the list of affected items. */
+	public List<T> getItems() {
+		return Collections.unmodifiableList(list);
 	}
 
 }

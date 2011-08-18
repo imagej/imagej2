@@ -42,7 +42,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
-import imagej.object.event.ObjectsChangedEvent;
+import imagej.object.event.ObjectsListEvent;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
 
@@ -100,17 +100,17 @@ public class WatchDisplays implements ImageJPlugin {
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		final EventSubscriber<ObjectsChangedEvent> objectsUpdatedSubscriber =
-				new EventSubscriber<ObjectsChangedEvent>() {
+		final EventSubscriber<ObjectsListEvent> objectsUpdatedSubscriber =
+				new EventSubscriber<ObjectsListEvent>() {
 
 					@Override
-					public void onEvent(final ObjectsChangedEvent event) {
+					public void onEvent(final ObjectsListEvent event) {
 						showDisplays();
 					}
 
 				};
 		subscribers.add(objectsUpdatedSubscriber);
-		Events.subscribe(ObjectsChangedEvent.class, objectsUpdatedSubscriber);
+		Events.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
 		
 //		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
 //				new EventSubscriber<WinActivatedEvent>() {

@@ -45,7 +45,7 @@ import java.util.Collection;
  * 
  * @author Curtis Rueden
  */
-public class MenusAddedEvent extends MenusChangedEvent {
+public class MenusAddedEvent extends MenuEvent {
 
 	public MenusAddedEvent(final ShadowMenu o) {
 		super(o);

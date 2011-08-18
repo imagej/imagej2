@@ -1,5 +1,5 @@
 //
-// ItemsChangedEvent.java
+// ObjectsListEvent.java
 //
 
 /*
@@ -34,33 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object.event;
 
-import imagej.event.ImageJEvent;
+import imagej.object.ObjectService;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
- * An event indicating a list of items has changed.
+ * An event indicating something has happened to the list of objects registered
+ * with the {@link ObjectService}.
  * 
+ * @author Grant Harris
  * @author Curtis Rueden
  */
-public class ItemsChangedEvent<T> extends ImageJEvent {
+public class ObjectsListEvent extends ListEvent<Object> {
 
-	private final List<T> list = new ArrayList<T>();
-
-	public ItemsChangedEvent(final T o) {
-		list.add(o);
+	public ObjectsListEvent(final Object o) {
+		super(o);
 	}
 
-	public ItemsChangedEvent(final Collection<? extends T> c) {
-		list.addAll(c);
-	}
-
-	/** Gets the list of affected items. */
-	public List<T> getItems() {
-		return Collections.unmodifiableList(list);
+	public ObjectsListEvent(final Collection<?> c) {
+		super(c);
 	}
 
 }
