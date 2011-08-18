@@ -45,6 +45,9 @@ import imagej.util.RealCoords;
  */
 public interface ImageCanvas extends Pannable, Zoomable {
 
+	/** Gets the display to which this canvas belongs. */
+	Display getDisplay();
+
 	/** Gets the unscaled width of the canvas. */
 	int getCanvasWidth();
 
