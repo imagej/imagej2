@@ -196,8 +196,8 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 	// -- Helper methods --
 
 	private void showEvent(final ImageJEvent evt) {
-		emitMessage("[" + timeStamp() + "] " + evt.getClass().getSimpleName() +
-			": " + evt);
+		final String eventClass = evt.getClass().getSimpleName();
+		emitMessage("[" + timeStamp() + "] " + eventClass + evt);
 	}
 
 	private String timeStamp() {

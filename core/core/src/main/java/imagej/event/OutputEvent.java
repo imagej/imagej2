@@ -36,16 +36,16 @@ package imagej.event;
 
 /**
  * An event indicating an output update.
- *
+ * 
  * @author Grant Harris
  */
 public class OutputEvent extends ImageJEvent {
 
+	/** The output message. */
+	private final String output;
+
 	/** Type of output. */
 	private final TYPE type;
-	
-	/** the output message. */
-	private final String output;
 
 	/** Constructs an output event. */
 	public OutputEvent(final String output) {
@@ -58,25 +58,29 @@ public class OutputEvent extends ImageJEvent {
 		this.type = type;
 	}
 
+	// -- OutputEvent methods --
+
 	/** Gets status message. */
 	public String getOutput() {
 		return output;
 	}
-	/** Gets output type */
+
+	/** Gets output type. */
 	public TYPE getType() {
 		return type;
 	}
 
+	// -- Object methods --
+
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("Output");
-		sb.append(": output =" + output);
-		sb.append(", type =" + type);
-		return sb.toString();
+		return super.toString() + "\n\toutput = " + output + "\n\ttype = " + type;
 	}
+
+	// -- Enums --
 
 	public enum TYPE {
 		LOG, INFO, RESULT, ERROR, DIAGNOSTIC
 	}
+
 }

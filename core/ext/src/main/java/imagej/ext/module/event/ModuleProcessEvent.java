@@ -58,4 +58,11 @@ public class ModuleProcessEvent extends ModuleExecutionEvent {
 		return processor;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tprocessor = " + processor;
+	}
+
 }

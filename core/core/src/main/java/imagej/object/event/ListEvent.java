@@ -48,19 +48,30 @@ import java.util.List;
  */
 public class ListEvent<T> extends ImageJEvent {
 
-	private final List<T> list = new ArrayList<T>();
+	private final List<T> items = new ArrayList<T>();
 
 	public ListEvent(final T o) {
-		list.add(o);
+		items.add(o);
 	}
 
 	public ListEvent(final Collection<? extends T> c) {
-		list.addAll(c);
+		items.addAll(c);
 	}
 
 	/** Gets the list of affected items. */
 	public List<T> getItems() {
-		return Collections.unmodifiableList(list);
+		return Collections.unmodifiableList(items);
+	}
+
+	// Object methods --
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder(super.toString());
+		for (int i = 0; i < items.size(); i++) {
+			sb.append("\n\titems[" + i + "] = " + items.get(i));
+		}
+		return sb.toString();
 	}
 
 }

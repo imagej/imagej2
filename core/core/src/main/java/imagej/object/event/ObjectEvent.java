@@ -43,14 +43,21 @@ import imagej.event.ImageJEvent;
  */
 public class ObjectEvent extends ImageJEvent {
 
-	private Object obj;
+	private Object object;
 
-	public ObjectEvent(final Object obj) {
-		this.obj = obj;
+	public ObjectEvent(final Object object) {
+		this.object = object;
 	}
 
 	public Object getObject() {
-		return obj;
+		return object;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tobject = " + object;
 	}
 
 }

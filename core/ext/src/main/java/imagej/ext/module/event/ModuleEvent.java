@@ -39,12 +39,12 @@ import imagej.ext.module.Module;
 
 /**
  * An event indicating something has happened to a module.
- *
+ * 
  * @author Curtis Rueden
  */
 public class ModuleEvent extends ImageJEvent {
 
-	private Module module;
+	private final Module module;
 
 	public ModuleEvent(final Module module) {
 		this.module = module;
@@ -52,6 +52,13 @@ public class ModuleEvent extends ImageJEvent {
 
 	public Module getModule() {
 		return module;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tmodule = " + module;
 	}
 
 }
