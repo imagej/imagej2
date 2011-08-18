@@ -96,13 +96,14 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	AdjustmentListener
 {
 
+	private final SwingImageDisplay display;
+
 	private final CanvasHelper canvasHelper;
 
 	private final Drawing drawing;
 	private final DefaultDrawingView drawingView;
 	private final DrawingEditor drawingEditor;
 
-	private final SwingImageDisplay display;
 	private final JScrollPane scrollPane;
 
 	private final EventSubscriber<ToolActivatedEvent> toolActivatedSubscriber =
@@ -289,6 +290,11 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	}
 
 	// -- ImageCanvas methods --
+
+	@Override
+	public SwingImageDisplay getDisplay() {
+		return display;
+	}
 
 	@Override
 	public int getCanvasWidth() {

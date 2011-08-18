@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.awt.display;
 
 import imagej.display.CanvasHelper;
+import imagej.display.Display;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
@@ -75,10 +76,14 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 {
 
 	private static final double MAX_SCREEN_PROPORTION = 0.85;
+
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
+
 	private static final Object INTERPOLATION_TYPE =
 	// TODO - put this back?? //RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 		RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR; // this is like IJ1
+
+	private final Display display;
 
 	private final CanvasHelper canvasHelper;
 
@@ -93,6 +98,7 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 
 	/** Creates an image canvas with no default image. */
 	public AWTImageCanvas() {
+		display = null; // TODO
 		canvasHelper = new CanvasHelper(this);
 //		setOpaque(false);
 		addResizeListener();
@@ -188,6 +194,11 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 	}
 
 	// -- ImageCanvas methods --
+
+	@Override
+	public Display getDisplay() {
+		return display;
+	}
 
 	@Override
 	public int getCanvasWidth() {
@@ -356,8 +367,8 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 	private boolean isImageEdgeInPanel() {
 		if (previousPanelSize == null) return false;
 		final IntCoords offset = canvasHelper.getPanOrigin();
-		return offset.x > 0 && offset.x < previousPanelSize.width ||
-			offset.y > 0 && offset.y < previousPanelSize.height;
+		return offset.x > 0 && offset.x < previousPanelSize.width || offset.y > 0 &&
+			offset.y < previousPanelSize.height;
 	}
 
 	/** Centers the current image in the panel. */
