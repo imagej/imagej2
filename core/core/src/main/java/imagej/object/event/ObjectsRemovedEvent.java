@@ -44,7 +44,7 @@ import java.util.Collection;
  * 
  * @author Curtis Rueden
  */
-public class ObjectsRemovedEvent extends ObjectsChangedEvent {
+public class ObjectsRemovedEvent extends ObjectsListEvent {
 
 	public ObjectsRemovedEvent(final Object o) {
 		super(o);

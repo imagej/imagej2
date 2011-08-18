@@ -43,6 +43,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
 import imagej.event.StatusEvent;
+import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
@@ -50,6 +51,7 @@ import imagej.ext.module.event.ModuleEvent;
 import imagej.ext.module.event.ModuleExecutedEvent;
 import imagej.ext.module.event.ModulePreprocessEvent;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectEvent;
 import imagej.tool.event.ToolEvent;
@@ -75,6 +77,24 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 
 	private final static WatchEvents listener = new WatchEvents();
 	private static SwingOutputWindow window;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String msg = "Event types to watch:";
+
+	@Parameter(label = "StatusEvent")
+	private boolean statusEvents = false;
+
+	@Parameter(label = "MsMovedEvent")
+	private boolean msMovedEvents = false;
+
+	@Parameter(label = "StatusEvent")
+	private boolean statusEvents = false;
+
+	@Parameter(label = "StatusEvent")
+	private boolean statusEvents = false;
+
+	@Parameter(label = "StatusEvent")
+	private boolean statusEvents = false;
 
 	@Override
 	public void run() {

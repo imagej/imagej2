@@ -1,5 +1,5 @@
 //
-// ObjectsChangedEvent.java
+// MenuEvent.java
 //
 
 /*
@@ -32,26 +32,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.object.event;
+package imagej.ext.menu.event;
 
-import imagej.object.ObjectService;
+import imagej.ext.menu.MenuService;
+import imagej.ext.menu.ShadowMenu;
+import imagej.object.event.ListEvent;
 
 import java.util.Collection;
 
 /**
- * An event indicating the list of objects registered with the
- * {@link ObjectService} has changed.
+ * An event indicating something has happened to the {@link MenuService}'s
+ * {@link ShadowMenu}.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
  */
-public class ObjectsChangedEvent extends ItemsChangedEvent<Object> {
+public class MenuEvent extends ListEvent<ShadowMenu> {
 
-	public ObjectsChangedEvent(final Object o) {
+	public MenuEvent(final ShadowMenu o) {
 		super(o);
 	}
 
-	public ObjectsChangedEvent(final Collection<?> c) {
+	public MenuEvent(final Collection<? extends ShadowMenu> c) {
 		super(c);
 	}
 
