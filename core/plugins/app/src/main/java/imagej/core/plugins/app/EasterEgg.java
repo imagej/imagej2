@@ -67,6 +67,7 @@ public class EasterEgg implements ImageJPlugin {
 		final UIService uiService = ImageJ.get(UIService.class);
 		final OutputWindow window =
 			uiService.createOutputWindow(dataset.getName() + " *~= SPECIAL =~*");
+		window.setVisible(true);
 
 		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		final int colCount = (int) imgPlus.dimension(0);

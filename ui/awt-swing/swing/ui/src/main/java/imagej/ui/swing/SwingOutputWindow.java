@@ -40,6 +40,7 @@ import imagej.ui.OutputWindow;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Rectangle;
 
 import javax.swing.JFrame;
@@ -47,8 +48,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
- * Generalized textual output window. Can be subscribed to OutputEvents for
- * global output, e.g. logging.
+ * Generalized textual output window. Can be subscribed to {@link OutputEvent}s
+ * for global output, e.g. logging.
  * 
  * @author Grant Harris
  */
@@ -56,7 +57,7 @@ public class SwingOutputWindow extends JFrame implements
 	EventSubscriber<OutputEvent>, OutputWindow
 {
 
-	JTextArea textArea = new JTextArea();
+	private final JTextArea textArea = new JTextArea();
 
 	// TODO: add tabular functionality
 
@@ -72,27 +73,13 @@ public class SwingOutputWindow extends JFrame implements
 		textArea.setEditable(false);
 		textArea.setRows(20);
 		textArea.setColumns(50);
-		final java.awt.Font font =
-			new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12);
+		final Font font = new Font("Monospaced", java.awt.Font.PLAIN, 12);
 		textArea.setFont(font);
 		getContentPane().add(new JScrollPane(textArea), BorderLayout.CENTER);
-		pack();
-		setVisible(true); // BDZ says why are we calling this twice in 3 lines?
-		this.setBounds(new Rectangle(x, y, w, h));
-		this.setVisible(true);
+		setBounds(new Rectangle(x, y, w, h));
 	}
 
-	@Override
-	public void append(final String text) {
-		textArea.append(text);
-		// Make sure the last line is always visible
-		textArea.setCaretPosition(textArea.getDocument().getLength());
-	}
-
-	@Override
-	public void clear() {
-		textArea.setText("");
-	}
+	// -- EventSubscriber methods --
 
 	@Override
 	public void onEvent(final OutputEvent event) {
@@ -119,6 +106,20 @@ public class SwingOutputWindow extends JFrame implements
 		}
 		append(output);
 		textArea.setForeground(Color.BLACK);
+	}
+
+	// -- OutputWindow methods --
+
+	@Override
+	public void append(final String text) {
+		textArea.append(text);
+		// Make sure the last line is always visible
+		textArea.setCaretPosition(textArea.getDocument().getLength());
+	}
+
+	@Override
+	public void clear() {
+		textArea.setText("");
 	}
 
 }
