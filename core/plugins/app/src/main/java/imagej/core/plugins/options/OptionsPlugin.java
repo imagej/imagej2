@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.options;
 
 import imagej.event.Events;
-import imagej.event.OptionsChangedEvent;
+import imagej.event.OptionsEvent;
 import imagej.ext.plugin.ImageJPlugin;
 
 /**
@@ -47,7 +47,7 @@ public class OptionsPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		Events.publish(new OptionsChangedEvent());
+		Events.publish(new OptionsEvent());
 	}
 
 }

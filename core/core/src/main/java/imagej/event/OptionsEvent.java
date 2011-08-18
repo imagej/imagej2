@@ -1,5 +1,5 @@
 //
-// OptionsChangedEvent.java
+// OptionsEvent.java
 //
 
 /*
@@ -40,9 +40,9 @@ package imagej.event;
  * 
  * @author Barry DeZonia
  */
-public class OptionsChangedEvent extends ImageJEvent {
+public class OptionsEvent extends ImageJEvent {
 
-	public OptionsChangedEvent() {
+	public OptionsEvent() {
 		// nothing to do
 	}
 
