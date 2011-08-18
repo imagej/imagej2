@@ -48,7 +48,7 @@ import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.OptionsChangedEvent;
+import imagej.event.OptionsEvent;
 import imagej.legacy.patches.FunctionsMethods;
 import imagej.util.Log;
 
@@ -179,17 +179,17 @@ public final class LegacyService extends AbstractService {
 		eventService.subscribe(DisplayActivatedEvent.class,
 			displayActivatedSubscriber);
 
-		final EventSubscriber<OptionsChangedEvent> optionSubscriber =
-			new EventSubscriber<OptionsChangedEvent>() {
+		final EventSubscriber<OptionsEvent> optionSubscriber =
+			new EventSubscriber<OptionsEvent>() {
 
 				@Override
-				public void onEvent(final OptionsChangedEvent event) {
+				public void onEvent(final OptionsEvent event) {
 					optionsSynchronizer.update();
 				}
 
 			};
 		subscribers.add(optionSubscriber);
-		eventService.subscribe(OptionsChangedEvent.class, optionSubscriber);
+		eventService.subscribe(OptionsEvent.class, optionSubscriber);
 
 		// TODO - FIXME remove AWT dependency when we have implemented our own
 		// KyEvent constants
