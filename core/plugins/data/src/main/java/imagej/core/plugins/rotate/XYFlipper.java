@@ -52,8 +52,7 @@ import net.imglib2.type.numeric.RealType;
 // TODO - XYFlipper could be renamed to something else. It takes XY data and transforms it some other space */
 
 /**
- * XYFlipper is used by FlipVertically, FlipHorizontally, Rotate90DegreesLeft
- * and Rotate90DegreesRight
+ * XYFlipper is used by Rotate90DegreesLeft and Rotate90DegreesRight
  * 
  * @author Barry DeZonia
  */

@@ -52,8 +52,8 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
 
 /**
- * Creates an output Dataset that is a duplicate of an input Dataset flipped
- * vertically
+ * Modifies an input Dataset by flipping its pixels vertically. Flips all
+ * image pixels unless a selected region is available from the OverlayService.
  * 
  * @author Barry DeZonia
  */
