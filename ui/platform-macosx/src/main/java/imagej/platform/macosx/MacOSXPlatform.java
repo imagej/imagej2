@@ -45,7 +45,7 @@ import imagej.platform.event.AppMenusCreatedEvent;
 import javax.swing.JMenuBar;
 
 /**
- * An platform implementation for handling Mac OS X platform issues:
+ * A platform implementation for handling Mac OS X platform issues:
  * <ul>
  * <li>Application events are rebroadcast as ImageJ events.</li>
  * <li>Mac OS X screen menu bar is enabled.</li>
@@ -59,6 +59,8 @@ public class MacOSXPlatform implements PlatformHandler,
 	EventSubscriber<AppMenusCreatedEvent>
 {
 
+	private MacOSXAppListener appListener;
+
 	// -- PlatformHandler methods --
 
 	@Override
@@ -67,13 +69,8 @@ public class MacOSXPlatform implements PlatformHandler,
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		// translate Mac OS X application events into ImageJ events
-		final MacOSXAppListener appListener = new MacOSXAppListener();
 		final Application app = Application.getApplication();
-		app.setAboutHandler(appListener);
-		app.setPreferencesHandler(appListener);
-		app.setPrintFileHandler(appListener);
-		app.setQuitHandler(appListener);
-		app.addAppEventListener(appListener);
+		appListener = new MacOSXAppListener(app);
 
 		Events.subscribe(AppMenusCreatedEvent.class, this);
 	}

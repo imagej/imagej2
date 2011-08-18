@@ -48,6 +48,7 @@ import com.apple.eawt.AppEvent.UserSessionEvent;
 import com.apple.eawt.AppForegroundListener;
 import com.apple.eawt.AppHiddenListener;
 import com.apple.eawt.AppReOpenedListener;
+import com.apple.eawt.Application;
 import com.apple.eawt.PreferencesHandler;
 import com.apple.eawt.PrintFilesHandler;
 import com.apple.eawt.QuitHandler;
@@ -83,6 +84,14 @@ public class MacOSXAppListener implements AboutHandler,
 	PreferencesHandler, PrintFilesHandler, QuitHandler, ScreenSleepListener,
 	SystemSleepListener, UserSessionListener
 {
+
+	public MacOSXAppListener(final Application app) {
+		app.setAboutHandler(this);
+		app.setPreferencesHandler(this);
+		app.setPrintFileHandler(this);
+		app.setQuitHandler(this);
+		app.addAppEventListener(this);		
+	}
 
 	// -- AboutHandler methods --
 
