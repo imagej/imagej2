@@ -44,6 +44,7 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.UI;
+import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 
 import org.apache.pivot.collections.Map;
@@ -61,6 +62,8 @@ import org.apache.pivot.wtk.Orientation;
  */
 @UI
 public class PivotUI implements Application, UserInterface {
+
+	private UIService uiService;
 
 	private Frame frame;
 	private BoxPane contentPane;
@@ -109,7 +112,8 @@ public class PivotUI implements Application, UserInterface {
 	// -- UserInterface methods --
 
 	@Override
-	public void initialize() {
+	public void initialize(final UIService service) {
+		uiService = service;
 		final String[] args = { getClass().getName() };
 		DesktopApplicationContext.main(args);
 	}
@@ -126,6 +130,11 @@ public class PivotUI implements Application, UserInterface {
 			menuService.createMenus(new PivotMenuCreator(), new BoxPane());
 		contentPane.add(menuPane);
 		Events.publish(new AppMenusCreatedEvent(menuPane));
+	}
+
+	@Override
+	public UIService getUIService() {
+		return uiService;
 	}
 
 	@Override
