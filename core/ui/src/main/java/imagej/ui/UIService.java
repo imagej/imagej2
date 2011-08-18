@@ -98,6 +98,10 @@ public final class UIService extends AbstractService {
 
 	// -- UIService methods --
 
+	public EventService getEventService() {
+		return eventService;
+	}
+
 	public PlatformService getPlatformService() {
 		return platformService;
 	}
@@ -154,7 +158,7 @@ public final class UIService extends AbstractService {
 		if (uis.size() > 0) {
 			final UserInterface ui = uis.get(0);
 			Log.info("Launching user interface: " + ui.getClass().getName());
-			ui.initialize();
+			ui.initialize(this);
 			userInterface = ui;
 		}
 		else {

@@ -39,12 +39,11 @@ import imagej.display.Display;
 import imagej.display.DisplayWindow;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
-import imagej.platform.PlatformService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.DialogPrompt;
@@ -52,6 +51,7 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.UI;
+import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Log;
@@ -89,6 +89,8 @@ public class SwingUI implements UserInterface {
 	private static final String README_FILE = "README.txt";
 	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
 
+	private UIService uiService;
+
 	private JFrame frame;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
@@ -98,7 +100,9 @@ public class SwingUI implements UserInterface {
 	// -- UserInterface methods --
 
 	@Override
-	public void initialize() {
+	public void initialize(final UIService service) {
+		uiService = service;
+
 		frame = new JFrame("ImageJ");
 		toolBar = new SwingToolBar();
 		statusBar = new SwingStatusBar();
@@ -112,7 +116,7 @@ public class SwingUI implements UserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent evt) {
-				Events.publish(new AppQuitEvent());
+				getUIService().getEventService().publish(new AppQuitEvent());
 			}
 		});
 
@@ -135,7 +139,12 @@ public class SwingUI implements UserInterface {
 	@Override
 	public void createMenus() {
 		final JMenuBar menuBar = createMenuBar(frame);
-		Events.publish(new AppMenusCreatedEvent(menuBar));
+		getUIService().getEventService().publish(new AppMenusCreatedEvent(menuBar));
+	}
+
+	@Override
+	public UIService getUIService() {
+		return uiService;
 	}
 
 	@Override
