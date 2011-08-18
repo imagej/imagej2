@@ -44,6 +44,10 @@ import imagej.display.event.DisplayEvent;
  */
 public class KyEvent extends DisplayEvent {
 
+	// TODO - Use an enum for the key codes. Perhaps an extensible enum (see Axis
+	// & Axes)? In util-awt, add a mechanism for mapping AWT key codes to and from
+	// ImageJ key codes (similar to AWTCursors).
+
 	private final char character;
 	private final int code;
 	private final int modifiers;

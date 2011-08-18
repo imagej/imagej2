@@ -44,9 +44,14 @@ import imagej.display.Display;
  */
 public class MsButtonEvent extends MsEvent {
 
+	// TODO - Use an enum for the buttons. Perhaps an extensible enum (see Axis &
+	// Axes)? In util-awt, add a mechanism for mapping AWT mouse buttons to and
+	// from ImageJ mouse buttons (similar to AWTCursors).
+
 	public static final int LEFT_BUTTON = 0;
 	public static final int MIDDLE_BUTTON = 1;
 	public static final int RIGHT_BUTTON = 2;
+
 	private final int button;
 	private final int numClicks;
 	private final boolean isPopupTrigger;
