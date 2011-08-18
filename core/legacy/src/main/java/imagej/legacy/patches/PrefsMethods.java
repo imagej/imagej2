@@ -221,33 +221,33 @@ public class PrefsMethods {
 	// and seeing what we may have missed
 	
 	private static void mapMiscPrefNames() {
-		keyMap.put("toolbar.brush.size", SettingsKeys.SETTINGS_TOOLBAR_LAST_BRUSH_SIZE);
-		keyMap.put("toolbar.arc.size", SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER);
+		keyMap.put("arrow.double", SettingsKeys.OPTIONS_ARROW_DOUBLEHEADED);
+		keyMap.put("arrow.outline", SettingsKeys.OPTIONS_ARROW_OUTLINE);
+		keyMap.put("arrow.size", SettingsKeys.OPTIONS_ARROW_SIZE);
 		keyMap.put("arrow.style", SettingsKeys.OPTIONS_ARROW_STYLE);
 		keyMap.put("arrow.width", SettingsKeys.OPTIONS_ARROW_WIDTH);
-		keyMap.put("arrow.size", SettingsKeys.OPTIONS_ARROW_SIZE);
-		keyMap.put("arrow.outline", SettingsKeys.OPTIONS_ARROW_OUTLINE);
-		keyMap.put("arrow.double", SettingsKeys.OPTIONS_ARROW_DOUBLEHEADED);
-		keyMap.put("javac.target", SettingsKeys.OPTIONS_COMPILER_VERSION);
-		keyMap.put("options.ext", SettingsKeys.OPTIONS_IO_FILE_EXT);
-		keyMap.put("bs.background", SettingsKeys.SETTINGS_BACKGROUND_SUBTRACTER_BACKGROUND);
-		keyMap.put("math.macro", SettingsKeys.SETTINGS_IMAGE_MATH_MACRO_VALUE);
-		keyMap.put("label.format", SettingsKeys.SETTINGS_STACKLABELER_LABEL_FORMAT);
-		keyMap.put("cthresholder.dark", SettingsKeys.SETTINGS_COLOR_THRESHOLDER_DARK);
-		keyMap.put("editor.font.size", SettingsKeys.SETTINGS_EDITOR_FONT_SIZE);
-		keyMap.put("editor.font.mono", SettingsKeys.SETTINGS_EDITOR_FONT_MONO);
-		keyMap.put("editor.case-sensitive", SettingsKeys.SETTINGS_EDITOR_CASE_SENSITIVE);
-		keyMap.put("recorder.mode", SettingsKeys.SETTINGS_RECORDER_MODE);
-		keyMap.put("threshold.mode", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_MODE_KEY);
-		keyMap.put("threshold.dark", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_DARK_BACKGROUND);
+		keyMap.put("batch.format", SettingsKeys.SETTINGS_BATCH_FORMAT);
 		keyMap.put("batch.input", SettingsKeys.SETTINGS_BATCH_INPUT);
 		keyMap.put("batch.output", SettingsKeys.SETTINGS_BATCH_OUTPUT);
-		keyMap.put("batch.formatt", SettingsKeys.SETTINGS_BATCH_FORMAT);
-		keyMap.put("resizer.zero", SettingsKeys.SETTINGS_CANVAS_RESIZER_ZERO);
+		keyMap.put("bs.background", SettingsKeys.SETTINGS_BACKGROUND_SUBTRACTER_BACKGROUND);
 		keyMap.put("command-finder.close", SettingsKeys.SETTINGS_COMMAND_FINDER_CLOSE);
+		keyMap.put("cthresholder.dark", SettingsKeys.SETTINGS_COLOR_THRESHOLDER_DARK);
+		keyMap.put("editor.case-sensitive", SettingsKeys.SETTINGS_EDITOR_CASE_SENSITIVE);
+		keyMap.put("editor.font.mono", SettingsKeys.SETTINGS_EDITOR_FONT_MONO);
+		keyMap.put("editor.font.size", SettingsKeys.SETTINGS_EDITOR_FONT_SIZE);
+		keyMap.put("gel.hscale", SettingsKeys.SETTINGS_GEL_ANALYZER_HSCALE);
 		keyMap.put("gel.options", SettingsKeys.SETTINGS_GEL_ANALYZER_OPTIONS); 
 		keyMap.put("gel.vscale", SettingsKeys.SETTINGS_GEL_ANALYZER_VSCALE);
-		keyMap.put("gel.hscale", SettingsKeys.SETTINGS_GEL_ANALYZER_HSCALE);
+		keyMap.put("javac.target", SettingsKeys.OPTIONS_COMPILER_VERSION);
+		keyMap.put("label.format", SettingsKeys.SETTINGS_STACKLABELER_LABEL_FORMAT);
+		keyMap.put("math.macro", SettingsKeys.SETTINGS_IMAGE_MATH_MACRO_VALUE);
+		keyMap.put("options.ext", SettingsKeys.OPTIONS_IO_FILE_EXT);
+		keyMap.put("recorder.mode", SettingsKeys.SETTINGS_RECORDER_MODE);
+		keyMap.put("resizer.zero", SettingsKeys.SETTINGS_CANVAS_RESIZER_ZERO);
+		keyMap.put("threshold.dark", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_DARK_BACKGROUND);
+		keyMap.put("threshold.mode", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_MODE_KEY);
+		keyMap.put("toolbar.arc.size", SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER);
+		keyMap.put("toolbar.brush.size", SettingsKeys.SETTINGS_TOOLBAR_LAST_BRUSH_SIZE);
 		keyMap.put("zproject.method",SettingsKeys.SETTINGS_ZPROJECTOR_METHOD);
 	}
 }
