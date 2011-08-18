@@ -54,4 +54,11 @@ public class DisplayEvent extends ImageJEvent {
 		return display;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tdisplay = " + display;
+	}
+
 }

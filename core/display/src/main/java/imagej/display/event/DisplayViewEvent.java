@@ -54,4 +54,11 @@ public class DisplayViewEvent extends DisplayEvent {
 		return displayView;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tdisplayView = " + displayView;
+	}
+
 }

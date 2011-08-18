@@ -55,4 +55,11 @@ public class AppVisibleEvent extends ApplicationEvent {
 		return !visible;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tvisible = " + visible;
+	}
+
 }

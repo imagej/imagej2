@@ -60,4 +60,11 @@ public class MsEvent extends DisplayEvent {
 		return y;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tx = " + x + "\n\ty = " + y;
+	}
+
 }

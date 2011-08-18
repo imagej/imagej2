@@ -75,4 +75,12 @@ public class AxisPositionEvent extends DisplayEvent {
 		return relative;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\taxis = " + axis + "\n\tvalue = " + value +
+			"\n\tmax = " + max + "\n\trelative = " + relative;
+	}
+
 }

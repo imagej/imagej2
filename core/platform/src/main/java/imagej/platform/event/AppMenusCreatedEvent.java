@@ -51,4 +51,11 @@ public class AppMenusCreatedEvent extends ApplicationEvent {
 		return menus;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tmenus = " + menus;
+	}
+
 }

@@ -40,20 +40,10 @@ package imagej.platform.event;
  * 
  * @author Curtis Rueden
  */
-public class AppScreenSleepEvent extends ApplicationEvent {
-
-	private boolean sleep;
+public class AppScreenSleepEvent extends AppSleepEvent {
 
 	public AppScreenSleepEvent(final boolean sleep) {
-		this.sleep = sleep;
-	}
-
-	public boolean isSleeping() {
-		return sleep;
-	}
-
-	public boolean isWaking() {
-		return !sleep;
+		super(sleep);
 	}
 
 }
