@@ -145,6 +145,11 @@ public class SwingUI implements UserInterface {
 	}
 
 	@Override
+	public JFrame getApplicationFrame() {
+		return frame;
+	}
+
+	@Override
 	public SwingToolBar getToolBar() {
 		return toolBar;
 	}

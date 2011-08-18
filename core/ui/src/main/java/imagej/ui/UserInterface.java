@@ -47,6 +47,8 @@ public interface UserInterface {
 
 	void createMenus();
 
+	Object getApplicationFrame();
+
 	ToolBar getToolBar();
 
 	StatusBar getStatusBar();

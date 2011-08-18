@@ -104,6 +104,11 @@ public class AWTUI implements UserInterface {
 	}
 
 	@Override
+	public Frame getApplicationFrame() {
+		return frame;
+	}
+
+	@Override
 	public AWTToolBar getToolBar() {
 		return toolBar;
 	}
