@@ -127,12 +127,12 @@ public class ImageMath implements ImageJPlugin {
 	@Override
 	public void run() {
 		final BinaryOperation<Real> binOp = operators.get(operatorName);
-		final Function<DiscreteNeigh,Real> f1 =
+		final Function<long[],Real> f1 =
 			new RealImageFunction(input1.getImgPlus().getImg());
-		final Function<DiscreteNeigh,Real> f2 =
+		final Function<long[],Real> f2 =
 			new RealImageFunction(input2.getImgPlus().getImg());
-		final GeneralBinaryFunction<DiscreteNeigh,Real> binFunc =
-			new GeneralBinaryFunction<DiscreteNeigh,Real>(f1, f2, binOp);
+		final GeneralBinaryFunction<long[],Real> binFunc =
+			new GeneralBinaryFunction<long[],Real>(f1, f2, binOp);
 		output = input1.duplicateBlank();
 		int numDims = output.getImgPlus().numDimensions();
 		long[] posOffs = new long[numDims];
