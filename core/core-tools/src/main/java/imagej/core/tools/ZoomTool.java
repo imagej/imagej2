@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.mouse.MsButtonEvent;
 import imagej.display.event.mouse.MsMovedEvent;
@@ -69,12 +70,14 @@ public class ZoomTool extends AbstractTool {
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final Display display = evt.getDisplay();
+		if(display instanceof ImageDisplay) {
 		final char c = evt.getCharacter();
 		if (c == '=' || c == '+') {
-			display.getImageCanvas().zoomIn(mousePos);
+			((ImageDisplay)display).getImageCanvas().zoomIn(mousePos);
 		}
 		else if (c == '-') {
-			display.getImageCanvas().zoomOut(mousePos);
+			((ImageDisplay)display).getImageCanvas().zoomOut(mousePos);
+		}
 		}
 	}
 
@@ -87,6 +90,7 @@ public class ZoomTool extends AbstractTool {
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
 		final Display display = evt.getDisplay();
+		if(display instanceof ImageDisplay) {
 		mouseUp.x = evt.getX();
 		mouseUp.y = evt.getY();
 		final int xDist = Math.abs(mouseUp.x - mouseDown.x);
@@ -107,16 +111,17 @@ public class ZoomTool extends AbstractTool {
 				mouseUp.y = mouseDown.y;
 				mouseDown.y = y;
 			}
-			display.getImageCanvas().zoomToFit(mouseDown, mouseUp);
+			((ImageDisplay)display).getImageCanvas().zoomToFit(mouseDown, mouseUp);
 		}
 		else {
 			// under threshold: just zoom
 			if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
-				display.getImageCanvas().zoomIn(mouseDown);
+				((ImageDisplay)display).getImageCanvas().zoomIn(mouseDown);
 			}
 			else {
-				display.getImageCanvas().zoomOut(mouseDown);
+				((ImageDisplay)display).getImageCanvas().zoomOut(mouseDown);
 			}
+		}
 		}
 	}
 
@@ -129,12 +134,14 @@ public class ZoomTool extends AbstractTool {
 	@Override
 	public void onMouseWheel(final MsWheelEvent evt) {
 		final Display display = evt.getDisplay();
+		if(display instanceof ImageDisplay) {
 		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
 		if (evt.getWheelRotation() < 0) {
-			display.getImageCanvas().zoomIn(center);
+			((ImageDisplay)display).getImageCanvas().zoomIn(center);
 		}
 		else {
-			display.getImageCanvas().zoomOut(center);
+			((ImageDisplay)display).getImageCanvas().zoomOut(center);
+		}
 		}
 	}
 

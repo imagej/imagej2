@@ -39,7 +39,7 @@ import imagej.data.roi.Overlay;
 import net.imglib2.img.Axis;
 
 /**
- * A view into an {@link Overlay}, for use with a {@link Display}.
+ * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.
  * 
  * @author Curtis Rueden
  */
@@ -47,7 +47,7 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 
 	private final Overlay overlay;
 
-	public AbstractOverlayView(final Display display, final Overlay overlay) {
+	public AbstractOverlayView(final ImageDisplay display, final Overlay overlay) {
 		super(display, overlay);
 		this.overlay = overlay;
 		long[] dims = ImageJ.get(DisplayService.class).getActiveDataset(display).getDims();

@@ -47,7 +47,7 @@ import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -246,7 +246,7 @@ public class OverlayTranslatorTest {
 
 	/**
 	 * Test method for
-	 * {@link imagej.legacy.OverlayTranslator#setDisplayOverlays(Display, ImagePlus)}
+	 * {@link imagej.legacy.OverlayTranslator#setDisplayOverlays(ImageDisplay, ImagePlus)}
 	 * .
 	 */
 	@Test

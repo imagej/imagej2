@@ -36,7 +36,7 @@ package imagej.core.plugins.axispos;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.AxisPositionEvent;
 import imagej.event.Events;
@@ -59,7 +59,7 @@ public final class AxisUtils {
 	 * @param change - the size of the change to make to the axis position
 	 * @param relative - whether the change is a relative or absolute amount
 	 */
-	public static void changeCurrentAxisPosition(final Display display,
+	public static void changeCurrentAxisPosition(final ImageDisplay display,
 		final long change, final boolean relative)
 	{
 		final DisplayService displayService = ImageJ.get(DisplayService.class);

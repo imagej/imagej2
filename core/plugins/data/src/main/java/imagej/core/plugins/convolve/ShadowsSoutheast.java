@@ -36,7 +36,7 @@ package imagej.core.plugins.convolve;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -59,7 +59,7 @@ public class ShadowsSoutheast implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Display display;
+	private ImageDisplay display;
 
 	// -- public interface --
 

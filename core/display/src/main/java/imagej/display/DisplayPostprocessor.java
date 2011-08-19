@@ -93,8 +93,8 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 	private boolean isDisplayed(final DataObject dataset) {
 		// TODO: Keep a reference count instead of manually counting here?
 		final ObjectService objectService = ImageJ.get(ObjectService.class);
-		final List<Display> displays = objectService.getObjects(Display.class);
-		for (final Display display : displays) {
+		final List<ImageDisplay> displays = objectService.getObjects(ImageDisplay.class);
+		for (final ImageDisplay display : displays) {
 			for (final DisplayView view : display.getViews()) {
 				if (dataset == view.getDataObject()) return true;
 			}
@@ -105,7 +105,9 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 	private void displayOverlay(final Overlay overlay) {
 		// Add the overlay to the currently active display
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		displayService.getActiveDisplay().display(overlay);
+		final Display activeDisplay = displayService.getActiveDisplay();
+		if(!(activeDisplay instanceof ImageDisplay) ) return;
+		((ImageDisplay)activeDisplay).display(overlay);
 	}
 
 }

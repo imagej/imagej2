@@ -40,6 +40,7 @@ import imagej.Service;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -94,7 +95,7 @@ public final class TypeChangeService extends AbstractService {
 	}
 
 	/** Selects the module matching the active dataset's type. */
-	public void refreshSelectedType(final Display display) {
+	public void refreshSelectedType(final ImageDisplay display) {
 		final Dataset dataset = displayService.getActiveDataset(display);
 		final String typeLabel = dataset == null ? "" : dataset.getTypeLabelShort();
 		final String suffix = ".ChangeTo" + typeLabel.toUpperCase();
@@ -127,7 +128,8 @@ public final class TypeChangeService extends AbstractService {
 
 				@Override
 				public void onEvent(final DisplayActivatedEvent event) {
-					refreshSelectedType(event.getDisplay());
+					if(event.getDisplay() instanceof ImageDisplay)
+					refreshSelectedType((ImageDisplay)event.getDisplay());
 				}
 			};
 		subscribers.add(displayActivatedSubscriber);

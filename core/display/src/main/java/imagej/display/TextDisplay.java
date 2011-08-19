@@ -1,5 +1,5 @@
-//
-// ClearRecent.java
+ //
+// TextDisplay.java
 //
 
 /*
@@ -31,36 +31,14 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-
 package imagej.display;
 
-import imagej.ImageJ;
-import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-
-
 /**
- * Clears the list of recently opened files.
- * 
- * @author Curtis Rueden
+ *
+ * @author GBH
  */
-@Plugin
-
-public class SelectWindow implements ImageJPlugin {
-
-	@Parameter String displayToSelect;
+public interface TextDisplay extends Display {
 	
-	// -- RunnablePlugin methods --
-
-	@Override
-	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		Display display = displayService.getDisplay(displayToSelect);
-		if(display == null) return;
-		DisplayPanel panel = display.getDisplayPanel();
-		if(panel == null) return;
-		panel.makeActive();
-	}
-
+	
+	
 }

@@ -38,7 +38,7 @@ import imagej.ImageJ;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -62,7 +62,7 @@ public class Rotate90DegreesRight implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Display display;
+	private ImageDisplay display;
 
 	// -- public interface --
 

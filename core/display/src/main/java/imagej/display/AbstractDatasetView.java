@@ -55,7 +55,7 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * A view into a {@link Dataset}, for use with a {@link Display}.
+ * A view into a {@link Dataset}, for use with a {@link ImageDisplay}.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
@@ -84,7 +84,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 	private ArrayList<EventSubscriber<?>> subscribers;
 
-	public AbstractDatasetView(final Display display, final Dataset dataset) {
+	public AbstractDatasetView(final ImageDisplay display, final Dataset dataset) {
 		super(display, dataset);
 		this.dataset = dataset;
 		subscribeToEvents();

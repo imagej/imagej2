@@ -39,7 +39,7 @@ import ij.gui.ImageWindow;
 import ij.gui.Roi;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
@@ -52,21 +52,21 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * An image map between IJ1 {@link ImagePlus} objects and IJ2 {@link Display}s.
+ * An image map between IJ1 {@link ImagePlus} objects and IJ2 {@link ImageDisplay}s.
  * Because every {@link ImagePlus} has a corresponding {@link ImageWindow} and
  * vice versa, it works out best to associate each {@link ImagePlus} with a
- * {@link Display} rather than with a {@link Dataset}.
+ * {@link ImageDisplay} rather than with a {@link Dataset}.
  * <p>
- * Any {@link Overlay}s present in the {@link Display} are translated to a
+ * Any {@link Overlay}s present in the {@link ImageDisplay} are translated to a
  * {@link Roi} attached to the {@link ImagePlus}, and vice versa.
  * </p>
  * <p>
- * In the case of one {@link Dataset} belonging to multiple {@link Display}s,
- * there is a separate {@link ImagePlus} for each {@link Display}, with pixels
+ * In the case of one {@link Dataset} belonging to multiple {@link ImageDisplay}s,
+ * there is a separate {@link ImagePlus} for each {@link ImageDisplay}, with pixels
  * by reference.
  * </p>
  * <p>
- * In the case of multiple {@link Dataset}s in a single {@link Display}, only
+ * In the case of multiple {@link Dataset}s in a single {@link ImageDisplay}, only
  * the first {@link Dataset} is translated to the {@link ImagePlus}.
  * </p>
  * 
@@ -77,15 +77,15 @@ public class LegacyImageMap {
 
 	// -- Fields --
 
-	/** Table of {@link ImagePlus} objects corresponding to {@link Display}s. */
-	private final Map<Display, ImagePlus> imagePlusTable;
+	/** Table of {@link ImagePlus} objects corresponding to {@link ImageDisplay}s. */
+	private final Map<ImageDisplay, ImagePlus> imagePlusTable;
 
-	/** Table of {@link Display} objects corresponding to {@link ImagePlus}es. */
-	private final Map<ImagePlus, Display> displayTable;
+	/** Table of {@link ImageDisplay} objects corresponding to {@link ImagePlus}es. */
+	private final Map<ImagePlus, ImageDisplay> displayTable;
 
 	/**
 	 * The {@link ImageTranslator} to use when creating {@link ImagePlus} and
-	 * {@link Display} objects corresponding to one another.
+	 * {@link ImageDisplay} objects corresponding to one another.
 	 */
 	private final ImageTranslator imageTranslator;
 
@@ -95,8 +95,8 @@ public class LegacyImageMap {
 	// -- Constructor --
 
 	public LegacyImageMap() {
-		imagePlusTable = new ConcurrentHashMap<Display, ImagePlus>();
-		displayTable = new ConcurrentHashMap<ImagePlus, Display>();
+		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
+		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
 		imageTranslator = new DefaultImageTranslator();
 		subscribers = new ArrayList<EventSubscriber<?>>();
 		subscribeToEvents();
@@ -106,37 +106,37 @@ public class LegacyImageMap {
 
 	/**
 	 * Gets the {@link ImageTranslator} used to create {@link ImagePlus} and
-	 * {@link Display} objects linked to one another.
+	 * {@link ImageDisplay} objects linked to one another.
 	 */
 	public ImageTranslator getTranslator() {
 		return imageTranslator;
 	}
 
 	/**
-	 * Gets the {@link Display} corresponding to the given {@link ImagePlus}, or
+	 * Gets the {@link ImageDisplay} corresponding to the given {@link ImagePlus}, or
 	 * null if there is no existing table entry.
 	 */
-	public Display lookupDisplay(final ImagePlus imp) {
+	public ImageDisplay lookupDisplay(final ImagePlus imp) {
 		if (imp == null) return null;
 		return displayTable.get(imp);
 	}
 
 	/**
-	 * Gets the {@link ImagePlus} corresponding to the given {@link Display}, or
+	 * Gets the {@link ImagePlus} corresponding to the given {@link ImageDisplay}, or
 	 * null if there is no existing table entry.
 	 */
-	public ImagePlus lookupImagePlus(final Display display) {
+	public ImagePlus lookupImagePlus(final ImageDisplay display) {
 		if (display == null) return null;
 		return imagePlusTable.get(display);
 	}
 
 	/**
-	 * Ensures that the given {@link Display} has a corresponding legacy image.
+	 * Ensures that the given {@link ImageDisplay} has a corresponding legacy image.
 	 * 
-	 * @return the {@link ImagePlus} object shadowing the given {@link Display},
+	 * @return the {@link ImagePlus} object shadowing the given {@link ImageDisplay},
 	 *         creating it if necessary using the {@link ImageTranslator}.
 	 */
-	public ImagePlus registerDisplay(final Display display) {
+	public ImagePlus registerDisplay(final ImageDisplay display) {
 		ImagePlus imp = lookupImagePlus(display);
 		if (imp == null) {
 			// mapping does not exist; mirror display to image window
@@ -147,13 +147,13 @@ public class LegacyImageMap {
 	}
 
 	/**
-	 * Ensures that the given legacy image has a corresponding {@link Display}.
+	 * Ensures that the given legacy image has a corresponding {@link ImageDisplay}.
 	 * 
-	 * @return the {@link Display} object shadowing the given {@link ImagePlus},
+	 * @return the {@link ImageDisplay} object shadowing the given {@link ImagePlus},
 	 *         creating it if necessary using the {@link ImageTranslator}.
 	 */
-	public Display registerLegacyImage(final ImagePlus imp) {
-		Display display = lookupDisplay(imp);
+	public ImageDisplay registerLegacyImage(final ImagePlus imp) {
+		ImageDisplay display = lookupDisplay(imp);
 		if (display == null) {
 			// mapping does not exist; mirror legacy image to display
 			display = imageTranslator.createDisplay(imp);
@@ -162,32 +162,32 @@ public class LegacyImageMap {
 		return display;
 	}
 
-	/** Removes the mapping associated with the given {@link Display}. */
-	public void unregisterDisplay(final Display display) {
+	/** Removes the mapping associated with the given {@link ImageDisplay}. */
+	public void unregisterDisplay(final ImageDisplay display) {
 		final ImagePlus imp = lookupImagePlus(display);
 		removeMapping(display, imp);
 	}
 
 	/** Removes the mapping associated with the given {@link ImagePlus}. */
 	public void unregisterLegacyImage(final ImagePlus imp) {
-		final Display display = lookupDisplay(imp);
+		final ImageDisplay display = lookupDisplay(imp);
 		removeMapping(display, imp);
 	}
 
 	// -- Helper methods --
 
-	private void addMapping(Display display, ImagePlus imp) {
+	private void addMapping(ImageDisplay display, ImagePlus imp) {
 		//System.out.println("CREATE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
 		
 		// Must remove old mappings to avoid memory leaks
 		//  Removal is tricky for the displayTable. Without removal different
-		//  ImagePluses and CompositeImages can point to the same Display. To
+		//  ImagePluses and CompositeImages can point to the same ImageDisplay. To
 		//  avoid a memory leak and to stay consistent in our mappings we find
 		//  all current mappings and remove them before inserting new ones. This
-		//  ensures that a Display is only linked with one ImagePlus or
+		//  ensures that a ImageDisplay is only linked with one ImagePlus or
 		//  CompositeImage.
 		imagePlusTable.remove(display);
-		for (Entry<ImagePlus, Display> entry : displayTable.entrySet()) {
+		for (Entry<ImagePlus, ImageDisplay> entry : displayTable.entrySet()) {
 			if (entry.getValue() == display) {
 				displayTable.remove(entry.getKey());
 			}
@@ -196,7 +196,7 @@ public class LegacyImageMap {
 		displayTable.put(imp, display);
 	}
 	
-	private void removeMapping(Display display, ImagePlus imp) {
+	private void removeMapping(ImageDisplay display, ImagePlus imp) {
 		// System.out.println("REMOVE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
 		
 		if (display != null) {
@@ -214,7 +214,8 @@ public class LegacyImageMap {
 
 				@Override
 				public void onEvent(final DisplayCreatedEvent event) {
-					registerDisplay(event.getObject());
+					if(event.getObject() instanceof ImageDisplay) 
+						registerDisplay((ImageDisplay)event.getObject());
 				}
 			};
 		subscribers.add(creationSubscriber);
@@ -232,16 +233,17 @@ public class LegacyImageMap {
 					//   No ImagePlus/Display mapping becomes a zombie in the
 					//     LegacyImageMap failing to get garbage collected.
 					//   That IJ2 does not think IJ1 initiated the ij1.close()
-					
-					ImagePlus imp = lookupImagePlus(event.getObject());
+					if(event.getObject() instanceof ImageDisplay)  {
+					ImagePlus imp = lookupImagePlus((ImageDisplay)event.getObject());
 					
 					if (imp != null)
 						ImageWindowMethods.closeInitiatedByIJ2(imp);
 
-					unregisterDisplay(event.getObject());
+					unregisterDisplay((ImageDisplay)event.getObject());
 					
 					if (imp != null)
 						ImageWindowMethods.closeCompletedByIJ2(imp);
+					}
 				}
 			};
 		subscribers.add(deletionSubscriber);

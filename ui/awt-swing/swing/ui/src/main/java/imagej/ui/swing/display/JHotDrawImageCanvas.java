@@ -49,7 +49,8 @@ import imagej.tool.ITool;
 import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
-import imagej.ui.common.awt.AWTEventDispatcher;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.tools.SelectionTool;
 import imagej.ui.swing.tools.roi.IJCreationTool;
 import imagej.ui.swing.tools.roi.IJCreationTool.FigureCreatedEvent;
@@ -244,7 +245,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 					final Overlay overlay = e.getOverlay();
 					final SwingOverlayView v = new SwingOverlayView(display,
 						overlay, e.getFigure());
-					final SwingDisplayWindow window = display.getDisplayWindow();
+					final SwingDisplayPanel window = display.getDisplayPanel();
 					overlay.setAxis(Axes.X, Axes.X.ordinal());
 					overlay.setAxis(Axes.Y, Axes.Y.ordinal());
 					for (int i=2; i<display.numDimensions(); i++) {
@@ -320,11 +321,14 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		final AWTEventDispatcher awtDispatcher = (AWTEventDispatcher) dispatcher;
-		drawingView.addKeyListener(awtDispatcher);
-		drawingView.addMouseListener(awtDispatcher);
-		drawingView.addMouseMotionListener(awtDispatcher);
-		drawingView.addMouseWheelListener(awtDispatcher);
+		if(dispatcher instanceof AWTKeyEventDispatcher) {
+			drawingView.addKeyListener((AWTKeyEventDispatcher)dispatcher);
+		}
+		if(dispatcher instanceof AWTMouseEventDispatcher) {
+			drawingView.addMouseListener((AWTMouseEventDispatcher)dispatcher);
+			drawingView.addMouseMotionListener((AWTMouseEventDispatcher)dispatcher);
+			drawingView.addMouseWheelListener((AWTMouseEventDispatcher)dispatcher);
+		}
 	}
 
 	@Override

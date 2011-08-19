@@ -41,6 +41,7 @@ import imagej.data.Position;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.display.event.DisplayActivatedEvent;
@@ -125,11 +126,12 @@ public class WatchOverlays implements ImageJPlugin {
 			window.append(overlay.getRegionOfInterest().toString() + ": " + overlay.getPosition(Axes.Z) + "\n");
 		}
 
-		final Display display = getCurrentDisplay();
+		final ImageDisplay display = getCurrentImageDisplay();
 		if(display==null) return;
+		if(!(display instanceof ImageDisplay)) return;
 		window.append("For dislay " + display.getName() + " --------------------\n");
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		List<Overlay> overlays2 = getOverlaysFromDisplay(display);
+		List<Overlay> overlays2 = getOverlaysFromDisplay((ImageDisplay)display);
 		for (Overlay overlay : overlays2) {
 			window.append(overlay.getRegionOfInterest().toString() + "\n");
 			if (overlay instanceof RectangleOverlay) {
@@ -150,9 +152,9 @@ public class WatchOverlays implements ImageJPlugin {
 		}
 	}
 
-	private Display getCurrentDisplay() {
+	private ImageDisplay getCurrentImageDisplay() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
+		final ImageDisplay display = displayService.getActiveImageDisplay();
 		if (display == null)
 			return null; // headless UI or no open images
 		return display;
@@ -176,7 +178,7 @@ public class WatchOverlays implements ImageJPlugin {
 //			//Inspector.inspect(overlay);
 //		}
 
-	public List<Overlay> getOverlaysFromDisplay(final Display display) {
+	public List<Overlay> getOverlaysFromDisplay(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
 			for (final DisplayView view : display.getViews()) {
@@ -193,7 +195,7 @@ public class WatchOverlays implements ImageJPlugin {
 		return overlays;
 	}
 
-	public List<Overlay> getOverlaysForCurrentSlice(final Display display) {
+	public List<Overlay> getOverlaysForCurrentSlice(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		for (final DisplayView view : display.getViews()) {
 			Position planePosition = view.getPlanePosition();

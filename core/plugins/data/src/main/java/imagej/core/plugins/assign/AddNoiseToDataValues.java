@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import net.imglib2.Cursor;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
@@ -57,7 +58,7 @@ public class AddNoiseToDataValues {
 
 	// -- instance variables --
 
-	private Display display;
+	private ImageDisplay display;
 	
 	/**
 	 * The stand deviation of the gaussian random value used to create perturbed
@@ -79,7 +80,7 @@ public class AddNoiseToDataValues {
 	 * Constructor - takes an input Dataset as the baseline data to compute
 	 * perturbed values from.
 	 */
-	public AddNoiseToDataValues(Display display) {
+	public AddNoiseToDataValues(ImageDisplay display) {
 		this.display = display;
 	}
 

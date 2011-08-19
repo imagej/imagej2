@@ -39,7 +39,7 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.display.OverlayService;
@@ -231,7 +231,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 				}
 				selecting = true;
 				final DisplayService displayService = ImageJ.get(DisplayService.class);
-				final Display display = displayService.getActiveDisplay();
+				final ImageDisplay display = (ImageDisplay) displayService.getActiveDisplay();
 				JList list = (JList) listSelectionEvent.getSource();
 				Object selectionValues[] = list.getSelectedValues();
 				for (final DisplayView overlayView : display.getViews()) {
@@ -276,12 +276,12 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 		private DisplayService dm = ImageJ.get(DisplayService.class);
 
 		public Object getElementAt(int index) {
-			Display display = dm.getActiveDisplay();
+			ImageDisplay display = (ImageDisplay) dm.getActiveDisplay();
 			return om.getOverlays(display).get(index);
 		}
 
 		public int getSize() {
-			Display display = dm.getActiveDisplay();
+			ImageDisplay display = (ImageDisplay) dm.getActiveDisplay();
 			return om.getOverlays(display).size();
 		}
 

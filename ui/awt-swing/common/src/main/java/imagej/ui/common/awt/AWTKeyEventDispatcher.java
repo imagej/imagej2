@@ -1,5 +1,5 @@
 //
-// ClearRecent.java
+// AWTKeyEventDispatcher.java
 //
 
 /*
@@ -32,35 +32,60 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.ui.common.awt;
 
-import imagej.ImageJ;
-import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.display.ImageDisplay;
+import imagej.display.EventDispatcher;
+import imagej.display.event.key.KyPressedEvent;
+import imagej.display.event.key.KyReleasedEvent;
+import imagej.display.event.key.KyTypedEvent;
+import imagej.event.Events;
+import imagej.event.ImageJEvent;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
- * Clears the list of recently opened files.
+ * Rebroadcasts AWT events as {@link ImageJEvent}s.
  * 
  * @author Curtis Rueden
+ * @author Grant Harris
  */
-@Plugin
+public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener
+{
 
-public class SelectWindow implements ImageJPlugin {
+	private final ImageDisplay display;
 
-	@Parameter String displayToSelect;
-	
-	// -- RunnablePlugin methods --
+	/**
+	 * Creates an AWT event dispatcher for the given display, with mouse
+	 * coordinates interpreted according to the relative flag.
+	 * 
+	 * @param relative If true, coordinates are relative to the entire image
+	 *          canvas rather than just the viewport; hence, the pan offset is
+	 *          already factored in.
+	 */
+	public AWTKeyEventDispatcher(final ImageDisplay display) {
+		this.display = display;
+	}
+
+	// -- KeyListener methods --
 
 	@Override
-	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		Display display = displayService.getDisplay(displayToSelect);
-		if(display == null) return;
-		DisplayPanel panel = display.getDisplayPanel();
-		if(panel == null) return;
-		panel.makeActive();
+	public void keyTyped(final KeyEvent e) {
+		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(),
+			e.getModifiers()));
+	}
+
+	@Override
+	public void keyPressed(final KeyEvent e) {
+		Events.publish(new KyPressedEvent(display, e.getKeyChar(), e.getKeyCode(),
+			e.getModifiers()));
+	}
+
+	@Override
+	public void keyReleased(final KeyEvent e) {
+		Events.publish(new KyReleasedEvent(display, e.getKeyChar(),
+			e.getKeyCode(), e.getModifiers()));
 	}
 
 }

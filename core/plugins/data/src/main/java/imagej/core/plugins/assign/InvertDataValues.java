@@ -36,8 +36,8 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -64,7 +64,7 @@ public class InvertDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Display display;
+	private ImageDisplay display;
 
 	// -- instance variables --
 

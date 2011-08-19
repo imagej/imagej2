@@ -37,7 +37,7 @@ package imagej.core.plugins.assign;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealXorConstant;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -57,7 +57,7 @@ public class XorDataValuesWith extends AbstractPreviewPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Display display;
+	ImageDisplay display;
 
 	@Parameter(label = "Value (binary)")
 	private long constant;
@@ -73,7 +73,7 @@ public class XorDataValuesWith extends AbstractPreviewPlugin {
 	}
 
 	@Override
-	public Display getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
 

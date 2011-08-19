@@ -55,7 +55,7 @@ import java.util.List;
  */
 public abstract class AbstractDisplayView implements DisplayView {
 
-	private final Display display;
+	private final ImageDisplay display;
 	private final DataObject dataObject;
 
 	/** List of event subscribers, to avoid garbage collection. */
@@ -74,7 +74,7 @@ public abstract class AbstractDisplayView implements DisplayView {
 	 */
 	private boolean selected;
 
-	public AbstractDisplayView(final Display display, final DataObject dataObject) {
+	public AbstractDisplayView(final ImageDisplay display, final DataObject dataObject) {
 		this.display = display;
 		this.dataObject = dataObject;
 		dataObject.incrementReferences();
@@ -84,7 +84,7 @@ public abstract class AbstractDisplayView implements DisplayView {
 	// -- DisplayView methods --
 
 	@Override
-	public Display getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
 

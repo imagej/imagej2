@@ -52,7 +52,7 @@ import imagej.data.roi.LineOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.OverlayService;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
@@ -90,10 +90,10 @@ import net.imglib2.type.logic.BitType;
 public class OverlayTranslator {
 
 	/**
-	 * Updates the given {@link Display} to contain {@link Overlay}s corresponding
+	 * Updates the given {@link ImageDisplay} to contain {@link Overlay}s corresponding
 	 * to the given {@link ImagePlus}'s ROI.
 	 */
-	public void setDisplayOverlays(final Display display, final ImagePlus imp) {
+	public void setDisplayOverlays(final ImageDisplay display, final ImagePlus imp) {
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		final Roi oldROI = createROI(overlayService.getOverlays(display));
 		if (oldROI instanceof ShapeRoi) {
@@ -128,9 +128,9 @@ public class OverlayTranslator {
 
 	/**
 	 * Updates the given {@link ImagePlus}'s ROI to match the {@link Overlay}s
-	 * being visualized in the given {@link Display}.
+	 * being visualized in the given {@link ImageDisplay}.
 	 */
-	public void setImagePlusOverlays(final Display display, final ImagePlus imp)
+	public void setImagePlusOverlays(final ImageDisplay display, final ImagePlus imp)
 	{
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		final List<Overlay> overlays = overlayService.getOverlays(display);

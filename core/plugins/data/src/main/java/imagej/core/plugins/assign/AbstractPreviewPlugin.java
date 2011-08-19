@@ -37,7 +37,7 @@ package imagej.core.plugins.assign;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -109,7 +109,7 @@ public abstract class AbstractPreviewPlugin
 			restoreViewedPlane();
 	}
 
-	public abstract Display getDisplay();
+	public abstract ImageDisplay getDisplay();
 	public abstract boolean previewOn();
 	public abstract UnaryOperation<Real> getOperation();
 	

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -51,7 +51,7 @@ import imagej.ext.plugin.Plugin;
 public class ZoomUserDefined implements ImageJPlugin {
 
 	@Parameter
-	private Display display;
+	private ImageDisplay display;
 
 	@Parameter(label = "Zoom (%) :",min= "0.1", max = "10000000")
 	private double userDefinedScale;

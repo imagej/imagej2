@@ -37,7 +37,7 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -52,16 +52,16 @@ import net.imglib2.img.Axis;
 public class GrayscaleImageTranslator implements ImageTranslator {
 
 	@Override
-	public Display createDisplay(final ImagePlus imp) {
+	public ImageDisplay createDisplay(final ImagePlus imp) {
 		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	/**
-	 * creates a {@link Display} from an {@link ImagePlus}. If possible the
-	 * Display is made planar sharing plane references with the ImagePlus.
+	 * creates a {@link ImageDisplay} from an {@link ImagePlus}. If possible the
+	 * ImageDisplay is made planar sharing plane references with the ImagePlus.
 	 */
 	@Override
-	public Display
+	public ImageDisplay
 		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
 	{
 		Dataset ds;
@@ -76,7 +76,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.createDisplay(ds);
+		final ImageDisplay display = displayService.createDisplay(ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 
@@ -84,11 +84,11 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * creates an {@link ImagePlus} from a {@link Display}. The ImagePlus made
-	 * shares plane references with the Display when possible.
+	 * creates an {@link ImagePlus} from a {@link ImageDisplay}. The ImagePlus made
+	 * shares plane references with the ImageDisplay when possible.
 	 */
 	@Override
-	public ImagePlus createLegacyImage(final Display display) {
+	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Dataset dataset = displayService.getActiveDataset(display);
 		ImagePlus imp;

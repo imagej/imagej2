@@ -39,7 +39,7 @@ import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.data.roi.Overlay.LineStyle;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.ext.module.ui.WidgetStyle;
@@ -210,9 +210,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	private List<Overlay> getSelectedOverlays() {
 		final ArrayList<Overlay> result = new ArrayList<Overlay>();
-
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
+		ImageDisplay display = ImageJ.get(DisplayService.class).getActiveImageDisplay();
 		if (display == null) {
 			return result;
 		}

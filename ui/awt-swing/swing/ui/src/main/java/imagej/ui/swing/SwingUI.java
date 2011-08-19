@@ -36,6 +36,7 @@ package imagej.ui.swing;
 
 import imagej.ImageJ;
 import imagej.display.Display;
+import imagej.display.DisplayPanel;
 import imagej.display.DisplayWindow;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
@@ -53,6 +54,7 @@ import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Log;
 import imagej.util.Prefs;
@@ -75,6 +77,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
@@ -304,10 +307,12 @@ public class SwingUI implements UserInterface {
 
 					@Override
 					public void onEvent(final DisplayCreatedEvent event) {
-						final Display display = event.getObject();
-						final DisplayWindow window = display.getDisplayWindow();
-						if (!(window instanceof SwingDisplayWindow)) return;
-						final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
+											final Display display = event.getObject();
+						final DisplayPanel panel = display.getDisplayPanel();
+						if (!(panel instanceof SwingDisplayPanel)) return;
+						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
+						SwingDisplayWindow swingWindow  = 
+							(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
 						// add a copy of the JMenuBar to the new display
 						if (swingWindow.getJMenuBar() == null) createMenuBar(swingWindow);
 					}
@@ -321,9 +326,11 @@ public class SwingUI implements UserInterface {
 					@Override
 					public void onEvent(final DisplayDeletedEvent event) {
 						final Display display = event.getObject();
-						final DisplayWindow window = display.getDisplayWindow();
-						if (!(window instanceof SwingDisplayWindow)) return;
-						final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
+						final DisplayPanel panel = display.getDisplayPanel();
+						if (!(panel instanceof SwingDisplayPanel)) return;
+						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
+						SwingDisplayWindow swingWindow  = 
+							(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
 						deleteMenuBar(swingWindow);
 					}
 				};

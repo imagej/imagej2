@@ -1,4 +1,4 @@
-//
+ //
 // Display.java
 //
 
@@ -34,78 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.data.Dataset;
-import imagej.data.roi.Overlay;
 import imagej.ext.plugin.IPlugin;
-
-import java.util.List;
-
-import net.imglib2.EuclideanSpace;
-import net.imglib2.img.Axis;
-import net.imglib2.meta.LabeledAxes;
 import net.imglib2.meta.Named;
 
 /**
- * A display is a special kind of ImageJ plugin for visualizing data.
- * 
- * @author Curtis Rueden
- * @author Grant Harris
+ *  Like a 'document'.
+ * May be a ImageDisplay, TextDisplay, 3DDisplay, etc.
+ *
+ * @author GBH
  */
-public interface Display extends IPlugin, Named, LabeledAxes, EuclideanSpace {
+public interface Display extends IPlugin, Named {
 
 	/**
-	 * Tests whether the display is capable of visualizing the given
-	 * {@link Dataset}.
+	 * Gets the top-level window associated with this display.
 	 */
-	boolean canDisplay(Dataset dataset);
-
-	/**
-	 * Displays the given {@link Dataset} in this display. Typically, this is a
-	 * shortcut for calling
-	 * <code>addView(new DatasetView(display, dataset))</code>.
-	 */
-	void display(Dataset dataset);
-
-	/**
-	 * Displays the given {@link Overlay} in this display. Typically, this is a
-	 * shortcut for calling
-	 * <code>addView(new OverlayView(display, overlay))</code>.
-	 */
-	void display(Overlay overlay);
-
-	/** Updates and redraws the display onscreen. */
-	void update();
-
-	/** Adds a view to this display. */
-	void addView(DisplayView view);
-
-	/** Removes a view from this display. */
-	void removeView(DisplayView view);
-
-	/** Removes all views from this display. */
-	void removeAllViews();
-
-	/** Gets a list of views linked to the display. */
-	List<DisplayView> getViews();
-
-	/** Gets the view currently designated as active. */
-	DisplayView getActiveView();
-
-	/** Gets the axis currently designated as active. */
-	Axis getActiveAxis();
+	DisplayPanel getDisplayPanel();
 	
-	/** Sets the axis currently designated as active. */
-	void setActiveAxis(Axis axis);
-	
-	/** Gets the top-level window containing this display. */
-	DisplayWindow getDisplayWindow();
-	
-	/** Forces the display window to redo its layout	 */
-	void redoWindowLayout();
-
-	/** Gets the image canvas upon which this display's output is painted. */
-	ImageCanvas getImageCanvas();
-
-	///** Forces display to close. */ 
-	//void close();
 }

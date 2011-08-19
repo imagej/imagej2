@@ -36,8 +36,8 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import imagej.display.OverlayService;
 import imagej.util.RealRect;
 import net.imglib2.img.Axes;
@@ -67,7 +67,7 @@ public class InplaceUnaryTransform {
 	
 	// -- constructor --
 
-	public InplaceUnaryTransform(final Display display,
+	public InplaceUnaryTransform(final ImageDisplay display,
 		final UnaryOperation<Real> operation)
 	{
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
@@ -88,7 +88,7 @@ public class InplaceUnaryTransform {
 
 	// -- private helpers --
 	
-	private DiscreteNeigh getNeighborhood(Display disp) {
+	private DiscreteNeigh getNeighborhood(ImageDisplay disp) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 

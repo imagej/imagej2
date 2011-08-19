@@ -37,7 +37,7 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import net.imglib2.img.Axis;
 
@@ -58,11 +58,11 @@ public class DefaultImageTranslator implements ImageTranslator {
 		new MixedModeTranslator();
 
 	/**
-	 * Creates a {@link Display} from an {@link ImagePlus}. Shares planes of data
+	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of data
 	 * when possible.
 	 */
 	@Override
-	public Display createDisplay(final ImagePlus imp) {
+	public ImageDisplay createDisplay(final ImagePlus imp) {
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
 			if (imp.getNChannels() == 1) return rgbTranslator.createDisplay(imp);
 			return mixedModeTranslator.createDisplay(imp);
@@ -71,11 +71,11 @@ public class DefaultImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Creates a {@link Display} from an {@link ImagePlus}. Shares planes of data
-	 * when possible. Builds Display with preferred Axis ordering.
+	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of data
+	 * when possible. Builds ImageDisplay with preferred Axis ordering.
 	 */
 	@Override
-	public Display
+	public ImageDisplay
 		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
 	{
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -87,11 +87,11 @@ public class DefaultImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Creates an {@link ImagePlus} from a {@link Display}. Shares planes of data
+	 * Creates an {@link ImagePlus} from a {@link ImageDisplay}. Shares planes of data
 	 * when possible.
 	 */
 	@Override
-	public ImagePlus createLegacyImage(final Display display) {
+	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Dataset ds = displayService.getActiveDataset(display);
 		if (ds.isRGBMerged()) {

@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 /**
- * A user interface window containing a {@link Display}.
+ * A user interface window containing a {@link ImageDisplay}.
  * 
  * @author Grant Harris
  */

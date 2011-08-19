@@ -1,5 +1,5 @@
 //
-// AbstractDisplay.java
+// AbstractImageDisplay.java
 //
 
 /*
@@ -55,7 +55,7 @@ import net.imglib2.meta.LabeledAxes;
  *
  * @author Lee Kamentsky
  */
-public abstract class AbstractDisplay implements Display {
+public abstract class AbstractImageDisplay implements ImageDisplay {
 
 	private Axis activeAxis = Axes.Z;
 	

@@ -41,6 +41,7 @@ import imagej.display.DisplayWindow;
  *
  * @author Curtis Rueden
  */
+
 public interface AWTDisplayWindow extends DisplayWindow {
 
 	void pack();

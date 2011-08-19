@@ -37,7 +37,7 @@ package imagej.core.plugins.assign;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAbs;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -58,7 +58,7 @@ public class AbsDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Display display;
+	ImageDisplay display;
 
 	// -- public interface --
 
