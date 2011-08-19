@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.MouseCursor;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.mouse.MsDraggedEvent;
@@ -68,22 +69,23 @@ public class PanTool extends AbstractTool {
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final Display display = evt.getDisplay();
+		if(display instanceof ImageDisplay) {
 		// TODO - eliminate use of AWT here
 		// to do so, need GUI-agnostic Key enum with all key codes...
 		switch (evt.getCode()) {
 			case KeyEvent.VK_UP:
-				display.getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
+				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
 				break;
 			case KeyEvent.VK_DOWN:
-				display.getImageCanvas().pan(new IntCoords(0, PAN_AMOUNT));
+				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(0, PAN_AMOUNT));
 				break;
 			case KeyEvent.VK_LEFT:
-				display.getImageCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
+				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
 				break;
 			case KeyEvent.VK_RIGHT:
-				display.getImageCanvas().pan(new IntCoords(PAN_AMOUNT, 0));
+				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(PAN_AMOUNT, 0));
 				break;
-		}
+		}}
 	}
 
 	@Override
@@ -95,11 +97,13 @@ public class PanTool extends AbstractTool {
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		final Display display = evt.getDisplay();
+		if(display instanceof ImageDisplay) {
 		final int xDelta = lastX - evt.getX();
 		final int yDelta = lastY - evt.getY();
-		display.getImageCanvas().pan(new IntCoords(xDelta, yDelta));
+		((ImageDisplay)display).getImageCanvas().pan(new IntCoords(xDelta, yDelta));
 		lastX = evt.getX();
 		lastY = evt.getY();
+		}
 	}
 
 	@Override

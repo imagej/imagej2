@@ -83,8 +83,8 @@ public final class OverlayService extends AbstractService {
 		return objectService.getObjects(Overlay.class);
 	}
 
-	/** Gets a list of {@link Overlay}s linked to the given {@link Display}. */
-	public List<Overlay> getOverlays(final Display display) {
+	/** Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}. */
+	public List<Overlay> getOverlays(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
 			for (final DisplayView view : display.getViews()) {
@@ -97,8 +97,8 @@ public final class OverlayService extends AbstractService {
 		return overlays;
 	}
 
-	/** Adds the list of {@link Overlay}s to the given {@link Display}. */
-	public void addOverlays(final Display display, final List<Overlay> overlays)
+	/** Adds the list of {@link Overlay}s to the given {@link ImageDisplay}. */
+	public void addOverlays(final ImageDisplay display, final List<Overlay> overlays)
 	{
 		for (final Overlay overlay : overlays) {
 			display.display(overlay);
@@ -106,12 +106,12 @@ public final class OverlayService extends AbstractService {
 	}
 
 	/**
-	 * Removes an {@link Overlay} from the given {@link Display}.
+	 * Removes an {@link Overlay} from the given {@link ImageDisplay}.
 	 * 
-	 * @param display the {@link Display} from which the overlay should be removed
+	 * @param display the {@link ImageDisplay} from which the overlay should be removed
 	 * @param overlay the {@link Overlay} to remove
 	 */
-	public void removeOverlay(final Display display, final Overlay overlay) {
+	public void removeOverlay(final ImageDisplay display, final Overlay overlay) {
 		final ArrayList<DisplayView> overlayViews = new ArrayList<DisplayView>();
 		final List<DisplayView> views = display.getViews();
 		for (final DisplayView view : views) {
@@ -125,13 +125,13 @@ public final class OverlayService extends AbstractService {
 
 	/**
 	 * Gets the bounding box for the selected overlays in the given
-	 * {@link Display}.
+	 * {@link ImageDisplay}.
 	 * 
-	 * @param display the {@link Display} from which the bounding box should be
+	 * @param display the {@link ImageDisplay} from which the bounding box should be
 	 *          computed
 	 * @return the smallest bounding box encompassing all selected overlays
 	 */
-	public RealRect getSelectionBounds(final Display display) {
+	public RealRect getSelectionBounds(final ImageDisplay display) {
 		// get total XY extents of the display by checking all datasets
 		double width = 0, height = 0;
 		for (final DisplayView view : display.getViews()) {

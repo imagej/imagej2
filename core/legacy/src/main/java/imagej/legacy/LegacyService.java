@@ -41,7 +41,7 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.key.KyPressedEvent;
@@ -128,10 +128,10 @@ public final class LegacyService extends AbstractService {
 
 	/**
 	 * Ensures that the currently active {@link ImagePlus} matches the currently
-	 * active {@link Display}. Does not perform any harmonization.
+	 * active {@link ImageDisplay}. Does not perform any harmonization.
 	 */
 	public void syncActiveImage() {
-		final Display activeDisplay = displayService.getActiveDisplay();
+		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
 		WindowManager.setTempCurrentImage(activeImagePlus);
 	}
@@ -166,7 +166,7 @@ public final class LegacyService extends AbstractService {
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		// keep the active legacy ImagePlus in sync with the active modern Display
+		// keep the active legacy ImagePlus in sync with the active modern ImageDisplay
 		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
 			new EventSubscriber<DisplayActivatedEvent>() {
 

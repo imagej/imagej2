@@ -42,17 +42,17 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
 
 /**
- * Assigns the active {@link Display} when there is one single unresolved
- * {@link Display} parameter. Hence, rather than a dialog prompting the user to
- * choose a {@link Display}, the active {@link Display} is used automatically.
+ * Assigns the active {@link ImageDisplay} when there is one single unresolved
+ * {@link ImageDisplay} parameter. Hence, rather than a dialog prompting the user to
+ * choose a {@link ImageDisplay}, the active {@link ImageDisplay} is used automatically.
  * <p>
- * In the case of more than one {@link Display} parameter, the active
- * {@link Display} is not used and instead the user must select. This behavior
+ * In the case of more than one {@link ImageDisplay} parameter, the active
+ * {@link ImageDisplay} is not used and instead the user must select. This behavior
  * is consistent with ImageJ v1.x.
  * </p>
  * <p>
  * The same process is applied for {@link DisplayView} and {@link Dataset}
- * parameters, using the active {@link Display}'s active {@link DisplayView} and
+ * parameters, using the active {@link ImageDisplay}'s active {@link DisplayView} and
  * {@link Dataset}, respectively.
  * </p>
  * 
@@ -78,10 +78,11 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 	@Override
 	public void process(final Module module) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-
-		// assign active display to single Display input
-		final String displayInput = getSingleInput(module, Display.class);
 		final Display activeDisplay = displayService.getActiveDisplay();
+		if(!(activeDisplay instanceof ImageDisplay) ) return;
+		
+		// assign active display to single ImageDisplay input
+		final String displayInput = getSingleInput(module, ImageDisplay.class);
 		if (displayInput != null && activeDisplay != null) {
 			module.setInput(displayInput, activeDisplay);
 			module.setResolved(displayInput, true);
@@ -98,7 +99,7 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 		// assign active display view to single DisplayView input
 		final String displayViewInput = getSingleInput(module, DisplayView.class);
 		final DisplayView activeDisplayView =
-			activeDisplay == null ? null : activeDisplay.getActiveView();
+			activeDisplay == null ? null : ((ImageDisplay)activeDisplay).getActiveView();
 		if (displayViewInput != null && activeDisplayView != null) {
 			module.setInput(displayViewInput, activeDisplayView);
 			module.setResolved(displayViewInput, true);

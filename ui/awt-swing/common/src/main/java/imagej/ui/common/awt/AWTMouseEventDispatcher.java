@@ -1,5 +1,5 @@
 //
-// AWTEventDispatcher.java
+// AWTMouseEventDispatcher.java
 //
 
 /*
@@ -34,11 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.EventDispatcher;
-import imagej.display.event.key.KyPressedEvent;
-import imagej.display.event.key.KyReleasedEvent;
-import imagej.display.event.key.KyTypedEvent;
 import imagej.display.event.mouse.MsButtonEvent;
 import imagej.display.event.mouse.MsClickedEvent;
 import imagej.display.event.mouse.MsDraggedEvent;
@@ -48,25 +45,14 @@ import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
-import imagej.display.event.window.WinActivatedEvent;
-import imagej.display.event.window.WinClosedEvent;
-import imagej.display.event.window.WinClosingEvent;
-import imagej.display.event.window.WinDeactivatedEvent;
-import imagej.display.event.window.WinDeiconifiedEvent;
-import imagej.display.event.window.WinIconifiedEvent;
-import imagej.display.event.window.WinOpenedEvent;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 /**
  * Rebroadcasts AWT events as {@link ImageJEvent}s.
@@ -74,18 +60,19 @@ import java.awt.event.WindowListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTEventDispatcher implements EventDispatcher, KeyListener,
-	MouseListener, MouseMotionListener, MouseWheelListener, WindowListener
+public class AWTMouseEventDispatcher implements EventDispatcher, 
+	MouseListener, MouseMotionListener, MouseWheelListener
 {
 
-	private final Display display;
+	// TODO: Use MouseAdapter
+	private final ImageDisplay display;
 	private final boolean relative;
 
 	/**
 	 * Creates an AWT event dispatcher for the given display, which assumes
 	 * viewport mouse coordinates.
 	 */
-	public AWTEventDispatcher(final Display display) {
+	public AWTMouseEventDispatcher(final ImageDisplay display) {
 		this(display, true);
 	}
 
@@ -97,7 +84,7 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 	 *          canvas rather than just the viewport; hence, the pan offset is
 	 *          already factored in.
 	 */
-	public AWTEventDispatcher(final Display display, final boolean relative) {
+	public AWTMouseEventDispatcher(final ImageDisplay display, final boolean relative) {
 		this.display = display;
 		this.relative = relative;
 	}
@@ -114,26 +101,6 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 	 */
 	public boolean isRelative() {
 		return relative;
-	}
-
-	// -- KeyListener methods --
-
-	@Override
-	public void keyTyped(final KeyEvent e) {
-		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(),
-			e.getModifiers()));
-	}
-
-	@Override
-	public void keyPressed(final KeyEvent e) {
-		Events.publish(new KyPressedEvent(display, e.getKeyChar(), e.getKeyCode(),
-			e.getModifiers()));
-	}
-
-	@Override
-	public void keyReleased(final KeyEvent e) {
-		Events.publish(new KyReleasedEvent(display, e.getKeyChar(),
-			e.getKeyCode(), e.getModifiers()));
 	}
 
 	// -- MouseListener methods --
@@ -187,42 +154,6 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 			e.getWheelRotation()));
 	}
 
-	// -- WindowListener methods --
-
-	@Override
-	public void windowActivated(final WindowEvent e) {
-		Events.publish(new WinActivatedEvent(display));
-	}
-
-	@Override
-	public void windowClosed(final WindowEvent e) {
-		Events.publish(new WinClosedEvent(display));
-	}
-
-	@Override
-	public void windowClosing(final WindowEvent e) {
-		Events.publish(new WinClosingEvent(display));
-	}
-
-	@Override
-	public void windowDeactivated(final WindowEvent e) {
-		Events.publish(new WinDeactivatedEvent(display));
-	}
-
-	@Override
-	public void windowDeiconified(final WindowEvent e) {
-		Events.publish(new WinDeiconifiedEvent(display));
-	}
-
-	@Override
-	public void windowIconified(final WindowEvent e) {
-		Events.publish(new WinIconifiedEvent(display));
-	}
-
-	@Override
-	public void windowOpened(final WindowEvent e) {
-		Events.publish(new WinOpenedEvent(display));
-	}
 
 	// -- Helper methods --
 

@@ -36,7 +36,7 @@ package imagej.core.plugins.axispos;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.AxisPositionEvent;
 import imagej.display.event.DisplayDeletedEvent;
@@ -91,7 +91,7 @@ public class AnimateAlongAxis extends DynamicPlugin {
 	private static final String PAUSED_STATUS =
 		"Animation paused. Press P to continue or ESC to terminate.";
 	private static final String DONE_STATUS = "Animation terminated";
-	private Display currDisplay;
+	private ImageDisplay currDisplay;
 	private long first;
 	private long last;
 	private boolean userHasQuit;
@@ -103,7 +103,7 @@ public class AnimateAlongAxis extends DynamicPlugin {
 
 	public AnimateAlongAxis() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		currDisplay = displayService.getActiveDisplay();
+		currDisplay = displayService.getActiveImageDisplay();
 		if (currDisplay == null) return;
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(currDisplay);
 		if (dataset == null) return;
@@ -185,7 +185,7 @@ public class AnimateAlongAxis extends DynamicPlugin {
 	/**
 	 * Do the actual animation. generates multiple AxisPositionEvents
 	 */
-	private void animateAlongAxis(final Display display, final Axis axis,
+	private void animateAlongAxis(final ImageDisplay display, final Axis axis,
 		final long total)
 	{
 		Events.publish(new StatusEvent(REGULAR_STATUS));

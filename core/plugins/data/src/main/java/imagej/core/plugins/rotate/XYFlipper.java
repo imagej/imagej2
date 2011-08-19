@@ -39,7 +39,7 @@ import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.OverlayService;
 import imagej.util.RealRect;
@@ -61,7 +61,7 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- instance variables --
 
-	private Display display;
+	private ImageDisplay display;
 	
 	private Dataset dataset;
 
@@ -105,7 +105,7 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- constructor --
 
-	public XYFlipper(Display display, FlipCoordinateTransformer flipper) {
+	public XYFlipper(ImageDisplay display, FlipCoordinateTransformer flipper) {
 		this.display = display;
 		this.dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
 		this.flipper = flipper;

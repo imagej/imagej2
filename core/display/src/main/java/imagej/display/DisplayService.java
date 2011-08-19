@@ -107,6 +107,12 @@ public final class DisplayService extends AbstractService {
 	public Display getActiveDisplay() {
 		return activeDisplay;
 	}
+	
+	/** Gets the currently active {@link Display}. */
+	public ImageDisplay getActiveImageDisplay() {
+		if (activeDisplay == null || !(activeDisplay instanceof ImageDisplay) ) return null;
+		return (ImageDisplay) activeDisplay;
+	}
 
 	/** Sets the currently active {@link Display}. */
 	public void setActiveDisplay(final Display display) {
@@ -116,10 +122,10 @@ public final class DisplayService extends AbstractService {
 
 	/**
 	 * Gets the active {@link Dataset}, if any, of the currently active
-	 * {@link Display}.
+	 * {@link Display}.nbv
 	 */
 	public Dataset getActiveDataset() {
-		return getActiveDataset(activeDisplay);
+		return getActiveDataset(getActiveImageDisplay() );
 	}
 
 	/**
@@ -127,11 +133,11 @@ public final class DisplayService extends AbstractService {
 	 * {@link Display}.
 	 */
 	public DatasetView getActiveDatasetView() {
-		return getActiveDatasetView(activeDisplay);
+		return getActiveDatasetView(getActiveImageDisplay());
 	}
 
 	/** Gets the active {@link Dataset}, if any, of the given {@link Display}. */
-	public Dataset getActiveDataset(final Display display) {
+	public Dataset getActiveDataset(final ImageDisplay display) {
 		final DatasetView activeDatasetView = getActiveDatasetView(display);
 		return activeDatasetView == null ? null : activeDatasetView.getDataObject();
 	}
@@ -139,8 +145,8 @@ public final class DisplayService extends AbstractService {
 	/**
 	 * Gets the active {@link DatasetView}, if any, of the given {@link Display}.
 	 */
-	public DatasetView getActiveDatasetView(final Display display) {
-		if (display == null) {
+	public DatasetView getActiveDatasetView(final ImageDisplay display) {
+		if (display == null ) {
 			return null;
 		}
 		final DisplayView activeView = display.getActiveView();
@@ -154,6 +160,11 @@ public final class DisplayService extends AbstractService {
 	public List<Display> getDisplays() {
 		return objectService.getObjects(Display.class);
 	}
+	
+	/** Gets a list of all available {@link ImageDisplay}s. */
+	public List<ImageDisplay> getImageDisplays() {
+		return objectService.getObjects(ImageDisplay.class);
+	}
 
 	/** Gets a {@link Display} by its name. */
 	public Display getDisplay(final String name) {
@@ -166,20 +177,20 @@ public final class DisplayService extends AbstractService {
 	}
 
 	/**
-	 * Gets a list of {@link Display}s containing the given {@link DataObject}.
+	 * Gets a list of {@link ImageDisplay}s containing the given {@link DataObject}.
 	 */
-	public List<Display> getDisplays(final DataObject dataObject) {
-		final ArrayList<Display> displays = new ArrayList<Display>();
-		for (final Display display : getDisplays()) {
+	public List<ImageDisplay> getDisplays(final DataObject dataObject) {
+		final ArrayList<ImageDisplay> imageDisplays = new ArrayList<ImageDisplay>();
+		for (final Display display : getImageDisplays()) {
 			// check whether data object is present in this display
-			for (final DisplayView view : display.getViews()) {
+			for (final DisplayView view :((ImageDisplay)display).getViews()) {
 				if (dataObject == view.getDataObject()) {
-					displays.add(display);
+					imageDisplays.add( (ImageDisplay)display);
 					break;
 				}
 			}
 		}
-		return displays;
+		return imageDisplays;
 	}
 
 	public boolean isUniqueName(final String name) {
@@ -192,15 +203,15 @@ public final class DisplayService extends AbstractService {
 		return true;
 	}
 
-	/** Creates a {@link Display} and adds the given {@link Dataset} as a view. */
-	public Display createDisplay(final Dataset dataset) {
+	/** Creates a {@link ImageDisplay} and adds the given {@link Dataset} as a view. */
+	public ImageDisplay createDisplay(final Dataset dataset) {
 		// get available display plugins from the plugin service
-		final List<PluginInfo<Display>> plugins =
-			pluginService.getPluginsOfType(Display.class);
+		final List<PluginInfo<ImageDisplay>> plugins =
+				pluginService.getPluginsOfType(ImageDisplay.class);
 
-		for (final PluginInfo<Display> pe : plugins) {
+		for (final PluginInfo<ImageDisplay> pe : plugins) {
 			try {
-				final Display displayPlugin = pe.createInstance();
+				final ImageDisplay displayPlugin = pe.createInstance();
 				// display dataset using the first compatible DisplayPlugin
 				// TODO: how to handle multiple matches? prompt user with dialog box?
 				if (displayPlugin.canDisplay(dataset)) {
@@ -231,14 +242,15 @@ public final class DisplayService extends AbstractService {
 		final EventSubscriber<WinClosedEvent> winClosedSubscriber =
 			new EventSubscriber<WinClosedEvent>() {
 
-				@Override
-				public void onEvent(final WinClosedEvent event) {
-					final Display display = event.getDisplay();
-					final ArrayList<DisplayView> views =
-						new ArrayList<DisplayView>(display.getViews());
-					for (final DisplayView view : views) {
-						view.dispose();
-					}
+					@Override
+					public void onEvent(final WinClosedEvent event) {
+						final Display display = event.getDisplay();
+						if(display instanceof ImageDisplay) {
+						final ArrayList<DisplayView> views =
+								new ArrayList<DisplayView>(((ImageDisplay)display).getViews());
+						for (final DisplayView view : views) {
+							view.dispose();
+						}}
 
 					// HACK - Necessary to plug memory leak when closing the last window.
 					// Might be slow since it has to walk the whole ObjectService object

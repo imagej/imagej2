@@ -41,7 +41,7 @@ import imagej.data.roi.Overlay;
 
 /**
  * A linkage between a {@link DataObject} (such as a {@link Dataset} or
- * {@link Overlay}) and a {@link Display}. The view takes care of mapping the
+ * {@link Overlay}) and a {@link ImageDisplay}. The view takes care of mapping the
  * N-dimensional data into a representation suitable for showing onscreen.
  * <p>
  * For example, a typical 2D display may have a number of sliders enabling a
@@ -54,8 +54,8 @@ import imagej.data.roi.Overlay;
  */
 public interface DisplayView {
 
-	/** Gets the {@link Display} containing this view. */
-	Display getDisplay();
+	/** Gets the {@link ImageDisplay} containing this view. */
+	ImageDisplay getDisplay();
 
 	/** Gets the {@link DataObject} represented by this view. */
 	DataObject getDataObject();

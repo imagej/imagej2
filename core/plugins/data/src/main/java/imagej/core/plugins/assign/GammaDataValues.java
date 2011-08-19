@@ -34,10 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.display.ImageDisplay;
+
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealGammaConstant;
-import imagej.display.Display;
+
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -58,7 +60,7 @@ public class GammaDataValues extends AbstractPreviewPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Display display;
+	ImageDisplay display;
 
 	@Parameter(label = "Value", min="0.05", max = "5.00", stepSize = "0.05")
 	private double constant;
@@ -74,7 +76,7 @@ public class GammaDataValues extends AbstractPreviewPlugin {
 	}
 
 	@Override
-	public Display getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
 

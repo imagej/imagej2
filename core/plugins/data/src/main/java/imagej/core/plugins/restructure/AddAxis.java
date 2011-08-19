@@ -37,6 +37,7 @@ package imagej.core.plugins.restructure;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
@@ -71,7 +72,7 @@ public class AddAxis extends DynamicPlugin {
 
 	public AddAxis() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
+		final ImageDisplay display = displayService.getActiveImageDisplay();
 		if (display == null) return;
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
 

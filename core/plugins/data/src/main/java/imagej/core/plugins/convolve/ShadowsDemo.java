@@ -37,6 +37,7 @@ package imagej.core.plugins.convolve;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.OverlayService;
 import imagej.display.event.DisplayDeletedEvent;
@@ -84,7 +85,7 @@ public class ShadowsDemo implements ImageJPlugin {
 		new double[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 } // northwest
 		};
 	private boolean userHasQuit = false;
-	private Display currDisplay;
+	private ImageDisplay currDisplay;
 	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
 
@@ -96,13 +97,17 @@ public class ShadowsDemo implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
+		
+		ImageDisplay display = ImageJ.get(DisplayService.class).getActiveImageDisplay();
+		if (display == null) return;
+		currDisplay = display;
 		if (unsupportedImage()) {
 			Log.error("This command only works with a single plane of data");
 			return;
 		}
 		subscribeToEvents();
 		Events.publish(new StatusEvent("Press ESC to terminate"));
-		currDisplay = ImageJ.get(DisplayService.class).getActiveDisplay();
+		
 		RealRect selection =
 			ImageJ.get(OverlayService.class).getSelectionBounds(currDisplay);
 		final Dataset originalData = input.duplicate();

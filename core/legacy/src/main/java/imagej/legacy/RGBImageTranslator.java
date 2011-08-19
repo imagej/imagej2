@@ -37,7 +37,7 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import net.imglib2.img.Axis;
 
@@ -50,16 +50,16 @@ import net.imglib2.img.Axis;
 public class RGBImageTranslator implements ImageTranslator {
 
 	@Override
-	public Display createDisplay(final ImagePlus imp) {
+	public ImageDisplay createDisplay(final ImagePlus imp) {
 		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	/**
-	 * Creates a color {@link Display} from a color {@link ImagePlus}. Expects
+	 * Creates a color {@link ImageDisplay} from a color {@link ImagePlus}. Expects
 	 * input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one channel.
 	 */
 	@Override
-	public Display
+	public ImageDisplay
 		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
 	{
 		final Dataset ds = LegacyUtils.makeColorDataset(imp, preferredOrder);
@@ -68,7 +68,7 @@ public class RGBImageTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.createDisplay(ds);
+		final ImageDisplay display = displayService.createDisplay(ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 
@@ -76,12 +76,12 @@ public class RGBImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Creates a color {@link ImagePlus} from a color {@link Display}. Expects
-	 * input expects input Display to have isRgbMerged() set with 3 channels of
+	 * Creates a color {@link ImagePlus} from a color {@link ImageDisplay}. Expects
+	 * input expects input ImageDisplay to have isRgbMerged() set with 3 channels of
 	 * unsigned byte data.
 	 */
 	@Override
-	public ImagePlus createLegacyImage(final Display display) {
+	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Dataset ds = displayService.getActiveDataset(display);
 		final ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);

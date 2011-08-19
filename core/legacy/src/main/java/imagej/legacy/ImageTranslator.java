@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import net.imglib2.img.Axis;
 
 /**
@@ -47,10 +47,10 @@ import net.imglib2.img.Axis;
  */
 public interface ImageTranslator {
 
-	Display createDisplay(final ImagePlus imp);
+	ImageDisplay createDisplay(final ImagePlus imp);
 
-	Display createDisplay(final ImagePlus imp, Axis[] preferredOrder);
+	ImageDisplay createDisplay(final ImagePlus imp, Axis[] preferredOrder);
 
-	ImagePlus createLegacyImage(final Display display);
+	ImagePlus createLegacyImage(final ImageDisplay display);
 
 }

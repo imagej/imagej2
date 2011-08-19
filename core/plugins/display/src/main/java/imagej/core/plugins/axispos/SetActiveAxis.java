@@ -36,7 +36,7 @@ package imagej.core.plugins.axispos;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
@@ -65,13 +65,13 @@ public class SetActiveAxis extends DynamicPlugin {
 
 	private static final String NAME_KEY = "Axis";
 
-	Display display;
+	ImageDisplay display;
 
 	String axisName;
 
 	public SetActiveAxis() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		display = displayService.getActiveDisplay();
+		display = displayService.getActiveImageDisplay();
 		if (display == null) return;
 		final Dataset dataset =
 			ImageJ.get(DisplayService.class).getActiveDataset(display);

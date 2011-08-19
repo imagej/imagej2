@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -57,7 +57,7 @@ public class LogDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Display display;
+	ImageDisplay display;
 
 	// -- public interface --
 

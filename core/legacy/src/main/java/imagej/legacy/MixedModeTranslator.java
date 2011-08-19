@@ -37,7 +37,7 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import net.imglib2.img.Axis;
 
@@ -50,12 +50,12 @@ import net.imglib2.img.Axis;
 public class MixedModeTranslator implements ImageTranslator {
 
 	@Override
-	public Display createDisplay(final ImagePlus imp) {
+	public ImageDisplay createDisplay(final ImagePlus imp) {
 		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	@Override
-	public Display
+	public ImageDisplay
 		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
 	{
 		final Dataset ds =
@@ -65,7 +65,7 @@ public class MixedModeTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.createDisplay(ds);
+		final ImageDisplay display = displayService.createDisplay(ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 
@@ -76,7 +76,7 @@ public class MixedModeTranslator implements ImageTranslator {
 	// and unsigned byte type and channels evenly divisible by 3. May want to
 	// not worry about this to phase out ColorProcessor reliance.
 	@Override
-	public ImagePlus createLegacyImage(final Display display) {
+	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		throw new UnsupportedOperationException(
 			"createLegacyImage(Display) is not implemented for this translator");
 	}

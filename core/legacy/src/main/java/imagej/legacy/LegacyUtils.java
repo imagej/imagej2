@@ -50,7 +50,7 @@ import imagej.data.Position;
 import imagej.display.ColorMode;
 import imagej.display.ColorTables;
 import imagej.display.DatasetView;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.util.Log;
@@ -758,10 +758,10 @@ public final class LegacyUtils {
 	}
 
 	/**
-	 * Sets the ColorTables of the active view of an IJ2 Display from the LUTs of
+	 * Sets the ColorTables of the active view of an IJ2 ImageDisplay from the LUTs of
 	 * a given ImagePlus or CompositeImage.
 	 */
-	static void setDisplayLuts(final Display disp, final ImagePlus imp) {
+	static void setDisplayLuts(final ImageDisplay disp, final ImagePlus imp) {
 		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
 		final List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(disp, colorTables, sixteenBitLuts);
@@ -770,11 +770,11 @@ public final class LegacyUtils {
 	/**
 	 * Sets LUTs of an ImagePlus or CompositeImage. If given an ImagePlus this
 	 * method sets it's single LUT from the first ColorTable of the active Dataset
-	 * of the given Display. If given a CompositeImage this method sets all it's
-	 * LUTs from the ColorTables of the active view of the given Display. If there
+	 * of the given ImageDisplay. If given a CompositeImage this method sets all it's
+	 * LUTs from the ColorTables of the active view of the given ImageDisplay. If there
 	 * is no such view the LUTs are assigned with default values.
 	 */
-	static void setImagePlusLuts(final Display disp, final ImagePlus imp) {
+	static void setImagePlusLuts(final ImageDisplay disp, final ImagePlus imp) {
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
 			final DisplayView activeView = disp.getActiveView();
@@ -1185,13 +1185,13 @@ public final class LegacyUtils {
 		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
-	/** Assigns the color tables of the active view of a Display. */
-	private static void assignColorTables(final Display disp,
+	/** Assigns the color tables of the active view of a ImageDisplay. */
+	private static void assignColorTables(final ImageDisplay disp,
 		final List<ColorTable<?>> colorTables,
 		@SuppressWarnings("unused") final boolean sixteenBitLuts)
 	{
 		// FIXME HACK
-		// Grab the active view of the given Display and set it's default channel
+		// Grab the active view of the given ImageDisplay and set it's default channel
 		// luts. When we allow multiple views of a Dataset this will break. We
 		// avoid setting a Dataset's per plane LUTs because it would be expensive
 		// and also IJ1 LUTs are not model space constructs but rather view space

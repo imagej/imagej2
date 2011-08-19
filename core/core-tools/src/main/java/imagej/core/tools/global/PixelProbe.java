@@ -40,6 +40,7 @@ import imagej.data.event.DatasetDeletedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.display.ImageCanvas;
@@ -96,7 +97,8 @@ public class PixelProbe extends AbstractTool {
 			evt.getContext().getService(EventService.class);
 
 		final Display display = evt.getDisplay();
-		final ImageCanvas canvas = display.getImageCanvas();
+		if(!(display instanceof ImageDisplay)) return;
+		final ImageCanvas canvas = ((ImageDisplay)display).getImageCanvas();
 		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
 		// mouse not in image ?
 		if (!canvas.isInImage(mousePos)) {
@@ -105,8 +107,8 @@ public class PixelProbe extends AbstractTool {
 		}
 		else { // mouse is over image
 			// CTR TODO - update tool to probe more than just the active view
-			final DisplayView activeView = display.getActiveView();
-			final Dataset d = displayService.getActiveDataset(display);
+			final DisplayView activeView = ((ImageDisplay)display).getActiveView();
+			final Dataset d = displayService.getActiveDataset((ImageDisplay)display);
 			setWorkingVariables(d);
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			// Re: bug #639

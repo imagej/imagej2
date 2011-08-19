@@ -35,15 +35,17 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.common.awt;
 
 import imagej.display.Display;
+import imagej.display.DisplayPanel;
+import imagej.display.ImageDisplay;
 
 /**
- * Superinterface for AWT-based {@link Display}s (including Swing).
+ * Superinterface for AWT-based {@link ImageDisplay}s (including Swing).
  *
  * @author Curtis Rueden
  */
 public interface AWTDisplay extends Display {
 
 	@Override
-	AWTDisplayWindow getDisplayWindow();
+	DisplayPanel  getDisplayPanel();
 
 }

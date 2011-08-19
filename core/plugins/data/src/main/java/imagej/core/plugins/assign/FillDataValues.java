@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -56,7 +56,7 @@ public class FillDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Display display;
+	private ImageDisplay display;
 
 	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
 	private double constant;

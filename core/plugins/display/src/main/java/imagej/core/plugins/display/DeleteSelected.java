@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.display;
 
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayView;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -54,7 +54,7 @@ import java.util.ArrayList;
 public class DeleteSelected implements ImageJPlugin {
 
 	@Parameter
-	private Display display;
+	private ImageDisplay display;
 
 	@Override
 	public void run() {
@@ -65,11 +65,11 @@ public class DeleteSelected implements ImageJPlugin {
 		}
 	}
 
-	public Display getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
 
-	public void setDisplay(final Display display) {
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 

@@ -36,7 +36,7 @@ package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
@@ -64,7 +64,7 @@ public class DynamicPluginTest extends DynamicPlugin {
 		// add one input and one output per available display
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		int displayCount = 0;
-		for (final Display display : displayService.getDisplays()) {
+		for (final ImageDisplay display : displayService.getImageDisplays()) {
 			final String name = display.getName();
 			final DefaultModuleItem<Integer> input =
 				new DefaultModuleItem<Integer>(this, name, Integer.class);

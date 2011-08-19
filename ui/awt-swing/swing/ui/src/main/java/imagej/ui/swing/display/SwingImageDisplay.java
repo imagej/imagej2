@@ -38,19 +38,19 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
-import imagej.display.AbstractDisplay;
-import imagej.display.Display;
+import imagej.display.AbstractImageDisplay;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
-import imagej.display.EventDispatcher;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ext.plugin.Plugin;
 import imagej.tool.ToolService;
 import imagej.ui.common.awt.AWTDisplay;
-import imagej.ui.common.awt.AWTEventDispatcher;
-
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTMouseEventDispatcher;
+import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +63,13 @@ import java.util.List;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-@Plugin(type = Display.class)
-public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
+@Plugin(type = ImageDisplay.class)
+public class SwingImageDisplay extends AbstractImageDisplay implements AWTDisplay {
 
 	private final JHotDrawImageCanvas imgCanvas;
-	private final SwingDisplayWindow imgWindow;
+	private final SwingDisplayPanel imgPanel;
 
-	private final Display thisDisplay;
+	private final ImageDisplay thisDisplay;
 
 //	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
 //	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
@@ -82,18 +82,19 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 	public SwingImageDisplay() {
 		imgCanvas = new JHotDrawImageCanvas(this);
-		imgWindow = new SwingDisplayWindow(this);
+		SwingDisplayWindow window = new SwingDisplayWindow();
+		imgPanel = new SwingDisplayPanel(this, window);
 
-		final EventDispatcher eventDispatcher =
-			new AWTEventDispatcher(this, false);
-		imgCanvas.addEventDispatcher(eventDispatcher);
-		imgWindow.addEventDispatcher(eventDispatcher);
+		//final EventDispatcher eventDispatcher =new AWTEventDispatcher(this, false);
+		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, false));
+		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
+		window.addWindowListener(new AWTWindowEventDispatcher(this));
 		subscribeToEvents();
 
 		thisDisplay = this;
 	}
 
-	// -- Display methods --
+	// -- ImageDisplay methods --
 
 	@Override
 	public boolean canDisplay(final Dataset dataset) {
@@ -107,7 +108,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 		final String datasetName = dataset.getName();
 		createName(datasetName);
-		imgWindow.setTitle(this.getName());
+		imgPanel.setTitle(this.getName());
 		addView(new SwingDatasetView(this, dataset));
 		update();
 	}
@@ -125,9 +126,10 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-				imgWindow.update();
 
-				// the following code is also done in SwingDisplayWindow::update()
+				imgPanel.update();
+
+				// the following code is also done in SwingDisplayPanel::update()
 				// (which was just called) so commenting out
 				
 				//for (final DisplayView view : getViews()) {
@@ -138,8 +140,8 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public SwingDisplayWindow getDisplayWindow() {
-		return imgWindow;
+	public SwingDisplayPanel getDisplayPanel() {
+		return imgPanel;
 	}
 
 	@Override
@@ -149,7 +151,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 	@Override
 	public void redoWindowLayout() {
-		imgWindow.redoLayout();
+		imgPanel.redoLayout();
 	}
 
 	// -- Named methods --

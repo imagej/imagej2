@@ -36,6 +36,7 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
 import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventSubscriber;
@@ -67,6 +68,7 @@ public class WatchDisplays implements ImageJPlugin {
 	public void run() {
 		window = new SwingOutputWindow("Displays");
 		StaticSwingUtils.locateLowerRight(window);
+		window.setVisible(true);
 		showDisplays();
 		subscribeToEvents();
 	}

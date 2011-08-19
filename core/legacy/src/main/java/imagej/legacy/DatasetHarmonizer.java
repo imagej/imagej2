@@ -38,7 +38,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 
 import java.util.HashMap;
@@ -90,10 +90,10 @@ public class DatasetHarmonizer {
 
 	/**
 	 * Changes the data within an {@link ImagePlus} to match data in a
-	 * {@link Display}. Assumes Dataset has planar primitive access in an IJ1
+	 * {@link ImageDisplay}. Assumes Dataset has planar primitive access in an IJ1
 	 * compatible format.
 	 */
-	public void updateLegacyImage(final Display display, final ImagePlus imp) {
+	public void updateLegacyImage(final ImageDisplay display, final ImagePlus imp) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Dataset ds = displayService.getActiveDataset(display);
 		if (!LegacyUtils.imagePlusIsNearestType(ds, imp)) {
@@ -118,16 +118,16 @@ public class DatasetHarmonizer {
 	}
 
 	/**
-	 * Changes the data within a {@link Display} to match data in an
+	 * Changes the data within a {@link ImageDisplay} to match data in an
 	 * {@link ImagePlus}.
 	 */
-	public void updateDisplay(final Display display, final ImagePlus imp) {
+	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Dataset ds = displayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
 		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
-			final Display tmp = imageTranslator.createDisplay(imp, ds.getAxes());
+			final ImageDisplay tmp = imageTranslator.createDisplay(imp, ds.getAxes());
 			final Dataset dsTmp = displayService.getActiveDataset(tmp);
 			ds.setImgPlus(dsTmp.getImgPlus());
 			ds.setRGBMerged(dsTmp.isRGBMerged());
@@ -195,12 +195,12 @@ public class DatasetHarmonizer {
 	}
 
 	/**
-	 * Creates a new {@link ImageStack} of data from a {@link Display} and
+	 * Creates a new {@link ImageStack} of data from a {@link ImageDisplay} and
 	 * assigns it to given {@link ImagePlus}
 	 * @param display
 	 * @param imp
 	 */
-	private void rebuildImagePlusData(Display display, ImagePlus imp) {
+	private void rebuildImagePlusData(ImageDisplay display, ImagePlus imp) {
 		final ImagePlus newImp = imageTranslator.createLegacyImage(display);
 		imp.setStack(newImp.getStack());
 		final int c = newImp.getNChannels();

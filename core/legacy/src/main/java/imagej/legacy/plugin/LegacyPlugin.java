@@ -39,7 +39,8 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
+import imagej.display.DisplayPanel;
+import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayWindow;
 import imagej.ext.plugin.ImageJPlugin;
@@ -75,14 +76,14 @@ public class LegacyPlugin implements ImageJPlugin {
 	private String arg;
 
 	@Parameter(output = true)
-	private List<Display> outputs;
+	private List<ImageDisplay> outputs;
 
 	private DisplayService displayService;
 	
 	// -- LegacyPlugin methods --
 
-	/** Gets the list of output {@link Display}s. */
-	public List<Display> getOutputs() {
+	/** Gets the list of output {@link ImageDisplay}s. */
+	public List<ImageDisplay> getOutputs() {
 		return Collections.unmodifiableList(outputs);
 	}
 
@@ -91,10 +92,10 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Override
 	public void run() {
 		displayService = ImageJ.get(DisplayService.class);
-		final Display activeDisplay = displayService.getActiveDisplay();
+		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
 		if (!isLegacyCompatible(activeDisplay)) {
 			Log.warn("Active dataset is not compatible with IJ1");
-			outputs = new ArrayList<Display>();
+			outputs = new ArrayList<ImageDisplay>();
 			return;
 		}
 
@@ -129,14 +130,14 @@ public class LegacyPlugin implements ImageJPlugin {
 			// make sure our ImagePluses are in sync with original Datasets
 			updateImagePlusesFromDisplays(map, harmonizer);
 			// return no outputs
-			outputs = new ArrayList<Display>();
+			outputs = new ArrayList<ImageDisplay>();
 		}
 
 		for (ImagePlus imp : closedSet) {
-			Display disp = map.lookupDisplay(imp);
+			ImageDisplay disp = map.lookupDisplay(imp);
 			if (disp != null) {
 				outputs.remove(disp);
-				DisplayWindow dispWin = disp.getDisplayWindow();
+				DisplayPanel dispWin = disp.getDisplayPanel();
 				if (dispWin != null) dispWin.close();
 			}
 		}
@@ -154,7 +155,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		// TODO - track events and keep a dirty bit, then only harmonize those
 		// displays that have changed. See ticket #546.
 		final ObjectService objectService = ImageJ.get(ObjectService.class);
-		for (final Display display : objectService.getObjects(Display.class)) {
+		for (final ImageDisplay display : objectService.getObjects(ImageDisplay.class)) {
 			ImagePlus imp = map.lookupImagePlus(display);
 			if (imp == null) {
 				if (isLegacyCompatible(display)) {
@@ -169,20 +170,20 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 	}
 
-	private List<Display> updateDisplaysFromImagePluses(final LegacyImageMap map,
+	private List<ImageDisplay> updateDisplaysFromImagePluses(final LegacyImageMap map,
 		final DatasetHarmonizer harmonizer)
 	{
 		// TODO - check the changes flag for each ImagePlus that already has a
-		// Display and only harmonize those that have changed. Maybe changes
+		// ImageDisplay and only harmonize those that have changed. Maybe changes
 		// flag does not track everything (such as metadata changes?) and thus
 		// we might still have to do some minor harmonization. Investigate.
 
 		// the IJ1 plugin may not have any outputs but just changes current
 		// ImagePlus make sure we catch any changes via harmonization
-		final List<Display> displays = new ArrayList<Display>();
+		final List<ImageDisplay> displays = new ArrayList<ImageDisplay>();
 		final ImagePlus currImp = WindowManager.getCurrentImage();
 		if (currImp != null) {
-			Display display = map.lookupDisplay(currImp);
+			ImageDisplay display = map.lookupDisplay(currImp);
 			if (display != null) { 
 				harmonizer.updateDisplay(display, currImp);
 			} else {
@@ -200,7 +201,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				// TODO - do we need to delete display or is it already done?
 			}
 			else { // image plus is not totally empty
-				Display display = map.lookupDisplay(imp);
+				ImageDisplay display = map.lookupDisplay(imp);
 				if (display == null) {
 					if (imp.getWindow() != null) {
 						display = map.registerLegacyImage(imp);
@@ -220,7 +221,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		return displays;
 	}
 
-	private boolean isLegacyCompatible(Display display) {
+	private boolean isLegacyCompatible(ImageDisplay display) {
 		if (display == null) return true;
 		Dataset ds = displayService.getActiveDataset(display);
 		Axis[] axes = ds.getAxes();

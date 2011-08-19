@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
-import imagej.display.Display;
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -55,7 +55,7 @@ public class SetAxisPosition implements ImageJPlugin {
 	// initialization code to be put in place.
 
 	@Parameter
-	private Display display;
+	private ImageDisplay display;
 
 	@Parameter(label = "Position", min = "1")
 	private long oneBasedPosition;
