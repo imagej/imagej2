@@ -51,7 +51,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.DiscreteIterator;
+import net.imglib2.ops.RegionIndexIterator;
 import net.imglib2.type.numeric.RealType;
 
 // TODO
@@ -207,8 +207,8 @@ public class ReorderAxes extends DynamicPlugin {
 		dataset.getImgPlus().dimensions(inputOffsets);
 		for (int i = 0; i < inputOffsets.length; i++)
 			inputOffsets[i]--;
-		DiscreteIterator iter =
-			new DiscreteIterator(
+		RegionIndexIterator iter =
+			new RegionIndexIterator(
 				inputOrigin,
 				new long[inputOrigin.length],
 				inputOffsets);

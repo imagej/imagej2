@@ -45,9 +45,9 @@ import imagej.ext.plugin.PreviewPlugin;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
-import net.imglib2.ops.DiscreteIterator;
 import net.imglib2.ops.DiscreteNeigh;
 import net.imglib2.ops.Real;
+import net.imglib2.ops.RegionIndexIterator;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.function.real.RealImageFunction;
@@ -78,7 +78,7 @@ public abstract class AbstractPreviewPlugin
 	
 	private long[] imageOffsets;
 
-	private DiscreteIterator iter;
+	private RegionIndexIterator iter;
 
 	private RandomAccess<? extends RealType<?>> accessor;
 	
@@ -176,7 +176,7 @@ public abstract class AbstractPreviewPlugin
 		
 		// setup region iterator
 		accessor = dataset.getImgPlus().randomAccess();
-		iter = new DiscreteIterator(planeOrigin, new long[planeOrigin.length], planeOffsets);
+		iter = new RegionIndexIterator(planeOrigin, new long[planeOrigin.length], planeOffsets);
 		dataBackup = new double[(int)(w*h)];
 	}
 
@@ -217,8 +217,8 @@ public abstract class AbstractPreviewPlugin
 		RealImageFunction imageFunc =
 			new RealImageFunction(dataset.getImgPlus().getImg());
 		UnaryOperation<Real> op = getOperation();
-		GeneralUnaryFunction<DiscreteNeigh, Real> function =
-			new GeneralUnaryFunction<DiscreteNeigh, Real>(imageFunc, op);
+		GeneralUnaryFunction<long[], Real> function =
+			new GeneralUnaryFunction<long[], Real>(imageFunc, op);
 		DiscreteNeigh neigh =
 			new DiscreteNeigh(origin, new long[origin.length], posOffsets);
 		RealImageAssignment assigner =

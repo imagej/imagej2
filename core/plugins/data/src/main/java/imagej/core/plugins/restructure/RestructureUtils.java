@@ -41,7 +41,7 @@ import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.DiscreteIterator;
+import net.imglib2.ops.RegionIndexIterator;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -126,8 +126,8 @@ public class RestructureUtils {
 		long[] dstOffsets = new long[dstOrigin.length];
 		for (int i = 0; i < dstOffsets.length; i++)
 			dstOffsets[i] = dstSpan[i]-1;
-		DiscreteIterator iterS = new DiscreteIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
-		DiscreteIterator iterD = new DiscreteIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
+		RegionIndexIterator iterS = new RegionIndexIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
+		RegionIndexIterator iterD = new RegionIndexIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
 		while (iterS.hasNext() && iterD.hasNext()) {
 			iterS.fwd();
 			iterD.fwd();
