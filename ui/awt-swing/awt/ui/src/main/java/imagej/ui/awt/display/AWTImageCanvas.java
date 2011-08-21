@@ -43,7 +43,8 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
-import imagej.ui.common.awt.AWTEventDispatcher;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;
 import imagej.util.Log;
@@ -222,11 +223,15 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		final AWTEventDispatcher awtDispatcher = (AWTEventDispatcher) dispatcher;
-		addKeyListener(awtDispatcher);
-		addMouseListener(awtDispatcher);
-		addMouseMotionListener(awtDispatcher);
-		addMouseWheelListener(awtDispatcher);
+		//final AWTEventDispatcher awtDispatcher = (AWTEventDispatcher) dispatcher;
+			if(dispatcher instanceof AWTKeyEventDispatcher) {
+			addKeyListener((AWTKeyEventDispatcher)dispatcher);
+		}
+		if(dispatcher instanceof AWTMouseEventDispatcher) {
+			addMouseListener((AWTMouseEventDispatcher)dispatcher);
+			addMouseMotionListener((AWTMouseEventDispatcher)dispatcher);
+			addMouseWheelListener((AWTMouseEventDispatcher)dispatcher);
+		}
 	}
 
 	@Override
