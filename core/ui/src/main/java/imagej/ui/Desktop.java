@@ -1,11 +1,11 @@
 //
-// UserInterface.java
+// Desktop.java
 //
 
 /*
 ImageJ software for multidimensional image processing and analysis.
 
-Copyright (c) 2010, ImageJDev.org.
+Copyright (c) 2011, ImageJDev.org.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,38 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 /**
- * An end-user ImageJ application.
+ * Marker interface for MDI Desktop manager
  *
- * @author Curtis Rueden
+ * @author GBH
  */
-public interface UserInterface {
-
-	void initialize(UIService uiService);
-
-	void processArgs(final String[] args);
-
-	void createMenus();
-
-	UIService getUIService();
-
-	ApplicationFrame getApplicationFrame();
+public interface Desktop {
 	
-	/*
-	 * To support MDI Desktop management
-	 */
-	Desktop getDesktop();
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
-	
-	/*
-	 * TODO Adapt this to use TextDisplay...
-	 */
-	
-	OutputWindow newOutputWindow(String title);
-	
-	DialogPrompt dialogPrompt(String message, String title, 
-			DialogPrompt.MessageType msg, DialogPrompt.OptionType option);
-
 }
