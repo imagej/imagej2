@@ -1,5 +1,5 @@
 //
-// SwingUI.java
+// SwingMdiUI.java
 //
 
 /*
@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,16 +30,13 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.ui.swing.mdi;
 
-import imagej.ui.ApplicationFrame;
-import imagej.ui.Desktop;
-import imagej.ui.swing.*;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayPanel;
-import imagej.display.DisplayWindow;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventService;
@@ -49,14 +46,17 @@ import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
-import imagej.ui.DialogPrompt;
+import imagej.ui.ApplicationFrame;
+import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
-import imagej.ui.UI;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
+import imagej.ui.swing.SwingOutputWindow;
+import imagej.ui.swing.SwingStatusBar;
+import imagej.ui.swing.SwingToolBar;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.sdi.SwingDisplayWindow;
 import imagej.util.Log;
@@ -78,15 +78,15 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
- * Swing-based user interface for ImageJ.
+ * Swing-based MDI user interface for ImageJ.
  * 
+ * @author Grant Harris
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
@@ -112,7 +112,7 @@ public class SwingMdiUI implements UserInterface {
 		statusBar = new SwingStatusBar();
 		createMenus();
 		// Create MDI Desktop 
-		parentFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		parentFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		parentFrame.setPreferredSize(new Dimension(800, 600));
 		desktopPane = new JMDIDesktopPane();
 		// TODO desktopPane.setTransferHandler(new DropFileTransferHandler());

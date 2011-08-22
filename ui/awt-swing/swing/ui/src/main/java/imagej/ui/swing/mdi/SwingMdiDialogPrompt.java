@@ -1,5 +1,5 @@
 //
-// SwingDialogPrompt.java
+// SwingMdiDialogPrompt.java
 //
 
 /*
@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.mdi;
 
-import imagej.ui.swing.*;
 import imagej.ui.DialogPrompt;
 
 import java.util.HashMap;

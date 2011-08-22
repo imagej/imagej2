@@ -1,5 +1,5 @@
 //
-// ClearRecent.java
+// SelectWindow.java
 //
 
 /*
@@ -39,14 +39,12 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-
 /**
- * Clears the list of recently opened files.
+ * TODO
  * 
- * @author Curtis Rueden
+ * @author Grant Harris
  */
 @Plugin
-
 public class SelectWindow implements ImageJPlugin {
 
 	@Parameter String displayToSelect;

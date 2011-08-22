@@ -1,4 +1,4 @@
- //
+//
 // Display.java
 //
 
@@ -38,16 +38,13 @@ import imagej.ext.plugin.IPlugin;
 import net.imglib2.meta.Named;
 
 /**
- *  Like a 'document'.
- * May be a ImageDisplay, TextDisplay, 3DDisplay, etc.
- *
- * @author GBH
+ * Like a 'document'. May be a ImageDisplay, TextDisplay, 3DDisplay, etc.
+ * 
+ * @author Grant Harris
  */
 public interface Display extends IPlugin, Named {
 
-	/**
-	 * Gets the top-level window associated with this display.
-	 */
+	/** Gets the top-level window associated with this display. */
 	DisplayPanel getDisplayPanel();
-	
+
 }

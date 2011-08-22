@@ -1,5 +1,5 @@
 //
-//  AbsDataValues.java
+// AbsDataValues.java
 //
 
 /*
@@ -68,4 +68,5 @@ public class AbsDataValues implements ImageJPlugin {
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
+
 }

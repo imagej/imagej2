@@ -34,18 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-
 import imagej.display.ImageDisplay;
-
-import net.imglib2.ops.Real;
-import net.imglib2.ops.UnaryOperation;
-import net.imglib2.ops.operation.unary.real.RealDivideConstant;
-
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Prefs;
 import imagej.util.SettingsKeys;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealDivideConstant;
 
 /**
  * Fills an output Dataset by dividing an input Dataset by a user defined
@@ -53,10 +50,10 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Divide...", weight = 4) })
+@Plugin(
+	menu = { @Menu(label = "Process", mnemonic = 'p'),
+		@Menu(label = "Math", mnemonic = 'm'),
+		@Menu(label = "Divide...", weight = 4) })
 public class DivideDataValuesBy extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
@@ -74,7 +71,9 @@ public class DivideDataValuesBy extends AbstractPreviewPlugin {
 
 	@Override
 	public UnaryOperation<Real> getOperation() {
-		double dbzVal = Prefs.getDouble(SettingsKeys.OPTIONS_MISC_DBZ_VALUE, Double.POSITIVE_INFINITY);
+		final double dbzVal =
+			Prefs.getDouble(SettingsKeys.OPTIONS_MISC_DBZ_VALUE,
+				Double.POSITIVE_INFINITY);
 		return new RealDivideConstant(constant, dbzVal);
 	}
 

@@ -39,24 +39,22 @@ import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
 import imagej.display.AbstractImageDisplay;
-import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
+import imagej.display.ImageDisplay;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.ext.plugin.Plugin;
 import imagej.tool.ToolService;
 import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
-import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.display.JHotDrawImageCanvas;
 import imagej.ui.swing.display.SwingDatasetView;
 import imagej.ui.swing.display.SwingDisplayPanel;
-import imagej.ui.swing.display.sdi.SwingDisplayWindow;
 import imagej.ui.swing.display.SwingOverlayView;
 import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
+
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +68,9 @@ import java.util.List;
  * @author Barry DeZonia
  */
 //@Plugin(type = ImageDisplay.class)
-public class SwingMdiImageDisplay extends AbstractImageDisplay implements AWTDisplay {
+public class SwingMdiImageDisplay extends AbstractImageDisplay implements
+	AWTDisplay
+{
 
 	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayPanel imgPanel;
@@ -88,10 +88,11 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay implements AWTDis
 
 	public SwingMdiImageDisplay() {
 		imgCanvas = new JHotDrawImageCanvas(this);
-		SwingMdiDisplayWindow window = new SwingMdiDisplayWindow();
+		final SwingMdiDisplayWindow window = new SwingMdiDisplayWindow();
 		imgPanel = new SwingDisplayPanel(this, window);
 
-		//final EventDispatcher eventDispatcher =new AWTEventDispatcher(this, false);
+		// final EventDispatcher eventDispatcher =new AWTEventDispatcher(this,
+		// false);
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, false));
 		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
 		window.addInternalFrameListener(new InternalFrameEventDispatcher(this));
@@ -137,10 +138,10 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay implements AWTDis
 
 				// the following code is also done in SwingDisplayPanel::update()
 				// (which was just called) so commenting out
-				
-				//for (final DisplayView view : getViews()) {
-				//	view.update();
-				//}
+
+				// for (final DisplayView view : getViews()) {
+				// view.update();
+				// }
 			}
 		});
 	}
@@ -206,13 +207,13 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay implements AWTDis
 				@Override
 				public void onEvent(final DatasetRestructuredEvent event) {
 					// NOTE - this code used to just note that a rebuild was necessary
-					//   and had the rebuild done in update(). But due to timing of
-					//   events it possible to get the update() before this call.
-					//   So make this do a rebuild. In some cases update() will be
-					//   called twice. Not sure if avoiding this was the reason to
-					//   just record and do work in update. Or if that code was to
-					//   avoid some other bug. Changing on 8-18-11. Fixed bug #627
-					//   and bug #605. BDZ
+					// and had the rebuild done in update(). But due to timing of
+					// events it possible to get the update() before this call.
+					// So make this do a rebuild. In some cases update() will be
+					// called twice. Not sure if avoiding this was the reason to
+					// just record and do work in update. Or if that code was to
+					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
+					// and bug #605. BDZ
 					final Dataset dataset = event.getObject();
 					for (final DisplayView view : getViews()) {
 						if (dataset == view.getDataObject()) {

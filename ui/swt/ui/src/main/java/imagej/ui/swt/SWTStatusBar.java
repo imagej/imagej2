@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 
 /**
- * Status bar with text area and progress bar, similar to ImageJ 1.x.
+ * SWT implementation of {@link StatusBar}.
  *
  * @author Curtis Rueden
  */

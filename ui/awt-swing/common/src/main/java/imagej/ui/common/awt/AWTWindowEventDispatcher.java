@@ -35,9 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.common.awt;
 
 import imagej.display.Display;
-import imagej.display.ImageDisplay;
 import imagej.display.EventDispatcher;
-
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.display.event.window.WinClosingEvent;
@@ -48,7 +46,6 @@ import imagej.display.event.window.WinOpenedEvent;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
 
-
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -58,9 +55,11 @@ import java.awt.event.WindowListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTWindowEventDispatcher implements EventDispatcher, WindowListener
+public class AWTWindowEventDispatcher implements EventDispatcher,
+	WindowListener
 {
-	// TODO: Use WindowAdapter ?  Currently,
+
+	// TODO: Use WindowAdapter ? Currently,
 	// not implementing WindowStateListener windowStateChanged(WindowEvent) and
 	// not implementing WindowFocusListener windowFocusGained/Lost(WindowEvent)
 
@@ -74,7 +73,7 @@ public class AWTWindowEventDispatcher implements EventDispatcher, WindowListener
 	 *          canvas rather than just the viewport; hence, the pan offset is
 	 *          already factored in.
 	 */
-	
+
 	public AWTWindowEventDispatcher(final Display display) {
 		this.display = display;
 	}
