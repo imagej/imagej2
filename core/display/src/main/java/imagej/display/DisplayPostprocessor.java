@@ -42,6 +42,7 @@ import imagej.ext.module.Module;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.object.ObjectService;
+import imagej.util.Log;
 
 import java.util.Collection;
 import java.util.List;
@@ -84,6 +85,9 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 		}
 		else {
 			// ignore unsupported output type
+			final String valueClass =
+				value == null ? "null" : value.getClass().getName();
+			Log.debug("Ignoring unsupported output: " + valueClass);
 		}
 	}
 
