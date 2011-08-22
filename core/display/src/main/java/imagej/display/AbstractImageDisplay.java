@@ -61,6 +61,7 @@ public abstract class AbstractImageDisplay implements ImageDisplay {
 	
 	private final ArrayList<DisplayView> views = new ArrayList<DisplayView>();
 
+	@Override
 	public List<Axis> getAxes() {
 		ArrayList<Axis> axes = new ArrayList<Axis>();
 		for (DisplayView v:this.getViews()) {
@@ -73,7 +74,7 @@ public abstract class AbstractImageDisplay implements ImageDisplay {
 					Axis axis = a.axis(i);
 					if (! axes.contains(axis)) {
 						axes.add(axis);
-					}
+					} 
 				}
 			}
 		}

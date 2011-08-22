@@ -41,29 +41,12 @@ package imagej.display;
  */
 public interface DisplayWindow {
 
-	Display getDisplay();
-
-	/** Updates the display window to reflect the display's current position. */
-	void update();
-
-	/**
-	 * Rebuilds the display window to reflect the display's current views,
-	 * dimensional lengths, etc. The window may change size, and hence may repack
-	 * itself.
-	 */
-	void redoLayout();
-
-	void setLabel(String s);
-
 	void setTitle(String s);
 
 	void addEventDispatcher(EventDispatcher dispatcher);
-	
-	/*
-	 * Make this the active window/frame (or top-level component)
-	 */
-	void makeActive();
-
-	void close();
-
+	void setContentPane(Object panel);
+	void requestFocus();
+	void pack();
+	//void setVisible(boolean visible);
+	void showDisplay(boolean visible);
 }
