@@ -38,6 +38,8 @@ import imagej.ImageJ;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.ApplicationFrame;
+import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -61,7 +63,7 @@ import java.awt.event.WindowEvent;
 public class AWTUI implements UserInterface {
 
 	private UIService uiService;
-	private Frame frame;
+	private AWTApplicationFrame frame;
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
 
@@ -71,7 +73,7 @@ public class AWTUI implements UserInterface {
 	public void initialize(final UIService service) {
 		uiService = service;
 
-		frame = new Frame("ImageJ");
+		frame = new AWTApplicationFrame("ImageJ");
 		toolBar = new AWTToolBar();
 		statusBar = new AWTStatusBar();
 		createMenus();
@@ -112,8 +114,13 @@ public class AWTUI implements UserInterface {
 	}
 
 	@Override
-	public Frame getApplicationFrame() {
+	public ApplicationFrame getApplicationFrame() {
 		return frame;
+	}
+
+	@Override
+	public Desktop getDesktop() {
+		return null;
 	}
 
 	@Override
@@ -137,5 +144,7 @@ public class AWTUI implements UserInterface {
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
+
+
 
 }
