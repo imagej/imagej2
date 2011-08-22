@@ -105,4 +105,6 @@ public interface ImageDisplay extends LabeledAxes, EuclideanSpace, Display {
 
 	///** Forces display to close. */ 
 	//void close();
+
+	List<Axis> getAxes();
 }
