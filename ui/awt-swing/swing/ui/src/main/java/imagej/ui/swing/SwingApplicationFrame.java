@@ -5,7 +5,7 @@
 /*
 ImageJ software for multidimensional image processing and analysis.
 
-Copyright (c) 2011, ImageJDev.org.
+Copyright (c) 2010, ImageJDev.org.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,21 +31,24 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing;
 
 import imagej.ui.ApplicationFrame;
+
 import java.awt.HeadlessException;
+
 import javax.swing.JFrame;
 
 /**
- *
- * @author GBH
+ * Swing implementation of {@link ApplicationFrame}.
+ * 
+ * @author Grant Harris
  */
 public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 
-	public SwingApplicationFrame(String title) throws HeadlessException {
+	public SwingApplicationFrame(final String title) throws HeadlessException {
 		super(title);
 	}
-	
-	
+
 }

@@ -41,7 +41,7 @@ import imagej.ui.ToolBar;
 import org.apache.pivot.wtk.BoxPane;
 
 /**
- * Pivot tool bar implementation.
+ * Pivot implementation of {@link ToolBar}.
  *
  * @author Curtis Rueden
  */

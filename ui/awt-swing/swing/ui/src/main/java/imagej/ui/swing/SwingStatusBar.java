@@ -49,7 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 /**
- * Status bar with text area and progress bar, similar to ImageJ 1.x.
+ * Swing implementation of {@link StatusBar}.
  * 
  * @author Curtis Rueden
  */

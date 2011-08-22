@@ -1,5 +1,5 @@
 //
-// AWTInternalFrameEventDispatcher.java
+// InternalFrameEventDispatcher.java
 //
 
 /*
@@ -35,9 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.mdi;
 
 import imagej.display.Display;
-import imagej.display.ImageDisplay;
 import imagej.display.EventDispatcher;
-
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.display.event.window.WinClosingEvent;
@@ -47,6 +45,7 @@ import imagej.display.event.window.WinIconifiedEvent;
 import imagej.display.event.window.WinOpenedEvent;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
+
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
@@ -56,7 +55,8 @@ import javax.swing.event.InternalFrameListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class InternalFrameEventDispatcher implements EventDispatcher, InternalFrameListener
+public class InternalFrameEventDispatcher implements EventDispatcher,
+	InternalFrameListener
 {
 
 	private final Display display;
@@ -69,7 +69,7 @@ public class InternalFrameEventDispatcher implements EventDispatcher, InternalFr
 	 *          canvas rather than just the viewport; hence, the pan offset is
 	 *          already factored in.
 	 */
-	
+
 	public InternalFrameEventDispatcher(final Display display) {
 		this.display = display;
 	}

@@ -5,7 +5,7 @@
 /*
 ImageJ software for multidimensional image processing and analysis.
 
-Copyright (c) 2011, ImageJDev.org.
+Copyright (c) 2010, ImageJDev.org.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,13 +31,14 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui;
 
 /**
- * Marker interface for top-level application frame
+ * Common interface for top-level application frames.
  * 
- * @author GBH
+ * @author Grant Harris
  */
 public interface ApplicationFrame {
-	
+	// marker interface
 }

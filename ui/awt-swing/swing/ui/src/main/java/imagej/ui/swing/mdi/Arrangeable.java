@@ -11,21 +11,26 @@
 
 package imagej.ui.swing.mdi;
 
-import java.beans.*;
+import java.beans.PropertyChangeListener;
 
 /**
  * Arrangeable.
- * 
  * 
  * @author Werner Randelshofer
  * @version $Id: Arrangeable.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public interface Arrangeable {
-    enum Arrangement { VERTICAL, HORIZONTAL, CASCADE };
-    
-    public void setArrangement(Arrangement newValue);
-    public Arrangement getArrangement();
-    
-    public void addPropertyChangeListener(PropertyChangeListener l);
-    public void removePropertyChangeListener(PropertyChangeListener l);
+
+	enum Arrangement {
+		VERTICAL, HORIZONTAL, CASCADE
+	};
+
+	public void setArrangement(Arrangement newValue);
+
+	public Arrangement getArrangement();
+
+	public void addPropertyChangeListener(PropertyChangeListener l);
+
+	public void removePropertyChangeListener(PropertyChangeListener l);
+
 }

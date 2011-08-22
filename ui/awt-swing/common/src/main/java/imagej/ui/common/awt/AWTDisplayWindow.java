@@ -38,12 +38,12 @@ import imagej.display.DisplayWindow;
 
 /**
  * Superinterface for AWT-based {@link DisplayWindow}s (including Swing).
- *
+ * 
  * @author Curtis Rueden
  */
-
 public interface AWTDisplayWindow extends DisplayWindow {
 
+	@Override
 	void pack();
 
 }

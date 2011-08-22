@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Button bar with selectable tools, similar to ImageJ 1.x.
+ * SWT implementation of {@link ToolBar}.
  * 
  * @author Curtis Rueden
  */

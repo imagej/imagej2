@@ -43,7 +43,7 @@ import java.awt.Graphics;
 import java.awt.Label;
 
 /**
- * Status bar with text area and progress bar, similar to ImageJ 1.x.
+ * AWT implementation of {@link StatusBar}.
  *
  * @author Curtis Rueden
  */

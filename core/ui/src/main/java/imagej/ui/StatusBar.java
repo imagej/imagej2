@@ -35,8 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 /**
- * Common interface for status bars.
- *
+ * Common interface for status bars, which have a text area and progress bar,
+ * similar to ImageJ 1.x.
+ * 
  * @author Curtis Rueden
  */
 public interface StatusBar {

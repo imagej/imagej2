@@ -5,7 +5,7 @@
 /*
 ImageJ software for multidimensional image processing and analysis.
 
-Copyright (c) 2011, ImageJDev.org.
+Copyright (c) 2010, ImageJDev.org.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,67 +40,73 @@ import imagej.display.EventDispatcher;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
-import imagej.ui.swing.display.*;
-
 import imagej.ui.swing.StaticSwingUtils;
+import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
 import imagej.ui.swing.mdi.JMDIDesktopPane;
-import java.awt.Container;
+
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.beans.PropertyVetoException;
+
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
 /**
- *
- * @author GBH
+ * TODO
+ * 
+ * @author Grant Harris
  */
-public class SwingMdiDisplayWindow extends JInternalFrame implements DisplayWindow {
+public class SwingMdiDisplayWindow extends JInternalFrame implements
+	DisplayWindow
+{
 
 	SwingDisplayPanel panel;
 
 	public SwingMdiDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
-        setMaximizable(true);
-        setResizable(true);
-        setIconifiable(false);
-        setSize(new Dimension(400, 400));
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		setMaximizable(true);
+		setResizable(true);
+		setIconifiable(false);
+		setSize(new Dimension(400, 400));
 		setLocation(StaticSwingUtils.nextFramePosition());
 	}
-	
-	
-		@Override
-	public void addEventDispatcher(EventDispatcher dispatcher) {
-		if(dispatcher instanceof AWTWindowEventDispatcher) {
-			addInternalFrameListener((InternalFrameEventDispatcher)dispatcher);
+
+	@Override
+	public void addEventDispatcher(final EventDispatcher dispatcher) {
+		if (dispatcher instanceof AWTWindowEventDispatcher) {
+			addInternalFrameListener((InternalFrameEventDispatcher) dispatcher);
 		}
 	}
 
 	@Override
-	public void setContentPane(Object panel) {
-		this.setContentPane((Container)rootPane);
+	public void setContentPane(final Object panel) {
+		this.setContentPane(rootPane);
 	}
 
 	@Override
-	public void showDisplay(boolean visible) {
-		final UserInterface ui = ImageJ.get(UIService.class).getUI();
-		JMDIDesktopPane desktop = (JMDIDesktopPane)ui.getDesktop();
-	    setVisible(true);
-        desktop.add(this);
-            if (desktop.getComponentCount() == 1) {
-                try {
-                    setMaximum(true);
-                } catch (PropertyVetoException ex) {
-                    // ignore veto
-                }
-            }
-            toFront();
-            try {
-                setSelected(true);
-            } catch (PropertyVetoException e) {
-                // Don't care.
-            }
+	public void showDisplay(final boolean visible) {
+		final UserInterface userInterface = ImageJ.get(UIService.class).getUI();
+		final JMDIDesktopPane desktop =
+			(JMDIDesktopPane) userInterface.getDesktop();
+		setVisible(true);
+		desktop.add(this);
+		if (desktop.getComponentCount() == 1) {
+			try {
+				setMaximum(true);
+			}
+			catch (final PropertyVetoException ex) {
+				// ignore veto
+			}
+		}
+		toFront();
+		try {
+			setSelected(true);
+		}
+		catch (final PropertyVetoException e) {
+			// Don't care.
+		}
 	}
+
 }

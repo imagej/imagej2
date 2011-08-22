@@ -37,7 +37,6 @@ package imagej.ui.swing.sdi;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayPanel;
-import imagej.display.DisplayWindow;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventService;
@@ -56,13 +55,12 @@ import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.swing.SwingApplicationFrame;
 import imagej.ui.swing.SwingOutputWindow;
 import imagej.ui.swing.SwingStatusBar;
 import imagej.ui.swing.SwingToolBar;
-import imagej.ui.swing.SwingApplicationFrame;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.sdi.SwingDisplayWindow;
-import imagej.ui.swing.mdi.JMDIDesktopPane;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -92,6 +90,7 @@ import javax.swing.WindowConstants;
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
+ * @author Grant Harris
  */
 @UI
 public class SwingUI implements UserInterface {
