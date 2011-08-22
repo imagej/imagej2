@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display.sdi;
 
+import imagej.display.DisplayPanel;
 import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
@@ -67,8 +68,8 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 	}
 
 	@Override
-	public void setContentPane(final Object panel) {
-		this.setContentPane(rootPane);
+	public void setContent(final DisplayPanel panel) {
+		setContentPane((SwingDisplayPanel)panel);
 	}
 
 	@Override
