@@ -44,7 +44,7 @@ public interface DisplayWindow {
 	void setTitle(String s);
 
 	void addEventDispatcher(EventDispatcher dispatcher);
-	void setContentPane(Object panel);
+	void setContent(DisplayPanel panel);
 	void requestFocus();
 	void pack();
 	//void setVisible(boolean visible);
