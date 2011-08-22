@@ -12,7 +12,6 @@
 
 package imagej.ui.swing.mdi;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
 import imagej.ui.Desktop;
 import javax.swing.*;
 import java.awt.*;
@@ -345,7 +344,6 @@ class MDIDesktopManager extends DefaultDesktopManager {
         }
     }
     
-    @Nullable
     public JScrollPane getScrollPane() {
         if (desktop.getParent() instanceof JViewport) {
             JViewport viewPort = (JViewport)desktop.getParent();
