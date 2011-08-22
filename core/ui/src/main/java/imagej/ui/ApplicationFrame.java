@@ -1,11 +1,11 @@
 //
-// UserInterface.java
+// ApplicationFrame.java
 //
 
 /*
 ImageJ software for multidimensional image processing and analysis.
 
-Copyright (c) 2010, ImageJDev.org.
+Copyright (c) 2011, ImageJDev.org.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,42 +31,13 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-
 package imagej.ui;
 
 /**
- * An end-user ImageJ application.
- *
- * @author Curtis Rueden
+ * Marker interface for top-level application frame
+ * 
+ * @author GBH
  */
-public interface UserInterface {
-
-	void initialize(UIService uiService);
-
-	void processArgs(final String[] args);
-
-	void createMenus();
-
-	UIService getUIService();
-
-	ApplicationFrame getApplicationFrame();
+public interface ApplicationFrame {
 	
-	/*
-	 * To support MDI Desktop management
-	 */
-	Desktop getDesktop();
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
-	
-	/*
-	 * TODO Adapt this to use TextDisplay...
-	 */
-	
-	OutputWindow newOutputWindow(String title);
-	
-	DialogPrompt dialogPrompt(String message, String title, 
-			DialogPrompt.MessageType msg, DialogPrompt.OptionType option);
-
 }
