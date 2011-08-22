@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.display.mdi;
 
 import imagej.ImageJ;
+import imagej.display.DisplayPanel;
 import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
 import imagej.ui.UIService;
@@ -81,8 +82,8 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 	}
 
 	@Override
-	public void setContentPane(final Object panel) {
-		this.setContentPane(rootPane);
+	public void setContent(final DisplayPanel panel) {
+		this.setContentPane((SwingDisplayPanel)panel);
 	}
 
 	@Override

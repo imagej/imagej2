@@ -126,7 +126,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		add(sliders, BorderLayout.SOUTH);
 
 		subscribeToEvents();
-		window.setContentPane(this);
+		window.setContent(this);
 	}
 
 	/**
