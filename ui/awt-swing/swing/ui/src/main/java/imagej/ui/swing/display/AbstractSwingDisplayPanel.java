@@ -35,6 +35,7 @@ package imagej.ui.swing.display;
 
 import imagej.display.DisplayPanel;
 import imagej.display.EventDispatcher;
+import imagej.display.ImageDisplayPanel;
 import imagej.ui.common.awt.AWTDisplayWindow;
 
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
@@ -55,7 +56,7 @@ import javax.swing.JTabbedPane;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public abstract class AbstractSwingDisplayPanel extends JPanel implements DisplayPanel {
+public abstract class AbstractSwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	// -- DisplayWindow methods --
 

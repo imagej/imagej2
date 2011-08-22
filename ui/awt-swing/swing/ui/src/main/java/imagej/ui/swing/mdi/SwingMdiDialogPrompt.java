@@ -32,8 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing;
+package imagej.ui.swing.mdi;
 
+import imagej.ui.swing.*;
 import imagej.ui.DialogPrompt;
 
 import java.util.HashMap;
@@ -47,19 +48,19 @@ import javax.swing.JOptionPane;
  * 
  * @author Grant Harris
  */
-public class SwingDialogPrompt implements DialogPrompt {
+public class SwingMdiDialogPrompt implements DialogPrompt {
 
 	JDialog dialog;
 	JOptionPane pane;
 
-	public SwingDialogPrompt(final String message, final String title,
+	public SwingMdiDialogPrompt(final String message, final String title,
 		final MessageType messageType, final OptionType optionType)
 	{
 		pane =
 			new JOptionPane(message, msgMap.get(messageType), optionMap
 				.get(optionType));
 		// pane.set.Xxxx(...); // Configure
-		dialog = pane.createDialog(null, title);
+		//dialog = pane.createInternalFrame(null, title);
 	}
 
 	@Override

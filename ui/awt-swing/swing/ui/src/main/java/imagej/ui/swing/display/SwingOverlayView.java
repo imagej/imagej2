@@ -36,6 +36,7 @@ package imagej.ui.swing.display;
 
 import imagej.data.roi.Overlay;
 import imagej.display.AbstractOverlayView;
+import imagej.display.ImageDisplay;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.roi.JHotDrawAdapterFinder;
 
@@ -55,7 +56,7 @@ import org.jhotdraw.draw.event.FigureEvent;
 @SuppressWarnings("synthetic-access")
 public class SwingOverlayView extends AbstractOverlayView implements FigureView {
 
-	private final SwingImageDisplay display;
+	private final ImageDisplay display;
 
 	/** JHotDraw {@link Figure} linked to the associated {@link Overlay}. */
 	private final Figure figure;
@@ -79,7 +80,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	 * @param display - hook to this display
 	 * @param overlay - represent this overlay
 	 */
-	public SwingOverlayView(final SwingImageDisplay display, final Overlay overlay) {
+	public SwingOverlayView(final ImageDisplay display, final Overlay overlay) {
 		this(display, overlay, null);
 	}
 	
@@ -91,7 +92,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	 * @param overlay - represent this overlay
 	 * @param figure - draw using this figure
 	 */
-	public SwingOverlayView(final SwingImageDisplay display,
+	public SwingOverlayView(final ImageDisplay display,
 		final Overlay overlay, Figure figure)
 	{
 		super(display, overlay);
@@ -106,7 +107,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 				public void run() {
 					synchronized(SwingOverlayView.this) {
 						if (! disposeScheduled) {
-							final JHotDrawImageCanvas canvas = display.getImageCanvas();
+							final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getImageCanvas();
 							final Drawing drawing = canvas.getDrawing();
 							drawing.add(SwingOverlayView.this.figure);
 							figureAdded = true;
@@ -161,7 +162,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	// -- DisplayView methods --
 
 	private void show(final boolean doShow) {
-		final JHotDrawImageCanvas canvas = display.getImageCanvas();
+		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getImageCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		final Figure fig = getFigure();
 		if (doShow) {

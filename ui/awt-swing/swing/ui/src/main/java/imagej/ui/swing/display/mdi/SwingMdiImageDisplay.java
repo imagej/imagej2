@@ -1,5 +1,5 @@
 //
-// SwingImageDisplay.java
+// SwingMdiImageDisplay.java
 //
 
 /*
@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.display;
+package imagej.ui.swing.display.mdi;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
@@ -51,6 +51,12 @@ import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
+import imagej.ui.swing.display.JHotDrawImageCanvas;
+import imagej.ui.swing.display.SwingDatasetView;
+import imagej.ui.swing.display.SwingDisplayPanel;
+import imagej.ui.swing.display.sdi.SwingDisplayWindow;
+import imagej.ui.swing.display.SwingOverlayView;
+import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +69,8 @@ import java.util.List;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-@Plugin(type = ImageDisplay.class)
-public class SwingImageDisplay extends AbstractImageDisplay implements AWTDisplay {
+//@Plugin(type = ImageDisplay.class)
+public class SwingMdiImageDisplay extends AbstractImageDisplay implements AWTDisplay {
 
 	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayPanel imgPanel;
@@ -80,15 +86,15 @@ public class SwingImageDisplay extends AbstractImageDisplay implements AWTDispla
 
 	private String name;
 
-	public SwingImageDisplay() {
+	public SwingMdiImageDisplay() {
 		imgCanvas = new JHotDrawImageCanvas(this);
-		SwingDisplayWindow window = new SwingDisplayWindow();
+		SwingMdiDisplayWindow window = new SwingMdiDisplayWindow();
 		imgPanel = new SwingDisplayPanel(this, window);
 
 		//final EventDispatcher eventDispatcher =new AWTEventDispatcher(this, false);
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, false));
 		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
-		window.addWindowListener(new AWTWindowEventDispatcher(this));
+		window.addInternalFrameListener(new InternalFrameEventDispatcher(this));
 		subscribeToEvents();
 
 		thisDisplay = this;
@@ -216,8 +222,8 @@ public class SwingImageDisplay extends AbstractImageDisplay implements AWTDispla
 							// incorrectly. The panReset() call must happen after the
 							// setZoom() call
 							imgCanvas.panReset();
-							SwingImageDisplay.this.redoWindowLayout();
-							SwingImageDisplay.this.update();
+							SwingMdiImageDisplay.this.redoWindowLayout();
+							SwingMdiImageDisplay.this.update();
 							return;
 						}
 					}

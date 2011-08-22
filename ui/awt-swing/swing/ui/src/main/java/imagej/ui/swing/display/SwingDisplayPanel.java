@@ -34,13 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.ui.swing.display.sdi.SwingDisplayWindow;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
+import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
+import imagej.display.ImageDisplay;
 import imagej.display.event.AxisPositionEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.ZoomEvent;
@@ -81,20 +84,24 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
-	private final SwingImageDisplay display;
+	private final ImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel sliders;
-	private final Map<Axis, Integer> axisPositions = new HashMap<Axis, Integer>();
+	private final DisplayWindow window;
+	//
+	protected final Map<Axis, Integer> axisPositions = new HashMap<Axis, Integer>();
+	//
 	private final Map<Axis, JScrollBar> axisSliders = new HashMap<Axis, JScrollBar>();
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
+	//
 	private EventSubscriber<ZoomEvent> zoomSubscriber;
 	//private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
 	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
 	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
-	private final SwingDisplayWindow window;
+	
 
-	public SwingDisplayPanel(final SwingImageDisplay display, SwingDisplayWindow window) {
+	public SwingDisplayPanel(final ImageDisplay display, DisplayWindow window) {
 		this.display = display;
 		this.window = window;
 
@@ -104,7 +111,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 		final JPanel graphicPane = new JPanel();
 		graphicPane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-		graphicPane.add(display.getImageCanvas());
+		graphicPane.add((JHotDrawImageCanvas)display.getImageCanvas());
 
 		sliders = new JPanel();
 		sliders.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
@@ -122,13 +129,16 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 	}
 
+	
 	/**
 	 * Get the position of some axis other than X and Y
 	 * @param axis - the axis
 	 * @return the position of that axis on the sliders
 	 */
 	public long getAxisPosition(Axis axis) {
-		if (axisPositions.containsKey(axis)) return axisPositions.get(axis);
+		if (axisPositions.containsKey(axis)) {
+			return axisPositions.get(axis);
+		}
 		return 0;
 	}
 
@@ -136,10 +146,10 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	public void setAxisPosition(final Axis axis, final int position) {
 		axisPositions.put(axis, position);
 	}
+	
 	// -- DisplayWindow methods --
-
 	@Override
-	public SwingImageDisplay getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
 	
@@ -173,7 +183,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				sliders.setVisible(sliders.getComponentCount() > 0);
 				window.setTitle(getDisplay().getName());
 				window.pack();
-				window.setVisible(true);
+				window.showDisplay(true);
 			}
 		});
 	}

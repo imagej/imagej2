@@ -37,9 +37,12 @@ package imagej.ui.swing.display;
 import imagej.ImageJ;
 import imagej.data.roi.Overlay;
 import imagej.display.CanvasHelper;
+import imagej.display.DisplayPanel;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
+import imagej.display.ImageDisplay;
+import imagej.display.ImageDisplayPanel;
 import imagej.display.MouseCursor;
 import imagej.display.event.DisplayViewDeselectedEvent;
 import imagej.display.event.DisplayViewSelectedEvent;
@@ -97,7 +100,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	AdjustmentListener
 {
 
-	private final SwingImageDisplay display;
+	private final ImageDisplay display;
 
 	private final CanvasHelper canvasHelper;
 
@@ -136,7 +139,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		
 	};
 	
-	public JHotDrawImageCanvas(final SwingImageDisplay display) {
+	public JHotDrawImageCanvas(final ImageDisplay display) {
 		this.display = display; 
 		canvasHelper = new CanvasHelper(this);
 
@@ -245,7 +248,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 					final Overlay overlay = e.getOverlay();
 					final SwingOverlayView v = new SwingOverlayView(display,
 						overlay, e.getFigure());
-					final SwingDisplayPanel window = display.getDisplayPanel();
+					final ImageDisplayPanel window = (ImageDisplayPanel) display.getDisplayPanel();
 					overlay.setAxis(Axes.X, Axes.X.ordinal());
 					overlay.setAxis(Axes.Y, Axes.Y.ordinal());
 					for (int i=2; i<display.numDimensions(); i++) {
@@ -293,7 +296,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	// -- ImageCanvas methods --
 
 	@Override
-	public SwingImageDisplay getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
 
