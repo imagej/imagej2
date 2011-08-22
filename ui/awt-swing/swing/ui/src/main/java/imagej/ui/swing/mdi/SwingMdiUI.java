@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+ * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+ * Neither the names of the ImageJDev.org developers nor the
+names of its contributors may be used to endorse or promote products
+derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,10 +30,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
+package imagej.ui.swing.mdi;
 
-package imagej.ui.swing;
-
+import imagej.ui.ApplicationFrame;
+import imagej.ui.Desktop;
+import imagej.ui.swing.*;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayPanel;
@@ -54,8 +56,9 @@ import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.swing.SwingApplicationFrame;
 import imagej.ui.swing.display.SwingDisplayPanel;
-import imagej.ui.swing.display.SwingDisplayWindow;
+import imagej.ui.swing.display.sdi.SwingDisplayWindow;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -73,6 +76,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -86,52 +90,54 @@ import javax.swing.WindowConstants;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@UI
-public class SwingUI implements UserInterface {
+//@UI
+public class SwingMdiUI implements UserInterface {
 
 	private static final String README_FILE = "README.txt";
 	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
-
 	private UIService uiService;
-
-	private JFrame frame;
+	private SwingApplicationFrame parentFrame;
+	private JScrollPane scrollPane;
+    private JMDIDesktopPane desktopPane;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
-
 	private ArrayList<EventSubscriber<?>> subscribers;
 
 	// -- UserInterface methods --
-
 	@Override
 	public void initialize(final UIService service) {
 		uiService = service;
-
-		frame = new JFrame("ImageJ");
+		parentFrame = new SwingApplicationFrame("ImageJ2, MDI");
 		toolBar = new SwingToolBar();
 		statusBar = new SwingStatusBar();
 		createMenus();
-
-		final JPanel pane = new JPanel();
-		frame.setContentPane(pane);
-		pane.setLayout(new BorderLayout());
-		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter() {
+		// Create MDI Desktop 
+		parentFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		parentFrame.setPreferredSize(new Dimension(800, 600));
+		desktopPane = new JMDIDesktopPane();
+		// TODO desktopPane.setTransferHandler(new DropFileTransferHandler());
+		scrollPane = new JScrollPane();
+		scrollPane.setViewportView(desktopPane);
+		parentFrame.getContentPane().add(scrollPane);
+		//PreferencesUtil.installFramePrefsHandler(prefs, "parentFrame", parentFrame);
+		parentFrame.addWindowListener(new WindowAdapter() {
 
 			@Override
 			public void windowClosing(final WindowEvent evt) {
 				getUIService().getEventService().publish(new AppQuitEvent());
 			}
+
 		});
 
-		pane.add(toolBar, BorderLayout.NORTH);
-		pane.add(statusBar, BorderLayout.SOUTH);
+		parentFrame.getContentPane().add(toolBar, BorderLayout.NORTH);
+		parentFrame.getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-		frame.pack();
-		frame.setVisible(true);
+		parentFrame.pack();
+		parentFrame.setVisible(true);
 
 		subscribeToEvents();
 
-		displayReadme();
+		//displayReadme();
 	}
 
 	@Override
@@ -141,7 +147,7 @@ public class SwingUI implements UserInterface {
 
 	@Override
 	public void createMenus() {
-		final JMenuBar menuBar = createMenuBar(frame);
+		final JMenuBar menuBar = createMenuBar(parentFrame);
 		getUIService().getEventService().publish(new AppMenusCreatedEvent(menuBar));
 	}
 
@@ -151,8 +157,13 @@ public class SwingUI implements UserInterface {
 	}
 
 	@Override
-	public JFrame getApplicationFrame() {
-		return frame;
+	public ApplicationFrame getApplicationFrame() {
+		return parentFrame;
+	}
+
+	@Override
+	public Desktop getDesktop() {
+		return desktopPane;
 	}
 
 	@Override
@@ -166,7 +177,6 @@ public class SwingUI implements UserInterface {
 	}
 
 	// -- Helper methods --
-
 	/**
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
 	 * and adds it to the given {@link JFrame}.
@@ -174,7 +184,7 @@ public class SwingUI implements UserInterface {
 	protected JMenuBar createMenuBar(final JFrame f) {
 		final MenuService menuService = ImageJ.get(MenuService.class);
 		final JMenuBar menuBar =
-			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
+				menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		f.setJMenuBar(menuBar);
 		f.validate();
 		return menuBar;
@@ -193,10 +203,12 @@ public class SwingUI implements UserInterface {
 
 	private void displayReadme() {
 		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
-		if (firstRun != null) return;
+		if (firstRun != null) {
+			return;
+		}
 		Prefs.put(getClass(), PREF_FIRST_RUN, false);
 
-		final JFrame readmeFrame = new JFrame();
+		final JInternalFrame readmeFrame = new JInternalFrame();
 		final JTextArea text = new JTextArea();
 		text.setEditable(false);
 		final JScrollPane scrollPane = new JScrollPane(text);
@@ -220,18 +232,16 @@ public class SwingUI implements UserInterface {
 
 		try {
 			final DataInputStream in =
-				new DataInputStream(new FileInputStream(readmeFile));
+					new DataInputStream(new FileInputStream(readmeFile));
 			final int len = (int) readmeFile.length();
 			final byte[] bytes = new byte[len];
 			in.readFully(bytes);
 			in.close();
 			return new String(bytes);
-		}
-		catch (final FileNotFoundException e) {
-			throw new IllegalArgumentException(README_FILE + " not found at " +
-				baseDir.getAbsolutePath());
-		}
-		catch (final IOException e) {
+		} catch (final FileNotFoundException e) {
+			throw new IllegalArgumentException(README_FILE + " not found at "
+					+ baseDir.getAbsolutePath());
+		} catch (final IOException e) {
 			throw new IllegalStateException(e.getMessage());
 		}
 	}
@@ -249,13 +259,13 @@ public class SwingUI implements UserInterface {
 			}
 			// NB: Base directory is 5 levels up from ui/awt-swing/swing/ui/target.
 			baseDir = up(up(up(up(up(dir)))));
-		}
-		else if (path.endsWith(".jar")) {
+		} else if (path.endsWith(".jar")) {
 			// assume class is in a library folder of the distribution
 			final File dir = pathToClass.getParentFile();
 			baseDir = up(dir);
+		} else {
+			baseDir = null;
 		}
-		else baseDir = null;
 
 		// return current working directory if not found
 		return baseDir == null ? new File(".") : baseDir;
@@ -278,18 +288,21 @@ public class SwingUI implements UserInterface {
 		path = path.replaceAll("!.*", "");
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
-		}
-		catch (final UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			Log.warn("Cannot parse class: " + className, e);
 		}
 		String slash = File.separator;
-		if (slash.equals("\\")) slash = "\\\\";
+		if (slash.equals("\\")) {
+			slash = "\\\\";
+		}
 		path = path.replaceAll("/", slash);
 		return new File(path);
 	}
 
 	private File up(final File file) {
-		if (file == null) return null;
+		if (file == null) {
+			return null;
+		}
 		return file.getParentFile();
 	}
 
@@ -303,37 +316,45 @@ public class SwingUI implements UserInterface {
 			// bar accordingly.
 
 			final EventSubscriber<DisplayCreatedEvent> createSubscriber =
-				new EventSubscriber<DisplayCreatedEvent>() {
+					new EventSubscriber<DisplayCreatedEvent>() {
 
-					@Override
-					public void onEvent(final DisplayCreatedEvent event) {
-											final Display display = event.getObject();
-						final DisplayPanel panel = display.getDisplayPanel();
-						if (!(panel instanceof SwingDisplayPanel)) return;
-						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
-						SwingDisplayWindow swingWindow  = 
-							(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
-						// add a copy of the JMenuBar to the new display
-						if (swingWindow.getJMenuBar() == null) createMenuBar(swingWindow);
-					}
-				};
+						@Override
+						public void onEvent(final DisplayCreatedEvent event) {
+							final Display display = event.getObject();
+							final DisplayPanel panel = display.getDisplayPanel();
+							if (!(panel instanceof SwingDisplayPanel)) {
+								return;
+							}
+							final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
+							SwingDisplayWindow swingWindow =
+									(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
+							// add a copy of the JMenuBar to the new display
+							if (swingWindow.getJMenuBar() == null) {
+								createMenuBar(swingWindow);
+							}
+						}
+
+					};
 			subscribers.add(createSubscriber);
 			eventService.subscribe(DisplayCreatedEvent.class, createSubscriber);
 
 			final EventSubscriber<DisplayDeletedEvent> deleteSubscriber =
-				new EventSubscriber<DisplayDeletedEvent>() {
+					new EventSubscriber<DisplayDeletedEvent>() {
 
-					@Override
-					public void onEvent(final DisplayDeletedEvent event) {
-						final Display display = event.getObject();
-						final DisplayPanel panel = display.getDisplayPanel();
-						if (!(panel instanceof SwingDisplayPanel)) return;
-						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
-						SwingDisplayWindow swingWindow  = 
-							(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
-						deleteMenuBar(swingWindow);
-					}
-				};
+						@Override
+						public void onEvent(final DisplayDeletedEvent event) {
+							final Display display = event.getObject();
+							final DisplayPanel panel = display.getDisplayPanel();
+							if (!(panel instanceof SwingDisplayPanel)) {
+								return;
+							}
+							final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
+							SwingDisplayWindow swingWindow =
+									(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
+							deleteMenuBar(swingWindow);
+						}
+
+					};
 			subscribers.add(deleteSubscriber);
 			eventService.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
 		}
@@ -345,10 +366,10 @@ public class SwingUI implements UserInterface {
 	}
 
 	@Override
-	public DialogPrompt dialogPrompt(final String message, final String title,
-		final MessageType msg, final OptionType option)
-	{
-		return new SwingDialogPrompt(message, title, msg, option);
+	public SwingMdiDialogPrompt dialogPrompt(final String message, final String title,
+			final MessageType msg, final OptionType option) {
+		return new SwingMdiDialogPrompt(message, title, msg, option);
 	}
+
 
 }
