@@ -36,15 +36,17 @@ package imagej.ui.headless;
 
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
+import imagej.ui.ApplicationFrame;
+import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
+import imagej.ui.DialogPrompt.MessageType;
+import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.StatusBar;
 import imagej.ui.ToolBar;
 import imagej.ui.UI;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.DialogPrompt.OptionType;
 import imagej.util.Log;
 
 import java.io.BufferedReader;
@@ -166,7 +168,12 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 	}
 
 	@Override
-	public Object getApplicationFrame() {
+	public ApplicationFrame getApplicationFrame() {
+		return null;
+	}
+
+	@Override
+	public Desktop getDesktop() {
 		return null;
 	}
 

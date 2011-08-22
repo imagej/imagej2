@@ -39,6 +39,7 @@ import imagej.event.Events;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.pivot.PivotMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -52,11 +53,10 @@ import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.Frame;
 import org.apache.pivot.wtk.Orientation;
 
 /**
- * TODO
+ * Apache Pivot-based user interface for ImageJ.
  * 
  * @author Curtis Rueden
  */
@@ -65,10 +65,11 @@ public class PivotUI implements Application, UserInterface {
 
 	private UIService uiService;
 
-	private Frame frame;
-	private BoxPane contentPane;
+	private PivotApplicationFrame frame;
 	private PivotToolBar toolBar;
 	private PivotStatusBar statusBar;
+
+	private BoxPane contentPane;
 
 	// -- Application methods --
 
@@ -76,7 +77,7 @@ public class PivotUI implements Application, UserInterface {
 	public void startup(final Display display,
 		final Map<String, String> properties)
 	{
-		frame = new Frame();
+		frame = new PivotApplicationFrame();
 		toolBar = new PivotToolBar();
 		statusBar = new PivotStatusBar();
 
@@ -138,8 +139,13 @@ public class PivotUI implements Application, UserInterface {
 	}
 
 	@Override
-	public Frame getApplicationFrame() {
+	public PivotApplicationFrame getApplicationFrame() {
 		return frame;
+	}
+
+	@Override
+	public Desktop getDesktop() {
+		return null;
 	}
 
 	@Override

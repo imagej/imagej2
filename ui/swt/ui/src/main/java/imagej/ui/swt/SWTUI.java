@@ -48,9 +48,7 @@ import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import net.miginfocom.swt.MigLayout;
 
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 
 /**
  * An SWT-based user interface for ImageJ.
@@ -62,8 +60,8 @@ public class SWTUI implements UserInterface, Runnable {
 
 	private UIService uiService;
 
-	private Display display;
-	private Shell shell;
+	private SWTDesktop display;
+	private SWTApplicationFrame shell;
 	private SWTToolBar toolBar;
 	private SWTStatusBar statusBar;
 
@@ -73,9 +71,9 @@ public class SWTUI implements UserInterface, Runnable {
 	public void initialize(final UIService service) {
 		uiService = service;
 
-		display = new Display();
+		display = new SWTDesktop();
 
-		shell = new Shell(display, 0);
+		shell = new SWTApplicationFrame(display);
 		shell.setLayout(new MigLayout("wrap 1"));
 		shell.setText("ImageJ");
 		toolBar = new SWTToolBar(display, shell);
@@ -108,8 +106,13 @@ public class SWTUI implements UserInterface, Runnable {
 	}
 
 	@Override
-	public Shell getApplicationFrame() {
+	public SWTApplicationFrame getApplicationFrame() {
 		return shell;
+	}
+
+	@Override
+	public SWTDesktop getDesktop() {
+		return display;
 	}
 
 	@Override
