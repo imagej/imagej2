@@ -12,6 +12,7 @@
 
 package imagej.ui.swing.mdi;
 
+import imagej.ui.Arrangeable;
 import imagej.ui.Desktop;
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +33,7 @@ import java.beans.*;
  * C.L.Gilbert <dnoyeb@users.sourceforge.net>
  * @version $Id: JMDIDesktopPane.java 717 2010-11-21 12:30:57Z rawcoder $
  */
-public class JMDIDesktopPane extends JDesktopPane implements Arrangeable, Desktop {
+public class JMDIDesktopPane extends JDesktopPane implements  Desktop {
     private MDIDesktopManager manager;
     
     public JMDIDesktopPane() {

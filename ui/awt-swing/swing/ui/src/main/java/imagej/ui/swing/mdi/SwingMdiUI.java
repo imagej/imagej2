@@ -51,6 +51,7 @@ import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
+import imagej.ui.UI;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
@@ -87,10 +88,10 @@ import javax.swing.WindowConstants;
  * Swing-based MDI user interface for ImageJ.
  * 
  * @author Grant Harris
- * @author Curtis Rueden
+ * @author Curtis Ruedenca
  * @author Barry DeZonia
  */
-//@UI
+@UI
 public class SwingMdiUI implements UserInterface {
 
 	private static final String README_FILE = "README.txt";

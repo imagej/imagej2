@@ -92,7 +92,7 @@ import javax.swing.WindowConstants;
  * @author Barry DeZonia
  * @author Grant Harris
  */
-@UI
+// @UI
 public class SwingUI implements UserInterface {
 
 	private static final String README_FILE = "README.txt";

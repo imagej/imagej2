@@ -45,6 +45,7 @@ import imagej.display.ImageDisplay;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.plugin.Plugin;
 import imagej.tool.ToolService;
 import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
@@ -67,7 +68,7 @@ import java.util.List;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-//@Plugin(type = ImageDisplay.class)
+@Plugin(type = ImageDisplay.class)
 public class SwingMdiImageDisplay extends AbstractImageDisplay implements
 	AWTDisplay
 {
