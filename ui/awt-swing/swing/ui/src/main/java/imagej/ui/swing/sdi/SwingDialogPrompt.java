@@ -55,9 +55,7 @@ public class SwingDialogPrompt implements DialogPrompt {
 	public SwingDialogPrompt(final String message, final String title,
 		final MessageType messageType, final OptionType optionType)
 	{
-		pane =
-			new JOptionPane(message, msgMap.get(messageType), optionMap
-				.get(optionType));
+		pane =new JOptionPane(message, msgMap.get(messageType), optionMap.get(optionType));
 		// pane.set.Xxxx(...); // Configure
 		dialog = pane.createDialog(null, title);
 	}
