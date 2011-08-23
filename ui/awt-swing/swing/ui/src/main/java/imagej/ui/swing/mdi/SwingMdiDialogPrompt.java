@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+ * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+ * Neither the names of the ImageJDev.org developers nor the
+names of its contributors may be used to endorse or promote products
+derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,16 +30,18 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-*/
-
+ */
 package imagej.ui.swing.mdi;
 
+import imagej.ImageJ;
 import imagej.ui.DialogPrompt;
 
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -49,17 +51,18 @@ import javax.swing.JOptionPane;
  */
 public class SwingMdiDialogPrompt implements DialogPrompt {
 
-	JDialog dialog;
+	JInternalFrame dialog;
 	JOptionPane pane;
 
 	public SwingMdiDialogPrompt(final String message, final String title,
-		final MessageType messageType, final OptionType optionType)
-	{
+			final MessageType messageType, final OptionType optionType) {
 		pane =
-			new JOptionPane(message, msgMap.get(messageType), optionMap
-				.get(optionType));
+				new JOptionPane(message, msgMap.get(messageType), optionMap.get(optionType));
 		// pane.set.Xxxx(...); // Configure
-		//dialog = pane.createInternalFrame(null, title);
+		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		//SwingApplicationFrame f = (SwingApplicationFrame)ui.getApplicationFrame();
+		JMDIDesktopPane desk = (JMDIDesktopPane)ui.getDesktop();
+		dialog = pane.createInternalFrame(desk, title);
 	}
 
 	@Override
@@ -71,42 +74,53 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 	}
 
 	/// Translate DialogPrompt types and results to JOptionPane types and results.
-
 	static final Map<DialogPrompt.MessageType, Integer> msgMap =
-		new HashMap<DialogPrompt.MessageType, Integer>();
+			new HashMap<DialogPrompt.MessageType, Integer>();
 	static final Map<DialogPrompt.OptionType, Integer> optionMap =
-		new HashMap<DialogPrompt.OptionType, Integer>();
+			new HashMap<DialogPrompt.OptionType, Integer>();
 	static final Map<Integer, DialogPrompt.Result> resultMap =
-		new HashMap<Integer, DialogPrompt.Result>();
+			new HashMap<Integer, DialogPrompt.Result>();
 
 	static {
 		msgMap.put(DialogPrompt.MessageType.ERROR_MESSAGE,
-			JOptionPane.ERROR_MESSAGE);
+				JOptionPane.ERROR_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.INFORMATION_MESSAGE,
-			JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.INFORMATION_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.PLAIN_MESSAGE,
-			JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.PLAIN_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.WARNING_MESSAGE,
-			JOptionPane.WARNING_MESSAGE);
+				JOptionPane.WARNING_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.QUESTION_MESSAGE,
-			JOptionPane.QUESTION_MESSAGE);
+				JOptionPane.QUESTION_MESSAGE);
 		//
 		optionMap.put(DialogPrompt.OptionType.DEFAULT_OPTION,
-			JOptionPane.DEFAULT_OPTION);
+				JOptionPane.DEFAULT_OPTION);
 		optionMap.put(DialogPrompt.OptionType.OK_CANCEL_OPTION,
-			JOptionPane.OK_CANCEL_OPTION);
+				JOptionPane.OK_CANCEL_OPTION);
 		optionMap.put(DialogPrompt.OptionType.YES_NO_CANCEL_OPTION,
-			JOptionPane.YES_NO_CANCEL_OPTION);
+				JOptionPane.YES_NO_CANCEL_OPTION);
 		optionMap.put(DialogPrompt.OptionType.YES_NO_OPTION,
-			JOptionPane.YES_NO_OPTION);
+				JOptionPane.YES_NO_OPTION);
 		//
-		resultMap
-			.put(JOptionPane.CANCEL_OPTION, DialogPrompt.Result.CANCEL_OPTION);
-		resultMap
-			.put(JOptionPane.CLOSED_OPTION, DialogPrompt.Result.CLOSED_OPTION);
+		resultMap.put(JOptionPane.CANCEL_OPTION, DialogPrompt.Result.CANCEL_OPTION);
+		resultMap.put(JOptionPane.CLOSED_OPTION, DialogPrompt.Result.CLOSED_OPTION);
 		resultMap.put(JOptionPane.NO_OPTION, DialogPrompt.Result.NO_OPTION);
 		resultMap.put(JOptionPane.OK_OPTION, DialogPrompt.Result.OK_OPTION);
 		resultMap.put(JOptionPane.YES_OPTION, DialogPrompt.Result.YES_OPTION);
 	}
+
+//	public static JInternalFrame getInternalInputDialog(Component parentComponent, 
+//			Object message, String title, int messageType,
+//			Icon icon, Object[] selectionValues, Object initialSelectionValue) {
+//		JOptionPane pane = new JOptionPane(message, messageType, JOptionPane.OK_CANCEL_OPTION, icon, null, null);
+//		Component fo = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+//		pane.setWantsInput(true);
+//		pane.setSelectionValues(selectionValues);
+//		pane.setInitialSelectionValue(initialSelectionValue);
+//		JInternalFrame dialog = pane.createInternalFrame(parentComponent, title);
+//		pane.selectInitialValue();
+//		dialog.setVisible(true);
+//		return dialog;
+//	}
 
 }
