@@ -9,7 +9,7 @@
  * see accompanying license terms.
  */
 
-package imagej.ui.swing.mdi;
+package imagej.ui;
 
 import java.beans.PropertyChangeListener;
 

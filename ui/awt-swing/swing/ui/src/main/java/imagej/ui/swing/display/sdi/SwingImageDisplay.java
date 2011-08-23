@@ -70,7 +70,7 @@ import java.util.List;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-@Plugin(type = ImageDisplay.class)
+//@Plugin(type = ImageDisplay.class)
 public class SwingImageDisplay extends AbstractImageDisplay implements
 	AWTDisplay
 {

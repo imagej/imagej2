@@ -1,5 +1,5 @@
 //
-// Desktop.java
+// TileWindows.java
 //
 
 /*
@@ -32,13 +32,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.ui.swing.mdi;
+
+import imagej.ImageJ;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Plugin;
+import imagej.ui.Arrangeable.Arrangement;
+import imagej.ui.Desktop;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 
 /**
- * Marker interface for MDI Desktop manager
+ * Arranges the Windows in an MDI environment.
  * 
  * @author Grant Harris
  */
-public interface Desktop extends Arrangeable {
-	// marker interface
+@Plugin( menuPath = "Window>Tile Vertical")
+public class WindowsTileVertical implements ImageJPlugin {
+
+	@Override
+	public void run() {
+		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		Desktop desk = ui.getDesktop();
+		desk.setArrangement(Arrangement.VERTICAL);
+	}
+
 }
