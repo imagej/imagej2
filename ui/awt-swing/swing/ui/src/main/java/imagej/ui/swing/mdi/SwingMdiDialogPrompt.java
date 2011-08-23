@@ -38,11 +38,16 @@ import imagej.ui.DialogPrompt;
 
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.swing.SwingApplicationFrame;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 /**
  * TODO
@@ -56,21 +61,18 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 
 	public SwingMdiDialogPrompt(final String message, final String title,
 			final MessageType messageType, final OptionType optionType) {
-		pane =
-				new JOptionPane(message, msgMap.get(messageType), optionMap.get(optionType));
-		// pane.set.Xxxx(...); // Configure
 		final UserInterface ui = ImageJ.get(UIService.class).getUI();
-		//SwingApplicationFrame f = (SwingApplicationFrame)ui.getApplicationFrame();
-		JMDIDesktopPane desk = (JMDIDesktopPane)ui.getDesktop();
-		dialog = pane.createInternalFrame(desk, title);
+		SwingApplicationFrame appFrame = (SwingApplicationFrame) ui.getApplicationFrame();
+		JMDIDesktopPane desk = (JMDIDesktopPane) ui.getDesktop();
+		pane = new JOptionPane(message, msgMap.get(messageType), optionMap.get(optionType));
+		dialog = new ModalInternalFrame(title, appFrame.getRootPane(), desk, pane);
 	}
 
 	@Override
 	public Result prompt() {
 		dialog.setVisible(true);
-		final Object selectedValue = pane.getValue();
-		return resultMap.get(selectedValue);
-
+		Object value = pane.getValue();
+		return resultMap.get(value);
 	}
 
 	/// Translate DialogPrompt types and results to JOptionPane types and results.
@@ -122,5 +124,4 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 //		dialog.setVisible(true);
 //		return dialog;
 //	}
-
 }
