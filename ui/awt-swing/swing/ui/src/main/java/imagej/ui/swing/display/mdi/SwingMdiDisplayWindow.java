@@ -93,14 +93,14 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 			(JMDIDesktopPane) userInterface.getDesktop();
 		setVisible(true);
 		desktop.add(this);
-		if (desktop.getComponentCount() == 1) {
-			try {
-				setMaximum(true);
-			}
-			catch (final PropertyVetoException ex) {
-				// ignore veto
-			}
-		}
+//		if (desktop.getComponentCount() == 1) {
+//			try {
+//				setMaximum(true);
+//			}
+//			catch (final PropertyVetoException ex) {
+//				// ignore veto
+//			}
+//		}
 		toFront();
 		try {
 			setSelected(true);
