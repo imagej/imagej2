@@ -87,7 +87,7 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 			// ignore unsupported output type
 			final String valueClass =
 				value == null ? "null" : value.getClass().getName();
-			Log.debug("Ignoring unsupported output: " + valueClass);
+			Log.warn("Ignoring unsupported output: " + valueClass);
 		}
 	}
 
