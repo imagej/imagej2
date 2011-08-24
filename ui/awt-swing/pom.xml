@@ -17,6 +17,18 @@
 	<name>ImageJ POM: AWT &amp; Swing UIs</name>
 	<description>ImageJ user interface projects for Swing and AWT.</description>
 
+	<!-- NB: for project parent, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
 	<profiles>
 		<profile>
 			<id>all</id>
@@ -47,17 +59,5 @@
 			</modules>
 		</profile>
 	</profiles>
-
-	<!-- NB: for project parent, in case of partial checkout -->
-	<repositories>
-		<repository>
-			<id>imagej.releases</id>
-			<url>http://dev.imagejdev.org/maven2/releases</url>
-		</repository>
-		<repository>
-			<id>imagej.snapshots</id>
-			<url>http://dev.imagejdev.org/maven2/snapshots</url>
-		</repository>
-	</repositories>
 
 </project>
