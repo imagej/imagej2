@@ -78,101 +78,6 @@
 		</dependency>
 	</dependencies>
 
-	<profiles>
-		<profile>
-			<id>awt</id>
-			<dependencies>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-awt</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>headless</id>
-			<dependencies>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-headless</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>pivot</id>
-			<dependencies>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-pivot</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>swing</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>swt</id>
-			<dependencies>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swt</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>deps</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration>
-							<descriptors>
-								<descriptor>src/main/assembly/all.xml</descriptor>
-							</descriptors>
-							<archive>
-								<manifest>
-									<mainClass>imagej.Main</mainClass>
-								</manifest>
-							</archive>
-						</configuration>
-						<executions>
-							<execution>
-								<id>make-assembly</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -237,5 +142,148 @@
 			<url>http://dev.imagejdev.org/maven2/snapshots</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>awt</id>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-awt</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>headless</id>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-headless</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>pivot</id>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-pivot</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>swing</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-base</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-plugins</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-sdi</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-tools</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>swing-mdi</id>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-base</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-mdi</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-plugins</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-tools</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>swt</id>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swt</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>deps</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/all.xml</descriptor>
+							</descriptors>
+							<archive>
+								<manifest>
+									<mainClass>imagej.Main</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+						<executions>
+							<execution>
+								<id>make-assembly</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

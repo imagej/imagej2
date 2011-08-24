@@ -19,7 +19,9 @@
 
 	<modules>
 		<module>ext</module>
-		<module>ui</module>
+		<module>plugins</module>
+		<module>tools</module>
+		<module>ui-base</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
@@ -33,5 +35,30 @@
 			<url>http://dev.imagejdev.org/maven2/snapshots</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>all</id>
+			<modules>
+				<module>ui-mdi</module>
+				<module>ui-sdi</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>swing</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>ui-sdi</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>swing-mdi</id>
+			<modules>
+				<module>ui-mdi</module>
+			</modules>
+		</profile>
+	</profiles>
 
 </project>
