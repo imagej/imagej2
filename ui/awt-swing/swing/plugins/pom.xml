@@ -49,32 +49,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-platform</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-tool</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-common-awt</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui-swing-base</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util-awt</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -87,16 +67,6 @@
 			<artifactId>miglayout</artifactId>
 			<version>${miglayout.version}</version>
 			<classifier>swing</classifier>
-		</dependency>
-		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>${sezpoz.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jhotdraw</groupId>
-			<artifactId>jhotdraw</artifactId>
-			<version>7.6.0</version>
 		</dependency>
 	</dependencies>
 
