@@ -39,6 +39,7 @@ import imagej.event.Events;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.swt.SWTMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -48,6 +49,7 @@ import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import net.miginfocom.swt.MigLayout;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 /**
@@ -60,10 +62,11 @@ public class SWTUI implements UserInterface, Runnable {
 
 	private UIService uiService;
 
-	private SWTDesktop display;
 	private SWTApplicationFrame shell;
 	private SWTToolBar toolBar;
 	private SWTStatusBar statusBar;
+
+	private Display display;
 
 	// -- UserInterface methods --
 
@@ -71,7 +74,7 @@ public class SWTUI implements UserInterface, Runnable {
 	public void initialize(final UIService service) {
 		uiService = service;
 
-		display = new SWTDesktop();
+		display = new Display();
 
 		shell = new SWTApplicationFrame(display);
 		shell.setLayout(new MigLayout("wrap 1"));
@@ -111,8 +114,8 @@ public class SWTUI implements UserInterface, Runnable {
 	}
 
 	@Override
-	public SWTDesktop getDesktop() {
-		return display;
+	public Desktop getDesktop() {
+		return null;
 	}
 
 	@Override

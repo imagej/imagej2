@@ -36,6 +36,7 @@ package imagej.ui.swt;
 
 import imagej.ui.ApplicationFrame;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -45,8 +46,8 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class SWTApplicationFrame extends Shell implements ApplicationFrame {
 
-	public SWTApplicationFrame(final SWTDesktop desktop) {
-		super(desktop, 0);
+	public SWTApplicationFrame(final Display display) {
+		super(display, 0);
 	}
 
 }
