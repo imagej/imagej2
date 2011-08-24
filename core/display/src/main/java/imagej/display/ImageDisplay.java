@@ -34,19 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
-import imagej.ext.plugin.IPlugin;
 
 import java.util.List;
 
 import net.imglib2.EuclideanSpace;
 import net.imglib2.img.Axis;
 import net.imglib2.meta.LabeledAxes;
-import net.imglib2.meta.Named;
 
 /**
- * A display is a special kind of ImageJ plugin for visualizing data.
+ * A image display is a special kind of {@link Display} for visualizing
+ * {@link DataObject}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -93,18 +93,16 @@ public interface ImageDisplay extends LabeledAxes, EuclideanSpace, Display {
 
 	/** Gets the axis currently designated as active. */
 	Axis getActiveAxis();
-	
+
 	/** Sets the axis currently designated as active. */
 	void setActiveAxis(Axis axis);
-	
-	/** Forces the display window to redo its layout	 */
+
+	/** Forces the display window to redo its layout. */
 	void redoWindowLayout();
 
 	/** Gets the image canvas upon which this display's output is painted. */
 	ImageCanvas getImageCanvas();
 
-	///** Forces display to close. */ 
-	//void close();
-
 	List<Axis> getAxes();
+
 }
