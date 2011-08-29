@@ -45,6 +45,8 @@ import net.java.sezpoz.Indexable;
  * Annotation indicating a discoverable user interface.
  *
  * @author Curtis Rueden
+ * @see UserInterface
+ * @see UIService
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
