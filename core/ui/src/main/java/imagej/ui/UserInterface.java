@@ -35,38 +35,36 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 /**
- * An end-user ImageJ application.
- *
+ * An end-user ImageJ application. User interfaces discoverable at runtime must
+ * implement this interface and be annotated with @{@link UI}.
+ * 
  * @author Curtis Rueden
+ * @see UI
+ * @see UIService
  */
 public interface UserInterface {
 
 	void initialize(UIService uiService);
 
-	void processArgs(final String[] args);
-
-	void createMenus();
-
 	UIService getUIService();
 
-	ApplicationFrame getApplicationFrame();
-	
-	/*
-	 * To support MDI Desktop management
-	 */
+	void processArgs(final String[] args);
+
+	/** Desktop for use with multi-document interfaces (MDI). */
 	Desktop getDesktop();
+
+	ApplicationFrame getApplicationFrame();
 
 	ToolBar getToolBar();
 
 	StatusBar getStatusBar();
-	
-	/*
-	 * TODO Adapt this to use TextDisplay...
-	 */
-	
+
+	void createMenus();
+
+	// TODO Adapt this to use TextDisplay...
 	OutputWindow newOutputWindow(String title);
-	
-	DialogPrompt dialogPrompt(String message, String title, 
-			DialogPrompt.MessageType msg, DialogPrompt.OptionType option);
+
+	DialogPrompt dialogPrompt(String message, String title,
+		DialogPrompt.MessageType msg, DialogPrompt.OptionType option);
 
 }
