@@ -37,11 +37,9 @@ package imagej.ui.swing.sdi;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
-import imagej.ui.swing.SwingOutputWindow;
 
 import java.awt.BorderLayout;
 
@@ -56,6 +54,15 @@ import javax.swing.JPanel;
 @UI
 public class SwingUI extends AbstractSwingUI {
 
+	// -- UserInterface methods --
+
+	@Override
+	public DialogPrompt dialogPrompt(final String message, final String title,
+		final MessageType msg, final OptionType option)
+	{
+		return new SwingDialogPrompt(message, title, msg, option);
+	}
+
 	// -- Internal methods --
 
 	@Override
@@ -65,20 +72,6 @@ public class SwingUI extends AbstractSwingUI {
 		appFrame.setContentPane(pane);
 		pane.setLayout(new BorderLayout());
 		appFrame.pack();
-	}
-
-	// -- Helper methods --
-
-	@Override
-	public OutputWindow newOutputWindow(final String title) {
-		return new SwingOutputWindow(title);
-	}
-
-	@Override
-	public DialogPrompt dialogPrompt(final String message, final String title,
-		final MessageType msg, final OptionType option)
-	{
-		return new SwingDialogPrompt(message, title, msg, option);
 	}
 
 }
