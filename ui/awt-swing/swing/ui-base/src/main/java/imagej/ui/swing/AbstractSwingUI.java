@@ -47,7 +47,6 @@ import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUI;
-import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
@@ -101,7 +100,7 @@ public abstract class AbstractSwingUI extends AbstractUI {
 	}
 
 	@Override
-	public OutputWindow newOutputWindow(final String title) {
+	public SwingOutputWindow newOutputWindow(final String title) {
 		return new SwingOutputWindow(title);
 	}
 
