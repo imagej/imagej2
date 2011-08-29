@@ -35,9 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.platform;
 
 /**
- * An interface for configuring a specific deployment platform.
+ * An interface for configuring a specific deployment platform, defined by
+ * criteria such as operation system, machine architecture or Java version.
+ * Platforms discoverable at runtime must implement this interface and be
+ * annotated with @{@link Platform}.
  * 
  * @author Curtis Rueden
+ * @see Platform
+ * @see PlatformService
  */
 public interface PlatformHandler {
 

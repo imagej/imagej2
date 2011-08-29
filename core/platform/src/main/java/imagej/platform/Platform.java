@@ -46,6 +46,8 @@ import net.java.sezpoz.Indexable;
  * particular deployment platform.
  *
  * @author Curtis Rueden
+ * @see PlatformHandler
+ * @see PlatformService
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
