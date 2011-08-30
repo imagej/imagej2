@@ -34,25 +34,30 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
+import imagej.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 
 /**
- * Terminates all running animations.
+ * Terminates running animation of current Display.
  * 
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
-	@Menu(label = "Terminate All Animations") })
-public class TerminateAnimations implements ImageJPlugin {
+	@Menu(label = "Stop Animation") })
+public class StopAnimation implements ImageJPlugin {
 
+	@Parameter
+	ImageDisplay display;
+	
 	@Override
 	public void run() {
-		Animator.terminateAll();
+		Animator.terminateAnimation(display);
 	}
 
 }
