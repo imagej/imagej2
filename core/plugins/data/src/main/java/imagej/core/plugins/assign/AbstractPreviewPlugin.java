@@ -111,7 +111,7 @@ public abstract class AbstractPreviewPlugin
 
 	public abstract ImageDisplay getDisplay();
 	public abstract boolean previewOn();
-	public abstract UnaryOperation<Real> getOperation();
+	public abstract UnaryOperation<Real,Real> getOperation();
 	
 	// -- private helpers --
 	
@@ -216,9 +216,9 @@ public abstract class AbstractPreviewPlugin
 	private void transformData(long[] origin, long[] posOffsets) {
 		RealImageFunction imageFunc =
 			new RealImageFunction(dataset.getImgPlus().getImg());
-		UnaryOperation<Real> op = getOperation();
-		GeneralUnaryFunction<long[], Real> function =
-			new GeneralUnaryFunction<long[], Real>(imageFunc, op);
+		UnaryOperation<Real,Real> op = getOperation();
+		GeneralUnaryFunction<long[], Real, Real> function =
+			new GeneralUnaryFunction<long[], Real, Real>(imageFunc, op);
 		DiscreteNeigh neigh =
 			new DiscreteNeigh(origin, new long[origin.length], posOffsets);
 		RealImageAssignment assigner =

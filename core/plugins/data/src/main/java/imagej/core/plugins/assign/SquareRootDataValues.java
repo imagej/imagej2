@@ -64,7 +64,7 @@ public class SquareRootDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real> op = new RealSqrt();
+		UnaryOperation<Real,Real> op = new RealSqrt();
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}

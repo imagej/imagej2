@@ -65,7 +65,7 @@ public class FillDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real> op = new RealSetConstant(constant);
+		UnaryOperation<Real,Real> op = new RealSetConstant(constant);
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}

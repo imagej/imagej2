@@ -70,7 +70,7 @@ public class DivideDataValuesBy extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real> getOperation() {
+	public UnaryOperation<Real,Real> getOperation() {
 		final double dbzVal =
 			Prefs.getDouble(SettingsKeys.OPTIONS_MISC_DBZ_VALUE,
 				Double.POSITIVE_INFINITY);

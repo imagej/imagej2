@@ -36,7 +36,6 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.ImageDisplay;
 import net.imglib2.Cursor;
@@ -99,7 +98,7 @@ public class AddNoiseToDataValues {
 	public void run() {
 		calcTypeMinAndMax();
 
-		UnaryOperation<Real> op = new RealAddNoise(rangeMin, rangeMax, rangeStdDev);
+		UnaryOperation<Real,Real> op = new RealAddNoise(rangeMin, rangeMax, rangeStdDev);
 
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 

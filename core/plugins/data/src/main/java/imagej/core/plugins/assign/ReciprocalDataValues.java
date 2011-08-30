@@ -67,7 +67,7 @@ public class ReciprocalDataValues implements ImageJPlugin {
 	@Override
 	public void run() {
 		double dbzVal = Prefs.getDouble(SettingsKeys.OPTIONS_MISC_DBZ_VALUE, Double.POSITIVE_INFINITY);
-		UnaryOperation<Real> op = new RealReciprocal(dbzVal);
+		UnaryOperation<Real,Real> op = new RealReciprocal(dbzVal);
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}

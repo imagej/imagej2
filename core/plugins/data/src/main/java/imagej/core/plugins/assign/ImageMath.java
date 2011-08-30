@@ -92,7 +92,7 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- other instance variables --
 
-	private final HashMap<String, BinaryOperation<Real>> operators;
+	private final HashMap<String, BinaryOperation<Real,Real,Real>> operators;
 
 	// -- constructor --
 
@@ -101,7 +101,7 @@ public class ImageMath implements ImageJPlugin {
 	 * avaialable.
 	 */
 	public ImageMath() {
-		operators = new HashMap<String, BinaryOperation<Real>>();
+		operators = new HashMap<String, BinaryOperation<Real,Real,Real>>();
 
 		operators.put("Add", new RealAdd());
 		operators.put("Subtract", new RealSubtract());
@@ -126,13 +126,13 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		final BinaryOperation<Real> binOp = operators.get(operatorName);
+		final BinaryOperation<Real,Real,Real> binOp = operators.get(operatorName);
 		final Function<long[],Real> f1 =
 			new RealImageFunction(input1.getImgPlus().getImg());
 		final Function<long[],Real> f2 =
 			new RealImageFunction(input2.getImgPlus().getImg());
-		final GeneralBinaryFunction<long[],Real> binFunc =
-			new GeneralBinaryFunction<long[],Real>(f1, f2, binOp);
+		final GeneralBinaryFunction<long[],Real,Real,Real> binFunc =
+			new GeneralBinaryFunction<long[],Real,Real,Real>(f1, f2, binOp);
 		output = input1.duplicateBlank();
 		int numDims = output.getImgPlus().numDimensions();
 		long[] posOffs = new long[numDims];

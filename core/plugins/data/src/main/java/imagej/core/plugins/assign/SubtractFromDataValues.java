@@ -71,7 +71,7 @@ public class SubtractFromDataValues extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real> getOperation() {
+	public UnaryOperation<Real,Real> getOperation() {
 		return new RealSubtractConstant(constant);
 	}
 
