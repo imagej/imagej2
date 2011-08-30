@@ -117,8 +117,13 @@ public class Animator implements ImageJPlugin {
 		}
 	}
 	
-	// TODO - make a plugin that calls this
-
+	/** Terminate a single animation. Called from StopAnimation plugin */
+	static void terminateAnimation(ImageDisplay display) {
+		Animation a = ANIMATIONS.get(display);
+		if (a != null) a.stop();
+	}
+	
+	/** Terminate all animations. Called from StopAllAnimations plugin */
 	static void terminateAll() {
 		DisplayService service = ImageJ.get(DisplayService.class);
 		List<Display> displays = service.getDisplays();
