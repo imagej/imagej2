@@ -63,7 +63,7 @@ public class ExpDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real> op = new RealExp();
+		UnaryOperation<Real,Real> op = new RealExp();
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}

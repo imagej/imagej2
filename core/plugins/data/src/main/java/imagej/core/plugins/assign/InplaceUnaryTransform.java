@@ -68,13 +68,13 @@ public class InplaceUnaryTransform {
 	// -- constructor --
 
 	public InplaceUnaryTransform(final ImageDisplay display,
-		final UnaryOperation<Real> operation)
+		final UnaryOperation<Real,Real> operation)
 	{
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
 		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		RealImageFunction f1 = new RealImageFunction(imgPlus.getImg());
-		GeneralUnaryFunction<long[],Real> function =
-			new GeneralUnaryFunction<long[],Real>(f1, operation);
+		GeneralUnaryFunction<long[],Real,Real> function =
+			new GeneralUnaryFunction<long[],Real,Real>(f1, operation);
 		DiscreteNeigh neigh = getNeighborhood(display);
 		assigner = new RealImageAssignment(imgPlus.getImg(), neigh, function);
 	}

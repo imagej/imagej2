@@ -86,7 +86,7 @@ public class InvertDataValues implements ImageJPlugin {
 		}
 		else
 			calcValueRange();
-		UnaryOperation<Real> op = new RealInvert(min, max);
+		UnaryOperation<Real,Real> op = new RealInvert(min, max);
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
