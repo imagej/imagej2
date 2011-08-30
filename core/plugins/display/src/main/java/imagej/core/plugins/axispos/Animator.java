@@ -69,7 +69,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
-	@Menu(label = "Animate", accelerator = "BACK_SLASH") })
+	@Menu(label = "Start Animation", accelerator = "BACK_SLASH") })
 public class Animator implements ImageJPlugin {
 
 	// - parameters - one per Animator instance --
