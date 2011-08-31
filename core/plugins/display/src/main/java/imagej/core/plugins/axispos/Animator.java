@@ -120,7 +120,8 @@ public class Animator implements ImageJPlugin {
 	/** Terminate a single animation. Called from StopAnimation plugin */
 	static void terminateAnimation(ImageDisplay display) {
 		Animation a = ANIMATIONS.get(display);
-		if (a != null) a.stop();
+		if (a != null)
+				a.stop();
 	}
 	
 	/** Terminate all animations. Called from StopAllAnimations plugin */
@@ -129,8 +130,8 @@ public class Animator implements ImageJPlugin {
 		List<Display> displays = service.getDisplays();
 		for (Display d : displays) {
 			Animation a = ANIMATIONS.get(d);
-			if (a == null) continue;
-			a.stop();
+			if (a != null)
+				a.stop();
 		}
 	}
 	
@@ -198,9 +199,8 @@ public class Animator implements ImageJPlugin {
 			@Override
 			public void onEvent(final KyPressedEvent event) {
 				Animation a = ANIMATIONS.get(event.getDisplay());
-				if (a == null) return;
-				if (event.getCode() != KeyEvent.VK_ESCAPE) return;
-				a.stop();
+				if ((a != null) && (event.getCode() == KeyEvent.VK_ESCAPE))
+					a.stop();
 			}
 		};
 		Events.subscribe(KyPressedEvent.class, KEYPRESS_SUBSCRIBER);
@@ -210,8 +210,8 @@ public class Animator implements ImageJPlugin {
 			@Override
 			public void onEvent(final DisplayDeletedEvent event) {
 				Animation a = ANIMATIONS.get(event.getObject());
-				if (a == null) return;
-				a.stop();
+				if (a != null)
+					a.stop();
 			}
 		};
 		Events.subscribe(DisplayDeletedEvent.class, DISPLAY_SUBSCRIBER);
@@ -226,7 +226,8 @@ public class Animator implements ImageJPlugin {
 					ImageJ.get(DisplayService.class).getDisplays(event.getObject());
 				for (ImageDisplay display : displays) {
 					Animation a = ANIMATIONS.get(display);
-					if (a != null) a.stop();
+					if (a != null)
+						a.stop();
 				}
 			}
 		};
