@@ -61,6 +61,7 @@ public class AxisPositionBackward implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		Animator.terminateAnimation(display);
 		AxisUtils.changeCurrentAxisPosition(display, -1, true);
 	}
 
