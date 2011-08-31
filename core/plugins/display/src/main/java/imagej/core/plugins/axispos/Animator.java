@@ -274,7 +274,7 @@ public class Animator implements ImageJPlugin {
 		 * associated with this Animation. Can be called multiple times for
 		 * an Animation via the AnimatorOptionsPlugin indirectly. 
 		 */
-		void initFromOptions() {
+		synchronized void initFromOptions() {
 			AnimatorOptions options = OPTIONS.get(display);
 
 			axis = options.axis;
@@ -342,8 +342,11 @@ public class Animator implements ImageJPlugin {
 		 */
 		@Override
 		public void run() {
+
 			initFromOptions();
+			
 			while (!quitting) {
+				
 				if (paused) {
 					try {
 						Thread.sleep(1000);
@@ -353,49 +356,9 @@ public class Animator implements ImageJPlugin {
 					}
 					continue;
 				}
-				// reached right end
-				if ((increment > 0) && (currPos == last)) {
-					if (!backAndForth) {
-						isRelative = false;
-						delta = first;
-						currPos = first;
-					}
-					else {
-						increment = -increment;
-						isRelative = true;
-						delta = -1;
-						currPos--;
-					}
-				}
-				// reached left end
-				else if ((increment < 0) && (currPos == first)) {
-					if (!backAndForth) {
-						isRelative = false;
-						delta = last;
-						currPos = last;
-					}
-					else {
-						increment = -increment;
-						isRelative = true;
-						delta = +1;
-						currPos++;
-					}
-				}
-				else { // somewhere in the middle
-					isRelative = true;
-					if (increment > 0) {
-						delta = +1;
-						currPos++;
-					}
-					else { // increment < 0
-						delta = -1;
-						currPos--;
-					}
-				}
 
-				Events.publish(
-					new AxisPositionEvent(display, axis, delta, total, isRelative));
-
+				updatePosition();
+				
 				try {
 					Thread.sleep((long) (1000 / fps));
 				}
@@ -403,6 +366,52 @@ public class Animator implements ImageJPlugin {
 					// do nothing
 				}
 			}
+			
+		}
+
+		private synchronized void updatePosition() {
+			// reached right end
+			if ((increment > 0) && (currPos == last)) {
+				if (!backAndForth) {
+					isRelative = false;
+					delta = first;
+					currPos = first;
+				}
+				else {
+					increment = -increment;
+					isRelative = true;
+					delta = -1;
+					currPos--;
+				}
+			}
+			// reached left end
+			else if ((increment < 0) && (currPos == first)) {
+				if (!backAndForth) {
+					isRelative = false;
+					delta = last;
+					currPos = last;
+				}
+				else {
+					increment = -increment;
+					isRelative = true;
+					delta = +1;
+					currPos++;
+				}
+			}
+			else { // somewhere in the middle
+				isRelative = true;
+				if (increment > 0) {
+					delta = +1;
+					currPos++;
+				}
+				else { // increment < 0
+					delta = -1;
+					currPos--;
+				}
+			}
+
+			Events.publish(
+				new AxisPositionEvent(display, axis, delta, total, isRelative));
 		}
 	}
 
