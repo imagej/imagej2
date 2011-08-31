@@ -40,6 +40,9 @@ ij.plugin.Animator("previous")            # Image>Stacks>Prev Slice
 ij.plugin.Animator("set")                 # Image>Stacks>Set Slice
 ij.plugin.StackEditor("add")              # Image>Stacks>Add Slice
 ij.plugin.StackEditor("delete")           # Image>Stacks>Delete Slice
+ij.plugin.Animator("start")               # Image>Stacks>Tools>Start Animation
+ij.plugin.Animator("stop")                # Image>Stacks>Tools>Stop Animation
+ij.plugin.Animator("options")             # Image>Stacks>Tools>Animation Options...
 ij.plugin.filter.Filters("smooth")        # Process>Smooth
 ij.plugin.filter.Filters("sharpen")       # Process>Sharpen
 ij.plugin.filter.Filters("edge")          # Process>Find Edges
