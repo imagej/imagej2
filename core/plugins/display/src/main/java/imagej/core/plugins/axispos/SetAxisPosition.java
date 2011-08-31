@@ -62,6 +62,7 @@ public class SetAxisPosition implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		Animator.terminateAnimation(display);
 		final long newPosition = oneBasedPosition - 1;
 		AxisUtils.changeCurrentAxisPosition(display, newPosition, false);
 	}
