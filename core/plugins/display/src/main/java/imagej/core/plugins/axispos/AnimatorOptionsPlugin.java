@@ -74,6 +74,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	
 	private ImageDisplay currDisplay;
 	private Dataset dataset;
+	
 	String axisName;
 	private long oneBasedFirst;
 	private long oneBasedLast;
@@ -89,13 +90,22 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	 * construct the DynamicPlugin from a Display's Dataset
 	 */
 	public AnimatorOptionsPlugin() {
+		
+		// make sure input is okay
+		
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		
 		currDisplay = displayService.getActiveImageDisplay();
 		if (currDisplay == null) return;
+		
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(currDisplay);
 		if (dataset == null) return;
-		if (dataset.getDims().length <= 2) return;
-		options = Animator.getOptions(currDisplay);  
+		if (dataset.getImgPlus().numDimensions() <= 2) return;
+		
+		options = Animator.getOptions(currDisplay);
+		
+		// axis name field initialization
+		
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
 		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
@@ -106,33 +116,52 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 				choices.add(candidateAxis.getLabel());
 		}
 		name.setChoices(choices);
+		name.setPersisted(false);
 		addInput(name);
 		setInput(NAME_KEY, new String(options.axis.getLabel()));
 
+		// first position field initialization
+		
 		final DefaultModuleItem<Long> firstPos =
 			new DefaultModuleItem<Long>(this, FIRST_POS_KEY, Long.class);
+		firstPos.setPersisted(false);
 		firstPos.setMinimumValue(1L);
-		// TODO - set max somehow based upon dataset's dimension along axis
+		// TODO - can't set max value as it varies based upon the axis the user
+		// selects at dialog run time. Need a callback that can manipulate the
+		// field's max value from chosen axis max.
+		//firstPos.setMaximumValue(new Long(options.total));
 		addInput(firstPos);
 		setInput(FIRST_POS_KEY, new Long(options.first+1));
 
+		// last position field initialization
+		
 		final DefaultModuleItem<Long> lastPos =
 			new DefaultModuleItem<Long>(this, LAST_POS_KEY, Long.class);
+		lastPos.setPersisted(false);
 		lastPos.setMinimumValue(1L);
-		// TODO - set max somehow based upon dataset's dimension along axis
+		// TODO - can't set max value as it varies based upon the axis the user
+		// selects at dialog run time. Need a callback that can manipulate the
+		// field's max value from chosen axis max.
+		//lastPos.setMaximumValue(new Long(options.total));
 		addInput(lastPos);
 		setInput(LAST_POS_KEY, new Long(options.last+1));
 
+		// frames per second field initialization
+		
 		final DefaultModuleItem<Double> framesPerSec =
 			new DefaultModuleItem<Double>(this, FPS_KEY, Double.class);
+		framesPerSec.setPersisted(false);
 		framesPerSec.setMinimumValue(0.1);
 		framesPerSec.setMaximumValue(1000.0);
 		addInput(framesPerSec);
 		setInput(FPS_KEY, new Double(options.fps));
 
-		final DefaultModuleItem<Boolean> bf =
+		// back and forth field initialization
+		
+		final DefaultModuleItem<Boolean> backForthBool =
 			new DefaultModuleItem<Boolean>(this, BACK_FORTH_KEY, Boolean.class);
-		addInput(bf);
+		backForthBool.setPersisted(false);
+		addInput(backForthBool);
 		setInput(BACK_FORTH_KEY, new Boolean(options.backAndForth));
 	}
 
