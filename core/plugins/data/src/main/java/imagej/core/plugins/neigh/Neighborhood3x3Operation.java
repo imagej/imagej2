@@ -37,7 +37,6 @@ package imagej.core.plugins.neigh;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.util.IntRect;
 import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;

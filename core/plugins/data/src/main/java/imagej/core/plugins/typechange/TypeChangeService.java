@@ -38,7 +38,6 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.Dataset;
-import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.ImageDisplay;
 import imagej.display.event.DisplayActivatedEvent;

@@ -36,7 +36,6 @@ package imagej.core.plugins.convolve;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
 import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.OverlayService;
