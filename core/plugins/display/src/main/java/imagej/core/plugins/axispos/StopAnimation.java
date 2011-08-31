@@ -49,7 +49,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
-	@Menu(label = "Stop Animation") })
+	@Menu(label = "Stop Animation", weight = 2) })
 public class StopAnimation implements ImageJPlugin {
 
 	@Parameter

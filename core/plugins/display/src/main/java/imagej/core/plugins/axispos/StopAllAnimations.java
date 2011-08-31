@@ -47,7 +47,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
-	@Menu(label = "Stop All Animations") })
+	@Menu(label = "Stop All Animations", weight = 3) })
 public class StopAllAnimations implements ImageJPlugin {
 
 	@Override
