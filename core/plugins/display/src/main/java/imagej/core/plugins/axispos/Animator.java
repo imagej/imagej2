@@ -97,7 +97,7 @@ public class Animator implements ImageJPlugin {
 
 	// -- package access static methods --
 	
-	/** Called from AnimatorOptionsPlugin */
+	/** Called from AnimatorOptionsPlugin. */
 	static AnimatorOptions getOptions(ImageDisplay display) {
 		AnimatorOptions options = OPTIONS.get(display);
 		if (options == null) {
@@ -107,7 +107,7 @@ public class Animator implements ImageJPlugin {
 		return options;
 	}
 	
-	/** Called from AnimatorOptionsPlugin */
+	/** Called from AnimatorOptionsPlugin. */
 	static void optionsUpdated(ImageDisplay display) {
 		Animation a = ANIMATIONS.get(display);
 		if (a != null) {
@@ -117,14 +117,15 @@ public class Animator implements ImageJPlugin {
 		}
 	}
 	
-	/** Terminate a single animation. Called from StopAnimation plugin */
+	/** Terminate a single animation. Called from StopAnimation plugin
+	 * and various axis position plugins. */
 	static void terminateAnimation(ImageDisplay display) {
 		Animation a = ANIMATIONS.get(display);
 		if (a != null)
 				a.stop();
 	}
 	
-	/** Terminate all animations. Called from StopAllAnimations plugin */
+	/** Terminate all animations. Called from StopAllAnimations plugin. */
 	static void terminateAll() {
 		DisplayService service = ImageJ.get(DisplayService.class);
 		List<Display> displays = service.getDisplays();
