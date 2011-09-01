@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.pivot;
 
 import imagej.ImageJ;
+import imagej.display.TextDisplay;
 import imagej.event.Events;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.pivot.PivotMenuCreator;
@@ -159,7 +160,7 @@ public class PivotUI implements Application, UserInterface {
 	}
 
 	@Override
-	public OutputWindow newOutputWindow(final String title) {
+	public TextDisplay  newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
