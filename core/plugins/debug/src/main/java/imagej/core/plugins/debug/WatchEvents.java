@@ -35,7 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
+import imagej.display.TextDisplay;
 import imagej.display.event.DisplayEvent;
+import imagej.display.event.key.KyEvent;
+import imagej.display.event.mouse.MsButtonEvent;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -53,7 +56,6 @@ import imagej.object.event.ListEvent;
 import imagej.object.event.ObjectEvent;
 import imagej.platform.event.ApplicationEvent;
 import imagej.tool.event.ToolEvent;
-import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 
 import java.text.SimpleDateFormat;
@@ -71,7 +73,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 
 	private EventService eventService;
 
-	private OutputWindow window;
+	private TextDisplay window;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	@SuppressWarnings("unused")
@@ -83,8 +85,14 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 	@Parameter(label = "DisplayEvent")
 	private boolean showDisplay = true;
 
+	@Parameter(label = "MsButtonEvent")
+	private boolean showMsButton = false;
+	
 	@Parameter(label = "MsMovedEvent")
 	private boolean showMsMoved = false;
+
+	@Parameter(label = "KeyEvent")
+	private boolean showKy = false;
 
 	@Parameter(label = "FileEvent")
 	private boolean showFile = true;
@@ -122,6 +130,14 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 
 	public void setShowMsMovedEvents(final boolean show) {
 		showMsMoved = show;
+	}
+	
+	public void setShowMsButtonEvents(final boolean show) {
+		showMsButton = show;
+	}
+	
+	public void setShowKyEvents(final boolean show) {
+		showKy = show;
 	}
 
 	public void setShowFileEvents(final boolean show) {
@@ -161,7 +177,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 	@Override
 	public void run() {
 		window = ImageJ.get(UIService.class).createOutputWindow("Event Watcher");
-		window.setVisible(true);
+		//window.setVisible(true);
 		eventService = ImageJ.get(EventService.class);
 		eventService.subscribeStrongly(ImageJEvent.class, this);
 		// TODO - unsubscribe when the output window is closed
@@ -177,6 +193,8 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 		final boolean okApplication = showApp && evt instanceof ApplicationEvent;
 		final boolean okDisplay = showDisplay && isDisplayEvent;
 		final boolean okMsMoved = showMsMoved && evt instanceof MsMovedEvent;
+		final boolean okMsButton = showMsButton && evt instanceof MsButtonEvent;
+		final boolean okKy = showKy && evt instanceof KyEvent;
 		final boolean okFile = showFile && evt instanceof FileEvent;
 		final boolean okList = showList && evt instanceof ListEvent;
 		final boolean okModule = showModule && evt instanceof ModuleEvent;
@@ -186,7 +204,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 		final boolean okStatus = showStatus && evt instanceof StatusEvent;
 		final boolean okTool = showTool && evt instanceof ToolEvent;
 
-		if (okApplication || okDisplay || okMsMoved || okFile || okList ||
+		if (okApplication || okDisplay || okMsButton || okMsMoved || okKy || okFile || okList ||
 			okModule || okObject || okOptions || okOutput || okStatus || okTool)
 		{
 			showEvent(evt);

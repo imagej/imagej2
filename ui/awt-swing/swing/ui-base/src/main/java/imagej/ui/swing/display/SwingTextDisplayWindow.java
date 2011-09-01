@@ -1,5 +1,5 @@
 //
-// SwingMdiDisplayWindow.java
+// SwingOutputWindow.java
 //
 
 /*
@@ -32,82 +32,57 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.mdi.display;
+package imagej.ui.swing.display;
 
-import imagej.ImageJ;
 import imagej.display.DisplayPanel;
 import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
-import imagej.ui.UIService;
-import imagej.ui.UserInterface;
+import imagej.event.OutputEvent;
+
+
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
+
 import imagej.ui.swing.StaticSwingUtils;
-import imagej.ui.swing.display.SwingDisplayPanel;
-import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
-import imagej.ui.swing.mdi.JMDIDesktopPane;
-
-import java.awt.Dimension;
 import java.awt.HeadlessException;
-import java.beans.PropertyVetoException;
-
-import javax.swing.JInternalFrame;
+import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 /**
- * TODO
+ * Generalized textual output window. Can be subscribed to {@link OutputEvent}s
+ * for global output, e.g. logging.
  * 
  * @author Grant Harris
  */
-public class SwingMdiDisplayWindow extends JInternalFrame implements
-	DisplayWindow
+public class SwingTextDisplayWindow extends JFrame implements DisplayWindow
 {
 
-	SwingDisplayPanel panel;
+	// TODO: add tabular functionality
 
-	public SwingMdiDisplayWindow() throws HeadlessException {
+	public SwingTextDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		setMaximizable(true);
-		setResizable(true);
-		setIconifiable(false);
-		setSize(new Dimension(400, 400));
+		//setSize(700,300);
 		setLocation(StaticSwingUtils.nextFramePosition());
 	}
 
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		if (dispatcher instanceof InternalFrameEventDispatcher) {
-			addInternalFrameListener((InternalFrameEventDispatcher) dispatcher);
+		if (dispatcher instanceof AWTWindowEventDispatcher) {
+			addWindowListener((AWTWindowEventDispatcher) dispatcher);
 		}
 	}
 
 	@Override
-	public void setContent(final DisplayPanel panel) {
-		this.setContentPane((SwingDisplayPanel)panel);
+	public void setContent(DisplayPanel panel) {
+		setContentPane((SwingTextDisplayPanel)panel);
+		pack();
 	}
 
 	@Override
-	public void showDisplay(final boolean visible) {
-		final UserInterface userInterface = ImageJ.get(UIService.class).getUI();
-		final JMDIDesktopPane desktop =
-			(JMDIDesktopPane) userInterface.getDesktop();
-		setVisible(true);
-		desktop.add(this);
-//		if (desktop.getComponentCount() == 1) {
-//			try {
-//				setMaximum(true);
-//			}
-//			catch (final PropertyVetoException ex) {
-//				// ignore veto
-//			}
-//		}
-		toFront();
-		try {
-			setSelected(true);
-		}
-		catch (final PropertyVetoException e) {
-			// Don't care.
-		}
+	public void showDisplay(boolean visible) {
+		this.setVisible(visible);
 	}
+
+
+
 
 }

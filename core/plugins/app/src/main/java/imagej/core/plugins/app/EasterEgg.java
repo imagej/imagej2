@@ -36,6 +36,7 @@ package imagej.core.plugins.app;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.TextDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -65,9 +66,9 @@ public class EasterEgg implements ImageJPlugin {
 		if (min == max) return; // no range
 
 		final UIService uiService = ImageJ.get(UIService.class);
-		final OutputWindow window =
+		final TextDisplay window =
 			uiService.createOutputWindow(dataset.getName() + " *~= SPECIAL =~*");
-		window.setVisible(true);
+		//window.setVisible(true);
 
 		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		final int colCount = (int) imgPlus.dimension(0);

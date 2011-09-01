@@ -98,7 +98,7 @@ public class SwingImageDisplay extends AbstractImageDisplay implements
 		// final EventDispatcher eventDispatcher =new AWTEventDispatcher(this,
 		// false);
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, false));
-		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
+		// imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
 		window.addEventDispatcher(new AWTWindowEventDispatcher(this));
 		subscribeToEvents();
 

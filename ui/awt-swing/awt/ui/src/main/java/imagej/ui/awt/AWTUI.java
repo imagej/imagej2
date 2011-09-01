@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.awt;
 
 import imagej.ImageJ;
+import imagej.display.TextDisplay;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -134,7 +135,7 @@ public class AWTUI implements UserInterface {
 	}
 
 	@Override
-	public OutputWindow newOutputWindow(final String title) {
+	public TextDisplay newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

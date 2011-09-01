@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.mdi;
 
+import imagej.display.TextDisplay;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -41,6 +42,7 @@ import imagej.ui.UI;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 
+import imagej.ui.swing.mdi.display.SwingMdiTextDisplay;
 import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -64,7 +66,7 @@ public class SwingMdiUI extends AbstractSwingUI {
 
 	@Override
 	public Desktop getDesktop() {
-		return desktopPane;
+		return desktopPane; 
 	}
 
 	@Override
@@ -93,6 +95,11 @@ public class SwingMdiUI extends AbstractSwingUI {
 	private Rectangle getWorkSpaceBounds() {
 		return GraphicsEnvironment.getLocalGraphicsEnvironment()
 			.getMaximumWindowBounds();
+	}
+
+	@Override
+	public TextDisplay newOutputWindow(String title) {
+		return new SwingMdiTextDisplay(title);
 	}
 
 }
