@@ -35,8 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.menu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.module.DefaultModuleInfo;
@@ -54,56 +56,57 @@ import org.junit.Test;
  */
 public class ShadowMenuTest {
 
+	/** Tests {@link ShadowMenu#addAll} and getters. */
 	@Test
 	public void testStructure() {
 		final ShadowMenu root = createShadowMenu();
+		checkStructure(root);
+	}
 
-		// check root node
-		final List<ShadowMenu> rootChildren = checkMenu(root, null, -1, 2);
+	/** Tests {@link ShadowMenu#iterator()}. */
+	@Test
+	public void testIterator() {
+		final ShadowMenu root = createShadowMenu();
+		final ShadowMenuIterator iter = root.iterator();
+		checkIter(iter, "Copy"); // Edit>Copy
+		checkIter(iter, "Cut"); // Edit>Cut
+		checkIter(iter, "Paste"); // Edit>Paste
+		checkIter(iter, "Exit"); // File>Exit
+		checkIter(iter, "Image"); // File>New>Image
+		checkIter(iter, "Text Window"); // File>New>Text Window
+		checkIter(iter, "Open"); // File>Open
+		checkIter(iter, "Save"); // File>Save
+		assertFalse(iter.hasNext());
+	}
 
-		// check Edit menu
-		final ShadowMenu edit = rootChildren.get(0);
-		final List<ShadowMenu> editChildren = checkMenu(edit, "Edit", 0, 3);
+	/** Tests {@link ShadowMenu#add}. */
+	@Test
+	public void testAdd() {
+		final ShadowMenu root = createShadowMenu();
+		root.add(createModuleInfo("Edit>Clear"));
 
-		// check File menu
-		final ShadowMenu file = rootChildren.get(1);
-		final List<ShadowMenu> fileChildren = checkMenu(file, "File", 0, 4);
+		// check Edit>Clear node
+		final ShadowMenu edit = root.getChildren().get(0);
+		final ShadowMenu editClear = edit.getChildren().get(0);
+		checkNode(editClear, "Clear", 1, 1, 0);
+	}
 
-		// check Edit>Copy menu item
-		final ShadowMenu editCopy = editChildren.get(0);
-		checkMenu(editCopy, "Copy", 1, 0);
+	/** Tests {@link ShadowMenu#remove}. */
+	@Test
+	public void testRemove() {
+		final ShadowMenu root = createShadowMenu();
 
-		// check Edit>Cut menu item
-		final ShadowMenu editCut = editChildren.get(1);
-		checkMenu(editCut, "Cut", 1, 0);
+		// check that leaf item is properly removed
+		final ModuleInfo createDoc = createModuleInfo("File>New>Document");
+		root.add(createDoc);
+		root.remove(createDoc);
+		checkStructure(root);
 
-		// check Edit>Paste menu item
-		final ShadowMenu editPaste = editChildren.get(2);
-		checkMenu(editPaste, "Paste", 1, 0);
-
-		// check File>Exit menu item
-		final ShadowMenu fileExit = fileChildren.get(0);
-		checkMenu(fileExit, "Exit", 1, 0);
-
-		// check File>New menu
-		final ShadowMenu fileNew = fileChildren.get(1);
-		final List<ShadowMenu> fileNewChildren = checkMenu(fileNew, "New", 1, 2);
-
-		// check File>New>Image menu item
-		final ShadowMenu fileNewImage = fileNewChildren.get(0);
-		checkMenu(fileNewImage, "Image", 2, 0);
-
-		// check File>New>Text Window menu item
-		final ShadowMenu fileNewTextWindow = fileNewChildren.get(1);
-		checkMenu(fileNewTextWindow, "Text Window", 2, 0);
-
-		// check File>Open menu item
-		final ShadowMenu fileOpen = fileChildren.get(2);
-		checkMenu(fileOpen, "Open", 1, 0);
-
-		// check File>Save menu item
-		final ShadowMenu fileSave = fileChildren.get(3);
-		checkMenu(fileSave, "Save", 1, 0);
+		// check that empty submenus are trimmed correctly
+		final ModuleInfo importData = createModuleInfo("File>Import>Data");
+		root.add(importData);
+		root.remove(importData);
+		checkStructure(root);
 	}
 
 	// -- Helper methods --
@@ -132,16 +135,80 @@ public class ShadowMenuTest {
 		return info;
 	}
 
-	private List<ShadowMenu> checkMenu(final ShadowMenu menu, final String name,
-		final int depth, final int childCount)
+	private void checkStructure(final ShadowMenu root) {
+		final List<ShadowMenu> rootChildren = checkNode(root, null, 8, -1, 2);
+
+		final ShadowMenu edit = rootChildren.get(0);
+		final List<ShadowMenu> editChildren = checkNode(edit, "Edit", 3, 0, 3);
+
+		final ShadowMenu file = rootChildren.get(1);
+		final List<ShadowMenu> fileChildren = checkNode(file, "File", 5, 0, 4);
+
+		final ShadowMenu editCopy = editChildren.get(0);
+		checkNode(editCopy, "Copy", 1, 1, 0);
+
+		final ShadowMenu editCut = editChildren.get(1);
+		checkNode(editCut, "Cut", 1, 1, 0);
+
+		final ShadowMenu editPaste = editChildren.get(2);
+		checkNode(editPaste, "Paste", 1, 1, 0);
+
+		final ShadowMenu fileExit = fileChildren.get(0);
+		checkNode(fileExit, "Exit", 1, 1, 0);
+
+		final ShadowMenu fileNew = fileChildren.get(1);
+		final List<ShadowMenu> fileNewChildren = checkNode(fileNew, "New", 2, 1, 2);
+
+		final ShadowMenu fileNewImage = fileNewChildren.get(0);
+		checkNode(fileNewImage, "Image", 1, 2, 0);
+
+		final ShadowMenu fileNewTextWindow = fileNewChildren.get(1);
+		checkNode(fileNewTextWindow, "Text Window", 1, 2, 0);
+
+		final ShadowMenu fileOpen = fileChildren.get(2);
+		checkNode(fileOpen, "Open", 1, 1, 0);
+
+		final ShadowMenu fileSave = fileChildren.get(3);
+		checkNode(fileSave, "Save", 1, 1, 0);
+	}
+
+	private List<ShadowMenu> checkNode(final ShadowMenu node, final String name,
+		final int size, final int depth, final int childCount)
 	{
-		if (name == null) assertNull(menu.getMenuEntry());
-		else assertEquals(menu.getMenuEntry().getName(), name);
-		assertEquals(menu.getMenuDepth(), depth);
-		final List<ShadowMenu> children = menu.getChildren();
+		// check name
+		if (name == null) assertNull(node.getMenuEntry());
+		else assertEquals(name, node.getMenuEntry().getName());
+
+		// check size
+		assertEquals(size, node.size());
+
+		// check depth
+		assertEquals(depth, node.getMenuDepth());
+
+		// check child count
+		final List<ShadowMenu> children = node.getChildren();
 		assertNotNull(children);
-		assertEquals(children.size(), childCount);
+		assertEquals(childCount, children.size());
+
+		// check leaf status and module info
+		final boolean leaf = children.isEmpty();
+		assertEquals(leaf, node.isLeaf());
+		if (leaf) {
+			// leaf nodes retain module info reference
+			assertNotNull(node.getModuleInfo());
+		}
+		else {
+			// non-leaf nodes have no associated module info
+			assertNull(node.getModuleInfo());
+		}
+
 		return children;
+	}
+
+	private void checkIter(final ShadowMenuIterator iter, final String name) {
+		assertTrue(iter.hasNext());
+		final ModuleInfo info = iter.next();
+		assertEquals(name, info.getMenuPath().getLeaf().getName());
 	}
 
 }
