@@ -69,6 +69,7 @@ public class IndexItemInfo<T> extends AbstractUIDetails implements
 	 * @see #getIconPath()
 	 */
 	public URL getIconURL() throws InstantiableException {
+		// See also: imagej.ext.menu.ShadowMenu#getIconURL()
 		final String iconPath = getIconPath();
 		if (iconPath == null || iconPath.isEmpty()) return null;
 		return loadClass().getResource(iconPath);
