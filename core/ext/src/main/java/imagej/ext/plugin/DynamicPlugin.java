@@ -53,16 +53,25 @@ public abstract class DynamicPlugin extends AbstractModule implements
 	private final DynamicPluginInfo info;
 
 	public DynamicPlugin() {
-		super(new DynamicPluginInfo());
-		info = (DynamicPluginInfo) super.getInfo();
-		info.setModule(this);
+		this(new DynamicPluginInfo());
+	}
+
+	public DynamicPlugin(final DynamicPluginInfo info) {
+		super(info);
+		this.info = info;
+		info.setPluginClass(getClass());
 	}
 
 	// -- DynamicPlugin methods --
 
 	/** Adds an input to the list. */
-	public <T> void addInput(final String name, final Class<T> type) {
-		addInput(new DefaultModuleItem<T>(this, name, type));
+	public <T> DefaultModuleItem<T> addInput(final String name,
+		final Class<T> type)
+	{
+		final DefaultModuleItem<T> item =
+			new DefaultModuleItem<T>(this, name, type);
+		addInput(item);
+		return item;
 	}
 
 	/** Adds an input to the list. */
@@ -71,8 +80,13 @@ public abstract class DynamicPlugin extends AbstractModule implements
 	}
 
 	/** Adds an output to the list. */
-	public <T> void addOutput(final String name, final Class<T> type) {
-		addOutput(new DefaultModuleItem<T>(this, name, type));
+	public <T> DefaultModuleItem<T> addOutput(final String name,
+		final Class<T> type)
+	{
+		final DefaultModuleItem<T> item =
+			new DefaultModuleItem<T>(this, name, type);
+		addOutput(item);
+		return item;
 	}
 
 	/** Adds an output to the list. */

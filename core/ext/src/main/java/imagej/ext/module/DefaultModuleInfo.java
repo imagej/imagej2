@@ -1,5 +1,5 @@
 //
-// AbstractModuleInfo.java
+// DefaultModuleInfo.java
 //
 
 /*
@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract superclass of {@link ModuleInfo} implementations.
+ * Default {@link ModuleInfo} implementation.
  * <p>
  * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
  * {@link List}s, internally. The {@link Module} {@link Class} given in the
@@ -57,7 +57,7 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractModuleInfo extends AbstractUIDetails implements
+public class DefaultModuleInfo extends AbstractUIDetails implements
 	ModuleInfo
 {
 
@@ -76,13 +76,19 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 	private final List<ModuleItem<?>> outputList =
 		new ArrayList<ModuleItem<?>>();
 
-	private final Class<? extends Module> moduleClass;
+	private Class<? extends Module> moduleClass;
 
-	public AbstractModuleInfo(final Class<? extends Module> moduleClass) {
+	// -- AbstractModuleInfo methods --
+
+	/** Sets the module class described by this {@link ModuleInfo}. */
+	public void setModuleClass(final Class<? extends Module> moduleClass) {
 		this.moduleClass = moduleClass;
 	}
 
-	// -- AbstractModuleInfo methods --
+	/** Gets the module class described by this {@link ModuleInfo}. */
+	public Class<? extends Module> getModuleClass() {
+		return moduleClass;
+	}
 
 	/** Adds an input to the list. */
 	public void addInput(final ModuleItem<?> input) {
