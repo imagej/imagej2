@@ -1,5 +1,5 @@
 //
-// TerminateAnimations.java
+// StopAnimation.java
 //
 
 /*
@@ -39,7 +39,6 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-
 
 /**
  * Terminates running animation of current Display.

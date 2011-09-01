@@ -36,7 +36,6 @@ package imagej.core.plugins.axispos;
 
 import net.imglib2.img.Axis;
 
-
 /**
  * This class is used to define a structure for passing around
  * a group of parameters related to the {@link Animator} and
