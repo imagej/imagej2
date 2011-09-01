@@ -100,15 +100,14 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		setLabel(plugin.label());
 		setDescription(plugin.description());
 
-		final MenuPath menuPath = new MenuPath();
+		final MenuPath menuPath;
 		final Menu[] menu = plugin.menu();
 		if (menu.length > 0) {
-			parseMenuPath(menuPath, menu);
+			menuPath = parseMenuPath(menu);
 		}
 		else {
 			// parse menuPath attribute
-			final String path = plugin.menuPath();
-			if (!path.isEmpty()) parseMenuPath(menuPath, path);
+			menuPath = new MenuPath(plugin.menuPath());
 		}
 		setMenuPath(menuPath);
 
@@ -129,7 +128,8 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		}
 	}
 
-	private void parseMenuPath(final MenuPath menuPath, final Menu[] menu) {
+	private MenuPath parseMenuPath(final Menu[] menu) {
+		final MenuPath menuPath = new MenuPath();
 		for (int i = 0; i < menu.length; i++) {
 			final String name = menu[i].label();
 			final double weight = menu[i].weight();
@@ -138,13 +138,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 			final String iconPath = menu[i].iconPath();
 			menuPath.add(new MenuEntry(name, weight, mnemonic, accel, iconPath));
 		}
-	}
-
-	private void parseMenuPath(final MenuPath menuPath, final String path) {
-		final String[] menuPathTokens = path.split(">");
-		for (final String token : menuPathTokens) {
-			menuPath.add(new MenuEntry(token.trim()));
-		}
+		return menuPath;
 	}
 
 }
