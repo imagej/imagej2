@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,16 +45,16 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Compiler...", weight = 14) })
 public class OptionsCompiler extends OptionsPlugin {
 
-	@Parameter(label = "Target", choices = {"1.4","1.5","1.6","1.7"},
+	@Parameter(label = "Target", choices = { "1.4", "1.5", "1.6", "1.7" },
 		persistKey = SettingsKeys.OPTIONS_COMPILER_VERSION)
 	private String targetJavaVersion;
-	
+
 	@Parameter(label = "Generate debugging ino (javac -g)",
 		persistKey = SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO)
 	private boolean generateDebugInfo;

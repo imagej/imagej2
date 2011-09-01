@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,10 +45,11 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
+@Plugin(type = OptionsPlugin.class, menu = {
+	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Colors...", weight = 9) })
-public class OptionsColors extends OptionsPlugin  {
+public class OptionsColors extends OptionsPlugin {
 
 	@Parameter(label = "Foreground", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" },

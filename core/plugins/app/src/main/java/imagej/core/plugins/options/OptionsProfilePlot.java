@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,7 +45,7 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Profile Plot Options...", weight = 4) })
@@ -53,19 +54,19 @@ public class OptionsProfilePlot extends OptionsPlugin {
 	@Parameter(label = "Width (pixels)",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_WIDTH)
 	private int width;
-	
+
 	@Parameter(label = "Height (pixels)",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_HEIGHT)
 	private int height;
-	
+
 	@Parameter(label = "Minimum Y",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_MIN_Y)
 	private double minY;
-	
+
 	@Parameter(label = "Maximum Y",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_MAX_Y)
 	private double maxY;
-	
+
 	@Parameter(label = "Fixed y-axis scale",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_FIXED_YSCALE)
 	private boolean yFixedScale;

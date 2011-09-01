@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,16 +45,17 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Wand Tool...", weight = 8) })
 public class OptionsWandTool extends OptionsPlugin {
 
-	@Parameter(label = "Mode", choices = {"Legacy", "4-connected", "8-connected"},
+	@Parameter(label = "Mode",
+		choices = { "Legacy", "4-connected", "8-connected" },
 		persistKey = SettingsKeys.OPTIONS_WAND_MODE)
 	private String mode;
-	
+
 	@Parameter(label = "Tolerance",
 		persistKey = SettingsKeys.OPTIONS_WAND_TOLERANCE)
 	private double tolerance;

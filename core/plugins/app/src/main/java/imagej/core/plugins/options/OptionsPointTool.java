@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,7 +45,7 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Point Tool...", weight = 7) })
@@ -53,25 +54,25 @@ public class OptionsPointTool extends OptionsPlugin {
 	@Parameter(label = "Mark Width (pixels)",
 		persistKey = SettingsKeys.OPTIONS_POINT_MARK_WIDTH)
 	private int markWidth;
-	
+
 	@Parameter(label = "Auto-Measure",
 		persistKey = SettingsKeys.OPTIONS_POINT_AUTO_MEASURE)
 	private boolean autoMeasure;
-	
+
 	@Parameter(label = "Auto-Next Slice",
 		persistKey = SettingsKeys.OPTIONS_POINT_AUTOSLICE)
 	private boolean autoNextSlice;
-	
+
 	@Parameter(label = "Add to ROI Manager",
 		persistKey = SettingsKeys.OPTIONS_POINT_ADD_ROI)
 	private boolean addToRoiMgr;
-	
+
 	@Parameter(label = "Label Points",
 		persistKey = SettingsKeys.OPTIONS_POINT_LABEL_POINTS)
 	private boolean labelPoints;
-	
-	@Parameter(label = "Selection Color", choices =
-	{"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"},
+
+	@Parameter(label = "Selection Color", choices = { "red", "green", "blue",
+		"magenta", "cyan", "yellow", "orange", "black", "white" },
 		persistKey = SettingsKeys.OPTIONS_POINT_SELECTION_COLOR)
 	private String selectionColor;
 

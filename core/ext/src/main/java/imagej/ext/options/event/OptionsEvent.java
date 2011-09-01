@@ -1,5 +1,5 @@
 //
-// OptionsFont.java
+// OptionsEvent.java
 //
 
 /*
@@ -32,38 +32,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.ext.options.event;
 
-import imagej.ext.options.OptionsPlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
+import imagej.event.ImageJEvent;
 
 /**
- * Runs the Edit::Options::Fonts dialog.
+ * Fired when an IJ2 plugin has changed an option. Used by the legacy layer
+ * keep IJ1 and IJ2 options in sync.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Fonts...", weight = 3) })
-public class OptionsFont extends OptionsPlugin {
+public class OptionsEvent extends ImageJEvent {
 
-	@Parameter(label = "Font", // TODO populate from system fonts
-		persistKey = SettingsKeys.OPTIONS_FONT_NAME)
-	private String font;
-
-	@Parameter(label = "Size", min = "8", max = "72",
-		persistKey = SettingsKeys.OPTIONS_FONT_SIZE)
-	private int fontSize;
-
-	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
-		"Bold + Italic" }, persistKey = SettingsKeys.OPTIONS_FONT_STYLE)
-	private String fontStyle;
-
-	@Parameter(label = "Smooth", persistKey = SettingsKeys.OPTIONS_FONT_SMOOTHING)
-	private boolean fontSmooth;
+	public OptionsEvent() {
+		// nothing to do
+	}
 
 }
