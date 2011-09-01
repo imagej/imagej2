@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 import imagej.ImageJ;
+import imagej.display.TextDisplay;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -106,7 +107,7 @@ public abstract class AbstractUI implements UserInterface {
 	// -- Helper methods --
 
 	private void displayReadme() {
-		final OutputWindow out =
+		final TextDisplay out =
 			newOutputWindow("ImageJ v" + ImageJ.VERSION + " - " + README_FILE);
 
 		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
@@ -115,7 +116,7 @@ public abstract class AbstractUI implements UserInterface {
 
 		final String readmeText = loadReadmeFile();
 		out.append(readmeText);
-		out.setVisible(true);
+		//out.setVisible(true);
 	}
 
 	private String loadReadmeFile() {

@@ -37,6 +37,7 @@ package imagej.ui.swing.display;
 import imagej.display.DisplayPanel;
 import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 
@@ -64,11 +65,14 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 		if (dispatcher instanceof AWTWindowEventDispatcher) {
 			addWindowListener((AWTWindowEventDispatcher) dispatcher);
 		}
+		if (dispatcher instanceof AWTKeyEventDispatcher) {
+			addKeyListener((AWTKeyEventDispatcher) dispatcher);
+		}
 	}
 
 	@Override
 	public void setContent(final DisplayPanel panel) {
-		setContentPane((SwingDisplayPanel)panel);
+		setContentPane((SwingDisplayPanel)panel); 
 	}
 
 	@Override

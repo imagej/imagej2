@@ -40,5 +40,9 @@ package imagej.display;
  * @author Grant Harris
  */
 public interface TextDisplay extends Display {
-	// marker interface
+
+	void append(String text);
+
+	void clear();
+	
 }

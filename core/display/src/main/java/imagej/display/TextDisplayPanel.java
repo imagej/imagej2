@@ -39,6 +39,10 @@ package imagej.display;
  *
  * @author Grant Harris
  */
-public class TextDisplayPanel {
-	// TODO
+public interface TextDisplayPanel extends DisplayPanel {
+	
+	void append(String text);
+
+	void clear();	
+
 }

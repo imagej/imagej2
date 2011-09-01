@@ -37,6 +37,7 @@ package imagej.ui;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.display.TextDisplay;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.menu.MenuService;
@@ -137,7 +138,7 @@ public final class UIService extends AbstractService {
 	}
 
 	/** Creates a new output window. */
-	public OutputWindow createOutputWindow(final String title) {
+	public TextDisplay createOutputWindow(final String title) {
 		return userInterface.newOutputWindow(title);
 	}
 
