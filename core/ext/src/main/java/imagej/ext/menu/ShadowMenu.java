@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.menu;
 
 import imagej.ext.MenuEntry;
+import imagej.ext.MenuPath;
 import imagej.ext.menu.event.MenusAddedEvent;
 import imagej.ext.menu.event.MenusRemovedEvent;
 import imagej.ext.menu.event.MenusUpdatedEvent;
@@ -148,12 +149,17 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	/** Gets the {@link MenuEntry} associated with this menu. */
 	public MenuEntry getMenuEntry() {
-		return moduleInfo.getMenuPath().get(menuDepth);
+		if (moduleInfo == null) return null;
+		final MenuPath menuPath = moduleInfo.getMenuPath();
+		if (menuPath == null) return null;
+		return menuPath.get(menuDepth);
 	}
 
 	/** Gets the URL of the icon associated with this menu's {@link MenuEntry}. */
 	public URL getIconURL() {
-		String iconPath = getMenuEntry().getIconPath();
+		final MenuEntry menuEntry = getMenuEntry();
+		if (menuEntry == null) return null;
+		String iconPath = menuEntry.getIconPath();
 		if (iconPath == null || iconPath.isEmpty()) {
 			if (isLeaf()) iconPath = DEFAULT_ICON_PATH;
 			else return null;
@@ -193,9 +199,12 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	public boolean updateAll(final Collection<? extends ModuleInfo> c) {
 		final HashSet<ShadowMenu> menus = new HashSet<ShadowMenu>();
 		for (final ModuleInfo info : c) {
+			System.out.println("==> ShadowMenu.updateAll: info=" + info);//TEMP
 			final ShadowMenu removed = removeInternal(info);
 			if (removed == null) continue; // was not in menu structure
+			System.out.println("==> ShadowMenu.updateAll: removed item: " + removed);//TEMP
 			final ShadowMenu menu = addInternal(info);
+			System.out.println("==> ShadowMenu.updateAll: added item: " + menu);//TEMP
 			if (menu != null) menus.add(menu);
 		}
 		if (menus.isEmpty()) return false;
