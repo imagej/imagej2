@@ -39,6 +39,10 @@ import imagej.display.event.DisplayEvent;
 
 /**
  * An event indicating keyboard activity in a display.
+ * <p>
+ * It is named <code>KyEvent</code> rather than <code>KeyEvent</code> to avoid
+ * name clashes with the <code>java.awt.event.KeyEvent</code> hierarchy.
+ * </p>
  * 
  * @author Curtis Rueden
  */
