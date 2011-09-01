@@ -1,5 +1,5 @@
 //
-// DynamicPlugin.java
+// DefaultModule.java
 //
 
 /*
@@ -32,39 +32,81 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.plugin;
-
-import imagej.ext.module.DefaultModule;
+package imagej.ext.module;
 
 /**
- * A class which can be extended to provide an ImageJ plugin with a variable
- * number of inputs and outputs. This class provides greater configurability,
- * but also greater complexity, than implementing the {@link ImageJPlugin}
- * interface and using only @{@link Parameter} annotations on instance fields.
+ * Default {@link Module} implementation, intended for subclassing.
  * 
  * @author Curtis Rueden
  */
-public abstract class DynamicPlugin extends DefaultModule implements
-	ImageJPlugin
-{
+public class DefaultModule extends AbstractModule {
 
-	private final DynamicPluginInfo info;
+	private final DefaultModuleInfo info;
 
-	public DynamicPlugin() {
-		this(new DynamicPluginInfo());
+	public DefaultModule() {
+		this(new DefaultModuleInfo());
 	}
 
-	public DynamicPlugin(final DynamicPluginInfo info) {
+	public DefaultModule(final DefaultModuleInfo info) {
 		super(info);
 		this.info = info;
-		info.setPluginClass(getClass());
+		info.setModuleClass(getClass());
+	}
+
+	// -- DefaultModule methods --
+
+	/** Adds an input to the list. */
+	public <T> DefaultModuleItem<T> addInput(final String name,
+		final Class<T> type)
+	{
+		final DefaultModuleItem<T> item =
+			new DefaultModuleItem<T>(this, name, type);
+		addInput(item);
+		return item;
+	}
+
+	/** Adds an input to the list. */
+	public void addInput(final ModuleItem<?> input) {
+		getInfo().addInput(input);
+	}
+
+	/** Adds an output to the list. */
+	public <T> DefaultModuleItem<T> addOutput(final String name,
+		final Class<T> type)
+	{
+		final DefaultModuleItem<T> item =
+			new DefaultModuleItem<T>(this, name, type);
+		addOutput(item);
+		return item;
+	}
+
+	/** Adds an output to the list. */
+	public void addOutput(final ModuleItem<?> output) {
+		getInfo().addOutput(output);
+	}
+
+	/** Removes an input from the list. */
+	public void removeInput(final ModuleItem<?> input) {
+		getInfo().removeInput(input);
+	}
+
+	/** Removes an output from the list. */
+	public void removeOutput(final ModuleItem<?> output) {
+		getInfo().removeOutput(output);
 	}
 
 	// -- Module methods --
 
 	@Override
-	public DynamicPluginInfo getInfo() {
+	public DefaultModuleInfo getInfo() {
 		return info;
+	}
+
+	// -- Runnable methods --
+
+	@Override
+	public void run() {
+		// do nothing by default
 	}
 
 }
