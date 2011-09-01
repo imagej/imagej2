@@ -1,5 +1,5 @@
 //
-// TerminateAnimations.java
+// StopAllAnimations.java
 //
 
 /*
@@ -37,7 +37,6 @@ package imagej.core.plugins.axispos;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
-
 
 /**
  * Terminates all running animations.

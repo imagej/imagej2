@@ -1,5 +1,5 @@
 //
-// SwingOutputWindow.java
+// SwingTextDisplayWindow.java
 //
 
 /*
@@ -38,12 +38,11 @@ import imagej.display.DisplayPanel;
 import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
 import imagej.event.OutputEvent;
-
-
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
-
 import imagej.ui.swing.StaticSwingUtils;
+
 import java.awt.HeadlessException;
+
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -53,14 +52,13 @@ import javax.swing.WindowConstants;
  * 
  * @author Grant Harris
  */
-public class SwingTextDisplayWindow extends JFrame implements DisplayWindow
-{
+public class SwingTextDisplayWindow extends JFrame implements DisplayWindow {
 
 	// TODO: add tabular functionality
 
 	public SwingTextDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		//setSize(700,300);
+		// setSize(700,300);
 		setLocation(StaticSwingUtils.nextFramePosition());
 	}
 
@@ -72,17 +70,14 @@ public class SwingTextDisplayWindow extends JFrame implements DisplayWindow
 	}
 
 	@Override
-	public void setContent(DisplayPanel panel) {
-		setContentPane((SwingTextDisplayPanel)panel);
+	public void setContent(final DisplayPanel panel) {
+		setContentPane((SwingTextDisplayPanel) panel);
 		pack();
 	}
 
 	@Override
-	public void showDisplay(boolean visible) {
+	public void showDisplay(final boolean visible) {
 		this.setVisible(visible);
 	}
-
-
-
 
 }

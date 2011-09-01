@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,24 +30,21 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.ui.swing.mdi;
 
 import imagej.ImageJ;
 import imagej.ui.DialogPrompt;
-
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 
 /**
  * TODO
@@ -60,49 +57,54 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 	JOptionPane pane;
 
 	public SwingMdiDialogPrompt(final String message, final String title,
-			final MessageType messageType, final OptionType optionType) {
+		final MessageType messageType, final OptionType optionType)
+	{
 		final UserInterface ui = ImageJ.get(UIService.class).getUI();
-		SwingApplicationFrame appFrame = (SwingApplicationFrame) ui.getApplicationFrame();
-		JMDIDesktopPane desk = (JMDIDesktopPane) ui.getDesktop();
-		pane = new JOptionPane(message, msgMap.get(messageType), optionMap.get(optionType));
+		final SwingApplicationFrame appFrame =
+			(SwingApplicationFrame) ui.getApplicationFrame();
+		final JMDIDesktopPane desk = (JMDIDesktopPane) ui.getDesktop();
+		pane =
+			new JOptionPane(message, msgMap.get(messageType), optionMap
+				.get(optionType));
 		dialog = new ModalInternalFrame(title, appFrame.getRootPane(), desk, pane);
 	}
 
 	@Override
 	public Result prompt() {
 		dialog.setVisible(true);
-		Object value = pane.getValue();
+		final Object value = pane.getValue();
 		return resultMap.get(value);
 	}
 
-	/// Translate DialogPrompt types and results to JOptionPane types and results.
+	// / Translate DialogPrompt types and results to JOptionPane types and
+	// results.
 	static final Map<DialogPrompt.MessageType, Integer> msgMap =
-			new HashMap<DialogPrompt.MessageType, Integer>();
+		new HashMap<DialogPrompt.MessageType, Integer>();
 	static final Map<DialogPrompt.OptionType, Integer> optionMap =
-			new HashMap<DialogPrompt.OptionType, Integer>();
+		new HashMap<DialogPrompt.OptionType, Integer>();
 	static final Map<Integer, DialogPrompt.Result> resultMap =
-			new HashMap<Integer, DialogPrompt.Result>();
+		new HashMap<Integer, DialogPrompt.Result>();
 
 	static {
 		msgMap.put(DialogPrompt.MessageType.ERROR_MESSAGE,
-				JOptionPane.ERROR_MESSAGE);
+			JOptionPane.ERROR_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.INFORMATION_MESSAGE,
-				JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.INFORMATION_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.PLAIN_MESSAGE,
-				JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.PLAIN_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.WARNING_MESSAGE,
-				JOptionPane.WARNING_MESSAGE);
+			JOptionPane.WARNING_MESSAGE);
 		msgMap.put(DialogPrompt.MessageType.QUESTION_MESSAGE,
-				JOptionPane.QUESTION_MESSAGE);
+			JOptionPane.QUESTION_MESSAGE);
 		//
 		optionMap.put(DialogPrompt.OptionType.DEFAULT_OPTION,
-				JOptionPane.DEFAULT_OPTION);
+			JOptionPane.DEFAULT_OPTION);
 		optionMap.put(DialogPrompt.OptionType.OK_CANCEL_OPTION,
-				JOptionPane.OK_CANCEL_OPTION);
+			JOptionPane.OK_CANCEL_OPTION);
 		optionMap.put(DialogPrompt.OptionType.YES_NO_CANCEL_OPTION,
-				JOptionPane.YES_NO_CANCEL_OPTION);
+			JOptionPane.YES_NO_CANCEL_OPTION);
 		optionMap.put(DialogPrompt.OptionType.YES_NO_OPTION,
-				JOptionPane.YES_NO_OPTION);
+			JOptionPane.YES_NO_OPTION);
 		//
 		resultMap.put(JOptionPane.CANCEL_OPTION, DialogPrompt.Result.CANCEL_OPTION);
 		resultMap.put(JOptionPane.CLOSED_OPTION, DialogPrompt.Result.CLOSED_OPTION);

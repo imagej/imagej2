@@ -1,5 +1,5 @@
 //
-// SwingOutputWindow.java
+// SwingMdiTextDisplayWindow.java
 //
 
 /*
@@ -41,7 +41,9 @@ import imagej.event.OutputEvent;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.display.SwingTextDisplayPanel;
 import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
+
 import java.awt.HeadlessException;
+
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
@@ -51,18 +53,19 @@ import javax.swing.WindowConstants;
  * 
  * @author Grant Harris
  */
-public class SwingMdiTextDisplayWindow extends JInternalFrame implements DisplayWindow
+public class SwingMdiTextDisplayWindow extends JInternalFrame implements
+	DisplayWindow
 {
 
 	// TODO: add tabular functionality
 
 	public SwingMdiTextDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setSize(700,300);
+		setSize(700, 300);
 		setLocation(StaticSwingUtils.nextFramePosition());
-		
+
 	}
-	
+
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {
 		if (dispatcher instanceof InternalFrameEventDispatcher) {
@@ -71,16 +74,13 @@ public class SwingMdiTextDisplayWindow extends JInternalFrame implements Display
 	}
 
 	@Override
-	public void setContent(DisplayPanel panel) {
-		setContentPane((SwingTextDisplayPanel)panel);
+	public void setContent(final DisplayPanel panel) {
+		setContentPane((SwingTextDisplayPanel) panel);
 	}
 
 	@Override
-	public void showDisplay(boolean visible) {
+	public void showDisplay(final boolean visible) {
 		this.setVisible(visible);
 	}
-
-
-
 
 }
