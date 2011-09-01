@@ -37,6 +37,8 @@ package imagej.ui.swing;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayPanel;
+import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventService;
@@ -99,11 +101,6 @@ public abstract class AbstractSwingUI extends AbstractUI {
 		getUIService().getEventService().publish(new AppMenusCreatedEvent(menuBar));
 	}
 
-	@Override
-	public SwingOutputWindow newOutputWindow(final String title) {
-		return new SwingOutputWindow(title);
-	}
-
 	// -- Internal methods --
 
 	@Override
@@ -130,9 +127,18 @@ public abstract class AbstractSwingUI extends AbstractUI {
 		appFrame.pack();
 		appFrame.setVisible(true);
 
-		subscribeToEvents();
+		String osName = System.getProperty("os.name").toLowerCase();
+		boolean isMacOs = osName.startsWith("mac os x");
+		if (isMacOs) {
+			subscribeToEvents();
+		}
+		addGlobalKeyListener();
 	}
 
+	void addGlobalKeyListener() {
+		AWTKeyEventDispatcherGlobal globalKey = AWTKeyEventDispatcherGlobal.getInstance();
+	}
+	
 	protected abstract void setupAppFrame();
 
 	/**
