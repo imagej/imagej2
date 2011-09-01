@@ -48,17 +48,18 @@ import java.util.NoSuchElementException;
  */
 public class ShadowMenuIterator implements Iterator<ModuleInfo> {
 
-	private final ShadowMenu rootMenu;
+	private final ShadowMenu node;
 	private final List<ShadowMenuIterator> childIterators;
-	private int index = -1;
+	private int index;
 
-	public ShadowMenuIterator(final ShadowMenu rootMenu) {
-		this.rootMenu = rootMenu;
-		final List<ShadowMenu> children = rootMenu.getChildren();
+	public ShadowMenuIterator(final ShadowMenu node) {
+		this.node = node;
+		final List<ShadowMenu> children = node.getChildren();
 		childIterators = new ArrayList<ShadowMenuIterator>();
 		for (final ShadowMenu child : children) {
 			childIterators.add(new ShadowMenuIterator(child));
 		}
+		index = node.getModuleInfo() == null ? 0 : -1;
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class ShadowMenuIterator implements Iterator<ModuleInfo> {
 		if (!hasNext()) throw new NoSuchElementException();
 		if (index < 0) {
 			index++;
-			return rootMenu.getModuleInfo();
+			return node.getModuleInfo();
 		}
 		final ShadowMenuIterator iter = childIterators.get(index);
 		final ModuleInfo next = iter.next();
