@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.headless;
 
+import imagej.display.TextDisplay;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ui.ApplicationFrame;
@@ -188,7 +189,7 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 	}
 
 	@Override
-	public OutputWindow newOutputWindow(final String title) {
+	public TextDisplay  newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
