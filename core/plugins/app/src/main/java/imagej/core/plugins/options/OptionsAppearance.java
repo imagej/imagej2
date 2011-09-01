@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,31 +45,38 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Appearance...", weight = 10) })
 public class OptionsAppearance extends OptionsPlugin {
 
-	@Parameter(label = "Interpolate zoomed images", persistKey = SettingsKeys.OPTIONS_APPEARANCE_INTERPOLATE_ZOOMED_IMAGES)
+	@Parameter(label = "Interpolate zoomed images",
+		persistKey = SettingsKeys.OPTIONS_APPEARANCE_INTERPOLATE_ZOOMED_IMAGES)
 	private boolean interpZoomedImages;
-	
-	@Parameter(label = "Open images at 100%", persistKey = SettingsKeys.OPTIONS_APPEARANCE_FULL_ZOOMED_IMAGES)
+
+	@Parameter(label = "Open images at 100%",
+		persistKey = SettingsKeys.OPTIONS_APPEARANCE_FULL_ZOOMED_IMAGES)
 	private boolean fullZoomImages;
-	
-	@Parameter(label = "Black canvas", persistKey = SettingsKeys.OPTIONS_APPEARANCE_BLACK_CANVAS)
+
+	@Parameter(label = "Black canvas",
+		persistKey = SettingsKeys.OPTIONS_APPEARANCE_BLACK_CANVAS)
 	private boolean blackCanvas;
-	
-	@Parameter(label = "No image border", persistKey = SettingsKeys.OPTIONS_APPEARANCE_NO_IMAGE_BORDER)
+
+	@Parameter(label = "No image border",
+		persistKey = SettingsKeys.OPTIONS_APPEARANCE_NO_IMAGE_BORDER)
 	private boolean noImageBorder;
-	
-	@Parameter(label = "Use inverting lookup table", persistKey = SettingsKeys.OPTIONS_APPEARANCE_USE_INVERTING_LUT)
+
+	@Parameter(label = "Use inverting lookup table",
+		persistKey = SettingsKeys.OPTIONS_APPEARANCE_USE_INVERTING_LUT)
 	private boolean useInvertingLUT;
-	
-	@Parameter(label = "Antialiased tool icons", persistKey = SettingsKeys.OPTIONS_APPEARANCE_ANTIALIASED_TOOL_ICONS)
+
+	@Parameter(label = "Antialiased tool icons",
+		persistKey = SettingsKeys.OPTIONS_APPEARANCE_ANTIALIASED_TOOL_ICONS)
 	private boolean antialiasedToolIcons;
-	
-	@Parameter(label = "Menu font size (points)", persistKey = SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE)
+
+	@Parameter(label = "Menu font size (points)",
+		persistKey = SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE)
 	private int menuFontSize;
 
 }

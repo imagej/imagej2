@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,7 +45,7 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Input/Output...", weight = 2) })
@@ -53,7 +54,7 @@ public class OptionsInputOutput extends OptionsPlugin {
 	@Parameter(label = "JPEG quality (0-100)",
 		persistKey = SettingsKeys.OPTIONS_IO_JPEG_QUALITY)
 	private int jpegQuality;
-	
+
 	@Parameter(label = "GIF and PNG transparent index",
 		persistKey = SettingsKeys.OPTIONS_IO_TRANSPARENT_INDEX)
 	private int transparentIndex;
@@ -69,13 +70,13 @@ public class OptionsInputOutput extends OptionsPlugin {
 	@Parameter(label = "Save TIFF and raw in Intel byte order",
 		persistKey = SettingsKeys.OPTIONS_IO_SAVE_INTEL)
 	private boolean saveOrderIntel;
-	
+
 	// TODO - in IJ1 these were grouped visually. How is this now done?
-	
+
 	@Parameter(label = "Result Table: Copy column headers",
 		persistKey = SettingsKeys.OPTIONS_IO_COPY_COLUMNS)
 	private boolean copyColumnHeaders;
-	
+
 	@Parameter(label = "Result Table: Copy row numbers",
 		persistKey = SettingsKeys.OPTIONS_IO_COPY_ROWS)
 	private boolean copyRowNumbers;
@@ -83,7 +84,7 @@ public class OptionsInputOutput extends OptionsPlugin {
 	@Parameter(label = "Result Table: Save column headers",
 		persistKey = SettingsKeys.OPTIONS_IO_SAVE_COLUMNS)
 	private boolean saveColumnHeaders;
-	
+
 	@Parameter(label = "Result Table: Save row numbers",
 		persistKey = SettingsKeys.OPTIONS_IO_SAVE_ROWS)
 	private boolean saveRowNumbers;

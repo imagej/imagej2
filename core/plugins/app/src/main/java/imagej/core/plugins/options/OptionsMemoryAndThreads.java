@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,7 +45,7 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Memory & Threads...", weight = 12) })
@@ -53,7 +54,7 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 	@Parameter(label = "Maximum memory (MB)",
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_MAX_MEMORY)
 	private int maxMemory;
-	
+
 	@Parameter(label = "Parallel threads for stacks",
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_STACK_THREADS)
 	private int stackThreads;

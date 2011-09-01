@@ -48,7 +48,7 @@ import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.OptionsEvent;
+import imagej.ext.options.event.OptionsEvent;
 import imagej.legacy.patches.FunctionsMethods;
 import imagej.util.Log;
 

@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,33 +45,29 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Rounded Rect Tool...", weight = 5) })
 public class OptionsRoundedRectangleTool extends OptionsPlugin {
-	
-	@Parameter(label = "Stroke Width", min="1", max = "25",
+
+	@Parameter(label = "Stroke Width", min = "1", max = "25",
 		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_WIDTH)
 	private int strokeWidth;
-	
-	@Parameter(label = "Corner Diameter", min="0", max = "200",
+
+	@Parameter(label = "Corner Diameter", min = "0", max = "200",
 		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER)
 	private int cornerDiameter;
-	
+
 	@Parameter(label = "Stroke Color",
-		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR,
-		choices = { "black", "white", "red", "green", "blue",
-			"cyan", "magenta", "yellow", "gray"
-		}
-	)
+		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, choices = {
+			"black", "white", "red", "green", "blue", "cyan", "magenta", "yellow",
+			"gray" })
 	private String strokeColor;
-	
+
 	@Parameter(label = "Fill Color",
-		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR,
-		choices = { "none", "black", "white", "red", "green", "blue",
-			"cyan", "magenta", "yellow", "gray"
-		}
-	)
+		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, choices = {
+			"none", "black", "white", "red", "green", "blue", "cyan", "magenta",
+			"yellow", "gray" })
 	private String fillColor;
 }

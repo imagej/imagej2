@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,10 +45,11 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
+@Plugin(type = OptionsPlugin.class, menu = {
+	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Arrow Tool...", weight = 6) })
-public class OptionsArrowTool extends OptionsPlugin  {
+public class OptionsArrowTool extends OptionsPlugin {
 
 	@Parameter(label = "Width", min = "1", max = "50",
 		persistKey = SettingsKeys.OPTIONS_ARROW_WIDTH)
@@ -66,8 +68,7 @@ public class OptionsArrowTool extends OptionsPlugin  {
 		"Headless" }, persistKey = SettingsKeys.OPTIONS_ARROW_STYLE)
 	private String arrowStyle;
 
-	@Parameter(label = "Outline",
-		persistKey = SettingsKeys.OPTIONS_ARROW_OUTLINE)
+	@Parameter(label = "Outline", persistKey = SettingsKeys.OPTIONS_ARROW_OUTLINE)
 	private boolean arrowOutline;
 
 	@Parameter(label = "Double headed",

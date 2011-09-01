@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.options;
 
+import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,7 +45,7 @@ import imagej.util.SettingsKeys;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Proxy Settings...", weight = 13) })
@@ -53,9 +54,8 @@ public class OptionsProxy extends OptionsPlugin {
 	@Parameter(label = "Proxy Server",
 		persistKey = SettingsKeys.OPTIONS_PROXY_SERVER)
 	private String proxyServer;
-	
-	@Parameter(label = "Port",
-		persistKey = SettingsKeys.OPTIONS_PROXY_PORT)
+
+	@Parameter(label = "Port", persistKey = SettingsKeys.OPTIONS_PROXY_PORT)
 	private int port;
 
 	@Parameter(label = "Authenticate",

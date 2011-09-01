@@ -1,5 +1,5 @@
 //
-// OptionsEvent.java
+// OptionsService.java
 //
 
 /*
@@ -32,18 +32,71 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event;
+package imagej.ext.options;
+
+import imagej.AbstractService;
+import imagej.ImageJ;
+import imagej.Service;
+import imagej.event.EventService;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Fired when an IJ2 plugin has changed an option. Used by the legacy layer
- * keep IJ1 and IJ2 options in sync.
+ * Service for keeping track of the available options and their settings.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
+ * @see OptionsPlugin
  */
-public class OptionsEvent extends ImageJEvent {
+@Service
+public class OptionsService extends AbstractService {
 
-	public OptionsEvent() {
-		// nothing to do
+	private final EventService eventService;
+	private final PluginService pluginService;
+
+	// -- Constructors --
+
+	public OptionsService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public OptionsService(final ImageJ context, final EventService eventService,
+		final PluginService pluginService)
+	{
+		super(context);
+		this.eventService = eventService;
+		this.pluginService = pluginService;
+	}
+
+	// -- OptionsService methods --
+
+	public EventService getEventService() {
+		return eventService;
+	}
+
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
+	public Map<String, Object> getOptions() {
+		final List<PluginInfo<OptionsPlugin>> optionsPlugins =
+			pluginService.getPluginsOfType(OptionsPlugin.class);
+		return null; // TODO
+	}
+
+	public Object getOption(final String name) {
+		return null; // TODO
+	}
+
+	// -- IService methods --
+
+	@Override
+	public void initialize() {
+		// no action needed
 	}
 
 }
