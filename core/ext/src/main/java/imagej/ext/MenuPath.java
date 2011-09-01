@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A path in a hierarchical menu structure, for use with {@link UIDetails}.
@@ -43,14 +44,35 @@ import java.util.ArrayList;
  */
 public class MenuPath extends ArrayList<MenuEntry> {
 
+	/** The separator between elements of a menu path string. */
+	public static final String PATH_SEPARATOR = ">";
+
 	/** Creates an empty menu path. */
 	public MenuPath() {
 		// default constructor
 	}
 
-	/** Creates a copy of the given menu path. */
-	public MenuPath(final MenuPath menuPath) {
-		addAll(menuPath);
+	/**
+	 * Creates a menu path with the given entries. Passing a {@link MenuPath} as
+	 * the argument will make a copy.
+	 */
+	public MenuPath(final Collection<? extends MenuEntry> menuEntries) {
+		addAll(menuEntries);
+	}
+
+	/**
+	 * Creates a menu path with entries parsed from the given string. Assumes
+	 * "&gt;" as the separator (e.g., "File&gt;New&gt;Image").
+	 * 
+	 * @see #PATH_SEPARATOR
+	 */
+	public MenuPath(final String path) {
+		if (path != null && !path.isEmpty()) {
+			final String[] tokens = path.split(PATH_SEPARATOR);
+			for (final String token : tokens) {
+				add(new MenuEntry(token.trim()));
+			}
+		}
 	}
 
 	/** Gets the final element of the menu path. */
@@ -71,7 +93,7 @@ public class MenuPath extends ArrayList<MenuEntry> {
 		final int last = includeLeaf ? size : size - 1;
 		for (int i = 0; i < last; i++) {
 			final MenuEntry menu = get(i);
-			if (i > 0) sb.append(" > ");
+			if (i > 0) sb.append(" " + PATH_SEPARATOR + " ");
 			sb.append(menu);
 		}
 		return sb.toString();
