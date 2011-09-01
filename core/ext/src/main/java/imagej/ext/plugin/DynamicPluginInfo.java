@@ -37,10 +37,8 @@ package imagej.ext.plugin;
 import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.UIDetails;
-import imagej.ext.module.AbstractModuleInfo;
+import imagej.ext.module.DefaultModuleInfo;
 import imagej.ext.module.DefaultModuleItem;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
 
@@ -53,39 +51,24 @@ import imagej.ext.module.ModuleItem;
  * this class adapts that object, delegating to it for the {@link UIDetails}
  * methods. The plain {@link PluginInfo} cannot be used as-is, however, because
  * we need to override the {@link ModuleInfo} methods as well as provide new
- * functionality such as {@link AbstractModuleInfo#addInput(ModuleItem)}.
+ * functionality such as {@link DefaultModuleInfo#addInput(ModuleItem)}.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public class DynamicPluginInfo extends AbstractModuleInfo {
+public class DynamicPluginInfo extends DefaultModuleInfo {
 
-	private DynamicPlugin module;
 	private PluginModuleInfo<? extends DynamicPlugin> info;
-
-	protected DynamicPluginInfo() {
-		super(null);
-	}
 
 	// -- Internal methods --
 
-	protected void setModule(final DynamicPlugin module) {
-		this.module = module;
+	protected void
+		setPluginClass(final Class<? extends DynamicPlugin> pluginClass)
+	{
+		setModuleClass(pluginClass);
 		final PluginService pluginService = ImageJ.get(PluginService.class);
-		info = pluginService.getRunnablePlugin(module.getClass());
+		info = pluginService.getRunnablePlugin(pluginClass);
 		populateItems();
-	}
-
-	// -- ModuleInfo methods --
-
-	@Override
-	public String getDelegateClassName() {
-		return module.getClass().getName();
-	}
-
-	@Override
-	public Module createModule() throws ModuleException {
-		throw new ModuleException("Unsupported operation");
 	}
 
 	// -- UIDetails methods --
