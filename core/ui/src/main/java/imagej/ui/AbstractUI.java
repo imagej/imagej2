@@ -107,12 +107,12 @@ public abstract class AbstractUI implements UserInterface {
 	// -- Helper methods --
 
 	private void displayReadme() {
-		final TextDisplay out =
-			newOutputWindow("ImageJ v" + ImageJ.VERSION + " - " + README_FILE);
-
 		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
 		if (firstRun != null) return;
 		Prefs.put(getClass(), PREF_FIRST_RUN, false);
+
+		final TextDisplay out =
+			newOutputWindow("ImageJ v" + ImageJ.VERSION + " - " + README_FILE);
 
 		final String readmeText = loadReadmeFile();
 		out.append(readmeText);
