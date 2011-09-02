@@ -89,7 +89,6 @@ public abstract class AbstractPreviewPlugin
 		if (dataset == null) {
 			initialize();
 		} else if (previewOn()) {
-			System.out.println("WTF - who set the dataset?");
 			restoreViewedPlane();
 		}
 		transformDataset();
