@@ -119,7 +119,7 @@ public abstract class AbstractUI implements UserInterface {
 		//out.setVisible(true);
 	}
 
-	private String loadReadmeFile() {
+	private String loadReadmeFile() { 
 		final File baseDir = getBaseDirectory();
 		final File readmeFile = new File(baseDir, README_FILE);
 
