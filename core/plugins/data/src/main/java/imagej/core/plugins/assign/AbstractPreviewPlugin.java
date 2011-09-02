@@ -86,8 +86,12 @@ public abstract class AbstractPreviewPlugin
 	
 	@Override
 	public void run() {
-		if (previewOn())
+		if (dataset == null) {
+			initialize();
+		} else if (previewOn()) {
+			System.out.println("WTF - who set the dataset?");
 			restoreViewedPlane();
+		}
 		transformDataset();
 	}
 
@@ -125,7 +129,6 @@ public abstract class AbstractPreviewPlugin
 	// cause precision loss for long data
 	
 	private void initialize() {
-
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 
