@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing;
+package imagej.ui.common.awt;
 
 import imagej.ImageJ;
 import imagej.display.Display;
