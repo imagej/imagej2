@@ -150,7 +150,7 @@ public class ColorRGB implements Serializable {
 	 */
 	static public ColorRGB fromHTMLColor(String color) {
 		// 4.2.1
-		// The format of an RGB value in hexadecimal notation is a ‘#’ 
+		// The format of an RGB value in hexadecimal notation is a "#" 
 		// immediately followed by either three or six hexadecimal characters. 
 		// The three-digit RGB notation (#rgb) is converted into six-digit form 
 		// (#rrggbb) by replicating digits, not by adding zeros. For example, 
