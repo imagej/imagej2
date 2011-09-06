@@ -61,6 +61,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -90,8 +91,16 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	protected final Map<Axis, Integer> axisPositions =
 		new HashMap<Axis, Integer>();
 
+	//TODO - HACK - to avoid concurrent modification exceptions I need to make 
+	// axisSliders a ConcurrentHashMap instead of a regular HashMap. See bug
+	// #672. The weird part is tracing with print statements you can show that
+	// nobody but the single call to createSliders() is accessing the
+	// axisSliders instance variable. I can find no evidence of a concurrent
+	// access let alone modification. Making hashmap concurrent makes issue go
+	// away.
 	private final Map<Axis, JScrollBar> axisSliders =
-		new HashMap<Axis, JScrollBar>();
+		new ConcurrentHashMap<Axis, JScrollBar>();
+
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
 
 	private EventSubscriber<ZoomEvent> zoomSubscriber;
