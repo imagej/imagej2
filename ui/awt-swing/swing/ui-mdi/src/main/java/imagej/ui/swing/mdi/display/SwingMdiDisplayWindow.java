@@ -110,4 +110,10 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 		}
 	}
 
+	@Override
+	public void close() {
+		this.setVisible(false);
+		this.dispose();
+	}
+
 }

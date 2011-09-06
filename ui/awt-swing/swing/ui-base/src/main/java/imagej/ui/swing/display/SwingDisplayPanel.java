@@ -446,14 +446,13 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	}
 
 	private void closeHelper() {
-		this.getParent().setVisible(false);
 		unsubscribeFromEvents();
 	}
 
 	@Override
 	public void close() {
 		closeHelper();
-		this.window.dispose();
+		window.close();
 	}
 
 }

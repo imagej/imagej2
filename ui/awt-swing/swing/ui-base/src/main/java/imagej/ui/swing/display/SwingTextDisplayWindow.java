@@ -79,5 +79,11 @@ public class SwingTextDisplayWindow extends JFrame implements DisplayWindow {
 	public void showDisplay(final boolean visible) {
 		this.setVisible(visible);
 	}
+	
+	@Override
+	public void close() {
+		this.setVisible(false);
+		this.dispose();
+	}
 
 }

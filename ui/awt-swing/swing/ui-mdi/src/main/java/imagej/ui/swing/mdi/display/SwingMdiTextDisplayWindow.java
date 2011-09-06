@@ -83,4 +83,10 @@ public class SwingMdiTextDisplayWindow extends JInternalFrame implements
 		this.setVisible(visible);
 	}
 
+	@Override
+	public void close() {
+		this.setVisible(false);
+		this.dispose();
+	}
+
 }
