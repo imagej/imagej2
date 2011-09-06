@@ -49,4 +49,5 @@ public interface DisplayWindow {
 	void pack();
 	//void setVisible(boolean visible);
 	void showDisplay(boolean visible);
+	void close();
 }

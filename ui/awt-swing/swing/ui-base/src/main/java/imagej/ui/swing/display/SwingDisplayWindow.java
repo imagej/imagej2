@@ -80,4 +80,12 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 		setVisible(visible);
 	}
 
+	@Override
+	public void close() {
+		setVisible(false);
+		dispose();
+	}
+	
+	
+
 }
