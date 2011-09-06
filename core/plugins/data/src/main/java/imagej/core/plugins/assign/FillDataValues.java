@@ -41,7 +41,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
-import net.imglib2.ops.operation.unary.real.RealSetConstant;
+import net.imglib2.ops.operation.unary.real.RealConstant;
 
 /**
  * Fills an output Dataset with a user defined constant value.
@@ -65,7 +65,7 @@ public class FillDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real,Real> op = new RealSetConstant(constant);
+		UnaryOperation<Real,Real> op = new RealConstant(constant);
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}

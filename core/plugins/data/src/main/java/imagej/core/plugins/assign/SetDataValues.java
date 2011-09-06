@@ -40,7 +40,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
-import net.imglib2.ops.operation.unary.real.RealSetConstant;
+import net.imglib2.ops.operation.unary.real.RealConstant;
 
 /**
  * Fills an output image with a user specified constant value. The dimensions of
@@ -69,7 +69,7 @@ public class SetDataValues extends AbstractPreviewPlugin {
 
 	@Override
 	public UnaryOperation<Real,Real> getOperation() {
-		return new RealSetConstant(constant);
+		return new RealConstant(constant);
 	}
 
 	@Override
