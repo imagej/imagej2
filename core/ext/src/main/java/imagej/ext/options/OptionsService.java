@@ -38,8 +38,13 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
+import imagej.ext.InstantiableException;
+import imagej.ext.module.ModuleException;
+import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.util.Log;
 
 import java.util.List;
 import java.util.Map;
@@ -82,14 +87,38 @@ public class OptionsService extends AbstractService {
 		return pluginService;
 	}
 
-	public Map<String, Object> getOptions() {
-		final List<PluginInfo<OptionsPlugin>> optionsPlugins =
-			pluginService.getPluginsOfType(OptionsPlugin.class);
-		return null; // TODO
+	/** Gets a list of all available options. */
+	public List<OptionsPlugin> getOptions() {
+		return pluginService.createInstances(OptionsPlugin.class);
 	}
 
-	public Object getOption(final String name) {
-		return null; // TODO
+	/** Gets options associated with the given options plugin, or null if none. */
+	public <O extends OptionsPlugin> O getOptions(final Class<O> optionsClass) {
+		return createInstance(getOptionsInfo(optionsClass));
+	}
+
+	/** Gets the option with the given name, from the specified options plugin. */
+	public <O extends OptionsPlugin> Object getOption(
+		final Class<O> optionsClass, final String name)
+	{
+		return getInput(getOptionsInfo(optionsClass), name);
+	}
+
+	/** Gets the option with the given name, from the specified options plugin. */
+	public Object getOption(final String className, final String name) {
+		return getInput(getOptionsInfo(className), name);
+	}
+
+	/** Gets a map of all options from the given options plugin. */
+	public <O extends OptionsPlugin> Map<String, Object> getOptionsMap(
+		final Class<O> optionsClass)
+	{
+		return getInputs(getOptionsInfo(optionsClass));
+	}
+
+	/** Gets a map of all options from the given options plugin. */
+	public Map<String, Object> getOptionsMap(final String className) {
+		return getInputs(getOptionsInfo(className));
 	}
 
 	// -- IService methods --
@@ -97,6 +126,57 @@ public class OptionsService extends AbstractService {
 	@Override
 	public void initialize() {
 		// no action needed
+	}
+
+	// -- Helper methods --
+
+	private <P extends IPlugin> P createInstance(final PluginInfo<P> info) {
+		if (info == null) return null;
+		try {
+			return info.createInstance();
+		}
+		catch (final InstantiableException e) {
+			Log.error("Cannot create plugin: " + info.getClassName());
+		}
+		return null;
+	}
+
+	private <O extends OptionsPlugin> PluginModuleInfo<O> getOptionsInfo(
+		final Class<O> optionsClass)
+	{
+		return pluginService.getRunnablePlugin(optionsClass);
+	}
+
+	private PluginModuleInfo<?> getOptionsInfo(final String className) {
+		final PluginModuleInfo<?> info = pluginService.getRunnablePlugin(className);
+		if (!OptionsPlugin.class.isAssignableFrom(info.getPluginType())) {
+			Log.error("Not an options plugin: " + className);
+			// not an options plugin
+			return null;
+		}
+		return info;
+	}
+
+	private Object getInput(final PluginModuleInfo<?> info, final String name) {
+		if (info == null) return null;
+		try {
+			return info.createModule().getInput(name);
+		}
+		catch (final ModuleException e) {
+			Log.error("Cannot create module: " + info.getClassName());
+		}
+		return null;
+	}
+
+	private Map<String, Object> getInputs(final PluginModuleInfo<?> info) {
+		if (info == null) return null;
+		try {
+			return info.createModule().getInputs();
+		}
+		catch (final ModuleException e) {
+			Log.error("Cannot create module: " + info.getClassName());
+		}
+		return null;
 	}
 
 }
