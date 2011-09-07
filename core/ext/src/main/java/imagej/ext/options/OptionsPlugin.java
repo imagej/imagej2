@@ -36,18 +36,34 @@ package imagej.ext.options;
 
 import imagej.event.Events;
 import imagej.ext.options.event.OptionsEvent;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 
 /**
- * Base class for all options oriented plugins.
+ * Base class for all options-oriented plugins.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public class OptionsPlugin implements ImageJPlugin {
+public class OptionsPlugin implements RunnablePlugin {
+
+	public OptionsPlugin() {
+		load();
+	}
+
+	/** Loads options from persistent storage. */
+	public void load() {
+		// TODO
+	}
+
+	/** Saves options to persistent storage. */
+	public void save() {
+		// TODO
+	}
 
 	@Override
 	public void run() {
-		Events.publish(new OptionsEvent());
+		save();
+		Events.publish(new OptionsEvent(this));
 	}
 
 }
