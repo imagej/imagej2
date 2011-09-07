@@ -37,7 +37,7 @@ package imagej.ext.ui.swing;
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
-import imagej.util.ClassUtils;
+import imagej.util.NumberUtils;
 
 import java.awt.Adjustable;
 import java.awt.Dimension;
@@ -94,7 +94,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		// add spinner widget
 		final Class<?> type = model.getItem().getType();
 		if (model.getValue() == null) {
-			final Number defaultValue = ClassUtils.getDefaultValue(min, max, type);
+			final Number defaultValue = NumberUtils.getDefaultValue(min, max, type);
 			model.setValue(defaultValue);
 		}
 		final Number value = (Number) model.getValue();

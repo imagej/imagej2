@@ -41,6 +41,7 @@ import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleItem;
 import imagej.util.ClassUtils;
 import imagej.util.ColorRGB;
+import imagej.util.NumberUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -172,18 +173,18 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
 
 		final Object itemMin = item.getMinimumValue();
-		Number min = ClassUtils.toNumber(itemMin, saneType);
-		if (min == null) min = ClassUtils.getMinimumNumber(type);
+		Number min = NumberUtils.toNumber(itemMin, saneType);
+		if (min == null) min = NumberUtils.getMinimumNumber(type);
 
 		final Object itemMax = item.getMaximumValue();
-		Number max = ClassUtils.toNumber(itemMax, saneType);
-		if (max == null) max = ClassUtils.getMaximumNumber(type);
+		Number max = NumberUtils.toNumber(itemMax, saneType);
+		if (max == null) max = NumberUtils.getMaximumNumber(type);
 
 		final Object itemStep = item.getStepSize();
-		Number stepSize = ClassUtils.toNumber(itemStep, saneType);
-		if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
+		Number stepSize = NumberUtils.toNumber(itemStep, saneType);
+		if (stepSize == null) stepSize = NumberUtils.toNumber("1", type);
 
-		final Number iValue = clampToRange(initialValue, min, max);
+		final Number iValue = NumberUtils.clampToRange(type, initialValue, min, max);
 		model.setValue(iValue);
 		inputPanel.addNumber(model, min, max, stepSize);
 	}
@@ -249,20 +250,6 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	}
 
 	// -- Helper methods - other --
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Number clampToRange(final Number value, final Number min,
-		final Number max)
-	{
-		if (value == null) return min;
-		final Class<?> type = value.getClass();
-		if (Comparable.class.isAssignableFrom(type)) {
-			final Comparable cValue = (Comparable) value;
-			if (min != null && cValue.compareTo(min) < 0) return min;
-			if (max != null && cValue.compareTo(max) > 0) return max;
-		}
-		return value;
-	}
 
 	/** Saves the value of the given module item to persistent storage. */
 	private <T> void saveValue(final Module module, final ModuleItem<T> item)

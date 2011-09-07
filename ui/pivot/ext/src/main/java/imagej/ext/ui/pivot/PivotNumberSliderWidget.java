@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.WidgetModel;
-import imagej.util.ClassUtils;
+import imagej.util.NumberUtils;
 
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Slider;
@@ -74,7 +74,7 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 	@Override
 	public Number getValue() {
 		final String value = "" + slider.getValue();
-		return ClassUtils.toNumber(value, getModel().getItem().getType());
+		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
 
 	// -- InputWidget methods --

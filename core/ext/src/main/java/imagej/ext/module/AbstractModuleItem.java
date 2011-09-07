@@ -37,6 +37,7 @@ package imagej.ext.module;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
+import imagej.util.NumberUtils;
 import imagej.util.Prefs;
 import imagej.util.StringMaker;
 
@@ -73,7 +74,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		sm.append("widgetStyle", getWidgetStyle(), WidgetStyle.DEFAULT);
 		sm.append("min", getMinimumValue());
 		sm.append("max", getMaximumValue());
-		sm.append("stepSize", getStepSize(), ClassUtils.toNumber("1", getType()));
+		sm.append("stepSize", getStepSize(), NumberUtils.toNumber("1", getType()));
 		sm.append("columnCount", getColumnCount(), 6);
 		sm.append("choices", getChoices());
 		return getName() + ": " + sm.toString();
@@ -173,7 +174,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	@Override
 	public Number getStepSize() {
 		if (!ClassUtils.isNumber(getType())) return null;
-		return ClassUtils.toNumber("1", getType());
+		return NumberUtils.toNumber("1", getType());
 	}
 
 	@Override

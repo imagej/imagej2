@@ -40,6 +40,7 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.util.ClassUtils;
+import imagej.util.NumberUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -137,7 +138,7 @@ public class PluginModuleItem<T> extends AbstractModuleItem<T> {
 	@Override
 	public Number getStepSize() {
 		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
-		return ClassUtils.toNumber(getParameter().stepSize(), saneType);
+		return NumberUtils.toNumber(getParameter().stepSize(), saneType);
 	}
 
 	@Override
