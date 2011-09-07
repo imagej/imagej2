@@ -91,6 +91,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 			slider.addChangeListener(this);
 		}
 
+		// add spinner widget
 		final Class<?> type = model.getItem().getType();
 		if (model.getValue() == null) {
 			final Number defaultValue = ClassUtils.getDefaultValue(min, max, type);
@@ -98,8 +99,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		}
 		final Number value = (Number) model.getValue();
 		final SpinnerNumberModel spinnerModel =
-			new SpinnerNumberModel(value, (Comparable<?>) min, (Comparable<?>) max,
-				stepSize);
+			new SpinnerNumberModelFactory().createModel(value, min, max, stepSize);
 		spinner = new JSpinner(spinnerModel);
 		setToolTip(spinner);
 		add(spinner);
