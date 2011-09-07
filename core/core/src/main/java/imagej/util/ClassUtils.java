@@ -38,8 +38,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 /**
- * Useful methods for working with {@link Class} objects, primitive types and
- * {@link Number}s.
+ * Useful methods for working with {@link Class} objects and primitive types.
  * 
  * @author Curtis Rueden
  */
@@ -247,45 +246,6 @@ public final class ClassUtils {
 			Log.error(e);
 			assert false;
 		}
-	}
-
-	// -- Numbers --
-
-	/**
-	 * Converts the given object to a {@link Number} of the specified type, or
-	 * null if the types are incompatible.
-	 */
-	public static Number toNumber(final Object value, final Class<?> type) {
-		final Object num = convert(value, type);
-		return num == null ? null : cast(num, Number.class);
-	}
-
-	public static Number getMinimumNumber(final Class<?> type) {
-		if (isByte(type)) return Byte.MIN_VALUE;
-		if (isShort(type)) return Short.MIN_VALUE;
-		if (isInteger(type)) return Integer.MIN_VALUE;
-		if (isLong(type)) return Long.MIN_VALUE;
-		if (isFloat(type)) return -Float.MAX_VALUE;
-		if (isDouble(type)) return -Double.MAX_VALUE;
-		return null;
-	}
-
-	public static Number getMaximumNumber(final Class<?> type) {
-		if (isByte(type)) return Byte.MAX_VALUE;
-		if (isShort(type)) return Short.MAX_VALUE;
-		if (isInteger(type)) return Integer.MAX_VALUE;
-		if (isLong(type)) return Long.MAX_VALUE;
-		if (isFloat(type)) return Float.MAX_VALUE;
-		if (isDouble(type)) return Double.MAX_VALUE;
-		return null;
-	}
-
-	public static Number getDefaultValue(final Number min, final Number max,
-		final Class<?> type)
-	{
-		if (min != null) return min;
-		if (max != null) return max;
-		return ClassUtils.toNumber("0", type);
 	}
 
 	// -- Type querying --
