@@ -38,12 +38,9 @@ import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleCanceledException;
 import imagej.ext.module.ModuleException;
-import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
 import imagej.util.ClassUtils;
 import imagej.util.ColorRGB;
-import imagej.util.Log;
-import imagej.util.Prefs;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -83,63 +80,8 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		final ArrayList<WidgetModel> models = new ArrayList<WidgetModel>();
 
 		for (final ModuleItem<?> item : inputs) {
-			final String name = item.getName();
-			final boolean resolved = module.isResolved(name);
-			if (resolved) continue; // skip resolved inputs
-
-			final Class<?> type = item.getType();
-			final WidgetModel model = new WidgetModel(inputPanel, module, item);
-			models.add(model);
-
-			final boolean message = item.getVisibility() == ItemVisibility.MESSAGE;
-			if (message) {
-				addMessage(inputPanel, model);
-				continue;
-			}
-
-			final boolean required = item.isRequired();
-			final boolean persist = item.isPersisted();
-			final String persistKey = item.getPersistKey();
-
-			final Object defaultValue = required ? null : module.getInput(name);
-			final String prefValue =
-				persist ? getPrefValue(module, item, persistKey) : null;
-
-			if (ClassUtils.isNumber(type)) {
-				final Number initialValue =
-					getInitialNumberValue(prefValue, defaultValue, type);
-				addNumber(inputPanel, model, initialValue);
-			}
-			else if (ClassUtils.isText(type)) {
-				final String initialValue =
-					getInitialStringValue(prefValue, defaultValue);
-				addTextField(inputPanel, model, initialValue);
-			}
-			else if (ClassUtils.isBoolean(type)) {
-				final boolean initialValue =
-					getInitialBooleanValue(prefValue, defaultValue);
-				addToggle(inputPanel, model, initialValue);
-			}
-			else if (File.class.isAssignableFrom(type)) {
-				final File initialValue = getInitialFileValue(prefValue, defaultValue);
-				addFile(inputPanel, model, initialValue);
-			}
-			else if (ColorRGB.class.isAssignableFrom(type)) {
-				final ColorRGB initialValue =
-					getInitialColorValue(prefValue, defaultValue);
-				addColor(inputPanel, model, initialValue);
-			}
-			else {
-				final Object initialValue =
-					getInitialObjectValue(prefValue, defaultValue);
-				try {
-					addObject(inputPanel, model, initialValue);
-				}
-				catch (final ModuleException e) {
-					throw new ModuleException("A " + type.getName() +
-						" is required but none exist.", e);
-				}
-			}
+			final WidgetModel model = addInput(inputPanel, module, item);
+			if (model != null) models.add(model);
 		}
 
 		// mark all models as initialized
@@ -159,24 +101,65 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		for (final ModuleItem<?> item : inputs) {
 			final String name = item.getName();
 			module.setResolved(name, true);
-
-			final Object value = module.getInput(name);
-			if (value == null) {
-				if (item.isRequired()) throw new ModuleCanceledException();
-			}
-
-			final boolean persist = item.isPersisted();
-			if (!persist) continue;
-
-			final String persistKey = item.getPersistKey();
-			setPrefValue(module, item, persistKey, value);
+			saveValue(module, item);
 		}
 	}
 
 	// -- Helper methods - input panel population --
 
-	private void
-		addMessage(final InputPanel inputPanel, final WidgetModel model)
+	private <T> WidgetModel addInput(final InputPanel inputPanel,
+		final Module module, final ModuleItem<T> item) throws ModuleException
+	{
+		final String name = item.getName();
+		final boolean resolved = module.isResolved(name);
+		if (resolved) return null; // skip resolved inputs
+
+		final Class<T> type = item.getType();
+		final WidgetModel model = new WidgetModel(inputPanel, module, item);
+
+		final boolean message = item.getVisibility() == ItemVisibility.MESSAGE;
+		if (message) {
+			addMessage(inputPanel, model);
+			return model;
+		}
+
+		final boolean required = item.isRequired();
+
+		final T defaultValue = required ? null : item.getValue(module);
+		final T prefValue = item.loadValue();
+		final T initialValue = getInitialValue(prefValue, defaultValue, type);
+
+		if (ClassUtils.isNumber(type)) {
+			addNumber(inputPanel, model, (Number) initialValue);
+		}
+		else if (ClassUtils.isText(type)) {
+			final String sInitialValue =
+				ClassUtils.convert(initialValue, String.class);
+			addTextField(inputPanel, model, sInitialValue);
+		}
+		else if (ClassUtils.isBoolean(type)) {
+			addToggle(inputPanel, model, (Boolean) initialValue);
+		}
+		else if (File.class.isAssignableFrom(type)) {
+			addFile(inputPanel, model, (File) initialValue);
+		}
+		else if (ColorRGB.class.isAssignableFrom(type)) {
+			addColor(inputPanel, model, (ColorRGB) initialValue);
+		}
+		else {
+			try {
+				addObject(inputPanel, model, initialValue);
+			}
+			catch (final ModuleException e) {
+				throw new ModuleException("A " + type.getSimpleName() +
+					" is required but none exist.", e);
+			}
+		}
+
+		return model;
+	}
+
+	private void addMessage(final InputPanel inputPanel, final WidgetModel model)
 	{
 		inputPanel.addMessage(model.getValue().toString());
 	}
@@ -228,7 +211,7 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	}
 
 	private void addToggle(final InputPanel inputPanel, final WidgetModel model,
-		final Boolean initialValue)
+		final boolean initialValue)
 	{
 		model.setValue(initialValue);
 		inputPanel.addToggle(model);
@@ -257,94 +240,12 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 
 	// -- Helper methods - initial value computation --
 
-	private Number getInitialNumberValue(final String prefValue,
-		final Object defaultValue, final Class<?> type)
+	private <T> T getInitialValue(final Object prefValue,
+		final Object defaultValue, final Class<T> type)
 	{
-		if (prefValue != null) return ClassUtils.toNumber(prefValue, type);
-		if (defaultValue != null) {
-			return ClassUtils.toNumber(defaultValue.toString(), type);
-		}
-		return null;
-	}
-
-	private String getInitialStringValue(final String prefValue,
-		final Object defaultValue)
-	{
-		if (prefValue != null) return prefValue;
-		if (defaultValue != null) return defaultValue.toString();
-		return null;
-	}
-
-	private Boolean getInitialBooleanValue(final String prefValue,
-		final Object defaultValue)
-	{
-		if (prefValue != null) return new Boolean(prefValue);
-		if (defaultValue != null) return new Boolean(defaultValue.toString());
-		return Boolean.FALSE;
-	}
-
-	private File getInitialFileValue(final String prefValue,
-		final Object defaultValue)
-	{
-		if (prefValue != null) return new File(prefValue);
-		if (defaultValue != null) return new File(defaultValue.toString());
-		return null;
-	}
-
-	private ColorRGB getInitialColorValue(final String prefValue,
-		final Object defaultValue)
-	{
-		if (prefValue != null) return new ColorRGB(prefValue);
-		if (defaultValue != null) return new ColorRGB(defaultValue.toString());
-		return null;
-	}
-
-	/**
-	 * @param prefValue Ignored for arbitrary objects, since we have no general
-	 *          way to translate a string back to a particular object type.
-	 */
-	private Object getInitialObjectValue(final String prefValue,
-		final Object defaultValue)
-	{
-		return defaultValue;
-	}
-
-	// -- Helper methods - persistence --
-
-	private String getPrefValue(final Module module, final ModuleItem<?> item,
-		final String persistKey)
-	{
-		String prefValue = null;
-		if (persistKey == null || persistKey.isEmpty()) {
-			final String prefKey = item.getName();
-			final Class<?> prefClass = getPrefClass(module, prefKey);
-			if (prefClass != null) prefValue = Prefs.get(prefClass, prefKey);
-		}
-		else prefValue = Prefs.get(persistKey);
-		return prefValue;
-	}
-
-	private void setPrefValue(final Module module, final ModuleItem<?> item,
-		final String persistKey, final Object value)
-	{
-		if (persistKey == null || persistKey.isEmpty()) {
-			final String prefKey = item.getName();
-			final Class<?> prefClass = getPrefClass(module, prefKey);
-			final String sValue = value == null ? "" : value.toString();
-			if (prefClass != null) Prefs.put(prefClass, prefKey, sValue);
-		}
-		else Prefs.put(persistKey, value.toString());
-	}
-
-	private Class<?> getPrefClass(final Module module, final String prefKey) {
-		final ModuleInfo info = module.getInfo();
-		final String className = info.getDelegateClassName();
-		final Class<?> prefClass = ClassUtils.loadClass(className);
-		if (prefClass == null) {
-			Log.error("Error locating preference '" + prefKey + "' from class " +
-				className);
-		}
-		return prefClass;
+		if (prefValue != null) return ClassUtils.convert(prefValue, type);
+		if (defaultValue != null) return ClassUtils.convert(defaultValue, type);
+		return ClassUtils.getNullValue(type);
 	}
 
 	// -- Helper methods - other --
@@ -357,10 +258,21 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		final Class<?> type = value.getClass();
 		if (Comparable.class.isAssignableFrom(type)) {
 			final Comparable cValue = (Comparable) value;
-			if (cValue.compareTo(min) < 0) return min;
-			if (cValue.compareTo(max) > 0) return max;
+			if (min != null && cValue.compareTo(min) < 0) return min;
+			if (max != null && cValue.compareTo(max) > 0) return max;
 		}
 		return value;
+	}
+
+	/** Saves the value of the given module item to persistent storage. */
+	private <T> void saveValue(final Module module, final ModuleItem<T> item)
+		throws ModuleException
+	{
+		final T value = item.getValue(module);
+		if (value == null) {
+			if (item.isRequired()) throw new ModuleCanceledException();
+		}
+		item.saveValue(value);
 	}
 
 }
