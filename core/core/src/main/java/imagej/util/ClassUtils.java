@@ -55,9 +55,10 @@ public final class ClassUtils {
 	 * Converts the given object to an object of the specified type. The object is
 	 * casted directly if possible, or else a new object is created using the
 	 * destination type's public constructor that takes the original object as
-	 * input. In the case of primitive types, returns an object of the
-	 * corresponding wrapped type. If the destination type does not have an
-	 * appropriate constructor, returns null.
+	 * input (except when converting to {@link String}, which uses the
+	 * {@link Object#toString()} method instead). In the case of primitive types,
+	 * returns an object of the corresponding wrapped type. If the destination
+	 * type does not have an appropriate constructor, returns null.
 	 * 
 	 * @param <T> Type to which the object should be converted.
 	 * @param value The object to convert.
@@ -74,6 +75,7 @@ public final class ClassUtils {
 
 		// special cases for strings
 		if (value instanceof String) {
+			// source type is String
 			final String s = (String) value;
 			if (s.isEmpty()) {
 				// return null for empty strings
@@ -87,6 +89,13 @@ public final class ClassUtils {
 				final T result = (T) c;
 				return result;
 			}
+		}
+		if (saneType == String.class) {
+			// destination type is String; use Object.toString() method
+			final String sValue = value.toString();
+			@SuppressWarnings("unchecked")
+			final T result = (T) sValue;
+			return result;
 		}
 
 		// wrap the original object with one of the new type, using a constructor
