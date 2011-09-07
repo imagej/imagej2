@@ -43,7 +43,12 @@ import java.awt.Adjustable;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.ParsePosition;
 
+import javax.swing.JComponent;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -101,6 +106,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		final SpinnerNumberModel spinnerModel =
 			new SpinnerNumberModelFactory().createModel(value, min, max, stepSize);
 		spinner = new JSpinner(spinnerModel);
+		fixSpinner(type);
 		setToolTip(spinner);
 		add(spinner);
 		limitWidth(200);
@@ -168,6 +174,23 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		if (prefSize.width > maxWidth) {
 			prefSize.width = maxWidth;
 			spinner.setPreferredSize(prefSize);
+		}
+	}
+
+	/**
+	 * Fixes spinners that display {@link BigDecimal} or {@link BigInteger}
+	 * values. This is a HACK to work around the fact that
+	 * {@link DecimalFormat#parse(String, ParsePosition)} uses {@link Double}
+	 * and/or {@link Long} by default, hence losing precision.
+	 */
+	private void fixSpinner(final Class<?> type) {
+		if (BigDecimal.class.isAssignableFrom(type) ||
+			BigInteger.class.isAssignableFrom(type))
+		{
+			final JComponent editor = spinner.getEditor();
+			final JSpinner.NumberEditor numberEditor = (JSpinner.NumberEditor) editor;
+			final DecimalFormat decimalFormat = numberEditor.getFormat();
+			decimalFormat.setParseBigDecimal(true);
 		}
 	}
 
