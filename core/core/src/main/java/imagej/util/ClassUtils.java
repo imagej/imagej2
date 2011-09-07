@@ -196,8 +196,7 @@ public final class ClassUtils {
 	/**
 	 * Gets the specified field of the given class, or null if it does not exist.
 	 */
-	public static Field getField(final String className, final String fieldName)
-	{
+	public static Field getField(final String className, final String fieldName) {
 		final Class<?> c = loadClass(className);
 		if (c == null) return null;
 		try {
