@@ -92,7 +92,11 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		}
 
 		final Class<?> type = model.getItem().getType();
-		final Number value = ClassUtils.getDefaultValue(min, type);
+		if (model.getValue() == null) {
+			final Number defaultValue = ClassUtils.getDefaultValue(min, max, type);
+			model.setValue(defaultValue);
+		}
+		final Number value = (Number) model.getValue();
 		final SpinnerNumberModel spinnerModel =
 			new SpinnerNumberModel(value, (Comparable<?>) min, (Comparable<?>) max,
 				stepSize);
