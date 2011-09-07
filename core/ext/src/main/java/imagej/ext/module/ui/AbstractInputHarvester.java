@@ -36,6 +36,7 @@ package imagej.ext.module.ui;
 
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.Module;
+import imagej.ext.module.ModuleCanceledException;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
@@ -68,7 +69,7 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		if (!inputPanel.hasWidgets()) return; // no inputs left to harvest
 
 		final boolean ok = harvestInputs(inputPanel, module);
-		if (!ok) throw new ModuleException(); // canceled
+		if (!ok) throw new ModuleCanceledException();
 
 		processResults(inputPanel, module);
 	}
@@ -161,7 +162,7 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 
 			final Object value = module.getInput(name);
 			if (value == null) {
-				if (item.isRequired()) throw new ModuleException(); // canceled
+				if (item.isRequired()) throw new ModuleCanceledException();
 			}
 
 			final boolean persist = item.isPersisted();
