@@ -37,6 +37,7 @@ package imagej.ext.module;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
+import imagej.util.Prefs;
 import imagej.util.StringMaker;
 
 import java.lang.reflect.Method;
@@ -98,6 +99,37 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	@Override
 	public String getPersistKey() {
 		return null;
+	}
+
+	@Override
+	public T loadValue() {
+		if (!isPersisted()) return null;
+
+		final String sValue;
+		final String persistKey = getPersistKey();
+		if (persistKey == null || persistKey.isEmpty()) {
+			final Class<?> prefClass = getDelegateClass();
+			final String prefKey = getName();
+			sValue = Prefs.get(prefClass, prefKey);
+		}
+		else sValue = Prefs.get(persistKey);
+
+		return ClassUtils.convert(sValue, getType());
+	}
+
+	@Override
+	public void saveValue(final T value) {
+		if (!isPersisted()) return;
+
+		final String sValue = value == null ? "" : value.toString();
+
+		final String persistKey = getPersistKey();
+		if (persistKey == null || persistKey.isEmpty()) {
+			final Class<?> prefClass = getDelegateClass();
+			final String prefKey = getName();
+			Prefs.put(prefClass, prefKey, sValue);
+		}
+		else Prefs.put(persistKey, sValue);
 	}
 
 	@Override
@@ -196,13 +228,16 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 
 	// -- Helper methods --
 
+	private Class<?> getDelegateClass() {
+		return ClassUtils.loadClass(info.getDelegateClassName());
+	}
+
 	private Method findCallbackMethod() {
 		callbackInitialized = true;
 		final String callback = getCallback();
 		if (callback == null || callback.isEmpty()) return null;
 
-		final String className = info.getDelegateClassName();
-		final Class<?> c = ClassUtils.loadClass(className);
+		final Class<?> c = getDelegateClass();
 		try {
 			// TODO - support inherited callback methods
 			final Method m = c.getDeclaredMethod(callback);
@@ -211,8 +246,8 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		}
 		catch (final Exception e) {
 			// NB: Multiple types of exceptions; simpler to handle them all the same.
-			Log.warn("Cannot find callback method \"" + className + "#" + callback +
-				"\" for module item " + getName(), e);
+			Log.warn("Cannot find callback method \"" + info.getDelegateClassName() +
+				"#" + callback + "\" for module item " + getName(), e);
 		}
 		return null;
 	}

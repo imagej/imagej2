@@ -62,6 +62,12 @@ public interface ModuleItem<T> extends BasicDetails {
 	/** Gets the key to use for saving the value persistently. */
 	String getPersistKey();
 
+	/** Loads the item's persisted value. */
+	T loadValue();
+
+	/** Saves the item's persisted value. */
+	void saveValue(T value);
+
 	/**
 	 * Gets the function that is called whenever this item changes.
 	 * <p>
