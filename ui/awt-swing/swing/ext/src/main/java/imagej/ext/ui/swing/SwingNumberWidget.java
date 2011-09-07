@@ -73,8 +73,8 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		final WidgetStyle style = model.getItem().getWidgetStyle();
 		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
 			scrollBar =
-				new JScrollBar(Adjustable.HORIZONTAL, min.intValue(), 1, min
-					.intValue(), max.intValue() + 1);
+				new JScrollBar(Adjustable.HORIZONTAL, min.intValue(), 1,
+					min.intValue(), max.intValue() + 1);
 			scrollBar.setUnitIncrement(stepSize.intValue());
 			setToolTip(scrollBar);
 			add(scrollBar);

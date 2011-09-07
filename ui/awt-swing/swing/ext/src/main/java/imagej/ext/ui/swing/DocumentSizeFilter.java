@@ -86,6 +86,8 @@ import javax.swing.text.DocumentFilter;
 
 /**
  * A {@link DocumentFilter} that limits maximum number of characters.
+ * 
+ * @author Grant Harris
  */
 public class DocumentSizeFilter extends DocumentFilter {
 
