@@ -35,17 +35,32 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.options.event;
 
 import imagej.event.ImageJEvent;
+import imagej.ext.options.OptionsPlugin;
 
 /**
- * Fired when an IJ2 plugin has changed an option. Used by the legacy layer
- * keep IJ1 and IJ2 options in sync.
+ * Fired when an IJ2 plugin has changed an option. Used by the legacy layer keep
+ * IJ1 and IJ2 options in sync.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 public class OptionsEvent extends ImageJEvent {
 
-	public OptionsEvent() {
-		// nothing to do
+	private OptionsPlugin options;
+
+	public OptionsEvent(final OptionsPlugin options) {
+		this.options = options;
+	}
+
+	public OptionsPlugin getOptions() {
+		return options;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\toptions = " + options;
 	}
 
 }
