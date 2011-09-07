@@ -116,7 +116,7 @@ public class PluginService extends AbstractService {
 				pluginIndex.addAll(plugins);
 			}
 			catch (final InstantiationException e) {
-				Log.warn("Invalid plugin finder: " + item, e);
+				Log.error("Invalid plugin finder: " + item, e);
 			}
 		}
 
@@ -276,7 +276,7 @@ public class PluginService extends AbstractService {
 				list.add(info.createInstance());
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Cannot create plugin: " + info.getClassName());
+				Log.error("Cannot create plugin: " + info.getClassName());
 			}
 		}
 		return list;
