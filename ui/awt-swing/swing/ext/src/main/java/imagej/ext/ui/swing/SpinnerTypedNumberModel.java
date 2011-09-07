@@ -73,6 +73,7 @@ public abstract class SpinnerTypedNumberModel<T extends Number> extends
 	// -- SpinnerTypedNumberModel methods --
 
 	protected abstract T stepUp();
+
 	protected abstract T stepDown();
 
 	// -- SpinnerNumberModel methods --
