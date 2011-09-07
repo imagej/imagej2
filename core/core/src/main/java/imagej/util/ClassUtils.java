@@ -281,11 +281,11 @@ public final class ClassUtils {
 		return null;
 	}
 
-	public static Number getDefaultValue(final Number min, final Class<?> type) {
+	public static Number getDefaultValue(final Number min, final Number max,
+		final Class<?> type)
+	{
 		if (min != null) return min;
-		// TODO: does not work in all cases -- what if max is negative?
-		// Once the module input value management is better,
-		// this method may stop being necessary.
+		if (max != null) return max;
 		return ClassUtils.toNumber("0", type);
 	}
 
