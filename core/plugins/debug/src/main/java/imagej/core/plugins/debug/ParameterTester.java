@@ -46,6 +46,7 @@ import imagej.util.ColorRGB;
 import imagej.util.Log;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -98,8 +99,11 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "Short")
 	private Short oShort;
 
-//@Parameter
+	@Parameter
 	private BigInteger bigInteger;
+
+	@Parameter
+	private BigDecimal bigDecimal;
 
 	@Parameter(label = "char")
 	private char pChar;
@@ -171,13 +175,15 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		Log.info("\tLong = " + oLong);
 		Log.info("\tShort = " + oShort);
 		Log.info("\tBigInteger = " + bigInteger);
+		Log.info("\tBigDecimal = " + bigDecimal);
 
 		Log.info("");
 		Log.info("-- Text --");
 		Log.info("\tchar = " + "'" + pChar + "' [" +
 			Character.getNumericValue(pChar) + "]");
-		Log.info("\tCharacter = " + "'" + oChar + "' [" +
-			Character.getNumericValue(oChar) + "]");
+		final String oCharValue = oChar == null ? "null" :
+			"" + Character.getNumericValue(oChar);
+		Log.info("\tCharacter = " + "'" + oChar + "' [" + oCharValue + "]");
 		Log.info("\tString = " + string);
 
 		Log.info("");
