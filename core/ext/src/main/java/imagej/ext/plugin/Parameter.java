@@ -43,11 +43,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO
+ * An annotation for indicating a field is an input or output parameter. This
+ * annotation is a useful way for plugins to declare their inputs and outputs
+ * simply.
  * 
  * @author Johannes Schindelin
  * @author Grant Harris
  * @author Curtis Rueden
+ * @see PluginModuleInfo
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
@@ -70,19 +73,19 @@ public @interface Parameter {
 	 * <li>NORMAL: parameter is included in the history for purposes of data
 	 * provenance, and included as a parameter when recording scripts.</li>
 	 * <li>TRANSIENT: parameter is excluded from the history for the purposes of
-	 * data provenance, but still included as a parameter when recording
-	 * scripts.</li>
+	 * data provenance, but still included as a parameter when recording scripts.</li>
 	 * <li>INVISIBLE: parameter is excluded from the history for the purposes of
 	 * data provenance, and also excluded as a parameter when recording scripts.
 	 * This option should only be used for parameters with no effect on the final
 	 * output, such as a "verbose" flag.</li>
-	 * <li>MESSAGE: parameter value is intended as a message only, not editable
-	 * by the user nor included as an input or output parameter.</li>
+	 * <li>MESSAGE: parameter value is intended as a message only, not editable by
+	 * the user nor included as an input or output parameter.</li>
 	 * </ul>
 	 */
 	// NB: We use the fully qualified name to work around a javac bug:
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
-	// See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
+	// See:
+	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
 	ItemVisibility visibility() default imagej.ext.module.ItemVisibility.NORMAL;
 
 	/** Defines whether the parameter value must be specified (i.e., no default). */
@@ -97,9 +100,9 @@ public @interface Parameter {
 	/**
 	 * Defines a function that is called whenever this parameter changes.
 	 * <p>
-	 * This mechanism enables interdependent parameters of various types.
-	 * For example, two int parameters "width" and "height" could update each
-	 * other when another boolean "Preserve aspect ratio" flag is set.
+	 * This mechanism enables interdependent parameters of various types. For
+	 * example, two int parameters "width" and "height" could update each other
+	 * when another boolean "Preserve aspect ratio" flag is set.
 	 * </p>
 	 */
 	String callback() default "";
@@ -107,7 +110,8 @@ public @interface Parameter {
 	/** Defines the preferred widget style. */
 	// NB: We use the fully qualified name to work around a javac bug:
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
-	// See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
+	// See:
+	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
 	WidgetStyle style() default imagej.ext.module.ui.WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
