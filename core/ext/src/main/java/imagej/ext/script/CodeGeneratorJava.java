@@ -41,59 +41,57 @@ package imagej.ext.script;
  */
 public class CodeGeneratorJava implements CodeGenerator {
 
-		StringBuilder sb = new StringBuilder();
+	StringBuilder sb = new StringBuilder();
 
 	@Override
-		public String getResult() {
-			return sb.toString();
-		}
-
-	@Override
-		public void invokeStatementBegin() {
-			sb.append("invoke(");
-		}
-
-	@Override
-		public void addModuleCalled(String moduleCalled) {
-			sb.append("\"");
-			sb.append(moduleCalled);
-			sb.append("\"");
-		}
-
-	@Override
-		public void addArgDelimiter() {
-			sb.append(", ");
-		}
-
-	@Override
-		public  void addArgument(ParameterObject parameterObject) {
-			StringBuilder sb1 = new StringBuilder();
-			//Class<?> type = parameterObject.type;
-			//String name = parameterObject.param;
-			Object value = parameterObject.value;
-			if(value instanceof String) {
-					sb1.append("\"");
-					sb1.append(parameterObject.value.toString());
-					sb1.append("\"");
-			}
-			else if(value instanceof Boolean) {
-				if((Boolean)value)
-					sb1.append("true");
-				else 
-					sb1.append("false");
-			} else
-				sb1.append(parameterObject.value.toString());
-			sb.append(sb1.toString());
-		}
-
-	@Override
-		public  void invokeStatementEnd() {
-			sb.append(");");
-		}
-
-	@Override
-		public  void statementTerminate() {
-			sb.append("\n");
-		}
-
+	public String getResult() {
+		return sb.toString();
 	}
+
+	@Override
+	public void invokeStatementBegin() {
+		sb.append("invoke(");
+	}
+
+	@Override
+	public void addModuleCalled(final String moduleCalled) {
+		sb.append("\"");
+		sb.append(moduleCalled);
+		sb.append("\"");
+	}
+
+	@Override
+	public void addArgDelimiter() {
+		sb.append(", ");
+	}
+
+	@Override
+	public void addArgument(final ParameterObject parameterObject) {
+		final StringBuilder sb1 = new StringBuilder();
+		// Class<?> type = parameterObject.type;
+		// String name = parameterObject.param;
+		final Object value = parameterObject.value;
+		if (value instanceof String) {
+			sb1.append("\"");
+			sb1.append(parameterObject.value.toString());
+			sb1.append("\"");
+		}
+		else if (value instanceof Boolean) {
+			if ((Boolean) value) sb1.append("true");
+			else sb1.append("false");
+		}
+		else sb1.append(parameterObject.value.toString());
+		sb.append(sb1.toString());
+	}
+
+	@Override
+	public void invokeStatementEnd() {
+		sb.append(");");
+	}
+
+	@Override
+	public void statementTerminate() {
+		sb.append("\n");
+	}
+
+}
