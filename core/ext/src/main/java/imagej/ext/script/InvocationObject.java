@@ -43,17 +43,18 @@ import java.util.ArrayList;
  */
 public class InvocationObject {
 
-		public String moduleCalled;
-		public ArrayList<ParameterObject> parameterObjects = new ArrayList<ParameterObject>();
+	public String moduleCalled;
+	public ArrayList<ParameterObject> parameterObjects =
+		new ArrayList<ParameterObject>();
 
-		public InvocationObject(String moduleCalled) {
-			this.moduleCalled = moduleCalled;
-		}
-
-		public void addParameter(String param,
-				Class<?> type,
-				Object value) {
-			parameterObjects.add(new ParameterObject(param, type, value));
-		}
-
+	public InvocationObject(final String moduleCalled) {
+		this.moduleCalled = moduleCalled;
 	}
+
+	public void addParameter(final String param, final Class<?> type,
+		final Object value)
+	{
+		parameterObjects.add(new ParameterObject(param, type, value));
+	}
+
+}
