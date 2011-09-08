@@ -214,6 +214,7 @@ public final class ClassUtils {
 	public static Object getValue(final Field field, final Object instance) {
 		if (instance == null) return null;
 		try {
+			field.setAccessible(true);
 			return field.get(instance);
 		}
 		catch (final IllegalArgumentException e) {
