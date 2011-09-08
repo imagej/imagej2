@@ -77,6 +77,7 @@ public final class ClassUtils {
 			// source type is String
 			final String s = (String) value;
 			if (s.isEmpty()) {
+				// TODO - only do this for primitive types? or types w/o string ctor?
 				// return null for empty strings
 				return getNullValue(type);
 			}
