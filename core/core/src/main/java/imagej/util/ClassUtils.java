@@ -182,6 +182,8 @@ public final class ClassUtils {
 
 	// -- Class loading and reflection --
 
+	// TODO - split everything except this section into new TypeUtils class
+
 	/** Loads the class with the given name, or null if it cannot be loaded. */
 	public static Class<?> loadClass(final String className) {
 		try {
@@ -197,6 +199,7 @@ public final class ClassUtils {
 	 * Gets the specified field of the given class, or null if it does not exist.
 	 */
 	public static Field getField(final String className, final String fieldName) {
+		// TODO - use getDeclaredField and recursively search
 		final Class<?> c = loadClass(className);
 		if (c == null) return null;
 		try {
@@ -208,11 +211,15 @@ public final class ClassUtils {
 		}
 	}
 
+	// TODO - add getMethod method that recursively searches
+	// use new method in AbstractModuleItem#findCallbackMethod
+
 	/**
 	 * Gets the given field's value of the specified object instance, or null if
 	 * the value cannot be obtained.
 	 */
 	public static Object getValue(final Field field, final Object instance) {
+		// TODO - rename to getFieldValue
 		if (instance == null) return null;
 		try {
 			return field.get(instance);
@@ -234,6 +241,7 @@ public final class ClassUtils {
 	public static void setValue(final Field field, final Object instance,
 		final Object value)
 	{
+		// TODO - rename to setFieldValue
 		if (instance == null) return;
 		try {
 			field.setAccessible(true);
