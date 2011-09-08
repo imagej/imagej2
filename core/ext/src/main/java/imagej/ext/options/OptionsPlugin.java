@@ -34,9 +34,42 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.options;
 
+import java.lang.reflect.Field;
+
+import imagej.ImageJ;
 import imagej.event.Events;
+import imagej.ext.module.ModuleItem;
 import imagej.ext.options.event.OptionsEvent;
+import imagej.ext.plugin.PluginModuleInfo;
+import imagej.ext.plugin.PluginModuleItem;
+import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.util.ClassUtils;
+
+// TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
+
+// 1. iterate over all inputs: array of PluginModuleItem?
+//     - or, split common logic into ParameterHelper class?
+// 2. for each input, call loadValue
+// 3. if loaded value is null, ignore; else set parameter to equal loaded value
+// This should solve IJ2<->IJ1 initialization problem
+// All IJ2 options will be set always, when asked using OptionsService
+// Legacy layer just needs to query OptionsService.getOption(Class, String) for values
+
+// Other issue is tabbed options dialog
+// can get all OptionsPlugins from the OptionsService
+// can iterate over all values of OptionsPlugin?
+// 1. Remove all menu parameters from Plugin annotations
+// 2. Create Options plugin, extends DynamicPlugin
+//    - Aggregates inputs from all OptionsPlugins from OptionsService & PluginService
+//    - assigns "group" field matching name of OptionsPlugin
+//    - Would iterate over options: one tab per OptionsPlugin class?
+//    - One widget per field of that class -- reuse InputWidget logic
+//    - List<PluginModuleInfo<OptionsPlugin>> infos = pluginService.getRunnablePlugins(OptionsPlugin.class)
+//      from those, can get name & label (for use setting group name, which we'll use for tab name)
+// "Best" approach: a "grouped" set of inputs rendered as tabs by input harvester
+// that get rendered as tabs by Swing, but potentially something else in other UIs
+// Then InputHarvester can "just handle" the Options special plugin
 
 /**
  * Base class for all options-oriented plugins.
@@ -52,12 +85,37 @@ public class OptionsPlugin implements RunnablePlugin {
 
 	/** Loads options from persistent storage. */
 	public void load() {
-		// TODO
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		final PluginModuleInfo<? extends OptionsPlugin> pluginInfo =
+				pluginService.getRunnablePlugin(this.getClass());
+		for (ModuleItem<?> input : pluginInfo.inputs()) {
+			final PluginModuleItem<?> moduleItem =
+					pluginInfo.getInput(input.getName());
+			final Object value = moduleItem.loadValue();
+			if (value != null) {
+				final Field field =
+						ClassUtils.getField(this.getClass().getName(), input.getName());
+				ClassUtils.setValue(field, this, value);
+			}
+		}
+		
 	}
 
 	/** Saves options to persistent storage. */
+	@SuppressWarnings("unchecked")
 	public void save() {
-		// TODO
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		final PluginModuleInfo<? extends OptionsPlugin> pluginInfo =
+				pluginService.getRunnablePlugin(this.getClass());
+		for (ModuleItem<?> input : pluginInfo.inputs()) {
+			final PluginModuleItem<?> moduleItem =
+					pluginInfo.getInput(input.getName());
+			final Field field =
+					ClassUtils.getField(this.getClass().getName(), input.getName());
+			final Object value = ClassUtils.getValue(field, this);
+			// TODO - cast hack that seems to work for all types
+			((ModuleItem<Object>)moduleItem).saveValue(value);
+		}
 	}
 
 	@Override
@@ -65,5 +123,4 @@ public class OptionsPlugin implements RunnablePlugin {
 		save();
 		Events.publish(new OptionsEvent(this));
 	}
-
 }
