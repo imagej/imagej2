@@ -93,24 +93,32 @@ public class OptionsSynchronizer {
 	private boolean getBoolean(String key, boolean defaultValue) {
 		String defaultString = (defaultValue ? "true" : "false");
 		String value = Prefs.get(key, defaultString);
+		if ((value == null) || (value == ""))
+			value = defaultString;
 		return value.equalsIgnoreCase("true");
 	}
 
 	private int getInteger(String key, int defaultValue) {
 		String defaultString = "" + defaultValue;
 		String value = Prefs.get(key, defaultString);
+		if (value.equals(""))
+			value = defaultString;
 		return Integer.parseInt(value);
 	}
 
 	private double getDouble(String key, double defaultValue) {
 		String defaultString = "" + defaultValue;
 		String value = Prefs.get(key, defaultString);
+		if (value.equals(""))
+			value = defaultString;
 		return Double.parseDouble(value);
 	}
 	
 	private Color getColor(String key, Color defaultValue) {
 		String defaultString = defaultValue.toString();
 		String value = Prefs.get(key, defaultString);
+		if (value.equals(""))
+			value = defaultString;
 		return Colors.getColor(value, defaultValue);
 	}
 
