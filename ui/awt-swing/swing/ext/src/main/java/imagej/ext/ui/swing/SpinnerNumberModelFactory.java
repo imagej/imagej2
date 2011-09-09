@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.swing;
 
+import imagej.util.NumberUtils;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -68,19 +70,15 @@ public class SpinnerNumberModelFactory {
 			final BigDecimal bdStepSize = (BigDecimal) stepSize;
 			return new SpinnerBigDecimalModel(bdValue, bdMin, bdMax, bdStepSize);
 		}
+
 		@SuppressWarnings("unchecked")
 		final Comparable<Number> cMin = (Comparable<Number>) min;
-		if (cMin != null && cMin.compareTo(value) > 0) {
-			throw new IllegalArgumentException("Value less than minimum: " + value +
-				" < " + min);
-		}
 		@SuppressWarnings("unchecked")
 		final Comparable<Number> cMax = (Comparable<Number>) max;
-		if (cMax != null && cMax.compareTo(value) < 0) {
-			throw new IllegalArgumentException("Value greater than minimum: " +
-				value + " > " + max);
-		}
-		return new SpinnerNumberModel(value, cMin, cMax, stepSize);
+
+		final Number clampedValue =
+			NumberUtils.clampToRange(value.getClass(), value, min, max);
+		return new SpinnerNumberModel(clampedValue, cMin, cMax, stepSize);
 	}
 
 }
