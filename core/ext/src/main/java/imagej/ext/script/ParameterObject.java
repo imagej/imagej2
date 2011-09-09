@@ -35,10 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.script;
 
 /**
- * Holds a parameter for a recorded macro.
+ * Holds a parameter, its type and value, for a recorded macro.
  * 
  * @author Grant Harris
  */
+
 public class ParameterObject {
 
 	public ParameterObject(final String param, final Class<?> type,
