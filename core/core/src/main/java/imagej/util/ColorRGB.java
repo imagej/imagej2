@@ -186,6 +186,7 @@ public class ColorRGB implements Serializable {
 			return 0;
 		}
 	}
+	// TODO - convert this to (extensible?) imagej.util.Colors enumeration
 	private static final Map<String, int[]> colorNames = new HashMap<String, int[]> ();
 	static {
 		colorNames.put("aliceblue", new int [] { 240, 248, 255 });
