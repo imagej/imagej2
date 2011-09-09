@@ -41,7 +41,6 @@ import imagej.ui.OutputWindow;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Rectangle;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -57,26 +56,23 @@ public class SwingOutputWindow extends JFrame implements
 	EventSubscriber<OutputEvent>, OutputWindow
 {
 
-	private final JTextArea textArea = new JTextArea();
+	private final JTextArea textArea;
+	private final JScrollPane scrollPane;
 
 	// TODO: add tabular functionality
 
 	public SwingOutputWindow(final String title) {
-		this(title, 400, 400, 700, 300);
-	}
-
-	public SwingOutputWindow(final String title, final int x, final int y,
-		final int w, final int h)
-	{
-		// Add a scrolling text area
-		this.setTitle(title);
-		textArea.setEditable(false);
-		textArea.setRows(20);
-		textArea.setColumns(50);
-		final Font font = new Font("Monospaced", java.awt.Font.PLAIN, 12);
+		super(title);
+		textArea = new JTextArea();
+		textArea.setEditable(true);
+		textArea.setRows(25);
+		textArea.setColumns(80);
+		final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 		textArea.setFont(font);
-		getContentPane().add(new JScrollPane(textArea), BorderLayout.CENTER);
-		setBounds(new Rectangle(x, y, w, h));
+		scrollPane = new JScrollPane(textArea);
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
+		pack();
 	}
 
 	// -- EventSubscriber methods --
@@ -84,8 +80,9 @@ public class SwingOutputWindow extends JFrame implements
 	@Override
 	public void onEvent(final OutputEvent event) {
 		final String output = event.getOutput();
+		// TODO - get ColorRGB from Type object, once it is exists,
+		// and convert to java.awt.Color using imagej.awt.AWTColors.
 		final OutputEvent.Type type = event.getType();
-		// LOG, INFO, RESULT, ERROR, DIAGNOSTIC
 		if (type == OutputEvent.Type.ERROR) {
 			textArea.setForeground(Color.RED);
 		}
