@@ -130,12 +130,8 @@ public class OptionsPlugin implements RunnablePlugin {
 		for (ModuleItem<?> input : pluginInfo.inputs()) {
 		
 			FieldInfo info = new FieldInfo();
-			
-			info.moduleItem =
-					pluginInfo.getInput(input.getName());
-			info.field =
-					ClassUtils.getField(this.getClass().getName(), input.getName());
-
+			info.moduleItem =	pluginInfo.getInput(input.getName());
+			info.field = ClassUtils.getField(getClass().getName(), input.getName());
 			fields.add(info);
 		}
 		
