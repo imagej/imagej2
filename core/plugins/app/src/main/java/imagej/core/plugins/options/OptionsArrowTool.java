@@ -59,6 +59,7 @@ public class OptionsArrowTool extends OptionsPlugin {
 		persistKey = SettingsKeys.OPTIONS_ARROW_SIZE)
 	private int arrowSize = 10;
 
+	// TODO - use imagej.util.ColorRGB instead
 	@Parameter(label = "Color", choices = { "red", "green", "blue", "magenta",
 		"cyan", "yellow", "orange", "black", "white" },
 		persistKey = SettingsKeys.OPTIONS_ARROW_COLOR)
