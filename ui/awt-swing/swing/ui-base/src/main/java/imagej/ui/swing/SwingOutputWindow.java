@@ -84,21 +84,21 @@ public class SwingOutputWindow extends JFrame implements
 	@Override
 	public void onEvent(final OutputEvent event) {
 		final String output = event.getOutput();
-		final OutputEvent.TYPE type = event.getType();
+		final OutputEvent.Type type = event.getType();
 		// LOG, INFO, RESULT, ERROR, DIAGNOSTIC
-		if (type == OutputEvent.TYPE.ERROR) {
+		if (type == OutputEvent.Type.ERROR) {
 			textArea.setForeground(Color.RED);
 		}
-		else if (type == OutputEvent.TYPE.RESULT) {
+		else if (type == OutputEvent.Type.RESULT) {
 			textArea.setForeground(Color.GREEN);
 		}
-		else if (type == OutputEvent.TYPE.INFO) {
+		else if (type == OutputEvent.Type.INFO) {
 			textArea.setForeground(Color.BLACK);
 		}
-		else if (type == OutputEvent.TYPE.LOG) {
+		else if (type == OutputEvent.Type.LOG) {
 			textArea.setForeground(Color.GRAY);
 		}
-		else if (type == OutputEvent.TYPE.DIAGNOSTIC) {
+		else if (type == OutputEvent.Type.DIAGNOSTIC) {
 			textArea.setForeground(Color.MAGENTA);
 		}
 		else {
