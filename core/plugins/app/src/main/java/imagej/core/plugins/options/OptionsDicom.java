@@ -53,14 +53,14 @@ public class OptionsDicom extends OptionsPlugin {
 
 	@Parameter(label = "Open as 32-bit float",
 		persistKey = SettingsKeys.OPTIONS_DICOM_OPEN_FLOAT32)
-	private boolean openAs32bitFloat;
+	private boolean openAs32bitFloat = false;
 
 	@Parameter(label = "Orthogonal Views: Rotate YZ",
 		persistKey = SettingsKeys.OPTIONS_DICOM_ROTATE_YZ)
-	private boolean rotateYZ;
+	private boolean rotateYZ = false;
 
 	@Parameter(label = "Orthogonal Views: Rotate XZ",
 		persistKey = SettingsKeys.OPTIONS_DICOM_ROTATE_XZ)
-	private boolean rotateXZ;
+	private boolean rotateXZ = false;
 
 }

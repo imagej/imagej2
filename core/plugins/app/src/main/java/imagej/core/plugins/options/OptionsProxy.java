@@ -53,13 +53,13 @@ public class OptionsProxy extends OptionsPlugin {
 
 	@Parameter(label = "Proxy Server",
 		persistKey = SettingsKeys.OPTIONS_PROXY_SERVER)
-	private String proxyServer;
+	private String proxyServer = "";
 
 	@Parameter(label = "Port", persistKey = SettingsKeys.OPTIONS_PROXY_PORT)
-	private int port;
+	private int port = 8080;
 
 	@Parameter(label = "Authenticate",
 		persistKey = SettingsKeys.OPTIONS_PROXY_AUTHENTICATE)
-	private boolean authenticationRequired;
+	private boolean authenticationRequired = false;
 
 }

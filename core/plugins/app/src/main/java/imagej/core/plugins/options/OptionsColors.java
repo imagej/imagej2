@@ -54,16 +54,16 @@ public class OptionsColors extends OptionsPlugin {
 	@Parameter(label = "Foreground", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" },
 		persistKey = SettingsKeys.OPTIONS_COLORS_FOREGROUND)
-	private String fgColor;
+	private String fgColor = "black";
 
 	@Parameter(label = "Background", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" },
 		persistKey = SettingsKeys.OPTIONS_COLORS_BACKGROUND)
-	private String bgColor;
+	private String bgColor = "white";
 
 	@Parameter(label = "Selection", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" },
 		persistKey = SettingsKeys.OPTIONS_COLORS_SELECTION)
-	private String selColor;
+	private String selColor = "yellow";
 
 }

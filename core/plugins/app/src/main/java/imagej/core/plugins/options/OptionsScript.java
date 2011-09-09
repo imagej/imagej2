@@ -56,6 +56,6 @@ public class OptionsScript extends OptionsPlugin {
 	 */
 	@Parameter(label = "Scripting Language",
 		persistKey = SettingsKeys.SCRIPT_LANG)
-	private String ScriptingLang;
+	private String ScriptingLang = "javascript"; // TODO - initial value faked for now
 
 }

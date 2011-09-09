@@ -53,10 +53,10 @@ public class OptionsCompiler extends OptionsPlugin {
 
 	@Parameter(label = "Target", choices = { "1.4", "1.5", "1.6", "1.7" },
 		persistKey = SettingsKeys.OPTIONS_COMPILER_VERSION)
-	private String targetJavaVersion;
+	private String targetJavaVersion = "1.5";
 
 	@Parameter(label = "Generate debugging ino (javac -g)",
 		persistKey = SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO)
-	private boolean generateDebugInfo;
+	private boolean generateDebugInfo = false;
 
 }

@@ -53,10 +53,10 @@ public class OptionsConversions extends OptionsPlugin {
 
 	@Parameter(label = "Scale When Converting",
 		persistKey = SettingsKeys.OPTIONS_CONVERSIONS_SCALE)
-	private boolean scaleWhenConverting;
+	private boolean scaleWhenConverting = true;
 
 	@Parameter(label = "Weighted RGB Conversions",
 		persistKey = SettingsKeys.OPTIONS_CONVERSIONS_WEIGHTED)
-	private boolean weightedRgbConversions;
+	private boolean weightedRgbConversions = false;
 
 }

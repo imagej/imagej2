@@ -53,6 +53,6 @@ public class OptionsLineWidth extends OptionsPlugin {
 
 	@Parameter(label = "Line Width",
 		persistKey = SettingsKeys.OPTIONS_LINEWIDTH_WIDTH)
-	private int lineWidth;
+	private int lineWidth = 1;
 
 }

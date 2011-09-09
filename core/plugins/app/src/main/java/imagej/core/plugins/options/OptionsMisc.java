@@ -53,30 +53,30 @@ public class OptionsMisc extends OptionsPlugin {
 
 	@Parameter(label = "Divide by zero value",
 		persistKey = SettingsKeys.OPTIONS_MISC_DBZ_VALUE)
-	private String divByZeroVal;
+	private String divByZeroVal = "Infinity";
 
 	@Parameter(label = "Use pointer cursor",
 		persistKey = SettingsKeys.OPTIONS_MISC_POINTER_CURSOR)
-	private boolean usePtrCursor;
+	private boolean usePtrCursor = false;
 
 	@Parameter(label = "Hide \"Process Stack?\" dialog",
 		persistKey = SettingsKeys.OPTIONS_MISC_HIDE_STACK_MSG)
-	private boolean hideProcessStackDialog;
+	private boolean hideProcessStackDialog = false;
 
 	@Parameter(label = "Require command key for shortcuts",
 		persistKey = SettingsKeys.OPTIONS_MISC_REQUIRE_COMMAND)
-	private boolean requireCommandKey;
+	private boolean requireCommandKey = false;
 
 	@Parameter(label = "Move isolated plugins to Misc. menu",
 		persistKey = SettingsKeys.OPTIONS_MISC_MOVE_PLUGINS)
-	private boolean moveIsolatedPlugins;
+	private boolean moveIsolatedPlugins = false;
 
 	@Parameter(label = "Run single instance listener",
 		persistKey = SettingsKeys.OPTIONS_MISC_SINGLE_INSTANCE)
-	private boolean runSingleInstanceListener;
+	private boolean runSingleInstanceListener = false;
 
 	@Parameter(label = "Debug mode",
 		persistKey = SettingsKeys.OPTIONS_MISC_DEBUG_MODE)
-	private boolean debugMode;
+	private boolean debugMode = false;
 
 }

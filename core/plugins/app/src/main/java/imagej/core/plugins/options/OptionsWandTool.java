@@ -54,9 +54,9 @@ public class OptionsWandTool extends OptionsPlugin {
 	@Parameter(label = "Mode",
 		choices = { "Legacy", "4-connected", "8-connected" },
 		persistKey = SettingsKeys.OPTIONS_WAND_MODE)
-	private String mode;
+	private String mode = "Legacy";
 
 	@Parameter(label = "Tolerance",
 		persistKey = SettingsKeys.OPTIONS_WAND_TOLERANCE)
-	private double tolerance;
+	private double tolerance = 0;
 }

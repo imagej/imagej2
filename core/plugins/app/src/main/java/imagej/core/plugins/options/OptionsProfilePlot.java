@@ -53,46 +53,46 @@ public class OptionsProfilePlot extends OptionsPlugin {
 
 	@Parameter(label = "Width (pixels)",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_WIDTH)
-	private int width;
+	private int width = 450;
 
 	@Parameter(label = "Height (pixels)",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_HEIGHT)
-	private int height;
+	private int height = 200;
 
 	@Parameter(label = "Minimum Y",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_MIN_Y)
-	private double minY;
+	private double minY = 0;
 
 	@Parameter(label = "Maximum Y",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_MAX_Y)
-	private double maxY;
+	private double maxY = 0;
 
 	@Parameter(label = "Fixed y-axis scale",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_FIXED_YSCALE)
-	private boolean yFixedScale;
+	private boolean yFixedScale = false;
 
 	@Parameter(label = "Do not save x-values",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_DISCARD_X)
-	private boolean noSaveXValues;
+	private boolean noSaveXValues = false;
 
 	@Parameter(label = "Auto-close",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_AUTOCLOSE)
-	private boolean autoClose;
+	private boolean autoClose = false;
 
 	@Parameter(label = "Vertical profile",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_VERTICAL)
-	private boolean vertProfile;
+	private boolean vertProfile = false;
 
 	@Parameter(label = "List values",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_LIST_VALUES)
-	private boolean listValues;
+	private boolean listValues = false;
 
 	@Parameter(label = "Interpolate line profiles",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_INTERPOLATE)
-	private boolean interpLineProf;
+	private boolean interpLineProf = true;
 
 	@Parameter(label = "Draw grid lines",
 		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_DRAW_GRID)
-	private boolean drawGridLines;
+	private boolean drawGridLines = true;
 
 }
