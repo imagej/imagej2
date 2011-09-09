@@ -47,11 +47,15 @@ import ij.plugin.filter.Analyzer;
 import ij.process.ColorProcessor;
 import ij.process.FloatBlitter;
 import ij.process.ImageConverter;
+import imagej.ImageJ;
+import imagej.ext.options.OptionsPlugin;
+import imagej.ext.options.OptionsService;
 import imagej.util.Prefs;
 import imagej.util.SettingsKeys;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.List;
 
 /**
  * The {@link OptionsSynchronizer} sets IJ1 settings and preferences to reflect
@@ -62,6 +66,14 @@ import java.awt.Font;
  */
 public class OptionsSynchronizer {
 
+	public OptionsSynchronizer() {
+		// make sure OptionsPlugin fields are initialized
+		List<OptionsPlugin> optionsPlugins =
+				ImageJ.get(OptionsService.class).getOptions();
+		for (OptionsPlugin plugin : optionsPlugins)
+			plugin.load();
+	}
+	
 	/**
 	 * Updates IJ1 settings and preferences to reflect values set in IJ2 dialogs.
 	 */ 
