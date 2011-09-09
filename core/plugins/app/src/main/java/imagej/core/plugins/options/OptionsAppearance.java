@@ -53,30 +53,30 @@ public class OptionsAppearance extends OptionsPlugin {
 
 	@Parameter(label = "Interpolate zoomed images",
 		persistKey = SettingsKeys.OPTIONS_APPEARANCE_INTERPOLATE_ZOOMED_IMAGES)
-	private boolean interpZoomedImages;
+	private boolean interpZoomedImages = false;
 
 	@Parameter(label = "Open images at 100%",
 		persistKey = SettingsKeys.OPTIONS_APPEARANCE_FULL_ZOOMED_IMAGES)
-	private boolean fullZoomImages;
+	private boolean fullZoomImages = false;
 
 	@Parameter(label = "Black canvas",
 		persistKey = SettingsKeys.OPTIONS_APPEARANCE_BLACK_CANVAS)
-	private boolean blackCanvas;
+	private boolean blackCanvas = false;
 
 	@Parameter(label = "No image border",
 		persistKey = SettingsKeys.OPTIONS_APPEARANCE_NO_IMAGE_BORDER)
-	private boolean noImageBorder;
+	private boolean noImageBorder = false;
 
 	@Parameter(label = "Use inverting lookup table",
 		persistKey = SettingsKeys.OPTIONS_APPEARANCE_USE_INVERTING_LUT)
-	private boolean useInvertingLUT;
+	private boolean useInvertingLUT = false;
 
 	@Parameter(label = "Antialiased tool icons",
 		persistKey = SettingsKeys.OPTIONS_APPEARANCE_ANTIALIASED_TOOL_ICONS)
-	private boolean antialiasedToolIcons;
+	private boolean antialiasedToolIcons = true;
 
 	@Parameter(label = "Menu font size (points)",
 		persistKey = SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE)
-	private int menuFontSize;
+	private int menuFontSize = 0;
 
 }

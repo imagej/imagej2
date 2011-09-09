@@ -53,18 +53,18 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	@Parameter(label = "Maximum memory (MB)",
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_MAX_MEMORY)
-	private int maxMemory;
+	private int maxMemory = 512;
 
 	@Parameter(label = "Parallel threads for stacks",
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_STACK_THREADS)
-	private int stackThreads;
+	private int stackThreads = 2;
 
 	@Parameter(label = "Keep multiple undo buffers",
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_MULTIPLE_UNDO_BUFFERS)
-	private boolean multipleBuffers;
+	private boolean multipleBuffers = false;
 
 	@Parameter(label = "Run garbage collector on status bar click",
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_RUN_GC)
-	private boolean runGcOnClick;
+	private boolean runGcOnClick = true;
 
 }

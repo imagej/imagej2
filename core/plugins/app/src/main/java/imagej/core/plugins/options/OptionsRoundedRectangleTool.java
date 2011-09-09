@@ -53,21 +53,21 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 
 	@Parameter(label = "Stroke Width", min = "1", max = "25",
 		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_WIDTH)
-	private int strokeWidth;
+	private int strokeWidth = 2;
 
 	@Parameter(label = "Corner Diameter", min = "0", max = "200",
 		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER)
-	private int cornerDiameter;
+	private int cornerDiameter = 20;
 
 	@Parameter(label = "Stroke Color",
 		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, choices = {
 			"black", "white", "red", "green", "blue", "cyan", "magenta", "yellow",
 			"gray" })
-	private String strokeColor;
+	private String strokeColor = "black";
 
 	@Parameter(label = "Fill Color",
 		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, choices = {
 			"none", "black", "white", "red", "green", "blue", "cyan", "magenta",
 			"yellow", "gray" })
-	private String fillColor;
+	private String fillColor = "none";
 }

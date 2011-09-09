@@ -51,19 +51,19 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Fonts...", weight = 3) })
 public class OptionsFont extends OptionsPlugin {
 
-	@Parameter(label = "Font", // TODO populate from system fonts
+	@Parameter(label = "Font",
 		persistKey = SettingsKeys.OPTIONS_FONT_NAME)
-	private String font;
+	private String font = "SansSerif";  // TODO populate from system fonts? Nonportable here?
 
 	@Parameter(label = "Size", min = "8", max = "72",
 		persistKey = SettingsKeys.OPTIONS_FONT_SIZE)
-	private int fontSize;
+	private int fontSize = 18;
 
 	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
 		"Bold + Italic" }, persistKey = SettingsKeys.OPTIONS_FONT_STYLE)
-	private String fontStyle;
+	private String fontStyle = "Plain";
 
 	@Parameter(label = "Smooth", persistKey = SettingsKeys.OPTIONS_FONT_SMOOTHING)
-	private boolean fontSmooth;
+	private boolean fontSmooth = true;
 
 }

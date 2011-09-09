@@ -53,26 +53,26 @@ public class OptionsArrowTool extends OptionsPlugin {
 
 	@Parameter(label = "Width", min = "1", max = "50",
 		persistKey = SettingsKeys.OPTIONS_ARROW_WIDTH)
-	private int arrowWidth;
+	private int arrowWidth = 2;
 
 	@Parameter(label = "Size", min = "0", max = "30",
 		persistKey = SettingsKeys.OPTIONS_ARROW_SIZE)
-	private int arrowSize;
+	private int arrowSize = 10;
 
 	@Parameter(label = "Color", choices = { "red", "green", "blue", "magenta",
 		"cyan", "yellow", "orange", "black", "white" },
 		persistKey = SettingsKeys.OPTIONS_ARROW_COLOR)
-	private String arrowColor;
+	private String arrowColor = "black";
 
 	@Parameter(label = "Style", choices = { "Filled", "Notched", "Open",
 		"Headless" }, persistKey = SettingsKeys.OPTIONS_ARROW_STYLE)
-	private String arrowStyle;
+	private String arrowStyle = "Filled";
 
 	@Parameter(label = "Outline", persistKey = SettingsKeys.OPTIONS_ARROW_OUTLINE)
-	private boolean arrowOutline;
+	private boolean arrowOutline = false;
 
 	@Parameter(label = "Double headed",
 		persistKey = SettingsKeys.OPTIONS_ARROW_DOUBLEHEADED)
-	private boolean arrowDoubleHeaded;
+	private boolean arrowDoubleHeaded = false;
 
 }

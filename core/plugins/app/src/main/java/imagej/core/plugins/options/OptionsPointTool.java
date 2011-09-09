@@ -53,27 +53,27 @@ public class OptionsPointTool extends OptionsPlugin {
 
 	@Parameter(label = "Mark Width (pixels)",
 		persistKey = SettingsKeys.OPTIONS_POINT_MARK_WIDTH)
-	private int markWidth;
+	private int markWidth = 0;
 
 	@Parameter(label = "Auto-Measure",
 		persistKey = SettingsKeys.OPTIONS_POINT_AUTO_MEASURE)
-	private boolean autoMeasure;
+	private boolean autoMeasure = false;
 
 	@Parameter(label = "Auto-Next Slice",
 		persistKey = SettingsKeys.OPTIONS_POINT_AUTOSLICE)
-	private boolean autoNextSlice;
+	private boolean autoNextSlice = false;
 
 	@Parameter(label = "Add to ROI Manager",
 		persistKey = SettingsKeys.OPTIONS_POINT_ADD_ROI)
-	private boolean addToRoiMgr;
+	private boolean addToRoiMgr = false;
 
 	@Parameter(label = "Label Points",
 		persistKey = SettingsKeys.OPTIONS_POINT_LABEL_POINTS)
-	private boolean labelPoints;
+	private boolean labelPoints = true;
 
 	@Parameter(label = "Selection Color", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" },
 		persistKey = SettingsKeys.OPTIONS_POINT_SELECTION_COLOR)
-	private String selectionColor;
+	private String selectionColor = "yellow";
 
 }

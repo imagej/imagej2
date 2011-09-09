@@ -53,40 +53,40 @@ public class OptionsInputOutput extends OptionsPlugin {
 
 	@Parameter(label = "JPEG quality (0-100)",
 		persistKey = SettingsKeys.OPTIONS_IO_JPEG_QUALITY)
-	private int jpegQuality;
+	private int jpegQuality = 85;
 
 	@Parameter(label = "GIF and PNG transparent index",
 		persistKey = SettingsKeys.OPTIONS_IO_TRANSPARENT_INDEX)
-	private int transparentIndex;
+	private int transparentIndex = -1;
 
 	@Parameter(label = "File extension for tables",
 		persistKey = SettingsKeys.OPTIONS_IO_FILE_EXT)
-	private String tableFileExtension;
+	private String tableFileExtension = ".txt";
 
 	@Parameter(label = "Use JFileChooser to open/save",
 		persistKey = SettingsKeys.OPTIONS_IO_USE_JFILECHOOSER)
-	private boolean useJFileChooser;
+	private boolean useJFileChooser = false;
 
 	@Parameter(label = "Save TIFF and raw in Intel byte order",
 		persistKey = SettingsKeys.OPTIONS_IO_SAVE_INTEL)
-	private boolean saveOrderIntel;
+	private boolean saveOrderIntel = false;
 
 	// TODO - in IJ1 these were grouped visually. How is this now done?
 
 	@Parameter(label = "Result Table: Copy column headers",
 		persistKey = SettingsKeys.OPTIONS_IO_COPY_COLUMNS)
-	private boolean copyColumnHeaders;
+	private boolean copyColumnHeaders = false;
 
 	@Parameter(label = "Result Table: Copy row numbers",
 		persistKey = SettingsKeys.OPTIONS_IO_COPY_ROWS)
-	private boolean copyRowNumbers;
+	private boolean copyRowNumbers = true;
 
 	@Parameter(label = "Result Table: Save column headers",
 		persistKey = SettingsKeys.OPTIONS_IO_SAVE_COLUMNS)
-	private boolean saveColumnHeaders;
+	private boolean saveColumnHeaders = true;
 
 	@Parameter(label = "Result Table: Save row numbers",
 		persistKey = SettingsKeys.OPTIONS_IO_SAVE_ROWS)
-	private boolean saveRowNumbers;
+	private boolean saveRowNumbers = true;
 
 }
