@@ -35,13 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.options;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.options.event.OptionsEvent;
 import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginModuleItem;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.util.ClassUtils;
@@ -85,36 +86,23 @@ public class OptionsPlugin implements RunnablePlugin {
 
 	/** Loads options from persistent storage. */
 	public void load() {
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		final PluginModuleInfo<? extends OptionsPlugin> pluginInfo =
-				pluginService.getRunnablePlugin(this.getClass());
-		for (ModuleItem<?> input : pluginInfo.inputs()) {
-			final PluginModuleItem<?> moduleItem =
-					pluginInfo.getInput(input.getName());
-			final Object value = moduleItem.loadValue();
+		List<FieldInfo> fields = getFieldInfos();
+		for (FieldInfo info : fields) {
+			final Object value = info.moduleItem.loadValue();
 			if (value != null) {
-				final Field field =
-						ClassUtils.getField(this.getClass().getName(), input.getName());
-				ClassUtils.setValue(field, this, value);
+				ClassUtils.setValue(info.field, this, value);
 			}
 		}
-		
 	}
 
 	/** Saves options to persistent storage. */
 	@SuppressWarnings("unchecked")
 	public void save() {
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		final PluginModuleInfo<? extends OptionsPlugin> pluginInfo =
-				pluginService.getRunnablePlugin(this.getClass());
-		for (ModuleItem<?> input : pluginInfo.inputs()) {
-			final PluginModuleItem<?> moduleItem =
-					pluginInfo.getInput(input.getName());
-			final Field field =
-					ClassUtils.getField(this.getClass().getName(), input.getName());
-			final Object value = ClassUtils.getValue(field, this);
+		List<FieldInfo> fields = getFieldInfos();
+		for (FieldInfo info : fields) {
+			final Object value = ClassUtils.getValue(info.field, this);
 			// TODO - cast hack that seems to work for all types
-			((ModuleItem<Object>)moduleItem).saveValue(value);
+			((ModuleItem<Object>)info.moduleItem).saveValue(value);
 		}
 	}
 
@@ -122,5 +110,35 @@ public class OptionsPlugin implements RunnablePlugin {
 	public void run() {
 		save();
 		Events.publish(new OptionsEvent(this));
+	}
+	
+	private class FieldInfo {
+		public ModuleItem<?> moduleItem;
+		public Field field;
+	}
+
+	@SuppressWarnings("synthetic-access")
+	private List<FieldInfo> getFieldInfos() {
+		
+		final ArrayList<FieldInfo> fields = new ArrayList<FieldInfo>();
+		
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		
+		final PluginModuleInfo<? extends OptionsPlugin> pluginInfo =
+				pluginService.getRunnablePlugin(this.getClass());
+
+		for (ModuleItem<?> input : pluginInfo.inputs()) {
+		
+			FieldInfo info = new FieldInfo();
+			
+			info.moduleItem =
+					pluginInfo.getInput(input.getName());
+			info.field =
+					ClassUtils.getField(this.getClass().getName(), input.getName());
+
+			fields.add(info);
+		}
+		
+		return fields;
 	}
 }
