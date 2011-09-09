@@ -8,16 +8,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import sun.org.mozilla.javascript.Context;
-import sun.org.mozilla.javascript.ImporterTopLevel;
-import sun.org.mozilla.javascript.Scriptable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
  * Executes a script.
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("restriction")
 @Plugin(menuPath = "Plugins>Script>Run Script")
 public class ScriptPlugin implements ImageJPlugin {
 
@@ -28,13 +27,16 @@ public class ScriptPlugin implements ImageJPlugin {
 	public void run() {
 		// TODO make a nice SezPoz-discoverable interface for scripting
 		// languages
-		final Context context = Context.enter();
-		final Scriptable scope = new ImporterTopLevel(context);
+		final ScriptEngineManager scriptManager = new ScriptEngineManager();
+		final ScriptEngine javascript = scriptManager
+				.getEngineByName("JavaScript");
 		try {
-			final Object result = context.evaluateReader(scope, new FileReader(
-					path), path.getName(), 1, null);
+			javascript.put(ScriptEngine.FILENAME, path.getPath());
+			final Object result = javascript.eval(new FileReader(path));
 			if (result != null)
 				System.out.println(result.toString());
+		} catch (final ScriptException e) {
+			e.printStackTrace(System.err);
 		} catch (final IOException e) {
 			e.printStackTrace(System.err);
 		}
