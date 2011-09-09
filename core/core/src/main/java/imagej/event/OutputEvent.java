@@ -45,15 +45,15 @@ public class OutputEvent extends ImageJEvent {
 	private final String output;
 
 	/** Type of output. */
-	private final TYPE type;
+	private final Type type;
 
 	/** Constructs an output event. */
 	public OutputEvent(final String output) {
-		this(output, TYPE.LOG);
+		this(output, Type.LOG);
 	}
 
 	/** Constructs an output event. */
-	public OutputEvent(final String output, final TYPE type) {
+	public OutputEvent(final String output, final Type type) {
 		this.output = output;
 		this.type = type;
 	}
@@ -66,7 +66,7 @@ public class OutputEvent extends ImageJEvent {
 	}
 
 	/** Gets output type. */
-	public TYPE getType() {
+	public Type getType() {
 		return type;
 	}
 
@@ -79,8 +79,10 @@ public class OutputEvent extends ImageJEvent {
 
 	// -- Enums --
 
-	public enum TYPE {
+	public enum Type {
 		LOG, INFO, RESULT, ERROR, DIAGNOSTIC
+		// TODO - associate default ColorRGB constant (from as-yet-uncreated
+		// imagej.util.Colors enum) with each type
 	}
 
 }
