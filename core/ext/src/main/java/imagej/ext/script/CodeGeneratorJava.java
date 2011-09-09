@@ -40,8 +40,8 @@ package imagej.ext.script;
  * @author Grant Harris
  */
 public class CodeGeneratorJava implements CodeGenerator {
-
-	StringBuilder sb = new StringBuilder();
+	static final String lsep = System.getProperty("line.separator");
+	private final StringBuilder sb = new StringBuilder();
 
 	@Override
 	public String getResult() {
@@ -85,13 +85,14 @@ public class CodeGeneratorJava implements CodeGenerator {
 	}
 
 	@Override
-	public void invokeStatementEnd() {
-		sb.append(");");
-	}
+		public  void statementTerminate() {
+			sb.append(lsep);
+		}
+
 
 	@Override
-	public void statementTerminate() {
-		sb.append("\n");
+	public void invokeStatementEnd() {
+		sb.append(")");
 	}
 
 }
