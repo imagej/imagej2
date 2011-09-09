@@ -50,7 +50,9 @@ public interface DisplayPanel {
 	 */
 	void addEventDispatcher(EventDispatcher dispatcher);
 
-	/** TODO */
+	/** 
+	 * Close this DisplayPanel and its container, a DisplayWindow.  
+	 */
 	void close();
 
 	void makeActive();
