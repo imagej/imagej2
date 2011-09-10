@@ -35,6 +35,11 @@ public class ScriptPlugin implements ImageJPlugin {
 		final ScriptEngine engine = scriptManager.getEngineByExtension(fileExtension);
 		try {
 			engine.put(ScriptEngine.FILENAME, path.getPath());
+			// TODO
+			// Bind java objects to script engine and for script access
+			// e.g. get current Display
+			// scriptEngine.put("currentDisplay", currentDisplay) ;
+			// same effect as: getBindings(ScriptContext.ENGINE_SCOPE).put. 
 			final Object result = engine.eval(new FileReader(path));
 			if (result != null) {
 				System.out.println(result.toString());
