@@ -14,8 +14,10 @@ import javax.script.ScriptException;
 
 /**
  * Executes a script.
+ * Using the file extension to choose the appropriate engine.
  * 
  * @author Johannes Schindelin
+ * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Script>Run Script")
 public class ScriptPlugin implements ImageJPlugin {
@@ -28,18 +30,31 @@ public class ScriptPlugin implements ImageJPlugin {
 		// TODO make a nice SezPoz-discoverable interface for scripting
 		// languages
 		final ScriptEngineManager scriptManager = new ScriptEngineManager();
-		final ScriptEngine javascript = scriptManager
-				.getEngineByName("JavaScript");
+		// Could use a FileChooser to select script, then
+		String fileExtension = getFileExtension(path.getPath());
+		final ScriptEngine engine = scriptManager.getEngineByExtension(fileExtension);
 		try {
-			javascript.put(ScriptEngine.FILENAME, path.getPath());
-			final Object result = javascript.eval(new FileReader(path));
-			if (result != null)
+			engine.put(ScriptEngine.FILENAME, path.getPath());
+			final Object result = engine.eval(new FileReader(path));
+			if (result != null) {
 				System.out.println(result.toString());
+			}
 		} catch (final ScriptException e) {
 			e.printStackTrace(System.err);
 		} catch (final IOException e) {
 			e.printStackTrace(System.err);
 		}
+	}
+
+	String getFileExtension(String filePath) {
+		File f = new File(filePath);
+		String name = f.getName();
+		int k = name.lastIndexOf(".");
+		String ext = null;
+		if (k != -1) {
+			ext = name.substring(k + 1, name.length());
+		}
+		return ext;
 	}
 
 }
