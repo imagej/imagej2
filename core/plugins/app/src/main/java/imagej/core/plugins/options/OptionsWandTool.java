@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Wand Tool dialog.
@@ -52,11 +51,9 @@ import imagej.util.SettingsKeys;
 public class OptionsWandTool extends OptionsPlugin {
 
 	@Parameter(label = "Mode",
-		choices = { "Legacy", "4-connected", "8-connected" },
-		persistKey = SettingsKeys.OPTIONS_WAND_MODE)
+		choices = { "Legacy", "4-connected", "8-connected" })
 	private String mode = "Legacy";
 
-	@Parameter(label = "Tolerance",
-		persistKey = SettingsKeys.OPTIONS_WAND_TOLERANCE)
+	@Parameter(label = "Tolerance")
 	private double tolerance = 0;
 }

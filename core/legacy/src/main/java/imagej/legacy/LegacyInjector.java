@@ -95,24 +95,10 @@ public class LegacyInjector {
 		}
 
 		// override behavior of ij.Prefs
-		hacker.replaceMethod("ij.Prefs",
-			"public static String get(java.lang.String key, java.lang.String defaultValue)");
-		hacker.replaceMethod("ij.Prefs",
+		//hacker.replaceMethod("ij.Prefs",
+		//	"public static String get(java.lang.String key, java.lang.String defaultValue)");
+		hacker.insertAfterMethod("ij.Prefs",
 			"public static void set(java.lang.String key, java.lang.String text)");
-		hacker.replaceMethod("ij.Prefs",
-			"public static void set(java.lang.String key, int value)");
-		hacker.replaceMethod("ij.Prefs",
-			"public static void set(java.lang.String key, double value)");
-		hacker.replaceMethod("ij.Prefs",
-			"public static void set(java.lang.String key, boolean value)");
-		hacker.replaceMethod("ij.Prefs",
-			"public static String get(java.lang.String key, java.lang.String def)");
-		hacker.replaceMethod("ij.Prefs",
-			"public static double get(java.lang.String key, double def)");
-		hacker.replaceMethod("ij.Prefs",
-			"public static boolean get(java.lang.String key, boolean def)");
-		hacker.replaceMethod("ij.Prefs",
-			"public static java.awt.Point getLocation(java.lang.String key)");
 		hacker.loadClass("ij.Prefs");
 	}
 

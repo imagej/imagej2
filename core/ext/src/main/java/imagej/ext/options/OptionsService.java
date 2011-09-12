@@ -44,8 +44,11 @@ import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.util.ClassUtils;
 import imagej.util.Log;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +56,7 @@ import java.util.Map;
  * Service for keeping track of the available options and their settings.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  * @see OptionsPlugin
  */
 @Service
@@ -109,6 +113,17 @@ public class OptionsService extends AbstractService {
 		return getInput(getOptionsInfo(className), name);
 	}
 
+	/** Sets the option with the given name, from the specified options plugin,
+	 *  to the given value.
+	 */
+	public void setOption(
+		final String className, final String name, final Object value)
+	{
+		PluginModuleInfo<?> info = getOptionsInfo(className);
+		Object valueObject = typedValue(info.getInput(name).getType(), value);
+		setInput(info, name, valueObject);
+	}
+
 	/** Gets a map of all options from the given options plugin. */
 	public <O extends OptionsPlugin> Map<String, Object> getOptionsMap(
 		final Class<O> optionsClass)
@@ -128,6 +143,12 @@ public class OptionsService extends AbstractService {
 		// no action needed
 	}
 
+	/*
+	public OptionsPlugin getInstance(String optionsPluginClassName) {
+		return null;
+	}
+	*/
+	
 	// -- Helper methods --
 
 	private <P extends IPlugin> P createInstance(final PluginInfo<P> info) {
@@ -179,4 +200,50 @@ public class OptionsService extends AbstractService {
 		return null;
 	}
 
+	private void setInput(
+		final PluginModuleInfo<?> info, final String name, Object value)
+	{
+		if (info == null) return;
+		try {
+			info.createModule().setInput(name,value);
+		}
+		catch (final ModuleException e) {
+			Log.error("Cannot create module: " + info.getClassName());
+		}
+	}
+
+	// TODO - move to ClassUtils? update convert() there?
+	
+	private Object typedValue(Class<?> type, Object obj) {
+		if (obj.getClass() == String.class) {
+			String text = (String) obj;
+			if (type == String.class)
+				return text;
+			else if ((type == char.class) || (type == Character.class))
+				return new Character(text.charAt(0));
+			else if ((type == byte.class) || (type == Byte.class))
+				return new Byte(text);
+			else if ((type == short.class) || (type == Short.class))
+					return new Short(text);
+			else if ((type == int.class) || (type == Integer.class))
+				return new Integer(text);
+			else if ((type == long.class) || (type == Long.class))
+				return new Long(text);
+			else if ((type == float.class) || (type == Float.class))
+				return new Float(text);
+			else if ((type == double.class) || (type == Double.class))
+				return new Double(text);
+			else if ((type == boolean.class) || (type == Boolean.class))
+				return new Boolean(text);
+			else if (type == BigInteger.class)
+				return new BigInteger(text);
+			else if (type == BigDecimal.class)
+				return new BigDecimal(text);
+			else
+				throw new IllegalArgumentException("unknown class type : " + type);
+			// TODO - a Color class conversion???
+		}
+		
+		return ClassUtils.convert(obj, type);
+	}
 }

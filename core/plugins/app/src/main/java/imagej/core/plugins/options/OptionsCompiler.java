@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Compiler dialog.
@@ -51,12 +50,10 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Compiler...", weight = 14) })
 public class OptionsCompiler extends OptionsPlugin {
 
-	@Parameter(label = "Target", choices = { "1.4", "1.5", "1.6", "1.7" },
-		persistKey = SettingsKeys.OPTIONS_COMPILER_VERSION)
+	@Parameter(label = "Target", choices = { "1.4", "1.5", "1.6", "1.7" })
 	private String targetJavaVersion = "1.5";
 
-	@Parameter(label = "Generate debugging ino (javac -g)",
-		persistKey = SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO)
+	@Parameter(label = "Generate debugging ino (javac -g)")
 	private boolean generateDebugInfo = false;
 
 }

@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Line Width dialog.
@@ -51,8 +50,7 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Line Width...", weight = 1) })
 public class OptionsLineWidth extends OptionsPlugin {
 
-	@Parameter(label = "Line Width",
-		persistKey = SettingsKeys.OPTIONS_LINEWIDTH_WIDTH)
+	@Parameter(label = "Line Width")
 	private int lineWidth = 1;
 
 }

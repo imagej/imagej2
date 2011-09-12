@@ -34,19 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.patches;
 
-import ij.text.TextWindow;
+import imagej.ImageJ;
+import imagej.ext.options.OptionsService;
 import imagej.legacy.LegacyInjector;
-import imagej.util.Log;
-import imagej.util.SettingsKeys;
 
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * These class methods are used by the {@link LegacyInjector} to replace
- * code in IJ1 that sets values in it's Prefs class to instead use IJ2's
- * Prefs class.
+ * code in IJ1 that sets values in it's Prefs class to update IJ2's
+ * internal options as needed.
  * 
  * @author Barry DeZonia
  */
@@ -54,200 +52,162 @@ public class PrefsMethods {
 
 	// -- static variables and initialization --
 	
-	private static Map<String,String> keyMap;
+	private static class OptionKey {
+		public String pluginName;
+		public String fieldName;
+		
+		public OptionKey(String pName, String fName) {
+			pluginName = pName;
+			fieldName = fName;
+		}
+	}
+	
+	private static Map<String,OptionKey> keyMap;
 	
 	static {
-		keyMap = new HashMap<String,String>();
-		mapBasePrefNames();
-		mapOptionsPrefNames();
-		mapPluginPrefNames();
-		mapImageJInstancePrefNames();
-		mapMenuPrefNames();
-		mapParticleAnalyzerPrefNames();
-		mapAnalyzerPrefNames();
-		mapImportDialogPrefNames();
-		mapPlotWindowPrefNames();
-		mapNewImagePrefNames();
-		mapMiscPrefNames();
+		keyMap = new HashMap<String,OptionKey>();
+		mapPrefKeys();
 	}
+	
+	private static final OptionsService OPTIONS_SERVICE = ImageJ.get(OptionsService.class);
 	
 	// -- public interface --
 	
-	public static String get(final String ij1Key, final String defaultValue)
-	{
-		String ij2Key = getIJ2Key(ij1Key);
-		return imagej.util.Prefs.get(ij2Key, defaultValue);
-	}
-
-	public static boolean get(final String ij1Key, final boolean defaultValue)
-	{
-		String ij2Key = getIJ2Key(ij1Key);
-		return imagej.util.Prefs.getBoolean(ij2Key, defaultValue);
-	}
-
-	public static double get(final String ij1Key, final double defaultValue)
-	{
-		String ij2Key = getIJ2Key(ij1Key);
-		return imagej.util.Prefs.getDouble(ij2Key, defaultValue);
-	}
-
 	public static void set(String ij1Key, String text) {
-		String ij2Key = getIJ2Key(ij1Key);
-		imagej.util.Prefs.put(ij2Key, text);
+		OptionKey ij2Key = getIJ2Key(ij1Key);
+		// is there a parallel settings value in IJ2?
+		if (ij2Key != null) {
+			// do some special case code if necessary
+			if (ij1Key.equals("arrow.style")) {
+				int styleIndex = Integer.parseInt(text);
+				String styleName;
+				switch (styleIndex) {
+					case 1: styleName = "Notched"; break;
+					case 2: styleName = "Open"; break;
+					case 3: styleName = "Headless"; break;
+					default: styleName = "Filled"; break;
+				}
+				OPTIONS_SERVICE.setOption(ij2Key.pluginName, ij2Key.fieldName, styleName);
+			}
+			else // this key requires no special case code
+				OPTIONS_SERVICE.setOption(ij2Key.pluginName, ij2Key.fieldName, text);
+		}
 	}
-	
-	public static void set(String ij1Key, int value) {
-		String ij2Key = getIJ2Key(ij1Key);
-		imagej.util.Prefs.put(ij2Key, value);
-	}
-	
-	public static void set(String ij1Key, double value) {
-		String ij2Key = getIJ2Key(ij1Key);
-		imagej.util.Prefs.put(ij2Key, value);
-	}
-	
-	public static void set(String ij1Key, boolean value) {
-		String ij2Key = getIJ2Key(ij1Key);
-		imagej.util.Prefs.put(ij2Key, value);
-	}
-	
-	// TODO - I don't think I need getLocation(). It is used by Frame oriented
-	//   classes and we never instantiate those in IJ2. Right?
-	
-	public static Point getLocation(final String key) {
-		return null;
-	}
-	
-	// TODO
-	// Need getInt(), getString(), etc. also? Don't think so. Prefs live in
-	//   Prefs' class variable "ijPrefs". Properties live in Prefs' class
-	//   variable "props". Those methods use "props".
 	
 	// -- private interface --
 	
-	private static void warn(String key) {
-		// TODO - might want to disable this
-		Log.warn("Legacy preferences key map does not contain IJ1 key: "+key);
-	}
-
-	private static String getIJ2Key(String ij1Key) {
-		String ij2Key = keyMap.get(ij1Key);
-		if (ij2Key == null) {
-			warn(ij1Key);
-			ij2Key = ij.Prefs.KEY_PREFIX + "legacy.unknown." + ij1Key;
-		}
-		return ij2Key;
+	private static OptionKey getIJ2Key(String ij1Key) {
+		return keyMap.get(ij1Key);
 	}
 	
-	private static void mapBasePrefNames() {
+	private static void mapPrefKeys() {
+		keyMap.put(ij.Prefs.JPEG, new OptionKey("imagej.core.plugins.options.OptionsInputOutput","jpegQuality"));
+		keyMap.put(ij.Prefs.DIV_BY_ZERO_VALUE, new OptionKey("imagej.core.plugins.options.OptionsMisc","divByZeroVal"));
+		keyMap.put(ij.Prefs.THREADS, new OptionKey("imagej.core.plugins.options.OptionsMemoryAndThreads","stackThreads"));
+		keyMap.put(ij.Prefs.MENU_SIZE, new OptionKey("imagej.core.plugins.options.OptionsAppearence","menuFontSize"));
+		keyMap.put("arrow.double", new OptionKey("imagej.core.plugins.options.OptionsArrowTool","arrowDoubleHeaded"));
+		keyMap.put("arrow.outline", new OptionKey("imagej.core.plugins.options.OptionsArrowTool","arrowOutline"));
+		keyMap.put("arrow.size", new OptionKey("imagej.core.plugins.options.OptionsArrowTool","arrowSize"));
+		keyMap.put("arrow.style", new OptionKey("imagej.core.plugins.options.OptionsArrowTool","arrowStyle"));
+		keyMap.put("arrow.width", new OptionKey("imagej.core.plugins.options.OptionsArrowTool","arrowWidth"));
+		keyMap.put("javac.target", new OptionKey("imagej.core.plugins.options.OptionsCompiler","targetJavaVersion"));
+		keyMap.put("options.ext", new OptionKey("imagej.core.plugins.options.OptionsInputOutput","tableFileExtension"));
+		keyMap.put("pp.max", new OptionKey("imagej.core.plugins.options.OptionsProfilePlot","maxY"));
+		keyMap.put("pp.min", new OptionKey("imagej.core.plugins.options.OptionsProfilePlot","minY"));
+		keyMap.put("pp.width", new OptionKey("imagej.core.plugins.options.OptionsProfilePlot","width"));
+		keyMap.put("pp.height", new OptionKey("imagej.core.plugins.options.OptionsProfilePlot","height"));
+		keyMap.put("proxy.server", new OptionKey("imagej.core.plugins.options.OptionsProxy","proxyServer"));
+		keyMap.put("proxy.port", new OptionKey("imagej.core.plugins.options.OptionsProxy","port"));
+		keyMap.put("toolbar.arc.size", new OptionKey("imagej.core.plugins.options.OptionsRoundedRectangleTool","cornerDiameter"));
+	}
+
+	@SuppressWarnings("unused")
+	private static void prefsGraveyard() {
+		
+		// These are IJ1 prefs that do not have an IJ2 OptionsPlugin associated
+		// with them. Keep around for now in case we do something with them.
+		
+		// not a options plugin field
+		//keyMap.put("ij.x",);
+		// not a options plugin field
+		//keyMap.put("ij.y",);
+
+		// not a options plugin field
+		//keyMap.put("proxy.user", null);
+		// not a options plugin field
+		//keyMap.put(TextWindow.WIDTH_KEY,);
+		// not a options plugin field
+		//keyMap.put(TextWindow.HEIGHT_KEY,);
+		// not a options plugin field
+		//keyMap.put("tw.font.anti",);
+		// not a options plugin field
+		//keyMap.put("tw.font.size",);
+
+		// next one is a animator dialog preference - no direct IJ2 mapping
+		//keyMap.put(ij.Prefs.FPS,);
+		// next one is a noise option dialog preference - no direct IJ2 mapping
+		//keyMap.put(ij.Prefs.NOISE_SD,);
+
+		//keyMap.put("ap.options",);
+		//keyMap.put("mark.width",);
+		//keyMap.put("measurements",);
+		//keyMap.put("new.type",);
+		//keyMap.put("new.fill",);
+		//keyMap.put("new.width",);
+		//keyMap.put("new.height",);
+		//keyMap.put("new.slices",);
+		//keyMap.put("precision",);
+		//keyMap.put("raw.type",);
+		//keyMap.put("raw.width",);
+		//keyMap.put("raw.height",);
+		//keyMap.put("raw.offset",);
+		//keyMap.put("raw.n",);
+		//keyMap.put("raw.gap",);
+		//keyMap.put("raw.options",);
+
 		// Next one relies on value of OpenDialog directory. We never invoke.
-		//keyMap.put(ij.Prefs.DIR_IMAGE, null);
+		//keyMap.put(ij.Prefs.DIR_IMAGE,);
 		// Next one used to draw IJ1 Rois. Since we don't draw we can ignore
-		//keyMap.put(ij.Prefs.ROICOLOR, null);
+		//keyMap.put(ij.Prefs.ROICOLOR,);
 		// Next one only used by ImageCanvas which we don't draw to
-		//keyMap.put(ij.Prefs.SHOW_ALL_COLOR, null);
+		//keyMap.put(ij.Prefs.SHOW_ALL_COLOR,);
 		// Next one only used by Toolbar which we don't instantiate
-		//keyMap.put(ij.Prefs.FCOLOR, null);
+		//keyMap.put(ij.Prefs.FCOLOR,);
 		// Next one only used by Toolbar which we don't instantiate
-		//keyMap.put(ij.Prefs.BCOLOR, null);
-		keyMap.put(ij.Prefs.JPEG, SettingsKeys.OPTIONS_IO_JPEG_QUALITY);
-		keyMap.put(ij.Prefs.FPS, SettingsKeys.SETTINGS_ANIMATOR_FPS);
-		keyMap.put(ij.Prefs.DIV_BY_ZERO_VALUE, SettingsKeys.OPTIONS_MISC_DBZ_VALUE);
-		keyMap.put(ij.Prefs.NOISE_SD, SettingsKeys.SETTINGS_FILTERS_NOISE_SD);
-		keyMap.put(ij.Prefs.THREADS, SettingsKeys.OPTIONS_MEMORYTHREADS_STACK_THREADS);
-	}
+		//keyMap.put(ij.Prefs.BCOLOR,);
 
-	private static void mapOptionsPrefNames() {
-		keyMap.put(ij.Prefs.OPTIONS, SettingsKeys.SETTINGS_PREFS_OPTIONS);
-	}
-	
-	private static void mapPluginPrefNames() {
-		// TODO - it seems like there is nothing to do
-	}
-	
-	private static void mapImageJInstancePrefNames() {
-		keyMap.put("ij.x", SettingsKeys.SETTINGS_PREFERRED_X_LOC);
-		keyMap.put("ij.y", SettingsKeys.SETTINGS_PREFERRED_Y_LOC);
-		keyMap.put("proxy.server", SettingsKeys.OPTIONS_PROXY_SERVER);
-		keyMap.put("proxy.port", SettingsKeys.OPTIONS_PROXY_PORT);
-		keyMap.put("proxy.user", SettingsKeys.SETTINGS_PROXY_USER);
-		keyMap.put(TextWindow.WIDTH_KEY, SettingsKeys.SETTINGS_TEXTWINDOW_WIDTH);
-		keyMap.put(TextWindow.HEIGHT_KEY, SettingsKeys.SETTINGS_TEXTWINDOW_HEIGHT);
-		keyMap.put("tw.font.anti", SettingsKeys.SETTINGS_TEXTWINDOW_FONT_ANTIALIASED);
-		keyMap.put("tw.font.size", SettingsKeys.SETTINGS_TEXTWINDOW_FONT_SIZE);
-	}
-	
-	private static void mapMenuPrefNames() {
-		keyMap.put(ij.Prefs.MENU_SIZE, SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE);
-	}
-	
-	private static void mapParticleAnalyzerPrefNames() {
-		keyMap.put("ap.options", SettingsKeys.SETTINGS_PARTICLE_ANALYZER_OPTIONS);
-	}
-	
-	private static void mapAnalyzerPrefNames() {
-		keyMap.put("measurements",SettingsKeys.SETTINGS_ANALYZER_MEASUREMENTS);
-		keyMap.put("mark.width",SettingsKeys.SETTINGS_ANALYZER_MARK_WIDTH);
-		keyMap.put("precision",SettingsKeys.SETTINGS_ANALYZER_PRECISION);
-	}
-	
-	private static void mapImportDialogPrefNames() {
-		keyMap.put("raw.type", SettingsKeys.SETTINGS_IMPORT_TYPE);
-		keyMap.put("raw.width", SettingsKeys.SETTINGS_IMPORT_WIDTH);
-		keyMap.put("raw.height", SettingsKeys.SETTINGS_IMPORT_HEIGHT);
-		keyMap.put("raw.offset", SettingsKeys.SETTINGS_IMPORT_OFFSET);
-		keyMap.put("raw.n", SettingsKeys.SETTINGS_IMPORT_N);
-		keyMap.put("raw.gap", SettingsKeys.SETTINGS_IMPORT_GAP);
-		keyMap.put("raw.options", SettingsKeys.SETTINGS_IMPORT_OPTIONS);
-	}
-	
-	private static void mapPlotWindowPrefNames() {
-		keyMap.put("pp.max", SettingsKeys.SETTINGS_PLOTWINDOW_MAX);
-		keyMap.put("pp.min", SettingsKeys.SETTINGS_PLOTWINDOW_MIN);
-		keyMap.put("pp.options", SettingsKeys.SETTINGS_PLOTWINDOW_OPTIONS);
-		keyMap.put("pp.width", SettingsKeys.SETTINGS_PLOTWINDOW_PLOT_WIDTH);
-		keyMap.put("pp.height", SettingsKeys.SETTINGS_PLOTWINDOW_PLOT_HEIGHT);
-	}
-	
-	private static void mapNewImagePrefNames() {
-		keyMap.put("new.type", SettingsKeys.SETTINGS_NEWIMAGE_TYPE);
-		keyMap.put("new.fill", SettingsKeys.SETTINGS_NEWIMAGE_FILL);
-		keyMap.put("new.width", SettingsKeys.SETTINGS_NEWIMAGE_WIDTH);
-		keyMap.put("new.height", SettingsKeys.SETTINGS_NEWIMAGE_HEIGHT);
-		keyMap.put("new.slices", SettingsKeys.SETTINGS_NEWIMAGE_SLICES);
-	}
-	
-	// next method populated by searching IJ1 source for all calls to Prefs.get()
-	// and seeing what we may have missed
-	
-	private static void mapMiscPrefNames() {
-		keyMap.put("arrow.double", SettingsKeys.OPTIONS_ARROW_DOUBLEHEADED);
-		keyMap.put("arrow.outline", SettingsKeys.OPTIONS_ARROW_OUTLINE);
-		keyMap.put("arrow.size", SettingsKeys.OPTIONS_ARROW_SIZE);
-		keyMap.put("arrow.style", SettingsKeys.OPTIONS_ARROW_STYLE);
-		keyMap.put("arrow.width", SettingsKeys.OPTIONS_ARROW_WIDTH);
-		keyMap.put("batch.format", SettingsKeys.SETTINGS_BATCH_FORMAT);
-		keyMap.put("batch.input", SettingsKeys.SETTINGS_BATCH_INPUT);
-		keyMap.put("batch.output", SettingsKeys.SETTINGS_BATCH_OUTPUT);
-		keyMap.put("bs.background", SettingsKeys.SETTINGS_BACKGROUND_SUBTRACTER_BACKGROUND);
-		keyMap.put("command-finder.close", SettingsKeys.SETTINGS_COMMAND_FINDER_CLOSE);
-		keyMap.put("cthresholder.dark", SettingsKeys.SETTINGS_COLOR_THRESHOLDER_DARK);
-		keyMap.put("editor.case-sensitive", SettingsKeys.SETTINGS_EDITOR_CASE_SENSITIVE);
-		keyMap.put("editor.font.mono", SettingsKeys.SETTINGS_EDITOR_FONT_MONO);
-		keyMap.put("editor.font.size", SettingsKeys.SETTINGS_EDITOR_FONT_SIZE);
-		keyMap.put("gel.hscale", SettingsKeys.SETTINGS_GEL_ANALYZER_HSCALE);
-		keyMap.put("gel.options", SettingsKeys.SETTINGS_GEL_ANALYZER_OPTIONS); 
-		keyMap.put("gel.vscale", SettingsKeys.SETTINGS_GEL_ANALYZER_VSCALE);
-		keyMap.put("javac.target", SettingsKeys.OPTIONS_COMPILER_VERSION);
-		keyMap.put("label.format", SettingsKeys.SETTINGS_STACKLABELER_LABEL_FORMAT);
-		keyMap.put("math.macro", SettingsKeys.SETTINGS_IMAGE_MATH_MACRO_VALUE);
-		keyMap.put("options.ext", SettingsKeys.OPTIONS_IO_FILE_EXT);
-		keyMap.put("recorder.mode", SettingsKeys.SETTINGS_RECORDER_MODE);
-		keyMap.put("resizer.zero", SettingsKeys.SETTINGS_CANVAS_RESIZER_ZERO);
-		keyMap.put("threshold.dark", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_DARK_BACKGROUND);
-		keyMap.put("threshold.mode", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_MODE_KEY);
-		keyMap.put("toolbar.arc.size", SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER);
-		keyMap.put("toolbar.brush.size", SettingsKeys.SETTINGS_TOOLBAR_LAST_BRUSH_SIZE);
-		keyMap.put("zproject.method",SettingsKeys.SETTINGS_ZPROJECTOR_METHOD);
+		// TODO
+		// This next one is tricky. IJ1 encodes some settings together as an int
+		// in ij.Prefs -> saveOptions() and loadOptions(). If we change a setting
+		// in IJ2, the IJ1 variables should get set. But the ability of an IJ1
+		// prefs user to get the right values is predicated on the last time IJ1's
+		// Prefs.saveOptions() was run. Maybe the OptionsSynchronizer has to fire
+		// something in IJ1 land so that saveOptions() is called often enough.
+		// keyMap.put(ij.Prefs.OPTIONS,);
+
+		// TODO - what about this one? encoded from many fields in IJ1
+		//keyMap.put("pp.options",);
+
+		//keyMap.put("batch.format",);
+		//keyMap.put("batch.input",);
+		//keyMap.put("batch.output",);
+		//keyMap.put("bs.background",);
+
+		//keyMap.put("command-finder.close", SettingsKeys.SETTINGS_COMMAND_FINDER_CLOSE);
+		//keyMap.put("cthresholder.dark", SettingsKeys.SETTINGS_COLOR_THRESHOLDER_DARK);
+		//keyMap.put("editor.case-sensitive", SettingsKeys.SETTINGS_EDITOR_CASE_SENSITIVE);
+		//keyMap.put("editor.font.mono", SettingsKeys.SETTINGS_EDITOR_FONT_MONO);
+		//keyMap.put("editor.font.size", SettingsKeys.SETTINGS_EDITOR_FONT_SIZE);
+		//keyMap.put("gel.hscale", SettingsKeys.SETTINGS_GEL_ANALYZER_HSCALE);
+		//keyMap.put("gel.options", SettingsKeys.SETTINGS_GEL_ANALYZER_OPTIONS); 
+		//keyMap.put("gel.vscale", SettingsKeys.SETTINGS_GEL_ANALYZER_VSCALE);
+		//keyMap.put("label.format", SettingsKeys.SETTINGS_STACKLABELER_LABEL_FORMAT);
+		//keyMap.put("math.macro", SettingsKeys.SETTINGS_IMAGE_MATH_MACRO_VALUE);
+		//keyMap.put("recorder.mode", SettingsKeys.SETTINGS_RECORDER_MODE);
+		//keyMap.put("resizer.zero", SettingsKeys.SETTINGS_CANVAS_RESIZER_ZERO);
+		//keyMap.put("threshold.dark", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_DARK_BACKGROUND);
+		//keyMap.put("threshold.mode", SettingsKeys.SETTINGS_THRESHOLD_ADJUSTER_MODE_KEY);
+		//keyMap.put("toolbar.brush.size", SettingsKeys.SETTINGS_TOOLBAR_LAST_BRUSH_SIZE);
+		//keyMap.put("zproject.method",SettingsKeys.SETTINGS_ZPROJECTOR_METHOD);
 	}
 }

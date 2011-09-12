@@ -50,8 +50,6 @@ import ij.process.ImageConverter;
 import imagej.ImageJ;
 import imagej.ext.options.OptionsPlugin;
 import imagej.ext.options.OptionsService;
-import imagej.util.Prefs;
-import imagej.util.SettingsKeys;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -66,6 +64,8 @@ import java.util.List;
  */
 public class OptionsSynchronizer {
 
+	private static OptionsService optionsService = ImageJ.get(OptionsService.class);
+	
 	public OptionsSynchronizer() {
 		// make sure OptionsPlugin fields are initialized
 		List<OptionsPlugin> optionsPlugins =
@@ -77,7 +77,7 @@ public class OptionsSynchronizer {
 	/**
 	 * Updates IJ1 settings and preferences to reflect values set in IJ2 dialogs.
 	 */ 
-	public void update() {
+	public void updateIJ1SettingsFromIJ2() {
 		appearenceOptions();
 		arrowOptions();
 		colorOptions();
@@ -98,64 +98,65 @@ public class OptionsSynchronizer {
 		
 	// -- helpers --
 	
-	private String getString(String key, String defaultValue) {
-		return Prefs.get(key, defaultValue);
-	}
-
-	private boolean getBoolean(String key, boolean defaultValue) {
-		String defaultString = (defaultValue ? "true" : "false");
-		String value = Prefs.get(key, defaultString);
-		if ((value == null) || (value == ""))
-			value = defaultString;
-		return value.equalsIgnoreCase("true");
-	}
-
-	private int getInteger(String key, int defaultValue) {
-		String defaultString = "" + defaultValue;
-		String value = Prefs.get(key, defaultString);
-		if (value.equals(""))
-			value = defaultString;
-		return Integer.parseInt(value);
-	}
-
-	private double getDouble(String key, double defaultValue) {
-		String defaultString = "" + defaultValue;
-		String value = Prefs.get(key, defaultString);
-		if (value.equals(""))
-			value = defaultString;
-		return Double.parseDouble(value);
+	private static String getString(String className, String fieldName) {
+		return (String) optionsService.getOption(className, fieldName);
 	}
 	
-	private Color getColor(String key, Color defaultValue) {
-		String defaultString = defaultValue.toString();
-		String value = Prefs.get(key, defaultString);
-		if (value.equals(""))
-			value = defaultString;
-		return Colors.getColor(value, defaultValue);
+	private static Boolean getBoolean(String className, String fieldName) {
+		return (Boolean) optionsService.getOption(className, fieldName);
+	}
+	
+	private static Integer getInteger(String className, String fieldName) {
+		return (Integer) optionsService.getOption(className, fieldName);
+	}
+	
+	private static Double getDouble(String className, String fieldName) {
+		return (Double) optionsService.getOption(className, fieldName);
+	}
+	
+	private static Color getColor(String className, String fieldName, Color defaultColor) {
+		String colorName = getString(className, fieldName);
+		return Colors.getColor(colorName, defaultColor);
 	}
 
+	/*
+	private static void setOption(String className, String fieldName, Object value) {
+		Field field = ClassUtils.getField(className, fieldName);
+		OptionsPlugin instance = optionsService.getInstance(className);
+		ClassUtils.setValue(field, instance, value);
+	}
+	*/
+	
 	private void appearenceOptions() {	
-		ij.Prefs.antialiasedTools = getBoolean(SettingsKeys.OPTIONS_APPEARANCE_ANTIALIASED_TOOL_ICONS, true);
-		ij.Prefs.blackCanvas = getBoolean(SettingsKeys.OPTIONS_APPEARANCE_BLACK_CANVAS, false);
-		ij.Prefs.open100Percent = getBoolean(SettingsKeys.OPTIONS_APPEARANCE_FULL_ZOOMED_IMAGES, false);
-		ij.Prefs.interpolateScaledImages = getBoolean(SettingsKeys.OPTIONS_APPEARANCE_INTERPOLATE_ZOOMED_IMAGES, false);
+		ij.Prefs.antialiasedText = false;
+		
+		ij.Prefs.antialiasedTools = getBoolean("imagej.core.plugins.options.OptionsAppearance", "antialiasedToolIcons");
+		
+		ij.Prefs.blackCanvas = getBoolean("imagej.core.plugins.options.OptionsAppearance", "blackCanvas");
+		
+		ij.Prefs.open100Percent = getBoolean("imagej.core.plugins.options.OptionsAppearance", "fullZoomImages");
+		
+		ij.Prefs.interpolateScaledImages = getBoolean("imagej.core.plugins.options.OptionsAppearance", "interpZoomedImages");
+		
+		ij.Prefs.noBorder = getBoolean("imagej.core.plugins.options.OptionsAppearance", "noImageBorder");
+		
+		ij.Prefs.useInvertingLut = getBoolean("imagej.core.plugins.options.OptionsAppearance", "useInvertingLUT");
+		
 		// TODO
 		// this one needs to have code applied to IJ2. Nothing to set for IJ1.
 		//Prefs.get(SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE);
-		ij.Prefs.noBorder = getBoolean(SettingsKeys.OPTIONS_APPEARANCE_NO_IMAGE_BORDER, false);
-		ij.Prefs.useInvertingLut = getBoolean(SettingsKeys.OPTIONS_APPEARANCE_USE_INVERTING_LUT, false);
 	}
-	
+
 	private void arrowOptions() {	
 		// TODO - for this next setting there is nothing to synchronize. Changing
 		// this setting runs some code in IJ1's UI. Might need some code on the IJ2
 		// side that mirrors the behavior. 
 		//String color = getString(SettingsKeys.OPTIONS_ARROW_COLOR);
-		boolean doubleHeaded = getBoolean(SettingsKeys.OPTIONS_ARROW_DOUBLEHEADED, false);
-		boolean outline = getBoolean(SettingsKeys.OPTIONS_ARROW_OUTLINE, false);
-		int size = getInteger(SettingsKeys.OPTIONS_ARROW_SIZE, 10);
-		String style = getString(SettingsKeys.OPTIONS_ARROW_STYLE, "Filled");
-		int width = getInteger(SettingsKeys.OPTIONS_ARROW_WIDTH, 2);
+		boolean doubleHeaded = getBoolean("imagej.core.plugins.options.OptionsArrowTool","arrowDoubleHeaded");
+		boolean outline = getBoolean("imagej.core.plugins.options.OptionsArrowTool","arrowOutline");
+		int size = getInteger("imagej.core.plugins.options.OptionsArrowTool","arrowSize");
+		String style = getString("imagej.core.plugins.options.OptionsArrowTool","arrowStyle");
+		int width = getInteger("imagej.core.plugins.options.OptionsArrowTool","arrowWidth");
 
 		if (style == null) style = "Filled";
 		int styleIndex = 0;
@@ -163,8 +164,8 @@ public class OptionsSynchronizer {
 		else if (style.equals("Notched")) styleIndex = 1;
 		else if (style.equals("Open")) styleIndex = 2;
 		else if (style.equals("Headless")) styleIndex = 3;
-
-		ij.Prefs.set(Arrow.STYLE_KEY, style);
+		
+		ij.Prefs.set(Arrow.STYLE_KEY, styleIndex);
 		ij.Prefs.set(Arrow.WIDTH_KEY, width);
 		ij.Prefs.set(Arrow.SIZE_KEY, size);
 		ij.Prefs.set(Arrow.OUTLINE_KEY, outline);
@@ -178,28 +179,28 @@ public class OptionsSynchronizer {
 	}
 	
 	private void colorOptions() {
-		Toolbar.setForegroundColor(getColor(SettingsKeys.OPTIONS_COLORS_FOREGROUND, Color.black));
-		Toolbar.setBackgroundColor(getColor(SettingsKeys.OPTIONS_COLORS_BACKGROUND, Color.white));
-		Roi.setColor(getColor(SettingsKeys.OPTIONS_COLORS_SELECTION, Color.yellow));
+		Toolbar.setForegroundColor(getColor("imagej.core.plugins.options.OptionsColors","fgColor", Color.white));
+		Toolbar.setBackgroundColor(getColor("imagej.core.plugins.options.OptionsColors","bgColor", Color.black));
+		Roi.setColor(getColor("imagej.core.plugins.options.OptionsColors","selColor",Color.yellow));
 	}
 	
 	private void compilerOptions() {
-		// TODO
-		// this next key has no way to be set programmatically in IJ1
-		// Prefs.get(SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO, false);
-		String version = getString(SettingsKeys.OPTIONS_COMPILER_VERSION, "1.5");
+		String version = getString("imagej.core.plugins.options.OptionsCompiler","targetJavaVersion");
 		if (version == null) version = "1.5";
 		if (version.equals("1.4")) ij.Prefs.set("javac.target", 0);
 		else if (version.equals("1.5")) ij.Prefs.set("javac.target", 1);
 		else if (version.equals("1.6")) ij.Prefs.set("javac.target", 2);
 		else if (version.equals("1.7")) ij.Prefs.set("javac.target", 3);
+		// TODO
+		// this next key has no way to be set programmatically in IJ1
+		// Prefs.get(SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO, false);
 	}
 	
 	private void conversionsOptions() {	
 		double[] weights = ColorProcessor.getWeightingFactors();
 		boolean weighted = !(weights[0]==1d/3d && weights[1]==1d/3d && weights[2]==1d/3d);
-		ImageConverter.setDoScaling(getBoolean(SettingsKeys.OPTIONS_CONVERSIONS_SCALE, true));
-		ij.Prefs.weightedColor = getBoolean(SettingsKeys.OPTIONS_CONVERSIONS_WEIGHTED, false);
+		ImageConverter.setDoScaling(getBoolean("imagej.core.plugins.options.OptionsConversions","scaleWhenConverting"));
+		ij.Prefs.weightedColor = getBoolean("imagej.core.plugins.options.OptionsConversions","weightedRgbConversions");
 		if (!ij.Prefs.weightedColor)
 			ColorProcessor.setWeightingFactors(1d/3d, 1d/3d, 1d/3d);
 		else if (ij.Prefs.weightedColor && !weighted)
@@ -207,16 +208,16 @@ public class OptionsSynchronizer {
 	}
 	
 	private void dicomOptions() {	
-		ij.Prefs.openDicomsAsFloat = getBoolean(SettingsKeys.OPTIONS_DICOM_OPEN_FLOAT32, false);
-		ij.Prefs.flipXZ = getBoolean(SettingsKeys.OPTIONS_DICOM_ROTATE_XZ, false);
-		ij.Prefs.rotateYZ = getBoolean(SettingsKeys.OPTIONS_DICOM_ROTATE_YZ, false);
+		ij.Prefs.openDicomsAsFloat = getBoolean("imagej.core.plugins.options.OptionsDicom","openAs32bitFloat");
+		ij.Prefs.flipXZ = getBoolean("imagej.core.plugins.options.OptionsDicom","rotateXZ");
+		ij.Prefs.rotateYZ = getBoolean("imagej.core.plugins.options.OptionsDicom","rotateYZ");
 	}
 	
 	private void fontOptions() {	
-		String fontName = getString(SettingsKeys.OPTIONS_FONT_NAME, "SansSerif");  // TODO - bad default name?
-		int fontSize = getInteger(SettingsKeys.OPTIONS_FONT_SIZE, 18);
-		String styleName = getString(SettingsKeys.OPTIONS_FONT_STYLE, "");
-		boolean smooth = getBoolean(SettingsKeys.OPTIONS_FONT_SMOOTHING, true); 
+		String fontName = getString("imagej.core.plugins.options.OptionsFont","font");
+		int fontSize = getInteger("imagej.core.plugins.options.OptionsFont","fontSize");
+		String styleName = getString("imagej.core.plugins.options.OptionsFont","fontStyle");
+		boolean smooth = getBoolean("imagej.core.plugins.options.OptionsFont","fontSmooth"); 
 		
 		if (styleName == null) styleName = "";
 		int fontStyle = Font.PLAIN;
@@ -230,40 +231,40 @@ public class OptionsSynchronizer {
 	}
 	
 	private void ioOptions() {	
-		ij.Prefs.copyColumnHeaders = getBoolean(SettingsKeys.OPTIONS_IO_COPY_COLUMNS, false);
-		ij.Prefs.noRowNumbers = !getBoolean(SettingsKeys.OPTIONS_IO_COPY_ROWS, true);
-		String extension = getString(SettingsKeys.OPTIONS_IO_FILE_EXT, ".txt");
-		if (extension == null) extension = ".TXT";
+		ij.Prefs.copyColumnHeaders = getBoolean("imagej.core.plugins.options.OptionsInputOutput","copyColumnHeaders");
+		ij.Prefs.noRowNumbers = !getBoolean("imagej.core.plugins.options.OptionsInputOutput","copyRowNumbers");
+		String extension = getString("imagej.core.plugins.options.OptionsInputOutput","tableFileExtension");
+		if (extension == null) extension = ".txt";
 		ij.Prefs.set("options.ext", extension);
-		FileSaver.setJpegQuality(getInteger(SettingsKeys.OPTIONS_IO_JPEG_QUALITY, 85));
-		ij.Prefs.dontSaveHeaders = !getBoolean(SettingsKeys.OPTIONS_IO_SAVE_COLUMNS, true);
-		ij.Prefs.intelByteOrder = getBoolean(SettingsKeys.OPTIONS_IO_SAVE_INTEL, false);
-		ij.Prefs.dontSaveRowNumbers = !getBoolean(SettingsKeys.OPTIONS_IO_SAVE_ROWS, true);
-		ij.Prefs.setTransparentIndex(getInteger(SettingsKeys.OPTIONS_IO_TRANSPARENT_INDEX, -1));
-		ij.Prefs.useJFileChooser = getBoolean(SettingsKeys.OPTIONS_IO_USE_JFILECHOOSER, false);
+		FileSaver.setJpegQuality(getInteger("imagej.core.plugins.options.OptionsInputOutput","jpegQuality"));
+		ij.Prefs.dontSaveHeaders = !getBoolean("imagej.core.plugins.options.OptionsInputOutput","saveColumnHeaders");
+		ij.Prefs.intelByteOrder = getBoolean("imagej.core.plugins.options.OptionsInputOutput","saveOrderIntel");
+		ij.Prefs.dontSaveRowNumbers = !getBoolean("imagej.core.plugins.options.OptionsInputOutput","saveRowNumbers");
+		ij.Prefs.setTransparentIndex(getInteger("imagej.core.plugins.options.OptionsInputOutput","transparentIndex"));
+		ij.Prefs.useJFileChooser = getBoolean("imagej.core.plugins.options.OptionsInputOutput","useJFileChooser");
 	}
 	
 	private void lineWidthOptions() {	
-		Line.setWidth(getInteger(SettingsKeys.OPTIONS_LINEWIDTH_WIDTH, 1));
+		Line.setWidth(getInteger("imagej.core.plugins.options.OptionsLineWidth","lineWidth"));
 	}	
 
 	private void memoryAndThreadsOptions() {	
+		ij.Prefs.keepUndoBuffers = getBoolean("imagej.core.plugins.options.OptionsMemoryAndThreads","multipleBuffers");
+		ij.Prefs.noClickToGC = !getBoolean("imagej.core.plugins.options.OptionsMemoryAndThreads","runGcOnClick");
+		ij.Prefs.setThreads(getInteger("imagej.core.plugins.options.OptionsMemoryAndThreads","stackThreads"));
 		// TODO
 		// nothing to set in this next case. Need IJ2 to fire some code as appropriate
 		//Prefs.get(SettingsKeys.OPTIONS_MEMORYTHREADS_MAX_MEMORY);
-		ij.Prefs.keepUndoBuffers = getBoolean(SettingsKeys.OPTIONS_MEMORYTHREADS_MULTIPLE_UNDO_BUFFERS, false);
-		ij.Prefs.noClickToGC = !getBoolean(SettingsKeys.OPTIONS_MEMORYTHREADS_RUN_GC, false);
-		ij.Prefs.setThreads(getInteger(SettingsKeys.OPTIONS_MEMORYTHREADS_STACK_THREADS, 2));
 	}
 	
 	private void miscOptions() {	
-		String divValue = getString(SettingsKeys.OPTIONS_MISC_DBZ_VALUE,"infinity");
-		IJ.debugMode = getBoolean(SettingsKeys.OPTIONS_MISC_DEBUG_MODE, false);
-		IJ.hideProcessStackDialog = getBoolean(SettingsKeys.OPTIONS_MISC_HIDE_STACK_MSG, false);
-		ij.Prefs.moveToMisc = getBoolean(SettingsKeys.OPTIONS_MISC_MOVE_PLUGINS, false);
-		ij.Prefs.usePointerCursor = getBoolean(SettingsKeys.OPTIONS_MISC_POINTER_CURSOR, false);
-		ij.Prefs.requireControlKey = getBoolean(SettingsKeys.OPTIONS_MISC_REQUIRE_COMMAND, false);
-		ij.Prefs.runSocketListener = getBoolean(SettingsKeys.OPTIONS_MISC_SINGLE_INSTANCE, false);
+		String divValue = getString("imagej.core.plugins.options.OptionsMisc","divByZeroVal");
+		IJ.debugMode = getBoolean("imagej.core.plugins.options.OptionsMisc","debugMode");
+		IJ.hideProcessStackDialog = getBoolean("imagej.core.plugins.options.OptionsMisc","hideProcessStackDialog");
+		ij.Prefs.moveToMisc = getBoolean("imagej.core.plugins.options.OptionsMisc","moveIsolatedPlugins");
+		ij.Prefs.usePointerCursor = getBoolean("imagej.core.plugins.options.OptionsMisc","usePtrCursor");
+		ij.Prefs.requireControlKey = getBoolean("imagej.core.plugins.options.OptionsMisc","requireCommandKey");
+		ij.Prefs.runSocketListener = getBoolean("imagej.core.plugins.options.OptionsMisc","runSingleInstanceListener");
 		
 		if (divValue == null) divValue = "infinity";
 		if (divValue.equalsIgnoreCase("infinity") || divValue.equalsIgnoreCase("infinite"))
@@ -282,26 +283,26 @@ public class OptionsSynchronizer {
 	}
 	
 	private void pointOptions() {	
-		ij.Prefs.pointAddToManager = getBoolean(SettingsKeys.OPTIONS_POINT_ADD_ROI, false);
-		ij.Prefs.pointAutoMeasure = getBoolean(SettingsKeys.OPTIONS_POINT_AUTO_MEASURE, false);
-		ij.Prefs.pointAutoNextSlice = getBoolean(SettingsKeys.OPTIONS_POINT_AUTOSLICE, false);
-		ij.Prefs.noPointLabels = !getBoolean(SettingsKeys.OPTIONS_POINT_LABEL_POINTS, true);
-		Analyzer.markWidth = getInteger(SettingsKeys.OPTIONS_POINT_MARK_WIDTH, 0);
-		Roi.setColor(getColor(SettingsKeys.OPTIONS_POINT_SELECTION_COLOR, Color.yellow));
+		ij.Prefs.pointAddToManager = getBoolean("imagej.core.plugins.options.OptionsPointTool","addToRoiMgr");
+		ij.Prefs.pointAutoMeasure = getBoolean("imagej.core.plugins.options.OptionsPointTool","autoMeasure");
+		ij.Prefs.pointAutoNextSlice = getBoolean("imagej.core.plugins.options.OptionsPointTool","autoNextSlice");
+		ij.Prefs.noPointLabels = !getBoolean("imagej.core.plugins.options.OptionsPointTool","labelPoints");
+		Analyzer.markWidth = getInteger("imagej.core.plugins.options.OptionsPointTool","markWidth");
+		Roi.setColor(getColor("imagej.core.plugins.options.OptionsPointTool","selectionColor",Color.yellow));
 	}
-	
+
 	private void profilePlotOptions() {	
-		ij.gui.PlotWindow.autoClose = getBoolean(SettingsKeys.OPTIONS_PROFILEPLOT_AUTOCLOSE, false);
-		ij.gui.PlotWindow.saveXValues = !getBoolean(SettingsKeys.OPTIONS_PROFILEPLOT_DISCARD_X, false);
-		ij.gui.PlotWindow.noGridLines = !getBoolean(SettingsKeys.OPTIONS_PROFILEPLOT_DRAW_GRID, true);
-		boolean fixedScale = getBoolean(SettingsKeys.OPTIONS_PROFILEPLOT_FIXED_YSCALE, false);
-		ij.gui.PlotWindow.plotHeight = getInteger(SettingsKeys.OPTIONS_PROFILEPLOT_HEIGHT, 200);
-		ij.gui.PlotWindow.interpolate = getBoolean(SettingsKeys.OPTIONS_PROFILEPLOT_INTERPOLATE, true);
-		ij.gui.PlotWindow.listValues = getBoolean(SettingsKeys.OPTIONS_PROFILEPLOT_LIST_VALUES, false);
-		double yMax = getDouble(SettingsKeys.OPTIONS_PROFILEPLOT_MAX_Y, 0);
-		double yMin = getDouble(SettingsKeys.OPTIONS_PROFILEPLOT_MIN_Y, 0);
-		ij.Prefs.verticalProfile = getBoolean(SettingsKeys.OPTIONS_PROFILEPLOT_VERTICAL, false);
-		ij.gui.PlotWindow.plotWidth = getInteger(SettingsKeys.OPTIONS_PROFILEPLOT_WIDTH, 450);
+		ij.gui.PlotWindow.autoClose = getBoolean("imagej.core.plugins.options.OptionsProfilePlot","autoClose");
+		ij.gui.PlotWindow.saveXValues = !getBoolean("imagej.core.plugins.options.OptionsProfilePlot","noSaveXValues");
+		ij.gui.PlotWindow.noGridLines = !getBoolean("imagej.core.plugins.options.OptionsProfilePlot","drawGridLines");
+		boolean fixedScale = getBoolean("imagej.core.plugins.options.OptionsProfilePlot","yFixedScale");
+		ij.gui.PlotWindow.plotHeight = getInteger("imagej.core.plugins.options.OptionsProfilePlot","height");
+		ij.gui.PlotWindow.interpolate = getBoolean("imagej.core.plugins.options.OptionsProfilePlot","interpLineProf");
+		ij.gui.PlotWindow.listValues = getBoolean("imagej.core.plugins.options.OptionsProfilePlot","listValues");
+		double yMax = getDouble("imagej.core.plugins.options.OptionsProfilePlot","maxY");
+		double yMin = getDouble("imagej.core.plugins.options.OptionsProfilePlot","minY");
+		ij.Prefs.verticalProfile = getBoolean("imagej.core.plugins.options.OptionsProfilePlot","vertProfile");
+		ij.gui.PlotWindow.plotWidth = getInteger("imagej.core.plugins.options.OptionsProfilePlot","width");
 		
 		if (!fixedScale && (yMin!=0.0 || yMax!=0.0))
 			fixedScale = true;
@@ -322,15 +323,15 @@ public class OptionsSynchronizer {
 		// This next setting affects IJ1 dialog. Nothing programmatic can be set.
 		// Need pure IJ2 plugins when this setting is utilized.
 		//Prefs.get(SettingsKeys.OPTIONS_PROXY_AUTHENTICATE);
-		String server = getString(SettingsKeys.OPTIONS_PROXY_SERVER, null);
+		String server = getString("imagej.core.plugins.options.OptionsProxy","proxyServer");
 		if (server != null) {
 			ij.Prefs.set("proxy.server", server);
-			ij.Prefs.set("proxy.port", getInteger(SettingsKeys.OPTIONS_PROXY_PORT, 8080));
+			ij.Prefs.set("proxy.port", getInteger("imagej.core.plugins.options.OptionsProxy","port"));
 		}
 	}
 	
 	private void roundRectOptions() {
-		int crnDiam = getInteger(SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER, 20);
+		int crnDiam = getInteger("imagej.core.plugins.options.OptionsRoundedRectangleTool","cornerDiameter");
 		Toolbar.setRoundRectArcSize(crnDiam);
 		// TODO
 		// IJ1 RectToolOptions does not manipulate Prefs much. It fires
@@ -350,5 +351,4 @@ public class OptionsSynchronizer {
 		//Prefs.get(SettingsKeys.OPTIONS_WAND_MODE, "Legacy");
 		//Prefs.get(SettingsKeys.OPTIONS_WAND_TOLERANCE, 0.0);
 	}
-
 }

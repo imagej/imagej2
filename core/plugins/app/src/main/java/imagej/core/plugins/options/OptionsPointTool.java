@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Point Tool dialog.
@@ -51,29 +50,23 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Point Tool...", weight = 7) })
 public class OptionsPointTool extends OptionsPlugin {
 
-	@Parameter(label = "Mark Width (pixels)",
-		persistKey = SettingsKeys.OPTIONS_POINT_MARK_WIDTH)
+	@Parameter(label = "Mark Width (pixels)")
 	private int markWidth = 0;
 
-	@Parameter(label = "Auto-Measure",
-		persistKey = SettingsKeys.OPTIONS_POINT_AUTO_MEASURE)
+	@Parameter(label = "Auto-Measure")
 	private boolean autoMeasure = false;
 
-	@Parameter(label = "Auto-Next Slice",
-		persistKey = SettingsKeys.OPTIONS_POINT_AUTOSLICE)
+	@Parameter(label = "Auto-Next Slice")
 	private boolean autoNextSlice = false;
 
-	@Parameter(label = "Add to ROI Manager",
-		persistKey = SettingsKeys.OPTIONS_POINT_ADD_ROI)
+	@Parameter(label = "Add to ROI Manager")
 	private boolean addToRoiMgr = false;
 
-	@Parameter(label = "Label Points",
-		persistKey = SettingsKeys.OPTIONS_POINT_LABEL_POINTS)
+	@Parameter(label = "Label Points")
 	private boolean labelPoints = true;
 
 	@Parameter(label = "Selection Color", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" },
-		persistKey = SettingsKeys.OPTIONS_POINT_SELECTION_COLOR)
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String selectionColor = "yellow";
 
 }

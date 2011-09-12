@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Plugins::Script::Options dialog.
@@ -54,8 +53,7 @@ public class OptionsScript extends OptionsPlugin {
 	/*
 	 * Scripting language to export recorded macros to.
 	 */
-	@Parameter(label = "Scripting Language",
-		persistKey = SettingsKeys.SCRIPT_LANG)
+	@Parameter(label = "Scripting Language")
 	private String ScriptingLang = "javascript"; // TODO - initial value faked for now
 
 }
