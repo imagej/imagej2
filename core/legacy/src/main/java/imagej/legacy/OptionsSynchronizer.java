@@ -96,6 +96,13 @@ public class OptionsSynchronizer {
 		wandToolOptions();
 	}
 		
+	/**
+	 * Updates IJ2 options dialog settings to reflect values set by IJ1 plugins.
+	 */
+	public void updateIJ2SettingsFromIJ1() {
+		
+	}
+	
 	// -- helpers --
 	
 	private static String getString(String className, String fieldName) {

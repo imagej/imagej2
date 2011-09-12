@@ -142,6 +142,10 @@ public final class LegacyService extends AbstractService {
 		optionsSynchronizer.updateIJ1SettingsFromIJ2();
 	}
 	
+	public void updateIJ2Settings() {
+		optionsSynchronizer.updateIJ2SettingsFromIJ1();
+	}
+	
 	// -- IService methods --
 
 	@Override

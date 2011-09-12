@@ -111,8 +111,9 @@ public class LegacyPlugin implements ImageJPlugin {
 		
 		updateImagePlusesFromDisplays(map, harmonizer);
 
+	  // must happen after updateImagePlusesFromDisplays()
 		outputSet.clear();
-		closedSet.clear();  // must happen after prePluginHarmonization()
+		closedSet.clear();
 
 		// set ImageJ1's active image
 		legacyService.syncActiveImage();
@@ -132,6 +133,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			outputs = new ArrayList<ImageDisplay>();
 		}
 
+		// close any displays that IJ1 wants closed
 		for (ImagePlus imp : closedSet) {
 			ImageDisplay disp = map.lookupDisplay(imp);
 			if (disp != null) {
@@ -141,9 +143,13 @@ public class LegacyPlugin implements ImageJPlugin {
 			}
 		}
 		
+		// clean up
 		harmonizer.resetTypeTracking();
 		outputSet.clear();
 		closedSet.clear();
+
+		// reflect any changes to globals in IJ2 options/prefs
+		legacyService.updateIJ2Settings();
 	}
 
 	// -- Helper methods --
