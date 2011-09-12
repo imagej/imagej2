@@ -3,6 +3,7 @@ package imagej.ext.script;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,7 +32,7 @@ public class ScriptPlugin implements ImageJPlugin {
 		// languages
 		final ScriptEngineManager scriptManager = new ScriptEngineManager();
 		// Could use a FileChooser to select script, then
-		String fileExtension = getFileExtension(path.getPath());
+		String fileExtension = FileUtils.getFileExtension(path);
 		final ScriptEngine engine = scriptManager.getEngineByExtension(fileExtension);
 		try {
 			engine.put(ScriptEngine.FILENAME, path.getPath());
@@ -49,17 +50,6 @@ public class ScriptPlugin implements ImageJPlugin {
 		} catch (final IOException e) {
 			e.printStackTrace(System.err);
 		}
-	}
-
-	String getFileExtension(String filePath) {
-		File f = new File(filePath);
-		String name = f.getName();
-		int k = name.lastIndexOf(".");
-		String ext = null;
-		if (k != -1) {
-			ext = name.substring(k + 1, name.length());
-		}
-		return ext;
 	}
 
 }
