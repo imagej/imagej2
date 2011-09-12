@@ -66,5 +66,7 @@ public interface ScriptService extends Service {
 	Object eval(final File file) throws FileNotFoundException,
 		ScriptException;
 
+	boolean canHandleFile(final File file);
+
 }
 

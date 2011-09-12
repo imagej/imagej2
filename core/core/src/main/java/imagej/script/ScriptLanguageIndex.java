@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script;
 
+import imagej.util.FileUtils;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -99,6 +102,12 @@ public class ScriptLanguageIndex extends HashSet<ScriptEngineFactory> {
 	public String[] getFileExtensions(final ScriptEngineFactory language) {
 		final List<String> extensions = language.getExtensions();
 		return extensions.toArray(new String[extensions.size()]);
+	}
+
+	public boolean canHandleFile(final File file) {
+		final String fileExtension = FileUtils.getExtension(file);
+		if ("".equals(fileExtension)) return false;
+		return byFileExtension.containsKey(fileExtension);
 	}
 
 }

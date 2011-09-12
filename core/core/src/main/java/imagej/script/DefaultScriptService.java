@@ -124,6 +124,11 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		return language.getScriptEngine().eval(new FileReader(file));
 	}
 
+	@Override
+	public boolean canHandleFile(final File file) {
+		return scriptLanguageIndex.canHandleFile(file);
+	}
+
 	public void reloadScriptLanguages() {
 		scriptLanguageIndex.clear();
 		for (final PluginInfo<? extends ScriptLanguage> item : pluginService.getPluginsOfType(ScriptLanguage.class))
