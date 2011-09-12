@@ -102,8 +102,14 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		return null;
 	}
 
+	/**
+	 * Returns the persisted value of a ModuleItem. Returns null if nothing has
+	 * been persisted. It is the API user's responsibility to check the return
+	 * value for null.
+	 */
 	@Override
 	public T loadValue() {
+		// if there is nothing to load from persistence return nothing
 		if (!isPersisted()) return null;
 
 		final String sValue;
@@ -114,6 +120,10 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 			sValue = Prefs.get(prefClass, prefKey);
 		}
 		else sValue = Prefs.get(persistKey);
+		
+		// if persisted value has never been set before return null
+		if (sValue == null)
+			return null;
 
 		return ClassUtils.convert(sValue, getType());
 	}

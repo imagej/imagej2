@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Input/Output dialog.
@@ -51,42 +50,33 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Input/Output...", weight = 2) })
 public class OptionsInputOutput extends OptionsPlugin {
 
-	@Parameter(label = "JPEG quality (0-100)",
-		persistKey = SettingsKeys.OPTIONS_IO_JPEG_QUALITY)
+	@Parameter(label = "JPEG quality (0-100)")
 	private int jpegQuality = 85;
 
-	@Parameter(label = "GIF and PNG transparent index",
-		persistKey = SettingsKeys.OPTIONS_IO_TRANSPARENT_INDEX)
+	@Parameter(label = "GIF and PNG transparent index")
 	private int transparentIndex = -1;
 
-	@Parameter(label = "File extension for tables",
-		persistKey = SettingsKeys.OPTIONS_IO_FILE_EXT)
+	@Parameter(label = "File extension for tables")
 	private String tableFileExtension = ".txt";
 
-	@Parameter(label = "Use JFileChooser to open/save",
-		persistKey = SettingsKeys.OPTIONS_IO_USE_JFILECHOOSER)
+	@Parameter(label = "Use JFileChooser to open/save")
 	private boolean useJFileChooser = false;
 
-	@Parameter(label = "Save TIFF and raw in Intel byte order",
-		persistKey = SettingsKeys.OPTIONS_IO_SAVE_INTEL)
+	@Parameter(label = "Save TIFF and raw in Intel byte order")
 	private boolean saveOrderIntel = false;
 
 	// TODO - in IJ1 these were grouped visually. How is this now done?
 
-	@Parameter(label = "Result Table: Copy column headers",
-		persistKey = SettingsKeys.OPTIONS_IO_COPY_COLUMNS)
+	@Parameter(label = "Result Table: Copy column headers")
 	private boolean copyColumnHeaders = false;
 
-	@Parameter(label = "Result Table: Copy row numbers",
-		persistKey = SettingsKeys.OPTIONS_IO_COPY_ROWS)
+	@Parameter(label = "Result Table: Copy row numbers")
 	private boolean copyRowNumbers = true;
 
-	@Parameter(label = "Result Table: Save column headers",
-		persistKey = SettingsKeys.OPTIONS_IO_SAVE_COLUMNS)
+	@Parameter(label = "Result Table: Save column headers")
 	private boolean saveColumnHeaders = true;
 
-	@Parameter(label = "Result Table: Save row numbers",
-		persistKey = SettingsKeys.OPTIONS_IO_SAVE_ROWS)
+	@Parameter(label = "Result Table: Save row numbers")
 	private boolean saveRowNumbers = true;
 
 }

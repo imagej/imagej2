@@ -136,6 +136,12 @@ public final class LegacyService extends AbstractService {
 		WindowManager.setTempCurrentImage(activeImagePlus);
 	}
 
+	// TODO - make private only???
+	
+	public void updateIJ1Settings() {
+		optionsSynchronizer.updateIJ1SettingsFromIJ2();
+	}
+	
 	// -- IService methods --
 
 	@Override
@@ -151,11 +157,7 @@ public final class LegacyService extends AbstractService {
 			Log.warn("Failed to instantiate IJ1.", t);
 		}
 
-		// TODO
-		// is this the correct place to do this? Need to determine when the
-		// IJ2 Parameter settings can be safely read/initialized before calling
-		// update().
-		optionsSynchronizer.update();
+		updateIJ1Settings();
 
 		subscribeToEvents();
 	}
@@ -184,7 +186,7 @@ public final class LegacyService extends AbstractService {
 
 				@Override
 				public void onEvent(final OptionsEvent event) {
-					optionsSynchronizer.update();
+					updateIJ1Settings();
 				}
 
 			};

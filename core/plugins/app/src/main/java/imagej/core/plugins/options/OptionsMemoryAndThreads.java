@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Memory &amp; Threads dialog.
@@ -51,20 +50,16 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Memory & Threads...", weight = 12) })
 public class OptionsMemoryAndThreads extends OptionsPlugin {
 
-	@Parameter(label = "Maximum memory (MB)",
-		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_MAX_MEMORY)
+	@Parameter(label = "Maximum memory (MB)")
 	private int maxMemory = 512;
 
-	@Parameter(label = "Parallel threads for stacks",
-		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_STACK_THREADS)
+	@Parameter(label = "Parallel threads for stacks")
 	private int stackThreads = 2;
 
-	@Parameter(label = "Keep multiple undo buffers",
-		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_MULTIPLE_UNDO_BUFFERS)
+	@Parameter(label = "Keep multiple undo buffers")
 	private boolean multipleBuffers = false;
 
-	@Parameter(label = "Run garbage collector on status bar click",
-		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_RUN_GC)
+	@Parameter(label = "Run garbage collector on status bar click")
 	private boolean runGcOnClick = true;
 
 }

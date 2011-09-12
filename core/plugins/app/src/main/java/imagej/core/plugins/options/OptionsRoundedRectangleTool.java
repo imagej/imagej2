@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Rounded Rectangle Tool dialog.
@@ -51,23 +50,17 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Rounded Rect Tool...", weight = 5) })
 public class OptionsRoundedRectangleTool extends OptionsPlugin {
 
-	@Parameter(label = "Stroke Width", min = "1", max = "25",
-		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_WIDTH)
+	@Parameter(label = "Stroke Width", min = "1", max = "25")
 	private int strokeWidth = 2;
 
-	@Parameter(label = "Corner Diameter", min = "0", max = "200",
-		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER)
+	@Parameter(label = "Corner Diameter", min = "0", max = "200")
 	private int cornerDiameter = 20;
 
-	@Parameter(label = "Stroke Color",
-		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, choices = {
-			"black", "white", "red", "green", "blue", "cyan", "magenta", "yellow",
-			"gray" })
+	@Parameter(label = "Stroke Color", choices = {"black", "white", "red",
+		"green", "blue", "cyan", "magenta", "yellow", "gray" })
 	private String strokeColor = "black";
 
-	@Parameter(label = "Fill Color",
-		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, choices = {
-			"none", "black", "white", "red", "green", "blue", "cyan", "magenta",
-			"yellow", "gray" })
+	@Parameter(label = "Fill Color", choices = {"none", "black", "white",
+		"red", "green", "blue", "cyan", "magenta", "yellow", "gray" })
 	private String fillColor = "none";
 }

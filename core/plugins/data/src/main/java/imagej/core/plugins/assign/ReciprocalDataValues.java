@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.ImageJ;
 import imagej.display.ImageDisplay;
+import imagej.ext.options.OptionsService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Prefs;
-import imagej.util.SettingsKeys;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealReciprocal;
@@ -66,7 +66,16 @@ public class ReciprocalDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		double dbzVal = Prefs.getDouble(SettingsKeys.OPTIONS_MISC_DBZ_VALUE, Double.POSITIVE_INFINITY);
+		OptionsService service = ImageJ.get(OptionsService.class);
+		String dbzString = (String) service.getOption(
+					"imagej.core.plugins.options.OptionsMisc",
+					"divByZeroVal");
+		double dbzVal;
+		try {
+			dbzVal = Double.parseDouble(dbzString);
+		} catch (NumberFormatException e) {
+			dbzVal = Double.POSITIVE_INFINITY;
+		}
 		UnaryOperation<Real,Real> op = new RealReciprocal(dbzVal);
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();

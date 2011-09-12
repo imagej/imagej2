@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Misc dialog.
@@ -51,32 +50,25 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Misc...", weight = 16) })
 public class OptionsMisc extends OptionsPlugin {
 
-	@Parameter(label = "Divide by zero value",
-		persistKey = SettingsKeys.OPTIONS_MISC_DBZ_VALUE)
+	@Parameter(label = "Divide by zero value")
 	private String divByZeroVal = "Infinity";
 
-	@Parameter(label = "Use pointer cursor",
-		persistKey = SettingsKeys.OPTIONS_MISC_POINTER_CURSOR)
+	@Parameter(label = "Use pointer cursor")
 	private boolean usePtrCursor = false;
 
-	@Parameter(label = "Hide \"Process Stack?\" dialog",
-		persistKey = SettingsKeys.OPTIONS_MISC_HIDE_STACK_MSG)
+	@Parameter(label = "Hide \"Process Stack?\" dialog")
 	private boolean hideProcessStackDialog = false;
 
-	@Parameter(label = "Require command key for shortcuts",
-		persistKey = SettingsKeys.OPTIONS_MISC_REQUIRE_COMMAND)
+	@Parameter(label = "Require command key for shortcuts")
 	private boolean requireCommandKey = false;
 
-	@Parameter(label = "Move isolated plugins to Misc. menu",
-		persistKey = SettingsKeys.OPTIONS_MISC_MOVE_PLUGINS)
+	@Parameter(label = "Move isolated plugins to Misc. menu")
 	private boolean moveIsolatedPlugins = false;
 
-	@Parameter(label = "Run single instance listener",
-		persistKey = SettingsKeys.OPTIONS_MISC_SINGLE_INSTANCE)
+	@Parameter(label = "Run single instance listener")
 	private boolean runSingleInstanceListener = false;
 
-	@Parameter(label = "Debug mode",
-		persistKey = SettingsKeys.OPTIONS_MISC_DEBUG_MODE)
+	@Parameter(label = "Debug mode")
 	private boolean debugMode = false;
 
 }

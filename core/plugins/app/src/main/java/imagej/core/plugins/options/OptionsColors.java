@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Colors dialog.
@@ -52,18 +51,15 @@ import imagej.util.SettingsKeys;
 public class OptionsColors extends OptionsPlugin {
 
 	@Parameter(label = "Foreground", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" },
-		persistKey = SettingsKeys.OPTIONS_COLORS_FOREGROUND)
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String fgColor = "black";
 
 	@Parameter(label = "Background", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" },
-		persistKey = SettingsKeys.OPTIONS_COLORS_BACKGROUND)
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String bgColor = "white";
 
 	@Parameter(label = "Selection", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" },
-		persistKey = SettingsKeys.OPTIONS_COLORS_SELECTION)
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String selColor = "yellow";
 
 }

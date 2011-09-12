@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::DICOM dialog.
@@ -51,16 +50,13 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "DICOM...", weight = 15) })
 public class OptionsDicom extends OptionsPlugin {
 
-	@Parameter(label = "Open as 32-bit float",
-		persistKey = SettingsKeys.OPTIONS_DICOM_OPEN_FLOAT32)
+	@Parameter(label = "Open as 32-bit float")
 	private boolean openAs32bitFloat = false;
 
-	@Parameter(label = "Orthogonal Views: Rotate YZ",
-		persistKey = SettingsKeys.OPTIONS_DICOM_ROTATE_YZ)
+	@Parameter(label = "Orthogonal Views: Rotate YZ")
 	private boolean rotateYZ = false;
 
-	@Parameter(label = "Orthogonal Views: Rotate XZ",
-		persistKey = SettingsKeys.OPTIONS_DICOM_ROTATE_XZ)
+	@Parameter(label = "Orthogonal Views: Rotate XZ")
 	private boolean rotateXZ = false;
 
 }

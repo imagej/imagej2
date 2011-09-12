@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Fonts dialog.
@@ -51,19 +50,17 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Fonts...", weight = 3) })
 public class OptionsFont extends OptionsPlugin {
 
-	@Parameter(label = "Font",
-		persistKey = SettingsKeys.OPTIONS_FONT_NAME)
+	@Parameter(label = "Font")
 	private String font = "SansSerif";  // TODO populate from system fonts? Nonportable here?
 
-	@Parameter(label = "Size", min = "8", max = "72",
-		persistKey = SettingsKeys.OPTIONS_FONT_SIZE)
+	@Parameter(label = "Size", min = "8", max = "72")
 	private int fontSize = 18;
 
 	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
-		"Bold + Italic" }, persistKey = SettingsKeys.OPTIONS_FONT_STYLE)
+		"Bold + Italic" })
 	private String fontStyle = "Plain";
 
-	@Parameter(label = "Smooth", persistKey = SettingsKeys.OPTIONS_FONT_SMOOTHING)
+	@Parameter(label = "Smooth")
 	private boolean fontSmooth = true;
 
 }

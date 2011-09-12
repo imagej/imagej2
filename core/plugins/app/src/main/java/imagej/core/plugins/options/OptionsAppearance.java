@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Appearance dialog.
@@ -51,32 +50,25 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Appearance...", weight = 10) })
 public class OptionsAppearance extends OptionsPlugin {
 
-	@Parameter(label = "Interpolate zoomed images",
-		persistKey = SettingsKeys.OPTIONS_APPEARANCE_INTERPOLATE_ZOOMED_IMAGES)
+	@Parameter(label = "Interpolate zoomed images")
 	private boolean interpZoomedImages = false;
 
-	@Parameter(label = "Open images at 100%",
-		persistKey = SettingsKeys.OPTIONS_APPEARANCE_FULL_ZOOMED_IMAGES)
+	@Parameter(label = "Open images at 100%")
 	private boolean fullZoomImages = false;
 
-	@Parameter(label = "Black canvas",
-		persistKey = SettingsKeys.OPTIONS_APPEARANCE_BLACK_CANVAS)
+	@Parameter(label = "Black canvas")
 	private boolean blackCanvas = false;
 
-	@Parameter(label = "No image border",
-		persistKey = SettingsKeys.OPTIONS_APPEARANCE_NO_IMAGE_BORDER)
+	@Parameter(label = "No image border")
 	private boolean noImageBorder = false;
 
-	@Parameter(label = "Use inverting lookup table",
-		persistKey = SettingsKeys.OPTIONS_APPEARANCE_USE_INVERTING_LUT)
+	@Parameter(label = "Use inverting lookup table")
 	private boolean useInvertingLUT = false;
 
-	@Parameter(label = "Antialiased tool icons",
-		persistKey = SettingsKeys.OPTIONS_APPEARANCE_ANTIALIASED_TOOL_ICONS)
+	@Parameter(label = "Antialiased tool icons")
 	private boolean antialiasedToolIcons = true;
 
-	@Parameter(label = "Menu font size (points)",
-		persistKey = SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE)
+	@Parameter(label = "Menu font size (points)")
 	private int menuFontSize = 0;
 
 }

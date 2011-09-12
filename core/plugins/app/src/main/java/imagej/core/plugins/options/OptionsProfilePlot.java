@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Profile Plot Options dialog.
@@ -51,48 +50,37 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Profile Plot Options...", weight = 4) })
 public class OptionsProfilePlot extends OptionsPlugin {
 
-	@Parameter(label = "Width (pixels)",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_WIDTH)
+	@Parameter(label = "Width (pixels)")
 	private int width = 450;
 
-	@Parameter(label = "Height (pixels)",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_HEIGHT)
+	@Parameter(label = "Height (pixels)")
 	private int height = 200;
 
-	@Parameter(label = "Minimum Y",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_MIN_Y)
+	@Parameter(label = "Minimum Y")
 	private double minY = 0;
 
-	@Parameter(label = "Maximum Y",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_MAX_Y)
+	@Parameter(label = "Maximum Y")
 	private double maxY = 0;
 
-	@Parameter(label = "Fixed y-axis scale",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_FIXED_YSCALE)
+	@Parameter(label = "Fixed y-axis scale")
 	private boolean yFixedScale = false;
 
-	@Parameter(label = "Do not save x-values",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_DISCARD_X)
+	@Parameter(label = "Do not save x-values")
 	private boolean noSaveXValues = false;
 
-	@Parameter(label = "Auto-close",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_AUTOCLOSE)
+	@Parameter(label = "Auto-close")
 	private boolean autoClose = false;
 
-	@Parameter(label = "Vertical profile",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_VERTICAL)
+	@Parameter(label = "Vertical profile")
 	private boolean vertProfile = false;
 
-	@Parameter(label = "List values",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_LIST_VALUES)
+	@Parameter(label = "List values")
 	private boolean listValues = false;
 
-	@Parameter(label = "Interpolate line profiles",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_INTERPOLATE)
+	@Parameter(label = "Interpolate line profiles")
 	private boolean interpLineProf = true;
 
-	@Parameter(label = "Draw grid lines",
-		persistKey = SettingsKeys.OPTIONS_PROFILEPLOT_DRAW_GRID)
+	@Parameter(label = "Draw grid lines")
 	private boolean drawGridLines = true;
 
 }

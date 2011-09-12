@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Proxy Settings dialog.
@@ -51,15 +50,13 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Proxy Settings...", weight = 13) })
 public class OptionsProxy extends OptionsPlugin {
 
-	@Parameter(label = "Proxy Server",
-		persistKey = SettingsKeys.OPTIONS_PROXY_SERVER)
+	@Parameter(label = "Proxy Server")
 	private String proxyServer = "";
 
-	@Parameter(label = "Port", persistKey = SettingsKeys.OPTIONS_PROXY_PORT)
+	@Parameter(label = "Port")
 	private int port = 8080;
 
-	@Parameter(label = "Authenticate",
-		persistKey = SettingsKeys.OPTIONS_PROXY_AUTHENTICATE)
+	@Parameter(label = "Authenticate")
 	private boolean authenticationRequired = false;
 
 }

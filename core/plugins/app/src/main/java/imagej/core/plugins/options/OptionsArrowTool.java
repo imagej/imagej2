@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Arrow Tool dialog.
@@ -51,29 +50,24 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Arrow Tool...", weight = 6) })
 public class OptionsArrowTool extends OptionsPlugin {
 
-	@Parameter(label = "Width", min = "1", max = "50",
-		persistKey = SettingsKeys.OPTIONS_ARROW_WIDTH)
+	@Parameter(label = "Width", min = "1", max = "50")
 	private int arrowWidth = 2;
 
-	@Parameter(label = "Size", min = "0", max = "30",
-		persistKey = SettingsKeys.OPTIONS_ARROW_SIZE)
+	@Parameter(label = "Size", min = "0", max = "30")
 	private int arrowSize = 10;
 
 	// TODO - use imagej.util.ColorRGB instead
 	@Parameter(label = "Color", choices = { "red", "green", "blue", "magenta",
-		"cyan", "yellow", "orange", "black", "white" },
-		persistKey = SettingsKeys.OPTIONS_ARROW_COLOR)
+		"cyan", "yellow", "orange", "black", "white" })
 	private String arrowColor = "black";
 
 	@Parameter(label = "Style", choices = { "Filled", "Notched", "Open",
-		"Headless" }, persistKey = SettingsKeys.OPTIONS_ARROW_STYLE)
+		"Headless" })
 	private String arrowStyle = "Filled";
 
-	@Parameter(label = "Outline", persistKey = SettingsKeys.OPTIONS_ARROW_OUTLINE)
+	@Parameter(label = "Outline")
 	private boolean arrowOutline = false;
 
-	@Parameter(label = "Double headed",
-		persistKey = SettingsKeys.OPTIONS_ARROW_DOUBLEHEADED)
+	@Parameter(label = "Double headed")
 	private boolean arrowDoubleHeaded = false;
-
 }

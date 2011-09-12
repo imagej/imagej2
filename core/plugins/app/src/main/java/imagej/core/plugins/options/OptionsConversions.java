@@ -38,7 +38,6 @@ import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Conversions dialog.
@@ -51,12 +50,10 @@ import imagej.util.SettingsKeys;
 	@Menu(label = "Conversions...", weight = 11) })
 public class OptionsConversions extends OptionsPlugin {
 
-	@Parameter(label = "Scale When Converting",
-		persistKey = SettingsKeys.OPTIONS_CONVERSIONS_SCALE)
+	@Parameter(label = "Scale When Converting")
 	private boolean scaleWhenConverting = true;
 
-	@Parameter(label = "Weighted RGB Conversions",
-		persistKey = SettingsKeys.OPTIONS_CONVERSIONS_WEIGHTED)
+	@Parameter(label = "Weighted RGB Conversions")
 	private boolean weightedRgbConversions = false;
 
 }
