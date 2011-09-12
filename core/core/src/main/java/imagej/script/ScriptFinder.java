@@ -59,6 +59,12 @@ public class ScriptFinder {
 	private static final String SCRIPT_PLUGIN_ICON = "/icons/script_code.png";
 	private static final String SPECIAL_SUBDIRECTORY = "Scripts";
 
+	private final ScriptService scriptService;
+
+	public ScriptFinder(final ScriptService scriptService) {
+		this.scriptService = scriptService;
+	}
+
 	/**
 	 * Discover the scripts
 	 * 
@@ -96,7 +102,7 @@ public class ScriptFinder {
 				else discoverScripts(plugins, file, subMenuPath(path, file
 					.getName()));
 			}
-			else if (isScriptName(file.getName())) plugins.add(createEntry(file,
+			else if (scriptService.canHandleFile(file)) plugins.add(createEntry(file,
 				subMenuPath(path, file.getName())));
 	}
 
@@ -106,12 +112,6 @@ public class ScriptFinder {
 		final MenuPath result = new MenuPath(menuPath);
 		result.add(new MenuEntry(subMenuName));
 		return result;
-	}
-
-	private boolean isScriptName(final String fileName) {
-		// TODO: we need to have a base interface for scripting languages;
-		// they'll do this job
-		return fileName.matches(".*\\.(js|bsh|py|ijm|rb|clj)$");
 	}
 
 	private CommandInfo<Command> createEntry(final File scriptPath,
