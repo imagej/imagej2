@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 /**
@@ -158,6 +159,16 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 			} catch (InstantiableException e) {
 				log.error("Invalid script language: " + item, e);
 			}
+		}
+
+		/*
+		 *  Now look for the ScriptEngines in javax.scripting. We only do that
+		 *  now since the javax.scripting framework does not provide all the
+		 *  functionality we might want to use in ImageJ2.
+		 */
+		final ScriptEngineManager manager = new javax.script.ScriptEngineManager();
+		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
+			scriptLanguageIndex.add(factory, true);
 		}
 	}
 
