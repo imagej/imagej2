@@ -100,7 +100,7 @@ public class OptionsSynchronizer {
 	 * Updates IJ2 options dialog settings to reflect values set by IJ1 plugins.
 	 */
 	public void updateIJ2SettingsFromIJ1() {
-		
+		setOptionsFromPublicStatics();
 	}
 	
 	// -- helpers --
@@ -126,6 +126,9 @@ public class OptionsSynchronizer {
 		return Colors.getColor(colorName, defaultColor);
 	}
 
+	private static void setOptionValue(String className, String fieldName, Object value) {
+		optionsService.setOption(className, fieldName, value);
+	}
 	/*
 	private static void setOption(String className, String fieldName, Object value) {
 		Field field = ClassUtils.getField(className, fieldName);
@@ -357,5 +360,90 @@ public class OptionsSynchronizer {
 		// needed because Wand is not ever active in IJ2. Right?
 		//Prefs.get(SettingsKeys.OPTIONS_WAND_MODE, "Legacy");
 		//Prefs.get(SettingsKeys.OPTIONS_WAND_TOLERANCE, 0.0);
+	}
+	
+	private void setOptionsFromPublicStatics() {
+		setOptionValue("imagej.core.plugins.options.OptionsAppearance", "antialiasedToolIcons", ij.Prefs.antialiasedTools);
+		setOptionValue("imagej.core.plugins.options.OptionsAppearance", "blackCanvas", ij.Prefs.blackCanvas);
+		setOptionValue("imagej.core.plugins.options.OptionsAppearance", "fullZoomImages",ij.Prefs.open100Percent);
+		setOptionValue("imagej.core.plugins.options.OptionsAppearance", "interpZoomedImages",ij.Prefs.interpolateScaledImages);
+		setOptionValue("imagej.core.plugins.options.OptionsAppearance", "noImageBorder",ij.Prefs.noBorder);
+		setOptionValue("imagej.core.plugins.options.OptionsAppearance", "useInvertingLUT",ij.Prefs.useInvertingLut);
+		boolean arrowTwoHeads = Arrow.getDefaultDoubleHeaded();
+		setOptionValue("imagej.core.plugins.options.OptionsArrowTool","arrowDoubleHeaded", arrowTwoHeads);
+		boolean arrowOutline = Arrow.getDefaultOutline();
+		setOptionValue("imagej.core.plugins.options.OptionsArrowTool","arrowOutline", arrowOutline);
+		int arrowSize = (int)Arrow.getDefaultHeadSize();
+		setOptionValue("imagej.core.plugins.options.OptionsArrowTool","arrowSize", arrowSize);
+		int arrowStyle = Arrow.getDefaultStyle();
+		String arrowStyleName;
+		if (arrowStyle == 1) arrowStyleName = "Notched";
+		else if (arrowStyle == 2) arrowStyleName = "Open";
+		else if (arrowStyle == 3) arrowStyleName = "Headless";
+		else arrowStyleName = "Filled";
+		setOptionValue("imagej.core.plugins.options.OptionsArrowTool","arrowStyle", arrowStyleName);
+		int arrowWidth = (int) Arrow.getDefaultWidth();
+		setOptionValue("imagej.core.plugins.options.OptionsArrowTool","arrowWidth",arrowWidth);
+		setOptionValue("imagej.core.plugins.options.OptionsColors","fgColor", Toolbar.getForegroundColor());
+		setOptionValue("imagej.core.plugins.options.OptionsColors","bgColor", Toolbar.getBackgroundColor());
+		setOptionValue("imagej.core.plugins.options.OptionsColors","selColor",Roi.getColor());
+		setOptionValue("imagej.core.plugins.options.OptionsConversions","scaleWhenConverting", ImageConverter.getDoScaling());
+		setOptionValue("imagej.core.plugins.options.OptionsConversions","weightedRgbConversions",ij.Prefs.weightedColor);
+		setOptionValue("imagej.core.plugins.options.OptionsDicom","openAs32bitFloat",ij.Prefs.openDicomsAsFloat);
+		setOptionValue("imagej.core.plugins.options.OptionsDicom","rotateXZ",ij.Prefs.flipXZ);
+		setOptionValue("imagej.core.plugins.options.OptionsDicom","rotateYZ",ij.Prefs.rotateYZ);
+		setOptionValue("imagej.core.plugins.options.OptionsFont","font", TextRoi.getFont());
+		setOptionValue("imagej.core.plugins.options.OptionsFont","fontSize", TextRoi.getSize());
+		String fontStyleString;
+		int tmp = TextRoi.getStyle();
+		if (tmp == Font.BOLD + Font.ITALIC)
+			fontStyleString = "Bold+Italic";
+		else if (tmp == Font.BOLD)
+			fontStyleString = "Bold";
+		else if (tmp == Font.ITALIC)
+			fontStyleString = "Italic";
+		else
+			fontStyleString = "";
+		setOptionValue("imagej.core.plugins.options.OptionsFont","fontStyle", fontStyleString);
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","copyColumnHeaders",ij.Prefs.copyColumnHeaders);
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","copyRowNumbers",!ij.Prefs.noRowNumbers);
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","jpegQuality", FileSaver.getJpegQuality());
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","saveColumnHeaders", !ij.Prefs.dontSaveHeaders);
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","saveOrderIntel",ij.Prefs.intelByteOrder);
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","saveRowNumbers", !ij.Prefs.dontSaveRowNumbers);
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","transparentIndex", ij.Prefs.getTransparentIndex());
+		setOptionValue("imagej.core.plugins.options.OptionsInputOutput","useJFileChooser",ij.Prefs.useJFileChooser);
+		setOptionValue("imagej.core.plugins.options.OptionsLineWidth","lineWidth", Line.getWidth());
+		setOptionValue("imagej.core.plugins.options.OptionsMemoryAndThreads","multipleBuffers",ij.Prefs.keepUndoBuffers);
+		setOptionValue("imagej.core.plugins.options.OptionsMemoryAndThreads","runGcOnClick",!ij.Prefs.noClickToGC);
+		setOptionValue("imagej.core.plugins.options.OptionsMemoryAndThreads","stackThreads", ij.Prefs.getThreads());
+		String dbzString = new Float(FloatBlitter.divideByZeroValue).toString();
+		setOptionValue("imagej.core.plugins.options.OptionsMisc","divByZeroVal", dbzString);
+		setOptionValue("imagej.core.plugins.options.OptionsMisc","debugMode",IJ.debugMode);
+		setOptionValue("imagej.core.plugins.options.OptionsMisc","hideProcessStackDialog",IJ.hideProcessStackDialog);
+		setOptionValue("imagej.core.plugins.options.OptionsMisc","moveIsolatedPlugins",ij.Prefs.moveToMisc);
+		setOptionValue("imagej.core.plugins.options.OptionsMisc","usePtrCursor",ij.Prefs.usePointerCursor);
+		setOptionValue("imagej.core.plugins.options.OptionsMisc","requireCommandKey",ij.Prefs.requireControlKey);
+		setOptionValue("imagej.core.plugins.options.OptionsMisc","runSingleInstanceListener",ij.Prefs.runSocketListener);
+		setOptionValue("imagej.core.plugins.options.OptionsPointTool","addToRoiMgr",ij.Prefs.pointAddToManager);
+		setOptionValue("imagej.core.plugins.options.OptionsPointTool","autoMeasure",ij.Prefs.pointAutoMeasure);
+		setOptionValue("imagej.core.plugins.options.OptionsPointTool","autoNextSlice",ij.Prefs.pointAutoNextSlice);
+		setOptionValue("imagej.core.plugins.options.OptionsPointTool","labelPoints",!ij.Prefs.noPointLabels);
+		setOptionValue("imagej.core.plugins.options.OptionsPointTool","markWidth",Analyzer.markWidth);
+		setOptionValue("imagej.core.plugins.options.OptionsPointTool","selectionColor",Roi.getColor());
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","autoClose",ij.gui.PlotWindow.autoClose);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","noSaveXValues",!ij.gui.PlotWindow.saveXValues);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","drawGridLines",!ij.gui.PlotWindow.noGridLines);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","height",ij.gui.PlotWindow.plotHeight);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","interpLineProf",ij.gui.PlotWindow.interpolate);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","listValues",ij.gui.PlotWindow.listValues);
+		double yMin = ProfilePlot.getFixedMin();
+		double yMax = ProfilePlot.getFixedMax();
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","maxY",yMax);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","minY",yMin);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","vertProfile",ij.Prefs.verticalProfile);
+		setOptionValue("imagej.core.plugins.options.OptionsProfilePlot","width",ij.gui.PlotWindow.plotWidth);
+		int crnDiam = Toolbar.getRoundRectArcSize();
+		setOptionValue("imagej.core.plugins.options.OptionsRoundedRectangleTool","cornerDiameter", crnDiam);
 	}
 }
