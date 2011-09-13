@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# Script to generate hierarchy of ImageJ event classes.
+
+set -e
+
 cd "$(dirname "$0")"/../ui/imagej
 mvn dependency:copy-dependencies
 find ../../core -name '*Event.java' | \
