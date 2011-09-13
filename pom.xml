@@ -153,15 +153,15 @@
 		<developer>
 			<id>dscho</id>
 			<name>Johannes Schindelin</name>
-			<email>Johannes.Schindelin@gmx.de</email>
+			<email>schindelin@wisc.edu</email>
 			<url>http://loci.wisc.edu/people/johannes-schindelin</url>
-			<organization>MPI-CBG at Dresden</organization>
-			<organizationUrl>http://mpi-cbg.de/</organizationUrl>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
 			<roles>
 				<role>architect</role>
 				<role>developer</role>
 			</roles>
-			<timezone>+1</timezone>
+			<timezone>-6</timezone>
 			<properties>
 				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/johannes.jpeg</picUrl>
 			</properties>
