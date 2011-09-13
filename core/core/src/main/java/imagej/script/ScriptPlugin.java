@@ -42,7 +42,6 @@ import imagej.util.FileUtils;
 import imagej.util.Log;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 import javax.script.ScriptEngineFactory;
@@ -76,9 +75,9 @@ public class ScriptPlugin implements Command {
 			}
 		}
 		catch (final ScriptException e) {
-			Log.error(e);
+			Log.error(e.getCause());
 		}
-		catch (final FileNotFoundException e) {
+		catch (final Throwable e) {
 			Log.error(e);
 		}
 	}
