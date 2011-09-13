@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins;
 
 import imagej.ImageJ;
+import imagej.ext.MenuEntry;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -50,7 +51,9 @@ import javax.swing.JOptionPane;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Utilities"),
+@Plugin(menu = {
+	@Menu(label = "Plugins", weight = MenuEntry.PLUGINS_WEIGHT, mnemonic = 'u'),
+	@Menu(label = "Utilities"),
 	@Menu(label = "Find Commands...", accelerator = "control L") })
 public class CommandFinder implements ImageJPlugin {
 

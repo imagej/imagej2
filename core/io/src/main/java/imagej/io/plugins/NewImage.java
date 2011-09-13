@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
+import imagej.ext.MenuEntry;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -52,7 +53,7 @@ import net.imglib2.type.numeric.RealType;
  */
 @Plugin(label = "New Image...", iconPath = "/icons/plugins/picture.png",
 	menu = {
-		@Menu(label = "File", mnemonic = 'f'),
+		@Menu(label = "File", weight = MenuEntry.FILE_WEIGHT, mnemonic = 'f'),
 		@Menu(label = "New", mnemonic = 'n'),
 		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
 			accelerator = "control N") })

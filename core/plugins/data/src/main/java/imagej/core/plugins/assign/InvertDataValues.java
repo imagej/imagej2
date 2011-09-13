@@ -38,14 +38,15 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
 import imagej.display.ImageDisplay;
+import imagej.ext.MenuEntry;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.Cursor;
-import net.imglib2.ops.operation.unary.real.RealInvert;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealInvert;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -57,7 +58,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
+	@Menu(label = "Edit", weight = MenuEntry.EDIT_WEIGHT, mnemonic = 'e'),
 	@Menu(label = "Invert", weight = 30, accelerator = "shift control I") })
 public class InvertDataValues implements ImageJPlugin {
 
