@@ -43,6 +43,15 @@ public class MenuEntry {
 
 	public static final double DEFAULT_WEIGHT = Double.POSITIVE_INFINITY;
 
+	public static final double FILE_WEIGHT = 0;
+	public static final double EDIT_WEIGHT = 1;
+	public static final double IMAGE_WEIGHT = 2;
+	public static final double PROCESS_WEIGHT = 3;
+	public static final double ANALYZE_WEIGHT = 4;
+	public static final double PLUGINS_WEIGHT = 5;
+	public static final double WINDOW_WEIGHT = 6;
+	public static final double HELP_WEIGHT = 1e7;
+
 	private String name;
 	private double weight = DEFAULT_WEIGHT;
 	private char mnemonic;
@@ -58,8 +67,8 @@ public class MenuEntry {
 		this.weight = weight;
 	}
 
-	public MenuEntry(final String name, final double weight,
-		final char mnemonic, final String accelerator, final String iconPath)
+	public MenuEntry(final String name, final double weight, final char mnemonic,
+		final String accelerator, final String iconPath)
 	{
 		this.name = name;
 		this.weight = weight;

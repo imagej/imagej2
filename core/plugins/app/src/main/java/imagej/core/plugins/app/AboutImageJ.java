@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.app;
 
 import imagej.ImageJ;
+import imagej.ext.MenuEntry;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -47,7 +48,8 @@ import imagej.ext.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(iconPath = "/icons/plugins/information.png", menu = {
-	@Menu(label = "Help"), @Menu(label = "About ImageJ...", weight = 43) })
+	@Menu(label = "Help", mnemonic = 'h', weight = MenuEntry.HELP_WEIGHT),
+	@Menu(label = "About ImageJ...", weight = 43) })
 public class AboutImageJ implements ImageJPlugin {
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
