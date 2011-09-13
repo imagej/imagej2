@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 
-# check-headers.pl - Verifies existence and correctness of source code headers.
+# Script to verify existence and correctness of source code headers.
 
 my %knownAuthors = (
   "Adam Fraser" => 1,
