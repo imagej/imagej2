@@ -38,8 +38,6 @@ import imagej.ui.common.awt.AWTKeyEventDispatcherGlobal;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayPanel;
-import imagej.display.DisplayService;
-import imagej.display.ImageDisplay;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventService;
@@ -53,6 +51,7 @@ import imagej.ui.AbstractUI;
 import imagej.ui.UIService;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
+import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
@@ -72,6 +71,9 @@ import javax.swing.WindowConstants;
  * @author Grant Harris
  */
 public abstract class AbstractSwingUI extends AbstractUI {
+
+	public static final String LAST_X_KEY = "ImageJ.SwingApplicationFrame.lastXLocation";
+	public static final String LAST_Y_KEY = "ImageJ.SwingApplicationFrame.lastYLocation";
 
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
@@ -118,6 +120,8 @@ public abstract class AbstractSwingUI extends AbstractUI {
 
 			@Override
 			public void windowClosing(final WindowEvent evt) {
+				Prefs.put(LAST_X_KEY, appFrame.getX());
+				Prefs.put(LAST_Y_KEY, appFrame.getY());
 				getUIService().getEventService().publish(new AppQuitEvent());
 			}
 		});
