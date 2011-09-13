@@ -1,4 +1,4 @@
-Thanks for trying ImageJ 2.0.0-alpha4!
+Thanks for trying ImageJ 2.0.0-alpha5!
 
 This is an "alpha"-quality release, meaning the code is not finished, nor is
 the design fully stabilized. We are releasing it for early community feedback,
@@ -13,21 +13,21 @@ ground up. It provides backward compatibility with older versions of ImageJ by
 bundling the latest v1.x code and translating between "legacy" and "modern"
 image structures.
 
-ImageJ v2.0.0-alpha4 has made substantial progress in many areas:
-  * Better image displays:
-    + Autoscaling based on minimum and maximum pixel values.
-    + Bounds checking when compositing multiple channels.
-  * Many bugfixes and improvements to overlay support:
-    + Better translation between IJ1 and IJ2 ROIs.
-    + IJ2 Crop plugin now operates on the selected region.
-  * Better services architecture:
-    + Initial support for multiple simultaneous instances of ImageJ.
-  * Lots of improvements to the extensibility framework:
-    + New "Dynamic Plugins" can customize their inputs and outputs at runtime.
-    + Eliminated use of plugin-specific code wherever possible in favor of more
-      general module interfaces.
-  * New Command Finder plugin (Ctrl+L).
-  * Several new debugging plugins (in Plugins > Debug).
+ImageJ v2.0.0-alpha5 has made substantial progress in many areas:
+  * architecture changes that make possible future features:
+    + better dynamic menu management
+    + tracking of recently opened files
+    + tracking of open windows
+    + MDI/SDI display implementations
+    + always active tools
+  * new features:
+    + improved support for legacy commands
+    + plugins respect ROI bounding boxes
+    + improved animation support
+  * numerous bug fixes related to:
+    + threading issues
+    + memory leaks
+    + better legacy interactions
 
 For more details on the project, see the ImageJDev web site at:
   http://imagejdev.org/
