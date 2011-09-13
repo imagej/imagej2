@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ui.ApplicationFrame;
+import imagej.util.Prefs;
 
 import java.awt.HeadlessException;
 
@@ -49,6 +50,8 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 
 	public SwingApplicationFrame(final String title) throws HeadlessException {
 		super(title);
+		int lastX = Prefs.getInt(AbstractSwingUI.LAST_X_KEY, 0);
+		int lastY = Prefs.getInt(AbstractSwingUI.LAST_Y_KEY, 0);
+		setLocation(lastX, lastY);
 	}
-
 }
