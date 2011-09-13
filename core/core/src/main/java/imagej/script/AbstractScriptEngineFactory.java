@@ -52,15 +52,6 @@ public abstract class AbstractScriptEngineFactory implements
 	// Abstract methods
 
 	@Override
-	public abstract String getEngineName();
-
-	@Override
-	public abstract String getLanguageName();
-
-	@Override
-	public abstract List<String> getNames();
-
-	@Override
 	public abstract ScriptEngine getScriptEngine();
 
 	// (Possibly) unsupported operations
@@ -87,6 +78,21 @@ public abstract class AbstractScriptEngineFactory implements
 	@Override
 	public List<String> getExtensions() {
 		return Collections.<String> emptyList();
+	}
+
+	@Override
+	public String getEngineName() {
+		return inferNameFromClassName();
+	}
+
+	@Override
+	public String getLanguageName() {
+		return inferNameFromClassName();
+	}
+
+	@Override
+	public List<String> getNames() {
+		return Collections.<String> singletonList(getEngineName());
 	}
 
 	@Override
@@ -123,6 +129,12 @@ public abstract class AbstractScriptEngineFactory implements
 	@Override
 	public String getEngineVersion() {
 		return "0.0";
+	}
+
+	protected String inferNameFromClassName() {
+		final String className = getClass().getName().replace('_', ' ');
+		final int dot = className.lastIndexOf('.');
+		return className.substring(dot + 1);
 	}
 
 }
