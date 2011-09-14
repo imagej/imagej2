@@ -36,8 +36,8 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.DisplayService;
-import imagej.display.ImageDisplay;
+import imagej.data.display.DisplayService;
+import imagej.data.display.ImageDisplay;
 import net.imglib2.Cursor;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;

@@ -35,18 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
+import imagej.data.display.CanvasHelper;
+import imagej.data.display.DisplayView;
+import imagej.data.display.ImageCanvas;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayPanel;
+import imagej.data.display.event.DisplayViewDeselectedEvent;
+import imagej.data.display.event.DisplayViewSelectedEvent;
 import imagej.data.roi.Overlay;
-import imagej.display.CanvasHelper;
-import imagej.display.DisplayView;
-import imagej.display.EventDispatcher;
-import imagej.display.ImageCanvas;
-import imagej.display.ImageDisplay;
-import imagej.display.ImageDisplayPanel;
-import imagej.display.MouseCursor;
-import imagej.display.event.DisplayViewDeselectedEvent;
-import imagej.display.event.DisplayViewSelectedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.display.EventDispatcher;
+import imagej.ext.display.MouseCursor;
 import imagej.tool.ITool;
 import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;

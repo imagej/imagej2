@@ -35,18 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.data.display.DisplayService;
+import imagej.data.display.DisplayView;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
+import imagej.data.display.event.DisplayViewSelectionEvent;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
-import imagej.display.ImageDisplay;
-import imagej.display.DisplayService;
-import imagej.display.DisplayView;
-import imagej.display.OverlayService;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayViewSelectionEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.display.event.DisplayActivatedEvent;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

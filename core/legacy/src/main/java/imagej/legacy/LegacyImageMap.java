@@ -38,12 +38,12 @@ import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.gui.Roi;
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
-import imagej.display.ImageDisplay;
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.display.event.DisplayCreatedEvent;
+import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.legacy.patches.ImageWindowMethods;
 
 import java.util.ArrayList;

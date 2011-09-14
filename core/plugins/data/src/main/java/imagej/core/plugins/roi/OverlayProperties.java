@@ -36,12 +36,12 @@ package imagej.core.plugins.roi;
 
 import imagej.ImageJ;
 import imagej.data.DataObject;
+import imagej.data.display.DisplayService;
+import imagej.data.display.DisplayView;
+import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.data.roi.Overlay.LineStyle;
-import imagej.display.ImageDisplay;
-import imagej.display.DisplayService;
-import imagej.display.DisplayView;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;

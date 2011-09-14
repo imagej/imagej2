@@ -36,9 +36,9 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.DisplayService;
-import imagej.display.ImageDisplay;
-import imagej.display.OverlayService;
+import imagej.data.display.DisplayService;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
 import imagej.util.RealRect;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;

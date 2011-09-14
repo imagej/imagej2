@@ -47,12 +47,12 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.display.ColorMode;
-import imagej.display.ColorTables;
-import imagej.display.DatasetView;
-import imagej.display.ImageDisplay;
-import imagej.display.DisplayService;
-import imagej.display.DisplayView;
+import imagej.data.display.ColorMode;
+import imagej.data.display.ColorTables;
+import imagej.data.display.DatasetView;
+import imagej.data.display.DisplayService;
+import imagej.data.display.DisplayView;
+import imagej.data.display.ImageDisplay;
 import imagej.util.Log;
 
 import java.awt.image.IndexColorModel;

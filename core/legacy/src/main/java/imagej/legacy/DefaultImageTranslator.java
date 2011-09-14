@@ -37,8 +37,8 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.ImageDisplay;
-import imagej.display.DisplayService;
+import imagej.data.display.DisplayService;
+import imagej.data.display.ImageDisplay;
 import net.imglib2.img.Axis;
 
 /**

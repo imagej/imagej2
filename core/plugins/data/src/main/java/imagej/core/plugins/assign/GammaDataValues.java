@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.display.ImageDisplay;
+import imagej.data.display.ImageDisplay;
 
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;

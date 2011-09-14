@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.display;
 
 import imagej.data.Dataset;
-import imagej.display.AbstractDatasetView;
-import imagej.display.ImageDisplay;
+import imagej.data.display.AbstractDatasetView;
+import imagej.data.display.ImageDisplay;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.EventQueue;

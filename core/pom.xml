@@ -21,7 +21,6 @@
 		<module>core</module>
 		<module>core-tools</module>
 		<module>data</module>
-		<module>display</module>
 		<module>ext</module>
 		<module>io</module>
 		<module>legacy</module>

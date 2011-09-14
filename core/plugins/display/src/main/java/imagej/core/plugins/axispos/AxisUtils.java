@@ -36,9 +36,9 @@ package imagej.core.plugins.axispos;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.ImageDisplay;
-import imagej.display.DisplayService;
-import imagej.display.event.AxisPositionEvent;
+import imagej.data.display.DisplayService;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.event.AxisPositionEvent;
 import imagej.event.Events;
 import net.imglib2.img.Axis;
 

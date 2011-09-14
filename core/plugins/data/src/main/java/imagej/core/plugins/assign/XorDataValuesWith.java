@@ -37,7 +37,7 @@ package imagej.core.plugins.assign;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealXorConstant;
-import imagej.display.ImageDisplay;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;

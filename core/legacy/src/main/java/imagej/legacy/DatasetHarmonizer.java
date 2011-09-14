@@ -38,8 +38,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.ImageDisplay;
-import imagej.display.DisplayService;
+import imagej.data.display.DisplayService;
+import imagej.data.display.ImageDisplay;
 
 import java.util.HashMap;
 import java.util.Map;

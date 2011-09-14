@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.display;
 
 import imagej.ImageJ;
-import imagej.display.DatasetView;
-import imagej.display.DisplayService;
+import imagej.data.display.DatasetView;
+import imagej.data.display.DisplayService;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
