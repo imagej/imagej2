@@ -37,7 +37,7 @@ package imagej.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 
@@ -97,6 +97,7 @@ public class ColorRGBTest {
 	public void testToHTMLColor() {
 		assertEquals("#010203", new ColorRGB(1, 2, 3).toHTMLColor());
 		assertEquals("red", new ColorRGB(255, 0, 0).toHTMLColor());
+		assertEquals("red", Colors.RED.toHTMLColor());
 	}
 
 	@Test
@@ -106,7 +107,7 @@ public class ColorRGBTest {
 
 	@Test
 	public void testEqualsObject() {
-		assertTrue(new ColorRGB(1, 2, 3).equals(new ColorRGB(1, 2, 3)));
+		assertEquals(new ColorRGB(1, 2, 3), new ColorRGB(1, 2, 3));
 		assertFalse(new ColorRGB(1, 2, 3).equals(new ColorRGB(3, 2, 1)));
 	}
 
@@ -114,6 +115,8 @@ public class ColorRGBTest {
 	public void testFromHTMLColor() {
 		assertEquals(new ColorRGB(1, 2, 3), ColorRGB.fromHTMLColor("#010203"));
 		assertEquals(new ColorRGB(255, 0, 0), ColorRGB.fromHTMLColor("red"));
+		assertSame(Colors.RED, ColorRGB.fromHTMLColor("red"));
+		assertNotSame(Colors.RED, ColorRGB.fromHTMLColor("green"));
 	}
 
 }
