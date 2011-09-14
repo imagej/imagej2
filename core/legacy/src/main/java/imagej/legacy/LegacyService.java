@@ -45,6 +45,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.display.event.key.KyReleasedEvent;
@@ -52,7 +53,6 @@ import imagej.ext.options.event.OptionsEvent;
 import imagej.legacy.patches.FunctionsMethods;
 import imagej.util.Log;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,44 +198,41 @@ public final class LegacyService extends AbstractService {
 		subscribers.add(optionSubscriber);
 		eventService.subscribe(OptionsEvent.class, optionSubscriber);
 
-		// TODO - FIXME remove AWT dependency when we have implemented our own
-		// KyEvent constants
-
 		final EventSubscriber<KyPressedEvent> pressSubscriber =
 			new EventSubscriber<KyPressedEvent>() {
 
 				@Override
 				public void onEvent(final KyPressedEvent event) {
-					final int code = event.getCode();
-					if (code == KeyEvent.VK_SPACE) IJ.setKeyDown(KeyEvent.VK_SPACE);
-					if (code == KeyEvent.VK_ALT) IJ.setKeyDown(KeyEvent.VK_ALT);
-					if (code == KeyEvent.VK_SHIFT) IJ.setKeyDown(KeyEvent.VK_SHIFT);
-					if (code == KeyEvent.VK_CONTROL) IJ.setKeyDown(KeyEvent.VK_CONTROL);
-					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_META)) IJ
-						.setKeyDown(KeyEvent.VK_CONTROL);
+					final KeyCode code = event.getCode();
+					if (code == KeyCode.SPACE) IJ.setKeyDown(KeyCode.SPACE.getCode());
+					if (code == KeyCode.ALT) IJ.setKeyDown(KeyCode.ALT.getCode());
+					if (code == KeyCode.SHIFT) IJ.setKeyDown(KeyCode.SHIFT.getCode());
+					if (code == KeyCode.CONTROL) IJ.setKeyDown(KeyCode.CONTROL.getCode());
+					if (IJ.isMacintosh() && code == KeyCode.META) {
+						IJ.setKeyDown(KeyCode.CONTROL.getCode());
+					}
 				}
 			};
 		subscribers.add(pressSubscriber);
 		eventService.subscribe(KyPressedEvent.class, pressSubscriber);
-
-		// TODO - FIXME remove AWT dependency when we have implemented our own
-		// KyEvent constants
 
 		final EventSubscriber<KyReleasedEvent> releaseSubscriber =
 			new EventSubscriber<KyReleasedEvent>() {
 
 				@Override
 				public void onEvent(final KyReleasedEvent event) {
-					final int code = event.getCode();
-					if (code == KeyEvent.VK_SPACE) IJ.setKeyUp(KeyEvent.VK_SPACE);
-					if (code == KeyEvent.VK_ALT) IJ.setKeyUp(KeyEvent.VK_ALT);
-					if (code == KeyEvent.VK_SHIFT) IJ.setKeyUp(KeyEvent.VK_SHIFT);
-					if (code == KeyEvent.VK_CONTROL) IJ.setKeyUp(KeyEvent.VK_CONTROL);
-					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_CONTROL)) IJ
-						.setKeyUp(KeyEvent.VK_CONTROL);
+					final KeyCode code = event.getCode();
+					if (code == KeyCode.SPACE) IJ.setKeyUp(KeyCode.SPACE.getCode());
+					if (code == KeyCode.ALT) IJ.setKeyUp(KeyCode.ALT.getCode());
+					if (code == KeyCode.SHIFT) IJ.setKeyUp(KeyCode.SHIFT.getCode());
+					if (code == KeyCode.CONTROL) IJ.setKeyUp(KeyCode.CONTROL.getCode());
+					if (IJ.isMacintosh() && code == KeyCode.CONTROL) {
+						IJ.setKeyUp(KeyCode.CONTROL.getCode());
+					}
 				}
 			};
 		subscribers.add(releaseSubscriber);
 		eventService.subscribe(KyReleasedEvent.class, releaseSubscriber);
 	}
+
 }

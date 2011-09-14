@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.display.event.key;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.KeyCode;
 
 /**
  * An event indicating keyboard activity in a display.
@@ -44,7 +45,7 @@ import imagej.ext.display.Display;
 public class KyPressedEvent extends KyEvent {
 
 	public KyPressedEvent(final Display<?> display, final char character,
-		final int code, final int modifiers)
+		final KeyCode code, final int modifiers)
 	{
 		super(display, character, code, modifiers);
 	}

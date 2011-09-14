@@ -39,6 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.event.Events;
 import imagej.ext.display.Display;
+import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.display.event.key.KyReleasedEvent;
 import imagej.ext.display.event.key.KyTypedEvent;
@@ -92,18 +93,21 @@ public class AWTKeyEventDispatcherGlobal extends EventQueue {
 	}
 
 	public void keyTyped(final KeyEvent e, final Display<?> display) {
-		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(), e
+		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
+		Events.publish(new KyTypedEvent(display, e.getKeyChar(), keyCode, e
 			.getModifiers()));
 	}
 
 	public void keyPressed(final KeyEvent e, final Display<?> display) {
-		Events.publish(new KyPressedEvent(display, e.getKeyChar(), e.getKeyCode(),
-			e.getModifiers()));
+		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
+		Events.publish(new KyPressedEvent(display, e.getKeyChar(), keyCode, e
+			.getModifiers()));
 	}
 
 	public void keyReleased(final KeyEvent e, final Display<?> display) {
-		Events.publish(new KyReleasedEvent(display, e.getKeyChar(), e.getKeyCode(),
-			e.getModifiers()));
+		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
+		Events.publish(new KyReleasedEvent(display, e.getKeyChar(), keyCode, e
+			.getModifiers()));
 	}
 
 }

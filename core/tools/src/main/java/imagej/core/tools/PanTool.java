@@ -44,8 +44,6 @@ import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
 
-import java.awt.event.KeyEvent;
-
 /**
  * Tool for panning the display.
  * 
@@ -69,23 +67,24 @@ public class PanTool extends AbstractTool {
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if(display instanceof ImageDisplay) {
-		// TODO - eliminate use of AWT here
-		// to do so, need GUI-agnostic Key enum with all key codes...
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
+
 		switch (evt.getCode()) {
-			case KeyEvent.VK_UP:
-				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
+			case UP:
+				imageDisplay.getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
 				break;
-			case KeyEvent.VK_DOWN:
-				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(0, PAN_AMOUNT));
+			case DOWN:
+				imageDisplay.getImageCanvas().pan(new IntCoords(0, PAN_AMOUNT));
 				break;
-			case KeyEvent.VK_LEFT:
-				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
+			case LEFT:
+				imageDisplay.getImageCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
 				break;
-			case KeyEvent.VK_RIGHT:
-				((ImageDisplay)display).getImageCanvas().pan(new IntCoords(PAN_AMOUNT, 0));
+			case RIGHT:
+				imageDisplay.getImageCanvas().pan(new IntCoords(PAN_AMOUNT, 0));
 				break;
-		}}
+			default:
+		}
 	}
 
 	@Override
@@ -97,13 +96,14 @@ public class PanTool extends AbstractTool {
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if(display instanceof ImageDisplay) {
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
+
 		final int xDelta = lastX - evt.getX();
 		final int yDelta = lastY - evt.getY();
-		((ImageDisplay)display).getImageCanvas().pan(new IntCoords(xDelta, yDelta));
+		imageDisplay.getImageCanvas().pan(new IntCoords(xDelta, yDelta));
 		lastX = evt.getX();
 		lastY = evt.getY();
-		}
 	}
 
 	@Override
