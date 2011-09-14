@@ -90,8 +90,18 @@ public final class EventService extends AbstractService {
 		eventBus.unsubscribe(c, subscriber);
 	}
 
-	public <E extends ImageJEvent> List<E> getSubscribers(final Class<E> c) {
-		return eventBus.getSubscribers(c);
+	public <E extends ImageJEvent> List<EventSubscriber<E>> getSubscribers(
+		final Class<E> c)
+	{
+		// HACK - The appears that EventBus API is incorrect in that
+		// EventBus#getSubscribers(Class<T>) returns a List<T> when it should
+		// actually be a List<EventSubscriber<T>>. This method works around the
+		// problem with casts.
+		@SuppressWarnings("rawtypes")
+		final List list = eventBus.getSubscribers(c);
+		@SuppressWarnings("unchecked")
+		final List<EventSubscriber<E>> typedList = list;
+		return typedList;
 	}
 
 	// -- IService methods --

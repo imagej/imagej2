@@ -36,6 +36,7 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.event.ImageJEvent;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.plugin.ImageJPlugin;
@@ -49,9 +50,7 @@ import imagej.ui.swing.SwingOutputWindow;
 import java.util.List;
 
 /**
- * For EventBus diagnostics...
- * Shows what is subscribed to a event types...  
- * 
+ * For EventBus diagnostics... Shows what is subscribed to a event types...
  * Change/Add event types as necessary...
  * 
  * @author Grant Harris
@@ -60,7 +59,6 @@ import java.util.List;
 public class ShowSubscribers implements ImageJPlugin {
 
 	private static SwingOutputWindow window;
-	private List<EventSubscriber<?>> subscribers;
 
 	@Override
 	public void run() {
@@ -71,13 +69,13 @@ public class ShowSubscribers implements ImageJPlugin {
 		listSubs(ObjectDeletedEvent.class);
 		listSubs(DisplayActivatedEvent.class);
 		listSubs(DisplayUpdatedEvent.class);
-		
+
 	}
 
-	private void listSubs(Class clazz) {
-		subscribers = Events.getSubscribers(clazz);
+	private <E extends ImageJEvent> void listSubs(final Class<E> clazz) {
+		final List<EventSubscriber<E>> subscribers = Events.getSubscribers(clazz);
 		window.append(clazz.getSimpleName() + ":\n");
-		for (EventSubscriber<?> subscriber : subscribers) {
+		for (final EventSubscriber<E> subscriber : subscribers) {
 			window.append("    " + subscriber.toString() + "\n");
 		}
 	}

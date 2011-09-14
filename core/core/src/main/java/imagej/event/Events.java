@@ -36,6 +36,8 @@ package imagej.event;
 
 import imagej.ImageJ;
 
+import java.util.List;
+
 /**
  * Simple utility class for subscribing to ImageJ events, as well as publishing
  * them.
@@ -71,8 +73,8 @@ public final class Events {
 		eventService.unsubscribe(c, subscriber);
 	}
 
-	public static <E extends ImageJEvent> java.util.List<E> getSubscribers(
-		final Class<E> c)
+	public static <E extends ImageJEvent> List<EventSubscriber<E>>
+		getSubscribers(final Class<E> c)
 	{
 		final EventService eventService = ImageJ.get(EventService.class);
 		if (eventService == null) return null; // no context
