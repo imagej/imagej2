@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import imagej.tool.ToolService;
+import imagej.ext.tool.ToolService;
 
 /**
  * Common interface for tool bars, which are button bars with selectable tools,

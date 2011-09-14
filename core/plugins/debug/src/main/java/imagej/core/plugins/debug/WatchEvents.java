@@ -51,10 +51,10 @@ import imagej.ext.options.event.OptionsEvent;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.tool.event.ToolEvent;
 import imagej.object.event.ListEvent;
 import imagej.object.event.ObjectEvent;
 import imagej.platform.event.ApplicationEvent;
-import imagej.tool.event.ToolEvent;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 

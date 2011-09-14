@@ -39,11 +39,11 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
-import imagej.tool.ITool;
-import imagej.tool.ToolInfo;
-import imagej.tool.ToolService;
-import imagej.tool.event.ToolActivatedEvent;
-import imagej.tool.event.ToolDeactivatedEvent;
+import imagej.ext.tool.ITool;
+import imagej.ext.tool.ToolInfo;
+import imagej.ext.tool.ToolService;
+import imagej.ext.tool.event.ToolActivatedEvent;
+import imagej.ext.tool.event.ToolDeactivatedEvent;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
 

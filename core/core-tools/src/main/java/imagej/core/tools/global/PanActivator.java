@@ -36,10 +36,10 @@ package imagej.core.tools.global;
 
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.display.event.key.KyReleasedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.ITool;
-import imagej.tool.Tool;
-import imagej.tool.ToolService;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.ITool;
+import imagej.ext.tool.Tool;
+import imagej.ext.tool.ToolService;
 
 /**
  * Tool for activating the pan tool in response to the space bar.

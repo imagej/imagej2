@@ -48,7 +48,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.plugin.Plugin;
-import imagej.tool.ToolService;
+import imagej.ext.tool.ToolService;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.display.JHotDrawImageCanvas;

@@ -37,7 +37,7 @@ package imagej.ui.swing.tools.roi;
 import imagej.data.display.DisplayView;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
-import imagej.tool.Tool;
+import imagej.ext.tool.Tool;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 import imagej.ui.swing.roi.SelectionTool;
 

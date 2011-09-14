@@ -50,8 +50,8 @@ import imagej.event.StatusEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.MouseCursor;
 import imagej.ext.display.event.mouse.MsMovedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 

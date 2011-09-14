@@ -41,7 +41,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.MouseCursor;
-import imagej.tool.event.ToolActivatedEvent;
+import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;

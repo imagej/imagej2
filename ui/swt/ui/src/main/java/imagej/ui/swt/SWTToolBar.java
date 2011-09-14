@@ -36,9 +36,9 @@ package imagej.ui.swt;
 
 import imagej.ImageJ;
 import imagej.ext.InstantiableException;
-import imagej.tool.ITool;
-import imagej.tool.ToolInfo;
-import imagej.tool.ToolService;
+import imagej.ext.tool.ITool;
+import imagej.ext.tool.ToolInfo;
+import imagej.ext.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
 

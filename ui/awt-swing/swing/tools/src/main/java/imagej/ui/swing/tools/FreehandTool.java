@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools;
 
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
 import imagej.ui.swing.tools.roi.PolygonAdapter;
 
 /**

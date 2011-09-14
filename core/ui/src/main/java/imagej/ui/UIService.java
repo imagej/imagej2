@@ -42,8 +42,8 @@ import imagej.event.EventSubscriber;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.tool.ToolService;
 import imagej.platform.PlatformService;
-import imagej.tool.ToolService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
