@@ -264,7 +264,9 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		// if weights are equal, sort alphabetically
 		final String n1 = menuEntry.getName();
 		final String n2 = c.menuEntry.getName();
-		return n1.compareTo(n2);
+		final String s1 = n1 == null ? "" : n1;
+		final String s2 = n2 == null ? "" : n2;
+		return s1.compareTo(s2);
 	}
 
 	@Override
