@@ -258,13 +258,35 @@ public class ModuleService extends AbstractService {
 		try {
 			return future.get();
 		}
-		catch (InterruptedException e) {
+		catch (final InterruptedException e) {
 			Log.error("Module execution interrupted", e);
 		}
-		catch (ExecutionException e) {
+		catch (final ExecutionException e) {
 			Log.error("Error during module execution", e);
 		}
 		return null;
+	}
+
+	/**
+	 * Checks the given module for a solitary unresolved input of the given type,
+	 * returning the relevant {@link ModuleItem} if found, or null if not exactly
+	 * one unresolved input of that type.
+	 */
+	public <T> ModuleItem<T> getSingleInput(final Module module,
+		final Class<T> type)
+	{
+		return getSingleItem(module, type, module.getInfo().inputs());
+	}
+
+	/**
+	 * Checks the given module for a solitary unresolved output of the given type,
+	 * returning the relevant {@link ModuleItem} if found, or null if not exactly
+	 * one unresolved output of that type.
+	 */
+	public <T> ModuleItem<T> getSingleOutput(final Module module,
+		final Class<T> type)
+	{
+		return getSingleItem(module, type, module.getInfo().outputs());
 	}
 
 	// -- IService methods --
@@ -325,6 +347,23 @@ public class ModuleService extends AbstractService {
 			module.setInput(name, converted);
 			module.setResolved(name, true);
 		}
+	}
+
+	private <T> ModuleItem<T> getSingleItem(final Module module,
+		final Class<T> type, final Iterable<ModuleItem<?>> items)
+	{
+		ModuleItem<T> result = null;
+		for (final ModuleItem<?> item : items) {
+			final String name = item.getName();
+			final boolean resolved = module.isResolved(name);
+			if (resolved) continue; // skip resolved inputs
+			if (!type.isAssignableFrom(item.getType())) continue;
+			if (result != null) return null; // multiple matching items
+			@SuppressWarnings("unchecked")
+			final ModuleItem<T> typedItem = (ModuleItem<T>) item;
+			result = typedItem;
+		}
+		return result;
 	}
 
 }
