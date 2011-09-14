@@ -35,10 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.util;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A color with red, green and blue color components.
