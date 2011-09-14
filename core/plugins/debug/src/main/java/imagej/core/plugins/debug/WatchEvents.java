@@ -38,7 +38,6 @@ import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
-import imagej.event.OutputEvent;
 import imagej.event.StatusEvent;
 import imagej.ext.display.event.DisplayEvent;
 import imagej.ext.display.event.key.KyEvent;
@@ -87,7 +86,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 
 	@Parameter(label = "MsButtonEvent")
 	private boolean showMsButton = false;
-	
+
 	@Parameter(label = "MsMovedEvent")
 	private boolean showMsMoved = false;
 
@@ -109,9 +108,6 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 	@Parameter(label = "OptionsEvent")
 	private boolean showOptions = true;
 
-	@Parameter(label = "OutputEvent")
-	private boolean showOutput = true;
-
 	@Parameter(label = "StatusEvent")
 	private boolean showStatus = false;
 
@@ -131,11 +127,11 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 	public void setShowMsMovedEvents(final boolean show) {
 		showMsMoved = show;
 	}
-	
+
 	public void setShowMsButtonEvents(final boolean show) {
 		showMsButton = show;
 	}
-	
+
 	public void setShowKyEvents(final boolean show) {
 		showKy = show;
 	}
@@ -160,10 +156,6 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 		showOptions = show;
 	}
 
-	public void setShowOutputEvents(final boolean show) {
-		showOutput = show;
-	}
-
 	public void setShowStatusEvents(final boolean show) {
 		showStatus = show;
 	}
@@ -177,7 +169,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 	@Override
 	public void run() {
 		window = ImageJ.get(UIService.class).createOutputWindow("Event Watcher");
-		//window.setVisible(true);
+		// window.setVisible(true);
 		eventService = ImageJ.get(EventService.class);
 		eventService.subscribeStrongly(ImageJEvent.class, this);
 		// TODO - unsubscribe when the output window is closed
@@ -200,12 +192,12 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 		final boolean okModule = showModule && evt instanceof ModuleEvent;
 		final boolean okObject = showObject && evt instanceof ObjectEvent;
 		final boolean okOptions = showOptions && evt instanceof OptionsEvent;
-		final boolean okOutput = showOutput && evt instanceof OutputEvent;
 		final boolean okStatus = showStatus && evt instanceof StatusEvent;
 		final boolean okTool = showTool && evt instanceof ToolEvent;
 
-		if (okApplication || okDisplay || okMsButton || okMsMoved || okKy || okFile || okList ||
-			okModule || okObject || okOptions || okOutput || okStatus || okTool)
+		if (okApplication || okDisplay || okMsButton || okMsMoved || okKy ||
+			okFile || okList || okModule || okObject || okOptions || okStatus ||
+			okTool)
 		{
 			showEvent(evt);
 		}
