@@ -43,7 +43,7 @@ import imagej.display.Display;
  */
 public class DisplayActivatedEvent extends DisplayEvent {
 
-	public DisplayActivatedEvent(final Display display) {
+	public DisplayActivatedEvent(final Display<?> display) {
 		super(display);
 	}
 

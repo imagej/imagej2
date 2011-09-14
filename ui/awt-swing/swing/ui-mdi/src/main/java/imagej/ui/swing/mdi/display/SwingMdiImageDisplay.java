@@ -47,7 +47,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ext.plugin.Plugin;
 import imagej.tool.ToolService;
-import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.display.JHotDrawImageCanvas;
@@ -69,9 +68,7 @@ import java.util.List;
  * @author Barry DeZonia
  */
 @Plugin(type = ImageDisplay.class)
-public class SwingMdiImageDisplay extends AbstractImageDisplay implements
-	AWTDisplay
-{
+public class SwingMdiImageDisplay extends AbstractImageDisplay {
 
 	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayPanel imgPanel;
@@ -84,8 +81,6 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay implements
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
-
-	private String name;
 
 	public SwingMdiImageDisplay() {
 		imgCanvas = new JHotDrawImageCanvas(this);
@@ -105,11 +100,6 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay implements
 	// -- ImageDisplay methods --
 
 	@Override
-	public boolean canDisplay(final Dataset dataset) {
-		return true;
-	}
-
-	@Override
 	public void display(final Dataset dataset) {
 		// GBH: Regarding naming/id of the display...
 		// For now, we will use the original (first) dataset name
@@ -126,6 +116,8 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay implements
 		addView(new SwingOverlayView(this, overlay));
 		update();
 	}
+
+	// -- Display methods --
 
 	@Override
 	public void update() {
@@ -160,18 +152,6 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay implements
 	@Override
 	public void redoWindowLayout() {
 		imgPanel.redoLayout();
-	}
-
-	// -- Named methods --
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setName(final String name) {
-		this.name = name;
 	}
 
 	// -- Helper methods --

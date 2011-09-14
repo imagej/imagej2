@@ -261,6 +261,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 			@Override
 			public void onEvent(final DatasetUpdatedEvent event) {
 				final DisplayView view = getDisplay().getActiveView();
+				if (view == null) return;
 				final Dataset ds = getDataset(view);
 				if (event.getObject() != ds) return;
 				setLabel(makeLabel());

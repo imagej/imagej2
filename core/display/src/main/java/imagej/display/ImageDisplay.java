@@ -51,41 +51,30 @@ import net.imglib2.meta.LabeledAxes;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface ImageDisplay extends LabeledAxes, EuclideanSpace, Display {
+public interface ImageDisplay extends LabeledAxes, EuclideanSpace,
+	Display<DisplayView>
+{
 
-	/**
-	 * Tests whether the display is capable of visualizing the given
-	 * {@link Dataset}.
-	 */
-	boolean canDisplay(Dataset dataset);
-
-	/**
-	 * Displays the given {@link Dataset} in this display. Typically, this is a
-	 * shortcut for calling
-	 * <code>addView(new DatasetView(display, dataset))</code>.
-	 */
+	@Deprecated
 	void display(Dataset dataset);
 
-	/**
-	 * Displays the given {@link Overlay} in this display. Typically, this is a
-	 * shortcut for calling
-	 * <code>addView(new OverlayView(display, overlay))</code>.
-	 */
+	@Deprecated
 	void display(Overlay overlay);
 
-	/** Updates and redraws the display onscreen. */
-	void update();
-
 	/** Adds a view to this display. */
+	@Deprecated
 	void addView(DisplayView view);
 
 	/** Removes a view from this display. */
+	@Deprecated
 	void removeView(DisplayView view);
 
 	/** Removes all views from this display. */
+	@Deprecated
 	void removeAllViews();
 
 	/** Gets a list of views linked to the display. */
+	@Deprecated
 	List<DisplayView> getViews();
 
 	/** Gets the view currently designated as active. */

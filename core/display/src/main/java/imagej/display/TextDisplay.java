@@ -35,14 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 /**
- * TODO
- *
- * @author Grant Harris
+ * A {@link Display} for visualizing text.
+ * 
+ * @author Curtis Rueden
  */
-public interface TextDisplay extends Display {
+public interface TextDisplay extends Display<String> {
 
 	void append(String text);
 
-	void clear();
-	
+	@Override
+	TextDisplayPanel getDisplayPanel();
+
 }

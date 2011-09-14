@@ -128,8 +128,8 @@ public class Animator implements ImageJPlugin {
 	/** Terminate all animations. Called from StopAllAnimations plugin. */
 	static void terminateAll() {
 		DisplayService service = ImageJ.get(DisplayService.class);
-		List<Display> displays = service.getDisplays();
-		for (Display d : displays) {
+		List<Display<?>> displays = service.getDisplays();
+		for (Display<?> d : displays) {
 			Animation a = ANIMATIONS.get(d);
 			if (a != null)
 				a.stop();
@@ -223,9 +223,9 @@ public class Animator implements ImageJPlugin {
 			public void onEvent(DatasetRestructuredEvent event) {
 				// NOTE - this event might get captured wel after an animation update
 				// took place with a modified Dataset.
-				List<ImageDisplay> displays =
-					ImageJ.get(DisplayService.class).getDisplays(event.getObject());
-				for (ImageDisplay display : displays) {
+				final List<Display<?>> displays =
+						ImageJ.get(DisplayService.class).getDisplaysContaining(event.getObject());
+				for (Display<?> display : displays) {
 					Animation a = ANIMATIONS.get(display);
 					if (a != null)
 						a.stop();
