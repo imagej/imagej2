@@ -171,7 +171,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	@Override
 	public void update() {
 		final List<Axis> dispAxes = display.getAxes();
-		for (final DisplayView view : display.getViews()) {
+		for (final DisplayView view : display) {
 			for (final Axis axis : axisPositions.keySet()) {
 				final int index = dispAxes.indexOf(axis);
 				if (index >= 0) {
@@ -338,7 +338,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		 *     For something like time or Z, this could be kind of cool:
 		 *     my thing's time dimension goes from last Tuesday to Friday.
 		 */
-		for (final DisplayView v : display.getViews()) {
+		for (final DisplayView v : display) {
 			final DataObject o = v.getDataObject();
 			if (o instanceof Dataset) {
 				final Dataset ds = (Dataset) o;

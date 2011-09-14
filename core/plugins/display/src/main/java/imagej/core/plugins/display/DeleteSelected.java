@@ -59,7 +59,7 @@ public class DeleteSelected implements ImageJPlugin {
 	@Override
 	public void run() {
 		final ArrayList<DisplayView> views =
-			new ArrayList<DisplayView>(display.getViews());
+			new ArrayList<DisplayView>(display);
 		for (final DisplayView view : views) {
 			if (view.isSelected()) display.removeView(view);
 		}

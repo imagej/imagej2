@@ -50,7 +50,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 /**
- * Rebroadcasts AWT events as {@link ImageJEvent}s.
+ * Rebroadcasts AWT internal frame events as {@link ImageJEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -61,15 +61,7 @@ public class InternalFrameEventDispatcher implements EventDispatcher,
 
 	private final Display<?> display;
 
-	/**
-	 * Creates an AWT event dispatcher for the given display, with mouse
-	 * coordinates interpreted according to the relative flag.
-	 * 
-	 * @param relative If true, coordinates are relative to the entire image
-	 *          canvas rather than just the viewport; hence, the pan offset is
-	 *          already factored in.
-	 */
-
+	/** Creates an AWT event dispatcher for the given display. */
 	public InternalFrameEventDispatcher(final Display<?> display) {
 		this.display = display;
 	}
