@@ -64,9 +64,9 @@ public class SwingOutputWindow extends JFrame implements
 	public SwingOutputWindow(final String title) {
 		super(title);
 		textArea = new JTextArea();
-		textArea.setEditable(true);
+		textArea.setEditable(false);
 		textArea.setRows(25);
-		textArea.setColumns(80);
+		textArea.setColumns(84);
 		final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 		textArea.setFont(font);
 		scrollPane = new JScrollPane(textArea);
@@ -110,7 +110,7 @@ public class SwingOutputWindow extends JFrame implements
 	@Override
 	public void append(final String text) {
 		textArea.append(text);
-		// Make sure the last line is always visible
+		// make sure the last line is always visible
 		textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 
