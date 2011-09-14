@@ -36,7 +36,7 @@ package imagej.core.plugins.debug;
 
 import com.github.sbridges.objectinspector.Inspector;
 
-import imagej.display.DisplayView;
+import imagej.data.display.DisplayView;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;

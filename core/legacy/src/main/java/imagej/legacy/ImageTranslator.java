@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.display.ImageDisplay;
+import imagej.data.display.ImageDisplay;
 import net.imglib2.img.Axis;
 
 /**

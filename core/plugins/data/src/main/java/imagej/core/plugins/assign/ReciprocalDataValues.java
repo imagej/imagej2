@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
-import imagej.display.ImageDisplay;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.options.OptionsService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;

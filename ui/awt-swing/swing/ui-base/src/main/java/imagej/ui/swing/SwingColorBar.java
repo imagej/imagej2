@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.display.ColorTables;
+import imagej.data.display.ColorTables;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.Color;

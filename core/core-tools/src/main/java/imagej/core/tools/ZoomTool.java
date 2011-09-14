@@ -34,14 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.display.Display;
-import imagej.display.ImageDisplay;
-import imagej.display.event.key.KyPressedEvent;
-import imagej.display.event.mouse.MsButtonEvent;
-import imagej.display.event.mouse.MsMovedEvent;
-import imagej.display.event.mouse.MsPressedEvent;
-import imagej.display.event.mouse.MsReleasedEvent;
-import imagej.display.event.mouse.MsWheelEvent;
+import imagej.data.display.ImageDisplay;
+import imagej.ext.display.Display;
+import imagej.ext.display.event.key.KyPressedEvent;
+import imagej.ext.display.event.mouse.MsButtonEvent;
+import imagej.ext.display.event.mouse.MsMovedEvent;
+import imagej.ext.display.event.mouse.MsPressedEvent;
+import imagej.ext.display.event.mouse.MsReleasedEvent;
+import imagej.ext.display.event.mouse.MsWheelEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;

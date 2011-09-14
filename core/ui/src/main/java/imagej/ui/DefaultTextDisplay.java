@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 import imagej.ImageJ;
-import imagej.display.AbstractTextDisplay;
-import imagej.display.TextDisplay;
-import imagej.display.TextDisplayPanel;
+import imagej.ext.display.AbstractTextDisplay;
+import imagej.ext.display.TextDisplay;
+import imagej.ext.display.TextDisplayPanel;
 import imagej.ext.plugin.Plugin;
 
 import java.util.Collection;

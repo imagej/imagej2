@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.display.ImageDisplay;
-import imagej.display.EventDispatcher;
-import imagej.display.event.key.KyPressedEvent;
-import imagej.display.event.key.KyReleasedEvent;
-import imagej.display.event.key.KyTypedEvent;
+import imagej.data.display.ImageDisplay;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
+import imagej.ext.display.EventDispatcher;
+import imagej.ext.display.event.key.KyPressedEvent;
+import imagej.ext.display.event.key.KyReleasedEvent;
+import imagej.ext.display.event.key.KyTypedEvent;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

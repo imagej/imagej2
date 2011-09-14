@@ -36,9 +36,9 @@ package imagej.core.plugins.neigh;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.ImageDisplay;
-import imagej.display.DisplayService;
-import imagej.display.OverlayService;
+import imagej.data.display.DisplayService;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;

@@ -36,8 +36,8 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.DisplayService;
-import imagej.display.ImageDisplay;
+import imagej.data.display.DisplayService;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.MenuEntry;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;

@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
+import imagej.data.display.DisplayView;
 import imagej.data.roi.LineOverlay;
 import imagej.data.roi.Overlay;
-import imagej.display.DisplayView;
 import imagej.tool.Tool;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.FreehandTool;
@@ -63,26 +63,17 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 
 	public static final int PRIORITY = FreehandTool.PRIORITY + 1;
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#supports(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
-	 */
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if (!(overlay instanceof LineOverlay)) return false;
 		return (figure == null) || (figure instanceof LineFigure);
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#createNewOverlay()
-	 */
 	@Override
 	public LineOverlay createNewOverlay() {
 		return new LineOverlay();
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#createDefaultFigure()
-	 */
 	@Override
 	public Figure createDefaultFigure() {
 		final LineFigure figure = new LineFigure();
@@ -90,9 +81,6 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 		return figure;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.AbstractJHotDrawOverlayAdapter#updateFigure(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure, imagej.display.DisplayView)
-	 */
 	@Override
 	public void updateFigure(final Overlay overlay, final Figure figure,
 		final DisplayView view)
@@ -108,12 +96,8 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 			.getDoublePosition(0), loverlay.getLineEnd().getDoublePosition(1)));
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ui.swing.tools.roi.AbstractJHotDrawOverlayAdapter#updateOverlay(org.jhotdraw.draw.Figure, imagej.data.roi.Overlay)
-	 */
 	@Override
 	public void updateOverlay(final Figure figure, final Overlay overlay) {
-		// TODO Auto-generated method stub
 		super.updateOverlay(figure, overlay);
 		assert figure instanceof LineFigure;
 		final LineFigure line = (LineFigure) figure;

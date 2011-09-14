@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import imagej.display.ImageDisplay;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;

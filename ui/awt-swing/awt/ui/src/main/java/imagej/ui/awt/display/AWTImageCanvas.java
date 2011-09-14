@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt.display;
 
-import imagej.display.CanvasHelper;
-import imagej.display.Display;
-import imagej.display.EventDispatcher;
-import imagej.display.ImageCanvas;
-import imagej.display.MouseCursor;
+import imagej.data.display.CanvasHelper;
+import imagej.data.display.ImageCanvas;
+import imagej.data.display.ImageDisplay;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.display.EventDispatcher;
+import imagej.ext.display.MouseCursor;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
@@ -84,7 +84,7 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 	// TODO - put this back?? //RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 		RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR; // this is like IJ1
 
-	private final Display display;
+	private final ImageDisplay display;
 
 	private final CanvasHelper canvasHelper;
 
@@ -197,7 +197,7 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 	// -- ImageCanvas methods --
 
 	@Override
-	public Display getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
 

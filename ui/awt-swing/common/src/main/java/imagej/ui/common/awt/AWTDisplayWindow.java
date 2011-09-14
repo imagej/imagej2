@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.display.DisplayWindow;
+import imagej.data.display.DisplayWindow;
 
 /**
  * Superinterface for AWT-based {@link DisplayWindow}s (including Swing).

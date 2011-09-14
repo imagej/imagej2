@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
+import imagej.data.display.DisplayView;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
-import imagej.display.DisplayView;
 import imagej.tool.Tool;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 import imagej.ui.swing.roi.SelectionTool;

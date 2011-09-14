@@ -35,12 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
-import imagej.display.Display;
-import imagej.display.DisplayPanel;
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayPanel;
+import imagej.ext.display.event.DisplayCreatedEvent;
+import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;

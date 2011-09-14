@@ -34,19 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.display.ImageDisplay;
-import imagej.display.EventDispatcher;
-import imagej.display.event.mouse.MsButtonEvent;
-import imagej.display.event.mouse.MsClickedEvent;
-import imagej.display.event.mouse.MsDraggedEvent;
-import imagej.display.event.mouse.MsEnteredEvent;
-import imagej.display.event.mouse.MsExitedEvent;
-import imagej.display.event.mouse.MsMovedEvent;
-import imagej.display.event.mouse.MsPressedEvent;
-import imagej.display.event.mouse.MsReleasedEvent;
-import imagej.display.event.mouse.MsWheelEvent;
+import imagej.data.display.ImageDisplay;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
+import imagej.ext.display.EventDispatcher;
+import imagej.ext.display.event.mouse.MsButtonEvent;
+import imagej.ext.display.event.mouse.MsClickedEvent;
+import imagej.ext.display.event.mouse.MsDraggedEvent;
+import imagej.ext.display.event.mouse.MsEnteredEvent;
+import imagej.ext.display.event.mouse.MsExitedEvent;
+import imagej.ext.display.event.mouse.MsMovedEvent;
+import imagej.ext.display.event.mouse.MsPressedEvent;
+import imagej.ext.display.event.mouse.MsReleasedEvent;
+import imagej.ext.display.event.mouse.MsWheelEvent;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

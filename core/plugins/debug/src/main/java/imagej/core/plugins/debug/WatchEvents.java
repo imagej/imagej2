@@ -35,16 +35,16 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
-import imagej.display.event.DisplayEvent;
-import imagej.display.event.key.KyEvent;
-import imagej.display.event.mouse.MsButtonEvent;
-import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.FileEvent;
 import imagej.event.ImageJEvent;
 import imagej.event.OutputEvent;
 import imagej.event.StatusEvent;
+import imagej.ext.display.event.DisplayEvent;
+import imagej.ext.display.event.key.KyEvent;
+import imagej.ext.display.event.mouse.MsButtonEvent;
+import imagej.ext.display.event.mouse.MsMovedEvent;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.event.ModuleEvent;
 import imagej.ext.options.event.OptionsEvent;

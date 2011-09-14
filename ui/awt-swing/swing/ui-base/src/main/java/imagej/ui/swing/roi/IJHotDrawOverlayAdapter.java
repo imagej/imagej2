@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.roi;
 
+import imagej.data.display.DisplayView;
 import imagej.data.roi.Overlay;
-import imagej.display.DisplayView;
 
 import org.jhotdraw.draw.Figure;
 

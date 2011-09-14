@@ -42,12 +42,12 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.ByteProcessor;
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
 import imagej.data.roi.BinaryMaskOverlay;
 import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
-import imagej.display.ImageDisplay;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
