@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.roi;
 
-import imagej.ImageJ;
 import imagej.data.DataObject;
-import imagej.data.display.DisplayService;
 import imagej.data.display.DisplayView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
@@ -72,17 +70,20 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	static final protected String noneLineStyle = "None";
 	static final protected String arrowLineDecoration = "Arrow";
 	static final protected String noLineDecoration = "None";
-	
+
+	@Parameter(required = true)
+	private ImageDisplay display;
+
 	@Parameter(label = "Line color", persist = false)
 	private ColorRGB lineColor;
 
 	@Parameter(label = "Line width", persist = false, min = "0.1")
 	private double lineWidth;
 
-	@Parameter(label = "Line style", persist = false, 
-			choices = {solidLineStyle, dashLineStyle, dotLineStyle, dotDashLineStyle, noneLineStyle	})
+	@Parameter(label = "Line style", persist = false, choices = { solidLineStyle,
+		dashLineStyle, dotLineStyle, dotDashLineStyle, noneLineStyle })
 	private String lineStyle = "Solid";
-	
+
 	@Parameter(label = "Fill color", persist = false)
 	private ColorRGB fillColor;
 
@@ -90,15 +91,18 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int alpha;
-	
-	@Parameter(label = "Line start arrow style", description = "The arrow style at the starting point of a line or other path",
-			persist = false, choices = { noLineDecoration, arrowLineDecoration })
+
+	@Parameter(
+		label = "Line start arrow style",
+		description = "The arrow style at the starting point of a line or other path",
+		persist = false, choices = { noLineDecoration, arrowLineDecoration })
 	private String startLineArrowStyle;
 
-	@Parameter(label = "Line end arrow style", description = "The arrow style at the end point of a line or other path",
-			persist = false, choices = { noLineDecoration, arrowLineDecoration })
+	@Parameter(label = "Line end arrow style",
+		description = "The arrow style at the end point of a line or other path",
+		persist = false, choices = { noLineDecoration, arrowLineDecoration })
 	private String endLineArrowStyle;
-	
+
 	public OverlayProperties() {
 		// set default values to match the first selected overlay
 		final List<Overlay> selected = getSelectedOverlays();
@@ -108,36 +112,36 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			lineWidth = overlay.getLineWidth();
 			fillColor = overlay.getFillColor();
 			alpha = overlay.getAlpha();
-			switch(overlay.getLineStyle()) {
-			case SOLID:
-				lineStyle = solidLineStyle;
-				break;
-			case DASH:
-				lineStyle = dashLineStyle;
-				break;
-			case DOT:
-				lineStyle = dotLineStyle;
-				break;
-			case DOT_DASH:
-				lineStyle = dotDashLineStyle;
-				break;
-			case NONE:
-				lineStyle = noneLineStyle;
-				break;
+			switch (overlay.getLineStyle()) {
+				case SOLID:
+					lineStyle = solidLineStyle;
+					break;
+				case DASH:
+					lineStyle = dashLineStyle;
+					break;
+				case DOT:
+					lineStyle = dotLineStyle;
+					break;
+				case DOT_DASH:
+					lineStyle = dotDashLineStyle;
+					break;
+				case NONE:
+					lineStyle = noneLineStyle;
+					break;
 			}
-			switch(overlay.getLineStartArrowStyle()) {
-			case NONE:
-				startLineArrowStyle = noLineDecoration;
-				break;
-			case ARROW:
-				startLineArrowStyle = arrowLineDecoration;
+			switch (overlay.getLineStartArrowStyle()) {
+				case NONE:
+					startLineArrowStyle = noLineDecoration;
+					break;
+				case ARROW:
+					startLineArrowStyle = arrowLineDecoration;
 			}
-			switch(overlay.getLineEndArrowStyle()) {
-			case NONE:
-				endLineArrowStyle = noLineDecoration;
-				break;
-			case ARROW:
-				endLineArrowStyle = arrowLineDecoration;
+			switch (overlay.getLineEndArrowStyle()) {
+				case NONE:
+					endLineArrowStyle = noLineDecoration;
+					break;
+				case ARROW:
+					endLineArrowStyle = arrowLineDecoration;
 			}
 		}
 	}
@@ -153,25 +157,33 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			overlay.setAlpha(alpha);
 			if (lineStyle.equals(solidLineStyle)) {
 				overlay.setLineStyle(LineStyle.SOLID);
-			} else if (lineStyle.equals(dashLineStyle)) {
+			}
+			else if (lineStyle.equals(dashLineStyle)) {
 				overlay.setLineStyle(LineStyle.DASH);
-			} else if (lineStyle.equals(dotLineStyle)) {
+			}
+			else if (lineStyle.equals(dotLineStyle)) {
 				overlay.setLineStyle(LineStyle.DOT);
-			} else if (lineStyle.equals(dotDashLineStyle)) {
+			}
+			else if (lineStyle.equals(dotDashLineStyle)) {
 				overlay.setLineStyle(LineStyle.DOT_DASH);
-			} else if (lineStyle.equals(noneLineStyle)) {
+			}
+			else if (lineStyle.equals(noneLineStyle)) {
 				overlay.setLineStyle(LineStyle.NONE);
-			} else {
-				throw new UnsupportedOperationException("Unimplemented style: " + lineStyle);
+			}
+			else {
+				throw new UnsupportedOperationException("Unimplemented style: " +
+					lineStyle);
 			}
 			if (startLineArrowStyle.equals(arrowLineDecoration)) {
 				overlay.setLineStartArrowStyle(ArrowStyle.ARROW);
-			} else {
+			}
+			else {
 				overlay.setLineStartArrowStyle(ArrowStyle.NONE);
 			}
 			if (endLineArrowStyle.equals(arrowLineDecoration)) {
 				overlay.setLineEndArrowStyle(ArrowStyle.ARROW);
-			} else {
+			}
+			else {
 				overlay.setLineEndArrowStyle(ArrowStyle.NONE);
 			}
 			overlay.update();
@@ -203,18 +215,15 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	public int getAlpha() {
 		return alpha;
 	}
-	
+
 	public Overlay.LineStyle getLineStyle() {
 		return Overlay.LineStyle.valueOf(lineStyle);
 	}
 
 	private List<Overlay> getSelectedOverlays() {
 		final ArrayList<Overlay> result = new ArrayList<Overlay>();
-		ImageDisplay display = ImageJ.get(DisplayService.class).getActiveImageDisplay();
-		if (display == null) {
-			return result;
-		}
-		for (final DisplayView view : display.getViews()) {
+		if (display == null) return result;
+		for (final DisplayView view : display) {
 			if (!view.isSelected()) continue;
 			final DataObject dataObject = view.getDataObject();
 			if (!(dataObject instanceof Overlay)) continue;

@@ -36,8 +36,8 @@ package imagej.core.plugins.convolve;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -96,8 +96,9 @@ public class ShadowsDemo implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		
-		ImageDisplay display = ImageJ.get(DisplayService.class).getActiveImageDisplay();
+
+		final ImageDisplay display =
+			ImageJ.get(ImageDisplayService.class).getActiveImageDisplay();
 		if (display == null) return;
 		currDisplay = display;
 		if (unsupportedImage()) {
@@ -106,8 +107,8 @@ public class ShadowsDemo implements ImageJPlugin {
 		}
 		subscribeToEvents();
 		Events.publish(new StatusEvent("Press ESC to terminate"));
-		
-		RealRect selection =
+
+		final RealRect selection =
 			ImageJ.get(OverlayService.class).getSelectionBounds(currDisplay);
 		final Dataset originalData = input.duplicate();
 		userHasQuit = false;

@@ -36,8 +36,8 @@ package imagej.core.plugins.restructure;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -76,10 +76,11 @@ public class ReorderAxes extends DynamicPlugin {
 	private Axis[] desiredAxisOrder;
 
 	public ReorderAxes() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.getActiveImageDisplay();
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return;
-		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 
 		final Axis[] axes = dataset.getAxes();
 
@@ -103,8 +104,8 @@ public class ReorderAxes extends DynamicPlugin {
 		if (inputBad()) return;
 		setupPermutationVars();
 		final ImgPlus<? extends RealType<?>> newImgPlus = getReorganizedData();
-		//reportDims(dataset.getImgPlus());
-		//reportDims(newImgPlus);
+		// reportDims(dataset.getImgPlus());
+		// reportDims(newImgPlus);
 		final int count = dataset.getCompositeChannelCount();
 		dataset.setImgPlus(newImgPlus);
 		dataset.setCompositeChannelCount(count);
@@ -207,10 +208,8 @@ public class ReorderAxes extends DynamicPlugin {
 		dataset.getImgPlus().dimensions(inputOffsets);
 		for (int i = 0; i < inputOffsets.length; i++)
 			inputOffsets[i]--;
-		RegionIndexIterator iter =
-			new RegionIndexIterator(
-				inputOrigin,
-				new long[inputOrigin.length],
+		final RegionIndexIterator iter =
+			new RegionIndexIterator(inputOrigin, new long[inputOrigin.length],
 				inputOffsets);
 		final long[] origDims = dataset.getDims();
 		final Axis[] origAxes = dataset.getAxes();
@@ -238,8 +237,8 @@ public class ReorderAxes extends DynamicPlugin {
 	/**
 	 * Returns the axis index of an Axis given a permuted set of axes.
 	 */
-	private int getNewAxisIndex(final Axis[] permutedAxes,
-		final Axis originalAxis)
+	private int
+		getNewAxisIndex(final Axis[] permutedAxes, final Axis originalAxis)
 	{
 		for (int i = 0; i < permutedAxes.length; i++) {
 			if (permutedAxes[i] == originalAxis) return i;

@@ -38,8 +38,8 @@ import imagej.ImageJ;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -53,8 +53,7 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Rotate 90 Degrees Left", weight = 5) })
 public class Rotate90DegreesLeft implements ImageJPlugin {
@@ -69,24 +68,26 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void run() {
-		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		FlipCoordinateTransformer flipTransformer = new NinetyLeftTransformer();
-		XYFlipper flipper = new XYFlipper(display, flipTransformer);
-		ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
+		final Dataset input =
+			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		final FlipCoordinateTransformer flipTransformer =
+			new NinetyLeftTransformer();
+		final XYFlipper flipper = new XYFlipper(display, flipTransformer);
+		final ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
 		runner.run();
 	}
 
 	// -- private interface --
 
 	private class NinetyLeftTransformer implements FlipCoordinateTransformer {
-		
-		public NinetyLeftTransformer(){
+
+		public NinetyLeftTransformer() {
 			// nothing to do
 		}
 
 		@Override
-		public void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
-			long[] outputPosition)
+		public void calcOutputPosition(final long[] inputDimensions,
+			final long[] inputPosition, final long[] outputPosition)
 		{
 			outputPosition[1] = inputDimensions[0] - inputPosition[0] - 1;
 			outputPosition[0] = inputPosition[1];
@@ -95,15 +96,15 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 		}
 
 		@Override
-		public long[] calcOutputDimensions(long[] inputDimensions) {
-			long[] outputDims = inputDimensions.clone();
+		public long[] calcOutputDimensions(final long[] inputDimensions) {
+			final long[] outputDims = inputDimensions.clone();
 
 			outputDims[0] = inputDimensions[1];
 			outputDims[1] = inputDimensions[0];
 
 			return outputDims;
 		}
-		
+
 		@Override
 		public boolean isShapePreserving() {
 			return false;

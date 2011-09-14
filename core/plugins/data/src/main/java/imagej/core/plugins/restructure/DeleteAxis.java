@@ -36,8 +36,8 @@ package imagej.core.plugins.restructure;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -72,10 +72,11 @@ public class DeleteAxis extends DynamicPlugin {
 	private long hyperPlaneToKeep;
 
 	public DeleteAxis() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.getActiveImageDisplay();
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return;
-		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
@@ -112,7 +113,8 @@ public class DeleteAxis extends DynamicPlugin {
 		final long[] newDimensions = getNewDimensions(dataset, axis);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
-		int compositeCount = compositeStatus(dataset.getCompositeChannelCount(), dstImgPlus);
+		final int compositeCount =
+			compositeStatus(dataset.getCompositeChannelCount(), dstImgPlus);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		// TODO - colorTables, metadata, etc.?
 		dstImgPlus.setCompositeChannelCount(compositeCount);
@@ -191,10 +193,11 @@ public class DeleteAxis extends DynamicPlugin {
 			dstImgPlus, dstOrigin, dstSpan);
 	}
 
-	private int compositeStatus(int compositeCount, ImgPlus<?> output) {
-		if (output.getAxisIndex(Axes.CHANNEL) < 0)
-			return 1;
+	private int
+		compositeStatus(final int compositeCount, final ImgPlus<?> output)
+	{
+		if (output.getAxisIndex(Axes.CHANNEL) < 0) return 1;
 		return compositeCount;
-			
+
 	}
 }

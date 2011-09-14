@@ -36,8 +36,8 @@ package imagej.core.plugins.neigh;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -50,8 +50,7 @@ import imagej.util.RealRect;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Find Edges", weight = 3) })
 public class FindEdges implements ImageJPlugin {
 
@@ -63,13 +62,17 @@ public class FindEdges implements ImageJPlugin {
 	// -- public interface --
 
 	/**
-	 * Sets the output Dataset to the result of the find edges operation */
+	 * Sets the output Dataset to the result of the find edges operation
+	 */
 	@Override
 	public void run() {
-		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		RealRect selection = ImageJ.get(OverlayService.class).getSelectionBounds(display);
-		Neighborhood3x3Operation operation =
-			new Neighborhood3x3Operation(input, selection, new FindEdgesWatcher(input));
+		final Dataset input =
+			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		final RealRect selection =
+			ImageJ.get(OverlayService.class).getSelectionBounds(display);
+		final Neighborhood3x3Operation operation =
+			new Neighborhood3x3Operation(input, selection,
+				new FindEdgesWatcher(input));
 		operation.run();
 	}
 
@@ -78,29 +81,32 @@ public class FindEdges implements ImageJPlugin {
 	private class FindEdgesWatcher implements Neighborhood3x3Watcher {
 
 		/**
-		 * n - contains a local copy of the 9 values of a 3x3 neighborhood */
+		 * n - contains a local copy of the 9 values of a 3x3 neighborhood
+		 */
 		private double[] n;
-		private boolean integerDataset;
-		private double typeMinValue;
-		private double typeMaxValue;
+		private final boolean integerDataset;
+		private final double typeMinValue;
+		private final double typeMaxValue;
 
-		public FindEdgesWatcher(Dataset input) {
+		public FindEdgesWatcher(final Dataset input) {
 			integerDataset = input.isInteger();
 			typeMinValue = input.getType().getMinValue();
 			typeMaxValue = input.getType().getMaxValue();
 		}
-		
+
 		/**
-		 * Create the local neighborhood variables */
+		 * Create the local neighborhood variables
+		 */
 		@Override
 		public void setup() {
 			n = new double[9];
 		}
 
 		/**
-		 * At each new neighborhood start tracking neighbor 0 */
+		 * At each new neighborhood start tracking neighbor 0
+		 */
 		@Override
-		public void initializeNeighborhood(long[] position) {
+		public void initializeNeighborhood(final long[] position) {
 			// nothing to do
 		}
 
@@ -109,8 +115,8 @@ public class FindEdges implements ImageJPlugin {
 		 * local copy
 		 */
 		@Override
-		public void visitLocation(int dx, int dy, double value) {
-			int index = (dy + 1) * (3) + (dx + 1);
+		public void visitLocation(final int dx, final int dy, final double value) {
+			final int index = (dy + 1) * (3) + (dx + 1);
 			n[index] = value;
 		}
 
@@ -121,17 +127,17 @@ public class FindEdges implements ImageJPlugin {
 		@Override
 		public double calcOutputValue() {
 
-			double sum1 = n[0] + 2 * n[1] + n[2] - n[6] - 2 * n[7] - n[8];
+			final double sum1 = n[0] + 2 * n[1] + n[2] - n[6] - 2 * n[7] - n[8];
 
-			double sum2 = n[0] + 2 * n[3] + n[6] - n[2] - 2 * n[5] - n[8];
+			final double sum2 = n[0] + 2 * n[3] + n[6] - n[2] - 2 * n[5] - n[8];
 
 			double value = Math.sqrt(sum1 * sum1 + sum2 * sum2);
-			
+
 			if (integerDataset) {
 				if (value < typeMinValue) value = typeMinValue;
 				if (value > typeMaxValue) value = typeMaxValue;
 			}
-			
+
 			return value;
 		}
 	}

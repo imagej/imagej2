@@ -32,10 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.display;
+package imagej.ext.display;
 
 import imagej.ImageJ;
-import imagej.ext.display.Display;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.Plugin;

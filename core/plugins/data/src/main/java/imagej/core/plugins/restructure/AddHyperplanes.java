@@ -36,8 +36,8 @@ package imagej.core.plugins.restructure;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -74,10 +74,11 @@ public class AddHyperplanes extends DynamicPlugin {
 	private long insertPosition;
 
 	public AddHyperplanes() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.getActiveImageDisplay();
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return;
-		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
@@ -124,7 +125,8 @@ public class AddHyperplanes extends DynamicPlugin {
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
-		int compositeChannelCount = compositeStatus(dataset, dstImgPlus, axis);
+		final int compositeChannelCount =
+			compositeStatus(dataset, dstImgPlus, axis);
 		dstImgPlus.setCompositeChannelCount(compositeChannelCount);
 		// TODO - colorTables, metadata, etc.?
 		dataset.setImgPlus(dstImgPlus);
@@ -174,10 +176,10 @@ public class AddHyperplanes extends DynamicPlugin {
 			numBeforeInsert, numBeforeInsert + numInInsertion, numAfterInsertion);
 	}
 
-	private int compositeStatus(
-		Dataset origData, ImgPlus<?> dstImgPlus, Axis axis)
+	private int compositeStatus(final Dataset origData,
+		final ImgPlus<?> dstImgPlus, final Axis axis)
 	{
-		
+
 		// adding along non-channel axis
 		if (axis != Axes.CHANNEL) {
 			return origData.getCompositeChannelCount();
@@ -186,24 +188,25 @@ public class AddHyperplanes extends DynamicPlugin {
 		// else adding hyperplanes along channel axis
 
 		// calc working data
-		int currComposCount = dataset.getCompositeChannelCount();
-		int origAxisPos = origData.getAxisIndex(Axes.CHANNEL);
-		long numOrigChannels = origData.getImgPlus().dimension(origAxisPos);
-		long numNewChannels = dstImgPlus.dimension(origAxisPos);
+		final int currComposCount = dataset.getCompositeChannelCount();
+		final int origAxisPos = origData.getAxisIndex(Axes.CHANNEL);
+		final long numOrigChannels = origData.getImgPlus().dimension(origAxisPos);
+		final long numNewChannels = dstImgPlus.dimension(origAxisPos);
 
 		// was "composite" on 1 channel
 		if (currComposCount == 1) {
 			return 1;
 		}
-		
+
 		// was composite on all channels
 		if (numOrigChannels == currComposCount) {
-			return (int) numNewChannels;  // in future be composite on all channels
+			return (int) numNewChannels; // in future be composite on all channels
 		}
 
 		// was composite on a subset of channels that divides channels evenly
-		if (((numOrigChannels % currComposCount) == 0) && 
-				((numNewChannels % currComposCount) == 0)) {
+		if (((numOrigChannels % currComposCount) == 0) &&
+			((numNewChannels % currComposCount) == 0))
+		{
 			return currComposCount;
 		}
 

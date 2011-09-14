@@ -50,9 +50,9 @@ import imagej.data.Position;
 import imagej.data.display.ColorMode;
 import imagej.data.display.ColorTables;
 import imagej.data.display.DatasetView;
-import imagej.data.display.DisplayService;
 import imagej.data.display.DisplayView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.util.Log;
 
 import java.awt.image.IndexColorModel;
@@ -174,11 +174,11 @@ public final class LegacyUtils {
 		final Axis[] axes = orderedAxes(preferredOrder, inputDims);
 		final long[] dims = orderedDims(axes, inputDims);
 		final String name = imp.getTitle();
-		
+
 		final boolean signed;
 		final boolean floating;
 		final int bitsPerPixel;
-		
+
 		if (isBinary(imp)) {
 			bitsPerPixel = 1;
 			signed = false;
@@ -189,7 +189,7 @@ public final class LegacyUtils {
 			signed = isSigned(imp);
 			floating = isFloating(imp);
 		}
-		
+
 		final Dataset ds =
 			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
 
@@ -637,8 +637,7 @@ public final class LegacyUtils {
 					final int planeNum = (int) planePos.getIndex();
 					final Object plane = ds.getPlane(planeNum, false);
 					if (plane == null) {
-						Log
-							.error(message("Couldn't extract plane from Dataset ", c, z, t));
+						Log.error(message("Couldn't extract plane from Dataset ", c, z, t));
 					}
 					final int stackPosition = t * zCount * cCount + z * cCount + c + 1;
 					stack.setPixels(plane, stackPosition);
@@ -758,8 +757,8 @@ public final class LegacyUtils {
 	}
 
 	/**
-	 * Sets the ColorTables of the active view of an IJ2 ImageDisplay from the LUTs of
-	 * a given ImagePlus or CompositeImage.
+	 * Sets the ColorTables of the active view of an IJ2 ImageDisplay from the
+	 * LUTs of a given ImagePlus or CompositeImage.
 	 */
 	static void setDisplayLuts(final ImageDisplay disp, final ImagePlus imp) {
 		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
@@ -770,9 +769,10 @@ public final class LegacyUtils {
 	/**
 	 * Sets LUTs of an ImagePlus or CompositeImage. If given an ImagePlus this
 	 * method sets it's single LUT from the first ColorTable of the active Dataset
-	 * of the given ImageDisplay. If given a CompositeImage this method sets all it's
-	 * LUTs from the ColorTables of the active view of the given ImageDisplay. If there
-	 * is no such view the LUTs are assigned with default values.
+	 * of the given ImageDisplay. If given a CompositeImage this method sets all
+	 * it's LUTs from the ColorTables of the active view of the given
+	 * ImageDisplay. If there is no such view the LUTs are assigned with default
+	 * values.
 	 */
 	static void setImagePlusLuts(final ImageDisplay disp, final ImagePlus imp) {
 		if (imp instanceof CompositeImage) {
@@ -787,8 +787,9 @@ public final class LegacyUtils {
 			}
 		}
 		else { // regular ImagePlus
-			final DisplayService displayService = ImageJ.get(DisplayService.class);
-			final Dataset ds = displayService.getActiveDataset(disp);
+			final ImageDisplayService imageDisplayService =
+				ImageJ.get(ImageDisplayService.class);
+			final Dataset ds = imageDisplayService.getActiveDataset(disp);
 			setImagePlusLutToFirstInDataset(ds, imp);
 		}
 	}
@@ -805,8 +806,7 @@ public final class LegacyUtils {
 	 * {@link Dataset}. Best fit means the IJ1 type that is the best at preserving
 	 * data.
 	 */
-	static boolean imagePlusIsNearestType(final Dataset ds, final ImagePlus imp)
-	{
+	static boolean imagePlusIsNearestType(final Dataset ds, final ImagePlus imp) {
 		final int impType = imp.getType();
 
 		if (impType == ImagePlus.COLOR_RGB) {
@@ -850,8 +850,8 @@ public final class LegacyUtils {
 	 * Sets the {@link Dataset}'s number of composite channels to display
 	 * simultaneously based on an input {@link ImagePlus}'s makeup.
 	 */
-	static void setDatasetCompositeVariables(final Dataset ds,
-		final ImagePlus imp)
+	static void
+		setDatasetCompositeVariables(final Dataset ds, final ImagePlus imp)
 	{
 		if ((imp instanceof CompositeImage) &&
 			(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE))
@@ -1187,11 +1187,12 @@ public final class LegacyUtils {
 
 	/** Assigns the color tables of the active view of a ImageDisplay. */
 	private static void assignColorTables(final ImageDisplay disp,
-		final List<ColorTable<?>> colorTables,
-		@SuppressWarnings("unused") final boolean sixteenBitLuts)
+		final List<ColorTable<?>> colorTables, @SuppressWarnings("unused")
+		final boolean sixteenBitLuts)
 	{
 		// FIXME HACK
-		// Grab the active view of the given ImageDisplay and set it's default channel
+		// Grab the active view of the given ImageDisplay and set it's default
+		// channel
 		// luts. When we allow multiple views of a Dataset this will break. We
 		// avoid setting a Dataset's per plane LUTs because it would be expensive
 		// and also IJ1 LUTs are not model space constructs but rather view space
@@ -1199,23 +1200,23 @@ public final class LegacyUtils {
 		final DisplayView dispView = disp.getActiveView();
 		if (dispView == null) return;
 		final DatasetView dsView = (DatasetView) dispView;
-		
-		ColorMode currMode = dsView.getColorMode();
-		
+
+		final ColorMode currMode = dsView.getColorMode();
+
 		if (currMode == ColorMode.GRAYSCALE) return;
-		
+
 		// either we're given one color table for whole dataset
 		if (colorTables.size() == 1) {
-			ColorTable8 newTable = (ColorTable8) colorTables.get(0);
-			List<ColorTable8> existingColorTables = dsView.getColorTables();
+			final ColorTable8 newTable = (ColorTable8) colorTables.get(0);
+			final List<ColorTable8> existingColorTables = dsView.getColorTables();
 			for (int i = 0; i < existingColorTables.size(); i++)
 				dsView.setColorTable(newTable, i);
 		}
-		else {  // or we're given one per channel
+		else { // or we're given one per channel
 			for (int i = 0; i < colorTables.size(); i++)
 				dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 		}
-		
+
 		// force current plane to redraw : HACK to fix bug #668
 		dsView.getProjector().map();
 		disp.update();
@@ -1229,8 +1230,8 @@ public final class LegacyUtils {
 		final LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
-				for (int i = 0; i < imp.getNChannels()*3; i++) {
-					ColorTable<?> cTable = ColorTables.getDefaultColorTable(i);
+				for (int i = 0; i < imp.getNChannels() * 3; i++) {
+					final ColorTable<?> cTable = ColorTables.getDefaultColorTable(i);
 					colorTables.add(cTable);
 				}
 			}
@@ -1314,8 +1315,8 @@ public final class LegacyUtils {
 			boolean allGrayLuts = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable8 cTable = cTables.get(i);
-				if ((allGrayLuts) && (!ColorTables.isGrayColorTable(cTable)))
-					allGrayLuts = false;
+				if ((allGrayLuts) && (!ColorTables.isGrayColorTable(cTable))) allGrayLuts =
+					false;
 				final LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
@@ -1340,21 +1341,19 @@ public final class LegacyUtils {
 	}
 
 	/**
-	 * Determines whether an ImagePlus is an IJ1 binary image (i.e. it is
-	 *  unsigned 8 bit data with only values 0 & 255 present)
+	 * Determines whether an ImagePlus is an IJ1 binary image (i.e. it is unsigned
+	 * 8 bit data with only values 0 & 255 present)
 	 */
-	private static boolean isBinary(ImagePlus imp) {
-		int numSlices = imp.getStackSize();
-		if (numSlices == 1)
-			return imp.getProcessor().isBinary();
-		ImageStack stack = imp.getStack();
+	private static boolean isBinary(final ImagePlus imp) {
+		final int numSlices = imp.getStackSize();
+		if (numSlices == 1) return imp.getProcessor().isBinary();
+		final ImageStack stack = imp.getStack();
 		for (int i = 1; i <= numSlices; i++) {
-			if (!stack.getProcessor(i).isBinary())
-				return false;
+			if (!stack.getProcessor(i).isBinary()) return false;
 		}
 		return true;
 	}
-	
+
 	// -- helper classes --
 
 	/** Helper class to simplify the making of planes of different type data. */

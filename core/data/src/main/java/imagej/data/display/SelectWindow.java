@@ -37,6 +37,7 @@ package imagej.data.display;
 import imagej.ImageJ;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayPanel;
+import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;

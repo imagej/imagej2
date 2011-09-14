@@ -36,8 +36,8 @@ package imagej.core.plugins.axispos;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -70,11 +70,11 @@ public class SetActiveAxis extends DynamicPlugin {
 	String axisName;
 
 	public SetActiveAxis() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		display = displayService.getActiveImageDisplay();
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return;
-		final Dataset dataset =
-			ImageJ.get(DisplayService.class).getActiveDataset(display);
+		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
 		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
@@ -82,8 +82,9 @@ public class SetActiveAxis extends DynamicPlugin {
 		for (final Axis candidateAxis : Axes.values()) {
 			// TODO - remove someday when we allow X or Y sliders
 			if ((candidateAxis == Axes.X) || (candidateAxis == Axes.Y)) continue;
-			if (datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
-				.getLabel());
+			if (datasetAxes.contains(candidateAxis)) {
+				choices.add(candidateAxis.getLabel());
+			}
 		}
 		name.setChoices(choices);
 		addInput(name);

@@ -38,8 +38,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -93,15 +93,18 @@ public class DatasetHarmonizer {
 	 * {@link ImageDisplay}. Assumes Dataset has planar primitive access in an IJ1
 	 * compatible format.
 	 */
-	public void updateLegacyImage(final ImageDisplay display, final ImagePlus imp) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Dataset ds = displayService.getActiveDataset(display);
+	public void
+		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
+	{
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		if (!LegacyUtils.imagePlusIsNearestType(ds, imp)) {
 			rebuildImagePlusData(display, imp);
 		}
 		else {
-			if ((dimensionsIncompatible(ds, imp)) ||
-					(imp.getStack().getSize() == 0)) {  // NB unfortunate issue with IJ1
+			if ((dimensionsIncompatible(ds, imp)) || (imp.getStack().getSize() == 0))
+			{ // NB unfortunate issue with IJ1
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -122,13 +125,14 @@ public class DatasetHarmonizer {
 	 * {@link ImagePlus}.
 	 */
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Dataset ds = displayService.getActiveDataset(display);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
 		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
 			final ImageDisplay tmp = imageTranslator.createDisplay(imp, ds.getAxes());
-			final Dataset dsTmp = displayService.getActiveDataset(tmp);
+			final Dataset dsTmp = imageDisplayService.getActiveDataset(tmp);
 			ds.setImgPlus(dsTmp.getImgPlus());
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
@@ -158,29 +162,30 @@ public class DatasetHarmonizer {
 	 * Determines whether a {@link Dataset} and an {@link ImagePlus} have
 	 * incompatible dimensionality.
 	 */
-	private boolean dimensionsIncompatible(final Dataset ds, final ImagePlus imp) {
+	private boolean dimensionsIncompatible(final Dataset ds, final ImagePlus imp)
+	{
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		
-		long[] dimensions = new long[ds.getImgPlus().numDimensions()];
+
+		final long[] dimensions = new long[ds.getImgPlus().numDimensions()];
 		ds.getImgPlus().dimensions(dimensions);
-		
+
 		final long x = (xIndex < 0) ? 1 : dimensions[xIndex];
 		final long y = (yIndex < 0) ? 1 : dimensions[yIndex];
 		final long c = (cIndex < 0) ? 1 : dimensions[cIndex];
 		final long z = (zIndex < 0) ? 1 : dimensions[zIndex];
 		final long t = (tIndex < 0) ? 1 : dimensions[tIndex];
-		
+
 		if (x != imp.getWidth()) return true;
 		if (y != imp.getHeight()) return true;
 		if (z != imp.getNSlices()) return true;
 		if (t != imp.getNFrames()) return true;
 		// channel case a little different
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			if (c != imp.getNChannels()*3) return true;
+			if (c != imp.getNChannels() * 3) return true;
 		}
 		else { // not color data
 			if (c != imp.getNChannels()) return true;
@@ -197,10 +202,13 @@ public class DatasetHarmonizer {
 	/**
 	 * Creates a new {@link ImageStack} of data from a {@link ImageDisplay} and
 	 * assigns it to given {@link ImagePlus}
+	 * 
 	 * @param display
 	 * @param imp
 	 */
-	private void rebuildImagePlusData(ImageDisplay display, ImagePlus imp) {
+	private void rebuildImagePlusData(final ImageDisplay display,
+		final ImagePlus imp)
+	{
 		final ImagePlus newImp = imageTranslator.createLegacyImage(display);
 		imp.setStack(newImp.getStack());
 		final int c = newImp.getNChannels();

@@ -37,8 +37,8 @@ package imagej.core.plugins.assign;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PreviewPlugin;
@@ -128,7 +128,7 @@ public abstract class AbstractPreviewPlugin
 	// cause precision loss for long data
 	
 	private void initialize() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final ImageDisplayService displayService = ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 
 		dataset = displayService.getActiveDataset(getDisplay());

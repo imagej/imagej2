@@ -39,8 +39,8 @@ import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
@@ -56,27 +56,27 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class XYFlipper implements OutputAlgorithm {
 
 	// -- instance variables --
 
-	private ImageDisplay display;
-	
-	private Dataset dataset;
+	private final ImageDisplay display;
 
-	private String errMessage = "No error";
+	private final Dataset dataset;
+
+	private final String errMessage = "No error";
 
 	private Img<? extends RealType<?>> outputImage;
 
-	private FlipCoordinateTransformer flipper;
-	
+	private final FlipCoordinateTransformer flipper;
+
 	private long[] inputDimensions;
 
 	private RandomAccess<? extends RealType<?>> inputAccessor;
-	
+
 	private RandomAccess<? extends RealType<?>> outputAccessor;
-	
+
 	// -- exported interface --
 
 	/**
@@ -96,7 +96,7 @@ public class XYFlipper implements OutputAlgorithm {
 		 */
 		void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
 			long[] outputPosition);
-		
+
 		/**
 		 * Returns if this transformation does not reorder X & Y axes
 		 */
@@ -105,27 +105,34 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- constructor --
 
-	public XYFlipper(ImageDisplay display, FlipCoordinateTransformer flipper) {
+	public XYFlipper(final ImageDisplay display,
+		final FlipCoordinateTransformer flipper)
+	{
 		this.display = display;
-		this.dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		this.dataset =
+			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
 		this.flipper = flipper;
 	}
 
 	// -- public interface : implementation of OutputAlgorithm methods --
 
 	/**
-	 * Makes sure input is okay and creates output image */
+	 * Makes sure input is okay and creates output image
+	 */
 	@Override
 	public boolean checkInput() {
-		Img inputImage = dataset.getImgPlus();  // TODO - raw type required here
-		
+		final Img inputImage = dataset.getImgPlus(); // TODO - raw type required
+																									// here
+
 		inputDimensions = new long[inputImage.numDimensions()];
 
 		inputImage.dimensions(inputDimensions);
-		
-		long[] outputDimensions = flipper.calcOutputDimensions(inputDimensions);
 
-		outputImage = inputImage.factory().create(outputDimensions, inputImage.firstElement());
+		final long[] outputDimensions =
+			flipper.calcOutputDimensions(inputDimensions);
+
+		outputImage =
+			inputImage.factory().create(outputDimensions, inputImage.firstElement());
 
 		return true;
 	}
@@ -144,22 +151,22 @@ public class XYFlipper implements OutputAlgorithm {
 	 */
 	@Override
 	public boolean process() {
-		Img<? extends RealType<?>> inputImage = dataset.getImgPlus();
+		final Img<? extends RealType<?>> inputImage = dataset.getImgPlus();
 
 		inputAccessor = inputImage.randomAccess();
 		outputAccessor = outputImage.randomAccess();
 
-		long width = inputDimensions[0];
-		long height = inputDimensions[1];
-		
-		RealRect selectedRegion =
+		final long width = inputDimensions[0];
+		final long height = inputDimensions[1];
+
+		final RealRect selectedRegion =
 			ImageJ.get(OverlayService.class).getSelectionBounds(display);
-		
+
 		long rx, ry, rw, rh;
-		
-		if (flipper.isShapePreserving() &&
-				(selectedRegion.width > 0) &&
-				(selectedRegion.height > 0)) {
+
+		if (flipper.isShapePreserving() && (selectedRegion.width > 0) &&
+			(selectedRegion.height > 0))
+		{
 			rx = (long) selectedRegion.x;
 			ry = (long) selectedRegion.y;
 			rw = (long) selectedRegion.width;
@@ -172,15 +179,15 @@ public class XYFlipper implements OutputAlgorithm {
 			rh = height;
 		}
 
-		long[] planeDims = new long[inputImage.numDimensions()-2];
+		final long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = inputDimensions[i+2];
-		Extents extents = new Extents(planeDims);
-		Position planePos = extents.createPosition();
+			planeDims[i] = inputDimensions[i + 2];
+		final Extents extents = new Extents(planeDims);
+		final Position planePos = extents.createPosition();
 		if (planeDims.length == 0) { // 2d Dataset
 			processPlane(planePos, rx, ry, rw, rh);
 		}
-		else {  // more than two dimensions
+		else { // more than two dimensions
 			while (planePos.hasNext()) {
 				planePos.fwd();
 				processPlane(planePos, rx, ry, rw, rh);
@@ -196,19 +203,21 @@ public class XYFlipper implements OutputAlgorithm {
 	public Img<? extends RealType<?>> getResult() {
 		return outputImage;
 	}
-	
-	private void processPlane(Position planePos, long rx, long ry, long rw, long rh) {
-		
-		long[] inputPosition = new long[planePos.numDimensions()+2];
-		long[] outputPosition = new long[planePos.numDimensions()+2];
+
+	private void processPlane(final Position planePos, final long rx,
+		final long ry, final long rw, final long rh)
+	{
+
+		final long[] inputPosition = new long[planePos.numDimensions() + 2];
+		final long[] outputPosition = new long[planePos.numDimensions() + 2];
 
 		for (int i = 2; i < inputPosition.length; i++)
-			inputPosition[i] = planePos.getLongPosition(i-2);
-		
-		for (long y = ry; y < ry+rh; y++) {
+			inputPosition[i] = planePos.getLongPosition(i - 2);
+
+		for (long y = ry; y < ry + rh; y++) {
 			inputPosition[1] = y;
 
-			for (long x = rx; x < rx+rw; x++) {
+			for (long x = rx; x < rx + rw; x++) {
 				inputPosition[0] = x;
 
 				flipper.calcOutputPosition(inputDimensions, inputPosition,
@@ -217,7 +226,7 @@ public class XYFlipper implements OutputAlgorithm {
 				inputAccessor.setPosition(inputPosition);
 				outputAccessor.setPosition(outputPosition);
 
-				double value = inputAccessor.get().getRealDouble();
+				final double value = inputAccessor.get().getRealDouble();
 
 				outputAccessor.get().setReal(value);
 			}

@@ -36,8 +36,8 @@ package imagej.core.plugins.convolve;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -50,8 +50,7 @@ import imagej.util.RealRect;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Shadows", mnemonic = 's'),
 	@Menu(label = "Southwest", weight = 6) })
 public class ShadowsSouthwest implements ImageJPlugin {
@@ -65,11 +64,13 @@ public class ShadowsSouthwest implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		Dataset input = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		RealRect selection = ImageJ.get(OverlayService.class).getSelectionBounds(display);
-		Convolve3x3Operation operation =
-			new Convolve3x3Operation(input, selection,
-				new double[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 });
+		final Dataset input =
+			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		final RealRect selection =
+			ImageJ.get(OverlayService.class).getSelectionBounds(display);
+		final Convolve3x3Operation operation =
+			new Convolve3x3Operation(input, selection, new double[] { 0, -1, -2, 1,
+				1, -1, 2, 1, 0 });
 		operation.run();
 	}
 }

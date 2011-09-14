@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.common.awt;
 
 import imagej.ImageJ;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.event.Events;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.key.KyPressedEvent;
@@ -74,9 +74,9 @@ public class AWTKeyEventDispatcherGlobal extends EventQueue {
 	@Override
 	protected void dispatchEvent(final AWTEvent event) {
 		if (event instanceof KeyEvent) {
-			// get the current display
+			// get the current image display
 			final ImageDisplay display =
-				ImageJ.get(DisplayService.class).getActiveImageDisplay();
+				ImageJ.get(ImageDisplayService.class).getActiveImageDisplay();
 			final int eventId = event.getID();
 			if (eventId == KeyEvent.KEY_TYPED) {
 				keyTyped((KeyEvent) event, display);

@@ -39,8 +39,8 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -78,8 +78,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Parameter(type = ItemIO.OUTPUT)
 	private List<ImageDisplay> outputs;
 
-	private DisplayService displayService;
-	
+	private ImageDisplayService imageDisplayService;
+
 	// -- LegacyPlugin methods --
 
 	/** Gets the list of output {@link ImageDisplay}s. */
@@ -91,8 +91,9 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
+		imageDisplayService = ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay activeDisplay =
+			imageDisplayService.getActiveImageDisplay();
 		if (!isLegacyCompatible(activeDisplay)) {
 			Log.warn("Active dataset is not compatible with IJ1");
 			outputs = new ArrayList<ImageDisplay>();
@@ -107,12 +108,12 @@ public class LegacyPlugin implements ImageJPlugin {
 			new DatasetHarmonizer(map.getTranslator());
 		final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
 		final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
-		
+
 		harmonizer.resetTypeTracking();
-		
+
 		updateImagePlusesFromDisplays(map, harmonizer);
 
-	  // must happen after updateImagePlusesFromDisplays()
+		// must happen after updateImagePlusesFromDisplays()
 		outputSet.clear();
 		closedSet.clear();
 
@@ -135,15 +136,15 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 
 		// close any displays that IJ1 wants closed
-		for (ImagePlus imp : closedSet) {
-			ImageDisplay disp = map.lookupDisplay(imp);
+		for (final ImagePlus imp : closedSet) {
+			final ImageDisplay disp = map.lookupDisplay(imp);
 			if (disp != null) {
 				outputs.remove(disp);
-				DisplayPanel dispWin = disp.getDisplayPanel();
+				final DisplayPanel dispWin = disp.getDisplayPanel();
 				if (dispWin != null) dispWin.close();
 			}
 		}
-		
+
 		// clean up
 		harmonizer.resetTypeTracking();
 		outputSet.clear();
@@ -161,7 +162,9 @@ public class LegacyPlugin implements ImageJPlugin {
 		// TODO - track events and keep a dirty bit, then only harmonize those
 		// displays that have changed. See ticket #546.
 		final ObjectService objectService = ImageJ.get(ObjectService.class);
-		for (final ImageDisplay display : objectService.getObjects(ImageDisplay.class)) {
+		for (final ImageDisplay display : objectService
+			.getObjects(ImageDisplay.class))
+		{
 			ImagePlus imp = map.lookupImagePlus(display);
 			if (imp == null) {
 				if (isLegacyCompatible(display)) {
@@ -176,8 +179,8 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 	}
 
-	private List<ImageDisplay> updateDisplaysFromImagePluses(final LegacyImageMap map,
-		final DatasetHarmonizer harmonizer)
+	private List<ImageDisplay> updateDisplaysFromImagePluses(
+		final LegacyImageMap map, final DatasetHarmonizer harmonizer)
 	{
 		// TODO - check the changes flag for each ImagePlus that already has a
 		// ImageDisplay and only harmonize those that have changed. Maybe changes
@@ -190,9 +193,10 @@ public class LegacyPlugin implements ImageJPlugin {
 		final ImagePlus currImp = WindowManager.getCurrentImage();
 		if (currImp != null) {
 			ImageDisplay display = map.lookupDisplay(currImp);
-			if (display != null) { 
+			if (display != null) {
 				harmonizer.updateDisplay(display, currImp);
-			} else {
+			}
+			else {
 				display = map.registerLegacyImage(currImp);
 				displays.add(display);
 			}
@@ -200,10 +204,9 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// also harmonize any outputs
 
-
 		final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
 		for (final ImagePlus imp : imps) {
-			if (imp.getStack().getSize() == 0) {  // totally emptied by plugin
+			if (imp.getStack().getSize() == 0) { // totally emptied by plugin
 				// TODO - do we need to delete display or is it already done?
 			}
 			else { // image plus is not totally empty
@@ -211,10 +214,12 @@ public class LegacyPlugin implements ImageJPlugin {
 				if (display == null) {
 					if (imp.getWindow() != null) {
 						display = map.registerLegacyImage(imp);
-					} else {
+					}
+					else {
 						continue;
 					}
-				} else {
+				}
+				else {
 					if (imp == currImp) {
 						// we harmonized this earlier
 					}
@@ -227,10 +232,10 @@ public class LegacyPlugin implements ImageJPlugin {
 		return displays;
 	}
 
-	private boolean isLegacyCompatible(ImageDisplay display) {
+	private boolean isLegacyCompatible(final ImageDisplay display) {
 		if (display == null) return true;
-		Dataset ds = displayService.getActiveDataset(display);
-		Axis[] axes = ds.getAxes();
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
+		final Axis[] axes = ds.getAxes();
 		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
 		if (dimensionsIncompatible(ds)) return false;
 		return true;
@@ -238,29 +243,29 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	/**
 	 * Assumes there are no incompatible IJ1 axes present in dataset
+	 * 
 	 * @param dataset
 	 */
-	private boolean dimensionsIncompatible(Dataset dataset) {
+	private boolean dimensionsIncompatible(final Dataset dataset) {
 		final int xIndex = dataset.getAxisIndex(Axes.X);
 		final int yIndex = dataset.getAxisIndex(Axes.Y);
 		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = dataset.getAxisIndex(Axes.Z);
 		final int tIndex = dataset.getAxisIndex(Axes.TIME);
 
-		long[] dims = dataset.getDims();
-		
+		final long[] dims = dataset.getDims();
+
 		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
 		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
 		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 
-		final long ij1ChannelCount =
-			dataset.isRGBMerged() ? (cCount / 3) : cCount;
-			
+		final long ij1ChannelCount = dataset.isRGBMerged() ? (cCount / 3) : cCount;
+
 		// check width
 		if ((xIndex < 0) || (xCount > Integer.MAX_VALUE)) return true;
-		
+
 		// check height
 		if ((yIndex < 0) || (yCount > Integer.MAX_VALUE)) return true;
 
@@ -268,8 +273,8 @@ public class LegacyPlugin implements ImageJPlugin {
 		if ((xCount * yCount) > Integer.MAX_VALUE) return true;
 
 		// check number of planes not too large
-		if (ij1ChannelCount * zCount * tCount > Integer.MAX_VALUE)  return true;
-		
+		if (ij1ChannelCount * zCount * tCount > Integer.MAX_VALUE) return true;
+
 		return false;
 	}
 

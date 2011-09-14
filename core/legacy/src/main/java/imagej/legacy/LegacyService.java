@@ -41,8 +41,8 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.event.DisplayActivatedEvent;
@@ -82,7 +82,7 @@ public final class LegacyService extends AbstractService {
 	}
 
 	private final EventService eventService;
-	private final DisplayService displayService;
+	private final ImageDisplayService imageDisplayService;
 
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
@@ -102,11 +102,11 @@ public final class LegacyService extends AbstractService {
 	}
 
 	public LegacyService(final ImageJ context, final EventService eventService,
-		final DisplayService displayService)
+		final ImageDisplayService imageDisplayService)
 	{
 		super(context);
 		this.eventService = eventService;
-		this.displayService = displayService;
+		this.imageDisplayService = imageDisplayService;
 	}
 
 	// -- LegacyService methods --
@@ -131,21 +131,22 @@ public final class LegacyService extends AbstractService {
 	 * active {@link ImageDisplay}. Does not perform any harmonization.
 	 */
 	public void syncActiveImage() {
-		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
+		final ImageDisplay activeDisplay =
+			imageDisplayService.getActiveImageDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
 		WindowManager.setTempCurrentImage(activeImagePlus);
 	}
 
 	// TODO - make private only???
-	
+
 	public void updateIJ1Settings() {
 		optionsSynchronizer.updateIJ1SettingsFromIJ2();
 	}
-	
+
 	public void updateIJ2Settings() {
 		optionsSynchronizer.updateIJ2SettingsFromIJ1();
 	}
-	
+
 	// -- IService methods --
 
 	@Override
@@ -168,11 +169,11 @@ public final class LegacyService extends AbstractService {
 
 	// -- Helper methods --
 
-	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		// keep the active legacy ImagePlus in sync with the active modern ImageDisplay
+		// keep the active legacy ImagePlus in sync with the active modern
+		// ImageDisplay
 		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
 			new EventSubscriber<DisplayActivatedEvent>() {
 

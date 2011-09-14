@@ -37,8 +37,9 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.ext.display.DisplayService;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
@@ -91,8 +92,9 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Dataset dataset = displayService.getActiveDataset(display);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		ImagePlus imp;
 		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) imp =
 			LegacyUtils.makeExactImagePlus(dataset);
