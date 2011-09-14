@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.plugins.debug;
+package imagej.core.plugins.debug;
 
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -40,43 +40,54 @@ import imagej.event.ImageJEvent;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsListEvent;
-import imagej.ui.swing.StaticSwingUtils;
-import imagej.ui.swing.SwingOutputWindow;
 
 import java.util.List;
 
 /**
- * For EventBus diagnostics... Shows what is subscribed to a event types...
- * Change/Add event types as necessary...
+ * For EventBus diagnostics: shows what is subscribed to various event types.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Subscribers")
 public class ShowSubscribers implements ImageJPlugin {
 
-	private static SwingOutputWindow window;
+	@Parameter(label = "Subscriber Log", output = true)
+	private String subscriberLog;
+
+	// -- ShowSubscribers methods --
+
+	public String getSubscriberLog() {
+		return subscriberLog;
+	}
+
+	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		window = new SwingOutputWindow("Subscribers");
-		StaticSwingUtils.locateLowerRight(window);
-		listSubs(ObjectsListEvent.class);
-		listSubs(ObjectCreatedEvent.class);
-		listSubs(ObjectDeletedEvent.class);
-		listSubs(DisplayActivatedEvent.class);
-		listSubs(DisplayUpdatedEvent.class);
-
+		final StringBuilder sb = new StringBuilder();
+		listSubs(sb, ObjectsListEvent.class);
+		listSubs(sb, ObjectCreatedEvent.class);
+		listSubs(sb, ObjectDeletedEvent.class);
+		listSubs(sb, DisplayActivatedEvent.class);
+		listSubs(sb, DisplayUpdatedEvent.class);
+		subscriberLog = sb.toString();
 	}
 
-	private <E extends ImageJEvent> void listSubs(final Class<E> clazz) {
-		final List<EventSubscriber<E>> subscribers = Events.getSubscribers(clazz);
-		window.append(clazz.getSimpleName() + ":\n");
+	// -- Helper methods --
+
+	private <E extends ImageJEvent> void listSubs(final StringBuilder sb,
+		final Class<E> c)
+	{
+		final List<EventSubscriber<E>> subscribers = Events.getSubscribers(c);
+		sb.append(c.getSimpleName() + ":\n");
 		for (final EventSubscriber<E> subscriber : subscribers) {
-			window.append("    " + subscriber.toString() + "\n");
+			sb.append("    " + subscriber.toString() + "\n");
 		}
 	}
 
