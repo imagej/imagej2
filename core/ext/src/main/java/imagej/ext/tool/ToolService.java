@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.tool;
+package imagej.ext.tool;
 
 import imagej.AbstractService;
 import imagej.ImageJ;
@@ -48,8 +48,8 @@ import imagej.ext.display.event.mouse.MsMovedEvent;
 import imagej.ext.display.event.mouse.MsPressedEvent;
 import imagej.ext.display.event.mouse.MsReleasedEvent;
 import imagej.ext.display.event.mouse.MsWheelEvent;
-import imagej.tool.event.ToolActivatedEvent;
-import imagej.tool.event.ToolDeactivatedEvent;
+import imagej.ext.tool.event.ToolActivatedEvent;
+import imagej.ext.tool.event.ToolDeactivatedEvent;
 import imagej.util.Log;
 
 import java.util.ArrayList;

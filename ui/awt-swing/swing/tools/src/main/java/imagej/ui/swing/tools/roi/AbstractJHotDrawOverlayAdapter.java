@@ -37,7 +37,7 @@ package imagej.ui.swing.tools.roi;
 import imagej.data.display.DisplayView;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
-import imagej.tool.AbstractTool;
+import imagej.ext.tool.AbstractTool;
 import imagej.ui.swing.roi.IJHotDrawOverlayAdapter;
 import imagej.util.ColorRGB;
 import imagej.util.ColorRGBA;

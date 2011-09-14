@@ -38,9 +38,9 @@ import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
-import imagej.tool.ITool;
-import imagej.tool.ToolInfo;
-import imagej.tool.ToolService;
+import imagej.ext.tool.ITool;
+import imagej.ext.tool.ToolInfo;
+import imagej.ext.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
 

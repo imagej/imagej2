@@ -1,5 +1,5 @@
 //
-// ToolInfo.java
+// DummyTool.java
 //
 
 /*
@@ -32,41 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.tool;
-
-import imagej.ext.IndexItemInfo;
+package imagej.ext.tool;
 
 /**
- * A collection of metadata about a particular {@link ITool}.
- * 
+ * A tool that does nothing.
+ *
  * @author Curtis Rueden
- * @see Tool
  */
-public class ToolInfo extends IndexItemInfo<ITool> {
-
-	/** Whether the tool is active all the time, rather than on the toolbar. */
-	private boolean global;
-
-	public ToolInfo(final String className) {
-		setClassName(className);
-	}
-
-	public ToolInfo(final String className, final Tool tool) {
-		this(className);
-		setName(tool.name());
-		setLabel(tool.label());
-		setDescription(tool.description());
-		setIconPath(tool.iconPath());
-		setPriority(tool.priority());
-		setEnabled(tool.enabled());
-		global = tool.global();
-	}
-
-	// -- ToolInfo methods --
-
-	/** Gets whether tool is always active, rather than part of the toolbar. */
-	public boolean isGlobal() {
-		return global;
-	}
-
+public class DummyTool extends AbstractTool {
+	// An empty tool implementation, active by default, to avoid null references.
 }

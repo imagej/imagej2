@@ -37,7 +37,7 @@ package imagej.ui.swing.tools.roi;
 import imagej.data.display.DisplayView;
 import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
-import imagej.tool.Tool;
+import imagej.ext.tool.Tool;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 
 import java.awt.Color;

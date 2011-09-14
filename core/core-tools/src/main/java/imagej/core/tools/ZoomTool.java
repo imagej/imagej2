@@ -42,8 +42,8 @@ import imagej.ext.display.event.mouse.MsMovedEvent;
 import imagej.ext.display.event.mouse.MsPressedEvent;
 import imagej.ext.display.event.mouse.MsReleasedEvent;
 import imagej.ext.display.event.mouse.MsWheelEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
 
 /**

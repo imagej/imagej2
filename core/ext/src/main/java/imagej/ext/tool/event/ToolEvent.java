@@ -1,5 +1,5 @@
 //
-// DummyTool.java
+// ToolEvent.java
 //
 
 /*
@@ -32,13 +32,33 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.tool;
+package imagej.ext.tool.event;
+
+import imagej.event.ImageJEvent;
+import imagej.ext.tool.ITool;
 
 /**
- * A tool that does nothing.
+ * An event indicating something has happened to a tool.
  *
  * @author Curtis Rueden
  */
-public class DummyTool extends AbstractTool {
-	// An empty tool implementation, active by default, to avoid null references.
+public class ToolEvent extends ImageJEvent {
+
+	private ITool tool;
+
+	public ToolEvent(final ITool tool) {
+		this.tool = tool;
+	}
+
+	public ITool getTool() {
+		return tool;
+	}
+
+	// Object methods --
+
+	@Override
+	public String toString() {
+		return "\n\ttool = " + tool;
+	}
+
 }

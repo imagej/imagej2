@@ -1,5 +1,5 @@
 //
-// ITool.java
+// AbstractTool.java
 //
 
 /*
@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.tool;
+package imagej.ext.tool;
 
 import imagej.ext.display.MouseCursor;
 import imagej.ext.display.event.key.KyPressedEvent;
@@ -45,56 +45,85 @@ import imagej.ext.display.event.mouse.MsReleasedEvent;
 import imagej.ext.display.event.mouse.MsWheelEvent;
 
 /**
- * Interface for ImageJ tools. Tools discoverable at runtime must implement this
- * interface and be annotated with @{@link Tool}. While it possible to create a
- * tool merely by implementing this interface, it is encouraged to instead
- * extend {@link AbstractTool}, for convenience.
+ * Abstract base class for ImageJ tools. A tool is a collection of rules binding
+ * user input (e.g., keyboard and mouse events) to display and data manipulation
+ * in a coherent way.
+ * <p>
+ * For example, a <code>PanTool</code> might pan a display when the mouse is
+ * dragged or arrow key is pressed, while a <code>PencilTool</code> could draw
+ * hard lines on the data within a display.
+ * </p>
  * 
- * @author Rick Lentz
- * @author Grant Harris
  * @author Curtis Rueden
- * @see Tool
- * @see ToolService
+ * @author Grant Harris
  */
-public interface ITool {
+public abstract class AbstractTool implements ITool {
 
-	/** Gets the info describing the tool. */
-	ToolInfo getInfo();
+	private ToolInfo info;
 
-	/** Sets the info describing the tool. */
-	void setInfo(final ToolInfo entry);
+	@Override
+	public ToolInfo getInfo() {
+		return info;
+	}
 
-	/** The tool's mouse pointer. */
-	MouseCursor getCursor();
+	@Override
+	public void setInfo(final ToolInfo info) {
+		this.info = info;
+	}
 
-	/** Informs the tool that it is now active. */
-	void activate();
+	@Override
+	public MouseCursor getCursor() {
+		return MouseCursor.DEFAULT;
+	}
 
-	/** Informs the tool that it is no longer active. */
-	void deactivate();
+	@Override
+	public void activate() {
+		// do nothing by default
+	}
 
-	/** Occurs when a key on the keyboard is pressed while the tool is active. */
-	void onKeyDown(KyPressedEvent event);
+	@Override
+	public void deactivate() {
+		// do nothing by default
+	}
 
-	/** Occurs when a key on the keyboard is released while the tool is active. */
-	void onKeyUp(KyReleasedEvent event);
+	@Override
+	public void onKeyDown(final KyPressedEvent evt) {
+		// do nothing by default
+	}
 
-	/** Occurs when a mouse button is pressed while the tool is active. */
-	void onMouseDown(MsPressedEvent event);
+	@Override
+	public void onKeyUp(final KyReleasedEvent evt) {
+		// do nothing by default
+	}
 
-	/** Occurs when a mouse button is released while the tool is active. */
-	void onMouseUp(MsReleasedEvent event);
+	@Override
+	public void onMouseDown(final MsPressedEvent evt) {
+		// do nothing by default
+	}
 
-	/** Occurs when a mouse button is double clicked while the tool is active. */
-	void onMouseClick(MsClickedEvent event);
+	@Override
+	public void onMouseUp(final MsReleasedEvent evt) {
+		// do nothing by default
+	}
 
-	/** Occurs when the mouse is moved while the tool is active. */
-	void onMouseMove(MsMovedEvent event);
+	@Override
+	public void onMouseClick(final MsClickedEvent evt) {
+		// do nothing by default
+	}
 
-	/** Occurs when the mouse is dragged while the tool is active. */
-	void onMouseDrag(MsDraggedEvent event);
+	@Override
+	public void onMouseMove(final MsMovedEvent evt) {
+		// do nothing by default
+	}
 
-	/** Occurs when the mouse wheel is moved while the tool is active. */
-	void onMouseWheel(MsWheelEvent event);
+	@Override
+	public void onMouseDrag(final MsDraggedEvent evt) {
+		// do nothing by default
+	}
+
+	@Override
+	public void onMouseWheel(final MsWheelEvent evt) {
+		// do nothing by default
+	}
 
 }

@@ -36,8 +36,8 @@ package imagej.core.tools.global;
 
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.plugin.PluginService;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
 
 import java.awt.event.KeyEvent;
 

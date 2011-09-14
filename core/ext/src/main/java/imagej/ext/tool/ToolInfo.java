@@ -1,5 +1,5 @@
 //
-// ToolActivatedEvent.java
+// ToolInfo.java
 //
 
 /*
@@ -32,19 +32,41 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.tool.event;
+package imagej.ext.tool;
 
-import imagej.tool.ITool;
+import imagej.ext.IndexItemInfo;
 
 /**
- * An event indicating a tool has been activated.
- *
+ * A collection of metadata about a particular {@link ITool}.
+ * 
  * @author Curtis Rueden
+ * @see Tool
  */
-public class ToolActivatedEvent extends ToolEvent {
+public class ToolInfo extends IndexItemInfo<ITool> {
 
-	public ToolActivatedEvent(final ITool tool) {
-		super(tool);
+	/** Whether the tool is active all the time, rather than on the toolbar. */
+	private boolean global;
+
+	public ToolInfo(final String className) {
+		setClassName(className);
+	}
+
+	public ToolInfo(final String className, final Tool tool) {
+		this(className);
+		setName(tool.name());
+		setLabel(tool.label());
+		setDescription(tool.description());
+		setIconPath(tool.iconPath());
+		setPriority(tool.priority());
+		setEnabled(tool.enabled());
+		global = tool.global();
+	}
+
+	// -- ToolInfo methods --
+
+	/** Gets whether tool is always active, rather than part of the toolbar. */
+	public boolean isGlobal() {
+		return global;
 	}
 
 }
