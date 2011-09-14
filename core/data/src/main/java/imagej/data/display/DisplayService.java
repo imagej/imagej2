@@ -213,7 +213,7 @@ public final class DisplayService extends AbstractService {
 	}
 
 	/** Creates a display for the given object. */
-	public Display<?> createDisplay(final Object o) {
+	public Display<?> createDisplay(final String name, final Object o) {
 		// get available display plugins from the plugin service
 		final List<PluginInfo<Display<?>>> displayPlugins = getDisplayPlugins();
 
@@ -223,6 +223,7 @@ public final class DisplayService extends AbstractService {
 				// display object using the first compatible Display
 				// TODO: how to handle multiple matches? prompt user with dialog box?
 				if (display.canDisplay(o)) {
+					display.setName(name);
 					display.display(o);
 					eventService.publish(new DisplayCreatedEvent(display));
 					return display;
@@ -260,8 +261,9 @@ public final class DisplayService extends AbstractService {
 				public void onEvent(final WinClosedEvent event) {
 					final Display<?> display = event.getDisplay();
 					if (display instanceof ImageDisplay) {
+						final ImageDisplay imageDisplay = (ImageDisplay) display;
 						final ArrayList<DisplayView> views =
-							new ArrayList<DisplayView>(((ImageDisplay) display).getViews());
+							new ArrayList<DisplayView>(imageDisplay);
 						for (final DisplayView view : views) {
 							view.dispose();
 						}

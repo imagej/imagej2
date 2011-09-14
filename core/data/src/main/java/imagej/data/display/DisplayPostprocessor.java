@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display;
 
 import imagej.ImageJ;
-import imagej.data.roi.Overlay;
 import imagej.ext.display.Display;
 import imagej.ext.module.Module;
 import imagej.ext.plugin.Plugin;
@@ -58,14 +57,13 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		final Map<String, Object> outputs = module.getOutputs();
-		handleOutput(outputs.values());
+		handleOutput(null, module.getOutputs());
 	}
 
-	/** Displays output datasets. */
-	public void handleOutput(final Object output) {
-		// HACK - find a more general way to decide this flag
-		final boolean addToExisting = output instanceof Overlay;
+	/** Displays output objects. */
+	public void handleOutput(final String name, final Object output) {
+		// TODO - find a general way to decide this flag
+		final boolean addToExisting = false;
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 
@@ -85,7 +83,7 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 			}
 			else {
 				// create a new display for the output
-				final Display<?> display = displayService.createDisplay(output);
+				final Display<?> display = displayService.createDisplay(name, output);
 				if (display != null) displays.add(display);
 			}
 		}
@@ -98,11 +96,22 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 			return;
 		}
 
+		if (output instanceof Map) {
+			// handle each item of the map separately
+			final Map<?, ?> map = (Map<?, ?>) output;
+			for (final Object key : map.keySet()) {
+				final String itemName = key.toString();
+				final Object itemValue = map.get(key);
+				handleOutput(itemName, itemValue);
+			}
+			return;
+		}
+
 		if (output instanceof Collection) {
 			// handle each item of the collection separately
 			final Collection<?> collection = (Collection<?>) output;
 			for (final Object item : collection) {
-				handleOutput(item);
+				handleOutput(name, item);
 			}
 			return;
 		}
