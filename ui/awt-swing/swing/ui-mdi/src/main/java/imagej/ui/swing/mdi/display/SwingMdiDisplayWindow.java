@@ -40,7 +40,6 @@ import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.EventDispatcher;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
-import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.mdi.InternalFrameEventDispatcher;

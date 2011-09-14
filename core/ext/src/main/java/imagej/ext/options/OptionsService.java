@@ -48,11 +48,6 @@ import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
