@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+// CTR TODO - refactor to remove this class and all subclasses!
+
 /**
  * TODO
  *
