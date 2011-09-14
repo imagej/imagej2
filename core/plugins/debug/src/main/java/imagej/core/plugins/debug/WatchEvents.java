@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
-import imagej.display.TextDisplay;
 import imagej.display.event.DisplayEvent;
 import imagej.display.event.key.KyEvent;
 import imagej.display.event.mouse.MsButtonEvent;
@@ -56,6 +55,7 @@ import imagej.object.event.ListEvent;
 import imagej.object.event.ObjectEvent;
 import imagej.platform.event.ApplicationEvent;
 import imagej.tool.event.ToolEvent;
+import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 
 import java.text.SimpleDateFormat;
@@ -73,7 +73,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 
 	private EventService eventService;
 
-	private TextDisplay window;
+	private OutputWindow window;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	@SuppressWarnings("unused")

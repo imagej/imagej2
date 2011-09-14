@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.sdi;
 
-import imagej.display.TextDisplay;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -42,7 +41,6 @@ import imagej.ui.UI;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 
-import imagej.ui.swing.sdi.display.SwingTextDisplay;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
@@ -74,11 +72,6 @@ public class SwingUI extends AbstractSwingUI {
 		appFrame.setContentPane(pane);
 		pane.setLayout(new BorderLayout());
 		appFrame.pack();
-	}
-
-	@Override
-	public TextDisplay newOutputWindow(String title) {
-		return new SwingTextDisplay(title);
 	}
 
 }

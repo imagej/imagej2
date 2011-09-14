@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import imagej.display.TextDisplay;
-
 /**
  * An end-user ImageJ application. User interfaces discoverable at runtime must
  * implement this interface and be annotated with @{@link UI}.
@@ -63,8 +61,7 @@ public interface UserInterface {
 
 	void createMenus();
 
-	// TODO Adapt this to use TextDisplay...
-	TextDisplay newOutputWindow(String title);
+	OutputWindow newOutputWindow(String title);
 
 	DialogPrompt dialogPrompt(String message, String title,
 		DialogPrompt.MessageType msg, DialogPrompt.OptionType option);

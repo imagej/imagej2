@@ -48,6 +48,7 @@ import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUI;
+import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
@@ -102,6 +103,11 @@ public abstract class AbstractSwingUI extends AbstractUI {
 	public void createMenus() {
 		final JMenuBar menuBar = createMenuBar(appFrame);
 		getUIService().getEventService().publish(new AppMenusCreatedEvent(menuBar));
+	}
+
+	@Override
+	public OutputWindow newOutputWindow(final String title) {
+		return new SwingOutputWindow(title);
 	}
 
 	// -- Internal methods --
