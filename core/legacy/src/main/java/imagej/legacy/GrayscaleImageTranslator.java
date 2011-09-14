@@ -78,7 +78,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		// CTR FIXME
 		final ImageDisplay display =
-			(ImageDisplay) displayService.createDisplay(ds);
+			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 
