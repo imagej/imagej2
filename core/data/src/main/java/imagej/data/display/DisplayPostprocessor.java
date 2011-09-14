@@ -37,6 +37,7 @@ package imagej.data.display;
 import imagej.ImageJ;
 import imagej.ext.display.Display;
 import imagej.ext.module.Module;
+import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.util.Log;
@@ -57,6 +58,14 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
+		for (final ModuleItem<?> outputItem : module.getInfo().outputs()) {
+			final String name = outputItem.getName();
+			final String label = outputItem.getLabel();
+			final String displayName =
+				label == null || label.isEmpty() ? name : label;
+			final Object value = outputItem.getValue(module);
+			handleOutput(displayName, value);
+		}
 		handleOutput(null, module.getOutputs());
 	}
 
