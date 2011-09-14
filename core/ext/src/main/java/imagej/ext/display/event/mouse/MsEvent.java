@@ -50,7 +50,7 @@ public class MsEvent extends DisplayEvent {
 
 	private final int x, y;
 
-	public MsEvent(final Display display, final int x, final int y) {
+	public MsEvent(final Display<?> display, final int x, final int y) {
 		super(display);
 		this.x = x;
 		this.y = y;

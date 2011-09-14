@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class MsReleasedEvent extends MsButtonEvent {
 
-	public MsReleasedEvent(final Display display, final int x, final int y,
+	public MsReleasedEvent(final Display<?> display, final int x, final int y,
 			final int button, final int numClicks, final boolean isPopupTrigger)
 	{
 		super(display, x, y, button, numClicks, isPopupTrigger);

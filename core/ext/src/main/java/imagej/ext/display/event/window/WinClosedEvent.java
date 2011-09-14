@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class WinClosedEvent extends WinEvent {
 
-	public WinClosedEvent(final Display display) {
+	public WinClosedEvent(final Display<?> display) {
 		super(display);
 	}
 

@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class KyPressedEvent extends KyEvent {
 
-	public KyPressedEvent(final Display display, final char character,
+	public KyPressedEvent(final Display<?> display, final char character,
 		final int code, final int modifiers)
 	{
 		super(display, character, code, modifiers);

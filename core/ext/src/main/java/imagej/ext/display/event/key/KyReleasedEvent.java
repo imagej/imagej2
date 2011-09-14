@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class KyReleasedEvent extends KyEvent {
 
-	public KyReleasedEvent(final Display display, final char character,
+	public KyReleasedEvent(final Display<?> display, final char character,
 		final int code, final int modifiers)
 	{
 		super(display, character, code, modifiers);

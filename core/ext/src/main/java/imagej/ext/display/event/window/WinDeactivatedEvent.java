@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class WinDeactivatedEvent extends WinEvent {
 
-	public WinDeactivatedEvent(final Display display) {
+	public WinDeactivatedEvent(final Display<?> display) {
 		super(display);
 	}
 

@@ -63,7 +63,7 @@ public class AWTWindowEventDispatcher implements EventDispatcher,
 	// not implementing WindowStateListener windowStateChanged(WindowEvent) and
 	// not implementing WindowFocusListener windowFocusGained/Lost(WindowEvent)
 
-	private final Display display;
+	private final Display<?> display;
 
 	/**
 	 * Creates an AWT event dispatcher for the given display, with mouse
@@ -74,7 +74,7 @@ public class AWTWindowEventDispatcher implements EventDispatcher,
 	 *          already factored in.
 	 */
 
-	public AWTWindowEventDispatcher(final Display display) {
+	public AWTWindowEventDispatcher(final Display<?> display) {
 		this.display = display;
 	}
 
