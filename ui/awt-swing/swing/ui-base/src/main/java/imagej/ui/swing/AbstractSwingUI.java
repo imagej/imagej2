@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.ui.common.awt.AWTKeyEventDispatcherGlobal;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayPanel;
@@ -50,6 +49,7 @@ import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUI;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
+import imagej.ui.common.awt.AWTKeyEventDispatcherGlobal;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Prefs;
@@ -138,8 +138,8 @@ public abstract class AbstractSwingUI extends AbstractUI {
 		appFrame.pack();
 		appFrame.setVisible(true);
 
-		String osName = System.getProperty("os.name").toLowerCase();
-		boolean isMacOs = osName.startsWith("mac os x");
+		final String osName = System.getProperty("os.name").toLowerCase();
+		final boolean isMacOs = osName.startsWith("mac os x");
 		if (isMacOs) {
 			subscribeToEvents();
 		}
@@ -147,9 +147,11 @@ public abstract class AbstractSwingUI extends AbstractUI {
 	}
 
 	void addGlobalKeyListener() {
-		AWTKeyEventDispatcherGlobal globalKey = AWTKeyEventDispatcherGlobal.getInstance();
+		// FIXME
+		final AWTKeyEventDispatcherGlobal globalKey =
+			AWTKeyEventDispatcherGlobal.getInstance();
 	}
-	
+
 	protected abstract void setupAppFrame();
 
 	/**
