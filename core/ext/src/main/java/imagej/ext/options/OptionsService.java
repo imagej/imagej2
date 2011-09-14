@@ -40,6 +40,7 @@ import imagej.Service;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.ModuleException;
+import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -49,6 +50,7 @@ import imagej.util.Log;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -200,15 +202,28 @@ public class OptionsService extends AbstractService {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setInput(
 		final PluginModuleInfo<?> info, final String name, Object value)
 	{
 		if (info == null) return;
+		//TODO - WAS THIS AND NOT WORKING. I THINK BECAUSE A NEW MODULE CREATED
+		/*
 		try {
 			info.createModule().setInput(name,value);
 		}
 		catch (final ModuleException e) {
 			Log.error("Cannot create module: " + info.getClassName());
+		}
+		*/
+		// NOW THIS: works but inefficient?
+		Iterator<ModuleItem<?>> i = info.inputs().iterator();
+		while (i.hasNext()) {
+			ModuleItem<Object> val = (ModuleItem<Object>) i.next();
+			if (val.getName().equals(name)) {
+				val.saveValue(value);
+				return;
+			}
 		}
 	}
 
