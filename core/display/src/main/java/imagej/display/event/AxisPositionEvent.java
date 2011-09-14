@@ -49,7 +49,7 @@ public class AxisPositionEvent extends DisplayEvent {
 	private final long max;
 	private final boolean relative;
 
-	public AxisPositionEvent(final Display display, final Axis axis,
+	public AxisPositionEvent(final Display<?> display, final Axis axis,
 		final long value, final long max, final boolean relative)
 	{
 		super(display);

@@ -44,13 +44,13 @@ import imagej.event.ImageJEvent;
  */
 public class DisplayEvent extends ImageJEvent {
 
-	private Display display;
+	private Display<?> display;
 
-	public DisplayEvent(final Display display) {
+	public DisplayEvent(final Display<?> display) {
 		this.display = display;
 	}
 
-	public Display getDisplay() {
+	public Display<?> getDisplay() {
 		return display;
 	}
 

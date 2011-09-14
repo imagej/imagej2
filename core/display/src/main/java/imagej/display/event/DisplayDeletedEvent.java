@@ -44,9 +44,9 @@ import imagej.object.event.ObjectDeletedEvent;
  */
 public class DisplayDeletedEvent extends ObjectDeletedEvent {
 
-	private Display display;
+	private Display<?> display;
 
-	public DisplayDeletedEvent(final Display display) {
+	public DisplayDeletedEvent(final Display<?> display) {
 		super(display);
 		this.display = display;
 	}
@@ -54,7 +54,7 @@ public class DisplayDeletedEvent extends ObjectDeletedEvent {
 	// -- ObjectEvent methods --
 
 	@Override
-	public Display getObject() {
+	public Display<?> getObject() {
 		return display;
 	}
 

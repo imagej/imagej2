@@ -37,12 +37,9 @@ package imagej.display;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
-import imagej.display.event.DisplayUpdatedEvent;
-import imagej.event.Events;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import net.imglib2.img.Axes;
@@ -50,44 +47,142 @@ import net.imglib2.img.Axis;
 import net.imglib2.meta.LabeledAxes;
 
 /**
- * The abstract display handles axes resolution, maintaining the dimensionality of the
- * EuclideanSpace represented by the display.
- *
+ * The abstract display handles axes resolution, maintaining the dimensionality
+ * of the EuclideanSpace represented by the display.
+ * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
-public abstract class AbstractImageDisplay implements ImageDisplay {
+public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
+	implements ImageDisplay
+{
 
 	private Axis activeAxis = Axes.Z;
-	
-	private final ArrayList<DisplayView> views = new ArrayList<DisplayView>();
+
+	public AbstractImageDisplay() {
+		super(DisplayView.class);
+	}
+
+	// -- LabeledAxes methods --
+
+	@Override
+	public int getAxisIndex(final Axis axis) {
+		return getAxes().indexOf(axis);
+	}
+
+	@Override
+	public Axis axis(final int d) {
+		return getAxes().get(d);
+	}
+
+	@Override
+	public void axes(final Axis[] axes) {
+		System.arraycopy(getAxes().toArray(), 0, axes, 0, axes.length);
+	}
+
+	@Override
+	public void setAxis(final Axis axis, final int d) {
+		throw new UnsupportedOperationException(
+			"You can't change the axes of a display");
+	}
+
+	@Override
+	public double calibration(final int d) {
+		// The display is calibrated in the base unit
+		return 1.0;
+	}
+
+	@Override
+	public void calibration(final double[] cal) {
+		Arrays.fill(cal, 1.0);
+	}
+
+	@Override
+	public void setCalibration(final double cal, final int d) {
+		throw new UnsupportedOperationException(
+			"You can't change the calibration of a display yet");
+	}
+
+	// -- EuclideanSpace methods --
+
+	@Override
+	public int numDimensions() {
+		return getAxes().size();
+	}
+
+	// -- ImageDisplay methods --
+
+	@Override
+	public void addView(final DisplayView view) {
+		add(view);
+		update();
+		redoWindowLayout();
+	}
+
+	@Override
+	public DisplayView getActiveView() {
+		return size() > 0 ? get(0) : null;
+	}
+
+	@Override
+	public List<DisplayView> getViews() {
+		final ArrayList<DisplayView> views = new ArrayList<DisplayView>();
+		views.addAll(this);
+		return views;
+	}
+
+	@Override
+	public void removeAllViews() {
+		clear();
+		update();
+		redoWindowLayout();
+	}
+
+	@Override
+	public void removeView(final DisplayView view) {
+		remove(view);
+		view.dispose();
+		update();
+		redoWindowLayout();
+	}
+
+	@Override
+	public Axis getActiveAxis() {
+		return activeAxis;
+	}
+
+	@Override
+	public void setActiveAxis(final Axis axis) {
+		activeAxis = axis;
+	}
 
 	@Override
 	public List<Axis> getAxes() {
-		ArrayList<Axis> axes = new ArrayList<Axis>();
-		for (DisplayView v:this.getViews()) {
-			DataObject o = v.getDataObject();
+		final ArrayList<Axis> axes = new ArrayList<Axis>();
+		for (final DisplayView v : this.getViews()) {
+			final DataObject o = v.getDataObject();
 			if (o instanceof Dataset) {
-				Dataset dataset = (Dataset)o;
-				int nAxes = dataset.getImgPlus().numDimensions();
-				LabeledAxes a = (LabeledAxes)(o);
-				for (int i=0; i<nAxes; i++) {
-					Axis axis = a.axis(i);
-					if (! axes.contains(axis)) {
+				final Dataset dataset = (Dataset) o;
+				final int nAxes = dataset.getImgPlus().numDimensions();
+				final LabeledAxes a = (LabeledAxes) (o);
+				for (int i = 0; i < nAxes; i++) {
+					final Axis axis = a.axis(i);
+					if (!axes.contains(axis)) {
 						axes.add(axis);
-					} 
+					}
 				}
 			}
 		}
-		for (DisplayView v:this.getViews()) {
-			DataObject o = v.getDataObject();
+		for (final DisplayView v : this.getViews()) {
+			final DataObject o = v.getDataObject();
 			if (o instanceof Overlay) {
-				Overlay overlay = (Overlay)o;
+				final Overlay overlay = (Overlay) o;
 				if (overlay.getRegionOfInterest() == null) continue;
-				int nAxes = overlay.getRegionOfInterest().numDimensions();
-				LabeledAxes a = (LabeledAxes)(o);
-				for (int i=0; i<nAxes; i++) {
-					Axis axis = a.axis(i);
-					if (! axes.contains(axis)) {
+				final int nAxes = overlay.getRegionOfInterest().numDimensions();
+				final LabeledAxes a = (LabeledAxes) (o);
+				for (int i = 0; i < nAxes; i++) {
+					final Axis axis = a.axis(i);
+					if (!axes.contains(axis)) {
 						axes.add(axis);
 					}
 				}
@@ -95,113 +190,19 @@ public abstract class AbstractImageDisplay implements ImageDisplay {
 		}
 		return axes;
 	}
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.LabeledAxes#getAxisIndex(net.imglib2.img.Axis)
-	 */
-	@Override
-	public int getAxisIndex(Axis axis) {
-		return getAxes().indexOf(axis);
-	}
 
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.LabeledAxes#axis(int)
-	 */
-	@Override
-	public Axis axis(int d) {
-		return getAxes().get(d);
-	}
+	// -- Display methods --
 
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.LabeledAxes#axes(net.imglib2.img.Axis[])
-	 */
 	@Override
-	public void axes(Axis[] axes) {
-		System.arraycopy(getAxes().toArray(), 0, axes, 0, axes.length);
-	}
-
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.LabeledAxes#setAxis(net.imglib2.img.Axis, int)
-	 */
-	@Override
-	public void setAxis(Axis axis, int d) {
-		throw new UnsupportedOperationException("You can't change the axes of a display");
-	}
-
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.LabeledAxes#calibration(int)
-	 */
-	@Override
-	public double calibration(int d) {
-		// The display is calibrated in the base unit
-		return 1.0;
-	}
-
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.LabeledAxes#calibration(double[])
-	 */
-	@Override
-	public void calibration(double[] cal) {
-		Arrays.fill(cal, 1.0);
-	}
-
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.LabeledAxes#setCalibration(double, int)
-	 */
-	@Override
-	public void setCalibration(double cal, int d) {
-		throw new UnsupportedOperationException("You can't change the calibration of a display yet");
-	}
-	/* (non-Javadoc)
-	 * @see net.imglib2.EuclideanSpace#numDimensions()
-	 */
-	@Override
-	public int numDimensions() {
-		return getAxes().size();
+	public boolean canDisplay(final Class<?> c) {
+		return DataObject.class.isAssignableFrom(c) || super.canDisplay(c);
 	}
 
 	@Override
-	public void addView(final DisplayView view) {
-		views.add(view);
-		update();
-		redoWindowLayout();
-		Events.publish(new DisplayUpdatedEvent(this));
+	public void display(final Object o) {
+		if (o instanceof Dataset) display((Dataset) o);
+		else if (o instanceof Overlay) display((Overlay) o);
+		else super.display(o);
 	}
 
-	@Override
-	public DisplayView getActiveView() {
-		// CTR TODO - do better than hardcoding first view
-		return views.size() > 0 ? views.get(0) : null;
-	}
-
-	@Override
-	public List<DisplayView> getViews() {
-		return Collections.unmodifiableList(views);
-	}
-
-	@Override
-	public void removeAllViews() {
-		views.clear();
-		update();
-		redoWindowLayout();
-		Events.publish(new DisplayUpdatedEvent(this));
-	}
-
-	@Override
-	public void removeView(final DisplayView view) {
-		views.remove(view);
-		view.dispose();
-		update();
-		redoWindowLayout();
-		Events.publish(new DisplayUpdatedEvent(this));
-	}
-	
-	@Override
-	public Axis getActiveAxis() {
-		return activeAxis;
-	}
-	
-	@Override
-	public void setActiveAxis(Axis axis) {
-		activeAxis = axis;
-	}
 }

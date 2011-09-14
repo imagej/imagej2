@@ -37,8 +37,8 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
@@ -61,8 +61,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	 * ImageDisplay is made planar sharing plane references with the ImagePlus.
 	 */
 	@Override
-	public ImageDisplay
-		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	public ImageDisplay createDisplay(final ImagePlus imp,
+		final Axis[] preferredOrder)
 	{
 		Dataset ds;
 		if (preferredOrder[0] == Axes.X && preferredOrder[1] == Axes.Y) {
@@ -76,7 +76,9 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.createDisplay(ds);
+		// CTR FIXME
+		final ImageDisplay display =
+			(ImageDisplay) displayService.createDisplay(ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 
@@ -84,8 +86,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * creates an {@link ImagePlus} from a {@link ImageDisplay}. The ImagePlus made
-	 * shares plane references with the ImageDisplay when possible.
+	 * creates an {@link ImagePlus} from a {@link ImageDisplay}. The ImagePlus
+	 * made shares plane references with the ImageDisplay when possible.
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {

@@ -37,13 +37,14 @@ package imagej.display.event;
 import imagej.display.Display;
 
 /**
- * An event indicating a display has updated, e.g. a DisplayView has been added, deleted. 
- *
+ * An event indicating a display has updated; e.g., an object has been added or
+ * removed.
+ * 
  * @author Grant Harris
  */
 public class DisplayUpdatedEvent extends DisplayEvent {
 
-	public DisplayUpdatedEvent(final Display display) {
+	public DisplayUpdatedEvent(final Display<?> display) {
 		super(display);
 	}
 

@@ -49,8 +49,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ext.plugin.Plugin;
 import imagej.tool.ToolService;
-import imagej.ui.common.awt.AWTDisplay;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.display.JHotDrawImageCanvas;
@@ -72,55 +70,36 @@ import java.util.List;
  * @author Barry DeZonia
  */
 @Plugin(type = ImageDisplay.class)
-public class SwingImageDisplay extends AbstractImageDisplay implements
-	AWTDisplay
-{
+public class SwingImageDisplay extends AbstractImageDisplay {
 
 	private final JHotDrawImageCanvas imgCanvas;
-	private SwingDisplayPanel imgPanel;
-
-	private final ImageDisplay thisDisplay;
-
-//	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
-//	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
-//	private EventSubscriber<WinActivatedEvent> winActivatedSubscriber;
+	private final SwingDisplayPanel imgPanel;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
-
-	private String name;
 
 	public SwingImageDisplay() {
 		imgCanvas = new JHotDrawImageCanvas(this);
 		final DisplayWindow window = new SwingDisplayWindow();
 		imgPanel = new SwingDisplayPanel(this, window);
 
-		// final EventDispatcher eventDispatcher =new AWTEventDispatcher(this,
-		// false);
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, false));
 		// imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
 		window.addEventDispatcher(new AWTWindowEventDispatcher(this));
 		subscribeToEvents();
-
-		thisDisplay = this;
 	}
 
 	// -- ImageDisplay methods --
 
 	@Override
-	public boolean canDisplay(final Dataset dataset) {
-		return true;
-	}
-
-	@Override
 	public void display(final Dataset dataset) {
 		// GBH: Regarding naming/id of the display...
 		// For now, we will use the original (first) dataset name
-
 		final String datasetName = dataset.getName();
 		createName(datasetName);
 		imgPanel.setTitle(this.getName());
 		addView(new SwingDatasetView(this, dataset));
+		redoWindowLayout(); // CTR FIXME
 		update();
 	}
 
@@ -129,6 +108,18 @@ public class SwingImageDisplay extends AbstractImageDisplay implements
 		addView(new SwingOverlayView(this, overlay));
 		update();
 	}
+
+	@Override
+	public ImageCanvas getImageCanvas() {
+		return imgCanvas;
+	}
+
+	@Override
+	public void redoWindowLayout() {
+		imgPanel.redoLayout();
+	}
+
+	// -- Display methods --
 
 	@Override
 	public void update() {
@@ -155,28 +146,6 @@ public class SwingImageDisplay extends AbstractImageDisplay implements
 		return imgPanel;
 	}
 
-	@Override
-	public ImageCanvas getImageCanvas() {
-		return imgCanvas;
-	}
-
-	@Override
-	public void redoWindowLayout() {
-		imgPanel.redoLayout();
-	}
-
-	// -- Named methods --
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setName(final String name) {
-		this.name = name;
-	}
-
 	// -- Helper methods --
 
 	@SuppressWarnings("synthetic-access")
@@ -195,7 +164,7 @@ public class SwingImageDisplay extends AbstractImageDisplay implements
 
 				@Override
 				public void onEvent(final WinActivatedEvent event) {
-					if (event.getDisplay() != thisDisplay) return;
+					if (event.getDisplay() != SwingImageDisplay.this) return;
 					// final UserInterface ui = ImageJ.get(UIService.class).getUI();
 					// final ToolService toolMgr = ui.getToolBar().getToolService();
 					final ToolService toolService = ImageJ.get(ToolService.class);

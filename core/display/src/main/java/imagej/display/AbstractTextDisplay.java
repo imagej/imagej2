@@ -1,5 +1,5 @@
 //
-// AWTDisplay.java
+// AbstractTextDisplay.java
 //
 
 /*
@@ -32,20 +32,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.common.awt;
-
-import imagej.display.Display;
-import imagej.display.DisplayPanel;
-import imagej.display.ImageDisplay;
+package imagej.display;
 
 /**
- * Superinterface for AWT-based {@link ImageDisplay}s (including Swing).
- *
+ * Abstract superclass of {@link TextDisplay} implementations.
+ * 
  * @author Curtis Rueden
  */
-public interface AWTDisplay extends Display {
+public abstract class AbstractTextDisplay extends AbstractDisplay<String>
+	implements TextDisplay
+{
 
-	@Override
-	DisplayPanel  getDisplayPanel();
+	public AbstractTextDisplay() {
+		super(String.class);
+	}
 
 }

@@ -1,5 +1,5 @@
 //
-// SwingMdiTextDisplay.java
+// TextDisplayTest.java
 //
 
 /*
@@ -32,56 +32,26 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.mdi.display;
+package imagej.core.plugins.debug;
 
-import imagej.display.DisplayPanel;
-import imagej.display.TextDisplay;
-import imagej.display.TextDisplayPanel;
-import imagej.ui.swing.display.SwingTextDisplayPanel;
-import imagej.ui.swing.display.SwingTextDisplayWindow;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
 
 /**
- * TODO
+ * A test of text displays.
  * 
- * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class SwingMdiTextDisplay implements TextDisplay {
+@Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest")
+public class TextDisplayTest implements ImageJPlugin {
 
-	private final TextDisplayPanel panel;
-	private String name;
-
-	public SwingMdiTextDisplay(final String name) {
-		setName(name);
-		final SwingTextDisplayWindow win = new SwingTextDisplayWindow();
-		panel = new SwingTextDisplayPanel(this, win);
-		win.setTitle(getName());
-		// window.pack();
-		win.showDisplay(true);
-	}
+	@Parameter(output = true)
+	private String output;
 
 	@Override
-	public void append(final String text) {
-		panel.append(text);
-	}
-
-	@Override
-	public void clear() {
-		panel.clear();
-	}
-
-	@Override
-	public DisplayPanel getDisplayPanel() {
-		return panel;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setName(final String name) {
-		this.name = name;
+	public void run() {
+		output = "Hello " + System.getProperty("user.name") + "!";
 	}
 
 }

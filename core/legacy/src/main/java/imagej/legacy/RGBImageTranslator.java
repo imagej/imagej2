@@ -37,8 +37,8 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import net.imglib2.img.Axis;
 
 /**
@@ -55,12 +55,13 @@ public class RGBImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Creates a color {@link ImageDisplay} from a color {@link ImagePlus}. Expects
-	 * input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one channel.
+	 * Creates a color {@link ImageDisplay} from a color {@link ImagePlus}.
+	 * Expects input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one
+	 * channel.
 	 */
 	@Override
-	public ImageDisplay
-		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	public ImageDisplay createDisplay(final ImagePlus imp,
+		final Axis[] preferredOrder)
 	{
 		final Dataset ds = LegacyUtils.makeColorDataset(imp, preferredOrder);
 		LegacyUtils.setDatasetColorData(ds, imp);
@@ -68,7 +69,8 @@ public class RGBImageTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.createDisplay(ds);
+		// CTR FIXME
+		final ImageDisplay display = (ImageDisplay) displayService.createDisplay(ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 
@@ -76,9 +78,9 @@ public class RGBImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Creates a color {@link ImagePlus} from a color {@link ImageDisplay}. Expects
-	 * input expects input ImageDisplay to have isRgbMerged() set with 3 channels of
-	 * unsigned byte data.
+	 * Creates a color {@link ImagePlus} from a color {@link ImageDisplay}.
+	 * Expects input expects input ImageDisplay to have isRgbMerged() set with 3
+	 * channels of unsigned byte data.
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {

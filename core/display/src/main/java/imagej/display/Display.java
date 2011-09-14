@@ -35,16 +35,47 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.ext.plugin.IPlugin;
+
+import java.util.List;
+
 import net.imglib2.meta.Named;
 
 /**
- * Like a 'document'. May be a ImageDisplay, TextDisplay, 3DDisplay, etc.
+ * A display is a particular type of {@link IPlugin} intended to visualize
+ * objects somehow. The most common type of display is the {@link ImageDisplay},
+ * which displays images onscreen. However, in principle there are no limits to
+ * the sorts of objects that can be handled.
  * 
+ * @author Curtis Rueden
  * @author Grant Harris
+ * @see ImageDisplay
+ * @see TextDisplay
  */
-public interface Display extends IPlugin, Named {
+public interface Display<E> extends List<E>, IPlugin, Named {
 
-	/** Gets the top-level window associated with this display. */
+	/**
+	 * Tests whether the display is capable of visualizing objects of the given
+	 * class.
+	 * 
+	 * @param c The class to check for visualization capabilities.
+	 * @return True if the display can handle certain objects of the given class;
+	 *         false if it cannot visualize any objects of that class.
+	 */
+	boolean canDisplay(Class<?> c);
+
+	/** Tests whether the display is capable of visualizing the given object. */
+	boolean canDisplay(Object o);
+
+	/** Displays the given object in this display. */
+	@Deprecated
+	void display(Object o);
+
+	/** Updates and redraws the display onscreen. */
+	void update();
+
+	// CTR TODO - add close method
+
+	/** Gets the user interface panel associated with this display. */
 	DisplayPanel getDisplayPanel();
 
 }

@@ -44,9 +44,9 @@ import imagej.object.event.ObjectCreatedEvent;
  */
 public class DisplayCreatedEvent extends ObjectCreatedEvent {
 
-	private Display display;
+	private Display<?> display;
 
-	public DisplayCreatedEvent(final Display display) {
+	public DisplayCreatedEvent(final Display<?> display) {
 		super(display);
 		this.display = display;
 	}
@@ -54,7 +54,7 @@ public class DisplayCreatedEvent extends ObjectCreatedEvent {
 	// -- ObjectEvent methods --
 
 	@Override
-	public Display getObject() {
+	public Display<?> getObject() {
 		return display;
 	}
 

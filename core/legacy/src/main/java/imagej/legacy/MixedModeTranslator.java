@@ -37,8 +37,8 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
+import imagej.display.ImageDisplay;
 import net.imglib2.img.Axis;
 
 /**
@@ -55,8 +55,8 @@ public class MixedModeTranslator implements ImageTranslator {
 	}
 
 	@Override
-	public ImageDisplay
-		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	public ImageDisplay createDisplay(final ImagePlus imp,
+		final Axis[] preferredOrder)
 	{
 		final Dataset ds =
 			LegacyUtils.makeGrayDatasetFromColorImp(imp, preferredOrder);
@@ -65,7 +65,9 @@ public class MixedModeTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.createDisplay(ds);
+		// CTR FIXME
+		final ImageDisplay display =
+			(ImageDisplay) displayService.createDisplay(ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 

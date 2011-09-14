@@ -35,21 +35,19 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.ImageJ;
-import imagej.data.DataObject;
-import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
 import imagej.ext.module.Module;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PostprocessorPlugin;
-import imagej.object.ObjectService;
 import imagej.util.Log;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Displays output {@link Dataset}s upon completion of a module execution.
+ * Displays outputs upon completion of a module execution.
  * 
  * @author Curtis Rueden
  * @author Lee Kamentsky
@@ -64,55 +62,54 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 	}
 
 	/** Displays output datasets. */
-	public void handleOutput(final Object value) {
-		if (value instanceof Collection) {
-			final Collection<?> collection = (Collection<?>) value;
-			for (final Object item : collection)
-				handleOutput(item);
-		}
-		else if (value instanceof Dataset) {
-			final Dataset dataset = (Dataset) value;
-			if (!isDisplayed(dataset)) {
-				final DisplayService displayService = ImageJ.get(DisplayService.class);
-				displayService.createDisplay(dataset);
-			}
-		}
-		else if (value instanceof Overlay) {
-			final Overlay overlay = (Overlay) value;
-			if (!isDisplayed(overlay)) {
-				displayOverlay(overlay);
-			}
-		}
-		else {
-			// ignore unsupported output type
-			final String valueClass =
-				value == null ? "null" : value.getClass().getName();
-			Log.warn("Ignoring unsupported output: " + valueClass);
-		}
-	}
+	public void handleOutput(final Object output) {
+		// HACK - find a more general way to decide this flag
+		final boolean addToExisting = output instanceof Overlay;
 
-	// -- Helper methods --
-
-	/** Determines whether the given data object is currently displayed onscreen. */
-	private boolean isDisplayed(final DataObject dataset) {
-		// TODO: Keep a reference count instead of manually counting here?
-		final ObjectService objectService = ImageJ.get(ObjectService.class);
-		final List<ImageDisplay> displays =
-			objectService.getObjects(ImageDisplay.class);
-		for (final ImageDisplay display : displays) {
-			for (final DisplayView view : display.getViews()) {
-				if (dataset == view.getDataObject()) return true;
-			}
-		}
-		return false;
-	}
-
-	private void displayOverlay(final Overlay overlay) {
-		// Add the overlay to the currently active display
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display activeDisplay = displayService.getActiveDisplay();
-		if (!(activeDisplay instanceof ImageDisplay)) return;
-		((ImageDisplay) activeDisplay).display(overlay);
+
+		// get list of existing displays containing this output
+		final List<Display<?>> existingDisplays =
+			displayService.getDisplaysContaining(output);
+		final ArrayList<Display<?>> displays = new ArrayList<Display<?>>();
+		displays.addAll(existingDisplays);
+
+		if (displays.isEmpty()) {
+			// output was not already displayed
+			final Display<?> activeDisplay = displayService.getActiveDisplay();
+
+			if (addToExisting && activeDisplay.canDisplay(output)) {
+				// add output to existing display if possible
+				activeDisplay.display(output);
+			}
+			else {
+				// create a new display for the output
+				final Display<?> display = displayService.createDisplay(output);
+				if (display != null) displays.add(display);
+			}
+		}
+
+		if (!displays.isEmpty()) {
+			// success!
+			for (final Display<?> display : displays) {
+				display.update();
+			}
+			return;
+		}
+
+		if (output instanceof Collection) {
+			// handle each item of the collection separately
+			final Collection<?> collection = (Collection<?>) output;
+			for (final Object item : collection) {
+				handleOutput(item);
+			}
+			return;
+		}
+
+		// no available displays for this type of output
+		final String valueClass =
+			output == null ? "null" : output.getClass().getName();
+		Log.warn("Ignoring unsupported output: " + valueClass);
 	}
 
 }
