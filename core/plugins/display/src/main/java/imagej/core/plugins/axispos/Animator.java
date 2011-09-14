@@ -45,6 +45,7 @@ import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
+import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.plugin.ImageJPlugin;
@@ -52,7 +53,6 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -200,7 +200,7 @@ public class Animator implements ImageJPlugin {
 			@Override
 			public void onEvent(final KyPressedEvent event) {
 				final Animation a = ANIMATIONS.get(event.getDisplay());
-				if ((a != null) && (event.getCode() == KeyEvent.VK_ESCAPE)) a.stop();
+				if (a != null && event.getCode() == KeyCode.ESCAPE) a.stop();
 			}
 		};
 		Events.subscribe(KyPressedEvent.class, KEYPRESS_SUBSCRIBER);

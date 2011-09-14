@@ -42,6 +42,7 @@ import imagej.data.display.OverlayService;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
+import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.plugin.ImageJPlugin;
@@ -50,9 +51,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 import imagej.util.RealRect;
-
-import java.awt.event.KeyEvent;
-
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
@@ -153,7 +151,7 @@ public class ShadowsDemo implements ImageJPlugin {
 			@Override
 			public void onEvent(final KyPressedEvent event) {
 				if (event.getDisplay() == currDisplay &&
-					event.getCode() == KeyEvent.VK_ESCAPE)
+					event.getCode() == KeyCode.ESCAPE)
 				{
 					userHasQuit = true;
 				}

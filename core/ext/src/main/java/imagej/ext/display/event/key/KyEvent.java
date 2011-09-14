@@ -35,29 +35,26 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.display.event.key;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayEvent;
 
 /**
  * An event indicating keyboard activity in a display.
  * <p>
  * It is named <code>KyEvent</code> rather than <code>KeyEvent</code> to avoid
- * name clashes with the <code>java.awt.event.KeyEvent</code> hierarchy.
+ * name clashes with the {@link java.awt.event.KeyEvent} hierarchy.
  * </p>
  * 
  * @author Curtis Rueden
  */
 public class KyEvent extends DisplayEvent {
 
-	// TODO - Use an enum for the key codes. Perhaps an extensible enum (see Axis
-	// & Axes)? In util-awt, add a mechanism for mapping AWT key codes to and from
-	// ImageJ key codes (similar to AWTCursors).
-
 	private final char character;
-	private final int code;
+	private final KeyCode code;
 	private final int modifiers;
 
-	public KyEvent(final Display<?> display, final char character, final int code,
-		final int modifiers)
+	public KyEvent(final Display<?> display, final char character,
+		final KeyCode code, final int modifiers)
 	{
 		super(display);
 		this.character = character;
@@ -69,7 +66,7 @@ public class KyEvent extends DisplayEvent {
 		return character;
 	}
 
-	public int getCode() {
+	public KeyCode getCode() {
 		return code;
 	}
 

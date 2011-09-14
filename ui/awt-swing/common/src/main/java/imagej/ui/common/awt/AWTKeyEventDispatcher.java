@@ -38,6 +38,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.EventDispatcher;
+import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.display.event.key.KyReleasedEvent;
 import imagej.ext.display.event.key.KyTypedEvent;
@@ -46,7 +47,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * Rebroadcasts AWT events as {@link ImageJEvent}s.
+ * Rebroadcasts AWT {@link KeyEvent}s as {@link ImageJEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -55,7 +56,7 @@ public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener {
 
 	private final ImageDisplay display;
 
-	/** Creates an AWT event dispatcher for the given display. */
+	/** Creates an AWT key event dispatcher for the given display. */
 	public AWTKeyEventDispatcher(final ImageDisplay display) {
 		this.display = display;
 	}
@@ -64,20 +65,23 @@ public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener {
 
 	@Override
 	public void keyTyped(final KeyEvent e) {
-		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(), e
+		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
+		Events.publish(new KyTypedEvent(display, e.getKeyChar(), keyCode, e
 			.getModifiers()));
 	}
 
 	@Override
 	public void keyPressed(final KeyEvent e) {
-		Events.publish(new KyPressedEvent(display, e.getKeyChar(), e.getKeyCode(),
-			e.getModifiers()));
+		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
+		Events.publish(new KyPressedEvent(display, e.getKeyChar(), keyCode, e
+			.getModifiers()));
 	}
 
 	@Override
 	public void keyReleased(final KeyEvent e) {
-		Events.publish(new KyReleasedEvent(display, e.getKeyChar(), e.getKeyCode(),
-			e.getModifiers()));
+		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
+		Events.publish(new KyReleasedEvent(display, e.getKeyChar(), keyCode, e
+			.getModifiers()));
 	}
 
 }

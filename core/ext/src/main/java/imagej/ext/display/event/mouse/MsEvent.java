@@ -41,7 +41,7 @@ import imagej.ext.display.event.DisplayEvent;
  * An event indicating mouse activity in a display.
  * <p>
  * It is named <code>MsEvent</code> rather than <code>MouseEvent</code> to avoid
- * name clashes with the <code>java.awt.event.MouseEvent</code> hierarchy.
+ * name clashes with the {@link java.awt.event.MouseEvent} hierarchy.
  * </p>
  * 
  * @author Curtis Rueden
