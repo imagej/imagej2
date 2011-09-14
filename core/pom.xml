@@ -19,14 +19,13 @@
 
 	<modules>
 		<module>core</module>
-		<module>core-tools</module>
 		<module>data</module>
 		<module>ext</module>
 		<module>io</module>
 		<module>legacy</module>
 		<module>platform</module>
 		<module>plugins</module>
-		<module>tool</module>
+		<module>tools</module>
 		<module>ui</module>
 	</modules>
 
