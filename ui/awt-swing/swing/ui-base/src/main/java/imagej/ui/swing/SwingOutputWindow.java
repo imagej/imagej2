@@ -34,12 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.event.EventSubscriber;
-import imagej.event.OutputEvent;
 import imagej.ui.OutputWindow;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JFrame;
@@ -47,14 +44,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
- * Generalized textual output window. Can be subscribed to {@link OutputEvent}s
- * for global output, e.g. logging.
+ * Generalized textual output window.
  * 
  * @author Grant Harris
  */
-public class SwingOutputWindow extends JFrame implements
-	EventSubscriber<OutputEvent>, OutputWindow
-{
+public class SwingOutputWindow extends JFrame implements OutputWindow {
 
 	private final JTextArea textArea;
 	private final JScrollPane scrollPane;
@@ -73,36 +67,6 @@ public class SwingOutputWindow extends JFrame implements
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		pack();
-	}
-
-	// -- EventSubscriber methods --
-
-	@Override
-	public void onEvent(final OutputEvent event) {
-		final String output = event.getOutput();
-		// TODO - get ColorRGB from Type object, once it is exists,
-		// and convert to java.awt.Color using imagej.awt.AWTColors.
-		final OutputEvent.Type type = event.getType();
-		if (type == OutputEvent.Type.ERROR) {
-			textArea.setForeground(Color.RED);
-		}
-		else if (type == OutputEvent.Type.RESULT) {
-			textArea.setForeground(Color.GREEN);
-		}
-		else if (type == OutputEvent.Type.INFO) {
-			textArea.setForeground(Color.BLACK);
-		}
-		else if (type == OutputEvent.Type.LOG) {
-			textArea.setForeground(Color.GRAY);
-		}
-		else if (type == OutputEvent.Type.DIAGNOSTIC) {
-			textArea.setForeground(Color.MAGENTA);
-		}
-		else {
-			textArea.setForeground(Color.BLACK);
-		}
-		append(output);
-		textArea.setForeground(Color.BLACK);
 	}
 
 	// -- OutputWindow methods --
