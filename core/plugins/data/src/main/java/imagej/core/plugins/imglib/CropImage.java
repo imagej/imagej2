@@ -36,8 +36,8 @@ package imagej.core.plugins.imglib;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.MenuEntry;
 import imagej.ext.plugin.ImageJPlugin;
@@ -78,10 +78,11 @@ public class CropImage implements ImageJPlugin {
 	/** Runs the crop process on the given display's active dataset. */
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 
-		final Dataset dataset = displayService.getActiveDataset(display);
+		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		final RealRect bounds = overlayService.getSelectionBounds(display);
 
 		final OutputAlgorithm algorithm = new CropAlgorithm(dataset, bounds);

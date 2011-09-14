@@ -38,9 +38,9 @@ import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.display.DisplayService;
 import imagej.data.display.DisplayView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.event.EventSubscriber;
@@ -68,6 +68,7 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 public class WatchOverlays implements ImageJPlugin {
 
 	private static SwingOutputWindow window;
+
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
@@ -130,12 +131,14 @@ public class WatchOverlays implements ImageJPlugin {
 		if (display == null) return;
 		window.append("For display " + display.getName() +
 			" --------------------\n");
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
 		final List<Overlay> overlays2 = getOverlaysFromDisplay(display);
 		for (final Overlay overlay : overlays2) {
 			window.append(overlay.getRegionOfInterest().toString() + "\n");
 			if (overlay instanceof RectangleOverlay) {
-				final Dataset currDataset = displayService.getActiveDataset(display);
+				final Dataset currDataset =
+					imageDisplayService.getActiveDataset(display);
 				final double[] origin =
 					new double[currDataset.getImgPlus().numDimensions()];
 				final double[] extent =
@@ -155,8 +158,9 @@ public class WatchOverlays implements ImageJPlugin {
 	}
 
 	private ImageDisplay getCurrentImageDisplay() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.getActiveImageDisplay();
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return null; // headless UI or no open images
 		return display;
 	}

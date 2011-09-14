@@ -1,5 +1,5 @@
 //
-// ActiveDisplayPreprocessor.java
+// ActiveImageDisplayPreprocessor.java
 //
 
 /*
@@ -36,31 +36,32 @@ package imagej.data.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.ext.display.Display;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
+import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
 
 /**
  * Assigns the active {@link ImageDisplay} when there is one single unresolved
- * {@link ImageDisplay} parameter. Hence, rather than a dialog prompting the user to
- * choose a {@link ImageDisplay}, the active {@link ImageDisplay} is used automatically.
+ * {@link ImageDisplay} parameter. Hence, rather than a dialog prompting the
+ * user to choose a {@link ImageDisplay}, the active {@link ImageDisplay} is
+ * used automatically.
  * <p>
  * In the case of more than one {@link ImageDisplay} parameter, the active
- * {@link ImageDisplay} is not used and instead the user must select. This behavior
- * is consistent with ImageJ v1.x.
+ * {@link ImageDisplay} is not used and instead the user must select. This
+ * behavior is consistent with ImageJ v1.x.
  * </p>
  * <p>
  * The same process is applied for {@link DisplayView} and {@link Dataset}
- * parameters, using the active {@link ImageDisplay}'s active {@link DisplayView} and
- * {@link Dataset}, respectively.
+ * parameters, using the active {@link ImageDisplay}'s active
+ * {@link DisplayView} and {@link Dataset}, respectively.
  * </p>
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Plugin.HIGH_PRIORITY)
-public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
+public class ActiveImageDisplayPreprocessor implements PreprocessorPlugin {
 
 	// -- PluginPreprocessor methods --
 
@@ -78,13 +79,15 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display activeDisplay = displayService.getActiveDisplay();
-		if(!(activeDisplay instanceof ImageDisplay) ) return;
-		
+		final ImageDisplayService displayService =
+			ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
+		if (activeDisplay == null) return;
+
 		// assign active display to single ImageDisplay input
-		final String displayInput = getSingleInput(module, ImageDisplay.class);
-		if (displayInput != null && activeDisplay != null) {
+		final String displayInput =
+			getSingleInput(module, ImageDisplay.class);
+		if (displayInput != null) {
 			module.setInput(displayInput, activeDisplay);
 			module.setResolved(displayInput, true);
 		}
@@ -99,8 +102,7 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 
 		// assign active display view to single DisplayView input
 		final String displayViewInput = getSingleInput(module, DisplayView.class);
-		final DisplayView activeDisplayView =
-			activeDisplay == null ? null : ((ImageDisplay)activeDisplay).getActiveView();
+		final DisplayView activeDisplayView = activeDisplay.getActiveView();
 		if (displayViewInput != null && activeDisplayView != null) {
 			module.setInput(displayViewInput, activeDisplayView);
 			module.setResolved(displayViewInput, true);
@@ -118,17 +120,9 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 	// -- Helper methods --
 
 	private String getSingleInput(final Module module, final Class<?> type) {
-		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
-		String result = null;
-		for (final ModuleItem<?> item : inputs) {
-			final String name = item.getName();
-			final boolean resolved = module.isResolved(name);
-			if (resolved) continue; // skip resolved inputs
-			if (!type.isAssignableFrom(item.getType())) continue;
-			if (result != null) return null; // there are multiple matching inputs
-			result = name;
-		}
-		return result;
+		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+		final ModuleItem<?> item = moduleService.getSingleInput(module, type);
+		return item == null ? null : item.getName();
 	}
 
 }

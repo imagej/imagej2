@@ -37,8 +37,8 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import net.imglib2.img.Axis;
 
 /**
@@ -58,8 +58,8 @@ public class DefaultImageTranslator implements ImageTranslator {
 		new MixedModeTranslator();
 
 	/**
-	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of data
-	 * when possible.
+	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
+	 * data when possible.
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
@@ -71,12 +71,12 @@ public class DefaultImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of data
-	 * when possible. Builds ImageDisplay with preferred Axis ordering.
+	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
+	 * data when possible. Builds ImageDisplay with preferred Axis ordering.
 	 */
 	@Override
-	public ImageDisplay
-		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	public ImageDisplay createDisplay(final ImagePlus imp,
+		final Axis[] preferredOrder)
 	{
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
 			if (imp.getNChannels() == 1) return rgbTranslator.createDisplay(imp,
@@ -87,13 +87,14 @@ public class DefaultImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Creates an {@link ImagePlus} from a {@link ImageDisplay}. Shares planes of data
-	 * when possible.
+	 * Creates an {@link ImagePlus} from a {@link ImageDisplay}. Shares planes of
+	 * data when possible.
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Dataset ds = displayService.getActiveDataset(display);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		if (ds.isRGBMerged()) {
 			return rgbTranslator.createLegacyImage(display);
 		}

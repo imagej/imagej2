@@ -36,8 +36,8 @@ package imagej.core.plugins.restructure;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -70,10 +70,11 @@ public class AddAxis extends DynamicPlugin {
 	private long axisSize;
 
 	public AddAxis() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.getActiveImageDisplay();
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return;
-		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
@@ -150,8 +151,8 @@ public class AddAxis extends DynamicPlugin {
 	 * Creates a long[] that consists of all the dimensions from a Dataset and an
 	 * additional value appended.
 	 */
-	private long[] getNewDimensions(final Dataset ds,
-		final long lastDimensionSize)
+	private long[]
+		getNewDimensions(final Dataset ds, final long lastDimensionSize)
 	{
 		final long[] origDims = ds.getDims();
 		final long[] newDims = new long[origDims.length + 1];

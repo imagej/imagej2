@@ -36,8 +36,8 @@ package imagej.core.plugins.restructure;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -75,10 +75,11 @@ public class DeleteHyperplanes extends DynamicPlugin {
 	private long deletePosition;
 
 	public DeleteHyperplanes() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final ImageDisplay display = displayService.getActiveImageDisplay();
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return;
-		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
@@ -125,7 +126,7 @@ public class DeleteHyperplanes extends DynamicPlugin {
 			RestructureUtils.getDimensions(dataset, axis, -numDeleting);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
-		int compositeChannelCount =
+		final int compositeChannelCount =
 			compositeStatus(dataset.getCompositeChannelCount(), dstImgPlus, axis);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
@@ -181,12 +182,13 @@ public class DeleteHyperplanes extends DynamicPlugin {
 			numBeforeCut + numInCut, numBeforeCut, numAfterCut);
 	}
 
-	private int compositeStatus(int compositeCount, ImgPlus<?> output, Axis axis) {
+	private int compositeStatus(final int compositeCount,
+		final ImgPlus<?> output, final Axis axis)
+	{
 		if (axis == Axes.CHANNEL) {
-			int axisIndex = output.getAxisIndex(Axes.CHANNEL);
-			long numChannels = output.dimension(axisIndex);
-			if (numChannels < compositeCount)
-				return (int) numChannels;
+			final int axisIndex = output.getAxisIndex(Axes.CHANNEL);
+			final long numChannels = output.dimension(axisIndex);
+			if (numChannels < compositeCount) return (int) numChannels;
 		}
 		return compositeCount;
 	}

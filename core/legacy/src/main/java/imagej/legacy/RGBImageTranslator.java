@@ -37,8 +37,9 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.ext.display.DisplayService;
 import net.imglib2.img.Axis;
 
 /**
@@ -85,8 +86,9 @@ public class RGBImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Dataset ds = displayService.getActiveDataset(display);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		final ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);
 		LegacyUtils.setImagePlusColorData(ds, imp);
 		LegacyUtils.setImagePlusMetadata(ds, imp);

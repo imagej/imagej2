@@ -32,12 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.display;
+package imagej.ext.display;
 
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
-import imagej.data.Dataset;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.InstantiableException;
@@ -253,30 +252,16 @@ public final class DisplayService extends AbstractService {
 		final EventSubscriber<WinClosedEvent> winClosedSubscriber =
 			new EventSubscriber<WinClosedEvent>() {
 
-				// CTR FIXME display views should not be disposed here!
-				// This is the job of the display itself when display.dispose()
-				// and/or display.close() gets called.
-
 				@Override
 				public void onEvent(final WinClosedEvent event) {
 					final Display<?> display = event.getDisplay();
-					if (display instanceof ImageDisplay) {
-						final ImageDisplay imageDisplay = (ImageDisplay) display;
-						final ArrayList<DisplayView> views =
-							new ArrayList<DisplayView>(imageDisplay);
-						for (final DisplayView view : views) {
-							view.dispose();
-						}
-					}
 
 					// HACK - Necessary to plug memory leak when closing the last window.
-					// Might be slow since it has to walk the whole ObjectService object
-					// list. Note that we could ignore this. Next created display will
-					// make old invalid activeDataset reference reclaimable.
 					if (getDisplays().size() == 1) {
 						setActiveDisplay(null);
 					}
 
+					// CTR TODO - is there a better way to publish DisplayDeletedEvents?
 					getEventService().publish(new DisplayDeletedEvent(display));
 				}
 
@@ -297,63 +282,6 @@ public final class DisplayService extends AbstractService {
 			};
 		subscribers.add(winActivatedSubscriber);
 		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
-	}
-
-	// -- Deprecated methods --
-
-	/** Gets the currently active {@link Display}. */
-	@Deprecated
-	public ImageDisplay getActiveImageDisplay() {
-		if (activeDisplay == null || !(activeDisplay instanceof ImageDisplay)) {
-			return null;
-		}
-		return (ImageDisplay) activeDisplay;
-	}
-
-	/**
-	 * Gets the active {@link Dataset}, if any, of the currently active
-	 * {@link Display}.nbv
-	 */
-	@Deprecated
-	public Dataset getActiveDataset() {
-		return getActiveDataset(getActiveImageDisplay());
-	}
-
-	/**
-	 * Gets the active {@link DatasetView}, if any, of the currently active
-	 * {@link Display}.
-	 */
-	@Deprecated
-	public DatasetView getActiveDatasetView() {
-		return getActiveDatasetView(getActiveImageDisplay());
-	}
-
-	/** Gets the active {@link Dataset}, if any, of the given {@link Display}. */
-	@Deprecated
-	public Dataset getActiveDataset(final ImageDisplay display) {
-		final DatasetView activeDatasetView = getActiveDatasetView(display);
-		return activeDatasetView == null ? null : activeDatasetView.getDataObject();
-	}
-
-	/**
-	 * Gets the active {@link DatasetView}, if any, of the given {@link Display}.
-	 */
-	@Deprecated
-	public DatasetView getActiveDatasetView(final ImageDisplay display) {
-		if (display == null) {
-			return null;
-		}
-		final DisplayView activeView = display.getActiveView();
-		if (activeView instanceof DatasetView) {
-			return (DatasetView) activeView;
-		}
-		return null;
-	}
-
-	/** Gets a list of all available {@link ImageDisplay}s. */
-	@Deprecated
-	public List<ImageDisplay> getImageDisplays() {
-		return objectService.getObjects(ImageDisplay.class);
 	}
 
 }

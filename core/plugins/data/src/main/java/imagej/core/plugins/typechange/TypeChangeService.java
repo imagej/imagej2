@@ -38,10 +38,11 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -60,7 +61,7 @@ public final class TypeChangeService extends AbstractService {
 
 	private final EventService eventService;
 	private final PluginService pluginService;
-	private final DisplayService displayService;
+	private final ImageDisplayService imageDisplayService;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
@@ -75,12 +76,12 @@ public final class TypeChangeService extends AbstractService {
 
 	public TypeChangeService(final ImageJ context,
 		final EventService eventService, final PluginService pluginService,
-		final DisplayService displayService)
+		final ImageDisplayService imageDisplayService)
 	{
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
-		this.displayService = displayService;
+		this.imageDisplayService = imageDisplayService;
 	}
 
 	// -- TypeChangeService methods --
@@ -93,9 +94,13 @@ public final class TypeChangeService extends AbstractService {
 		return pluginService;
 	}
 
+	public ImageDisplayService getImageDisplayService() {
+		return imageDisplayService;
+	}
+
 	/** Selects the module matching the active dataset's type. */
 	public void refreshSelectedType(final ImageDisplay display) {
-		final Dataset dataset = displayService.getActiveDataset(display);
+		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		final String typeLabel = dataset == null ? "" : dataset.getTypeLabelShort();
 		final String suffix = ".ChangeTo" + typeLabel.toUpperCase();
 
@@ -127,8 +132,10 @@ public final class TypeChangeService extends AbstractService {
 
 				@Override
 				public void onEvent(final DisplayActivatedEvent event) {
-					if(event.getDisplay() instanceof ImageDisplay)
-					refreshSelectedType((ImageDisplay)event.getDisplay());
+					final Display<?> display = event.getDisplay();
+					if (display instanceof ImageDisplay) {
+						refreshSelectedType((ImageDisplay) display);
+					}
 				}
 			};
 		subscribers.add(displayActivatedSubscriber);

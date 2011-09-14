@@ -34,6 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
+import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Plugin;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,18 +50,10 @@ import java.util.Map;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
-import imagej.data.display.ImageDisplay;
-import imagej.ext.module.DefaultModuleItem;
-import imagej.ext.plugin.DynamicPlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Plugin;
 
 /**
- * This class manipulates options that affect the {@link Animator} class'
- * run() method.
+ * This class manipulates options that affect the {@link Animator} class' run()
+ * method.
  * 
  * @author Barry DeZonia
  */
@@ -61,9 +62,9 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Tools", mnemonic = 't'),
 	@Menu(label = "Animation Options...", weight = 4) })
 public class AnimatorOptionsPlugin extends DynamicPlugin {
-	
+
 	// -- private constants --
-	
+
 	private static final String NAME_KEY = "Axis";
 	private static final String FIRST_POS_KEY = "First position";
 	private static final String LAST_POS_KEY = "Last position";
@@ -71,10 +72,10 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	private static final String BACK_FORTH_KEY = "Loop back and forth";
 
 	// -- instance variables --
-	
+
 	private ImageDisplay currDisplay;
 	private Dataset dataset;
-	
+
 	String axisName;
 	private long oneBasedFirst;
 	private long oneBasedLast;
@@ -85,35 +86,36 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	private boolean backForth;
 
 	private AnimatorOptions options;
-	
+
 	/**
 	 * construct the DynamicPlugin from a Display's Dataset
 	 */
 	public AnimatorOptionsPlugin() {
-		
+
 		// make sure input is okay
-		
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		
-		currDisplay = displayService.getActiveImageDisplay();
+
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
+
+		currDisplay = imageDisplayService.getActiveImageDisplay();
 		if (currDisplay == null) return;
-		
-		dataset = ImageJ.get(DisplayService.class).getActiveDataset(currDisplay);
+
+		dataset = imageDisplayService.getActiveDataset(currDisplay);
 		if (dataset == null) return;
 		if (dataset.getImgPlus().numDimensions() <= 2) return;
-		
+
 		options = Animator.getOptions(currDisplay);
-		
+
 		// axis name field initialization
-		
+
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
 		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final Axis candidateAxis : Axes.values()) {
 			if ((candidateAxis == Axes.X) || (candidateAxis == Axes.Y)) continue;
-			if (datasetAxes.contains(candidateAxis))
-				choices.add(candidateAxis.getLabel());
+			if (datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
+				.getLabel());
 		}
 		name.setChoices(choices);
 		name.setPersisted(false);
@@ -121,7 +123,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		setInput(NAME_KEY, new String(options.axis.getLabel()));
 
 		// first position field initialization
-		
+
 		final DefaultModuleItem<Long> firstPos =
 			new DefaultModuleItem<Long>(this, FIRST_POS_KEY, Long.class);
 		firstPos.setPersisted(false);
@@ -129,12 +131,12 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		// TODO - can't set max value as it varies based upon the axis the user
 		// selects at dialog run time. Need a callback that can manipulate the
 		// field's max value from chosen axis max.
-		//firstPos.setMaximumValue(new Long(options.total));
+		// firstPos.setMaximumValue(new Long(options.total));
 		addInput(firstPos);
-		setInput(FIRST_POS_KEY, new Long(options.first+1));
+		setInput(FIRST_POS_KEY, new Long(options.first + 1));
 
 		// last position field initialization
-		
+
 		final DefaultModuleItem<Long> lastPos =
 			new DefaultModuleItem<Long>(this, LAST_POS_KEY, Long.class);
 		lastPos.setPersisted(false);
@@ -142,12 +144,12 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		// TODO - can't set max value as it varies based upon the axis the user
 		// selects at dialog run time. Need a callback that can manipulate the
 		// field's max value from chosen axis max.
-		//lastPos.setMaximumValue(new Long(options.total));
+		// lastPos.setMaximumValue(new Long(options.total));
 		addInput(lastPos);
-		setInput(LAST_POS_KEY, new Long(options.last+1));
+		setInput(LAST_POS_KEY, new Long(options.last + 1));
 
 		// frames per second field initialization
-		
+
 		final DefaultModuleItem<Double> framesPerSec =
 			new DefaultModuleItem<Double>(this, FPS_KEY, Double.class);
 		framesPerSec.setPersisted(false);
@@ -157,7 +159,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		setInput(FPS_KEY, new Double(options.fps));
 
 		// back and forth field initialization
-		
+
 		final DefaultModuleItem<Boolean> backForthBool =
 			new DefaultModuleItem<Boolean>(this, BACK_FORTH_KEY, Boolean.class);
 		backForthBool.setPersisted(false);
@@ -166,16 +168,16 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	}
 
 	/**
-	 * Harvests the input values from the user and updates the current
-	 * display's set of animation options. Each display has it's own set
-	 * of options. Any animation launched on a display will use it's set
-	 * of options. Options can be changed during the run of an animation.
+	 * Harvests the input values from the user and updates the current display's
+	 * set of animation options. Each display has it's own set of options. Any
+	 * animation launched on a display will use it's set of options. Options can
+	 * be changed during the run of an animation.
 	 */
 	@Override
 	public void run() {
 		if (currDisplay == null) return;
 		harvestInputs();
-		Axis axis = Axes.get(axisName);
+		final Axis axis = Axes.get(axisName);
 		final int axisIndex = dataset.getImgPlus().getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		final long totalHyperplanes = dataset.getImgPlus().dimension(axisIndex);
@@ -211,7 +213,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		last = Math.max(oneBasedFirst, oneBasedLast) - 1;
 		if (first < 0) first = 0;
 		if (last < 0) last = 0;
-		if (first >= totalHyperplanes) first = totalHyperplanes-1;
-		if (last >= totalHyperplanes) last = totalHyperplanes-1;
+		if (first >= totalHyperplanes) first = totalHyperplanes - 1;
+		if (last >= totalHyperplanes) last = totalHyperplanes - 1;
 	}
 }

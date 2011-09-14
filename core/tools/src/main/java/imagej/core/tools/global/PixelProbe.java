@@ -36,10 +36,10 @@ package imagej.core.tools.global;
 
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.display.DisplayService;
 import imagej.data.display.DisplayView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
@@ -91,14 +91,16 @@ public class PixelProbe extends AbstractTool {
 
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
-		final DisplayService displayService =
-			evt.getContext().getService(DisplayService.class);
+		final ImageDisplayService imageDisplayService =
+			evt.getContext().getService(ImageDisplayService.class);
 		final EventService eventService =
 			evt.getContext().getService(EventService.class);
 
-		final Display display = evt.getDisplay();
-		if(!(display instanceof ImageDisplay)) return;
-		final ImageCanvas canvas = ((ImageDisplay)display).getImageCanvas();
+		final Display<?> display = evt.getDisplay();
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
+
+		final ImageCanvas canvas = imageDisplay.getImageCanvas();
 		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
 		// mouse not in image ?
 		if (!canvas.isInImage(mousePos)) {
@@ -107,15 +109,15 @@ public class PixelProbe extends AbstractTool {
 		}
 		else { // mouse is over image
 			// CTR TODO - update tool to probe more than just the active view
-			final DisplayView activeView = ((ImageDisplay)display).getActiveView();
-			final Dataset d = displayService.getActiveDataset((ImageDisplay)display);
+			final DisplayView activeView = imageDisplay.getActiveView();
+			final Dataset d = imageDisplayService.getActiveDataset(imageDisplay);
 			setWorkingVariables(d);
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			// Re: bug #639
 			// note - can't use getIntX() and getIntY() since they round and can
 			// take the integer coords out of the image bounds. Exceptions happen
-			//final int cx = (int) Math.floor(coords.x);
-			//final int cy = (int) Math.floor(coords.y);
+			// final int cx = (int) Math.floor(coords.x);
+			// final int cy = (int) Math.floor(coords.y);
 			// The previous attempt did not fix things. There is a scaling issue
 			// in the canvas that needs to be figured out.
 			final int cx = coords.getIntX();
@@ -124,13 +126,13 @@ public class PixelProbe extends AbstractTool {
 			fillCurrentPosition(position, cx, cy, planePos);
 			randomAccess.setPosition(position);
 			double doubleValue = 0;
-			//try {
-				doubleValue = randomAccess.get().getRealDouble();
+			// try {
+			doubleValue = randomAccess.get().getRealDouble();
 			// Re: bug #639
-			//} catch (Exception e) {
-			//	System.out.println("Exception happened with position "+
-			//		position[xAxis]+","+position[yAxis]);
-			//}
+			// } catch (Exception e) {
+			// System.out.println("Exception happened with position "+
+			// position[xAxis]+","+position[yAxis]);
+			// }
 			final String statusMessage;
 			if (dataset.isInteger()) {
 				statusMessage =
@@ -172,9 +174,8 @@ public class PixelProbe extends AbstractTool {
 		}
 	}
 
-	private void fillCurrentPosition(final long[] pos,
-		final long x, final long y,
-		final Position planePos)
+	private void fillCurrentPosition(final long[] pos, final long x,
+		final long y, final Position planePos)
 	{
 		int d = 0;
 		for (int i = 0; i < pos.length; i++) {

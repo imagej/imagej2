@@ -36,8 +36,8 @@ package imagej.core.plugins.axispos;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.event.Events;
 import net.imglib2.img.Axis;
@@ -62,17 +62,17 @@ public final class AxisUtils {
 	public static void changeCurrentAxisPosition(final ImageDisplay display,
 		final long change, final boolean relative)
 	{
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
 		if (display == null) return; // headless UI or no open images
 		final Axis axis = display.getActiveAxis();
 		if (axis == null) return;
 		if (display.getAxisIndex(axis) < 0) return;
-		final Dataset ds = displayService.getActiveDataset(display);
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		final int axisIndex = ds.getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		final long max = ds.getExtents().dimension(axisIndex);
-		Events
-			.publish(new AxisPositionEvent(display, axis, change, max, relative));
+		Events.publish(new AxisPositionEvent(display, axis, change, max, relative));
 	}
 
 }

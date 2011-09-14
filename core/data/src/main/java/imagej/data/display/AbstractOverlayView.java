@@ -50,7 +50,7 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 	public AbstractOverlayView(final ImageDisplay display, final Overlay overlay) {
 		super(display, overlay);
 		this.overlay = overlay;
-		long[] dims = ImageJ.get(DisplayService.class).getActiveDataset(display).getDims();
+		long[] dims = ImageJ.get(ImageDisplayService.class).getActiveDataset(display).getDims();
 		setDimensions(dims);
 	}
 	

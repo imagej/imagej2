@@ -38,8 +38,8 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -60,8 +60,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Salt and Pepper", weight = 3) })
 public class SaltAndPepper implements ImageJPlugin {
@@ -78,7 +77,7 @@ public class SaltAndPepper implements ImageJPlugin {
 	private Img<? extends RealType<?>> inputImage;
 	private RandomAccess<? extends RealType<?>> accessor;
 	private long[] position;
-	
+
 	// -- public interface --
 
 	@Override
@@ -94,19 +93,22 @@ public class SaltAndPepper implements ImageJPlugin {
 	// -- private interface --
 
 	private void initializeMembers() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final ImageDisplayService imageDisplayService =
+			ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
-		input = displayService.getActiveDataset(display);
+		input = imageDisplayService.getActiveDataset(display);
 		selection = overlayService.getSelectionBounds(display);
 	}
-	
+
 	private void checkInput() {
-		input = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		if (input == null)
+		input = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		if (input == null) {
 			throw new IllegalArgumentException("input Dataset is null");
-		
-		if (input.getImgPlus() == null)
+		}
+
+		if (input.getImgPlus() == null) {
 			throw new IllegalArgumentException("input Image is null");
+		}
 	}
 
 	private void setupWorkingData() {
@@ -114,17 +116,17 @@ public class SaltAndPepper implements ImageJPlugin {
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
 	}
-	
+
 	private void assignPixels() {
-		Random rng = new Random();
+		final Random rng = new Random();
 
 		rng.setSeed(System.currentTimeMillis());
 
-		long[] planeDims = new long[inputImage.numDimensions() - 2];
+		final long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = inputImage.dimension(i+2);
-		Extents extents = new Extents(planeDims);
-		Position planePos = extents.createPosition();
+			planeDims[i] = inputImage.dimension(i + 2);
+		final Extents extents = new Extents(planeDims);
+		final Position planePos = extents.createPosition();
 		if (planeDims.length == 0) { // 2d only
 			assignPixelsInXYPlane(planePos, rng);
 		}
@@ -140,45 +142,46 @@ public class SaltAndPepper implements ImageJPlugin {
 		// nothing to do
 	}
 
-	private void assignPixelsInXYPlane(Position planePos, Random rng) {
-		
+	private void assignPixelsInXYPlane(final Position planePos, final Random rng)
+	{
+
 		// set non-XY coordinate values once
 		for (int i = 2; i < position.length; i++)
-			position[i] = planePos.getLongPosition(i-2);
+			position[i] = planePos.getLongPosition(i - 2);
 
-		long ox = (long) selection.x;
-		long oy = (long) selection.y;
+		final long ox = (long) selection.x;
+		final long oy = (long) selection.y;
 		long w = (long) selection.width;
 		long h = (long) selection.height;
-		
+
 		if (w <= 0) w = inputImage.dimension(0);
 		if (h <= 0) h = inputImage.dimension(1);
 
-		double percentToChange = 0.05;
-		long numPixels = (long) (percentToChange * w * h);
+		final double percentToChange = 0.05;
+		final long numPixels = (long) (percentToChange * w * h);
 
 		for (long p = 0; p < numPixels / 2; p++) {
 			long randomX, randomY;
 
-			randomX = ox + nextLong(rng,w);
-			randomY = oy + nextLong(rng,h);
+			randomX = ox + nextLong(rng, w);
+			randomY = oy + nextLong(rng, h);
 			setPixel(randomX, randomY, 255);
 
-			randomX = ox + nextLong(rng,w);
-			randomY = oy + nextLong(rng,h);
+			randomX = ox + nextLong(rng, w);
+			randomY = oy + nextLong(rng, h);
 			setPixel(randomX, randomY, 0);
 		}
 	}
-	
-	private long nextLong(Random rng, long bound) {
-		double val = rng.nextDouble();
+
+	private long nextLong(final Random rng, final long bound) {
+		final double val = rng.nextDouble();
 		return (long) (val * bound);
 	}
-	
+
 	/**
 	 * Sets a value at a specific (x,y) location in the image to a given value
 	 */
-	private void setPixel(long x, long y, double value) {
+	private void setPixel(final long x, final long y, final double value) {
 		position[0] = x;
 		position[1] = y;
 

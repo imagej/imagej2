@@ -36,8 +36,8 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.MenuEntry;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -78,7 +78,7 @@ public class InvertDataValues implements ImageJPlugin {
 	 * Fills the output image from the input image */
 	@Override
 	public void run() {
-		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
 		// this is similar to IJ1
 		if (dataset.isInteger() && !dataset.isSigned() &&
 				dataset.getType().getBitsPerPixel() == 8) {
