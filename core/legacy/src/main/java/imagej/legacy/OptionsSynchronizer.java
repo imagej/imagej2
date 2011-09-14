@@ -56,8 +56,8 @@ import java.awt.Font;
 import java.util.List;
 
 /**
- * The {@link OptionsSynchronizer} sets IJ1 settings and preferences to reflect
- * values set within IJ2 Options dialogs. 
+ * The {@link OptionsSynchronizer} bidirectionally synchronizes IJ2 Options with
+ * IJ1 settings and preferences. 
  * 
  * @author Barry DeZonia
  *
@@ -129,13 +129,6 @@ public class OptionsSynchronizer {
 	private static void setOptionValue(String className, String fieldName, Object value) {
 		optionsService.setOption(className, fieldName, value);
 	}
-	/*
-	private static void setOption(String className, String fieldName, Object value) {
-		Field field = ClassUtils.getField(className, fieldName);
-		OptionsPlugin instance = optionsService.getInstance(className);
-		ClassUtils.setValue(field, instance, value);
-	}
-	*/
 	
 	private void appearenceOptions() {	
 		ij.Prefs.antialiasedText = false;
