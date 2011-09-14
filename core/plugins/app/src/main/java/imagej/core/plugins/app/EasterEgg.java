@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.app;
 
 import imagej.data.Dataset;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -55,7 +56,7 @@ public class EasterEgg implements ImageJPlugin {
 	@Parameter
 	public Dataset dataset;
 
-	@Parameter(output = true)
+	@Parameter(type = ItemIO.OUTPUT)
 	public String ascii;
 
 	@Override

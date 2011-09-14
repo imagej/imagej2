@@ -38,6 +38,7 @@ package imagej.ext.module;
  * Defines the "visibility" of a {@link ModuleItem}.
  * <p>
  * Choices are:
+ * </p>
  * <ul>
  * <li>NORMAL: item is included in the history for purposes of data provenance,
  * and included as a parameter when recording scripts.</li>

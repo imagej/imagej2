@@ -36,6 +36,7 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.ext.MenuEntry;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -94,7 +95,7 @@ public class NewImage implements ImageJPlugin {
 
 	// TODO: allow creation of multidimensional datasets
 
-	@Parameter(output = true)
+	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
 
 	// -- NewImage methods --

@@ -50,6 +50,15 @@ public interface ModuleItem<T> extends BasicDetails {
 	/** Type of the item. */
 	Class<T> getType();
 
+	/** Gets the input/output type of the item. */
+	ItemIO getIOType();
+
+	/** Gets whether the item is a module input. */
+	boolean isInput();
+
+	/** Gets whether the item is a module output. */
+	boolean isOutput();
+
 	/** The visibility of the item. */
 	ItemVisibility getVisibility();
 

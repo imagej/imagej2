@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
+import imagej.ext.module.ItemIO;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.ui.WidgetStyle;
 
@@ -62,13 +63,30 @@ public @interface Parameter {
 	/** Defines a description for the parameter. */
 	String description() default "";
 
-	/** Defines if the parameter is an output. */
-	boolean output() default false;
+	/**
+	 * Defines the input/output type of the parameter.
+	 * <p>
+	 * Choices are:
+	 * </p>
+	 * <ul>
+	 * <li>INPUT: parameter is an input for the plugin.</li>
+	 * <li>OUTPUT: parameter is an output for the plugin.</li>
+	 * <li>BOTH: parameter is both and input and an output for the plugin. This
+	 * type is used to indicate an object that is mutated somehow during
+	 * execution.</li>
+	 * </ul>
+	 */
+	// NB: We use the fully qualified name to work around a javac bug:
+	// http://bugs.sun.com/view_bug.do?bug_id=6512707
+	// See:
+	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
+	ItemIO type() default imagej.ext.module.ItemIO.INPUT;
 
 	/**
 	 * Defines the "visibility" of the parameter.
 	 * <p>
 	 * Choices are:
+	 * </p>
 	 * <ul>
 	 * <li>NORMAL: parameter is included in the history for purposes of data
 	 * provenance, and included as a parameter when recording scripts.</li>

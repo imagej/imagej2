@@ -38,6 +38,7 @@ import imagej.data.Dataset;
 import imagej.event.Events;
 import imagej.event.FileOpenedEvent;
 import imagej.event.StatusEvent;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -70,7 +71,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 	@Parameter(label = "File to open")
 	private File inputFile;
 
-	@Parameter(output = true)
+	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
 
 	@Override

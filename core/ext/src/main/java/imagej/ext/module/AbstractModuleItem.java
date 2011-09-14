@@ -83,6 +83,23 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	// -- ModuleItem methods --
 
 	@Override
+	public ItemIO getIOType() {
+		return ItemIO.INPUT;
+	}
+
+	@Override
+	public boolean isInput() {
+		final ItemIO ioType = getIOType();
+		return ioType == ItemIO.INPUT || ioType == ItemIO.BOTH;
+	}
+
+	@Override
+	public boolean isOutput() {
+		final ItemIO ioType = getIOType();
+		return ioType == ItemIO.OUTPUT || ioType == ItemIO.BOTH;
+	}
+
+	@Override
 	public ItemVisibility getVisibility() {
 		return ItemVisibility.NORMAL;
 	}
@@ -199,7 +216,10 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 
 	@Override
 	public T getValue(final Module module) {
-		final Object result = module.getInput(getName());
+		final Object result;
+		if (isInput()) result = module.getInput(getName());
+		else if (isOutput()) result = module.getOutput(getName());
+		else result = null;
 		@SuppressWarnings("unchecked")
 		final T value = (T) result;
 		return value;
