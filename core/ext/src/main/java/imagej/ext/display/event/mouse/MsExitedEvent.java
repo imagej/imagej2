@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class MsExitedEvent extends MsEvent {
 
-	public MsExitedEvent(final Display display,
+	public MsExitedEvent(final Display<?> display,
 		final int x, final int y)
 	{
 		super(display, x, y);

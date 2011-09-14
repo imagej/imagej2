@@ -56,7 +56,7 @@ public class KyEvent extends DisplayEvent {
 	private final int code;
 	private final int modifiers;
 
-	public KyEvent(final Display display, final char character, final int code,
+	public KyEvent(final Display<?> display, final char character, final int code,
 		final int modifiers)
 	{
 		super(display);

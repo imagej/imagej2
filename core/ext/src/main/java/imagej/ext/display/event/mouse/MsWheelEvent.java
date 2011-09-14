@@ -45,7 +45,7 @@ public class MsWheelEvent extends MsEvent {
 
 	private int wheelRotation;
 
-	public MsWheelEvent(final Display display,
+	public MsWheelEvent(final Display<?> display,
 		final int x, final int y, final int wheelRotation)
 	{
 		super(display, x, y);

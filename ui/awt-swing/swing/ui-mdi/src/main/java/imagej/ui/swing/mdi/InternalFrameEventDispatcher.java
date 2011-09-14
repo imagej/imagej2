@@ -59,7 +59,7 @@ public class InternalFrameEventDispatcher implements EventDispatcher,
 	InternalFrameListener
 {
 
-	private final Display display;
+	private final Display<?> display;
 
 	/**
 	 * Creates an AWT event dispatcher for the given display, with mouse
@@ -70,7 +70,7 @@ public class InternalFrameEventDispatcher implements EventDispatcher,
 	 *          already factored in.
 	 */
 
-	public InternalFrameEventDispatcher(final Display display) {
+	public InternalFrameEventDispatcher(final Display<?> display) {
 		this.display = display;
 	}
 

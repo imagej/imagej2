@@ -195,7 +195,7 @@ public abstract class AbstractSwingUI extends AbstractUI {
 
 					@Override
 					public void onEvent(final DisplayCreatedEvent event) {
-						final Display display = event.getObject();
+						final Display<?> display = event.getObject();
 						final DisplayPanel panel = display.getDisplayPanel();
 						if (!(panel instanceof SwingDisplayPanel)) return;
 						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
@@ -213,7 +213,7 @@ public abstract class AbstractSwingUI extends AbstractUI {
 
 					@Override
 					public void onEvent(final DisplayDeletedEvent event) {
-						final Display display = event.getObject();
+						final Display<?> display = event.getObject();
 						final DisplayPanel panel = display.getDisplayPanel();
 						if (!(panel instanceof SwingDisplayPanel)) return;
 						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;

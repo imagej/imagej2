@@ -68,7 +68,7 @@ public class PanTool extends AbstractTool {
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
-		final Display display = evt.getDisplay();
+		final Display<?> display = evt.getDisplay();
 		if(display instanceof ImageDisplay) {
 		// TODO - eliminate use of AWT here
 		// to do so, need GUI-agnostic Key enum with all key codes...
@@ -96,7 +96,7 @@ public class PanTool extends AbstractTool {
 
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
-		final Display display = evt.getDisplay();
+		final Display<?> display = evt.getDisplay();
 		if(display instanceof ImageDisplay) {
 		final int xDelta = lastX - evt.getX();
 		final int yDelta = lastY - evt.getY();

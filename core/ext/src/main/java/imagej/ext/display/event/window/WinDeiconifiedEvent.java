@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class WinDeiconifiedEvent extends WinEvent {
 
-	public WinDeiconifiedEvent(final Display display) {
+	public WinDeiconifiedEvent(final Display<?> display) {
 		super(display);
 	}
 

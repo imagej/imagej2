@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class MsDraggedEvent extends MsButtonEvent {
 
-	public MsDraggedEvent(final Display display, final int x, final int y,
+	public MsDraggedEvent(final Display<?> display, final int x, final int y,
 		final int button, final int numClicks, final boolean isPopupTrigger)
 	{
 		super(display, x, y, button, numClicks, isPopupTrigger);

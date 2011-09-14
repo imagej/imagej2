@@ -43,7 +43,7 @@ import imagej.ext.display.Display;
  */
 public class WinIconifiedEvent extends WinEvent {
 
-	public WinIconifiedEvent(final Display display) {
+	public WinIconifiedEvent(final Display<?> display) {
 		super(display);
 	}
 

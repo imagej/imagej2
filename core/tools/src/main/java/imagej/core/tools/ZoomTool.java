@@ -69,7 +69,7 @@ public class ZoomTool extends AbstractTool {
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
-		final Display display = evt.getDisplay();
+		final Display<?> display = evt.getDisplay();
 		if(display instanceof ImageDisplay) {
 		final char c = evt.getCharacter();
 		if (c == '=' || c == '+') {
@@ -89,7 +89,7 @@ public class ZoomTool extends AbstractTool {
 
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
-		final Display display = evt.getDisplay();
+		final Display<?> display = evt.getDisplay();
 		if(display instanceof ImageDisplay) {
 		mouseUp.x = evt.getX();
 		mouseUp.y = evt.getY();
@@ -133,7 +133,7 @@ public class ZoomTool extends AbstractTool {
 
 	@Override
 	public void onMouseWheel(final MsWheelEvent evt) {
-		final Display display = evt.getDisplay();
+		final Display<?> display = evt.getDisplay();
 		if(display instanceof ImageDisplay) {
 		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
 		if (evt.getWheelRotation() < 0) {
