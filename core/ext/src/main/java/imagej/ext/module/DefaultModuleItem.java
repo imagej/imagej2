@@ -49,6 +49,7 @@ import java.util.List;
 public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 
 	private final Class<T> type;
+	private ItemIO ioType;
 	private ItemVisibility visibility;
 	private boolean required;
 	private boolean persisted;
@@ -76,6 +77,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		super(info);
 		this.name = name;
 		this.type = type;
+		ioType = super.getIOType();
 		visibility = super.getVisibility();
 		required = super.isRequired();
 		persisted = super.isPersisted();
@@ -97,6 +99,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		super(info);
 		name = item.getName();
 		type = item.getType();
+		ioType = item.getIOType();
 		visibility = item.getVisibility();
 		required = item.isRequired();
 		persisted = item.isPersisted();
@@ -114,6 +117,10 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	// -- DefaultModuleItem methods --
+
+	public void setIOType(final ItemIO ioType) {
+		this.ioType = ioType;
+	}
 
 	public void setVisibility(final ItemVisibility visibility) {
 		this.visibility = visibility;
@@ -165,6 +172,11 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 	@Override
 	public Class<T> getType() {
 		return type;
+	}
+
+	@Override
+	public ItemIO getIOType() {
+		return ioType;
 	}
 
 	@Override

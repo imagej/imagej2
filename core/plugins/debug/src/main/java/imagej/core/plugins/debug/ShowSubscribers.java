@@ -39,6 +39,7 @@ import imagej.event.Events;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -57,7 +58,7 @@ import java.util.List;
 @Plugin(menuPath = "Plugins>Debug>Subscribers")
 public class ShowSubscribers implements ImageJPlugin {
 
-	@Parameter(label = "Subscriber Log", output = true)
+	@Parameter(label = "Subscriber Log", type = ItemIO.OUTPUT)
 	private String subscriberLog;
 
 	// -- ShowSubscribers methods --

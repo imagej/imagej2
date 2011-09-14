@@ -37,6 +37,7 @@ package imagej.core.plugins.roi;
 import imagej.data.Dataset;
 import imagej.data.roi.BinaryMaskOverlay;
 import imagej.data.roi.Overlay;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -77,7 +78,7 @@ public class ImageToBinaryMask implements ImageJPlugin {
 
 	@Parameter(label = "Output mask",
 		description = "The overlay that is the result of the operation",
-		output = true)
+		type = ItemIO.OUTPUT)
 	private Overlay output;
 
 	@Parameter(label = "Overlay color",

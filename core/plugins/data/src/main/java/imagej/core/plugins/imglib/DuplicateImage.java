@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -45,17 +46,16 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Duplicate...", accelerator="shift control D")})
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Duplicate...", accelerator = "shift control D") })
 public class DuplicateImage implements ImageJPlugin {
 
 	// -- Plugin parameters --
 
-	@Parameter(required=true)
+	@Parameter(required = true)
 	private Dataset input;
 
-	@Parameter(output = true)
+	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset output;
 
 	// -- DuplicateImage methods --
@@ -70,5 +70,5 @@ public class DuplicateImage implements ImageJPlugin {
 	public void run() {
 		output = input.duplicate();
 	}
-	
+
 }

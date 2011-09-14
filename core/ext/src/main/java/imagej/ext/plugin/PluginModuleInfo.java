@@ -271,13 +271,13 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 			// add item to the relevant list (inputs or outputs)
 			final PluginModuleItem<Object> item =
 				new PluginModuleItem<Object>(this, f);
-			if (param.output()) {
-				outputMap.put(name, item);
-				if (!isPreset) outputList.add(item);
-			}
-			else {
+			if (item.isInput()) {
 				inputMap.put(name, item);
 				if (!isPreset) inputList.add(item);
+			}
+			if (item.isOutput()) {
+				outputMap.put(name, item);
+				if (!isPreset) outputList.add(item);
 			}
 		}
 

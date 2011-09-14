@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.plugin;
 
 import imagej.ext.module.AbstractModuleItem;
+import imagej.ext.module.ItemIO;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
@@ -91,6 +92,11 @@ public class PluginModuleItem<T> extends AbstractModuleItem<T> {
 	@SuppressWarnings("unchecked")
 	public Class<T> getType() {
 		return (Class<T>) field.getType();
+	}
+
+	@Override
+	public ItemIO getIOType() {
+		return getParameter().type();
 	}
 
 	@Override

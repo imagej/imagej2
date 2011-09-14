@@ -42,6 +42,7 @@ import imagej.data.Dataset;
 import imagej.data.display.DisplayService;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.DisplayPanel;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.legacy.DatasetHarmonizer;
@@ -74,7 +75,7 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Parameter
 	private String arg;
 
-	@Parameter(output = true)
+	@Parameter(type = ItemIO.OUTPUT)
 	private List<ImageDisplay> outputs;
 
 	private DisplayService displayService;

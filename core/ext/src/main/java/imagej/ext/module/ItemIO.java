@@ -1,5 +1,5 @@
 //
-// TextDisplayTest.java
+// ItemIO.java
 //
 
 /*
@@ -32,27 +32,22 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.debug;
-
-import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+package imagej.ext.module;
 
 /**
- * A test of text displays.
+ * Defines the input/output type of a {@link ModuleItem}.
+ * <p>
+ * Choices are:
+ * </p>
+ * <ul>
+ * <li>INPUT: item is an input for the module.</li>
+ * <li>OUTPUT: item is an output for the module.</li>
+ * <li>BOTH: item is both and input and an output for the module. This type is
+ * used to indicate an object that is mutated somehow during execution.</li>
+ * </ul>
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest")
-public class TextDisplayTest implements ImageJPlugin {
-
-	@Parameter(type = ItemIO.OUTPUT)
-	private String output;
-
-	@Override
-	public void run() {
-		output = "Hello " + System.getProperty("user.name") + "!";
-	}
-
+public enum ItemIO {
+	INPUT, OUTPUT, BOTH
 }

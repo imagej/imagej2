@@ -36,6 +36,7 @@ package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
 import imagej.ext.MenuEntry;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -83,7 +84,7 @@ public class ImageMath implements ImageJPlugin {
 	@Parameter(required = true)
 	private Dataset input2;
 
-	@Parameter(output = true)
+	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset output;
 
 	@Parameter(label = "Operation to do between the two input images",
