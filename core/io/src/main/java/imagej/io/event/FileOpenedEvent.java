@@ -1,5 +1,5 @@
 //
-// FileSavedEvent.java
+// FileOpenedEvent.java
 //
 
 /*
@@ -32,16 +32,16 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event;
+package imagej.io.event;
 
 /**
- * An event indicating a file has been saved.
+ * An event indicating a file has been opened.
  *
  * @author Grant Harris
  */
-public class FileSavedEvent extends FileEvent {
+public class FileOpenedEvent extends FileEvent {
 
-	public FileSavedEvent(final String path) {
+	public FileOpenedEvent(final String path) {
 		super(path);
 	}
 

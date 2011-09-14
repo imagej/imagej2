@@ -36,13 +36,13 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.event.Events;
-import imagej.event.FileOpenedEvent;
 import imagej.event.StatusEvent;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.io.event.FileOpenedEvent;
 import imagej.util.Log;
 
 import java.io.File;

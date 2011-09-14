@@ -39,7 +39,6 @@ import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.FileOpenedEvent;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
 import imagej.ext.menu.MenuService;
@@ -49,6 +48,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.io.event.FileOpenedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
