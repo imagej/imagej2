@@ -65,7 +65,6 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 			final Object value = outputItem.getValue(module);
 			handleOutput(displayName, value);
 		}
-		handleOutput(null, module.getOutputs());
 	}
 
 	/** Displays output objects. */
