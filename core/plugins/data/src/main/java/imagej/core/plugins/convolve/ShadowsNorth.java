@@ -34,19 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.convolve;
 
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.RealRect;
 
 /**
- * Implements IJ1's Shadows North plugin functionality
+ * Implements IJ1's Shadows North plugin functionality.
  * 
  * @author Barry DeZonia
  */
@@ -54,24 +46,12 @@ import imagej.util.RealRect;
 	menu = { @Menu(label = "Process", mnemonic = 'p'),
 		@Menu(label = "Shadows", mnemonic = 's'),
 		@Menu(label = "North", weight = 1) })
-public class ShadowsNorth implements ImageJPlugin {
+public class ShadowsNorth extends AbstractShadows {
 
-	// -- instance variables that are Parameters --
+	static final double[] KERNEL = { 1, 2, 1, 0, 1, 0, -1, -2, -1 };
 
-	@Parameter
-	private ImageDisplay display;
-
-	// -- public interface --
-
-	@Override
-	public void run() {
-		final Dataset input =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
-		final RealRect selection =
-			ImageJ.get(OverlayService.class).getSelectionBounds(display);
-		final Convolve3x3Operation operation =
-			new Convolve3x3Operation(input, selection, new double[] { 1, 2, 1, 0, 1,
-				0, -1, -2, -1 });
-		operation.run();
+	public ShadowsNorth() {
+		super(KERNEL);
 	}
+
 }
