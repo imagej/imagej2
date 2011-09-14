@@ -57,7 +57,7 @@ import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
 /**
- * Implements IJ1's Shadows Demo plugin functionality
+ * Implements IJ1's Shadows Demo plugin functionality.
  * 
  * @author Barry DeZonia
  */
@@ -66,6 +66,11 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Shadows Demo", weight = 200) })
 public class ShadowsDemo implements ImageJPlugin {
 
+	private static final double[][] KERNELS = new double[][] {
+		ShadowsNorth.KERNEL, ShadowsNortheast.KERNEL, ShadowsEast.KERNEL,
+		ShadowsSoutheast.KERNEL, ShadowsSouth.KERNEL, ShadowsSouthwest.KERNEL,
+		ShadowsWest.KERNEL, ShadowsNorthwest.KERNEL };
+
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -73,16 +78,6 @@ public class ShadowsDemo implements ImageJPlugin {
 
 	// -- private instance variables --
 
-	private static final double[][] KERNELS = new double[][] {
-		new double[] { 1, 2, 1, 0, 1, 0, -1, -2, -1 }, // north
-		new double[] { 0, 1, 2, -1, 1, 1, -2, -1, 0 }, // northeast
-		new double[] { -1, 0, 1, -2, 1, 2, -1, 0, 1 }, // east
-		new double[] { -2, -1, 0, -1, 1, 1, 0, 1, 2 }, // southeast
-		new double[] { -1, -2, -1, 0, 1, 0, 1, 2, 1 }, // south
-		new double[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 }, // southwest
-		new double[] { 1, 0, -1, 2, 1, -2, 1, 0, -1 }, // west
-		new double[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 } // northwest
-		};
 	private boolean userHasQuit = false;
 	private ImageDisplay currDisplay;
 	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
@@ -149,7 +144,7 @@ public class ShadowsDemo implements ImageJPlugin {
 	}
 
 	/**
-	 * Subscribes to events that will track when the user has decided to quit
+	 * Subscribes to events that will track when the user has decided to quit.
 	 */
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
@@ -178,7 +173,7 @@ public class ShadowsDemo implements ImageJPlugin {
 
 	/**
 	 * Unsubscribes from events. this keeps IJ2 from maintaining dangling
-	 * references to obsolete event listeners
+	 * references to obsolete event listeners.
 	 */
 	private void unsubscribeFromEvents() {
 		Events.unsubscribe(KyPressedEvent.class, kyPressSubscriber);

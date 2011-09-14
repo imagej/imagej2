@@ -1,5 +1,5 @@
 //
-// ShadowsSoutheast.java
+// AbstractShadows.java
 //
 
 /*
@@ -34,23 +34,40 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.convolve;
 
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Plugin;
+import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
+import imagej.util.RealRect;
 
 /**
- * Implements IJ1's Shadows Southeast plugin functionality.
+ * Abstract superclass for Shadows plugins.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Shadows", mnemonic = 's'),
-	@Menu(label = "Southeast", weight = 4) })
-public class ShadowsSoutheast extends AbstractShadows {
+public abstract class AbstractShadows implements ImageJPlugin {
 
-	static final double[] KERNEL = { -2, -1, 0, -1, 1, 1, 0, 1, 2 };
+	@Parameter
+	private ImageDisplay display;
 
-	public ShadowsSoutheast() {
-		super(KERNEL);
+	private final double[] kernel;
+
+	AbstractShadows(final double[] kernel) {
+		this.kernel = kernel;
+	}
+
+	@Override
+	public void run() {
+		final Dataset input =
+			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		final RealRect selection =
+			ImageJ.get(OverlayService.class).getSelectionBounds(display);
+		final Convolve3x3Operation operation =
+			new Convolve3x3Operation(input, selection, kernel);
+		operation.run();
 	}
 
 }
