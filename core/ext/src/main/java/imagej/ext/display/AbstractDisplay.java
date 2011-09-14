@@ -84,8 +84,6 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 		add(typedObj);
 	}
 
-	// -- Named methods --
-
 	@Override
 	public String getName() {
 		return name;

@@ -91,17 +91,17 @@ public class AWTKeyEventDispatcherGlobal extends EventQueue {
 		super.dispatchEvent(event); // let the next in chain handle event
 	}
 
-	public void keyTyped(final KeyEvent e, final Display display) {
+	public void keyTyped(final KeyEvent e, final Display<?> display) {
 		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(), e
 			.getModifiers()));
 	}
 
-	public void keyPressed(final KeyEvent e, final Display display) {
+	public void keyPressed(final KeyEvent e, final Display<?> display) {
 		Events.publish(new KyPressedEvent(display, e.getKeyChar(), e.getKeyCode(),
 			e.getModifiers()));
 	}
 
-	public void keyReleased(final KeyEvent e, final Display display) {
+	public void keyReleased(final KeyEvent e, final Display<?> display) {
 		Events.publish(new KyReleasedEvent(display, e.getKeyChar(), e.getKeyCode(),
 			e.getModifiers()));
 	}

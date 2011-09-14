@@ -45,7 +45,6 @@ import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
@@ -62,7 +61,7 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Overlays")
@@ -84,13 +83,13 @@ public class WatchOverlays implements ImageJPlugin {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<ObjectsListEvent> objectsUpdatedSubscriber =
-				new EventSubscriber<ObjectsListEvent>() {
+			new EventSubscriber<ObjectsListEvent>() {
 
-					@Override
-					public void onEvent(final ObjectsListEvent event) {
-						updateOverlaysShown();
-					}
-				};
+				@Override
+				public void onEvent(final ObjectsListEvent event) {
+					updateOverlaysShown();
+				}
+			};
 		subscribers.add(objectsUpdatedSubscriber);
 		Events.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
 		//
@@ -103,15 +102,15 @@ public class WatchOverlays implements ImageJPlugin {
 //				};
 //		subscribers.add(WinActivatedSubscriber);
 //		Events.subscribe(WinActivatedEvent.class, WinActivatedSubscriber);
-		
-				
+
 		final EventSubscriber<DisplayActivatedEvent> DisplaySelectedSubscriber =
-				new EventSubscriber<DisplayActivatedEvent>() {
-					@Override
-					public void onEvent(final DisplayActivatedEvent event) {
-						updateOverlaysShown();
-					}
-				};
+			new EventSubscriber<DisplayActivatedEvent>() {
+
+				@Override
+				public void onEvent(final DisplayActivatedEvent event) {
+					updateOverlaysShown();
+				}
+			};
 		subscribers.add(DisplaySelectedSubscriber);
 		Events.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
 	}
@@ -119,35 +118,38 @@ public class WatchOverlays implements ImageJPlugin {
 	private void updateOverlaysShown() {
 		window.clear();
 		final ObjectService objectService = ImageJ.get(ObjectService.class);
-		List<Overlay> overlays = objectService.getObjects(Overlay.class);
+		final List<Overlay> overlays = objectService.getObjects(Overlay.class);
 
 		window.append("all --------------------\n");
-		for (Overlay overlay : overlays) {
-			window.append(overlay.getRegionOfInterest().toString() + ": " + overlay.getPosition(Axes.Z) + "\n");
+		for (final Overlay overlay : overlays) {
+			window.append(overlay.getRegionOfInterest().toString() + ": " +
+				overlay.getPosition(Axes.Z) + "\n");
 		}
 
 		final ImageDisplay display = getCurrentImageDisplay();
-		if(display==null) return;
-		if(!(display instanceof ImageDisplay)) return;
-		window.append("For dislay " + display.getName() + " --------------------\n");
+		if (display == null) return;
+		window.append("For display " + display.getName() +
+			" --------------------\n");
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		List<Overlay> overlays2 = getOverlaysFromDisplay((ImageDisplay)display);
-		for (Overlay overlay : overlays2) {
+		final List<Overlay> overlays2 = getOverlaysFromDisplay(display);
+		for (final Overlay overlay : overlays2) {
 			window.append(overlay.getRegionOfInterest().toString() + "\n");
 			if (overlay instanceof RectangleOverlay) {
-				Dataset currDataset = displayService.getActiveDataset(display);
-				final double[] origin = new double[currDataset.getImgPlus().numDimensions()];
-				final double[] extent = new double[currDataset.getImgPlus().numDimensions()];
-				((RectangleRegionOfInterest) overlay.getRegionOfInterest()).getExtent(extent);
-				((RectangleRegionOfInterest) overlay.getRegionOfInterest()).getOrigin(origin);
-				int minX = (int) origin[0];
-				int minY = (int) origin[1];
-				int maxX = (int) extent[0];
-				int maxY = (int) extent[1];
-							window.append("   Rect: " + minX + "," + 
-									minY + "," + 
-									maxX + "," + 
-									maxY + "\n");
+				final Dataset currDataset = displayService.getActiveDataset(display);
+				final double[] origin =
+					new double[currDataset.getImgPlus().numDimensions()];
+				final double[] extent =
+					new double[currDataset.getImgPlus().numDimensions()];
+				((RectangleRegionOfInterest) overlay.getRegionOfInterest())
+					.getExtent(extent);
+				((RectangleRegionOfInterest) overlay.getRegionOfInterest())
+					.getOrigin(origin);
+				final int minX = (int) origin[0];
+				final int minY = (int) origin[1];
+				final int maxX = (int) extent[0];
+				final int maxY = (int) extent[1];
+				window.append("   Rect: " + minX + "," + minY + "," + maxX + "," +
+					maxY + "\n");
 			}
 		}
 	}
@@ -155,10 +157,10 @@ public class WatchOverlays implements ImageJPlugin {
 	private ImageDisplay getCurrentImageDisplay() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final ImageDisplay display = displayService.getActiveImageDisplay();
-		if (display == null)
-			return null; // headless UI or no open images
+		if (display == null) return null; // headless UI or no open images
 		return display;
 	}
+
 //		List<Overlay> overlays;
 //		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 //		if (overlayService == null) {
@@ -181,8 +183,8 @@ public class WatchOverlays implements ImageJPlugin {
 	public List<Overlay> getOverlaysFromDisplay(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
-			for (final DisplayView view : display.getViews()) {
-				//SwingOverlayView sov = (SwingOverlayView) view;
+			for (final DisplayView view : display) {
+				// SwingOverlayView sov = (SwingOverlayView) view;
 				final DataObject dataObject = view.getDataObject();
 				dataObject.getClass().getSimpleName();
 				if (!(dataObject instanceof Overlay)) {
@@ -197,9 +199,9 @@ public class WatchOverlays implements ImageJPlugin {
 
 	public List<Overlay> getOverlaysForCurrentSlice(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		for (final DisplayView view : display.getViews()) {
-			Position planePosition = view.getPlanePosition();
-			DataObject dataObject = view.getDataObject();
+		for (final DisplayView view : display) {
+			final Position planePosition = view.getPlanePosition();
+			final DataObject dataObject = view.getDataObject();
 			if (dataObject instanceof Overlay) {
 				isVisible((Overlay) dataObject, planePosition);
 			}
@@ -208,11 +210,12 @@ public class WatchOverlays implements ImageJPlugin {
 		return overlays;
 	}
 
-	public boolean isVisible(Overlay overlay, Position planePosition) {
+	public boolean isVisible(final Overlay overlay, final Position planePosition)
+	{
 		for (int i = 2; i < overlay.numDimensions(); i++) {
-			Axis axis = overlay.axis(i);
+			final Axis axis = overlay.axis(i);
 			final Long pos = overlay.getPosition(axis);
-			if ((pos != null) && !pos.equals(planePosition.getLongPosition(i-2))) {
+			if (pos != null && !pos.equals(planePosition.getLongPosition(i - 2))) {
 				return false;
 			}
 		}
