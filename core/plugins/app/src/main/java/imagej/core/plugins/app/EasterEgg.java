@@ -34,14 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.TextDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.OutputWindow;
-import imagej.ui.UIService;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
@@ -59,16 +55,14 @@ public class EasterEgg implements ImageJPlugin {
 	@Parameter
 	public Dataset dataset;
 
+	@Parameter(output = true)
+	public String ascii;
+
 	@Override
 	public void run() {
 		final double min = dataset.getChannelMinimum(0);
 		final double max = dataset.getChannelMaximum(0);
 		if (min == max) return; // no range
-
-		final UIService uiService = ImageJ.get(UIService.class);
-		final TextDisplay window =
-			uiService.createOutputWindow(dataset.getName() + " *~= SPECIAL =~*");
-		//window.setVisible(true);
 
 		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		final int colCount = (int) imgPlus.dimension(0);
@@ -78,15 +72,14 @@ public class EasterEgg implements ImageJPlugin {
 		final StringBuilder sb = new StringBuilder();
 		for (int r = 0; r < rowCount; r++) {
 			access.setPosition(r, 1);
-			sb.setLength(0);
 			for (int c = 0; c < colCount; c++) {
 				access.setPosition(c, 0);
 				final double value = access.get().getRealDouble();
 				sb.append(getChar(value, min, max));
 			}
 			sb.append("\n");
-			window.append(sb.toString());
 		}
+		ascii = sb.toString();
 	}
 
 	// -- Helper methods --
