@@ -219,19 +219,23 @@ public class OptionsService extends AbstractService {
 			Log.error("Cannot create module: " + info.getClassName());
 		}
 		*/
+
 		// NOW THIS: works but kludgy and perhaps inefficient
 		Iterator<ModuleItem<?>> i = info.inputs().iterator();
 		while (i.hasNext()) {
-			ModuleItem<Object> val = (ModuleItem<Object>) i.next();
+			ModuleItem<?> val = i.next();
 			if (val.getName().equals(name)) {
-				val.saveValue(value);
+				((ModuleItem<Object>)val).saveValue(value);
 				return;
 			}
 		}
-		// COULD DO THIS?
+
+		// COULD DO THIS? NOT YET WORKING
 		/*
+		String className = info.getClassName();
+		Object pluginInstance = pluginService.getPlugin(className);
 		Field field = ClassUtils.getField(info.getClassName(), name);
-		Something pluginInstance = info.somethingOrOther()
+		System.out.println("Try setting field "+name+" of instance of "+className+" to "+value);
 		ClassUtils.setValue(field, pluginInstance, value);
 		*/
 	}
