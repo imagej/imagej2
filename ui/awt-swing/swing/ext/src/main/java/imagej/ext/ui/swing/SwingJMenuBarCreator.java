@@ -65,7 +65,7 @@ public class SwingJMenuBarCreator extends AbstractSwingMenuCreator<JMenuBar> {
 
 	@Override
 	protected void addSeparatorToTop(final JMenuBar target) {
-		Log.warn("JMenuBarCreator: Ignoring top-level separator");
+		Log.debug("SwingJMenuBarCreator: Ignoring top-level separator");
 	}
 
 }
