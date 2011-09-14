@@ -58,7 +58,7 @@ public class SelectNone implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		for (final DisplayView view : display.getViews()) {
+		for (final DisplayView view : display) {
 			view.setSelected(false);
 		}
 	}

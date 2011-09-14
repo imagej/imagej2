@@ -183,7 +183,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	protected void onFigureSelectionChanged(final FigureSelectionEvent event) {
 		final Set<Figure> newSelection = event.getNewSelection();
 		final Set<Figure> oldSelection = event.getOldSelection();
-		for (final DisplayView view : display.getViews()) {
+		for (final DisplayView view : display) {
 			if (view instanceof FigureView) {
 				final Figure figure = ((FigureView) view).getFigure();
 				if (newSelection.contains(figure)) {

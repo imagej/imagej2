@@ -41,42 +41,19 @@ package imagej.ext.script;
  */
 public interface CodeGenerator {
 
-	/**
-	 * Adds Delimiter character between arguments (typically a ',')
-	 */
+	/** Adds delimiter character between arguments (typically a ','). */
 	void addArgDelimiter();
 
-	/**
-	 * 
-	 * @param parameterObject
-	 */
 	void addArgument(ParameterObject parameterObject);
 
-	/**
-	 * 
-	 * @param moduleCalled
-	 */
 	void addModuleCalled(String moduleCalled);
 
-	/**
-	 * 
-	 * @return
-	 */
 	String getResult();
 
-	/**
-	 * 
-	 */
 	void invokeStatementBegin();
 
-	/**
-	 * 
-	 */
 	void invokeStatementEnd();
 
-	/**
-	 * 
-	 */
 	void statementTerminate();
 
 }

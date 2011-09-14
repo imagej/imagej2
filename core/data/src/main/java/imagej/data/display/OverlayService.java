@@ -87,7 +87,7 @@ public final class OverlayService extends AbstractService {
 	public List<Overlay> getOverlays(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
-			for (final DisplayView view : display.getViews()) {
+			for (final DisplayView view : display) {
 				final DataObject dataObject = view.getDataObject();
 				if (!(dataObject instanceof Overlay)) continue;
 				final Overlay overlay = (Overlay) dataObject;
@@ -113,7 +113,7 @@ public final class OverlayService extends AbstractService {
 	 */
 	public void removeOverlay(final ImageDisplay display, final Overlay overlay) {
 		final ArrayList<DisplayView> overlayViews = new ArrayList<DisplayView>();
-		final List<DisplayView> views = display.getViews();
+		final List<DisplayView> views = display;
 		for (final DisplayView view : views) {
 			final DataObject dataObject = view.getDataObject();
 			if (dataObject == overlay) overlayViews.add(view);
@@ -134,7 +134,7 @@ public final class OverlayService extends AbstractService {
 	public RealRect getSelectionBounds(final ImageDisplay display) {
 		// get total XY extents of the display by checking all datasets
 		double width = 0, height = 0;
-		for (final DisplayView view : display.getViews()) {
+		for (final DisplayView view : display) {
 			final DataObject dataObject = view.getDataObject();
 			if (!(dataObject instanceof Dataset)) continue;
 			final Dataset dataset = (Dataset) dataObject;
@@ -154,7 +154,7 @@ public final class OverlayService extends AbstractService {
 		double xMax = Double.NEGATIVE_INFINITY;
 		double yMin = Double.POSITIVE_INFINITY;
 		double yMax = Double.NEGATIVE_INFINITY;
-		for (final DisplayView view : display.getViews()) {
+		for (final DisplayView view : display) {
 			if (!view.isSelected()) continue; // ignore non-selected objects
 			final DataObject dataObject = view.getDataObject();
 			if (!(dataObject instanceof Overlay)) continue; // ignore non-overlays

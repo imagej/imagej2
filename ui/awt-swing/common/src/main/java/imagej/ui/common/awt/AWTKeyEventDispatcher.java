@@ -51,19 +51,11 @@ import java.awt.event.KeyListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener
-{
+public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener {
 
 	private final ImageDisplay display;
 
-	/**
-	 * Creates an AWT event dispatcher for the given display, with mouse
-	 * coordinates interpreted according to the relative flag.
-	 * 
-	 * @param relative If true, coordinates are relative to the entire image
-	 *          canvas rather than just the viewport; hence, the pan offset is
-	 *          already factored in.
-	 */
+	/** Creates an AWT event dispatcher for the given display. */
 	public AWTKeyEventDispatcher(final ImageDisplay display) {
 		this.display = display;
 	}
@@ -72,8 +64,8 @@ public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener
 
 	@Override
 	public void keyTyped(final KeyEvent e) {
-		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(),
-			e.getModifiers()));
+		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(), e
+			.getModifiers()));
 	}
 
 	@Override
@@ -84,8 +76,8 @@ public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener
 
 	@Override
 	public void keyReleased(final KeyEvent e) {
-		Events.publish(new KyReleasedEvent(display, e.getKeyChar(),
-			e.getKeyCode(), e.getModifiers()));
+		Events.publish(new KyReleasedEvent(display, e.getKeyChar(), e.getKeyCode(),
+			e.getModifiers()));
 	}
 
 }

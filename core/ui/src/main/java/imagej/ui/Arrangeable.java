@@ -23,7 +23,7 @@ public interface Arrangeable {
 
 	enum Arrangement {
 		VERTICAL, HORIZONTAL, CASCADE
-	};
+	}
 
 	public void setArrangement(Arrangement newValue);
 

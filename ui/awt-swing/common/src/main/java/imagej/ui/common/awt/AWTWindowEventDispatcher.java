@@ -65,15 +65,7 @@ public class AWTWindowEventDispatcher implements EventDispatcher,
 
 	private final Display<?> display;
 
-	/**
-	 * Creates an AWT event dispatcher for the given display, with mouse
-	 * coordinates interpreted according to the relative flag.
-	 * 
-	 * @param relative If true, coordinates are relative to the entire image
-	 *          canvas rather than just the viewport; hence, the pan offset is
-	 *          already factored in.
-	 */
-
+	/** Creates an AWT event dispatcher for the given display. */
 	public AWTWindowEventDispatcher(final Display<?> display) {
 		this.display = display;
 	}
