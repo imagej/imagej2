@@ -36,7 +36,6 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
 import imagej.display.Display;
-import imagej.display.ImageDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventSubscriber;
@@ -54,7 +53,7 @@ import javax.swing.SwingUtilities;
 
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Displays")
@@ -76,19 +75,20 @@ public class WatchDisplays implements ImageJPlugin {
 	public void showDisplays() {
 		window.clear();
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		List<Display> displays = displayService.getDisplays();
-		final Display active = displayService.getActiveDisplay();
-		for (Display display : displays) {
+		final List<Display<?>> displays = displayService.getDisplays();
+		final Display<?> active = displayService.getActiveDisplay();
+		for (final Display<?> display : displays) {
 			if (display == active) {
 				window.append("** " + display.toString() + "\n");
-			} else {
+			}
+			else {
 				window.append(display.toString() + "\n");
 			}
 		}
 
 		if (!SwingUtilities.isEventDispatchThread()) {
 			SwingUtilities.invokeLater(new Runnable() {
-				
+
 				@SuppressWarnings("synthetic-access")
 				@Override
 				public void run() {
@@ -103,17 +103,17 @@ public class WatchDisplays implements ImageJPlugin {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<ObjectsListEvent> objectsUpdatedSubscriber =
-				new EventSubscriber<ObjectsListEvent>() {
+			new EventSubscriber<ObjectsListEvent>() {
 
-					@Override
-					public void onEvent(final ObjectsListEvent event) {
-						showDisplays();
-					}
+				@Override
+				public void onEvent(final ObjectsListEvent event) {
+					showDisplays();
+				}
 
-				};
+			};
 		subscribers.add(objectsUpdatedSubscriber);
 		Events.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
-		
+
 //		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
 //				new EventSubscriber<WinActivatedEvent>() {
 //
@@ -125,19 +125,19 @@ public class WatchDisplays implements ImageJPlugin {
 //				};
 //		subscribers.add(WinActivatedSubscriber);
 //		Events.subscribe(WinActivatedEvent.class, WinActivatedSubscriber);
-		
+
 		final EventSubscriber<DisplayActivatedEvent> DisplaySelectedSubscriber =
-				new EventSubscriber<DisplayActivatedEvent>() {
+			new EventSubscriber<DisplayActivatedEvent>() {
 
-					@Override
-					public void onEvent(final DisplayActivatedEvent event) {
-						showDisplays();
-					}
+				@Override
+				public void onEvent(final DisplayActivatedEvent event) {
+					showDisplays();
+				}
 
-				};
+			};
 		subscribers.add(DisplaySelectedSubscriber);
 		Events.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
-		
+
 	}
 
 }
