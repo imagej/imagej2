@@ -48,6 +48,7 @@ import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -216,7 +217,7 @@ public class OptionsService extends AbstractService {
 			Log.error("Cannot create module: " + info.getClassName());
 		}
 		*/
-		// NOW THIS: works but inefficient?
+		// NOW THIS: works but kludgy and perhaps inefficient
 		Iterator<ModuleItem<?>> i = info.inputs().iterator();
 		while (i.hasNext()) {
 			ModuleItem<Object> val = (ModuleItem<Object>) i.next();
@@ -225,6 +226,12 @@ public class OptionsService extends AbstractService {
 				return;
 			}
 		}
+		// COULD DO THIS?
+		/*
+		Field field = ClassUtils.getField(info.getClassName(), name);
+		Something pluginInstance = info.somethingOrOther()
+		ClassUtils.setValue(field, pluginInstance, value);
+		*/
 	}
 
 	// TODO - move to ClassUtils? update convert() there?
