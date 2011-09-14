@@ -48,7 +48,9 @@ import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -120,11 +122,11 @@ public class OptionsService extends AbstractService {
 	 *  to the given value.
 	 */
 	public void setOption(
-		final String className, final String name, final Object value)
+		final String className, final String name, final Object inputValue)
 	{
 		PluginModuleInfo<?> info = getOptionsInfo(className);
-		Object valueObject = typedValue(info.getInput(name).getType(), value);
-		setInput(info, name, valueObject);
+		Object coercedValue = ClassUtils.convert(inputValue,info.getInput(name).getType());
+		setInput(info, name, coercedValue);
 	}
 
 	/** Gets a map of all options from the given options plugin. */
@@ -232,40 +234,5 @@ public class OptionsService extends AbstractService {
 		Something pluginInstance = info.somethingOrOther()
 		ClassUtils.setValue(field, pluginInstance, value);
 		*/
-	}
-
-	// TODO - move to ClassUtils? update convert() there?
-	
-	private Object typedValue(Class<?> type, Object obj) {
-		if (obj.getClass() == String.class) {
-			String text = (String) obj;
-			if (type == String.class)
-				return text;
-			else if ((type == char.class) || (type == Character.class))
-				return new Character(text.charAt(0));
-			else if ((type == byte.class) || (type == Byte.class))
-				return new Byte(text);
-			else if ((type == short.class) || (type == Short.class))
-					return new Short(text);
-			else if ((type == int.class) || (type == Integer.class))
-				return new Integer(text);
-			else if ((type == long.class) || (type == Long.class))
-				return new Long(text);
-			else if ((type == float.class) || (type == Float.class))
-				return new Float(text);
-			else if ((type == double.class) || (type == Double.class))
-				return new Double(text);
-			else if ((type == boolean.class) || (type == Boolean.class))
-				return new Boolean(text);
-			else if (type == BigInteger.class)
-				return new BigInteger(text);
-			else if (type == BigDecimal.class)
-				return new BigDecimal(text);
-			else
-				throw new IllegalArgumentException("unknown class type : " + type);
-			// TODO - a Color class conversion???
-		}
-		
-		return ClassUtils.convert(obj, type);
 	}
 }
