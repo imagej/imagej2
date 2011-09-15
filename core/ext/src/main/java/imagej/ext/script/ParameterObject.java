@@ -39,7 +39,6 @@ package imagej.ext.script;
  * 
  * @author Grant Harris
  */
-
 public class ParameterObject {
 
 	public ParameterObject(final String param, final Class<?> type,
