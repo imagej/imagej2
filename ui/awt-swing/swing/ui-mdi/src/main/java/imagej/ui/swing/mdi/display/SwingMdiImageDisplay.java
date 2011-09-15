@@ -197,7 +197,7 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 					// and bug #605. BDZ
 					final Dataset dataset = event.getObject();
 					for (final DisplayView view : getViews()) {
-						if (dataset == view.getDataObject()) {
+						if (dataset == view.getData()) {
 							// NB - if just panReset() we'll be zoomed on wrong part of image
 							imgCanvas.setZoom(0); // original scale
 							// NB - if x or y dims change without panReset() image panned

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.roi;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.display.DisplayView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
@@ -225,7 +225,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		if (display == null) return result;
 		for (final DisplayView view : display) {
 			if (!view.isSelected()) continue;
-			final DataObject dataObject = view.getDataObject();
+			final Data dataObject = view.getData();
 			if (!(dataObject instanceof Overlay)) continue;
 			final Overlay overlay = (Overlay) dataObject;
 			result.add(overlay);

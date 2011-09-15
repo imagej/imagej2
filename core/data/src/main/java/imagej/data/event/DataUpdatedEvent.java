@@ -1,5 +1,5 @@
 //
-// DataObjectUpdatedEvent.java
+// DataUpdatedEvent.java
 //
 
 /*
@@ -34,18 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 
 /**
- * An event indicating a {@link DataObject}'s data has been updated. This means
+ * An event indicating a {@link Data}'s data has been updated. This means
  * that sample values may have changed, but the dimensional structure is the
  * same as before.
  * 
  * @author Curtis Rueden
  */
-public abstract class DataObjectUpdatedEvent extends DataObjectModifiedEvent {
+public abstract class DataUpdatedEvent extends DataModifiedEvent {
 
-	public DataObjectUpdatedEvent(final DataObject dataObject) {
+	public DataUpdatedEvent(final Data dataObject) {
 		super(dataObject);
 	}
 

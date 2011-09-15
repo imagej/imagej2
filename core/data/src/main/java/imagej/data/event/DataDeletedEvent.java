@@ -1,5 +1,5 @@
 //
-// DataObjectRestructuredEvent.java
+// DataDeletedEvent.java
 //
 
 /*
@@ -34,18 +34,28 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
+import imagej.object.event.ObjectDeletedEvent;
 
 /**
- * An event indicating a {@link DataObject}'s dimensional extents may have
- * changed.
+ * An event indicating a {@link Data} has been deleted.
  * 
  * @author Curtis Rueden
  */
-public abstract class DataObjectRestructuredEvent extends DataObjectModifiedEvent {
+public class DataDeletedEvent extends ObjectDeletedEvent {
 
-	public DataObjectRestructuredEvent(final DataObject dataObject) {
+	private final Data dataObject;
+
+	public DataDeletedEvent(final Data dataObject) {
 		super(dataObject);
+		this.dataObject = dataObject;
+	}
+
+	// -- ObjectEvent methods --
+
+	@Override
+	public Data getObject() {
+		return dataObject;
 	}
 
 }

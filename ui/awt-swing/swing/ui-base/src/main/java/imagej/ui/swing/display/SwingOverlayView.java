@@ -243,7 +243,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		if (disposeScheduled) return;
 		updatingFigure = true;
 		try {
-			adapter.updateFigure(getDataObject(), figure, this);
+			adapter.updateFigure(getData(), figure, this);
 		} finally {
 			updatingFigure = false;
 		}

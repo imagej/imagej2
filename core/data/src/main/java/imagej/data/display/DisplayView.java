@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.roi.Overlay;
 
 /**
- * A linkage between a {@link DataObject} (such as a {@link Dataset} or
+ * A linkage between a {@link Data} (such as a {@link Dataset} or
  * {@link Overlay}) and a {@link ImageDisplay}. The view takes care of mapping the
  * N-dimensional data into a representation suitable for showing onscreen.
  * <p>
@@ -57,8 +57,8 @@ public interface DisplayView {
 	/** Gets the {@link ImageDisplay} containing this view. */
 	ImageDisplay getDisplay();
 
-	/** Gets the {@link DataObject} represented by this view. */
-	DataObject getDataObject();
+	/** Gets the {@link Data} represented by this view. */
+	Data getData();
 
 	/** Gets the N-dimensional plane position of this view. */
 	Position getPlanePosition();
@@ -83,7 +83,7 @@ public interface DisplayView {
 
 	/**
 	 * Recreates the view. This operation is useful in case the linked
-	 * {@link DataObject} has changed structurally somehow.
+	 * {@link Data} has changed structurally somehow.
 	 */
 	void rebuild();
 

@@ -57,7 +57,7 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 	// -- DisplayView methods --
 
 	@Override
-	public Overlay getDataObject() {
+	public Overlay getData() {
 		return overlay;
 	}
 	

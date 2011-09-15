@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.AbstractDisplay;
@@ -161,7 +161,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
 	public List<Axis> getAxes() {
 		final ArrayList<Axis> axes = new ArrayList<Axis>();
 		for (final DisplayView v : this.getViews()) {
-			final DataObject o = v.getDataObject();
+			final Data o = v.getData();
 			if (o instanceof Dataset) {
 				final Dataset dataset = (Dataset) o;
 				final int nAxes = dataset.getImgPlus().numDimensions();
@@ -175,7 +175,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
 			}
 		}
 		for (final DisplayView v : this.getViews()) {
-			final DataObject o = v.getDataObject();
+			final Data o = v.getData();
 			if (o instanceof Overlay) {
 				final Overlay overlay = (Overlay) o;
 				if (overlay.getRegionOfInterest() == null) continue;
@@ -196,7 +196,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
 
 	@Override
 	public boolean canDisplay(final Class<?> c) {
-		return DataObject.class.isAssignableFrom(c) || super.canDisplay(c);
+		return Data.class.isAssignableFrom(c) || super.canDisplay(c);
 	}
 
 	@Override

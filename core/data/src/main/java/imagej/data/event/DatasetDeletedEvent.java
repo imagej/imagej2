@@ -41,7 +41,7 @@ import imagej.data.Dataset;
  * 
  * @author Curtis Rueden
  */
-public class DatasetDeletedEvent extends DataObjectDeletedEvent {
+public class DatasetDeletedEvent extends DataDeletedEvent {
 
 	private final Dataset dataset;
 

@@ -119,7 +119,7 @@ public final class ImageDisplayService extends AbstractService {
 	 */
 	public Dataset getActiveDataset(final ImageDisplay display) {
 		final DatasetView activeDatasetView = getActiveDatasetView(display);
-		return activeDatasetView == null ? null : activeDatasetView.getDataObject();
+		return activeDatasetView == null ? null : activeDatasetView.getData();
 	}
 
 	/**

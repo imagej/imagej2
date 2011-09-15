@@ -1,5 +1,5 @@
 //
-// AbstractDataObject.java
+// AbstractData.java
 //
 
 /*
@@ -34,20 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import imagej.data.event.DataObjectCreatedEvent;
-import imagej.data.event.DataObjectDeletedEvent;
+import imagej.data.event.DataCreatedEvent;
+import imagej.data.event.DataDeletedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.Events;
 
 /**
- * Base implementation of {@link DataObject}.
+ * Base implementation of {@link Data}.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  * @see Dataset
  * @see Overlay
  */
-public abstract class AbstractDataObject implements DataObject {
+public abstract class AbstractData implements Data {
 
 	private int refs = 0;
 	
@@ -60,7 +60,7 @@ public abstract class AbstractDataObject implements DataObject {
 	 * method to publish more specific events.
 	 */
 	protected void register() {
-		Events.publish(new DataObjectCreatedEvent(this));
+		Events.publish(new DataCreatedEvent(this));
 	}
 
 	/**
@@ -70,17 +70,17 @@ public abstract class AbstractDataObject implements DataObject {
 	 * publish more specific events.
 	 * */
 	protected void delete() {
-		Events.publish(new DataObjectDeletedEvent(this));
+		Events.publish(new DataDeletedEvent(this));
 	}
 
-	/** @see DataObject */
+	/** @see Data */
 	@Override
 	public void incrementReferences() {
 		refs++;
 		if (refs == 1) register();
 	}
 
-	/** @see DataObject */
+	/** @see Data */
 	@Override
 	public void decrementReferences() {
 		if (refs == 0)
