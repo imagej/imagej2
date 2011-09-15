@@ -83,4 +83,94 @@ public class OptionsProfilePlot extends OptionsPlugin {
 	@Parameter(label = "Draw grid lines")
 	private boolean drawGridLines = true;
 
+	// -- OptionsProfilePlot methods --
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public double getMinY() {
+		return minY;
+	}
+
+	public double getMaxY() {
+		return maxY;
+	}
+
+	public boolean isyFixedScale() {
+		return yFixedScale;
+	}
+
+	public boolean isNoSaveXValues() {
+		return noSaveXValues;
+	}
+
+	public boolean isAutoClose() {
+		return autoClose;
+	}
+
+	public boolean isVertProfile() {
+		return vertProfile;
+	}
+
+	public boolean isListValues() {
+		return listValues;
+	}
+
+	public boolean isInterpLineProf() {
+		return interpLineProf;
+	}
+
+	public boolean isDrawGridLines() {
+		return drawGridLines;
+	}
+
+	public void setWidth(final int width) {
+		this.width = width;
+	}
+
+	public void setHeight(final int height) {
+		this.height = height;
+	}
+
+	public void setMinY(final double minY) {
+		this.minY = minY;
+	}
+
+	public void setMaxY(final double maxY) {
+		this.maxY = maxY;
+	}
+
+	public void setyFixedScale(final boolean yFixedScale) {
+		this.yFixedScale = yFixedScale;
+	}
+
+	public void setNoSaveXValues(final boolean noSaveXValues) {
+		this.noSaveXValues = noSaveXValues;
+	}
+
+	public void setAutoClose(final boolean autoClose) {
+		this.autoClose = autoClose;
+	}
+
+	public void setVertProfile(final boolean vertProfile) {
+		this.vertProfile = vertProfile;
+	}
+
+	public void setListValues(final boolean listValues) {
+		this.listValues = listValues;
+	}
+
+	public void setInterpLineProf(final boolean interpLineProf) {
+		this.interpLineProf = interpLineProf;
+	}
+
+	public void setDrawGridLines(final boolean drawGridLines) {
+		this.drawGridLines = drawGridLines;
+	}
+
 }

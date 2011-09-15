@@ -56,10 +56,13 @@ public class OptionsArrowTool extends OptionsPlugin {
 	@Parameter(label = "Size", min = "0", max = "30")
 	private int arrowSize = 10;
 
-	// TODO - use imagej.util.ColorRGB instead
+	// TODO - use ColorRGB for arrowColor
+
 	@Parameter(label = "Color", choices = { "red", "green", "blue", "magenta",
 		"cyan", "yellow", "orange", "black", "white" })
 	private String arrowColor = "black";
+
+	// TODO - use enum for arrowStyle
 
 	@Parameter(label = "Style", choices = { "Filled", "Notched", "Open",
 		"Headless" })
@@ -70,4 +73,55 @@ public class OptionsArrowTool extends OptionsPlugin {
 
 	@Parameter(label = "Double headed")
 	private boolean arrowDoubleHeaded = false;
+
+	// -- OptionsArrowTool methods --
+
+	public int getArrowWidth() {
+		return arrowWidth;
+	}
+
+	public int getArrowSize() {
+		return arrowSize;
+	}
+
+	public String getArrowColor() {
+		return arrowColor;
+	}
+
+	public String getArrowStyle() {
+		return arrowStyle;
+	}
+
+	public boolean isArrowOutline() {
+		return arrowOutline;
+	}
+
+	public boolean isArrowDoubleHeaded() {
+		return arrowDoubleHeaded;
+	}
+
+	public void setArrowWidth(final int arrowWidth) {
+		this.arrowWidth = arrowWidth;
+	}
+
+	public void setArrowSize(final int arrowSize) {
+		this.arrowSize = arrowSize;
+	}
+
+	public void setArrowColor(final String arrowColor) {
+		this.arrowColor = arrowColor;
+	}
+
+	public void setArrowStyle(final String arrowStyle) {
+		this.arrowStyle = arrowStyle;
+	}
+
+	public void setArrowOutline(final boolean arrowOutline) {
+		this.arrowOutline = arrowOutline;
+	}
+
+	public void setArrowDoubleHeaded(final boolean arrowDoubleHeaded) {
+		this.arrowDoubleHeaded = arrowDoubleHeaded;
+	}
+
 }

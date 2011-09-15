@@ -50,7 +50,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Input/Output...", weight = 2) })
 public class OptionsInputOutput extends OptionsPlugin {
 
-	@Parameter(label = "JPEG quality (0-100)")
+	@Parameter(label = "JPEG quality (0-100)", min = "0", max = "100")
 	private int jpegQuality = 85;
 
 	@Parameter(label = "GIF and PNG transparent index")
@@ -78,5 +78,79 @@ public class OptionsInputOutput extends OptionsPlugin {
 
 	@Parameter(label = "Result Table: Save row numbers")
 	private boolean saveRowNumbers = true;
+
+	// -- OptionsInputOutput methods --
+
+	public int getJpegQuality() {
+		return jpegQuality;
+	}
+
+	public int getTransparentIndex() {
+		return transparentIndex;
+	}
+
+	public String getTableFileExtension() {
+		return tableFileExtension;
+	}
+
+	public boolean isUseJFileChooser() {
+		return useJFileChooser;
+	}
+
+	public boolean isSaveOrderIntel() {
+		return saveOrderIntel;
+	}
+
+	public boolean isCopyColumnHeaders() {
+		return copyColumnHeaders;
+	}
+
+	public boolean isCopyRowNumbers() {
+		return copyRowNumbers;
+	}
+
+	public boolean isSaveColumnHeaders() {
+		return saveColumnHeaders;
+	}
+
+	public boolean isSaveRowNumbers() {
+		return saveRowNumbers;
+	}
+
+	public void setJpegQuality(final int jpegQuality) {
+		this.jpegQuality = jpegQuality;
+	}
+
+	public void setTransparentIndex(final int transparentIndex) {
+		this.transparentIndex = transparentIndex;
+	}
+
+	public void setTableFileExtension(final String tableFileExtension) {
+		this.tableFileExtension = tableFileExtension;
+	}
+
+	public void setUseJFileChooser(final boolean useJFileChooser) {
+		this.useJFileChooser = useJFileChooser;
+	}
+
+	public void setSaveOrderIntel(final boolean saveOrderIntel) {
+		this.saveOrderIntel = saveOrderIntel;
+	}
+
+	public void setCopyColumnHeaders(final boolean copyColumnHeaders) {
+		this.copyColumnHeaders = copyColumnHeaders;
+	}
+
+	public void setCopyRowNumbers(final boolean copyRowNumbers) {
+		this.copyRowNumbers = copyRowNumbers;
+	}
+
+	public void setSaveColumnHeaders(final boolean saveColumnHeaders) {
+		this.saveColumnHeaders = saveColumnHeaders;
+	}
+
+	public void setSaveRowNumbers(final boolean saveRowNumbers) {
+		this.saveRowNumbers = saveRowNumbers;
+	}
 
 }

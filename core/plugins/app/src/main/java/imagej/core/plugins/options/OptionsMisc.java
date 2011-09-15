@@ -71,4 +71,64 @@ public class OptionsMisc extends OptionsPlugin {
 	@Parameter(label = "Debug mode")
 	private boolean debugMode = false;
 
+	// -- OptionsMisc methods --
+
+	public String getDivByZeroVal() {
+		return divByZeroVal;
+	}
+
+	public boolean isUsePtrCursor() {
+		return usePtrCursor;
+	}
+
+	public boolean isHideProcessStackDialog() {
+		return hideProcessStackDialog;
+	}
+
+	public boolean isRequireCommandKey() {
+		return requireCommandKey;
+	}
+
+	public boolean isMoveIsolatedPlugins() {
+		return moveIsolatedPlugins;
+	}
+
+	public boolean isRunSingleInstanceListener() {
+		return runSingleInstanceListener;
+	}
+
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+
+	public void setDivByZeroVal(final String divByZeroVal) {
+		this.divByZeroVal = divByZeroVal;
+	}
+
+	public void setUsePtrCursor(final boolean usePtrCursor) {
+		this.usePtrCursor = usePtrCursor;
+	}
+
+	public void setHideProcessStackDialog(final boolean hideProcessStackDialog) {
+		this.hideProcessStackDialog = hideProcessStackDialog;
+	}
+
+	public void setRequireCommandKey(final boolean requireCommandKey) {
+		this.requireCommandKey = requireCommandKey;
+	}
+
+	public void setMoveIsolatedPlugins(final boolean moveIsolatedPlugins) {
+		this.moveIsolatedPlugins = moveIsolatedPlugins;
+	}
+
+	public void setRunSingleInstanceListener(
+		final boolean runSingleInstanceListener)
+	{
+		this.runSingleInstanceListener = runSingleInstanceListener;
+	}
+
+	public void setDebugMode(final boolean debugMode) {
+		this.debugMode = debugMode;
+	}
+
 }

@@ -56,11 +56,49 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	@Parameter(label = "Corner Diameter", min = "0", max = "200")
 	private int cornerDiameter = 20;
 
-	@Parameter(label = "Stroke Color", choices = {"black", "white", "red",
+	// TODO - use ColorRGB for strokeColor
+
+	@Parameter(label = "Stroke Color", choices = { "black", "white", "red",
 		"green", "blue", "cyan", "magenta", "yellow", "gray" })
 	private String strokeColor = "black";
 
-	@Parameter(label = "Fill Color", choices = {"none", "black", "white",
-		"red", "green", "blue", "cyan", "magenta", "yellow", "gray" })
+	// TODO - use ColorRGB for fillColor
+
+	@Parameter(label = "Fill Color", choices = { "none", "black", "white", "red",
+		"green", "blue", "cyan", "magenta", "yellow", "gray" })
 	private String fillColor = "none";
+
+	// -- OptionsRoundedRectangle methods --
+
+	public int getStrokeWidth() {
+		return strokeWidth;
+	}
+
+	public int getCornerDiameter() {
+		return cornerDiameter;
+	}
+
+	public String getStrokeColor() {
+		return strokeColor;
+	}
+
+	public String getFillColor() {
+		return fillColor;
+	}
+
+	public void setStrokeWidth(final int strokeWidth) {
+		this.strokeWidth = strokeWidth;
+	}
+
+	public void setCornerDiameter(final int cornerDiameter) {
+		this.cornerDiameter = cornerDiameter;
+	}
+
+	public void setStrokeColor(final String strokeColor) {
+		this.strokeColor = strokeColor;
+	}
+
+	public void setFillColor(final String fillColor) {
+		this.fillColor = fillColor;
+	}
 }

@@ -56,4 +56,22 @@ public class OptionsConversions extends OptionsPlugin {
 	@Parameter(label = "Weighted RGB Conversions")
 	private boolean weightedRgbConversions = false;
 
+	// -- OptionsConversions methods --
+
+	public boolean isScaleWhenConverting() {
+		return scaleWhenConverting;
+	}
+
+	public boolean isWeightedRgbConversions() {
+		return weightedRgbConversions;
+	}
+
+	public void setScaleWhenConverting(final boolean scaleWhenConverting) {
+		this.scaleWhenConverting = scaleWhenConverting;
+	}
+
+	public void setWeightedRgbConversions(final boolean weightedRgbConversions) {
+		this.weightedRgbConversions = weightedRgbConversions;
+	}
+
 }

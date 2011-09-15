@@ -68,7 +68,65 @@ public class OptionsAppearance extends OptionsPlugin {
 	@Parameter(label = "Antialiased tool icons")
 	private boolean antialiasedToolIcons = true;
 
-	@Parameter(label = "Menu font size (points)")
+	@Parameter(label = "Menu font size (points)", min = "0")
 	private int menuFontSize = 0;
+
+	// -- OptionsAppearance methods --
+
+	public boolean isInterpZoomedImages() {
+		return interpZoomedImages;
+	}
+
+	public boolean isFullZoomImages() {
+		return fullZoomImages;
+	}
+
+	public boolean isBlackCanvas() {
+		return blackCanvas;
+	}
+
+	public boolean isNoImageBorder() {
+		return noImageBorder;
+	}
+
+	public boolean isUseInvertingLUT() {
+		return useInvertingLUT;
+	}
+
+	public boolean isAntialiasedToolIcons() {
+		return antialiasedToolIcons;
+	}
+
+	public int getMenuFontSize() {
+		return menuFontSize;
+	}
+
+	public void setInterpZoomedImages(final boolean interpZoomedImages) {
+		this.interpZoomedImages = interpZoomedImages;
+	}
+
+	public void setFullZoomImages(final boolean fullZoomImages) {
+		this.fullZoomImages = fullZoomImages;
+	}
+
+	public void setBlackCanvas(final boolean blackCanvas) {
+		this.blackCanvas = blackCanvas;
+	}
+
+	public void setNoImageBorder(final boolean noImageBorder) {
+		this.noImageBorder = noImageBorder;
+	}
+
+	public void setUseInvertingLUT(final boolean useInvertingLUT) {
+		this.useInvertingLUT = useInvertingLUT;
+	}
+
+	public void setAntialiasedToolIcons(final boolean antialiasedToolIcons) {
+		this.antialiasedToolIcons = antialiasedToolIcons;
+	}
+
+	public void setMenuFontSize(final int menuFontSize) {
+		this.menuFontSize = menuFontSize;
+	}
 
 }

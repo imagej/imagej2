@@ -62,4 +62,38 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 	@Parameter(label = "Run garbage collector on status bar click")
 	private boolean runGcOnClick = true;
 
+	// -- OptionsMemoryAndThreads methods --
+
+	public int getMaxMemory() {
+		return maxMemory;
+	}
+
+	public int getStackThreads() {
+		return stackThreads;
+	}
+
+	public boolean isMultipleBuffers() {
+		return multipleBuffers;
+	}
+
+	public boolean isRunGcOnClick() {
+		return runGcOnClick;
+	}
+
+	public void setMaxMemory(final int maxMemory) {
+		this.maxMemory = maxMemory;
+	}
+
+	public void setStackThreads(final int stackThreads) {
+		this.stackThreads = stackThreads;
+	}
+
+	public void setMultipleBuffers(final boolean multipleBuffers) {
+		this.multipleBuffers = multipleBuffers;
+	}
+
+	public void setRunGcOnClick(final boolean runGcOnClick) {
+		this.runGcOnClick = runGcOnClick;
+	}
+
 }

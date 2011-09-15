@@ -50,10 +50,30 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Compiler...", weight = 14) })
 public class OptionsCompiler extends OptionsPlugin {
 
+	// TODO - use enum for targetJavaVersion?
+
 	@Parameter(label = "Target", choices = { "1.4", "1.5", "1.6", "1.7" })
 	private String targetJavaVersion = "1.5";
 
 	@Parameter(label = "Generate debugging ino (javac -g)")
 	private boolean generateDebugInfo = false;
+
+	// -- OptionsCompiler methods --
+
+	public String getTargetJavaVersion() {
+		return targetJavaVersion;
+	}
+
+	public boolean isGenerateDebugInfo() {
+		return generateDebugInfo;
+	}
+
+	public void setTargetJavaVersion(final String targetJavaVersion) {
+		this.targetJavaVersion = targetJavaVersion;
+	}
+
+	public void setGenerateDebugInfo(final boolean generateDebugInfo) {
+		this.generateDebugInfo = generateDebugInfo;
+	}
 
 }

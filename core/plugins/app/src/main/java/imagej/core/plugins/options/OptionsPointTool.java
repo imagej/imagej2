@@ -65,8 +65,60 @@ public class OptionsPointTool extends OptionsPlugin {
 	@Parameter(label = "Label Points")
 	private boolean labelPoints = true;
 
+	// TODO - use ColorRGB for selectionColor
+
 	@Parameter(label = "Selection Color", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String selectionColor = "yellow";
+
+	// -- OptionsPointTool methods --
+
+	public int getMarkWidth() {
+		return markWidth;
+	}
+
+	public boolean isAutoMeasure() {
+		return autoMeasure;
+	}
+
+	public boolean isAutoNextSlice() {
+		return autoNextSlice;
+	}
+
+	public boolean isAddToRoiMgr() {
+		return addToRoiMgr;
+	}
+
+	public boolean isLabelPoints() {
+		return labelPoints;
+	}
+
+	public String getSelectionColor() {
+		return selectionColor;
+	}
+
+	public void setMarkWidth(final int markWidth) {
+		this.markWidth = markWidth;
+	}
+
+	public void setAutoMeasure(final boolean autoMeasure) {
+		this.autoMeasure = autoMeasure;
+	}
+
+	public void setAutoNextSlice(final boolean autoNextSlice) {
+		this.autoNextSlice = autoNextSlice;
+	}
+
+	public void setAddToRoiMgr(final boolean addToRoiMgr) {
+		this.addToRoiMgr = addToRoiMgr;
+	}
+
+	public void setLabelPoints(final boolean labelPoints) {
+		this.labelPoints = labelPoints;
+	}
+
+	public void setSelectionColor(final String selectionColor) {
+		this.selectionColor = selectionColor;
+	}
 
 }

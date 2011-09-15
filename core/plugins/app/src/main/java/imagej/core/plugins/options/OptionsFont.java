@@ -50,11 +50,15 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Fonts...", weight = 3) })
 public class OptionsFont extends OptionsPlugin {
 
+	// TODO populate font choices from system fonts? Nonportable here?
+
 	@Parameter(label = "Font")
-	private String font = "SansSerif";  // TODO populate from system fonts? Nonportable here?
+	private String font = "SansSerif";
 
 	@Parameter(label = "Size", min = "8", max = "72")
 	private int fontSize = 18;
+
+	// TODO - use enum for fontStyle
 
 	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
 		"Bold + Italic" })
@@ -62,5 +66,39 @@ public class OptionsFont extends OptionsPlugin {
 
 	@Parameter(label = "Smooth")
 	private boolean fontSmooth = true;
+
+	// -- OptionsFont methods --
+
+	public String getFont() {
+		return font;
+	}
+
+	public int getFontSize() {
+		return fontSize;
+	}
+
+	public String getFontStyle() {
+		return fontStyle;
+	}
+
+	public boolean isFontSmooth() {
+		return fontSmooth;
+	}
+
+	public void setFont(final String font) {
+		this.font = font;
+	}
+
+	public void setFontSize(final int fontSize) {
+		this.fontSize = fontSize;
+	}
+
+	public void setFontStyle(final String fontStyle) {
+		this.fontStyle = fontStyle;
+	}
+
+	public void setFontSmooth(final boolean fontSmooth) {
+		this.fontSmooth = fontSmooth;
+	}
 
 }

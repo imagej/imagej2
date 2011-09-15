@@ -50,16 +50,48 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Colors...", weight = 9) })
 public class OptionsColors extends OptionsPlugin {
 
+	// TODO - use ColorRGB for fgColor
+
 	@Parameter(label = "Foreground", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String fgColor = "black";
+
+	// TODO - use ColorRGB for bgColor
 
 	@Parameter(label = "Background", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String bgColor = "white";
 
+	// TODO - use ColorRGB for selColor
+
 	@Parameter(label = "Selection", choices = { "red", "green", "blue",
 		"magenta", "cyan", "yellow", "orange", "black", "white" })
 	private String selColor = "yellow";
+
+	// -- OptionsColors methods --
+
+	public String getFgColor() {
+		return fgColor;
+	}
+
+	public String getBgColor() {
+		return bgColor;
+	}
+
+	public String getSelColor() {
+		return selColor;
+	}
+
+	public void setFgColor(final String fgColor) {
+		this.fgColor = fgColor;
+	}
+
+	public void setBgColor(final String bgColor) {
+		this.bgColor = bgColor;
+	}
+
+	public void setSelColor(final String selColor) {
+		this.selColor = selColor;
+	}
 
 }
