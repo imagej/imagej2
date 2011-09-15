@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.display;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -58,9 +58,9 @@ public class DeleteSelected implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final ArrayList<DisplayView> views =
-			new ArrayList<DisplayView>(display);
-		for (final DisplayView view : views) {
+		final ArrayList<DataView> views =
+			new ArrayList<DataView>(display);
+		for (final DataView view : views) {
 			if (view.isSelected()) display.removeView(view);
 		}
 	}

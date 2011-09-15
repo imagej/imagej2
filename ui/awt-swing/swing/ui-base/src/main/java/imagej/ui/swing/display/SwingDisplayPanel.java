@@ -37,7 +37,7 @@ package imagej.ui.swing.display;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.DisplayWindow;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.event.AxisPositionEvent;
@@ -171,7 +171,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	@Override
 	public void update() {
 		final List<Axis> dispAxes = display.getAxes();
-		for (final DisplayView view : display) {
+		for (final DataView view : display) {
 			for (final Axis axis : axisPositions.keySet()) {
 				final int index = dispAxes.indexOf(axis);
 				if (index >= 0) {
@@ -245,7 +245,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 				@Override
 				public void onEvent(DatasetRestructuredEvent event) {
-					for (DisplayView view : getDisplay().getViews()) {
+					for (DataView view : getDisplay().getViews()) {
 						if (event.getObject() == view.getData()) {
 							createSliders();
 							return;
@@ -260,7 +260,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 			@Override
 			public void onEvent(final DatasetUpdatedEvent event) {
-				final DisplayView view = getDisplay().getActiveView();
+				final DataView view = getDisplay().getActiveView();
 				if (view == null) return;
 				final Dataset ds = getDataset(view);
 				if (event.getObject() != ds) return;
@@ -338,7 +338,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		 *     For something like time or Z, this could be kind of cool:
 		 *     my thing's time dimension goes from last Tuesday to Friday.
 		 */
-		for (final DisplayView v : display) {
+		for (final DataView v : display) {
 			final Data o = v.getData();
 			if (o instanceof Dataset) {
 				final Dataset ds = (Dataset) o;
@@ -424,7 +424,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 	private String makeLabel() {
 		// CTR TODO - Fix window label to show beyond just the active view.
-		final DisplayView view = display.getActiveView();
+		final DataView view = display.getActiveView();
 		final Dataset dataset = getDataset(view);
 
 		final int xIndex = dataset.getAxisIndex(Axes.X);
@@ -450,7 +450,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		return sb.toString();
 	}
 
-	private Dataset getDataset(final DisplayView view) {
+	private Dataset getDataset(final DataView view) {
 		final Data dataObject = view.getData();
 		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}

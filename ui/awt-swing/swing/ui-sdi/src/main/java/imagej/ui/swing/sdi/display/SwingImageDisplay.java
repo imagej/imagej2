@@ -37,7 +37,7 @@ package imagej.ui.swing.sdi.display;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.AbstractImageDisplay;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.DisplayWindow;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
@@ -134,7 +134,7 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 				// the following code is also done in SwingDisplayPanel::update()
 				// (which was just called) so commenting out
 
-				// for (final DisplayView view : getViews()) {
+				// for (final DataView view : getViews()) {
 				// view.update();
 				// }
 			}
@@ -188,7 +188,7 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
 					// and bug #605. BDZ
 					final Dataset dataset = event.getObject();
-					for (final DisplayView view : getViews()) {
+					for (final DataView view : getViews()) {
 						if (dataset == view.getData()) {
 							// NB - if just panReset() we'll be zoomed on wrong part of image
 							imgCanvas.setZoom(0); // original scale

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.ext.tool.Tool;
@@ -99,7 +99,7 @@ public class EllipseAdapter extends
 
 	@Override
 	public void updateFigure(final Overlay o, final Figure f,
-		final DisplayView view)
+		final DataView view)
 	{
 		super.updateFigure(o, f, view);
 		final EllipseOverlay overlay = downcastOverlay(o);

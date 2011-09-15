@@ -79,7 +79,7 @@ public class SwingDatasetView extends AbstractDatasetView implements FigureView
 		rebuild();
 	}
 
-	// -- DisplayView methods --
+	// -- DataView methods --
 
 	@Override
 	public int getPreferredWidth() {

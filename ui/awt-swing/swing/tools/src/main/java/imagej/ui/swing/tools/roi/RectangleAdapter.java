@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.ext.tool.Tool;
@@ -93,7 +93,7 @@ public class RectangleAdapter extends
 
 	@Override
 	public void updateFigure(final Overlay overlay, final Figure f,
-		final DisplayView view)
+		final DataView view)
 	{
 		super.updateFigure(overlay, f, view);
 		final RectangleOverlay rectangleOverlay = downcastOverlay(overlay);

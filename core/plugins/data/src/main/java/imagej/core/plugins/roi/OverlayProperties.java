@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.roi;
 
 import imagej.data.Data;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.Overlay.ArrowStyle;
@@ -223,7 +223,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	private List<Overlay> getSelectedOverlays() {
 		final ArrayList<Overlay> result = new ArrayList<Overlay>();
 		if (display == null) return result;
-		for (final DisplayView view : display) {
+		for (final DataView view : display) {
 			if (!view.isSelected()) continue;
 			final Data dataObject = view.getData();
 			if (!(dataObject instanceof Overlay)) continue;

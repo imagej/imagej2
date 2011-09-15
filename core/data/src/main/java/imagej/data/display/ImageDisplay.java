@@ -54,7 +54,7 @@ import net.imglib2.meta.Named;
  * @author Grant Harris
  */
 public interface ImageDisplay extends LabeledAxes, EuclideanSpace, Named,
-	Display<DisplayView>
+	Display<DataView>
 {
 
 	@Deprecated
@@ -65,11 +65,11 @@ public interface ImageDisplay extends LabeledAxes, EuclideanSpace, Named,
 
 	/** Adds a view to this display. */
 	@Deprecated
-	void addView(DisplayView view);
+	void addView(DataView view);
 
 	/** Removes a view from this display. */
 	@Deprecated
-	void removeView(DisplayView view);
+	void removeView(DataView view);
 
 	/** Removes all views from this display. */
 	@Deprecated
@@ -77,10 +77,10 @@ public interface ImageDisplay extends LabeledAxes, EuclideanSpace, Named,
 
 	/** Gets a list of views linked to the display. */
 	@Deprecated
-	List<DisplayView> getViews();
+	List<DataView> getViews();
 
 	/** Gets the view currently designated as active. */
-	DisplayView getActiveView();
+	DataView getActiveView();
 
 	/** Gets the axis currently designated as active. */
 	Axis getActiveAxis();

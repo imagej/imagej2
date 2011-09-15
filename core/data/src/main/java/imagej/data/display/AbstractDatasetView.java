@@ -60,7 +60,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public abstract class AbstractDatasetView extends AbstractDisplayView
+public abstract class AbstractDatasetView extends AbstractDataView
 	implements DatasetView
 {
 
@@ -179,7 +179,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		projector.map();
 	}
 
-	// -- DisplayView methods --
+	// -- DataView methods --
 
 	@Override
 	public Dataset getData() {

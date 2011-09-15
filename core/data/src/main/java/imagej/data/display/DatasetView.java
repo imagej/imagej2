@@ -53,7 +53,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-public interface DatasetView extends DisplayView {
+public interface DatasetView extends DataView {
 
 	ARGBScreenImage getScreenImage();
 

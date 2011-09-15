@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.ext.tool.AbstractTool;
@@ -85,7 +85,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 
 	@Override
 	public void updateFigure(final Overlay overlay, final Figure figure,
-		final DisplayView view)
+		final DataView view)
 	{
 		final ColorRGB lineColor = overlay.getLineColor();
 		if (overlay.getLineStyle() != Overlay.LineStyle.NONE) {

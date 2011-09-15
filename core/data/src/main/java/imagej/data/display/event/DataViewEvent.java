@@ -1,5 +1,5 @@
 //
-// DisplayViewEvent.java
+// DataViewEvent.java
 //
 
 /*
@@ -34,32 +34,32 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display.event;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.ext.display.event.DisplayEvent;
 
 /**
- * An event on a display view.
+ * An event on a {@link DataView}.
  * 
  * @author Lee Kamentsky
  */
-public class DisplayViewEvent extends DisplayEvent {
+public class DataViewEvent extends DisplayEvent {
 
-	private final DisplayView displayView;
+	private final DataView view;
 
-	public DisplayViewEvent(final DisplayView displayView) {
-		super(displayView.getDisplay());
-		this.displayView = displayView;
+	public DataViewEvent(final DataView view) {
+		super(view.getDisplay());
+		this.view = view;
 	}
 
-	public DisplayView getDisplayView() {
-		return displayView;
+	public DataView getView() {
+		return view;
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tdisplayView = " + displayView;
+		return super.toString() + "\n\tview = " + view;
 	}
 
 }

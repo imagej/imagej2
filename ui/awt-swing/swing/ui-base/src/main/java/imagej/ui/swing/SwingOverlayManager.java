@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.data.display.event.DisplayViewSelectionEvent;
+import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.roi.AbstractOverlay;
@@ -150,20 +150,17 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 			};
 		subscribers.add(displayActivatedSubscriber);
 		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
-		//
-		/*
-		 * Update the selection when an overlay displayView selection changes 
-		 */
-		final EventSubscriber<DisplayViewSelectionEvent> displayViewSelectedSubscriber =
-			new EventSubscriber<DisplayViewSelectionEvent>() {
+
+		final EventSubscriber<DataViewSelectionEvent> viewSelectionSubscriber =
+			new EventSubscriber<DataViewSelectionEvent>() {
 
 				@Override
 				@SuppressWarnings("synthetic-access")
-				public void onEvent(final DisplayViewSelectionEvent event) {
+				public void onEvent(final DataViewSelectionEvent event) {
 					if (selecting) return;
 					selecting = true;
 					// Select or deselect the corresponding overlay in the list
-					final Object overlay = event.getDisplayView().getData();
+					final Object overlay = event.getView().getData();
 					if (event.isSelected()) {
 						final int[] current_sel = olist.getSelectedIndices();
 						olist.setSelectedValue(overlay, true);
@@ -184,9 +181,9 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 					selecting = false;
 				}
 			};
-		subscribers.add(displayViewSelectedSubscriber);
-		Events.subscribe(DisplayViewSelectionEvent.class,
-			displayViewSelectedSubscriber);
+		subscribers.add(viewSelectionSubscriber);
+		Events.subscribe(DataViewSelectionEvent.class,
+			viewSelectionSubscriber);
 		//
 	}
 
@@ -246,7 +243,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 						imageDisplayService.getActiveImageDisplay();
 					final JList list = (JList) listSelectionEvent.getSource();
 					final Object selectionValues[] = list.getSelectedValues();
-					for (final DisplayView overlayView : display) {
+					for (final DataView overlayView : display) {
 						overlayView.setSelected(false);
 						for (final Object overlay : selectionValues) {
 							if (overlay == overlayView.getData()) {
@@ -266,7 +263,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 //		// No need to update unless thumbnail will be redrawn.
 ////		Events.subscribe(OverlayRestructuredEvent.class, restructureSubscriber);
 //		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
-//		Events.subscribe(DisplayViewSelectionEvent.class, displayViewSelectedSubscriber);
+//		Events.subscribe(DataViewSelectionEvent.class, viewSelectedSubscriber);
 
 	}
 

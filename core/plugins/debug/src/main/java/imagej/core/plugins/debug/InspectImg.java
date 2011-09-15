@@ -36,7 +36,7 @@ package imagej.core.plugins.debug;
 
 import com.github.sbridges.objectinspector.Inspector;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -50,11 +50,11 @@ import imagej.ext.plugin.Plugin;
 public class InspectImg implements ImageJPlugin {
 
 	@Parameter
-	private DisplayView displayView;
+	private DataView view;
 
 	@Override
 	public void run() {
-		Inspector.inspect(displayView);		
+		Inspector.inspect(view);		
 	}
 	
 }
