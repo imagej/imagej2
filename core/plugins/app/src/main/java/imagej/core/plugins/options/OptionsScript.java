@@ -50,10 +50,19 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Options...", weight = 3) })
 public class OptionsScript extends OptionsPlugin {
 
-	/*
-	 * Scripting language to export recorded macros to.
-	 */
+	/** Scripting language to use when recording macros. */
+	// TODO - initial value faked for now
 	@Parameter(label = "Scripting Language")
-	private String ScriptingLang = "javascript"; // TODO - initial value faked for now
+	private String scriptingLang = "javascript";
+
+	// -- OptionsScript methods --
+
+	public String getScriptingLang() {
+		return scriptingLang;
+	}
+
+	public void setScriptingLang(final String scriptingLang) {
+		this.scriptingLang = scriptingLang;
+	}
 
 }

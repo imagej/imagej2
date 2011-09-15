@@ -50,7 +50,17 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Line Width...", weight = 1) })
 public class OptionsLineWidth extends OptionsPlugin {
 
-	@Parameter(label = "Line Width")
+	@Parameter(label = "Line Width", min = "1")
 	private int lineWidth = 1;
+
+	// -- OptionsLineWidth methods --
+
+	public int getLineWidth() {
+		return lineWidth;
+	}
+
+	public void setLineWidth(final int lineWidth) {
+		this.lineWidth = lineWidth;
+	}
 
 }

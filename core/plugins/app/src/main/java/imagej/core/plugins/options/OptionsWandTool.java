@@ -50,10 +50,31 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Wand Tool...", weight = 8) })
 public class OptionsWandTool extends OptionsPlugin {
 
+	// TODO - use an enum for mode
+
 	@Parameter(label = "Mode",
 		choices = { "Legacy", "4-connected", "8-connected" })
 	private String mode = "Legacy";
 
 	@Parameter(label = "Tolerance")
 	private double tolerance = 0;
+
+	// -- OptionsWandTool methods --
+
+	public String getMode() {
+		return mode;
+	}
+
+	public double getTolerance() {
+		return tolerance;
+	}
+
+	public void setMode(final String mode) {
+		this.mode = mode;
+	}
+
+	public void setTolerance(final double tolerance) {
+		this.tolerance = tolerance;
+	}
+
 }

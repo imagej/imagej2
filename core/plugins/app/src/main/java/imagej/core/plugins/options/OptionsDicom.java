@@ -59,4 +59,30 @@ public class OptionsDicom extends OptionsPlugin {
 	@Parameter(label = "Orthogonal Views: Rotate XZ")
 	private boolean rotateXZ = false;
 
+	// -- OptionsDicom methods --
+
+	public boolean isOpenAs32bitFloat() {
+		return openAs32bitFloat;
+	}
+
+	public boolean isRotateYZ() {
+		return rotateYZ;
+	}
+
+	public boolean isRotateXZ() {
+		return rotateXZ;
+	}
+
+	public void setOpenAs32bitFloat(final boolean openAs32bitFloat) {
+		this.openAs32bitFloat = openAs32bitFloat;
+	}
+
+	public void setRotateYZ(final boolean rotateYZ) {
+		this.rotateYZ = rotateYZ;
+	}
+
+	public void setRotateXZ(final boolean rotateXZ) {
+		this.rotateXZ = rotateXZ;
+	}
+
 }

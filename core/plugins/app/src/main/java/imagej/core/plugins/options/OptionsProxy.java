@@ -59,4 +59,30 @@ public class OptionsProxy extends OptionsPlugin {
 	@Parameter(label = "Authenticate")
 	private boolean authenticationRequired = false;
 
+	// -- OptionsProxy methods --
+
+	public String getProxyServer() {
+		return proxyServer;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public boolean isAuthenticationRequired() {
+		return authenticationRequired;
+	}
+
+	public void setProxyServer(final String proxyServer) {
+		this.proxyServer = proxyServer;
+	}
+
+	public void setPort(final int port) {
+		this.port = port;
+	}
+
+	public void setAuthenticationRequired(final boolean authenticationRequired) {
+		this.authenticationRequired = authenticationRequired;
+	}
+
 }
