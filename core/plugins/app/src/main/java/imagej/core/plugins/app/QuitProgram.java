@@ -39,7 +39,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.ui.UserInterface;
+import imagej.ui.IUserInterface;
 
 /**
  * Quits ImageJ.
@@ -65,7 +65,7 @@ public class QuitProgram implements ImageJPlugin {
 	}
 
 	private boolean promptForQuit() {
-		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt(MESSAGE, "Quit",
 				DialogPrompt.MessageType.QUESTION_MESSAGE,

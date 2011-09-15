@@ -37,7 +37,7 @@ package imagej.ui.swing.mdi;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.UI;
+import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 
@@ -53,7 +53,7 @@ import javax.swing.JScrollPane;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@UI
+@UserInterface
 public class SwingMdiUI extends AbstractSwingUI {
 
 	private JMDIDesktopPane desktopPane;

@@ -52,7 +52,7 @@ import imagej.ext.script.InvocationObject;
 import imagej.ext.script.ParameterObject;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.ui.UserInterface;
+import imagej.ui.IUserInterface;
 import imagej.ui.swing.StaticSwingUtils;
 
 import java.awt.BorderLayout;
@@ -269,7 +269,7 @@ public class SwingScriptRecorder implements ImageJPlugin {
 	}
 
 	private void promptForGenerate() {
-		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt("Generate Code?", "Code Generator",
 				DialogPrompt.MessageType.QUESTION_MESSAGE,

@@ -72,7 +72,7 @@ public class FileUtils {
 	public static final String SHORTENER_ELLIPSE = "...";
 
 	public static String pathShortener(final String path) {
-		return pathShortener(path, FileUtils.DEFAULT_SHORTENER_THRESHOLD);
+		return pathShortener(path, DEFAULT_SHORTENER_THRESHOLD);
 	}
 
 	/**

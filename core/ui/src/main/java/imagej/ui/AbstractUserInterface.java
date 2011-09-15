@@ -1,5 +1,5 @@
 //
-// AbstractUI.java
+// AbstractUserInterface.java
 //
 
 /*
@@ -47,11 +47,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
- * Abstract superclass for {@link UserInterface} implementations.
+ * Abstract superclass for {@link IUserInterface} implementations.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractUI implements UserInterface {
+public abstract class AbstractUserInterface implements IUserInterface {
 
 	private static final String README_FILE = "README.txt";
 	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;

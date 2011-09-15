@@ -44,9 +44,9 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
-import imagej.ui.UI;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.UIService;
+import imagej.ui.IUserInterface;
 
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Application;
@@ -60,8 +60,8 @@ import org.apache.pivot.wtk.Orientation;
  * 
  * @author Curtis Rueden
  */
-@UI
-public class PivotUI implements Application, UserInterface {
+@UserInterface
+public class PivotUI implements Application, IUserInterface {
 
 	private UIService uiService;
 

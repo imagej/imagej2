@@ -37,7 +37,7 @@ package imagej.ui.swing.mdi;
 import imagej.ImageJ;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.ui.UserInterface;
+import imagej.ui.IUserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
 
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 	public SwingMdiDialogPrompt(final String message, final String title,
 		final MessageType messageType, final OptionType optionType)
 	{
-		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
 		final SwingApplicationFrame appFrame =
 			(SwingApplicationFrame) ui.getApplicationFrame();
 		final JMDIDesktopPane desk = (JMDIDesktopPane) ui.getDesktop();

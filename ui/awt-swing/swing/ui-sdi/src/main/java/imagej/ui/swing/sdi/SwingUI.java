@@ -37,7 +37,7 @@ package imagej.ui.swing.sdi;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.UI;
+import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 
@@ -51,7 +51,7 @@ import javax.swing.JPanel;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@UI
+@UserInterface
 public class SwingUI extends AbstractSwingUI {
 
 	// -- UserInterface methods --
