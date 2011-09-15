@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.Display;
@@ -48,7 +48,7 @@ import net.imglib2.meta.Named;
 
 /**
  * A image display is a special kind of {@link Display} for visualizing
- * {@link DataObject}s.
+ * {@link Data}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris

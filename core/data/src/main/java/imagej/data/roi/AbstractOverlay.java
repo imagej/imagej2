@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.roi;
 
-import imagej.data.AbstractDataObject;
+import imagej.data.AbstractData;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
@@ -62,7 +62,7 @@ import net.imglib2.roi.RegionOfInterest;
  * 
  * @author Curtis Rueden
  */
-public class AbstractOverlay extends AbstractDataObject implements Overlay, Externalizable {
+public class AbstractOverlay extends AbstractData implements Overlay, Externalizable {
 
 	public final static ColorRGB defaultLineColor = new ColorRGB(255,255,0);
 	public final static ColorRGB defaultFillColor = new ColorRGB(0, 255, 0);
@@ -94,7 +94,7 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 		return null;
 	}
 
-	// -- DataObject methods --
+	// -- Data methods --
 
 	@Override
 	public void update() {

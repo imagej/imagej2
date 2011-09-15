@@ -34,14 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.data.display.event.DisplayViewDeselectedEvent;
 import imagej.data.display.event.DisplayViewSelectedEvent;
 import imagej.data.display.event.DisplayViewSelectionEvent;
-import imagej.data.event.DataObjectRestructuredEvent;
-import imagej.data.event.DataObjectUpdatedEvent;
+import imagej.data.event.DataRestructuredEvent;
+import imagej.data.event.DataUpdatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 
@@ -56,7 +56,7 @@ import java.util.List;
 public abstract class AbstractDisplayView implements DisplayView {
 
 	private final ImageDisplay display;
-	private final DataObject dataObject;
+	private final Data dataObject;
 
 	/** List of event subscribers, to avoid garbage collection. */
 	private final List<EventSubscriber<?>> subscribers =
@@ -74,7 +74,7 @@ public abstract class AbstractDisplayView implements DisplayView {
 	 */
 	private boolean selected;
 
-	public AbstractDisplayView(final ImageDisplay display, final DataObject dataObject) {
+	public AbstractDisplayView(final ImageDisplay display, final Data dataObject) {
 		this.display = display;
 		this.dataObject = dataObject;
 		dataObject.incrementReferences();
@@ -89,7 +89,7 @@ public abstract class AbstractDisplayView implements DisplayView {
 	}
 
 	@Override
-	public DataObject getDataObject() {
+	public Data getData() {
 		return dataObject;
 	}
 
@@ -140,18 +140,18 @@ public abstract class AbstractDisplayView implements DisplayView {
 
 	/** Updates the display when the linked object changes. */
 	private void subscribeToEvents() {
-		final EventSubscriber<DataObjectUpdatedEvent> updateSubscriber =
-			new EventSubscriber<DataObjectUpdatedEvent>()
+		final EventSubscriber<DataUpdatedEvent> updateSubscriber =
+			new EventSubscriber<DataUpdatedEvent>()
 		{
 			@SuppressWarnings("synthetic-access")
 			@Override
-			public void onEvent(final DataObjectUpdatedEvent event) {
+			public void onEvent(final DataUpdatedEvent event) {
 				if (event.getObject() != dataObject) return;
 				update();
 				display.update();
 			}
 		};
-		Events.subscribe(DataObjectUpdatedEvent.class, updateSubscriber);
+		Events.subscribe(DataUpdatedEvent.class, updateSubscriber);
 		subscribers.add(updateSubscriber);
 
 		// TODO - perhaps it would be better for the display to listen for
@@ -159,18 +159,18 @@ public abstract class AbstractDisplayView implements DisplayView {
 		// and call rebuild() on itself (only once). This would avoid a potential
 		// issue where multiple views linked to the same data object will currently
 		// result in multiple rebuilds.
-		final EventSubscriber<DataObjectRestructuredEvent> restructureSubscriber =
-			new EventSubscriber<DataObjectRestructuredEvent>()
+		final EventSubscriber<DataRestructuredEvent> restructureSubscriber =
+			new EventSubscriber<DataRestructuredEvent>()
 		{
 			@SuppressWarnings("synthetic-access")
 			@Override
-			public void onEvent(final DataObjectRestructuredEvent event) {
+			public void onEvent(final DataRestructuredEvent event) {
 				if (event.getObject() != dataObject) return;
 				rebuild();
 				display.update();
 			}
 		};
-		Events.subscribe(DataObjectRestructuredEvent.class, restructureSubscriber);
+		Events.subscribe(DataRestructuredEvent.class, restructureSubscriber);
 		subscribers.add(restructureSubscriber);
 	}
 

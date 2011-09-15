@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.roi;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
 import net.imglib2.EuclideanSpace;
@@ -51,7 +51,7 @@ import net.imglib2.roi.RegionOfInterest;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public interface Overlay extends DataObject, LabeledAxes, EuclideanSpace {
+public interface Overlay extends Data, LabeledAxes, EuclideanSpace {
 
 	/** The style used to render the bounding line of the overlay. */
 	public enum LineStyle {

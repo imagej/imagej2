@@ -78,6 +78,6 @@ public interface DatasetView extends DisplayView {
 	void setColorMode(final ColorMode colorMode);
 
 	@Override
-	Dataset getDataObject();
+	Dataset getData();
 	
 }

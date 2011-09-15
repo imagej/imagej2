@@ -1,5 +1,5 @@
 //
-// DataObjectModifiedEvent.java
+// DataCreatedEvent.java
 //
 
 /*
@@ -34,19 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import imagej.data.DataObject;
-import imagej.object.event.ObjectModifiedEvent;
+import imagej.data.Data;
+import imagej.object.event.ObjectCreatedEvent;
 
 /**
- * An event indicating a {@link DataObject} has been modified somehow.
+ * An event indicating a new {@link Data} has been created.
  * 
  * @author Curtis Rueden
  */
-public class DataObjectModifiedEvent extends ObjectModifiedEvent {
+public class DataCreatedEvent extends ObjectCreatedEvent {
 
-	private final DataObject dataObject;
+	private final Data dataObject;
 
-	public DataObjectModifiedEvent(final DataObject dataObject) {
+	public DataCreatedEvent(final Data dataObject) {
 		super(dataObject);
 		this.dataObject = dataObject;
 	}
@@ -54,7 +54,7 @@ public class DataObjectModifiedEvent extends ObjectModifiedEvent {
 	// -- ObjectEvent methods --
 
 	@Override
-	public DataObject getObject() {
+	public Data getObject() {
 		return dataObject;
 	}
 

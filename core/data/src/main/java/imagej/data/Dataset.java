@@ -89,7 +89,7 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class Dataset extends AbstractDataObject implements
+public class Dataset extends AbstractData implements
 	Comparable<Dataset>, Metadata
 {
 
@@ -312,7 +312,7 @@ public class Dataset extends AbstractDataObject implements
 		Events.publish(new DatasetRGBChangedEvent(this));
 	}
 
-	// -- DataObject methods --
+	// -- Data methods --
 
 	@Override
 	public void update() {

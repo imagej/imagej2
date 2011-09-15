@@ -1,5 +1,5 @@
 //
-// DataObject.java
+// DataRestructuredEvent.java
 //
 
 /*
@@ -32,45 +32,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data;
+package imagej.data.event;
 
-import net.imglib2.meta.Named;
+import imagej.data.Data;
 
 /**
- * TODO
+ * An event indicating a {@link Data}'s dimensional extents may have
+ * changed.
  * 
  * @author Curtis Rueden
  */
-public interface DataObject extends Named {
+public abstract class DataRestructuredEvent extends DataModifiedEvent {
 
-	/**
-	 * Informs interested parties that the data object has undergone a
-	 * non-structural change, such as sample values being updated.
-	 */
-	void update();
-
-	/**
-	 * Informs interested parties that the data object has undergone a major
-	 * change, such as the dimensional extents changing.
-	 */
-	void rebuild();
-
-	/**
-	 * Adds to the data object's reference count. Typically this is called when
-	 * the data object is added to a display. Implementers of this interface may
-	 * want to emit Events when the reference count goes to 1.
-	 * {@link AbstractDataObject} does exactly this to let interested parties
-	 * know that a data object has come into use.
-	 */
-	void incrementReferences();
-
-	/**
-	 * Subtracts from the data object's reference count. Typically this is called
-	 * when the data object is removed from a display. Implementers of this
-	 * interface may want to emit Events when the reference count goes to 0.
-	 * {@link AbstractDataObject} does exactly this to let interested parties know
-	 * that the data object is no longer in use.
-	 */
-	void decrementReferences();
+	public DataRestructuredEvent(final Data dataObject) {
+		super(dataObject);
+	}
 
 }

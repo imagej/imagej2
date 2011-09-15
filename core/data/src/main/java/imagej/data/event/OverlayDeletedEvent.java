@@ -41,7 +41,7 @@ import imagej.data.roi.Overlay;
  * 
  * @author Curtis Rueden
  */
-public class OverlayDeletedEvent extends DataObjectDeletedEvent {
+public class OverlayDeletedEvent extends DataDeletedEvent {
 
 	private final Overlay overlay;
 

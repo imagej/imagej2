@@ -182,7 +182,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	// -- DisplayView methods --
 
 	@Override
-	public Dataset getDataObject() {
+	public Dataset getData() {
 		return dataset;
 	}
 

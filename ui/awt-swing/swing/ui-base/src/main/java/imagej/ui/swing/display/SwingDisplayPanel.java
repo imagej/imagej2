@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DisplayView;
@@ -246,7 +246,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				@Override
 				public void onEvent(DatasetRestructuredEvent event) {
 					for (DisplayView view : getDisplay().getViews()) {
-						if (event.getObject() == view.getDataObject()) {
+						if (event.getObject() == view.getData()) {
 							createSliders();
 							return;
 						}
@@ -339,7 +339,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		 *     my thing's time dimension goes from last Tuesday to Friday.
 		 */
 		for (final DisplayView v : display) {
-			final DataObject o = v.getDataObject();
+			final Data o = v.getData();
 			if (o instanceof Dataset) {
 				final Dataset ds = (Dataset) o;
 				final long[] dims = ds.getDims();
@@ -451,7 +451,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	}
 
 	private Dataset getDataset(final DisplayView view) {
-		final DataObject dataObject = view.getDataObject();
+		final Data dataObject = view.getData();
 		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}
 

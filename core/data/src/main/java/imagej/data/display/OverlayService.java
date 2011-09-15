@@ -37,7 +37,7 @@ package imagej.data.display;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.roi.Overlay;
@@ -88,7 +88,7 @@ public final class OverlayService extends AbstractService {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
 			for (final DisplayView view : display) {
-				final DataObject dataObject = view.getDataObject();
+				final Data dataObject = view.getData();
 				if (!(dataObject instanceof Overlay)) continue;
 				final Overlay overlay = (Overlay) dataObject;
 				overlays.add(overlay);
@@ -115,7 +115,7 @@ public final class OverlayService extends AbstractService {
 		final ArrayList<DisplayView> overlayViews = new ArrayList<DisplayView>();
 		final List<DisplayView> views = display;
 		for (final DisplayView view : views) {
-			final DataObject dataObject = view.getDataObject();
+			final Data dataObject = view.getData();
 			if (dataObject == overlay) overlayViews.add(view);
 		}
 		for (final DisplayView view : overlayViews) {
@@ -135,7 +135,7 @@ public final class OverlayService extends AbstractService {
 		// get total XY extents of the display by checking all datasets
 		double width = 0, height = 0;
 		for (final DisplayView view : display) {
-			final DataObject dataObject = view.getDataObject();
+			final Data dataObject = view.getData();
 			if (!(dataObject instanceof Dataset)) continue;
 			final Dataset dataset = (Dataset) dataObject;
 			final Extents extents = dataset.getExtents();
@@ -147,7 +147,7 @@ public final class OverlayService extends AbstractService {
 
 		// TODO - Compute bounds over N dimensions, not just two.
 		// TODO - Update this method when ticket #660 is done.
-		// For example, why don't all DataObjects have Extents?
+		// For example, why don't all Data objects have Extents?
 
 		// determine XY bounding box by checking all overlays
 		double xMin = Double.POSITIVE_INFINITY;
@@ -156,7 +156,7 @@ public final class OverlayService extends AbstractService {
 		double yMax = Double.NEGATIVE_INFINITY;
 		for (final DisplayView view : display) {
 			if (!view.isSelected()) continue; // ignore non-selected objects
-			final DataObject dataObject = view.getDataObject();
+			final Data dataObject = view.getData();
 			if (!(dataObject instanceof Overlay)) continue; // ignore non-overlays
 
 			final Overlay overlay = (Overlay) dataObject;

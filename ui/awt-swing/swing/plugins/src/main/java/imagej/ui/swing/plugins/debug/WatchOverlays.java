@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
-import imagej.data.DataObject;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DisplayView;
@@ -173,7 +173,7 @@ public class WatchOverlays implements ImageJPlugin {
 //		}
 //		AbstractDatasetView dsView = (AbstractDatasetView) display.getActiveView();
 //		if (dsView != null) {
-//			overlays = overlayService.getOverlays(dsView.getDataObject());
+//			overlays = overlayService.getOverlays(dsView.getData());
 //		} else {
 //			window.append("** dsView==null");
 //			overlays = overlayService.getOverlays();
@@ -189,7 +189,7 @@ public class WatchOverlays implements ImageJPlugin {
 		if (display != null) {
 			for (final DisplayView view : display) {
 				// SwingOverlayView sov = (SwingOverlayView) view;
-				final DataObject dataObject = view.getDataObject();
+				final Data dataObject = view.getData();
 				dataObject.getClass().getSimpleName();
 				if (!(dataObject instanceof Overlay)) {
 					continue;
@@ -205,7 +205,7 @@ public class WatchOverlays implements ImageJPlugin {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		for (final DisplayView view : display) {
 			final Position planePosition = view.getPlanePosition();
-			final DataObject dataObject = view.getDataObject();
+			final Data dataObject = view.getData();
 			if (dataObject instanceof Overlay) {
 				isVisible((Overlay) dataObject, planePosition);
 			}

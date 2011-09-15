@@ -217,7 +217,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 			break; // use only first channel, for now
 		}
 		Log.debug("BrightnessContrast: valid bits = " +
-			view.getDataObject().getValidBits());
+			view.getData().getValidBits());
 	}
 
 	private void updateBrightness() {

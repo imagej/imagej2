@@ -163,7 +163,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 					if (selecting) return;
 					selecting = true;
 					// Select or deselect the corresponding overlay in the list
-					final Object overlay = event.getDisplayView().getDataObject();
+					final Object overlay = event.getDisplayView().getData();
 					if (event.isSelected()) {
 						final int[] current_sel = olist.getSelectedIndices();
 						olist.setSelectedValue(overlay, true);
@@ -249,7 +249,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 					for (final DisplayView overlayView : display) {
 						overlayView.setSelected(false);
 						for (final Object overlay : selectionValues) {
-							if (overlay == overlayView.getDataObject()) {
+							if (overlay == overlayView.getData()) {
 								overlayView.setSelected(true);
 								break;
 							}

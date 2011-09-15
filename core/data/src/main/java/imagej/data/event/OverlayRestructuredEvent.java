@@ -42,7 +42,7 @@ import imagej.data.roi.Overlay;
  * 
  * @author Curtis Rueden
  */
-public class OverlayRestructuredEvent extends DataObjectRestructuredEvent {
+public class OverlayRestructuredEvent extends DataRestructuredEvent {
 
 	private final Overlay overlay;
 

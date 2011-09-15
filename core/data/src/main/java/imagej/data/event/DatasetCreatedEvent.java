@@ -41,7 +41,7 @@ import imagej.data.Dataset;
  * 
  * @author Curtis Rueden
  */
-public class DatasetCreatedEvent extends DataObjectCreatedEvent {
+public class DatasetCreatedEvent extends DataCreatedEvent {
 
 	private final Dataset dataset;
 
