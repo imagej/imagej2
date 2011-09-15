@@ -123,11 +123,11 @@ public class IJCreationTool extends CreationTool {
 	}
 
 	@Override
-	protected void creationFinished(final Figure createdFigure) {
-		super.creationFinished(createdFigure);
+	protected void creationFinished(final Figure figure) {
+		super.creationFinished(figure);
 		final Overlay overlay = adapter.createNewOverlay();
-		adapter.updateOverlay(createdFigure, overlay);
-		fireOverlayCreatedEvent(overlay, createdFigure);
+		adapter.updateOverlay(figure, overlay);
+		fireOverlayCreatedEvent(overlay, figure);
 	}
 
 }

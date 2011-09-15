@@ -52,5 +52,5 @@ import net.java.sezpoz.Indexable;
 @Target(ElementType.TYPE)
 @Indexable(type=IUserInterface.class)
 public @interface UserInterface {
-	// no attributes for the moment...
+	// marker interface for discovery via SezPoz
 }
