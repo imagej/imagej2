@@ -39,8 +39,8 @@ import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
+import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
-import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -48,7 +48,6 @@ import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -101,6 +100,11 @@ public class OptionsService extends AbstractService {
 		return createInstance(getOptionsInfo(optionsClass));
 	}
 
+	/** Gets options associated with the given options plugin, or null if none. */
+	public OptionsPlugin getOptions(final String className) {
+		return createInstance(getOptionsInfo(className));
+	}
+
 	/** Gets the option with the given name, from the specified options plugin. */
 	public <O extends OptionsPlugin> Object getOption(
 		final Class<O> optionsClass, final String name)
@@ -111,17 +115,6 @@ public class OptionsService extends AbstractService {
 	/** Gets the option with the given name, from the specified options plugin. */
 	public Object getOption(final String className, final String name) {
 		return getInput(getOptionsInfo(className), name);
-	}
-
-	/** Sets the option with the given name, from the specified options plugin,
-	 *  to the given value.
-	 */
-	public void setOption(
-		final String className, final String name, final Object inputValue)
-	{
-		PluginModuleInfo<?> info = getOptionsInfo(className);
-		Object coercedValue = ClassUtils.convert(inputValue,info.getInput(name).getType());
-		setInput(info, name, coercedValue);
 	}
 
 	/** Gets a map of all options from the given options plugin. */
@@ -136,6 +129,55 @@ public class OptionsService extends AbstractService {
 		return getInputs(getOptionsInfo(className));
 	}
 
+	/**
+	 * Sets the option with the given name, from the specified options plugin, to
+	 * the given value.
+	 */
+	public <O extends OptionsPlugin> void setOption(final Class<O> optionsClass,
+		final String name, final Object value)
+	{
+		final PluginModuleInfo<O> info = getOptionsInfo(optionsClass);
+		if (info == null) return;
+		setOption(info, name, value);
+	}
+
+	/**
+	 * Sets the option with the given name, from the specified options plugin, to
+	 * the given value.
+	 */
+	public void setOption(final String className, final String name,
+		final Object value)
+	{
+		final PluginModuleInfo<OptionsPlugin> info = getOptionsInfo(className);
+		if (info == null) return;
+		setOption(info, name, value);
+	}
+
+	/**
+	 * Sets the option with the given name, from the specified options plugin, to
+	 * the given value.
+	 */
+	public <O extends OptionsPlugin> void setOption(
+		final PluginModuleInfo<O> info, final String name, final Object value)
+	{
+		final Module module;
+		try {
+			module = info.createModule();
+		}
+		catch (final ModuleException e) {
+			Log.error("Cannot create module: " + info.getClassName());
+			return;
+		}
+
+		// assign value with correct type
+		final Class<?> type = info.getInput(name).getType();
+		final Object typedValue = ClassUtils.convert(value, type);
+		module.setInput(name, typedValue);
+
+		// persist the option value, and publish an OptionsEvent
+		module.run();
+	}
+
 	// -- IService methods --
 
 	@Override
@@ -148,7 +190,7 @@ public class OptionsService extends AbstractService {
 		return null;
 	}
 	*/
-	
+
 	// -- Helper methods --
 
 	private <P extends IPlugin> P createInstance(final PluginInfo<P> info) {
@@ -165,17 +207,27 @@ public class OptionsService extends AbstractService {
 	private <O extends OptionsPlugin> PluginModuleInfo<O> getOptionsInfo(
 		final Class<O> optionsClass)
 	{
-		return pluginService.getRunnablePlugin(optionsClass);
+		final PluginModuleInfo<O> info =
+			pluginService.getRunnablePlugin(optionsClass);
+		if (info == null) {
+			Log.error("No such options class: " + optionsClass.getName());
+		}
+		return info;
 	}
 
-	private PluginModuleInfo<?> getOptionsInfo(final String className) {
+	private PluginModuleInfo<OptionsPlugin>
+		getOptionsInfo(final String className)
+	{
 		final PluginModuleInfo<?> info = pluginService.getRunnablePlugin(className);
 		if (!OptionsPlugin.class.isAssignableFrom(info.getPluginType())) {
 			Log.error("Not an options plugin: " + className);
 			// not an options plugin
 			return null;
 		}
-		return info;
+		@SuppressWarnings("unchecked")
+		final PluginModuleInfo<OptionsPlugin> typedInfo =
+			(PluginModuleInfo<OptionsPlugin>) info;
+		return typedInfo;
 	}
 
 	private Object getInput(final PluginModuleInfo<?> info, final String name) {
@@ -200,38 +252,4 @@ public class OptionsService extends AbstractService {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void setInput(
-		final PluginModuleInfo<?> info, final String name, Object value)
-	{
-		if (info == null) return;
-		//TODO - WAS THIS AND NOT WORKING. I THINK BECAUSE A NEW MODULE CREATED
-		/*
-		try {
-			info.createModule().setInput(name,value);
-		}
-		catch (final ModuleException e) {
-			Log.error("Cannot create module: " + info.getClassName());
-		}
-		*/
-
-		// NOW THIS: works but kludgy and perhaps inefficient
-		Iterator<ModuleItem<?>> i = info.inputs().iterator();
-		while (i.hasNext()) {
-			ModuleItem<?> val = i.next();
-			if (val.getName().equals(name)) {
-				((ModuleItem<Object>)val).saveValue(value);
-				return;
-			}
-		}
-
-		// COULD DO THIS? NOT YET WORKING
-		/*
-		String className = info.getClassName();
-		Object pluginInstance = pluginService.getPlugin(className);
-		Field field = ClassUtils.getField(info.getClassName(), name);
-		System.out.println("Try setting field "+name+" of instance of "+className+" to "+value);
-		ClassUtils.setValue(field, pluginInstance, value);
-		*/
-	}
 }
