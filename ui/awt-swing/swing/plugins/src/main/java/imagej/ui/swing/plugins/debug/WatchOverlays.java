@@ -38,7 +38,7 @@ import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
@@ -187,7 +187,7 @@ public class WatchOverlays implements ImageJPlugin {
 	public List<Overlay> getOverlaysFromDisplay(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
-			for (final DisplayView view : display) {
+			for (final DataView view : display) {
 				// SwingOverlayView sov = (SwingOverlayView) view;
 				final Data dataObject = view.getData();
 				dataObject.getClass().getSimpleName();
@@ -203,7 +203,7 @@ public class WatchOverlays implements ImageJPlugin {
 
 	public List<Overlay> getOverlaysForCurrentSlice(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		for (final DisplayView view : display) {
+		for (final DataView view : display) {
 			final Position planePosition = view.getPlanePosition();
 			final Data dataObject = view.getData();
 			if (dataObject instanceof Overlay) {

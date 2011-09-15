@@ -1,5 +1,5 @@
 //
-// DisplayViewSelectedEvent.java
+// DataViewSelectedEvent.java
 //
 
 /*
@@ -34,17 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display.event;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 
 /**
- * Event fired when a {@link DisplayView} becomes selected.
+ * Event fired when a {@link DataView} becomes selected.
  * 
  * @author Lee Kamentsky
  */
-public class DisplayViewSelectedEvent extends DisplayViewSelectionEvent {
+public class DataViewSelectedEvent extends DataViewSelectionEvent {
 
-	public DisplayViewSelectedEvent(final DisplayView displayView) {
-		super(displayView);
+	public DataViewSelectedEvent(final DataView view) {
+		super(view);
 	}
 
 	@Override

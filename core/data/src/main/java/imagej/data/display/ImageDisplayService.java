@@ -128,7 +128,7 @@ public final class ImageDisplayService extends AbstractService {
 	 */
 	public DatasetView getActiveDatasetView(final ImageDisplay display) {
 		if (display == null) return null;
-		final DisplayView activeView = display.getActiveView();
+		final DataView activeView = display.getActiveView();
 		if (activeView instanceof DatasetView) {
 			return (DatasetView) activeView;
 		}
@@ -165,9 +165,9 @@ public final class ImageDisplayService extends AbstractService {
 					final Display<?> display = event.getDisplay();
 					if (!(display instanceof ImageDisplay)) return;
 					final ImageDisplay imageDisplay = (ImageDisplay) display;
-					final ArrayList<DisplayView> views =
-						new ArrayList<DisplayView>(imageDisplay);
-					for (final DisplayView view : views) {
+					final ArrayList<DataView> views =
+						new ArrayList<DataView>(imageDisplay);
+					for (final DataView view : views) {
 						view.dispose();
 					}
 				}

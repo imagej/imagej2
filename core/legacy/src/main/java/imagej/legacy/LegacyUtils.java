@@ -50,7 +50,7 @@ import imagej.data.Position;
 import imagej.data.display.ColorMode;
 import imagej.data.display.ColorTables;
 import imagej.data.display.DatasetView;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.util.Log;
@@ -777,7 +777,7 @@ public final class LegacyUtils {
 	static void setImagePlusLuts(final ImageDisplay disp, final ImagePlus imp) {
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
-			final DisplayView activeView = disp.getActiveView();
+			final DataView activeView = disp.getActiveView();
 			if (activeView == null) {
 				setCompositeImageLutsToDefault(ci);
 			}
@@ -1197,7 +1197,7 @@ public final class LegacyUtils {
 		// avoid setting a Dataset's per plane LUTs because it would be expensive
 		// and also IJ1 LUTs are not model space constructs but rather view space
 		// constructs.
-		final DisplayView dispView = disp.getActiveView();
+		final DataView dispView = disp.getActiveView();
 		if (dispView == null) return;
 		final DatasetView dsView = (DatasetView) dispView;
 

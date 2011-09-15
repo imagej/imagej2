@@ -211,7 +211,7 @@ public class SwingScriptRecorder implements ImageJPlugin {
 //						+ ((DisplayEvent) evt).getDisplay().getName());
 //			}
 //		}
-//		if (evt instanceof DisplayViewEvent) {
+//		if (evt instanceof DataViewEvent) {
 //			showClass(evt);
 //			showFields(evt);
 //		}

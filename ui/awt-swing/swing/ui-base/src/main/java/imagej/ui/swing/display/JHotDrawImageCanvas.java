@@ -36,12 +36,12 @@ package imagej.ui.swing.display;
 
 import imagej.ImageJ;
 import imagej.data.display.CanvasHelper;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayPanel;
-import imagej.data.display.event.DisplayViewDeselectedEvent;
-import imagej.data.display.event.DisplayViewSelectedEvent;
+import imagej.data.display.event.DataViewDeselectedEvent;
+import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -118,21 +118,21 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			}
 		};
 
-	private final EventSubscriber<DisplayViewSelectedEvent> displayViewSelectedEvent =
-		new EventSubscriber<DisplayViewSelectedEvent>() {
+	private final EventSubscriber<DataViewSelectedEvent> viewSelectedEvent =
+		new EventSubscriber<DataViewSelectedEvent>() {
 
 			@Override
-			public void onEvent(final DisplayViewSelectedEvent event) {
+			public void onEvent(final DataViewSelectedEvent event) {
 				onViewSelected(event);
 			}
 
 		};
 
-	private final EventSubscriber<DisplayViewDeselectedEvent> displayViewDeselectedEvent =
-		new EventSubscriber<DisplayViewDeselectedEvent>() {
+	private final EventSubscriber<DataViewDeselectedEvent> viewDeselectedEvent =
+		new EventSubscriber<DataViewDeselectedEvent>() {
 
 			@Override
-			public void onEvent(final DisplayViewDeselectedEvent event) {
+			public void onEvent(final DataViewDeselectedEvent event) {
 				onViewDeselected(event);
 			}
 
@@ -161,9 +161,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		final ITool activeTool = ImageJ.get(ToolService.class).getActiveTool();
 		activateTool(activeTool);
 		Events.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
-		Events.subscribe(DisplayViewSelectedEvent.class, displayViewSelectedEvent);
-		Events.subscribe(DisplayViewDeselectedEvent.class,
-			displayViewDeselectedEvent);
+		Events.subscribe(DataViewSelectedEvent.class, viewSelectedEvent);
+		Events.subscribe(DataViewDeselectedEvent.class,
+			viewDeselectedEvent);
 
 		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
 
@@ -183,7 +183,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	protected void onFigureSelectionChanged(final FigureSelectionEvent event) {
 		final Set<Figure> newSelection = event.getNewSelection();
 		final Set<Figure> oldSelection = event.getOldSelection();
-		for (final DisplayView view : display) {
+		for (final DataView view : display) {
 			if (view instanceof FigureView) {
 				final Figure figure = ((FigureView) view).getFigure();
 				if (newSelection.contains(figure)) {
@@ -198,8 +198,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		}
 	}
 
-	protected void onViewSelected(final DisplayViewSelectedEvent event) {
-		final DisplayView view = event.getDisplayView();
+	protected void onViewSelected(final DataViewSelectedEvent event) {
+		final DataView view = event.getView();
 		if ((view.getDisplay() == display) && (view instanceof FigureView)) {
 			final Figure figure = ((FigureView) view).getFigure();
 			if (!drawingView.getSelectedFigures().contains(figure)) {
@@ -208,8 +208,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		}
 	}
 
-	protected void onViewDeselected(final DisplayViewDeselectedEvent event) {
-		final DisplayView view = event.getDisplayView();
+	protected void onViewDeselected(final DataViewDeselectedEvent event) {
+		final DataView view = event.getView();
 		if ((view.getDisplay() == display) && (view instanceof FigureView)) {
 			final Figure figure = ((FigureView) view).getFigure();
 			if (drawingView.getSelectedFigures().contains(figure)) {

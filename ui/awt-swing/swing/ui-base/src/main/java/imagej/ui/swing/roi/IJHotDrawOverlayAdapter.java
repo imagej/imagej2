@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.roi;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.roi.Overlay;
 
 import org.jhotdraw.draw.Figure;
@@ -98,6 +98,6 @@ public interface IJHotDrawOverlayAdapter {
 	 * @param figure the figure that is to be made to look like the overlay
 	 * @param view the view into which the figure is rendered
 	 */
-	void updateFigure(Overlay overlay, Figure figure, DisplayView view);
+	void updateFigure(Overlay overlay, Figure figure, DataView view);
 
 }

@@ -1,5 +1,5 @@
 //
-// DisplayView.java
+// DataView.java
 //
 
 /*
@@ -41,18 +41,17 @@ import imagej.data.roi.Overlay;
 
 /**
  * A linkage between a {@link Data} (such as a {@link Dataset} or
- * {@link Overlay}) and a {@link ImageDisplay}. The view takes care of mapping the
- * N-dimensional data into a representation suitable for showing onscreen.
+ * {@link Overlay}) and a {@link ImageDisplay}. The view takes care of mapping
+ * the N-dimensional data into a representation suitable for showing onscreen.
  * <p>
  * For example, a typical 2D display may have a number of sliders enabling a
- * user to select a particular plane of a {@link Dataset} for display. The
- * DisplayView keeps track of the current position and provides access the
- * resultant plane.
+ * user to select a particular plane of a {@link Dataset} for display. The view
+ * keeps track of the current position and provides access the resultant plane.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public interface DisplayView {
+public interface DataView {
 
 	/** Gets the {@link ImageDisplay} containing this view. */
 	ImageDisplay getDisplay();
@@ -89,7 +88,7 @@ public interface DisplayView {
 
 	/** Discards the view, performing any needed cleanup. */
 	void dispose();
-	
+
 	/**
 	 * Set the view's selection state.
 	 * 
@@ -101,9 +100,10 @@ public interface DisplayView {
 	 * @return the view's selection state.
 	 */
 	boolean isSelected();
-	
+
 	/**
-	 * @return true if the data object (or some part of it) is visible, given the current (hyper)plane position
+	 * @return true if the data object (or some part of it) is visible, given the
+	 *         current (hyper)plane position
 	 */
 	boolean isVisible();
 

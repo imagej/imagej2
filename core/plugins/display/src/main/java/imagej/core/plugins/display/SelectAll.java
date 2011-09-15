@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.display;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -58,7 +58,7 @@ public class SelectAll implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		for (final DisplayView view : display) {
+		for (final DataView view : display) {
 			view.setSelected(true);
 		}
 	}

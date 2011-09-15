@@ -1,5 +1,5 @@
 //
-// AbstractDisplayView.java
+// AbstractDataView.java
 //
 
 /*
@@ -37,9 +37,9 @@ package imagej.data.display;
 import imagej.data.Data;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.data.display.event.DisplayViewDeselectedEvent;
-import imagej.data.display.event.DisplayViewSelectedEvent;
-import imagej.data.display.event.DisplayViewSelectionEvent;
+import imagej.data.display.event.DataViewDeselectedEvent;
+import imagej.data.display.event.DataViewSelectedEvent;
+import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
 import imagej.event.EventSubscriber;
@@ -49,11 +49,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstract supeclass for {@link DisplayView}s.
+ * Abstract supeclass for {@link DataView}s.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDisplayView implements DisplayView {
+public abstract class AbstractDataView implements DataView {
 
 	private final ImageDisplay display;
 	private final Data dataObject;
@@ -74,14 +74,14 @@ public abstract class AbstractDisplayView implements DisplayView {
 	 */
 	private boolean selected;
 
-	public AbstractDisplayView(final ImageDisplay display, final Data dataObject) {
+	public AbstractDataView(final ImageDisplay display, final Data dataObject) {
 		this.display = display;
 		this.dataObject = dataObject;
 		dataObject.incrementReferences();
 		subscribeToEvents();
 	}
 
-	// -- DisplayView methods --
+	// -- DataView methods --
 
 	@Override
 	public ImageDisplay getDisplay() {
@@ -128,7 +128,7 @@ public abstract class AbstractDisplayView implements DisplayView {
 	public void setSelected(boolean isSelected) {
 		if (selected != isSelected) {
 			selected = isSelected;
-			DisplayViewSelectionEvent event = isSelected? new DisplayViewSelectedEvent(this): new DisplayViewDeselectedEvent(this);
+			DataViewSelectionEvent event = isSelected? new DataViewSelectedEvent(this): new DataViewDeselectedEvent(this);
 			Events.publish(event);
 		}
 	}

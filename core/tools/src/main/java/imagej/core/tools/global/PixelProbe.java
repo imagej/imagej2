@@ -36,7 +36,7 @@ package imagej.core.tools.global;
 
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -109,7 +109,7 @@ public class PixelProbe extends AbstractTool {
 		}
 		else { // mouse is over image
 			// CTR TODO - update tool to probe more than just the active view
-			final DisplayView activeView = imageDisplay.getActiveView();
+			final DataView activeView = imageDisplay.getActiveView();
 			final Dataset d = imageDisplayService.getActiveDataset(imageDisplay);
 			setWorkingVariables(d);
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);

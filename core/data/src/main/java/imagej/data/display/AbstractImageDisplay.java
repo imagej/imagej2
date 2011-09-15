@@ -54,14 +54,14 @@ import net.imglib2.meta.LabeledAxes;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
+public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {
 
 	private Axis activeAxis = Axes.Z;
 
 	public AbstractImageDisplay() {
-		super(DisplayView.class);
+		super(DataView.class);
 	}
 
 	// -- LabeledAxes methods --
@@ -114,20 +114,20 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
 	// -- ImageDisplay methods --
 
 	@Override
-	public void addView(final DisplayView view) {
+	public void addView(final DataView view) {
 		add(view);
 		update();
 		redoWindowLayout();
 	}
 
 	@Override
-	public DisplayView getActiveView() {
+	public DataView getActiveView() {
 		return size() > 0 ? get(0) : null;
 	}
 
 	@Override
-	public List<DisplayView> getViews() {
-		final ArrayList<DisplayView> views = new ArrayList<DisplayView>();
+	public List<DataView> getViews() {
+		final ArrayList<DataView> views = new ArrayList<DataView>();
 		views.addAll(this);
 		return views;
 	}
@@ -140,7 +140,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
 	}
 
 	@Override
-	public void removeView(final DisplayView view) {
+	public void removeView(final DataView view) {
 		remove(view);
 		view.dispose();
 		update();
@@ -160,7 +160,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
 	@Override
 	public List<Axis> getAxes() {
 		final ArrayList<Axis> axes = new ArrayList<Axis>();
-		for (final DisplayView v : this.getViews()) {
+		for (final DataView v : this.getViews()) {
 			final Data o = v.getData();
 			if (o instanceof Dataset) {
 				final Dataset dataset = (Dataset) o;
@@ -174,7 +174,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DisplayView>
 				}
 			}
 		}
-		for (final DisplayView v : this.getViews()) {
+		for (final DataView v : this.getViews()) {
 			final Data o = v.getData();
 			if (o instanceof Overlay) {
 				final Overlay overlay = (Overlay) o;

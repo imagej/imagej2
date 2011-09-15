@@ -43,30 +43,34 @@ import net.imglib2.img.Axis;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractOverlayView extends AbstractDisplayView {
+public abstract class AbstractOverlayView extends AbstractDataView {
 
 	private final Overlay overlay;
 
-	public AbstractOverlayView(final ImageDisplay display, final Overlay overlay) {
+	public AbstractOverlayView(final ImageDisplay display, final Overlay overlay)
+	{
 		super(display, overlay);
 		this.overlay = overlay;
-		long[] dims = ImageJ.get(ImageDisplayService.class).getActiveDataset(display).getDims();
+		final long[] dims =
+			ImageJ.get(ImageDisplayService.class).getActiveDataset(display).getDims();
 		setDimensions(dims);
 	}
-	
-	// -- DisplayView methods --
+
+	// -- DataView methods --
 
 	@Override
 	public Overlay getData() {
 		return overlay;
 	}
-	
+
 	@Override
 	public boolean isVisible() {
-		for (int i=2; i<overlay.numDimensions(); i++) {
-			Axis axis = overlay.axis(i);
+		for (int i = 2; i < overlay.numDimensions(); i++) {
+			final Axis axis = overlay.axis(i);
 			final Long pos = overlay.getPosition(axis);
-			if ((pos != null) && ! pos.equals(getPlanePosition().getLongPosition(i-2))) {
+			if ((pos != null) &&
+				!pos.equals(getPlanePosition().getLongPosition(i - 2)))
+			{
 				return false;
 			}
 		}

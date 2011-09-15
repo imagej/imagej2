@@ -159,7 +159,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		});
 	}
 
-	// -- DisplayView methods --
+	// -- DataView methods --
 
 	private void show(final boolean doShow) {
 		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getImageCanvas();

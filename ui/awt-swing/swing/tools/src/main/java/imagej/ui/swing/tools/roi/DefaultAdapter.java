@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
-import imagej.data.display.DisplayView;
+import imagej.data.display.DataView;
 import imagej.data.roi.Overlay;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 import imagej.util.ColorRGB;
@@ -89,7 +89,7 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 
 	@Override
 	public void updateFigure(final Overlay overlay, final Figure figure,
-		final DisplayView view)
+		final DataView view)
 	{
 		super.updateFigure(overlay, figure, view);
 
