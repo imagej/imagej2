@@ -46,7 +46,7 @@ import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
-import imagej.ui.AbstractUI;
+import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 import imagej.ui.common.awt.AWTKeyEventDispatcherGlobal;
@@ -71,7 +71,7 @@ import javax.swing.WindowConstants;
  * @author Barry DeZonia
  * @author Grant Harris
  */
-public abstract class AbstractSwingUI extends AbstractUI {
+public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 	public static final String LAST_X_KEY = "ImageJ.SwingApplicationFrame.lastXLocation";
 	public static final String LAST_Y_KEY = "ImageJ.SwingApplicationFrame.lastYLocation";

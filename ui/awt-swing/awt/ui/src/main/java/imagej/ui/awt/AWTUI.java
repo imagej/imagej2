@@ -44,9 +44,9 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
-import imagej.ui.UI;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.UIService;
+import imagej.ui.IUserInterface;
 
 import java.awt.BorderLayout;
 import java.awt.MenuBar;
@@ -58,8 +58,8 @@ import java.awt.event.WindowEvent;
  * 
  * @author Curtis Rueden
  */
-@UI
-public class AWTUI implements UserInterface {
+@UserInterface
+public class AWTUI implements IUserInterface {
 
 	private UIService uiService;
 	private AWTApplicationFrame frame;

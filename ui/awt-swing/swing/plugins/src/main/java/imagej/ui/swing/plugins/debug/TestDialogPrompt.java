@@ -39,7 +39,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.ui.UserInterface;
+import imagej.ui.IUserInterface;
 
 /**
  * TODO
@@ -51,7 +51,7 @@ public class TestDialogPrompt implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
 		DialogPrompt dialog = ui.dialogPrompt("Message", "Title",
 				DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
 		DialogPrompt.Result result = dialog.prompt();

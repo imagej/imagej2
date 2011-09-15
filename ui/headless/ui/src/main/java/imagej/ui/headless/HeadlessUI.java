@@ -44,9 +44,9 @@ import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.StatusBar;
 import imagej.ui.ToolBar;
-import imagej.ui.UI;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.UIService;
+import imagej.ui.IUserInterface;
 import imagej.util.Log;
 
 import java.io.BufferedReader;
@@ -64,8 +64,8 @@ import javax.script.ScriptException;
  * 
  * @author Curtis Rueden
  */
-@UI
-public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent> {
+@UserInterface
+public class HeadlessUI implements IUserInterface, EventSubscriber<StatusEvent> {
 
 	private UIService uiService;
 

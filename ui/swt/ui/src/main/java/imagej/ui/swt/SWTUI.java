@@ -44,9 +44,9 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
-import imagej.ui.UI;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.UIService;
+import imagej.ui.IUserInterface;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Display;
@@ -57,8 +57,8 @@ import org.eclipse.swt.widgets.Menu;
  * 
  * @author Curtis Rueden
  */
-@UI
-public class SWTUI implements UserInterface, Runnable {
+@UserInterface
+public class SWTUI implements IUserInterface, Runnable {
 
 	private UIService uiService;
 

@@ -1,5 +1,5 @@
 //
-// UI.java
+// IUserInterface.java
 //
 
 /*
@@ -34,23 +34,36 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
-
 /**
- * Annotation indicating a discoverable user interface.
- *
+ * An end-user ImageJ application. User interfaces discoverable at runtime must
+ * implement this interface and be annotated with @{@link UserInterface}.
+ * 
  * @author Curtis Rueden
  * @see UserInterface
  * @see UIService
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type=UserInterface.class)
-public @interface UI {
-	// no attributes for the moment...
+public interface IUserInterface {
+
+	void initialize(UIService uiService);
+
+	UIService getUIService();
+
+	void processArgs(final String[] args);
+
+	/** Desktop for use with multi-document interfaces (MDI). */
+	Desktop getDesktop();
+
+	ApplicationFrame getApplicationFrame();
+
+	ToolBar getToolBar();
+
+	StatusBar getStatusBar();
+
+	void createMenus();
+
+	OutputWindow newOutputWindow(String title);
+
+	DialogPrompt dialogPrompt(String message, String title,
+		DialogPrompt.MessageType msg, DialogPrompt.OptionType option);
+
 }

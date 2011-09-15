@@ -68,10 +68,10 @@ public final class UIService extends AbstractService {
 	private final ToolService toolService;
 
 	/** The active user interface. */
-	private UserInterface userInterface;
+	private IUserInterface userInterface;
 
 	/** Available user interfaces. */
-	private List<UserInterface> availableUIs;
+	private List<IUserInterface> availableUIs;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
@@ -127,12 +127,12 @@ public final class UIService extends AbstractService {
 	}
 
 	/** Gets the active user interface. */
-	public UserInterface getUI() {
+	public IUserInterface getUI() {
 		return userInterface;
 	}
 
 	/** Gets the user interfaces available on the classpath. */
-	public List<UserInterface> getAvailableUIs() {
+	public List<IUserInterface> getAvailableUIs() {
 		return availableUIs;
 	}
 
@@ -153,10 +153,10 @@ public final class UIService extends AbstractService {
 
 	/** Discovers and launches the user interface. */
 	private void launchUI() {
-		final List<UserInterface> uis = discoverUIs();
+		final List<IUserInterface> uis = discoverUIs();
 		availableUIs = Collections.unmodifiableList(uis);
 		if (uis.size() > 0) {
-			final UserInterface ui = uis.get(0);
+			final IUserInterface ui = uis.get(0);
 			Log.info("Launching user interface: " + ui.getClass().getName());
 			ui.initialize(this);
 			userInterface = ui;
@@ -168,13 +168,13 @@ public final class UIService extends AbstractService {
 	}
 
 	/** Discovers user interfaces using SezPoz. */
-	private List<UserInterface> discoverUIs() {
-		final List<UserInterface> uis = new ArrayList<UserInterface>();
-		for (final IndexItem<UI, UserInterface> item : Index.load(UI.class,
-			UserInterface.class))
+	private List<IUserInterface> discoverUIs() {
+		final List<IUserInterface> uis = new ArrayList<IUserInterface>();
+		for (final IndexItem<UserInterface, IUserInterface> item : Index.load(UserInterface.class,
+			IUserInterface.class))
 		{
 			try {
-				final UserInterface ui = item.instance();
+				final IUserInterface ui = item.instance();
 				Log.info("Discovered user interface: " + ui.getClass().getName());
 				uis.add(ui);
 			}
