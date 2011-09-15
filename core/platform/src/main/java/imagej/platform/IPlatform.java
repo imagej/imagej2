@@ -1,5 +1,5 @@
 //
-// PlatformHandler.java
+// IPlatform.java
 //
 
 /*
@@ -44,7 +44,7 @@ package imagej.platform;
  * @see Platform
  * @see PlatformService
  */
-public interface PlatformHandler {
+public interface IPlatform {
 
 	void configure(PlatformService platformService);
 

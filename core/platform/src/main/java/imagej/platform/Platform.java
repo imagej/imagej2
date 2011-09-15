@@ -46,12 +46,12 @@ import net.java.sezpoz.Indexable;
  * particular deployment platform.
  *
  * @author Curtis Rueden
- * @see PlatformHandler
+ * @see IPlatform
  * @see PlatformService
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=PlatformHandler.class)
+@Indexable(type=IPlatform.class)
 public @interface Platform {
 
 	/** Java Runtime Environment vendor to match. */

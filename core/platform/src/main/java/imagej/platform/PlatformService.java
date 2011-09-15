@@ -55,7 +55,7 @@ import net.java.sezpoz.IndexItem;
 public final class PlatformService extends AbstractService {
 
 	/** Platform handlers applicable to this platform. */
-	private List<PlatformHandler> targetPlatforms;
+	private List<IPlatform> targetPlatforms;
 
 	/** Whether the menu bar should be duplicated for every window frame. */
 	private boolean menuBarDuplicated;
@@ -75,7 +75,7 @@ public final class PlatformService extends AbstractService {
 	// -- PlatformService methods --
 
 	/** Gets the platform handlers applicable to this platform. */
-	public List<PlatformHandler> getTargetPlatforms() {
+	public List<IPlatform> getTargetPlatforms() {
 		return targetPlatforms;
 	}
 
@@ -97,9 +97,9 @@ public final class PlatformService extends AbstractService {
 
 	@Override
 	public void initialize() {
-		final List<PlatformHandler> platforms = discoverTargetPlatforms();
+		final List<IPlatform> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
-		for (final PlatformHandler platform : platforms) {
+		for (final IPlatform platform : platforms) {
 			Log.info("Configuring platform: " + platform.getClass().getName());
 			platform.configure(this);
 		}
@@ -109,10 +109,10 @@ public final class PlatformService extends AbstractService {
 	// -- Helper methods --
 
 	/** Discovers target platform handlers using SezPoz. */
-	private List<PlatformHandler> discoverTargetPlatforms() {
-		final List<PlatformHandler> platforms = new ArrayList<PlatformHandler>();
-		for (final IndexItem<Platform, PlatformHandler> item : Index.load(
-			Platform.class, PlatformHandler.class))
+	private List<IPlatform> discoverTargetPlatforms() {
+		final List<IPlatform> platforms = new ArrayList<IPlatform>();
+		for (final IndexItem<Platform, IPlatform> item : Index.load(
+			Platform.class, IPlatform.class))
 		{
 			if (!isTargetPlatform(item.annotation())) continue;
 			try {
