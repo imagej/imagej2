@@ -37,7 +37,7 @@ package imagej.platform.macosx;
 import com.apple.eawt.Application;
 
 import imagej.platform.Platform;
-import imagej.platform.PlatformHandler;
+import imagej.platform.IPlatform;
 import imagej.platform.PlatformService;
 
 /**
@@ -51,7 +51,7 @@ import imagej.platform.PlatformService;
  * @author Curtis Rueden
  */
 @Platform(osName = "Mac OS X")
-public class MacOSXPlatform implements PlatformHandler {
+public class MacOSXPlatform implements IPlatform {
 
 	private MacOSXAppListener appListener;
 
