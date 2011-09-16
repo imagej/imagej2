@@ -102,7 +102,7 @@ public class NativeLibraryUtil {
                 }
             }   
         }
-        //IJ.log("architectures is " + s_architecture + " os.name is " + System.getProperty("os.name").toLowerCase());
+        IJ.log("architectures is " + s_architecture + " os.name is " + System.getProperty("os.name").toLowerCase());
         return s_architecture;
     }
 
@@ -128,7 +128,7 @@ public class NativeLibraryUtil {
             }
             processor = (32 == bits) ? Processor.INTEL_32 : Processor.INTEL_64;
         }
-        //IJ.log("processor is " + processor + " os.arch is " + System.getProperty("os.arch").toLowerCase());
+        IJ.log("processor is " + processor + " os.arch is " + System.getProperty("os.arch").toLowerCase());
         return processor;
     }
 
@@ -141,10 +141,10 @@ public class NativeLibraryUtil {
         String path = "META-INF" + DELIM + "lib" + DELIM;
         switch (getArchitecture()) {
             case LINUX_32:
-                path += "i386-Linux-g++";
+                path += "i386-Linux-gpp";
                 break;
             case LINUX_64:
-                path += "x86_64-Linux-g++";
+                path += "x86_64-Linux-gpp";
                 break;
             case WINDOWS_32:
                 path += "x86-Windows-msvc";
