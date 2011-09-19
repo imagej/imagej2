@@ -47,10 +47,7 @@ import imagej.util.Log;
 @Plugin(type = PreprocessorPlugin.class, priority = Plugin.FIRST_PRIORITY)
 public class DebugPreprocessor implements PreprocessorPlugin {
 
-	@Override
-	public void process(final Module module) {
-		Log.debug("Executing module: " + module.getDelegateObject());
-	}
+	// -- ModulePreprocessor methods --
 
 	@Override
 	public boolean canceled() {
@@ -60,6 +57,13 @@ public class DebugPreprocessor implements PreprocessorPlugin {
 	@Override
 	public String getMessage() {
 		return null;
+	}
+
+	// -- ModuleProcessor methods --
+
+	@Override
+	public void process(final Module module) {
+		Log.debug("Executing module: " + module.getDelegateObject());
 	}
 
 }

@@ -63,7 +63,7 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
 @Plugin(type = PreprocessorPlugin.class, priority = Plugin.HIGH_PRIORITY)
 public class ActiveImageDisplayPreprocessor implements PreprocessorPlugin {
 
-	// -- PluginPreprocessor methods --
+	// -- ModulePreprocessor methods --
 
 	@Override
 	public boolean canceled() {
