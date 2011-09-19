@@ -93,7 +93,7 @@ public final class EventService extends AbstractService {
 	public <E extends ImageJEvent> List<EventSubscriber<E>> getSubscribers(
 		final Class<E> c)
 	{
-		// HACK - The appears that EventBus API is incorrect in that
+		// HACK - It appears that EventBus API is incorrect, in that
 		// EventBus#getSubscribers(Class<T>) returns a List<T> when it should
 		// actually be a List<EventSubscriber<T>>. This method works around the
 		// problem with casts.
