@@ -40,8 +40,8 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DatasetRestructuredEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
@@ -76,14 +76,17 @@ public class Animator implements ImageJPlugin {
 	// - parameters - one per Animator instance --
 
 	@Parameter
+	private EventService eventService;
+
+	@Parameter
 	private ImageDisplay activeImageDisplay;
 
 	// -- private constants --
 
 	private static final String REGULAR_STATUS =
-		"Press ESC to terminate. Pressing '\' pauses.";
+		"Press ESC to terminate. Pressing '\\' pauses.";
 	private static final String PAUSED_STATUS =
-		"Animation paused. Press '\' to continue or ESC to terminate.";
+		"Animation paused. Press '\\' to continue or ESC to terminate.";
 	private static final String DONE_STATUS = "Animation terminated.";
 
 	// -- static variables - only one for all Animator instances --
@@ -139,18 +142,15 @@ public class Animator implements ImageJPlugin {
 
 	// -- public instance methods --
 
-	public Animator() {
-		synchronized (ANIMATIONS) {
-			if (KEYPRESS_SUBSCRIBER == null) subscribeToEvents();
-		}
-	}
-
 	/**
 	 * Starts a new animation or modifies an existing animation. Only does any
 	 * work when the active display's {@link Dataset} has 3 or more axes.
 	 */
 	@Override
 	public void run() {
+		synchronized (ANIMATIONS) {
+			if (KEYPRESS_SUBSCRIBER == null) subscribeToEvents();
+		}
 		final Dataset ds =
 			ImageJ.get(ImageDisplayService.class)
 				.getActiveDataset(activeImageDisplay);
@@ -194,7 +194,7 @@ public class Animator implements ImageJPlugin {
 	 * and a {@link DatasetRestructuredEvent}.
 	 */
 	@SuppressWarnings("synthetic-access")
-	private static void subscribeToEvents() {
+	private void subscribeToEvents() {
 		KEYPRESS_SUBSCRIBER = new EventSubscriber<KyPressedEvent>() {
 
 			@Override
@@ -203,7 +203,7 @@ public class Animator implements ImageJPlugin {
 				if (a != null && event.getCode() == KeyCode.ESCAPE) a.stop();
 			}
 		};
-		Events.subscribe(KyPressedEvent.class, KEYPRESS_SUBSCRIBER);
+		eventService.subscribe(KyPressedEvent.class, KEYPRESS_SUBSCRIBER);
 
 		DISPLAY_SUBSCRIBER = new EventSubscriber<DisplayDeletedEvent>() {
 
@@ -213,7 +213,7 @@ public class Animator implements ImageJPlugin {
 				if (a != null) a.stop();
 			}
 		};
-		Events.subscribe(DisplayDeletedEvent.class, DISPLAY_SUBSCRIBER);
+		eventService.subscribe(DisplayDeletedEvent.class, DISPLAY_SUBSCRIBER);
 
 		RESTRUCTURE_SUBSCRIBER = new EventSubscriber<DatasetRestructuredEvent>() {
 
@@ -230,7 +230,8 @@ public class Animator implements ImageJPlugin {
 				}
 			}
 		};
-		Events.subscribe(DatasetRestructuredEvent.class, RESTRUCTURE_SUBSCRIBER);
+		eventService.subscribe(DatasetRestructuredEvent.class,
+			RESTRUCTURE_SUBSCRIBER);
 	}
 
 	/**
@@ -288,7 +289,8 @@ public class Animator implements ImageJPlugin {
 			delta = 1;
 			isRelative = true;
 
-			Events.publish(new AxisPositionEvent(display, axis, first, total, false));
+			eventService.publish(new AxisPositionEvent(display, axis, first, total,
+				false));
 		}
 
 		/**
@@ -300,7 +302,7 @@ public class Animator implements ImageJPlugin {
 			if (OPTIONS.get(display) == null) OPTIONS.put(display,
 				defaultOptions(display));
 			new Thread(this).start();
-			Events.publish(new StatusEvent(REGULAR_STATUS));
+			eventService.publish(new StatusEvent(REGULAR_STATUS));
 		}
 
 		/**
@@ -308,7 +310,7 @@ public class Animator implements ImageJPlugin {
 		 */
 		void pause() {
 			paused = true;
-			Events.publish(new StatusEvent(PAUSED_STATUS));
+			eventService.publish(new StatusEvent(PAUSED_STATUS));
 		}
 
 		/**
@@ -316,7 +318,7 @@ public class Animator implements ImageJPlugin {
 		 */
 		void resume() {
 			paused = false;
-			Events.publish(new StatusEvent(REGULAR_STATUS));
+			eventService.publish(new StatusEvent(REGULAR_STATUS));
 		}
 
 		/**
@@ -325,7 +327,7 @@ public class Animator implements ImageJPlugin {
 		void stop() {
 			quitting = true;
 			ANIMATIONS.remove(display);
-			Events.publish(new StatusEvent(DONE_STATUS));
+			eventService.publish(new StatusEvent(DONE_STATUS));
 		}
 
 		/**
@@ -409,7 +411,7 @@ public class Animator implements ImageJPlugin {
 				}
 			}
 
-			Events.publish(new AxisPositionEvent(display, axis, delta, total,
+			eventService.publish(new AxisPositionEvent(display, axis, delta, total,
 				isRelative));
 		}
 	}
