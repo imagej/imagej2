@@ -44,7 +44,11 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  * @author Grant Harris
+ * @deprecated Use {@link EventService} instead. For plugins, create an input
+ *             Parameter of type {@link EventService} and use it for event
+ *             subscription and publication.
  */
+@Deprecated
 public final class Events {
 
 	private Events() {
