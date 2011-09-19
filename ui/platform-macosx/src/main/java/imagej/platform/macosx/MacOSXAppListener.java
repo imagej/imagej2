@@ -57,7 +57,7 @@ import com.apple.eawt.ScreenSleepListener;
 import com.apple.eawt.SystemSleepListener;
 import com.apple.eawt.UserSessionListener;
 
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppFocusEvent;
 import imagej.platform.event.AppPreferencesEvent;
@@ -70,12 +70,7 @@ import imagej.platform.event.AppUserSessionEvent;
 import imagej.platform.event.AppVisibleEvent;
 
 /**
- * An adapter for handling Mac OS X application issues:
- * <ul>
- * <li>Application events are rebroadcast as ImageJ events.</li>
- * <li>Mac OS X screen menu bar is enabled.</li>
- * <li>Special screen menu bar menu items are handled.</li> 
- * </ul>
+ * Rebroadcasts Mac OS X application events as ImageJ events.
  * 
  * @author Curtis Rueden
  */
@@ -85,7 +80,10 @@ public class MacOSXAppListener implements AboutHandler,
 	SystemSleepListener, UserSessionListener
 {
 
-	public MacOSXAppListener(final Application app) {
+	private final EventService eventService;
+
+	public MacOSXAppListener(final Application app, final EventService eventService) {
+		this.eventService = eventService;
 		app.setAboutHandler(this);
 		app.setPreferencesHandler(this);
 		app.setPrintFileHandler(this);
@@ -97,28 +95,28 @@ public class MacOSXAppListener implements AboutHandler,
 
 	@Override
 	public void handleAbout(final AboutEvent e) {
-		Events.publish(new AppAboutEvent());
+		eventService.publish(new AppAboutEvent());
 	}
 
 	// -- PreferencesHandler methods --
 
 	@Override
 	public void handlePreferences(final PreferencesEvent e) {
-		Events.publish(new AppPreferencesEvent());
+		eventService.publish(new AppPreferencesEvent());
 	}
 
 	// -- PrintFilesHandler --
 
 	@Override
 	public void printFiles(final PrintFilesEvent e) {
-		Events.publish(new AppPrintEvent());
+		eventService.publish(new AppPrintEvent());
 	}
 
 	// -- QuitHandler methods --
 
 	@Override
 	public void handleQuitRequestWith(final QuitEvent e, final QuitResponse r) {
-		Events.publish(new AppQuitEvent());
+		eventService.publish(new AppQuitEvent());
 		r.cancelQuit();
 	}
 
@@ -126,67 +124,67 @@ public class MacOSXAppListener implements AboutHandler,
 
 	@Override
 	public void userSessionActivated(final UserSessionEvent e) {
-		Events.publish(new AppUserSessionEvent(true));
+		eventService.publish(new AppUserSessionEvent(true));
 	}
 
 	@Override
 	public void userSessionDeactivated(final UserSessionEvent e) {
-		Events.publish(new AppUserSessionEvent(false));
+		eventService.publish(new AppUserSessionEvent(false));
 	}
 
 	// -- SystemSleepListener methods --
 
 	@Override
 	public void systemAboutToSleep(final SystemSleepEvent e) {
-		Events.publish(new AppSystemSleepEvent(true));
+		eventService.publish(new AppSystemSleepEvent(true));
 	}
 
 	@Override
 	public void systemAwoke(final SystemSleepEvent e) {
-		Events.publish(new AppSystemSleepEvent(false));
+		eventService.publish(new AppSystemSleepEvent(false));
 	}
 
 	// -- ScreenSleepListener methods --
 
 	@Override
 	public void screenAboutToSleep(final ScreenSleepEvent e) {
-		Events.publish(new AppScreenSleepEvent(true));
+		eventService.publish(new AppScreenSleepEvent(true));
 	}
 
 	@Override
 	public void screenAwoke(final ScreenSleepEvent e) {
-		Events.publish(new AppScreenSleepEvent(false));
+		eventService.publish(new AppScreenSleepEvent(false));
 	}
 
 	// -- AppHiddenListener methods --
 
 	@Override
 	public void appHidden(final AppHiddenEvent e) {
-		Events.publish(new AppVisibleEvent(false));
+		eventService.publish(new AppVisibleEvent(false));
 	}
 
 	@Override
 	public void appUnhidden(final AppHiddenEvent e) {
-		Events.publish(new AppVisibleEvent(true));
+		eventService.publish(new AppVisibleEvent(true));
 	}
 
 	// -- AppForegroundListener methods --
 
 	@Override
 	public void appMovedToBackground(final AppForegroundEvent e) {
-		Events.publish(new AppFocusEvent(false));
+		eventService.publish(new AppFocusEvent(false));
 	}
 
 	@Override
 	public void appRaisedToForeground(final AppForegroundEvent e) {
-		Events.publish(new AppFocusEvent(true));
+		eventService.publish(new AppFocusEvent(true));
 	}
 
 	// -- AppReOpenedListener methods --
 
 	@Override
 	public void appReOpened(final AppReOpenedEvent e) {
-		Events.publish(new AppReOpenEvent());
+		eventService.publish(new AppReOpenEvent());
 	}
 
 }
