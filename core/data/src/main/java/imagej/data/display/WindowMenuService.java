@@ -91,6 +91,12 @@ public final class WindowMenuService extends AbstractService {
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
+	/*
+	 * order in menu, 'weight'
+	 */
+	
+	private int order =  1000;  
+	
 	public WindowMenuService() {
 		// NB: Required by SezPoz.
 		super(null);
@@ -181,7 +187,7 @@ public final class WindowMenuService extends AbstractService {
 		info.setMenuPath(menuPath);
 
 		// set menu position
-		leaf.setWeight(0); // TODO - do this properly
+		leaf.setWeight(order++); // TODO - do this properly
 
 		// use the same icon as File > Open
 //		final PluginService pluginService = ImageJ.get(PluginService.class);
