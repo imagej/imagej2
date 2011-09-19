@@ -225,6 +225,12 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		return value;
 	}
 
+	@Override
+	public void setValue(final Module module, final T value) {
+		if (isInput()) module.setInput(getName(), value);
+		if (isOutput()) module.setOutput(getName(), value);
+	}
+
 	// -- BasicDetails methods --
 
 	@Override

@@ -123,4 +123,7 @@ public interface ModuleItem<T> extends BasicDetails {
 	/** Gets the item's current value with respect to the given module. */
 	T getValue(Module module);
 
+	/** Sets the item's current value with respect to the given module. */
+	void setValue(Module module, T value);
+
 }
