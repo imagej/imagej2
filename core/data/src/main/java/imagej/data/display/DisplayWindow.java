@@ -38,7 +38,7 @@ import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.EventDispatcher;
 
 /**
- * A user interface window containing an {@link ImageDisplay}.
+ * A user interface window associated with a Display, containing a {@link DisplayPanel}.
  * 
  * @author Grant Harris
  */
@@ -47,10 +47,20 @@ public interface DisplayWindow {
 	void setTitle(String s);
 
 	void addEventDispatcher(EventDispatcher dispatcher);
+	
 	void setContent(DisplayPanel panel);
-	void requestFocus();
-	void pack();
-	//void setVisible(boolean visible);
+
+	void pack();  // or reformat, or (re)validate, or somesuch.
+	
+	/*
+	 * Places this component  into the desktop environment.
+	 * It should do appropriate size and locate the window.
+	 * Different types of DisplayWindows (e.g. Image, Text) can implement this differently, 
+	 * for instance in a tabbed enviroment, it is added to the appropriate set of tabs.
+	 */
 	void showDisplay(boolean visible);
+	
+	void requestFocus();
+	
 	void close();
 }
