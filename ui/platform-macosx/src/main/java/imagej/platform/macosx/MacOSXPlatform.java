@@ -36,6 +36,7 @@ package imagej.platform.macosx;
 
 import com.apple.eawt.Application;
 
+import imagej.event.EventService;
 import imagej.platform.Platform;
 import imagej.platform.IPlatform;
 import imagej.platform.PlatformService;
@@ -70,7 +71,8 @@ public class MacOSXPlatform implements IPlatform {
 
 		// translate Mac OS X application events into ImageJ events
 		final Application app = Application.getApplication();
-		appListener = new MacOSXAppListener(app);
+		final EventService eventService = platformService.getEventService();
+		appListener = new MacOSXAppListener(app, eventService);
 
 		// duplicate menu bar across all window frames
 		platformService.setMenuBarDuplicated(true);

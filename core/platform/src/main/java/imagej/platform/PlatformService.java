@@ -37,6 +37,7 @@ package imagej.platform;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ import net.java.sezpoz.IndexItem;
 @Service
 public final class PlatformService extends AbstractService {
 
+	private final EventService eventService;
+
 	/** Platform handlers applicable to this platform. */
 	private List<IPlatform> targetPlatforms;
 
@@ -68,11 +71,17 @@ public final class PlatformService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public PlatformService(final ImageJ context) {
+	public PlatformService(final ImageJ context, final EventService eventService)
+	{
 		super(context);
+		this.eventService = eventService;
 	}
 
 	// -- PlatformService methods --
+
+	public EventService getEventService() {
+		return eventService;
+	}
 
 	/** Gets the platform handlers applicable to this platform. */
 	public List<IPlatform> getTargetPlatforms() {
@@ -111,8 +120,8 @@ public final class PlatformService extends AbstractService {
 	/** Discovers target platform handlers using SezPoz. */
 	private List<IPlatform> discoverTargetPlatforms() {
 		final List<IPlatform> platforms = new ArrayList<IPlatform>();
-		for (final IndexItem<Platform, IPlatform> item : Index.load(
-			Platform.class, IPlatform.class))
+		for (final IndexItem<Platform, IPlatform> item : Index.load(Platform.class,
+			IPlatform.class))
 		{
 			if (!isTargetPlatform(item.annotation())) continue;
 			try {
