@@ -304,6 +304,15 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		return display;
 	}
 
+	// needed to override Dimension getPreferredSize() and add 4 to the w and h,  
+	// Don't ask me why it is 4, - GBH
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(
+				drawingView.getPreferredSize().width + 4, 
+				drawingView.getPreferredSize().height +4);
+	}
+	
 	@Override
 	public int getCanvasWidth() {
 		// NB: Return *unscaled* canvas width.
