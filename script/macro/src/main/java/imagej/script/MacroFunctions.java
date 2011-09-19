@@ -36,13 +36,20 @@ package imagej.script;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.TextDisplay;
+import imagej.util.RealRect;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Random;
+
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * This class contains all built-in macro functions as static methods
@@ -219,12 +226,14 @@ public class MacroFunctions {
 	}
 
 	/**
-	 * Replace by getSelectionBounds.
+	 * @deprecated
+	 * @see Replaced by getSelectionBounds.
 	 */
+	@Deprecated
 	public static void getBoundingRect(final Variable x, final Variable y,
 		final Variable width, final Variable height)
 	{
-		throw new RuntimeException("TODO");
+		getSelectionBounds(x, y, width, height);
 	}
 
 	/**
@@ -248,7 +257,15 @@ public class MacroFunctions {
 		final Variable dayOfWeek, final Variable dayOfMonth, final Variable hour,
 		final Variable minute, final Variable second, final Variable msec)
 	{
-		throw new RuntimeException("TODO");
+		final Calendar date = Calendar.getInstance();
+		year.setValue(date.get(Calendar.YEAR));
+		month.setValue(date.get(Calendar.MONTH));
+		dayOfWeek.setValue(date.get(Calendar.DAY_OF_WEEK));
+		dayOfMonth.setValue(date.get(Calendar.DAY_OF_MONTH));
+		hour.setValue(date.get(Calendar.HOUR));
+		minute.setValue(date.get(Calendar.MINUTE));
+		second.setValue(date.get(Calendar.SECOND));
+		msec.setValue(date.get(Calendar.MILLISECOND));
 	}
 
 	/**
@@ -257,9 +274,19 @@ public class MacroFunctions {
 	public static void getDimensions(final Variable width, final Variable height,
 		final Variable channels, final Variable slices, final Variable frames)
 	{
-		throw new RuntimeException("TODO");
+		final Dataset image = IJ2.getCurrentImage();
+		final long[] dims = image.getDims();
+		final Variable[] variables =
+			new Variable[] { width, height, channels, slices, frames };
+		final AxisType[] axes =
+			new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+		for (int i = 0; i < axes.length; i++) {
+			final int index = image.getAxisIndex(axes[i]);
+			variables[i].setValue(index < 0 ? 1 : dims[index]);
+		}
 	}
 
+	// TODO: support single-quoted strings
 	/**
 	 * Displays a "choose directory" dialog and returns the selected directory, or
 	 * returns the path to a specified directory, such as "plugins", "home", etc.
@@ -296,8 +323,11 @@ public class MacroFunctions {
 	/**
 	 * Returns the height in pixels of the current image.
 	 */
-	public static int getHeight() {
-		throw new RuntimeException("TODO");
+	public static long getHeight() {
+		final Dataset image = IJ2.getCurrentImage();
+		final long[] dims = image.getDims();
+		final int index = image.getAxisIndex(Axes.Y);
+		return index < 0 ? 1 : dims[index];
 	}
 
 	/**
@@ -528,12 +558,28 @@ public class MacroFunctions {
 	 * selection. x and y are the pixel coordinates of the upper left corner of
 	 * the rectangle. width and height are the width and height of the rectangle
 	 * in pixels. If there is no selection, returns (0, 0, ImageWidth,
-	 * ImageHeight). See also: selectionType and setSelectionLocation.
+	 * ImageHeight).
+	 * 
+	 * @see {@link #selectionType} and {@link #setSelectionLocation}.
 	 */
 	public static void getSelectionBounds(final Variable x, final Variable y,
 		final Variable width, final Variable height)
 	{
-		throw new RuntimeException("TODO");
+		if (IJ2.getCurrentSelection().size() == 0) {
+			final Dataset currentImage = IJ2.getCurrentImage();
+			x.setValue(0);
+			y.setValue(0);
+			final long[] dimensions = currentImage.getDims();
+			width.setValue(dimensions[0]);
+			height.setValue(dimensions[1]);
+		}
+		else {
+			final RealRect rectangle = IJ2.getCurrentSelectionBounds();
+			x.setValue(rectangle.x);
+			y.setValue(rectangle.y);
+			width.setValue(rectangle.width);
+			height.setValue(rectangle.height);
+		}
 	}
 
 	/**
@@ -591,14 +637,14 @@ public class MacroFunctions {
 	 * getDateAndTime.
 	 */
 	public static long getTime() {
-		throw new RuntimeException("TODO");
+		return System.currentTimeMillis();
 	}
 
 	/**
 	 * Returns the title of the current image.
 	 */
 	public static String getTitle() {
-		throw new RuntimeException("TODO");
+		return IJ2.getCurrentImage().getName();
 	}
 
 	/**
@@ -633,8 +679,11 @@ public class MacroFunctions {
 	/**
 	 * Returns the width in pixels of the current image.
 	 */
-	public static int getWidth() {
-		throw new RuntimeException("TODO");
+	public static long getWidth() {
+		final Dataset image = IJ2.getCurrentImage();
+		final long[] dims = image.getDims();
+		final int index = image.getAxisIndex(Axes.X);
+		return index < 0 ? 1 : dims[index];
 	}
 
 	/**
@@ -642,7 +691,7 @@ public class MacroFunctions {
 	 * 0.03125 to 32.0 (3.1% to 3200%).
 	 */
 	public static double getZoom() {
-		throw new RuntimeException("TODO");
+		return IJ2.getCurrentImageDisplay().getCanvas().getZoomFactor();
 	}
 
 	/**
@@ -705,7 +754,7 @@ public class MacroFunctions {
 	 * Returns number of open images. The parentheses "()" are optional.
 	 */
 	public static int nImages() {
-		throw new RuntimeException("TODO");
+		return ImageJ.get(ImageDisplayService.class).getImageDisplays().size();
 	}
 
 	/**
@@ -721,8 +770,12 @@ public class MacroFunctions {
 	 * image is not a stack. The parentheses "()" are optional. See also:
 	 * getSliceNumber,
 	 */
-	public static int nSlices() {
-		throw new RuntimeException("TODO");
+	public static long nSlices() {
+		final Dataset image = IJ2.getCurrentImage();
+		long result = 1;
+		for (final long dim : image.getDims())
+			result *= dim;
+		return result;
 	}
 
 	/**
@@ -2327,8 +2380,8 @@ public class MacroFunctions {
 		 * Creates a dialog box with the specified title. Call Dialog.addString(),
 		 * Dialog.addNumber(), etc. to add components to the dialog. Call
 		 * Dialog.show() to display the dialog and Dialog.getString(),
-		 * Dialog.getNumber(), etc. to retrieve the values entered by the user. Refer
-		 * to the DialogDemo macro for an example.
+		 * Dialog.getNumber(), etc. to retrieve the values entered by the user.
+		 * Refer to the DialogDemo macro for an example.
 		 */
 		public static void create(final String title) {
 			throw new RuntimeException("TODO");
@@ -2384,8 +2437,8 @@ public class MacroFunctions {
 		/**
 		 * Adds a slider controlled numeric field to the dialog, using the specified
 		 * label, and min, max and default values (example). Values with decimal
-		 * points are used when (max-min)<=5 and min, max or default are non-integer.
-		 * Requires 1.45f.
+		 * points are used when (max-min)<=5 and min, max or default are
+		 * non-integer. Requires 1.45f.
 		 */
 		public static void addSlider(final String label, final double min,
 			final double max, final double defaultValue)
@@ -2591,9 +2644,9 @@ public class MacroFunctions {
 		/**
 		 * Creates a new text file and returns a file variable that refers to it. To
 		 * write to the file, pass the file variable to the print function. Displays
-		 * a file save dialog box if path is an empty string. The file is closed when
-		 * the macro exits. Currently, only one file can be open at a time. For an
-		 * example, refer to the SaveTextFileDemo macro.
+		 * a file save dialog box if path is an empty string. The file is closed
+		 * when the macro exits. Currently, only one file can be open at a time. For
+		 * an example, refer to the SaveTextFileDemo macro.
 		 */
 		public static void open(final String path) {
 			throw new RuntimeException("TODO");
@@ -2668,8 +2721,8 @@ public class MacroFunctions {
 		/**
 		 * Fits the specified equation to the points defined by xpoints, ypoints.
 		 * Equation can be either the equation name or an index. The equation names
-		 * are shown in the drop down menu in the Analyze>Tools>Curve Fitting window.
-		 * With ImageJ 1.42f or later, equation can be a string containing a
+		 * are shown in the drop down menu in the Analyze>Tools>Curve Fitting
+		 * window. With ImageJ 1.42f or later, equation can be a string containing a
 		 * user-defined equation (example).
 		 */
 		public static void doFit(final String equation, final double[] xpoints,
@@ -2867,9 +2920,9 @@ public class MacroFunctions {
 		/**
 		 * Measures the current image or selection and loads the resulting parameter
 		 * names (as keys) and values. All parameters listed in the Analyze>Set
-		 * Measurements dialog box are measured. Use List.getValue() in an assignment
-		 * statement to retrieve the values. See the DrawEllipse macro for an
-		 * example.
+		 * Measurements dialog box are measured. Use List.getValue() in an
+		 * assignment statement to retrieve the values. See the DrawEllipse macro
+		 * for an example.
 		 */
 		public static void setMeasurements() {
 			throw new RuntimeException("TODO");
@@ -3044,8 +3097,8 @@ public class MacroFunctions {
 		/**
 		 * Specifies the width of the line used to draw a curve. Points (circle,
 		 * box, etc.) are also drawn larger if a line width greater than one is
-		 * specified. Note that the curve specified in create() is the last one drawn
-		 * before the plot is dispayed or updated.
+		 * specified. Note that the curve specified in create() is the last one
+		 * drawn before the plot is dispayed or updated.
 		 */
 		public static void setLineWidth(final int width) {
 			throw new RuntimeException("TODO");
@@ -3054,8 +3107,8 @@ public class MacroFunctions {
 		/**
 		 * Specifies the color used in subsequent calls to add() or addText(). The
 		 * argument can be "black", "blue", "cyan", "darkGray", "gray", "green",
-		 * "lightGray", "magenta", "orange", "pink", "red", "white" or "yellow". Note
-		 * that the curve specified in create() is drawn last.
+		 * "lightGray", "magenta", "orange", "pink", "red", "white" or "yellow".
+		 * Note that the curve specified in create() is drawn last.
 		 */
 		public static void setColor(final String name) {
 			throw new RuntimeException("TODO");
@@ -3326,6 +3379,33 @@ public class MacroFunctions {
 				throw new MacroException("No current image!");
 			}
 			return result;
+		}
+
+		public static ImageDisplay getCurrentImageDisplay() {
+			final ImageDisplay result =
+				ImageJ.get(ImageDisplayService.class).getActiveImageDisplay();
+			if (result == null) {
+				throw new MacroException("No current image!");
+			}
+			return result;
+		}
+
+		public static OverlayService getOverlayService() {
+			final OverlayService result = ImageJ.get(OverlayService.class);
+			if (result == null) {
+				throw new MacroException("No current ROI!");
+			}
+			return result;
+		}
+
+		public static RealRect getCurrentSelectionBounds() {
+			return getOverlayService().getSelectionBounds(getCurrentImageDisplay());
+		}
+
+		public static java.util.List<imagej.data.overlay.Overlay>
+			getCurrentSelection()
+		{
+			return getOverlayService().getOverlays(getCurrentImageDisplay());
 		}
 
 		public static TextDisplay getLog() {
