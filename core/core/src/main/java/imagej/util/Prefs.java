@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.util;
 
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -181,6 +182,12 @@ public final class Prefs {
 		prefs(c).putLong(key(c, name), value);
 	}
 
+	public static void
+		clear(final Class<?> c)
+	{
+		try { prefs(c).clear(); } catch (BackingStoreException e) {}
+	}
+	
 	// -- Helper methods --
 
 	private static Preferences prefs(final Class<?> c) {
