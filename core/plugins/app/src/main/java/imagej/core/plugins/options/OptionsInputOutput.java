@@ -81,6 +81,14 @@ public class OptionsInputOutput extends OptionsPlugin {
 
 	// -- OptionsInputOutput methods --
 
+
+	public OptionsInputOutput() {
+		// NOTE - this method needs to exist for each OptionsPlugin. If done in
+		// base class then load() happens before the @Parameter initialization.
+		// Thus persisted values get overwritten with initializers.
+		load();
+	}
+	
 	public int getJpegQuality() {
 		return jpegQuality;
 	}
