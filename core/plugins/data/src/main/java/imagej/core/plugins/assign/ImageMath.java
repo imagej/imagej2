@@ -45,7 +45,6 @@ import imagej.ext.plugin.Plugin;
 import java.util.HashMap;
 
 import net.imglib2.ops.BinaryOperation;
-import net.imglib2.ops.DiscreteNeigh;
 import net.imglib2.ops.Function;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.function.general.GeneralBinaryFunction;
@@ -137,14 +136,12 @@ public class ImageMath implements ImageJPlugin {
 			new GeneralBinaryFunction<long[], Real, Real, Real>(f1, f2, binOp);
 		output = input1.duplicateBlank();
 		final int numDims = output.getImgPlus().numDimensions();
+		final long[] origin = new long[numDims];
+		final long[] negOffs = new long[numDims];
 		final long[] posOffs = new long[numDims];
-		for (int i = 0; i < numDims; i++) {
-			posOffs[i] = input1.getImgPlus().dimension(i) - 1;
-		}
-		final DiscreteNeigh neigh =
-			new DiscreteNeigh(new long[numDims], new long[numDims], posOffs);
+		final long[] span = input1.getDims();
 		final RealImageAssignment assigner =
-			new RealImageAssignment(output.getImgPlus().getImg(), neigh, binFunc);
+			new RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc, negOffs, posOffs);
 		assigner.assign();
 	}
 
