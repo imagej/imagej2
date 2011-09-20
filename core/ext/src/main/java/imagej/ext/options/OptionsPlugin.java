@@ -99,13 +99,14 @@ public class OptionsPlugin implements RunnablePlugin {
 	}
 
 	/** Saves options to persistent storage. */
-	@SuppressWarnings("unchecked")
 	public void save() {
 		List<FieldInfo> fields = getFieldInfos();
 		for (FieldInfo info : fields) {
 			final Object value = ClassUtils.getValue(info.field, this);
 			// TODO - cast hack that seems to work for all types
-			((ModuleItem<Object>)info.moduleItem).saveValue(value);
+			@SuppressWarnings({ "unchecked" })
+			final ModuleItem<Object> item = (ModuleItem<Object>) info.moduleItem;
+			item.saveValue(value);
 		}
 	}
 
