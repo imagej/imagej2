@@ -72,11 +72,11 @@ public abstract class AbstractPreviewPlugin
 
 	private long[] planeOrigin;
 	
-	private long[] planeOffsets;
+	private long[] planeSpan;
 
 	private long[] imageOrigin;
 	
-	private long[] imageOffsets;
+	private long[] imageSpan;
 
 	private RegionIndexIterator iter;
 
@@ -158,9 +158,11 @@ public abstract class AbstractPreviewPlugin
 		}
 		
 		// calc span of preview plane
-		planeOffsets = new long[dims.length];
-		planeOffsets[xIndex] = w-1;
-		planeOffsets[yIndex] = h-1;
+		planeSpan = new long[dims.length];
+		for (int i = 0; i < planeSpan.length; i++)
+			planeSpan[i] = 1;
+		planeSpan[xIndex] = w;
+		planeSpan[yIndex] = h;
 		
 		// calc origin of image for actual data changes
 		imageOrigin = new long[dims.length];
@@ -170,11 +172,16 @@ public abstract class AbstractPreviewPlugin
 		imageOrigin[yIndex] = (long) bounds.y;
 
 		// calc span of image for actual data changes
-		imageOffsets = new long[dims.length];
-		for (int i = 0; i < imageOffsets.length; i++)
-			imageOffsets[i] = dims[i]-1;
-		imageOffsets[xIndex] = w-1;
-		imageOffsets[yIndex] = h-1;
+		imageSpan = new long[dims.length];
+		for (int i = 0; i < imageSpan.length; i++)
+			imageSpan[i] = dims[i];
+		imageSpan[xIndex] = w;
+		imageSpan[yIndex] = h;
+
+		// calc plane offsets for region iterator
+		long[] planeOffsets = new long[planeSpan.length];
+		for (int i = 0; i < planeOffsets.length; i++)
+			planeOffsets[i] = planeSpan[i] - 1;
 		
 		// setup region iterator
 		accessor = dataset.getImgPlus().randomAccess();
@@ -208,23 +215,22 @@ public abstract class AbstractPreviewPlugin
 	}
 
 	private void transformDataset() {
-		transformData(imageOrigin, imageOffsets);
+		transformData(imageOrigin, imageSpan);
 	}
 
 	private void transformViewedPlane() {
-		transformData(planeOrigin, planeOffsets);
+		transformData(planeOrigin, planeSpan);
 	}
 
-	private void transformData(long[] origin, long[] posOffsets) {
+	private void transformData(long[] origin, long[] span) {
 		RealImageFunction imageFunc =
 			new RealImageFunction(dataset.getImgPlus().getImg());
 		UnaryOperation<Real,Real> op = getOperation();
 		GeneralUnaryFunction<long[], Real, Real> function =
 			new GeneralUnaryFunction<long[], Real, Real>(imageFunc, op);
-		DiscreteNeigh neigh =
-			new DiscreteNeigh(origin, new long[origin.length], posOffsets);
 		RealImageAssignment assigner =
-			new RealImageAssignment(dataset.getImgPlus().getImg(), neigh, function);
+			new RealImageAssignment(dataset.getImgPlus().getImg(), origin, span,
+				function, new long[span.length], new long[span.length]);
 		assigner.assign();
 		dataset.update();
 	}

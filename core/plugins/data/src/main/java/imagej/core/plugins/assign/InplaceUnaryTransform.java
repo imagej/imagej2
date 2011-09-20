@@ -42,7 +42,6 @@ import imagej.data.display.OverlayService;
 import imagej.util.RealRect;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.DiscreteNeigh;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
@@ -62,7 +61,8 @@ public class InplaceUnaryTransform {
 	// -- instance variables --
 
 	private final Dataset dataset;
-
+	private long[] origin;
+	private long[] span;
 	private final RealImageAssignment assigner;
 
 	// -- constructor --
@@ -75,8 +75,8 @@ public class InplaceUnaryTransform {
 		final RealImageFunction f1 = new RealImageFunction(imgPlus.getImg());
 		final GeneralUnaryFunction<long[], Real, Real> function =
 			new GeneralUnaryFunction<long[], Real, Real>(f1, operation);
-		final DiscreteNeigh neigh = getNeighborhood(display);
-		assigner = new RealImageAssignment(imgPlus.getImg(), neigh, function);
+		setOriginAndSpan(display);
+		assigner = new RealImageAssignment(imgPlus.getImg(), origin, span, function, new long[span.length], new long[span.length]);
 	}
 
 	// -- public interface --
@@ -88,7 +88,7 @@ public class InplaceUnaryTransform {
 
 	// -- private helpers --
 
-	private DiscreteNeigh getNeighborhood(final ImageDisplay disp) {
+	private void setOriginAndSpan(final ImageDisplay disp) {
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
@@ -106,21 +106,18 @@ public class InplaceUnaryTransform {
 		final long h = (long) bounds.height;
 
 		// calc origin of image for actual data changes
-		final long[] imageOrigin = new long[dims.length];
-		for (int i = 0; i < imageOrigin.length; i++)
-			imageOrigin[i] = 0;
-		imageOrigin[xIndex] = (long) bounds.x;
-		imageOrigin[yIndex] = (long) bounds.y;
+		origin = new long[dims.length];
+		for (int i = 0; i < origin.length; i++)
+			origin[i] = 0;
+		origin[xIndex] = (long) bounds.x;
+		origin[yIndex] = (long) bounds.y;
 
 		// calc span of image for actual data changes
-		final long[] imageOffsets = new long[dims.length];
-		for (int i = 0; i < imageOffsets.length; i++)
-			imageOffsets[i] = dims[i] - 1;
-		imageOffsets[xIndex] = w - 1;
-		imageOffsets[yIndex] = h - 1;
-
-		return new DiscreteNeigh(imageOrigin, new long[imageOrigin.length],
-			imageOffsets);
+		span = new long[dims.length];
+		for (int i = 0; i < span.length; i++)
+			span[i] = dims[i] - 1;
+		span[xIndex] = w - 1;
+		span[yIndex] = h - 1;
 	}
 
 }
