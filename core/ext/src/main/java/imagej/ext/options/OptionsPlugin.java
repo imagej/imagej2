@@ -81,7 +81,10 @@ import imagej.util.ClassUtils;
 public class OptionsPlugin implements RunnablePlugin {
 
 	public OptionsPlugin() {
-		load();
+		// Removed. load() was happening before instance field initialization and
+		// thus persisted values overwritten in fields. This code pushed out to
+		// each OptionsPlugin implementation's default constructor.
+		//load();
 	}
 
 	/** Loads options from persistent storage. */
