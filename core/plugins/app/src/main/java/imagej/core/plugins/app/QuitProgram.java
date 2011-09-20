@@ -36,6 +36,7 @@ package imagej.core.plugins.app;
 
 import imagej.ImageJ;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
@@ -48,7 +49,10 @@ import imagej.ui.IUserInterface;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(iconPath = "/icons/plugins/door_in.png", menuPath = "File>Quit")
+@Plugin(iconPath = "/icons/plugins/door_in.png", menu = {
+		@Menu(label = "File"),
+		@Menu(label = "Quitt", weight = Double.MAX_VALUE, mnemonic = 'q',
+				accelerator = "control Q") })
 public class QuitProgram implements ImageJPlugin {
 
 	public static final String MESSAGE = "Really quit ImageJ?";
