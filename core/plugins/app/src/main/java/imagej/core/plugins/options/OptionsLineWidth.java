@@ -55,6 +55,13 @@ public class OptionsLineWidth extends OptionsPlugin {
 
 	// -- OptionsLineWidth methods --
 
+	public OptionsLineWidth() {
+		// NOTE - this method needs to exist for each OptionsPlugin. If done in
+		// base class then load() happens before the @Parameter initialization.
+		// Thus persisted values get overwritten with initializers.
+		load();
+	}
+	
 	public int getLineWidth() {
 		return lineWidth;
 	}
@@ -63,4 +70,25 @@ public class OptionsLineWidth extends OptionsPlugin {
 		this.lineWidth = lineWidth;
 	}
 
+	// TODO - remove this debugging code
+	
+	@Override
+	public void load() {
+		// TODO Auto-generated method stub
+		super.load();
+		//System.out.println("Just loaded from "+this+" and field value = "+lineWidth);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		super.run();
+		//System.out.println("Just run from "+this+" and field value = "+lineWidth);
+	}
+
+	@Override
+	public void save() {
+		//System.out.println("About to save from "+this+" and field value = "+lineWidth);
+		super.save();
+	}
 }

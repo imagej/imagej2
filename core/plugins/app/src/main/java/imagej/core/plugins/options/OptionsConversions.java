@@ -58,6 +58,13 @@ public class OptionsConversions extends OptionsPlugin {
 
 	// -- OptionsConversions methods --
 
+	public OptionsConversions() {
+		// NOTE - this method needs to exist for each OptionsPlugin. If done in
+		// base class then load() happens before the @Parameter initialization.
+		// Thus persisted values get overwritten with initializers.
+		load();
+	}
+	
 	public boolean isScaleWhenConverting() {
 		return scaleWhenConverting;
 	}
@@ -73,5 +80,4 @@ public class OptionsConversions extends OptionsPlugin {
 	public void setWeightedRgbConversions(final boolean weightedRgbConversions) {
 		this.weightedRgbConversions = weightedRgbConversions;
 	}
-
 }

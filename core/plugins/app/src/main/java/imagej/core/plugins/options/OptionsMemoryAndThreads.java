@@ -64,6 +64,14 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	// -- OptionsMemoryAndThreads methods --
 
+
+	public OptionsMemoryAndThreads() {
+		// NOTE - this method needs to exist for each OptionsPlugin. If done in
+		// base class then load() happens before the @Parameter initialization.
+		// Thus persisted values get overwritten with initializers.
+		load();
+	}
+	
 	public int getMaxMemory() {
 		return maxMemory;
 	}
