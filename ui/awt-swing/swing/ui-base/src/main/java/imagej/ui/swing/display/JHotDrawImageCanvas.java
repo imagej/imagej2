@@ -354,9 +354,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 	@Override
 	public RealCoords panelToImageCoords(final IntCoords panelCoords) {
-		final Point viewCoords = new Point(panelCoords.x, panelCoords.y);
-		final Point2D.Double drawCoords = drawingView.viewToDrawing(viewCoords);
-		return new RealCoords(drawCoords.x, drawCoords.y);
+		return canvasHelper.panelToImageCoords(panelCoords);
 	}
 
 	@Override
