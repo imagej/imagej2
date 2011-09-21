@@ -51,8 +51,7 @@ import net.imglib2.ops.operation.unary.real.RealReciprocal;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Reciprocal", weight = 16) })
 public class ReciprocalDataValues implements ImageJPlugin {
@@ -66,18 +65,20 @@ public class ReciprocalDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		OptionsService service = ImageJ.get(OptionsService.class);
-		String dbzString = (String) service.getOption(
-					"imagej.options.plugins.OptionsMisc",
-					"divByZeroVal");
+		final OptionsService service = ImageJ.get(OptionsService.class);
+		final String dbzString =
+			(String) service.getOption("imagej.options.plugins.OptionsMisc",
+				"divByZeroVal");
 		double dbzVal;
 		try {
 			dbzVal = Double.parseDouble(dbzString);
-		} catch (NumberFormatException e) {
+		}
+		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
-		UnaryOperation<Real,Real> op = new RealReciprocal(dbzVal);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
+		final UnaryOperation<Real, Real> op = new RealReciprocal(dbzVal);
+		final InplaceUnaryTransform transform =
+			new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
 
