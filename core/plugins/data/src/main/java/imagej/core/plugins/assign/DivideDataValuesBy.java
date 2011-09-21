@@ -40,6 +40,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
+import imagej.options.plugins.OptionsMisc;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealDivideConstant;
@@ -72,9 +73,8 @@ public class DivideDataValuesBy extends AbstractPreviewPlugin {
 	@Override
 	public UnaryOperation<Real, Real> getOperation() {
 		final OptionsService service = ImageJ.get(OptionsService.class);
-		final String dbzString =
-			(String) service.getOption("imagej.options.plugins.OptionsMisc",
-				"divByZeroVal");
+		final OptionsMisc optionsMisc = service.getOptions(OptionsMisc.class);
+		final String dbzString = optionsMisc.getDivByZeroVal();
 		double dbzVal;
 		try {
 			dbzVal = Double.parseDouble(dbzString);
