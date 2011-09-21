@@ -471,7 +471,10 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	}
 
 	private void syncZoom() {
+		final IntCoords origin = canvasHelper.getPanOrigin();
 		drawingView.setScaleFactor(canvasHelper.getZoomFactor());
+		scrollPane.validate();
+		canvasHelper.setPan(origin);
 	}
 
 	private void constrainOrigin(final IntCoords origin) {
