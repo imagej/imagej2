@@ -1,5 +1,5 @@
 //
-// OptionsFont.java
+// OptionsLineWidth.java
 //
 
 /*
@@ -32,77 +32,60 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Fonts dialog.
+ * Runs the Edit::Options::Line Width dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Fonts...", weight = 3) })
-public class OptionsFont extends OptionsPlugin {
+	@Menu(label = "Line Width...", weight = 1) })
+public class OptionsLineWidth extends OptionsPlugin {
 
-	// TODO populate font choices from system fonts? Nonportable here?
+	@Parameter(label = "Line Width", min = "1")
+	private int lineWidth = 1;
 
-	@Parameter(label = "Font")
-	private String font = "SansSerif";
+	// -- OptionsLineWidth methods --
 
-	@Parameter(label = "Size", min = "8", max = "72")
-	private int fontSize = 18;
-
-	// TODO - use enum for fontStyle
-
-	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
-		"Bold + Italic" })
-	private String fontStyle = "Plain";
-
-	@Parameter(label = "Smooth")
-	private boolean fontSmooth = true;
-
-	// -- OptionsFont methods --
-
-	public OptionsFont() {
+	public OptionsLineWidth() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public String getFont() {
-		return font;
+	public int getLineWidth() {
+		return lineWidth;
 	}
 
-	public int getFontSize() {
-		return fontSize;
+	public void setLineWidth(final int lineWidth) {
+		this.lineWidth = lineWidth;
 	}
 
-	public String getFontStyle() {
-		return fontStyle;
+	// TODO - remove this debugging code
+	
+	@Override
+	public void load() {
+		// TODO Auto-generated method stub
+		super.load();
+		//System.out.println("Just loaded from "+this+" and field value = "+lineWidth);
 	}
 
-	public boolean isFontSmooth() {
-		return fontSmooth;
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		super.run();
+		//System.out.println("Just run from "+this+" and field value = "+lineWidth);
 	}
 
-	public void setFont(final String font) {
-		this.font = font;
+	@Override
+	public void save() {
+		//System.out.println("About to save from "+this+" and field value = "+lineWidth);
+		super.save();
 	}
-
-	public void setFontSize(final int fontSize) {
-		this.fontSize = fontSize;
-	}
-
-	public void setFontStyle(final String fontStyle) {
-		this.fontStyle = fontStyle;
-	}
-
-	public void setFontSmooth(final boolean fontSmooth) {
-		this.fontSmooth = fontSmooth;
-	}
-
 }

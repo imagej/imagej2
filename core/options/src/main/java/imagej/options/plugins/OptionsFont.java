@@ -1,5 +1,5 @@
 //
-// OptionsColors.java
+// OptionsFont.java
 //
 
 /*
@@ -32,70 +32,77 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Colors dialog.
+ * Runs the Edit::Options::Fonts dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Colors...", weight = 9) })
-public class OptionsColors extends OptionsPlugin {
+	@Menu(label = "Fonts...", weight = 3) })
+public class OptionsFont extends OptionsPlugin {
 
-	// TODO - use ColorRGB for fgColor
+	// TODO populate font choices from system fonts? Nonportable here?
 
-	@Parameter(label = "Foreground", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" })
-	private String fgColor = "black";
+	@Parameter(label = "Font")
+	private String font = "SansSerif";
 
-	// TODO - use ColorRGB for bgColor
+	@Parameter(label = "Size", min = "8", max = "72")
+	private int fontSize = 18;
 
-	@Parameter(label = "Background", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" })
-	private String bgColor = "white";
+	// TODO - use enum for fontStyle
 
-	// TODO - use ColorRGB for selColor
+	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
+		"Bold + Italic" })
+	private String fontStyle = "Plain";
 
-	@Parameter(label = "Selection", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" })
-	private String selColor = "yellow";
+	@Parameter(label = "Smooth")
+	private boolean fontSmooth = true;
 
-	// -- OptionsColors methods --
+	// -- OptionsFont methods --
 
-	public OptionsColors() {
+	public OptionsFont() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public String getFgColor() {
-		return fgColor;
+	public String getFont() {
+		return font;
 	}
 
-	public String getBgColor() {
-		return bgColor;
+	public int getFontSize() {
+		return fontSize;
 	}
 
-	public String getSelColor() {
-		return selColor;
+	public String getFontStyle() {
+		return fontStyle;
 	}
 
-	public void setFgColor(final String fgColor) {
-		this.fgColor = fgColor;
+	public boolean isFontSmooth() {
+		return fontSmooth;
 	}
 
-	public void setBgColor(final String bgColor) {
-		this.bgColor = bgColor;
+	public void setFont(final String font) {
+		this.font = font;
 	}
 
-	public void setSelColor(final String selColor) {
-		this.selColor = selColor;
+	public void setFontSize(final int fontSize) {
+		this.fontSize = fontSize;
+	}
+
+	public void setFontStyle(final String fontStyle) {
+		this.fontStyle = fontStyle;
+	}
+
+	public void setFontSmooth(final boolean fontSmooth) {
+		this.fontSmooth = fontSmooth;
 	}
 
 }

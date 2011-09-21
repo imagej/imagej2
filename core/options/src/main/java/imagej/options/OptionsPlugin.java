@@ -32,17 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.options;
+package imagej.options;
 
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
-import imagej.ext.options.event.OptionsEvent;
 import imagej.ext.plugin.PluginModule;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.options.event.OptionsEvent;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 

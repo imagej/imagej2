@@ -36,11 +36,11 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.options.OptionsService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsService;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealReciprocal;
@@ -68,7 +68,7 @@ public class ReciprocalDataValues implements ImageJPlugin {
 	public void run() {
 		OptionsService service = ImageJ.get(OptionsService.class);
 		String dbzString = (String) service.getOption(
-					"imagej.core.plugins.options.OptionsMisc",
+					"imagej.options.plugins.OptionsMisc",
 					"divByZeroVal");
 		double dbzVal;
 		try {

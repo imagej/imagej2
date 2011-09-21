@@ -1,5 +1,5 @@
 //
-// OptionsWandTool.java
+// OptionsConversions.java
 //
 
 /*
@@ -32,53 +32,49 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Wand Tool dialog.
+ * Runs the Edit::Options::Conversions dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Wand Tool...", weight = 8) })
-public class OptionsWandTool extends OptionsPlugin {
+	@Menu(label = "Conversions...", weight = 11) })
+public class OptionsConversions extends OptionsPlugin {
 
-	// TODO - use an enum for mode
+	@Parameter(label = "Scale When Converting")
+	private boolean scaleWhenConverting = true;
 
-	@Parameter(label = "Mode",
-		choices = { "Legacy", "4-connected", "8-connected" })
-	private String mode = "Legacy";
+	@Parameter(label = "Weighted RGB Conversions")
+	private boolean weightedRgbConversions = false;
 
-	@Parameter(label = "Tolerance")
-	private double tolerance = 0;
+	// -- OptionsConversions methods --
 
-	// -- OptionsWandTool methods --
-
-	public OptionsWandTool() {
+	public OptionsConversions() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public String getMode() {
-		return mode;
+	public boolean isScaleWhenConverting() {
+		return scaleWhenConverting;
 	}
 
-	public double getTolerance() {
-		return tolerance;
+	public boolean isWeightedRgbConversions() {
+		return weightedRgbConversions;
 	}
 
-	public void setMode(final String mode) {
-		this.mode = mode;
+	public void setScaleWhenConverting(final boolean scaleWhenConverting) {
+		this.scaleWhenConverting = scaleWhenConverting;
 	}
 
-	public void setTolerance(final double tolerance) {
-		this.tolerance = tolerance;
+	public void setWeightedRgbConversions(final boolean weightedRgbConversions) {
+		this.weightedRgbConversions = weightedRgbConversions;
 	}
-
 }

@@ -1,5 +1,5 @@
 //
-// OptionsLineWidth.java
+// OptionsColors.java
 //
 
 /*
@@ -32,60 +32,70 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Line Width dialog.
+ * Runs the Edit::Options::Colors dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Line Width...", weight = 1) })
-public class OptionsLineWidth extends OptionsPlugin {
+	@Menu(label = "Colors...", weight = 9) })
+public class OptionsColors extends OptionsPlugin {
 
-	@Parameter(label = "Line Width", min = "1")
-	private int lineWidth = 1;
+	// TODO - use ColorRGB for fgColor
 
-	// -- OptionsLineWidth methods --
+	@Parameter(label = "Foreground", choices = { "red", "green", "blue",
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
+	private String fgColor = "black";
 
-	public OptionsLineWidth() {
+	// TODO - use ColorRGB for bgColor
+
+	@Parameter(label = "Background", choices = { "red", "green", "blue",
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
+	private String bgColor = "white";
+
+	// TODO - use ColorRGB for selColor
+
+	@Parameter(label = "Selection", choices = { "red", "green", "blue",
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
+	private String selColor = "yellow";
+
+	// -- OptionsColors methods --
+
+	public OptionsColors() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public int getLineWidth() {
-		return lineWidth;
+	public String getFgColor() {
+		return fgColor;
 	}
 
-	public void setLineWidth(final int lineWidth) {
-		this.lineWidth = lineWidth;
+	public String getBgColor() {
+		return bgColor;
 	}
 
-	// TODO - remove this debugging code
-	
-	@Override
-	public void load() {
-		// TODO Auto-generated method stub
-		super.load();
-		//System.out.println("Just loaded from "+this+" and field value = "+lineWidth);
+	public String getSelColor() {
+		return selColor;
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		super.run();
-		//System.out.println("Just run from "+this+" and field value = "+lineWidth);
+	public void setFgColor(final String fgColor) {
+		this.fgColor = fgColor;
 	}
 
-	@Override
-	public void save() {
-		//System.out.println("About to save from "+this+" and field value = "+lineWidth);
-		super.save();
+	public void setBgColor(final String bgColor) {
+		this.bgColor = bgColor;
 	}
+
+	public void setSelColor(final String selColor) {
+		this.selColor = selColor;
+	}
+
 }

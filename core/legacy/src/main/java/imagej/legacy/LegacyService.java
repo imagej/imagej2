@@ -49,8 +49,9 @@ import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.display.event.key.KyReleasedEvent;
-import imagej.ext.options.event.OptionsEvent;
 import imagej.legacy.patches.FunctionsMethods;
+import imagej.options.OptionsService;
+import imagej.options.event.OptionsEvent;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public final class LegacyService extends AbstractService {
 	}
 
 	private final EventService eventService;
+	private final OptionsService optionsService;
 	private final ImageDisplayService imageDisplayService;
 
 	/** Mapping between modern and legacy image data structures. */
@@ -102,14 +104,28 @@ public final class LegacyService extends AbstractService {
 	}
 
 	public LegacyService(final ImageJ context, final EventService eventService,
+		final OptionsService optionsService,
 		final ImageDisplayService imageDisplayService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.optionsService = optionsService;
 		this.imageDisplayService = imageDisplayService;
 	}
 
 	// -- LegacyService methods --
+
+	public EventService getEventService() {
+		return eventService;
+	}
+
+	public OptionsService getOptionsService() {
+		return optionsService;
+	}
+
+	public ImageDisplayService getImageDisplayService() {
+		return imageDisplayService;
+	}
 
 	public LegacyImageMap getImageMap() {
 		return imageMap;
@@ -152,7 +168,7 @@ public final class LegacyService extends AbstractService {
 	@Override
 	public void initialize() {
 		imageMap = new LegacyImageMap();
-		optionsSynchronizer = new OptionsSynchronizer();
+		optionsSynchronizer = new OptionsSynchronizer(optionsService);
 
 		// initialize legacy ImageJ application
 		try {

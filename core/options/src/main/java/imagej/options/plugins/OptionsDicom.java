@@ -1,5 +1,5 @@
 //
-// OptionsEvent.java
+// OptionsDicom.java
 //
 
 /*
@@ -32,35 +32,61 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.options.event;
+package imagej.options.plugins;
 
-import imagej.event.ImageJEvent;
-import imagej.ext.options.OptionsPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Fired when an IJ2 plugin has changed an option. Used by the legacy layer keep
- * IJ1 and IJ2 options in sync.
+ * Runs the Edit::Options::DICOM dialog.
  * 
  * @author Barry DeZonia
- * @author Curtis Rueden
  */
-public class OptionsEvent extends ImageJEvent {
+@Plugin(type = OptionsPlugin.class, menu = {
+	@Menu(label = "Edit", mnemonic = 'e'),
+	@Menu(label = "Options", mnemonic = 'o'),
+	@Menu(label = "DICOM...", weight = 15) })
+public class OptionsDicom extends OptionsPlugin {
 
-	private OptionsPlugin options;
+	@Parameter(label = "Open as 32-bit float")
+	private boolean openAs32bitFloat = false;
 
-	public OptionsEvent(final OptionsPlugin options) {
-		this.options = options;
+	@Parameter(label = "Orthogonal Views: Rotate YZ")
+	private boolean rotateYZ = false;
+
+	@Parameter(label = "Orthogonal Views: Rotate XZ")
+	private boolean rotateXZ = false;
+
+	// -- OptionsDicom methods --
+
+	public OptionsDicom() {
+		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public OptionsPlugin getOptions() {
-		return options;
+	public boolean isOpenAs32bitFloat() {
+		return openAs32bitFloat;
 	}
 
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return super.toString() + "\n\toptions = " + options;
+	public boolean isRotateYZ() {
+		return rotateYZ;
 	}
 
+	public boolean isRotateXZ() {
+		return rotateXZ;
+	}
+
+	public void setOpenAs32bitFloat(final boolean openAs32bitFloat) {
+		this.openAs32bitFloat = openAs32bitFloat;
+	}
+
+	public void setRotateYZ(final boolean rotateYZ) {
+		this.rotateYZ = rotateYZ;
+	}
+
+	public void setRotateXZ(final boolean rotateXZ) {
+		this.rotateXZ = rotateXZ;
+	}
+	
 }

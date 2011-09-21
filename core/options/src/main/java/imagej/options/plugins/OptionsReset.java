@@ -1,5 +1,5 @@
 //
-// OptionsRoundedRectangleTool.java
+// OptionsMisc.java
 //
 
 /*
@@ -32,77 +32,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
+import imagej.ImageJ;
+import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
+import imagej.options.OptionsService;
+import imagej.util.Prefs;
+
+import java.util.List;
 
 /**
- * Runs the Edit::Options::Rounded Rectangle Tool dialog.
+ * Runs the Edit::Options::Misc dialog.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = OptionsPlugin.class, menu = {
+@Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Rounded Rect Tool...", weight = 5) })
-public class OptionsRoundedRectangleTool extends OptionsPlugin {
+	@Menu(label = "Reset", weight = 17) })
+public class OptionsReset implements ImageJPlugin {
 
-	@Parameter(label = "Stroke Width", min = "1", max = "25")
-	private int strokeWidth = 2;
-
-	@Parameter(label = "Corner Diameter", min = "0", max = "200")
-	private int cornerDiameter = 20;
-
-	// TODO - use ColorRGB for strokeColor
-
-	@Parameter(label = "Stroke Color", choices = { "black", "white", "red",
-		"green", "blue", "cyan", "magenta", "yellow", "gray" })
-	private String strokeColor = "black";
-
-	// TODO - use ColorRGB for fillColor
-
-	@Parameter(label = "Fill Color", choices = { "none", "black", "white", "red",
-		"green", "blue", "cyan", "magenta", "yellow", "gray" })
-	private String fillColor = "none";
-
-	// -- OptionsRoundedRectangle methods --
-
-	public OptionsRoundedRectangleTool() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-	
-	public int getStrokeWidth() {
-		return strokeWidth;
-	}
-
-	public int getCornerDiameter() {
-		return cornerDiameter;
-	}
-
-	public String getStrokeColor() {
-		return strokeColor;
-	}
-
-	public String getFillColor() {
-		return fillColor;
-	}
-
-	public void setStrokeWidth(final int strokeWidth) {
-		this.strokeWidth = strokeWidth;
-	}
-
-	public void setCornerDiameter(final int cornerDiameter) {
-		this.cornerDiameter = cornerDiameter;
-	}
-
-	public void setStrokeColor(final String strokeColor) {
-		this.strokeColor = strokeColor;
-	}
-
-	public void setFillColor(final String fillColor) {
-		this.fillColor = fillColor;
+	@Override
+	public void run() {
+		OptionsService service = ImageJ.get(OptionsService.class);
+		List<OptionsPlugin> optionsPlugins = service.getOptions();
+		for (OptionsPlugin plugin : optionsPlugins) {
+			Prefs.clear(plugin.getClass());
+		}
 	}
 }
