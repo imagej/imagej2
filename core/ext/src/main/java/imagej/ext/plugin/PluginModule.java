@@ -66,6 +66,17 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 		assignPresets();
 	}
 
+	/**
+	 * Creates a plugin module for the given {@link PluginInfo}, around the
+	 * specified {@link RunnablePlugin} instance.
+	 */
+	public PluginModule(final PluginModuleInfo<R> info, final R plugin) {
+		super(info);
+		this.info = info;
+		this.plugin = plugin;
+		assignPresets();
+	}
+
 	// -- PluginModule methods --
 
 	/** Gets the plugin instance handled by this module. */
