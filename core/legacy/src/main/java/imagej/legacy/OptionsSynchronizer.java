@@ -53,7 +53,7 @@ import java.awt.Color;
 import java.awt.Font;
 
 /**
- * The {@link OptionsSynchronizer} bidirectionally synchronizes IJ2 Options with
+ * The options synchronizer bidirectionally synchronizes IJ2 options with
  * IJ1 settings and preferences. 
  * 
  * @author Barry DeZonia
