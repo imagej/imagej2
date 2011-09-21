@@ -316,13 +316,13 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@Override
 	public int getCanvasWidth() {
 		// NB: Return *unscaled* canvas width.
-		return (int) (drawingView.getPreferredSize().width / getZoomFactor());
+		return display.getActiveView().getPreferredWidth();
 	}
 
 	@Override
 	public int getCanvasHeight() {
 		// NB: Return *unscaled* canvas height.
-		return (int) (drawingView.getPreferredSize().height / getZoomFactor());
+		return display.getActiveView().getPreferredHeight();
 	}
 
 	@Override
