@@ -41,6 +41,8 @@ import imagej.ext.module.ModuleService;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +96,51 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		add(searchField);
 		add(new JScrollPane(commandsList), "grow,span 2");
 		add(showFullCheckbox, "center, span 2");
+
+		searchField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_DOWN:
+					commandsList.ensureIndexIsVisible(0);
+					commandsList.setSelectedIndex(0);
+					commandsList.grabFocus();
+					break;
+				case KeyEvent.VK_UP:
+					int index = commandsList.getModel().getSize() - 1;
+					commandsList.ensureIndexIsVisible(index);
+					commandsList.setSelectedIndex(index);
+					commandsList.grabFocus();
+					break;
+				default:
+					return;
+				}
+				e.consume();
+			}
+		});
+
+		commandsList.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int selected;
+
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_DOWN:
+					selected = commandsList.getSelectedIndex();
+					if (selected != commandsList.getModel().getSize() - 1) return;
+					searchField.grabFocus();
+					break;
+				case KeyEvent.VK_UP:
+					selected = commandsList.getSelectedIndex();
+					if (selected != 0) return;
+					searchField.grabFocus();
+					break;
+				default:
+					return;
+				}
+				e.consume();
+			}
+		});
 	}
 
 	// -- CommandFinderPanel methods --
