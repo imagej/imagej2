@@ -185,12 +185,6 @@ public class OptionsService extends AbstractService {
 		// no action needed
 	}
 
-	/*
-	public OptionsPlugin getInstance(String optionsPluginClassName) {
-		return null;
-	}
-	*/
-
 	// -- Helper methods --
 
 	private <P extends IPlugin> P createInstance(final PluginInfo<P> info) {
