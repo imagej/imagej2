@@ -50,6 +50,7 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = "Misc...", weight = 16) })
 public class OptionsMisc extends OptionsPlugin {
 
+	// TODO - use double instead of string for divide by zero value?
 	@Parameter(label = "Divide by zero value")
 	private String divByZeroVal = "Infinity";
 
