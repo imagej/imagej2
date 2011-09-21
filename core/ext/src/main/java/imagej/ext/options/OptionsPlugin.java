@@ -34,18 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.options;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.ImageJ;
-import imagej.event.Events;
+import imagej.event.EventService;
+import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.options.event.OptionsEvent;
+import imagej.ext.plugin.PluginModule;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
-import imagej.util.ClassUtils;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 
@@ -80,65 +77,54 @@ import imagej.util.ClassUtils;
  */
 public class OptionsPlugin implements RunnablePlugin {
 
-	public OptionsPlugin() {
-		// Removed. load() was happening before instance field initialization and
-		// thus persisted values overwritten in fields. This code pushed out to
-		// each OptionsPlugin implementation's default constructor.
-		//load();
-	}
+	// -- OptionsPlugin methods --
 
-	/** Loads options from persistent storage. */
+	/** Loads option values from persistent storage. */
 	public void load() {
-		List<FieldInfo> fields = getFieldInfos();
-		for (FieldInfo info : fields) {
-			final Object value = info.moduleItem.loadValue();
-			if (value != null) {
-				ClassUtils.setValue(info.field, this, value);
-			}
+		final PluginModule<?> module = createModule(this);
+		for (final ModuleItem<?> input : module.getInfo().inputs()) {
+			loadInput(module, input);
 		}
 	}
 
-	/** Saves options to persistent storage. */
+	/** Saves option values to persistent storage. */
 	public void save() {
-		List<FieldInfo> fields = getFieldInfos();
-		for (FieldInfo info : fields) {
-			final Object value = ClassUtils.getValue(info.field, this);
-			// TODO - cast hack that seems to work for all types
-			@SuppressWarnings({ "unchecked" })
-			final ModuleItem<Object> item = (ModuleItem<Object>) info.moduleItem;
-			item.saveValue(value);
+		final PluginModule<?> module = createModule(this);
+		for (final ModuleItem<?> input : module.getInfo().inputs()) {
+			saveInput(module, input);
 		}
 	}
+
+	// -- Runnable methods --
 
 	@Override
 	public void run() {
 		save();
-		Events.publish(new OptionsEvent(this));
-	}
-	
-	private class FieldInfo {
-		public ModuleItem<?> moduleItem;
-		public Field field;
+		final EventService eventService = ImageJ.get(EventService.class);
+		eventService.publish(new OptionsEvent(this));
 	}
 
-	@SuppressWarnings("synthetic-access")
-	private List<FieldInfo> getFieldInfos() {
-		
-		final ArrayList<FieldInfo> fields = new ArrayList<FieldInfo>();
-		
+	// -- Helper methods --
+
+	private <R extends RunnablePlugin> PluginModule<R>
+		createModule(final R plugin)
+	{
 		final PluginService pluginService = ImageJ.get(PluginService.class);
-		
-		final PluginModuleInfo<? extends OptionsPlugin> pluginInfo =
-				pluginService.getRunnablePlugin(this.getClass());
-
-		for (ModuleItem<?> input : pluginInfo.inputs()) {
-		
-			FieldInfo info = new FieldInfo();
-			info.moduleItem =	pluginInfo.getInput(input.getName());
-			info.field = ClassUtils.getField(getClass().getName(), input.getName());
-			fields.add(info);
-		}
-		
-		return fields;
+		@SuppressWarnings("unchecked")
+		final Class<R> pluginClass = (Class<R>) plugin.getClass();
+		final PluginModuleInfo<R> info =
+			pluginService.getRunnablePlugin(pluginClass);
+		return new PluginModule<R>(info, plugin);
 	}
+
+	private <T> void loadInput(final Module module, final ModuleItem<T> input) {
+		final T value = input.loadValue();
+		input.setValue(module, value);
+	}
+
+	private <T> void saveInput(final Module module, final ModuleItem<T> input) {
+		final T value = input.getValue(module);
+		input.saveValue(value);
+	}
+
 }
