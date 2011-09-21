@@ -327,7 +327,7 @@ public class OptionsSynchronizer {
 		ij.gui.PlotWindow.autoClose = optionsProfilePlot.isAutoClose();
 		ij.gui.PlotWindow.saveXValues = !optionsProfilePlot.isNoSaveXValues();
 		ij.gui.PlotWindow.noGridLines = !optionsProfilePlot.isDrawGridLines();
-		boolean fixedScale = optionsProfilePlot.isyFixedScale();
+		boolean fixedScale = optionsProfilePlot.isYFixedScale();
 		ij.gui.PlotWindow.plotHeight = optionsProfilePlot.getHeight();
 		ij.gui.PlotWindow.interpolate = optionsProfilePlot.isInterpLineProf();
 		ij.gui.PlotWindow.listValues = optionsProfilePlot.isListValues();

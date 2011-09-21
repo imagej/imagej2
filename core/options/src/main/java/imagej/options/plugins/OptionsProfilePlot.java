@@ -105,7 +105,7 @@ public class OptionsProfilePlot extends OptionsPlugin {
 		return maxY;
 	}
 
-	public boolean isyFixedScale() {
+	public boolean isYFixedScale() {
 		return yFixedScale;
 	}
 
