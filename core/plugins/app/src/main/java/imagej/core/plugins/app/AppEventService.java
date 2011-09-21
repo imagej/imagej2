@@ -32,14 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins;
+package imagej.core.plugins.app;
 
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
-import imagej.core.plugins.app.AboutImageJ;
-import imagej.core.plugins.app.QuitProgram;
-import imagej.core.plugins.app.ShowPrefs;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.plugin.PluginService;
