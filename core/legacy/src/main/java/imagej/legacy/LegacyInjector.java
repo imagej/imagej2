@@ -65,7 +65,8 @@ public class LegacyInjector {
 		// override behavior of ij.ImagePlus
 		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
 		hacker.insertAfterMethod("ij.ImagePlus", "public void repaintWindow()");
-		hacker.insertAfterMethod("ij.ImagePlus", "public void show(java.lang.String statusMessage)");
+		hacker.insertAfterMethod("ij.ImagePlus",
+			"public void show(java.lang.String statusMessage)");
 		hacker.insertAfterMethod("ij.ImagePlus", "public void hide()");
 		hacker.loadClass("ij.ImagePlus");
 
@@ -93,13 +94,6 @@ public class LegacyInjector {
 				"public void run(java.lang.String arg)", ";");
 			hacker.loadClass("MacAdapter");
 		}
-
-		// override behavior of ij.Prefs
-		//hacker.replaceMethod("ij.Prefs",
-		//	"public static String get(java.lang.String key, java.lang.String defaultValue)");
-		hacker.insertAfterMethod("ij.Prefs",
-			"public static void set(java.lang.String key, java.lang.String text)");
-		hacker.loadClass("ij.Prefs");
 	}
 
 }
