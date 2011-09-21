@@ -1,5 +1,5 @@
 //
-// OptionsDicom.java
+// OptionsRoundedRectangleTool.java
 //
 
 /*
@@ -32,61 +32,77 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::DICOM dialog.
+ * Runs the Edit::Options::Rounded Rectangle Tool dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "DICOM...", weight = 15) })
-public class OptionsDicom extends OptionsPlugin {
+	@Menu(label = "Rounded Rect Tool...", weight = 5) })
+public class OptionsRoundedRectangleTool extends OptionsPlugin {
 
-	@Parameter(label = "Open as 32-bit float")
-	private boolean openAs32bitFloat = false;
+	@Parameter(label = "Stroke Width", min = "1", max = "25")
+	private int strokeWidth = 2;
 
-	@Parameter(label = "Orthogonal Views: Rotate YZ")
-	private boolean rotateYZ = false;
+	@Parameter(label = "Corner Diameter", min = "0", max = "200")
+	private int cornerDiameter = 20;
 
-	@Parameter(label = "Orthogonal Views: Rotate XZ")
-	private boolean rotateXZ = false;
+	// TODO - use ColorRGB for strokeColor
 
-	// -- OptionsDicom methods --
+	@Parameter(label = "Stroke Color", choices = { "black", "white", "red",
+		"green", "blue", "cyan", "magenta", "yellow", "gray" })
+	private String strokeColor = "black";
 
-	public OptionsDicom() {
+	// TODO - use ColorRGB for fillColor
+
+	@Parameter(label = "Fill Color", choices = { "none", "black", "white", "red",
+		"green", "blue", "cyan", "magenta", "yellow", "gray" })
+	private String fillColor = "none";
+
+	// -- OptionsRoundedRectangle methods --
+
+	public OptionsRoundedRectangleTool() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-
-	public boolean isOpenAs32bitFloat() {
-		return openAs32bitFloat;
-	}
-
-	public boolean isRotateYZ() {
-		return rotateYZ;
-	}
-
-	public boolean isRotateXZ() {
-		return rotateXZ;
-	}
-
-	public void setOpenAs32bitFloat(final boolean openAs32bitFloat) {
-		this.openAs32bitFloat = openAs32bitFloat;
-	}
-
-	public void setRotateYZ(final boolean rotateYZ) {
-		this.rotateYZ = rotateYZ;
-	}
-
-	public void setRotateXZ(final boolean rotateXZ) {
-		this.rotateXZ = rotateXZ;
-	}
 	
+	public int getStrokeWidth() {
+		return strokeWidth;
+	}
+
+	public int getCornerDiameter() {
+		return cornerDiameter;
+	}
+
+	public String getStrokeColor() {
+		return strokeColor;
+	}
+
+	public String getFillColor() {
+		return fillColor;
+	}
+
+	public void setStrokeWidth(final int strokeWidth) {
+		this.strokeWidth = strokeWidth;
+	}
+
+	public void setCornerDiameter(final int cornerDiameter) {
+		this.cornerDiameter = cornerDiameter;
+	}
+
+	public void setStrokeColor(final String strokeColor) {
+		this.strokeColor = strokeColor;
+	}
+
+	public void setFillColor(final String fillColor) {
+		this.fillColor = fillColor;
+	}
 }

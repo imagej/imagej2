@@ -1,5 +1,5 @@
 //
-// OptionsMemoryAndThreads.java
+// OptionsScript.java
 //
 
 /*
@@ -32,73 +32,41 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Memory &amp; Threads dialog.
+ * Runs the Plugins::Script::Options dialog.
  * 
- * @author Barry DeZonia
+ * @author Grant Harris
  */
 @Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Memory & Threads...", weight = 12) })
-public class OptionsMemoryAndThreads extends OptionsPlugin {
+	@Menu(label = "Plugins", mnemonic = 'p'),
+	@Menu(label = "Script", mnemonic = 's'),
+	@Menu(label = "Options...", weight = 3) })
+public class OptionsScript extends OptionsPlugin {
 
-	@Parameter(label = "Maximum memory (MB)")
-	private int maxMemory = 512;
+	/** Scripting language to use when recording macros. */
+	// TODO - initial value faked for now
+	@Parameter(label = "Scripting Language")
+	private String scriptingLang = "javascript";
 
-	@Parameter(label = "Parallel threads for stacks")
-	private int stackThreads = 2;
+	// -- OptionsScript methods --
 
-	@Parameter(label = "Keep multiple undo buffers")
-	private boolean multipleBuffers = false;
-
-	@Parameter(label = "Run garbage collector on status bar click")
-	private boolean runGcOnClick = true;
-
-	// -- OptionsMemoryAndThreads methods --
-
-
-	public OptionsMemoryAndThreads() {
+	public OptionsScript() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public int getMaxMemory() {
-		return maxMemory;
+	public String getScriptingLang() {
+		return scriptingLang;
 	}
 
-	public int getStackThreads() {
-		return stackThreads;
-	}
-
-	public boolean isMultipleBuffers() {
-		return multipleBuffers;
-	}
-
-	public boolean isRunGcOnClick() {
-		return runGcOnClick;
-	}
-
-	public void setMaxMemory(final int maxMemory) {
-		this.maxMemory = maxMemory;
-	}
-
-	public void setStackThreads(final int stackThreads) {
-		this.stackThreads = stackThreads;
-	}
-
-	public void setMultipleBuffers(final boolean multipleBuffers) {
-		this.multipleBuffers = multipleBuffers;
-	}
-
-	public void setRunGcOnClick(final boolean runGcOnClick) {
-		this.runGcOnClick = runGcOnClick;
+	public void setScriptingLang(final String scriptingLang) {
+		this.scriptingLang = scriptingLang;
 	}
 
 }

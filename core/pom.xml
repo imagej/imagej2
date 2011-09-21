@@ -23,6 +23,7 @@
 		<module>ext</module>
 		<module>io</module>
 		<module>legacy</module>
+		<module>options</module>
 		<module>platform</module>
 		<module>plugins</module>
 		<module>tools</module>

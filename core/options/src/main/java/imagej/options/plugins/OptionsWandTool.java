@@ -1,5 +1,5 @@
 //
-// OptionsArrowTool.java
+// OptionsWandTool.java
 //
 
 /*
@@ -32,100 +32,53 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Arrow Tool dialog.
+ * Runs the Edit::Options::Wand Tool dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Arrow Tool...", weight = 6) })
-public class OptionsArrowTool extends OptionsPlugin {
+	@Menu(label = "Wand Tool...", weight = 8) })
+public class OptionsWandTool extends OptionsPlugin {
 
-	@Parameter(label = "Width", min = "1", max = "50")
-	private int arrowWidth = 2;
+	// TODO - use an enum for mode
 
-	@Parameter(label = "Size", min = "0", max = "30")
-	private int arrowSize = 10;
+	@Parameter(label = "Mode",
+		choices = { "Legacy", "4-connected", "8-connected" })
+	private String mode = "Legacy";
 
-	// TODO - use ColorRGB for arrowColor
+	@Parameter(label = "Tolerance")
+	private double tolerance = 0;
 
-	@Parameter(label = "Color", choices = { "red", "green", "blue", "magenta",
-		"cyan", "yellow", "orange", "black", "white" })
-	private String arrowColor = "black";
+	// -- OptionsWandTool methods --
 
-	// TODO - use enum for arrowStyle
-
-	@Parameter(label = "Style", choices = { "Filled", "Notched", "Open",
-		"Headless" })
-	private String arrowStyle = "Filled";
-
-	@Parameter(label = "Outline")
-	private boolean arrowOutline = false;
-
-	@Parameter(label = "Double headed")
-	private boolean arrowDoubleHeaded = false;
-
-	// -- OptionsArrowTool methods --
-
-	public OptionsArrowTool() {
+	public OptionsWandTool() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public int getArrowWidth() {
-		return arrowWidth;
+	public String getMode() {
+		return mode;
 	}
 
-	public int getArrowSize() {
-		return arrowSize;
+	public double getTolerance() {
+		return tolerance;
 	}
 
-	public String getArrowColor() {
-		return arrowColor;
+	public void setMode(final String mode) {
+		this.mode = mode;
 	}
 
-	public String getArrowStyle() {
-		return arrowStyle;
-	}
-
-	public boolean isArrowOutline() {
-		return arrowOutline;
-	}
-
-	public boolean isArrowDoubleHeaded() {
-		return arrowDoubleHeaded;
-	}
-
-	public void setArrowWidth(final int arrowWidth) {
-		this.arrowWidth = arrowWidth;
-	}
-
-	public void setArrowSize(final int arrowSize) {
-		this.arrowSize = arrowSize;
-	}
-
-	public void setArrowColor(final String arrowColor) {
-		this.arrowColor = arrowColor;
-	}
-
-	public void setArrowStyle(final String arrowStyle) {
-		this.arrowStyle = arrowStyle;
-	}
-
-	public void setArrowOutline(final boolean arrowOutline) {
-		this.arrowOutline = arrowOutline;
-	}
-
-	public void setArrowDoubleHeaded(final boolean arrowDoubleHeaded) {
-		this.arrowDoubleHeaded = arrowDoubleHeaded;
+	public void setTolerance(final double tolerance) {
+		this.tolerance = tolerance;
 	}
 
 }

@@ -1,5 +1,5 @@
 //
-// OptionsConversions.java
+// OptionsPointTool.java
 //
 
 /*
@@ -32,49 +32,97 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.plugins;
 
-import imagej.ext.options.OptionsPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Conversions dialog.
+ * Runs the Edit::Options::Point Tool dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Conversions...", weight = 11) })
-public class OptionsConversions extends OptionsPlugin {
+	@Menu(label = "Point Tool...", weight = 7) })
+public class OptionsPointTool extends OptionsPlugin {
 
-	@Parameter(label = "Scale When Converting")
-	private boolean scaleWhenConverting = true;
+	@Parameter(label = "Mark Width (pixels)")
+	private int markWidth = 0;
 
-	@Parameter(label = "Weighted RGB Conversions")
-	private boolean weightedRgbConversions = false;
+	@Parameter(label = "Auto-Measure")
+	private boolean autoMeasure = false;
 
-	// -- OptionsConversions methods --
+	@Parameter(label = "Auto-Next Slice")
+	private boolean autoNextSlice = false;
 
-	public OptionsConversions() {
+	@Parameter(label = "Add to ROI Manager")
+	private boolean addToRoiMgr = false;
+
+	@Parameter(label = "Label Points")
+	private boolean labelPoints = true;
+
+	// TODO - use ColorRGB for selectionColor
+
+	@Parameter(label = "Selection Color", choices = { "red", "green", "blue",
+		"magenta", "cyan", "yellow", "orange", "black", "white" })
+	private String selectionColor = "yellow";
+
+	// -- OptionsPointTool methods --
+
+	public OptionsPointTool() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public boolean isScaleWhenConverting() {
-		return scaleWhenConverting;
+	public int getMarkWidth() {
+		return markWidth;
 	}
 
-	public boolean isWeightedRgbConversions() {
-		return weightedRgbConversions;
+	public boolean isAutoMeasure() {
+		return autoMeasure;
 	}
 
-	public void setScaleWhenConverting(final boolean scaleWhenConverting) {
-		this.scaleWhenConverting = scaleWhenConverting;
+	public boolean isAutoNextSlice() {
+		return autoNextSlice;
 	}
 
-	public void setWeightedRgbConversions(final boolean weightedRgbConversions) {
-		this.weightedRgbConversions = weightedRgbConversions;
+	public boolean isAddToRoiMgr() {
+		return addToRoiMgr;
 	}
+
+	public boolean isLabelPoints() {
+		return labelPoints;
+	}
+
+	public String getSelectionColor() {
+		return selectionColor;
+	}
+
+	public void setMarkWidth(final int markWidth) {
+		this.markWidth = markWidth;
+	}
+
+	public void setAutoMeasure(final boolean autoMeasure) {
+		this.autoMeasure = autoMeasure;
+	}
+
+	public void setAutoNextSlice(final boolean autoNextSlice) {
+		this.autoNextSlice = autoNextSlice;
+	}
+
+	public void setAddToRoiMgr(final boolean addToRoiMgr) {
+		this.addToRoiMgr = addToRoiMgr;
+	}
+
+	public void setLabelPoints(final boolean labelPoints) {
+		this.labelPoints = labelPoints;
+	}
+
+	public void setSelectionColor(final String selectionColor) {
+		this.selectionColor = selectionColor;
+	}
+
 }

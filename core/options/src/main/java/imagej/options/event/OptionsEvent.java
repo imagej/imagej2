@@ -1,5 +1,5 @@
 //
-// OptionsScript.java
+// OptionsEvent.java
 //
 
 /*
@@ -32,41 +32,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.options;
+package imagej.options.event;
 
-import imagej.ext.options.OptionsPlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.event.ImageJEvent;
+import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Plugins::Script::Options dialog.
+ * Fired when an IJ2 plugin has changed an option. Used by the legacy layer keep
+ * IJ1 and IJ2 options in sync.
  * 
- * @author Grant Harris
+ * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = "Plugins", mnemonic = 'p'),
-	@Menu(label = "Script", mnemonic = 's'),
-	@Menu(label = "Options...", weight = 3) })
-public class OptionsScript extends OptionsPlugin {
+public class OptionsEvent extends ImageJEvent {
 
-	/** Scripting language to use when recording macros. */
-	// TODO - initial value faked for now
-	@Parameter(label = "Scripting Language")
-	private String scriptingLang = "javascript";
+	private OptionsPlugin options;
 
-	// -- OptionsScript methods --
-
-	public OptionsScript() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-	
-	public String getScriptingLang() {
-		return scriptingLang;
+	public OptionsEvent(final OptionsPlugin options) {
+		this.options = options;
 	}
 
-	public void setScriptingLang(final String scriptingLang) {
-		this.scriptingLang = scriptingLang;
+	public OptionsPlugin getOptions() {
+		return options;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\toptions = " + options;
 	}
 
 }
