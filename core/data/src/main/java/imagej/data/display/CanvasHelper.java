@@ -241,7 +241,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 				Math.max(canvas.getCanvasWidth(), canvas.getCanvasHeight());
 
 			// if zooming the image would show less than one pixel of image data
-			if ((maxDimension / getZoomFactor()) < 1) return true;
+			if (maxDimension / desiredScale < 1) return true;
 		}
 
 		// check if trying to zoom out too far
