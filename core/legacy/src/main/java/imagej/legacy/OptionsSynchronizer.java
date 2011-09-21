@@ -369,37 +369,48 @@ public class OptionsSynchronizer {
 	}
 	
 	private void setOptionsFromPublicStatics() {
-		optionsService.setOption(OptionsAppearance.class, "antialiasedToolIcons", Prefs.antialiasedTools);
-		optionsService.setOption(OptionsAppearance.class, "blackCanvas", Prefs.blackCanvas);
-		optionsService.setOption(OptionsAppearance.class, "fullZoomImages",Prefs.open100Percent);
-		optionsService.setOption(OptionsAppearance.class, "interpZoomedImages",Prefs.interpolateScaledImages);
-		optionsService.setOption(OptionsAppearance.class, "noImageBorder",Prefs.noBorder);
-		optionsService.setOption(OptionsAppearance.class, "useInvertingLUT",Prefs.useInvertingLut);
+		final OptionsAppearance optionsAppearance = optionsService.getOptions(OptionsAppearance.class);
+		optionsAppearance.setAntialiasedToolIcons(Prefs.antialiasedTools);
+		optionsAppearance.setBlackCanvas(Prefs.blackCanvas);
+		optionsAppearance.setFullZoomImages(Prefs.open100Percent);
+		optionsAppearance.setInterpZoomedImages(Prefs.interpolateScaledImages);
+		optionsAppearance.setNoImageBorder(Prefs.noBorder);
+		optionsAppearance.setUseInvertingLUT(Prefs.useInvertingLut);
+
+		final OptionsArrowTool optionsArrowTool = optionsService.getOptions(OptionsArrowTool.class);
 		boolean arrowTwoHeads = Arrow.getDefaultDoubleHeaded();
-		optionsService.setOption(OptionsArrowTool.class,"arrowDoubleHeaded", arrowTwoHeads);
+		optionsArrowTool.setArrowDoubleHeaded(arrowTwoHeads);
 		boolean arrowOutline = Arrow.getDefaultOutline();
-		optionsService.setOption(OptionsArrowTool.class,"arrowOutline", arrowOutline);
+		optionsArrowTool.setArrowOutline(arrowOutline);
 		int arrowSize = (int)Arrow.getDefaultHeadSize();
-		optionsService.setOption(OptionsArrowTool.class,"arrowSize", arrowSize);
+		optionsArrowTool.setArrowSize( arrowSize);
 		int arrowStyle = Arrow.getDefaultStyle();
 		String arrowStyleName;
 		if (arrowStyle == 1) arrowStyleName = "Notched";
 		else if (arrowStyle == 2) arrowStyleName = "Open";
 		else if (arrowStyle == 3) arrowStyleName = "Headless";
 		else arrowStyleName = "Filled";
-		optionsService.setOption(OptionsArrowTool.class,"arrowStyle", arrowStyleName);
+		optionsArrowTool.setArrowStyle( arrowStyleName);
 		int arrowWidth = (int) Arrow.getDefaultWidth();
-		optionsService.setOption(OptionsArrowTool.class,"arrowWidth",arrowWidth);
-		optionsService.setOption(OptionsColors.class,"fgColor", Toolbar.getForegroundColor());
-		optionsService.setOption(OptionsColors.class,"bgColor", Toolbar.getBackgroundColor());
-		optionsService.setOption(OptionsColors.class,"selColor",Roi.getColor());
-		optionsService.setOption(OptionsConversions.class,"scaleWhenConverting", ImageConverter.getDoScaling());
-		optionsService.setOption(OptionsConversions.class,"weightedRgbConversions",Prefs.weightedColor);
-		optionsService.setOption(OptionsDicom.class,"openAs32bitFloat",Prefs.openDicomsAsFloat);
-		optionsService.setOption(OptionsDicom.class,"rotateXZ",Prefs.flipXZ);
-		optionsService.setOption(OptionsDicom.class,"rotateYZ",Prefs.rotateYZ);
-		optionsService.setOption(OptionsFont.class,"font", TextRoi.getFont());
-		optionsService.setOption(OptionsFont.class,"fontSize", TextRoi.getSize());
+		optionsArrowTool.setArrowWidth(arrowWidth);
+
+		final OptionsColors optionsColors = optionsService.getOptions(OptionsColors.class);
+		optionsColors.setFgColor( Toolbar.getForegroundColor().toString());
+		optionsColors.setBgColor( Toolbar.getBackgroundColor().toString());
+		optionsColors.setSelColor(Roi.getColor().toString());
+
+		final OptionsConversions optionsConversions = optionsService.getOptions(OptionsConversions.class);		
+		optionsConversions.setScaleWhenConverting( ImageConverter.getDoScaling());
+		optionsConversions.setWeightedRgbConversions(Prefs.weightedColor);
+		
+		final OptionsDicom optionsDicom = optionsService.getOptions(OptionsDicom.class);
+		optionsDicom.setOpenAs32bitFloat(Prefs.openDicomsAsFloat);
+		optionsDicom.setRotateXZ(Prefs.flipXZ);
+		optionsDicom.setRotateYZ(Prefs.rotateYZ);
+		
+		final OptionsFont optionsFont = optionsService.getOptions(OptionsFont.class);
+		optionsFont.setFont( TextRoi.getFont());
+		optionsFont.setFontSize( TextRoi.getSize());
 		String fontStyleString;
 		int tmp = TextRoi.getStyle();
 		if (tmp == Font.BOLD + Font.ITALIC)
@@ -410,46 +421,60 @@ public class OptionsSynchronizer {
 			fontStyleString = "Italic";
 		else
 			fontStyleString = "";
-		optionsService.setOption(OptionsFont.class,"fontStyle", fontStyleString);
-		optionsService.setOption(OptionsInputOutput.class,"copyColumnHeaders",Prefs.copyColumnHeaders);
-		optionsService.setOption(OptionsInputOutput.class,"copyRowNumbers",!Prefs.noRowNumbers);
-		optionsService.setOption(OptionsInputOutput.class,"jpegQuality", FileSaver.getJpegQuality());
-		optionsService.setOption(OptionsInputOutput.class,"saveColumnHeaders", !Prefs.dontSaveHeaders);
-		optionsService.setOption(OptionsInputOutput.class,"saveOrderIntel",Prefs.intelByteOrder);
-		optionsService.setOption(OptionsInputOutput.class,"saveRowNumbers", !Prefs.dontSaveRowNumbers);
-		optionsService.setOption(OptionsInputOutput.class,"transparentIndex", Prefs.getTransparentIndex());
-		optionsService.setOption(OptionsInputOutput.class,"useJFileChooser",Prefs.useJFileChooser);
-		optionsService.setOption(OptionsLineWidth.class,"lineWidth", Line.getWidth());
-		optionsService.setOption(OptionsMemoryAndThreads.class,"multipleBuffers",Prefs.keepUndoBuffers);
-		optionsService.setOption(OptionsMemoryAndThreads.class,"runGcOnClick",!Prefs.noClickToGC);
-		optionsService.setOption(OptionsMemoryAndThreads.class,"stackThreads", Prefs.getThreads());
+		optionsFont.setFontStyle( fontStyleString);
+		
+		final OptionsInputOutput optionsInputOutput = optionsService.getOptions(OptionsInputOutput.class);
+		optionsInputOutput.setCopyColumnHeaders(Prefs.copyColumnHeaders);
+		optionsInputOutput.setCopyRowNumbers(!Prefs.noRowNumbers);
+		optionsInputOutput.setJpegQuality( FileSaver.getJpegQuality());
+		optionsInputOutput.setSaveColumnHeaders( !Prefs.dontSaveHeaders);
+		optionsInputOutput.setSaveOrderIntel(Prefs.intelByteOrder);
+		optionsInputOutput.setSaveRowNumbers( !Prefs.dontSaveRowNumbers);
+		optionsInputOutput.setTransparentIndex( Prefs.getTransparentIndex());
+		optionsInputOutput.setUseJFileChooser(Prefs.useJFileChooser);
+
+		final OptionsLineWidth optionsLineWidth = optionsService.getOptions(OptionsLineWidth.class);
+		optionsLineWidth.setLineWidth( Line.getWidth());
+
+		final OptionsMemoryAndThreads optionsMemoryAndThreads = optionsService.getOptions(OptionsMemoryAndThreads.class);
+		optionsMemoryAndThreads.setMultipleBuffers(Prefs.keepUndoBuffers);
+		optionsMemoryAndThreads.setRunGcOnClick(!Prefs.noClickToGC);
+		optionsMemoryAndThreads.setStackThreads( Prefs.getThreads());
+
+		final OptionsMisc optionsMisc = optionsService.getOptions(OptionsMisc.class);
 		String dbzString = new Float(FloatBlitter.divideByZeroValue).toString();
-		optionsService.setOption(OptionsMisc.class,"divByZeroVal", dbzString);
-		optionsService.setOption(OptionsMisc.class,"debugMode",IJ.debugMode);
-		optionsService.setOption(OptionsMisc.class,"hideProcessStackDialog",IJ.hideProcessStackDialog);
-		optionsService.setOption(OptionsMisc.class,"moveIsolatedPlugins",Prefs.moveToMisc);
-		optionsService.setOption(OptionsMisc.class,"usePtrCursor",Prefs.usePointerCursor);
-		optionsService.setOption(OptionsMisc.class,"requireCommandKey",Prefs.requireControlKey);
-		optionsService.setOption(OptionsMisc.class,"runSingleInstanceListener",Prefs.runSocketListener);
-		optionsService.setOption(OptionsPointTool.class,"addToRoiMgr",Prefs.pointAddToManager);
-		optionsService.setOption(OptionsPointTool.class,"autoMeasure",Prefs.pointAutoMeasure);
-		optionsService.setOption(OptionsPointTool.class,"autoNextSlice",Prefs.pointAutoNextSlice);
-		optionsService.setOption(OptionsPointTool.class,"labelPoints",!Prefs.noPointLabels);
-		optionsService.setOption(OptionsPointTool.class,"markWidth",Analyzer.markWidth);
-		optionsService.setOption(OptionsPointTool.class,"selectionColor",Roi.getColor());
-		optionsService.setOption(OptionsProfilePlot.class,"autoClose",ij.gui.PlotWindow.autoClose);
-		optionsService.setOption(OptionsProfilePlot.class,"noSaveXValues",!ij.gui.PlotWindow.saveXValues);
-		optionsService.setOption(OptionsProfilePlot.class,"drawGridLines",!ij.gui.PlotWindow.noGridLines);
-		optionsService.setOption(OptionsProfilePlot.class,"height",ij.gui.PlotWindow.plotHeight);
-		optionsService.setOption(OptionsProfilePlot.class,"interpLineProf",ij.gui.PlotWindow.interpolate);
-		optionsService.setOption(OptionsProfilePlot.class,"listValues",ij.gui.PlotWindow.listValues);
+		optionsMisc.setDivByZeroVal( dbzString);
+		optionsMisc.setDebugMode(IJ.debugMode);
+		optionsMisc.setHideProcessStackDialog(IJ.hideProcessStackDialog);
+		optionsMisc.setMoveIsolatedPlugins(Prefs.moveToMisc);
+		optionsMisc.setUsePtrCursor(Prefs.usePointerCursor);
+		optionsMisc.setRequireCommandKey(Prefs.requireControlKey);
+		optionsMisc.setRunSingleInstanceListener(Prefs.runSocketListener);
+
+		final OptionsPointTool optionsPointTool = optionsService.getOptions(OptionsPointTool.class);
+		optionsPointTool.setAddToRoiMgr(Prefs.pointAddToManager);
+		optionsPointTool.setAutoMeasure(Prefs.pointAutoMeasure);
+		optionsPointTool.setAutoNextSlice(Prefs.pointAutoNextSlice);
+		optionsPointTool.setLabelPoints(!Prefs.noPointLabels);
+		optionsPointTool.setMarkWidth(Analyzer.markWidth);
+		optionsPointTool.setSelectionColor(Roi.getColor().toString());
+		
+		final OptionsProfilePlot optionsProfilePlot = optionsService.getOptions(OptionsProfilePlot.class);
+		optionsProfilePlot.setAutoClose(ij.gui.PlotWindow.autoClose);
+		optionsProfilePlot.setNoSaveXValues(!ij.gui.PlotWindow.saveXValues);
+		optionsProfilePlot.setDrawGridLines(!ij.gui.PlotWindow.noGridLines);
+		optionsProfilePlot.setHeight(ij.gui.PlotWindow.plotHeight);
+		optionsProfilePlot.setInterpLineProf(ij.gui.PlotWindow.interpolate);
+		optionsProfilePlot.setListValues(ij.gui.PlotWindow.listValues);
 		double yMin = ProfilePlot.getFixedMin();
 		double yMax = ProfilePlot.getFixedMax();
-		optionsService.setOption(OptionsProfilePlot.class,"maxY",yMax);
-		optionsService.setOption(OptionsProfilePlot.class,"minY",yMin);
-		optionsService.setOption(OptionsProfilePlot.class,"vertProfile",Prefs.verticalProfile);
-		optionsService.setOption(OptionsProfilePlot.class,"width",ij.gui.PlotWindow.plotWidth);
+		optionsProfilePlot.setMaxY(yMax);
+		optionsProfilePlot.setMinY(yMin);
+		optionsProfilePlot.setVertProfile(Prefs.verticalProfile);
+		optionsProfilePlot.setWidth(ij.gui.PlotWindow.plotWidth);
+		
+		final OptionsRoundedRectangleTool optionsRoundedRectangleTool = optionsService.getOptions(OptionsRoundedRectangleTool.class);
 		int crnDiam = Toolbar.getRoundRectArcSize();
-		optionsService.setOption(OptionsRoundedRectangleTool.class,"cornerDiameter", crnDiam);
+		optionsRoundedRectangleTool.setCornerDiameter( crnDiam);
 	}
 }
