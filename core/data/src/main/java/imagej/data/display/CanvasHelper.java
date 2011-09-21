@@ -81,14 +81,14 @@ public class CanvasHelper implements Pannable, Zoomable {
 	}
 
 	public RealCoords panelToImageCoords(final IntCoords panelCoords) {
-		final double imageX = (panelCoords.x - offset.x) / scale;
-		final double imageY = (panelCoords.y - offset.y) / scale;
+		final double imageX = (panelCoords.x + offset.x) / scale;
+		final double imageY = (panelCoords.y + offset.y) / scale;
 		return new RealCoords(imageX, imageY);
 	}
 
 	public IntCoords imageToPanelCoords(final RealCoords imageCoords) {
-		final int panelX = (int) Math.round(scale * imageCoords.x + offset.x);
-		final int panelY = (int) Math.round(scale * imageCoords.y + offset.y);
+		final int panelX = (int) Math.round(scale * imageCoords.x - offset.x);
+		final int panelY = (int) Math.round(scale * imageCoords.y - offset.y);
 		return new IntCoords(panelX, panelY);
 	}
 
@@ -102,7 +102,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void setPan(final IntCoords origin) {
-		offset = origin;
+		offset.x = origin.x;
+		offset.y = origin.y;
 	}
 
 	@Override
@@ -112,7 +113,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public IntCoords getPanOrigin() {
-		return offset;
+		return new IntCoords(offset.x, offset.y);
 	}
 
 	// -- Zoomable methods --
@@ -127,20 +128,17 @@ public class CanvasHelper implements Pannable, Zoomable {
 		double desiredScale = factor;
 		if (factor == 0) desiredScale = initialScale;
 		if (scaleOutOfBounds(desiredScale)) return;
-		final RealCoords imageCenter = panelToImageCoords(center);
-		clipToImageBoundaries(imageCenter);
-		scale = desiredScale;
 
 		// We know:
-		// panel = scale * image + offset
+		// imageCenter.x = (center.x + offset.x) / scale
+		// (and only offset and scale change)
 		// Hence:
-		// offset = panel - scale * image
-		// Desired panel coordinates should remain unchanged
+		// (center.x + newOffset.x) / desiredScale = (center.x + offset.x) / scale
+		// or: newOffset.x = -center.x + (center.x + offset.x) * desiredScale / scale
 
-		final int panelX = center.x;
-		final int panelY = center.y;
-		offset.x = (int) (panelX - scale * imageCenter.x);
-		offset.y = (int) (panelY - scale * imageCenter.y);
+		offset.x = (int) (-center.x + (center.x + offset.x) * desiredScale / scale);
+		offset.y = (int) (-center.y + (center.y + offset.y) * desiredScale / scale);
+		scale = desiredScale;
 
 		Events.publish(new ZoomEvent(canvas, getZoomFactor(), center.x, center.y));
 	}
