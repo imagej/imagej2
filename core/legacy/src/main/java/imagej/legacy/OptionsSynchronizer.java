@@ -70,23 +70,22 @@ import java.awt.Color;
 import java.awt.Font;
 
 /**
- * The options synchronizer bidirectionally synchronizes IJ2 options with
- * IJ1 settings and preferences. 
+ * The options synchronizer bidirectionally synchronizes IJ2 options with IJ1
+ * settings and preferences.
  * 
  * @author Barry DeZonia
- *
  */
 public class OptionsSynchronizer {
 
-	private OptionsService optionsService;
+	private final OptionsService optionsService;
 
 	public OptionsSynchronizer(final OptionsService optionsService) {
 		this.optionsService = optionsService;
 	}
-	
+
 	/**
 	 * Updates IJ1 settings and preferences to reflect values set in IJ2 dialogs.
-	 */ 
+	 */
 	public void updateIJ1SettingsFromIJ2() {
 		appearanceOptions();
 		arrowOptions();
@@ -105,22 +104,25 @@ public class OptionsSynchronizer {
 		roundRectOptions();
 		wandToolOptions();
 	}
-		
+
 	/**
 	 * Updates IJ2 options dialog settings to reflect values set by IJ1 plugins.
 	 */
 	public void updateIJ2SettingsFromIJ1() {
 		setOptionsFromPublicStatics();
 	}
-	
+
 	// -- helpers --
-	
-	private <O extends OptionsPlugin> Color getColor(String colorName, Color defaultColor) {
+
+	private <O extends OptionsPlugin> Color getColor(final String colorName,
+		final Color defaultColor)
+	{
 		return Colors.getColor(colorName, defaultColor);
 	}
 
-	private void appearanceOptions() {	
-		final OptionsAppearance optionsAppearance = optionsService.getOptions(OptionsAppearance.class);
+	private void appearanceOptions() {
+		final OptionsAppearance optionsAppearance =
+			optionsService.getOptions(OptionsAppearance.class);
 
 		Prefs.antialiasedText = false;
 		Prefs.antialiasedTools = optionsAppearance.isAntialiasedToolIcons();
@@ -132,21 +134,22 @@ public class OptionsSynchronizer {
 
 		// TODO
 		// this one needs to have code applied to IJ2. Nothing to set for IJ1.
-		//Prefs.get(SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE);
+		// Prefs.get(SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE);
 	}
 
-	private void arrowOptions() {	
-		final OptionsArrowTool optionsArrowTool = optionsService.getOptions(OptionsArrowTool.class);
+	private void arrowOptions() {
+		final OptionsArrowTool optionsArrowTool =
+			optionsService.getOptions(OptionsArrowTool.class);
 
 		// TODO - for this next setting there is nothing to synchronize. Changing
 		// this setting runs some code in IJ1's UI. Might need some code on the IJ2
-		// side that mirrors the behavior. 
-		//String color = optionsArrowTool.getArrowColor();
-		boolean doubleHeaded = optionsArrowTool.isArrowDoubleHeaded();
-		boolean outline = optionsArrowTool.isArrowOutline();
-		int size = optionsArrowTool.getArrowSize();
+		// side that mirrors the behavior.
+		// String color = optionsArrowTool.getArrowColor();
+		final boolean doubleHeaded = optionsArrowTool.isArrowDoubleHeaded();
+		final boolean outline = optionsArrowTool.isArrowOutline();
+		final int size = optionsArrowTool.getArrowSize();
 		String style = optionsArrowTool.getArrowStyle();
-		int width = optionsArrowTool.getArrowWidth();
+		final int width = optionsArrowTool.getArrowWidth();
 
 		if (style == null) style = "Filled";
 		int styleIndex = 0;
@@ -154,7 +157,7 @@ public class OptionsSynchronizer {
 		else if (style.equals("Notched")) styleIndex = 1;
 		else if (style.equals("Open")) styleIndex = 2;
 		else if (style.equals("Headless")) styleIndex = 3;
-		
+
 		Prefs.set(Arrow.STYLE_KEY, styleIndex);
 		Prefs.set(Arrow.WIDTH_KEY, width);
 		Prefs.set(Arrow.SIZE_KEY, size);
@@ -167,17 +170,21 @@ public class OptionsSynchronizer {
 		Arrow.setDefaultOutline(outline);
 		Arrow.setDefaultDoubleHeaded(doubleHeaded);
 	}
-	
-	private void colorOptions() {
-		final OptionsColors optionsColors = optionsService.getOptions(OptionsColors.class);
 
-		Toolbar.setForegroundColor(getColor(optionsColors.getFgColor(), Color.white));
-		Toolbar.setBackgroundColor(getColor(optionsColors.getBgColor(), Color.black));
-		Roi.setColor(getColor(optionsColors.getSelColor(),Color.yellow));
+	private void colorOptions() {
+		final OptionsColors optionsColors =
+			optionsService.getOptions(OptionsColors.class);
+
+		Toolbar
+			.setForegroundColor(getColor(optionsColors.getFgColor(), Color.white));
+		Toolbar
+			.setBackgroundColor(getColor(optionsColors.getBgColor(), Color.black));
+		Roi.setColor(getColor(optionsColors.getSelColor(), Color.yellow));
 	}
-	
+
 	private void compilerOptions() {
-		final OptionsCompiler optionsCompiler = optionsService.getOptions(OptionsCompiler.class);
+		final OptionsCompiler optionsCompiler =
+			optionsService.getOptions(OptionsCompiler.class);
 
 		String version = optionsCompiler.getTargetJavaVersion();
 		if (version == null) version = "1.5";
@@ -189,49 +196,52 @@ public class OptionsSynchronizer {
 		// this next key has no way to be set programmatically in IJ1
 		// Prefs.get(SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO, false);
 	}
-	
-	private void conversionsOptions() {	
-		final OptionsConversions optionsConversions = optionsService.getOptions(OptionsConversions.class);
 
-		double[] weights = ColorProcessor.getWeightingFactors();
-		boolean weighted = !(weights[0]==1d/3d && weights[1]==1d/3d && weights[2]==1d/3d);
+	private void conversionsOptions() {
+		final OptionsConversions optionsConversions =
+			optionsService.getOptions(OptionsConversions.class);
+
+		final double[] weights = ColorProcessor.getWeightingFactors();
+		final boolean weighted =
+			!(weights[0] == 1d / 3d && weights[1] == 1d / 3d && weights[2] == 1d / 3d);
 		ImageConverter.setDoScaling(optionsConversions.isScaleWhenConverting());
 		Prefs.weightedColor = optionsConversions.isWeightedRgbConversions();
-		if (!Prefs.weightedColor)
-			ColorProcessor.setWeightingFactors(1d/3d, 1d/3d, 1d/3d);
-		else if (Prefs.weightedColor && !weighted)
-			ColorProcessor.setWeightingFactors(0.299, 0.587, 0.114);
+		if (!Prefs.weightedColor) ColorProcessor.setWeightingFactors(1d / 3d,
+			1d / 3d, 1d / 3d);
+		else if (Prefs.weightedColor && !weighted) ColorProcessor
+			.setWeightingFactors(0.299, 0.587, 0.114);
 	}
-	
-	private void dicomOptions() {	
-		final OptionsDicom optionsDicom = optionsService.getOptions(OptionsDicom.class);
+
+	private void dicomOptions() {
+		final OptionsDicom optionsDicom =
+			optionsService.getOptions(OptionsDicom.class);
 
 		Prefs.openDicomsAsFloat = optionsDicom.isOpenAs32bitFloat();
 		Prefs.flipXZ = optionsDicom.isRotateXZ();
 		Prefs.rotateYZ = optionsDicom.isRotateYZ();
 	}
-	
-	private void fontOptions() {	
-		final OptionsFont optionsFont = optionsService.getOptions(OptionsFont.class);
 
-		String fontName = optionsFont.getFont();
-		int fontSize = optionsFont.getFontSize();
+	private void fontOptions() {
+		final OptionsFont optionsFont =
+			optionsService.getOptions(OptionsFont.class);
+
+		final String fontName = optionsFont.getFont();
+		final int fontSize = optionsFont.getFontSize();
 		String styleName = optionsFont.getFontStyle();
-		boolean smooth = optionsFont.isFontSmooth(); 
-		
+		final boolean smooth = optionsFont.isFontSmooth();
+
 		if (styleName == null) styleName = "";
 		int fontStyle = Font.PLAIN;
-		if (styleName.equals("Bold"))
-			fontStyle = Font.BOLD;
-		else if (styleName.equals("Italic"))
-			fontStyle = Font.ITALIC;
-		else if (styleName.equals("Bold+Italic"))
-			fontStyle = Font.BOLD+Font.ITALIC;
+		if (styleName.equals("Bold")) fontStyle = Font.BOLD;
+		else if (styleName.equals("Italic")) fontStyle = Font.ITALIC;
+		else if (styleName.equals("Bold+Italic")) fontStyle =
+			Font.BOLD + Font.ITALIC;
 		TextRoi.setFont(fontName, fontSize, fontStyle, smooth);
 	}
-	
-	private void ioOptions() {	
-		final OptionsInputOutput optionsInputOutput = optionsService.getOptions(OptionsInputOutput.class);
+
+	private void ioOptions() {
+		final OptionsInputOutput optionsInputOutput =
+			optionsService.getOptions(OptionsInputOutput.class);
 
 		Prefs.copyColumnHeaders = optionsInputOutput.isCopyColumnHeaders();
 		Prefs.noRowNumbers = !optionsInputOutput.isCopyRowNumbers();
@@ -245,26 +255,30 @@ public class OptionsSynchronizer {
 		Prefs.setTransparentIndex(optionsInputOutput.getTransparentIndex());
 		Prefs.useJFileChooser = optionsInputOutput.isUseJFileChooser();
 	}
-	
-	private void lineWidthOptions() {	
-		final OptionsLineWidth optionsLineWidth = optionsService.getOptions(OptionsLineWidth.class);
+
+	private void lineWidthOptions() {
+		final OptionsLineWidth optionsLineWidth =
+			optionsService.getOptions(OptionsLineWidth.class);
 
 		Line.setWidth(optionsLineWidth.getLineWidth());
-	}	
+	}
 
-	private void memoryAndThreadsOptions() {	
-		OptionsMemoryAndThreads optionsMemoryAndThreads = optionsService.getOptions(OptionsMemoryAndThreads.class);
+	private void memoryAndThreadsOptions() {
+		final OptionsMemoryAndThreads optionsMemoryAndThreads =
+			optionsService.getOptions(OptionsMemoryAndThreads.class);
 
 		Prefs.keepUndoBuffers = optionsMemoryAndThreads.isMultipleBuffers();
 		Prefs.noClickToGC = !optionsMemoryAndThreads.isRunGcOnClick();
 		Prefs.setThreads(optionsMemoryAndThreads.getStackThreads());
 		// TODO
-		// nothing to set in this next case. Need IJ2 to fire some code as appropriate
-		//Prefs.get(SettingsKeys.OPTIONS_MEMORYTHREADS_MAX_MEMORY);
+		// nothing to set in this next case. Need IJ2 to fire some code as
+		// appropriate
+		// Prefs.get(SettingsKeys.OPTIONS_MEMORYTHREADS_MAX_MEMORY);
 	}
-	
-	private void miscOptions() {	
-		final OptionsMisc optionsMisc = optionsService.getOptions(OptionsMisc.class);
+
+	private void miscOptions() {
+		final OptionsMisc optionsMisc =
+			optionsService.getOptions(OptionsMisc.class);
 
 		String divValue = optionsMisc.getDivByZeroVal();
 		IJ.debugMode = optionsMisc.isDebugMode();
@@ -273,36 +287,42 @@ public class OptionsSynchronizer {
 		Prefs.usePointerCursor = optionsMisc.isUsePtrCursor();
 		Prefs.requireControlKey = optionsMisc.isRequireCommandKey();
 		Prefs.runSocketListener = optionsMisc.isRunSingleInstanceListener();
-		
+
 		if (divValue == null) divValue = "infinity";
-		if (divValue.equalsIgnoreCase("infinity") || divValue.equalsIgnoreCase("infinite"))
-			FloatBlitter.divideByZeroValue = Float.POSITIVE_INFINITY;
-		else if (divValue.equalsIgnoreCase("NaN"))
-			FloatBlitter.divideByZeroValue = Float.NaN;
-		else if (divValue.equalsIgnoreCase("max"))
-			FloatBlitter.divideByZeroValue = Float.MAX_VALUE;
+		if (divValue.equalsIgnoreCase("infinity") ||
+			divValue.equalsIgnoreCase("infinite")) FloatBlitter.divideByZeroValue =
+			Float.POSITIVE_INFINITY;
+		else if (divValue.equalsIgnoreCase("NaN")) FloatBlitter.divideByZeroValue =
+			Float.NaN;
+		else if (divValue.equalsIgnoreCase("max")) FloatBlitter.divideByZeroValue =
+			Float.MAX_VALUE;
 		else {
 			Float f;
-			try {f = new Float(divValue);}
-			catch (NumberFormatException e) {f = null;}
-			if (f!=null)
-				FloatBlitter.divideByZeroValue = f.floatValue();
+			try {
+				f = new Float(divValue);
+			}
+			catch (final NumberFormatException e) {
+				f = null;
+			}
+			if (f != null) FloatBlitter.divideByZeroValue = f.floatValue();
 		}
 	}
-	
-	private void pointOptions() {	
-		final OptionsPointTool optionsPointTool = optionsService.getOptions(OptionsPointTool.class);
+
+	private void pointOptions() {
+		final OptionsPointTool optionsPointTool =
+			optionsService.getOptions(OptionsPointTool.class);
 
 		Prefs.pointAddToManager = optionsPointTool.isAddToRoiMgr();
 		Prefs.pointAutoMeasure = optionsPointTool.isAutoMeasure();
 		Prefs.pointAutoNextSlice = optionsPointTool.isAutoNextSlice();
 		Prefs.noPointLabels = !optionsPointTool.isLabelPoints();
 		Analyzer.markWidth = optionsPointTool.getMarkWidth();
-		Roi.setColor(getColor(optionsPointTool.getSelectionColor(),Color.yellow));
+		Roi.setColor(getColor(optionsPointTool.getSelectionColor(), Color.yellow));
 	}
 
-	private void profilePlotOptions() {	
-		final OptionsProfilePlot optionsProfilePlot = optionsService.getOptions(OptionsProfilePlot.class);
+	private void profilePlotOptions() {
+		final OptionsProfilePlot optionsProfilePlot =
+			optionsService.getOptions(OptionsProfilePlot.class);
 
 		ij.gui.PlotWindow.autoClose = optionsProfilePlot.isAutoClose();
 		ij.gui.PlotWindow.saveXValues = !optionsProfilePlot.isNoSaveXValues();
@@ -315,61 +335,64 @@ public class OptionsSynchronizer {
 		double yMin = optionsProfilePlot.getMinY();
 		Prefs.verticalProfile = optionsProfilePlot.isVertProfile();
 		ij.gui.PlotWindow.plotWidth = optionsProfilePlot.getWidth();
-		
-		if (!fixedScale && (yMin!=0.0 || yMax!=0.0))
-			fixedScale = true;
+
+		if (!fixedScale && (yMin != 0.0 || yMax != 0.0)) fixedScale = true;
 		if (!fixedScale) {
 			yMin = 0.0;
 			yMax = 0.0;
 		}
-		else if (yMin>yMax) {
-			double tmp = yMin;
+		else if (yMin > yMax) {
+			final double tmp = yMin;
 			yMin = yMax;
 			yMax = tmp;
 		}
 		ProfilePlot.setMinAndMax(yMin, yMax);
 	}
-	
-	private void proxyOptions() {	
-		final OptionsProxy optionsProxy = optionsService.getOptions(OptionsProxy.class);
+
+	private void proxyOptions() {
+		final OptionsProxy optionsProxy =
+			optionsService.getOptions(OptionsProxy.class);
 
 		// TODO
 		// This next setting affects IJ1 dialog. Nothing programmatic can be set.
 		// Need pure IJ2 plugins when this setting is utilized.
-		//Prefs.get(SettingsKeys.OPTIONS_PROXY_AUTHENTICATE);
-		String server = optionsProxy.getProxyServer();
+		// Prefs.get(SettingsKeys.OPTIONS_PROXY_AUTHENTICATE);
+		final String server = optionsProxy.getProxyServer();
 		if (server != null) {
 			Prefs.set("proxy.server", server);
 			Prefs.set("proxy.port", optionsProxy.getPort());
 		}
 	}
-	
-	private void roundRectOptions() {
-		final OptionsRoundedRectangleTool optionsRoundedRectangleTool = optionsService.getOptions(OptionsRoundedRectangleTool.class);
 
-		int crnDiam = optionsRoundedRectangleTool.getCornerDiameter();
+	private void roundRectOptions() {
+		final OptionsRoundedRectangleTool optionsRoundedRectangleTool =
+			optionsService.getOptions(OptionsRoundedRectangleTool.class);
+
+		final int crnDiam = optionsRoundedRectangleTool.getCornerDiameter();
 		Toolbar.setRoundRectArcSize(crnDiam);
 		// TODO
 		// IJ1 RectToolOptions does not manipulate Prefs much. It fires
 		// code to change behavior when dialog entries changed. No programmatic
 		// way to make our settings affect IJ1. Need pure IJ2 support elsewhere.
-		//Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, none);  ?how to handle "none"?
-		//Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, Color.black);
-		//Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_WIDTH, 2);
+		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, none); ?how to
+		// handle "none"?
+		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, Color.black);
+		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_WIDTH, 2);
 	}
-	
-	private void wandToolOptions() {	
+
+	private void wandToolOptions() {
 		// TODO
 		// IJ1 WandToolOptions does not mess with preferences in any way. There
 		// is no way in IJ1 to set values without running dialog. Programmatic
 		// approach is out. Can't synchronize unless Wayne adds code. May not be
 		// needed because Wand is not ever active in IJ2. Right?
-		//Prefs.get(SettingsKeys.OPTIONS_WAND_MODE, "Legacy");
-		//Prefs.get(SettingsKeys.OPTIONS_WAND_TOLERANCE, 0.0);
+		// Prefs.get(SettingsKeys.OPTIONS_WAND_MODE, "Legacy");
+		// Prefs.get(SettingsKeys.OPTIONS_WAND_TOLERANCE, 0.0);
 	}
-	
+
 	private void setOptionsFromPublicStatics() {
-		final OptionsAppearance optionsAppearance = optionsService.getOptions(OptionsAppearance.class);
+		final OptionsAppearance optionsAppearance =
+			optionsService.getOptions(OptionsAppearance.class);
 		optionsAppearance.setAntialiasedToolIcons(Prefs.antialiasedTools);
 		optionsAppearance.setBlackCanvas(Prefs.blackCanvas);
 		optionsAppearance.setFullZoomImages(Prefs.open100Percent);
@@ -377,73 +400,79 @@ public class OptionsSynchronizer {
 		optionsAppearance.setNoImageBorder(Prefs.noBorder);
 		optionsAppearance.setUseInvertingLUT(Prefs.useInvertingLut);
 
-		final OptionsArrowTool optionsArrowTool = optionsService.getOptions(OptionsArrowTool.class);
-		boolean arrowTwoHeads = Arrow.getDefaultDoubleHeaded();
+		final OptionsArrowTool optionsArrowTool =
+			optionsService.getOptions(OptionsArrowTool.class);
+		final boolean arrowTwoHeads = Arrow.getDefaultDoubleHeaded();
 		optionsArrowTool.setArrowDoubleHeaded(arrowTwoHeads);
-		boolean arrowOutline = Arrow.getDefaultOutline();
+		final boolean arrowOutline = Arrow.getDefaultOutline();
 		optionsArrowTool.setArrowOutline(arrowOutline);
-		int arrowSize = (int)Arrow.getDefaultHeadSize();
-		optionsArrowTool.setArrowSize( arrowSize);
-		int arrowStyle = Arrow.getDefaultStyle();
+		final int arrowSize = (int) Arrow.getDefaultHeadSize();
+		optionsArrowTool.setArrowSize(arrowSize);
+		final int arrowStyle = Arrow.getDefaultStyle();
 		String arrowStyleName;
 		if (arrowStyle == 1) arrowStyleName = "Notched";
 		else if (arrowStyle == 2) arrowStyleName = "Open";
 		else if (arrowStyle == 3) arrowStyleName = "Headless";
 		else arrowStyleName = "Filled";
-		optionsArrowTool.setArrowStyle( arrowStyleName);
-		int arrowWidth = (int) Arrow.getDefaultWidth();
+		optionsArrowTool.setArrowStyle(arrowStyleName);
+		final int arrowWidth = (int) Arrow.getDefaultWidth();
 		optionsArrowTool.setArrowWidth(arrowWidth);
 
-		final OptionsColors optionsColors = optionsService.getOptions(OptionsColors.class);
-		optionsColors.setFgColor( Toolbar.getForegroundColor().toString());
-		optionsColors.setBgColor( Toolbar.getBackgroundColor().toString());
+		final OptionsColors optionsColors =
+			optionsService.getOptions(OptionsColors.class);
+		optionsColors.setFgColor(Toolbar.getForegroundColor().toString());
+		optionsColors.setBgColor(Toolbar.getBackgroundColor().toString());
 		optionsColors.setSelColor(Roi.getColor().toString());
 
-		final OptionsConversions optionsConversions = optionsService.getOptions(OptionsConversions.class);		
-		optionsConversions.setScaleWhenConverting( ImageConverter.getDoScaling());
+		final OptionsConversions optionsConversions =
+			optionsService.getOptions(OptionsConversions.class);
+		optionsConversions.setScaleWhenConverting(ImageConverter.getDoScaling());
 		optionsConversions.setWeightedRgbConversions(Prefs.weightedColor);
-		
-		final OptionsDicom optionsDicom = optionsService.getOptions(OptionsDicom.class);
+
+		final OptionsDicom optionsDicom =
+			optionsService.getOptions(OptionsDicom.class);
 		optionsDicom.setOpenAs32bitFloat(Prefs.openDicomsAsFloat);
 		optionsDicom.setRotateXZ(Prefs.flipXZ);
 		optionsDicom.setRotateYZ(Prefs.rotateYZ);
-		
-		final OptionsFont optionsFont = optionsService.getOptions(OptionsFont.class);
-		optionsFont.setFont( TextRoi.getFont());
-		optionsFont.setFontSize( TextRoi.getSize());
+
+		final OptionsFont optionsFont =
+			optionsService.getOptions(OptionsFont.class);
+		optionsFont.setFont(TextRoi.getFont());
+		optionsFont.setFontSize(TextRoi.getSize());
 		String fontStyleString;
-		int tmp = TextRoi.getStyle();
-		if (tmp == Font.BOLD + Font.ITALIC)
-			fontStyleString = "Bold+Italic";
-		else if (tmp == Font.BOLD)
-			fontStyleString = "Bold";
-		else if (tmp == Font.ITALIC)
-			fontStyleString = "Italic";
-		else
-			fontStyleString = "";
-		optionsFont.setFontStyle( fontStyleString);
-		
-		final OptionsInputOutput optionsInputOutput = optionsService.getOptions(OptionsInputOutput.class);
+		final int tmp = TextRoi.getStyle();
+		if (tmp == Font.BOLD + Font.ITALIC) fontStyleString = "Bold+Italic";
+		else if (tmp == Font.BOLD) fontStyleString = "Bold";
+		else if (tmp == Font.ITALIC) fontStyleString = "Italic";
+		else fontStyleString = "";
+		optionsFont.setFontStyle(fontStyleString);
+
+		final OptionsInputOutput optionsInputOutput =
+			optionsService.getOptions(OptionsInputOutput.class);
 		optionsInputOutput.setCopyColumnHeaders(Prefs.copyColumnHeaders);
 		optionsInputOutput.setCopyRowNumbers(!Prefs.noRowNumbers);
-		optionsInputOutput.setJpegQuality( FileSaver.getJpegQuality());
-		optionsInputOutput.setSaveColumnHeaders( !Prefs.dontSaveHeaders);
+		optionsInputOutput.setJpegQuality(FileSaver.getJpegQuality());
+		optionsInputOutput.setSaveColumnHeaders(!Prefs.dontSaveHeaders);
 		optionsInputOutput.setSaveOrderIntel(Prefs.intelByteOrder);
-		optionsInputOutput.setSaveRowNumbers( !Prefs.dontSaveRowNumbers);
-		optionsInputOutput.setTransparentIndex( Prefs.getTransparentIndex());
+		optionsInputOutput.setSaveRowNumbers(!Prefs.dontSaveRowNumbers);
+		optionsInputOutput.setTransparentIndex(Prefs.getTransparentIndex());
 		optionsInputOutput.setUseJFileChooser(Prefs.useJFileChooser);
 
-		final OptionsLineWidth optionsLineWidth = optionsService.getOptions(OptionsLineWidth.class);
-		optionsLineWidth.setLineWidth( Line.getWidth());
+		final OptionsLineWidth optionsLineWidth =
+			optionsService.getOptions(OptionsLineWidth.class);
+		optionsLineWidth.setLineWidth(Line.getWidth());
 
-		final OptionsMemoryAndThreads optionsMemoryAndThreads = optionsService.getOptions(OptionsMemoryAndThreads.class);
+		final OptionsMemoryAndThreads optionsMemoryAndThreads =
+			optionsService.getOptions(OptionsMemoryAndThreads.class);
 		optionsMemoryAndThreads.setMultipleBuffers(Prefs.keepUndoBuffers);
 		optionsMemoryAndThreads.setRunGcOnClick(!Prefs.noClickToGC);
-		optionsMemoryAndThreads.setStackThreads( Prefs.getThreads());
+		optionsMemoryAndThreads.setStackThreads(Prefs.getThreads());
 
-		final OptionsMisc optionsMisc = optionsService.getOptions(OptionsMisc.class);
-		String dbzString = new Float(FloatBlitter.divideByZeroValue).toString();
-		optionsMisc.setDivByZeroVal( dbzString);
+		final OptionsMisc optionsMisc =
+			optionsService.getOptions(OptionsMisc.class);
+		final String dbzString =
+			new Float(FloatBlitter.divideByZeroValue).toString();
+		optionsMisc.setDivByZeroVal(dbzString);
 		optionsMisc.setDebugMode(IJ.debugMode);
 		optionsMisc.setHideProcessStackDialog(IJ.hideProcessStackDialog);
 		optionsMisc.setMoveIsolatedPlugins(Prefs.moveToMisc);
@@ -451,30 +480,33 @@ public class OptionsSynchronizer {
 		optionsMisc.setRequireCommandKey(Prefs.requireControlKey);
 		optionsMisc.setRunSingleInstanceListener(Prefs.runSocketListener);
 
-		final OptionsPointTool optionsPointTool = optionsService.getOptions(OptionsPointTool.class);
+		final OptionsPointTool optionsPointTool =
+			optionsService.getOptions(OptionsPointTool.class);
 		optionsPointTool.setAddToRoiMgr(Prefs.pointAddToManager);
 		optionsPointTool.setAutoMeasure(Prefs.pointAutoMeasure);
 		optionsPointTool.setAutoNextSlice(Prefs.pointAutoNextSlice);
 		optionsPointTool.setLabelPoints(!Prefs.noPointLabels);
 		optionsPointTool.setMarkWidth(Analyzer.markWidth);
 		optionsPointTool.setSelectionColor(Roi.getColor().toString());
-		
-		final OptionsProfilePlot optionsProfilePlot = optionsService.getOptions(OptionsProfilePlot.class);
+
+		final OptionsProfilePlot optionsProfilePlot =
+			optionsService.getOptions(OptionsProfilePlot.class);
 		optionsProfilePlot.setAutoClose(ij.gui.PlotWindow.autoClose);
 		optionsProfilePlot.setNoSaveXValues(!ij.gui.PlotWindow.saveXValues);
 		optionsProfilePlot.setDrawGridLines(!ij.gui.PlotWindow.noGridLines);
 		optionsProfilePlot.setHeight(ij.gui.PlotWindow.plotHeight);
 		optionsProfilePlot.setInterpLineProf(ij.gui.PlotWindow.interpolate);
 		optionsProfilePlot.setListValues(ij.gui.PlotWindow.listValues);
-		double yMin = ProfilePlot.getFixedMin();
-		double yMax = ProfilePlot.getFixedMax();
+		final double yMin = ProfilePlot.getFixedMin();
+		final double yMax = ProfilePlot.getFixedMax();
 		optionsProfilePlot.setMaxY(yMax);
 		optionsProfilePlot.setMinY(yMin);
 		optionsProfilePlot.setVertProfile(Prefs.verticalProfile);
 		optionsProfilePlot.setWidth(ij.gui.PlotWindow.plotWidth);
-		
-		final OptionsRoundedRectangleTool optionsRoundedRectangleTool = optionsService.getOptions(OptionsRoundedRectangleTool.class);
-		int crnDiam = Toolbar.getRoundRectArcSize();
-		optionsRoundedRectangleTool.setCornerDiameter( crnDiam);
+
+		final OptionsRoundedRectangleTool optionsRoundedRectangleTool =
+			optionsService.getOptions(OptionsRoundedRectangleTool.class);
+		final int crnDiam = Toolbar.getRoundRectArcSize();
+		optionsRoundedRectangleTool.setCornerDiameter(crnDiam);
 	}
 }
