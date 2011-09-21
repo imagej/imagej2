@@ -70,15 +70,16 @@ public class DivideDataValuesBy extends AbstractPreviewPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real,Real> getOperation() {
-		OptionsService service = ImageJ.get(OptionsService.class);
-		String dbzString = (String) service.getOption(
-					"imagej.options.plugins.OptionsMisc",
-					"divByZeroVal");
+	public UnaryOperation<Real, Real> getOperation() {
+		final OptionsService service = ImageJ.get(OptionsService.class);
+		final String dbzString =
+			(String) service.getOption("imagej.options.plugins.OptionsMisc",
+				"divByZeroVal");
 		double dbzVal;
 		try {
 			dbzVal = Double.parseDouble(dbzString);
-		} catch (NumberFormatException e) {
+		}
+		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
 		return new RealDivideConstant(constant, dbzVal);
