@@ -434,6 +434,10 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	public void zoomToFit(final IntCoords topLeft, final IntCoords bottomRight) {
 		canvasHelper.zoomToFit(topLeft, bottomRight);
 	}
+	
+	void setInitialScale(double value) {
+		canvasHelper.setInitialScale(value);
+	}
 
 	@Override
 	public double getZoomFactor() {
