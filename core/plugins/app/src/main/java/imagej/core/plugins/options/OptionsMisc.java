@@ -74,10 +74,7 @@ public class OptionsMisc extends OptionsPlugin {
 	// -- OptionsMisc methods --
 
 	public OptionsMisc() {
-		// NOTE - this method needs to exist for each OptionsPlugin. If done in
-		// base class then load() happens before the @Parameter initialization.
-		// Thus persisted values get overwritten with initializers.
-		load();
+		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
 	public String getDivByZeroVal() {
