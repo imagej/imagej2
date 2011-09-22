@@ -75,7 +75,7 @@ public class Animator implements ImageJPlugin {
 
 	// - parameters - one per Animator instance --
 
-	@Parameter
+	@Parameter(required = true, persist = false)
 	private EventService eventService;
 
 	@Parameter
