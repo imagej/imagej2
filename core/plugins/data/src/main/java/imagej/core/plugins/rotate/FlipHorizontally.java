@@ -149,7 +149,7 @@ public class FlipHorizontally implements ImageJPlugin {
 
 		long col1, col2;
 
-		if ((height & 1) == 0) { // even number of cols
+		if ((width & 1) == 0) { // even number of cols
 			col2 = width / 2;
 			col1 = col2 - 1;
 		}
