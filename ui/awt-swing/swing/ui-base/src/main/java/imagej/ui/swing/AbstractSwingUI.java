@@ -116,7 +116,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	protected void createUI() {
 		appFrame = new SwingApplicationFrame("ImageJ");
 		toolBar = new SwingToolBar();
-		statusBar = new SwingStatusBar();
+		statusBar = new SwingStatusBar(getUIService().getEventService());
 		createMenus();
 
 		setupAppFrame();

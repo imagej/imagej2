@@ -35,18 +35,20 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 
 import java.awt.BorderLayout;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.border.BevelBorder;
 
 /**
  * Swing implementation of {@link StatusBar}.
@@ -54,52 +56,53 @@ import javax.swing.JProgressBar;
  * @author Curtis Rueden
  */
 public class SwingStatusBar extends JPanel implements StatusBar,
-	EventSubscriber<StatusEvent>
+	EventSubscriber<StatusEvent>, MouseListener
 {
 
+	private final EventService eventService;
+	
+	private final JLabel statusText;
 	private final JProgressBar progressBar;
 
-	public SwingStatusBar() {
+	public SwingStatusBar(final EventService eventService) {
+		this.eventService = eventService;
+		
+		statusText = new JLabel(getInfoString(false));
+		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		progressBar = new JProgressBar();
-		progressBar.setStringPainted(true);
+		progressBar.setVisible(false);
 		setLayout(new BorderLayout());
-		add(progressBar, BorderLayout.CENTER);
-		setStatus("");
-		Events.subscribe(StatusEvent.class, this);
-
-		progressBar.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(final MouseEvent evt) {
-				System.gc();
-				Events.publish(new StatusEvent(getInfoString()));
-			}
-		});
+		add(statusText, BorderLayout.CENTER);
+		add(progressBar, BorderLayout.EAST);
+		eventService.subscribe(StatusEvent.class, this);
+		statusText.addMouseListener(this);
 	}
 
 	// -- StatusBar methods --
 
 	@Override
 	public void setStatus(final String message) {
-		progressBar.setString(message == null ? "" : message);
+		final String text;
+		if (message == null || message.isEmpty()) text = " ";
+		else text = message;
+		statusText.setText(text);
 	}
 
 	@Override
 	public void setProgress(final int val, final int max) {
-		if (max < 0) return;
-		
-		// NB - by design val == max falls to bottom and resets to 0
+		if (max < 0) {
+			progressBar.setVisible(false);
+			return;
+		}
+
 		if (val >= 0 && val < max) {
 			progressBar.setValue(val);
 			progressBar.setMaximum(max);
+			progressBar.setVisible(true);
 		}
 		else {
-			progressBar.setValue(0);
-			progressBar.setMaximum(1);
+			progressBar.setVisible(false);
 		}
-		
-		// try to keep up
-		//progressBar.repaint();? show()?
 	}
 
 	// -- EventSubscriber methods --
@@ -122,9 +125,39 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 		}
 	}
 
+	// -- MouseListener methods --
+
+	@Override
+	public void mouseClicked(final MouseEvent e) {
+		// NB: no action needed
+	}
+
+	@Override
+	public void mouseEntered(final MouseEvent e) {
+		// NB: no action needed
+	}
+
+	@Override
+	public void mouseExited(final MouseEvent e) {
+		// NB: no action needed
+	}
+
+	@Override
+	public void mousePressed(final MouseEvent e) {
+		System.gc();
+		eventService.publish(new StatusEvent(getInfoString(true)));
+	}
+
+	@Override
+	public void mouseReleased(final MouseEvent e) {
+		// NB: no action needed
+	}
+
 	// -- Helper methods --
 
-	protected String getInfoString() {
+	// TODO - refactor this code to a UI-agnostic location
+
+	private String getInfoString(final boolean mem) {
 		final String javaVersion = System.getProperty("java.version");
 		final String osArch = System.getProperty("os.arch");
 		final long maxMem = Runtime.getRuntime().maxMemory();
@@ -133,8 +166,13 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 		final long usedMem = totalMem - freeMem;
 		final long usedMB = usedMem / 1048576;
 		final long maxMB = maxMem / 1048576;
-		return "ImageJ " + ImageJ.VERSION + "; Java " + javaVersion + " [" +
-			osArch + "]; " + usedMB + "MB of " + maxMB + "MB";
+		final StringBuilder sb = new StringBuilder();
+		sb.append("ImageJ " + ImageJ.VERSION + "; Java " + javaVersion + " [" +
+			osArch + "]");
+		if (mem) {
+			sb.append("; " + usedMB + "MB of " + maxMB + "MB");
+		}
+		return sb.toString();
 	}
 
 }
