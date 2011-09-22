@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.data.Dataset;
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
@@ -56,6 +56,9 @@ import java.math.BigInteger;
  */
 @Plugin(menuPath = "Plugins>Debug>Parameter Tester")
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
+
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
 
 	@Parameter(label = "boolean")
 	private boolean pBoolean;
@@ -217,7 +220,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Override
 	public void preview() {
 		Log.info("ParameterTester: " + ++previews + " previews and counting");
-		Events.publish(new StatusEvent(message));
+		eventService.publish(new StatusEvent(message));
 	}
 
 	@Override

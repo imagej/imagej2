@@ -39,8 +39,8 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayDeletedEvent;
@@ -71,6 +71,9 @@ public class ShadowsDemo implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
+
 	@Parameter
 	private Dataset input;
 
@@ -99,7 +102,7 @@ public class ShadowsDemo implements ImageJPlugin {
 			return;
 		}
 		subscribeToEvents();
-		Events.publish(new StatusEvent("Press ESC to terminate"));
+		eventService.publish(new StatusEvent("Press ESC to terminate"));
 
 		final RealRect selection =
 			ImageJ.get(OverlayService.class).getSelectionBounds(currDisplay);
@@ -120,7 +123,7 @@ public class ShadowsDemo implements ImageJPlugin {
 				if (userHasQuit) break;
 			}
 		}
-		Events.publish(new StatusEvent("Shadows demo terminated"));
+		eventService.publish(new StatusEvent("Shadows demo terminated"));
 		unsubscribeFromEvents();
 	}
 
@@ -157,7 +160,7 @@ public class ShadowsDemo implements ImageJPlugin {
 				}
 			}
 		};
-		Events.subscribe(KyPressedEvent.class, kyPressSubscriber);
+		eventService.subscribe(KyPressedEvent.class, kyPressSubscriber);
 
 		displaySubscriber = new EventSubscriber<DisplayDeletedEvent>() {
 
@@ -166,7 +169,7 @@ public class ShadowsDemo implements ImageJPlugin {
 				if (event.getObject() == currDisplay) userHasQuit = true;
 			}
 		};
-		Events.subscribe(DisplayDeletedEvent.class, displaySubscriber);
+		eventService.subscribe(DisplayDeletedEvent.class, displaySubscriber);
 	}
 
 	/**
@@ -174,7 +177,8 @@ public class ShadowsDemo implements ImageJPlugin {
 	 * references to obsolete event listeners.
 	 */
 	private void unsubscribeFromEvents() {
-		Events.unsubscribe(KyPressedEvent.class, kyPressSubscriber);
-		Events.unsubscribe(DisplayDeletedEvent.class, displaySubscriber);
+		eventService.unsubscribe(KyPressedEvent.class, kyPressSubscriber);
+		eventService.unsubscribe(DisplayDeletedEvent.class, displaySubscriber);
 	}
+
 }
