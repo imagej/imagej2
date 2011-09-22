@@ -51,7 +51,7 @@ import imagej.ui.IUserInterface;
  */
 @Plugin(iconPath = "/icons/plugins/door_in.png", menu = {
 		@Menu(label = "File"),
-		@Menu(label = "Quitt", weight = Double.MAX_VALUE, mnemonic = 'q',
+		@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
 				accelerator = "control Q") })
 public class QuitProgram implements ImageJPlugin {
 
