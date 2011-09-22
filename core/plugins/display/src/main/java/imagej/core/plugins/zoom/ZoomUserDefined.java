@@ -53,8 +53,8 @@ public class ZoomUserDefined implements ImageJPlugin {
 	@Parameter
 	private ImageDisplay display;
 
-	@Parameter(label = "Zoom (%) :",min= "0.1", max = "10000000")
-	private double userDefinedScale;
+	@Parameter(label = "Zoom (%) :", min = "0.1", max = "10000000")
+	private final double userDefinedScale = 100;
 
 	@Override
 	public void run() {
