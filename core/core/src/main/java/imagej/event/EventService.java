@@ -40,7 +40,7 @@ import imagej.Service;
 
 import java.util.List;
 
-import org.bushe.swing.event.ThreadSafeEventService;
+import org.bushe.swing.event.SwingEventService;
 
 /**
  * Service for publishing and subscribing to ImageJ events.
@@ -108,7 +108,12 @@ public final class EventService extends AbstractService {
 
 	@Override
 	public void initialize() {
-		eventBus = new ThreadSafeEventService();
+		// TODO - Use ThreadSafeEventService instead of SwingEventService.
+		// Unfortunately, without further care elsewhere in the code (subject to
+		// further investigation), using it results in a race condition where
+		// JHotDraw partially repaints images before they are done being processed.
+		// See ticket #719: http://dev.imagejdev.org/trac/imagej/ticket/719
+		eventBus = new SwingEventService();
 	}
 
 }
