@@ -523,6 +523,18 @@ public class Position implements Localizable, Positionable, Iterator {
 		return position[d];
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("extents=" + parentSpace);
+		sb.append(", position={");
+		for (long p : position) {
+			sb.append(" " + p);
+		}
+		sb.append(" }, valid=" + !isInvalid);
+		return sb.toString();
+	}
+	
 	// -- private helpers --
 	
 	private boolean isInvalid() {
