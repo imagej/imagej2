@@ -81,8 +81,9 @@ public class AddAxis extends DynamicPlugin {
 		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final Axis candidateAxis : Axes.values()) {
-			if (!datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
-				.getLabel());
+			if (!datasetAxes.contains(candidateAxis)) {
+				choices.add(candidateAxis.getLabel());
+			}
 		}
 		name.setChoices(choices);
 		addInput(name);
@@ -151,8 +152,8 @@ public class AddAxis extends DynamicPlugin {
 	 * Creates a long[] that consists of all the dimensions from a Dataset and an
 	 * additional value appended.
 	 */
-	private long[]
-		getNewDimensions(final Dataset ds, final long lastDimensionSize)
+	private long[] getNewDimensions(final Dataset ds,
+		final long lastDimensionSize)
 	{
 		final long[] origDims = ds.getDims();
 		final long[] newDims = new long[origDims.length + 1];
