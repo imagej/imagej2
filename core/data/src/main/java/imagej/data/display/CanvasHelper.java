@@ -218,17 +218,6 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return new IntCoords(w / 2, h / 2);
 	}
 
-	private void clipToImageBoundaries(final RealCoords coords) {
-		if (coords.x < 0) coords.x = 0;
-		if (coords.y < 0) coords.y = 0;
-		if (coords.x >= canvas.getCanvasWidth()) {
-			coords.x = canvas.getCanvasWidth() - 1;
-		}
-		if (coords.y >= canvas.getCanvasHeight()) {
-			coords.y = canvas.getCanvasHeight() - 1;
-		}
-	}
-
 	private boolean scaleOutOfBounds(final double desiredScale) {
 		if (desiredScale <= 0) {
 			Log.warn("*********** BAD SCALE in CanvasHelper *******************");
