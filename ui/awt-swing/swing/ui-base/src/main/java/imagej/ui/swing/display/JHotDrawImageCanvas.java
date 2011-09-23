@@ -162,8 +162,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		activateTool(activeTool);
 		Events.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
 		Events.subscribe(DataViewSelectedEvent.class, viewSelectedEvent);
-		Events.subscribe(DataViewDeselectedEvent.class,
-			viewDeselectedEvent);
+		Events.subscribe(DataViewDeselectedEvent.class, viewDeselectedEvent);
 
 		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
 
@@ -242,7 +241,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			// When the tool creates an overlay, add the
 			// overlay/figure combo to a SwingOverlayView.
 			creationTool
-				.addOverlayCreatedListener(new IJCreationTool.OverlayCreatedListener() {
+				.addOverlayCreatedListener(new IJCreationTool.OverlayCreatedListener()
+				{
 
 					@SuppressWarnings("synthetic-access")
 					@Override
@@ -304,15 +304,17 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		return display;
 	}
 
-	// needed to override Dimension getPreferredSize() and add 4 to the w and h,  
-	// Don't ask me why it is 4, - GBH
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(
-				drawingView.getPreferredSize().width + 4, 
-				drawingView.getPreferredSize().height +4);
+		// HACK: Size the canvas a few pixels larger. This is a workaround to an
+		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
+		// large X until it is finished being rendered. Unfortunately, the X is
+		// slightly smaller than the image after being rendered.
+		final int w = drawingView.getPreferredSize().width + 5;
+		final int h = drawingView.getPreferredSize().height + 5;
+		return new Dimension(w, h);
 	}
-	
+
 	@Override
 	public int getCanvasWidth() {
 		// NB: Return *unscaled* canvas width.
@@ -432,8 +434,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	public void zoomToFit(final IntCoords topLeft, final IntCoords bottomRight) {
 		canvasHelper.zoomToFit(topLeft, bottomRight);
 	}
-	
-	void setInitialScale(double value) {
+
+	void setInitialScale(final double value) {
 		canvasHelper.setInitialScale(value);
 	}
 
