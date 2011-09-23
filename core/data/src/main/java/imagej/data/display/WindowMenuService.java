@@ -60,11 +60,6 @@ import java.util.Map;
 /**
  * Service for keeping track of open windows, including management of the
  * Windows menu.
- * <p>
- * <ul>
- * <li>add(String path)</li>
- * <li>remove(String path)</li>
- * </ul>
  * 
  * @author Grant Harris
  */
