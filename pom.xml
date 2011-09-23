@@ -21,7 +21,7 @@
 	</modules>
 
 	<properties>
-		<bio-formats.version>5.0-SNAPSHOT</bio-formats.version>
+		<bio-formats.version>4.3.3-SNAPSHOT</bio-formats.version>
 		<imagej.groupId>imagej</imagej.groupId>
 		<imagej.version>${project.version}</imagej.version>
 		<imagej1.version>1.45i</imagej1.version>
