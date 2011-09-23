@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.debug;
 
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
@@ -57,6 +57,9 @@ import java.util.List;
  */
 @Plugin(menuPath = "Plugins>Debug>Subscribers")
 public class ShowSubscribers implements ImageJPlugin {
+
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
 
 	@Parameter(label = "Subscriber Log", type = ItemIO.OUTPUT)
 	private String subscriberLog;
@@ -85,7 +88,8 @@ public class ShowSubscribers implements ImageJPlugin {
 	private <E extends ImageJEvent> void listSubs(final StringBuilder sb,
 		final Class<E> c)
 	{
-		final List<EventSubscriber<E>> subscribers = Events.getSubscribers(c);
+		final List<EventSubscriber<E>> subscribers =
+			eventService.getSubscribers(c);
 		sb.append(c.getSimpleName() + ":\n");
 		for (final EventSubscriber<E> subscriber : subscribers) {
 			sb.append("    " + subscriber.toString() + "\n");
