@@ -99,6 +99,16 @@ public class Extents extends AbstractInterval {
 	}
 	*/
 	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("{");
+		for (int d = 0; d < numDimensions(); d++) {
+			sb.append(" " + dimension(d));
+		}
+		sb.append(" }");
+		return sb.toString();
+	}
+	
 	// -- private helpers --
 	
 	private long calcNumElements() {
