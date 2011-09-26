@@ -126,7 +126,7 @@ public class PixelProbe extends AbstractTool {
 		for (int d = 0; d < randomAccess.numDimensions(); d++) {
 			if (d == xAxis) randomAccess.setPosition(cx, d);
 			else if (d == yAxis) randomAccess.setPosition(cy, d);
-			else randomAccess.setPosition(planePos.dimension(i++), d);
+			else randomAccess.setPosition(planePos.getLongPosition(i++), d);
 		}
 	}
 
