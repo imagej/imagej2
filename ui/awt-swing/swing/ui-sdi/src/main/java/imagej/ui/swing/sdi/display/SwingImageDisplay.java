@@ -192,7 +192,7 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 						if (dataset == view.getData()) {
 							/*
 							 * BDZ - setZoom() and panReset() code tied to numerous bugs:
-							 * - fixes #605 & #607
+							 * - fixes #605 & #627
 							 * - call to setZoom() causes #797
 							 */
 							// NB - if just panReset() we'll be zoomed on wrong part of image
