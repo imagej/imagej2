@@ -69,15 +69,20 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 
 	/** Displays output objects. */
 	public void handleOutput(final String name, final Object output) {
-		// TODO - find a general way to decide this flag
-		final boolean addToExisting = false;
+		if (output instanceof Display) {
+			// output is itself a display; just update it
+			final Display<?> display = (Display<?>) output;
+			display.update();
+			return;
+		}
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final boolean addToExisting = addToExisting(output);
+		final ArrayList<Display<?>> displays = new ArrayList<Display<?>>();
 
 		// get list of existing displays containing this output
 		final List<Display<?>> existingDisplays =
 			displayService.getDisplaysContaining(output);
-		final ArrayList<Display<?>> displays = new ArrayList<Display<?>>();
 		displays.addAll(existingDisplays);
 
 		if (displays.isEmpty()) {
@@ -87,6 +92,7 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 			if (addToExisting && activeDisplay.canDisplay(output)) {
 				// add output to existing display if possible
 				activeDisplay.display(output);
+				displays.add(activeDisplay);
 			}
 			else {
 				// create a new display for the output
@@ -96,7 +102,7 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 		}
 
 		if (!displays.isEmpty()) {
-			// success!
+			// output was successfully associated with at least one display
 			for (final Display<?> display : displays) {
 				display.update();
 			}
@@ -127,6 +133,13 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 		final String valueClass =
 			output == null ? "null" : output.getClass().getName();
 		Log.warn("Ignoring unsupported output: " + valueClass);
+	}
+
+	// -- Helper methods --
+
+	private boolean addToExisting(final Object output) {
+		// TODO - find a general way to decide this
+		return false;
 	}
 
 }
