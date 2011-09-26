@@ -433,6 +433,13 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		final Axis[] axes = dataset.getAxes();
 		final Position pos = view.getPlanePosition();
 
+		/* BDZ NB - issue in code here. Bug #797: a race condition can arise where
+		 * the dims array and the pos Position are not compatible (during an add
+		 * axis operation for example). That causes array access exceptions below
+		 * in for loop. Could loop on initializations of dims and pos until they
+		 * match. But that is a hack. Fixes in SwingImageDisplay for bugs #605 &
+		 * #627 (specifically the setZoom() call) cause the issue here. Investigate
+		 */
 		final StringBuilder sb = new StringBuilder();
 		for (int i = 0, p = -1; i < dims.length; i++) {
 			if (Axes.isXY(axes[i])) continue;

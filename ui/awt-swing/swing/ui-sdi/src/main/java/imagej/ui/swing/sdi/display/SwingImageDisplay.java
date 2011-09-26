@@ -181,15 +181,20 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 				public void onEvent(final DatasetRestructuredEvent event) {
 					// NOTE - this code used to just note that a rebuild was necessary
 					// and had the rebuild done in update(). But due to timing of
-					// events it possible to get the update() before this call.
+					// events it is possible to get the update() before this call.
 					// So make this do a rebuild. In some cases update() will be
-					// called twice. Not sure if avoiding this was the reason to
-					// just record and do work in update. Or if that code was to
+					// called twice. Not sure if avoiding this was the reason we used
+					// to just record and do work in update. Or if that code was to
 					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
 					// and bug #605. BDZ
 					final Dataset dataset = event.getObject();
 					for (final DataView view : getViews()) {
 						if (dataset == view.getData()) {
+							/*
+							 * BDZ - setZoom() and panReset() code tied to numerous bugs:
+							 * - fixes #605 & #607
+							 * - call to setZoom() causes #797
+							 */
 							// NB - if just panReset() we'll be zoomed on wrong part of image
 							imgCanvas.setZoom(0); // original scale
 							// NB - if x or y dims change without panReset() image panned
