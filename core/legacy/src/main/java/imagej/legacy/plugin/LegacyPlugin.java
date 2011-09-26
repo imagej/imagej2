@@ -162,9 +162,9 @@ public class LegacyPlugin implements ImageJPlugin {
 		// TODO - track events and keep a dirty bit, then only harmonize those
 		// displays that have changed. See ticket #546.
 		final ObjectService objectService = ImageJ.get(ObjectService.class);
-		for (final ImageDisplay display : objectService
-			.getObjects(ImageDisplay.class))
-		{
+		final List<ImageDisplay> imageDisplays =
+			objectService.getObjects(ImageDisplay.class);
+		for (final ImageDisplay display : imageDisplays) {
 			ImagePlus imp = map.lookupImagePlus(display);
 			if (imp == null) {
 				if (isLegacyCompatible(display)) {
