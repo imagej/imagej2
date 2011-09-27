@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.awt;
 
 import imagej.ImageJ;
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
 import imagej.ext.tool.ITool;
@@ -70,7 +70,10 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 	private final Map<String, Button> toolButtons;
 
+	final protected EventService eventService;
+
 	public AWTToolBar() {
+		eventService = ImageJ.get(EventService.class);
 		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new FlowLayout());
@@ -142,7 +145,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
-				Events.publish(new StatusEvent(description));
+				eventService.publish(new StatusEvent(description));
 			}
 		});
 

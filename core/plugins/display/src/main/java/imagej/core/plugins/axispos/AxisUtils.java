@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
-import imagej.event.Events;
+import imagej.event.EventService;
 import net.imglib2.img.Axis;
 
 /**
@@ -72,7 +72,9 @@ public final class AxisUtils {
 		final int axisIndex = ds.getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		final long max = ds.getExtents().dimension(axisIndex);
-		Events.publish(new AxisPositionEvent(display, axis, change, max, relative));
+		final EventService eventService =
+			ImageJ.get(EventService.class);
+		eventService.publish(new AxisPositionEvent(display, axis, change, max, relative));
 	}
 
 }

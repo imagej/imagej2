@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.pivot;
 
 import imagej.ImageJ;
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.pivot.PivotMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -43,10 +43,10 @@ import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.OutputWindow;
-import imagej.ui.UserInterface;
-import imagej.ui.UIService;
 import imagej.ui.IUserInterface;
+import imagej.ui.OutputWindow;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Application;
@@ -130,7 +130,7 @@ public class PivotUI implements Application, IUserInterface {
 		final BoxPane menuPane =
 			menuService.createMenus(new PivotMenuCreator(), new BoxPane());
 		contentPane.add(menuPane);
-		Events.publish(new AppMenusCreatedEvent(menuPane));
+		ImageJ.get(EventService.class).publish(new AppMenusCreatedEvent(menuPane));
 	}
 
 	@Override

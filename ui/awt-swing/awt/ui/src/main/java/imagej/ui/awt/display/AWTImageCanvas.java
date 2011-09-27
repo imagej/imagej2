@@ -34,11 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt.display;
 
+import imagej.ImageJ;
 import imagej.data.display.CanvasHelper;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.MouseCursor;
 import imagej.ext.tool.event.ToolActivatedEvent;
@@ -103,7 +104,7 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 		canvasHelper = new CanvasHelper(this);
 //		setOpaque(false);
 		addResizeListener();
-		Events.subscribe(ToolActivatedEvent.class, this);
+		ImageJ.get(EventService.class).subscribe(ToolActivatedEvent.class, this);
 	}
 
 	/** Creates an image canvas with the specified image. */

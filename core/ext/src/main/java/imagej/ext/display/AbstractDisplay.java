@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display;
 
-import imagej.event.Events;
+import imagej.ImageJ;
+import imagej.event.EventService;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 
 import java.util.ArrayList;
@@ -59,7 +60,10 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	/** The name of the display. */
 	private String name;
 
+	final protected EventService eventService;
+
 	public AbstractDisplay(final Class<E> type) {
+		eventService = ImageJ.get(EventService.class);
 		this.type = type;
 		objects = new ArrayList<E>();
 	}
@@ -99,13 +103,13 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public void add(int index, E element) {
 		objects.add(index, element);
-		Events.publish(new DisplayUpdatedEvent(this));
+		eventService.publish(new DisplayUpdatedEvent(this));
 	}
 
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c) {
 		final boolean changed = objects.addAll(index, c);
-		if (changed) Events.publish(new DisplayUpdatedEvent(this));
+		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
@@ -137,14 +141,14 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public E remove(int index) {
 		final E result = objects.remove(index);
-		if (result != null) Events.publish(new DisplayUpdatedEvent(this));
+		if (result != null) eventService.publish(new DisplayUpdatedEvent(this));
 		return result;
 	}
 
 	@Override
 	public E set(int index, E element) {
 		final E result = objects.set(index, element);
-		if (result != null) Events.publish(new DisplayUpdatedEvent(this));
+		if (result != null) eventService.publish(new DisplayUpdatedEvent(this));
 		return result;
 	}
 
@@ -159,7 +163,7 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	public boolean add(E o) {
 		checkObject(o);
 		boolean changed = objects.add(o);
-		if (changed) Events.publish(new DisplayUpdatedEvent(this));
+		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
@@ -167,14 +171,14 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	public boolean addAll(Collection<? extends E> c) {
 		for (final E o : c) checkObject(o);
 		boolean changed = objects.addAll(c);
-		if (changed) Events.publish(new DisplayUpdatedEvent(this));
+		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
 	@Override
 	public void clear() {
 		objects.clear();
-		Events.publish(new DisplayUpdatedEvent(this));
+		eventService.publish(new DisplayUpdatedEvent(this));
 	}
 
 	@Override
@@ -200,21 +204,21 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public boolean remove(Object o) {
 		final boolean changed = objects.remove(o);
-		if (changed) Events.publish(new DisplayUpdatedEvent(this));
+		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		final boolean changed = objects.removeAll(c);
-		if (changed) Events.publish(new DisplayUpdatedEvent(this));
+		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		final boolean changed = objects.retainAll(c);
-		if (changed) Events.publish(new DisplayUpdatedEvent(this));
+		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 

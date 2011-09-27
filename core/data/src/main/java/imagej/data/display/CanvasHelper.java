@@ -34,8 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
+import imagej.ImageJ;
 import imagej.data.display.event.ZoomEvent;
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.util.IntCoords;
 import imagej.util.Log;
 import imagej.util.RealCoords;
@@ -66,7 +67,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 	/** The amount the image should be zoomed in or out per operation. */
 	private double zoomStep = 1.2;
 
+	private final EventService eventService;
+
 	public CanvasHelper(final ImageCanvas canvas) {
+		eventService = ImageJ.get(EventService.class);
 		this.canvas = canvas;
 	}
 
@@ -140,7 +144,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 		offset.y = (int) (-center.y + (center.y + offset.y) * desiredScale / scale);
 		scale = desiredScale;
 
-		Events.publish(new ZoomEvent(canvas, getZoomFactor(), center.x, center.y));
+		eventService.publish(new ZoomEvent(canvas, getZoomFactor(), center.x, center.y));
 	}
 
 	@Override
