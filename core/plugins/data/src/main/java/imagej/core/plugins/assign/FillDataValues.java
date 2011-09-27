@@ -61,7 +61,7 @@ public class FillDataValues implements ImageJPlugin {
 	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
 	private double constant;
 
-	// -- public interrface --
+	// -- public interface --
 
 	@Override
 	public void run() {
