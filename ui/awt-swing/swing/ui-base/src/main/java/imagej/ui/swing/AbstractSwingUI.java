@@ -48,7 +48,6 @@ import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
-import imagej.ui.common.awt.AWTKeyEventDispatcherGlobal;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Prefs;
@@ -148,13 +147,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		if (isMacOs) {
 			subscribeToEvents();
 		}
-		addGlobalKeyListener();
-	}
-
-	void addGlobalKeyListener() {
-		// FIXME, this needs to pass the event listener
-		final AWTKeyEventDispatcherGlobal globalKey =
-			AWTKeyEventDispatcherGlobal.getInstance();
 	}
 
 	protected abstract void setupAppFrame();
