@@ -40,8 +40,8 @@ import ij.gui.Roi;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.legacy.patches.ImageWindowMethods;
@@ -91,10 +91,12 @@ public class LegacyImageMap {
 
 	/** List of event subscribers, to avoid garbage collection. */
 	private final ArrayList<EventSubscriber<?>> subscribers;
+	private final EventService eventService;
 
 	// -- Constructor --
 
-	public LegacyImageMap() {
+	public LegacyImageMap(final EventService eventService) {
+		this.eventService = eventService;
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
 		imageTranslator = new DefaultImageTranslator();
@@ -219,7 +221,7 @@ public class LegacyImageMap {
 				}
 			};
 		subscribers.add(creationSubscriber);
-		Events.subscribe(DisplayCreatedEvent.class, creationSubscriber);
+		eventService.subscribe(DisplayCreatedEvent.class, creationSubscriber);
 
 		final EventSubscriber<DisplayDeletedEvent> deletionSubscriber =
 			new EventSubscriber<DisplayDeletedEvent>() {
@@ -247,7 +249,7 @@ public class LegacyImageMap {
 				}
 			};
 		subscribers.add(deletionSubscriber);
-		Events.subscribe(DisplayDeletedEvent.class, deletionSubscriber);
+		eventService.subscribe(DisplayDeletedEvent.class, deletionSubscriber);
 	}
 
 }

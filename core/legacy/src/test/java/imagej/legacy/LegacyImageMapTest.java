@@ -58,7 +58,7 @@ public class LegacyImageMapTest {
 
 	@SuppressWarnings("unchecked")
 	private final ImageJ context = ImageJ.createContext(EventService.class);
-	private final LegacyImageMap map = new LegacyImageMap();
+	private final LegacyImageMap map = new LegacyImageMap(context.getService(EventService.class));
 
 	// -- private interface --
 

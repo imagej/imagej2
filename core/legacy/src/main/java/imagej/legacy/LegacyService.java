@@ -167,7 +167,7 @@ public final class LegacyService extends AbstractService {
 
 	@Override
 	public void initialize() {
-		imageMap = new LegacyImageMap();
+		imageMap = new LegacyImageMap(eventService);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
 
 		// initialize legacy ImageJ application
