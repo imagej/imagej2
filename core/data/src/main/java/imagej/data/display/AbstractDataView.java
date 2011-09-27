@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
+import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -42,8 +43,8 @@ import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,7 @@ public abstract class AbstractDataView implements DataView {
 	/** List of event subscribers, to avoid garbage collection. */
 	private final List<EventSubscriber<?>> subscribers =
 		new ArrayList<EventSubscriber<?>>();
+	protected final EventService eventService;
 
 	private long[] planeDims;
 	private long[] position;
@@ -75,6 +77,7 @@ public abstract class AbstractDataView implements DataView {
 	private boolean selected;
 
 	public AbstractDataView(final ImageDisplay display, final Data dataObject) {
+		eventService = ImageJ.get(EventService.class);
 		this.display = display;
 		this.dataObject = dataObject;
 		dataObject.incrementReferences();
@@ -129,7 +132,7 @@ public abstract class AbstractDataView implements DataView {
 		if (selected != isSelected) {
 			selected = isSelected;
 			DataViewSelectionEvent event = isSelected? new DataViewSelectedEvent(this): new DataViewDeselectedEvent(this);
-			Events.publish(event);
+			eventService.publish(event);
 		}
 	}
 
@@ -151,7 +154,7 @@ public abstract class AbstractDataView implements DataView {
 				display.update();
 			}
 		};
-		Events.subscribe(DataUpdatedEvent.class, updateSubscriber);
+		eventService.subscribe(DataUpdatedEvent.class, updateSubscriber);
 		subscribers.add(updateSubscriber);
 
 		// TODO - perhaps it would be better for the display to listen for
@@ -170,7 +173,7 @@ public abstract class AbstractDataView implements DataView {
 				display.update();
 			}
 		};
-		Events.subscribe(DataRestructuredEvent.class, restructureSubscriber);
+		eventService.subscribe(DataRestructuredEvent.class, restructureSubscriber);
 		subscribers.add(restructureSubscriber);
 	}
 
