@@ -40,7 +40,6 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -342,7 +341,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 			};
 		subscribers.add(typeChangeSubscriber);
-		Events.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
+		eventService.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
 
 		final EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
 			new EventSubscriber<DatasetRGBChangedEvent>() {
@@ -356,7 +355,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 			};
 		subscribers.add(rgbChangeSubscriber);
-		Events.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
+		eventService.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
 
 		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
 			new EventSubscriber<DatasetUpdatedEvent>() {
@@ -376,7 +375,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 			};
 		subscribers.add(updateSubscriber);
-		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
+		eventService.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
 	}
 
 }
