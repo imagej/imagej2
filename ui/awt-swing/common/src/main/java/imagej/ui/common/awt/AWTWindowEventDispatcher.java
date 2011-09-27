@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.EventDispatcher;
@@ -64,47 +64,49 @@ public class AWTWindowEventDispatcher implements EventDispatcher,
 	// not implementing WindowFocusListener windowFocusGained/Lost(WindowEvent)
 
 	private final Display<?> display;
+	private final EventService eventService;
 
 	/** Creates an AWT event dispatcher for the given display. */
-	public AWTWindowEventDispatcher(final Display<?> display) {
+	public AWTWindowEventDispatcher(final Display<?> display, final EventService eventService) {
 		this.display = display;
+		this.eventService = eventService;
 	}
 
 	// -- WindowListener methods --
 
 	@Override
 	public void windowActivated(final WindowEvent e) {
-		Events.publish(new WinActivatedEvent(display));
+		eventService.publish(new WinActivatedEvent(display));
 	}
 
 	@Override
 	public void windowClosed(final WindowEvent e) {
-		Events.publish(new WinClosedEvent(display));
+		eventService.publish(new WinClosedEvent(display));
 	}
 
 	@Override
 	public void windowClosing(final WindowEvent e) {
-		Events.publish(new WinClosingEvent(display));
+		eventService.publish(new WinClosingEvent(display));
 	}
 
 	@Override
 	public void windowDeactivated(final WindowEvent e) {
-		Events.publish(new WinDeactivatedEvent(display));
+		eventService.publish(new WinDeactivatedEvent(display));
 	}
 
 	@Override
 	public void windowDeiconified(final WindowEvent e) {
-		Events.publish(new WinDeiconifiedEvent(display));
+		eventService.publish(new WinDeiconifiedEvent(display));
 	}
 
 	@Override
 	public void windowIconified(final WindowEvent e) {
-		Events.publish(new WinIconifiedEvent(display));
+		eventService.publish(new WinIconifiedEvent(display));
 	}
 
 	@Override
 	public void windowOpened(final WindowEvent e) {
-		Events.publish(new WinOpenedEvent(display));
+		eventService.publish(new WinOpenedEvent(display));
 	}
 
 }

@@ -92,8 +92,8 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 		// final EventDispatcher eventDispatcher =new AWTEventDispatcher(this,
 		// false);
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, eventService, false));
-		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
-		window.addInternalFrameListener(new InternalFrameEventDispatcher(this));
+		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
+		window.addInternalFrameListener(new InternalFrameEventDispatcher(this, eventService));
 		subscribeToEvents();
 
 		thisDisplay = this;

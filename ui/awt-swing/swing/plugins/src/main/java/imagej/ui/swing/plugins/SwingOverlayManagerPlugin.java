@@ -55,7 +55,7 @@ public class SwingOverlayManagerPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final SwingOverlayManager overlaymgr = new SwingOverlayManager();
+		final SwingOverlayManager overlaymgr = new SwingOverlayManager(eventService);
 		overlaymgr.setVisible(true);
 	}
 

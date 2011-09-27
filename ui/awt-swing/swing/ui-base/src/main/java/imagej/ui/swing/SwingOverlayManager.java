@@ -44,8 +44,8 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.DisplayActivatedEvent;
 
@@ -89,7 +89,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	private void subscribeToEvents() {
+	private void subscribeToEvents(final EventService eventService) {
 
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
@@ -105,7 +105,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		subscribers.add(creationSubscriber);
-		Events.subscribe(OverlayCreatedEvent.class, creationSubscriber);
+		eventService.subscribe(OverlayCreatedEvent.class, creationSubscriber);
 		//
 		final EventSubscriber<OverlayDeletedEvent> deletionSubscriber =
 			new EventSubscriber<OverlayDeletedEvent>() {
@@ -119,7 +119,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		subscribers.add(deletionSubscriber);
-		Events.subscribe(OverlayDeletedEvent.class, deletionSubscriber);
+		eventService.subscribe(OverlayDeletedEvent.class, deletionSubscriber);
 		//
 		// No need to update unless thumbnail will be redrawn.
 //		final EventSubscriber<OverlayRestructuredEvent> restructureSubscriber =
@@ -133,7 +133,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 //
 //				};
 //		subscribers.add(restructureSubscriber);
-//		Events.subscribe(OverlayRestructuredEvent.class, restructureSubscriber);
+//		eventService.subscribe(OverlayRestructuredEvent.class, restructureSubscriber);
 		//
 		/*
 		 * Update when a display is activated 
@@ -149,7 +149,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		subscribers.add(displayActivatedSubscriber);
-		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
+		eventService.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
 
 		final EventSubscriber<DataViewSelectionEvent> viewSelectionSubscriber =
 			new EventSubscriber<DataViewSelectionEvent>() {
@@ -182,7 +182,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 				}
 			};
 		subscribers.add(viewSelectionSubscriber);
-		Events.subscribe(DataViewSelectionEvent.class,
+		eventService.subscribe(DataViewSelectionEvent.class,
 			viewSelectionSubscriber);
 		//
 	}
@@ -191,7 +191,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 	 * Constructor. Create a JList to list the overlays. 
 	 */
 
-	public SwingOverlayManager() {
+	public SwingOverlayManager(final EventService eventService) {
 		olist = new JList(new OverlayListModel());
 		olist.setCellRenderer(new OverlayRenderer());
 
@@ -257,7 +257,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		olist.addListSelectionListener(listSelectionListener);
-		subscribeToEvents();
+		subscribeToEvents(eventService);
 //		Events.subscribe(OverlayCreatedEvent.class, creationSubscriber);
 //		Events.subscribe(OverlayDeletedEvent.class, deletionSubscriber);
 //		// No need to update unless thumbnail will be redrawn.

@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swt;
 
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 import net.miginfocom.swt.MigLayout;
@@ -56,12 +56,12 @@ public class SWTStatusBar extends Composite
 	private final Label label;
 	private final ProgressBar progressBar;
 
-	public SWTStatusBar(final Composite parent) {
+	public SWTStatusBar(final Composite parent, final EventService eventService) {
 		super(parent, 0);
 		setLayout(new MigLayout());
 		label = new Label(this, 0);
 		progressBar = new ProgressBar(this, 0);
-		Events.subscribe(StatusEvent.class, this);
+		eventService.subscribe(StatusEvent.class, this);
 	}
 
 	@Override

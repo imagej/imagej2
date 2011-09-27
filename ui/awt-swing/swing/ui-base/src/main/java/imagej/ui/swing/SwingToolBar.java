@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
 import imagej.ext.tool.ITool;
@@ -82,6 +82,8 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 
+	private final EventService eventService;
+
 	final private EventSubscriber<ToolActivatedEvent> toolActivatedEventSubscriber =
 		new EventSubscriber<ToolActivatedEvent>() {
 
@@ -101,12 +103,13 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 			}
 		};
 
-	public SwingToolBar() {
+	public SwingToolBar(final EventService eventService) {
+		this.eventService = eventService;
 		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
-		Events.subscribe(ToolActivatedEvent.class, toolActivatedEventSubscriber);
-		Events.subscribe(ToolDeactivatedEvent.class,
+		eventService.subscribe(ToolActivatedEvent.class, toolActivatedEventSubscriber);
+		eventService.subscribe(ToolDeactivatedEvent.class,
 			toolDeactivatedEventSubscriber);
 	}
 
@@ -174,7 +177,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
-				Events.publish(new StatusEvent(description));
+				eventService.publish(new StatusEvent(description));
 			}
 		});
 
