@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module;
 
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.ext.AbstractUIDetails;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 
@@ -165,8 +165,8 @@ public class DefaultModuleInfo extends AbstractUIDetails implements
 	}
 
 	@Override
-	public void update() {
-		Events.publish(new ModulesUpdatedEvent(this));
+	public void update(final EventService eventService) {
+		eventService.publish(new ModulesUpdatedEvent(this));
 	}
 
 	// -- UIDetails methods --

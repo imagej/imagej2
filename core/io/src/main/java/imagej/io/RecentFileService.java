@@ -229,7 +229,7 @@ public final class RecentFileService extends AbstractService {
 		// TODO - update module weights
 		if(info != null) {
 			// notify interested parties
-			info.update();
+			info.update(eventService);
 		}
 	}
 
