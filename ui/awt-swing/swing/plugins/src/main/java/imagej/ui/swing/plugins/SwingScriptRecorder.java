@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins;
 
 import imagej.ImageJ;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.ImageJEvent;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
@@ -45,14 +45,15 @@ import imagej.ext.module.event.ModuleEvent;
 import imagej.ext.module.event.ModuleExecutedEvent;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.script.CodeGenerator;
 import imagej.ext.script.CodeGeneratorJava;
 import imagej.ext.script.InvocationObject;
 import imagej.ext.script.ParameterObject;
 import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 import imagej.ui.swing.StaticSwingUtils;
 
 import java.awt.BorderLayout;
@@ -81,6 +82,9 @@ import javax.swing.WindowConstants;
 @Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Macros"),
 	@Menu(label = "Record...", weight = 4) })
 public class SwingScriptRecorder implements ImageJPlugin {
+
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
 
 	// private static SwingOutputWindow window;
 	JTextArea textArea = new JTextArea();
@@ -164,11 +168,11 @@ public class SwingScriptRecorder implements ImageJPlugin {
 		};
 
 	private void subscribeToEvents() {
-		Events.subscribe(ImageJEvent.class, imageJEventSubscriber);
+		eventService.subscribe(ImageJEvent.class, imageJEventSubscriber);
 	}
 
 	private void unSubscribeFromEvents() {
-		Events.unsubscribe(ImageJEvent.class, imageJEventSubscriber);
+		eventService.unsubscribe(ImageJEvent.class, imageJEventSubscriber);
 	}
 
 	public void append(final String text) {

@@ -35,12 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectsListEvent;
 import imagej.ui.swing.StaticSwingUtils;
@@ -58,6 +59,9 @@ import javax.swing.SwingUtilities;
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Displays")
 public class WatchDisplays implements ImageJPlugin {
+
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
 
 	private static SwingOutputWindow window;
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
@@ -112,7 +116,7 @@ public class WatchDisplays implements ImageJPlugin {
 
 			};
 		subscribers.add(objectsUpdatedSubscriber);
-		Events.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
+		eventService.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
 
 //		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
 //				new EventSubscriber<WinActivatedEvent>() {
@@ -136,7 +140,7 @@ public class WatchDisplays implements ImageJPlugin {
 
 			};
 		subscribers.add(DisplaySelectedSubscriber);
-		Events.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
+		eventService.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
 
 	}
 

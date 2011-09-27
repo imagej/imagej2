@@ -43,10 +43,11 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.object.event.ObjectsListEvent;
@@ -66,6 +67,9 @@ import net.imglib2.roi.RectangleRegionOfInterest;
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Overlays")
 public class WatchOverlays implements ImageJPlugin {
+
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
 
 	private static SwingOutputWindow window;
 
@@ -92,7 +96,7 @@ public class WatchOverlays implements ImageJPlugin {
 				}
 			};
 		subscribers.add(objectsUpdatedSubscriber);
-		Events.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
+		eventService.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
 		//
 //		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
 //				new EventSubscriber<WinActivatedEvent>() {
@@ -113,7 +117,7 @@ public class WatchOverlays implements ImageJPlugin {
 				}
 			};
 		subscribers.add(DisplaySelectedSubscriber);
-		Events.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
+		eventService.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
 	}
 
 	private void updateOverlaysShown() {
