@@ -141,7 +141,7 @@ public class MenuService extends AbstractService {
 	/** Selects or deselects the given module in the menu structure. */
 	public void setSelected(final ModuleInfo info, final boolean selected) {
 		info.setSelected(selected);
-		info.update();
+		info.update(eventService);
 	}
 
 	// -- IService methods --

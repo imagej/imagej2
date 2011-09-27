@@ -204,7 +204,7 @@ public final class WindowMenuService extends AbstractService {
 		// TODO - update module weights
 
 		// notify interested parties
-		info.update();
+		info.update(eventService);
 	}
 
 	/** Shortens the given path to ensure it conforms to a maximum length. */

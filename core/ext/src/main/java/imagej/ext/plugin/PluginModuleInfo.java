@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.Module;
@@ -207,8 +207,8 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	}
 
 	@Override
-	public void update() {
-		Events.publish(new ModulesUpdatedEvent(this));
+	public void update(final EventService eventService) {
+		eventService.publish(new ModulesUpdatedEvent(this));
 	}
 
 	// -- UIDetails methods --

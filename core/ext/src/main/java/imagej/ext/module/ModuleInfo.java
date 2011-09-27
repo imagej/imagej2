@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module;
 
+import imagej.event.EventService;
 import imagej.ext.UIDetails;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 
@@ -109,6 +110,6 @@ public interface ModuleInfo extends UIDetails {
 	 * {@link DefaultModuleInfo#update()} for an example).
 	 * </p>
 	 */
-	void update();
+	void update(EventService eventService);
 
 }
