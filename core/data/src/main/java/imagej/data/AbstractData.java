@@ -34,10 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.ImageJ;
 import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
 import imagej.data.roi.Overlay;
-import imagej.event.Events;
+import imagej.event.EventService;
 
 /**
  * Base implementation of {@link Data}.
@@ -53,6 +54,12 @@ public abstract class AbstractData implements Data {
 	
 	private String name;
 
+	final protected EventService eventService;
+
+	public AbstractData() {
+		eventService = ImageJ.get(EventService.class);
+	}
+
 	/**
 	 * Informs interested parties that the data object has become relevant and
 	 * should be registered. Called the first time the reference count is
@@ -60,7 +67,7 @@ public abstract class AbstractData implements Data {
 	 * method to publish more specific events.
 	 */
 	protected void register() {
-		Events.publish(new DataCreatedEvent(this));
+		eventService.publish(new DataCreatedEvent(this));
 	}
 
 	/**
@@ -70,7 +77,7 @@ public abstract class AbstractData implements Data {
 	 * publish more specific events.
 	 * */
 	protected void delete() {
-		Events.publish(new DataDeletedEvent(this));
+		eventService.publish(new DataDeletedEvent(this));
 	}
 
 	/** @see Data */

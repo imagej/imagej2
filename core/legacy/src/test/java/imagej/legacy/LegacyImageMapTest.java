@@ -36,7 +36,9 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import ij.gui.NewImage;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.event.EventService;
 import net.imglib2.Cursor;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -54,6 +56,8 @@ public class LegacyImageMapTest {
 
 	// -- instance variables --
 
+	@SuppressWarnings("unchecked")
+	private final ImageJ context = ImageJ.createContext(EventService.class);
 	private final LegacyImageMap map = new LegacyImageMap();
 
 	// -- private interface --

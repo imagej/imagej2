@@ -39,7 +39,6 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
-import imagej.event.Events;
 import imagej.util.ColorRGB;
 
 import java.io.Externalizable;
@@ -98,22 +97,22 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 
 	@Override
 	public void update() {
-		Events.publish(new OverlayUpdatedEvent(this));
+		eventService.publish(new OverlayUpdatedEvent(this));
 	}
 
 	@Override
 	public void rebuild() {
-		Events.publish(new OverlayRestructuredEvent(this));
+		eventService.publish(new OverlayRestructuredEvent(this));
 	}
 
 	@Override
 	public void register() {
-		Events.publish(new OverlayCreatedEvent(this));		
+		eventService.publish(new OverlayCreatedEvent(this));
 	}
 
 	@Override
 	public void delete() {
-		Events.publish(new OverlayDeletedEvent(this));
+		eventService.publish(new OverlayDeletedEvent(this));
 	}
 
 	@Override
