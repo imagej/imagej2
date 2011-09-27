@@ -43,8 +43,8 @@ import imagej.data.display.ImageDisplayPanel;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.roi.Overlay;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.MouseCursor;
 import imagej.ext.tool.ITool;
@@ -160,9 +160,12 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 		final ITool activeTool = ImageJ.get(ToolService.class).getActiveTool();
 		activateTool(activeTool);
-		Events.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
-		Events.subscribe(DataViewSelectedEvent.class, viewSelectedEvent);
-		Events.subscribe(DataViewDeselectedEvent.class, viewDeselectedEvent);
+		final EventService eventService =
+				ImageJ.get(EventService.class);
+		eventService.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
+		eventService.subscribe(DataViewSelectedEvent.class, viewSelectedEvent);
+		eventService.subscribe(DataViewDeselectedEvent.class,
+			viewDeselectedEvent);
 
 		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
 
