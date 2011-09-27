@@ -34,8 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins;
 
+import imagej.event.EventService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.SwingOverlayManager;
 
@@ -47,6 +49,9 @@ import imagej.ui.swing.SwingOverlayManager;
 @Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
 	@Menu(label = "Overlay Manager") })
 public class SwingOverlayManagerPlugin implements ImageJPlugin {
+
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
 
 	@Override
 	public void run() {

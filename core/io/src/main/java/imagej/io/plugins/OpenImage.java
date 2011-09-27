@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -68,6 +68,9 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin, StatusListener
 {
 
+	@Parameter(required = true, persist = false)
+	private EventService eventService;
+
 	@Parameter(label = "File to open")
 	private File inputFile;
 
@@ -84,7 +87,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 			imageOpener.addStatusListener(this);
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
 			dataset = new Dataset(imgPlus);
-			Events.publish(new FileOpenedEvent(id));
+			eventService.publish(new FileOpenedEvent(id));
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);
@@ -126,7 +129,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 		}
 		lastTime = time;
 
-		Events.publish(new StatusEvent(progress, maximum, message, warn));
+		eventService.publish(new StatusEvent(progress, maximum, message, warn));
 	}
 
 }
