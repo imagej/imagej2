@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swt;
 
 import imagej.ImageJ;
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.swt.SWTMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -61,6 +61,7 @@ import org.eclipse.swt.widgets.Menu;
 public class SWTUI implements IUserInterface, Runnable {
 
 	private UIService uiService;
+	private EventService eventService;
 
 	private SWTApplicationFrame shell;
 	private SWTToolBar toolBar;
@@ -73,6 +74,7 @@ public class SWTUI implements IUserInterface, Runnable {
 	@Override
 	public void initialize(final UIService service) {
 		uiService = service;
+		eventService = uiService.getEventService();
 
 		display = new Display();
 
@@ -80,7 +82,7 @@ public class SWTUI implements IUserInterface, Runnable {
 		shell.setLayout(new MigLayout("wrap 1"));
 		shell.setText("ImageJ");
 		toolBar = new SWTToolBar(display, shell);
-		statusBar = new SWTStatusBar(shell);
+		statusBar = new SWTStatusBar(shell, eventService);
 		createMenus();
 
 		shell.pack();
@@ -100,7 +102,7 @@ public class SWTUI implements IUserInterface, Runnable {
 		final Menu menuBar =
 			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
 		shell.setMenuBar(menuBar); // TODO - is this necessary?
-		Events.publish(new AppMenusCreatedEvent(menuBar));
+		eventService.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 	@Override

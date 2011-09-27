@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.mdi;
 
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.EventDispatcher;
@@ -60,9 +60,11 @@ public class InternalFrameEventDispatcher implements EventDispatcher,
 {
 
 	private final Display<?> display;
+	private final EventService eventService;
 
 	/** Creates an AWT event dispatcher for the given display. */
-	public InternalFrameEventDispatcher(final Display<?> display) {
+	public InternalFrameEventDispatcher(final Display<?> display, final EventService eventService) {
+		this.eventService = eventService;
 		this.display = display;
 	}
 
@@ -70,37 +72,37 @@ public class InternalFrameEventDispatcher implements EventDispatcher,
 
 	@Override
 	public void internalFrameActivated(final InternalFrameEvent e) {
-		Events.publish(new WinActivatedEvent(display));
+		eventService.publish(new WinActivatedEvent(display));
 	}
 
 	@Override
 	public void internalFrameClosed(final InternalFrameEvent e) {
-		Events.publish(new WinClosedEvent(display));
+		eventService.publish(new WinClosedEvent(display));
 	}
 
 	@Override
 	public void internalFrameClosing(final InternalFrameEvent e) {
-		Events.publish(new WinClosingEvent(display));
+		eventService.publish(new WinClosingEvent(display));
 	}
 
 	@Override
 	public void internalFrameDeactivated(final InternalFrameEvent e) {
-		Events.publish(new WinDeactivatedEvent(display));
+		eventService.publish(new WinDeactivatedEvent(display));
 	}
 
 	@Override
 	public void internalFrameDeiconified(final InternalFrameEvent e) {
-		Events.publish(new WinDeiconifiedEvent(display));
+		eventService.publish(new WinDeiconifiedEvent(display));
 	}
 
 	@Override
 	public void internalFrameIconified(final InternalFrameEvent e) {
-		Events.publish(new WinIconifiedEvent(display));
+		eventService.publish(new WinIconifiedEvent(display));
 	}
 
 	@Override
 	public void internalFrameOpened(final InternalFrameEvent e) {
-		Events.publish(new WinOpenedEvent(display));
+		eventService.publish(new WinOpenedEvent(display));
 	}
 
 }

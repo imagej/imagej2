@@ -48,7 +48,6 @@ import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
-import imagej.ui.UIService;
 import imagej.ui.common.awt.AWTKeyEventDispatcherGlobal;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
@@ -80,8 +79,13 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
 
+	protected final EventService eventService;
 	private ArrayList<EventSubscriber<?>> subscribers;
 
+	public AbstractSwingUI() {
+		// At this stage, the userIntService field is not initialized
+		eventService = ImageJ.get(EventService.class);
+	}
 	// -- UserInterface methods --
 
 	@Override
@@ -102,7 +106,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	public void createMenus() {
 		final JMenuBar menuBar = createMenuBar(appFrame);
-		getUIService().getEventService().publish(new AppMenusCreatedEvent(menuBar));
+		eventService.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 	@Override
@@ -115,8 +119,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	protected void createUI() {
 		appFrame = new SwingApplicationFrame("ImageJ");
-		toolBar = new SwingToolBar();
-		statusBar = new SwingStatusBar(getUIService().getEventService());
+		toolBar = new SwingToolBar(eventService);
+		statusBar = new SwingStatusBar(eventService);
 		createMenus();
 
 		setupAppFrame();
@@ -138,6 +142,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.pack();
 		appFrame.setVisible(true);
 
+		// TODO: this is platform specific! Why?
 		final String osName = System.getProperty("os.name").toLowerCase();
 		final boolean isMacOs = osName.startsWith("mac os x");
 		if (isMacOs) {
@@ -147,7 +152,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	}
 
 	void addGlobalKeyListener() {
-		// FIXME
+		// FIXME, this needs to pass the event listener
 		final AWTKeyEventDispatcherGlobal globalKey =
 			AWTKeyEventDispatcherGlobal.getInstance();
 	}
@@ -181,11 +186,9 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	// -- Helper methods --
 
 	private void subscribeToEvents() {
-		final UIService uiService = getUIService();
-		final EventService eventService = uiService.getEventService();
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		if (uiService.getPlatformService().isMenuBarDuplicated()) {
+		if (getUIService().getPlatformService().isMenuBarDuplicated()) {
 			// NB: If menu bars are supposed to be duplicated across all window
 			// frames, listen for display creations and deletions and clone the menu
 			// bar accordingly.
