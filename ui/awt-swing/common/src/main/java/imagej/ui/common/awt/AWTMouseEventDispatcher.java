@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.common.awt;
 
 import imagej.data.display.ImageDisplay;
-import imagej.event.Events;
+import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.mouse.MsButtonEvent;
@@ -64,16 +64,16 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	MouseListener, MouseMotionListener, MouseWheelListener
 {
 
-	// TODO: Use MouseAdapter
 	private final ImageDisplay display;
 	private final boolean relative;
+	private final EventService eventService;
 
 	/**
 	 * Creates an AWT event dispatcher for the given display, which assumes
 	 * viewport mouse coordinates.
 	 */
-	public AWTMouseEventDispatcher(final ImageDisplay display) {
-		this(display, true);
+	public AWTMouseEventDispatcher(final ImageDisplay display, final EventService eventService) {
+		this(display, eventService, true);
 	}
 
 	/**
@@ -84,9 +84,10 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	 *          canvas rather than just the viewport; hence, the pan offset is
 	 *          already factored in.
 	 */
-	public AWTMouseEventDispatcher(final ImageDisplay display, final boolean relative) {
+	public AWTMouseEventDispatcher(final ImageDisplay display, final EventService eventService, final boolean relative) {
 		this.display = display;
 		this.relative = relative;
+		this.eventService = eventService;
 	}
 
 	// -- AWTEventDispatcher methods --
@@ -107,19 +108,19 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 
 	@Override
 	public void mouseClicked(final MouseEvent e) {
-		Events.publish(new MsClickedEvent(display, getX(e), getY(e),
+		eventService.publish(new MsClickedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mousePressed(final MouseEvent e) {
-		Events.publish(new MsPressedEvent(display, getX(e), getY(e),
+		eventService.publish(new MsPressedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mouseReleased(final MouseEvent e) {
-		Events.publish(new MsReleasedEvent(display, getX(e), getY(e),
+		eventService.publish(new MsReleasedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
@@ -127,30 +128,30 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 
 	@Override
 	public void mouseEntered(final MouseEvent e) {
-		Events.publish(new MsEnteredEvent(display, getX(e), getY(e)));
+		eventService.publish(new MsEnteredEvent(display, getX(e), getY(e)));
 	}
 
 	@Override
 	public void mouseExited(final MouseEvent e) {
-		Events.publish(new MsExitedEvent(display, getX(e), getY(e)));
+		eventService.publish(new MsExitedEvent(display, getX(e), getY(e)));
 	}
 
 	@Override
 	public void mouseDragged(final MouseEvent e) {
-		Events.publish(new MsDraggedEvent(display, getX(e), getY(e),
+		eventService.publish(new MsDraggedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mouseMoved(final MouseEvent e) {
-		Events.publish(new MsMovedEvent(display, getX(e), getY(e)));
+		eventService.publish(new MsMovedEvent(display, getX(e), getY(e)));
 	}
 
 	// -- MouseWheelListener methods --
 
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
-		Events.publish(new MsWheelEvent(display, getX(e), getY(e),
+		eventService.publish(new MsWheelEvent(display, getX(e), getY(e),
 			e.getWheelRotation()));
 	}
 

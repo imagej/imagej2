@@ -41,8 +41,8 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.plugin.Plugin;
@@ -81,15 +81,17 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
+	private final EventService eventService;
 
 	public SwingMdiImageDisplay() {
+		eventService = ImageJ.get(EventService.class);
 		imgCanvas = new JHotDrawImageCanvas(this);
 		final SwingMdiDisplayWindow window = new SwingMdiDisplayWindow();
 		imgPanel = new SwingDisplayPanel(this, window);
 
 		// final EventDispatcher eventDispatcher =new AWTEventDispatcher(this,
 		// false);
-		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, false));
+		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, eventService, false));
 		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
 		window.addInternalFrameListener(new InternalFrameEventDispatcher(this));
 		subscribeToEvents();
@@ -180,7 +182,7 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 				}
 			};
 		subscribers.add(winActivatedSubscriber);
-		Events.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
+		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
 
 		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>() {
@@ -212,7 +214,7 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 				}
 			};
 		subscribers.add(restructureSubscriber);
-		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+		eventService.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 	}
 
 	/** Name this display with unique id. */
