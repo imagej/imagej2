@@ -40,7 +40,6 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.event.Events;
 import imagej.util.Log;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -303,13 +302,13 @@ public class Dataset extends AbstractData implements
 	
 	public void typeChange() {
 		setDirty(true);
-		Events.publish(new DatasetTypeChangedEvent(this));
+		eventService.publish(new DatasetTypeChangedEvent(this));
 	}
 
 	public void rgbChange() {
 		// TODO - not sure if this needs to be done here
 		// setDirty(true);
-		Events.publish(new DatasetRGBChangedEvent(this));
+		eventService.publish(new DatasetRGBChangedEvent(this));
 	}
 
 	// -- Data methods --
@@ -317,23 +316,23 @@ public class Dataset extends AbstractData implements
 	@Override
 	public void update() {
 		setDirty(true);
-		Events.publish(new DatasetUpdatedEvent(this));
+		eventService.publish(new DatasetUpdatedEvent(this));
 	}
 
 	@Override
 	public void rebuild() {
 		setDirty(true);
-		Events.publish(new DatasetRestructuredEvent(this));
+		eventService.publish(new DatasetRestructuredEvent(this));
 	}
 
 	@Override
 	public void register() {
-		Events.publish(new DatasetCreatedEvent(this));
+		eventService.publish(new DatasetCreatedEvent(this));
 	}
 
 	@Override
 	public void delete() {
-		Events.publish(new DatasetDeletedEvent(this));
+		eventService.publish(new DatasetDeletedEvent(this));
 	}
 
 	// -- Object methods --
