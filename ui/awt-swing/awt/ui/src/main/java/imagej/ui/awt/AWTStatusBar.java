@@ -34,8 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt;
 
+import imagej.ImageJ;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 
@@ -55,7 +56,7 @@ public class AWTStatusBar extends Label
 	private int maximum;
 
 	public AWTStatusBar() {
-		Events.subscribe(StatusEvent.class, this);
+		ImageJ.get(EventService.class).subscribe(StatusEvent.class, this);
 	}
 
 	// -- Component methods --

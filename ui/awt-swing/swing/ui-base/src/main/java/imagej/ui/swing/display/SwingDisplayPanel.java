@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -44,8 +45,8 @@ import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
@@ -108,10 +109,13 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
 	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
+	private final EventService eventService;
 
 	public SwingDisplayPanel(final ImageDisplay display,
 		final DisplayWindow window)
 	{
+		eventService = ImageJ.get(EventService.class);
+
 		this.display = display;
 		this.window = (SwingDisplayWindow) window;
 
@@ -229,7 +233,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				setLabel(makeLabel());
 			}
 		};
-		Events.subscribe(ZoomEvent.class, zoomSubscriber);
+		eventService.subscribe(ZoomEvent.class, zoomSubscriber);
 
 		/* NB - BDZ - 7-29-11
 		 * This code may no longer be necessary. There were race conditions where
@@ -253,7 +257,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 					}
 				}
 			};
-		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+		eventService.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 		*/
 
 		updateSubscriber = new EventSubscriber<DatasetUpdatedEvent>() {
@@ -267,7 +271,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				setLabel(makeLabel());
 			}
 		};
-		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
+		eventService.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
 
 		axisMoveSubscriber = new EventSubscriber<AxisPositionEvent>() {
 
@@ -292,7 +296,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				}
 			}
 		};
-		Events.subscribe(AxisPositionEvent.class, axisMoveSubscriber);
+		eventService.subscribe(AxisPositionEvent.class, axisMoveSubscriber);
 
 		displayDeletedSubscriber = new EventSubscriber<DisplayDeletedEvent>() {
 
@@ -305,18 +309,18 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				}
 			}
 		};
-		Events.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+		eventService.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
 	}
 
 	// NB - this method necessary to make sure resources get returned via GC.
 	// Else there is a memory leak.
 	private void unsubscribeFromEvents() {
-		Events.unsubscribe(ZoomEvent.class, zoomSubscriber);
-		// Events.unsubscribe(DatasetRestructuredEvent.class,
+		eventService.unsubscribe(ZoomEvent.class, zoomSubscriber);
+		// eventService.unsubscribe(DatasetRestructuredEvent.class,
 		// restructureSubscriber);
-		Events.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
-		Events.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
-		Events.unsubscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+		eventService.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
+		eventService.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
+		eventService.unsubscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
 	}
 
 	private/*synchronized*/void createSliders() {
