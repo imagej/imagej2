@@ -193,17 +193,9 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 					final Dataset dataset = event.getObject();
 					for (final DataView view : getViews()) {
 						if (dataset == view.getData()) {
-							/*
-							 * BDZ - setZoom() and panReset() code tied to numerous bugs:
-							 * - fixes #605 & #627
-							 * - call to setZoom() causes #797
+							/* BDZ - calls to imgCanvas.setZoom(0) followed by
+							 * imgCanvas.panReset() removed from here to fix bug #797.
 							 */
-							// NB - if just panReset() we'll be zoomed on wrong part of image
-							imgCanvas.setZoom(0); // original scale
-							// NB - if x or y dims change without panReset() image panned
-							// incorrectly. The panReset() call must happen after the
-							// setZoom() call
-							imgCanvas.panReset();
 							SwingImageDisplay.this.redoWindowLayout();
 							SwingImageDisplay.this.update();
 							return;
