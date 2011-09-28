@@ -102,14 +102,11 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 		createName(datasetName);
 		imgPanel.setTitle(this.getName());
 		addView(new SwingDatasetView(this, dataset));
-		redoWindowLayout(); // CTR FIXME
-		update();
 	}
 
 	@Override
 	public void display(final Overlay overlay) {
 		addView(new SwingOverlayView(this, overlay));
-		update();
 	}
 
 	@Override
@@ -131,15 +128,7 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-
 				imgPanel.update();
-
-				// the following code is also done in SwingDisplayPanel::update()
-				// (which was just called) so commenting out
-
-				// for (final DataView view : getViews()) {
-				// view.update();
-				// }
 			}
 		});
 	}
@@ -191,7 +180,7 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
 					// and bug #605. BDZ
 					final Dataset dataset = event.getObject();
-					for (final DataView view : getViews()) {
+					for (final DataView view : SwingImageDisplay.this) {
 						if (dataset == view.getData()) {
 							/* BDZ - calls to imgCanvas.setZoom(0) followed by
 							 * imgCanvas.panReset() removed from here to fix bug #797.
