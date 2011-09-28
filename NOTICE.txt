@@ -10,21 +10,21 @@ As of this writing, the full list is as follows:
 ===============================================================================
 Apache log4j - http://logging.apache.org/log4j/
 
-License: Apache 2
+License: Apache 2.0
 
 Artifact: log4j:log4j:jar:1.2.14
 
 ===============================================================================
 EventBus - http://eventbus.org/
 
-License: Apache 2
+License: Apache 2.0
 
 Artifact: org.jbushe:eventbus:1.4
 
 ===============================================================================
 ImgLib2 - http://imglib2.net/
 
-License: BSD
+License: 3-clause BSD
 
 Artifacts:
 net.imglib2:imglib2:jar:2.0-SNAPSHOT
@@ -34,7 +34,7 @@ net.imglib2:imglib2-ops:jar:2.0-SNAPSHOT
 ===============================================================================
 Javassist - http://www.javassist.org/
 
-License: MPL or LGPL
+License: MPL 1.1 or LGPL 2.1
 
 Artifact: javassist:javassist:jar:3.9.0.GA
 
@@ -48,14 +48,14 @@ Artifact: org.jhotdraw:jhotdraw:jar:7.6.0
 ===============================================================================
 LOCI Common - http://loci.wisc.edu/software/bio-formats/
 
-License: GPL (slated to be BSD)
+License: GPL 2+ (slated to be BSD)
 
 Artifact: loci:loci-common:jar:4.3.3-SNAPSHOT
 
 ===============================================================================
 MigLayout - http://www.miglayout.com/
 
-License: BSD or GPL
+License: 3-clause BSD or GPL
 
 Artifact: com.miglayout:miglayout:jar:swing:3.7.3.1
 
@@ -69,7 +69,7 @@ Artifact: com.github.sbridges.object-inspector:object-inspector:jar:0.1
 ===============================================================================
 SciFIO - http://loci.wisc.edu/software/bio-formats/
 
-License: GPL (slated to be BSD)
+License: GPL 2+ (slated to be BSD)
 
 Artifact: loci:scifio:jar:4.3.3-SNAPSHOT
 
@@ -84,7 +84,7 @@ xalan:xalan:jar:2.7.1
 ===============================================================================
 SezPoz - http://sezpoz.java.net/
 
-License: CDDL or GPL
+License: CDDL 1.0 or GPL 2.0
 
 Artifact: net.java.sezpoz:sezpoz:1.9
 
