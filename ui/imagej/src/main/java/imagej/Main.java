@@ -47,7 +47,7 @@ public final class Main {
 		// prevent instantiation of utility class
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		final ImageJ context = ImageJ.createContext();
 		context.getService(UIService.class).processArgs(args);
 	}
