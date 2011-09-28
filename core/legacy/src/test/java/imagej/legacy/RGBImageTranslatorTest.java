@@ -43,7 +43,9 @@ import ij.ImageStack;
 import ij.gui.NewImage;
 import ij.measure.Calibration;
 import ij.process.ColorProcessor;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.event.EventService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
@@ -58,6 +60,10 @@ import org.junit.Test;
  * @author Barry DeZonia
  */
 public class RGBImageTranslatorTest {
+
+	@SuppressWarnings("unchecked")
+	private final ImageJ context = ImageJ.createContext(EventService.class);
+	private final LegacyImageMap map = new LegacyImageMap(context.getService(EventService.class));
 
 	private final RGBImageTranslator translator = new RGBImageTranslator();
 
