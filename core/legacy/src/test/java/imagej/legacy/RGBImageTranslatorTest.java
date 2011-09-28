@@ -45,6 +45,7 @@ import ij.measure.Calibration;
 import ij.process.ColorProcessor;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.DatasetFactory;
 import imagej.event.EventService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -63,7 +64,8 @@ public class RGBImageTranslatorTest {
 
 	@SuppressWarnings("unchecked")
 	private final ImageJ context = ImageJ.createContext(EventService.class);
-	private final LegacyImageMap map = new LegacyImageMap(context.getService(EventService.class));
+	private final LegacyImageMap map = new LegacyImageMap(context
+		.getService(EventService.class));
 
 	private final RGBImageTranslator translator = new RGBImageTranslator();
 
@@ -85,8 +87,8 @@ public class RGBImageTranslatorTest {
 
 	// -- helper tests --
 
-	private void testDataSame(final Dataset ds, final ImagePlus imp,
-		final int x, final int y, int z, int t)
+	private void testDataSame(final Dataset ds, final ImagePlus imp, final int x,
+		final int y, int z, int t)
 	{
 		final long[] dims = ds.getDims();
 
@@ -215,8 +217,8 @@ public class RGBImageTranslatorTest {
 //		testMetadataSame(ds, imp);
 	}
 
-	private void testImageToIJ1(final int x, final int y, final int z,
-		final int t)
+	private void
+		testImageToIJ1(final int x, final int y, final int z, final int t)
 	{
 		int totalDims = 3;
 		if (z > 0) totalDims++;
@@ -237,7 +239,7 @@ public class RGBImageTranslatorTest {
 		if (t > 0) dims[dims.length - 1] = t;
 
 		final Dataset ds =
-			Dataset.create(dims, "color image", axes, 8, false, false);
+			DatasetFactory.create(dims, "color image", axes, 8, false, false);
 		ds.setRGBMerged(true);
 		fill(ds);
 		ds.setCalibration(3, 0);
@@ -330,8 +332,7 @@ public class RGBImageTranslatorTest {
 		}
 
 		// type not == RGB
-		imp =
-			NewImage.createByteImage("byte image", 10, 10, 3, NewImage.FILL_RAMP);
+		imp = NewImage.createByteImage("byte image", 10, 10, 3, NewImage.FILL_RAMP);
 		imp.setDimensions(3, 1, 1); // c == 3
 		try {
 			// CTR FIXME - Fix tests.
@@ -354,7 +355,7 @@ public class RGBImageTranslatorTest {
 
 		// to IJ1 : isRgbMerged not true
 		ds =
-			Dataset.create(new long[] { 1, 2, 3, 4, 5 }, "zoompa", new Axes[] {
+			DatasetFactory.create(new long[] { 1, 2, 3, 4, 5 }, "zoompa", new Axes[] {
 				Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME }, 8, false, false);
 		try {
 			// CTR FIXME - Fix tests.
@@ -367,7 +368,7 @@ public class RGBImageTranslatorTest {
 
 		// to IJ1 : not unsigned byte
 		ds =
-			Dataset.create(new long[] { 1, 2, 3, 4, 5 }, "zoompa", new Axes[] {
+			DatasetFactory.create(new long[] { 1, 2, 3, 4, 5 }, "zoompa", new Axes[] {
 				Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME }, 16, false, false);
 		ds.setRGBMerged(true);
 		try {
@@ -381,8 +382,8 @@ public class RGBImageTranslatorTest {
 
 		// to IJ1 : X Axis not present
 		ds =
-			Dataset.create(new long[] { 2, 3, 4, 5 }, "zoompa", new Axes[] { Axes.Y,
-				Axes.CHANNEL, Axes.Z, Axes.TIME }, 8, false, false);
+			DatasetFactory.create(new long[] { 2, 3, 4, 5 }, "zoompa", new Axes[] {
+				Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME }, 8, false, false);
 		ds.setRGBMerged(true);
 		try {
 			// CTR FIXME - Fix tests.
@@ -395,8 +396,8 @@ public class RGBImageTranslatorTest {
 
 		// to IJ1 : Y Axis not present
 		ds =
-			Dataset.create(new long[] { 2, 3, 4, 5 }, "zoompa", new Axes[] { Axes.X,
-				Axes.CHANNEL, Axes.Z, Axes.TIME }, 8, false, false);
+			DatasetFactory.create(new long[] { 2, 3, 4, 5 }, "zoompa", new Axes[] {
+				Axes.X, Axes.CHANNEL, Axes.Z, Axes.TIME }, 8, false, false);
 		ds.setRGBMerged(true);
 		try {
 			// CTR FIXME - Fix tests.
@@ -409,8 +410,8 @@ public class RGBImageTranslatorTest {
 
 		// to IJ1 : C Axis not present
 		ds =
-			Dataset.create(new long[] { 1, 2, 4, 5 }, "zoompa", new Axes[] { Axes.X,
-				Axes.Y, Axes.Z, Axes.TIME }, 8, false, false);
+			DatasetFactory.create(new long[] { 1, 2, 4, 5 }, "zoompa", new Axes[] {
+				Axes.X, Axes.Y, Axes.Z, Axes.TIME }, 8, false, false);
 		ds.setRGBMerged(true);
 		try {
 			// CTR FIXME - Fix tests.
@@ -423,9 +424,9 @@ public class RGBImageTranslatorTest {
 
 		// to IJ1 : non XYCZT index present
 		ds =
-			Dataset.create(new long[] { 1, 2, 3, 4, 5 }, "zoompa", new Axes[] {
-				Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.FREQUENCY }, 8, false,
-				false);
+			DatasetFactory
+				.create(new long[] { 1, 2, 3, 4, 5 }, "zoompa", new Axes[] { Axes.X,
+					Axes.Y, Axes.CHANNEL, Axes.Z, Axes.FREQUENCY }, 8, false, false);
 		ds.setRGBMerged(true);
 		try {
 			// CTR FIXME - Fix tests.
@@ -438,8 +439,9 @@ public class RGBImageTranslatorTest {
 
 		// channels != 3
 		ds =
-			Dataset.create(new long[] { 1, 2, 97, 4, 5 }, "zoompa", new Axes[] {
-				Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME }, 8, false, false);
+			DatasetFactory.create(new long[] { 1, 2, 97, 4, 5 }, "zoompa",
+				new Axes[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME }, 8,
+				false, false);
 		ds.setRGBMerged(true);
 		try {
 			// CTR FIXME - Fix tests.

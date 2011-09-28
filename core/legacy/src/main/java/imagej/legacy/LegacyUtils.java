@@ -45,12 +45,13 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.DatasetFactory;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.data.display.ColorMode;
 import imagej.data.display.ColorTables;
-import imagej.data.display.DatasetView;
 import imagej.data.display.DataView;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.util.Log;
@@ -147,7 +148,7 @@ public final class LegacyUtils {
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
 		final Dataset ds =
-			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		setDatasetPlanes(ds, imp);
 
@@ -191,7 +192,7 @@ public final class LegacyUtils {
 		}
 
 		final Dataset ds =
-			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		return ds;
 	}
@@ -227,7 +228,7 @@ public final class LegacyUtils {
 		final boolean signed = false;
 		final boolean floating = false;
 		final Dataset ds =
-			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		return ds;
 	}
@@ -266,7 +267,7 @@ public final class LegacyUtils {
 		final boolean signed = false;
 		final boolean floating = false;
 		final Dataset ds =
-			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		ds.setRGBMerged(true);
 
