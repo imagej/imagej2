@@ -42,6 +42,7 @@ import ij.gui.NewImage;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
+import imagej.data.DatasetFactory;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
@@ -82,8 +83,8 @@ public class GrayscaleImageTranslatorTest {
 
 	// -- helper tests --
 
-	private void testDataSame(final Dataset ds, final ImagePlus imp,
-		final int x, final int y, final int c, final int z, final int t)
+	private void testDataSame(final Dataset ds, final ImagePlus imp, final int x,
+		final int y, final int c, final int z, final int t)
 	{
 		final long[] dims = ds.getDims();
 
@@ -118,8 +119,7 @@ public class GrayscaleImageTranslatorTest {
 						for (int xi = 0; xi < x; xi++) {
 							pos[xIndex] = xi;
 							accessor.setPosition(pos);
-							assertEquals(accessor.get().getRealDouble(), proc.getf(xi, yi),
-								0);
+							assertEquals(accessor.get().getRealDouble(), proc.getf(xi, yi), 0);
 						}
 					}
 				}
@@ -151,16 +151,16 @@ public class GrayscaleImageTranslatorTest {
 		final Calibration cal = imp.getCalibration();
 		int axisIndex;
 		axisIndex = ds.getAxisIndex(Axes.X);
-		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex),
-			cal.pixelWidth, 0);
+		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), cal.pixelWidth,
+			0);
 		axisIndex = ds.getAxisIndex(Axes.Y);
 		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex),
 			cal.pixelHeight, 0);
 		axisIndex = ds.getAxisIndex(Axes.CHANNEL);
 		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), 1, 0);
 		axisIndex = ds.getAxisIndex(Axes.Z);
-		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex),
-			cal.pixelDepth, 0);
+		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), cal.pixelDepth,
+			0);
 		axisIndex = ds.getAxisIndex(Axes.TIME);
 		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex),
 			cal.frameInterval, 0);
@@ -226,18 +226,18 @@ public class GrayscaleImageTranslatorTest {
 		switch (type) {
 			case BYTE:
 				ds =
-					Dataset.create(new long[] { x, y, c, z, t }, "byte image", axes, 8,
-						false, false);
+					DatasetFactory.create(new long[] { x, y, c, z, t }, "byte image",
+						axes, 8, false, false);
 				break;
 			case SHORT:
 				ds =
-					Dataset.create(new long[] { x, y, c, z, t }, "short image", axes,
-						16, false, false);
+					DatasetFactory.create(new long[] { x, y, c, z, t }, "short image",
+						axes, 16, false, false);
 				break;
 			case FLOAT:
 				ds =
-					Dataset.create(new long[] { x, y, c, z, t }, "float image", axes,
-						32, true, true);
+					DatasetFactory.create(new long[] { x, y, c, z, t }, "float image",
+						axes, 32, true, true);
 				break;
 			default:
 				throw new IllegalStateException();
@@ -367,7 +367,7 @@ public class GrayscaleImageTranslatorTest {
 		for (int i = 2; i < dims.length; i++)
 			dims[i] = 5 + i * 2;
 		final Dataset ds =
-			Dataset.create(new UnsignedByteType(), dims, "temp", fullAxes);
+			DatasetFactory.create(new UnsignedByteType(), dims, "temp", fullAxes);
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);

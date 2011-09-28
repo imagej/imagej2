@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
+import imagej.data.DatasetFactory;
 import imagej.ext.MenuEntry;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -130,7 +131,7 @@ public class NewImage implements ImageJPlugin {
 	}
 
 	public void setFloating(final boolean floating) {
-		this.floating = floating; 
+		this.floating = floating;
 	}
 
 	public String getFillType() {
@@ -165,8 +166,9 @@ public class NewImage implements ImageJPlugin {
 		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = { width, height };
 		final Axis[] axes = { Axes.X, Axes.Y };
-		dataset = Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
-		
+		dataset =
+			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
+
 		final boolean isWhite = fillType.equals(WHITE);
 		final boolean isBlack = fillType.equals(BLACK);
 

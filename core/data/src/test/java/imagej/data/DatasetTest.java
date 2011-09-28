@@ -71,7 +71,7 @@ public class DatasetTest {
 		final EventService eventService = context.get(EventService.class);
 		final Img<IntType> img = factory.create(DIMENSIONS, new IntType());
 		final ImgPlus<IntType> imgPlus = new ImgPlus<IntType>(img);
-		return new Dataset(imgPlus);
+		return new ImgLibDataset(imgPlus);
 	}
 
 	private Dataset createPlanarDataset() {

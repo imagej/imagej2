@@ -38,6 +38,7 @@ import ij.ImagePlus;
 import ij.gui.NewImage;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.DatasetFactory;
 import imagej.event.EventService;
 import net.imglib2.Cursor;
 import net.imglib2.img.Axes;
@@ -58,7 +59,8 @@ public class LegacyImageMapTest {
 
 	@SuppressWarnings("unchecked")
 	private final ImageJ context = ImageJ.createContext(EventService.class);
-	private final LegacyImageMap map = new LegacyImageMap(context.getService(EventService.class));
+	private final LegacyImageMap map = new LegacyImageMap(context
+		.getService(EventService.class));
 
 	// -- private interface --
 
@@ -82,8 +84,8 @@ public class LegacyImageMapTest {
 
 		// register a gray dataset
 		ds0 =
-			Dataset.create(new long[] { 1, 2, 3, 4, 5 }, "temp", axes, 16, false,
-				false);
+			DatasetFactory.create(new long[] { 1, 2, 3, 4, 5 }, "temp", axes, 16,
+				false, false);
 		fill(ds0);
 		ds0.getImgPlus().setCalibration(5, 0);
 		ds0.getImgPlus().setCalibration(6, 1);
@@ -102,8 +104,8 @@ public class LegacyImageMapTest {
 
 		// register a color dataset
 		ds0 =
-			Dataset.create(new long[] { 1, 2, 3, 4, 5 }, "temp", axes, 8, false,
-				false);
+			DatasetFactory.create(new long[] { 1, 2, 3, 4, 5 }, "temp", axes, 8,
+				false, false);
 		fill(ds0);
 		ds0.getImgPlus().setCalibration(5, 0);
 		ds0.getImgPlus().setCalibration(6, 1);
