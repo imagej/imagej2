@@ -59,11 +59,14 @@ import net.imglib2.roi.RegionOfInterest;
 /**
  * Abstract superclass of {@link Overlay} implementations.
  * 
+ * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public class AbstractOverlay extends AbstractData implements Overlay, Externalizable {
+public class AbstractOverlay extends AbstractData implements Overlay,
+	Externalizable
+{
 
-	public final static ColorRGB defaultLineColor = new ColorRGB(255,255,0);
+	public final static ColorRGB defaultLineColor = new ColorRGB(255, 255, 0);
 	public final static ColorRGB defaultFillColor = new ColorRGB(0, 255, 0);
 	protected ArrowStyle startArrowStyle = ArrowStyle.NONE;
 	protected ArrowStyle endArrowStyle = ArrowStyle.NONE;
@@ -75,15 +78,31 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	protected Overlay.LineStyle lineStyle = Overlay.LineStyle.SOLID;
 	final protected List<Axis> axes = new ArrayList<Axis>();
 	final protected List<Double> calibrations = new ArrayList<Double>();
-	final protected SortedMap<Axis, Long> axisPositions = new TreeMap<Axis, Long>(new Comparator<Axis>() {
 
-		@Override
-		public int compare(Axis axis1, Axis axis2) {
-			if ((axis1 instanceof Axes) && (axis2 instanceof Axes)) {
-				return new Integer(((Axes)axis1).ordinal()).compareTo(((Axes)axis2).ordinal());
+	final protected SortedMap<Axis, Long> axisPositions =
+		new TreeMap<Axis, Long>(new Comparator<Axis>() {
+
+			@Override
+			public int compare(final Axis axis1, final Axis axis2) {
+				if ((axis1 instanceof Axes) && (axis2 instanceof Axes)) {
+					return new Integer(((Axes) axis1).ordinal()).compareTo(((Axes) axis2)
+						.ordinal());
+				}
+				return axis1.getLabel().compareTo(axis2.getLabel());
 			}
-			return axis1.getLabel().compareTo(axis2.getLabel());
-		}});
+		});
+
+	// -- AbstractData methods --
+
+	@Override
+	protected void register() {
+		eventService.publish(new OverlayCreatedEvent(this));
+	}
+
+	@Override
+	protected void delete() {
+		eventService.publish(new OverlayDeletedEvent(this));
+	}
 
 	// -- Overlay methods --
 
@@ -103,16 +122,6 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	@Override
 	public void rebuild() {
 		eventService.publish(new OverlayRestructuredEvent(this));
-	}
-
-	@Override
-	public void register() {
-		eventService.publish(new OverlayCreatedEvent(this));
-	}
-
-	@Override
-	public void delete() {
-		eventService.publish(new OverlayDeletedEvent(this));
 	}
 
 	@Override
@@ -141,8 +150,8 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	}
 
 	@Override
-	public void setLineColor(ColorRGB lineColor) {
-		if (! this.lineColor.equals(lineColor)) {
+	public void setLineColor(final ColorRGB lineColor) {
+		if (!this.lineColor.equals(lineColor)) {
 			this.lineColor = lineColor;
 		}
 	}
@@ -153,22 +162,23 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	}
 
 	/**
-	 * @param lineWidth the width to be used when painting lines and shape borders, in pixels.
+	 * @param lineWidth the width to be used when painting lines and shape
+	 *          borders, in pixels.
 	 */
 	@Override
-	public void setLineWidth(double lineWidth) {
+	public void setLineWidth(final double lineWidth) {
 		if (this.lineWidth != lineWidth) {
 			this.lineWidth = lineWidth;
 		}
 	}
-	
+
 	@Override
 	public LineStyle getLineStyle() {
 		return lineStyle;
 	}
 
 	@Override
-	public void setLineStyle(LineStyle lineStyle) {
+	public void setLineStyle(final LineStyle lineStyle) {
 		this.lineStyle = lineStyle;
 	}
 
@@ -181,69 +191,76 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 		out.writeObject(fillColor);
 		out.writeInt(alpha);
 		out.writeInt(axes.size());
-		for (int i=0; i<axes.size(); i++){
+		for (int i = 0; i < axes.size(); i++) {
 			writeAxis(out, axes.get(i));
 			out.writeDouble(calibrations.get(i));
 		}
 		out.writeInt(axisPositions.size());
-		for (Axis axis:axisPositions.keySet()) {
+		for (final Axis axis : axisPositions.keySet()) {
 			writeAxis(out, axis);
 			out.writeLong(axisPositions.get(axis));
 		}
 		writeString(out, startArrowStyle.name());
 		writeString(out, endArrowStyle.name());
 	}
-	
+
 	/**
 	 * Helper function to write a string to the object output
+	 * 
 	 * @param out
 	 * @param s
 	 * @throws IOException
 	 */
-	static protected void writeString(final ObjectOutput out, final String s) throws IOException {
+	static protected void writeString(final ObjectOutput out, final String s)
+		throws IOException
+	{
 		out.writeInt(s.length());
 		out.writeChars(s);
-		
 	}
-	
+
 	/**
 	 * Helper function to read a string
+	 * 
 	 * @param in
 	 * @return string read from in
 	 * @throws IOException
 	 */
 	static protected String readString(final ObjectInput in) throws IOException {
-		int length = in.readInt();
-		char [] buffer = new char[length];
-		for (int i=0; i<length; i++) buffer[i] = in.readChar();
+		final int length = in.readInt();
+		final char[] buffer = new char[length];
+		for (int i = 0; i < length; i++)
+			buffer[i] = in.readChar();
 		return new String(buffer);
 	}
-	
-	static private void writeAxis(final ObjectOutput out, final Axis axis) throws IOException {
+
+	static private void writeAxis(final ObjectOutput out, final Axis axis)
+		throws IOException
+	{
 		writeString(out, axis.getLabel());
 	}
-	
+
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
 	{
 		lineColor = (ColorRGB) in.readObject();
 		lineWidth = in.readDouble();
-		char [] buffer = new char[in.readInt()];
-		for (int i=0; i<buffer.length; i++) buffer[i] = in.readChar();
+		final char[] buffer = new char[in.readInt()];
+		for (int i = 0; i < buffer.length; i++)
+			buffer[i] = in.readChar();
 		lineStyle = Overlay.LineStyle.valueOf(new String(buffer));
 		fillColor = (ColorRGB) in.readObject();
 		alpha = in.readInt();
 		final int nAxes = in.readInt();
 		this.axes.clear();
 		this.calibrations.clear();
-		for (int i=0; i<nAxes; i++) {
+		for (int i = 0; i < nAxes; i++) {
 			axes.add(readAxis(in));
 			calibrations.add(in.readDouble());
 		}
 		final int nPositions = in.readInt();
-		for (int i=0; i<nPositions; i++) {
-			Axis axis = readAxis(in);
+		for (int i = 0; i < nPositions; i++) {
+			final Axis axis = readAxis(in);
 			axisPositions.put(axis, in.readLong());
 		}
 		startArrowStyle = ArrowStyle.valueOf(readString(in));
@@ -253,13 +270,14 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	static private Axis readAxis(final ObjectInput in) throws IOException {
 		return Axes.get(new String(readString(in)));
 	}
+
 	@Override
-	public int getAxisIndex(Axis axis) {
+	public int getAxisIndex(final Axis axis) {
 		int index = axes.indexOf(axis);
 		if (index >= 0) return index;
 		if (axisPositions.containsKey(axis)) {
 			index = axes.size();
-			for (Axis other:axisPositions.keySet()) {
+			for (final Axis other : axisPositions.keySet()) {
 				if (other == axis) return index;
 				index++;
 			}
@@ -268,29 +286,27 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	}
 
 	@Override
-	public Axis axis(int d) {
+	public Axis axis(final int d) {
 		if (d < axes.size()) {
 			return axes.get(d);
 		}
 		int index = axes.size();
-		for (Axis axis:axisPositions.keySet()) {
+		for (final Axis axis : axisPositions.keySet()) {
 			if (index++ == d) return axis;
 		}
 		return null;
 	}
 
 	@Override
-	public void axes(Axis[] axesToFill) {
-		for (int i=0; (i < axesToFill.length) &&
-									(i < this.axes.size()); i++ )
-		{
+	public void axes(final Axis[] axesToFill) {
+		for (int i = 0; (i < axesToFill.length) && (i < this.axes.size()); i++) {
 			axesToFill[i] = this.axes.get(i);
 		}
 	}
 
 	@Override
-	public void setAxis(Axis axis, int d) {
-		while(this.axes.size() <= d) {
+	public void setAxis(final Axis axis, final int d) {
+		while (this.axes.size() <= d) {
 			this.axes.add(null);
 			this.calibrations.add(1.0);
 		}
@@ -298,14 +314,14 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	}
 
 	@Override
-	public double calibration(int d) {
+	public double calibration(final int d) {
 		if (d >= calibrations.size()) return 1.0;
 		return calibrations.get(d);
 	}
 
 	@Override
-	public void calibration(double[] cal) {
-		for (int i=0; (i < cal.length) && (i < this.calibrations.size()); i++ ) {
+	public void calibration(final double[] cal) {
+		for (int i = 0; (i < cal.length) && (i < this.calibrations.size()); i++) {
 			cal[i] = this.calibrations.get(i);
 		}
 		if (cal.length > calibrations.size()) {
@@ -314,7 +330,7 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 	}
 
 	@Override
-	public void setCalibration(double cal, int d) {
+	public void setCalibration(final double cal, final int d) {
 		while (calibrations.size() <= d) {
 			calibrations.add(1.0);
 		}
@@ -326,54 +342,37 @@ public class AbstractOverlay extends AbstractData implements Overlay, Externaliz
 		return axes.size() + axisPositions.size();
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setPosition(net.imglib2.img.Axis, long)
-	 */
 	@Override
-	public void setPosition(Axis axis, long position) {
+	public void setPosition(final Axis axis, final long position) {
 		axisPositions.put(axis, position);
 	}
-	
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getPosition(net.imglib2.img.Axis)
-	 */
+
 	@Override
-	public Long getPosition(Axis axis) {
+	public Long getPosition(final Axis axis) {
 		if (axisPositions.containsKey(axis)) {
 			return axisPositions.get(axis);
 		}
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getLineStartArrowStyle()
-	 */
 	@Override
 	public ArrowStyle getLineStartArrowStyle() {
 		return startArrowStyle;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setLineStartArrowStyle(imagej.data.roi.Overlay.ArrowStyle)
-	 */
 	@Override
-	public void setLineStartArrowStyle(ArrowStyle style) {
+	public void setLineStartArrowStyle(final ArrowStyle style) {
 		startArrowStyle = style;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getLineEndArrowStyle()
-	 */
 	@Override
 	public ArrowStyle getLineEndArrowStyle() {
 		return endArrowStyle;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setLineEndArrowStyle(imagej.data.roi.Overlay.ArrowStyle)
-	 */
 	@Override
-	public void setLineEndArrowStyle(ArrowStyle style) {
+	public void setLineEndArrowStyle(final ArrowStyle style) {
 		endArrowStyle = style;
 	}
+	
 }

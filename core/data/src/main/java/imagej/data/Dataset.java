@@ -112,10 +112,6 @@ public interface Dataset extends Data, Metadata {
 
 	void rgbChange();
 
-	void register();
-
-	void delete();
-
 	/**
 	 * Changes a Dataset's internal data and metadata to match that from a given
 	 * Dataset. Only it's name stays the same. Written to allow nonplanar
