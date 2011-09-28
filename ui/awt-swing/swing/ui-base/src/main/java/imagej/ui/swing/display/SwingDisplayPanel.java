@@ -197,7 +197,6 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				createSliders();
 				sliders.setVisible(sliders.getComponentCount() > 0);
 				window.setTitle(getDisplay().getName());
-				window.pack();
 				window.showDisplay(true);
 			}
 		});
