@@ -116,8 +116,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@Override
 	public void addView(final DataView view) {
 		add(view);
-		update();
 		redoWindowLayout();
+		update();
 	}
 
 	@Override
@@ -135,16 +135,16 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@Override
 	public void removeAllViews() {
 		clear();
-		update();
 		redoWindowLayout();
+		update();
 	}
 
 	@Override
 	public void removeView(final DataView view) {
 		remove(view);
 		view.dispose();
-		update();
 		redoWindowLayout();
+		update();
 	}
 
 	@Override
