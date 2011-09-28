@@ -41,8 +41,7 @@ import imagej.ext.display.event.DisplayEvent;
  * An event indicating something has happened to a display window.
  * <p>
  * It is named <code>WinEvent</code> rather than <code>WindowEvent</code> to
- * avoid name clashes with the <code>java.awt.event.WindowEvent</code>
- * hierarchy.
+ * avoid name clashes with the {@link java.awt.event.WindowEvent} hierarchy.
  * </p>
  * 
  * @author Curtis Rueden
