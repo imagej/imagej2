@@ -88,6 +88,18 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		extents = extents(imgPlus);
 	}
 
+	// -- AbstractData methods --
+	
+	@Override
+	protected void register() {
+		eventService.publish(new DatasetCreatedEvent(this));
+	}
+
+	@Override
+	protected void delete() {
+		eventService.publish(new DatasetDeletedEvent(this));
+	}
+
 	// -- Dataset methods --
 
 	@Override
@@ -330,16 +342,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	public void rebuild() {
 		setDirty(true);
 		eventService.publish(new DatasetRestructuredEvent(this));
-	}
-
-	@Override
-	public void register() {
-		eventService.publish(new DatasetCreatedEvent(this));
-	}
-
-	@Override
-	public void delete() {
-		eventService.publish(new DatasetDeletedEvent(this));
 	}
 
 	// -- Named methods --
