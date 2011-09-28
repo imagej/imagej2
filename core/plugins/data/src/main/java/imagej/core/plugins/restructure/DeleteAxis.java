@@ -83,6 +83,7 @@ public class DeleteAxis extends DynamicPlugin {
 		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final Axis candidateAxis : Axes.values()) {
+			if (Axes.isXY(candidateAxis)) continue;
 			if (datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
 				.getLabel());
 		}
