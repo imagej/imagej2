@@ -99,8 +99,11 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		eventService.publish(new OverlayCreatedEvent(this));
 	}
 
+	// TODO - Decide whether this should really be public. If not, don't call it
+	// elsewhere. But if so, add it to the proper interface.
+	
 	@Override
-	protected void delete() {
+	public void delete() {
 		eventService.publish(new OverlayDeletedEvent(this));
 	}
 
