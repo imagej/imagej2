@@ -63,8 +63,16 @@ public interface Display<E> extends List<E>, IPlugin {
 	/** Tests whether the display is capable of visualizing the given object. */
 	boolean canDisplay(Object o);
 
-	/** Displays the given object in this display. */
-	@Deprecated
+	/**
+	 * Displays the given object in this display.
+	 * <p>
+	 * This method is essentially the same as {@link #add} except that it accepts
+	 * any {@link Object} regardless of type.
+	 * </p>
+	 * 
+	 * @throws IllegalArgumentException if the object cannot be displayed (i.e.,
+	 *           if {@link #canDisplay(Object)} returns false).
+	 */
 	void display(Object o);
 
 	/** Updates and redraws the display onscreen. */
