@@ -37,6 +37,7 @@ package imagej.ui.common.awt;
 import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
+import imagej.ext.display.Display;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.mouse.MsButtonEvent;
 import imagej.ext.display.event.mouse.MsClickedEvent;
@@ -64,7 +65,7 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	MouseListener, MouseMotionListener, MouseWheelListener
 {
 
-	private final ImageDisplay display;
+	private final Display<?> display;
 	private final boolean relative;
 	private final EventService eventService;
 
@@ -72,7 +73,7 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	 * Creates an AWT event dispatcher for the given display, which assumes
 	 * viewport mouse coordinates.
 	 */
-	public AWTMouseEventDispatcher(final ImageDisplay display, final EventService eventService) {
+	public AWTMouseEventDispatcher(final Display<?> display, final EventService eventService) {
 		this(display, eventService, true);
 	}
 
@@ -84,7 +85,7 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	 *          canvas rather than just the viewport; hence, the pan offset is
 	 *          already factored in.
 	 */
-	public AWTMouseEventDispatcher(final ImageDisplay display, final EventService eventService, final boolean relative) {
+	public AWTMouseEventDispatcher(final Display<?> display, final EventService eventService, final boolean relative) {
 		this.display = display;
 		this.relative = relative;
 		this.eventService = eventService;
@@ -174,13 +175,18 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	private int getX(final MouseEvent e) {
 		final int x = e.getX();
 		if (relative) return x;
-		return x - display.getImageCanvas().getPanOrigin().x;
+		if(display instanceof ImageDisplay) {
+			return x - ((ImageDisplay)display).getImageCanvas().getPanOrigin().x;}
+		return x;
 	}
 
 	private int getY(final MouseEvent e) {
 		final int y = e.getY();
 		if (relative) return y;
-		return y - display.getImageCanvas().getPanOrigin().y;
+		if(display instanceof ImageDisplay) {
+			return y -  ((ImageDisplay)display).getImageCanvas().getPanOrigin().y;
+		}
+		return y;
 	}
 
 }

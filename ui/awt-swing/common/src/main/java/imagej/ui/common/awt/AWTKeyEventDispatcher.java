@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
+import imagej.ext.display.Display;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.key.KyPressedEvent;
@@ -55,12 +56,12 @@ import java.awt.event.KeyListener;
  */
 public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener {
 
-	private final ImageDisplay display;
+	private final Display<?> display;
 
 	final protected EventService eventService;
 
 	/** Creates an AWT key event dispatcher for the given display. */
-	public AWTKeyEventDispatcher(final ImageDisplay display, final EventService eventService) {
+	public AWTKeyEventDispatcher(final Display<?> display, final EventService eventService) {
 		this.display = display;
 		this.eventService = eventService;
 	}
