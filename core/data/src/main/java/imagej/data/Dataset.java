@@ -88,9 +88,7 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class Dataset extends AbstractData implements
-	Comparable<Dataset>, Metadata
-{
+public class Dataset extends AbstractData implements Metadata {
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
@@ -335,21 +333,7 @@ public class Dataset extends AbstractData implements
 		eventService.publish(new DatasetDeletedEvent(this));
 	}
 
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return imgPlus.getName();
-	}
-
-	// -- Comparable methods --
-
-	@Override
-	public int compareTo(final Dataset dataset) {
-		return imgPlus.getName().compareTo(dataset.imgPlus.getName());
-	}
-
-	// -- Metadata methods --
+	// -- Named methods --
 
 	@Override
 	public String getName() {
@@ -362,6 +346,8 @@ public class Dataset extends AbstractData implements
 		update();
 	}
 
+	// -- LabeledAxis methods --
+	
 	@Override
 	public int getAxisIndex(final Axis axis) {
 		return imgPlus.getAxisIndex(axis);
@@ -399,6 +385,8 @@ public class Dataset extends AbstractData implements
 		update();
 	}
 
+	// -- ImageMetadata methods --
+	
 	@Override
 	public int getValidBits() {
 		final int validBits = imgPlus.getValidBits();
@@ -677,4 +665,5 @@ public class Dataset extends AbstractData implements
 		imgP.dimensions(dims);
 		return new Extents(dims);
 	}
+	
 }

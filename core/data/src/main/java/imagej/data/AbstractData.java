@@ -48,7 +48,7 @@ import imagej.event.EventService;
  * @see Dataset
  * @see Overlay
  */
-public abstract class AbstractData implements Data {
+public abstract class AbstractData implements Data, Comparable<Data> {
 
 	private int refs = 0;
 	
@@ -60,6 +60,8 @@ public abstract class AbstractData implements Data {
 		eventService = ImageJ.get(EventService.class);
 	}
 
+	// -- AbstractData methods --
+	
 	/**
 	 * Informs interested parties that the data object has become relevant and
 	 * should be registered. Called the first time the reference count is
@@ -80,14 +82,21 @@ public abstract class AbstractData implements Data {
 		eventService.publish(new DataDeletedEvent(this));
 	}
 
-	/** @see Data */
+	// -- Object methods --
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	// -- Data methods --
+	
 	@Override
 	public void incrementReferences() {
 		refs++;
 		if (refs == 1) register();
 	}
 
-	/** @see Data */
 	@Override
 	public void decrementReferences() {
 		if (refs == 0)
@@ -97,20 +106,23 @@ public abstract class AbstractData implements Data {
 		if (refs == 0) delete();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.Named#getName()
-	 */
+	// -- Named methods --
+	
 	@Override
 	public String getName() {
 		return name;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.imglib2.meta.Named#setName(java.lang.String)
-	 */
 	@Override
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	// -- Comparable methods --
+	
+	@Override
+	public int compareTo(final Data data) {
+		return getName().compareTo(data.getName());
 	}
 
 }
