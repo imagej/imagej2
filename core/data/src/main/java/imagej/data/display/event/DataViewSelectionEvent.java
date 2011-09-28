@@ -37,9 +37,12 @@ package imagej.data.display.event;
 import imagej.data.display.DataView;
 
 /**
- * TODO
+ * An event that indicates that the selection status of a {@link DataView} has
+ * changed (i.e., it was either selected or deselected).
  * 
  * @author Lee Kamentsky
+ * @see DataViewSelectedEvent
+ * @see DataViewDeselectedEvent
  */
 public abstract class DataViewSelectionEvent extends DataViewEvent {
 
@@ -48,8 +51,8 @@ public abstract class DataViewSelectionEvent extends DataViewEvent {
 	}
 
 	/**
-	 * @return true if the event signals that the associated {@link DataView}
-	 *         is selected, false if deselected
+	 * @return true if the event signals that the associated {@link DataView} is
+	 *         selected, false if deselected
 	 */
 	public abstract boolean isSelected();
 
