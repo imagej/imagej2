@@ -8,14 +8,14 @@ You can generate an up-to-date list of dependencies from the source code:
 As of this writing, the full list is as follows:
 
 ===============================================================================
-Apache log4j 1.2.14 - http://logging.apache.org/log4j/
+Apache log4j - http://logging.apache.org/log4j/
 
 License: Apache 2
 
 Artifact: log4j:log4j:jar:1.2.14
 
 ===============================================================================
-EventBus 1.4 - http://eventbus.org/
+EventBus - http://eventbus.org/
 
 License: Apache 2
 
