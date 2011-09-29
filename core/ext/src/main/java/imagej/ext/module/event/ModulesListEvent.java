@@ -46,7 +46,7 @@ import java.util.Collection;
  * 
  * @author Curtis Rueden
  */
-public class ModulesListEvent extends ListEvent<ModuleInfo> {
+public abstract class ModulesListEvent extends ListEvent<ModuleInfo> {
 
 	public ModulesListEvent(final ModuleInfo o) {
 		super(o);

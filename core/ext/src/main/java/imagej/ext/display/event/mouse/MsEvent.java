@@ -46,7 +46,7 @@ import imagej.ext.display.event.DisplayEvent;
  * 
  * @author Curtis Rueden
  */
-public class MsEvent extends DisplayEvent {
+public abstract class MsEvent extends DisplayEvent {
 
 	private final int x, y;
 

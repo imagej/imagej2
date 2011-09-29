@@ -45,7 +45,7 @@ import java.util.Collection;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public class ObjectsListEvent extends ListEvent<Object> {
+public abstract class ObjectsListEvent extends ListEvent<Object> {
 
 	public ObjectsListEvent(final Object o) {
 		super(o);

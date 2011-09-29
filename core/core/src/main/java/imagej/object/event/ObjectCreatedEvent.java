@@ -42,7 +42,7 @@ import imagej.object.ObjectService;
  * 
  * @author Curtis Rueden
  */
-public class ObjectCreatedEvent extends ObjectEvent {
+public abstract class ObjectCreatedEvent extends ObjectEvent {
 
 	public ObjectCreatedEvent(final Object obj) {
 		super(obj);

@@ -42,7 +42,7 @@ import imagej.ext.module.Module;
  * 
  * @author Curtis Rueden
  */
-public class ModuleEvent extends ImageJEvent {
+public abstract class ModuleEvent extends ImageJEvent {
 
 	private final Module module;
 

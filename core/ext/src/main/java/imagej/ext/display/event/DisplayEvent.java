@@ -42,7 +42,7 @@ import imagej.ext.display.Display;
  *
  * @author Curtis Rueden
  */
-public class DisplayEvent extends ImageJEvent {
+public abstract class DisplayEvent extends ImageJEvent {
 
 	private Display<?> display;
 

@@ -41,7 +41,7 @@ import imagej.ext.module.Module;
  * 
  * @author Curtis Rueden
  */
-public class ModuleExecutionEvent extends ModuleEvent {
+public abstract class ModuleExecutionEvent extends ModuleEvent {
 
 	public ModuleExecutionEvent(final Module module) {
 		super(module);

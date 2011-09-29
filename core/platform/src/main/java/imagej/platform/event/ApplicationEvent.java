@@ -43,6 +43,6 @@ import imagej.event.ImageJEvent;
  *
  * @author Curtis Rueden
  */
-public class ApplicationEvent extends ImageJEvent {
+public abstract class ApplicationEvent extends ImageJEvent {
 	// placeholder event class
 }

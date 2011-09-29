@@ -42,7 +42,7 @@ import imagej.ext.display.Display;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class MsButtonEvent extends MsEvent {
+public abstract class MsButtonEvent extends MsEvent {
 
 	// TODO - Use an enum for the buttons. Perhaps an extensible enum (see Axis &
 	// Axes)? In util-awt, add a mechanism for mapping AWT mouse buttons to and

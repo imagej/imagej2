@@ -46,7 +46,7 @@ import imagej.ext.display.event.DisplayEvent;
  * 
  * @author Curtis Rueden
  */
-public class WinEvent extends DisplayEvent {
+public abstract class WinEvent extends DisplayEvent {
 
 	public WinEvent(final Display<?> display) {
 		super(display);
