@@ -150,7 +150,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		if (typeChanged) typeChange();
 	}
 
-	/** Gets the dimensional extents of the dataset. */
 	@Override
 	public long[] getDims() {
 		final int numDims = extents.numDimensions();
@@ -159,7 +158,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return dims;
 	}
 
-	/** Gets the dimensional extents of the dataset. */
 	@Override
 	public Axis[] getAxes() {
 		final Axis[] axes = new Axis[imgPlus.numDimensions()];
@@ -167,11 +165,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return axes;
 	}
 
-	/**
-	 * gets a plane of data from the Dataset. The representation of the plane is
-	 * determined by the native Imglib container. This method will create a copy
-	 * of the original data if it cannot obtain a direct reference.
-	 */
 	@Override
 	public Object getPlane(final int planeNumber) {
 		return getPlane(planeNumber, true);
@@ -249,7 +242,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return getType() instanceof IntegerType;
 	}
 
-	/** Gets a short string description of the dataset's pixel type. */
 	@Override
 	public String getTypeLabelShort() {
 		if (isRGBMerged()) return "RGB";
@@ -258,7 +250,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return category + bitsPerPixel;
 	}
 
-	/** Gets the full string description of the dataset's pixel type. */
 	@Override
 	public String getTypeLabelLong() {
 		if (isRGBMerged()) return "RGB color";
@@ -268,7 +259,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return category + " " + bitsPerPixel + "-bit";
 	}
 
-	/** Creates a copy of the dataset. */
 	@Override
 	public Dataset duplicate() {
 		final Dataset d = duplicateBlank();
@@ -276,7 +266,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return d;
 	}
 
-	/** Creates a copy of the dataset, but without copying any pixel values. */
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Dataset duplicateBlank() {
@@ -286,27 +275,18 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return d;
 	}
 
-	/** Copies the dataset's pixels into the given target dataset. */
 	@Override
 	public void copyInto(final Dataset target) {
 		copyDataValues(imgPlus.getImg(), target.getImgPlus().getImg());
 		target.update();
 	}
 
-	/**
-	 * For use in legacy layer only, this flag allows the various legacy layer
-	 * image translators to support color images correctly.
-	 */
 	@Override
 	public void setRGBMerged(final boolean rgbMerged) {
 		if (rgbMerged != this.rgbMerged) rgbChange();
 		this.rgbMerged = rgbMerged;
 	}
 
-	/**
-	 * For use in legacy layer only, this flag allows the various legacy layer
-	 * image translators to support color images correctly.
-	 */
 	@Override
 	public boolean isRGBMerged() {
 		return rgbMerged;
@@ -476,12 +456,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return imgPlus.getColorTableCount();
 	}
 
-	/**
-	 * Changes a Dataset's internal data and metadata to match that from a given
-	 * Dataset. Only it's name stays the same. Written to allow nonplanar
-	 * representations to copy data from other Datasets as needed to get around
-	 * the fact that its data is not being shared by reference.
-	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void copyDataFrom(final Dataset other) {
