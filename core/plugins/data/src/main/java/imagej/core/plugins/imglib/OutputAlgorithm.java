@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 /**
- * TODO - This interface was created from imglib's Algorithm & OutputAlgorithm.
- * We plan to use those later when imglib algorithms ported to imglib2.
+ * TODO - This interface was created from ImgLib's Algorithm & OutputAlgorithm.
+ * We plan to use those later when ImgLib algorithms ported to ImgLib2.
  * 
  * @author Barry DeZonia
  */

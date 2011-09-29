@@ -184,7 +184,7 @@ public class Neighborhood3x3Operation {
 		}
 	}
 
-	// TODO - eliminate when Imglib allows ability to duplicate/clone an Img
+	// TODO - eliminate when ImgLib allows ability to duplicate/clone an Img
 	// TODO - find a way to eliminate use of raw types here
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Img<? extends RealType<?>> cloneImage(Img image) {

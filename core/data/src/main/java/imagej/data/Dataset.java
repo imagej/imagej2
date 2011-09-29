@@ -57,14 +57,14 @@ public interface Dataset extends Data, Metadata {
 
 	/**
 	 * gets a plane of data from the Dataset. The representation of the plane is
-	 * determined by the native Imglib container. This method will create a copy
+	 * determined by the native ImgLib container. This method will create a copy
 	 * of the original data if it cannot obtain a direct reference.
 	 */
 	Object getPlane(final int planeNumber);
 
 	/**
 	 * gets a plane of data from the Dataset. The representation of the plane is
-	 * determined by the native Imglib container. The behavior of this method when
+	 * determined by the native ImgLib container. The behavior of this method when
 	 * a reference to the actual data cannot be obtained depends upon the value of
 	 * the input copyOK boolean. If copyOK is true a copy of the data is created
 	 * and returned. If copyOK is false null is returned.

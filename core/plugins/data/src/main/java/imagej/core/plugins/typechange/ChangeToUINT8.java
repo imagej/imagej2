@@ -39,7 +39,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
- * Changes an input Dataset's underlying imglib data to be of 8-bit unsigned
+ * Changes an input Dataset's underlying ImgLib data to be of 8-bit unsigned
  * type.
  * 
  * @author Barry DeZonia

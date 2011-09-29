@@ -39,7 +39,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.real.FloatType;
 
 /**
- * Changes an input Dataset's underlying imglib data to be of 32-bit float type.
+ * Changes an input Dataset's underlying ImgLib data to be of 32-bit float type.
  * 
  * @author Barry DeZonia
  */

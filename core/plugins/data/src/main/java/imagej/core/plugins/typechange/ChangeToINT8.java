@@ -39,7 +39,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.integer.ByteType;
 
 /**
- * Changes an input Dataset's underlying imglib data to be of 8-bit signed type.
+ * Changes an input Dataset's underlying ImgLib data to be of 8-bit signed type.
  * 
  * @author Barry DeZonia
  */
