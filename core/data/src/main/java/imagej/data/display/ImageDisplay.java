@@ -67,14 +67,6 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	@Deprecated
 	void removeView(DataView view);
 
-	/** Removes all views from this display. */
-	@Deprecated
-	void removeAllViews();
-
-	/** Gets a list of views linked to the display. */
-	@Deprecated
-	List<DataView> getViews();
-
 	/** Gets the view currently designated as active. */
 	DataView getActiveView();
 
