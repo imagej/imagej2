@@ -1,5 +1,5 @@
 //
-// ImageDisplay.java
+// LabeledSpace.java
 //
 
 /*
@@ -32,64 +32,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.display;
+package imagej.data;
 
-import imagej.data.Data;
-import imagej.data.Dataset;
-import imagej.data.LabeledSpace;
-import imagej.data.roi.Overlay;
-import imagej.ext.display.Display;
-
-import java.util.List;
-
-import net.imglib2.img.Axis;
+import imagej.data.display.ImageDisplay;
+import net.imglib2.EuclideanSpace;
+import net.imglib2.meta.LabeledAxes;
+import net.imglib2.meta.Named;
 
 /**
- * A image display is a special kind of {@link Display} for visualizing
- * {@link Data} objects.
+ * A named Euclidean coordinate space with labeled dimensional axes. All
+ * N-dimensional constructs in ImageJ should implement this interface.
  * 
  * @author Curtis Rueden
- * @author Grant Harris
+ * @see Data
+ * @see ImageDisplay
  */
-public interface ImageDisplay extends Display<DataView>, LabeledSpace {
-
-	@Deprecated
-	void display(Dataset dataset);
-
-	@Deprecated
-	void display(Overlay overlay);
-
-	/** Adds a view to this display. */
-	@Deprecated
-	void addView(DataView view);
-
-	/** Removes a view from this display. */
-	@Deprecated
-	void removeView(DataView view);
-
-	/** Removes all views from this display. */
-	@Deprecated
-	void removeAllViews();
-
-	/** Gets a list of views linked to the display. */
-	@Deprecated
-	List<DataView> getViews();
-
-	/** Gets the view currently designated as active. */
-	DataView getActiveView();
-
-	/** Gets the axis currently designated as active. */
-	Axis getActiveAxis();
-
-	/** Sets the axis currently designated as active. */
-	void setActiveAxis(Axis axis);
-
-	/** Forces the display window to redo its layout. */
-	void redoWindowLayout();
-
-	/** Gets the image canvas upon which this display's output is painted. */
-	ImageCanvas getImageCanvas();
-
-	List<Axis> getAxes();
-
+public interface LabeledSpace extends EuclideanSpace, LabeledAxes, Named {
+	// marker interface
 }
