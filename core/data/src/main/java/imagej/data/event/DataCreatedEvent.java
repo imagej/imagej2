@@ -42,7 +42,7 @@ import imagej.object.event.ObjectCreatedEvent;
  * 
  * @author Curtis Rueden
  */
-public abstract class DataCreatedEvent extends ObjectCreatedEvent {
+public class DataCreatedEvent extends ObjectCreatedEvent {
 
 	private final Data dataObject;
 

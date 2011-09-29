@@ -42,7 +42,7 @@ import imagej.object.event.ObjectDeletedEvent;
  * 
  * @author Curtis Rueden
  */
-public abstract class DataDeletedEvent extends ObjectDeletedEvent {
+public class DataDeletedEvent extends ObjectDeletedEvent {
 
 	private final Data dataObject;
 
