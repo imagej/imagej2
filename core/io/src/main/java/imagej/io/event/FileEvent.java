@@ -41,7 +41,7 @@ import imagej.event.ImageJEvent;
  *
  * @author Curtis Rueden
  */
-public class FileEvent extends ImageJEvent {
+public abstract class FileEvent extends ImageJEvent {
 
 	/** The path of the file. */
 	private final String path;

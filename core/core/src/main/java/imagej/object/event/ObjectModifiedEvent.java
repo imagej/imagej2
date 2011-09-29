@@ -39,7 +39,7 @@ package imagej.object.event;
  *
  * @author Curtis Rueden
  */
-public class ObjectModifiedEvent extends ObjectEvent {
+public abstract class ObjectModifiedEvent extends ObjectEvent {
 
 	public ObjectModifiedEvent(final Object obj) {
 		super(obj);

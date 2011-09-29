@@ -46,7 +46,7 @@ import java.util.Collection;
  * 
  * @author Curtis Rueden
  */
-public class MenuEvent extends ListEvent<ShadowMenu> {
+public abstract class MenuEvent extends ListEvent<ShadowMenu> {
 
 	public MenuEvent(final ShadowMenu o) {
 		super(o);

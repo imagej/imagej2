@@ -47,7 +47,7 @@ import imagej.ext.display.event.DisplayEvent;
  * 
  * @author Curtis Rueden
  */
-public class KyEvent extends DisplayEvent {
+public abstract class KyEvent extends DisplayEvent {
 
 	private final char character;
 	private final KeyCode code;

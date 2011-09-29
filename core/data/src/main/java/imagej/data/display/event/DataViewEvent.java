@@ -42,7 +42,7 @@ import imagej.ext.display.event.DisplayEvent;
  * 
  * @author Lee Kamentsky
  */
-public class DataViewEvent extends DisplayEvent {
+public abstract class DataViewEvent extends DisplayEvent {
 
 	private final DataView view;
 

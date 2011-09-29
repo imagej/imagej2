@@ -41,7 +41,7 @@ import imagej.ImageJ;
  * 
  * @author Curtis Rueden
  */
-public class ImageJEvent {
+public abstract class ImageJEvent {
 
 	private ImageJ context;
 

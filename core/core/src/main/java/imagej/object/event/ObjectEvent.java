@@ -41,7 +41,7 @@ import imagej.event.ImageJEvent;
  *
  * @author Curtis Rueden
  */
-public class ObjectEvent extends ImageJEvent {
+public abstract class ObjectEvent extends ImageJEvent {
 
 	private Object object;
 

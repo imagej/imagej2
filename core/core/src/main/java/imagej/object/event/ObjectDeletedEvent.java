@@ -42,7 +42,7 @@ import imagej.object.ObjectService;
  * 
  * @author Curtis Rueden
  */
-public class ObjectDeletedEvent extends ObjectEvent {
+public abstract class ObjectDeletedEvent extends ObjectEvent {
 
 	public ObjectDeletedEvent(final Object obj) {
 		super(obj);

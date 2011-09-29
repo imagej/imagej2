@@ -42,7 +42,7 @@ import imagej.object.event.ObjectModifiedEvent;
  * 
  * @author Curtis Rueden
  */
-public class DataModifiedEvent extends ObjectModifiedEvent {
+public abstract class DataModifiedEvent extends ObjectModifiedEvent {
 
 	private final Data dataObject;
 

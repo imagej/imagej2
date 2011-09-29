@@ -42,7 +42,7 @@ import imagej.ext.tool.ITool;
  *
  * @author Curtis Rueden
  */
-public class ToolEvent extends ImageJEvent {
+public abstract class ToolEvent extends ImageJEvent {
 
 	private ITool tool;
 

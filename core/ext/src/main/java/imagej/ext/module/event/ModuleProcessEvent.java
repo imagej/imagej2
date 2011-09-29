@@ -43,7 +43,7 @@ import imagej.ext.module.process.ModuleProcessor;
  * 
  * @author Curtis Rueden
  */
-public class ModuleProcessEvent extends ModuleExecutionEvent {
+public abstract class ModuleProcessEvent extends ModuleExecutionEvent {
 
 	private final ModuleProcessor processor;
 

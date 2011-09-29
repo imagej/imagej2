@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.platform.event;
 
 /**
- * An event sent when a device enters or exist power save sleep.
+ * An event sent when a device enters or exits power save sleep.
  * 
  * @author Curtis Rueden
  */
-public class AppSleepEvent extends ApplicationEvent {
+public abstract class AppSleepEvent extends ApplicationEvent {
 
 	private boolean sleep;
 

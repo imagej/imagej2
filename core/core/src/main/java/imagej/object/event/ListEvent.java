@@ -46,7 +46,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public class ListEvent<T> extends ImageJEvent {
+public abstract class ListEvent<T> extends ImageJEvent {
 
 	private final List<T> items = new ArrayList<T>();
 
