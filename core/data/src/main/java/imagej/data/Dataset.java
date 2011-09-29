@@ -94,6 +94,11 @@ public interface Dataset extends Data, Metadata {
 	/** Copies the dataset's pixels into the given target dataset. */
 	void copyInto(final Dataset target);
 
+	// TODO - eliminate legacy layer specific functionality in favor of a
+	// generic properties system (setProperty(String, Object),
+	// getProperty(String)) for storing arbitrary key/value pairs about the data.
+	// The property system can be part of Data, and implemented in AbstractData.
+	
 	/**
 	 * For use in legacy layer only, this flag allows the various legacy layer
 	 * image translators to support color images correctly.
