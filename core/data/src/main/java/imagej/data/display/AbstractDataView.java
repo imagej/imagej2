@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstract supeclass for {@link DataView}s.
+ * Abstract superclass for {@link DataView}s.
  * 
  * @author Curtis Rueden
  */

@@ -35,9 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data;
 
 import imagej.data.roi.Overlay;
-import net.imglib2.EuclideanSpace;
-import net.imglib2.meta.LabeledAxes;
-import net.imglib2.meta.Named;
 
 /**
  * A data object is the superinterface for all types of N-dimensional data
@@ -46,7 +43,7 @@ import net.imglib2.meta.Named;
  * 
  * @author Curtis Rueden
  */
-public interface Data extends EuclideanSpace, LabeledAxes, Named {
+public interface Data extends LabeledSpace {
 
 	/**
 	 * Informs interested parties that the data object has undergone a
