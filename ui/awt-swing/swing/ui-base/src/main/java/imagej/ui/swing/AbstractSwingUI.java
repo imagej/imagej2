@@ -71,8 +71,10 @@ import javax.swing.WindowConstants;
  */
 public abstract class AbstractSwingUI extends AbstractUserInterface {
 
-	public static final String LAST_X_KEY = "ImageJ.SwingApplicationFrame.lastXLocation";
-	public static final String LAST_Y_KEY = "ImageJ.SwingApplicationFrame.lastYLocation";
+	public static final String LAST_X_KEY =
+		"ImageJ.SwingApplicationFrame.lastXLocation";
+	public static final String LAST_Y_KEY =
+		"ImageJ.SwingApplicationFrame.lastYLocation";
 
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
@@ -85,6 +87,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		// At this stage, the userIntService field is not initialized
 		eventService = ImageJ.get(EventService.class);
 	}
+
 	// -- UserInterface methods --
 
 	@Override

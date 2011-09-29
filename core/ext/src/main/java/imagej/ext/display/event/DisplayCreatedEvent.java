@@ -39,12 +39,12 @@ import imagej.object.event.ObjectCreatedEvent;
 
 /**
  * An event indicating a new display has been created.
- *
+ * 
  * @author Curtis Rueden
  */
 public class DisplayCreatedEvent extends ObjectCreatedEvent {
 
-	private Display<?> display;
+	private final Display<?> display;
 
 	public DisplayCreatedEvent(final Display<?> display) {
 		super(display);

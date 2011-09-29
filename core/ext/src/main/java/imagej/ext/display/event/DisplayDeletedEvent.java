@@ -39,12 +39,12 @@ import imagej.object.event.ObjectDeletedEvent;
 
 /**
  * An event indicating a display has been deleted.
- *
+ * 
  * @author Curtis Rueden
  */
 public class DisplayDeletedEvent extends ObjectDeletedEvent {
 
-	private Display<?> display;
+	private final Display<?> display;
 
 	public DisplayDeletedEvent(final Display<?> display) {
 		super(display);
