@@ -102,11 +102,6 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	}
 
 	@Override
-	public ImgPlus<? extends RealType<?>> getImgPlus() {
-		return dataset.getImgPlus();
-	}
-
-	@Override
 	public CompositeXYProjector<? extends RealType<?>> getProjector() {
 		return projector;
 	}
