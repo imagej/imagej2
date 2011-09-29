@@ -119,7 +119,7 @@ public interface Dataset extends Data, Metadata {
 
 	/**
 	 * Changes a Dataset's internal data and metadata to match that from a given
-	 * Dataset. Only it's name stays the same. Written to allow nonplanar
+	 * Dataset. Only its name stays the same. Written to allow nonplanar
 	 * representations to copy data from other Datasets as needed to get around
 	 * the fact that its data is not being shared by reference.
 	 */
