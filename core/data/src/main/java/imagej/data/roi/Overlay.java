@@ -37,9 +37,7 @@ package imagej.data.roi;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
-import net.imglib2.EuclideanSpace;
 import net.imglib2.img.Axis;
-import net.imglib2.meta.LabeledAxes;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
@@ -51,7 +49,7 @@ import net.imglib2.roi.RegionOfInterest;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public interface Overlay extends Data, LabeledAxes, EuclideanSpace {
+public interface Overlay extends Data {
 
 	/** The style used to render the bounding line of the overlay. */
 	enum LineStyle {
