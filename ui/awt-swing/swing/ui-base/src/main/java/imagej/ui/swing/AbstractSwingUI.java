@@ -190,14 +190,12 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 					@Override
 					public void onEvent(final DisplayCreatedEvent event) {
-						final Display<?> display = event.getObject();
-						final DisplayPanel panel = display.getDisplayPanel();
-						if (!(panel instanceof SwingDisplayPanel)) return;
-						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
-						final SwingDisplayWindow swingWindow =
-							(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
+						final SwingDisplayWindow displayWindow =
+							getDisplayWindow(event.getObject());
 						// add a copy of the JMenuBar to the new display
-						if (swingWindow.getJMenuBar() == null) createMenuBar(swingWindow);
+						if (displayWindow != null && displayWindow.getJMenuBar() == null) {
+							createMenuBar(displayWindow);
+						}
 					}
 				};
 			subscribers.add(createSubscriber);
@@ -208,18 +206,25 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 					@Override
 					public void onEvent(final DisplayDeletedEvent event) {
-						final Display<?> display = event.getObject();
-						final DisplayPanel panel = display.getDisplayPanel();
-						if (!(panel instanceof SwingDisplayPanel)) return;
-						final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
-						final SwingDisplayWindow swingWindow =
-							(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
-						deleteMenuBar(swingWindow);
+						final SwingDisplayWindow displayWindow =
+							getDisplayWindow(event.getObject());
+						if (displayWindow != null) deleteMenuBar(displayWindow);
 					}
 				};
 			subscribers.add(deleteSubscriber);
 			eventService.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
 		}
+	}
+
+	// -- Helper methods --
+
+	protected SwingDisplayWindow getDisplayWindow(final Display<?> display) {
+		final DisplayPanel panel = display.getDisplayPanel();
+		if (!(panel instanceof SwingDisplayPanel)) return null;
+		final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
+		final SwingDisplayWindow displayWindow =
+			(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
+		return displayWindow;
 	}
 
 }
