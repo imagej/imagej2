@@ -191,7 +191,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setPlane(final int no, final Object newPlane) {
 		final Img<? extends RealType<?>> img = imgPlus.getImg();
 		if (!(img instanceof PlanarAccess)) {
@@ -200,30 +199,14 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 			return;
 		}
 		// TODO - copy the plane if it cannot be set by reference
+		@SuppressWarnings("rawtypes")
 		final PlanarAccess planarAccess = (PlanarAccess) img;
-		final Object currPlane =
-			((ArrayDataAccess<?>) planarAccess.getPlane(no)).getCurrentStorageArray();
+		final ArrayDataAccess<?> arrayAccess =
+			(ArrayDataAccess<?>) planarAccess.getPlane(no);
+		final Object currPlane = arrayAccess.getCurrentStorageArray();
 		if (newPlane == currPlane) return;
-		ArrayDataAccess<?> array = null;
-		if (newPlane instanceof byte[]) {
-			array = new ByteArray((byte[]) newPlane);
-		}
-		else if (newPlane instanceof short[]) {
-			array = new ShortArray((short[]) newPlane);
-		}
-		else if (newPlane instanceof int[]) {
-			array = new IntArray((int[]) newPlane);
-		}
-		else if (newPlane instanceof float[]) {
-			array = new FloatArray((float[]) newPlane);
-		}
-		else if (newPlane instanceof long[]) {
-			array = new LongArray((long[]) newPlane);
-		}
-		else if (newPlane instanceof double[]) {
-			array = new DoubleArray((double[]) newPlane);
-		}
-		planarAccess.setPlane(no, array);
+		final ArrayDataAccess<?> array = createArrayDataAccess(newPlane);
+		setPlane(no, planarAccess, array);
 		update();
 	}
 
@@ -267,9 +250,10 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Dataset duplicateBlank() {
+		@SuppressWarnings("rawtypes")
 		final ImgPlus untypedImg = imgPlus;
+		@SuppressWarnings("unchecked")
 		final Dataset d = new ImgLibDataset(createBlankCopy(untypedImg));
 		d.setRGBMerged(isRGBMerged());
 		return d;
@@ -457,10 +441,11 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void copyDataFrom(final Dataset other) {
 		// create a new img to hold data using our own factory
+		@SuppressWarnings("rawtypes")
 		final ImgFactory factory = getImgPlus().getImg().factory();
+		@SuppressWarnings("unchecked")
 		final Img<? extends RealType<?>> newImg =
 			factory.create(other.getDims(), other.getType());
 
@@ -470,6 +455,7 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		// create new imgplus to contain data using the current name
 		final double[] calib = new double[other.getDims().length];
 		other.calibration(calib);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final ImgPlus<? extends RealType<?>> newImgPlus =
 			new ImgPlus(newImg, getName(), other.getAxes(), calib);
 
@@ -479,6 +465,40 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	// -- Helper methods --
+
+	/**
+	 * Wraps the given primitive array in an {@link ArrayDataAccess} object of the
+	 * proper type.
+	 */
+	private ArrayDataAccess<?> createArrayDataAccess(final Object newPlane) {
+		if (newPlane instanceof byte[]) {
+			return new ByteArray((byte[]) newPlane);
+		}
+		else if (newPlane instanceof short[]) {
+			return new ShortArray((short[]) newPlane);
+		}
+		else if (newPlane instanceof int[]) {
+			return new IntArray((int[]) newPlane);
+		}
+		else if (newPlane instanceof float[]) {
+			return new FloatArray((float[]) newPlane);
+		}
+		else if (newPlane instanceof long[]) {
+			return new LongArray((long[]) newPlane);
+		}
+		else if (newPlane instanceof double[]) {
+			return new DoubleArray((double[]) newPlane);
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setPlane(final int no,
+		@SuppressWarnings("rawtypes") final PlanarAccess planarAccess,
+		final ArrayDataAccess<?> array)
+	{
+		planarAccess.setPlane(no, array);
+	}
 
 	// NB - assumes the two images are of the exact same dimensions
 	private void copyDataValues(final Img<? extends RealType<?>> input,
@@ -504,7 +524,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return new Extents(dims);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Object copyOfPlane(final int planeNum) {
 		final long[] dimensions = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dimensions);
@@ -515,11 +534,14 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 				" entities (MAX = " + Integer.MAX_VALUE + ")");
 		}
 		final NativeType<?> nativeType = (NativeType<?>) getType();
+		@SuppressWarnings("rawtypes")
 		final NativeImgFactory storageFactory = new ArrayImgFactory();
+		@SuppressWarnings("unchecked")
 		final ArrayImg<?, ?> container =
 			(ArrayImg<?, ?>) nativeType.createSuitableNativeImg(storageFactory,
 				new long[] { w, h });
 		final RandomAccess<? extends RealType<?>> input = imgPlus.randomAccess();
+		@SuppressWarnings("unchecked")
 		final RandomAccess<? extends RealType<?>> output =
 			(RandomAccess<? extends RealType<?>>) container.randomAccess();
 		final long[] planeIndexSpans = new long[dimensions.length - 2];
