@@ -40,11 +40,7 @@ import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
-
-import java.awt.Dimension;
 import java.awt.HeadlessException;
-
-import java.awt.Rectangle;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -80,36 +76,14 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 
 	@Override
 	public void showDisplay(final boolean visible) {
-		// place on desktop with appropriate sizing
-		sizeAppropriately();
 		pack();
 		setVisible(visible);
 	}
 	
-	private boolean initial=true;
-
-	void sizeAppropriately() {
-		JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) panel.getDisplay().getImageCanvas();
-		Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
-		Dimension canvasSize = canvas.getPreferredSize();
-		int scaling = 1;
-		while (canvasSize.height > deskBounds.height - 32 || canvasSize.width > deskBounds.width - 32) {
-			canvas.setZoom(1.0 / scaling++);
-			canvasSize = canvas.getPreferredSize();
-		}
-		if(initial) {
-			canvas.setInitialScale(canvas.getZoomFactor());
-			initial = false;
-		}
-	}
-
-
 	@Override
 	public void close() {
 		setVisible(false);
 		dispose();
 	}
-	
-	
 
 }

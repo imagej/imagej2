@@ -52,10 +52,12 @@ import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 
+import imagej.ui.swing.StaticSwingUtils;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.Arrays;
@@ -76,7 +78,10 @@ import net.imglib2.roi.RegionOfInterest;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * Swing implementation of display window.
+ * Swing implementation of image display panel.
+ * Contains a label, a graphics pane containing an ImageCanvas, 
+ * and panel containing dimensional controllers (sliders).
+ * This panel is added to a top-level display container (DisplayWindow).
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -196,12 +201,34 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 			public void run() {
 				createSliders();
 				sliders.setVisible(sliders.getComponentCount() > 0);
+				sizeAppropriately();
 				window.setTitle(getDisplay().getName());
 				window.showDisplay(true);
 			}
 		});
 	}
 
+		private boolean initial=true;
+
+	void sizeAppropriately() {
+		JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getImageCanvas();
+		Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
+		Dimension canvasSize = canvas.getPreferredSize();
+		// width determined by scaled image canvas width
+		int labelPlusSliderHeight = 
+				imageLabel.getPreferredSize().height +sliders.getPreferredSize().height;
+		//graphicPane.getPreferredSize();
+		int scaling = 1;
+		while (canvasSize.height +labelPlusSliderHeight > deskBounds.height - 32 
+				|| canvasSize.width > deskBounds.width - 32) {
+			canvas.setZoom(1.0 / scaling++);
+			canvasSize = canvas.getPreferredSize();
+		}
+		if(initial) {
+			canvas.setInitialScale(canvas.getZoomFactor());
+			initial = false;
+		}
+	}
 	@Override
 	public void setLabel(final String s) {
 		imageLabel.setText(s);
