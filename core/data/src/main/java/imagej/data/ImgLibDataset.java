@@ -465,6 +465,11 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		setImgPlus(newImgPlus);
 	}
 
+	@Override
+	public int numDimensions() {
+		return imgPlus.numDimensions();
+	}
+
 	// -- Helper methods --
 
 	/**
