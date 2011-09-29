@@ -50,7 +50,7 @@ import net.imglib2.type.numeric.RealType;
 /**
  * Transforms a {@link Dataset} (and linked {@link ImgPlus}) between types.
  * <p>
- * Although Imglib does not do any range clamping of values we will do so here.
+ * Although ImgLib does not do any range clamping of values we will do so here.
  * </p>
  * 
  * @author Barry DeZonia

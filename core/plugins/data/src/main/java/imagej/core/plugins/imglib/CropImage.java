@@ -86,8 +86,8 @@ public class CropImage implements ImageJPlugin {
 		final RealRect bounds = overlayService.getSelectionBounds(display);
 
 		final OutputAlgorithm algorithm = new CropAlgorithm(dataset, bounds);
-		final ImglibDataTransform runner =
-			new ImglibDataTransform(dataset, algorithm);
+		final ImgLibDataTransform runner =
+			new ImgLibDataTransform(dataset, algorithm);
 		runner.run();
 	}
 
@@ -95,7 +95,7 @@ public class CropImage implements ImageJPlugin {
 
 	/**
 	 * CropAlgorithm is responsible for creating the cropped image from the input
-	 * Dataset. It is an Imglib OutputAlgorithm.
+	 * Dataset. It is an ImgLib OutputAlgorithm.
 	 */
 	private class CropAlgorithm implements OutputAlgorithm {
 

@@ -2232,7 +2232,7 @@ public class ImagePlusTest {
 		assertEquals(3,fi.nImages);
 		assertEquals(false,fi.whiteIsZero);
 		assertEquals(false,fi.intelByteOrder);
-		// TODO : reenable equality test when imglib is returning references
+		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
 		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(2.0,fi.pixelWidth,Assert.DOUBLE_TOL);
@@ -2264,7 +2264,7 @@ public class ImagePlusTest {
 		assertEquals(3,fi.nImages);
 		assertEquals(false,fi.whiteIsZero);
 		assertEquals(false,fi.intelByteOrder);
-		// TODO : reenable equality test when imglib is returning references
+		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
 		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
@@ -2295,7 +2295,7 @@ public class ImagePlusTest {
 		assertEquals(3,fi.nImages);
 		assertEquals(false,fi.whiteIsZero);
 		assertEquals(false,fi.intelByteOrder);
-		// TODO : reenable equality test when imglib is returning references
+		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
 		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
@@ -2326,7 +2326,7 @@ public class ImagePlusTest {
 		assertEquals(3,fi.nImages);
 		assertEquals(false,fi.whiteIsZero);
 		assertEquals(false,fi.intelByteOrder);
-		// TODO : reenable equality test when imglib is returning references
+		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
 		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
@@ -2357,7 +2357,7 @@ public class ImagePlusTest {
 		assertEquals(3,fi.nImages);
 		assertEquals(false,fi.whiteIsZero);
 		assertEquals(false,fi.intelByteOrder);
-		// TODO : reenable equality test when imglib is returning references
+		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
 		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
@@ -2391,7 +2391,7 @@ public class ImagePlusTest {
 		assertEquals(3,fi.nImages);
 		assertEquals(false,fi.whiteIsZero);
 		assertEquals(false,fi.intelByteOrder);
-		// TODO : reenable equality test when imglib is returning references
+		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
 		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
@@ -2607,7 +2607,7 @@ public class ImagePlusTest {
 		assertArrayEquals(new int[] {1,4,1,4,4},result.getDimensions());
 		// TODO reenable when possible (if ever)
 		// Problem - createHyperStack() makes an ImageStack of a given size and given
-		//   bitDepth. But 24 bit is a problem to support as imglib only supports
+		//   bitDepth. But 24 bit is a problem to support as ImgLib only supports
 		//   8/16/32/64. So createHyperStack() translates 24 bit requests into 32 bit
 		//   int as it was stored previously in IJ. But reported bitDepth is 32. This
 		//   makes changes in the calibration and also getBitDepth(). Not sure how we

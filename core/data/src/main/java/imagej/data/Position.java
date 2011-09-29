@@ -58,7 +58,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	public Position(Extents parentSpace) {
 		this.parentSpace = parentSpace;
 		this.position = new long[parentSpace.numDimensions()];
-	  // Imglib convention - start out of bounds
+		// ImgLib convention - start out of bounds
 		reset();
 	}
 
