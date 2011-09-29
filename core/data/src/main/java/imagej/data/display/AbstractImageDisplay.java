@@ -78,20 +78,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public List<DataView> getViews() {
-		final ArrayList<DataView> views = new ArrayList<DataView>();
-		views.addAll(this);
-		return views;
-	}
-
-	@Override
-	public void removeAllViews() {
-		clear();
-		redoWindowLayout();
-		update();
-	}
-
-	@Override
 	public void removeView(final DataView view) {
 		remove(view);
 		view.dispose();
