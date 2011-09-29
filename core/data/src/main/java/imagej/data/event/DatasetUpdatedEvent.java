@@ -43,7 +43,7 @@ import imagej.data.Dataset;
  * 
  * @author Curtis Rueden
  */
-public abstract class DatasetUpdatedEvent extends DataUpdatedEvent {
+public class DatasetUpdatedEvent extends DataUpdatedEvent {
 
 	private final Dataset dataset;
 
