@@ -60,7 +60,7 @@ public class JHotDrawAdapterFinder {
 	private ArrayList<IJHotDrawOverlayAdapter> adapters;
 
 	private JHotDrawAdapterFinder() {
-		// NB: prevent instantiation of utility class.
+		// prevent instantiation of utility class
 	}
 
 	private void initialize() {
@@ -72,18 +72,18 @@ public class JHotDrawAdapterFinder {
 				final IJHotDrawOverlayAdapter adapter = indexItem.instance();
 				adapter.setPriority(indexItem.annotation().priority());
 				adapters.add(adapter);
-				Log.info("Found JHotDraw adapter: " + adapter);
 			}
 			catch (final InstantiationException e) {
 				Log.warn("Failed to load " + indexItem.className(), e);
 			}
 		}
+		Log.info("Found " + adapters.size() + " JHotDraw adapters.");
 	}
 
 	/**
-	 * Get some adapter for the given overlay
+	 * Get some adapter for the given overlay.
 	 * 
-	 * @param overlay - the overlay that requires an adapter
+	 * @param overlay the overlay that requires an adapter
 	 * @return any adapter that supports the overlay
 	 * @throws UnsupportedOperationException
 	 */
@@ -108,10 +108,10 @@ public class JHotDrawAdapterFinder {
 	}
 
 	/**
-	 * Get some adapter for the given overlay
+	 * Get some adapter for the given overlay.
 	 * 
-	 * @param overlay - the overlay that requires an adapter
-	 * @param figure - the figure to be adapted to the overlay
+	 * @param overlay the overlay that requires an adapter
+	 * @param figure the figure to be adapted to the overlay
 	 * @return any adapter that supports the overlay adapted to the figure
 	 * @throws UnsupportedOperationException
 	 */
@@ -137,9 +137,9 @@ public class JHotDrawAdapterFinder {
 	}
 
 	/**
-	 * Get the adapters capable of handling a given overlay
+	 * Get the adapters capable of handling a given overlay.
 	 * 
-	 * @param overlay - the overlay to adapt
+	 * @param overlay the overlay to adapt
 	 * @return a collection of all adapters capable of handling the overlay
 	 */
 	public static Collection<IJHotDrawOverlayAdapter> getAdaptersForOverlay(
@@ -152,8 +152,8 @@ public class JHotDrawAdapterFinder {
 	 * Returns all adapters capable of handling a given overlay / figure
 	 * combination.
 	 * 
-	 * @param overlay - the overlay to be adapted to the JHotDraw GUI
-	 * @param figure - the figure to be associated with the overlay
+	 * @param overlay the overlay to be adapted to the JHotDraw GUI
+	 * @param figure the figure to be associated with the overlay
 	 * @return collection of valid adapters
 	 */
 	public static Collection<IJHotDrawOverlayAdapter> getAdaptersForOverlay(

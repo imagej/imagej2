@@ -54,7 +54,7 @@ import net.imglib2.roi.RegionOfInterest;
 public interface Overlay extends Data, LabeledAxes, EuclideanSpace {
 
 	/** The style used to render the bounding line of the overlay. */
-	public enum LineStyle {
+	enum LineStyle {
 		SOLID, DASH, DOT, DOT_DASH, NONE
 	}
 
@@ -62,9 +62,8 @@ public interface Overlay extends Data, LabeledAxes, EuclideanSpace {
 	 * @author Lee Kamentsky
 	 * 
 	 * Arrow decorations for the start and end.
-	 *
 	 */
-	static public enum ArrowStyle {
+	static enum ArrowStyle {
 		NONE,
 		ARROW
 	}
@@ -174,4 +173,5 @@ public interface Overlay extends Data, LabeledAxes, EuclideanSpace {
 	 * @param style the arrow style to be shown at the end of a line or path
 	 */
 	void setLineEndArrowStyle(ArrowStyle style);
+	
 }

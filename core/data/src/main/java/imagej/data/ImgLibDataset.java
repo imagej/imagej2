@@ -89,7 +89,7 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	// -- AbstractData methods --
-	
+
 	@Override
 	protected void register() {
 		eventService.publish(new DatasetCreatedEvent(this));
@@ -229,7 +229,8 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	public String getTypeLabelShort() {
 		if (isRGBMerged()) return "RGB";
 		final int bitsPerPixel = getType().getBitsPerPixel();
-		final String category = isInteger() ? isSigned() ? "int" : "uint" : "float";
+		final String category =
+			isInteger() ? isSigned() ? "int" : "uint" : "float";
 		return category + bitsPerPixel;
 	}
 
@@ -321,7 +322,7 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		update();
 	}
 
-	// -- LabeledAxis methods --
+	// -- LabeledAxes methods --
 
 	@Override
 	public int getAxisIndex(final Axis axis) {
@@ -530,8 +531,8 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		final long w = dimensions[0];
 		final long h = dimensions[1];
 		if (w * h > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("cannot create a plane of " + (w * h) +
-				" entities (MAX = " + Integer.MAX_VALUE + ")");
+			throw new IllegalArgumentException("cannot create a plane of " +
+				(w * h) + " entities (MAX = " + Integer.MAX_VALUE + ")");
 		}
 		final NativeType<?> nativeType = (NativeType<?>) getType();
 		@SuppressWarnings("rawtypes")
