@@ -96,8 +96,9 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 			ImageJ.get(ImageDisplayService.class);
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		ImagePlus imp;
-		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) imp =
-			LegacyUtils.makeExactImagePlus(dataset);
+		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
+			imp =	LegacyUtils.makeExactImagePlus(dataset);
+		}
 		else {
 			imp = LegacyUtils.makeNearestTypeGrayImagePlus(dataset);
 			LegacyUtils.setImagePlusGrayData(dataset, imp);
