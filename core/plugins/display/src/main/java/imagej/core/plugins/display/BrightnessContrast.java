@@ -92,25 +92,11 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		this.defaultMin = min;
 		this.defaultMax = max;
 		Log.debug("default min/max= " + defaultMin + "/" + defaultMax);
-
-//		if (view.getCompositeDimIndex() >= 0) {
-//			int currentChannel = view.getProjector().getIntPosition(view.getCompositeDimIndex());
-//			defaultMin = view.getImgPlus().getChannelMinimum(currentChannel);
-//			defaultMax = view.getImgPlus().getChannelMaximum(currentChannel);
-//		}
 	}
 
 	@Override
 	public void run() {
-		if (view == null) return;
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
-			conv.setMin(min);
-			conv.setMax(max);
-		}
-		view.getProjector().map();
-		view.update();
+		updateMinMax(min, max);
 	}
 
 	@Override
@@ -120,7 +106,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
 	@Override
 	public void cancel() {
-		// TODO
+		updateMinMax(defaultMin, defaultMax);
 	}
 
 	public DatasetView getView() {
@@ -234,6 +220,18 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 			c = SLIDER_RANGE - ((max - min) / (defaultMax - defaultMin)) * mid;
 		}
 		contrast = ((int) c);
+	}
+
+	private void updateMinMax(final double minValue, final double maxValue) {
+		if (view == null) return;
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+			view.getConverters();
+		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
+			conv.setMin(minValue);
+			conv.setMax(maxValue);
+		}
+		view.getProjector().map();
+		view.update();
 	}
 
 }
