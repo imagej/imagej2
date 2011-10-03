@@ -104,7 +104,7 @@ public class DatasetHarmonizer {
 		}
 		else {
 			if ((dimensionsIncompatible(ds, imp)) || (imp.getStack().getSize() == 0))
-			{ // NB unfortunate issue with IJ1
+			{ // NB - in IJ1 stack size can be zero for single slice image!
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
