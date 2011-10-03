@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data;
 
 import imagej.data.roi.Overlay;
+import net.imglib2.img.Axis;
 
 /**
  * A data object is the superinterface for all types of N-dimensional data
@@ -44,6 +45,15 @@ import imagej.data.roi.Overlay;
  * @author Curtis Rueden
  */
 public interface Data extends LabeledSpace {
+
+	/** Gets the dimensional lengths of the data. */
+	long[] getDims();
+
+	/** Gets the dimensional axis labels of the data. */
+	Axis[] getAxes();
+
+	/** Gets the dimensional extents of the data. */
+	Extents getExtents();
 
 	/**
 	 * Informs interested parties that the data object has undergone a
