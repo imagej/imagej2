@@ -53,9 +53,11 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 		this.roi = roi;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.AbstractOverlay#getRegionOfInterest()
-	 */
+	// TODO - Have this class implement ROIOverlay which defines
+	// getRegionOfInterest(), rather than having the base Overlay interface have
+	// that method. This avoids confusion with non-ROI Overlay implementation (so
+	// no getRegionOfInterest() method returning null for them).
+
 	@Override
 	public R getRegionOfInterest() {
 		return roi;
