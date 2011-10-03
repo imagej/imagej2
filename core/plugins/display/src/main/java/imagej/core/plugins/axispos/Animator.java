@@ -277,15 +277,15 @@ public class Animator implements ImageJPlugin {
 		synchronized void initFromOptions() {
 			final AnimatorOptions options = OPTIONS.get(display);
 
-			axis = options.axis;
-			first = options.first;
-			last = options.last;
-			total = options.total;
-			fps = options.fps;
-			backAndForth = options.backAndForth;
+			axis = options.getAxis();
+			first = options.getFirst();
+			last = options.getLast();
+			total = options.getTotal();
+			fps = options.getFps();
+			backAndForth = options.isBackAndForth();
 
 			increment = 1;
-			currPos = options.first;
+			currPos = options.getFirst();
 			delta = 1;
 			isRelative = true;
 

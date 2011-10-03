@@ -44,12 +44,12 @@ import net.imglib2.img.Axis;
  * @author Barry DeZonia
  */
 public class AnimatorOptions {
-	public Axis axis;
-	public double fps;
-	public long first;
-	public long last;
-	public long total;
-	public boolean backAndForth;
+	private Axis axis;
+	private double fps;
+	private long first;
+	private long last;
+	private long total;
+	private boolean backAndForth;
 	
 	public AnimatorOptions(Axis axis, double fps, long first, long last,
 		long total, boolean backAndForth)
@@ -62,5 +62,63 @@ public class AnimatorOptions {
 		this.backAndForth = backAndForth;
 	}
 	
+	public Axis getAxis() {
+		return axis;
+	}
+
+	
+	public void setAxis(Axis axis) {
+		this.axis = axis;
+	}
+
+	
+	public double getFps() {
+		return fps;
+	}
+
+	
+	public void setFps(double fps) {
+		this.fps = fps;
+	}
+
+	
+	public long getFirst() {
+		return first;
+	}
+
+	
+	public void setFirst(long first) {
+		this.first = first;
+	}
+
+	
+	public long getLast() {
+		return last;
+	}
+
+	
+	public void setLast(long last) {
+		this.last = last;
+	}
+
+	
+	public long getTotal() {
+		return total;
+	}
+
+	
+	public void setTotal(long total) {
+		this.total = total;
+	}
+
+	
+	public boolean isBackAndForth() {
+		return backAndForth;
+	}
+
+	
+	public void setBackAndForth(boolean backAndForth) {
+		this.backAndForth = backAndForth;
+	}
 }
 

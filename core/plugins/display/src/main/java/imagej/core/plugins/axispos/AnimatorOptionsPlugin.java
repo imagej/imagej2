@@ -120,7 +120,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		name.setChoices(choices);
 		name.setPersisted(false);
 		addInput(name);
-		setInput(NAME_KEY, new String(options.axis.getLabel()));
+		setInput(NAME_KEY, new String(options.getAxis().getLabel()));
 
 		// first position field initialization
 
@@ -133,7 +133,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		// field's max value from chosen axis max.
 		// firstPos.setMaximumValue(new Long(options.total));
 		addInput(firstPos);
-		setInput(FIRST_POS_KEY, new Long(options.first + 1));
+		setInput(FIRST_POS_KEY, new Long(options.getFirst() + 1));
 
 		// last position field initialization
 
@@ -146,7 +146,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		// field's max value from chosen axis max.
 		// lastPos.setMaximumValue(new Long(options.total));
 		addInput(lastPos);
-		setInput(LAST_POS_KEY, new Long(options.last + 1));
+		setInput(LAST_POS_KEY, new Long(options.getLast() + 1));
 
 		// frames per second field initialization
 
@@ -156,7 +156,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		framesPerSec.setMinimumValue(0.1);
 		framesPerSec.setMaximumValue(1000.0);
 		addInput(framesPerSec);
-		setInput(FPS_KEY, new Double(options.fps));
+		setInput(FPS_KEY, new Double(options.getFps()));
 
 		// back and forth field initialization
 
@@ -164,7 +164,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 			new DefaultModuleItem<Boolean>(this, BACK_FORTH_KEY, Boolean.class);
 		backForthBool.setPersisted(false);
 		addInput(backForthBool);
-		setInput(BACK_FORTH_KEY, new Boolean(options.backAndForth));
+		setInput(BACK_FORTH_KEY, new Boolean(options.isBackAndForth()));
 	}
 
 	/**
@@ -182,12 +182,12 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		if (axisIndex < 0) return;
 		final long totalHyperplanes = dataset.getImgPlus().dimension(axisIndex);
 		setFirstAndLast(totalHyperplanes);
-		options.axis = axis;
-		options.backAndForth = backForth;
-		options.first = first;
-		options.last = last;
-		options.fps = fps;
-		options.total = totalHyperplanes;
+		options.setAxis(axis);
+		options.setBackAndForth(backForth);
+		options.setFirst(first);
+		options.setLast(last);
+		options.setFps(fps);
+		options.setTotal(totalHyperplanes);
 		Animator.optionsUpdated(currDisplay);
 	}
 
