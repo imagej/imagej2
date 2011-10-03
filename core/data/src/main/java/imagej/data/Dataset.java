@@ -49,12 +49,6 @@ public interface Dataset extends Data, Metadata {
 
 	void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus);
 
-	/** Gets the dimensional extents of the dataset. */
-	long[] getDims();
-
-	/** Gets the dimensional extents of the dataset. */
-	Axis[] getAxes();
-
 	/**
 	 * gets a plane of data from the Dataset. The representation of the plane is
 	 * determined by the native ImgLib container. This method will create a copy
@@ -110,8 +104,6 @@ public interface Dataset extends Data, Metadata {
 	 * image translators to support color images correctly.
 	 */
 	boolean isRGBMerged();
-
-	Extents getExtents();
 
 	void typeChange();
 

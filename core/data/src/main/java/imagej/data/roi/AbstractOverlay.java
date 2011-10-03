@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.roi;
 
 import imagej.data.AbstractData;
+import imagej.data.Extents;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
@@ -113,18 +114,6 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	public RegionOfInterest getRegionOfInterest() {
 		// NB: By default, no associated region of interest.
 		return null;
-	}
-
-	// -- Data methods --
-
-	@Override
-	public void update() {
-		eventService.publish(new OverlayUpdatedEvent(this));
-	}
-
-	@Override
-	public void rebuild() {
-		eventService.publish(new OverlayRestructuredEvent(this));
 	}
 
 	@Override
@@ -378,4 +367,22 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		endArrowStyle = style;
 	}
 	
+	// -- Data methods --
+
+	@Override
+	public Extents getExtents() {
+		// FIXME
+		return null;
+	}
+	
+	@Override
+	public void update() {
+		eventService.publish(new OverlayUpdatedEvent(this));
+	}
+
+	@Override
+	public void rebuild() {
+		eventService.publish(new OverlayRestructuredEvent(this));
+	}
+
 }

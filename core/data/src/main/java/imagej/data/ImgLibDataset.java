@@ -151,21 +151,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
-	public long[] getDims() {
-		final int numDims = extents.numDimensions();
-		final long[] dims = new long[numDims];
-		extents.dimensions(dims);
-		return dims;
-	}
-
-	@Override
-	public Axis[] getAxes() {
-		final Axis[] axes = new Axis[imgPlus.numDimensions()];
-		axes(axes);
-		return axes;
-	}
-
-	@Override
 	public Object getPlane(final int planeNumber) {
 		return getPlane(planeNumber, true);
 	}
@@ -278,11 +263,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
-	public Extents getExtents() {
-		return extents;
-	}
-
-	@Override
 	public void typeChange() {
 		setDirty(true);
 		eventService.publish(new DatasetTypeChangedEvent(this));
@@ -296,6 +276,11 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	// -- Data methods --
+
+	@Override
+	public Extents getExtents() {
+		return extents;
+	}
 
 	@Override
 	public void update() {
