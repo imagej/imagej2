@@ -36,7 +36,10 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.event.DataRestructuredEvent;
+import imagej.data.event.DataUpdatedEvent;
 import imagej.data.roi.Overlay;
+import imagej.event.EventSubscriber;
 import imagej.ext.display.AbstractDisplay;
 
 import java.util.ArrayList;
@@ -47,6 +50,8 @@ import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
 /**
+ * TODO - better Javadoc.
+ * 
  * The abstract display handles axes resolution, maintaining the dimensionality
  * of the EuclideanSpace represented by the display.
  * 
@@ -57,10 +62,15 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {
 
+	/** List of event subscribers, to avoid garbage collection. */
+	private final List<EventSubscriber<?>> subscribers =
+		new ArrayList<EventSubscriber<?>>();
+	
 	private Axis activeAxis = Axes.Z;
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
+		subscribeToEvents();
 	}
 
 	// -- ImageDisplay methods --
@@ -170,6 +180,45 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	public void setCalibration(final double cal, final int d) {
 		throw new UnsupportedOperationException(
 			"You can't change the calibration of a display yet");
+	}
+
+	// -- Helper methods --
+	
+	/** Updates the display when the linked object changes. */
+	private void subscribeToEvents() {
+		final EventSubscriber<DataUpdatedEvent> updateSubscriber =
+			new EventSubscriber<DataUpdatedEvent>()
+		{
+			@Override
+			public void onEvent(final DataUpdatedEvent event) {
+				for (final DataView view : AbstractImageDisplay.this) {
+					if (event.getObject() == view.getData()) {
+						view.update();
+						update();
+						return;
+					}
+				}
+			}
+		};
+		eventService.subscribe(DataUpdatedEvent.class, updateSubscriber);
+		subscribers.add(updateSubscriber);
+
+		final EventSubscriber<DataRestructuredEvent> restructureSubscriber =
+			new EventSubscriber<DataRestructuredEvent>()
+		{
+			@Override
+			public void onEvent(final DataRestructuredEvent event) {
+				for (final DataView view : AbstractImageDisplay.this) {
+					if (event.getObject() == view.getData()) {
+						view.rebuild();
+						update();
+						return;
+					}
+				}
+			}
+		};
+		eventService.subscribe(DataRestructuredEvent.class, restructureSubscriber);
+		subscribers.add(restructureSubscriber);
 	}
 
 }

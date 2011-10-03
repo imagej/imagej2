@@ -41,13 +41,7 @@ import imagej.data.Position;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
-import imagej.data.event.DataRestructuredEvent;
-import imagej.data.event.DataUpdatedEvent;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Abstract superclass for {@link DataView}s.
@@ -59,9 +53,6 @@ public abstract class AbstractDataView implements DataView {
 	private final ImageDisplay display;
 	private final Data dataObject;
 
-	/** List of event subscribers, to avoid garbage collection. */
-	private final List<EventSubscriber<?>> subscribers =
-		new ArrayList<EventSubscriber<?>>();
 	protected final EventService eventService;
 
 	private long[] planeDims;
@@ -81,7 +72,6 @@ public abstract class AbstractDataView implements DataView {
 		this.display = display;
 		this.dataObject = dataObject;
 		dataObject.incrementReferences();
-		subscribeToEvents();
 	}
 
 	// -- DataView methods --
@@ -141,42 +131,6 @@ public abstract class AbstractDataView implements DataView {
 		return selected;
 	}
 
-	/** Updates the display when the linked object changes. */
-	private void subscribeToEvents() {
-		final EventSubscriber<DataUpdatedEvent> updateSubscriber =
-			new EventSubscriber<DataUpdatedEvent>()
-		{
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void onEvent(final DataUpdatedEvent event) {
-				if (event.getObject() != dataObject) return;
-				update();
-				display.update();
-			}
-		};
-		eventService.subscribe(DataUpdatedEvent.class, updateSubscriber);
-		subscribers.add(updateSubscriber);
-
-		// TODO - perhaps it would be better for the display to listen for
-		// ObjectRestructuredEvents, compare the data object to all of its views,
-		// and call rebuild() on itself (only once). This would avoid a potential
-		// issue where multiple views linked to the same data object will currently
-		// result in multiple rebuilds.
-		final EventSubscriber<DataRestructuredEvent> restructureSubscriber =
-			new EventSubscriber<DataRestructuredEvent>()
-		{
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void onEvent(final DataRestructuredEvent event) {
-				if (event.getObject() != dataObject) return;
-				rebuild();
-				display.update();
-			}
-		};
-		eventService.subscribe(DataRestructuredEvent.class, restructureSubscriber);
-		subscribers.add(restructureSubscriber);
-	}
-
 	@Override
 	public boolean isVisible() {
 		return true;
@@ -191,4 +145,5 @@ public abstract class AbstractDataView implements DataView {
 		planePosition = extents.createPosition();
 		planePosition.first();
 	}
+	
 }
