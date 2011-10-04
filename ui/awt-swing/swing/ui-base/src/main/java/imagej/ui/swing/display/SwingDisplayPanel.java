@@ -92,7 +92,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	private final ImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel sliders;
-	private final SwingDisplayWindow window;
+	private final DisplayWindow window;
 
 	protected final Map<Axis, Integer> axisPositions =
 		new HashMap<Axis, Integer>();
@@ -122,7 +122,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		eventService = ImageJ.get(EventService.class);
 
 		this.display = display;
-		this.window = (SwingDisplayWindow) window;
+		this.window = window;
 
 		imageLabel = new JLabel(" ");
 		final int prefHeight = imageLabel.getPreferredSize().height;
