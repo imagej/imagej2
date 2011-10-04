@@ -36,6 +36,7 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.Extents;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
 import imagej.data.roi.Overlay;
@@ -44,6 +45,7 @@ import imagej.ext.display.AbstractDisplay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import net.imglib2.img.Axes;
@@ -98,22 +100,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public List<Axis> getAxes() {
-		final ArrayList<Axis> axes = new ArrayList<Axis>();
-		for (final DataView view : this) {
-			final Data data = view.getData();
-			final int nAxes = data.numDimensions();
-			for (int i = 0; i < nAxes; i++) {
-				final Axis axis = data.axis(i);
-				if (!axes.contains(axis)) {
-					axes.add(axis);
-				}
-			}
-		}
-		return axes;
-	}
-
-	@Override
 	public boolean containsData(final Data data) {
 		for (final DataView view : this) {
 			if (data == view.getData()) return true;
@@ -135,28 +121,90 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		else super.display(o);
 	}
 
+	// -- LabeledSpace methods --
+
+	@Override
+	public long[] getDims() {
+		// This logic scans the axes of all constituent data objects, and merges
+		// them into a single aggregate coordinate space. The current implementation
+		// is not performance optimized.
+
+		// CTR TODO - reconcile multiple copies of same axis with different lengths.
+
+		final ArrayList<Long> dimsList = new ArrayList<Long>();
+		final HashSet<Axis> axes = new HashSet<Axis>();
+		for (final DataView view : this) {
+			final Data data = view.getData();
+			final long[] dataDims = data.getDims();
+			for (int i = 0; i < dataDims.length; i++) {
+				final Axis axis = data.axis(i);
+				if (!axes.contains(axis)) {
+					axes.add(axis);
+					dimsList.add(dataDims[i]);
+				}
+			}
+		}
+		final long[] dims = new long[dimsList.size()];
+		for (int i = 0; i < dims.length; i++) {
+			dims[i] = dimsList.get(i);
+		}
+		return dims;
+	}
+
+	@Override
+	public Axis[] getAxes() {
+		// This logic scans the axes of all constituent data objects, and merges
+		// them into a single aggregate coordinate space. The current implementation
+		// is not performance optimized.
+
+		// CTR TODO - reconcile multiple copies of same axis with different lengths.
+
+		final ArrayList<Axis> axes = new ArrayList<Axis>();
+		for (final DataView view : this) {
+			final Data data = view.getData();
+			final int nAxes = data.numDimensions();
+			for (int i = 0; i < nAxes; i++) {
+				final Axis axis = data.axis(i);
+				if (!axes.contains(axis)) {
+					axes.add(axis);
+				}
+			}
+		}
+		return axes.toArray(new Axis[0]);
+	}
+
+	@Override
+	public Extents getExtents() {
+		return new Extents(getDims());
+	}
+
 	// -- EuclideanSpace methods --
 
 	@Override
 	public int numDimensions() {
-		return getAxes().size();
+		return getAxes().length;
 	}
 
 	// -- LabeledAxes methods --
 
 	@Override
 	public int getAxisIndex(final Axis axis) {
-		return getAxes().indexOf(axis);
+		final Axis[] axes = getAxes();
+		for (int i = 0; i < axes.length; i++) {
+			if (axes[i] == axis) return i;
+		}
+		return -1;
 	}
 
 	@Override
 	public Axis axis(final int d) {
-		return getAxes().get(d);
+		// TODO - avoid array allocation
+		return getAxes()[d];
 	}
 
 	@Override
 	public void axes(final Axis[] axes) {
-		System.arraycopy(getAxes().toArray(), 0, axes, 0, axes.length);
+		System.arraycopy(getAxes(), 0, axes, 0, axes.length);
 	}
 
 	@Override

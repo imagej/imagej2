@@ -36,6 +36,7 @@ package imagej.data;
 
 import imagej.data.display.ImageDisplay;
 import net.imglib2.EuclideanSpace;
+import net.imglib2.img.Axis;
 import net.imglib2.meta.LabeledAxes;
 import net.imglib2.meta.Named;
 
@@ -48,5 +49,16 @@ import net.imglib2.meta.Named;
  * @see ImageDisplay
  */
 public interface LabeledSpace extends EuclideanSpace, LabeledAxes, Named {
-	// marker interface
+	
+	// CTR TODO - add dimension(int) method, similar to net.imglib2.Interval
+
+	/** Gets the dimensional lengths of the data. */
+	long[] getDims();
+
+	/** Gets the dimensional axis labels of the data. */
+	Axis[] getAxes();
+
+	/** Gets the dimensional extents of the data. */
+	Extents getExtents();
+
 }

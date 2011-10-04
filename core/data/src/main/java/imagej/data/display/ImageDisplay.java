@@ -39,9 +39,6 @@ import imagej.data.Dataset;
 import imagej.data.LabeledSpace;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.Display;
-
-import java.util.List;
-
 import net.imglib2.img.Axis;
 
 /**
@@ -67,10 +64,6 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 
 	/** Tests whether this display contains the given data object (via a view). */
 	boolean containsData(Data data);
-	
-	// CTR TODO - move getAxes method into LabeledSpace.
-	
-	List<Axis> getAxes();
 	
 	// CTR TODO - eliminate the methods below.
 	

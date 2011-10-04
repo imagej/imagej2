@@ -370,12 +370,6 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	// -- Data methods --
 
 	@Override
-	public Extents getExtents() {
-		// FIXME
-		return null;
-	}
-	
-	@Override
 	public void update() {
 		eventService.publish(new OverlayUpdatedEvent(this));
 	}
@@ -385,4 +379,12 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		eventService.publish(new OverlayRestructuredEvent(this));
 	}
 
+	// -- LabeledSpace methods --
+	
+	@Override
+	public Extents getExtents() {
+		// FIXME
+		return null;
+	}
+	
 }
