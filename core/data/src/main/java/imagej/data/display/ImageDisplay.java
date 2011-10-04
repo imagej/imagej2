@@ -65,10 +65,12 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	/** Gets the image canvas upon which this display's output is painted. */
 	ImageCanvas getImageCanvas();
 
-	List<Axis> getAxes();
-	
 	/** Tests whether this display contains the given data object (via a view). */
 	boolean containsData(Data data);
+	
+	// CTR TODO - move getAxes method into LabeledSpace.
+	
+	List<Axis> getAxes();
 	
 	// CTR TODO - eliminate the methods below.
 	
