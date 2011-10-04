@@ -81,16 +81,6 @@ public class SwingDatasetView extends AbstractDatasetView implements FigureView
 
 	// -- DataView methods --
 
-	@Override
-	public int getPreferredWidth() {
-		return getScreenImage().image().getWidth(null);
-	}
-
-	@Override
-	public int getPreferredHeight() {
-		return getScreenImage().image().getHeight(null);
-	}
-
 	@SuppressWarnings("synthetic-access")
 	@Override
 	public synchronized void update() {

@@ -206,6 +206,16 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	}
 
 	@Override
+	public int getPreferredWidth() {
+		return getScreenImage().image().getWidth(null);
+	}
+
+	@Override
+	public int getPreferredHeight() {
+		return getScreenImage().image().getHeight(null);
+	}
+
+	@Override
 	public void rebuild() {
 		channelDimIndex = getChannelDimIndex();
 
