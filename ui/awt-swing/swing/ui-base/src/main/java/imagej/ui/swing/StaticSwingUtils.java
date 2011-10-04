@@ -126,15 +126,12 @@ public class StaticSwingUtils {
    * @return the containing JFrame or null if none
    */
   public static JFrame getTopFrame(Component comp) {
-    if (comp == null) {
-      return null;
+    if (comp == null) return null;
+    Component top = comp;
+    while (top.getParent() != null) {
+      top = top.getParent();
     }
-    while (comp.getParent() != null) {
-      comp = comp.getParent();
-    }
-    if (comp instanceof JFrame) {
-      return (JFrame) comp;
-    }
+    if (top instanceof JFrame) return (JFrame) top;
     return null;
   }
 
@@ -146,13 +143,15 @@ public class StaticSwingUtils {
   public static abstract class PopperUpper extends MouseAdapter {
     /// To work properly on all platforms, must check on mouse press as well as release/
 
-    public void mousePressed(MouseEvent e) {
+    @Override
+		public void mousePressed(MouseEvent e) {
       if (e.isPopupTrigger()) {
         popUp(e);
       }
     }
 
-    public void mouseReleased(MouseEvent e) {
+    @Override
+		public void mouseReleased(MouseEvent e) {
       if (e.isPopupTrigger()) {
         popUp(e);
       }
@@ -213,7 +212,6 @@ public class StaticSwingUtils {
 
   public static void locateUpperRight(java.awt.Container component) {
     int w = component.getWidth();
-    int h = component.getHeight();
     Rectangle bounds = getWorkSpaceBounds();
     int x = (int) (bounds.getX() + bounds.getWidth() - w);
     int y = (int) (bounds.getY());
@@ -235,7 +233,6 @@ public class StaticSwingUtils {
   }
 
   public static void locateLowerLeft(java.awt.Container component) {
-    int w = component.getWidth();
     int h = component.getHeight();
     Rectangle bounds = getWorkSpaceBounds();
     int x = (int) (bounds.getX());

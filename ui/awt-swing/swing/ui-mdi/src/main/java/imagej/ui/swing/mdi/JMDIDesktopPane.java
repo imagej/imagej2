@@ -40,7 +40,7 @@ public class JMDIDesktopPane extends JDesktopPane implements  Desktop {
         manager = new MDIDesktopManager(this);
         setDesktopManager(manager);
         setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-        setAlignmentX(JComponent.LEFT_ALIGNMENT);
+        setAlignmentX(Component.LEFT_ALIGNMENT);
     }
     
     @Override
@@ -104,7 +104,7 @@ public class JMDIDesktopPane extends JDesktopPane implements  Desktop {
         checkDesktopSize();
     }
     
-    private void tileFramesHorizontally() {
+    public void tileFramesHorizontally() {
         Component[] allFrames = getAllFrames();
         
         // do nothing if no frames to work with
@@ -340,9 +340,8 @@ class MDIDesktopManager extends DefaultDesktopManager {
         JScrollPane scrollPane = getScrollPane();
         if ((scrollPane == null) || (getScrollPane().getBorder() == null)) {
             return new Insets(0, 0, 0, 0);
-        } else {
-            return getScrollPane().getBorder().getBorderInsets(scrollPane);
         }
+        return getScrollPane().getBorder().getBorderInsets(scrollPane);
     }
     
     public JScrollPane getScrollPane() {

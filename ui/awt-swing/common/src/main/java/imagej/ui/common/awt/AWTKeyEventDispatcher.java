@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.ImageJ;
-import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.Display;
@@ -61,7 +59,9 @@ public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener {
 	final protected EventService eventService;
 
 	/** Creates an AWT key event dispatcher for the given display. */
-	public AWTKeyEventDispatcher(final Display<?> display, final EventService eventService) {
+	public AWTKeyEventDispatcher(final Display<?> display,
+		final EventService eventService)
+	{
 		this.display = display;
 		this.eventService = eventService;
 	}
@@ -85,8 +85,8 @@ public class AWTKeyEventDispatcher implements EventDispatcher, KeyListener {
 	@Override
 	public void keyReleased(final KeyEvent e) {
 		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
-		eventService.publish(new KyReleasedEvent(display, e.getKeyChar(), keyCode, e
-			.getModifiers()));
+		eventService.publish(new KyReleasedEvent(display, e.getKeyChar(), keyCode,
+			e.getModifiers()));
 	}
 
 }

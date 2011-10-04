@@ -76,13 +76,13 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	protected static final Border INACTIVE_BORDER = new BevelBorder(
 		BevelBorder.RAISED);
 
+	protected final EventService eventService;
+
 	private final ToolService toolService;
 
 	private final Map<String, AbstractButton> toolButtons;
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-
-	private final EventService eventService;
 
 	final private EventSubscriber<ToolActivatedEvent> toolActivatedEventSubscriber =
 		new EventSubscriber<ToolActivatedEvent>() {
@@ -108,7 +108,8 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
-		eventService.subscribe(ToolActivatedEvent.class, toolActivatedEventSubscriber);
+		eventService.subscribe(ToolActivatedEvent.class,
+			toolActivatedEventSubscriber);
 		eventService.subscribe(ToolDeactivatedEvent.class,
 			toolDeactivatedEventSubscriber);
 	}
