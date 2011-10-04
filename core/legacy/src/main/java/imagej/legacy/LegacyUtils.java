@@ -203,7 +203,7 @@ public final class LegacyUtils {
 	 * channels as the input ImagePlus, and bitsperPixel == 8. Does not populate
 	 * the data of the returned Dataset. That is left to other utility methods.
 	 * Does not set metadata of Dataset. Throws exceptions if input ImagePlus is
-	 * not multichannel RGB.
+	 * not RGB.
 	 */
 	static Dataset makeGrayDatasetFromColorImp(final ImagePlus imp,
 		final Axis[] preferredOrder)
@@ -277,11 +277,10 @@ public final class LegacyUtils {
 	/**
 	 * Makes an {@link ImagePlus} from a {@link Dataset}. Data is exactly the same
 	 * between them as planes of data are shared by reference. Assumes the Dataset
-	 * can be represented via plane references (thus backled by
+	 * can be represented via plane references (thus XYCZT and backed by
 	 * {@link PlanarAccess} and in a type compatible with IJ1). Does not set the
-	 * metadata of the ImagePlus. Throws an exception if the Dataset has any axis
-	 * present that is not IJ1 compatible. Also throws an exception when Dataset
-	 * has any axis or total number of planes > Integer.MAX_VALUE.
+	 * metadata of the ImagePlus. Throws an exception when Dataset has any axis
+	 * length or total number of planes > Integer.MAX_VALUE.
 	 */
 	// TODO - check that Dataset can be represented exactly
 	static ImagePlus makeExactImagePlus(final Dataset ds) {
@@ -319,9 +318,8 @@ public final class LegacyUtils {
 	 * Makes a color {@link ImagePlus} from a color {@link Dataset}. The ImagePlus
 	 * will have the same X, Y, Z, & T dimensions. C will be 1. The data values
 	 * and metadata are not assigned. Throws an exception if the dataset is not
-	 * color compatible. Throws an exception if the Dataset has any axis present
-	 * that is not IJ1 compatible. Also throws an exception when Dataset has any
-	 * axis or total number of planes > Integer.MAX_VALUE.
+	 * color compatible. Throws an exception when Dataset has any axis or total
+	 * number of planes > Integer.MAX_VALUE.
 	 */
 	static ImagePlus makeColorImagePlus(final Dataset ds) {
 		if (!isColorCompatible(ds)) {
@@ -349,45 +347,50 @@ public final class LegacyUtils {
 		return imp;
 	}
 
+	// TODO - FIXME - UPDATED BUT UNTESTED
+	
 	/**
 	 * Assigns the data values of an {@link ImagePlus} from a paired
-	 * {@link Dataset}. Assumes the Dataset and ImagePlus have the same dimensions
-	 * and that the data planes are not directly mapped. If the data values are
-	 * directly mapped then this code just wastes time. Sets values via
+	 * {@link Dataset}. Assumes the Dataset and ImagePlus are not directly
+	 * mapped. It is possible that multiple IJ2 axes are encoded as a single
+	 * set of channels in the ImagePlus. Sets values via
 	 * {@link ImageProcessor}::setf(). Some special case code is in place to
-	 * assure that BitType images go to IJ1 as 0/255 value images. Does not change
-	 * the ImagePlus' metadata.
+	 * assure that BitType images go to IJ1 as 0/255 value images. Does not
+	 * change the ImagePlus' metadata.
 	 */
 	static void setImagePlusGrayData(final Dataset ds, final ImagePlus imp) {
 		final boolean bitData = ds.getType() instanceof BitType;
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int x = imp.getWidth();
-		final int y = imp.getHeight();
-		final int c = imp.getNChannels();
-		final int z = imp.getNSlices();
-		final int t = imp.getNFrames();
-		int imagejPlaneNumber = 1;
 		final RandomAccess<? extends RealType<?>> accessor =
-			ds.getImgPlus().randomAccess();
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) accessor.setPosition(ci, cIndex);
-					final ImageProcessor proc =
-						imp.getStack().getProcessor(imagejPlaneNumber++);
-					for (int yi = 0; yi < y; yi++) {
-						accessor.setPosition(yi, yIndex);
-						for (int xi = 0; xi < x; xi++) {
-							accessor.setPosition(xi, xIndex);
-							double value = accessor.get().getRealDouble();
+				ds.getImgPlus().randomAccess();
+		long[] dims = ds.getDims();
+		Axis[] axes = ds.getAxes();
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int xSize = imp.getWidth();
+		int ySize = imp.getHeight();
+		int zSize = imp.getNSlices();
+		int tSize = imp.getNFrames();
+		int cSize = imp.getNChannels();
+		ImageStack stack = imp.getStack();
+		int planeNum = 1;
+		long[] pos = new long[dims.length];
+		for (int t = 0; t < tSize; t++) {
+			if (tIndex >= 0) pos[tIndex] = t;
+			for (int z = 0; z < zSize; z++) {
+				if (zIndex >= 0) pos[zIndex] = z;
+				for (int c = 0; c < cSize; c++) {
+					fillChannelIndices(dims, axes, c, pos);
+					ImageProcessor proc = stack.getProcessor(planeNum++);
+					for (int x = 0; x < xSize; x++) {
+						if (xIndex >= 0) pos[xIndex] = x;
+						for (int y = 0; y < ySize; y++) {
+							if (yIndex >= 0) pos[yIndex] = y;
+							accessor.setPosition(pos);
+							float value = accessor.get().getRealFloat();
 							if (bitData) if (value > 0) value = 255;
-							proc.setf(xi, yi, (float) value);
+							proc.setf(x, y, value);
 						}
 					}
 				}
@@ -395,12 +398,14 @@ public final class LegacyUtils {
 		}
 	}
 
+	// TODO - FIXME - MAYBE UPDATE FOR NON IJ1 AXIS SUPPORT
+	
 	/**
 	 * Assigns the data values of a color {@link ImagePlus} from a paired
-	 * {@link Dataset}. Assumes the Dataset and ImagePlus have the same dimensions
-	 * and that the data planes are not directly mapped. Also assumes that the
-	 * Dataset has isRGBMerged() true. Sets values via {@link ImageProcessor}
-	 * ::set(). Does not change the ImagePlus' metadata.
+	 * {@link Dataset}. Assumes the Dataset and ImagePlus have compatible
+	 * dimensions and that the data planes are not directly mapped. Also
+	 * assumes that the Dataset has isRGBMerged() true. Sets values via
+	 * {@link ImageProcessor}::set(). Does not change the ImagePlus' metadata.
 	 */
 	static void setImagePlusColorData(final Dataset ds, final ImagePlus imp) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
@@ -448,48 +453,51 @@ public final class LegacyUtils {
 		}
 	}
 
+	// TODO - FIXME - UPDATED BUT UNTESTED
+
 	/**
 	 * Assigns the data values of a {@link Dataset} from a paired
-	 * {@link ImagePlus}. Assumes the Dataset and ImagePlus have the same
-	 * dimensions and that the data planes are not directly mapped. If the data
-	 * values are directly mapped then this code just wastes time. Gets values via
-	 * {@link ImageProcessor}::getf(). In cases where there is a narrowing of
-	 * types into IJ2 data is range clamped. Does not change the Dataset's
-	 * metadata.
+	 * {@link ImagePlus}. Assumes the Dataset and ImagePlus have compatible
+	 * dimensions and that the data planes are not directly mapped. Gets values
+	 * via {@link ImageProcessor}::getf(). In cases where there is a narrowing of
+	 * data into IJ2 types the data is range clamped. Does not change the
+	 * Dataset's metadata.
 	 */
 	static void setDatasetGrayData(final Dataset ds, final ImagePlus imp) {
 		final RealType<?> type = ds.getType();
 		final double typeMin = type.getMinValue();
 		final double typeMax = type.getMaxValue();
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int x = imp.getWidth();
-		final int y = imp.getHeight();
-		final int c = imp.getNChannels();
-		final int z = imp.getNSlices();
-		final int t = imp.getNFrames();
-		int imagejPlaneNumber = 1;
 		final RandomAccess<? extends RealType<?>> accessor =
-			ds.getImgPlus().randomAccess();
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) accessor.setPosition(ci, cIndex);
-					final ImageProcessor proc =
-						imp.getStack().getProcessor(imagejPlaneNumber++);
-					for (int yi = 0; yi < y; yi++) {
-						accessor.setPosition(yi, yIndex);
-						for (int xi = 0; xi < x; xi++) {
-							accessor.setPosition(xi, xIndex);
-							double value = proc.getf(xi, yi);
-							// NB - always clamp! a little unnecessary work sometimes
-							if (value < typeMin) value = typeMin;
-							if (value > typeMax) value = typeMax;
+				ds.getImgPlus().randomAccess();
+		long[] dims = ds.getDims();
+		Axis[] axes = ds.getAxes();
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int xSize = imp.getWidth();
+		int ySize = imp.getHeight();
+		int zSize = imp.getNSlices();
+		int tSize = imp.getNFrames();
+		int cSize = imp.getNChannels();
+		ImageStack stack = imp.getStack();
+		int planeNum = 1;
+		long[] pos = new long[dims.length];
+		for (int t = 0; t < tSize; t++) {
+			if (tIndex >= 0) pos[tIndex] = t;
+			for (int z = 0; z < zSize; z++) {
+				if (zIndex >= 0) pos[zIndex] = z;
+				for (int c = 0; c < cSize; c++) {
+					fillChannelIndices(dims, axes, c, pos);
+					ImageProcessor proc = stack.getProcessor(planeNum++);
+					for (int x = 0; x < xSize; x++) {
+						if (xIndex >= 0) pos[xIndex] = x;
+						for (int y = 0; y < ySize; y++) {
+							if (yIndex >= 0) pos[yIndex] = y;
+							accessor.setPosition(pos);
+							float value = proc.getf(x, y);
+							if (value < typeMin) value = (float)typeMin;
+							if (value > typeMax) value = (float)typeMax;
 							accessor.get().setReal(value);
 						}
 					}
@@ -499,9 +507,11 @@ public final class LegacyUtils {
 		ds.update();
 	}
 
+	// TODO - FIXME - MAYBE UPDATE FOR NON IJ1 AXIS SUPPORT
+
 	/**
 	 * Assigns the data values of a color {@link Dataset} from a paired
-	 * {@link ImagePlus}. Assumes the Dataset and ImagePlus have the same
+	 * {@link ImagePlus}. Assumes the Dataset and ImagePlus have compatible
 	 * dimensions and are both of type color. Gets values via
 	 * {@link ImageProcessor}::get(). Does not change the Dataset's metadata.
 	 */
@@ -548,10 +558,12 @@ public final class LegacyUtils {
 		ds.update();
 	}
 
+	// TODO - FIXME - PROBABLY NOT UPDATE FOR NON IJ1 AXIS SUPPORT - VERIFY USES ARE CORRECT
+
 	/**
 	 * Assigns the data values of a gray {@link Dataset} from a paired
 	 * multichannel color {@link ImagePlus}. Assumes the Dataset and ImagePlus
-	 * have the same dimensions. Gets values via {@link ImageProcessor}::get().
+	 * have compatible dimensions. Gets values via {@link ImageProcessor}::get().
 	 * Does not change the Dataset's metadata.
 	 */
 	static void setDatasetGrayDataFromColorImp(final Dataset ds,
@@ -602,9 +614,8 @@ public final class LegacyUtils {
 	/**
 	 * Assigns the plane references of an {@link ImagePlus}' {@link ImageStack} to
 	 * match those of a given {@link Dataset}. Assumes input Dataset and ImagePlus
-	 * match in dimensions and backing type. Throws an exception if the Dataset
-	 * has any axis present that is not IJ1 compatible. Also throws an exception
-	 * when Dataset has any axis or total number of planes > Integer.MAX_VALUE.
+	 * match in dimensions and backing type. Throws an exception when Dataset has
+	 * any axis or total number of planes > Integer.MAX_VALUE.
 	 */
 	static void setImagePlusPlanes(final Dataset ds, final ImagePlus imp) {
 		final int[] dimIndices = new int[5];
@@ -629,6 +640,7 @@ public final class LegacyUtils {
 		final Extents extents = new Extents(planeDims);
 		final Position planePos = extents.createPosition();
 
+		int stackPosition = 1;
 		for (int t = 0; t < tCount; t++) {
 			if (tIndex >= 0) planePos.setPosition(t, tIndex - 2);
 			for (int z = 0; z < zCount; z++) {
@@ -640,8 +652,7 @@ public final class LegacyUtils {
 					if (plane == null) {
 						Log.error(message("Couldn't extract plane from Dataset ", c, z, t));
 					}
-					final int stackPosition = t * zCount * cCount + z * cCount + c + 1;
-					stack.setPixels(plane, stackPosition);
+					stack.setPixels(plane, stackPosition++);
 				}
 			}
 		}
@@ -668,16 +679,16 @@ public final class LegacyUtils {
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
-		int p = 1;
+		int stackPosition = 1;
 		for (int ti = 0; ti < t; ti++) {
 			if (tIndex >= 0) planePos.setPosition(ti, tIndex - 2);
 			for (int zi = 0; zi < z; zi++) {
 				if (zIndex >= 0) planePos.setPosition(zi, zIndex - 2);
 				for (int ci = 0; ci < c; ci++) {
 					if (cIndex >= 0) planePos.setPosition(ci, cIndex - 2);
-					final Object plane = imp.getStack().getPixels(p++);
+					final Object plane = imp.getStack().getPixels(stackPosition++);
 					if (plane == null) {
-						Log.error("Could not extract plane from ImageStack: " + (p - 1));
+						Log.error("Could not extract plane from ImageStack: " + (stackPosition - 1));
 					}
 					final int planeNum = (int) planePos.getIndex();
 					ds.setPlane(planeNum, plane);
@@ -799,6 +810,8 @@ public final class LegacyUtils {
 	 * Returns true if a {@link Dataset} can be represented by reference in IJ1.
 	 */
 	static boolean datasetIsIJ1Compatible(final Dataset ds) {
+		Axis[] axes = ds.getAxes();
+		if (hasNonIJ1Axes(axes)) return false;
 		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
 	}
 
@@ -980,17 +993,17 @@ public final class LegacyUtils {
 
 	/**
 	 * Makes an {@link ImagePlus} that matches dimensions of a {@link Dataset}.
-	 * The data values of the ImagePlus to be populated later elsewhere. Throws an
-	 * exception if the Dataset has any axis present that is not IJ1 compatible.
-	 * Also throws an exception when Dataset has any axis or total number of
-	 * planes > Integer.MAX_VALUE.
+	 * The data values of the ImagePlus to be populated later elsewhere. Throws
+	 * an exception when Dataset has any axis or total number of planes >
+	 * Integer.MAX_VALUE.
 	 * 
 	 * @param ds - input Dataset to be shape compatible with
 	 * @param planeMaker - a PlaneMaker to use to make type correct image planes
 	 * @param makeDummyPlanes - save memory by allocating the minimum number of
 	 *          planes for the case that we'll be reassigning the planes
 	 *          immediately.
-	 * @return an ImagePlus whose dimensions math the input Dataset
+	 * @return an ImagePlus whose dimensions are IJ1 compatible with the input
+	 *          Dataset.
 	 */
 	private static ImagePlus makeImagePlus(final Dataset ds,
 		final PlaneMaker planeMaker, final boolean makeDummyPlanes)
@@ -1046,23 +1059,18 @@ public final class LegacyUtils {
 
 	/**
 	 * Copies a {@link Dataset}'s dimensions and axis indices into provided
-	 * arrays. The order of dimensions is formatted to be X,Y,C,Z,T. If an axis is
-	 * not present in the Dataset its value is set to 1 and its index is set to
-	 * -1. Throws an exception if the Dataset has any axis present that is not IJ1
-	 * compatible. Also throws an exception when Dataset has any axis or total
-	 * number of planes > Integer.MAX_VALUE.
+	 * arrays. The order of dimensions is formatted to be X,Y,C,Z,T. If an axis
+	 * is not present in the Dataset its value is set to 1 and its index is set
+	 * to -1. Combines all non XYZT axis dimensions into 1 C dimensions. Throws
+	 * an exception when Dataset has any axis length or total number of planes
+	 * > Integer.MAX_VALUE.
 	 */
 	private static void getImagePlusDims(final Dataset dataset,
 		final int[] outputIndices, final int[] outputDims)
 	{
-		// make sure there are not any other axis types present
-		final Axis[] axes = dataset.getAxes();
-		if (hasNonIJ1Axes(axes)) {
-			throw new IllegalArgumentException("Dataset has one or more axes "
-				+ "that can not be classified as X, Y, Z, C, or T");
-		}
-
 		final long[] dims = dataset.getDims();
+
+		final Axis[] axes = dataset.getAxes();
 
 		// get axis indices
 		final int xIndex = dataset.getAxisIndex(Axes.X);
@@ -1073,9 +1081,9 @@ public final class LegacyUtils {
 
 		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
 		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
-		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
+		long cCount = ij1ChannelCount(dims, axes);
 
 		// check width
 		if (xIndex < 0) throw new IllegalArgumentException("missing X axis");
@@ -1103,6 +1111,11 @@ public final class LegacyUtils {
 		}
 
 		// set output values : indices
+		//   NB - cIndex tells what dimension is channel in Dataset. For a
+		//     Dataset that encodes other axes as channels this info is not so
+		//     useful. But for Datasets that can be represented exactly it is.
+		//     So pass along info but API consumers must be careful to not make
+		//     assumptions.
 		outputIndices[0] = xIndex;
 		outputIndices[1] = yIndex;
 		outputIndices[2] = cIndex;
@@ -1354,6 +1367,46 @@ public final class LegacyUtils {
 		}
 		return true;
 	}
+
+	public static long ij1ChannelCount(long[] dims, Axis[] axes) {
+		long cCount = 1;
+		int axisIndex = 0;
+		for (Axis axis : axes) {
+			long axisSize = dims[axisIndex++];
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if (axis == Axes.Z) continue;
+			if (axis == Axes.TIME) continue;
+			cCount *= axisSize;
+		}
+		return cCount;
+	}
+
+	private static void fillChannelIndices(
+		long[] dims, Axis[] axes, int channelIndex, long[] pos)
+	{
+		int workingIndex = channelIndex;
+		for (int i = 0; i < dims.length; i++) {
+			Axis axis = axes[i];
+			// skip axes we don't encode as channels
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if (axis == Axes.Z) continue;
+			if (axis == Axes.TIME) continue;
+			// calc index of encoded channels
+			int subIndex = (int) (workingIndex % dims[i]);
+			pos[i] = subIndex;
+			workingIndex = (int) (workingIndex / dims[i]);
+		}
+	}
+	
+	/*
+	private static long ij1ChannelIndex(long[] dims, Axis[] axes, long[] pos) {
+		long channel = 0;
+		// TODO FIXME IMPLEMENT SOMETHING HERE
+		return channel;
+	}
+	*/
 
 	// -- helper classes --
 
