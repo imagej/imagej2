@@ -76,13 +76,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// -- ImageDisplay methods --
 
 	@Override
-	public void addView(final DataView view) {
-		add(view);
-		redoWindowLayout();
-		update();
-	}
-
-	@Override
 	public DataView getActiveView() {
 		return size() > 0 ? get(0) : null;
 	}
