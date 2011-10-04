@@ -73,24 +73,6 @@ public interface DataView {
 	/** Sets the position of the given dimensional axis. */
 	void setPosition(final long value, final int dim);
 
-	/** Gets the view's ideal width in pixels. */
-	int getPreferredWidth();
-
-	/** Gets the view's ideal height in pixels. */
-	int getPreferredHeight();
-
-	/** Updates and redraws the view onscreen. */
-	void update();
-
-	/**
-	 * Recreates the view. This operation is useful in case the linked
-	 * {@link Data} has changed structurally somehow.
-	 */
-	void rebuild();
-
-	/** Discards the view, performing any needed cleanup. */
-	void dispose();
-
 	/**
 	 * Set the view's selection state.
 	 * 
@@ -108,5 +90,25 @@ public interface DataView {
 	 *         current (hyper)plane position
 	 */
 	boolean isVisible();
+
+	// CTR TODO - reevaluate the methods below, and potentially eliminate some.
+	
+	/** Gets the view's natural width in pixels. */
+	int getPreferredWidth();
+
+	/** Gets the view's natural height in pixels. */
+	int getPreferredHeight();
+
+	/** Updates and redraws the view onscreen. */
+	void update();
+
+	/**
+	 * Recreates the view. This operation is useful in case the linked
+	 * {@link Data} has changed structurally somehow.
+	 */
+	void rebuild();
+
+	/** Discards the view, performing any needed cleanup. */
+	void dispose();
 
 }
