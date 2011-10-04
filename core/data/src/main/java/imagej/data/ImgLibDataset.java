@@ -40,6 +40,7 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
+import imagej.event.ImageJEvent;
 import imagej.util.Log;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -89,14 +90,12 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 
 	@Override
 	protected void register() {
-		if (eventService != null)
-			eventService.publish(new DatasetCreatedEvent(this));
+		publish(new DatasetCreatedEvent(this));
 	}
 
 	@Override
 	protected void delete() {
-		if (eventService != null)
-			eventService.publish(new DatasetDeletedEvent(this));
+		publish(new DatasetDeletedEvent(this));
 	}
 
 	// -- Dataset methods --
@@ -213,8 +212,7 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	public String getTypeLabelShort() {
 		if (isRGBMerged()) return "RGB";
 		final int bitsPerPixel = getType().getBitsPerPixel();
-		final String category =
-			isInteger() ? isSigned() ? "int" : "uint" : "float";
+		final String category = isInteger() ? isSigned() ? "int" : "uint" : "float";
 		return category + bitsPerPixel;
 	}
 
@@ -264,16 +262,14 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	@Override
 	public void typeChange() {
 		setDirty(true);
-		if (eventService != null)
-			eventService.publish(new DatasetTypeChangedEvent(this));
+		publish(new DatasetTypeChangedEvent(this));
 	}
 
 	@Override
 	public void rgbChange() {
 		// TODO - not sure if this needs to be done here
 		// setDirty(true);
-		if (eventService != null)
-			eventService.publish(new DatasetRGBChangedEvent(this));
+		publish(new DatasetRGBChangedEvent(this));
 	}
 
 	// -- Data methods --
@@ -286,15 +282,13 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	@Override
 	public void update() {
 		setDirty(true);
-		if (eventService != null)
-			eventService.publish(new DatasetUpdatedEvent(this));
+		publish(new DatasetUpdatedEvent(this));
 	}
 
 	@Override
 	public void rebuild() {
 		setDirty(true);
-		if (eventService != null)
-			eventService.publish(new DatasetRestructuredEvent(this));
+		publish(new DatasetRestructuredEvent(this));
 	}
 
 	// -- Named methods --
@@ -486,9 +480,8 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void setPlane(final int no,
-		@SuppressWarnings("rawtypes") final PlanarAccess planarAccess,
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void setPlane(final int no, final PlanarAccess planarAccess,
 		final ArrayDataAccess<?> array)
 	{
 		planarAccess.setPlane(no, array);
@@ -524,8 +517,8 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		final long w = dimensions[0];
 		final long h = dimensions[1];
 		if (w * h > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("cannot create a plane of " +
-				(w * h) + " entities (MAX = " + Integer.MAX_VALUE + ")");
+			throw new IllegalArgumentException("cannot create a plane of " + (w * h) +
+				" entities (MAX = " + Integer.MAX_VALUE + ")");
 		}
 		final NativeType<?> nativeType = (NativeType<?>) getType();
 		@SuppressWarnings("rawtypes")
@@ -586,6 +579,11 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		final Img<T> blankImg =
 			img.factory().create(dimensions, img.firstElement());
 		return new ImgPlus<T>(blankImg, img);
+	}
+
+	private void publish(final ImageJEvent event) {
+		if (eventService == null) return;
+		eventService.publish(event);
 	}
 
 }
