@@ -120,6 +120,14 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 		return axes;
 	}
+	
+	@Override
+	public boolean containsData(final Data data) {
+		for (final DataView view : this) {
+			if (data == view.getData()) return true;
+		}
+		return false;
+	}
 
 	// -- Display methods --
 
