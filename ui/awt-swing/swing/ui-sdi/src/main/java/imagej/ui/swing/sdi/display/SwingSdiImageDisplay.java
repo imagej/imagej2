@@ -34,175 +34,27 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.sdi.display;
 
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.display.AbstractImageDisplay;
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.event.DatasetRestructuredEvent;
-import imagej.data.roi.Overlay;
-import imagej.event.EventSubscriber;
-import imagej.ext.display.DisplayService;
-import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.ToolService;
-import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
-import imagej.ui.swing.display.JHotDrawImageCanvas;
-import imagej.ui.swing.display.SwingDatasetView;
-import imagej.ui.swing.display.SwingDisplayPanel;
+import imagej.ui.swing.display.AbstractSwingImageDisplay;
 import imagej.ui.swing.display.SwingDisplayWindow;
-import imagej.ui.swing.display.SwingOverlayView;
 
-import java.awt.EventQueue;
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.JFrame;
 
 /**
- * A Swing image display plugin, which displays 2D planes in grayscale or
- * composite color.
+ * Single Document Interface implementation of Swing image display plugin.
+ * The SDI display is housed in a {@link JFrame}.
  * 
  * @author Curtis Rueden
- * @author Grant Harris
- * @author Barry DeZonia
+ * @see AbstractSwingImageDisplay
  */
 @Plugin(type = ImageDisplay.class)
-public class SwingSdiImageDisplay extends AbstractImageDisplay {
-
-	private final JHotDrawImageCanvas imgCanvas;
-	private final SwingDisplayPanel imgPanel;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
+public class SwingSdiImageDisplay extends AbstractSwingImageDisplay {
 
 	public SwingSdiImageDisplay() {
-		imgCanvas = new JHotDrawImageCanvas(this);
-		final SwingDisplayWindow window = new SwingDisplayWindow();
-		imgPanel = new SwingDisplayPanel(this, window);
-
-		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, eventService, false));
-		// imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this));
+		super(new SwingDisplayWindow());
 		window.addEventDispatcher(new AWTWindowEventDispatcher(this, eventService));
-		subscribeToEvents();
-	}
-
-	// -- ImageDisplay methods --
-
-	@Override
-	public void display(final Dataset dataset) {
-		// GBH: Regarding naming/id of the display...
-		// For now, we will use the original (first) dataset name
-		final String datasetName = dataset.getName();
-		createName(datasetName);
-		imgPanel.setTitle(this.getName());
-		add(new SwingDatasetView(this, dataset));
-		redoWindowLayout();
-		update();
-	}
-
-	@Override
-	public void display(final Overlay overlay) {
-		add(new SwingOverlayView(this, overlay));
-		redoWindowLayout();
-		update();
-	}
-
-	@Override
-	public JHotDrawImageCanvas getImageCanvas() {
-		return imgCanvas;
-	}
-
-	@Override
-	public void redoWindowLayout() {
-		imgPanel.redoLayout();
-	}
-
-	// -- Display methods --
-
-	@Override
-	public void update() {
-		EventQueue.invokeLater(new Runnable() {
-
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void run() {
-				imgPanel.update();
-			}
-		});
-	}
-
-	@Override
-	public SwingDisplayPanel getDisplayPanel() {
-		return imgPanel;
-	}
-
-	// -- Helper methods --
-
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents() {
-
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		// CTR TODO - listen for imgWindow windowClosing and send
-		// DisplayDeletedEvent. Think about how best this should work...
-		// Is a display always deleted when its window is closed?
-		// BDZ note - I added some code to winCloseSubscriber below
-		// to do some cleanup work. Fix if needed.
-
-		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
-			new EventSubscriber<WinActivatedEvent>() {
-
-				@Override
-				public void onEvent(final WinActivatedEvent event) {
-					if (event.getDisplay() != SwingSdiImageDisplay.this) return;
-					// final UserInterface ui = ImageJ.get(UIService.class).getUI();
-					// final ToolService toolMgr = ui.getToolBar().getToolService();
-					final ToolService toolService = ImageJ.get(ToolService.class);
-					imgCanvas.setCursor(toolService.getActiveTool().getCursor());
-				}
-			};
-		subscribers.add(winActivatedSubscriber);
-		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
-
-		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
-			new EventSubscriber<DatasetRestructuredEvent>() {
-
-				@Override
-				public void onEvent(final DatasetRestructuredEvent event) {
-					// NOTE - this code used to just note that a rebuild was necessary
-					// and had the rebuild done in update(). But due to timing of
-					// events it is possible to get the update() before this call.
-					// So make this do a rebuild. In some cases update() will be
-					// called twice. Not sure if avoiding this was the reason we used
-					// to just record and do work in update. Or if that code was to
-					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
-					// and bug #605. BDZ
-					final Dataset dataset = event.getObject();
-					for (final DataView view : SwingSdiImageDisplay.this) {
-						if (dataset == view.getData()) {
-							// BDZ - calls to imgCanvas.setZoom(0) followed by
-							// imgCanvas.panReset() removed from here to fix bug #797.
-							SwingSdiImageDisplay.this.redoWindowLayout();
-							SwingSdiImageDisplay.this.update();
-							return;
-						}
-					}
-				}
-			};
-		subscribers.add(restructureSubscriber);
-		eventService.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
-	}
-
-	/** Name this display with unique id. */
-	private void createName(final String baseName) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		String theName = baseName;
-		int n = 0;
-		while (!displayService.isUniqueName(theName)) {
-			n++;
-			theName = baseName + "-" + n;
-		}
-		this.setName(theName);
 	}
 
 }
