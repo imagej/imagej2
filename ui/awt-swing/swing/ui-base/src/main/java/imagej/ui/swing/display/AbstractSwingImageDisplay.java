@@ -64,7 +64,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 	protected final DisplayWindow window;
 	protected final SwingDisplayPanel imgPanel;
-	
+
 	private final JHotDrawImageCanvas imgCanvas;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
@@ -72,14 +72,15 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 	public AbstractSwingImageDisplay(final DisplayWindow window) {
 		this.window = window;
-		
+
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgPanel = new SwingDisplayPanel(this, window);
 
-		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, eventService, false));
+		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
+			eventService, false));
 		subscribeToEvents();
 	}
-	
+
 	// -- ImageDisplay methods --
 
 	@Override
@@ -181,7 +182,8 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 				}
 			};
 		subscribers.add(restructureSubscriber);
-		eventService.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+		eventService.subscribe(DatasetRestructuredEvent.class,
+			restructureSubscriber);
 	}
 
 	/** Name this display with unique id. */
