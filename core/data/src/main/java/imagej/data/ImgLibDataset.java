@@ -438,9 +438,8 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		// create new imgplus to contain data using the current name
 		final double[] calib = new double[other.getDims().length];
 		other.calibration(calib);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final ImgPlus<? extends RealType<?>> newImgPlus =
-			new ImgPlus(newImg, getName(), other.getAxes(), calib);
+			wrapAsImgPlus(newImg, other.getAxes(), calib);
 
 		// set my instance vars to the new values
 		setRGBMerged(other.isRGBMerged());
@@ -579,6 +578,12 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		final Img<T> blankImg =
 			img.factory().create(dimensions, img.firstElement());
 		return new ImgPlus<T>(blankImg, img);
+	}
+
+	private <T extends RealType<?>> ImgPlus<T> wrapAsImgPlus(final Img<T> newImg,
+		final Axis[] axes, final double[] calib)
+	{
+		return new ImgPlus<T>(newImg, getName(), axes, calib);
 	}
 
 	private void publish(final ImageJEvent event) {
