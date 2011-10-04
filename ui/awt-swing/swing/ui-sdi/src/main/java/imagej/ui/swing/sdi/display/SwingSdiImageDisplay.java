@@ -70,7 +70,7 @@ import java.util.List;
  * @author Barry DeZonia
  */
 @Plugin(type = ImageDisplay.class)
-public class SwingImageDisplay extends AbstractImageDisplay {
+public class SwingSdiImageDisplay extends AbstractImageDisplay {
 
 	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayPanel imgPanel;
@@ -80,7 +80,7 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 	private final EventService eventService;
 
 
-	public SwingImageDisplay() {
+	public SwingSdiImageDisplay() {
 		eventService = ImageJ.get(EventService.class);
 		imgCanvas = new JHotDrawImageCanvas(this);
 		final DisplayWindow window = new SwingDisplayWindow();
@@ -160,7 +160,7 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 
 				@Override
 				public void onEvent(final WinActivatedEvent event) {
-					if (event.getDisplay() != SwingImageDisplay.this) return;
+					if (event.getDisplay() != SwingSdiImageDisplay.this) return;
 					// final UserInterface ui = ImageJ.get(UIService.class).getUI();
 					// final ToolService toolMgr = ui.getToolBar().getToolService();
 					final ToolService toolService = ImageJ.get(ToolService.class);
@@ -184,13 +184,13 @@ public class SwingImageDisplay extends AbstractImageDisplay {
 					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
 					// and bug #605. BDZ
 					final Dataset dataset = event.getObject();
-					for (final DataView view : SwingImageDisplay.this) {
+					for (final DataView view : SwingSdiImageDisplay.this) {
 						if (dataset == view.getData()) {
 							/* BDZ - calls to imgCanvas.setZoom(0) followed by
 							 * imgCanvas.panReset() removed from here to fix bug #797.
 							 */
-							SwingImageDisplay.this.redoWindowLayout();
-							SwingImageDisplay.this.update();
+							SwingSdiImageDisplay.this.redoWindowLayout();
+							SwingSdiImageDisplay.this.update();
 							return;
 						}
 					}
