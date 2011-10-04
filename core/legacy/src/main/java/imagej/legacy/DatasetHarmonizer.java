@@ -63,9 +63,9 @@ public class DatasetHarmonizer {
 		new HashMap<ImagePlus, Integer>();
 
 	/**
-	 * Constructs a {@link DatasetHarmonizer} with a given {@link ImageTranslator}
-	 * . The translator is used to create new Datasets and ImagePluses when
-	 * necessary.
+	 * Constructs a {@link DatasetHarmonizer} with a given
+	 * {@link ImageTranslator}. The translator is used to create new Datasets
+	 * and ImagePluses when necessary.
 	 */
 	public DatasetHarmonizer(final ImageTranslator translator) {
 		imageTranslator = translator;
@@ -122,9 +122,19 @@ public class DatasetHarmonizer {
 
 	/**
 	 * Changes the data within a {@link ImageDisplay} to match data in an
-	 * {@link ImagePlus}.
+	 * {@link ImagePlus}. Assumes the given ImagePlus is not a degenerate
+	 * set of data (an empty stack).
 	 */
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
+		
+		// NB - if ImagePlus is degenerate the following code can fail. This is
+		// because imglib cannot represent an empty data container. So we catch
+		// the issue here:
+		
+		if (imp.getStack().getSize() == 0)
+			throw new IllegalArgumentException(
+				"cannot update a display with an ImagePlus that has an empty stack");
+			
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
@@ -137,7 +147,6 @@ public class DatasetHarmonizer {
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
-			// NB - ImagePlus with an empty stack avoided earlier.  TODO - stale comment?
 			if (dimensionsIncompatible(ds, imp)) {
 				LegacyUtils.reshapeDataset(ds, imp);
 			}
@@ -169,8 +178,7 @@ public class DatasetHarmonizer {
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
 
-		final long[] dimensions = new long[ds.getImgPlus().numDimensions()];
-		ds.getImgPlus().dimensions(dimensions);
+		final long[] dimensions = ds.getDims();
 
 		final long x = (xIndex < 0) ? 1 : dimensions[xIndex];
 		final long y = (yIndex < 0) ? 1 : dimensions[yIndex];
@@ -189,7 +197,7 @@ public class DatasetHarmonizer {
 			if (c != imp.getNChannels() * 3) return true;
 		}
 		else { // not color data
-			long c = LegacyUtils.ij1ChannelCount(ds.getDims(), ds.getAxes());
+			long c = LegacyUtils.ij1ChannelCount(dimensions, ds.getAxes());
 			if (c != imp.getNChannels()) return true;
 		}
 
