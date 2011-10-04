@@ -66,10 +66,7 @@ import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Dataset is the primary image data structure in ImageJ. A Dataset wraps an
- * ImgLib {@link ImgPlus}. It also provides a number of convenience methods,
- * such as the ability to access pixels on a plane-by-plane basis, and create
- * new Datasets of various types easily.
+ * Default implementation of {@link Dataset}.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
