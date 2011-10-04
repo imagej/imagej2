@@ -92,12 +92,14 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 
 	@Override
 	protected void register() {
-		eventService.publish(new DatasetCreatedEvent(this));
+		if (eventService != null)
+			eventService.publish(new DatasetCreatedEvent(this));
 	}
 
 	@Override
 	protected void delete() {
-		eventService.publish(new DatasetDeletedEvent(this));
+		if (eventService != null)
+			eventService.publish(new DatasetDeletedEvent(this));
 	}
 
 	// -- Dataset methods --
@@ -265,14 +267,16 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	@Override
 	public void typeChange() {
 		setDirty(true);
-		eventService.publish(new DatasetTypeChangedEvent(this));
+		if (eventService != null)
+			eventService.publish(new DatasetTypeChangedEvent(this));
 	}
 
 	@Override
 	public void rgbChange() {
 		// TODO - not sure if this needs to be done here
 		// setDirty(true);
-		eventService.publish(new DatasetRGBChangedEvent(this));
+		if (eventService != null)
+			eventService.publish(new DatasetRGBChangedEvent(this));
 	}
 
 	// -- Data methods --
@@ -285,13 +289,15 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	@Override
 	public void update() {
 		setDirty(true);
-		eventService.publish(new DatasetUpdatedEvent(this));
+		if (eventService != null)
+			eventService.publish(new DatasetUpdatedEvent(this));
 	}
 
 	@Override
 	public void rebuild() {
 		setDirty(true);
-		eventService.publish(new DatasetRestructuredEvent(this));
+		if (eventService != null)
+			eventService.publish(new DatasetRestructuredEvent(this));
 	}
 
 	// -- Named methods --
