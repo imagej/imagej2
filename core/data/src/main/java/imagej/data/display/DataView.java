@@ -40,9 +40,11 @@ import imagej.data.Position;
 import imagej.data.roi.Overlay;
 
 /**
- * A linkage between a {@link Data} (such as a {@link Dataset} or
- * {@link Overlay}) and a {@link ImageDisplay}. The view takes care of mapping
- * the N-dimensional data into a representation suitable for showing onscreen.
+ * A view provides visualization settings for an associated {@link Data} object
+ * (such as a {@link Dataset} or {@link Overlay}) for use with an
+ * {@link ImageDisplay}. The view keeps track of the currently visualized
+ * position within the N-dimensional data space, as well as color settings and
+ * other view-specific metadata.
  * <p>
  * For example, a typical 2D display may have a number of sliders enabling a
  * user to select a particular plane of a {@link Dataset} for display. The view
