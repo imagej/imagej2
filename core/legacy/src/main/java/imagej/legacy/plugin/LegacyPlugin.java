@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 
 /**
  * Executes an IJ1 plugin.
