@@ -1,5 +1,5 @@
 //
-// SwingImageDisplay.java
+// SwingSdiImageDisplay.java
 //
 
 /*
@@ -38,12 +38,9 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.AbstractImageDisplay;
 import imagej.data.display.DataView;
-import imagej.data.display.DisplayWindow;
-import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
-import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.window.WinActivatedEvent;
@@ -77,13 +74,10 @@ public class SwingSdiImageDisplay extends AbstractImageDisplay {
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
-	private final EventService eventService;
-
 
 	public SwingSdiImageDisplay() {
-		eventService = ImageJ.get(EventService.class);
 		imgCanvas = new JHotDrawImageCanvas(this);
-		final DisplayWindow window = new SwingDisplayWindow();
+		final SwingDisplayWindow window = new SwingDisplayWindow();
 		imgPanel = new SwingDisplayPanel(this, window);
 
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, eventService, false));
@@ -114,7 +108,7 @@ public class SwingSdiImageDisplay extends AbstractImageDisplay {
 	}
 
 	@Override
-	public ImageCanvas getImageCanvas() {
+	public JHotDrawImageCanvas getImageCanvas() {
 		return imgCanvas;
 	}
 
@@ -186,9 +180,8 @@ public class SwingSdiImageDisplay extends AbstractImageDisplay {
 					final Dataset dataset = event.getObject();
 					for (final DataView view : SwingSdiImageDisplay.this) {
 						if (dataset == view.getData()) {
-							/* BDZ - calls to imgCanvas.setZoom(0) followed by
-							 * imgCanvas.panReset() removed from here to fix bug #797.
-							 */
+							// BDZ - calls to imgCanvas.setZoom(0) followed by
+							// imgCanvas.panReset() removed from here to fix bug #797.
 							SwingSdiImageDisplay.this.redoWindowLayout();
 							SwingSdiImageDisplay.this.update();
 							return;
