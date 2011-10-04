@@ -93,21 +93,6 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 	// -- Data methods --
 	
 	@Override
-	public long[] getDims() {
-		final int numDims = getExtents().numDimensions();
-		final long[] dims = new long[numDims];
-		getExtents().dimensions(dims);
-		return dims;
-	}
-
-	@Override
-	public Axis[] getAxes() {
-		final Axis[] axes = new Axis[getExtents().numDimensions()];
-		axes(axes);
-		return axes;
-	}
-
-	@Override
 	public void incrementReferences() {
 		refs++;
 		if (refs == 1) register();
@@ -120,6 +105,23 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 				"decrementing reference count when it is already 0");
 		refs--;
 		if (refs == 0) delete();
+	}
+
+	// -- LabeledSpace methods --
+	
+	@Override
+	public long[] getDims() {
+		final int numDims = getExtents().numDimensions();
+		final long[] dims = new long[numDims];
+		getExtents().dimensions(dims);
+		return dims;
+	}
+
+	@Override
+	public Axis[] getAxes() {
+		final Axis[] axes = new Axis[getExtents().numDimensions()];
+		axes(axes);
+		return axes;
 	}
 
 	// -- Named methods --

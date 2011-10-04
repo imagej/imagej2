@@ -51,8 +51,8 @@ import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
-
 import imagej.ui.swing.StaticSwingUtils;
+
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -62,7 +62,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -179,10 +178,9 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 	@Override
 	public void update() {
-		final List<Axis> dispAxes = display.getAxes();
 		for (final DataView view : display) {
 			for (final Axis axis : axisPositions.keySet()) {
-				final int index = dispAxes.indexOf(axis);
+				final int index = display.getAxisIndex(axis);
 				if (index >= 0) {
 					view.setPosition(axisPositions.get(axis), index);
 				}
@@ -356,7 +354,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		Arrays.fill(max, Long.MIN_VALUE);
 		// final Axis[] axes = new Axis[display.numDimensions()];
 		// display.axes(axes);
-		final List<Axis> dispAxes = display.getAxes();
+		final Axis[] dispAxes = display.getAxes();
 		/*
 		 * Run through all of the views and determine the extents of each.
 		 * 
@@ -373,8 +371,8 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 			if (o instanceof Dataset) {
 				final Dataset ds = (Dataset) o;
 				final long[] dims = ds.getDims();
-				for (int i = 0; i < dispAxes.size(); i++) {
-					final int index = ds.getAxisIndex(dispAxes.get(i));
+				for (int i = 0; i < dispAxes.length; i++) {
+					final int index = ds.getAxisIndex(dispAxes[i]);
 					if (index >= 0) {
 						min[i] = Math.min(min[i], 0);
 						max[i] = Math.max(max[i], dims[index]);
@@ -385,8 +383,8 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 				final Overlay overlay = (Overlay) o;
 				final RegionOfInterest roi = overlay.getRegionOfInterest();
 				if (roi != null) {
-					for (int i = 0; i < dispAxes.size(); i++) {
-						final int index = overlay.getAxisIndex(dispAxes.get(i));
+					for (int i = 0; i < dispAxes.length; i++) {
+						final int index = overlay.getAxisIndex(dispAxes[i]);
 						if ((index >= 0) && (index < roi.numDimensions())) {
 							min[i] = Math.min(min[i], (long) Math.ceil(roi.realMin(index)));
 							max[i] = Math.max(max[i], (long) Math.floor(roi.realMax(index)));
@@ -397,7 +395,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		}
 
 		for (final Axis axis : axisSliders.keySet()) {
-			if (dispAxes.indexOf(axis) < 0) {
+			if (display.getAxisIndex(axis) < 0) {
 				sliders.remove(axisSliders.get(axis));
 				sliders.remove(axisLabels.get(axis));
 				axisSliders.remove(axis);
@@ -410,8 +408,8 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 			// has changed. check that we have correct range.
 			final JScrollBar slider = axisSliders.get(axis);
 			if (slider != null) {
-				for (int i = 0; i < dispAxes.size(); i++) {
-					if (axis == dispAxes.get(i)) {
+				for (int i = 0; i < dispAxes.length; i++) {
+					if (axis == dispAxes[i]) {
 						if ((slider.getMinimum() != min[i]) ||
 							(slider.getMaximum() != max[i]))
 						{
@@ -424,8 +422,8 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 			}
 		}
 
-		for (int i = 0; i < dispAxes.size(); i++) {
-			final Axis axis = dispAxes.get(i);
+		for (int i = 0; i < dispAxes.length; i++) {
+			final Axis axis = dispAxes[i];
 			if (axisSliders.containsKey(axis)) continue;
 			if (Axes.isXY(axis)) continue;
 			if (min[i] >= max[i] - 1) continue;

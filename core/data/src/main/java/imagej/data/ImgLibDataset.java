@@ -275,11 +275,6 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	// -- Data methods --
 
 	@Override
-	public Extents getExtents() {
-		return extents;
-	}
-
-	@Override
 	public void update() {
 		setDirty(true);
 		publish(new DatasetUpdatedEvent(this));
@@ -289,6 +284,13 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	public void rebuild() {
 		setDirty(true);
 		publish(new DatasetRestructuredEvent(this));
+	}
+
+	// -- LabeledSpace methods --
+
+	@Override
+	public Extents getExtents() {
+		return extents;
 	}
 
 	// -- Named methods --
