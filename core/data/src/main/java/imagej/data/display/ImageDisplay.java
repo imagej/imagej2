@@ -53,6 +53,25 @@ import net.imglib2.img.Axis;
  */
 public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 
+	/** Gets the view currently designated as active. */
+	DataView getActiveView();
+
+	/** Gets the axis currently designated as active. */
+	Axis getActiveAxis();
+
+	/** Sets the axis currently designated as active. */
+	void setActiveAxis(Axis axis);
+
+	/** Gets the image canvas upon which this display's output is painted. */
+	ImageCanvas getImageCanvas();
+
+	List<Axis> getAxes();
+	
+	/** Tests whether this display contains the given data object (via a view). */
+	boolean containsData(Data data);
+	
+	// CTR TODO - eliminate the methods below.
+	
 	@Deprecated
 	void display(Dataset dataset);
 
@@ -63,24 +82,7 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	@Deprecated
 	void removeView(DataView view);
 
-	/** Gets the view currently designated as active. */
-	DataView getActiveView();
-
-	/** Gets the axis currently designated as active. */
-	Axis getActiveAxis();
-
-	/** Sets the axis currently designated as active. */
-	void setActiveAxis(Axis axis);
-
 	/** Forces the display window to redo its layout. */
 	void redoWindowLayout();
 
-	/** Gets the image canvas upon which this display's output is painted. */
-	ImageCanvas getImageCanvas();
-
-	List<Axis> getAxes();
-	
-	/** Tests whether this display contains the given data object (via a view). */
-	boolean containsData(Data data);
-	
 }

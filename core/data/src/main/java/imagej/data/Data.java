@@ -46,6 +46,8 @@ import net.imglib2.img.Axis;
  */
 public interface Data extends LabeledSpace {
 
+	// TODO - move top three methods into LabeledSpace
+	
 	/** Gets the dimensional lengths of the data. */
 	long[] getDims();
 
