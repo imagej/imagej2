@@ -41,7 +41,6 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
-import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.window.WinActivatedEvent;
@@ -73,30 +72,18 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayPanel imgPanel;
 
-	private final ImageDisplay thisDisplay;
-
-//	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
-//	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
-//	private EventSubscriber<WinActivatedEvent> winActivatedSubscriber;
-
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
-	private final EventService eventService;
 
 	public SwingMdiImageDisplay() {
-		eventService = ImageJ.get(EventService.class);
 		imgCanvas = new JHotDrawImageCanvas(this);
 		final SwingMdiDisplayWindow window = new SwingMdiDisplayWindow();
 		imgPanel = new SwingDisplayPanel(this, window);
 
-		// final EventDispatcher eventDispatcher =new AWTEventDispatcher(this,
-		// false);
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this, eventService, false));
 		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
 		window.addInternalFrameListener(new InternalFrameEventDispatcher(this, eventService));
 		subscribeToEvents();
-
-		thisDisplay = this;
 	}
 
 	// -- ImageDisplay methods --
@@ -105,7 +92,6 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 	public void display(final Dataset dataset) {
 		// GBH: Regarding naming/id of the display...
 		// For now, we will use the original (first) dataset name
-
 		final String datasetName = dataset.getName();
 		createName(datasetName);
 		imgPanel.setTitle(this.getName());
@@ -121,6 +107,16 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 		update();
 	}
 
+	@Override
+	public JHotDrawImageCanvas getImageCanvas() {
+		return imgCanvas;
+	}
+
+	@Override
+	public void redoWindowLayout() {
+		imgPanel.redoLayout();
+	}
+
 	// -- Display methods --
 
 	@Override
@@ -130,15 +126,7 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-
 				imgPanel.update();
-
-				// the following code is also done in SwingDisplayPanel::update()
-				// (which was just called) so commenting out
-
-				// for (final DataView view : getViews()) {
-				// view.update();
-				// }
 			}
 		});
 	}
@@ -146,16 +134,6 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 	@Override
 	public SwingDisplayPanel getDisplayPanel() {
 		return imgPanel;
-	}
-
-	@Override
-	public JHotDrawImageCanvas getImageCanvas() {
-		return imgCanvas;
-	}
-
-	@Override
-	public void redoWindowLayout() {
-		imgPanel.redoLayout();
 	}
 
 	// -- Helper methods --
@@ -176,7 +154,7 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 
 				@Override
 				public void onEvent(final WinActivatedEvent event) {
-					if (event.getDisplay() != thisDisplay) return;
+					if (event.getDisplay() != SwingMdiImageDisplay.this) return;
 					// final UserInterface ui = ImageJ.get(UIService.class).getUI();
 					// final ToolService toolMgr = ui.getToolBar().getToolService();
 					final ToolService toolService = ImageJ.get(ToolService.class);
@@ -193,21 +171,17 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 				public void onEvent(final DatasetRestructuredEvent event) {
 					// NOTE - this code used to just note that a rebuild was necessary
 					// and had the rebuild done in update(). But due to timing of
-					// events it possible to get the update() before this call.
+					// events it is possible to get the update() before this call.
 					// So make this do a rebuild. In some cases update() will be
-					// called twice. Not sure if avoiding this was the reason to
-					// just record and do work in update. Or if that code was to
+					// called twice. Not sure if avoiding this was the reason we used
+					// to just record and do work in update. Or if that code was to
 					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
 					// and bug #605. BDZ
 					final Dataset dataset = event.getObject();
 					for (final DataView view : SwingMdiImageDisplay.this) {
 						if (dataset == view.getData()) {
-							// NB - if just panReset() we'll be zoomed on wrong part of image
-							imgCanvas.setZoom(0); // original scale
-							// NB - if x or y dims change without panReset() image panned
-							// incorrectly. The panReset() call must happen after the
-							// setZoom() call
-							imgCanvas.panReset();
+							// BDZ - calls to imgCanvas.setZoom(0) followed by
+							// imgCanvas.panReset() removed from here to fix bug #797.
 							SwingMdiImageDisplay.this.redoWindowLayout();
 							SwingMdiImageDisplay.this.update();
 							return;
