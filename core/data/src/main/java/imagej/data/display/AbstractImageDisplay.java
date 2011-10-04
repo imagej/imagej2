@@ -108,8 +108,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@Override
 	public List<Axis> getAxes() {
 		final ArrayList<Axis> axes = new ArrayList<Axis>();
-		for (final DataView v : this) {
-			final Data data = v.getData();
+		for (final DataView view : this) {
+			final Data data = view.getData();
 			final int nAxes = data.numDimensions();
 			for (int i = 0; i < nAxes; i++) {
 				final Axis axis = data.axis(i);
