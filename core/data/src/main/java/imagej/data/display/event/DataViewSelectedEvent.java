@@ -40,16 +40,12 @@ import imagej.data.display.DataView;
  * Event fired when a {@link DataView} becomes selected.
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
 public class DataViewSelectedEvent extends DataViewSelectionEvent {
 
 	public DataViewSelectedEvent(final DataView view) {
-		super(view);
-	}
-
-	@Override
-	public boolean isSelected() {
-		return true;
+		super(view, true);
 	}
 
 }

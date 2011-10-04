@@ -40,16 +40,12 @@ import imagej.data.display.DataView;
  * An event that indicates that a {@link DataView} is no longer selected.
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
 public class DataViewDeselectedEvent extends DataViewSelectionEvent {
 
 	public DataViewDeselectedEvent(final DataView view) {
-		super(view);
-	}
-
-	@Override
-	public boolean isSelected() {
-		return false;
+		super(view, false);
 	}
 
 }

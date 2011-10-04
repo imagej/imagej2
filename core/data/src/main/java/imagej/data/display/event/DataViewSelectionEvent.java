@@ -41,19 +41,25 @@ import imagej.data.display.DataView;
  * changed (i.e., it was either selected or deselected).
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  * @see DataViewSelectedEvent
  * @see DataViewDeselectedEvent
  */
 public abstract class DataViewSelectionEvent extends DataViewEvent {
 
-	public DataViewSelectionEvent(final DataView view) {
+	private final boolean selected;
+
+	public DataViewSelectionEvent(final DataView view, final boolean selected) {
 		super(view);
+		this.selected = selected;
 	}
 
 	/**
 	 * @return true if the event signals that the associated {@link DataView} is
 	 *         selected, false if deselected
 	 */
-	public abstract boolean isSelected();
+	public boolean isSelected() {
+		return selected;
+	}
 
 }

@@ -35,26 +35,28 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display.event;
 
 import imagej.data.display.DataView;
-import imagej.ext.display.event.DisplayEvent;
+import imagej.data.display.ImageDisplay;
+import imagej.event.ImageJEvent;
 
 /**
- * An event on a {@link DataView}.
+ * An event indicating something has happened to a {@link DataView} with
+ * respect to a particular {@link ImageDisplay}.
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
-public abstract class DataViewEvent extends DisplayEvent {
+public abstract class DataViewEvent extends ImageJEvent {
 
 	private final DataView view;
 
 	public DataViewEvent(final DataView view) {
-		super(view.getDisplay());
 		this.view = view;
 	}
 
 	public DataView getView() {
 		return view;
 	}
-
+	
 	// -- Object methods --
 
 	@Override
