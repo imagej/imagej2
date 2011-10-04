@@ -60,7 +60,7 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	/** The name of the display. */
 	private String name;
 
-	final protected EventService eventService;
+	protected final EventService eventService;
 
 	public AbstractDisplay(final Class<E> type) {
 		eventService = ImageJ.get(EventService.class);
@@ -101,30 +101,30 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	// -- List methods --
 
 	@Override
-	public void add(int index, E element) {
+	public void add(final int index, final E element) {
 		objects.add(index, element);
 		eventService.publish(new DisplayUpdatedEvent(this));
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends E> c) {
+	public boolean addAll(final int index, final Collection<? extends E> c) {
 		final boolean changed = objects.addAll(index, c);
 		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
 	@Override
-	public E get(int index) {
+	public E get(final int index) {
 		return objects.get(index);
 	}
 
 	@Override
-	public int indexOf(Object o) {
+	public int indexOf(final Object o) {
 		return objects.indexOf(o);
 	}
 
 	@Override
-	public int lastIndexOf(Object o) {
+	public int lastIndexOf(final Object o) {
 		return objects.lastIndexOf(o);
 	}
 
@@ -134,43 +134,45 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public ListIterator<E> listIterator(int index) {
+	public ListIterator<E> listIterator(final int index) {
 		return objects.listIterator(index);
 	}
 
 	@Override
-	public E remove(int index) {
+	public E remove(final int index) {
 		final E result = objects.remove(index);
 		if (result != null) eventService.publish(new DisplayUpdatedEvent(this));
 		return result;
 	}
 
 	@Override
-	public E set(int index, E element) {
+	public E set(final int index, final E element) {
 		final E result = objects.set(index, element);
 		if (result != null) eventService.publish(new DisplayUpdatedEvent(this));
 		return result;
 	}
 
 	@Override
-	public List<E> subList(int fromIndex, int toIndex) {
+	public List<E> subList(final int fromIndex, final int toIndex) {
 		return objects.subList(fromIndex, toIndex);
 	}
 
 	// -- Collection methods --
 
 	@Override
-	public boolean add(E o) {
+	public boolean add(final E o) {
 		checkObject(o);
-		boolean changed = objects.add(o);
+		final boolean changed = objects.add(o);
 		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
-		for (final E o : c) checkObject(o);
-		boolean changed = objects.addAll(c);
+	public boolean addAll(final Collection<? extends E> c) {
+		for (final E o : c) {
+			checkObject(o);
+		}
+		final boolean changed = objects.addAll(c);
 		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
@@ -182,12 +184,12 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public boolean contains(Object o) {
+	public boolean contains(final Object o) {
 		return objects.contains(o);
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(final Collection<?> c) {
 		return objects.containsAll(c);
 	}
 
@@ -202,21 +204,21 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public boolean remove(Object o) {
+	public boolean remove(final Object o) {
 		final boolean changed = objects.remove(o);
 		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(final Collection<?> c) {
 		final boolean changed = objects.removeAll(c);
 		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(final Collection<?> c) {
 		final boolean changed = objects.retainAll(c);
 		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
 		return changed;
@@ -233,7 +235,7 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(final T[] a) {
 		return objects.toArray(a);
 	}
 
