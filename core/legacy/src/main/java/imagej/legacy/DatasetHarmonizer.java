@@ -137,7 +137,7 @@ public class DatasetHarmonizer {
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
-			// NB - ImagePlus with an empty stack avoided earlier.
+			// NB - ImagePlus with an empty stack avoided earlier.  TODO - stale comment?
 			if (dimensionsIncompatible(ds, imp)) {
 				LegacyUtils.reshapeDataset(ds, imp);
 			}
@@ -166,7 +166,6 @@ public class DatasetHarmonizer {
 	{
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
 
@@ -175,7 +174,6 @@ public class DatasetHarmonizer {
 
 		final long x = (xIndex < 0) ? 1 : dimensions[xIndex];
 		final long y = (yIndex < 0) ? 1 : dimensions[yIndex];
-		final long c = (cIndex < 0) ? 1 : dimensions[cIndex];
 		final long z = (zIndex < 0) ? 1 : dimensions[zIndex];
 		final long t = (tIndex < 0) ? 1 : dimensions[tIndex];
 
@@ -185,15 +183,14 @@ public class DatasetHarmonizer {
 		if (t != imp.getNFrames()) return true;
 		// channel case a little different
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+			if (cIndex < 0) return true;
+			long c = dimensions[cIndex];
 			if (c != imp.getNChannels() * 3) return true;
 		}
 		else { // not color data
+			long c = LegacyUtils.ij1ChannelCount(ds.getDims(), ds.getAxes());
 			if (c != imp.getNChannels()) return true;
-		}
-
-		if (LegacyUtils.hasNonIJ1Axes(ds.getAxes())) {
-			throw new IllegalStateException(
-				"Dataset associated with ImagePlus has axes incompatible with IJ1");
 		}
 
 		return false;

@@ -235,8 +235,6 @@ public class LegacyPlugin implements ImageJPlugin {
 	private boolean isLegacyCompatible(final ImageDisplay display) {
 		if (display == null) return true;
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
-		final Axis[] axes = ds.getAxes();
-		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
 		if (dimensionsIncompatible(ds)) return false;
 		return true;
 	}
@@ -244,24 +242,23 @@ public class LegacyPlugin implements ImageJPlugin {
 	/**
 	 * Assumes there are no incompatible IJ1 axes present in dataset
 	 * 
-	 * @param dataset
+	 * @param ds
 	 */
-	private boolean dimensionsIncompatible(final Dataset dataset) {
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
-		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = dataset.getAxisIndex(Axes.Z);
-		final int tIndex = dataset.getAxisIndex(Axes.TIME);
+	private boolean dimensionsIncompatible(final Dataset ds) {
+		final int xIndex = ds.getAxisIndex(Axes.X);
+		final int yIndex = ds.getAxisIndex(Axes.Y);
+		final int zIndex = ds.getAxisIndex(Axes.Z);
+		final int tIndex = ds.getAxisIndex(Axes.TIME);
 
-		final long[] dims = dataset.getDims();
+		final long[] dims = ds.getDims();
 
 		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
 		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
-		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
+		final long cCount = LegacyUtils.ij1ChannelCount(dims, ds.getAxes());
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 
-		final long ij1ChannelCount = dataset.isRGBMerged() ? (cCount / 3) : cCount;
+		final long ij1ChannelCount = ds.isRGBMerged() ? (cCount / 3) : cCount;
 
 		// check width
 		if ((xIndex < 0) || (xCount > Integer.MAX_VALUE)) return true;
