@@ -131,6 +131,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.addWindowListener(new WindowAdapter() {
 
 			@Override
+			@SuppressWarnings("synthetic-access")
 			public void windowClosing(final WindowEvent evt) {
 				Prefs.put(LAST_X_KEY, appFrame.getX());
 				Prefs.put(LAST_Y_KEY, appFrame.getY());

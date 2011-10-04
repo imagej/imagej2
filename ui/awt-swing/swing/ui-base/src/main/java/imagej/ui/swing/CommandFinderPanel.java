@@ -69,14 +69,14 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	DocumentListener
 {
 
-	private List<Command> commands;
-
-	private final JTextField searchField;
-	private final JList commandsList;
+	protected final JTextField searchField;
+	protected final JList commandsList;
 	private final JCheckBox showFullCheckbox;
+	
+	private final List<Command> commands;
 
 	public CommandFinderPanel() {
-		buildCommands();
+		commands = buildCommands();
 
 		searchField = new JTextField(12);
 		commandsList = new JList();
@@ -195,16 +195,18 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	// -- Helper methods --
 
 	/** Builds the master list of available commands. */
-	private void buildCommands() {
-		commands = new ArrayList<Command>();
+	private ArrayList<Command> buildCommands() {
+		final ArrayList<Command> list = new ArrayList<Command>();
 
 		final ModuleService moduleService = ImageJ.get(ModuleService.class);
 		final List<ModuleInfo> modules = moduleService.getModules();
 		for (final ModuleInfo info : modules) {
-			commands.add(new Command(info));
+			list.add(new Command(info));
 		}
 
-		Collections.sort(commands);
+		Collections.sort(list);
+		
+		return list;
 	}
 
 	/** Updates the list of visible commands. */
