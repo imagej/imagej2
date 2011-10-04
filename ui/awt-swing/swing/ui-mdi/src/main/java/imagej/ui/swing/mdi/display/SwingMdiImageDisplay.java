@@ -109,13 +109,15 @@ public class SwingMdiImageDisplay extends AbstractImageDisplay {
 		final String datasetName = dataset.getName();
 		createName(datasetName);
 		imgPanel.setTitle(this.getName());
-		addView(new SwingDatasetView(this, dataset));
+		add(new SwingDatasetView(this, dataset));
+		redoWindowLayout();
 		update();
 	}
 
 	@Override
 	public void display(final Overlay overlay) {
-		addView(new SwingOverlayView(this, overlay));
+		add(new SwingOverlayView(this, overlay));
+		redoWindowLayout();
 		update();
 	}
 
