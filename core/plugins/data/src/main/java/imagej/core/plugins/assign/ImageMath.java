@@ -137,11 +137,9 @@ public class ImageMath implements ImageJPlugin {
 		output = input1.duplicateBlank();
 		final int numDims = output.getImgPlus().numDimensions();
 		final long[] origin = new long[numDims];
-		final long[] negOffs = new long[numDims];
-		final long[] posOffs = new long[numDims];
 		final long[] span = input1.getDims();
 		final RealImageAssignment assigner =
-			new RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc, negOffs, posOffs);
+			new RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc);
 		assigner.assign();
 	}
 
