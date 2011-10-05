@@ -76,10 +76,6 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	@Deprecated
 	void display(Overlay overlay);
 
-	/** Removes a view from this display. */
-	@Deprecated
-	void removeView(DataView view);
-
 	/** Forces the display window to redo its layout. */
 	void redoWindowLayout();
 

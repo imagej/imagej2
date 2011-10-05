@@ -92,14 +92,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public void removeView(final DataView view) {
-		remove(view);
-		view.dispose();
-		redoWindowLayout();
-		update();
-	}
-
-	@Override
 	public Axis getActiveAxis() {
 		return activeAxis;
 	}

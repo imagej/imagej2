@@ -119,7 +119,10 @@ public final class OverlayService extends AbstractService {
 			if (dataObject == overlay) overlayViews.add(view);
 		}
 		for (final DataView view : overlayViews) {
-			display.removeView(view);
+			display.remove(view);
+			view.dispose();
+			display.redoWindowLayout();
+			display.update();
 		}
 	}
 
