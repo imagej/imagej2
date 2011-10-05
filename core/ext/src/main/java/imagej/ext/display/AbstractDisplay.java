@@ -77,6 +77,8 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 
 	@Override
 	public boolean canDisplay(final Object o) {
+		if (o == null)
+			return false;
 		return canDisplay(o.getClass());
 	}
 
