@@ -323,16 +323,6 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 		return canvasHelper.getZoomFactor();
 	}
 
-	@Override
-	public void setZoomStep(final double zoomStep) {
-		canvasHelper.setZoomStep(zoomStep);
-	}
-
-	@Override
-	public double getZoomStep() {
-		return canvasHelper.getZoomStep();
-	}
-
 	// -- EventSubscriber methods --
 
 	@Override
