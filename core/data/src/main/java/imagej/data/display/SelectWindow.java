@@ -50,17 +50,18 @@ import imagej.ext.plugin.Plugin;
 @Plugin
 public class SelectWindow implements ImageJPlugin {
 
-	@Parameter String displayToSelect;
-	
-	// -- RunnablePlugin methods --
+	@Parameter
+	String displayToSelect;
+
+	// -- Runnable methods --
 
 	@Override
 	public void run() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		Display<?> display = displayService.getDisplay(displayToSelect);
-		if(display == null) return;
-		DisplayPanel panel = display.getDisplayPanel();
-		if(panel == null) return;
+		final Display<?> display = displayService.getDisplay(displayToSelect);
+		if (display == null) return;
+		final DisplayPanel panel = display.getDisplayPanel();
+		if (panel == null) return;
 		panel.makeActive();
 	}
 

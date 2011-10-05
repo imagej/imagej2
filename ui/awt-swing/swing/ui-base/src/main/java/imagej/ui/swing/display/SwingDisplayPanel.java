@@ -166,6 +166,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	}
 
 	// -- DisplayWindow methods --
+	
 	@Override
 	public ImageDisplay getDisplay() {
 		return display;
