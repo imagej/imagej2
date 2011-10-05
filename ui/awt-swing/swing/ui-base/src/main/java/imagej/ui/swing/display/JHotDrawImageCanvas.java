@@ -253,14 +253,13 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 						final Overlay overlay = e.getOverlay();
 						final SwingOverlayView v =
 							new SwingOverlayView(display, overlay, e.getFigure());
-						final ImageDisplayPanel window =
-							(ImageDisplayPanel) display.getPanel();
+						final ImageDisplayPanel panel = display.getPanel();
 						overlay.setAxis(Axes.X, Axes.X.ordinal());
 						overlay.setAxis(Axes.Y, Axes.Y.ordinal());
 						for (int i = 2; i < display.numDimensions(); i++) {
 							final Axis axis = display.axis(i);
 							if (overlay.getAxisIndex(axis) < 0) {
-								overlay.setPosition(axis, window.getAxisPosition(axis));
+								overlay.setPosition(axis, panel.getAxisPosition(axis));
 							}
 						}
 						display.add(v);
