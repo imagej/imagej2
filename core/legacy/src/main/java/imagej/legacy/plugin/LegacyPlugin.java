@@ -41,7 +41,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.ext.display.DisplayPanel;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
@@ -139,8 +138,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			final ImageDisplay disp = map.lookupDisplay(imp);
 			if (disp != null) {
 				outputs.remove(disp);
-				final DisplayPanel dispWin = disp.getDisplayPanel();
-				if (dispWin != null) dispWin.close();
+				disp.close();
 			}
 		}
 

@@ -52,9 +52,6 @@ public interface DisplayPanel {
 	 */
 	void addEventDispatcher(EventDispatcher dispatcher);
 
-	/** Close this DisplayPanel and its container, a DisplayWindow. */
-	void close();
-
 	void makeActive();
 
 	/**
@@ -67,7 +64,4 @@ public interface DisplayPanel {
 	/** TODO */
 	void setLabel(String s);
 
-	/** Updates the display window to reflect the display's current position. */
-	void update();
-	
 }

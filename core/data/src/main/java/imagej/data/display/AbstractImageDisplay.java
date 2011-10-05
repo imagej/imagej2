@@ -37,11 +37,16 @@ package imagej.data.display;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
+import imagej.data.Position;
+import imagej.data.display.event.AxisPositionEvent;
+import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.AbstractDisplay;
+import imagej.ext.display.event.DisplayDeletedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +72,11 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	private final List<EventSubscriber<?>> subscribers =
 		new ArrayList<EventSubscriber<?>>();
 
+	private EventSubscriber<ZoomEvent> zoomSubscriber;
+	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
+	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
+	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
+	
 	private Axis activeAxis = Axes.Z;
 
 	public AbstractImageDisplay() {
@@ -116,9 +126,24 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void display(final Object o) {
+		// CTR FIXME
 		if (o instanceof Dataset) display((Dataset) o);
 		else if (o instanceof Overlay) display((Overlay) o);
 		else super.display(o);
+	}
+
+	@Override
+	public void update() {
+		for (final DataView view : this) {
+			for (final Axis axis : getAxes()) {
+				final int index = getAxisIndex(axis);
+				if (index >= 0) {
+					view.setPosition(getDisplayPanel().getAxisPosition(axis), index);
+				}
+			}
+			view.update();
+		}
+		getDisplayPanel().setLabel(makeLabel());
 	}
 
 	// -- LabeledSpace methods --
@@ -234,7 +259,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	/** Updates the display when the linked object changes. */
 	private void subscribeToEvents() {
-		final EventSubscriber<DataUpdatedEvent> updateSubscriber =
+		final EventSubscriber<DataUpdatedEvent> dataUpdatedSubscriber =
 			new EventSubscriber<DataUpdatedEvent>() {
 
 				@Override
@@ -248,10 +273,10 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					}
 				}
 			};
-		eventService.subscribe(DataUpdatedEvent.class, updateSubscriber);
-		subscribers.add(updateSubscriber);
+		eventService.subscribe(DataUpdatedEvent.class, dataUpdatedSubscriber);
+		subscribers.add(dataUpdatedSubscriber);
 
-		final EventSubscriber<DataRestructuredEvent> restructureSubscriber =
+		final EventSubscriber<DataRestructuredEvent> dataRestructedSubscriber =
 			new EventSubscriber<DataRestructuredEvent>() {
 
 				@Override
@@ -265,8 +290,132 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					}
 				}
 			};
-		eventService.subscribe(DataRestructuredEvent.class, restructureSubscriber);
-		subscribers.add(restructureSubscriber);
+		eventService.subscribe(DataRestructuredEvent.class, dataRestructedSubscriber);
+		subscribers.add(dataRestructedSubscriber);
+		
+		zoomSubscriber = new EventSubscriber<ZoomEvent>() {
+
+			@Override
+			public void onEvent(final ZoomEvent event) {
+				if (event.getCanvas() != getImageCanvas()) return;
+				getDisplayPanel().setLabel(makeLabel());
+			}
+		};
+		eventService.subscribe(ZoomEvent.class, zoomSubscriber);
+
+		updateSubscriber = new EventSubscriber<DatasetUpdatedEvent>() {
+
+			@Override
+			public void onEvent(final DatasetUpdatedEvent event) {
+				final DataView view = getActiveView();
+				if (view == null) return;
+				final Dataset ds = getDataset(view);
+				if (event.getObject() != ds) return;
+				getDisplayPanel().setLabel(makeLabel());
+			}
+		};
+		eventService.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
+
+		axisMoveSubscriber = new EventSubscriber<AxisPositionEvent>() {
+
+			@Override
+			public void onEvent(final AxisPositionEvent event) {
+				if (event.getDisplay() == AbstractImageDisplay.this) {
+					final Axis axis = event.getAxis();
+					final long value = event.getValue();
+					long newPos = value;
+					if (event.isRelative()) {
+						final long currPos = getDisplayPanel().getAxisPosition(axis);
+						newPos = currPos + value;
+					}
+					final long max = event.getMax();
+					if (newPos >= 0 && newPos < max) {
+						getDisplayPanel().setAxisPosition(axis, newPos);
+						update();
+					}
+				}
+			}
+		};
+		eventService.subscribe(AxisPositionEvent.class, axisMoveSubscriber);
+
+		displayDeletedSubscriber = new EventSubscriber<DisplayDeletedEvent>() {
+
+			@Override
+			public void onEvent(final DisplayDeletedEvent event) {
+				if (event.getObject() == AbstractImageDisplay.this) {
+					closeHelper();
+					// NB - we've avoided dispose() since its been called elsewhere.
+					// If call close() here instead get duplicated WindowClosingEvents.
+				}
+			}
+		};
+		eventService.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+	}
+
+	// NB - this method necessary to make sure resources get returned via GC.
+	// Else there is a memory leak.
+	private void unsubscribeFromEvents() {
+		eventService.unsubscribe(ZoomEvent.class, zoomSubscriber);
+		// eventService.unsubscribe(DatasetRestructuredEvent.class,
+		// dataRestructedSubscriber);
+		eventService.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
+		eventService.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
+		eventService.unsubscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+	}
+
+	protected void closeHelper() {
+		unsubscribeFromEvents();
+	}
+
+	@Override
+	public void close() {
+		closeHelper();
+		getDisplayPanel().getWindow().close();
+	}
+
+	protected String makeLabel() {
+		// CTR TODO - Fix window label to show beyond just the active view.
+		final DataView view = getActiveView();
+		final Dataset dataset = getDataset(view);
+
+		final int xIndex = dataset.getAxisIndex(Axes.X);
+		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		final long[] dims = dataset.getDims();
+		final Axis[] axes = dataset.getAxes();
+		final Position pos = view.getPlanePosition();
+
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 0, p = -1; i < dims.length; i++) {
+			if (Axes.isXY(axes[i])) continue;
+			p++;
+			if (dims[i] == 1) continue;
+			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] +
+				"; ");
+		}
+		
+		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
+		
+		sb.append(dataset.getTypeLabelLong());
+		
+		final double zoomPercent = getImageCanvas().getZoomFactor() * 100;
+		if (zoomPercent == 100) {
+			// do nothing
+		}
+		else { // some kind of magnification being done
+			if (zoomPercent > 100 && zoomPercent - Math.floor(zoomPercent) < 0.00001) {
+				sb.append(String.format(" [%d%%]", (int)zoomPercent));
+			}
+			else {
+				sb.append(String.format(" [%.2f%%]", zoomPercent));
+			}
+		}
+		
+		return sb.toString();
+	}
+
+	protected Dataset getDataset(final DataView view) {
+		final Data dataObject = view.getData();
+		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}
 
 }
