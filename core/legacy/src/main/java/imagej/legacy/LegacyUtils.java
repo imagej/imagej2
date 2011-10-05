@@ -1382,10 +1382,10 @@ public final class LegacyUtils {
 		return cCount;
 	}
 
-	private static void fillChannelIndices(
-		long[] dims, Axis[] axes, int channelIndex, long[] pos)
+	static void fillChannelIndices(
+		long[] dims, Axis[] axes, long channelIndex, long[] pos)
 	{
-		int workingIndex = channelIndex;
+		long workingIndex = channelIndex;
 		for (int i = 0; i < dims.length; i++) {
 			Axis axis = axes[i];
 			// skip axes we don't encode as channels
@@ -1394,9 +1394,9 @@ public final class LegacyUtils {
 			if (axis == Axes.Z) continue;
 			if (axis == Axes.TIME) continue;
 			// calc index of encoded channels
-			int subIndex = (int) (workingIndex % dims[i]);
+			long subIndex = workingIndex % dims[i];
 			pos[i] = subIndex;
-			workingIndex = (int) (workingIndex / dims[i]);
+			workingIndex = workingIndex / dims[i];
 		}
 	}
 	
