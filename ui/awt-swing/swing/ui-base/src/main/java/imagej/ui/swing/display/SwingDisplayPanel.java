@@ -39,6 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.display.DataView;
 import imagej.data.display.DisplayWindow;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayPanel;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
@@ -78,7 +79,7 @@ import net.miginfocom.swing.MigLayout;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
+public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	private final ImageDisplay display;
 	private final JLabel imageLabel;
