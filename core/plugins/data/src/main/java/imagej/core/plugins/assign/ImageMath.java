@@ -36,6 +36,7 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.DatasetFactory;
 import imagej.ext.MenuEntry;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -143,6 +144,13 @@ public class ImageMath implements ImageJPlugin {
 			dialog.prompt();
 			return;
 		}
+		// TODO : HACK - this next line works but always creates a PlanarImg
+		output = DatasetFactory.create(span, "Result of operation",
+			input1.getAxes(), input1.getType().getBitsPerPixel(), input1.isSigned(),
+			!input1.isInteger());
+		// This is what I'd like to do
+		// output = DatasetFactory.create(input1.getType(), span,
+		//   "Result of operation", input1.getAxes());
 		final BinaryOperation<Real, Real, Real> binOp = operators.get(operatorName);
 		final Function<long[], Real> f1 =
 			new RealImageFunction(input1.getImgPlus().getImg());
@@ -150,7 +158,6 @@ public class ImageMath implements ImageJPlugin {
 			new RealImageFunction(input2.getImgPlus().getImg());
 		final GeneralBinaryFunction<long[], Real, Real, Real> binFunc =
 			new GeneralBinaryFunction<long[], Real, Real, Real>(f1, f2, binOp);
-		output = input1.duplicate();
 		final RealImageAssignment assigner =
 			new RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc);
 		assigner.assign();
