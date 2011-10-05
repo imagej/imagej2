@@ -46,6 +46,7 @@ import javax.swing.JInternalFrame;
  * Multiple Document Interface implementation of Swing image display plugin.
  * The MDI display is housed in a {@link JInternalFrame}.
  * 
+ * @author Grant Harris
  * @author Curtis Rueden
  * @see AbstractSwingImageDisplay
  */
