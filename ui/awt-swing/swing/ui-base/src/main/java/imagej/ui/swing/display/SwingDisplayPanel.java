@@ -469,12 +469,23 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] +
 				"; ");
 		}
+		
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
+		
 		sb.append(dataset.getTypeLabelLong());
+		
 		final double zoomPercent =
-			getDisplay().getImageCanvas().getZoomFactor() * 100.0;
-		if (Math.abs(100.0 - zoomPercent) >= 0.01) sb.append(String.format(
-			" [%.2f%%]", zoomPercent));
+			getDisplay().getImageCanvas().getZoomFactor() * 100;
+		if (zoomPercent == 100) {
+			// do nothing
+		}
+		else { // some kind of magnification being done
+			if ((zoomPercent > 100) && ((zoomPercent - Math.floor(zoomPercent)) < 0.00001))
+				sb.append(String.format(" [%d%%]", (int)zoomPercent));
+			else
+				sb.append(String.format(" [%.2f%%]", zoomPercent));
+		}
+		
 		return sb.toString();
 	}
 
