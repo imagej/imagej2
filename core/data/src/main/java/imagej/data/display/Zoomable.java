@@ -34,12 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.ext.display.Display;
 import imagej.util.IntCoords;
 
 /**
- * Defines methods needed to adjust the zoom of a {@link Display} or
- * {@link ImageCanvas}.
+ * Defines methods needed to adjust the zoom of an {@link ImageCanvas}.
  * 
  * @author Barry DeZonia
  * @author Grant Harris
