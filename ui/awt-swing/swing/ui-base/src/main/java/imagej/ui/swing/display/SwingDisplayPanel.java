@@ -34,21 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
-import imagej.data.Position;
 import imagej.data.display.DataView;
 import imagej.data.display.DisplayWindow;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.event.AxisPositionEvent;
-import imagej.data.display.event.ZoomEvent;
-import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.display.EventDispatcher;
-import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
@@ -93,8 +85,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	private final JPanel sliders;
 	private final DisplayWindow window;
 
-	protected final Map<Axis, Integer> axisPositions =
-		new HashMap<Axis, Integer>();
+	protected final Map<Axis, Long> axisPositions = new HashMap<Axis, Long>();
 
 	//TODO - HACK - to avoid concurrent modification exceptions I need to make 
 	// axisSliders a ConcurrentHashMap instead of a regular HashMap. See bug
@@ -108,18 +99,9 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
 
-	private EventSubscriber<ZoomEvent> zoomSubscriber;
-	// private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
-	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
-	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
-	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
-	private final EventService eventService;
-
 	public SwingDisplayPanel(final ImageDisplay display,
 		final DisplayWindow window)
 	{
-		eventService = ImageJ.get(EventService.class);
-
 		this.display = display;
 		this.window = window;
 
@@ -141,9 +123,10 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		add(graphicPane, BorderLayout.CENTER);
 		add(sliders, BorderLayout.SOUTH);
 
-		subscribeToEvents();
 		window.setContent(this);
 	}
+	
+	// -- ImageDisplayPanel methods --
 
 	/**
 	 * Get the position of some axis other than X and Y
@@ -159,13 +142,19 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		return 0;
 	}
 
-	// TODO - position might be better as a long
 	@Override
-	public void setAxisPosition(final Axis axis, final int position) {
+	public void setAxisPosition(final Axis axis, final long position) {
 		axisPositions.put(axis, position);
+		final JScrollBar scrollBar = axisSliders.get(axis);
+		if (scrollBar != null) scrollBar.setValue((int) position);
 	}
 
-	// -- DisplayWindow methods --
+	@Override
+	public DisplayWindow getWindow() {
+		return window;
+	}
+	
+	// -- DisplayPanel methods --
 	
 	@Override
 	public ImageDisplay getDisplay() {
@@ -175,20 +164,6 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	@Override
 	public void makeActive() {
 		window.requestFocus();
-	}
-
-	@Override
-	public void update() {
-		for (final DataView view : display) {
-			for (final Axis axis : axisPositions.keySet()) {
-				final int index = display.getAxisIndex(axis);
-				if (index >= 0) {
-					view.setPosition(axisPositions.get(axis), index);
-				}
-			}
-			view.update();
-		}
-		setLabel(makeLabel());
 	}
 
 	@Override
@@ -246,107 +221,6 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 	}
 
 	// -- Helper methods --
-
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents() {
-
-		zoomSubscriber = new EventSubscriber<ZoomEvent>() {
-
-			@Override
-			public void onEvent(final ZoomEvent event) {
-				if (event.getCanvas() != getDisplay().getImageCanvas()) return;
-				setLabel(makeLabel());
-			}
-		};
-		eventService.subscribe(ZoomEvent.class, zoomSubscriber);
-
-		/* NB - BDZ - 7-29-11
-		 * This code may no longer be necessary. There were race conditions where
-		 * createSliders() was getting called twice from two different places in
-		 * this class at the same time resulting in exceptions. Simply deleting
-		 * the channel axis from Organ Of Corti would initiate it. redoLayout()
-		 * must be getting called more appropriately now and this event might be
-		 * able to be ignored. If it cannot be ignored then making createSliders()
-		 * synchronized will fix the bug too. Leave code here for now for easy
-		 * restoration.
-		restructureSubscriber =
-			new EventSubscriber<DatasetRestructuredEvent>() {
-
-				@Override
-				public void onEvent(DatasetRestructuredEvent event) {
-					for (DataView view : getDisplay().getViews()) {
-						if (event.getObject() == view.getData()) {
-							createSliders();
-							return;
-						}
-					}
-				}
-			};
-		eventService.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
-		*/
-
-		updateSubscriber = new EventSubscriber<DatasetUpdatedEvent>() {
-
-			@Override
-			public void onEvent(final DatasetUpdatedEvent event) {
-				final DataView view = getDisplay().getActiveView();
-				if (view == null) return;
-				final Dataset ds = getDataset(view);
-				if (event.getObject() != ds) return;
-				setLabel(makeLabel());
-			}
-		};
-		eventService.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
-
-		axisMoveSubscriber = new EventSubscriber<AxisPositionEvent>() {
-
-			@Override
-			public void onEvent(final AxisPositionEvent event) {
-				if (event.getDisplay() == display) {
-					final Axis axis = event.getAxis();
-					final long value = event.getValue();
-					long newPos = value;
-					if (event.isRelative()) {
-						final long currPos = getAxisPosition(axis);
-						newPos = currPos + value;
-					}
-					final long max = event.getMax();
-					if ((newPos >= 0) && (newPos < max)) {
-						setAxisPosition(axis, (int) newPos); // TODO eliminate cast
-						final long pos = getAxisPosition(axis);
-						final JScrollBar scrollBar = axisSliders.get(axis);
-						scrollBar.setValue((int) pos);
-						update();
-					}
-				}
-			}
-		};
-		eventService.subscribe(AxisPositionEvent.class, axisMoveSubscriber);
-
-		displayDeletedSubscriber = new EventSubscriber<DisplayDeletedEvent>() {
-
-			@Override
-			public void onEvent(final DisplayDeletedEvent event) {
-				if (event.getObject() == display) {
-					closeHelper();
-					// NB - we've avoided dispose() since its been called elsewhere.
-					// If call close() here instead get duplicated WindowClosingEvents.
-				}
-			}
-		};
-		eventService.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
-	}
-
-	// NB - this method necessary to make sure resources get returned via GC.
-	// Else there is a memory leak.
-	private void unsubscribeFromEvents() {
-		eventService.unsubscribe(ZoomEvent.class, zoomSubscriber);
-		// eventService.unsubscribe(DatasetRestructuredEvent.class,
-		// restructureSubscriber);
-		eventService.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
-		eventService.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
-		eventService.unsubscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
-	}
 
 	private/*synchronized*/void createSliders() {
 		final long[] min = new long[display.numDimensions()];
@@ -441,68 +315,14 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
-					final int position = slider.getValue();
+					final long position = slider.getValue();
 					axisPositions.put(axis, position);
-					update();
+					getDisplay().update();
 				}
 			});
 			sliders.add(label);
 			sliders.add(slider);
 		}
-	}
-
-	private String makeLabel() {
-		// CTR TODO - Fix window label to show beyond just the active view.
-		final DataView view = display.getActiveView();
-		final Dataset dataset = getDataset(view);
-
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
-		final long[] dims = dataset.getDims();
-		final Axis[] axes = dataset.getAxes();
-		final Position pos = view.getPlanePosition();
-
-		final StringBuilder sb = new StringBuilder();
-		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (Axes.isXY(axes[i])) continue;
-			p++;
-			if (dims[i] == 1) continue;
-			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] +
-				"; ");
-		}
-		
-		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-		
-		sb.append(dataset.getTypeLabelLong());
-		
-		final double zoomPercent =
-			getDisplay().getImageCanvas().getZoomFactor() * 100;
-		if (zoomPercent == 100) {
-			// do nothing
-		}
-		else { // some kind of magnification being done
-			if ((zoomPercent > 100) && ((zoomPercent - Math.floor(zoomPercent)) < 0.00001))
-				sb.append(String.format(" [%d%%]", (int)zoomPercent));
-			else
-				sb.append(String.format(" [%.2f%%]", zoomPercent));
-		}
-		
-		return sb.toString();
-	}
-
-	private Dataset getDataset(final DataView view) {
-		final Data dataObject = view.getData();
-		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
-	}
-
-	private void closeHelper() {
-		unsubscribeFromEvents();
-	}
-
-	@Override
-	public void close() {
-		closeHelper();
-		window.close();
 	}
 
 }

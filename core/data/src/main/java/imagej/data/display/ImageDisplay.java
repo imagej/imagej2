@@ -65,6 +65,9 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	/** Tests whether this display contains the given data object (via a view). */
 	boolean containsData(Data data);
 	
+	@Override
+	ImageDisplayPanel getDisplayPanel();
+	
 	// CTR TODO - eliminate the methods below.
 	
 	@Deprecated
@@ -79,5 +82,8 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 
 	/** Forces the display window to redo its layout. */
 	void redoWindowLayout();
+
+	// CTR TEMP - move close method to toplevel Display interface
+	void close();
 
 }

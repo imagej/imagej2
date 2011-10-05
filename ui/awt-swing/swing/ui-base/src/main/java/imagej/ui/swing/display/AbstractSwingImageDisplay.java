@@ -47,7 +47,6 @@ import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.tool.ToolService;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 
-import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,17 +114,6 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	// -- Display methods --
 
 	@Override
-	public void update() {
-		EventQueue.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				imgPanel.update();
-			}
-		});
-	}
-
-	@Override
 	public SwingDisplayPanel getDisplayPanel() {
 		return imgPanel;
 	}
@@ -136,10 +124,6 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	private void subscribeToEvents() {
 
 		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		// CTR TODO - listen for imgWindow windowClosing and send
-		// DisplayDeletedEvent. Think about how best this should work...
-		// Is a display always deleted when its window is closed?
 
 		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
 			new EventSubscriber<WinActivatedEvent>() {
