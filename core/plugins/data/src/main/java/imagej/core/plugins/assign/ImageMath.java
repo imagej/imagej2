@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.ext.MenuEntry;
 import imagej.ext.module.ItemIO;
@@ -41,6 +42,9 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 import java.util.HashMap;
 
@@ -127,6 +131,18 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
+		final int numDims = input1.numDimensions();
+		final long[] origin = new long[numDims];
+		final long[] span = calcOverlappedSpan(input1.getDims(), input2.getDims());
+		if (span == null) {
+			final IUserInterface ui = ImageJ.get(UIService.class).getUI();
+			final DialogPrompt dialog =
+				ui.dialogPrompt("Input images have different number of dimensions", "Image Calculator",
+					DialogPrompt.MessageType.INFORMATION_MESSAGE,
+					DialogPrompt.OptionType.DEFAULT_OPTION);
+			dialog.prompt();
+			return;
+		}
 		final BinaryOperation<Real, Real, Real> binOp = operators.get(operatorName);
 		final Function<long[], Real> f1 =
 			new RealImageFunction(input1.getImgPlus().getImg());
@@ -134,13 +150,23 @@ public class ImageMath implements ImageJPlugin {
 			new RealImageFunction(input2.getImgPlus().getImg());
 		final GeneralBinaryFunction<long[], Real, Real, Real> binFunc =
 			new GeneralBinaryFunction<long[], Real, Real, Real>(f1, f2, binOp);
-		output = input1.duplicateBlank();
-		final int numDims = output.getImgPlus().numDimensions();
-		final long[] origin = new long[numDims];
-		final long[] span = input1.getDims();
+		output = input1.duplicate();
 		final RealImageAssignment assigner =
 			new RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc);
 		assigner.assign();
 	}
 
+	// -- private helpers --
+	
+	private long[] calcOverlappedSpan(long[] dimsA, long[] dimsB) {
+		if (dimsA.length != dimsB.length)
+			return null;
+		
+		long[] overlap = new long[dimsA.length];
+		
+		for (int i = 0; i < overlap.length; i++)
+			overlap[i] = Math.min(dimsA[i], dimsB[i]);
+		
+		return overlap;
+	}
 }
