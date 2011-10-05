@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data;
 
 import net.imglib2.img.Axis;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.img.planar.PlanarImgFactory;
@@ -133,8 +135,26 @@ public final class DatasetFactory {
 		final T type, final long[] dims, final String name, final Axis[] axes)
 	{
 		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
-		final PlanarImg<T, ?> planarImg = imgFactory.create(dims, type);
-		final ImgPlus<T> imgPlus = new ImgPlus<T>(planarImg, name, axes, null);
+		return create(imgFactory, type, dims, name, axes);
+	}
+
+	/**
+	 * Creates a new dataset using provided ImgFactory
+	 * 
+	 * @param <T> The type of the dataset.
+	 * @param factory The ImgFactory to use to create the data.
+	 * @param type The type of the dataset.
+	 * @param dims The dataset's dimensional extents.
+	 * @param name The dataset's name.
+	 * @param axes The dataset's dimensional axis labels.
+	 * @return The newly created dataset.
+	 */
+	public static <T extends RealType<T> & NativeType<T>> Dataset create(
+		final ImgFactory<T> factory, final T type, final long[] dims,
+		final String name, final Axis[] axes)
+	{
+		final Img<T> img = factory.create(dims, type);
+		final ImgPlus<T> imgPlus = new ImgPlus<T>(img, name, axes, null);
 		return new ImgLibDataset(imgPlus);
 	}
 
