@@ -37,7 +37,7 @@ package imagej.ext.display;
 // CTR TODO - refactor to remove this class and all subclasses!
 
 /**
- * TODO
+ * The panel housing a particular {@link Display}.
  *
  * @author Grant Harris
  */
@@ -52,9 +52,7 @@ public interface DisplayPanel {
 	 */
 	void addEventDispatcher(EventDispatcher dispatcher);
 
-	/** 
-	 * Close this DisplayPanel and its container, a DisplayWindow.  
-	 */
+	/** Close this DisplayPanel and its container, a DisplayWindow. */
 	void close();
 
 	void makeActive();
