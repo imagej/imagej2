@@ -44,6 +44,6 @@ public interface TextDisplay extends Display<String> {
 	void append(String text);
 
 	@Override
-	TextDisplayPanel getDisplayPanel();
+	TextDisplayPanel getPanel();
 
 }

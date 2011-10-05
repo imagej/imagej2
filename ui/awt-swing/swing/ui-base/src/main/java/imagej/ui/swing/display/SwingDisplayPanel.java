@@ -111,7 +111,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 
 		final JPanel graphicPane = new JPanel();
 		graphicPane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-		graphicPane.add((JHotDrawImageCanvas) display.getImageCanvas());
+		graphicPane.add((JHotDrawImageCanvas) display.getCanvas());
 
 		sliders = new JPanel();
 		sliders.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
@@ -185,7 +185,7 @@ public class SwingDisplayPanel extends AbstractSwingDisplayPanel {
 		private boolean initial=true;
 
 	void sizeAppropriately() {
-		JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getImageCanvas();
+		JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getCanvas();
 		Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
 		Dimension canvasSize = canvas.getPreferredSize();
 		// width determined by scaled image canvas width

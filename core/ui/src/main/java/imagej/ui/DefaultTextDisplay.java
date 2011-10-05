@@ -82,7 +82,7 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 	}
 
 	@Override
-	public TextDisplayPanel getDisplayPanel() {
+	public TextDisplayPanel getPanel() {
 		// CTR FIXME
 		return null;
 	}

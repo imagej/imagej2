@@ -56,7 +56,7 @@ public class ZoomOut implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		display.getImageCanvas().zoomOut();
+		display.getCanvas().zoomOut();
 	}
 
 }

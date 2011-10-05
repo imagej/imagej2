@@ -174,13 +174,13 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	private int getX(final MouseEvent e) {
 		final int x = e.getX();
 		if (relative) return x;
-		return x - display.getImageCanvas().getPanOrigin().x;
+		return x - display.getCanvas().getPanOrigin().x;
 	}
 
 	private int getY(final MouseEvent e) {
 		final int y = e.getY();
 		if (relative) return y;
-		return y - display.getImageCanvas().getPanOrigin().y;
+		return y - display.getCanvas().getPanOrigin().y;
 	}
 
 }

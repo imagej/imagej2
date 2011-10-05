@@ -138,12 +138,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			for (final Axis axis : getAxes()) {
 				final int index = getAxisIndex(axis);
 				if (index >= 0) {
-					view.setPosition(getDisplayPanel().getAxisPosition(axis), index);
+					view.setPosition(getPanel().getAxisPosition(axis), index);
 				}
 			}
 			view.update();
 		}
-		getDisplayPanel().setLabel(makeLabel());
+		getPanel().setLabel(makeLabel());
 	}
 
 	// -- LabeledSpace methods --
@@ -297,8 +297,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 			@Override
 			public void onEvent(final ZoomEvent event) {
-				if (event.getCanvas() != getImageCanvas()) return;
-				getDisplayPanel().setLabel(makeLabel());
+				if (event.getCanvas() != getCanvas()) return;
+				getPanel().setLabel(makeLabel());
 			}
 		};
 		eventService.subscribe(ZoomEvent.class, zoomSubscriber);
@@ -311,7 +311,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				if (view == null) return;
 				final Dataset ds = getDataset(view);
 				if (event.getObject() != ds) return;
-				getDisplayPanel().setLabel(makeLabel());
+				getPanel().setLabel(makeLabel());
 			}
 		};
 		eventService.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
@@ -325,12 +325,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					final long value = event.getValue();
 					long newPos = value;
 					if (event.isRelative()) {
-						final long currPos = getDisplayPanel().getAxisPosition(axis);
+						final long currPos = getPanel().getAxisPosition(axis);
 						newPos = currPos + value;
 					}
 					final long max = event.getMax();
 					if (newPos >= 0 && newPos < max) {
-						getDisplayPanel().setAxisPosition(axis, newPos);
+						getPanel().setAxisPosition(axis, newPos);
 						update();
 					}
 				}
@@ -370,7 +370,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@Override
 	public void close() {
 		closeHelper();
-		getDisplayPanel().getWindow().close();
+		getPanel().getWindow().close();
 	}
 
 	protected String makeLabel() {
@@ -397,7 +397,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		
 		sb.append(dataset.getTypeLabelLong());
 		
-		final double zoomPercent = getImageCanvas().getZoomFactor() * 100;
+		final double zoomPercent = getCanvas().getZoomFactor() * 100;
 		if (zoomPercent == 100) {
 			// do nothing
 		}

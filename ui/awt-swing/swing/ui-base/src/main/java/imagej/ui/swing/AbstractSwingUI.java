@@ -223,7 +223,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	// -- Helper methods --
 
 	protected SwingDisplayWindow getDisplayWindow(final Display<?> display) {
-		final DisplayPanel panel = display.getDisplayPanel();
+		final DisplayPanel panel = display.getPanel();
 		if (!(panel instanceof SwingDisplayPanel)) return null;
 		final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
 		final SwingDisplayWindow displayWindow =

@@ -81,7 +81,7 @@ public interface Display<E> extends List<E>, IPlugin {
 	// CTR TODO - add close method
 
 	/** Gets the user interface panel associated with this display. */
-	DisplayPanel getDisplayPanel();
+	DisplayPanel getPanel();
 
 	/** Gets the name of the display. */
 	String getName();

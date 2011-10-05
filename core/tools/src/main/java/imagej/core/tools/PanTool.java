@@ -72,16 +72,16 @@ public class PanTool extends AbstractTool {
 
 		switch (evt.getCode()) {
 			case UP:
-				imageDisplay.getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
+				imageDisplay.getCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
 				break;
 			case DOWN:
-				imageDisplay.getImageCanvas().pan(new IntCoords(0, PAN_AMOUNT));
+				imageDisplay.getCanvas().pan(new IntCoords(0, PAN_AMOUNT));
 				break;
 			case LEFT:
-				imageDisplay.getImageCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
+				imageDisplay.getCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
 				break;
 			case RIGHT:
-				imageDisplay.getImageCanvas().pan(new IntCoords(PAN_AMOUNT, 0));
+				imageDisplay.getCanvas().pan(new IntCoords(PAN_AMOUNT, 0));
 				break;
 			default:
 		}
@@ -101,7 +101,7 @@ public class PanTool extends AbstractTool {
 
 		final int xDelta = lastX - evt.getX();
 		final int yDelta = lastY - evt.getY();
-		imageDisplay.getImageCanvas().pan(new IntCoords(xDelta, yDelta));
+		imageDisplay.getCanvas().pan(new IntCoords(xDelta, yDelta));
 		lastX = evt.getX();
 		lastY = evt.getY();
 	}

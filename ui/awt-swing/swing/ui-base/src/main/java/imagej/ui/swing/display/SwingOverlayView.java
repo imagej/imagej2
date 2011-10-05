@@ -107,7 +107,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 				public void run() {
 					synchronized(SwingOverlayView.this) {
 						if (! disposeScheduled) {
-							final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getImageCanvas();
+							final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getCanvas();
 							final Drawing drawing = canvas.getDrawing();
 							drawing.add(SwingOverlayView.this.figure);
 							figureAdded = true;
@@ -166,7 +166,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	// -- DataView methods --
 
 	private void show(final boolean doShow) {
-		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getImageCanvas();
+		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		final Figure fig = getFigure();
 		if (doShow) {

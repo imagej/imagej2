@@ -55,7 +55,7 @@ public class Zoom100Percent implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		display.getImageCanvas().setZoom(1);
+		display.getCanvas().setZoom(1);
 	}
 
 }

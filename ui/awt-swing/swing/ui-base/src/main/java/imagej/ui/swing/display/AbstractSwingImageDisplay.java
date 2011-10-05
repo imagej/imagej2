@@ -102,7 +102,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	}
 
 	@Override
-	public JHotDrawImageCanvas getImageCanvas() {
+	public JHotDrawImageCanvas getCanvas() {
 		return imgCanvas;
 	}
 
@@ -114,7 +114,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	// -- Display methods --
 
 	@Override
-	public SwingDisplayPanel getDisplayPanel() {
+	public SwingDisplayPanel getPanel() {
 		return imgPanel;
 	}
 
