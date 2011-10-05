@@ -226,6 +226,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final DisplayPanel panel = display.getPanel();
 		if (!(panel instanceof SwingDisplayPanel)) return null;
 		final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
+		// CTR FIXME - Clear up confusion surrounding SwingDisplayPanel and
+		// SwingDisplayWindow in SDI vs. MDI contexts. Avoid casting!
 		final SwingDisplayWindow displayWindow =
 			(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
 		return displayWindow;
