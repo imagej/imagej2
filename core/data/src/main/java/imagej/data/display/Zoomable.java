@@ -96,11 +96,4 @@ public interface Zoomable {
 
 	/** Gets the current zoom level. */
 	double getZoomFactor();
-
-	/** Sets the amount zoomed in/out per operation. */
-	void setZoomStep(double zoomStep);
-
-	/** Gets the amount zoomed in/out per operation. */
-	double getZoomStep();
-
 }

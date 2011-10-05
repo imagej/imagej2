@@ -449,16 +449,6 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		return canvasHelper.getZoomFactor();
 	}
 
-	@Override
-	public void setZoomStep(final double zoomStep) {
-		canvasHelper.setZoomStep(zoomStep);
-	}
-
-	@Override
-	public double getZoomStep() {
-		return canvasHelper.getZoomStep();
-	}
-
 	// -- AdjustmentListener methods --
 
 	@Override

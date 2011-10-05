@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
+import java.util.Arrays;
+
 import imagej.ImageJ;
 import imagej.data.display.event.ZoomEvent;
 import imagej.event.EventService;
@@ -55,6 +57,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 	/** The {@link ImageCanvas} on which this helper operates. */
 	private final ImageCanvas canvas;
 
+	/** The standard zoom levels for the canvas */
+	private final double[] zoomLevels;
+
 	/** Scale factor, for zooming. */
 	private double scale = 1;
 
@@ -64,14 +69,16 @@ public class CanvasHelper implements Pannable, Zoomable {
 	/** Offset from top left, in panel coordinates (pixels). */
 	private IntCoords offset = new IntCoords(0, 0);
 
-	/** The amount the image should be zoomed in or out per operation. */
-	private double zoomStep = 1.2;
-
 	private final EventService eventService;
 
 	public CanvasHelper(final ImageCanvas canvas) {
+		this(canvas, defaultZoomLevels());
+	}
+	
+	public CanvasHelper(final ImageCanvas canvas, double[] zoomLevels) {
 		eventService = ImageJ.get(EventService.class);
 		this.canvas = canvas;
+		this.zoomLevels = validatedZoomLevels(zoomLevels);
 	}
 
 	// -- CanvasHelper methods --
@@ -154,7 +161,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void zoomIn(final IntCoords center) {
-		canvas.setZoom(scale * zoomStep, center);
+		double newScale = nextLargerZoom(scale);
+		if (newScale != scale)
+			canvas.setZoom(newScale, center);
 	}
 
 	@Override
@@ -164,7 +173,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void zoomOut(final IntCoords center) {
-		canvas.setZoom(scale / zoomStep, center);
+		double newScale = nextSmallerZoom(scale);
+		if (newScale != scale)
+			canvas.setZoom(newScale, center);
 	}
 
 	@Override
@@ -188,19 +199,6 @@ public class CanvasHelper implements Pannable, Zoomable {
 	public double getZoomFactor() {
 		return scale;
 	}
-
-	@Override
-	public void setZoomStep(final double zoomStep) {
-		if (zoomStep <= 1) {
-			throw new IllegalArgumentException("Zoom step must be > 1");
-		}
-		this.zoomStep = zoomStep;
-	}
-
-	@Override
-	public double getZoomStep() {
-		return zoomStep;
-	}
 	
 	public void setInitialScale(double value) {
 		if (value <= 0)
@@ -211,6 +209,65 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	public double getInitialScale() {
 		return initialScale;
+	}
+	
+	// Could do this algorithmically but would require some special cases.
+	// So make it very clear what the zooms are by hand specifying them.
+	
+	public static double[] defaultZoomLevels() {
+		double[] levels = new double[49];
+		
+		levels[0] = 1/256d;
+		levels[1] = 1/240d;
+		levels[2] = 1/224d;
+		levels[3] = 1/208d;
+		levels[4] = 1/192d;
+		levels[5] = 1/176d;
+		levels[6] = 1/160d;
+		levels[7] = 1/144d;
+		levels[8] = 1/128d;
+		levels[9] = 1/112d;
+		levels[10] = 1/96d;
+		levels[11] = 1/80d;
+		levels[12] = 1/64d;
+		levels[13] = 1/48d;
+		levels[14] = 1/32d;
+		levels[15] = 1/24d;
+		levels[16] = 1/16d;
+		levels[17] = 1/12d;
+		levels[18] = 1/8d;
+		levels[19] = 1/6d;
+		levels[20] = 1/4d;
+		levels[21] = 1/3d;
+		levels[22] = 1/2d;
+		levels[23] = 3/4d;
+		levels[24] = 1;
+		levels[25] = 1.5;
+		levels[26] = 2;
+		levels[27] = 3;
+		levels[28] = 4;
+		levels[29] = 6;
+		levels[30] = 8;
+		levels[31] = 12;
+		levels[32] = 16;
+		levels[33] = 24;
+		levels[34] = 32;
+		levels[35] = 48;
+		levels[36] = 64;
+		levels[37] = 80;
+		levels[38] = 96;
+		levels[39] = 112;
+		levels[40] = 128;
+		levels[41] = 144;
+		levels[42] = 160;
+		levels[43] = 176;
+		levels[44] = 192;
+		levels[45] = 208;
+		levels[46] = 224;
+		levels[47] = 240;
+		levels[48] = 256;
+		
+		return levels;
 	}
 	
 	// -- Helper methods --
@@ -253,5 +310,65 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 		return false;
 	}
+	
+	private double nextSmallerZoom(double currScale) {
+		
+		int index = Arrays.binarySearch(zoomLevels, currScale);
 
+		int nextIndex;
+		if (index >= 0)
+			nextIndex = index - 1;
+		else
+			nextIndex = -(index + 1) - 1;
+		
+		if (nextIndex < 0)
+			return zoomLevels[0];
+		
+		if (nextIndex > zoomLevels.length-1)
+			return zoomLevels[zoomLevels.length-1];
+		
+		return zoomLevels[nextIndex];
+	}
+
+	
+	private double nextLargerZoom(double currScale) {
+		
+		int index = Arrays.binarySearch(zoomLevels, currScale);
+		
+		int nextIndex;
+		if (index >= 0)
+			nextIndex = index + 1;
+		else
+			nextIndex = -(index + 1);
+		
+		if (nextIndex < 0)
+			return zoomLevels[0];
+		
+		if (nextIndex > zoomLevels.length-1)
+			return zoomLevels[zoomLevels.length-1];
+		
+		return zoomLevels[nextIndex];
+	}
+
+	private static double[] validatedZoomLevels(double[] levels) {
+		double[] validatedLevels = levels.clone();
+		
+		Arrays.sort(validatedLevels);
+		
+		if (validatedLevels.length == 0)
+			throw new IllegalArgumentException("given zoom level array is empty");
+		
+		double prevEntry = validatedLevels[0];
+		if (prevEntry <= 0)
+			throw new IllegalArgumentException("zoom level array contains nonpositive entries");
+		
+		for (int i = 1; i < validatedLevels.length; i++) {
+			double currEntry = validatedLevels[i];
+			if (currEntry == prevEntry)
+				throw new IllegalArgumentException("zoom level array contains duplicate entries");
+			prevEntry = currEntry;
+		}
+		
+		return validatedLevels;
+	}
 }
