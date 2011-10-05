@@ -50,6 +50,13 @@ import imagej.ext.plugin.Plugin;
 @Plugin
 public class SelectWindow implements ImageJPlugin {
 
+	// TODO - Use Display, not String for the display parameter. This currently
+	// won't work because it gets auto-populated with the current display. So add
+	// an "autoPopulate" or similar boolean toggle to the Parameter annotation,
+	// defaulting to true, but that can be set to false for plugins that need to
+	// prompt the user for a single parameter of that type. Then update the
+	// Active*Preprocessor classes to respect the flag.
+	
 	@Parameter
 	String displayToSelect;
 
@@ -60,6 +67,7 @@ public class SelectWindow implements ImageJPlugin {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display<?> display = displayService.getDisplay(displayToSelect);
 		if (display == null) return;
+		// TODO - Add display.activate() method and eliminate usage of panel here.
 		final DisplayPanel panel = display.getDisplayPanel();
 		if (panel == null) return;
 		panel.makeActive();
