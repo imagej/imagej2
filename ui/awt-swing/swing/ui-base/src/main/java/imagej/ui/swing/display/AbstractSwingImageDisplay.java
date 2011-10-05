@@ -89,7 +89,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		// For now, we will use the original (first) dataset name
 		final String datasetName = dataset.getName();
 		createName(datasetName);
-		imgPanel.setTitle(this.getName());
+		window.setTitle(this.getName());
 		add(new SwingDatasetView(this, dataset));
 		redoWindowLayout();
 		update();

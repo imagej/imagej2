@@ -39,12 +39,7 @@ import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 
-import java.awt.Component;
-
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 
 /**
  * Swing implementation of display window.
@@ -73,25 +68,6 @@ public abstract class AbstractSwingDisplayPanel extends JPanel implements
 			addMouseListener((AWTMouseEventDispatcher) dispatcher);
 			addMouseMotionListener((AWTMouseEventDispatcher) dispatcher);
 			addMouseWheelListener((AWTMouseEventDispatcher) dispatcher);
-		}
-	}
-
-	@Override
-	public void setTitle(final String title) {
-		final Component parent = this.getParent();
-		if (parent instanceof JInternalFrame) {
-			((JInternalFrame) parent).setTitle(title);
-		}
-		else if (parent instanceof JFrame) {
-			((JFrame) parent).setTitle(title);
-		}
-		else if (parent instanceof JTabbedPane) {
-			// TODO: determine index of containing tab - TEST this.
-			final int tabIndex = ((JTabbedPane) parent).getSelectedIndex();
-			((JTabbedPane) parent).setTitleAt(tabIndex, title);
-		}
-		else {
-			// cannot set title
 		}
 	}
 

@@ -69,13 +69,6 @@ public interface DisplayPanel {
 	/** TODO */
 	void setLabel(String s);
 
-	/**
-	 * Sets the title of the  top-level component containing this panel.
-	 *
-	 * @param s
-	 */
-	void setTitle(String s);
-
 	/** Updates the display window to reflect the display's current position. */
 	void update();
 	
