@@ -42,8 +42,9 @@ import imagej.ext.display.Display;
 import net.imglib2.img.Axis;
 
 /**
- * A image display is a special kind of {@link Display} for visualizing
- * {@link Data} objects.
+ * An image display is a {@link Display} for visualizing {@link Data} objects.
+ * It operates directly on {@link DataView}s, which wrap the {@link Data}
+ * objects and provide display settings for the data.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -64,12 +65,12 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 
 	/** Tests whether this display contains the given data object (via a view). */
 	boolean containsData(Data data);
-	
+
 	@Override
 	ImageDisplayPanel getPanel();
-	
+
 	// CTR TODO - eliminate the methods below.
-	
+
 	@Deprecated
 	void display(Dataset dataset);
 

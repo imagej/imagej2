@@ -48,7 +48,8 @@ import imagej.data.roi.Overlay;
  * <p>
  * For example, a typical 2D display may have a number of sliders enabling a
  * user to select a particular plane of a {@link Dataset} for display. The view
- * keeps track of the current position and provides access the resultant plane.
+ * keeps track of the current position and provides access to the resultant
+ * plane.
  * </p>
  * 
  * @author Curtis Rueden
@@ -92,7 +93,7 @@ public interface DataView {
 	boolean isVisible();
 
 	// CTR TODO - reevaluate the methods below, and potentially eliminate some.
-	
+
 	/** Gets the view's natural width in pixels. */
 	int getPreferredWidth();
 
