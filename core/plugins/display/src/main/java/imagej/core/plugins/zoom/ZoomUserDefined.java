@@ -58,7 +58,7 @@ public class ZoomUserDefined implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		display.getImageCanvas().setZoom(userDefinedScale / 100.0);
+		display.getCanvas().setZoom(userDefinedScale / 100.0);
 	}
 
 	public double getUserDefinedScale() {

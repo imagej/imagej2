@@ -68,7 +68,7 @@ public class SelectWindow implements ImageJPlugin {
 		final Display<?> display = displayService.getDisplay(displayToSelect);
 		if (display == null) return;
 		// TODO - Add display.activate() method and eliminate usage of panel here.
-		final DisplayPanel panel = display.getDisplayPanel();
+		final DisplayPanel panel = display.getPanel();
 		if (panel == null) return;
 		panel.makeActive();
 	}

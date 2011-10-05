@@ -78,7 +78,7 @@ public class PixelProbe extends AbstractTool {
 		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
-		final ImageCanvas canvas = imageDisplay.getImageCanvas();
+		final ImageCanvas canvas = imageDisplay.getCanvas();
 		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
 		if (!canvas.isInImage(mousePos)) {
 			eventService.publish(new StatusEvent(null));

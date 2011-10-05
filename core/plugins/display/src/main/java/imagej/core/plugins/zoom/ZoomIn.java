@@ -56,7 +56,7 @@ public class ZoomIn implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		display.getImageCanvas().zoomIn();
+		display.getCanvas().zoomIn();
 	}
 
 }

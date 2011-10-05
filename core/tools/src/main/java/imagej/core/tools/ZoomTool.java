@@ -73,10 +73,10 @@ public class ZoomTool extends AbstractTool {
 		if(display instanceof ImageDisplay) {
 		final char c = evt.getCharacter();
 		if (c == '=' || c == '+') {
-			((ImageDisplay)display).getImageCanvas().zoomIn(mousePos);
+			((ImageDisplay)display).getCanvas().zoomIn(mousePos);
 		}
 		else if (c == '-') {
-			((ImageDisplay)display).getImageCanvas().zoomOut(mousePos);
+			((ImageDisplay)display).getCanvas().zoomOut(mousePos);
 		}
 		}
 	}
@@ -111,15 +111,15 @@ public class ZoomTool extends AbstractTool {
 				mouseUp.y = mouseDown.y;
 				mouseDown.y = y;
 			}
-			((ImageDisplay)display).getImageCanvas().zoomToFit(mouseDown, mouseUp);
+			((ImageDisplay)display).getCanvas().zoomToFit(mouseDown, mouseUp);
 		}
 		else {
 			// under threshold: just zoom
 			if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
-				((ImageDisplay)display).getImageCanvas().zoomIn(mouseDown);
+				((ImageDisplay)display).getCanvas().zoomIn(mouseDown);
 			}
 			else {
-				((ImageDisplay)display).getImageCanvas().zoomOut(mouseDown);
+				((ImageDisplay)display).getCanvas().zoomOut(mouseDown);
 			}
 		}
 		}
@@ -137,10 +137,10 @@ public class ZoomTool extends AbstractTool {
 		if(display instanceof ImageDisplay) {
 		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
 		if (evt.getWheelRotation() < 0) {
-			((ImageDisplay)display).getImageCanvas().zoomIn(center);
+			((ImageDisplay)display).getCanvas().zoomIn(center);
 		}
 		else {
-			((ImageDisplay)display).getImageCanvas().zoomOut(center);
+			((ImageDisplay)display).getCanvas().zoomOut(center);
 		}
 		}
 	}
