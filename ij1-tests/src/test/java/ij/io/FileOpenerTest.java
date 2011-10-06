@@ -10,6 +10,7 @@ import ij.Assert;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.process.DataConstants;
+import ij.process.ShortProcessor;
 
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
@@ -147,8 +148,7 @@ public class FileOpenerTest {
 		assertEquals(2,ip.getBytesPerPixel());
 		assertEquals(256,ip.getHeight());
 		assertEquals(38,ip.getWidth());
-		assertTrue(ip.getProcessor().isUnsignedType());
-		assertTrue(ip.getProcessor().getBitDepth() == 16);
+		assertTrue(ip.getProcessor() instanceof ShortProcessor);
 		assertNotNull(ip.getStack());
 		assertEquals("Red",ip.getStack().getSliceLabel(1));
 		assertEquals("Green",ip.getStack().getSliceLabel(2));
