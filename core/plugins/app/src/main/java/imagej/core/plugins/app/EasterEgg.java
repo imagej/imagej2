@@ -51,7 +51,7 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(label = "| It's a secret to everyone |")
 public class EasterEgg implements ImageJPlugin {
 
-	private static final String CHARS = " .,-+o*O#";
+	private static final String CHARS = "#O*o+-,. ";
 
 	@Parameter
 	public Dataset dataset;
