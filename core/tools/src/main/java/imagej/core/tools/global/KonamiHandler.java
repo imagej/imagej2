@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools.global;
 
+import imagej.core.tools.TunePlayer;
 import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.key.KyPressedEvent;
 import imagej.ext.plugin.PluginService;
@@ -41,16 +42,19 @@ import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
 /**
- * Mysterious!
+ * Oh, the nostalgia!
  * 
  * @author Curtis Rueden
  */
 @Tool(name = "Konami", global = true)
 public class KonamiHandler extends AbstractTool {
 
-	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP,
-		KeyCode.DOWN, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
-		KeyCode.LEFT, KeyCode.RIGHT, KeyCode.B, KeyCode.A };
+	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,
+		KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
+		KeyCode.B, KeyCode.A };
+
+	private static final String JINGLE =
+		"T100 L32 B > C E G B > C E C < B G E C < L8 B";
 
 	private static final String PLUGIN = "imagej.core.plugins.app.EasterEgg";
 
@@ -62,6 +66,7 @@ public class KonamiHandler extends AbstractTool {
 			index++;
 			if (index == CODE.length) {
 				index = 0;
+				new TunePlayer().play(JINGLE);
 				final PluginService pluginService =
 					evt.getContext().getService(PluginService.class);
 				pluginService.run(PLUGIN);
