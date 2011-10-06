@@ -45,6 +45,7 @@ import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.tool.ToolService;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgPanel = new SwingDisplayPanel(this, window);
 
+		imgCanvas.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
 			eventService, false));
 		subscribeToEvents();
