@@ -2523,7 +2523,7 @@ public class ImagePlusTest {
 		cal.setFunction(Calibration.LOG, new double[] {5,6,7,8,9}, "hectareMummies");
 		ip.setCalibration(cal);
 		newOne = ip.createImagePlus();
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), newOne.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), newOne.getCalibration());
 		assertEquals(ip.getType(),newOne.getType());
 
 		// try Short type with unique calib
@@ -2533,7 +2533,7 @@ public class ImagePlusTest {
 		cal.setFunction(Calibration.POLY2, new double[] {5,6,7,8,9}, "hectareMummies");
 		ip.setCalibration(cal);
 		newOne = ip.createImagePlus();
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), newOne.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), newOne.getCalibration());
 		assertEquals(ip.getType(),newOne.getType());
 
 		// try Float type with unique calib
@@ -2543,7 +2543,7 @@ public class ImagePlusTest {
 		cal.setFunction(Calibration.RODBARD, new double[] {5,6,7,8,9}, "hectareMummies");
 		ip.setCalibration(cal);
 		newOne = ip.createImagePlus();
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), newOne.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), newOne.getCalibration());
 		assertEquals(ip.getType(),newOne.getType());
 
 		// try Color type with unique calib
@@ -2553,7 +2553,7 @@ public class ImagePlusTest {
 		cal.setFunction(Calibration.EXPONENTIAL, new double[] {5,6,7,8,9}, "hectareMummies");
 		ip.setCalibration(cal);
 		newOne = ip.createImagePlus();
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), newOne.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), newOne.getCalibration());
 		assertEquals(ip.getType(),newOne.getType());
 	}
 
@@ -2574,7 +2574,7 @@ public class ImagePlusTest {
 		assertEquals(24,result.getStackSize());
 		assertArrayEquals(new int[] {2,3,2,3,4},result.getDimensions());
 		assertEquals(8,result.getBitDepth());
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), result.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), result.getCalibration());
 		assertTrue(result.getOpenAsHyperStack());
 
 		// try 16 bit case
@@ -2590,7 +2590,7 @@ public class ImagePlusTest {
 		//assertNull(result.getStack().getPixels(1));
 		assertArrayEquals(new int[] {2,3,2,3,4},result.getDimensions());
 		assertEquals(16,result.getBitDepth());
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), result.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), result.getCalibration());
 		assertTrue(result.getOpenAsHyperStack());
 
 		// try 24 bit case
@@ -2613,7 +2613,7 @@ public class ImagePlusTest {
 		//   makes changes in the calibration and also getBitDepth(). Not sure how we
 		//   should handle this.
 		//assertEquals(24,result.getBitDepth());
-		//assertTrue(CalibrationTools.isSame(ip.getCalibration(), (result.getCalibration()));
+		//CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), result.getCalibration());
 		assertTrue(result.getOpenAsHyperStack());
 
 		// try 32 bit case
@@ -2627,7 +2627,7 @@ public class ImagePlusTest {
 		assertEquals(24,result.getStackSize());
 		assertArrayEquals(new int[] {2,2,2,3,4},result.getDimensions());
 		assertEquals(32,result.getBitDepth());
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), result.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), result.getCalibration());
 		assertTrue(result.getOpenAsHyperStack());
 
 		// should fail on any other case
@@ -2656,7 +2656,7 @@ public class ImagePlusTest {
 		cal.setFunction(Calibration.POWER,new double[] {8,9,4,3},"whackiesPerNoodle");
 		ip.setCalibration(cal);
 		ip.copyScale(null);
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), cal));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), cal);
 
 		// passing a valid ImagePlus should copy its calib func
 		ip = new ImagePlus();
@@ -2668,7 +2668,7 @@ public class ImagePlusTest {
 		cal2.setFunction(Calibration.RODBARD2,new double[] {3,6,8,3,5,7},"chickletsPerBox");
 		ip2.setCalibration(cal2);
 		ip.copyScale(ip2);
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), ip2.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), ip2.getCalibration());
 
 		// if global cal set no change should happen
 		ip.setGlobalCalibration(new Calibration());
@@ -2677,7 +2677,7 @@ public class ImagePlusTest {
 		cal.setFunction(Calibration.STRAIGHT_LINE,new double[] {5,89},"hermansPerMunster");
 		ip.setCalibration(cal);
 		ip.copyScale(null);
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), ip.getGlobalCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), ip.getGlobalCalibration());
 
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
@@ -2709,21 +2709,21 @@ public class ImagePlusTest {
 		// after default ctor() calib should be null, get Calib should make a default one
 		cal = new Calibration();
 		ip = new ImagePlus();
-		assertTrue(CalibrationTools.isSame(ip.getCalibration(), cal));
+		CalibrationTools.assertCalibrationsEqual(ip.getCalibration(), cal);
 
 		// if calib not null return it
 		ip = new ImagePlus();
 		cal = new Calibration();
 		cal.setFunction(Calibration.UNCALIBRATED_OD, new double[] {1,3,6,9}, "hooglesPerSnick");
 		ip.setCalibration(cal);
-		assertTrue(CalibrationTools.isSame(cal, ip.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(cal, ip.getCalibration());
 
 		// if global calibration set return a copy of it
 		cal = new Calibration();
 		cal.setFunction(Calibration.POLY3,new double[] {7,5,3,1},"boomerangsPerEpicycle");
 		ip.setGlobalCalibration(cal);
 		ip = new ImagePlus();
-		assertTrue(CalibrationTools.isSame(ip.getGlobalCalibration(), ip.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(ip.getGlobalCalibration(), ip.getCalibration());
 
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
@@ -2740,14 +2740,13 @@ public class ImagePlusTest {
 		ip.setCalibration(cal);
 		ip.setCalibration(null);
 		assertNotNull(ip.getCalibration());
-		assertFalse(CalibrationTools.isSame(cal, ip.getCalibration()));
 
 		// set to a valid calib
 		ip = new ImagePlus();
 		cal = new Calibration();
 		cal.setFunction(Calibration.UNCALIBRATED_OD, new double[] {1,3,6,9}, "hooglesPerSnick");
 		ip.setCalibration(cal);
-		assertTrue(CalibrationTools.isSame(cal, ip.getCalibration()));
+		CalibrationTools.assertCalibrationsEqual(cal, ip.getCalibration());
 	}
 
 	@Test
@@ -2766,7 +2765,7 @@ public class ImagePlusTest {
 		ip = new ImagePlus();
 		cal = new Calibration();
 		ip.setGlobalCalibration(cal);
-		assertTrue(CalibrationTools.isSame(ip.getGlobalCalibration(), cal));
+		CalibrationTools.assertCalibrationsEqual(ip.getGlobalCalibration(), cal);
 
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
@@ -2785,14 +2784,14 @@ public class ImagePlusTest {
 		// after default ctor() calib should be null, get Calib should make a default one
 		ip = new ImagePlus();
 		cal = new Calibration();
-		assertTrue(CalibrationTools.isSame(ip.getLocalCalibration(), cal));
+		CalibrationTools.assertCalibrationsEqual(ip.getLocalCalibration(), cal);
 
 		// if calib not null return it
 		ip = new ImagePlus();
 		cal = new Calibration();
 		cal.setFunction(Calibration.UNCALIBRATED_OD, new double[] {1,3,6,9}, "hooglesPerSnick");
 		ip.setCalibration(cal);
-		assertTrue(CalibrationTools.isSame(cal, ip.getLocalCalibration()));
+		CalibrationTools.assertCalibrationsEqual(cal, ip.getLocalCalibration());
 
 		// if global calibration set still return a copy of the local one
 		ip = new ImagePlus();
@@ -2800,7 +2799,7 @@ public class ImagePlusTest {
 		cal.setFunction(Calibration.POLY3,new double[] {7,5,3,1},"boomerangsPerEpicycle");
 		ip.setCalibration(cal);
 		ip.setGlobalCalibration(new Calibration());
-		assertTrue(CalibrationTools.isSame(ip.getLocalCalibration(), cal));
+		CalibrationTools.assertCalibrationsEqual(ip.getLocalCalibration(), cal);
 
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
