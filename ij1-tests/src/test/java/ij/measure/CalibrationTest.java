@@ -346,7 +346,7 @@ public class CalibrationTest {
 
 		// else I'll need to write a bunch of methods to test public variables and methods
 
-		assertTrue(actual.isSameAs(expected));
+		assertTrue(CalibrationTools.isSame(actual, expected));
 	}
 	
 	@Test

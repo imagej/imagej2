@@ -188,7 +188,6 @@ public class FileInfoTest {
 		assertEquals(16,FileInfo.GRAY64_FLOAT);	
 		assertEquals(17,FileInfo.RGB48_PLANAR);	
 		assertEquals(18,FileInfo.ABGR);	
-		assertEquals(19,FileInfo.GRAY64_SIGNED);	
 
 		// File formats
 		assertEquals(0,FileInfo.UNKNOWN);
