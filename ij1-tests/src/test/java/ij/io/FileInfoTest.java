@@ -278,8 +278,9 @@ public class FileInfoTest {
 		fInfo.fileType = FileInfo.GRAY24_UNSIGNED;
 		assertEquals(4,fInfo.getBytesPerPixel());
 		
+		// NB: GRAY12_UNSIGNED does not have a defined bytes per pixel.
 		fInfo.fileType = FileInfo.GRAY12_UNSIGNED;
-		assertEquals(2,fInfo.getBytesPerPixel());
+		assertEquals(0,fInfo.getBytesPerPixel());
 
 		fInfo.fileType = 99999;
 		assertEquals(0,fInfo.getBytesPerPixel());
