@@ -63,6 +63,7 @@ import java.util.List;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
+import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
@@ -777,6 +778,7 @@ public final class LegacyUtils {
 		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
 		final List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(disp, colorTables, sixteenBitLuts);
+		assignChannelMinMax(disp, imp);
 	}
 
 	/**
@@ -1235,6 +1237,51 @@ public final class LegacyUtils {
 		// force current plane to redraw : HACK to fix bug #668
 		dsView.getProjector().map();
 		disp.update();
+	}
+
+	/**
+	 * Assigns the given ImagePlus's per-channel min/max values to the active view
+	 * of the specified ImageDisplay.
+	 */
+	private static void assignChannelMinMax(final ImageDisplay disp,
+		final ImagePlus imp)
+	{
+		final DataView dataView = disp.getActiveView();
+		if (!(dataView instanceof DatasetView)) return;
+		final DatasetView view = (DatasetView) dataView;
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+			view.getConverters();
+		final int channelCount = converters.size();
+		final double[] min = new double[channelCount];
+		final double[] max = new double[channelCount];
+
+		if (imp instanceof CompositeImage) {
+			final CompositeImage ci = (CompositeImage) imp;
+			final LUT[] luts = ci.getLuts();
+			if (channelCount != luts.length) {
+				throw new IllegalArgumentException("Channel mismatch: " +
+					converters.size() + " vs. " + luts.length);
+			}
+			for (int c = 0; c < channelCount; c++) {
+				min[c] = luts[c].min;
+				max[c] = luts[c].max;
+			}
+		}
+		else {
+			final double mn = imp.getDisplayRangeMin();
+			final double mx = imp.getDisplayRangeMax();
+			for (int c = 0; c < channelCount; c++) {
+				min[c] = mn;
+				max[c] = mx;
+			}
+		}
+
+		for (int c = 0; c < channelCount; c++) {
+			final RealLUTConverter<? extends RealType<?>> conv = converters.get(0);
+			conv.setMin(min[c]);
+			conv.setMax(max[c]);
+		}
+		view.getProjector().map();
 	}
 
 	/** Creates a list of ColorTables from an ImagePlus. */
