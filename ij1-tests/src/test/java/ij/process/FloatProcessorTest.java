@@ -82,6 +82,7 @@ public class FloatProcessorTest {
 	@AfterClass
 	public static void runAfterClass()
 	{
+		// no action needed
 	}
 
 	@Test
@@ -265,14 +266,15 @@ public class FloatProcessorTest {
 
 	public static byte[] getSHA1DigestFromByteArray(byte[] b)
 	{
-		 MessageDigest sha1MessageDigest = null;
+		MessageDigest sha1MessageDigest = null;
 
-		 //assign a message digest from type SHA1
-		 try {
-				sha1MessageDigest = MessageDigest.getInstance("SHA");
-		} catch (NoSuchAlgorithmException e1) {
-
+		//assign a message digest from type SHA1
+		try {
+			sha1MessageDigest = MessageDigest.getInstance("SHA");
+		}
+		catch (NoSuchAlgorithmException e1) {
 			e1.printStackTrace();
+			return null;
 		}
 		for(byte bte:b)
 			sha1MessageDigest.update(bte);

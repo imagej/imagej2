@@ -151,6 +151,7 @@ public class LineTest {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testLineIntIntIntIntImagePlus() {
 		// create line roi
@@ -348,9 +349,9 @@ public class LineTest {
 
 	@Test
 	public void testIsHandle() {
-		// isHandle() relies on having an imagecanvas to get coord from. this is false in our case. can't test.
 		if (IJInfo.RUN_GUI_TESTS)
 		{
+			// isHandle() relies on having an imagecanvas to get coord from. this is false in our case. can't test.
 		}
 	}
 

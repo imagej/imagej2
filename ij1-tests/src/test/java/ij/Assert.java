@@ -52,11 +52,15 @@ public class Assert {
 		if (expected == actual)
 			return;
 
-		if (expected == null)
+		if (expected == null) {
 			fail("Assert.assertFloatArraysEqual(float[],float[]) passed in null data for first parameter");
+			return;
+		}
 
-		if (actual == null)
+		if (actual == null) {
 			fail("Assert.assertFloatArraysEqual(float[],float[]) passed in null data for second parameter");
+			return;
+		}
 		
 		if (expected.length != actual.length)
 			fail("Assert.assertFloatArraysEqual(float[],float[]) array lengths differ: expected "+expected.length + " and got " + actual.length);
@@ -71,11 +75,15 @@ public class Assert {
 		if (expected == actual)
 			return;
 
-		if (expected == null)
+		if (expected == null) {
 			fail("Assert.assertDoubleArraysEqual(double[],double[]) passed in null data for first parameter");
+			return;
+		}
 
-		if (actual == null)
+		if (actual == null) {
 			fail("Assert.assertDoubleArraysEqual(double[],double[]) passed in null data for second parameter");
+			return;
+		}
 		
 		if (expected.length != actual.length)
 			fail("Assert.assertDoubleArraysEqual(double[],double[]) array lengths differ: expected "+expected.length + " and got " + actual.length);
@@ -90,8 +98,10 @@ public class Assert {
 		if (expected == actual)
 			return;
 		
-		if ((expected == null) || (actual == null))
+		if ((expected == null) || (actual == null)) {
 			fail("Assert.assertArraysSame() one argument is null : (expcted=" + expected + ",actual=" + actual + ")");
+			return;
+		}
 		
 		Class<?> aClass = expected.getClass();
 		Class<?> bClass = actual.getClass();

@@ -81,7 +81,6 @@ public class ShortProcessorTest {
 		/**
 		 * Converts a byte[] to an int[]; assumes native byte ordering; assumes short
 		 * @param b - Byte[]
-		 * @return
 		 */
 		private static short[] byteArrayToIntArray(byte[] b )
 		{
@@ -1024,6 +1023,7 @@ public class ShortProcessorTest {
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testShortProcessorIntIntShortArrayColorModelBoolean()
 	{

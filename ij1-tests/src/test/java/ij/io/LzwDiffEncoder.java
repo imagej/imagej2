@@ -101,9 +101,9 @@ public class LzwDiffEncoder {
 	
 	static public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
 	{
-		input = differentiate(input, format, fi);
-		
-		byte[] output = LzwEncoder.encode(input);
+		byte[] adjustedInput = differentiate(input, format, fi);
+
+		byte[] output = LzwEncoder.encode(adjustedInput);
 
 		return output;
 	}

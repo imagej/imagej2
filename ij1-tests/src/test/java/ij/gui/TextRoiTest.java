@@ -128,18 +128,6 @@ public class TextRoiTest {
 		assertTrue(t.isDrawingTool());  // true of all TextRois
 	}
 
-	private void validateAddChars(String charSeq, String result)
-	{
-		t = new TextRoi(1,3,"");
-
-		t.setImage(RoiHelpers.getCalibratedImagePlus());  // needed to avoid runtime crash
-		
-		for (int i = 0; i < charSeq.length(); i++)
-			t.addChar(charSeq.charAt(i));
-		
-		assertEquals(result, t.getText());
-	}
-	
 	@Test
 	public void testAddChar() {
 		

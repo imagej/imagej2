@@ -46,6 +46,7 @@ public class Color8Format extends PixelFormat {
 		super("Color8",1,8,1);  // super(String name, int numSamples, int bitsPerSample, int planes)
 	}
 	
+	@Override
 	boolean canDoImageCombo(int compression, ByteOrder.Value byteOrder, int headerBytes, boolean stripped)
 	{
 		if (compression == FileInfo.COMPRESSION_UNKNOWN)
@@ -62,11 +63,13 @@ public class Color8Format extends PixelFormat {
 		return true;
 	}
 	
+	@Override
 	byte[] nativeBytes(long pix, ByteOrder.Value byteOrder)
 	{
 		return new byte[] {(byte)(pix & 0xff)};
 	}
 	
+	@Override
 	byte[] getBytes(long[][] image, int compression, ByteOrder.Value byteOrder, int headerBytes, boolean inStrips, FileInfo fi)
 	{
 		initializeFileInfo(fi,FileInfo.COLOR8,compression,byteOrder,image.length,image[0].length);
@@ -83,6 +86,7 @@ public class Color8Format extends PixelFormat {
 		return output;
 	}
 
+	@Override
 	Object expectedResults(long[][] inputImage)
 	{
 		byte[] output = new byte[inputImage.length * inputImage[0].length];
@@ -95,6 +99,7 @@ public class Color8Format extends PixelFormat {
 		return output;
 	}
 
+	@Override
 	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		return bytes;

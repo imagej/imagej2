@@ -46,6 +46,7 @@ public class Gray64FloatFormat extends PixelFormat {
 		super("Gray64Float",1,64,1);  // super(String name, int numSamples, int bitsPerSample, int planes)
 	}
 	
+	@Override
 	boolean canDoImageCombo(int compression, ByteOrder.Value byteOrder, int headerBytes, boolean stripped)
 	{
 		if (compression != FileInfo.COMPRESSION_NONE)
@@ -57,11 +58,12 @@ public class Gray64FloatFormat extends PixelFormat {
 		return true;
 	}
 	
+	@Override
 	byte[] nativeBytes(long pix, ByteOrder.Value byteOrder)
 	{
 		byte[] output = new byte[8];
 
-		double dPix = (double) pix;
+		double dPix = pix;
 
 		long bPix = Double.doubleToLongBits(dPix);
 
@@ -80,6 +82,7 @@ public class Gray64FloatFormat extends PixelFormat {
 		return output;
 	}
 	
+	@Override
 	byte[] getBytes(long[][] image, int compression, ByteOrder.Value byteOrder, int headerBytes, boolean inStrips, FileInfo fi)
 	{
 		initializeFileInfo(fi,FileInfo.GRAY64_FLOAT,compression,byteOrder,image.length,image[0].length);
@@ -96,6 +99,7 @@ public class Gray64FloatFormat extends PixelFormat {
 
 	}
 
+	@Override
 	Object expectedResults(long[][] inputImage)
 	{
 		float[] output = new float[inputImage.length * inputImage[0].length];
@@ -103,10 +107,11 @@ public class Gray64FloatFormat extends PixelFormat {
 		int i = 0;
 		for (long[] row : inputImage)
 			for (long pix : row)
-				output[i++] = (float)pix;
+				output[i++] = pix;
 		return output;
 	}
 
+	@Override
 	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		// this method not tested by ImageWriter. Therefore no implementation until it will be used.

@@ -508,7 +508,6 @@ public class ImageProcessorTest
 	/**
 	 * Converts a byte[] to an int[]; assumes native byte ordering
 	 * @param b - Byte[]
-	 * @return
 	 */
 	public static int[] byteArrayToIntArray(byte[] b )
 	{
@@ -1127,6 +1126,7 @@ public class ImageProcessorTest
 		assertEquals( false, testColorProcessor.getInterpolate() );
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testIsKillable()
 	{
@@ -1296,6 +1296,7 @@ public class ImageProcessorTest
 		testImageStats( testColorProcessor, "stats[count=64000, mean=23.8383125, min=0.0, max=248.0] 209.8867525101403 117.7659003890493 160.0 100.0");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testDrawDot2()
 	{
@@ -1737,8 +1738,8 @@ public class ImageProcessorTest
 	@Test
 	public void testCubic()
 	{
-		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		assertEquals( 0.0, refColorProcessor.cubic( 19.99 ), 0.0 );
+		new ColorProcessor( width, height, getRefImageArray() );
+		assertEquals( 0.0, ImageProcessor.cubic( 19.99 ), 0.0 );
 	}
 
 	@Test
@@ -1903,6 +1904,7 @@ public class ImageProcessorTest
 		testImageStats( testColorProcessor, "stats[count=64000, mean=69.13840625, min=0.0, max=247.0] 149.75832087032828 86.8824061330147 160.0 100.0");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testTranslateIntIntBoolean()
 	{

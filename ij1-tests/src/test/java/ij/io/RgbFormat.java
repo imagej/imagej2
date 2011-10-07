@@ -46,6 +46,7 @@ public class RgbFormat extends PixelFormat {
 		super("Rgb",3,8,1);  // super(String name, int numSamples, int bitsPerSample, int planes)
 	}
 	
+	@Override
 	boolean canDoImageCombo(int compression, ByteOrder.Value byteOrder, int headerBytes, boolean stripped)
 	{
 		if (compression == FileInfo.COMPRESSION_UNKNOWN)
@@ -62,6 +63,7 @@ public class RgbFormat extends PixelFormat {
 		return true;
 	}
 	
+	@Override
 	byte[] nativeBytes(long pix, ByteOrder.Value byteOrder)
 	{
 		byte[] output = new byte[3];
@@ -73,6 +75,7 @@ public class RgbFormat extends PixelFormat {
 		return output;
 	}
 	
+	@Override
 	byte[] getBytes(long[][] image, int compression, ByteOrder.Value byteOrder, int headerBytes, boolean inStrips, FileInfo fi)
 	{
 		initializeFileInfo(fi,FileInfo.RGB,compression,byteOrder,image.length,image[0].length);
@@ -90,6 +93,7 @@ public class RgbFormat extends PixelFormat {
 
 	}
 
+	@Override
 	Object expectedResults(long[][] inputImage)
 	{
 		int[] output = new int[inputImage.length * inputImage[0].length];
@@ -104,6 +108,7 @@ public class RgbFormat extends PixelFormat {
 		return output;
 	}
 
+	@Override
 	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		int numInts = bytes.length / 3;

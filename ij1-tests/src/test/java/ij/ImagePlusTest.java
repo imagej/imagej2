@@ -225,29 +225,29 @@ public class ImagePlusTest {
 
 	@Test
 	public void testDraw() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
 	@Test
 	public void testDrawIntIntIntInt() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
 	@Test
 	public void testUpdateAndDraw() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
 	@Test
 	public void testUpdateChannelAndDraw() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
@@ -268,15 +268,15 @@ public class ImagePlusTest {
 
 	@Test
 	public void testRepaintWindow() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
 	@Test
 	public void testUpdateAndRepaintWindow() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
@@ -642,15 +642,15 @@ public class ImagePlusTest {
 
 	@Test
 	public void testSetWindow() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
 	@Test
 	public void testGetCanvas() {
-		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
+			// note - for now cannot test
 		}
 	}
 
@@ -980,9 +980,8 @@ public class ImagePlusTest {
 
 	@Test
 	public void testSetTitle() {
-		// note - there is some gui stuff here that is not tested
-		if (IJInfo.RUN_GUI_TESTS)
-		{
+		if (IJInfo.RUN_GUI_TESTS) {
+			// note - there is some gui stuff here that is not tested
 		}
 
 		ip = new ImagePlus("TrainWreck",(Image)null);
@@ -2273,7 +2272,7 @@ public class ImagePlusTest {
 		assertEquals(false,fi.intelByteOrder);
 		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
-		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
+		assertArrayEquals(st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(2.0,fi.pixelWidth,Assert.DOUBLE_TOL);
 		assertEquals(3.0,fi.pixelHeight,Assert.DOUBLE_TOL);
 		assertEquals("pixel",fi.unit);
@@ -2305,7 +2304,7 @@ public class ImagePlusTest {
 		assertEquals(false,fi.intelByteOrder);
 		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
-		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
+		assertArrayEquals(st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
 		assertEquals(1.0,fi.pixelHeight,Assert.DOUBLE_TOL);
 		assertNull(fi.unit);
@@ -2336,7 +2335,7 @@ public class ImagePlusTest {
 		assertEquals(false,fi.intelByteOrder);
 		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
-		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
+		assertArrayEquals(st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
 		assertEquals(1.0,fi.pixelHeight,Assert.DOUBLE_TOL);
 		assertNull(fi.unit);
@@ -2367,7 +2366,7 @@ public class ImagePlusTest {
 		assertEquals(false,fi.intelByteOrder);
 		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
-		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
+		assertArrayEquals(st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
 		assertEquals(1.0,fi.pixelHeight,Assert.DOUBLE_TOL);
 		assertNull(fi.unit);
@@ -2398,7 +2397,7 @@ public class ImagePlusTest {
 		assertEquals(false,fi.intelByteOrder);
 		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
-		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
+		assertArrayEquals(st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
 		assertEquals(1.0,fi.pixelHeight,Assert.DOUBLE_TOL);
 		assertNull(fi.unit);
@@ -2432,7 +2431,7 @@ public class ImagePlusTest {
 		assertEquals(false,fi.intelByteOrder);
 		// TODO : reenable equality test when ImgLib is returning references
 		//assertEquals(st.getImageArray(),fi.pixels);
-		assertArrayEquals((Object[])st.getImageArray(),(Object[])fi.pixels);
+		assertArrayEquals(st.getImageArray(),(Object[])fi.pixels);
 		assertEquals(1.0,fi.pixelWidth,Assert.DOUBLE_TOL);
 		assertEquals(1.0,fi.pixelHeight,Assert.DOUBLE_TOL);
 		assertNull(fi.unit);
@@ -3100,8 +3099,11 @@ public class ImagePlusTest {
 		public boolean opened, closed, updated;
 
 		public FakeListener() {}
+		@Override
 		public void imageOpened(ImagePlus imp)  {opened = true;}
+		@Override
 		public void imageClosed(ImagePlus imp)  {closed = true;}
+		@Override
 		public void imageUpdated(ImagePlus imp) {updated = true;}
 	}
 

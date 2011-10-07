@@ -83,14 +83,15 @@ public class FileOpenerTest {
 		assertNotNull(opener);
 	}
 
-	// note - no need to test this - it just does a open(true) and true means display results which we can't test
 	@Test
 	public void testOpen() {
+		// note - no need to test this - it just does a open(true) and true means display results which we can't test
 	}
 
-	// note - only testing false case - true means display results which we can't test
 	@Test
 	public void testOpenBoolean() {
+		// note - only testing false case - true means display results which we can't test
+
 		FileInfo info;
 		ImagePlus ip;
 

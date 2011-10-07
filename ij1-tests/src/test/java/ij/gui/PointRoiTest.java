@@ -282,9 +282,6 @@ public class PointRoiTest {
 	
 	@Test
 	public void testSubtractPointsRoi() {
-		Roi roi;
-		PointRoi pts;
-
 		// since Polygon.contains is so finicky I can't test edge cases
 		
 		// empty pointroi and empty roi

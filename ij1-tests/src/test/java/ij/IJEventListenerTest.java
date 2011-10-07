@@ -49,6 +49,7 @@ public class IJEventListenerTest {
 	
 	class FakeEL implements IJEventListener {
 
+		@Override
 		public void eventOccurred(int eventID) {
 			// do nothing
 		}
