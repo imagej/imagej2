@@ -34,16 +34,29 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import ij.Assert;
+import ij.IJInfo;
+import ij.process.ByteProcessor;
+import ij.process.FloatPolygon;
+import ij.process.ImageProcessor;
 
 import java.awt.Polygon;
 
-import ij.*;
-import ij.process.*;
-import ij.measure.Calibration;
+import org.junit.Test;
 
+/**
+ * Unit tests for {@link PolygonRoi}.
+ *
+ * @author Barry DeZonia
+ */
 public class PolygonRoiTest {
 
 	enum Fit {NONE,SPLINE};

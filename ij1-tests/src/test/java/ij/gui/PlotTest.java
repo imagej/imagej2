@@ -34,15 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.awt.Color;
 import java.awt.Font;
 
-import ij.process.ImageProcessor;
-
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Plot}.
+ *
+ * @author Barry DeZonia
+ */
 public class PlotTest {
 
 	// Note - Plot does not really have any accessors. Only package access variables. Therefore I can't do much if

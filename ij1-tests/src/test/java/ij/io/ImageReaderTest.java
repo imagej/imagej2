@@ -34,42 +34,51 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import ij.Assert;
+import ij.IJInfo;
+
+import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
 
-import java.io.*;
-
-import ij.IJInfo;
-import ij.Assert;
-
-// NOTES
-//   This suite of tests also exercises the public class ByteVector which is defined in ImageReader.java
-//   Due to the API definitions of ByteVector it is difficult to exercise single methods. The tests tend
-//   to be interdependent so some methods are tested in multiple places.
-
-// IMPORTANT: I have made changes to our local copy of ImageJ to work around bugs in ImageReader.
-//   - 4 byte pixels with LZW and PACK_BITS compression: ImageReader.readPixels() had different code for channel selection
-//       when the code called was either readChunkyRGB() or readCompressedChunkyRGB(). Fixed in local repository.
-//       3-9-10 - BDZ integrated Wayne's fixes into our copy of ImageReader.java
-//   - gray16 signed data reading when compressed LZW_WITH_DIFFERENCING: the 32768 bias was being computed before
-//       the differences were being used. I have updated ImageReader in the local repository.
-//       3-9-10 - BDZ integrated Wayne's fixes into our copy of ImageReader.java
-//   - lurking bug in ImageReader for 16-bit files? If strips > 1 then it assumes its compressed regardless of the
-//       compression flag. However uncompress() doesn't know what to do with it and does no uncompression.
-
-// TODO if needed
-//   readPixels()
-//     JPEG code in place but failing tests - this is due to the fact that ImageJ uses the JDK's inbuilt JPEG support which is lossy.
-//       I think for now we'll not test it (we'll assume Java knows what its doing). JPEG capabilities blocked in canDoImageCombo()
-//       of each relevant PixelFormat.
-//     Planar pixel formats (RgbPlanarFormat and Rgb48PlanarFormat) pass data in one strip. RgbPlanar does one strip for all three planes.
-//       Rgb48Planar does one strip per plane. ImageReader inspections show that the written code there could conceivably handle multiple
-//       strips per plane. However this may be an oversight in the original source code. Since the readPixels() subcase that reads these
-//       formats just reads the underlying 8 and 16 bit subcases the strip lengths and offsets are reused and thus the strips have to be
-//       encoded with a fixed size as big as the maximum compressed strip size. I doubt people are doing this but might need to test this.
-
+/**
+ * Unit tests for {@link ImageReader}.
+ *
+ * @author Barry DeZonia
+ */
 public class ImageReaderTest {
+
+	// NOTES
+	//   This suite of tests also exercises the public class ByteVector which is defined in ImageReader.java
+	//   Due to the API definitions of ByteVector it is difficult to exercise single methods. The tests tend
+	//   to be interdependent so some methods are tested in multiple places.
+	
+	// IMPORTANT: I have made changes to our local copy of ImageJ to work around bugs in ImageReader.
+	//   - 4 byte pixels with LZW and PACK_BITS compression: ImageReader.readPixels() had different code for channel selection
+	//       when the code called was either readChunkyRGB() or readCompressedChunkyRGB(). Fixed in local repository.
+	//       3-9-10 - BDZ integrated Wayne's fixes into our copy of ImageReader.java
+	//   - gray16 signed data reading when compressed LZW_WITH_DIFFERENCING: the 32768 bias was being computed before
+	//       the differences were being used. I have updated ImageReader in the local repository.
+	//       3-9-10 - BDZ integrated Wayne's fixes into our copy of ImageReader.java
+	//   - lurking bug in ImageReader for 16-bit files? If strips > 1 then it assumes its compressed regardless of the
+	//       compression flag. However uncompress() doesn't know what to do with it and does no uncompression.
+	
+	// TODO if needed
+	//   readPixels()
+	//     JPEG code in place but failing tests - this is due to the fact that ImageJ uses the JDK's inbuilt JPEG support which is lossy.
+	//       I think for now we'll not test it (we'll assume Java knows what its doing). JPEG capabilities blocked in canDoImageCombo()
+	//       of each relevant PixelFormat.
+	//     Planar pixel formats (RgbPlanarFormat and Rgb48PlanarFormat) pass data in one strip. RgbPlanar does one strip for all three planes.
+	//       Rgb48Planar does one strip per plane. ImageReader inspections show that the written code there could conceivably handle multiple
+	//       strips per plane. However this may be an oversight in the original source code. Since the readPixels() subcase that reads these
+	//       formats just reads the underlying 8 and 16 bit subcases the strip lengths and offsets are reused and thus the strips have to be
+	//       encoded with a fixed size as big as the maximum compressed strip size. I doubt people are doing this but might need to test this.
 
 	private FormatTester gray8Tester= new FormatTester(new Gray8Format());
 	private FormatTester color8Tester= new FormatTester(new Color8Format());

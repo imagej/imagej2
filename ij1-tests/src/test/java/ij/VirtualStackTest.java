@@ -48,6 +48,11 @@ import java.awt.image.ColorModel;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link VirtualStack}.
+ * 
+ * @author Barry DeZonia
+ */
 public class VirtualStackTest {
 
 	// ******* instance vars

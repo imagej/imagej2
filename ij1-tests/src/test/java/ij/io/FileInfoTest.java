@@ -34,15 +34,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayInputStream;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import ij.io.FileInfo;
-
+/**
+ * Unit tests for {@link FileInfo}.
+ *
+ * @author Barry DeZonia
+ */
 public class FileInfoTest {
 
 	FileInfo fInfo = null;

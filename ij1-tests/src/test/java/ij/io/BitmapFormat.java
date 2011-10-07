@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class BitmapFormat extends PixelFormat
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class BitmapFormat extends PixelFormat {
+
 	BitmapFormat()
 	{
 		super("Bitmap",1,1,1);  // super(String name, int numSamples, int bitsPerSample, int planes)

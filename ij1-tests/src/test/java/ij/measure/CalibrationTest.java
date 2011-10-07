@@ -34,17 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.measure;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import ij.Assert;
+import ij.ImagePlus;
+import ij.gui.NewImage;
+import ij.plugin.filter.Analyzer;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ij.Assert;
-import ij.ImagePlus;
-import ij.plugin.filter.Analyzer;
-import ij.gui.NewImage;
-
+/**
+ * Unit tests for {@link Calibration}.
+ *
+ * @author Barry DeZonia
+ */
 public class CalibrationTest {
 
 	Calibration c;

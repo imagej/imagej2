@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class PixelArranger
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class PixelArranger {
+	
 	PixelArranger() {}
 
 	static void reverse(byte[] bytes)

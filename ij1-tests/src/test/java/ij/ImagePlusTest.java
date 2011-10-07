@@ -73,6 +73,11 @@ import org.junit.Test;
 // note - in some places I refer to ImagePlus's protected instance var ip (via ip.ip) rather than getProcessor() (via
 //   ip.getProcessor()) as getProcessor() has some side effects. If we eliminate the ip instance var some tests will break.
 
+/**
+ * Unit tests for {@link ImagePlus}.
+ *
+ * @author Barry DeZonia
+ */
 public class ImagePlusTest {
 
 	ImagePlus ip;

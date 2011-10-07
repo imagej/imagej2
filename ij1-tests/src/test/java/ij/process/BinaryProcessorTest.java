@@ -43,6 +43,11 @@ import java.awt.image.ColorModel;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link BinaryProcessor}.
+ *
+ * @author Barry DeZonia
+ */
 public class BinaryProcessorTest {
 
   private static int width;

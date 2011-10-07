@@ -37,7 +37,13 @@ package ij.io;
 import loci.formats.codec.CodecOptions;
 import loci.formats.codec.JPEGCodec;
 
-class JpegEncoder {
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class JpegEncoder {
+	
 	JpegEncoder() {}
 	
 	static public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
@@ -59,5 +65,5 @@ class JpegEncoder {
 		}
 		return output;
 	}
+	
 }
-

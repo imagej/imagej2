@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class BgrFormat extends PixelFormat
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class BgrFormat extends PixelFormat {
+	
 	BgrFormat()
 	{
 		super("Bgr",3,8,1);  // super(String name, int numSamples, int bitsPerSample, int planes)

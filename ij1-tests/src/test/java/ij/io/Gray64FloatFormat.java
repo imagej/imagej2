@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class Gray64FloatFormat extends PixelFormat
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class Gray64FloatFormat extends PixelFormat {
+
 	Gray64FloatFormat()
 	{
 		super("Gray64Float",1,64,1);  // super(String name, int numSamples, int bitsPerSample, int planes)

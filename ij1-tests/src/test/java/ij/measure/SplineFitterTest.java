@@ -34,12 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.measure;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import ij.Assert;
 import ij.IJInfo;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link SplineFitter}.
+ *
+ * @author Barry DeZonia
+ */
 public class SplineFitterTest {
 
 	SplineFitter sf;

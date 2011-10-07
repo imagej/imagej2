@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class TwelveBitEncoder
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class TwelveBitEncoder {
+
 	TwelveBitEncoder() {}
 	
 	static public byte[] encode(long[][] inPix)

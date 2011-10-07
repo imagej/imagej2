@@ -34,13 +34,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
-
-import ij.*;
-import ij.process.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import ij.Assert;
+import ij.IJInfo;
+import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Arrow}.
+ *
+ * @author Barry DeZonia
+ */
 public class ArrowTest {
 
 	Arrow ar;

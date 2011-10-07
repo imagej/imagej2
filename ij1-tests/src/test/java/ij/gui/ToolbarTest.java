@@ -34,17 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
-
-import java.awt.Color;
-import java.awt.Dimension;
-
-import ij.ImageJ;
-import ij.Prefs;
-import ij.plugin.MacroInstaller;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Toolbar}.
+ *
+ * @author Barry DeZonia
+ */
 public class ToolbarTest {
 
 	Toolbar bar;

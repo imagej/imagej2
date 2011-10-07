@@ -34,6 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 public class Images {
 
 	// ********************** PRIVATE DATA  ***************************************

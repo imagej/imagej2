@@ -34,12 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.awt.Dimension;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ProgressBar}.
+ *
+ * @author Barry DeZonia
+ */
 public class ProgressBarTest {
 
 	ProgressBar bar;

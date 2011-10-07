@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class Gray16UnsignedFormat extends PixelFormat
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class Gray16UnsignedFormat extends PixelFormat {
+
 	Gray16UnsignedFormat()
 	{
 		super("Gray16Unsigned",1,16,1);  // super(String name, int numSamples, int bitsPerSample, int planes)

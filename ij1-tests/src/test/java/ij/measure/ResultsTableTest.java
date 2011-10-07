@@ -50,7 +50,11 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-
+/**
+ * Unit tests for {@link ResultsTable}.
+ *
+ * @author Barry DeZonia
+ */
 public class ResultsTableTest {
 
 	ResultsTable r;

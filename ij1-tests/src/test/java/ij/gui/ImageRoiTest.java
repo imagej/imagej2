@@ -34,17 +34,24 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import ij.Assert;
+import ij.IJInfo;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 
 import org.junit.Test;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
-import ij.Assert;
-import ij.IJInfo;
-import ij.process.*;
-
+/**
+ * Unit tests for {@link ImageRoi}.
+ *
+ * @author Barry DeZonia
+ */
 public class ImageRoiTest {
 
 	ImageRoi roi;

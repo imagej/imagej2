@@ -34,14 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij;
 
-// implement the interface so that we have compile time check it exists
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ImageListener}.
+ *
+ * @author Barry DeZonia
+ */
 public class ImageListenerTest {
 
+	// implement the interface so that we have compile time check it exists
 	class FakeIL implements ImageListener {
 
 		public void imageClosed(ImagePlus imp) {

@@ -34,10 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link IJEventListener}.
+ *
+ * @author Barry DeZonia
+ */
 public class IJEventListenerTest {
 
 	// implement the interface so that we have compile time check it exists
