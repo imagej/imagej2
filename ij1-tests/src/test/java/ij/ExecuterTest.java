@@ -43,7 +43,11 @@ import java.awt.event.KeyEvent;
 
 import org.junit.Test;
 
-
+/**
+ * Unit tests for {@link Executer}.
+ *
+ * @author Barry DeZonia
+ */
 public class ExecuterTest {
 
 	enum Behavior {RunAsAsked, RunOther, RunNothing};

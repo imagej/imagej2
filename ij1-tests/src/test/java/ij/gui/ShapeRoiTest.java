@@ -34,15 +34,33 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import ij.Assert;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
+
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.Arc2D;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+
 import org.junit.Test;
 
-import java.awt.*;
-import java.awt.geom.*;
-
-import ij.Assert;
-import ij.process.*;
-
+/**
+ * Unit tests for {@link ShapeRoi}.
+ *
+ * @author Barry DeZonia
+ */
 public class ShapeRoiTest {
 
 	ShapeRoi s;

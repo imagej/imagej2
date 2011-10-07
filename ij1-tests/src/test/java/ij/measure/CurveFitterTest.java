@@ -34,9 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.measure;
 
-import static org.junit.Assert.*;
-import ij.IJInfo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import ij.Assert;
+import ij.IJInfo;
 
 import org.junit.Test;
 
@@ -46,6 +48,11 @@ import org.junit.Test;
 //  choosing an "isEquals" tolerance may be key. I'll make a local tolerance that can be
 //  adjusted in case future implementation needs to relax it.
 
+/**
+ * Unit tests for {@link CurveFitter}.
+ *
+ * @author Barry DeZonia
+ */
 public class CurveFitterTest {
 
 	private static final double Tolerance = 0.001;

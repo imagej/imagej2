@@ -34,14 +34,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.util;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import ij.Assert;
 
 import java.awt.Color;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Tools}.
+ *
+ * @author Barry DeZonia
+ */
 public class ToolsTest {
 
 	@Test

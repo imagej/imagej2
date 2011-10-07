@@ -34,9 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Undo}.
+ *
+ * @author Barry DeZonia
+ */
 public class UndoTest {
 	@Test
 	public void testConstants() {

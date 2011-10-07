@@ -34,12 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.util;
 
-import java.util.*;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link StringSorter}.
+ *
+ * @author Barry DeZonia
+ */
 public class StringSorterTest {
 
 	// make sure that StringSorter's implementation matches a known good sort algo: Java's Collections.sort

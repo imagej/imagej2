@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class Color8Format extends PixelFormat
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class Color8Format extends PixelFormat {
+
 	Color8Format()
 	{
 		super("Color8",1,8,1);  // super(String name, int numSamples, int bitsPerSample, int planes)

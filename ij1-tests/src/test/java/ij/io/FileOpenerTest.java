@@ -56,6 +56,11 @@ import java.util.zip.GZIPInputStream;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link FileOpener}.
+ *
+ * @author Barry DeZonia
+ */
 public class FileOpenerTest {
 
 	FileOpener fo;

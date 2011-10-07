@@ -54,6 +54,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link FloatProcessor}.
+ *
+ * @author Barry DeZonia
+ */
 public class FloatProcessorTest {
 
 

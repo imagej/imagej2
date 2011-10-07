@@ -34,12 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
-// implement the interface so that we have compile time check it exists
-
+/**
+ * Unit tests for {@link CommandListener}.
+ *
+ * @author Barry DeZonia
+ */
 public class CommandListenerTest {
+	
+	// implement the interface so that we have compile time check it exists
 	class FakeCL implements CommandListener {
 		public String commandExecuting(String command) { return null; }
 	}
@@ -48,4 +54,5 @@ public class CommandListenerTest {
 	public void testExistence() {
 		assertTrue(true);
 	}
+	
 }

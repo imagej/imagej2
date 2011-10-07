@@ -34,17 +34,27 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import ij.Assert;
+import ij.ImagePlus;
+import ij.measure.Calibration;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+
+import java.awt.Polygon;
+import java.awt.event.KeyEvent;
 
 import org.junit.Test;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-
-import ij.*;
-import ij.measure.Calibration;
-import ij.process.*;
-
+/**
+ * Unit tests for {@link OvalRoi}.
+ *
+ * @author Barry DeZonia
+ */
 public class OvalRoiTest {
 
 	OvalRoi o;

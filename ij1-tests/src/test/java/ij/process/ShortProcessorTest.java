@@ -37,7 +37,6 @@ package ij.process;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -50,6 +49,11 @@ import java.io.IOException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ShortProcessor}.
+ *
+ * @author Barry DeZonia
+ */
 public class ShortProcessorTest {
 
 	 public static int width;

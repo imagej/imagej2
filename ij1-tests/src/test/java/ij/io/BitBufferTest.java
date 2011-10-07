@@ -38,13 +38,17 @@ package ij.io;
 // 1) getBits(99) on a 48 bit buffer just gives the 32 bits - no exception thrown, no overflow testing
 // 2) BitBuffer(null) will generate an uncaught runtime exception
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import ij.IJInfo;
 
 import org.junit.Test;
 
-import ij.io.BitBuffer;
-import ij.IJInfo;
-
+/**
+ * Unit tests for {@link BitBuffer}.
+ *
+ * @author Barry DeZonia
+ */
 public class BitBufferTest {
 	private BitBuffer bits = null;
 

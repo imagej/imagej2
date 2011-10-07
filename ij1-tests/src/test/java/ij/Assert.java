@@ -37,6 +37,11 @@ package ij;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 
+/**
+ * Helper methods for unit testing assertions.
+ *
+ * @author Barry DeZonia
+ */
 public class Assert {
 	
 	public static final float FLOAT_TOL = 0.00001f;
@@ -111,4 +116,5 @@ public class Assert {
 		else
 			fail("Assert.assertArraysSame() passed unsupported data format type : (" + aClass.getName() + ")");
 	}
+	
 }

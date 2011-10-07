@@ -34,7 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-abstract class PixelFormat {
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public abstract class PixelFormat {
 	
 	private String name;  // might be useful for debugging purposes. otherwise could be an interface
 	private int numSamples;

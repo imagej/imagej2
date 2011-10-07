@@ -34,16 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.process;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import ij.Assert;
+import ij.ByteCreator;
+import ij.IJInfo;
 
 import java.awt.image.IndexColorModel;
 
-import ij.IJInfo;
-import ij.Assert;
-import ij.ByteCreator;
+import org.junit.Test;
 
+/**
+ * Unit tests for {@link LUT}.
+ *
+ * @author Barry DeZonia
+ */
 public class LUTTest {
 
 	LUT lut;

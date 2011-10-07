@@ -34,12 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
-
-import java.awt.Dimension;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link TrimmedButton}.
+ *
+ * @author Barry DeZonia
+ */
 public class TrimmedButtonTest {
 	
 	TrimmedButton b; 

@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class BargFormat extends PixelFormat
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class BargFormat extends PixelFormat {
+	
 	BargFormat()
 	{
 		super("Barg",4,8,1);  // super(String name, int numSamples, int bitsPerSample, int planes)

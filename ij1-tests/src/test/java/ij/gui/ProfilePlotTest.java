@@ -34,16 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
-
-import java.awt.Dimension;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import ij.Assert;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ProfilePlot}.
+ *
+ * @author Barry DeZonia
+ */
 public class ProfilePlotTest {
 
 	ProfilePlot p;

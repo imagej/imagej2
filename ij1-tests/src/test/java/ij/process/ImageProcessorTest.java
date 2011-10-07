@@ -61,6 +61,11 @@ import javax.swing.JLabel;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ImageProcessor}.
+ *
+ * @author Barry DeZonia
+ */
 public class ImageProcessorTest
 {
 	public static int width;

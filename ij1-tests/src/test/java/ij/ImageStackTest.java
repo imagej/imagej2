@@ -34,14 +34,27 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+
+import java.awt.Rectangle;
+import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
 
 import org.junit.Test;
 
-import java.awt.*;
-import java.awt.image.*;
-import ij.process.*;
-
+/**
+ * Unit tests for {@link ImageStack}.
+ *
+ * @author Barry DeZonia
+ */
 public class ImageStackTest {
 
 	private ImageStack is;

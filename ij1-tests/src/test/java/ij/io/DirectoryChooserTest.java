@@ -34,13 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import ij.IJInfo;
 
 import org.junit.Test;
 
-import ij.io.DirectoryChooser;
-import ij.IJInfo;
-
+/**
+ * Unit tests for {@link DirectoryChooser}.
+ *
+ * @author Barry DeZonia
+ */
 public class DirectoryChooserTest {
 
 	@Test

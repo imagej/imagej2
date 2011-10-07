@@ -34,24 +34,34 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import ij.Assert;
+import ij.IJ;
+import ij.IJInfo;
+import ij.ImagePlus;
+import ij.measure.Calibration;
+import ij.process.Blitter;
+import ij.process.ByteProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 import org.junit.Test;
 
-import ij.Assert;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.Undo;
-
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.geom.PathIterator;
-import java.util.*;
-
-import ij.*;
-import ij.measure.Calibration;
-import ij.process.*;
-
+/**
+ * Unit tests for {@link Roi}.
+ *
+ * @author Barry DeZonia
+ */
 public class RoiTest {
 
 	Roi roi;

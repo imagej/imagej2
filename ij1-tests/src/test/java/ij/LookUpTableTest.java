@@ -34,15 +34,27 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
 
-import org.junit.Test;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
+
 import org.junit.Before;
+import org.junit.Test;
 
-import java.awt.image.*;
-
-import ij.process.*;
-
+/**
+ * Unit tests for {@link LookUpTable}.
+ *
+ * @author Barry DeZonia
+ */
 public class LookUpTableTest {
 
 	//  *********    instance vars of LookUpTest

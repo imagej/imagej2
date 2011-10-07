@@ -54,6 +54,11 @@ import javax.swing.JLabel;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ColorProcessor}.
+ *
+ * @author Barry DeZonia
+ */
 public class ColorProcessorTest {
 
     public static int width;

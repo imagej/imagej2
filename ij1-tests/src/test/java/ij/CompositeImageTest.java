@@ -56,6 +56,11 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link CompositeImage}.
+ *
+ * @author Barry DeZonia
+ */
 public class CompositeImageTest {
 
 	// instance vars

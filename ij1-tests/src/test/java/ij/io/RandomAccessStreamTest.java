@@ -34,8 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import ij.Assert;
 
 import java.io.ByteArrayInputStream;
@@ -45,6 +48,11 @@ import java.io.RandomAccessFile;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link RandomAccessStream}.
+ *
+ * @author Barry DeZonia
+ */
 public class RandomAccessStreamTest {
 
 	private RandomAccessStream stream;

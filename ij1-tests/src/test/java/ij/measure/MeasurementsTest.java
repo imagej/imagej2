@@ -34,10 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.measure;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Measurements}.
+ *
+ * @author Barry DeZonia
+ */
 public class MeasurementsTest {
 	@Test
 	public void testConstants()

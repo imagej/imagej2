@@ -34,13 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import ij.IJInfo;
+import ij.ImagePlus;
+import ij.process.ByteProcessor;
 
 import org.junit.Test;
 
-import ij.*;
-import ij.process.*;
-
+/**
+ * Unit tests for {@link FreehandRoi}.
+ *
+ * @author Barry DeZonia
+ */
 public class FreehandRoiTest {
 	
 	FreehandRoi roi;

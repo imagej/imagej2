@@ -38,7 +38,12 @@ package ij.io;
 //   - test ImageReader's ability to handle more than one style of packbits encoded data
 //   - stand in for the real PackBitsEncoder if we think it is ever faulty
 
-class PackbitsEncoderNaive {
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class PackbitsEncoderNaive {
 	
 	PackbitsEncoderNaive() {}
 	

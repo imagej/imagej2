@@ -34,6 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 public class ByteCreator {
 
 	// helper - create a list of bytes in ascending order

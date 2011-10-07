@@ -55,6 +55,11 @@ import java.util.Random;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ByteProcessor}.
+ *
+ * @author Barry DeZonia
+ */
 public class ByteProcessorTest {
 
   private static int width;

@@ -34,10 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.macro;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Symbol}.
+ *
+ * @author Barry DeZonia
+ */
 public class SymbolTest {
 
 	@Test

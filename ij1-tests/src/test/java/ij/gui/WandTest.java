@@ -34,12 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Wand}.
+ *
+ * @author Barry DeZonia
+ */
 public class WandTest {
 
 	// data

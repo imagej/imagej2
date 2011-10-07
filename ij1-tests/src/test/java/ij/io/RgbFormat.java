@@ -34,8 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package ij.io;
 
-class RgbFormat extends PixelFormat
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class RgbFormat extends PixelFormat {
+
 	RgbFormat()
 	{
 		super("Rgb",3,8,1);  // super(String name, int numSamples, int bitsPerSample, int planes)

@@ -47,15 +47,18 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-/*
-	NOTES
-		fi.nImages == 1 implies no imageStack : its not possible to have a stack of 1 items.
-		Therefore must make sure you don't pass a "stack" of 1 thing to the tryX() routines as ImageWriter will
-		assume the data is not stacked and will fail to cast the pixels correctly. This requirement enforced
-		by making sure Images.ImageSets contain sets with more than one image in them.
+/**
+ * Unit tests for {@link ImageWriter}.
+ *
+ * @author Barry DeZonia
  */
-
 public class ImageWriterTest {
+
+	// NOTES
+	// fi.nImages == 1 implies no imageStack : its not possible to have a stack of 1 items.
+	// Therefore must make sure you don't pass a "stack" of 1 thing to the tryX() routines as ImageWriter will
+	// assume the data is not stacked and will fail to cast the pixels correctly. This requirement enforced
+	// by making sure Images.ImageSets contain sets with more than one image in them.
 
 	final ByteOrder.Value[] ByteOrders = new ByteOrder.Value[] {ByteOrder.Value.DEFAULT,ByteOrder.Value.INTEL};
 

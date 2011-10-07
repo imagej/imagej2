@@ -37,10 +37,15 @@ package ij.io;
 import loci.formats.codec.CodecOptions;
 import loci.formats.codec.LZWCodec;
 
-class LzwEncoder {
-	
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class LzwEncoder {
+
 	LzwEncoder() {}
-	
+
 	static public byte[] encode(byte[] input)
 	{
 		byte[] output = null;
@@ -52,4 +57,5 @@ class LzwEncoder {
 		}
 		return output;
 	}
+
 }

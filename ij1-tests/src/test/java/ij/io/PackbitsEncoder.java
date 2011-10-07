@@ -38,7 +38,12 @@ import static org.junit.Assert.assertArrayEquals;
 
 // A real PackBitsEncoder is needed to test packbits compression in ImageReader::readPixels()
 
-class PackbitsEncoder {
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
+public class PackbitsEncoder {
 	
 	PackbitsEncoder() {}
 
