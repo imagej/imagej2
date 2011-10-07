@@ -36,15 +36,15 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
+import imagej.data.display.GetImgMinMax;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Log;
 
-import java.util.Iterator;
 import java.util.List;
 
+import net.imglib2.Cursor;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.type.numeric.RealType;
 
@@ -60,8 +60,9 @@ import net.imglib2.type.numeric.RealType;
 		weight = 0) })
 public class AutoContrast implements ImageJPlugin {
 
-	static final int AUTO_THRESHOLD = 5000;
-	static int autoThreshold;
+	private static final int BINS = 256;
+	private static final int AUTO_THRESHOLD = 5000;
+	private static int autoThreshold;
 
 	@Parameter(required = true, persist = false)
 	private DatasetView view;
@@ -70,16 +71,8 @@ public class AutoContrast implements ImageJPlugin {
 	public void run() {
 		final Dataset dataset = view.getData();
 
-		final Iterator<?> itr = dataset.getImgPlus().getImg().cursor();
-		final int[] histogram = new int[256];
-		int pixelCount = 0;
-		while (itr.hasNext()) {
-			final String v = itr.next().toString();
-			// TODO: v needs to be scaled to 0-255 for non 8-bit images
-			final int val = Integer.valueOf(v);
-			histogram[val] += 1;
-			pixelCount += 1;
-		}
+		final int[] histogram = computeHistogram(dataset);
+		final int pixelCount = countPixels(histogram);
 
 		if (autoThreshold < 10) autoThreshold = AUTO_THRESHOLD;
 		else autoThreshold /= 2;
@@ -94,9 +87,9 @@ public class AutoContrast implements ImageJPlugin {
 			if (count > limit) count = 0;
 			found = count > threshold;
 		}
-		while (!found && i < 255);
+		while (!found && i < BINS - 1);
 		final int hmin = i;
-		i = 256;
+		i = BINS;
 		do {
 			i--;
 			count = histogram[i];
@@ -125,7 +118,57 @@ public class AutoContrast implements ImageJPlugin {
 			max = 255;
 		}
 
-		Log.debug("AutoContrast: " + hmin + "," + hmax);
+		setMinMax(min, max);
+	}
+
+	// -- Helper methods --
+
+	private int[] computeHistogram(final Dataset dataset) {
+		// CTR FIXME - Autoscaling needs to be reworked.
+
+//		final double histMin = dataset.getChannelMinimum(0);
+//		final double histMax = dataset.getChannelMaximum(0);
+		final double[] range = computeMinMax(dataset);
+
+		final Cursor<? extends RealType<?>> c =
+			dataset.getImgPlus().getImg().cursor();
+		final int[] histogram = new int[BINS];
+		while (c.hasNext()) {
+			final double value = c.next().getRealDouble();
+			final int bin = computeBin(value, range[0], range[1]);
+			histogram[bin]++;
+		}
+		return histogram;
+	}
+
+	private double[] computeMinMax(final Dataset d) {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final GetImgMinMax<? extends RealType<?>> cmm =
+			new GetImgMinMax(d.getImgPlus());
+		cmm.process();
+		return new double[] { cmm.getMin().getRealDouble(),
+			cmm.getMax().getRealDouble() };
+	}
+
+	private int computeBin(final double value, final double histMin,
+		final double histMax)
+	{
+		double v = value;
+		if (v < histMin) v = histMin;
+		if (v > histMax) v = histMax;
+		final int bin = (int) ((BINS - 1) * (v - histMin) / (histMax - histMin));
+		return bin;
+	}
+
+	private int countPixels(final int[] histogram) {
+		int sum = 0;
+		for (final int v : histogram) {
+			sum += v;
+		}
+		return sum;
+	}
+
+	private void setMinMax(final double min, final double max) {
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
@@ -134,7 +177,6 @@ public class AutoContrast implements ImageJPlugin {
 		}
 		view.getProjector().map();
 		view.update();
-
 	}
 
 }

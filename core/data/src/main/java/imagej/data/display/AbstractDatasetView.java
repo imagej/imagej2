@@ -277,6 +277,8 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void autoscale(final int c) {
+		// CTR FIXME - Autoscaling needs to be reworked.
+		
 		// Get min/max from metadata
 		double min = dataset.getImgPlus().getChannelMinimum(c);
 		double max = dataset.getImgPlus().getChannelMaximum(c);
@@ -297,9 +299,8 @@ public abstract class AbstractDatasetView extends AbstractDataView
 			dataset.getImgPlus().setChannelMinimum(c, type.getMinValue());
 			dataset.getImgPlus().setChannelMaximum(c, type.getMaxValue());
 		}
-
 	}
-
+	
 	private void updateLUTs() {
 		if (converters.size() == 0) {
 			return; // converters not yet initialized

@@ -58,6 +58,8 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements
 	Algorithm, MultiThreaded, Benchmark
 {
 
+	// CTR FIXME - Autoscaling needs to be reworked.
+	
 	final Img<T> image;
 	final T min, max;
 	String errorMessage = "";
