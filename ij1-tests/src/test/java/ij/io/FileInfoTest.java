@@ -75,8 +75,8 @@ public class FileInfoTest {
 		fInfo.rowsPerStrip = 3;
 		fInfo.lutSize = 768;
 		fInfo.reds = new byte[] {1,7,4,8,99,23,15};
-		fInfo.greens = new byte[] {1,7,4,8,99,23,15};;
-		fInfo.blues = new byte[] {1,7,4,8,99,23,15};;
+		fInfo.greens = new byte[] {1,7,4,8,99,23,15};
+		fInfo.blues = new byte[] {1,7,4,8,99,23,15};
 		fInfo.pixels = new byte[] {1,2,3,4,5,6,7,8,9,10};	
 		fInfo.debugInfo = "fake data";
 		fInfo.sliceLabels = new String[] {"Jane", "Doe"};
@@ -154,6 +154,7 @@ public class FileInfoTest {
 
 	@After
 	public void tearDown() throws Exception {
+		// no action needed
 	}
 
 	@Test

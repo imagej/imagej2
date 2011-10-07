@@ -69,8 +69,7 @@ public class PixelArranger {
 			compressed = PackbitsEncoder.encode(input);
 		else if (fi.compression == FileInfo.JPEG)
 			compressed = JpegEncoder.encode(input,format,fi);
-		else
-			; // do nothing
+		// else do nothing
 
 		return compressed;
 	}

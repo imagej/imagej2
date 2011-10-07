@@ -69,16 +69,6 @@ public class CompositeImageTest {
 	ImagePlus ip;
 	ImageStack st;
 
-	// helper method: needed because surprisingly bools1.equals(bools2) seems to compare references
-	private boolean boolsEqual(boolean[] a, boolean[] b) {
-		if (a.length != b.length)
-			return false;
-		for (int i = 0; i < a.length; i++)
-			if (a[i] != b[i])
-				return false;
-		return true;
-	}
-
 	// helper method: needed because surprisingly bytes1.equals(bytes2) seems to compare references
 	private boolean bytesEqual(byte[] a, byte[] b) {
 		if (a.length != b.length)
@@ -774,7 +764,6 @@ public class CompositeImageTest {
 	@Test
 	public void testGetChannelLut() {
 		LUT[] luts = new LUT[3];
-		LUT lut;
 
 		ci.setPosition(1,1,1);
 		assertEquals(1,ci.getChannel());

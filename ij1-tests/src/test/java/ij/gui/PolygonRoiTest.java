@@ -59,7 +59,7 @@ import org.junit.Test;
  */
 public class PolygonRoiTest {
 
-	enum Fit {NONE,SPLINE};
+	enum Fit {NONE,SPLINE}
 	
 	PolygonRoi p;
 	
@@ -472,8 +472,6 @@ public class PolygonRoiTest {
 
 	@Test
 	public void testGetConvexHull() {
-		Polygon poly;
-
 		// 0 point poly
 		//TODO: crashes - validateConvexHull(new int[]{}, new int[]{}, new int[]{}, new int[]{});
 

@@ -274,7 +274,7 @@ public class ImageStackTest {
 		
 		// deleting slice > nslices should throw exception
 		is = new ImageStack(2,2);
-		is.addSlice("Temp", (Object)new byte[]{0,1,2,3});
+		is.addSlice("Temp", new byte[]{0,1,2,3});
 		try {
 			is.deleteSlice(2);
 			fail();
@@ -291,15 +291,15 @@ public class ImageStackTest {
 		byte[] c = new byte[] {8,9,10,11};
 
 		is = new ImageStack(2,2);
-		is.addSlice("Succeed please", (Object)a);
+		is.addSlice("Succeed please", a);
 		is.deleteSlice(1);
 		assertEquals(0,is.getSize());
 		
 		// delete the first slice
 		is = new ImageStack(2,2);
-		is.addSlice("By golly", (Object)a);
-		is.addSlice("Geewilikers", (Object)b);
-		is.addSlice("Gosh darn", (Object)c);
+		is.addSlice("By golly", a);
+		is.addSlice("Geewilikers", b);
+		is.addSlice("Gosh darn", c);
 		is.deleteSlice(1);
 		assertEquals(2,is.getSize());
 		assertEquals(b,is.getPixels(1));
@@ -309,9 +309,9 @@ public class ImageStackTest {
 		
 		// delete the last slice
 		is = new ImageStack(2,2);
-		is.addSlice("By golly", (Object)a);
-		is.addSlice("Geewilikers", (Object)b);
-		is.addSlice("Gosh darn", (Object)c);
+		is.addSlice("By golly", a);
+		is.addSlice("Geewilikers", b);
+		is.addSlice("Gosh darn", c);
 		is.deleteSlice(3);
 		assertEquals(2,is.getSize());
 		assertEquals(a,is.getPixels(1));
@@ -321,9 +321,9 @@ public class ImageStackTest {
 		
 		// delete a middle slice
 		is = new ImageStack(2,2);
-		is.addSlice("By golly", (Object)a);
-		is.addSlice("Geewilikers", (Object)b);
-		is.addSlice("Gosh darn", (Object)c);
+		is.addSlice("By golly", a);
+		is.addSlice("Geewilikers", b);
+		is.addSlice("Gosh darn", c);
 		is.deleteSlice(2);
 		assertEquals(2,is.getSize());
 		assertEquals(a,is.getPixels(1));

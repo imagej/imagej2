@@ -124,7 +124,6 @@ public class ColorProcessorTest {
 	/**
 	 * Converts a byte[] to an int[]; assumes native byte ordering;
 	 * @param b - Byte[]
-	 * @return
 	 */
 	private static int[] byteArrayToIntArray(byte[] b )
 	{
@@ -636,7 +635,6 @@ public class ColorProcessorTest {
 	 * Provides easy access to the 0-255 mapped byte value at the specified position
 	 * @param bytes
 	 * @param position - Byte position defines as [0 1 2 3], 0 being left most byte
-	 * @return
 	 */
 	public static int byteToInt(byte bytes, int position)
 	{
@@ -755,7 +753,7 @@ public class ColorProcessorTest {
 	{
 		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height );
-		testColorProcessor.copyBits(refColorProcessor, 0, 0, ColorBlitter.COPY);
+		testColorProcessor.copyBits(refColorProcessor, 0, 0, Blitter.COPY);
 
 		for(int y = 0; y < height; y++)
 		{
@@ -1090,7 +1088,7 @@ public class ColorProcessorTest {
 	public void testResizeIntInt()
 	{
 		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		refColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
+		refColorProcessor.setInterpolationMethod( ImageProcessor.BICUBIC );
 		ColorProcessor testColorProcessor = (ColorProcessor) refColorProcessor.resize(width*3, height*3);
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "Bicubic 5x", 300);
 
@@ -1115,7 +1113,7 @@ public class ColorProcessorTest {
 	public void testRotate()
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
+		testColorProcessor.setInterpolationMethod( ImageProcessor.BICUBIC );
 		testColorProcessor.rotate(19.99);
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "Rotate 19.99 degrees", 300);
 
@@ -1206,7 +1204,7 @@ public class ColorProcessorTest {
 	public void testConvolve()
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
+		testColorProcessor.setInterpolationMethod( ImageProcessor.BICUBIC );
 	    float[] kernel = {-1,-1,-1,-1,8,-1,-1,-1,-1};
 		testColorProcessor.convolve( kernel, 3, 3);
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "Convolve", 300);
@@ -1232,7 +1230,7 @@ public class ColorProcessorTest {
 	public void testAutoThreshold()
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
+		testColorProcessor.setInterpolationMethod( ImageProcessor.BICUBIC );
 		testColorProcessor.autoThreshold();
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "AutoThreshold", 300);
 
@@ -1299,7 +1297,6 @@ public class ColorProcessorTest {
 	/**
 	 * Gives 0-255 mapped ARGB in 4 element int array when given an ARGB packed int
 	 * @param combinedInt - ARGB packed int
-	 * @return
 	 */
 	public static int[] getARGB(int combinedInt)
 	{
@@ -1318,7 +1315,6 @@ public class ColorProcessorTest {
 	 * prints out the results if the values do not match
 	 * @param referenceInt 4Byte value representing ARGB reference values
 	 * @param testInt 4Byte value representing ARGB reference values
-	 * @return
 	 */
 	public static boolean compareARGBInts(int referenceInt, int testInt)
 	{

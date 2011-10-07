@@ -150,7 +150,7 @@ public class ToolsTest {
 		testMinMaxDouble(0.0, 1.0, new float[] {1.0f, 0.0f});
 		testMinMaxDouble(-7.0, -1.0, new float[] {-7.0f, -3.0f, -1.0f});
 		testMinMaxDouble(20.0, 100.0, new float[] {100.0f, 80.0f, 60.0f, 40.0f, 20.0f});
-		testMinMaxDouble((double)Float.MIN_VALUE, (double)Float.MAX_VALUE, new float[] {Float.MAX_VALUE,Float.MIN_VALUE});
+		testMinMaxDouble(Float.MIN_VALUE, Float.MAX_VALUE, new float[] {Float.MAX_VALUE,Float.MIN_VALUE});
 		testMinMaxDouble(Double.MAX_VALUE, -Double.MAX_VALUE, new float[] {Float.NaN});
 		testMinMaxDouble(1.0, 8.0, new float[] {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f});
 		testMinMaxDouble(-454.0, 10000.0, new float[] {42.0f, 3.1415f, -73.0f, 1.68f, 10000.0f, -454.0f});
@@ -162,7 +162,7 @@ public class ToolsTest {
 		assertNotNull(doubles);
 		assertTrue(floats.length == doubles.length);
 		for (int i = 0; i < floats.length; i++)
-			assertEquals((double)floats[i],doubles[i],Assert.DOUBLE_TOL);
+			assertEquals(floats[i],doubles[i],Assert.DOUBLE_TOL);
 	}
 
 	@Test

@@ -40,5 +40,5 @@ package ij.io;
  * @author Barry DeZonia
  */
 public class ByteOrder {
-	public enum Value { DEFAULT, INTEL };
+	public enum Value { DEFAULT, INTEL }
 }

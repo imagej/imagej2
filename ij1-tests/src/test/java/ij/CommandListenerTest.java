@@ -47,6 +47,7 @@ public class CommandListenerTest {
 	
 	// implement the interface so that we have compile time check it exists
 	class FakeCL implements CommandListener {
+		@Override
 		public String commandExecuting(String command) { return null; }
 	}
 	

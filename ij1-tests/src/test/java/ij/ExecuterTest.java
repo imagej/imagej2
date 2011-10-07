@@ -50,7 +50,7 @@ import org.junit.Test;
  */
 public class ExecuterTest {
 
-	enum Behavior {RunAsAsked, RunOther, RunNothing};
+	enum Behavior {RunAsAsked, RunOther, RunNothing}
 
 	Executer ex;
 
@@ -65,6 +65,7 @@ public class ExecuterTest {
 			this.otherCommand = otherCommand;
 		}
 
+		@Override
 		public String commandExecuting(String command)
 		{
 			if (b == Behavior.RunAsAsked)
@@ -167,7 +168,9 @@ public class ExecuterTest {
 		// give Executer's hatched threads time to terminate
 		try {
 			Thread.sleep(1000L);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
+			// no action needed
 		}
 
 		Executer.removeCommandListener(listener);

@@ -71,7 +71,7 @@ public class RoiTest {
 		
 		// compile time test : make sure public static vars exist
 		assertTrue(Roi.previousRoi == Roi.previousRoi);
-		assertTrue(Roi.onePixelWide instanceof BasicStroke);
+		assertTrue(Roi.onePixelWide != null);
 		
 		// make sure constants exist with the correct values
 		assertEquals(0,Roi.CONSTRUCTING);

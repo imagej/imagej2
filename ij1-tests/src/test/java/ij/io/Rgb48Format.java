@@ -46,6 +46,7 @@ public class Rgb48Format extends PixelFormat {
 		super("Rgb48",3,16,1);  // super(String name, int numSamples, int bitsPerSample, int planes)
 	}
 	
+	@Override
 	boolean canDoImageCombo(int compression, ByteOrder.Value byteOrder, int headerBytes, boolean stripped)
 	{
 		if (compression == FileInfo.LZW_WITH_DIFFERENCING)
@@ -62,6 +63,7 @@ public class Rgb48Format extends PixelFormat {
 		return true;
 	}
 
+	@Override
 	byte[] nativeBytes(long pix, ByteOrder.Value byteOrder)
 	{
 		byte[] output = new byte[6];
@@ -89,6 +91,7 @@ public class Rgb48Format extends PixelFormat {
 		return output;
 	}
 	
+	@Override
 	byte[] getBytes(long[][] image, int compression, ByteOrder.Value byteOrder, int headerBytes, boolean inStrips, FileInfo fi)
 	{
 		initializeFileInfo(fi,FileInfo.RGB48,compression,byteOrder,image.length,image[0].length);
@@ -102,6 +105,7 @@ public class Rgb48Format extends PixelFormat {
 		return output;
 	}
 
+	@Override
 	Object expectedResults(long[][] inputImage)
 	{
 		int rows = inputImage.length;
@@ -125,6 +129,7 @@ public class Rgb48Format extends PixelFormat {
 		return output;
 	}		
 
+	@Override
 	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		int numPix = bytes.length / 6;

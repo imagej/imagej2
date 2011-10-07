@@ -117,12 +117,10 @@ public class CurveFitterTest {
 	        case CurveFitter.POWER:
 	            if (x == 0.0)
 	            	return 0.0;
-	            else
-	            	return p[0]*Math.exp(p[1]*Math.log(x)); //y=ax^b
+            	return p[0]*Math.exp(p[1]*Math.log(x)); //y=ax^b
 	        case CurveFitter.LOG:
-	            if (x == 0.0)
-	                x = 0.5;
-	            return p[0]*Math.log(p[1]*x);
+	            final double mult =  x == 0.0 ? 0.5 : x;
+	            return p[0]*Math.log(p[1]*mult);
 	        case CurveFitter.RODBARD:
 				double ex;
 				if (x == 0.0)

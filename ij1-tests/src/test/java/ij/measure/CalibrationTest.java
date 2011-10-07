@@ -65,6 +65,7 @@ public class CalibrationTest {
 
 	@After
 	public void tearDown() throws Exception {
+		// no action needed
 	}
 
 	@Test
@@ -356,7 +357,7 @@ public class CalibrationTest {
 		// for next two cases set needed flag
 		
 		int measurements = Analyzer.getMeasurements();
-		measurements |= Analyzer.INVERT_Y;
+		measurements |= Measurements.INVERT_Y;
 		Analyzer.setMeasurements(measurements);
 
 		// invertY specified false but Analyzer::INVERT_Y true
@@ -877,8 +878,7 @@ public class CalibrationTest {
 			assertNull(values);
 	}
 
-	private void tryXFloats(int x, boolean expectSuccess, Calibration c)
-	{
+	private void tryXFloats(int x, boolean expectSuccess, Calibration c) {
 		Calibration clone = (Calibration) c.clone();
 		float[] floats = new float[x];
 		try {
@@ -1175,7 +1175,7 @@ public class CalibrationTest {
 		
 		// make sure analyzer in a good state
 		int measurements = Analyzer.getMeasurements();
-		measurements &= ~Analyzer.INVERT_Y;
+		measurements &= ~Measurements.INVERT_Y;
 		Analyzer.setMeasurements(measurements);
 
 		double y;

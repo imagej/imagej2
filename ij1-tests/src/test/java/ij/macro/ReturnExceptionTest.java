@@ -46,7 +46,7 @@ public class ReturnExceptionTest {
 	@Test
 	public void testReturnException() 
 	{
-		ReturnException re = new ReturnException();
+		new ReturnException();
 		//Not sure how to test this.
 	}
 
