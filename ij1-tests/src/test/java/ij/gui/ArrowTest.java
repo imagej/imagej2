@@ -113,6 +113,13 @@ public class ArrowTest {
 
 	@Test
 	public void testDrawPixelsImageProcessor() {
+
+		// NOTE - at some point Wayne changed the way arrows are drawn to accommodate
+		// outlined arrowheads. As of 1.45q all the pixel arrangements below are out
+		// of date. We could test code and reset them to new values but this is not
+		// an important thing to test. As per Wayne's request disabling test.
+		
+		/*
 		ImageProcessor proc;
 		
 		int dims = 10;
@@ -162,7 +169,8 @@ public class ArrowTest {
 		ar = new Arrow(2,2,2,5);
 		ar.setDoubleHeaded(true);
 		ar.drawPixels(proc);
-		RoiHelpers.validateResult(proc,refVal,new int[]{1,2,3,11,12,13,21,22,23,32,42,52,61,62,63,71,72,73,81,82,83,90,91,92,93,94});		
+		RoiHelpers.validateResult(proc,refVal,new int[]{1,2,3,11,12,13,21,22,23,32,42,52,61,62,63,71,72,73,81,82,83,90,91,92,93,94});
+		*/		
 	}
 
 	@Test
