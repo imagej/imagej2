@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
+import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
 import imagej.data.DatasetFactory;
 import imagej.ext.MenuEntry;
@@ -49,6 +50,7 @@ import imagej.ui.UIService;
 
 import java.util.HashMap;
 
+import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.BinaryOperation;
 import net.imglib2.ops.Function;
 import net.imglib2.ops.Real;
@@ -68,6 +70,7 @@ import net.imglib2.ops.operation.binary.real.RealMultiply;
 import net.imglib2.ops.operation.binary.real.RealOr;
 import net.imglib2.ops.operation.binary.real.RealSubtract;
 import net.imglib2.ops.operation.binary.real.RealXor;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
@@ -96,6 +99,12 @@ public class ImageMath implements ImageJPlugin {
 			"Min", "Max", "Average", "Difference", "Copy", "Transparent-zero" })
 	private String operatorName;
 
+	@Parameter(label = "Create new window")
+	private boolean newWindow = true;
+	
+	@Parameter(label = "Floating point result")
+	private boolean overrideType;
+	
 	// -- other instance variables --
 
 	private final HashMap<String, BinaryOperation<Real, Real, Real>> operators;
@@ -103,8 +112,8 @@ public class ImageMath implements ImageJPlugin {
 	// -- constructor --
 
 	/**
-	 * Constructs the ImageMath object by initializing which binary operations are
-	 * avaialable.
+	 * Constructs the ImageMath object by initializing which binary operations
+	 * are available.
 	 */
 	public ImageMath() {
 		operators = new HashMap<String, BinaryOperation<Real, Real, Real>>();
@@ -132,35 +141,33 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		final int numDims = input1.numDimensions();
-		final long[] origin = new long[numDims];
 		final long[] span = calcOverlappedSpan(input1.getDims(), input2.getDims());
 		if (span == null) {
-			final IUserInterface ui = ImageJ.get(UIService.class).getUI();
-			final DialogPrompt dialog =
-				ui.dialogPrompt("Input images have different number of dimensions", "Image Calculator",
-					DialogPrompt.MessageType.INFORMATION_MESSAGE,
-					DialogPrompt.OptionType.DEFAULT_OPTION);
-			dialog.prompt();
+			warnBadSpan();
 			return;
+		}
+		int bits = input1.getType().getBitsPerPixel();
+		boolean floating = !input1.isInteger();
+		boolean signed = input1.isSigned();
+		if (overrideType) {
+			bits = 64;
+			floating = true;
+			signed = true;
 		}
 		// TODO : HACK - this next line works but always creates a PlanarImg
 		output = DatasetFactory.create(span, "Result of operation",
-			input1.getAxes(), input1.getType().getBitsPerPixel(), input1.isSigned(),
-			!input1.isInteger());
+			input1.getAxes(), bits, signed,	floating);
 		// This is what I'd like to do
 		// output = DatasetFactory.create(input1.getType(), span,
 		//   "Result of operation", input1.getAxes());
-		final BinaryOperation<Real, Real, Real> binOp = operators.get(operatorName);
-		final Function<long[], Real> f1 =
-			new RealImageFunction(input1.getImgPlus().getImg());
-		final Function<long[], Real> f2 =
-			new RealImageFunction(input2.getImgPlus().getImg());
-		final GeneralBinaryFunction<long[], Real, Real, Real> binFunc =
-			new GeneralBinaryFunction<long[], Real, Real, Real>(f1, f2, binOp);
-		final RealImageAssignment assigner =
-			new RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc);
-		assigner.assign();
+		
+		assignPixelValues(span);
+
+		// replace original data if desired by user
+		if (!overrideType && !newWindow) {
+			copyDataIntoInput1(span);
+			output = null;
+		}
 	}
 
 	// -- private helpers --
@@ -169,11 +176,44 @@ public class ImageMath implements ImageJPlugin {
 		if (dimsA.length != dimsB.length)
 			return null;
 		
-		long[] overlap = new long[dimsA.length];
+		final long[] overlap = new long[dimsA.length];
 		
 		for (int i = 0; i < overlap.length; i++)
 			overlap[i] = Math.min(dimsA[i], dimsB[i]);
 		
 		return overlap;
+	}
+	
+	private void warnBadSpan() {
+		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
+		final DialogPrompt dialog =
+			ui.dialogPrompt("Input images have different number of dimensions",
+				"Image Calculator",
+				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+		dialog.prompt();
+	}
+
+	private void assignPixelValues(long[] span) {
+		final long[] origin = new long[span.length];
+		final BinaryOperation<Real, Real, Real> binOp = operators.get(operatorName);
+		final Function<long[], Real> f1 =
+			new RealImageFunction(input1.getImgPlus().getImg());
+		final Function<long[], Real> f2 =
+			new RealImageFunction(input2.getImgPlus().getImg());
+		final GeneralBinaryFunction<long[], Real, Real, Real> binFunc =
+			new GeneralBinaryFunction<long[], Real, Real, Real>(f1, f2, binOp);
+		final RealImageAssignment assigner = new
+			RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc);
+		assigner.assign();
+	}
+
+	private void copyDataIntoInput1(long[] span) {
+		ImgPlus<? extends RealType<?>> srcImgPlus = output.getImgPlus();
+		ImgPlus<? extends RealType<?>> dstImgPlus = input1.getImgPlus();
+		RestructureUtils.copyHyperVolume(
+			srcImgPlus, new long[span.length], span,
+			dstImgPlus, new long[span.length], span);
+		input1.update();
 	}
 }
