@@ -181,27 +181,31 @@ public class ShapeRoiTest {
 	@Test
 	public void testGetFeretValues() {
 		// try various roi shapes
-		feretTest(new OvalRoi(0,0,5,10),new double[]{10.44016,0,5.00000,0,0});
-		feretTest(new Roi(16,22,8,19),new double[]{20.61544,0,8,0,0});
-		feretTest(new TextRoi(4,3,RoiHelpers.getCalibratedImagePlus()),new double[]{0,0,0,0,0});
+		feretTest(new OvalRoi(0,0,5,10),new double[]{10.44031,106.69924,5.00000,1,0});
+		feretTest(new Roi(16,22,8,19),new double[]{20.61553,112.83365,8,0,0});
+		feretTest(new TextRoi(4,3,RoiHelpers.getCalibratedImagePlus()),new double[]{1.41421,135,1,0,0});
 	}
 
-	private void convexHullTest(Roi roi)
+	private void convexHullTest(Roi roi, int x, int y, int w, int h)
 	{
 		s = new ShapeRoi(roi);
 		assertNotNull(s);
-		
-		// should always be null
-		
-		assertNull(s.getConvexHull());
+
+		Polygon hull = s.getConvexHull();
+		Rectangle bounds = hull.getBounds();
+
+		assertEquals(x, bounds.x);
+		assertEquals(y, bounds.y);
+		assertEquals(w, bounds.width);
+		assertEquals(h, bounds.height);
 	}
 	
 	@Test
 	public void testGetConvexHull() {
 		// try various roi shapes
-		convexHullTest(new OvalRoi(0,0,5,10));
-		convexHullTest(new Roi(16,22,8,19));
-		convexHullTest(new TextRoi(4,3,RoiHelpers.getCalibratedImagePlus()));
+		convexHullTest(new OvalRoi(0,0,5,10),0,0,5,10);
+		convexHullTest(new Roi(16,22,8,19),0,0,8,19);
+		convexHullTest(new TextRoi(4,3,RoiHelpers.getCalibratedImagePlus()),0,0,1,1);
 	}
 
 	private void cloneTest(Roi roi)
