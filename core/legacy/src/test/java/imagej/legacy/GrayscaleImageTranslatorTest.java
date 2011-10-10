@@ -38,9 +38,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.NewImage;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetFactory;
 import net.imglib2.Cursor;
@@ -53,7 +55,16 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+// BDZ - FIXME notes: tests commented out. Tests always fail as
+// createDisplay() and createLegacyImage() always return null. This is because
+// the DisplayService doesn't get setup correctly within the test framework
+// and cannot create displays. Need to setup a headless UI and create displays
+// within that framework. Then these tests can be run. For now do NO testing.
+// Note that the tests are partially translated from using Datasets for
+// translatiions to using Displays.
 
 /**
  * Unit tests for {@link GrayscaleImageTranslator}.
@@ -83,43 +94,39 @@ public class GrayscaleImageTranslatorTest {
 
 	// -- helper tests --
 
-	private void testDataSame(final Dataset ds, final ImagePlus imp, final int x,
-		final int y, final int c, final int z, final int t)
+	private void testDataSame(final Dataset ds, final ImagePlus imp)
 	{
-		final long[] dims = ds.getDims();
-
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
-
-		if (xIndex >= 0) assertEquals(x, dims[xIndex]);
-		if (yIndex >= 0) assertEquals(y, dims[yIndex]);
-		if (cIndex >= 0) assertEquals(c, dims[cIndex]);
-		if (zIndex >= 0) assertEquals(z, dims[zIndex]);
-		if (tIndex >= 0) assertEquals(t, dims[tIndex]);
-
 		final RandomAccess<? extends RealType<?>> accessor =
-			ds.getImgPlus().randomAccess();
-
-		final long[] pos = new long[dims.length];
-
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) pos[tIndex] = ti;
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) pos[zIndex] = zi;
-				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) pos[cIndex] = ci;
-					final int sliceNumber = ti * c * z + zi * c + ci;
-					final ImageProcessor proc =
-						imp.getStack().getProcessor(sliceNumber + 1);
-					for (int yi = 0; yi < y; yi++) {
-						pos[yIndex] = yi;
-						for (int xi = 0; xi < x; xi++) {
-							pos[xIndex] = xi;
+				ds.getImgPlus().randomAccess();
+		long[] dims = ds.getDims();
+		Axis[] axes = ds.getAxes();
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int xSize = imp.getWidth();
+		int ySize = imp.getHeight();
+		int zSize = imp.getNSlices();
+		int tSize = imp.getNFrames();
+		int cSize = imp.getNChannels();
+		ImageStack stack = imp.getStack();
+		int planeNum = 1;
+		long[] pos = new long[dims.length];
+		for (int t = 0; t < tSize; t++) {
+			if (tIndex >= 0) pos[tIndex] = t;
+			for (int z = 0; z < zSize; z++) {
+				if (zIndex >= 0) pos[zIndex] = z;
+				for (int c = 0; c < cSize; c++) {
+					LegacyUtils.fillChannelIndices(dims, axes, c, pos);
+					ImageProcessor proc = stack.getProcessor(planeNum++);
+					for (int x = 0; x < xSize; x++) {
+						if (xIndex >= 0) pos[xIndex] = x;
+						for (int y = 0; y < ySize; y++) {
+							if (yIndex >= 0) pos[yIndex] = y;
 							accessor.setPosition(pos);
-							assertEquals(accessor.get().getRealDouble(), proc.getf(xi, yi), 0);
+							float dsValue = accessor.get().getRealFloat();
+							float impValue = proc.getf(x, y);
+							assertEquals(dsValue, impValue, 0.000001f);
 						}
 					}
 				}
@@ -210,9 +217,10 @@ public class GrayscaleImageTranslatorTest {
 		cal.pixelWidth = 7;
 		imp.setCalibration(cal);
 		// CTR FIXME - Fix comparison tests.
-//		Dataset ds = translator.createDataset(imp);
-//		testDataSame(ds, imp, x, y, c, z, t);
-//		testMetadataSame(ds, imp);
+		//ImageDisplay disp = translator.createDisplay(imp);
+		//Dataset ds = ImageJ.get(ImageDisplayService.class).getActiveDataset(disp);
+		//testDataSame(ds, imp);
+		//testMetadataSame(ds, imp);
 	}
 
 	private void testImageFromIJ2(final DataType type, final int x, final int y,
@@ -254,6 +262,17 @@ public class GrayscaleImageTranslatorTest {
 //		testMetadataSame(ds, imp);
 	}
 
+	// -- setup code --
+
+	// BDZ - FIXME - partial attempt to fix initialization of
+	// DisplayService. See FIXME discussion above.
+	
+	//@BeforeClass
+	//public static void setup() {
+	//	final ImageJ context = ImageJ.createContext();
+	//	//context.getService(UIService.class).processArgs(args);
+	//}
+	
 	// -- public tests --
 
 	@Test
