@@ -111,7 +111,7 @@ public class FileOpenerTest {
 
 		// test for a real 8 bit file
 		info = new FileInfo();
-		info.fileName = "gray8-2x3-sub1.tif";
+		info.fileName = "gray8-3x2-sub1.tif";
 		info.fileType = FileInfo.GRAY8;
 		info.height = 2;
 		info.width = 3;
@@ -126,7 +126,7 @@ public class FileOpenerTest {
 
 		// test for a real 16 bit file
 		info = new FileInfo();
-		info.fileName = "gray16-2x3-sub1.tif";
+		info.fileName = "gray16-3x2-sub1.tif";
 		info.fileType = FileInfo.GRAY16_UNSIGNED;
 		info.height = 2;
 		info.width = 3;
@@ -141,7 +141,7 @@ public class FileOpenerTest {
 
 		// test for a real 32 bit file
 		info = new FileInfo();
-		info.fileName = "gray32float-2x3-sub1.tif";
+		info.fileName = "gray32float-3x2-sub1.tif";
 		info.fileType = FileInfo.GRAY32_FLOAT;
 		info.height = 2;
 		info.width = 3;
@@ -156,7 +156,7 @@ public class FileOpenerTest {
 
 		// test for a real 24 bit file
 		info = new FileInfo();
-		info.fileName = "gray24-2x3-sub1.tif";
+		info.fileName = "gray24-3x2-sub1.tif";
 		info.fileType = FileInfo.RGB;
 		info.height = 2;
 		info.width = 3;
@@ -204,7 +204,7 @@ public class FileOpenerTest {
 
 		// try to open an image stack
 		info = new FileInfo();
-		info.fileName = "gray8-2x3-stack.tif";
+		info.fileName = "gray8-3x2-stack.tif";
 		info.fileType = FileInfo.GRAY8;
 		info.nImages = 2;
 		info.height = 2;
