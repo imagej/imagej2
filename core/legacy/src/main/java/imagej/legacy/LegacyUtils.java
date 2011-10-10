@@ -1448,14 +1448,6 @@ public final class LegacyUtils {
 		}
 	}
 
-	/*
-	private static long ij1ChannelIndex(long[] dims, Axis[] axes, long[] pos) {
-		long channel = 0;
-		// TODO FIXME IMPLEMENT SOMETHING HERE
-		return channel;
-	}
-	*/
-
 	// -- helper classes --
 
 	/** Helper class to simplify the making of planes of different type data. */
