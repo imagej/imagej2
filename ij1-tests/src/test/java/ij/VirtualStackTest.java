@@ -238,22 +238,22 @@ public class VirtualStackTest {
 	@Test
 	public void testGetPixels() {
 		// try on real data
-		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
-		vs.addSlice("gray8-2x3-sub1.tif");
-		vs.addSlice("gray8-2x3-sub2.tif");
+		vs = new VirtualStack(3,2,null,DataConstants.DATA_DIR);
+		vs.addSlice("gray8-3x2-sub1.tif");
+		vs.addSlice("gray8-3x2-sub2.tif");
 		Object obj = vs.getPixels(1);
 		assertTrue(obj instanceof byte[]);
 		byte[] bytes = (byte[]) obj;
-		assertArrayEquals(new byte[]{0,40,0,40,120,-96},bytes);
+		assertArrayEquals(new byte[]{0,40,80,120,(byte)160,(byte)200},bytes);
 	}
 
 	@Test
 	public void testSetPixels() {
 		// setPixels should have no effect
 		//   note getPixels() returns a new array of pixels with each call. So can't test object==.
-		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
-		vs.addSlice("gray8-2x3-sub1.tif");
-		vs.addSlice("gray8-2x3-sub2.tif");
+		vs = new VirtualStack(3,2,null,DataConstants.DATA_DIR);
+		vs.addSlice("gray8-3x2-sub1.tif");
+		vs.addSlice("gray8-3x2-sub2.tif");
 		byte[] origBytes = (byte[])vs.getPixels(1);
 		vs.setPixels(new byte[]{1,2,3,4,5,6,7,8,9,10,9,8},1);
 		byte[] nextBytes = (byte[])vs.getPixels(1);
@@ -280,13 +280,13 @@ public class VirtualStackTest {
 	@Test
 	public void testGetSliceLabel() {
 		// setup vstack
-		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
-		vs.addSlice("gray8-2x3-sub1.tif");
-		vs.addSlice("gray8-2x3-sub2.tif");
+		vs = new VirtualStack(3,2,null,DataConstants.DATA_DIR);
+		vs.addSlice("gray8-3x2-sub1.tif");
+		vs.addSlice("gray8-3x2-sub2.tif");
 
 		// make sure labels reflect structure of stack
-		assertEquals("gray8-2x3-sub1",vs.getShortSliceLabel(1));
-		assertEquals("gray8-2x3-sub2",vs.getShortSliceLabel(2));
+		assertEquals("gray8-3x2-sub1",vs.getShortSliceLabel(1));
+		assertEquals("gray8-3x2-sub2",vs.getShortSliceLabel(2));
 	}
 
 	@Test
@@ -294,25 +294,25 @@ public class VirtualStackTest {
 		// setSliceLabel does nothing
 
 		// setup vstack
-		vs = new VirtualStack(2,3,null,"data");
-		vs.addSlice("gray8-2x3-sub1.tif");
-		vs.addSlice("gray8-2x3-sub2.tif");
+		vs = new VirtualStack(3,2,null,"data");
+		vs.addSlice("gray8-3x2-sub1.tif");
+		vs.addSlice("gray8-3x2-sub2.tif");
 
 		// try to change labels
 		vs.setSliceLabel("Flubblepop", 1);
 		vs.setSliceLabel("Sweego", 2);
 
 		// test that it had no effect
-		assertEquals("gray8-2x3-sub1",vs.getShortSliceLabel(1));
-		assertEquals("gray8-2x3-sub2",vs.getShortSliceLabel(2));
+		assertEquals("gray8-3x2-sub1",vs.getShortSliceLabel(1));
+		assertEquals("gray8-3x2-sub2",vs.getShortSliceLabel(2));
 	}
 
 	@Test
 	public void testGetProcessor() {
 		// setup vstack
-		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
-		vs.addSlice("gray8-2x3-sub1.tif");
-		vs.addSlice("gray8-2x3-sub2.tif");
+		vs = new VirtualStack(3,2,null,DataConstants.DATA_DIR);
+		vs.addSlice("gray8-3x2-sub1.tif");
+		vs.addSlice("gray8-3x2-sub2.tif");
 
 		// test that it works
 		ImageProcessor proc;
@@ -329,14 +329,14 @@ public class VirtualStackTest {
 
 		// try valid entries and test returned data
 		proc = vs.getProcessor(1);
-		assertEquals(2,proc.getWidth());
-		assertEquals(3,proc.getHeight());
-		assertArrayEquals(new byte[]{0,40,0,40,120,-96},(byte[])proc.getPixels());
+		assertEquals(3,proc.getWidth());
+		assertEquals(2,proc.getHeight());
+		assertArrayEquals(new byte[]{0,40,80,120,(byte)160,(byte)200},(byte[])proc.getPixels());
 
 		proc = vs.getProcessor(2);
-		assertEquals(2,proc.getWidth());
-		assertEquals(3,proc.getHeight());
-		assertArrayEquals(new byte[]{0,40,0,40,120,-96},(byte[])proc.getPixels());
+		assertEquals(3,proc.getWidth());
+		assertEquals(2,proc.getHeight());
+		assertArrayEquals(new byte[]{0,40,80,120,(byte)160,(byte)200},(byte[])proc.getPixels());
 	}
 
 	@Test

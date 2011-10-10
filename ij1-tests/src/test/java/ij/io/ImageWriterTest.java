@@ -64,7 +64,7 @@ public class ImageWriterTest {
 
 	//  *******    Helper methods  ****************************
 
-	private void setFileInfo(FileInfo fi, int fileType, int height, int width, boolean intel, int nImages,
+	private void setFileInfo(FileInfo fi, int fileType, int width, int height, boolean intel, int nImages,
 			VirtualStack vStack, Object pixels)
 	{
 		fi.intelByteOrder = intel;
@@ -166,13 +166,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray8-2x3-sub1.tif");
-			vStack.addSlice("gray8-2x3-sub2.tif");
+			vStack.addSlice("gray8-3x2-sub1.tif");
+			vStack.addSlice("gray8-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.COLOR8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.COLOR8, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 
 			byte[] bytes = writeData(fi, false);
 
@@ -189,13 +189,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray8-2x3-sub1.tif");
-			vStack.addSlice("gray8-2x3-sub2.tif");
+			vStack.addSlice("gray8-3x2-sub1.tif");
+			vStack.addSlice("gray8-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.COLOR8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.COLOR8, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 			fi.fileName = "FlipTheseImages";
 
 			byte[] bytes = writeData(fi, false);
@@ -224,7 +224,7 @@ public class ImageWriterTest {
 				}
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.COLOR8, imageSet[0].length, imageSet[0][0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.COLOR8, imageSet[0][0].length, imageSet[0].length, (order == ByteOrder.Value.INTEL),
 							imageSet.length, null, imageStack);
 
 				byte[] bytes = writeData(fi, false);
@@ -245,7 +245,7 @@ public class ImageWriterTest {
 				byte[] expected = (byte[])(format.expectedResults(image));
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.COLOR8, image.length, image[0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.COLOR8, image[0].length, image.length, (order == ByteOrder.Value.INTEL),
 							1, null, expected);
 
 				byte[] bytes = writeData(fi, false);
@@ -272,13 +272,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray8-2x3-sub1.tif");
-			vStack.addSlice("gray8-2x3-sub2.tif");
+			vStack.addSlice("gray8-3x2-sub1.tif");
+			vStack.addSlice("gray8-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY8, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 
 			byte[] bytes = writeData(fi, false);
 
@@ -295,13 +295,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray8-2x3-sub1.tif");
-			vStack.addSlice("gray8-2x3-sub2.tif");
+			vStack.addSlice("gray8-3x2-sub1.tif");
+			vStack.addSlice("gray8-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY8, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 			fi.fileName = "FlipTheseImages";
 
 			byte[] bytes = writeData(fi, false);
@@ -330,7 +330,7 @@ public class ImageWriterTest {
 				}
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.GRAY8, imageSet[0].length, imageSet[0][0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.GRAY8, imageSet[0][0].length, imageSet[0].length, (order == ByteOrder.Value.INTEL),
 						imageSet.length, null, imageStack);
 
 				byte[] bytes = writeData(fi, false);
@@ -351,7 +351,7 @@ public class ImageWriterTest {
 				byte[] expected = (byte[])(format.expectedResults(image));
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.COLOR8, image.length, image[0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.COLOR8, image[0].length, image.length, (order == ByteOrder.Value.INTEL),
 							1, null, expected);
 
 				byte[] bytes = writeData(fi, false);
@@ -378,13 +378,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray16-2x3-sub1.tif");
-			vStack.addSlice("gray16-2x3-sub2.tif");
+			vStack.addSlice("gray16-3x2-sub1.tif");
+			vStack.addSlice("gray16-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY16_SIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY16_SIGNED, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 
 			byte[] bytes = writeData(fi, false);
 
@@ -400,13 +400,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray16-2x3-sub1.tif");
-			vStack.addSlice("gray16-2x3-sub2.tif");
+			vStack.addSlice("gray16-3x2-sub1.tif");
+			vStack.addSlice("gray16-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY16_SIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY16_SIGNED, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 			fi.fileName = "FlipTheseImages";
 
 			byte[] bytes = writeData(fi, false);
@@ -435,7 +435,7 @@ public class ImageWriterTest {
 				}
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.GRAY16_SIGNED, imageSet[0].length, imageSet[0][0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.GRAY16_SIGNED, imageSet[0][0].length, imageSet[0].length, (order == ByteOrder.Value.INTEL),
 						imageSet.length, null, imageStack);
 
 				byte[] bytes = writeData(fi, false);
@@ -456,7 +456,7 @@ public class ImageWriterTest {
 				short[] expected = (short[])(format.expectedResults(image));
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.GRAY16_SIGNED, image.length, image[0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.GRAY16_SIGNED, image[0].length, image.length, (order == ByteOrder.Value.INTEL),
 							1, null, expected);
 
 				byte[] bytes = writeData(fi, false);
@@ -483,13 +483,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray16-2x3-sub1.tif");
-			vStack.addSlice("gray16-2x3-sub2.tif");
+			vStack.addSlice("gray16-3x2-sub1.tif");
+			vStack.addSlice("gray16-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 
 			byte[] bytes = writeData(fi, false);
 
@@ -505,13 +505,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray16-2x3-sub1.tif");
-			vStack.addSlice("gray16-2x3-sub2.tif");
+			vStack.addSlice("gray16-3x2-sub1.tif");
+			vStack.addSlice("gray16-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 			fi.fileName = "FlipTheseImages";
 
 			byte[] bytes = writeData(fi, false);
@@ -540,7 +540,7 @@ public class ImageWriterTest {
 				}
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, imageSet[0].length, imageSet[0][0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, imageSet[0][0].length, imageSet[0].length, (order == ByteOrder.Value.INTEL),
 						imageSet.length, null, imageStack);
 
 				byte[] bytes = writeData(fi, false);
@@ -561,7 +561,7 @@ public class ImageWriterTest {
 				short[] expected = (short[])(format.expectedResults(image));
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, image.length, image[0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, image[0].length, image.length, (order == ByteOrder.Value.INTEL),
 							1, null, expected);
 
 				byte[] bytes = writeData(fi, false);
@@ -588,13 +588,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray24-2x3-sub1.tif");
-			vStack.addSlice("gray24-2x3-sub2.tif");
+			vStack.addSlice("gray24-3x2-sub1.tif");
+			vStack.addSlice("gray24-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.RGB, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.RGB, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 
 			byte[] bytes = writeData(fi, false);
 
@@ -611,13 +611,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray24-2x3-sub1.tif");
-			vStack.addSlice("gray24-2x3-sub2.tif");
+			vStack.addSlice("gray24-3x2-sub1.tif");
+			vStack.addSlice("gray24-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.RGB, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.RGB, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 			fi.fileName = "FlipTheseImages";
 
 			byte[] bytes = writeData(fi, false);
@@ -647,7 +647,7 @@ public class ImageWriterTest {
 				}
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.RGB, imageSet[0].length, imageSet[0][0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.RGB, imageSet[0][0].length, imageSet[0].length, (order == ByteOrder.Value.INTEL),
 						imageSet.length, null, imageStack);
 
 				byte[] bytes = writeData(fi, false);
@@ -668,7 +668,7 @@ public class ImageWriterTest {
 				int[] expected = (int[])(format.expectedResults(image));
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.RGB, image.length, image[0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.RGB, image[0].length, image.length, (order == ByteOrder.Value.INTEL),
 							1, null, expected);
 
 				byte[] bytes = writeData(fi, false);
@@ -694,13 +694,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray32float-2x3-sub1.tif");
-			vStack.addSlice("gray32float-2x3-sub2.tif");
+			vStack.addSlice("gray32float-3x2-sub1.tif");
+			vStack.addSlice("gray32float-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY32_FLOAT, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY32_FLOAT, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 
 			byte[] bytes = writeData(fi, false);
 
@@ -717,13 +717,13 @@ public class ImageWriterTest {
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, DataConstants.DATA_DIR);
 
-			vStack.addSlice("gray32float-2x3-sub1.tif");
-			vStack.addSlice("gray32float-2x3-sub2.tif");
+			vStack.addSlice("gray32float-3x2-sub1.tif");
+			vStack.addSlice("gray32float-3x2-sub2.tif");
 
 			assertNotNull(vStack.getProcessor(1));
 
 			FileInfo fi = new FileInfo();
-			setFileInfo(fi, FileInfo.GRAY32_FLOAT, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			setFileInfo(fi, FileInfo.GRAY32_FLOAT, 3, 2, (order == ByteOrder.Value.INTEL), 2, vStack, null);
 			fi.fileName = "FlipTheseImages";
 
 			byte[] bytes = writeData(fi, false);
@@ -753,7 +753,7 @@ public class ImageWriterTest {
 				}
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.GRAY32_FLOAT, imageSet[0].length, imageSet[0][0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.GRAY32_FLOAT, imageSet[0][0].length, imageSet[0].length, (order == ByteOrder.Value.INTEL),
 						imageSet.length, null, imageStack);
 
 				byte[] bytes = writeData(fi, false);
@@ -774,7 +774,7 @@ public class ImageWriterTest {
 				float[] expected = (float[])(format.expectedResults(image));
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.GRAY32_FLOAT, image.length, image[0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.GRAY32_FLOAT, image[0].length, image.length, (order == ByteOrder.Value.INTEL),
 							1, null, expected);
 
 				byte[] bytes = writeData(fi, false);
@@ -801,7 +801,7 @@ public class ImageWriterTest {
 				short[][] expected = (short[][]) format.expectedResults(image);
 
 				FileInfo fi = new FileInfo();
-				setFileInfo(fi, FileInfo.RGB48, image.length, image[0].length, (order == ByteOrder.Value.INTEL),
+				setFileInfo(fi, FileInfo.RGB48, image[0].length, image.length, (order == ByteOrder.Value.INTEL),
 							0, null, expected);  // 0 is intentional
 
 				byte[] bytes = writeData(fi, false);

@@ -155,7 +155,7 @@ public class ImagePlusTest {
 		assertNull(ip.getImage());
 
 		// try a file that should exist
-		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-3x2-sub1.tif");
 		assertNotNull(ip);
 		assertNotNull(ip.getImage());
 		assertEquals(2,ip.getNDimensions());
@@ -166,7 +166,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getNChannels());
 		assertEquals(8,ip.getBitDepth());
 		assertEquals(1,ip.getBytesPerPixel());
-		assertEquals("gray8-2x3-sub1.tif",ip.getTitle());
+		assertEquals("gray8-3x2-sub1.tif",ip.getTitle());
 	}
 
 	@Test
@@ -254,7 +254,7 @@ public class ImagePlusTest {
 	@Test
 	public void testGetChannelProcessor() {
 		// getChannelProcessor() overridden by other classes. Default should be same as getProcessor()
-		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-3x2-sub1.tif");
 		proc = ip.getProcessor();
 		assertEquals(proc,ip.getChannelProcessor());
 	}
@@ -262,7 +262,7 @@ public class ImagePlusTest {
 	@Test
 	public void testGetLuts() {
 		// getLuts() overridden by other classes. Default should be null
-		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-3x2-sub1.tif");
 		assertNull(ip.getLuts());
 	}
 
@@ -366,7 +366,7 @@ public class ImagePlusTest {
 		//assertNull(ip.img);
 		assertNull(ip.getImage());
 
-		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-3x2-sub1.tif");
 		//assertNull(ip.img);
 		assertNotNull(ip.getImage());
 	}
@@ -384,7 +384,7 @@ public class ImagePlusTest {
 		}
 
 		// try a non composite image
-		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-3x2-sub1.tif");
 		assertNotNull(ip.getBufferedImage());
 
 		// try a composite image
