@@ -97,7 +97,7 @@ public class ImageMath implements ImageJPlugin {
 	@Parameter(label = "Operation to do between the two input images",
 		choices = { "Add", "Subtract", "Multiply", "Divide", "AND", "OR", "XOR",
 			"Min", "Max", "Average", "Difference", "Copy", "Transparent-zero" })
-	private String operatorName;
+	private String opName;
 
 	@Parameter(label = "Create new window")
 	private boolean newWindow = true;
@@ -196,7 +196,7 @@ public class ImageMath implements ImageJPlugin {
 
 	private void assignPixelValues(long[] span) {
 		final long[] origin = new long[span.length];
-		final BinaryOperation<Real, Real, Real> binOp = operators.get(operatorName);
+		final BinaryOperation<Real, Real, Real> binOp = operators.get(opName);
 		final Function<long[], Real> f1 =
 			new RealImageFunction(input1.getImgPlus().getImg());
 		final Function<long[], Real> f2 =
@@ -209,8 +209,8 @@ public class ImageMath implements ImageJPlugin {
 	}
 
 	private void copyDataIntoInput1(long[] span) {
-		ImgPlus<? extends RealType<?>> srcImgPlus = output.getImgPlus();
-		ImgPlus<? extends RealType<?>> dstImgPlus = input1.getImgPlus();
+		final ImgPlus<? extends RealType<?>> srcImgPlus = output.getImgPlus();
+		final ImgPlus<? extends RealType<?>> dstImgPlus = input1.getImgPlus();
 		RestructureUtils.copyHyperVolume(
 			srcImgPlus, new long[span.length], span,
 			dstImgPlus, new long[span.length], span);
