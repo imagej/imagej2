@@ -137,8 +137,10 @@ public class LegacyPlugin implements ImageJPlugin {
 		for (final ImagePlus imp : closedSet) {
 			final ImageDisplay disp = map.lookupDisplay(imp);
 			if (disp != null) {
-				outputs.remove(disp);
-				disp.close();
+				// REMOVED: outputs.remove(display);
+				// Now only close displays that have not been changed
+				if (!outputs.contains(disp))
+					disp.close();
 			}
 		}
 
