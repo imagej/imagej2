@@ -1377,8 +1377,8 @@ public final class LegacyUtils {
 			boolean allGrayLuts = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable8 cTable = cTables.get(i);
-				if ((allGrayLuts) && (!ColorTables.isGrayColorTable(cTable))) allGrayLuts =
-					false;
+				if ((allGrayLuts) && (!ColorTables.isGrayColorTable(cTable)))
+					allGrayLuts = false;
 				final LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
