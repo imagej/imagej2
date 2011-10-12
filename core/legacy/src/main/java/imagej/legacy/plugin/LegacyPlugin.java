@@ -93,7 +93,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
 		if (!isLegacyCompatible(activeDisplay)) {
-			Log.warn("Active dataset is not compatible with IJ1");
+			Log.error("Active dataset too large to be represented inside IJ1");
 			outputs = new ArrayList<ImageDisplay>();
 			return;
 		}
