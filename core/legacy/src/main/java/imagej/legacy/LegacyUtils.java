@@ -280,8 +280,8 @@ public final class LegacyUtils {
 	 * between them as planes of data are shared by reference. Assumes the Dataset
 	 * can be represented via plane references (thus XYCZT and backed by
 	 * {@link PlanarAccess} and in a type compatible with IJ1). Does not set the
-	 * metadata of the ImagePlus. Throws an exception when Dataset has any axis
-	 * size or total number of planes > Integer.MAX_VALUE.
+	 * metadata of the ImagePlus. Throws an exception if Dataset axis 0 is not X
+	 * or Dataset axis 1 is not Y.
 	 */
 	// TODO - check that Dataset can be represented exactly
 	static ImagePlus makeExactImagePlus(final Dataset ds) {
@@ -319,8 +319,7 @@ public final class LegacyUtils {
 	 * Makes a color {@link ImagePlus} from a color {@link Dataset}. The ImagePlus
 	 * will have the same X, Y, Z, & T dimensions. C will be 1. The data values
 	 * and metadata are not assigned. Throws an exception if the dataset is not
-	 * color compatible. Throws an exception when Dataset has any axis size or
-	 * total number of planes > Integer.MAX_VALUE.
+	 * color compatible.
 	 */
 	static ImagePlus makeColorImagePlus(final Dataset ds) {
 		if (!isColorCompatible(ds)) {
@@ -615,8 +614,8 @@ public final class LegacyUtils {
 	/**
 	 * Assigns the plane references of an {@link ImagePlus}' {@link ImageStack} to
 	 * match those of a given {@link Dataset}. Assumes input Dataset and ImagePlus
-	 * match in dimensions and backing type. Throws an exception when Dataset has
-	 * any axis size or total number of planes > Integer.MAX_VALUE.
+	 * match in dimensions and backing type. Throws an exception if Dataset axis 0
+	 * is not X or Dataset axis 1 is not Y.
 	 */
 	static void setImagePlusPlanes(final Dataset ds, final ImagePlus imp) {
 		final int[] dimIndices = new int[5];
@@ -997,9 +996,7 @@ public final class LegacyUtils {
 
 	/**
 	 * Makes an {@link ImagePlus} that matches dimensions of a {@link Dataset}.
-	 * The data values of the ImagePlus to be populated later elsewhere. Throws an
-	 * exception when Dataset has any axis size or total number of planes >
-	 * Integer.MAX_VALUE.
+	 * The data values of the ImagePlus to be populated later elsewhere.
 	 * 
 	 * @param ds - input Dataset to be shape compatible with
 	 * @param planeMaker - a PlaneMaker to use to make type correct image planes
@@ -1065,9 +1062,7 @@ public final class LegacyUtils {
 	 * Copies a {@link Dataset}'s dimensions and axis indices into provided
 	 * arrays. The order of dimensions is formatted to be X,Y,C,Z,T. If an axis is
 	 * not present in the Dataset its value is set to 1 and its index is set to
-	 * -1. Combines all non XYZT axis dimensions into 1 C dimensions. Throws an
-	 * exception when Dataset has any axis size or total number of planes >
-	 * Integer.MAX_VALUE.
+	 * -1. Combines all non XYZT axis dimensions into multiple C dimensions.
 	 */
 	private static void getImagePlusDims(final Dataset dataset,
 		final int[] outputIndices, final int[] outputDims)
@@ -1089,37 +1084,13 @@ public final class LegacyUtils {
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 		final long cCount = ij1ChannelCount(dims, axes);
 
-		// check width
-		if (xIndex < 0) throw new IllegalArgumentException("missing X axis");
-		if (xCount > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("Width out of range: " + xCount);
-		}
-
-		// check height
-		if (yIndex < 0) throw new IllegalArgumentException("missing Y axis");
-		if (yCount > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("Height out of range: " + yCount);
-		}
-
-		// check plane size
-		if ((xCount * yCount) > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("too many elements per plane: " +
-				"value(" + (xCount * yCount) + ") : max (" + Integer.MAX_VALUE + ")");
-		}
-
-		// check total channels, slices and frames not too large
-
-		if (cCount * zCount * tCount > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("too many planes : value(" +
-				(cCount * zCount * tCount) + ") : max (" + Integer.MAX_VALUE + ")");
-		}
-
-		// set output values : indices
 		// NB - cIndex tells what dimension is channel in Dataset. For a
 		// Dataset that encodes other axes as channels this info is not so
 		// useful. But for Datasets that can be represented exactly it is.
 		// So pass along info but API consumers must be careful to not make
 		// assumptions.
+
+		// set output values : indices
 		outputIndices[0] = xIndex;
 		outputIndices[1] = yIndex;
 		outputIndices[2] = cIndex;
