@@ -47,6 +47,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Axes;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
@@ -57,8 +58,7 @@ import net.imglib2.type.numeric.RealType;
 
 /**
  * Creates an output Dataset by cropping an input Dataset in X & Y. Works on
- * images of any dimensionality. X & Y are assumed to be the first two
- * dimensions.
+ * images of any dimensionality.
  * 
  * @author Barry DeZonia
  */
@@ -102,6 +102,7 @@ public class CropImage implements ImageJPlugin {
 		// TODO - had to make this raw to avoid compiler errors
 		private final Img inputImage;
 		private final long minX, maxX, minY, maxY;
+		private final int xIndex, yIndex;
 
 		private final String errMessage = "No error";
 		private Img<? extends RealType<?>> outputImage;
@@ -112,6 +113,8 @@ public class CropImage implements ImageJPlugin {
 			minY = (long) bounds.y;
 			maxX = (long) (bounds.x + bounds.width - 1);
 			maxY = (long) (bounds.y + bounds.height - 1);
+			xIndex = dataset.getAxisIndex(Axes.X);
+			yIndex = dataset.getAxisIndex(Axes.Y);
 			/*
 			long[] dims = dataset.getDims();
 			System.out.print("Ds dims: ");
@@ -126,8 +129,8 @@ public class CropImage implements ImageJPlugin {
 			final long[] newDimensions = new long[inputImage.numDimensions()];
 
 			inputImage.dimensions(newDimensions);
-			newDimensions[0] = maxX - minX + 1;
-			newDimensions[1] = maxY - minY + 1;
+			newDimensions[xIndex] = maxX - minX + 1;
+			newDimensions[yIndex] = maxY - minY + 1;
 
 			// TODO - in inputImage not a raw type this won't compile
 			outputImage =
@@ -157,8 +160,8 @@ public class CropImage implements ImageJPlugin {
 
 				outputCursor.localize(tmpPosition);
 
-				tmpPosition[0] += minX;
-				tmpPosition[1] += minY;
+				tmpPosition[xIndex] += minX;
+				tmpPosition[yIndex] += minY;
 
 				inputAccessor.setPosition(tmpPosition);
 
