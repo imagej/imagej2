@@ -110,8 +110,15 @@ public class CropImage implements ImageJPlugin {
 			inputImage = dataset.getImgPlus();
 			minX = (long) bounds.x;
 			minY = (long) bounds.y;
-			maxX = (long) (bounds.x + bounds.width);
-			maxY = (long) (bounds.y + bounds.height);
+			maxX = (long) (bounds.x + bounds.width - 1);
+			maxY = (long) (bounds.y + bounds.height - 1);
+			/*
+			long[] dims = dataset.getDims();
+			System.out.print("Ds dims: ");
+			for (int i = 0; i < dims.length; i++)
+				System.out.print((i==0 ? "" : ",")+dims[i]);
+			System.out.println(" min("+minX+","+ minY+") max("+maxX+","+ maxY+")");
+			*/
 		}
 
 		@Override
