@@ -807,6 +807,7 @@ public final class LegacyUtils {
 			final Dataset ds = imageDisplayService.getActiveDataset(disp);
 			setImagePlusLutToFirstInDataset(ds, imp);
 		}
+		assignImagePlusMinMax(disp, imp);
 	}
 
 	/**
@@ -1240,8 +1241,8 @@ public final class LegacyUtils {
 	}
 
 	/**
-	 * Assigns the given ImagePlus's per-channel min/max values to the active view
-	 * of the specified ImageDisplay.
+	 * Assigns the per-channel min/max values of active view of given
+	 * ImageDisplay to the specified ImagePlus/CompositeImage range(s).
 	 */
 	private static void assignChannelMinMax(final ImageDisplay disp,
 		final ImagePlus imp)
@@ -1277,13 +1278,54 @@ public final class LegacyUtils {
 		}
 
 		for (int c = 0; c < channelCount; c++) {
-			final RealLUTConverter<? extends RealType<?>> conv = converters.get(0);
+			final RealLUTConverter<? extends RealType<?>> conv = converters.get(c);
 			conv.setMin(min[c]);
 			conv.setMax(max[c]);
 		}
-		view.getProjector().map();
 	}
 
+	/**
+	 * Assigns the given ImagePlus's per-channel min/max values to the active view
+	 * of the specified ImageDisplay.
+	 */
+	private static void assignImagePlusMinMax(final ImageDisplay disp,
+		final ImagePlus imp)
+	{
+		final DataView dataView = disp.getActiveView();
+		if (!(dataView instanceof DatasetView)) return;
+		final DatasetView view = (DatasetView) dataView;
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+			view.getConverters();
+		final int channelCount = converters.size();
+		final double[] min = new double[channelCount];
+		final double[] max = new double[channelCount];
+		double overallMin = Double.POSITIVE_INFINITY;
+		double overallMax = Double.NEGATIVE_INFINITY;
+		for (int c = 0; c < channelCount; c++) {
+			final RealLUTConverter<? extends RealType<?>> conv = converters.get(c);
+			min[c] = conv.getMin();
+			max[c] = conv.getMax();
+			if (min[c] < overallMin) overallMin = min[c];
+			if (max[c] > overallMax) overallMax = max[c];
+		}
+		
+		if (imp instanceof CompositeImage) {
+			CompositeImage ci = (CompositeImage) imp;
+			LUT[] luts = ci.getLuts();
+			if (channelCount != luts.length) {
+				throw new IllegalArgumentException("Channel mismatch: " +
+					converters.size() + " vs. " + luts.length);
+			}
+			for (int i = 0; i < luts.length; i++) {
+				luts[i].min = min[i];
+				luts[i].max = max[i];
+			}
+		}
+		else { // regular ImagePlus
+			imp.setDisplayRange(overallMin, overallMax);
+		}
+	}
+	
 	/** Creates a list of ColorTables from an ImagePlus. */
 	private static List<ColorTable<?>> colorTablesFromImagePlus(
 		final ImagePlus imp)
