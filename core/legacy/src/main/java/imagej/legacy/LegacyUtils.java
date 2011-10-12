@@ -281,7 +281,7 @@ public final class LegacyUtils {
 	 * can be represented via plane references (thus XYCZT and backed by
 	 * {@link PlanarAccess} and in a type compatible with IJ1). Does not set the
 	 * metadata of the ImagePlus. Throws an exception when Dataset has any axis
-	 * length or total number of planes > Integer.MAX_VALUE.
+	 * size or total number of planes > Integer.MAX_VALUE.
 	 */
 	// TODO - check that Dataset can be represented exactly
 	static ImagePlus makeExactImagePlus(final Dataset ds) {
@@ -319,8 +319,8 @@ public final class LegacyUtils {
 	 * Makes a color {@link ImagePlus} from a color {@link Dataset}. The ImagePlus
 	 * will have the same X, Y, Z, & T dimensions. C will be 1. The data values
 	 * and metadata are not assigned. Throws an exception if the dataset is not
-	 * color compatible. Throws an exception when Dataset has any axis or total
-	 * number of planes > Integer.MAX_VALUE.
+	 * color compatible. Throws an exception when Dataset has any axis size or
+	 * total number of planes > Integer.MAX_VALUE.
 	 */
 	static ImagePlus makeColorImagePlus(final Dataset ds) {
 		if (!isColorCompatible(ds)) {
@@ -616,7 +616,7 @@ public final class LegacyUtils {
 	 * Assigns the plane references of an {@link ImagePlus}' {@link ImageStack} to
 	 * match those of a given {@link Dataset}. Assumes input Dataset and ImagePlus
 	 * match in dimensions and backing type. Throws an exception when Dataset has
-	 * any axis or total number of planes > Integer.MAX_VALUE.
+	 * any axis size or total number of planes > Integer.MAX_VALUE.
 	 */
 	static void setImagePlusPlanes(final Dataset ds, final ImagePlus imp) {
 		final int[] dimIndices = new int[5];
@@ -898,7 +898,7 @@ public final class LegacyUtils {
 	// -- private helpers --
 
 	/**
-	 * Gets a dimension for a given axis from a list of dimensions in XTCZT order.
+	 * Gets a dimension for a given axis from a list of dimensions in XYCZT order.
 	 */
 	private static int getDim(final Axis axis, final int[] fullDimensions) {
 		if (axis == Axes.X) return fullDimensions[0];
@@ -998,7 +998,7 @@ public final class LegacyUtils {
 	/**
 	 * Makes an {@link ImagePlus} that matches dimensions of a {@link Dataset}.
 	 * The data values of the ImagePlus to be populated later elsewhere. Throws an
-	 * exception when Dataset has any axis or total number of planes >
+	 * exception when Dataset has any axis size or total number of planes >
 	 * Integer.MAX_VALUE.
 	 * 
 	 * @param ds - input Dataset to be shape compatible with
@@ -1066,7 +1066,7 @@ public final class LegacyUtils {
 	 * arrays. The order of dimensions is formatted to be X,Y,C,Z,T. If an axis is
 	 * not present in the Dataset its value is set to 1 and its index is set to
 	 * -1. Combines all non XYZT axis dimensions into 1 C dimensions. Throws an
-	 * exception when Dataset has any axis length or total number of planes >
+	 * exception when Dataset has any axis size or total number of planes >
 	 * Integer.MAX_VALUE.
 	 */
 	private static void getImagePlusDims(final Dataset dataset,
