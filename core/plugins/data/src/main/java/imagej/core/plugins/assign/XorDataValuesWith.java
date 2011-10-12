@@ -51,7 +51,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "XOR...", weight = 7) })
+	@Menu(label = "XOR...", weight = 8) })
 public class XorDataValuesWith extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --

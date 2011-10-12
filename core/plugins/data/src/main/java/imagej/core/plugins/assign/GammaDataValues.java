@@ -54,7 +54,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Gamma...", weight = 10) })
+	@Menu(label = "Gamma...", weight = 11) })
 public class GammaDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --

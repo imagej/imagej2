@@ -1,5 +1,5 @@
 //
-// AndDataValuesWith.java
+// AddToDataValues.java
 //
 
 /*
@@ -40,46 +40,45 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
-import net.imglib2.ops.operation.unary.real.RealAndConstant;
+import net.imglib2.ops.operation.unary.real.RealPowerConstant;
 
 /**
- * Fills an output Dataset by ANDing an input Dataset with a user defined
- * constant value.
+ * Fills an output Dataset by raising input Dataset values to a user defined
+ * constant value power.
  * 
  * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "AND...", weight = 6) })
-public class AndDataValuesWith extends AbstractPreviewPlugin {
+	@Menu(label = "Power...", weight = 5) })
+public class RaiseToPowerDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
-	
+
 	@Parameter
 	ImageDisplay display;
-	
-	@Parameter(label = "Value (binary)")
-	private long constant;
-	
+
+	@Parameter(label = "Value")
+	private double constant;
+
 	@Parameter(label = "Preview")
 	private boolean preview;
-	
+
 	// -- public interface --
-	
+
 	@Override
 	public UnaryOperation<Real,Real> getOperation() {
-		return new RealAndConstant(constant);
+		return new RealPowerConstant(constant);
 	}
-	
+
 	@Override
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
+
 	@Override
 	public boolean previewOn() {
 		return preview;
 	}
-	
 }

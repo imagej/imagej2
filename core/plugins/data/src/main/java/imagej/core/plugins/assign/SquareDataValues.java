@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealSqr;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Square", weight = 14) })
+	@Menu(label = "Square", weight = 15) })
 public class SquareDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -51,7 +51,7 @@ import net.imglib2.ops.operation.unary.real.RealLog;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Log", weight = 12) })
+	@Menu(label = "Log", weight = 13) })
 public class LogDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

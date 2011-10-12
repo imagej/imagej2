@@ -51,7 +51,7 @@ import net.imglib2.ops.operation.unary.real.RealConstant;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Set...", weight = 11) })
+	@Menu(label = "Set...", weight = 12) })
 public class SetDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
