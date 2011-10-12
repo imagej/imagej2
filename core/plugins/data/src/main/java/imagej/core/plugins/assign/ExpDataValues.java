@@ -51,7 +51,7 @@ import net.imglib2.ops.operation.unary.real.RealExp;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Exp", weight = 13) })
+	@Menu(label = "Exp", weight = 14) })
 public class ExpDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

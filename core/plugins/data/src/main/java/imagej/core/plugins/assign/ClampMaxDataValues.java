@@ -51,7 +51,7 @@ import net.imglib2.ops.operation.unary.real.RealMaxConstant;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Max...", weight = 9) })
+	@Menu(label = "Max...", weight = 10) })
 public class ClampMaxDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --

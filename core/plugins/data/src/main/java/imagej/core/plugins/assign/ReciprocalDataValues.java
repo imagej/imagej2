@@ -54,7 +54,7 @@ import net.imglib2.ops.operation.unary.real.RealReciprocal;
  */
 @Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Reciprocal", weight = 16) })
+	@Menu(label = "Reciprocal", weight = 17) })
 public class ReciprocalDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -53,7 +53,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Min...", weight = 8) })
+	@Menu(label = "Min...", weight = 9) })
 public class ClampMinDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --

@@ -52,7 +52,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Abs", weight = 18) })
+	@Menu(label = "Abs", weight = 19) })
 public class AbsDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
