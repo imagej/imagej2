@@ -239,9 +239,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	/**
-	 * Assumes there are no incompatible IJ1 axes present in dataset
-	 * 
-	 * @param ds
+	 * Determines if a Dataset's dimensions cannot be represented within IJ1's
+	 * dimensional constraints.
 	 */
 	private boolean dimensionsIncompatible(final Dataset ds) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
@@ -253,10 +252,10 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
 		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
-		final long cCount = LegacyUtils.ij1ChannelCount(dims, ds.getAxes());
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 
+		final long cCount = LegacyUtils.ij1ChannelCount(dims, ds.getAxes());
 		final long ij1ChannelCount = ds.isRGBMerged() ? (cCount / 3) : cCount;
 
 		// check width
