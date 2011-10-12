@@ -189,9 +189,13 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			if (view instanceof FigureView) {
 				final Figure figure = ((FigureView) view).getFigure();
 				if (newSelection.contains(figure)) {
-					if (!oldSelection.contains(figure)) {
-						view.setSelected(true);
-					}
+					// BDZ removed next line 10-12-11
+					//   Fixes drawing of multiple overlays (#817). Lee had this code
+					//   here in anticipation of avoiding infinite event loops.
+					//   Inspection seems to bear out that this possibility doesn't
+					//   happen.
+					//if (!oldSelection.contains(figure))
+					view.setSelected(true);
 				}
 				else if (oldSelection.contains(figure)) {
 					view.setSelected(false);
