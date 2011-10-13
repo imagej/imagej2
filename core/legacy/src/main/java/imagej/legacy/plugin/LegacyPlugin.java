@@ -126,7 +126,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			outputs = updateDisplaysFromImagePluses(map, harmonizer);
 		}
 		catch (final Exception e) {
-			Log.warn("No outputs found - ImageJ 1.x plugin threw exception", e);
+			Log.error("No outputs found - ImageJ 1.x plugin threw exception", e);
 			// make sure our ImagePluses are in sync with original Datasets
 			updateImagePlusesFromDisplays(map, harmonizer);
 			// return no outputs
