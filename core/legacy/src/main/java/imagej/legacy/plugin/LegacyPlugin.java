@@ -50,6 +50,9 @@ import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.legacy.LegacyUtils;
 import imagej.object.ObjectService;
+import imagej.ui.DialogPrompt;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -90,11 +93,15 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		
 		imageDisplayService = ImageJ.get(ImageDisplayService.class);
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
+		
 		if (!isLegacyCompatible(activeDisplay)) {
-			Log.error("Active dataset too large to be represented inside IJ1");
+			String err = "Active dataset too large to be represented inside IJ1";
+			notifyUser(err);
+			Log.error(err);
 			outputs = new ArrayList<ImageDisplay>();
 			return;
 		}
@@ -102,7 +109,9 @@ public class LegacyPlugin implements ImageJPlugin {
 		/*
 		// temp hack to test error handling
 		if (new Random().nextDouble() < 0.3) {
-			Log.error("programmer generated error");
+			String err = "programmer generated error";
+			notifyUser(err);
+			Log.error(err);
 			outputs = new ArrayList<ImageDisplay>();
 			return;
 		}
@@ -136,7 +145,9 @@ public class LegacyPlugin implements ImageJPlugin {
 			outputs = updateDisplaysFromImagePluses(map, harmonizer);
 		}
 		catch (final Exception e) {
-			Log.error("ImageJ 1.x plugin threw exception", e);
+			String err = "ImageJ 1.x plugin threw exception";
+			notifyUser(err);
+			Log.error(err);
 			// make sure our ImagePluses are in sync with original Datasets
 			updateImagePlusesFromDisplays(map, harmonizer);
 			// return no outputs
@@ -286,4 +297,12 @@ public class LegacyPlugin implements ImageJPlugin {
 		return false;
 	}
 
+	private void notifyUser(String message) {
+		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
+		final DialogPrompt dialog =
+			ui.dialogPrompt(message, "Error",
+				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+		dialog.prompt();
+	}
 }
