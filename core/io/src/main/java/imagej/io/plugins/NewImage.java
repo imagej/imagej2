@@ -89,10 +89,10 @@ public class NewImage implements ImageJPlugin {
 	private String fillType = WHITE;
 
 	@Parameter(min = "1")
-	private int width = 512;
+	private long width = 512;
 
 	@Parameter(min = "1")
-	private int height = 512;
+	private long height = 512;
 
 	// TODO: allow creation of multidimensional datasets
 
@@ -142,19 +142,19 @@ public class NewImage implements ImageJPlugin {
 		this.fillType = fillType;
 	}
 
-	public int getWidth() {
+	public long getWidth() {
 		return width;
 	}
 
-	public void setWidth(final int width) {
+	public void setWidth(final long width) {
 		this.width = width;
 	}
 
-	public int getHeight() {
+	public long getHeight() {
 		return height;
 	}
 
-	public void setHeight(final int height) {
+	public void setHeight(final long height) {
 		this.height = height;
 	}
 
