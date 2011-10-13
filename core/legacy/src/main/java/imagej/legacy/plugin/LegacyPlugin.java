@@ -249,8 +249,11 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	/**
-	 * Determines if a Dataset's dimensions cannot be represented within IJ1's
-	 * dimensional constraints.
+	 * Determines if a Dataset's dimensions cannot be represented within
+	 * an IJ1 ImageStack. Returns true if the Dataset does not have X or
+	 * Y axes. Returns true if the XY plane size is greater than
+	 * Integer.MAX_VALUE. Returns true if the number of planes is greater
+	 * than Integer.MAX_VALUE. 
 	 */
 	private boolean dimensionsIncompatible(final Dataset ds) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
@@ -268,13 +271,13 @@ public class LegacyPlugin implements ImageJPlugin {
 		final long cCount = LegacyUtils.ij1ChannelCount(dims, ds.getAxes());
 		final long ij1ChannelCount = ds.isRGBMerged() ? (cCount / 3) : cCount;
 
-		// check width
-		if ((xIndex < 0) || (xCount > Integer.MAX_VALUE)) return true;
+		// check width exists
+		if (xIndex < 0) return true;
 
-		// check height
-		if ((yIndex < 0) || (yCount > Integer.MAX_VALUE)) return true;
+		// check height exists
+		if (yIndex < 0) return true;
 
-		// check plane size
+		// check plane size not too large
 		if ((xCount * yCount) > Integer.MAX_VALUE) return true;
 
 		// check number of planes not too large
