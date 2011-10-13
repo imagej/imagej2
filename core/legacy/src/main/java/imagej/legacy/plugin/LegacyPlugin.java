@@ -55,6 +55,7 @@ import imagej.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import net.imglib2.img.Axes;
@@ -98,6 +99,15 @@ public class LegacyPlugin implements ImageJPlugin {
 			return;
 		}
 
+		/*
+		// temp hack to test error handling
+		if (new Random().nextDouble() < 0.3) {
+			Log.error("programmer generated error");
+			outputs = new ArrayList<ImageDisplay>();
+			return;
+		}
+		*/
+		
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		final LegacyImageMap map = legacyService.getImageMap();
 
@@ -126,7 +136,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			outputs = updateDisplaysFromImagePluses(map, harmonizer);
 		}
 		catch (final Exception e) {
-			Log.error("No outputs found - ImageJ 1.x plugin threw exception", e);
+			Log.error("ImageJ 1.x plugin threw exception", e);
 			// make sure our ImagePluses are in sync with original Datasets
 			updateImagePlusesFromDisplays(map, harmonizer);
 			// return no outputs
