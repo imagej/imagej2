@@ -117,7 +117,9 @@ public class ZoomTool extends AbstractTool {
 		}
 		else {
 			// under threshold: just zoom
-			final boolean zoomOut = evt.getButton() != MsButtonEvent.LEFT_BUTTON;
+			final boolean zoomOut =
+				evt.getButton() != MsButtonEvent.LEFT_BUTTON ||
+					evt.getModifiers().isCtrlDown();
 			if (zoomOut) {
 				imageDisplay.getCanvas().zoomOut(mouseDown);
 			}
