@@ -50,8 +50,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ObjectIndex<E> implements Collection<E> {
 
 	/**
-	 * "Sleeping on a dragon's hoard with greedy, dragonish thoughts in his heart,
-	 * he had become a dragon himself." &mdash;C.S. Lewis
+	 * "Them as counts counts moren them as dont count." &mdash;Russell Hoban,
+	 * <em>Riddley Walker</em>
 	 */
 	protected final Map<Class<?>, List<E>> hoard =
 		new ConcurrentHashMap<Class<?>, List<E>>();
@@ -194,7 +194,8 @@ public class ObjectIndex<E> implements Collection<E> {
 	}
 
 	protected boolean addToList(final E obj, final List<E> list,
-		@SuppressWarnings("unused") final boolean batch)
+		@SuppressWarnings("unused")
+		final boolean batch)
 	{
 		if (list.contains(obj)) return false; // object already on the list
 		list.add(obj);
@@ -202,7 +203,8 @@ public class ObjectIndex<E> implements Collection<E> {
 	}
 
 	protected boolean removeFromList(final Object obj, final List<E> list,
-		@SuppressWarnings("unused") final boolean batch)
+		@SuppressWarnings("unused")
+		final boolean batch)
 	{
 		return list.remove(obj);
 	}
@@ -210,8 +212,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	// -- Helper methods --
 
 	/** Recursively adds the given object to type lists. */
-	private boolean
-		register(final E o, final Class<?> type, final boolean batch)
+	private boolean register(final E o, final Class<?> type, final boolean batch)
 	{
 		if (type == null) return false; // invalid class
 
