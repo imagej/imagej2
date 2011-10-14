@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.data.roi.Overlay;
 import imagej.ext.MenuEntry;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -49,6 +49,7 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 // TODO - the IJ1 crop plugin can do a lot more than this can.
@@ -57,97 +58,121 @@ import net.imglib2.type.numeric.RealType;
 //TODO - add correct weight to @Plugin annotation.
 
 /**
- * Creates an output Dataset by cropping an input Dataset in X & Y. Works on
- * images of any dimensionality.
+ * Replaces the pixels of an input Dataset by cropping in X & Y using it's
+ * currently selected region. Works on images of any dimensionality.
  * 
  * @author Barry DeZonia
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Plugin(menu = {
 	@Menu(label = "Image", weight = MenuEntry.IMAGE_WEIGHT, mnemonic = 'i'),
 	@Menu(label = "Crop", accelerator = "shift control X") })
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class CropImage implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
 	@Parameter
+	private ImageDisplayService imageDisplayService;
+	
+	@Parameter
+	private OverlayService overlayService;
+	
+	@Parameter
 	private ImageDisplay display;
+
+	// -- other instance variables --
+	
+	private Img inputImage;
+	private long minX, maxX, minY, maxY;
+	private int xIndex, yIndex;
+	private Img<? extends RealType<?>> outputImage;
 
 	// -- public interface --
 
-	/** Runs the crop process on the given display's active dataset. */
+	/**
+	 * Runs the crop process on the given display's active dataset.
+	 */
 	@Override
 	public void run() {
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
-		final OverlayService overlayService = ImageJ.get(OverlayService.class);
-
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		final RealRect bounds = overlayService.getSelectionBounds(display);
 
-		final OutputAlgorithm algorithm = new CropAlgorithm(dataset, bounds);
-		final ImgLibDataTransform runner =
-			new ImgLibDataTransform(dataset, algorithm);
-		runner.run();
+		ImgPlus<? extends RealType<?>> croppedData =
+				generateCroppedData(dataset, bounds);
+
+		System.out.println("CropImage::run() - size = "+(maxX-minX+1)+","+(maxY-minY+1));
+		// remove all overlays
+		//   TODO - could be a problem when multiple datasets in one display
+		//   TODO - could just remove those that are not wholly contained in
+		//     crop region. Could translate or recreate others.
+		for (Overlay overlay : overlayService.getOverlays(display)) {
+			overlayService.removeOverlay(display, overlay);
+		}
+
+		// BDZ - HACK - FIXME
+	  // 10-14-11 resetting zoom will cause canvas to prefer new smaller size
+		// and sizeAppropriately() correctly. TODO GBH will be changing
+		// sizeAppropriately() soon. Test whether this tweak is needed or else
+		// add some code to tell canvas it's size is invalid. Or have panel
+		// listen for DatasetRestructuredEvents and reset canvas size there.
+		// Not sure how that would interact with current event sequences.
+		// Note that this hack is somewhat effective. The resize does not always
+		// happen even with this. Once again we have a display timing bug. See
+		// what CTR figures out about timing issues with the elimination of
+		// redoLayout(). Related ticket is #826.
+		display.getCanvas().setZoom(1);
+
+		dataset.setImgPlus(croppedData);
+
+		//   TODO - could create an overlay that selects all afterwards or
+		//   move original one. Or just make sure region is marked as selected
+		//for (final DataView view : display) {
+		//	view.setSelected(true);
+		//}
 	}
 
 	// -- private interface --
 
 	/**
-	 * CropAlgorithm is responsible for creating the cropped image from the input
-	 * Dataset. It is an ImgLib OutputAlgorithm.
+	 * Creates an ImgPlus containing data from crop region of an input Dataset
 	 */
-	private class CropAlgorithm implements OutputAlgorithm {
+	private ImgPlus<? extends RealType<?>>
+		generateCroppedData(Dataset ds, RealRect bounds)
+	{
+		setup(ds, bounds);
+		copyPixels();
+		return ImgPlus.wrap(outputImage, ds);
+	}
 
-		// TODO - had to make this raw to avoid compiler errors
-		private final Img inputImage;
-		private final long minX, maxX, minY, maxY;
-		private final int xIndex, yIndex;
+	/**
+	 *  Initializes working variables used by copyPixels()
+	 */
+	private void setup(Dataset dataset, RealRect bounds) {
+		inputImage = dataset.getImgPlus();
+		
+		minX = (long) bounds.x;
+		minY = (long) bounds.y;
+		maxX = (long) (bounds.x + bounds.width - 1);
+		maxY = (long) (bounds.y + bounds.height - 1);
 
-		private final String errMessage = "No error";
-		private Img<? extends RealType<?>> outputImage;
+		xIndex = dataset.getAxisIndex(Axes.X);
+		yIndex = dataset.getAxisIndex(Axes.Y);
 
-		public CropAlgorithm(final Dataset dataset, final RealRect bounds) {
-			inputImage = dataset.getImgPlus();
-			minX = (long) bounds.x;
-			minY = (long) bounds.y;
-			maxX = (long) (bounds.x + bounds.width - 1);
-			maxY = (long) (bounds.y + bounds.height - 1);
-			xIndex = dataset.getAxisIndex(Axes.X);
-			yIndex = dataset.getAxisIndex(Axes.Y);
-			/*
-			long[] dims = dataset.getDims();
-			System.out.print("Ds dims: ");
-			for (int i = 0; i < dims.length; i++)
-				System.out.print((i==0 ? "" : ",")+dims[i]);
-			System.out.println(" min("+minX+","+ minY+") max("+maxX+","+ maxY+")");
-			*/
-		}
+		final long[] newDimensions = new long[inputImage.numDimensions()];
+		inputImage.dimensions(newDimensions);
+		newDimensions[xIndex] = maxX - minX + 1;
+		newDimensions[yIndex] = maxY - minY + 1;
 
-		@Override
-		public boolean checkInput() {
-			final long[] newDimensions = new long[inputImage.numDimensions()];
+		// TODO - if inputImage is not a raw type this won't compile
+		outputImage =
+			inputImage.factory().create(newDimensions, inputImage.firstElement());
+	}
 
-			inputImage.dimensions(newDimensions);
-			newDimensions[xIndex] = maxX - minX + 1;
-			newDimensions[yIndex] = maxY - minY + 1;
-
-			// TODO - in inputImage not a raw type this won't compile
-			outputImage =
-				inputImage.factory().create(newDimensions, inputImage.firstElement());
-
-			return true;
-		}
-
-		@Override
-		public String getErrorMessage() {
-			return errMessage;
-		}
-
-		/** Runs the cropping process. */
-		@Override
-		public boolean process() {
-			final RandomAccess<? extends RealType<?>> inputAccessor =
+	/**
+	 * Fills cropped image data container from the input Dataset.
+	 */
+	private void copyPixels() {
+		final RandomAccess<? extends RealType<?>> inputAccessor =
 				inputImage.randomAccess();
 
 			final Cursor<? extends RealType<?>> outputCursor =
@@ -169,15 +194,6 @@ public class CropImage implements ImageJPlugin {
 
 				outputCursor.get().setReal(value);
 			}
-
-			return true;
-		}
-
-		@Override
-		public Img<? extends RealType<?>> getResult() {
-			return outputImage;
-		}
-
 	}
 
 }
