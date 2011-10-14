@@ -38,15 +38,16 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating a mouse button was pressed in a display.
- *
+ * 
  * @author Curtis Rueden
  */
 public class MsPressedEvent extends MsButtonEvent {
 
-	public MsPressedEvent(final Display<?> display, final int x, final int y,
-			final int button, final int numClicks, final boolean isPopupTrigger)
+	public MsPressedEvent(final Display<?> display,
+		final InputModifiers modifiers, final int x, final int y, final int button,
+		final int numClicks, final boolean isPopupTrigger)
 	{
-		super(display, x, y, button, numClicks, isPopupTrigger);
+		super(display, modifiers, x, y, button, numClicks, isPopupTrigger);
 	}
 
 }

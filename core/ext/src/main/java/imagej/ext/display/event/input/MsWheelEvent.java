@@ -38,17 +38,17 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating a mouse wheel was moved in a display.
- *
+ * 
  * @author Curtis Rueden
  */
 public class MsWheelEvent extends MsEvent {
 
-	private int wheelRotation;
+	private final int wheelRotation;
 
-	public MsWheelEvent(final Display<?> display,
+	public MsWheelEvent(final Display<?> display, final InputModifiers modifiers,
 		final int x, final int y, final int wheelRotation)
 	{
-		super(display, x, y);
+		super(display, modifiers, x, y);
 		this.wheelRotation = wheelRotation;
 	}
 

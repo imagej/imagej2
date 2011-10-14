@@ -1,5 +1,5 @@
 //
-// MsDraggedEvent.java
+// InputEvent.java
 //
 
 /*
@@ -35,19 +35,32 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.event.DisplayEvent;
 
 /**
- * An event indicating a mouse was dragged in a display.
+ * An event indicating input device (e.g., keyboard or mouse) activity in a
+ * display.
  * 
  * @author Curtis Rueden
  */
-public class MsDraggedEvent extends MsButtonEvent {
+public abstract class InputEvent extends DisplayEvent {
 
-	public MsDraggedEvent(final Display<?> display,
-		final InputModifiers modifiers, final int x, final int y, final int button,
-		final int numClicks, final boolean isPopupTrigger)
-	{
-		super(display, modifiers, x, y, button, numClicks, isPopupTrigger);
+	private final InputModifiers modifiers;
+
+	public InputEvent(final Display<?> display, final InputModifiers modifiers) {
+		super(display);
+		this.modifiers = modifiers;
+	}
+
+	public InputModifiers getModifiers() {
+		return modifiers;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tmodifiers = " + modifiers;
 	}
 
 }

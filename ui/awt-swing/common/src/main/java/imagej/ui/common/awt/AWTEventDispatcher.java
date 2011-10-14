@@ -1,5 +1,5 @@
 //
-// MsDraggedEvent.java
+// AWTEventDispatcher.java
 //
 
 /*
@@ -32,22 +32,37 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.input;
+package imagej.ui.common.awt;
 
-import imagej.ext.display.Display;
+import imagej.ext.display.EventDispatcher;
+import imagej.ext.display.event.input.InputModifiers;
+
+import java.awt.event.InputEvent;
 
 /**
- * An event indicating a mouse was dragged in a display.
+ * Abstract superclass of AWT {@link EventDispatcher} implementations.
  * 
  * @author Curtis Rueden
  */
-public class MsDraggedEvent extends MsButtonEvent {
+public abstract class AWTEventDispatcher implements EventDispatcher {
 
-	public MsDraggedEvent(final Display<?> display,
-		final InputModifiers modifiers, final int x, final int y, final int button,
-		final int numClicks, final boolean isPopupTrigger)
-	{
-		super(display, modifiers, x, y, button, numClicks, isPopupTrigger);
+	public InputModifiers createModifiers(final int modsEx) {
+		final boolean altDown = isOn(modsEx, InputEvent.ALT_DOWN_MASK);
+		final boolean altGrDown = isOn(modsEx, InputEvent.ALT_GRAPH_DOWN_MASK);
+		final boolean ctrlDown = isOn(modsEx, InputEvent.CTRL_DOWN_MASK);
+		final boolean metaDown = isOn(modsEx, InputEvent.META_DOWN_MASK);
+		final boolean shiftDown = isOn(modsEx, InputEvent.SHIFT_DOWN_MASK);
+		final boolean leftButtonDown = isOn(modsEx, InputEvent.BUTTON1_DOWN_MASK);
+		final boolean middleButtonDown = isOn(modsEx, InputEvent.BUTTON3_DOWN_MASK);
+		final boolean rightButtonDown = isOn(modsEx, InputEvent.BUTTON2_DOWN_MASK);
+		return new InputModifiers(altDown, altGrDown, ctrlDown, metaDown,
+			shiftDown, leftButtonDown, middleButtonDown, rightButtonDown);
+	}
+
+	// -- Helper methods --
+
+	private boolean isOn(final int modsEx, final int mask) {
+		return (modsEx & mask) != 0;
 	}
 
 }
