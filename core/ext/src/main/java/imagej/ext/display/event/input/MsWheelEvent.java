@@ -1,5 +1,5 @@
 //
-// MsReleasedEvent.java
+// MsWheelEvent.java
 //
 
 /*
@@ -32,21 +32,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.mouse;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
 
 /**
- * An event indicating a mouse button was released in a display.
+ * An event indicating a mouse wheel was moved in a display.
  *
  * @author Curtis Rueden
  */
-public class MsReleasedEvent extends MsButtonEvent {
+public class MsWheelEvent extends MsEvent {
 
-	public MsReleasedEvent(final Display<?> display, final int x, final int y,
-			final int button, final int numClicks, final boolean isPopupTrigger)
+	private int wheelRotation;
+
+	public MsWheelEvent(final Display<?> display,
+		final int x, final int y, final int wheelRotation)
 	{
-		super(display, x, y, button, numClicks, isPopupTrigger);
+		super(display, x, y);
+		this.wheelRotation = wheelRotation;
+	}
+
+	public int getWheelRotation() {
+		return wheelRotation;
 	}
 
 }

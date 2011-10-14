@@ -1,5 +1,5 @@
 //
-// MsDraggedEvent.java
+// MsMovedEvent.java
 //
 
 /*
@@ -32,21 +32,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.mouse;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
 
 /**
- * An event indicating a mouse was dragged in a display.
+ * An event indicating a mouse was moved in a display.
  *
  * @author Curtis Rueden
  */
-public class MsDraggedEvent extends MsButtonEvent {
+public class MsMovedEvent extends MsEvent {
 
-	public MsDraggedEvent(final Display<?> display, final int x, final int y,
-		final int button, final int numClicks, final boolean isPopupTrigger)
+	public MsMovedEvent(final Display<?> display,
+		final int x, final int y)
 	{
-		super(display, x, y, button, numClicks, isPopupTrigger);
+		super(display, x, y);
 	}
 
 }

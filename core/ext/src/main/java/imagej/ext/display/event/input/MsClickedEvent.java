@@ -1,5 +1,5 @@
 //
-// MsEnteredEvent.java
+// MsClickedEvent.java
 //
 
 /*
@@ -32,21 +32,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.mouse;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
 
 /**
- * An event indicating a mouse cursor entered a display.
+ * An event indicating a mouse button was clicked in a display.
  *
  * @author Curtis Rueden
  */
-public class MsEnteredEvent extends MsEvent {
+public class MsClickedEvent extends MsButtonEvent {
 
-	public MsEnteredEvent(final Display<?> display,
-		final int x, final int y)
+	public MsClickedEvent(final Display<?> display, final int x, final int y,
+		final int button, int numClicks, boolean isPopupTrigger)
 	{
-		super(display, x, y);
+		super(display, x, y, button, numClicks, isPopupTrigger);
 	}
 
 }

@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.key;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
 import imagej.ext.display.KeyCode;

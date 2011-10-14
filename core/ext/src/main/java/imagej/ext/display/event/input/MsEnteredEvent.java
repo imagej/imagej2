@@ -1,5 +1,5 @@
 //
-// KyTypedEvent.java
+// MsEnteredEvent.java
 //
 
 /*
@@ -32,22 +32,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.key;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.KeyCode;
 
 /**
- * An event indicating keyboard activity in a display.
+ * An event indicating a mouse cursor entered a display.
  *
  * @author Curtis Rueden
  */
-public class KyTypedEvent extends KyEvent {
+public class MsEnteredEvent extends MsEvent {
 
-	public KyTypedEvent(final Display<?> display, final char character,
-		final KeyCode code, final int modifiers)
+	public MsEnteredEvent(final Display<?> display,
+		final int x, final int y)
 	{
-		super(display, character, code, modifiers);
+		super(display, x, y);
 	}
 
 }
