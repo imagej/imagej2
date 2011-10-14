@@ -44,7 +44,8 @@ package imagej.ext.menu;
  * 
  * @author Curtis Rueden
  * @param <T> Top-level menu class to populate (e.g.,
- *          {@link javax.swing.JMenuBar} or {@link javax.swing.JMenu})
+ *          {@link javax.swing.JMenuBar} or {@link javax.swing.JMenu} or
+ *          {@link java.awt.MenuBar})
  * @param <M> Hierarchical menu class (e.g., {@link javax.swing.JMenu} or
  *          {@link java.awt.Menu})
  */

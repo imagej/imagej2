@@ -50,7 +50,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 /**
- * Rebroadcasts AWT events as {@link ImageJEvent}s.
+ * Rebroadcasts AWT window events as {@link ImageJEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
