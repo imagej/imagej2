@@ -1,5 +1,5 @@
 //
-// MsEvent.java
+// KyReleasedEvent.java
 //
 
 /*
@@ -32,43 +32,22 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.mouse;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayEvent;
+import imagej.ext.display.KeyCode;
 
 /**
- * An event indicating mouse activity in a display.
- * <p>
- * It is named <code>MsEvent</code> rather than <code>MouseEvent</code> to avoid
- * name clashes with the {@link java.awt.event.MouseEvent} hierarchy.
- * </p>
- * 
+ * An event indicating keyboard activity in a display.
+ *
  * @author Curtis Rueden
  */
-public abstract class MsEvent extends DisplayEvent {
+public class KyReleasedEvent extends KyEvent {
 
-	private final int x, y;
-
-	public MsEvent(final Display<?> display, final int x, final int y) {
-		super(display);
-		this.x = x;
-		this.y = y;
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return super.toString() + "\n\tx = " + x + "\n\ty = " + y;
+	public KyReleasedEvent(final Display<?> display, final char character,
+		final KeyCode code, final int modifiers)
+	{
+		super(display, character, code, modifiers);
 	}
 
 }

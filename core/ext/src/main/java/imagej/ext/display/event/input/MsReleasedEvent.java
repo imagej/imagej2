@@ -1,5 +1,5 @@
 //
-// MsPressedEvent.java
+// MsReleasedEvent.java
 //
 
 /*
@@ -32,18 +32,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.mouse;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
 
 /**
- * An event indicating a mouse button was pressed in a display.
+ * An event indicating a mouse button was released in a display.
  *
  * @author Curtis Rueden
  */
-public class MsPressedEvent extends MsButtonEvent {
+public class MsReleasedEvent extends MsButtonEvent {
 
-	public MsPressedEvent(final Display<?> display, final int x, final int y,
+	public MsReleasedEvent(final Display<?> display, final int x, final int y,
 			final int button, final int numClicks, final boolean isPopupTrigger)
 	{
 		super(display, x, y, button, numClicks, isPopupTrigger);

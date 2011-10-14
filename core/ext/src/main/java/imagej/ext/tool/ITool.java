@@ -35,14 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.tool;
 
 import imagej.ext.display.MouseCursor;
-import imagej.ext.display.event.key.KyPressedEvent;
-import imagej.ext.display.event.key.KyReleasedEvent;
-import imagej.ext.display.event.mouse.MsClickedEvent;
-import imagej.ext.display.event.mouse.MsDraggedEvent;
-import imagej.ext.display.event.mouse.MsMovedEvent;
-import imagej.ext.display.event.mouse.MsPressedEvent;
-import imagej.ext.display.event.mouse.MsReleasedEvent;
-import imagej.ext.display.event.mouse.MsWheelEvent;
+import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.display.event.input.MsClickedEvent;
+import imagej.ext.display.event.input.MsDraggedEvent;
+import imagej.ext.display.event.input.MsMovedEvent;
+import imagej.ext.display.event.input.MsPressedEvent;
+import imagej.ext.display.event.input.MsReleasedEvent;
+import imagej.ext.display.event.input.MsWheelEvent;
 
 /**
  * Interface for ImageJ tools. Tools discoverable at runtime must implement this

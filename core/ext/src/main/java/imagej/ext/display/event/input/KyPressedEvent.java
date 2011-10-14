@@ -1,5 +1,5 @@
 //
-// MsMovedEvent.java
+// KyPressedEvent.java
 //
 
 /*
@@ -32,21 +32,22 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.mouse;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.KeyCode;
 
 /**
- * An event indicating a mouse was moved in a display.
+ * An event indicating keyboard activity in a display.
  *
  * @author Curtis Rueden
  */
-public class MsMovedEvent extends MsEvent {
+public class KyPressedEvent extends KyEvent {
 
-	public MsMovedEvent(final Display<?> display,
-		final int x, final int y)
+	public KyPressedEvent(final Display<?> display, final char character,
+		final KeyCode code, final int modifiers)
 	{
-		super(display, x, y);
+		super(display, character, code, modifiers);
 	}
 
 }

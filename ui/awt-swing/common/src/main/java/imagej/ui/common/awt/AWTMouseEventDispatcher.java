@@ -38,15 +38,15 @@ import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.EventDispatcher;
-import imagej.ext.display.event.mouse.MsButtonEvent;
-import imagej.ext.display.event.mouse.MsClickedEvent;
-import imagej.ext.display.event.mouse.MsDraggedEvent;
-import imagej.ext.display.event.mouse.MsEnteredEvent;
-import imagej.ext.display.event.mouse.MsExitedEvent;
-import imagej.ext.display.event.mouse.MsMovedEvent;
-import imagej.ext.display.event.mouse.MsPressedEvent;
-import imagej.ext.display.event.mouse.MsReleasedEvent;
-import imagej.ext.display.event.mouse.MsWheelEvent;
+import imagej.ext.display.event.input.MsButtonEvent;
+import imagej.ext.display.event.input.MsClickedEvent;
+import imagej.ext.display.event.input.MsDraggedEvent;
+import imagej.ext.display.event.input.MsEnteredEvent;
+import imagej.ext.display.event.input.MsExitedEvent;
+import imagej.ext.display.event.input.MsMovedEvent;
+import imagej.ext.display.event.input.MsPressedEvent;
+import imagej.ext.display.event.input.MsReleasedEvent;
+import imagej.ext.display.event.input.MsWheelEvent;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -60,8 +60,8 @@ import java.awt.event.MouseWheelListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTMouseEventDispatcher implements EventDispatcher, 
-	MouseListener, MouseMotionListener, MouseWheelListener
+public class AWTMouseEventDispatcher implements EventDispatcher, MouseListener,
+	MouseMotionListener, MouseWheelListener
 {
 
 	private final ImageDisplay display;
@@ -72,7 +72,9 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	 * Creates an AWT event dispatcher for the given display, which assumes
 	 * viewport mouse coordinates.
 	 */
-	public AWTMouseEventDispatcher(final ImageDisplay display, final EventService eventService) {
+	public AWTMouseEventDispatcher(final ImageDisplay display,
+		final EventService eventService)
+	{
 		this(display, eventService, true);
 	}
 
@@ -84,7 +86,9 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 	 *          canvas rather than just the viewport; hence, the pan offset is
 	 *          already factored in.
 	 */
-	public AWTMouseEventDispatcher(final ImageDisplay display, final EventService eventService, final boolean relative) {
+	public AWTMouseEventDispatcher(final ImageDisplay display,
+		final EventService eventService, final boolean relative)
+	{
 		this.display = display;
 		this.relative = relative;
 		this.eventService = eventService;
@@ -151,10 +155,9 @@ public class AWTMouseEventDispatcher implements EventDispatcher,
 
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
-		eventService.publish(new MsWheelEvent(display, getX(e), getY(e),
-			e.getWheelRotation()));
+		eventService.publish(new MsWheelEvent(display, getX(e), getY(e), e
+			.getWheelRotation()));
 	}
-
 
 	// -- Helper methods --
 

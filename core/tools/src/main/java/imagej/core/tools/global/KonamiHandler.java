@@ -36,7 +36,7 @@ package imagej.core.tools.global;
 
 import imagej.core.tools.TunePlayer;
 import imagej.ext.display.KeyCode;
-import imagej.ext.display.event.key.KyPressedEvent;
+import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;

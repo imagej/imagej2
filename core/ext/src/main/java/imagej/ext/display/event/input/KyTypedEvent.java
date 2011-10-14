@@ -1,5 +1,5 @@
 //
-// KyPressedEvent.java
+// KyTypedEvent.java
 //
 
 /*
@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.key;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
 import imagej.ext.display.KeyCode;
@@ -42,9 +42,9 @@ import imagej.ext.display.KeyCode;
  *
  * @author Curtis Rueden
  */
-public class KyPressedEvent extends KyEvent {
+public class KyTypedEvent extends KyEvent {
 
-	public KyPressedEvent(final Display<?> display, final char character,
+	public KyTypedEvent(final Display<?> display, final char character,
 		final KeyCode code, final int modifiers)
 	{
 		super(display, character, code, modifiers);

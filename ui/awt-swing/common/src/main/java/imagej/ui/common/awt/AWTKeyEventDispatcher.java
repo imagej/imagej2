@@ -39,9 +39,9 @@ import imagej.event.ImageJEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.KeyCode;
-import imagej.ext.display.event.key.KyPressedEvent;
-import imagej.ext.display.event.key.KyReleasedEvent;
-import imagej.ext.display.event.key.KyTypedEvent;
+import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.display.event.input.KyTypedEvent;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

@@ -44,7 +44,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.display.Display;
-import imagej.ext.display.event.mouse.MsMovedEvent;
+import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;

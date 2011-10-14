@@ -1,5 +1,5 @@
 //
-// MsWheelEvent.java
+// MsEvent.java
 //
 
 /*
@@ -32,28 +32,43 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.mouse;
+package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.event.DisplayEvent;
 
 /**
- * An event indicating a mouse wheel was moved in a display.
- *
+ * An event indicating mouse activity in a display.
+ * <p>
+ * It is named <code>MsEvent</code> rather than <code>MouseEvent</code> to avoid
+ * name clashes with the {@link java.awt.event.MouseEvent} hierarchy.
+ * </p>
+ * 
  * @author Curtis Rueden
  */
-public class MsWheelEvent extends MsEvent {
+public abstract class MsEvent extends DisplayEvent {
 
-	private int wheelRotation;
+	private final int x, y;
 
-	public MsWheelEvent(final Display<?> display,
-		final int x, final int y, final int wheelRotation)
-	{
-		super(display, x, y);
-		this.wheelRotation = wheelRotation;
+	public MsEvent(final Display<?> display, final int x, final int y) {
+		super(display);
+		this.x = x;
+		this.y = y;
 	}
 
-	public int getWheelRotation() {
-		return wheelRotation;
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tx = " + x + "\n\ty = " + y;
 	}
 
 }
