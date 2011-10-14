@@ -37,7 +37,7 @@ package imagej.ui.common.awt;
 import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
-import imagej.ext.display.EventDispatcher;
+import imagej.ext.display.event.input.InputModifiers;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
@@ -60,8 +60,8 @@ import java.awt.event.MouseWheelListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTMouseEventDispatcher implements EventDispatcher, MouseListener,
-	MouseMotionListener, MouseWheelListener
+public class AWTMouseEventDispatcher extends AWTEventDispatcher implements
+	MouseListener, MouseMotionListener, MouseWheelListener
 {
 
 	private final ImageDisplay display;
@@ -112,51 +112,62 @@ public class AWTMouseEventDispatcher implements EventDispatcher, MouseListener,
 
 	@Override
 	public void mouseClicked(final MouseEvent e) {
-		eventService.publish(new MsClickedEvent(display, getX(e), getY(e),
-			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService.publish(new MsClickedEvent(display, modifiers, getX(e),
+			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mousePressed(final MouseEvent e) {
-		eventService.publish(new MsPressedEvent(display, getX(e), getY(e),
-			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService.publish(new MsPressedEvent(display, modifiers, getX(e),
+			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mouseReleased(final MouseEvent e) {
-		eventService.publish(new MsReleasedEvent(display, getX(e), getY(e),
-			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService.publish(new MsReleasedEvent(display, modifiers, getX(e),
+			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	// -- MouseMotionListener methods --
 
 	@Override
 	public void mouseEntered(final MouseEvent e) {
-		eventService.publish(new MsEnteredEvent(display, getX(e), getY(e)));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService.publish(new MsEnteredEvent(display, modifiers, getX(e),
+			getY(e)));
 	}
 
 	@Override
 	public void mouseExited(final MouseEvent e) {
-		eventService.publish(new MsExitedEvent(display, getX(e), getY(e)));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService
+			.publish(new MsExitedEvent(display, modifiers, getX(e), getY(e)));
 	}
 
 	@Override
 	public void mouseDragged(final MouseEvent e) {
-		eventService.publish(new MsDraggedEvent(display, getX(e), getY(e),
-			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService.publish(new MsDraggedEvent(display, modifiers, getX(e),
+			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mouseMoved(final MouseEvent e) {
-		eventService.publish(new MsMovedEvent(display, getX(e), getY(e)));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService
+			.publish(new MsMovedEvent(display, modifiers, getX(e), getY(e)));
 	}
 
 	// -- MouseWheelListener methods --
 
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
-		eventService.publish(new MsWheelEvent(display, getX(e), getY(e), e
-			.getWheelRotation()));
+		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
+		eventService.publish(new MsWheelEvent(display, modifiers, getX(e), getY(e),
+			e.getWheelRotation()));
 	}
 
 	// -- Helper methods --

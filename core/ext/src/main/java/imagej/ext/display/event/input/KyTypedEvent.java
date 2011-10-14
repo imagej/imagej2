@@ -44,10 +44,10 @@ import imagej.ext.display.KeyCode;
  */
 public class KyTypedEvent extends KyEvent {
 
-	public KyTypedEvent(final Display<?> display, final char character,
-		final KeyCode code, final int modifiers)
+	public KyTypedEvent(final Display<?> display, final InputModifiers modifiers,
+		final char character, final KeyCode code)
 	{
-		super(display, character, code, modifiers);
+		super(display, modifiers, character, code);
 	}
 
 }

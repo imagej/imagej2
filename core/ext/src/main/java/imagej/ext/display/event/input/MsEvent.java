@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayEvent;
 
 /**
  * An event indicating mouse activity in a display.
@@ -46,12 +45,14 @@ import imagej.ext.display.event.DisplayEvent;
  * 
  * @author Curtis Rueden
  */
-public abstract class MsEvent extends DisplayEvent {
+public abstract class MsEvent extends InputEvent {
 
 	private final int x, y;
 
-	public MsEvent(final Display<?> display, final int x, final int y) {
-		super(display);
+	public MsEvent(final Display<?> display, final InputModifiers modifiers,
+		final int x, final int y)
+	{
+		super(display, modifiers);
 		this.x = x;
 		this.y = y;
 	}

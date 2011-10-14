@@ -1,5 +1,5 @@
 //
-// KyEvent.java
+// InputModifiers.java
 //
 
 /*
@@ -34,45 +34,77 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display.event.input;
 
-import imagej.ext.display.Display;
-import imagej.ext.display.KeyCode;
-
 /**
- * An event indicating keyboard activity in a display.
- * <p>
- * It is named <code>KyEvent</code> rather than <code>KeyEvent</code> to avoid
- * name clashes with the {@link java.awt.event.KeyEvent} hierarchy.
- * </p>
+ * A class encapsulating keyboard modifier key states.
  * 
  * @author Curtis Rueden
  */
-public abstract class KyEvent extends InputEvent {
+public class InputModifiers {
 
-	private final char character;
-	private final KeyCode code;
+	private final boolean altDown, altGrDown, ctrlDown, metaDown, shiftDown;
+	private final boolean leftButtonDown, middleButtonDown, rightButtonDown;
 
-	public KyEvent(final Display<?> display, final InputModifiers modifiers,
-		final char character, final KeyCode code)
+	public InputModifiers(final boolean altDown,
+		final boolean altGrDown, final boolean ctrlDown, final boolean metaDown,
+		final boolean shiftDown, final boolean leftButtonDown,
+		final boolean middleButtonDown, final boolean rightButtonDown)
 	{
-		super(display, modifiers);
-		this.character = character;
-		this.code = code;
+		this.altDown = altDown;
+		this.altGrDown = altGrDown;
+		this.ctrlDown = ctrlDown;
+		this.metaDown = metaDown;
+		this.shiftDown = shiftDown;
+		this.leftButtonDown = leftButtonDown;
+		this.middleButtonDown = middleButtonDown;
+		this.rightButtonDown = rightButtonDown;
 	}
 
-	public char getCharacter() {
-		return character;
+	public boolean isAltDown() {
+		return altDown;
+	}
+	
+	public boolean isAltGrDown() {
+		return altGrDown;
 	}
 
-	public KeyCode getCode() {
-		return code;
+	public boolean isCtrlDown() {
+		return ctrlDown;
+	}
+
+	public boolean isMetaDown() {
+		return metaDown;
+	}
+
+	public boolean isShiftDown() {
+		return shiftDown;
+	}
+	
+	public boolean isLeftButtonDown() {
+		return leftButtonDown;
+	}
+	
+	public boolean isMiddleButtonDown() {
+		return middleButtonDown;
+	}
+
+	public boolean isRightButtonDown() {
+		return rightButtonDown;
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tcharacter = '" + character + "'\n\tcode = " +
-			code;
+		StringBuilder sb = new StringBuilder();
+		if (altDown) sb.append(", Alt");
+		if (altGrDown) sb.append(", AltGr");
+		if (ctrlDown) sb.append(", Ctrl");
+		if (metaDown) sb.append(", Meta");
+		if (shiftDown) sb.append(", Shift");
+		if (leftButtonDown) sb.append(", Left Button");
+		if (middleButtonDown) sb.append(", Middle Button");
+		if (rightButtonDown) sb.append(", Right Button");
+		return sb.toString();
 	}
 
 }
