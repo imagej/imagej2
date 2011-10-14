@@ -100,7 +100,6 @@ public class CropImage implements ImageJPlugin {
 		ImgPlus<? extends RealType<?>> croppedData =
 				generateCroppedData(dataset, bounds);
 
-		System.out.println("CropImage::run() - size = "+(maxX-minX+1)+","+(maxY-minY+1));
 		// remove all overlays
 		//   TODO - could be a problem when multiple datasets in one display
 		//   TODO - could just remove those that are not wholly contained in
