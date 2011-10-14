@@ -85,10 +85,10 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true)
+	@Parameter(required = true, persist=false)
 	private Dataset input1;
 
-	@Parameter(required = true)
+	@Parameter(required = true, persist=false)
 	private Dataset input2;
 
 	@Parameter(type = ItemIO.OUTPUT)
