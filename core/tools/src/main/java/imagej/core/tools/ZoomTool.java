@@ -68,7 +68,7 @@ public class ZoomTool extends AbstractTool {
 	// -- ITool methods --
 
 	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
+	public boolean onKeyDown(final KyPressedEvent evt) {
 		final Display<?> display = evt.getDisplay();
 		if (display instanceof ImageDisplay) {
 			final char c = evt.getCharacter();
@@ -79,18 +79,20 @@ public class ZoomTool extends AbstractTool {
 				((ImageDisplay) display).getCanvas().zoomOut(mousePos);
 			}
 		}
+		return false;
 	}
 
 	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
+	public boolean onMouseDown(final MsPressedEvent evt) {
 		mouseDown.x = evt.getX();
 		mouseDown.y = evt.getY();
+		return true;
 	}
 
 	@Override
-	public void onMouseUp(final MsReleasedEvent evt) {
+	public boolean onMouseUp(final MsReleasedEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
+		if (!(display instanceof ImageDisplay)) return false;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		mouseUp.x = evt.getX();
@@ -127,18 +129,20 @@ public class ZoomTool extends AbstractTool {
 				imageDisplay.getCanvas().zoomIn(mouseDown);
 			}
 		}
+		return true;
 	}
 
 	@Override
-	public void onMouseMove(final MsMovedEvent evt) {
+	public boolean onMouseMove(final MsMovedEvent evt) {
 		mousePos.x = evt.getX();
 		mousePos.y = evt.getY();
+		return true;
 	}
 
 	@Override
-	public void onMouseWheel(final MsWheelEvent evt) {
+	public boolean onMouseWheel(final MsWheelEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
+		if (!(display instanceof ImageDisplay)) return false;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
@@ -148,6 +152,7 @@ public class ZoomTool extends AbstractTool {
 		else {
 			imageDisplay.getCanvas().zoomOut(center);
 		}
+		return true;
 	}
 
 }

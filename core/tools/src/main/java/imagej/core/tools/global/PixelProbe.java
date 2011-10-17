@@ -68,21 +68,21 @@ public class PixelProbe extends AbstractTool {
 	// -- ITool methods --
 
 	@Override
-	public void onMouseMove(final MsMovedEvent evt) {
+	public boolean onMouseMove(final MsMovedEvent evt) {
 		final ImageJ context = evt.getContext();
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
 		final EventService eventService = context.getService(EventService.class);
 
 		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
+		if (!(display instanceof ImageDisplay)) return false;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		final ImageCanvas canvas = imageDisplay.getCanvas();
 		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
 		if (!canvas.isInImage(mousePos)) {
 			eventService.publish(new StatusEvent(null));
-			return;
+			return false;
 		}
 
 		// mouse is over image
@@ -114,6 +114,7 @@ public class PixelProbe extends AbstractTool {
 			message = String.format("x=%d, y=%d, value=%f", cx, cy, value);
 		}
 		eventService.publish(new StatusEvent(message));
+		return false;
 	}
 
 	// -- private interface --

@@ -56,23 +56,25 @@ public class PanActivator extends AbstractTool {
 	private ITool priorTool;
 
 	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
-		if (evt.getCharacter() != KEY) return;
+	public boolean onKeyDown(final KyPressedEvent evt) {
+		if (evt.getCharacter() != KEY) return false;
 		final ToolService toolService =
 			evt.getContext().getService(ToolService.class);
 		final ITool activeTool = toolService.getActiveTool();
 		final ITool panTool = toolService.getTool("Pan");
-		if (activeTool == panTool) return;
+		if (activeTool == panTool) return false;;
 		priorTool = activeTool;
 		toolService.setActiveTool(panTool);
+		return false;
 	}
 
 	@Override
-	public void onKeyUp(final KyReleasedEvent evt) {
-		if (evt.getCharacter() != KEY) return;
+	public boolean onKeyUp(final KyReleasedEvent evt) {
+		if (evt.getCharacter() != KEY) return false;
 		final ToolService toolService =
 			evt.getContext().getService(ToolService.class);
 		toolService.setActiveTool(priorTool);
+		return false;
 	}
 
 }
