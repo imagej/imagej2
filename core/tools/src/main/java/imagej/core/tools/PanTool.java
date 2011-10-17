@@ -65,9 +65,9 @@ public class PanTool extends AbstractTool {
 	private int lastX, lastY;
 
 	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
+	public boolean onKeyDown(final KyPressedEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
+		if (!(display instanceof ImageDisplay)) return false;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		switch (evt.getCode()) {
@@ -85,18 +85,20 @@ public class PanTool extends AbstractTool {
 				break;
 			default:
 		}
+		return false;
 	}
 
 	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
+	public boolean onMouseDown(final MsPressedEvent evt) {
 		lastX = evt.getX();
 		lastY = evt.getY();
+		return true;
 	}
 
 	@Override
-	public void onMouseDrag(final MsDraggedEvent evt) {
+	public boolean onMouseDrag(final MsDraggedEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
+		if (!(display instanceof ImageDisplay)) return false;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		final int xDelta = lastX - evt.getX();
@@ -104,6 +106,7 @@ public class PanTool extends AbstractTool {
 		imageDisplay.getCanvas().pan(new IntCoords(xDelta, yDelta));
 		lastX = evt.getX();
 		lastY = evt.getY();
+		return true;
 	}
 
 	@Override
