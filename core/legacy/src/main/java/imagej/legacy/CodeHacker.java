@@ -36,6 +36,7 @@ package imagej.legacy;
 
 import imagej.util.Log;
 import javassist.CannotCompileException;
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -63,6 +64,7 @@ public class CodeHacker {
 
 	public CodeHacker() {
 		pool = ClassPool.getDefault();
+		pool.appendClassPath(new ClassClassPath(getClass()));
 	}
 
 	/**
