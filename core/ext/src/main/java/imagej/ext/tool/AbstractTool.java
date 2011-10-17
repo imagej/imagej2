@@ -86,44 +86,49 @@ public abstract class AbstractTool implements ITool {
 		// do nothing by default
 	}
 
+	/** Event Handlers return a boolean value indicating whether
+	 * the event should be consumed or passed down the chain.
+	 * Such methods return true for 'consume the event'
+	 */
+	
 	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
-		// do nothing by default
+	public boolean onKeyDown(final KyPressedEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 	@Override
-	public void onKeyUp(final KyReleasedEvent evt) {
-		// do nothing by default
+	public boolean onKeyUp(final KyReleasedEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
-		// do nothing by default
+	public boolean onMouseDown(final MsPressedEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 	@Override
-	public void onMouseUp(final MsReleasedEvent evt) {
-		// do nothing by default
+	public boolean onMouseUp(final MsReleasedEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 	@Override
-	public void onMouseClick(final MsClickedEvent evt) {
-		// do nothing by default
+	public boolean onMouseClick(final MsClickedEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 	@Override
-	public void onMouseMove(final MsMovedEvent evt) {
-		// do nothing by default
+	public boolean onMouseMove(final MsMovedEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 	@Override
-	public void onMouseDrag(final MsDraggedEvent evt) {
-		// do nothing by default
+	public boolean onMouseDrag(final MsDraggedEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 	@Override
-	public void onMouseWheel(final MsWheelEvent evt) {
-		// do nothing by default
+	public boolean onMouseWheel(final MsWheelEvent evt) {
+		return false; // pass event down chain by default
 	}
 
 }
