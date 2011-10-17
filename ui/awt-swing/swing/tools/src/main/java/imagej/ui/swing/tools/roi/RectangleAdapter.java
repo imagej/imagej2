@@ -37,11 +37,16 @@ package imagej.ui.swing.tools.roi;
 import imagej.data.display.DataView;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
+import imagej.event.EventService;
+import imagej.event.StatusEvent;
+import imagej.ext.display.event.input.MsDraggedEvent;
+import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 import imagej.ui.swing.roi.SelectionTool;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -55,6 +60,7 @@ import org.jhotdraw.draw.RectangleFigure;
  * TODO
  * 
  * @author Lee Kamentsky
+ * @author Grant Harris
  */
 @Tool(name = "Rectangle", description = "Rectangular overlays",
 	iconPath = "/icons/tools/rectangle.png",
@@ -118,6 +124,28 @@ public class RectangleAdapter extends
 		roi.setOrigin(bounds.getMinY(), 1);
 		roi.setExtent(bounds.getWidth(), 0);
 		roi.setExtent(bounds.getHeight(), 1);
+	}
+	
+	/*
+	 * Show x,y,w,h of rectangle in StatusBar on click-drag
+	 * Return true to consume the event, thus not having 
+	 * PixelProbe global tool overwrite the status bar.
+	 */
+	Point anchor = new Point();
+	@Override
+	public boolean onMouseDown(final MsPressedEvent evt) {
+		anchor.x = evt.getX();
+		anchor.y = evt.getY();
+		return true;
+	}
+	
+	@Override
+	public boolean onMouseDrag(final MsDraggedEvent evt) {
+		final EventService eventService = evt.getContext().getService(EventService.class);
+		String message = String.format("x=%d, y=%d, w=%d, h=%d", 
+					anchor.x, anchor.y, evt.getX()-anchor.x, evt.getY()-anchor.y);
+		eventService.publish(new StatusEvent(message));
+		return true;
 	}
 
 }
