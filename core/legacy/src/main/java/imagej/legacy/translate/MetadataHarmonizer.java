@@ -41,7 +41,7 @@ import imagej.data.Dataset;
 
 
 /**
- * Synchronizes metadata biridrectionally between a Dataset and an ImagePlus
+ * Synchronizes metadata bidirectionally between a Dataset and an ImagePlus
  *  
  * @author Barry DeZonia
  *
