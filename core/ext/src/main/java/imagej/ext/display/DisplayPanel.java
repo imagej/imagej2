@@ -43,7 +43,7 @@ package imagej.ext.display;
  */
 public interface DisplayPanel {
 
-	/** TODO */
+	/** Gets the panel's associated display. */
 	Display<?> getDisplay();
 
 	/**
@@ -52,6 +52,7 @@ public interface DisplayPanel {
 	 */
 	void addEventDispatcher(EventDispatcher dispatcher);
 
+	/** TODO */
 	void makeActive();
 
 	/**
@@ -61,7 +62,7 @@ public interface DisplayPanel {
 	 */
 	void redoLayout();
 
-	/** TODO */
+	/** Sets the label at the top of the display panel. */
 	void setLabel(String s);
 
 }
