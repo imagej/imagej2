@@ -58,13 +58,11 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 	
-	private Harmonizer harmonizer;
-	
-	// -- constructor --
-	
-	public GrayDisplayCreator(Harmonizer h) {
-		harmonizer = h;
-	}
+	private GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
+	private ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
+	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
+	private PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
 	
 	// -- public interface --
 
@@ -85,15 +83,15 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private ImageDisplay colorCase(ImagePlus imp, Axis[] preferredOrder) {
 		final Dataset ds = makeGrayDatasetFromColorImp(imp, preferredOrder);
 		setDatasetGrayDataFromColorImp(ds, imp);
-		harmonizer.setDatasetMetadata(ds, imp);
-		harmonizer.setDatasetCompositeVariables(ds, imp);
+		metadataHarmonizer.updateDataset(ds, imp);
+		compositeHarmonizer.updateDataset(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
-		harmonizer.setDisplayLuts(display, imp);
+		colorTableHarmonizer.updateDisplay(display, imp);
 
 		return display;
 	}
@@ -105,17 +103,17 @@ public class GrayDisplayCreator implements DisplayCreator {
 		}
 		else {
 			ds = makeGrayDatasetFromGrayImp(imp, preferredOrder);
-			harmonizer.setDatasetGrayData(ds, imp);
+			pixelHarmonizer.updateDataset(ds, imp);
 		}
-		harmonizer.setDatasetMetadata(ds, imp);
-		harmonizer.setDatasetCompositeVariables(ds, imp);
+		metadataHarmonizer.updateDataset(ds, imp);
+		compositeHarmonizer.updateDataset(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
-		harmonizer.setDisplayLuts(display, imp);
+		colorTableHarmonizer.updateDisplay(display, imp);
 
 		return display;
 	}
@@ -231,7 +229,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final Dataset ds =
 			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
-		harmonizer.setDatasetPlanes(ds, imp);
+		planeHarmonizer.updateDataset(ds, imp);
 
 		return ds;
 	}

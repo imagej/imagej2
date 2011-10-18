@@ -51,13 +51,8 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private Harmonizer harmonizer;
-	
-	// -- constructor --
-
-	public ColorImagePlusCreator(Harmonizer h) {
-		harmonizer = h;
-	}
+	private ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
+	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
 	
 	// -- public interface --
 
@@ -72,8 +67,8 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 			ImageJ.get(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		final ImagePlus imp = makeColorImagePlus(ds);
-		harmonizer.setImagePlusColorData(ds, imp);
-		harmonizer.setImagePlusMetadata(ds, imp);
+		pixelHarmonizer.updateLegacyImage(ds, imp);
+		metadataHarmonizer.updateLegacyImage(ds, imp);
 		return imp;
 	}
 

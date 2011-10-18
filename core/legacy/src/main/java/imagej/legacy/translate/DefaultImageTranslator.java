@@ -46,24 +46,21 @@ import net.imglib2.img.Axis;
  * structures. It delegates to the appropriate more specific translators
  * based on the type of data being translated.
  * 
- * @author Curtis Rueden
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 public class DefaultImageTranslator implements ImageTranslator {
 
-	private final Harmonizer harmonizer;
 	private final DisplayCreator colorDisplayCreator;
 	private final DisplayCreator grayDisplayCreator;
 	private final ImagePlusCreator colorImagePlusCreator;
 	private final ImagePlusCreator grayImagePlusCreator;
 	
 	public DefaultImageTranslator() {
-		harmonizer = new Harmonizer();
-		colorDisplayCreator = new ColorDisplayCreator(harmonizer);
-		grayDisplayCreator = new GrayDisplayCreator(harmonizer);
-		colorImagePlusCreator = new ColorImagePlusCreator(harmonizer);
-		grayImagePlusCreator = new GrayImagePlusCreator(harmonizer);
-		harmonizer.setImageTranslator(this);
+		colorDisplayCreator = new ColorDisplayCreator();
+		grayDisplayCreator = new GrayDisplayCreator();
+		colorImagePlusCreator = new ColorImagePlusCreator();
+		grayImagePlusCreator = new GrayImagePlusCreator();
 	}
 	
 	/**
