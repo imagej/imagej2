@@ -100,7 +100,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
 
-	public SwingDisplayPanel(final ImageDisplay display,
+	public SwingDisplayPanel(final AbstractSwingImageDisplay display,
 		final DisplayWindow window)
 	{
 		this.display = display;
@@ -112,7 +112,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 		final JPanel graphicPane = new JPanel();
 		graphicPane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-		graphicPane.add((JHotDrawImageCanvas) display.getCanvas());
+		graphicPane.add(display.getCanvas());
 
 		sliders = new JPanel();
 		sliders.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
