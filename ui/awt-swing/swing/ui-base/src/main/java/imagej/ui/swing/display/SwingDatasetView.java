@@ -36,7 +36,6 @@ package imagej.ui.swing.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.AbstractDatasetView;
-import imagej.data.display.ImageDisplay;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.EventQueue;
@@ -60,11 +59,12 @@ public class SwingDatasetView extends AbstractDatasetView implements FigureView
 	private final ImageFigure figure;
 	private boolean needsUpdate;
 
-	public SwingDatasetView(final ImageDisplay display, final Dataset dataset) {
+	public SwingDatasetView(final AbstractSwingImageDisplay display,
+		final Dataset dataset)
+	{
 		super(display, dataset);
 		needsUpdate = false;
-		final JHotDrawImageCanvas canvas =
-			(JHotDrawImageCanvas) display.getCanvas();
+		final JHotDrawImageCanvas canvas = display.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		figure = new ImageFigure();
 		figure.setSelectable(false);
