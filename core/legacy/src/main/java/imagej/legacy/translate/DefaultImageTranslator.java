@@ -1,5 +1,5 @@
 //
-// GrayscaleImageTranslator.java
+// DefaultImageTranslator.java
 //
 
 /*
@@ -32,94 +32,89 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.legacy;
+package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.ext.display.DisplayService;
-import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
 /**
- * Translates between legacy and modern ImageJ image structures for non-RGB
- * data.
+ * The default {@link ImageTranslator} between legacy and modern ImageJ image
+ * structures. It delegates to the appropriate more specific translators
+ * based on the type of data being translated.
  * 
- * @author Barry DeZonia
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public class GrayscaleImageTranslator implements ImageTranslator {
+public class DefaultImageTranslator implements ImageTranslator {
 
+	private final Harmonizer harmonizer;
+	private final DisplayCreator colorDisplayCreator;
+	private final DisplayCreator grayDisplayCreator;
+	private final ImagePlusCreator colorImagePlusCreator;
+	private final ImagePlusCreator grayImagePlusCreator;
+	
+	public DefaultImageTranslator() {
+		harmonizer = new Harmonizer();
+		colorDisplayCreator = new ColorDisplayCreator(harmonizer);
+		grayDisplayCreator = new GrayDisplayCreator(harmonizer);
+		colorImagePlusCreator = new ColorImagePlusCreator(harmonizer);
+		grayImagePlusCreator = new GrayImagePlusCreator(harmonizer);
+		harmonizer.setImageTranslator(this);
+	}
+	
+	/**
+	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
+	 * data when possible.
+	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
+		
+		if ((imp.getType() == ImagePlus.COLOR_RGB) &&
+				(imp.getNChannels() == 1)) {
+			return colorDisplayCreator.createDisplay(imp);
+		}
+
+		return grayDisplayCreator.createDisplay(imp);
 	}
 
 	/**
-	 * creates a {@link ImageDisplay} from an {@link ImagePlus}. If possible the
-	 * ImageDisplay is made planar sharing plane references with the ImagePlus.
+	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
+	 * data when possible. Builds ImageDisplay with preferred Axis ordering.
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
 		final Axis[] preferredOrder)
 	{
-		Dataset ds;
-		if (preferredOrder[0] == Axes.X && preferredOrder[1] == Axes.Y) {
-			ds = LegacyUtils.makeExactDataset(imp, preferredOrder);
+		
+		if ((imp.getType() == ImagePlus.COLOR_RGB) &&
+				(imp.getNChannels() == 1)) {
+			return colorDisplayCreator.createDisplay(imp, preferredOrder);
 		}
-		else {
-			ds = LegacyUtils.makeGrayDataset(imp, preferredOrder);
-			LegacyUtils.setDatasetGrayData(ds, imp);
-		}
-		LegacyUtils.setDatasetMetadata(ds, imp);
-		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		// CTR FIXME
-		final ImageDisplay display =
-			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
-
-		LegacyUtils.setDisplayLuts(display, imp);
-
-		return display;
+		return grayDisplayCreator.createDisplay(imp, preferredOrder);
 	}
 
 	/**
-	 * creates an {@link ImagePlus} from a {@link ImageDisplay}. The ImagePlus
-	 * made shares plane references with the ImageDisplay when possible.
+	 * Creates an {@link ImagePlus} from a {@link ImageDisplay}. Shares planes of
+	 * data when possible.
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
+
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
-		final Dataset dataset = imageDisplayService.getActiveDataset(display);
-		ImagePlus imp;
-		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
-			imp =	LegacyUtils.makeExactImagePlus(dataset);
+		
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
+		
+		if (ds.isRGBMerged()) {
+			return colorImagePlusCreator.createLegacyImage(display);
 		}
-		else {
-			imp = LegacyUtils.makeNearestTypeGrayImagePlus(dataset);
-			LegacyUtils.setImagePlusGrayData(dataset, imp);
-		}
-		LegacyUtils.setImagePlusMetadata(dataset, imp);
-		if (shouldBeComposite(dataset, imp)) {
-			imp = LegacyUtils.makeCompositeImage(imp);
-		}
-		LegacyUtils.setImagePlusLuts(display, imp);
-		return imp;
-	}
 
-	// -- helpers --
-
-	// TODO - is this logic correct? Specifically is testing compChanCnt
-	// sufficient?
-	private boolean shouldBeComposite(final Dataset ds, final ImagePlus imp) {
-		if (ds.getCompositeChannelCount() == 1) return false;
-		final int channels = imp.getNChannels();
-		if (channels < 2 || channels > 7) return false;
-		return true;
+		return grayImagePlusCreator.createLegacyImage(display);
 	}
 
 }

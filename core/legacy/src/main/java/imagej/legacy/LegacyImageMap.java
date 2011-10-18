@@ -45,6 +45,9 @@ import imagej.event.EventSubscriber;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.legacy.patches.ImageWindowMethods;
+import imagej.legacy.translate.DefaultImageTranslator;
+import imagej.legacy.translate.ImageTranslator;
+import imagej.legacy.translate.LegacyUtils;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -87,7 +90,7 @@ public class LegacyImageMap {
 	 * The {@link ImageTranslator} to use when creating {@link ImagePlus} and
 	 * {@link ImageDisplay} objects corresponding to one another.
 	 */
-	private final ImageTranslator imageTranslator;
+	private final DefaultImageTranslator imageTranslator;
 
 	/** List of event subscribers, to avoid garbage collection. */
 	private final ArrayList<EventSubscriber<?>> subscribers;
@@ -105,14 +108,6 @@ public class LegacyImageMap {
 	}
 
 	// -- LegacyImageMap methods --
-
-	/**
-	 * Gets the {@link ImageTranslator} used to create {@link ImagePlus} and
-	 * {@link ImageDisplay} objects linked to one another.
-	 */
-	public ImageTranslator getTranslator() {
-		return imageTranslator;
-	}
 
 	/**
 	 * Gets the {@link ImageDisplay} corresponding to the given {@link ImagePlus}, or

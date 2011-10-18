@@ -1,5 +1,5 @@
 //
-// MixedModeTranslator.java
+//
 //
 
 /*
@@ -32,55 +32,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.legacy;
+package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import imagej.ImageJ;
-import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.display.DisplayService;
 import net.imglib2.img.Axis;
 
 /**
- * This class used to create Datasets from ImagePluses that are RGB and yet are
- * not single channel
+ * The interface for creating ImageDisplays from ImagePluses.
  * 
  * @author Barry DeZonia
  */
-public class MixedModeTranslator implements ImageTranslator {
+public interface DisplayCreator {
 
-	@Override
-	public ImageDisplay createDisplay(final ImagePlus imp) {
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
-	}
+	ImageDisplay createDisplay(final ImagePlus imp);
 
-	@Override
-	public ImageDisplay createDisplay(final ImagePlus imp,
-		final Axis[] preferredOrder)
-	{
-		final Dataset ds =
-			LegacyUtils.makeGrayDatasetFromColorImp(imp, preferredOrder);
-		LegacyUtils.setDatasetGrayDataFromColorImp(ds, imp);
-		LegacyUtils.setDatasetMetadata(ds, imp);
-		LegacyUtils.setDatasetCompositeVariables(ds, imp);
-
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		// CTR FIXME
-		final ImageDisplay display =
-			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
-
-		LegacyUtils.setDisplayLuts(display, imp);
-
-		return display;
-	}
-
-	// TODO - do we need this in the other direction too?? if isRGBMerged == true
-	// and unsigned byte type and channels evenly divisible by 3. May want to
-	// not worry about this to phase out ColorProcessor reliance.
-	@Override
-	public ImagePlus createLegacyImage(final ImageDisplay display) {
-		throw new UnsupportedOperationException(
-			"createLegacyImage(Display) is not implemented for this translator");
-	}
+	ImageDisplay createDisplay(final ImagePlus imp, Axis[] preferredOrder);
 
 }

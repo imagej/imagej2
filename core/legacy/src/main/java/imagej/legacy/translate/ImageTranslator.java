@@ -32,11 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.legacy;
+package imagej.legacy.translate;
 
-import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
-import net.imglib2.img.Axis;
 
 /**
  * The interface for translating between legacy and modern ImageJ image
@@ -45,12 +42,6 @@ import net.imglib2.img.Axis;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public interface ImageTranslator {
-
-	ImageDisplay createDisplay(final ImagePlus imp);
-
-	ImageDisplay createDisplay(final ImagePlus imp, Axis[] preferredOrder);
-
-	ImagePlus createLegacyImage(final ImageDisplay display);
-
+public interface ImageTranslator extends DisplayCreator, ImagePlusCreator {
+	// all methods inherited
 }

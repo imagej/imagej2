@@ -49,6 +49,7 @@ import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
+import imagej.legacy.translate.OverlayTranslator;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
