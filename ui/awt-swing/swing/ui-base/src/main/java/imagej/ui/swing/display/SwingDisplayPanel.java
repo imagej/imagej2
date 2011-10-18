@@ -34,12 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.display.DataView;
+import imagej.data.display.DatasetView;
 import imagej.data.display.DisplayWindow;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayPanel;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
@@ -68,9 +71,12 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import net.imglib2.display.ColorTable8;
+import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.roi.RegionOfInterest;
+import net.imglib2.type.numeric.RealType;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -181,6 +187,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 			@Override
 			public void run() {
 				createSliders();
+				updateBorder(0);
 				sliders.setVisible(sliders.getComponentCount() > 0);
 				sizeAppropriately();
 				window.setTitle(getDisplay().getName());
@@ -340,12 +347,30 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
 					final long position = slider.getValue();
 					axisPositions.put(axis, position);
+					if (axis == Axes.CHANNEL) updateBorder((int) position);
 					getDisplay().update();
 				}
 			});
 			sliders.add(label);
 			sliders.add(slider);
 		}
+	}
+
+
+	protected void updateBorder(final int c) {
+		final ImageDisplayService imageDisplayService =
+				ImageJ.get(ImageDisplayService.class);
+		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
+		if (view == null) return; // no active dataset
+		final RealLUTConverter<? extends RealType<?>> converter =
+				view.getConverters().get(c);
+		final ColorTable8 lut = converter.getLUT();
+		final int last = lut.getLength() - 1;
+		int r = lut.get(0, last);
+		int g = lut.get(1, last);
+		int b = lut.get(2, last);
+		final ColorRGB color = new ColorRGB(r, g, b);
+		setBorderColor(color);
 	}
 
 }
