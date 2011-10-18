@@ -52,15 +52,12 @@ import imagej.data.display.ImageDisplayService;
  */
 public class GrayImagePlusCreator implements ImagePlusCreator {
 
-	// -- instace variables --
-
-	private Harmonizer harmonizer;
+	// -- instance variables --
 	
-	// -- constructor --
-
-	public GrayImagePlusCreator(Harmonizer h) {
-		harmonizer = h;
-	}
+	private GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
+	private ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
+	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
 	
 	// -- public interface --
 
@@ -75,13 +72,13 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 			}
 			else {
 				imp = makeNearestTypeGrayImagePlus(dataset);
-				harmonizer.setImagePlusGrayData(dataset, imp);
+				pixelHarmonizer.updateLegacyImage(dataset, imp);
 			}
-			harmonizer.setImagePlusMetadata(dataset, imp);
+			metadataHarmonizer.updateLegacyImage(dataset, imp);
 			if (shouldBeComposite(dataset, imp)) {
 				imp = makeCompositeImage(imp);
 			}
-			harmonizer.setImagePlusLuts(display, imp);
+			colorTableHarmonizer.updateLegacyImage(display, imp);
 			return imp;
 	}
 
@@ -158,7 +155,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 		final ImagePlus imp = makeImagePlus(ds, getPlaneMaker(ds), true);
 
-		harmonizer.setImagePlusPlanes(ds, imp);
+		planeHarmonizer.updateLegacyImage(ds, imp);
 
 		imp.setDimensions(c, z, t);
 
@@ -172,7 +169,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 	 * type and sometimes they are not. The data values and metadata are not
 	 * assigned. Assumes it will never be sent a color Dataset.
 	 */
-	ImagePlus makeNearestTypeGrayImagePlus(final Dataset ds) {
+	private ImagePlus makeNearestTypeGrayImagePlus(final Dataset ds) {
 		final PlaneMaker planeMaker = getPlaneMaker(ds);
 		return makeImagePlus(ds, planeMaker, false);
 	}

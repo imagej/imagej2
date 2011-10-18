@@ -54,13 +54,10 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
-	private Harmonizer harmonizer;
-	
-	// -- constructor --
-
-	public ColorDisplayCreator(Harmonizer h) {
-		harmonizer = h;
-	}
+	private ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
+	private ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
+	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
 	
 	// -- public interface --
 
@@ -72,16 +69,16 @@ public class ColorDisplayCreator implements DisplayCreator {
 	@Override
 	public ImageDisplay createDisplay(ImagePlus imp, Axis[] preferredOrder) {
 		final Dataset ds = makeColorDataset(imp, preferredOrder);
-		harmonizer.setDatasetColorData(ds, imp);
-		harmonizer.setDatasetMetadata(ds, imp);
-		harmonizer.setDatasetCompositeVariables(ds, imp);
+		pixelHarmonizer.updateDataset(ds, imp);
+		metadataHarmonizer.updateDataset(ds, imp);
+		compositeHarmonizer.updateDataset(ds, imp);
 
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
-		harmonizer.setDisplayLuts(display, imp);
+		colorTableHarmonizer.updateDisplay(display, imp);
 
 		return display;
 	}
