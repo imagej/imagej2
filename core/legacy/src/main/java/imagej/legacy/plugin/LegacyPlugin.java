@@ -62,8 +62,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import net.imglib2.img.Axes;
-
 /**
  * Executes an IJ1 plugin.
  * 
@@ -258,46 +256,7 @@ public class LegacyPlugin implements ImageJPlugin {
 	private boolean isLegacyCompatible(final ImageDisplay display) {
 		if (display == null) return true;
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
-		if (dimensionsIncompatible(ds)) return false;
-		return true;
-	}
-
-	/**
-	 * Determines if a Dataset's dimensions cannot be represented within
-	 * an IJ1 ImageStack. Returns true if the Dataset does not have X or
-	 * Y axes. Returns true if the XY plane size is greater than
-	 * Integer.MAX_VALUE. Returns true if the number of planes is greater
-	 * than Integer.MAX_VALUE. 
-	 */
-	private boolean dimensionsIncompatible(final Dataset ds) {
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
-
-		final long[] dims = ds.getDims();
-
-		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
-		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
-		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
-		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
-
-		final long cCount = LegacyUtils.ij1ChannelCount(dims, ds.getAxes());
-		final long ij1ChannelCount = ds.isRGBMerged() ? (cCount / 3) : cCount;
-
-		// check width exists
-		if (xIndex < 0) return true;
-
-		// check height exists
-		if (yIndex < 0) return true;
-
-		// check plane size not too large
-		if ((xCount * yCount) > Integer.MAX_VALUE) return true;
-
-		// check number of planes not too large
-		if (ij1ChannelCount * zCount * tCount > Integer.MAX_VALUE) return true;
-
-		return false;
+		return LegacyUtils.dimensionsIJ1Compatible(ds);
 	}
 
 	private void notifyUser(String message) {

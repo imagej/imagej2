@@ -49,7 +49,6 @@ import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import ij.CompositeImage;
@@ -123,7 +122,7 @@ public class Harmonizer {
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
 				setImagePlusColorData(ds, imp);
 			}
-			else if (datasetIsIJ1Compatible(ds)) {
+			else if (LegacyUtils.datasetIsIJ1Compatible(ds)) {
 				setImagePlusPlanes(ds, imp);
 			}
 			else setImagePlusGrayData(ds, imp);
@@ -166,7 +165,7 @@ public class Harmonizer {
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
 				setDatasetColorData(ds, imp);
 			}
-			else if (datasetIsIJ1Compatible(ds)) {
+			else if (LegacyUtils.datasetIsIJ1Compatible(ds)) {
 				setDatasetPlanes(ds, imp);
 			}
 			else setDatasetGrayData(ds, imp);
@@ -555,15 +554,6 @@ public class Harmonizer {
 	}
 
 	/**
-	 * Returns true if a {@link Dataset} can be represented by reference in IJ1.
-	 */
-	boolean datasetIsIJ1Compatible(final Dataset ds) {
-		final Axis[] axes = ds.getAxes();
-		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
-		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
-	}
-
-	/**
 	 * Assigns the plane references of an {@link ImagePlus}' {@link ImageStack} to
 	 * match those of a given {@link Dataset}. Assumes input Dataset and ImagePlus
 	 * match in dimensions and backing type. Throws an exception if Dataset axis 0
@@ -684,37 +674,6 @@ public class Harmonizer {
 			pos[i] = subIndex;
 			workingIndex = workingIndex / dims[i];
 		}
-	}
-
-	/** Returns true if a {@link Dataset} is backed by {@link PlanarAccess}. */
-	private boolean ij1StorageCompatible(final Dataset ds) {
-		return ds.getImgPlus().getImg() instanceof PlanarAccess;
-	}
-
-	/**
-	 * Returns true if a {@link Dataset} has a type that can be directly
-	 * represented in an IJ1 ImagePlus.
-	 */
-	private boolean ij1TypeCompatible(final Dataset ds) {
-		final RealType<?> type = ds.getType();
-		final int bitsPerPix = type.getBitsPerPixel();
-		final boolean integer = ds.isInteger();
-		final boolean signed = ds.isSigned();
-
-		Object plane;
-		if ((bitsPerPix == 8) && !signed && integer) {
-			plane = ds.getPlane(0, false);
-			if (plane != null && plane instanceof byte[]) return true;
-		}
-		else if ((bitsPerPix == 16) && !signed && integer) {
-			plane = ds.getPlane(0, false);
-			if (plane != null && plane instanceof short[]) return true;
-		}
-		else if ((bitsPerPix == 32) && signed && !integer) {
-			plane = ds.getPlane(0, false);
-			if (plane != null && plane instanceof float[]) return true;
-		}
-		return false;
 	}
 
 	/** Assigns the color tables of the active view of a ImageDisplay. */
