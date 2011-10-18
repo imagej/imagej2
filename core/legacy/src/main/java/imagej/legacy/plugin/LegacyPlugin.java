@@ -98,24 +98,14 @@ public class LegacyPlugin implements ImageJPlugin {
 			imageDisplayService.getActiveImageDisplay();
 		
 		if (!isLegacyCompatible(activeDisplay)) {
-			String err = "Active dataset too large to be represented inside IJ1";
-			notifyUser(err);
+			final String err =
+					"The active dataset is too large to be represented inside IJ1.";
 			Log.error(err);
+			notifyUser(err);
 			outputs = new ArrayList<ImageDisplay>();
 			return;
 		}
 
-		/*
-		// temp hack to test error handling
-		if (new Random().nextDouble() < 0.3) {
-			String err = "programmer generated error";
-			notifyUser(err);
-			Log.error(err);
-			outputs = new ArrayList<ImageDisplay>();
-			return;
-		}
-		*/
-		
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		final LegacyImageMap map = legacyService.getImageMap();
 
@@ -146,9 +136,9 @@ public class LegacyPlugin implements ImageJPlugin {
 			outputs = updateDisplaysFromImagePluses(map, harmonizer);
 		}
 		catch (final Exception e) {
-			String err = "ImageJ 1.x plugin threw exception";
-			notifyUser(err);
-			Log.error(err);
+			final String msg = "ImageJ 1.x plugin threw exception";
+			Log.error(msg, e);
+			notifyUser(msg);
 			// make sure our ImagePluses are in sync with original Datasets
 			updateImagePlusesFromDisplays(map, harmonizer);
 			// return no outputs
