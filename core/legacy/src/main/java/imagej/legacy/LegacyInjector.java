@@ -94,6 +94,7 @@ public class LegacyInjector {
 				"public void run(java.lang.String arg)", ";");
 			hacker.loadClass("MacAdapter");
 		}
+		hacker.close();
 	}
 
 }

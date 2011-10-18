@@ -34,6 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
+
 import imagej.util.Log;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
@@ -60,11 +65,23 @@ public class CodeHacker {
 	private static final String PATCH_PKG = "imagej.legacy.patches";
 	private static final String PATCH_SUFFIX = "Methods";
 
+	// for debugging
+	private final String debugJarPath = null;
+	private JarOutputStream jar;
+	private DataOutputStream dataOut;
+
 	private final ClassPool pool;
 
 	public CodeHacker() {
 		pool = ClassPool.getDefault();
 		pool.appendClassPath(new ClassClassPath(getClass()));
+
+		if (debugJarPath != null) try {
+			jar = new JarOutputStream(new FileOutputStream(debugJarPath));
+			dataOut = new DataOutputStream(jar);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -245,6 +262,9 @@ public class CodeHacker {
 	 */
 	public Class<?> loadClass(final String fullClass) {
 		final CtClass classRef = getClass(fullClass);
+		if (dataOut != null) {
+			writeJarEntry(classRef);
+		}
 		try {
 			return classRef.toClass();
 		}
@@ -350,6 +370,27 @@ public class CodeHacker {
 		final String methodPrefix = methodSig.substring(0, parenIndex);
 		return methodPrefix.startsWith("void ") ||
 			methodPrefix.indexOf(" void ") > 0;
+	}
+
+	private void writeJarEntry(CtClass clazz) {
+		try {
+			ZipEntry entry = new ZipEntry(clazz.getName().replace('.', '/') + ".class");
+			jar.putNextEntry(entry);
+			clazz.getClassFile().write(dataOut);
+			dataOut.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+
+	public void close() {
+		if (jar != null) try {
+			jar.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
