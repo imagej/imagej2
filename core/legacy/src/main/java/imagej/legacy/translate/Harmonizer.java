@@ -582,6 +582,8 @@ public class Harmonizer {
 		final Extents extents = new Extents(planeDims);
 		final Position planePos = extents.createPosition();
 
+		// copy planes by reference
+		
 		if (imp.getStackSize() == 1)
 			imp.getProcessor().setPixels(ds.getPlane(0));
 		else {
@@ -625,20 +627,26 @@ public class Harmonizer {
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
-		int stackPosition = 1;
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) planePos.setPosition(ti, tIndex - 2);
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) planePos.setPosition(zi, zIndex - 2);
-				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) planePos.setPosition(ci, cIndex - 2);
-					final Object plane = imp.getStack().getPixels(stackPosition++);
-					if (plane == null) {
-						Log.error("Could not extract plane from ImageStack: " +
-							(stackPosition - 1));
+		
+		if (imp.getStackSize() == 1) {
+			ds.setPlane(0, imp.getProcessor().getPixels());
+		}
+		else {
+			int stackPosition = 1;
+			for (int ti = 0; ti < t; ti++) {
+				if (tIndex >= 0) planePos.setPosition(ti, tIndex - 2);
+				for (int zi = 0; zi < z; zi++) {
+					if (zIndex >= 0) planePos.setPosition(zi, zIndex - 2);
+					for (int ci = 0; ci < c; ci++) {
+						if (cIndex >= 0) planePos.setPosition(ci, cIndex - 2);
+						final Object plane = imp.getStack().getPixels(stackPosition++);
+						if (plane == null) {
+							Log.error("Could not extract plane from ImageStack: " +
+								(stackPosition - 1));
+						}
+						final int planeNum = (int) planePos.getIndex();
+						ds.setPlane(planeNum, plane);
 					}
-					final int planeNum = (int) planePos.getIndex();
-					ds.setPlane(planeNum, plane);
 				}
 			}
 		}
