@@ -41,6 +41,8 @@ import ij.macro.Interpreter;
 import imagej.data.Dataset;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
+import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * A bag of static methods used throughout the translation layer
@@ -55,12 +57,10 @@ public class LegacyUtils {
 	private static Axis[] defaultAxes = new Axis[] { Axes.X, Axes.Y,
 		Axes.CHANNEL, Axes.Z, Axes.TIME };
 
-	// -- static methods --
+	// -- public static methods --
 	
-	static Axis[] getPreferredAxisOrder() {
-		return defaultAxes;
-	}
-
+	// TODO - this could be better located in some other class
+	
 	/**
 	 * Modifies IJ1 data structures so that there are no dangling references to an
 	 * obsolete ImagePlus.
@@ -74,6 +74,85 @@ public class LegacyUtils {
 			imp.changes = false;
 			if (!ij1Window.isClosed()) ij1Window.close();
 		}
+	}
+
+	/**
+	 * Returns true if any of the given Axes cannot be represented in an IJ1
+	 * ImagePlus.
+	 */
+	static boolean hasNonIJ1Axes(final Axis[] axes) {
+		for (final Axis axis : axes) {
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if (axis == Axes.CHANNEL) continue;
+			if (axis == Axes.Z) continue;
+			if (axis == Axes.TIME) continue;
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the number of channels required in IJ1 to represent all the axes
+	 * of an IJ2 Dataset. Incompatible IJ2 axes are encoded as extra channels
+	 * in IJ1.
+	 */
+	static long ij1ChannelCount(final long[] dims, final Axis[] axes) {
+		long cCount = 1;
+		int axisIndex = 0;
+		for (final Axis axis : axes) {
+			final long axisSize = dims[axisIndex++];
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if (axis == Axes.Z) continue;
+			if (axis == Axes.TIME) continue;
+			cCount *= axisSize;
+		}
+		return cCount;
+	}
+
+	/**
+	 * Determines if a Dataset's dimensions cannot be represented within
+	 * an IJ1 ImageStack. Returns true if the Dataset does not have X or
+	 * Y axes. Returns true if the XY plane size is greater than
+	 * Integer.MAX_VALUE. Returns true if the number of planes is greater
+	 * than Integer.MAX_VALUE. 
+	 */
+	public static boolean dimensionsIJ1Compatible(final Dataset ds) {
+		final int xIndex = ds.getAxisIndex(Axes.X);
+		final int yIndex = ds.getAxisIndex(Axes.Y);
+		final int zIndex = ds.getAxisIndex(Axes.Z);
+		final int tIndex = ds.getAxisIndex(Axes.TIME);
+
+		final long[] dims = ds.getDims();
+
+		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
+		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
+		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
+		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
+
+		final long cCount = LegacyUtils.ij1ChannelCount(dims, ds.getAxes());
+		final long ij1ChannelCount = ds.isRGBMerged() ? (cCount / 3) : cCount;
+
+		// check width exists
+		if (xIndex < 0) return false;
+
+		// check height exists
+		if (yIndex < 0) return false;
+
+		// check plane size not too large
+		if ((xCount * yCount) > Integer.MAX_VALUE) return false;
+
+		// check number of planes not too large
+		if (ij1ChannelCount * zCount * tCount > Integer.MAX_VALUE) return false;
+
+		return true;
+	}
+
+	// -- package access static methods --
+	
+	static Axis[] getPreferredAxisOrder() {
+		return defaultAxes;
 	}
 
 	/**
@@ -162,25 +241,6 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Returns the number of channels required in IJ1 to represent all the axes
-	 * of an IJ2 Dataset. Incompatible IJ2 axes are encoded as extra channels
-	 * in IJ1.
-	 */
-	public static long ij1ChannelCount(final long[] dims, final Axis[] axes) {
-		long cCount = 1;
-		int axisIndex = 0;
-		for (final Axis axis : axes) {
-			final long axisSize = dims[axisIndex++];
-			if (axis == Axes.X) continue;
-			if (axis == Axes.Y) continue;
-			if (axis == Axes.Z) continue;
-			if (axis == Axes.TIME) continue;
-			cCount *= axisSize;
-		}
-		return cCount;
-	}
-
-	/**
 	 * Copies a {@link Dataset}'s dimensions and axis indices into provided
 	 * arrays. The order of dimensions is formatted to be X,Y,C,Z,T. If an axis is
 	 * not present in the Dataset its value is set to 1 and its index is set to
@@ -228,22 +288,6 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Returns true if any of the given Axes cannot be represented in an IJ1
-	 * ImagePlus.
-	 */
-	public static boolean hasNonIJ1Axes(final Axis[] axes) {
-		for (final Axis axis : axes) {
-			if (axis == Axes.X) continue;
-			if (axis == Axes.Y) continue;
-			if (axis == Axes.CHANNEL) continue;
-			if (axis == Axes.Z) continue;
-			if (axis == Axes.TIME) continue;
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Throws an Exception if the planes of a Dataset are not compatible with IJ1.
 	 */
 	static void assertXYPlanesCorrectlyOriented(final int[] dimIndices) {
@@ -255,6 +299,15 @@ public class LegacyUtils {
 			throw new IllegalArgumentException(
 				"Dataset does not have Y as the second axis");
 		}
+	}
+
+	/**
+	 * Returns true if a {@link Dataset} can be represented by reference in IJ1.
+	 */
+	static boolean datasetIsIJ1Compatible(final Dataset ds) {
+		final Axis[] axes = ds.getAxes();
+		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
+		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
 	}
 
 	// -- private helper methods --
@@ -270,6 +323,38 @@ public class LegacyUtils {
 		else if (axis == Axes.TIME) return fullDimensions[4];
 		else throw new IllegalArgumentException(
 			"incompatible dimension type specified");
+	}
+
+
+	/** Returns true if a {@link Dataset} is backed by {@link PlanarAccess}. */
+	private static boolean ij1StorageCompatible(final Dataset ds) {
+		return ds.getImgPlus().getImg() instanceof PlanarAccess;
+	}
+
+	/**
+	 * Returns true if a {@link Dataset} has a type that can be directly
+	 * represented in an IJ1 ImagePlus.
+	 */
+	private static boolean ij1TypeCompatible(final Dataset ds) {
+		final RealType<?> type = ds.getType();
+		final int bitsPerPix = type.getBitsPerPixel();
+		final boolean integer = ds.isInteger();
+		final boolean signed = ds.isSigned();
+
+		Object plane;
+		if ((bitsPerPix == 8) && !signed && integer) {
+			plane = ds.getPlane(0, false);
+			if (plane != null && plane instanceof byte[]) return true;
+		}
+		else if ((bitsPerPix == 16) && !signed && integer) {
+			plane = ds.getPlane(0, false);
+			if (plane != null && plane instanceof short[]) return true;
+		}
+		else if ((bitsPerPix == 32) && signed && !integer) {
+			plane = ds.getPlane(0, false);
+			if (plane != null && plane instanceof float[]) return true;
+		}
+		return false;
 	}
 
 }

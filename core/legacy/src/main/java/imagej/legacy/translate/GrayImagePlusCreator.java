@@ -70,7 +70,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 				ImageJ.get(ImageDisplayService.class);
 			final Dataset dataset = imageDisplayService.getActiveDataset(display);
 			ImagePlus imp;
-			if (harmonizer.datasetIsIJ1Compatible(dataset)) {
+			if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
 				imp =	makeExactImagePlus(dataset);
 			}
 			else {
