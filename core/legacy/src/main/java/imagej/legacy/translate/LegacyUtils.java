@@ -59,7 +59,9 @@ public class LegacyUtils {
 
 	// -- public static methods --
 	
-	// TODO - this could be better located in some other class
+	// TODO - deleteImagePlus() could be better located in some other class.
+	//   It's use of an ImagePlus does not fit in with theme of other methods
+	//   in this class.
 	
 	/**
 	 * Modifies IJ1 data structures so that there are no dangling references to an
