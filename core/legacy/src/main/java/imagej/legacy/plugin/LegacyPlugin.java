@@ -44,11 +44,13 @@ import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
-import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
-import imagej.legacy.LegacyUtils;
+import imagej.legacy.translate.LegacyUtils;
+import imagej.legacy.translate.DefaultImageTranslator;
+import imagej.legacy.translate.Harmonizer;
+import imagej.legacy.translate.ImageTranslator;
 import imagej.object.ObjectService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.IUserInterface;
@@ -58,7 +60,6 @@ import imagej.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import net.imglib2.img.Axes;
@@ -121,8 +122,10 @@ public class LegacyPlugin implements ImageJPlugin {
 		final LegacyImageMap map = legacyService.getImageMap();
 
 		// sync legacy images to match existing modern displays
-		final DatasetHarmonizer harmonizer =
-			new DatasetHarmonizer(map.getTranslator());
+		final Harmonizer harmonizer =	new Harmonizer();
+		final ImageTranslator imageTranslator = new DefaultImageTranslator();
+		harmonizer.setImageTranslator(imageTranslator);
+		
 		final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
 		final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
 
@@ -177,7 +180,7 @@ public class LegacyPlugin implements ImageJPlugin {
 	// -- Helper methods --
 
 	private void updateImagePlusesFromDisplays(final LegacyImageMap map,
-		final DatasetHarmonizer harmonizer)
+		final Harmonizer harmonizer)
 	{
 		// TODO - track events and keep a dirty bit, then only harmonize those
 		// displays that have changed. See ticket #546.
@@ -200,7 +203,7 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	private List<ImageDisplay> updateDisplaysFromImagePluses(
-		final LegacyImageMap map, final DatasetHarmonizer harmonizer)
+		final LegacyImageMap map, final Harmonizer harmonizer)
 	{
 		// TODO - check the changes flag for each ImagePlus that already has a
 		// ImageDisplay and only harmonize those that have changed. Maybe changes

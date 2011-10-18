@@ -1,5 +1,5 @@
 //
-// RGBImageTranslator.java
+//
 //
 
 /*
@@ -32,52 +32,34 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.legacy;
+package imagej.legacy.translate;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.ext.display.DisplayService;
-import net.imglib2.img.Axis;
 
 /**
- * Translates between legacy and modern ImageJ image structures for RGB data.
- * 
+ * Creates ImagePluses from ImageDisplays containing color merged data
+ *  
  * @author Barry DeZonia
- * @author Curtis Rueden
+ *
  */
-public class RGBImageTranslator implements ImageTranslator {
+public class ColorImagePlusCreator implements ImagePlusCreator {
 
-	@Override
-	public ImageDisplay createDisplay(final ImagePlus imp) {
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
+	// -- instance variables --
+
+	private Harmonizer harmonizer;
+	
+	// -- constructor --
+
+	public ColorImagePlusCreator(Harmonizer h) {
+		harmonizer = h;
 	}
-
-	/**
-	 * Creates a color {@link ImageDisplay} from a color {@link ImagePlus}.
-	 * Expects input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one
-	 * channel.
-	 */
-	@Override
-	public ImageDisplay createDisplay(final ImagePlus imp,
-		final Axis[] preferredOrder)
-	{
-		final Dataset ds = LegacyUtils.makeColorDataset(imp, preferredOrder);
-		LegacyUtils.setDatasetColorData(ds, imp);
-		LegacyUtils.setDatasetMetadata(ds, imp);
-		LegacyUtils.setDatasetCompositeVariables(ds, imp);
-
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		// CTR FIXME
-		final ImageDisplay display =
-			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
-
-		LegacyUtils.setDisplayLuts(display, imp);
-
-		return display;
-	}
+	
+	// -- public interface --
 
 	/**
 	 * Creates a color {@link ImagePlus} from a color {@link ImageDisplay}.
@@ -89,10 +71,43 @@ public class RGBImageTranslator implements ImageTranslator {
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
-		final ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);
-		LegacyUtils.setImagePlusColorData(ds, imp);
-		LegacyUtils.setImagePlusMetadata(ds, imp);
+		final ImagePlus imp = makeColorImagePlus(ds);
+		harmonizer.setImagePlusColorData(ds, imp);
+		harmonizer.setImagePlusMetadata(ds, imp);
 		return imp;
 	}
 
+	// -- private interface --
+
+	/**
+	 * Makes a color {@link ImagePlus} from a color {@link Dataset}. The ImagePlus
+	 * will have the same X, Y, Z, & T dimensions. C will be 1. The data values
+	 * and metadata are not assigned. Throws an exception if the dataset is not
+	 * color compatible.
+	 */
+	private ImagePlus makeColorImagePlus(final Dataset ds) {
+		if (!LegacyUtils.isColorCompatible(ds)) {
+			throw new IllegalArgumentException("Dataset is not color compatible");
+		}
+
+		final int[] dimIndices = new int[5];
+		final int[] dimValues = new int[5];
+		LegacyUtils.getImagePlusDims(ds, dimIndices, dimValues);
+		final int w = dimValues[0];
+		final int h = dimValues[1];
+		final int c = dimValues[2] / 3;
+		final int z = dimValues[3];
+		final int t = dimValues[4];
+
+		final ImageStack stack = new ImageStack(w, h, c * z * t);
+
+		for (int i = 0; i < c * z * t; i++)
+			stack.setPixels(new int[w * h], i + 1);
+
+		final ImagePlus imp = new ImagePlus(ds.getName(), stack);
+
+		imp.setDimensions(c, z, t);
+
+		return imp;
+	}
 }
