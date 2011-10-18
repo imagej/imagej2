@@ -34,12 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display;
 
+import imagej.util.ColorRGB;
+
 // CTR TODO - refactor to remove this class and all subclasses!
 
 /**
  * The panel housing a particular {@link Display}.
  *
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 public interface DisplayPanel {
 
@@ -64,5 +67,8 @@ public interface DisplayPanel {
 
 	/** Sets the label at the top of the display panel. */
 	void setLabel(String s);
+
+	/** Sets the color of the display panel's border. */
+	void setBorderColor(ColorRGB color);
 
 }

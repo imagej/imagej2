@@ -45,6 +45,8 @@ import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
+import imagej.util.ColorRGB;
+import imagej.util.awt.AWTColors;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -62,7 +64,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -83,6 +87,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	private final ImageDisplay display;
 	private final JLabel imageLabel;
+	private final JPanel imagePane;
 	private final JPanel sliders;
 	private final DisplayWindow window;
 
@@ -110,18 +115,19 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		final int prefHeight = imageLabel.getPreferredSize().height;
 		imageLabel.setPreferredSize(new Dimension(0, prefHeight));
 
-		final JPanel graphicPane = new JPanel();
-		graphicPane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-		graphicPane.add(display.getCanvas());
+		imagePane = new JPanel();
+		imagePane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
+		imagePane.add(display.getCanvas());
 
 		sliders = new JPanel();
 		sliders.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
 
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(3, 3, 3, 3));
+		setBorderColor(null);
 
 		add(imageLabel, BorderLayout.NORTH);
-		add(graphicPane, BorderLayout.CENTER);
+		add(imagePane, BorderLayout.CENTER);
 		add(sliders, BorderLayout.SOUTH);
 
 		window.setContent(this);
@@ -210,6 +216,19 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	@Override
 	public void setLabel(final String s) {
 		imageLabel.setText(s);
+	}
+
+	@Override
+	public void setBorderColor(final ColorRGB color) {
+		final int width = 1;
+		final Border border;
+		if (color == null) {
+			border = new EmptyBorder(width, width, width, width);
+		}
+		else {
+			border = new LineBorder(AWTColors.getColor(color), width);
+		}
+		imagePane.setBorder(border);
 	}
 
 	@Override
