@@ -330,7 +330,7 @@ public class LegacyUtils {
 
 	/** Returns true if a {@link Dataset} is backed by {@link PlanarAccess}. */
 	private static boolean ij1StorageCompatible(final Dataset ds) {
-		return ds.getImgPlus().getImg() instanceof PlanarAccess;
+		return ds.getImgPlus().getImg() instanceof PlanarAccess<?>;
 	}
 
 	/**
