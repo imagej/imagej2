@@ -211,7 +211,7 @@ public class Harmonizer {
 	 * the data values or change the metadata.
 	 */
 	// assumes the data type of the given Dataset is fine as is
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void reshapeDataset(final Dataset ds, final ImagePlus imp) {
 		final long[] newDims = ds.getDims();
 		final double[] cal = new double[newDims.length];
