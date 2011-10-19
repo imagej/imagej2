@@ -138,6 +138,7 @@ public class Harmonizer {
 			final Dataset dsTmp = imageDisplayService.getActiveDataset(tmp);
 			ds.setImgPlus(dsTmp.getImgPlus());
 			ds.setRGBMerged(dsTmp.isRGBMerged());
+			tmp.close();
 		}
 		else { // ImagePlus type unchanged
 			if (!dimensionsCompatible(ds, imp)) {
