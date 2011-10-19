@@ -327,8 +327,10 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	}
 
 	private long getChannelCount() {
-		return channelDimIndex < 0 ? 1 : dataset.getExtents().dimension(
-			channelDimIndex);
+		return
+				channelDimIndex < 0 ?
+					1 :
+					dataset.getExtents().dimension(channelDimIndex);
 	}
 
 	@SuppressWarnings("synthetic-access")
