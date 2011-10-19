@@ -45,24 +45,36 @@ import ij.macro.Functions;
  */
 public class FunctionsMethods {
 
+	// TODO - this class was written to get around bug #554. The reliance on a
+	// static here is troubling. Rather than track calls we could replace the
+	// IJ1 code completely with a method that does the roi code but not the
+	// drawing code. Not sure if that would cause bad side effects. Waiting
+	// until we verify this implementation is a problem. On 10-19-11 BDZ
+	// found that not tracking this at all seems to be okay as #554 does not
+	// happen.
+	
 	public static int InsideBatchDrawing = 0;
 
 	private FunctionsMethods() {
 		// prevent instantiation of utility class
 	}
 
-	/** Prepends {@link Functions#displayBatchModeImage(ImagePlus)}. */
+	/** Prepends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
 	public static void displayBatchModeImageBefore(
 		@SuppressWarnings("unused") final ImagePlus imp2)
 	{
-		InsideBatchDrawing++;
+		// NOTE - BDZ - removing for now - see if any problems rear their head.
+		//   Was for bug #554
+		//InsideBatchDrawing++;
 	}
 
-	/** Appends {@link Functions#displayBatchModeImage(ImagePlus)}. */
+	/** Appends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
 	public static void displayBatchModeImageAfter(
 		@SuppressWarnings("unused") final ImagePlus imp2)
 	{
-		InsideBatchDrawing--;
+		// NOTE - BDZ - removing for now - see if any problems rear their head.
+		//   Was for bug #554
+		//InsideBatchDrawing--;
 	}
 
 }
