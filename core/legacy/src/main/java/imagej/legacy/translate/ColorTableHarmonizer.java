@@ -47,7 +47,6 @@ import ij.ImagePlus;
 import ij.process.LUT;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.ColorMode;
 import imagej.data.display.ColorTables;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
@@ -247,9 +246,11 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		if (dispView == null) return;
 		final DatasetView dsView = (DatasetView) dispView;
 
-		final ColorMode currMode = dsView.getColorMode();
-
-		if (currMode == ColorMode.GRAYSCALE) return;
+		// TODO - removing this old code allows color tables to be applied to
+		// gray images. Does this break anything? Note that avoiding this code
+		// fixes #550, #765, #768, and #774.
+		//final ColorMode currMode = dsView.getColorMode();
+		//if (currMode == ColorMode.GRAYSCALE) return;
 
 		// either we're given one color table for whole dataset
 		if (colorTables.size() == 1) {
