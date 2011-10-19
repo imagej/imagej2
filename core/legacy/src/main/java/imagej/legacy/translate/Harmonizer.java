@@ -96,7 +96,7 @@ public class Harmonizer {
 			rebuildImagePlusData(display, imp);
 		}
 		else {
-			if ((dimensionsIncompatible(ds, imp)) || (imp.getStack().getSize() == 0))
+			if ((!dimensionsCompatible(ds, imp)) || (imp.getStack().getSize() == 0))
 			{ // NB - in IJ1 stack size can be zero for single slice image!
 				rebuildImagePlusData(display, imp);
 			}
@@ -140,7 +140,7 @@ public class Harmonizer {
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
-			if (dimensionsIncompatible(ds, imp)) {
+			if (!dimensionsCompatible(ds, imp)) {
 				reshapeDataset(ds, imp);
 			}
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -211,7 +211,7 @@ public class Harmonizer {
 	 * the data values or change the metadata.
 	 */
 	// assumes the data type of the given Dataset is fine as is
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	private void reshapeDataset(final Dataset ds, final ImagePlus imp) {
 		final long[] newDims = ds.getDims();
 		final double[] cal = new double[newDims.length];
@@ -240,9 +240,9 @@ public class Harmonizer {
 
 	/**
 	 * Determines whether a {@link Dataset} and an {@link ImagePlus} have
-	 * incompatible dimensionality.
+	 * compatible dimensionality.
 	 */
-	private boolean dimensionsIncompatible(final Dataset ds, final ImagePlus imp)
+	private boolean dimensionsCompatible(final Dataset ds, final ImagePlus imp)
 	{
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
@@ -256,23 +256,23 @@ public class Harmonizer {
 		final long z = (zIndex < 0) ? 1 : dimensions[zIndex];
 		final long t = (tIndex < 0) ? 1 : dimensions[tIndex];
 
-		if (x != imp.getWidth()) return true;
-		if (y != imp.getHeight()) return true;
-		if (z != imp.getNSlices()) return true;
-		if (t != imp.getNFrames()) return true;
+		if (x != imp.getWidth()) return false;
+		if (y != imp.getHeight()) return false;
+		if (z != imp.getNSlices()) return false;
+		if (t != imp.getNFrames()) return false;
 		// channel case a little different
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
 			int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-			if (cIndex < 0) return true;
+			if (cIndex < 0) return false;
 			long c = dimensions[cIndex];
-			if (c != imp.getNChannels() * 3) return true;
+			if (c != imp.getNChannels() * 3) return false;
 		}
 		else { // not color data
 			long c = LegacyUtils.ij1ChannelCount(dimensions, ds.getAxes());
-			if (c != imp.getNChannels()) return true;
+			if (c != imp.getNChannels()) return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
