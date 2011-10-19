@@ -74,7 +74,12 @@ public class ScriptFinder {
 		final String path = System.getProperty("plugins.dir");
 		if (path == null) return;
 
-		discoverScripts(plugins, new File(path), null);
+		File directory = new File(path);
+		if (!path.endsWith("plugins")) {
+			final File pluginsDir = new File(directory, "plugins");
+			if (pluginsDir.isDirectory()) directory = pluginsDir;
+		}
+		discoverScripts(plugins, directory, null);
 	}
 
 	/**
