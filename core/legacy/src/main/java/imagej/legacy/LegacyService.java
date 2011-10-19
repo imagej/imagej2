@@ -137,7 +137,10 @@ public final class LegacyService extends AbstractService {
 	 */
 	public void legacyImageChanged(final ImagePlus imp) {
 		// CTR FIXME rework static InsideBatchDrawing logic?
-		if (FunctionsMethods.InsideBatchDrawing > 0) return;
+		// BDZ - removal for now. replace if issues arise. Alternative fix outlined
+		//   in FunctionsMethods code. This code was for addressing bug #554
+		//if (FunctionsMethods.InsideBatchDrawing > 0) return;
+		
 		// record resultant ImagePlus as a legacy plugin output
 		LegacyOutputTracker.getOutputImps().add(imp);
 	}
