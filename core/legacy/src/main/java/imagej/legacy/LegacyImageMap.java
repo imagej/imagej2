@@ -207,6 +207,8 @@ public class LegacyImageMap {
 	}
 	
 	private void subscribeToEvents() {
+		/* Removing this code to fix bug #835. Rely on LegacyPlugin to create
+			ImagePluses as they are needed. 
 		final EventSubscriber<DisplayCreatedEvent> creationSubscriber =
 			new EventSubscriber<DisplayCreatedEvent>() {
 
@@ -218,7 +220,8 @@ public class LegacyImageMap {
 			};
 		subscribers.add(creationSubscriber);
 		eventService.subscribe(DisplayCreatedEvent.class, creationSubscriber);
-
+		*/
+		
 		final EventSubscriber<DisplayDeletedEvent> deletionSubscriber =
 			new EventSubscriber<DisplayDeletedEvent>() {
 
