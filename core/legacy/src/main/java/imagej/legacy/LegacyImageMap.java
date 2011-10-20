@@ -44,7 +44,6 @@ import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.legacy.patches.ImageWindowMethods;
 import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
@@ -234,12 +233,12 @@ public class LegacyImageMap {
 					ImagePlus imp = lookupImagePlus((ImageDisplay)event.getObject());
 					
 					if (imp != null)
-						ImageWindowMethods.closeInitiatedByIJ2(imp);
+						LegacyOutputTracker.closeInitiatedByIJ2(imp);
 
 					unregisterDisplay((ImageDisplay)event.getObject());
 					
 					if (imp != null)
-						ImageWindowMethods.closeCompletedByIJ2(imp);
+						LegacyOutputTracker.closeCompletedByIJ2(imp);
 					}
 				}
 			};

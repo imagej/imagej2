@@ -44,6 +44,7 @@ import imagej.util.Log;
  * Overrides {@link ImagePlus} methods.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public final class ImagePlusMethods {
 
@@ -66,7 +67,8 @@ public final class ImagePlusMethods {
 	}
 
 	/** Appends {@link ImagePlus#show(String message)}. */
-	public static void show(final ImagePlus obj, final String message) {
+	public static void show(final ImagePlus obj,
+		@SuppressWarnings("unused") final String message) {
 		Log.debug("ImagePlus.show(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -77,5 +79,11 @@ public final class ImagePlusMethods {
 		Log.debug("ImagePlus.hide(): " + obj);
 		LegacyOutputTracker.getOutputImps().remove(obj);
 		LegacyOutputTracker.getClosedImps().add(obj);
+	}
+
+	/** Appends {@link ImagePlus#close()}. */
+	public static void close(ImagePlus obj) {
+		if ((obj != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)))
+			LegacyOutputTracker.getClosedImps().add(obj);
 	}
 }
