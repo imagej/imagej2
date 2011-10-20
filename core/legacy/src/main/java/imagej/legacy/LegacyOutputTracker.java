@@ -75,9 +75,14 @@ public class LegacyOutputTracker {
 		};
 
 	/** Tracks which ImagePluses have their close() method initiated by IJ2 */
-	private static final Map<ImagePlus,Boolean> closeInitiatedByIJ2 =
-				new ConcurrentHashMap<ImagePlus,Boolean>();
-
+	private static ThreadLocal<Set<ImagePlus>> beingClosedByIJ2 =
+			new ThreadLocal<Set<ImagePlus>>() {
+				@Override
+				protected synchronized Set<ImagePlus> initialValue() {
+					return new HashSet<ImagePlus>();
+				}
+			};
+	
 	// -- public interface --
 		
 	/**
@@ -98,15 +103,15 @@ public class LegacyOutputTracker {
 
 	/** Informs tracker that IJ2 has initiated the close() of an ImagePlus */
 	public static void closeInitiatedByIJ2(ImagePlus imp) {
-		closeInitiatedByIJ2.put(imp, true);
+		beingClosedByIJ2.get().add(imp);
 	}
 
 	/** Informs tracker that IJ2 has finished the close() of an ImagePlus */
 	public static void closeCompletedByIJ2(ImagePlus imp) {
-		closeInitiatedByIJ2.remove(imp);
+		beingClosedByIJ2.get().remove(imp);
 	}
 
 	public static boolean isBeingClosedbyIJ2(ImagePlus imp) {
-		return closeInitiatedByIJ2.get(imp) != null;
+		return beingClosedByIJ2.get().contains(imp);
 	}
 }
