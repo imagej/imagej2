@@ -37,7 +37,9 @@ package imagej.legacy;
 import ij.ImagePlus;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The legacy output tracker is responsible for tracking important changes
@@ -71,7 +73,11 @@ public class LegacyOutputTracker {
 				return new HashSet<ImagePlus>();
 			}
 		};
-	
+
+	/** Tracks which ImagePluses have their close() method initiated by IJ2 */
+	private static final Map<ImagePlus,Boolean> closeInitiatedByIJ2 =
+				new ConcurrentHashMap<ImagePlus,Boolean>();
+
 	// -- public interface --
 		
 	/**
@@ -90,4 +96,17 @@ public class LegacyOutputTracker {
 		return closedImps.get();
 	}
 
+	/** Informs tracker that IJ2 has initiated the close() of an ImagePlus */
+	public static void closeInitiatedByIJ2(ImagePlus imp) {
+		closeInitiatedByIJ2.put(imp, true);
+	}
+
+	/** Informs tracker that IJ2 has finished the close() of an ImagePlus */
+	public static void closeCompletedByIJ2(ImagePlus imp) {
+		closeInitiatedByIJ2.remove(imp);
+	}
+
+	public static boolean isBeingClosedbyIJ2(ImagePlus imp) {
+		return closeInitiatedByIJ2.get(imp) != null;
+	}
 }
