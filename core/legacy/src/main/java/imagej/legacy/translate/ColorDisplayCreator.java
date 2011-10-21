@@ -54,10 +54,10 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
-	private ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
-	private ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
-	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
-	private CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
+	private final ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
+	private final ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private final CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
 	
 	// -- public interface --
 
