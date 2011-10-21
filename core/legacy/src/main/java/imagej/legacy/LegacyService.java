@@ -49,7 +49,6 @@ import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
-import imagej.legacy.patches.FunctionsMethods;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.util.Log;
