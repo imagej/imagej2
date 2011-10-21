@@ -37,9 +37,8 @@ package imagej.legacy;
 import ij.ImagePlus;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * The legacy output tracker is responsible for tracking important changes
