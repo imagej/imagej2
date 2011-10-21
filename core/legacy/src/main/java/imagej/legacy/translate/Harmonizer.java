@@ -185,9 +185,8 @@ public class Harmonizer {
 	private boolean imagePlusIsNearestType(final Dataset ds, final ImagePlus imp) {
 		final int impType = imp.getType();
 
-		if (impType == ImagePlus.COLOR_RGB) {
-			if (LegacyUtils.isColorCompatible(ds)) return true;
-		}
+		if (impType == ImagePlus.COLOR_RGB)
+			return LegacyUtils.isColorCompatible(ds);
 
 		final RealType<?> dsType = ds.getType();
 		final boolean isSigned = ds.isSigned();

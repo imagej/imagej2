@@ -54,7 +54,7 @@ public class LegacyUtils {
 
 	// -- static variables --
 
-	private static Axis[] defaultAxes = new Axis[] { Axes.X, Axes.Y,
+	private final static Axis[] defaultAxes = new Axis[] { Axes.X, Axes.Y,
 		Axes.CHANNEL, Axes.Z, Axes.TIME };
 
 	// -- public static methods --

@@ -51,8 +51,8 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
-	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private final ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
 	
 	// -- public interface --
 

@@ -58,11 +58,11 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 	
-	private GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
-	private ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
-	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
-	private CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
-	private PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
+	private final GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
+	private final ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private final CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
+	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
 	
 	// -- public interface --
 
