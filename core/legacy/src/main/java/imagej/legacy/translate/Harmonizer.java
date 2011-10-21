@@ -62,16 +62,16 @@ public class Harmonizer {
 
 	// -- instance variables --
 
-	private ImageTranslator imageTranslator;
-	private final OverlayTranslator overlayTranslator = new OverlayTranslator();
+	private final ImageTranslator imageTranslator;
 	private final Map<ImagePlus, Integer> bitDepthMap = new HashMap<ImagePlus, Integer>();
 	
-	private GrayPixelHarmonizer grayPixelHarmonizer = new GrayPixelHarmonizer();
-	private ColorPixelHarmonizer colorPixelHarmonizer = new ColorPixelHarmonizer();
-	private ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
-	private MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
-	private CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
-	private PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
+	private final GrayPixelHarmonizer grayPixelHarmonizer = new GrayPixelHarmonizer();
+	private final ColorPixelHarmonizer colorPixelHarmonizer = new ColorPixelHarmonizer();
+	private final ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private final CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
+	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
+	private final OverlayHarmonizer overlayHarmonizer = new OverlayHarmonizer();
 	
 	// -- constructor --
 
@@ -109,7 +109,7 @@ public class Harmonizer {
 			else grayPixelHarmonizer.updateLegacyImage(ds, imp);
 		}
 		metadataHarmonizer.updateLegacyImage(ds, imp);
-		overlayTranslator.setImagePlusOverlays(display, imp);
+		overlayHarmonizer.updateLegacyImage(display, imp);
 		colorTableHarmonizer.updateLegacyImage(display, imp);
 	}
 
@@ -154,7 +154,7 @@ public class Harmonizer {
 		}
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
-		overlayTranslator.setDisplayOverlays(display, imp);
+		overlayHarmonizer.updateDisplay(display, imp);
 		colorTableHarmonizer.updateDisplay(display, imp);
 		// NB - make it the lower level methods' job to call ds.update()
 	}

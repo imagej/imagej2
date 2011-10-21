@@ -87,13 +87,14 @@ import net.imglib2.type.logic.BitType;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public class OverlayTranslator {
+public class OverlayHarmonizer implements DisplayHarmonizer {
 
 	/**
 	 * Updates the given {@link ImageDisplay} to contain {@link Overlay}s corresponding
 	 * to the given {@link ImagePlus}'s ROI.
 	 */
-	public void setDisplayOverlays(final ImageDisplay display, final ImagePlus imp) {
+	@Override
+	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		final Roi oldROI = createROI(overlayService.getOverlays(display));
 		if (oldROI instanceof ShapeRoi) {
@@ -130,7 +131,8 @@ public class OverlayTranslator {
 	 * Updates the given {@link ImagePlus}'s ROI to match the {@link Overlay}s
 	 * being visualized in the given {@link ImageDisplay}.
 	 */
-	public void setImagePlusOverlays(final ImageDisplay display, final ImagePlus imp)
+	@Override
+	public void updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		final List<Overlay> overlays = overlayService.getOverlays(display);
