@@ -19,7 +19,6 @@
 
 	<modules>
 		<module>visad-plugin</module>
-		<module>image5d</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
