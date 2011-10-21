@@ -42,7 +42,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.ImageTranslator;
