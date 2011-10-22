@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script;
 
+import imagej.log.LogService;
 import imagej.plugin.PluginService;
 import imagej.service.Service;
 
@@ -53,6 +54,8 @@ import javax.script.ScriptException;
 public interface ScriptService extends Service {
 
 	PluginService getPluginService();
+
+	LogService getLogService();
 
 	/** Gets the index of available script languages. */
 	ScriptLanguageIndex getIndex();

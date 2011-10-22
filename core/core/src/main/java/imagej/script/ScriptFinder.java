@@ -38,6 +38,7 @@ import imagej.MenuEntry;
 import imagej.MenuPath;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
+import imagej.log.LogService;
 
 import java.io.File;
 import java.util.HashMap;
@@ -60,10 +61,14 @@ public class ScriptFinder {
 	private static final String SPECIAL_SUBDIRECTORY = "Scripts";
 
 	private final ScriptService scriptService;
+	private final LogService log;
 
 	public ScriptFinder(final ScriptService scriptService) {
 		this.scriptService = scriptService;
+		log = scriptService.getLogService();
 	}
+
+	private int scriptCount;
 
 	/**
 	 * Discover the scripts
@@ -79,7 +84,9 @@ public class ScriptFinder {
 			final File pluginsDir = new File(directory, "plugins");
 			if (pluginsDir.isDirectory()) directory = pluginsDir;
 		}
+		scriptCount = 0;
 		discoverScripts(plugins, directory, null);
+		log.info("Found " + scriptCount + " scripts");
 	}
 
 	/**
@@ -107,8 +114,10 @@ public class ScriptFinder {
 				else discoverScripts(plugins, file, subMenuPath(path, file
 					.getName()));
 			}
-			else if (scriptService.canHandleFile(file)) plugins.add(createEntry(file,
-				subMenuPath(path, file.getName())));
+			else if (scriptService.canHandleFile(file)) {
+				plugins.add(createEntry(file, subMenuPath(path, file.getName())));
+				scriptCount++;
+			}
 	}
 
 	private MenuPath
