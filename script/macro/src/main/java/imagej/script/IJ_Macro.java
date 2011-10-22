@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javassist.CannotCompileException;
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CodeConverter;
 import javassist.CtClass;
@@ -85,6 +86,7 @@ public class IJ_Macro extends AbstractScriptEngineFactory {
 
 	static {
 		final ClassPool pool = ClassPool.getDefault();
+		pool.appendClassPath(new ClassClassPath(IJ_Macro.class));
 
 		Class<Interpreter> newClass = null;
 		try {
