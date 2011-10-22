@@ -112,9 +112,12 @@ public class ScriptFinder {
 				if (isTopLevel && file.getName().equals(SPECIAL_SUBDIRECTORY)) discoverScripts(
 					plugins, file, new MenuPath());
 				else discoverScripts(plugins, file, subMenuPath(path, file
-					.getName()));
+					.getName().replace('_', ' ')));
 			}
 			else if (scriptService.canHandleFile(file)) {
+				String name = file.getName().replace('_', ' ');
+				final int dot = name.lastIndexOf('.');
+				if (dot > 0) name = name.substring(0, dot);
 				plugins.add(createEntry(file, subMenuPath(path, file.getName())));
 				scriptCount++;
 			}
