@@ -59,6 +59,7 @@ import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -128,8 +129,18 @@ public class LegacyPlugin implements ImageJPlugin {
 		legacyService.syncActiveImage();
 
 		try {
+
+			Set<Thread> originalThreads = getCurrentThreads();
+
 			// execute the legacy plugin
 			IJ.runPlugIn(className, arg);
+
+			// we always sleep at least once to make sure plugin has time to hatch
+			// it's first thread if its going to create any.			
+			try {	Thread.sleep(50); } catch (InterruptedException e) {/**/}
+			
+			// wait for any threads hatched by plugin to terminate
+			waitForPluginThreads(originalThreads);
 
 			// sync modern displays to match existing legacy images
 			outputs = updateDisplaysFromImagePluses(map, harmonizer);
@@ -167,6 +178,31 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	// -- Helper methods --
 
+	private Set<Thread> getCurrentThreads() {
+		ThreadGroup group = Thread.currentThread().getThreadGroup();
+		Thread[] threads;
+		int numThreads;
+		int size = 25;
+		do {
+			threads = new Thread[size];
+			numThreads = group.enumerate(threads);
+			size *= 2;
+		} while (numThreads > threads.length);
+		Set<Thread> threadSet = new HashSet<Thread>();
+		for (int i = 0; i < numThreads; i++)
+			threadSet.add(threads[i]);
+		return threadSet;
+	}
+	
+	private void waitForPluginThreads(Set<Thread> threadsToIgnore) {
+		Set<Thread> currentThreads = getCurrentThreads();
+		for (Thread thread : currentThreads) {
+			if ((thread != Thread.currentThread()) &&
+					(!threadsToIgnore.contains(thread)))
+				try { thread.join(); } catch (InterruptedException e) {/**/}
+		}
+	}
+	
 	private void updateImagePlusesFromDisplays(final LegacyImageMap map,
 		final Harmonizer harmonizer)
 	{
