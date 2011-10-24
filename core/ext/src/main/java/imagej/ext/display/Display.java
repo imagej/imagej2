@@ -78,7 +78,8 @@ public interface Display<E> extends List<E>, IPlugin {
 	/** Updates and redraws the display onscreen. */
 	void update();
 
-	// CTR TODO - add close method
+	/** Closes the display and disposes its resources. */
+	void close();
 
 	/** Gets the user interface panel associated with this display. */
 	DisplayPanel getPanel();
