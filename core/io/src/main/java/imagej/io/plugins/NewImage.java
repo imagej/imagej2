@@ -71,6 +71,7 @@ public class NewImage implements ImageJPlugin {
 	public static final String WHITE = "White";
 	public static final String BLACK = "Black";
 	public static final String RAMP = "Ramp";
+	public static final String ZERO = "Zero";
 
 	@Parameter
 	private String name = "Untitled";
@@ -85,7 +86,7 @@ public class NewImage implements ImageJPlugin {
 	@Parameter(callback = "floatingChanged")
 	private boolean floating = false;
 
-	@Parameter(label = "Fill With", choices = { WHITE, BLACK, RAMP })
+	@Parameter(label = "Fill With", choices = { WHITE, BLACK, RAMP, ZERO })
 	private String fillType = WHITE;
 
 	@Parameter(min = "1")
@@ -171,6 +172,7 @@ public class NewImage implements ImageJPlugin {
 
 		final boolean isWhite = fillType.equals(WHITE);
 		final boolean isBlack = fillType.equals(BLACK);
+		final boolean isZero = fillType.equals(ZERO);
 
 		// fill in the diagonal gradient
 		final long[] pos = new long[2];
@@ -178,14 +180,13 @@ public class NewImage implements ImageJPlugin {
 			dataset.getImgPlus().localizingCursor();
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			final long x = cursor.getLongPosition(0);
-			final long y = cursor.getLongPosition(1);
-			pos[0] = x;
-			pos[1] = y;
+			pos[0] = cursor.getLongPosition(0);
+			pos[1] = cursor.getLongPosition(1);
 			final RealType<?> type = cursor.get();
 			final double value;
 			if (isWhite) value = type.getMaxValue();
 			else if (isBlack) value = type.getMinValue();
+			else if (isZero) value = 0;
 			else value = rampedValue(pos, dims, type); // fillWith == RAMP
 			type.setReal(value);
 		}
