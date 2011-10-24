@@ -139,6 +139,9 @@ public final class LegacyService extends AbstractService {
 		// BDZ - removal for now. replace if issues arise. Alternative fix outlined
 		//   in FunctionsMethods code. This code was for addressing bug #554
 		//if (FunctionsMethods.InsideBatchDrawing > 0) return;
+
+		// create a display if it doesn't exist yet.
+		imageMap.registerLegacyImage(imp);
 		
 		// record resultant ImagePlus as a legacy plugin output
 		LegacyOutputTracker.getOutputImps().add(imp);
