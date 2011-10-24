@@ -133,7 +133,14 @@ public class Harmonizer {
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
-		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
+		Integer oldBitDepth = bitDepthMap.get(imp);
+		// if old bit depth is null then plugin created a new display and it's
+		// contents are already up to date
+		if (oldBitDepth == null) {
+			bitDepthMap.put(imp, imp.getBitDepth());
+			return;
+		}
+		if (imp.getBitDepth() != oldBitDepth) {
 			final ImageDisplay tmp = imageTranslator.createDisplay(imp, ds.getAxes());
 			final Dataset dsTmp = imageDisplayService.getActiveDataset(tmp);
 			ds.setImgPlus(dsTmp.getImgPlus());
@@ -201,7 +208,7 @@ public class Harmonizer {
 			return impType == ImagePlus.GRAY16;
 		}
 
-		// isSigned && !isInteger
+		// isSigned || !isInteger || bitPerPix > 16
 		return impType == ImagePlus.GRAY32;
 	}
 	
