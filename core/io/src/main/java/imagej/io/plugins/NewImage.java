@@ -173,17 +173,20 @@ public class NewImage implements ImageJPlugin {
 		final boolean isBlack = fillType.equals(BLACK);
 
 		// fill in the diagonal gradient
+		final long[] pos = new long[2];
 		final Cursor<? extends RealType<?>> cursor =
 			dataset.getImgPlus().localizingCursor();
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			final long x = cursor.getLongPosition(0);
 			final long y = cursor.getLongPosition(1);
+			pos[0] = x;
+			pos[1] = y;
 			final RealType<?> type = cursor.get();
 			final double value;
 			if (isWhite) value = type.getMaxValue();
 			else if (isBlack) value = type.getMinValue();
-			else value = calcRangedValue(x + y, type); // fillWith == RAMP
+			else value = rampedValue(pos, dims, type); // fillWith == RAMP
 			type.setReal(value);
 		}
 	}
@@ -225,25 +228,26 @@ public class NewImage implements ImageJPlugin {
 		return !bitDepth.equals(DEPTH32) && !bitDepth.equals(DEPTH64);
 	}
 
-	// NOTE
-	// input "value" assumed to be >= 0.
-	// if not float data we modulate to fit into type's [range min, range, max]
-	// note that this behavior is different than before in that it starts from
-	// the type's minimum value. the difference is apparent for signed data.
-
-	private double calcRangedValue(final double value, final RealType<?> type) {
-		if (floating) return value;
-
-		final double rangeMin = type.getMinValue();
-		final double rangeMax = type.getMaxValue();
-		final double totalRange = rangeMax - rangeMin + 1;
-
-		double newValue = value;
-		while (newValue >= totalRange) {
-			newValue -= totalRange;
+	private double rampedValue(long[] pos, long[] dims, RealType<?> type) {
+		double origin = type.getMinValue();
+		double range = type.getMaxValue() - type.getMinValue();
+		if (floating) {
+			origin = 0;
+			range = 1;
 		}
-
-		return rangeMin + newValue;
+		
+		double numerator = 0;
+		double denominator = 0;
+		for (int i = 0; i < pos.length; i++) {
+			numerator += pos[i];
+			denominator += dims[i]-1;
+		}
+		
+		if (denominator == 0)
+			return origin;
+		
+		double percent = numerator / denominator;
+		
+		return origin + percent * range;
 	}
-
 }
