@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.mdi.display;
 
 import imagej.ImageJ;
-import imagej.data.display.DisplayWindow;
 import imagej.ext.display.DisplayPanel;
+import imagej.ext.display.DisplayWindow;
 import imagej.ext.display.EventDispatcher;
 import imagej.ui.UIService;
 import imagej.ui.IUserInterface;

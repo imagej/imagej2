@@ -32,10 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.display;
+package imagej.ext.display;
 
-import imagej.ext.display.DisplayPanel;
-import imagej.ext.display.EventDispatcher;
 
 /**
  * A user interface window associated with a Display, containing a {@link DisplayPanel}.
