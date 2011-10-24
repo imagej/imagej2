@@ -46,5 +46,7 @@ public interface OutputWindow {
 	void clear();
 
 	void setVisible(boolean visible);
+	
+	void dispose();
 
 }

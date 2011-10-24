@@ -84,6 +84,7 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 	@Override
 	public void close() {
 		outputWindow.setVisible(false);
+		outputWindow.dispose();
 	}
 
 	@Override
