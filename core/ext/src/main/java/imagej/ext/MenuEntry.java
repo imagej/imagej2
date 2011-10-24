@@ -73,7 +73,7 @@ public class MenuEntry {
 		this.name = name;
 		this.weight = weight;
 		this.mnemonic = mnemonic;
-		this.accelerator = accelerator;
+		setAccelerator(accelerator);
 		this.iconPath = iconPath;
 	}
 
@@ -102,7 +102,28 @@ public class MenuEntry {
 	}
 
 	public void setAccelerator(final String accelerator) {
-		this.accelerator = accelerator;
+		this.accelerator = normalizeAccelerator(accelerator);
+	}
+
+	/** Sorts the modifiers of the accelerator. */
+	private static String normalizeAccelerator(final String accelerator) {
+		final String[] components = accelerator.split(" ");
+		// If there is only one component, assume it is already normalized.
+		if (components.length < 2) return accelerator;
+		boolean alt = false, control = false, meta = false, shift = false;
+		for (int i = 0; i < components.length - 1; i++)
+			if (components[i].equalsIgnoreCase("alt")) alt = true;
+			else if (components[i].equalsIgnoreCase("ctrl") ||
+				components[i].equalsIgnoreCase("control")) control = true;
+			else if (components[i].equalsIgnoreCase("meta")) meta = true;
+			else if (components[i].equalsIgnoreCase("shift")) shift = true;
+		final StringBuilder builder = new StringBuilder();
+		if (alt) builder.append("alt ");
+		if (control) builder.append("control ");
+		if (meta) builder.append("meta ");
+		if (shift) builder.append("shift ");
+		builder.append(components[components.length - 1].toUpperCase());
+		return builder.toString();
 	}
 
 	public String getAccelerator() {
