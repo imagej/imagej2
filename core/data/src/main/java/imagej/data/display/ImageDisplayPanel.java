@@ -44,9 +44,9 @@ import net.imglib2.img.Axis;
  * @author Grant Harris
  */
 public interface ImageDisplayPanel extends DisplayPanel {
+	
 	long getAxisPosition(Axis axis);
+
 	void setAxisPosition(final Axis axis, final long position);
 	
-	// CTR TEMP - needed for now during refactoring process
-	DisplayWindow getWindow();
 }
