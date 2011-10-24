@@ -49,6 +49,9 @@ public interface DisplayPanel {
 	/** Gets the panel's associated display. */
 	Display<?> getDisplay();
 
+	// CTR TEMP - needed for now during refactoring process
+	DisplayWindow getWindow();
+
 	/**
 	 * Handle keyboard, mouse and window events.
 	 * @param dispatcher
