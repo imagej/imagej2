@@ -63,6 +63,10 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
 	private final CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
 	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
+	private final OverlayHarmonizer overlayHarmonizer = new OverlayHarmonizer();
+	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays while
+	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction as
+	// Harmonizer always catches that case.
 	
 	// -- public interface --
 
@@ -92,7 +96,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
 		colorTableHarmonizer.updateDisplay(display, imp);
-
+		overlayHarmonizer.updateDisplay(display, imp);
+		
 		return display;
 	}
 	
@@ -114,7 +119,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
 		colorTableHarmonizer.updateDisplay(display, imp);
-
+		overlayHarmonizer.updateDisplay(display, imp);
+		
 		return display;
 	}
 	
