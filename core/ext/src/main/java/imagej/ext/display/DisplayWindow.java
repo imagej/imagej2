@@ -61,4 +61,5 @@ public interface DisplayWindow {
 	void requestFocus();
 	
 	void close();
+
 }

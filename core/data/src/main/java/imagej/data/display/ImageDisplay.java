@@ -80,7 +80,4 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	/** Forces the display window to redo its layout. */
 	void redoWindowLayout();
 
-	// CTR TEMP - move close method to toplevel Display interface
-	void close();
-
 }

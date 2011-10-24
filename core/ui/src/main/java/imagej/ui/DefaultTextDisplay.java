@@ -80,6 +80,11 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 		}
 		outputWindow.setVisible(true);
 	}
+	
+	@Override
+	public void close() {
+		outputWindow.setVisible(false);
+	}
 
 	@Override
 	public TextDisplayPanel getPanel() {
