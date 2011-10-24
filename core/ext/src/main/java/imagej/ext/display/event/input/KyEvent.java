@@ -67,6 +67,36 @@ public abstract class KyEvent extends InputEvent {
 		return code;
 	}
 
+	/**
+	 * Converts the current key event into the corresponding accelerator string.
+	 * 
+	 * @return the string required as accelerator in the annotation of a plugin in
+	 *         order to match the current key event.
+	 */
+	public String getAcceleratorString() {
+		return getAcceleratorString(false);
+	}
+
+	/**
+	 * Converts the current key event into the corresponding accelerator string.
+	 * 
+	 * @param forceControlModifier always pretend that the Control key (or on
+	 *          Apple, the Command key) has been pressed.
+	 * @return the string required as accelerator in the annotation of a plugin in
+	 *         order to match the current key event.
+	 */
+	public String getAcceleratorString(final boolean forceControlModifier) {
+		final InputModifiers modifiers = getModifiers();
+		final StringBuilder builder = new StringBuilder();
+		if (modifiers.isAltDown()) builder.append("alt ");
+		if (forceControlModifier || modifiers.isCtrlDown()) builder
+			.append("control ");
+		if (modifiers.isMetaDown()) builder.append("meta ");
+		if (modifiers.isShiftDown()) builder.append("shift ");
+		builder.append(Character.toUpperCase(getCharacter()));
+		return builder.toString();
+	}
+
 	// -- Object methods --
 
 	@Override
