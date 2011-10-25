@@ -53,6 +53,7 @@ import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
+import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -145,6 +146,14 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.pack();
 		appFrame.setVisible(true);
 
+		// setup drag and drop targets
+		SwingDropListener dropListener = new SwingDropListener();
+		new DropTarget(toolBar, dropListener);
+		new DropTarget(statusBar, dropListener);
+		//   this one seems unnecessary. neither IJ2 nor IJ1 respond to dropping
+		//   on the title bar
+		//new DropTarget(appFrame, dropListener);
+		
 		// TODO: this is platform specific! Why?
 		final String osName = System.getProperty("os.name").toLowerCase();
 		final boolean isMacOs = osName.startsWith("mac os x");
