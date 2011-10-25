@@ -362,6 +362,7 @@ public class OptionsSynchronizer {
 			Prefs.set("proxy.server", server);
 			Prefs.set("proxy.port", optionsProxy.getPort());
 		}
+		ij.Prefs.useSystemProxies = optionsProxy.isUseSystemProxy();
 	}
 
 	private void roundRectOptions() {
@@ -503,6 +504,10 @@ public class OptionsSynchronizer {
 		optionsProfilePlot.setMinY(yMin);
 		optionsProfilePlot.setVertProfile(Prefs.verticalProfile);
 		optionsProfilePlot.setWidth(ij.gui.PlotWindow.plotWidth);
+
+		final OptionsProxy optionsProxy =
+				optionsService.getOptions(OptionsProxy.class);
+		optionsProxy.setUseSystemProxy(ij.Prefs.useSystemProxies);
 
 		final OptionsRoundedRectangleTool optionsRoundedRectangleTool =
 			optionsService.getOptions(OptionsRoundedRectangleTool.class);

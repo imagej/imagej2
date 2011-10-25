@@ -56,8 +56,8 @@ public class OptionsProxy extends OptionsPlugin {
 	@Parameter(label = "Port")
 	private int port = 8080;
 
-	@Parameter(label = "Authenticate")
-	private boolean authenticationRequired = false;
+	@Parameter(label = "Or, use system proxy settings")
+	private boolean useSystemProxy = false;
 
 	// -- OptionsProxy methods --
 
@@ -73,8 +73,8 @@ public class OptionsProxy extends OptionsPlugin {
 		return port;
 	}
 
-	public boolean isAuthenticationRequired() {
-		return authenticationRequired;
+	public boolean isUseSystemProxy() {
+		return useSystemProxy;
 	}
 
 	public void setProxyServer(final String proxyServer) {
@@ -85,8 +85,8 @@ public class OptionsProxy extends OptionsPlugin {
 		this.port = port;
 	}
 
-	public void setAuthenticationRequired(final boolean authenticationRequired) {
-		this.authenticationRequired = authenticationRequired;
+	public void setUseSystemProxy(final boolean useSystemProxy) {
+		this.useSystemProxy = useSystemProxy;
 	}
 
 }
