@@ -37,13 +37,14 @@ package imagej.ui.swing.display;
 import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
+import imagej.data.display.DisplayWindow;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayPanel;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
-import imagej.ext.display.DisplayWindow;
 import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
@@ -82,7 +83,7 @@ import net.miginfocom.swing.MigLayout;
 /**
  * Swing implementation of image display panel. Contains a label, a graphics
  * pane containing an ImageCanvas, and panel containing dimensional controllers
- * (sliders). This panel is added to a top-level display container
+ * (sliderPanel). This panel is added to a top-level display container
  * (DisplayWindow).
  * 
  * @author Curtis Rueden
@@ -94,7 +95,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	private final ImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel imagePane;
-	private final JPanel sliders;
+	private final JPanel sliderPanel;
 	private final DisplayWindow window;
 
 	protected final Map<Axis, Long> axisPositions = new HashMap<Axis, Long>();
@@ -125,8 +126,8 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		imagePane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
 		imagePane.add(display.getCanvas());
 
-		sliders = new JPanel();
-		sliders.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
+		sliderPanel = new JPanel();
+		sliderPanel.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
 
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(3, 3, 3, 3));
@@ -134,7 +135,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 		add(imageLabel, BorderLayout.NORTH);
 		add(imagePane, BorderLayout.CENTER);
-		add(sliders, BorderLayout.SOUTH);
+		add(sliderPanel, BorderLayout.SOUTH);
 
 		window.setContent(this);
 	}
@@ -145,7 +146,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	 * Get the position of some axis other than X and Y
 	 * 
 	 * @param axis - the axis
-	 * @return the position of that axis on the sliders
+	 * @return the position of that axis on the sliderPanel
 	 */
 	@Override
 	public long getAxisPosition(final Axis axis) {
@@ -188,7 +189,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 			public void run() {
 				createSliders();
 				updateBorder(0);
-				sliders.setVisible(sliders.getComponentCount() > 0);
+				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
 				sizeAppropriately();
 				window.setTitle(getDisplay().getName());
 				window.showDisplay(true);
@@ -200,26 +201,33 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	void sizeAppropriately() {
 		final JHotDrawImageCanvas canvas =
-			(JHotDrawImageCanvas) display.getCanvas();
-		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
+				(JHotDrawImageCanvas) display.getCanvas();
 		Dimension canvasSize = canvas.getPreferredSize();
+		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
 		// width determined by scaled image canvas width
 		final int labelPlusSliderHeight =
-			imageLabel.getPreferredSize().height + sliders.getPreferredSize().height;
-		// graphicPane.getPreferredSize();
-		int scaling = 1;
-		while (canvasSize.height + labelPlusSliderHeight > deskBounds.height - 32 ||
-			canvasSize.width > deskBounds.width - 32)
-		{
-			canvas.setZoom(1.0 / scaling++);
-			canvasSize = canvas.getPreferredSize();
+				imageLabel.getPreferredSize().height + sliderPanel.getPreferredSize().height;
+		double scale = 1.0;
+		if (canvasSize.width >= canvasSize.height) {
+			// reduce width to fit
+			if (canvasSize.width > deskBounds.width - 32) {
+				scale = 1.0 / Math.ceil(canvasSize.width / (deskBounds.width - 32));
+			}
+		} else {
+			// reduce height to fit
+			if (canvasSize.height > deskBounds.height - 32 - labelPlusSliderHeight) {
+				scale = 1.0 / Math.ceil(canvasSize.height / (deskBounds.height - 32 - labelPlusSliderHeight));
+			}
 		}
+		double zoomLevel = CanvasHelper.getNextLowerZoomLevel(scale);
+		canvas.setZoom(zoomLevel);
+		//canvasSize = canvas.getPreferredSize();
 		if (initial) {
 			canvas.setInitialScale(canvas.getZoomFactor());
 			initial = false;
 		}
 	}
-
+	
 	@Override
 	public void setLabel(final String s) {
 		imageLabel.setText(s);
@@ -301,8 +309,8 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 		for (final Axis axis : axisSliders.keySet()) {
 			if (display.getAxisIndex(axis) < 0) {
-				sliders.remove(axisSliders.get(axis));
-				sliders.remove(axisLabels.get(axis));
+				sliderPanel.remove(axisSliders.get(axis));
+				sliderPanel.remove(axisLabels.get(axis));
 				axisSliders.remove(axis);
 				axisLabels.remove(axis);
 				axisPositions.remove(axis);
@@ -351,8 +359,8 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 					getDisplay().update();
 				}
 			});
-			sliders.add(label);
-			sliders.add(slider);
+			sliderPanel.add(label);
+			sliderPanel.add(slider);
 		}
 	}
 
