@@ -61,6 +61,7 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		final Calibration cal = imp.getCalibration();
 		if (xIndex >= 0) ds.setCalibration(cal.pixelWidth, xIndex);
 		if (yIndex >= 0) ds.setCalibration(cal.pixelHeight, yIndex);
+		// TODO - remove this next line?
 		if (cIndex >= 0) ds.setCalibration(1, cIndex);
 		if (zIndex >= 0) ds.setCalibration(cal.pixelDepth, zIndex);
 		if (tIndex >= 0) ds.setCalibration(cal.frameInterval, tIndex);
@@ -78,26 +79,12 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		if (xIndex >= 0) cal.pixelWidth = calValue(ds,xIndex,1);
-		if (yIndex >= 0) cal.pixelHeight = calValue(ds,yIndex,1);
+		if (xIndex >= 0) cal.pixelWidth = ds.calibration(xIndex);
+		if (yIndex >= 0) cal.pixelHeight = ds.calibration(yIndex);
 		if (cIndex >= 0) {
 			// nothing to set on IJ1 side
 		}
-		if (zIndex >= 0) cal.pixelDepth = calValue(ds,zIndex,1);
-		if (tIndex >= 0) cal.frameInterval = calValue(ds,tIndex,0);
-	}
-	
-	// NB : IJ1 hates the NaNs that IJ2 defaults to. So make this method in order
-	// to set calibration values safely. This allows things like IJ1's Show Info
-	// command to avoid displaying NaNs. As a consequence NaN calib values in IJ2
-	// will get driven to 1.0's & 0.0's after running a plugin.
-	// Could do some defensive programming and only update IJ2 NaNs to IJ1 values
-	// when they are not defaults except then if a user runs a plugin that really
-	// wants a default calib value they won't get it.
-	
-	private double calValue(Dataset ds, int axisIndex, double defaultValue) {
-		double value = ds.calibration(axisIndex);
-		if (Double.isNaN(value)) return defaultValue;
-		return value;
+		if (zIndex >= 0) cal.pixelDepth = ds.calibration(zIndex);
+		if (tIndex >= 0) cal.frameInterval = ds.calibration(tIndex);
 	}
 }
