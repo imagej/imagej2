@@ -91,6 +91,9 @@ public class MetadataHarmonizer implements DataHarmonizer {
 	// to set calibration values safely. This allows things like IJ1's Show Info
 	// command to avoid displaying NaNs. As a consequence NaN calib values in IJ2
 	// will get driven to 1.0's & 0.0's after running a plugin.
+	// Could do some defensive programming and only update IJ2 NaNs to IJ1 values
+	// when they are not defaults except then if a user runs a plugin that really
+	// wants a default calib value they won't get it.
 	
 	private double calValue(Dataset ds, int axisIndex, double defaultValue) {
 		double value = ds.calibration(axisIndex);
