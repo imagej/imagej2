@@ -210,7 +210,15 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return initialScale;
 	}
 
-	// Could do this algorithmically but would require some special cases.
+	public static double getNextLowerZoomLevel(double fractionalScale) {
+		double[] levels = defaultZoomLevels() ;
+		 for (int i = 0; i < levels.length; i++) {
+			 if(levels[i] >= fractionalScale ) return levels[i-1];
+		 }
+		return 1.0;
+	}
+	
+	// Could do this algorithmically but would require some speci al cases.
 	// So make it very clear what the zooms are by hand specifying them.
 
 	public static double[] defaultZoomLevels() {
