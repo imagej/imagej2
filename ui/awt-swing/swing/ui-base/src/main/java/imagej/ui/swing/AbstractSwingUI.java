@@ -153,13 +153,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		//   this one seems unnecessary. neither IJ2 nor IJ1 respond to dropping
 		//   on the title bar
 		//new DropTarget(appFrame, dropListener);
-		
-		// TODO: this is platform specific! Why?
-		final String osName = System.getProperty("os.name").toLowerCase();
-		final boolean isMacOs = osName.startsWith("mac os x");
-		if (isMacOs) {
-			subscribeToEvents();
-		}
+
+		subscribeToEvents();
 	}
 
 	protected abstract void setupAppFrame();
