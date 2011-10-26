@@ -34,14 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
-import java.awt.image.IndexColorModel;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.imglib2.display.ColorTable;
-import net.imglib2.display.ColorTable8;
-import net.imglib2.display.RealLUTConverter;
-import net.imglib2.type.numeric.RealType;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.process.LUT;
@@ -52,6 +44,15 @@ import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+
+import java.awt.image.IndexColorModel;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable8;
+import net.imglib2.display.RealLUTConverter;
+import net.imglib2.type.numeric.RealType;
 
 
 /**

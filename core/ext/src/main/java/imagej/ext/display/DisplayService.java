@@ -40,7 +40,6 @@ import imagej.Service;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.InstantiableException;
-import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;

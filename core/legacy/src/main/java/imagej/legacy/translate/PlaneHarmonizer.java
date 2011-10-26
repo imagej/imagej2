@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
-import net.imglib2.img.Axes;
 import ij.ImagePlus;
 import ij.ImageStack;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.util.Log;
+import net.imglib2.img.Axes;
 
 
 /**

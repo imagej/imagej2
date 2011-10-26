@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.io.plugins;
 
-import javax.swing.JOptionPane;
-
 import imagej.data.Dataset;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
+
+import javax.swing.JOptionPane;
 
 /**
  * Saves the current {@link Dataset} to disk.

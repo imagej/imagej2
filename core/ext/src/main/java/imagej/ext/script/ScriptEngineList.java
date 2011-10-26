@@ -38,6 +38,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 
 import java.util.List;
+
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 

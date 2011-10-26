@@ -39,6 +39,7 @@ import static org.junit.Assert.assertNotSame;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ByteProcessor;
+import imagej.legacy.translate.LegacyUtils;
 
 import org.junit.Test;
 

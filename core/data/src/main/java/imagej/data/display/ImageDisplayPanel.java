@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display;
 
 import imagej.ext.display.DisplayPanel;
-import imagej.ext.display.DisplayWindow;
 import net.imglib2.img.Axis;
 
 /**

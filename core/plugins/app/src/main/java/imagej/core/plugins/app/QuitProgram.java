@@ -39,8 +39,8 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 /**
  * Quits ImageJ.
