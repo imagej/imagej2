@@ -41,9 +41,9 @@ import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
+import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
 

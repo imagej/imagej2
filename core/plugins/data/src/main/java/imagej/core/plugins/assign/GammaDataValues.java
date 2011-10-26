@@ -35,14 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.display.ImageDisplay;
-
-import net.imglib2.ops.Real;
-import net.imglib2.ops.UnaryOperation;
-import net.imglib2.ops.operation.unary.real.RealGammaConstant;
-
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealGammaConstant;
 
 /**
  * Fills an output Dataset with the result of applying the gamma function to an

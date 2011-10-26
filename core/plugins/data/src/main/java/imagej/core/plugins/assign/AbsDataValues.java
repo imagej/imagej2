@@ -34,14 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import net.imglib2.ops.Real;
-import net.imglib2.ops.UnaryOperation;
-import net.imglib2.ops.operation.unary.real.RealAbs;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import net.imglib2.ops.Real;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.real.RealAbs;
 
 /**
  * Fills an output Dataset by applying the absolute value function to an input

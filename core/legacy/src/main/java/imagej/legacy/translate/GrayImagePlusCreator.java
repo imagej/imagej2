@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
-import net.imglib2.img.basictypeaccess.PlanarAccess;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -42,6 +41,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import net.imglib2.img.basictypeaccess.PlanarAccess;
 
 
 /**

@@ -40,7 +40,9 @@ import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
+
 import java.awt.HeadlessException;
+
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 

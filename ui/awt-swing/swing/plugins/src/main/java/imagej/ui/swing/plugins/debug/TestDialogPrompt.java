@@ -38,8 +38,8 @@ import imagej.ImageJ;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 /**
  * TODO

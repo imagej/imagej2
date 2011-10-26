@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.process.ImageProcessor;
+import imagej.data.Dataset;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.ImageProcessor;
-import imagej.data.Dataset;
 
 
 /**

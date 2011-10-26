@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
-import net.imglib2.img.Axes;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import imagej.data.Dataset;
+import net.imglib2.img.Axes;
 
 
 /**

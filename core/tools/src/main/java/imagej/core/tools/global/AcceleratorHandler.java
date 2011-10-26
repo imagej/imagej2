@@ -7,7 +7,6 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
-import imagej.util.Log;
 
 @Tool(name = "Keyboard Shortcuts", global = true, priority = Integer.MIN_VALUE)
 public class AcceleratorHandler extends AbstractTool {

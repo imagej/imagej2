@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
-import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
-import net.imglib2.type.numeric.RealType;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
+import net.imglib2.RandomAccess;
+import net.imglib2.img.Axes;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Supports bidirectional synchronization between color ImagePluses and

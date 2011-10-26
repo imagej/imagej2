@@ -34,6 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
+import ij.ImagePlus;
+import ij.ImageStack;
+import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,13 +49,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
-import ij.ImagePlus;
-import ij.ImageStack;
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.legacy.translate.LegacyUtils;
 
 
 /**
