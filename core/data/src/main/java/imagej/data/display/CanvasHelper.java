@@ -210,15 +210,37 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return initialScale;
 	}
 
-	public static double getNextLowerZoomLevel(double fractionalScale) {
-		double[] levels = defaultZoomLevels() ;
-		 for (int i = 0; i < levels.length; i++) {
-			 if(levels[i] >= fractionalScale ) return levels[i-1];
-		 }
-		return 1.0;
+	public static double getBestZoomLevel(double fractionalScale) {
+		double[] levels = defaultZoomLevels();
+
+		if ((levels[0] >= 1) || (levels[levels.length-1] <= 1))
+			throw new IllegalArgumentException("default zoom levels misconfigured");
+		
+		// test off one end
+		if (fractionalScale < levels[0]) {
+			double newScale = levels[0];
+			double prevScale = newScale;
+			while (fractionalScale <= newScale) {
+				prevScale = newScale;
+				newScale = 1 / (1/newScale + 16);
+			}
+			return prevScale;
+		}
+		
+		// test middle
+		for (int i = 1; i < levels.length; i++) {
+			if (levels[i] > fractionalScale) return levels[i-1];
+		}
+
+		// off the other end
+		//   fractionalScale >= max default zoom
+		double newScale = levels[levels.length-1];
+		while (fractionalScale > newScale)
+			newScale += 16;
+		return newScale;
 	}
 	
-	// Could do this algorithmically but would require some speci al cases.
+	// Could do this algorithmically but would require some special cases.
 	// So make it very clear what the zooms are by hand specifying them.
 
 	public static double[] defaultZoomLevels() {

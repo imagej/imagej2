@@ -219,7 +219,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 				scale = 1.0 / Math.ceil(canvasSize.height / (deskBounds.height - 32 - labelPlusSliderHeight));
 			}
 		}
-		double zoomLevel = CanvasHelper.getNextLowerZoomLevel(scale);
+		double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
 		canvas.setZoom(zoomLevel);
 		//canvasSize = canvas.getPreferredSize();
 		if (initial) {
