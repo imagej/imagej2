@@ -130,6 +130,7 @@ public abstract class AbstractSwingMenuCreator<T> extends
 	}
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
+		// TODO - isolate/refactor platform-specific logic
 		String accelerator = shadow.getMenuEntry().getAccelerator();
 		if (accelerator != null) {
 			// allow use of ^X to represent control X in keyboard accel parameters
