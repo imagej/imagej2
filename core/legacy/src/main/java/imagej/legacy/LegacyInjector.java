@@ -89,11 +89,15 @@ public class LegacyInjector {
 				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($1);");
 		hacker.loadClass("ij.macro.Functions");
 
-		// override behavior of MacAdapter on Mac OS X
-		if (System.getProperty("os.name").equals("Mac OS X")) {
+		// override behavior of MacAdapter, if needed
+		try {
+			Class.forName("com.apple.eawt.ApplicationListener");
 			hacker.replaceMethod("MacAdapter",
 				"public void run(java.lang.String arg)", ";");
 			hacker.loadClass("MacAdapter");
+		}
+		catch (ClassNotFoundException e) {
+			// NB: If com.apple.eawt class is missing, no need to do anything.
 		}
 	}
 
