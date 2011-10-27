@@ -155,8 +155,6 @@ public class SwingDropListener implements DropTargetListener {
 					Object obj = t.getTransferData(flavor);
 					if (!(obj instanceof String)) continue;
 					String s = obj.toString().trim();
-					if (isLinux() && (s.length()>1) && (s.charAt(1)==0))
-						s = fixLinuxString(s);
 					if (s.indexOf("href=\"")!=-1 || s.indexOf("src=\"")!=-1) {
 						s = parseHTML(s);
 						inputs.add(s);
@@ -192,17 +190,6 @@ public class SwingDropListener implements DropTargetListener {
   private void openFile(String filename) {
   	File file = new File(filename);
   	openFile(file);
-  }
-
-  private boolean isLinux() {
-		return System.getProperty("os.name").startsWith("Linux");
-  }
-  
-  private String fixLinuxString(String s) {
-  	StringBuffer sb = new StringBuffer(200);
-  	for (int i=0; i<s.length(); i+=2)
-  		sb.append(s.charAt(i));
-  	return new String(sb);
   }
 
   private String parseHTML(String s) {
