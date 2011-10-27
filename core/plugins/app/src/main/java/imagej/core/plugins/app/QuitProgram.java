@@ -55,7 +55,7 @@ import imagej.ui.UIService;
 				accelerator = "control Q") })
 public class QuitProgram implements ImageJPlugin {
 
-	public static final String MESSAGE = "Really quit ImageJ?";
+	public static final String MESSAGE = "Quit ImageJ?";
 
 	@Override
 	public void run() {
