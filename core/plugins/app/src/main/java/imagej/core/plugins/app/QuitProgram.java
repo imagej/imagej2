@@ -35,8 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.app;
 
 import imagej.ImageJ;
+import imagej.data.display.WindowMenuService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.IUserInterface;
@@ -57,15 +59,22 @@ public class QuitProgram implements ImageJPlugin {
 
 	public static final String MESSAGE = "Quit ImageJ?";
 
+	@Parameter(required = true, persist = false)
+	private WindowMenuService windowMenuService;
+
 	@Override
 	public void run() {
-		if (promptForQuit()) {
+		if (windowMenuService.getOpenWindows().size() > 0) {
+			if (!promptForQuit()) {
+				return;
+			}
+
 			// TODO - save existing data
 			// TODO - close windows
-			// TODO - call ImageJ.getContext().shutdown() or some such, rather than
-			// using System.exit(0), which kills the entire JVM.
-			System.exit(0);
 		}
+		// TODO - call ImageJ.getContext().shutdown() or some such, rather than
+		// using System.exit(0), which kills the entire JVM.
+		System.exit(0);
 	}
 
 	private boolean promptForQuit() {
