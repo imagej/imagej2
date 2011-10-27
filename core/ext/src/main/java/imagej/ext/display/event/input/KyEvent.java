@@ -93,7 +93,9 @@ public abstract class KyEvent extends InputEvent {
 			.append("control ");
 		if (modifiers.isMetaDown()) builder.append("meta ");
 		if (modifiers.isShiftDown()) builder.append("shift ");
-		builder.append(Character.toUpperCase(getCharacter()));
+		char ch = getCharacter();
+		if (ch > 0)
+			builder.append(getCode().toString());
 		return builder.toString();
 	}
 
