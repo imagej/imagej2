@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import imagej.util.ClassUtils;
+
 /**
  * Overrides class behavior of ImageJ1 classes using bytecode manipulation. This
  * class uses the {@link CodeHacker} (which uses Javassist) to inject method
@@ -90,14 +92,11 @@ public class LegacyInjector {
 		hacker.loadClass("ij.macro.Functions");
 
 		// override behavior of MacAdapter, if needed
-		try {
-			Class.forName("com.apple.eawt.ApplicationListener");
+		if (ClassUtils.hasClass("com.apple.eawt.ApplicationListener")) {
+			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
 			hacker.replaceMethod("MacAdapter",
 				"public void run(java.lang.String arg)", ";");
 			hacker.loadClass("MacAdapter");
-		}
-		catch (ClassNotFoundException e) {
-			// NB: If com.apple.eawt class is missing, no need to do anything.
 		}
 	}
 

@@ -192,6 +192,17 @@ public final class ClassUtils {
 		}
 	}
 
+	/** Checks whether a class with the given name exists. */
+	public static boolean hasClass(final String className) {
+		try {
+			Class.forName(className);
+			return true;
+		}
+		catch (final ClassNotFoundException e) {
+			return false;
+		}
+	}
+
 	/**
 	 * Gets the specified field of the given class, or null if it does not exist.
 	 */
