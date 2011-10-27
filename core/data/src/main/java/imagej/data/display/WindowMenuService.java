@@ -151,7 +151,7 @@ public final class WindowMenuService extends AbstractService {
 	}
 
 	/** Gets the list of window files. */
-	public List<String> getopenWindows() {
+	public List<String> getOpenWindows() {
 		return Collections.unmodifiableList(openWindows);
 	}
 
