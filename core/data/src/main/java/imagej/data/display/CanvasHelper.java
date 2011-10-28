@@ -41,7 +41,10 @@ import imagej.util.IntCoords;
 import imagej.util.Log;
 import imagej.util.RealCoords;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A collection of helper methods for {@link ImageCanvas} objects, particularly
@@ -162,7 +165,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void zoomIn(final IntCoords center) {
-		final double newScale = nextLargerZoom(scale);
+		final double newScale = nextLargerZoom(zoomLevels,scale);
 		if (newScale != scale) canvas.setZoom(newScale, center);
 	}
 
@@ -173,7 +176,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void zoomOut(final IntCoords center) {
-		final double newScale = nextSmallerZoom(scale);
+		final double newScale = nextSmallerZoom(zoomLevels,scale);
 		if (newScale != scale) canvas.setZoom(newScale, center);
 	}
 
@@ -213,90 +216,71 @@ public class CanvasHelper implements Pannable, Zoomable {
 	public static double getBestZoomLevel(double fractionalScale) {
 		double[] levels = defaultZoomLevels();
 
-		if ((levels[0] >= 1) || (levels[levels.length-1] <= 1))
-			throw new IllegalArgumentException("default zoom levels misconfigured");
-		
-		// test off one end
-		if (fractionalScale < levels[0]) {
-			double newScale = levels[0];
-			double prevScale = newScale;
-			while (fractionalScale <= newScale) {
-				prevScale = newScale;
-				newScale = 1 / (1/newScale + 16);
-			}
-			return prevScale;
-		}
-		
-		// test middle
-		for (int i = 1; i < levels.length; i++) {
-			if (levels[i] > fractionalScale) return levels[i-1];
-		}
+		double zoom = lookupZoom(levels, fractionalScale);
 
-		// off the other end
-		//   fractionalScale >= max default zoom
-		double newScale = levels[levels.length-1];
-		while (fractionalScale > newScale)
-			newScale += 16;
-		return newScale;
+		if (zoom > 0) return zoom;
+		
+		return nextSmallerZoom(levels, fractionalScale);
 	}
 	
 	// Could do this algorithmically but would require some special cases.
 	// So make it very clear what the zooms are by hand specifying them.
 
 	public static double[] defaultZoomLevels() {
-		final double[] levels = new double[49];
+		
+		List<Double> midLevelZooms = new ArrayList<Double>();
 
-		levels[0] = 1 / 256d;
-		levels[1] = 1 / 240d;
-		levels[2] = 1 / 224d;
-		levels[3] = 1 / 208d;
-		levels[4] = 1 / 192d;
-		levels[5] = 1 / 176d;
-		levels[6] = 1 / 160d;
-		levels[7] = 1 / 144d;
-		levels[8] = 1 / 128d;
-		levels[9] = 1 / 112d;
-		levels[10] = 1 / 96d;
-		levels[11] = 1 / 80d;
-		levels[12] = 1 / 64d;
-		levels[13] = 1 / 48d;
-		levels[14] = 1 / 32d;
-		levels[15] = 1 / 24d;
-		levels[16] = 1 / 16d;
-		levels[17] = 1 / 12d;
-		levels[18] = 1 / 8d;
-		levels[19] = 1 / 6d;
-		levels[20] = 1 / 4d;
-		levels[21] = 1 / 3d;
-		levels[22] = 1 / 2d;
-		levels[23] = 3 / 4d;
-		levels[24] = 1;
-		levels[25] = 1.5;
-		levels[26] = 2;
-		levels[27] = 3;
-		levels[28] = 4;
-		levels[29] = 6;
-		levels[30] = 8;
-		levels[31] = 12;
-		levels[32] = 16;
-		levels[33] = 24;
-		levels[34] = 32;
-		levels[35] = 48;
-		levels[36] = 64;
-		levels[37] = 80;
-		levels[38] = 96;
-		levels[39] = 112;
-		levels[40] = 128;
-		levels[41] = 144;
-		levels[42] = 160;
-		levels[43] = 176;
-		levels[44] = 192;
-		levels[45] = 208;
-		levels[46] = 224;
-		levels[47] = 240;
-		levels[48] = 256;
-
-		return levels;
+		midLevelZooms.add(1 / 32d);
+		midLevelZooms.add(1 / 24d);
+		midLevelZooms.add(1 / 16d);
+		midLevelZooms.add(1 / 12d);
+		midLevelZooms.add(1 / 8d);
+		midLevelZooms.add(1 / 6d);
+		midLevelZooms.add(1 / 4d);
+		midLevelZooms.add(1 / 3d);
+		midLevelZooms.add(1 / 2d);
+		midLevelZooms.add(3 / 4d);
+		midLevelZooms.add(1d);
+		midLevelZooms.add(1.5d);
+		midLevelZooms.add(2d);
+		midLevelZooms.add(3d);
+		midLevelZooms.add(4d);
+		midLevelZooms.add(6d);
+		midLevelZooms.add(8d);
+		midLevelZooms.add(12d);
+		midLevelZooms.add(16d);
+		midLevelZooms.add(24d);
+		midLevelZooms.add(32d);
+		
+		final int EXTRA_ZOOMS = 25;
+		
+		List<Double> loZooms = new ArrayList<Double>();
+		double prevDenom = 1 / midLevelZooms.get(0);
+		for (int i = 0; i < EXTRA_ZOOMS; i++) {
+			double newDenom = prevDenom + 16;
+			loZooms.add(1 / newDenom);
+			prevDenom = newDenom;
+		}
+		Collections.reverse(loZooms);
+		
+		List<Double> hiZooms = new ArrayList<Double>();
+		double prevNumer = midLevelZooms.get(midLevelZooms.size()-1);
+		for (int i = 0; i < EXTRA_ZOOMS; i++) {
+			double newNumer = prevNumer + 16;
+			hiZooms.add(newNumer / 1);
+			prevNumer = newNumer;
+		}
+		
+		List<Double> combinedZoomLevels = new ArrayList<Double>();
+		combinedZoomLevels.addAll(loZooms);
+		combinedZoomLevels.addAll(midLevelZooms);
+		combinedZoomLevels.addAll(hiZooms);
+		
+		double[] zooms = new double[combinedZoomLevels.size()];
+		for (int i = 0; i < zooms.length; i++)
+			zooms[i] = combinedZoomLevels.get(i);
+		
+		return zooms;
 	}
 
 	// -- Helper methods --
@@ -343,7 +327,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return false;
 	}
 
-	private double nextSmallerZoom(final double currScale) {
+	private static double nextSmallerZoom(double[] zoomLevels, double currScale) {
 		final int index = Arrays.binarySearch(zoomLevels, currScale);
 
 		int nextIndex;
@@ -359,7 +343,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return zoomLevels[nextIndex];
 	}
 
-	private double nextLargerZoom(final double currScale) {
+	private static double nextLargerZoom(double[] zoomLevels, double currScale) {
 		final int index = Arrays.binarySearch(zoomLevels, currScale);
 
 		int nextIndex;
@@ -402,4 +386,22 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return validatedLevels;
 	}
 
+	// unfortunately can't rely on Java's binary search since we're using
+	// doubles and rounding errors could cause problems. write our own that
+	// searches zooms avoiding rounding problems.
+	private static double lookupZoom(double[] levels, double requestedZoom) {
+		int lo = 0;
+		int hi = levels.length - 1;
+		do {
+			int mid = (lo + hi) / 2;
+			double possibleZoom = levels[mid];
+			if (Math.abs(requestedZoom - possibleZoom) < 0.00001)
+				return requestedZoom;
+			if (requestedZoom < possibleZoom)
+				hi = mid - 1;
+			else
+				lo = mid + 1;
+		} while (hi >= lo);
+		return -1;
+	}
 }
