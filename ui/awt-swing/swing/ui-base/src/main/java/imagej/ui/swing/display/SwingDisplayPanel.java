@@ -202,24 +202,29 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	void sizeAppropriately() {
 		final JHotDrawImageCanvas canvas =
 				(JHotDrawImageCanvas) display.getCanvas();
-		Dimension canvasSize = canvas.getPreferredSize();
+		final Dimension canvasSize = canvas.getPreferredSize();
 		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
 		// width determined by scaled image canvas width
 		final int labelPlusSliderHeight =
 				imageLabel.getPreferredSize().height + sliderPanel.getPreferredSize().height;
+		final int extraSpace = 32;
+		final int maxViewHeight = deskBounds.height - labelPlusSliderHeight - extraSpace;
+		final int maxViewWidth = deskBounds.width - extraSpace;
 		double scale = 1.0;
-		if (canvasSize.width >= canvasSize.height) {
-			// reduce width to fit
-			if (canvasSize.width > deskBounds.width - 32) {
-				scale = 1.0 / Math.ceil(canvasSize.width / (deskBounds.width - 32));
+		if ((canvasSize.width > maxViewWidth) || (canvasSize.height > maxViewHeight))
+		{
+			final double canvasAspect = 1.0 * canvasSize.width / canvasSize.height;
+			final double viewAspect = 1.0 * maxViewWidth / maxViewHeight;
+			if (canvasAspect < viewAspect) {
+				// image height the issue
+				scale = 1.0 * maxViewHeight / canvasSize.height;
 			}
-		} else {
-			// reduce height to fit
-			if (canvasSize.height > deskBounds.height - 32 - labelPlusSliderHeight) {
-				scale = 1.0 / Math.ceil(canvasSize.height / (deskBounds.height - 32 - labelPlusSliderHeight));
+			else {
+				// image width the issue
+				scale = 1.0 * maxViewWidth / canvasSize.width;
 			}
 		}
-		double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
+		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
 		canvas.setZoom(zoomLevel);
 		//canvasSize = canvas.getPreferredSize();
 		if (initial) {
