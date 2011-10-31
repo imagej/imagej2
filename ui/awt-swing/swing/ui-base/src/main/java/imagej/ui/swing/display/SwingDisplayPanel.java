@@ -97,6 +97,8 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	private final JPanel imagePane;
 	private final JPanel sliderPanel;
 	private final DisplayWindow window;
+	private boolean initialScaleCalcuated = false;
+
 
 	protected final Map<Axis, Long> axisPositions = new HashMap<Axis, Long>();
 
@@ -197,8 +199,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		});
 	}
 
-	private boolean initial = true;
-
 	void sizeAppropriately() {
 		final JHotDrawImageCanvas canvas =
 				(JHotDrawImageCanvas) display.getCanvas();
@@ -227,9 +227,9 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
 		canvas.setZoom(zoomLevel);
 		//canvasSize = canvas.getPreferredSize();
-		if (initial) {
+		if (!initialScaleCalcuated) {
 			canvas.setInitialScale(canvas.getZoomFactor());
-			initial = false;
+			initialScaleCalcuated = true;
 		}
 	}
 	
