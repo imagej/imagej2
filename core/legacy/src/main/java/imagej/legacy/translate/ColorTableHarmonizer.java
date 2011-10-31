@@ -98,6 +98,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			}
 		}
 		else { // regular ImagePlus
+			// NOTE to fix bug #849 the nonnull case was added below. This reflects
+			// a significant behavior change.
 			if (activeView == null) {
 				final ImageDisplayService imageDisplayService =
 					ImageJ.get(ImageDisplayService.class);
