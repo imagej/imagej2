@@ -78,30 +78,34 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 
 	/**
 	 * Sets LUTs of an ImagePlus or CompositeImage. If given an ImagePlus this
-	 * method sets it's single LUT from the first ColorTable of the active Dataset
-	 * of the given ImageDisplay. If given a CompositeImage this method sets all
-	 * it's LUTs from the ColorTables of the active view of the given
-	 * ImageDisplay. If there is no such view the LUTs are assigned with default
-	 * values.
+	 * method sets it's single LUT from the first ColorTable of the active view
+	 * that displays the active Dataset of the given ImageDisplay. If given a
+	 * CompositeImage this method sets all it's LUTs from the ColorTables of
+	 * the active view of the given ImageDisplay. In both cases if there is no
+	 * active view for the ImageDisplay the LUTs are assigned with sensible
+	 * default values.
 	 */
 	@Override
 	public void updateLegacyImage(ImageDisplay disp, ImagePlus imp) {
+		final DatasetView activeView = (DatasetView) disp.getActiveView();
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
-			final DataView activeView = disp.getActiveView();
 			if (activeView == null) {
 				setCompositeImageLutsToDefault(ci);
 			}
 			else {
-				final DatasetView view = (DatasetView) activeView;
-				setCompositeImageLuts(ci, view.getColorTables());
+				setCompositeImageLuts(ci, activeView.getColorTables());
 			}
 		}
 		else { // regular ImagePlus
-			final ImageDisplayService imageDisplayService =
-				ImageJ.get(ImageDisplayService.class);
-			final Dataset ds = imageDisplayService.getActiveDataset(disp);
-			setImagePlusLutToFirstInDataset(ds, imp);
+			if (activeView == null) {
+				final ImageDisplayService imageDisplayService =
+					ImageJ.get(ImageDisplayService.class);
+				final Dataset ds = imageDisplayService.getActiveDataset(disp);
+				setImagePlusLutToFirstInDataset(ds, imp);
+			}
+			else
+				setImagePlusLutToFirstInView(activeView, imp);
 		}
 		assignImagePlusMinMax(disp, imp);
 	}
@@ -154,6 +158,17 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final ImagePlus imp)
 	{
 		ColorTable8 cTable = ds.getColorTable8(0);
+		if (cTable == null) cTable = ColorTables.GRAYS;
+		final LUT lut = make8BitLut(cTable);
+		imp.getProcessor().setColorModel(lut);
+		// or imp.getStack().setColorModel(lut);
+	}
+
+	/** Sets the single LUT of an ImagePlus to the first ColorTable of a Dataset */
+	private void setImagePlusLutToFirstInView(final DatasetView view,
+		final ImagePlus imp)
+	{
+		ColorTable8 cTable = view.getColorTables().get(0);
 		if (cTable == null) cTable = ColorTables.GRAYS;
 		final LUT lut = make8BitLut(cTable);
 		imp.getProcessor().setColorModel(lut);
