@@ -77,7 +77,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
 	
-	private Axis activeAxis = Axes.Z;
+	private Axis activeAxis = null;
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
@@ -109,6 +109,18 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		return false;
 	}
 
+	public void initActiveAxis() {
+		if (activeAxis == null) {
+			Axis[] axes = getAxes();
+			for (Axis axis : axes) {
+				if (axis == Axes.X) continue;
+				if (axis == Axes.Y) continue;
+				setActiveAxis(axis);
+				return;
+			}
+		}
+	}
+	
 	// -- Display methods --
 
 	@Override
