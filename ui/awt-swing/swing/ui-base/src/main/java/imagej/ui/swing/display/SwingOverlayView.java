@@ -152,7 +152,9 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 
 			@Override
 			public void figureRemoved(FigureEvent e) {
-				if (disposed || disposeScheduled) return;
+				synchronized(SwingOverlayView.this) {
+					if (disposed || disposeScheduled) return;
+				}
 				if (isVisible()) {
 					display.remove(SwingOverlayView.this);
 					dispose();
