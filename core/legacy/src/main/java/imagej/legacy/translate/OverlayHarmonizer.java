@@ -111,10 +111,16 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 						}
 					}
 					if (same &&
-						oldROI.getStrokeWidth() == newROI.getStrokeWidth() &&
-						oldROI.getStrokeColor().equals(newROI.getStrokeColor()) &&
-						oldROI.getFillColor().equals(newROI.getFillColor())) {
-						return;
+							oldROI.getStrokeWidth() == newROI.getStrokeWidth() &&
+							oldROI.getFillColor().equals(newROI.getFillColor()))
+					{
+						// must test further but colors might be uninitialized by IJ1
+						Color oldColor = oldROI.getStrokeColor();
+						Color newColor = newROI.getStrokeColor();
+						if (oldColor == null) {
+							if (newColor == null) return;
+						}
+						else if (oldColor.equals(newColor)) return;
 					}
 				}
 			}
@@ -123,8 +129,16 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		for (final Overlay overlay : overlaysToRemove) {
 			overlayService.removeOverlay(display, overlay);
 		}
-		final List<Overlay> overlays = getOverlays(imp);
-		overlayService.addOverlays(display, overlays);
+		/*
+		if (fullySelected(display, imp)) {
+			for (DataView view : display)
+				view.setSelected(true);
+		}
+		else {
+		*/
+			final List<Overlay> overlays = getOverlays(imp);
+			overlayService.addOverlays(display, overlays);
+		//}
 	}
 
 	/**
@@ -318,6 +332,27 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 
 	// -- Helper methods - IJ2 overlay creation --
 
+	/*
+	private boolean fullySelected(ImageDisplay display, ImagePlus imp) {
+		Roi roi = imp.getRoi();
+		if (roi != null) {
+			if (roi.getType() == Roi.RECTANGLE) {
+				ImageDisplayService dispServ = ImageJ.get(ImageDisplayService.class);
+				Dataset ds = dispServ.getActiveDataset(display);
+				long[] dims = ds.getDims();
+				// TODO - FIXME - assumes X and Y are at 0 & 1
+				long imageWidth = dims[0];
+				long imageHeight = dims[1];
+				Rectangle rect = roi.getBounds();
+				if ((rect.x == 0) && (rect.y == 0) &&
+						(rect.width == imageWidth) && (rect.height == imageHeight))
+					return true;
+			}
+		}
+		return false;
+	}
+	*/
+	
 	private void createOverlays(final Roi roi,
 		final ArrayList<Overlay> overlays, int xOff, int yOff)
 	{
@@ -365,11 +400,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
 				final Roi[] rois = shapeRoi.getRois();
-				xOff += xOff + shapeRoi.getBounds().x;
-				yOff += shapeRoi.getBounds().y;
+				int xO = xOff + xOff + shapeRoi.getBounds().x;
+				int yO = yOff + shapeRoi.getBounds().y;
 				final ArrayList<Overlay> subOverlays = new ArrayList<Overlay>();
 				for (final Roi r : rois)
-					createOverlays(r, subOverlays, xOff, yOff);
+					createOverlays(r, subOverlays, xO, yO);
 				for (final Overlay overlay : subOverlays) {
 					assignPropertiesToOverlay(overlay, shapeRoi);
 				}
@@ -448,6 +483,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return overlay;
 	}
 
+	@SuppressWarnings("unused")
 	private PolygonOverlay createPolygonOverlay(final Roi roi, final int xOff,
 		final int yOff)
 	{
@@ -467,15 +503,16 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return overlay;
 	}
 
-	private Overlay createDefaultOverlay(final Roi roi, int xOff, int yOff) {
+	@SuppressWarnings("unused")
+	private Overlay createDefaultOverlay(final Roi roi, int xO, int yO) {
 		final Rectangle bounds = roi.getBounds();
 		final NativeImg<BitType, BitAccess> nativeImg =
 			new ArrayImgFactory<BitType>().createBitInstance(new long[] {
 				bounds.width, bounds.height }, 1);
 		final BitType t = new BitType(nativeImg);
 		nativeImg.setLinkedType(t);
-		xOff = bounds.x;
-		yOff = bounds.y;
+		int xOff = bounds.x;
+		int yOff = bounds.y;
 		final Img<BitType> img =
 			new ImgTranslationAdapter<BitType, Img<BitType>>(nativeImg, new long[] {
 				xOff, yOff });
