@@ -110,16 +110,19 @@ public class CropImage implements ImageJPlugin {
 
 		// BDZ - HACK - FIXME
 	  // 10-14-11 resetting zoom will cause canvas to prefer new smaller size
-		// and sizeAppropriately() correctly. TODO GBH will be changing
-		// sizeAppropriately() soon. Test whether this tweak is needed or else
-		// add some code to tell canvas it's size is invalid. Or have panel
-		// listen for DatasetRestructuredEvents and reset canvas size there.
-		// Not sure how that would interact with current event sequences.
-		// Note that this hack is somewhat effective. The resize does not always
-		// happen even with this. Once again we have a display timing bug. See
-		// what CTR figures out about timing issues with the elimination of
-		// redoLayout(). Related ticket is #826.
-		display.getCanvas().setZoom(1);
+		// and sizeAppropriately() correctly. TODO sizeAppropriately() changed
+		// recently. This tweak maybe not needed anymore. Could instead add some
+		// code to tell canvas it's size is invalid. Or have panel listen for
+		// DatasetRestructuredEvents and reset canvas size there. Not sure how
+		// that would interact with current event sequences. Note that this hack
+		// is only somewhat effective. The resize does not always happen even with
+		// this. Once again we have a display timing bug. See what CTR figures out
+		// about timing issues with the elimination of redoLayout(). Related ticket
+		// is #826.
+		// note 11-1-11: removed to see if needed. Remove all these comments and
+		// this hack if unneeded after #826 handled.
+		//
+		//display.getCanvas().setZoom(1);
 
 		dataset.setImgPlus(croppedData);
 
