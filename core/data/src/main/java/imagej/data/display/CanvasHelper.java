@@ -336,11 +336,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 		if (index >= 0) nextIndex = index - 1;
 		else nextIndex = -(index + 1) - 1;
 
-		if (nextIndex < 0) return zoomLevels[0];
-
-		if (nextIndex > zoomLevels.length - 1) {
-			return zoomLevels[zoomLevels.length - 1];
-		}
+		if (nextIndex < 0) nextIndex = 0;
+		if (nextIndex > zoomLevels.length-1) nextIndex = zoomLevels.length-1;
 
 		return zoomLevels[nextIndex];
 	}
@@ -352,11 +349,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 		if (index >= 0) nextIndex = index + 1;
 		else nextIndex = -(index + 1);
 
-		if (nextIndex < 0) return zoomLevels[0];
-
-		if (nextIndex > zoomLevels.length - 1) {
-			return zoomLevels[zoomLevels.length - 1];
-		}
+		if (nextIndex < 0) nextIndex = 0;
+		if (nextIndex > zoomLevels.length-1) nextIndex = zoomLevels.length-1;
 
 		return zoomLevels[nextIndex];
 	}
