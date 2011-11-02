@@ -5,7 +5,7 @@
 set -e
 
 ROOT=`cd "$(dirname $0)/.." ; pwd`
-cd $ROOT/ui/ij-app
+cd $ROOT/ui/app
 mvn package dependency:copy-dependencies
 mkdir -p src/main/assembly/all/META-INF/annotations
 java -cp 'target/test-classes:target/classes:target/dependency/*' \
