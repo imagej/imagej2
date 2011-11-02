@@ -327,7 +327,14 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	{
 		roi.setStrokeWidth((float) overlay.getLineWidth());
 		roi.setStrokeColor(AWTColors.getColor(overlay.getLineColor()));
-		roi.setFillColor(AWTColors.getColor(overlay.getFillColor()));
+		Color fillColor = AWTColors.getColor(overlay.getFillColor());
+		Color colorWithAlpha =
+				new Color(
+					fillColor.getRed(),
+					fillColor.getGreen(),
+					fillColor.getBlue(),
+					overlay.getAlpha());
+		roi.setFillColor(colorWithAlpha);
 	}
 
 	// -- Helper methods - IJ2 overlay creation --
