@@ -56,6 +56,62 @@ import java.util.List;
 public class CanvasHelper implements Pannable, Zoomable {
 
 	private static final int MIN_ALLOWED_VIEW_SIZE = 25;
+	
+	private static double[] defaultZooms;
+	
+	static {
+		List<Double> midLevelZooms = new ArrayList<Double>();
+
+		midLevelZooms.add(1 / 32d);
+		midLevelZooms.add(1 / 24d);
+		midLevelZooms.add(1 / 16d);
+		midLevelZooms.add(1 / 12d);
+		midLevelZooms.add(1 / 8d);
+		midLevelZooms.add(1 / 6d);
+		midLevelZooms.add(1 / 4d);
+		midLevelZooms.add(1 / 3d);
+		midLevelZooms.add(1 / 2d);
+		midLevelZooms.add(3 / 4d);
+		midLevelZooms.add(1d);
+		midLevelZooms.add(1.5d);
+		midLevelZooms.add(2d);
+		midLevelZooms.add(3d);
+		midLevelZooms.add(4d);
+		midLevelZooms.add(6d);
+		midLevelZooms.add(8d);
+		midLevelZooms.add(12d);
+		midLevelZooms.add(16d);
+		midLevelZooms.add(24d);
+		midLevelZooms.add(32d);
+		
+		final int EXTRA_ZOOMS = 25;
+		
+		List<Double> loZooms = new ArrayList<Double>();
+		double prevDenom = 1 / midLevelZooms.get(0);
+		for (int i = 0; i < EXTRA_ZOOMS; i++) {
+			double newDenom = prevDenom + 16;
+			loZooms.add(1 / newDenom);
+			prevDenom = newDenom;
+		}
+		Collections.reverse(loZooms);
+		
+		List<Double> hiZooms = new ArrayList<Double>();
+		double prevNumer = midLevelZooms.get(midLevelZooms.size()-1);
+		for (int i = 0; i < EXTRA_ZOOMS; i++) {
+			double newNumer = prevNumer + 16;
+			hiZooms.add(newNumer / 1);
+			prevNumer = newNumer;
+		}
+		
+		List<Double> combinedZoomLevels = new ArrayList<Double>();
+		combinedZoomLevels.addAll(loZooms);
+		combinedZoomLevels.addAll(midLevelZooms);
+		combinedZoomLevels.addAll(hiZooms);
+		
+		defaultZooms = new double[combinedZoomLevels.size()];
+		for (int i = 0; i < defaultZooms.length; i++)
+			defaultZooms[i] = combinedZoomLevels.get(i);
+	}
 
 	/** The {@link ImageCanvas} on which this helper operates. */
 	private final ImageCanvas canvas;
@@ -74,6 +130,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	private final EventService eventService;
 
+	// -- constructors --
+	
 	public CanvasHelper(final ImageCanvas canvas) {
 		this(canvas, defaultZoomLevels());
 	}
@@ -85,6 +143,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 	}
 
 	// -- CanvasHelper methods --
+
+	public static double[] defaultZoomLevels() {
+		return defaultZooms;
+	}
 
 	public boolean isInImage(final IntCoords point) {
 		final RealCoords imageCoords = panelToImageCoords(point);
@@ -223,66 +285,6 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return nextSmallerZoom(levels, fractionalScale);
 	}
 	
-	// Could do this algorithmically but would require some special cases.
-	// So make it very clear what the zooms are by hand specifying them.
-
-	public static double[] defaultZoomLevels() {
-		
-		List<Double> midLevelZooms = new ArrayList<Double>();
-
-		midLevelZooms.add(1 / 32d);
-		midLevelZooms.add(1 / 24d);
-		midLevelZooms.add(1 / 16d);
-		midLevelZooms.add(1 / 12d);
-		midLevelZooms.add(1 / 8d);
-		midLevelZooms.add(1 / 6d);
-		midLevelZooms.add(1 / 4d);
-		midLevelZooms.add(1 / 3d);
-		midLevelZooms.add(1 / 2d);
-		midLevelZooms.add(3 / 4d);
-		midLevelZooms.add(1d);
-		midLevelZooms.add(1.5d);
-		midLevelZooms.add(2d);
-		midLevelZooms.add(3d);
-		midLevelZooms.add(4d);
-		midLevelZooms.add(6d);
-		midLevelZooms.add(8d);
-		midLevelZooms.add(12d);
-		midLevelZooms.add(16d);
-		midLevelZooms.add(24d);
-		midLevelZooms.add(32d);
-		
-		final int EXTRA_ZOOMS = 25;
-		
-		List<Double> loZooms = new ArrayList<Double>();
-		double prevDenom = 1 / midLevelZooms.get(0);
-		for (int i = 0; i < EXTRA_ZOOMS; i++) {
-			double newDenom = prevDenom + 16;
-			loZooms.add(1 / newDenom);
-			prevDenom = newDenom;
-		}
-		Collections.reverse(loZooms);
-		
-		List<Double> hiZooms = new ArrayList<Double>();
-		double prevNumer = midLevelZooms.get(midLevelZooms.size()-1);
-		for (int i = 0; i < EXTRA_ZOOMS; i++) {
-			double newNumer = prevNumer + 16;
-			hiZooms.add(newNumer / 1);
-			prevNumer = newNumer;
-		}
-		
-		List<Double> combinedZoomLevels = new ArrayList<Double>();
-		combinedZoomLevels.addAll(loZooms);
-		combinedZoomLevels.addAll(midLevelZooms);
-		combinedZoomLevels.addAll(hiZooms);
-		
-		double[] zooms = new double[combinedZoomLevels.size()];
-		for (int i = 0; i < zooms.length; i++)
-			zooms[i] = combinedZoomLevels.get(i);
-		
-		return zooms;
-	}
-
 	// -- Helper methods --
 
 	/** Gets the zoom center to use when none is specified. */
