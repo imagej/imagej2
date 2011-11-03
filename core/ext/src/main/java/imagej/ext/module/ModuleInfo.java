@@ -107,7 +107,7 @@ public interface ModuleInfo extends UIDetails {
 	 * <p>
 	 * For classes implementing this interface directly, this method should
 	 * publish a {@link ModulesUpdatedEvent} to the event bus (see
-	 * {@link DefaultModuleInfo#update()} for an example).
+	 * {@link DefaultModuleInfo#update(EventService)} for an example).
 	 * </p>
 	 */
 	void update(EventService eventService);
