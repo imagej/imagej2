@@ -14,7 +14,7 @@
 	<artifactId>ij-ui-awt</artifactId>
 
 	<name>ImageJ UI: AWT</name>
-	<description>An AWT-based ImageJ user interface.</description>
+	<description>An AWT-based ImageJ user interface. Not yet fully functional.</description>
 
 	<dependencies>
 		<dependency>

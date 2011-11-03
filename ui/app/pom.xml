@@ -14,7 +14,7 @@
 	<artifactId>ij-app</artifactId>
 
 	<name>ImageJ Application</name>
-	<description>Top-level ImageJ application.</description>
+	<description>The app component is the top-level ImageJ application. It brings together all the components into the final application. It currently launches the Swing user interface, but other interfaces are equally possible.</description>
 
 	<dependencies>
 		<dependency>

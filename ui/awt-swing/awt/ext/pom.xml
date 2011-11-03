@@ -14,7 +14,7 @@
 	<artifactId>ij-ext-awt</artifactId>
 
 	<name>ImageJ Extensibility Framework: AWT</name>
-	<description>AWT UI components for use with ImageJ extensibility framework.</description>
+	<description>The ext-awt component provides AWT-based user interface components for use with the ImageJ extensibility framework--i.e., a collection of AWT UI classes for working with modules. It includes facilities for harvesting input parameters from a user dialog, as well as building an AWT MenuBar containing available modules.</description>
 
 	<dependencies>
 		<dependency>

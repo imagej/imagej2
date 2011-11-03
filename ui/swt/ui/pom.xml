@@ -14,7 +14,7 @@
 	<artifactId>ij-ui-swt</artifactId>
 
 	<name>ImageJ UI: SWT</name>
-	<description>An Eclipse SWT-based ImageJ user interface.</description>
+	<description>An Eclipse SWT-based ImageJ user interface. Not yet functional.</description>
 
 	<dependencies>
 		<dependency>

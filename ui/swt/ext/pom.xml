@@ -14,7 +14,7 @@
 	<artifactId>ij-ext-swt</artifactId>
 
 	<name>ImageJ Extensibility Framework: SWT</name>
-	<description>Eclipse SWT UI components for use with ImageJ extensibility framework.</description>
+	<description>The ext-swt component provides Eclipse SWT-based user interface components for use with the ImageJ extensibility framework--i.e., a collection of SWT UI classes for working with modules. It includes facilities for harvesting input parameters from a user dialog, as well as building an SWT Menu containing available modules.</description>
 
 	<dependencies>
 		<dependency>

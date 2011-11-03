@@ -14,8 +14,7 @@
 	<artifactId>ij-ext</artifactId>
 
 	<name>ImageJ Extensibility Framework</name>
-	<description>Shared framework for ImageJ extensions, including modules,
-		plugins and scripts.</description>
+	<description>The ext component is ImageJ's framework for extensibility, which allows for the definition of ImageJ modules, plugins and tools. A module is a discrete piece of functionality with typed inputs and outputs. Plugins, scripts and workflows are all types of modules. A plugin is a piece of code that enables functionality (such as an image processing algorithm) within the program. A tool is a piece of code that defines user input behavior, such as drawing on the image with a pencil, or panning the display by dragging. The extensibility framework also provides a central discovery mechanism for plugins and tools, which allows ImageJ extensions to be loaded dynamically.</description>
 
 	<dependencies>
 		<dependency>

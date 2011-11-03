@@ -14,7 +14,7 @@
 	<artifactId>ij-platform</artifactId>
 
 	<name>ImageJ Platform Framework</name>
-	<description>Shared framework for platform-specific ImageJ code.</description>
+	<description>The platform component provides the framework for defining platform-specific functionality. A "platform" can be an operating system, CPU architecture, or version of Java.</description>
 
 	<dependencies>
 		<dependency>

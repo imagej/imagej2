@@ -14,7 +14,7 @@
 	<artifactId>ij-io</artifactId>
 
 	<name>ImageJ Core: I/O</name>
-	<description>Core image input/output framework for ImageJ.</description>
+	<description>The io component provides an input/output service for reading and writing data to and from data streams. It also provides several core plugins for importing image data, as well as a recent file service for keeping track of recently opened files.</description>
 
 	<dependencies>
 		<dependency>
