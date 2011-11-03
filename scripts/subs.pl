@@ -2,7 +2,7 @@
 
 # Shared helper subroutines for use by perl scripts.
 
-sub match {
+sub match($$$) {
   my ($tRef, $dRef, $index) = @_;
   my @template = @$tRef;
   my @data = @$dRef;
@@ -19,7 +19,7 @@ sub match {
   return $result;
 }
 
-sub readFile {
+sub readFile($) {
   my ($file) = @_;
   open FILE, "$file" or die "$file: $!";
   my @data = <FILE>;
@@ -30,7 +30,7 @@ sub readFile {
   return @data;
 }
 
-sub trim {
+sub trim($) {
   my ($line) = @_;
   $line =~ s/^\s*//;
   $line =~ s/\s*$//;
