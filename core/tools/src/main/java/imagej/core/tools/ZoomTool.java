@@ -67,21 +67,11 @@ public class ZoomTool extends AbstractTool {
 
 	// -- ITool methods --
 
-	@Override
-	public boolean onKeyDown(final KyPressedEvent evt) {
-		final Display<?> display = evt.getDisplay();
-		if (display instanceof ImageDisplay) {
-			final char c = evt.getCharacter();
-			if (c == '=' || c == '+') {
-				((ImageDisplay) display).getCanvas().zoomIn(mousePos);
-			}
-			else if (c == '-') {
-				((ImageDisplay) display).getCanvas().zoomOut(mousePos);
-			}
-		}
-		return false;
-	}
-
+	// NB
+	//   removed onKeyDown() method because zoom events were doubling.
+	//   now the plugins get called appropriately. The difference is
+	//   that now '+' does nothing. only '-' and '=' zoom.
+	
 	@Override
 	public boolean onMouseDown(final MsPressedEvent evt) {
 		mouseDown.x = evt.getX();
