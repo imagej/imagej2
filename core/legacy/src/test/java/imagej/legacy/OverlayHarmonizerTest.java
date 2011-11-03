@@ -244,10 +244,10 @@ public class OverlayHarmonizerTest {
 
 	/**
 	 * Test method for
-	 * {@link OverlayHarmonizer#setDisplayOverlays(ImageDisplay, ImagePlus)}.
+	 * {@link OverlayHarmonizer#updateDisplay(ImageDisplay, ImagePlus)}.
 	 */
 	@Test
-	public void testSetDatasetOverlays() {
+	public void testUpdateDisplay() {
 		// TODO: this just runs the code, but does not check the results.
 //		OverlayTranslator ot = new OverlayTranslator();
 //		Random r = new Random(1234);
@@ -259,10 +259,10 @@ public class OverlayHarmonizerTest {
 
 	/**
 	 * Test method for
-	 * {@link OverlayHarmonizer#setImagePlusOverlays(ImageDisplay, ImagePlus)}.
+	 * {@link OverlayHarmonizer#updateLegacyImage(ImageDisplay, ImagePlus)}.
 	 */
 	@Test
-	public void testSetImagePlusOverlays() {
+	public void testUpdateImagePlus() {
 		// TODO: there are no headless displays at this point, so this pretty much
 		// does nothing.
 		// So someone needs to make it really test something when headless displays
