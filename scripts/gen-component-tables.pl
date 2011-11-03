@@ -15,8 +15,8 @@ require "$dir/subs.pl";
 
 # -- Constants --
 
-my $nameColor = '#81c2ea';
-my $descColor = '#d8ecf8';
+my $nameColor = '#d8ecf8';
+my $descColor = '#eeeeee';
 my $columns = 4;
 
 my $baseURL = 'http://dev.imagejdev.org';
@@ -116,6 +116,7 @@ sub process($) {
   $package =~ s/\//./g;
 
   my $jarFile = "$artifactId-$version.jar";
+  my $jarName = "$artifactId.jar";
   my $trunkBuild = "$trunkBuildPrefix/$componentPath/target/$jarFile";
   my $dailyBuild = "$dailyBuildPrefix/$componentPath/target/$jarFile";
   my $mavenSite = "$dailyBuildPrefix/$componentPath/target/site/index.html";
@@ -123,13 +124,14 @@ sub process($) {
 
   print "<tr><td style=\"background-color: $nameColor;\" " .
     "colspan=\"$columns\">$name</td></tr>\n";
-  print "<tr><td style=\"background-color: $descColor; font-size: smaller;\" " .
-    "colspan=\"$columns\">$description</td></tr>\n";
   print "<tr>\n";
-  print "<td><a href=\"$trunkBuild\">$jarFile</a></td>\n";
-  print "<td><a href=\"$dailyBuild\">$jarFile</a></td>\n";
+  print "<td><a href=\"$trunkBuild\">$jarName</a></td>\n";
+  print "<td><a href=\"$dailyBuild\">$jarName</a></td>\n";
   print "<td><a href=\"$mavenSite\">$artifactId</a></td>\n";
   print "<td><a href=\"$sourceCode\">$package</a></td>\n";
   print "</tr>\n";
+  print "<tr><td style=\"background-color: $descColor; font-size: smaller\"" .
+    "colspan=\"$columns\">$description</td></tr>\n";
+  print "<tr><td colspan=\"$columns\">&nbsp;</td></tr>\n";
 
 }
