@@ -1,9 +1,13 @@
 #!/usr/bin/perl
-use strict;
 
 # Script to verify existence and correctness of source code headers.
 
 # Usage: perl scripts/check-headers.pl [subdirectory ...]
+
+use strict;
+my $dir = `dirname "$0"`;
+chop $dir;
+require "$dir/subs.pl";
 
 my %knownAuthors = (
   "Adam Fraser" => 1,
@@ -42,17 +46,6 @@ my @src = `$cmd`;
 for my $file (@src) {
   chop $file;
   process($file);
-}
-
-sub readFile {
-  my ($file) = @_;
-  open FILE, "$file" or die "$file: $!";
-  my @data = <FILE>;
-  close(FILE);
-  for my $line (@data) {
-    chop $line;
-  }
-  return @data;
 }
 
 sub process {
@@ -155,28 +148,4 @@ sub process {
     print "$file: invalid type declaration at line #$i\n";
     return;
   }
-}
-
-sub match {
-  my ($tRef, $dRef, $index) = @_;
-  my @template = @$tRef;
-  my @data = @$dRef;
-
-  my $i = $index;
-  my $result = 1;
-  for my $expected (@template) {
-    my $actual = $data[$i++];
-    if ($actual ne $expected) {
-      $result = 0;
-      last;
-    }
-  }
-  return $result;
-}
-
-sub trim {
-  my ($line) = @_;
-  $line =~ s/^\s*//;
-  $line =~ s/\s*$//;
-  return $line;
 }
