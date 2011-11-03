@@ -3,6 +3,8 @@ use strict;
 
 # Script to verify existence and correctness of source code headers.
 
+# Usage: perl scripts/check-headers.pl [subdirectory ...]
+
 my %knownAuthors = (
   "Adam Fraser" => 1,
   "Aivar Grislis" => 1,
