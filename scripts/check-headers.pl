@@ -5,6 +5,7 @@
 # Usage: perl scripts/check-headers.pl [subdirectory ...]
 
 use strict;
+
 my $dir = `dirname "$0"`;
 chop $dir;
 require "$dir/subs.pl";
