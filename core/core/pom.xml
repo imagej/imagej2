@@ -14,7 +14,7 @@
 	<artifactId>ij-core</artifactId>
 
 	<name>ImageJ Core Classes</name>
-	<description>ImageJ application framework and core services.</description>
+	<description>The ImageJ core classes include the services framework with some basic services: an event service, which uses a publish/subscribe messaging pattern to manage events, which reduces direct dependencies between components; an object service, for keeping track of registered objects sorted by type; and a thread service, for managing running threads. This component also includes some basic utility classes.</description>
 
 	<dependencies>
 		<dependency>

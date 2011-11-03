@@ -14,7 +14,7 @@
 	<artifactId>ij-ext-headless</artifactId>
 
 	<name>ImageJ Extensibility Framework: Headless</name>
-	<description>Headless UI components for use with ImageJ extensibility framework.</description>
+	<description>The ext-headless component provides headless user interface components for use with the ImageJ extensibility framework--i.e., a collection of headless UI classes for working with modules. It provides a dummy implementation of each UI widget.</description>
 
 	<dependencies>
 		<dependency>

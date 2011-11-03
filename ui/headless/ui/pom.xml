@@ -14,7 +14,7 @@
 	<artifactId>ij-ui-headless</artifactId>
 
 	<name>ImageJ UI: Headless</name>
-	<description>A headless ImageJ user interface.</description>
+	<description>A headless ImageJ user interface. Not yet functional.</description>
 
 	<dependencies>
 		<dependency>

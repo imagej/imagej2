@@ -14,7 +14,7 @@
 	<artifactId>ij-options</artifactId>
 
 	<name>ImageJ Core: Options</name>
-	<description>Core options framework for ImageJ.</description>
+	<description>The options component provides a service for managing shared preferences between areas of ImageJ. For example, two plugins that both wish to respect a particular setting can retrieve the option value using the options service.</description>
 
 	<dependencies>
 		<dependency>

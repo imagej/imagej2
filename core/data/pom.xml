@@ -14,7 +14,7 @@
 	<artifactId>ij-data</artifactId>
 
 	<name>ImageJ Data Model</name>
-	<description>ImageJ core data model, based on ImgLib.</description>
+	<description>The data component contains the core image data model, based on ImgLib2. This is the primary mechanism by which image data is managed internally by ImageJ2. This component also provides the corresponding core image display logic for user interfaces.</description>
 
 	<dependencies>
 		<dependency>

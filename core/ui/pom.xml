@@ -14,7 +14,7 @@
 	<artifactId>ij-ui</artifactId>
 
 	<name>ImageJ User Interface Framework</name>
-	<description>Shared framework for ImageJ user interfaces.</description>
+	<description>The ui component contains the user interface (UI) framework for ImageJ. Each ImageJ user interface uses this framework to make itself available for use.</description>
 
 	<dependencies>
 		<dependency>

@@ -14,7 +14,7 @@
 	<artifactId>ij-ext-pivot</artifactId>
 
 	<name>ImageJ Extensibility Framework: Pivot</name>
-	<description>Apache Pivot UI components for use with ImageJ extensibility framework.</description>
+	<description>The ext-pivot component provides Apache Pivot-based user interface components for use with the ImageJ extensibility framework--i.e., a collection of Pivot UI classes for working with modules. It includes facilities for harvesting input parameters from a user dialog, as well as building a Pivot BoxPane of MenuButtons containing available modules.</description>
 
 	<dependencies>
 		<dependency>
