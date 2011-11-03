@@ -71,6 +71,10 @@ public class OptionsAppearance extends OptionsPlugin {
 	@Parameter(label = "Menu font size (points)", min = "0")
 	private int menuFontSize = 0;
 
+	// NOTE - this one is not part of IJ1 but an IJ2 enhancement
+	@Parameter(label = "Display fractional scales")
+	private boolean displayFractionalScales = false;
+	
 	// -- OptionsAppearance methods --
 
 	public OptionsAppearance() {
@@ -105,6 +109,10 @@ public class OptionsAppearance extends OptionsPlugin {
 		return menuFontSize;
 	}
 
+	public boolean isDisplayFractionalScales() {
+		return displayFractionalScales;
+	}
+	
 	public void setInterpZoomedImages(final boolean interpZoomedImages) {
 		this.interpZoomedImages = interpZoomedImages;
 	}
@@ -133,4 +141,8 @@ public class OptionsAppearance extends OptionsPlugin {
 		this.menuFontSize = menuFontSize;
 	}
 
+	public void setDisplayFractionalScales(boolean wantFractionalScales) {
+		displayFractionalScales = wantFractionalScales;
+	}
+	
 }
