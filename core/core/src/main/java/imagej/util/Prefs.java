@@ -185,7 +185,7 @@ public final class Prefs {
 	public static void
 		clear(final Class<?> c)
 	{
-		try { prefs(c).clear(); } catch (BackingStoreException e) {}
+		try { prefs(c).clear(); } catch (BackingStoreException e) {/**/}
 	}
 	
 	// -- Helper methods --
