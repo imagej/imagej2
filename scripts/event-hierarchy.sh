@@ -2,6 +2,8 @@
 
 # Script to generate hierarchy of ImageJ event classes.
 
+# Usage: bash scripts/event-hierarchy.sh
+
 set -e
 
 cd "$(dirname "$0")"/../ui/imagej
