@@ -82,17 +82,17 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi =
+		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> theRoi =
 			getRegionOfInterest();
 		final BitType b = new BitType();
 		b.set(true);
 		final RandomAccessible<BitType> ra =
-			new ConstantRandomAccessible<BitType>(b, roi.numDimensions());
-		final IterableInterval<BitType> ii = roi.getIterableIntervalOverROI(ra);
+			new ConstantRandomAccessible<BitType>(b, theRoi.numDimensions());
+		final IterableInterval<BitType> ii = theRoi.getIterableIntervalOverROI(ra);
 		final Cursor<BitType> c = ii.localizingCursor();
 
-		out.writeInt(roi.numDimensions());
-		for (int i = 0; i < roi.numDimensions(); i++) {
+		out.writeInt(theRoi.numDimensions());
+		for (int i = 0; i < theRoi.numDimensions(); i++) {
 			out.writeLong(ii.dimension(i));
 		}
 		/*
@@ -101,18 +101,18 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		final ByteArrayOutputStream s = new ByteArrayOutputStream();
 		final DataOutputStream ds =
 			new DataOutputStream(new DeflaterOutputStream(s));
-		final long initial_position[] = new long[roi.numDimensions()];
-		final long next_position[] = new long[roi.numDimensions()];
+		final long initial_position[] = new long[theRoi.numDimensions()];
+		final long next_position[] = new long[theRoi.numDimensions()];
 		Arrays.fill(initial_position, Long.MIN_VALUE);
 		long run = 0;
 		while (c.hasNext()) {
 			c.next();
 			next_position[0] = initial_position[0] + run;
-			for (int i = 0; i < roi.numDimensions(); i++) {
+			for (int i = 0; i < theRoi.numDimensions(); i++) {
 				if (next_position[i] != c.getLongPosition(i)) {
 					if (run > 0) {
 						ds.writeLong(run);
-						for (int j = 0; j < roi.numDimensions(); j++) {
+						for (int j = 0; j < theRoi.numDimensions(); j++) {
 							ds.writeLong(initial_position[j]);
 						}
 					}
@@ -126,7 +126,7 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		}
 		if (run > 0) {
 			ds.writeLong(run);
-			for (int j = 0; j < roi.numDimensions(); j++) {
+			for (int j = 0; j < theRoi.numDimensions(); j++) {
 				ds.writeLong(initial_position[j]);
 			}
 		}
