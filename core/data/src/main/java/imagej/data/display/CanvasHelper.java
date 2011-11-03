@@ -278,9 +278,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 	public static double getBestZoomLevel(double fractionalScale) {
 		double[] levels = defaultZoomLevels();
 
-		double zoom = lookupZoom(levels, fractionalScale);
+		int zoomIndex = lookupZoomIndex(levels, fractionalScale);
 
-		if (zoom > 0) return zoom;
+		if (zoomIndex != -1) return levels[zoomIndex];
 		
 		return nextSmallerZoom(levels, fractionalScale);
 	}
@@ -385,14 +385,14 @@ public class CanvasHelper implements Pannable, Zoomable {
 	// unfortunately can't rely on Java's binary search since we're using
 	// doubles and rounding errors could cause problems. write our own that
 	// searches zooms avoiding rounding problems.
-	private static double lookupZoom(double[] levels, double requestedZoom) {
+	private static int lookupZoomIndex(double[] levels, double requestedZoom) {
 		int lo = 0;
 		int hi = levels.length - 1;
 		do {
 			int mid = (lo + hi) / 2;
 			double possibleZoom = levels[mid];
 			if (Math.abs(requestedZoom - possibleZoom) < 0.00001)
-				return requestedZoom;
+				return mid;
 			if (requestedZoom < possibleZoom)
 				hi = mid - 1;
 			else
