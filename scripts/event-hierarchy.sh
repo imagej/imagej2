@@ -6,8 +6,8 @@
 
 set -e
 
-cd "$(dirname "$0")"/../ui/imagej
-mvn dependency:copy-dependencies
+cd "$(dirname "$0")"/../ui/app
+mvn dependency:copy-dependencies > /dev/null
 find ../../core -name '*Event.java' | \
   sed -e 's/.*src\/main\/java\///' -e 's/\//./g' -e 's/\.java$//' |
   xargs java \
