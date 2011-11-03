@@ -78,9 +78,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
 	
 	private Axis activeAxis = null;
+	
+	private ScaleConverter scaleConverter;
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
+		initScaleConverter();
 		subscribeToEvents();
 	}
 
@@ -401,25 +404,92 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		
 		sb.append(dataset.getTypeLabelLong());
 		
-		final double zoomPercent = getCanvas().getZoomFactor() * 100;
-		if (zoomPercent == 100) {
-			// do nothing
-		}
-		else { // some kind of magnification being done
-			if (zoomPercent > 100 && zoomPercent - Math.floor(zoomPercent) < 0.00001) {
-				sb.append(String.format(" [%d%%]", (int)zoomPercent));
-			}
-			else {
-				sb.append(String.format(" [%.2f%%]", zoomPercent));
-			}
-		}
+		final double zoomFactor = getCanvas().getZoomFactor();
+		if (zoomFactor != 1)
+			sb.append(" (" + scaleConverter.getString(zoomFactor) + ")");
 		
 		return sb.toString();
 	}
+
 
 	protected Dataset getDataset(final DataView view) {
 		final Data dataObject = view.getData();
 		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}
 
+	// -- private interface --
+
+	@SuppressWarnings("synthetic-access")
+	private void initScaleConverter() {
+		// TODO - handle scale conversion / label setting elsewhere
+		scaleConverter = new FractionalScaleConverter();
+		scaleConverter = new PercentScaleConverter();
+	}
+	
+	private interface ScaleConverter {
+		String getString(double realScale);
+	}
+
+	private class PercentScaleConverter implements ScaleConverter {
+
+		@Override
+		public String getString(double realScale) {
+			return String.format("%.2f%%", realScale * 100);
+		}
+		
+	}
+
+	private class FractionalScaleConverter implements ScaleConverter {
+		@Override
+		public String getString(double realScale) {
+			FractionalScale fracScale = new FractionalScale(realScale);
+			// is fractional scale invalid?
+			if (fracScale.getDenom() == 0) {
+				if (realScale >= 1)
+					return String.format("%.2fX", realScale);
+				// else scale < 1
+				return String.format("1/%.2fX", (1/realScale));
+			}
+			// or de we have a whole number scale?
+			else if (fracScale.getDenom() == 1)
+					return String.format("%dX", fracScale.getNumer());
+			// else have valid fraction
+			return String.format("%d/%dX",fracScale.getNumer(),fracScale.getDenom());
+		}
+	}
+	
+	private class FractionalScale {
+		private int numer, denom;
+		
+		FractionalScale(double realScale) {
+			numer = 0;
+			denom = 0;
+			if (realScale >= 1) {
+				double floor = Math.floor(realScale);
+				if ((realScale - floor) < 0.0001) {
+					numer = (int) floor;
+					denom = 1;
+				}
+				else if (realScale == 1.5) {
+					numer = 3;
+					denom = 2;
+				}
+			}
+			else { // factor < 1
+				double recip = 1.0 / realScale;
+				double floor = Math.floor(recip);
+				if ((recip - floor) < 0.0001) {
+					numer = 1;
+					denom = (int) floor;
+				}
+				else if (realScale == 0.75) {
+					numer = 3;
+					denom = 4;
+				}
+			}
+		}
+		
+		int getNumer() { return numer; }
+		int getDenom() { return denom; }
+	}
 }
