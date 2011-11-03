@@ -36,7 +36,6 @@ package imagej.core.tools;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.Display;
-import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
@@ -69,8 +68,7 @@ public class ZoomTool extends AbstractTool {
 
 	// NB
 	//   removed onKeyDown() method because zoom events were doubling.
-	//   now the plugins get called appropriately. The difference is
-	//   that now '+' does nothing. only '-' and '=' zoom.
+	//   make sure elsewhere that the zoom plugins get called appropriately.
 	
 	@Override
 	public boolean onMouseDown(final MsPressedEvent evt) {
