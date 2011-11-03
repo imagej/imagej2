@@ -109,9 +109,9 @@ public class RectangleAdapter extends
 		final double w = roi.getExtent(0);
 		final double y0 = roi.getOrigin(1);
 		final double h = roi.getExtent(1);
-		final Point2D.Double anchor = new Point2D.Double(x0, y0);
+		final Point2D.Double anch = new Point2D.Double(x0, y0);
 		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
-		f.setBounds(anchor, lead);
+		f.setBounds(anch, lead);
 	}
 
 	@Override
