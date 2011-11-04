@@ -44,6 +44,7 @@ import imagej.ImageJ;
 public abstract class ImageJEvent {
 
 	private ImageJ context;
+	private boolean consumed;
 
 	// -- ImageJEvent methods --
 
@@ -55,11 +56,23 @@ public abstract class ImageJEvent {
 		this.context = context;
 	}
 
+	public boolean isConsumed() {
+		return consumed;
+	}
+
+	public void setConsumed(final boolean consumed) {
+		this.consumed = consumed;
+	}
+
+	public void consume() {
+		setConsumed(true);
+	}
+
 	// Object methods --
 
 	@Override
 	public String toString() {
-		return "\n\tcontext = " + context.getID();
+		return "\n\tcontext = " + context.getID() + "\n\tconsumed = " + consumed;
 	}
 
 }
