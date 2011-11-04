@@ -126,16 +126,14 @@ public class RectangleAdapter extends
 		roi.setExtent(bounds.getHeight(), 1);
 	}
 	
-	/*
-	 * Show x,y,w,h of rectangle in StatusBar on click-drag
-	 * Return true to consume the event, thus not having 
-	 * PixelProbe global tool overwrite the status bar.
-	 */
-	Point anchor = new Point();
+	// show x,y,w,h of rectangle in StatusBar on click-drag
+	private Point anchor = new Point();
+
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
 		anchor.x = evt.getX();
 		anchor.y = evt.getY();
+		// NB: Prevent PixelProbe from overwriting the status bar.
 		evt.consume();
 	}
 	
@@ -145,6 +143,7 @@ public class RectangleAdapter extends
 		String message = String.format("x=%d, y=%d, w=%d, h=%d", 
 					anchor.x, anchor.y, evt.getX()-anchor.x, evt.getY()-anchor.y);
 		eventService.publish(new StatusEvent(message));
+		// NB: Prevent PixelProbe from overwriting the status bar.
 		evt.consume();
 	}
 

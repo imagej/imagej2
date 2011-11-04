@@ -77,10 +77,10 @@ public class ToolService extends AbstractService {
 
 	private final EventService eventService;
 
-	private Map<String, ITool> globalTools;
+	private Map<String, ITool> alwaysActiveTools;
 	private Map<String, ITool> tools;
 
-	private List<ITool> globalToolList;
+	private List<ITool> alwaysActiveToolList;
 	private List<ITool> toolList;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
@@ -104,19 +104,20 @@ public class ToolService extends AbstractService {
 	// -- ToolService methods --
 
 	public ITool getTool(final String name) {
-		final ITool globalTool = globalTools.get(name);
-		if (globalTool != null) return globalTool;
+		final ITool alwaysActiveTool = alwaysActiveTools.get(name);
+		if (alwaysActiveTool != null) return alwaysActiveTool;
 		return tools.get(name);
 	}
 	
 	/**
-	 * Get a tool given its class
+	 * Get a tool given its class.
+	 * 
 	 * @param <T> the tool's type
 	 * @param toolClass the class of the tool to fetch
-	 * @return the tool, taken from the global tools list or null if not present / supported
+	 * @return the tool, or null if no such tool
 	 */
 	public <T extends ITool> T getTool(final Class<T> toolClass) {
-		for (ITool tool: globalToolList) {
+		for (ITool tool: alwaysActiveToolList) {
 			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
 		}
 		for (ITool tool: toolList) {
@@ -129,8 +130,8 @@ public class ToolService extends AbstractService {
 		return toolList;
 	}
 
-	public List<ITool> getGlobalTools() {
-		return globalToolList;
+	public List<ITool> getAlwaysActiveTools() {
+		return alwaysActiveToolList;
 	}
 
 	public ITool getActiveTool() {
@@ -171,7 +172,7 @@ public class ToolService extends AbstractService {
 		Collections.sort(toolEntries);
 
 		// create tool instances
-		globalTools = new HashMap<String, ITool>();
+		alwaysActiveTools = new HashMap<String, ITool>();
 		tools = new HashMap<String, ITool>();
 		for (final ToolInfo info : toolEntries) {
 			final ITool tool;
@@ -183,8 +184,8 @@ public class ToolService extends AbstractService {
 				Log.error("Invalid tool: " + info.getName(), e);
 				continue;
 			}
-			if (info.isGlobal()) {
-				globalTools.put(info.getName(), tool);
+			if (info.isAlwaysActive()) {
+				alwaysActiveTools.put(info.getName(), tool);
 			}
 			else {
 				tools.put(info.getName(), tool);
@@ -199,7 +200,7 @@ public class ToolService extends AbstractService {
 				return tool1.getInfo().compareTo(tool2.getInfo());
 			}
 		};
-		globalToolList = createSortedList(globalTools.values(), toolComparator);
+		alwaysActiveToolList = createSortedList(alwaysActiveTools.values(), toolComparator);
 		toolList = createSortedList(tools.values(), toolComparator);
 	}
 
@@ -237,7 +238,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final KyPressedEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onKeyDown(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onKeyDown(event);
 					}
@@ -253,7 +254,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final KyReleasedEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onKeyUp(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onKeyUp(event);
 					}
@@ -269,7 +270,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final MsPressedEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onMouseDown(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onMouseDown(event);
 					}
@@ -285,7 +286,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final MsReleasedEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onMouseUp(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onMouseUp(event);
 					}
@@ -301,7 +302,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final MsClickedEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onMouseClick(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onMouseClick(event);
 					}
@@ -317,7 +318,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final MsMovedEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onMouseMove(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onMouseMove(event);
 					}
@@ -333,7 +334,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final MsDraggedEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onMouseDrag(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onMouseDrag(event);
 					}
@@ -349,7 +350,7 @@ public class ToolService extends AbstractService {
 				public void onEvent(final MsWheelEvent event) {
 					if (event.isConsumed()) return;
 					getActiveTool().onMouseWheel(event);
-					for (final ITool tool : getGlobalTools()) {
+					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
 						tool.onMouseWheel(event);
 					}
