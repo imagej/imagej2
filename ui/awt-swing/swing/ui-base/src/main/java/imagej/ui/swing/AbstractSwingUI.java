@@ -150,9 +150,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final SwingDropListener dropListener = new SwingDropListener();
 		new DropTarget(toolBar, dropListener);
 		new DropTarget(statusBar, dropListener);
-		//   this one seems unnecessary. neither IJ2 nor IJ1 respond to dropping
-		//   on the title bar
-		//new DropTarget(appFrame, dropListener);
+		new DropTarget(appFrame, dropListener);
 
 		subscribeToEvents();
 	}
