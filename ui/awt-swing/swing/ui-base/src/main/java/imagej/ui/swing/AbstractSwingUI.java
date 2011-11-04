@@ -48,6 +48,7 @@ import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Prefs;
@@ -127,6 +128,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		createMenus();
 
 		setupAppFrame();
+
+		// NB: The following setup happens for both SDI and MDI frames.
+
+		appFrame
+			.addKyEventDispatcher(new AWTKeyEventDispatcher(null, eventService));
 
 		appFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		appFrame.addWindowListener(new WindowAdapter() {
