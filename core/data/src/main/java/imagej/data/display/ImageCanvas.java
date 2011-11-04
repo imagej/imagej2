@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.MouseCursor;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -61,12 +60,6 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	
 	/** Gets the current height of the canvas viewport in pixels. */
 	int getViewportHeight();
-
-	/**
-	 * Adds the given {@link EventDispatcher} as an event handler; e.g., for key
-	 * and mouse events.
-	 */
-	void addEventDispatcher(EventDispatcher dispatcher);
 
 	/**
 	 * Tests whether a given point in the panel falls within the image boundaries.

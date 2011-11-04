@@ -40,7 +40,6 @@ import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.MouseCursor;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
@@ -146,6 +145,16 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 		repaint();
 	}
 
+	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+		addKeyListener(dispatcher);
+	}
+
+	public void addMsEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
+		addMouseListener(dispatcher);
+		addMouseMotionListener(dispatcher);
+		addMouseWheelListener(dispatcher);
+	}
+
 	// -- Component methods --
 
 	@Override
@@ -220,19 +229,6 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 	@Override
 	public int getViewportHeight() {
 		return getHeight();
-	}
-
-	@Override
-	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		//final AWTEventDispatcher awtDispatcher = (AWTEventDispatcher) dispatcher;
-			if(dispatcher instanceof AWTKeyEventDispatcher) {
-			addKeyListener((AWTKeyEventDispatcher)dispatcher);
-		}
-		if(dispatcher instanceof AWTMouseEventDispatcher) {
-			addMouseListener((AWTMouseEventDispatcher)dispatcher);
-			addMouseMotionListener((AWTMouseEventDispatcher)dispatcher);
-			addMouseWheelListener((AWTMouseEventDispatcher)dispatcher);
-		}
 	}
 
 	@Override

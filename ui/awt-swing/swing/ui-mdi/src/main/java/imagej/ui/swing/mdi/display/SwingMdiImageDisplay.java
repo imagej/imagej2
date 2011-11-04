@@ -43,8 +43,8 @@ import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
 import javax.swing.JInternalFrame;
 
 /**
- * Multiple Document Interface implementation of Swing image display plugin.
- * The MDI display is housed in a {@link JInternalFrame}.
+ * Multiple Document Interface implementation of Swing image display plugin. The
+ * MDI display is housed in a {@link JInternalFrame}.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
@@ -57,8 +57,9 @@ public class SwingMdiImageDisplay extends AbstractSwingImageDisplay {
 		super(new SwingMdiDisplayWindow());
 		final SwingMdiDisplayWindow mdiWindow = (SwingMdiDisplayWindow) window;
 
-		imgPanel.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
-		mdiWindow.addInternalFrameListener(new InternalFrameEventDispatcher(this,
+		imgPanel
+			.addKyEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
+		mdiWindow.addWinEventDispatcher(new InternalFrameEventDispatcher(this,
 			eventService));
 	}
 

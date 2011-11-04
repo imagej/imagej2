@@ -45,7 +45,6 @@ import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.MouseCursor;
 import imagej.ext.tool.ITool;
 import imagej.ext.tool.ToolService;
@@ -305,6 +304,16 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		return drawingEditor;
 	}
 
+	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+		drawingView.addKeyListener(dispatcher);
+	}
+	
+	public void addMsEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
+		drawingView.addMouseListener(dispatcher);
+		drawingView.addMouseMotionListener(dispatcher);
+		drawingView.addMouseWheelListener(dispatcher);
+	}
+
 	// -- ImageCanvas methods --
 
 	@Override
@@ -343,18 +352,6 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@Override
 	public int getViewportHeight() {
 		return drawingView.getHeight();
-	}
-
-	@Override
-	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		if (dispatcher instanceof AWTKeyEventDispatcher) {
-			drawingView.addKeyListener((AWTKeyEventDispatcher) dispatcher);
-		}
-		if (dispatcher instanceof AWTMouseEventDispatcher) {
-			drawingView.addMouseListener((AWTMouseEventDispatcher) dispatcher);
-			drawingView.addMouseMotionListener((AWTMouseEventDispatcher) dispatcher);
-			drawingView.addMouseWheelListener((AWTMouseEventDispatcher) dispatcher);
-		}
 	}
 
 	@Override

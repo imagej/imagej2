@@ -43,8 +43,8 @@ import imagej.ui.swing.display.SwingDisplayWindow;
 import javax.swing.JFrame;
 
 /**
- * Single Document Interface implementation of Swing image display plugin.
- * The SDI display is housed in a {@link JFrame}.
+ * Single Document Interface implementation of Swing image display plugin. The
+ * SDI display is housed in a {@link JFrame}.
  * 
  * @author Curtis Rueden
  * @see AbstractSwingImageDisplay
@@ -54,7 +54,10 @@ public class SwingSdiImageDisplay extends AbstractSwingImageDisplay {
 
 	public SwingSdiImageDisplay() {
 		super(new SwingDisplayWindow());
-		window.addEventDispatcher(new AWTWindowEventDispatcher(this, eventService));
+		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
+
+		sdiWindow.addWinEventDispatcher(new AWTWindowEventDispatcher(this,
+			eventService));
 	}
 
 }
