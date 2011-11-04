@@ -147,7 +147,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.setVisible(true);
 
 		// setup drag and drop targets
-		SwingDropListener dropListener = new SwingDropListener();
+		final SwingDropListener dropListener = new SwingDropListener();
 		new DropTarget(toolBar, dropListener);
 		new DropTarget(statusBar, dropListener);
 		//   this one seems unnecessary. neither IJ2 nor IJ1 respond to dropping
