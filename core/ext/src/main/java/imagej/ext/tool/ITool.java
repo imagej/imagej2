@@ -73,34 +73,28 @@ public interface ITool {
 	/** Informs the tool that it is no longer active. */
 	void deactivate();
 
-	
-	/** Event Handlers return a boolean value indicating whether
-	 * the event should be consumed or passed down the chain.
-	 * Such methods return true for 'consume the event'
-	 */
-	
 	/** Occurs when a key on the keyboard is pressed while the tool is active. */
-	boolean onKeyDown(KyPressedEvent event);
+	void onKeyDown(KyPressedEvent event);
 
 	/** Occurs when a key on the keyboard is released while the tool is active. */
-	boolean onKeyUp(KyReleasedEvent event);
+	void onKeyUp(KyReleasedEvent event);
 
 	/** Occurs when a mouse button is pressed while the tool is active. */
-	boolean onMouseDown(MsPressedEvent event);
+	void onMouseDown(MsPressedEvent event);
 
 	/** Occurs when a mouse button is released while the tool is active. */
-	boolean onMouseUp(MsReleasedEvent event);
+	void onMouseUp(MsReleasedEvent event);
 
 	/** Occurs when a mouse button is double clicked while the tool is active. */
-	boolean onMouseClick(MsClickedEvent event);
+	void onMouseClick(MsClickedEvent event);
 
 	/** Occurs when the mouse is moved while the tool is active. */
-	boolean onMouseMove(MsMovedEvent event);
+	void onMouseMove(MsMovedEvent event);
 
 	/** Occurs when the mouse is dragged while the tool is active. */
-	boolean onMouseDrag(MsDraggedEvent event);
+	void onMouseDrag(MsDraggedEvent event);
 
 	/** Occurs when the mouse wheel is moved while the tool is active. */
-	boolean onMouseWheel(MsWheelEvent event);
+	void onMouseWheel(MsWheelEvent event);
 
 }

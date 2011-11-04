@@ -235,8 +235,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final KyPressedEvent event) {
-					if(getActiveTool().onKeyDown(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onKeyDown(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onKeyDown(event);
 					}
 				}
@@ -249,8 +251,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final KyReleasedEvent event) {
-					if(getActiveTool().onKeyUp(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onKeyUp(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onKeyUp(event);
 					}
 				}
@@ -263,8 +267,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final MsPressedEvent event) {
-					if(getActiveTool().onMouseDown(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onMouseDown(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onMouseDown(event);
 					}
 				}
@@ -277,8 +283,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final MsReleasedEvent event) {
-					if(getActiveTool().onMouseUp(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onMouseUp(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onMouseUp(event);
 					}
 				}
@@ -291,8 +299,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final MsClickedEvent event) {
-					if(getActiveTool().onMouseClick(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onMouseClick(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onMouseClick(event);
 					}
 				}
@@ -305,8 +315,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final MsMovedEvent event) {
-					if(getActiveTool().onMouseMove(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onMouseMove(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onMouseMove(event);
 					}
 				}
@@ -319,8 +331,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final MsDraggedEvent event) {
-					if(getActiveTool().onMouseDrag(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onMouseDrag(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onMouseDrag(event);
 					}
 				}
@@ -333,8 +347,10 @@ public class ToolService extends AbstractService {
 
 				@Override
 				public void onEvent(final MsWheelEvent event) {
-					if(getActiveTool().onMouseWheel(event)) return;
+					if (event.isConsumed()) return;
+					getActiveTool().onMouseWheel(event);
 					for (final ITool tool : getGlobalTools()) {
+						if (event.isConsumed()) break;
 						tool.onMouseWheel(event);
 					}
 				}

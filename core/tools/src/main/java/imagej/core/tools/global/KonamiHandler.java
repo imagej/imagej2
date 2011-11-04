@@ -61,7 +61,7 @@ public class KonamiHandler extends AbstractTool {
 	private int index = 0;
 
 	@Override
-	public boolean onKeyDown(final KyPressedEvent evt) {
+	public void onKeyDown(final KyPressedEvent evt) {
 		if (evt.getCode() == CODE[index]) {
 			index++;
 			if (index == CODE.length) {
@@ -73,7 +73,6 @@ public class KonamiHandler extends AbstractTool {
 			}
 		}
 		else index = 0;
-		return false;
 	}
 
 }
