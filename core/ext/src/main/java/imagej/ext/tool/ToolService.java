@@ -40,6 +40,7 @@ import imagej.Service;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.InstantiableException;
+import imagej.ext.display.event.DisplayEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
@@ -238,10 +239,11 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final KyPressedEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onKeyDown(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onKeyDown(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onKeyDown(event);
+						if (eventOk(event, tool)) tool.onKeyDown(event);
 					}
 				}
 			};
@@ -254,10 +256,11 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final KyReleasedEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onKeyUp(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onKeyUp(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onKeyUp(event);
+						if (eventOk(event, tool)) tool.onKeyUp(event);
 					}
 				}
 			};
@@ -270,10 +273,11 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsPressedEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onMouseDown(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onMouseDown(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onMouseDown(event);
+						if (eventOk(event, tool)) tool.onMouseDown(event);
 					}
 				}
 			};
@@ -286,10 +290,11 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsReleasedEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onMouseUp(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onMouseUp(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onMouseUp(event);
+						if (eventOk(event, tool)) tool.onMouseUp(event);
 					}
 				}
 			};
@@ -302,10 +307,11 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsClickedEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onMouseClick(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onMouseClick(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onMouseClick(event);
+						if (eventOk(event, tool)) tool.onMouseClick(event);
 					}
 				}
 			};
@@ -318,10 +324,11 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsMovedEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onMouseMove(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onMouseMove(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onMouseMove(event);
+						if (eventOk(event, tool)) tool.onMouseMove(event);
 					}
 				}
 			};
@@ -334,10 +341,11 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsDraggedEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onMouseDrag(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onMouseDrag(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onMouseDrag(event);
+						if (eventOk(event, tool)) tool.onMouseDrag(event);
 					}
 				}
 			};
@@ -350,15 +358,25 @@ public class ToolService extends AbstractService {
 				@Override
 				public void onEvent(final MsWheelEvent event) {
 					if (event.isConsumed()) return;
-					getActiveTool().onMouseWheel(event);
+					final ITool aTool = getActiveTool();
+					if (eventOk(event, aTool)) aTool.onMouseWheel(event);
 					for (final ITool tool : getAlwaysActiveTools()) {
 						if (event.isConsumed()) break;
-						tool.onMouseWheel(event);
+						if (eventOk(event, tool)) tool.onMouseWheel(event);
 					}
 				}
 			};
 		subscribers.add(msWheelSubscriber);
 		eventService.subscribe(MsWheelEvent.class, msWheelSubscriber);
+	}
+
+	// -- Helper methods --
+
+	/** Checks that an event is OK to be dispatched to a particular tool. */
+	protected boolean eventOk(final DisplayEvent event, final ITool tool) {
+		// NB: An event with a null display came from the main app frame.
+		// We only pass these events on to tools flagged with activeInAppFrame.
+		return event.getDisplay() != null || tool.getInfo().isActiveInAppFrame();
 	}
 
 }
