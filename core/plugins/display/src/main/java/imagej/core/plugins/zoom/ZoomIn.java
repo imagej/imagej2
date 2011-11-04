@@ -48,7 +48,9 @@ import imagej.ext.plugin.Plugin;
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "In", accelerator = "control EQUALS", weight = 1) })
+	@Menu(label = "In =", weight = 1) })
+// NB - if accelerator defined then zoom happens twice when that exact key
+// sequence entered. Difficult to eradicate this behavior. 
 public class ZoomIn implements ImageJPlugin {
 
 	@Parameter
