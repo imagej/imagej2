@@ -108,7 +108,7 @@ public class ToolService extends AbstractService {
 		if (alwaysActiveTool != null) return alwaysActiveTool;
 		return tools.get(name);
 	}
-	
+
 	/**
 	 * Get a tool given its class.
 	 * 
@@ -117,10 +117,10 @@ public class ToolService extends AbstractService {
 	 * @return the tool, or null if no such tool
 	 */
 	public <T extends ITool> T getTool(final Class<T> toolClass) {
-		for (ITool tool: alwaysActiveToolList) {
+		for (final ITool tool : alwaysActiveToolList) {
 			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
 		}
-		for (ITool tool: toolList) {
+		for (final ITool tool : toolList) {
 			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
 		}
 		return null;
@@ -200,7 +200,8 @@ public class ToolService extends AbstractService {
 				return tool1.getInfo().compareTo(tool2.getInfo());
 			}
 		};
-		alwaysActiveToolList = createSortedList(alwaysActiveTools.values(), toolComparator);
+		alwaysActiveToolList =
+			createSortedList(alwaysActiveTools.values(), toolComparator);
 		toolList = createSortedList(tools.values(), toolComparator);
 	}
 
