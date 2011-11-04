@@ -40,11 +40,12 @@ import imagej.ext.display.event.input.InputModifiers;
 import java.awt.event.InputEvent;
 
 /**
- * Abstract superclass of AWT {@link EventDispatcher} implementations.
+ * Abstract superclass of AWT {@link EventDispatcher} implementations for
+ * {@link InputEvent}s.
  * 
  * @author Curtis Rueden
  */
-public abstract class AWTEventDispatcher implements EventDispatcher {
+public abstract class AWTInputEventDispatcher implements EventDispatcher {
 
 	public InputModifiers createModifiers(final int modsEx) {
 		final boolean altDown = isOn(modsEx, InputEvent.ALT_DOWN_MASK);

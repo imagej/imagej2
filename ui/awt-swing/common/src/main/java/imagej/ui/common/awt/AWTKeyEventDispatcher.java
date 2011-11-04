@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.common.awt;
 
 import imagej.event.EventService;
-import imagej.event.ImageJEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.input.InputModifiers;
+import imagej.ext.display.event.input.KyEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.KyTypedEvent;
@@ -47,12 +47,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * Rebroadcasts AWT {@link KeyEvent}s as {@link ImageJEvent}s.
+ * Rebroadcasts AWT {@link KeyEvent}s as ImageJ {@link KyEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTKeyEventDispatcher extends AWTEventDispatcher implements
+public class AWTKeyEventDispatcher extends AWTInputEventDispatcher implements
 	KeyListener
 {
 
