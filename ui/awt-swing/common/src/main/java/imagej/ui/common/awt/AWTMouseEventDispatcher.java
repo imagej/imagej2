@@ -113,22 +113,31 @@ public class AWTMouseEventDispatcher extends AWTEventDispatcher implements
 	@Override
 	public void mouseClicked(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new MsClickedEvent(display, modifiers, getX(e),
-			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final MsClickedEvent evt =
+			new MsClickedEvent(display, modifiers, getX(e), getY(e), mouseButton(e),
+				e.getClickCount(), e.isPopupTrigger());
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	@Override
 	public void mousePressed(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new MsPressedEvent(display, modifiers, getX(e),
-			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final MsPressedEvent evt =
+			new MsPressedEvent(display, modifiers, getX(e), getY(e), mouseButton(e),
+				e.getClickCount(), e.isPopupTrigger());
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	@Override
 	public void mouseReleased(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new MsReleasedEvent(display, modifiers, getX(e),
-			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final MsReleasedEvent evt =
+			new MsReleasedEvent(display, modifiers, getX(e), getY(e), mouseButton(e),
+				e.getClickCount(), e.isPopupTrigger());
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	// -- MouseMotionListener methods --
@@ -136,29 +145,38 @@ public class AWTMouseEventDispatcher extends AWTEventDispatcher implements
 	@Override
 	public void mouseEntered(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new MsEnteredEvent(display, modifiers, getX(e),
-			getY(e)));
+		final MsEnteredEvent evt =
+			new MsEnteredEvent(display, modifiers, getX(e), getY(e));
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	@Override
 	public void mouseExited(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService
-			.publish(new MsExitedEvent(display, modifiers, getX(e), getY(e)));
+		final MsExitedEvent evt =
+			new MsExitedEvent(display, modifiers, getX(e), getY(e));
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	@Override
 	public void mouseDragged(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new MsDraggedEvent(display, modifiers, getX(e),
-			getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
+		final MsDraggedEvent evt =
+			new MsDraggedEvent(display, modifiers, getX(e), getY(e), mouseButton(e),
+				e.getClickCount(), e.isPopupTrigger());
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	@Override
 	public void mouseMoved(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService
-			.publish(new MsMovedEvent(display, modifiers, getX(e), getY(e)));
+		final MsMovedEvent evt =
+			new MsMovedEvent(display, modifiers, getX(e), getY(e));
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	// -- MouseWheelListener methods --
@@ -166,8 +184,11 @@ public class AWTMouseEventDispatcher extends AWTEventDispatcher implements
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new MsWheelEvent(display, modifiers, getX(e), getY(e),
-			e.getWheelRotation()));
+		final MsWheelEvent evt =
+			new MsWheelEvent(display, modifiers, getX(e), getY(e), e
+				.getWheelRotation());
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	// -- Helper methods --

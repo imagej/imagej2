@@ -74,24 +74,30 @@ public class AWTKeyEventDispatcher extends AWTEventDispatcher implements
 	public void keyTyped(final KeyEvent e) {
 		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new KyTypedEvent(display, modifiers, e.getKeyChar(),
-			keyCode));
+		final KyTypedEvent evt =
+			new KyTypedEvent(display, modifiers, e.getKeyChar(), keyCode);
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	@Override
 	public void keyPressed(final KeyEvent e) {
 		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new KyPressedEvent(display, modifiers, e.getKeyChar(),
-			keyCode));
+		final KyPressedEvent evt =
+			new KyPressedEvent(display, modifiers, e.getKeyChar(), keyCode);
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 	@Override
 	public void keyReleased(final KeyEvent e) {
 		final KeyCode keyCode = KeyCode.get(e.getKeyCode());
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		eventService.publish(new KyReleasedEvent(display, modifiers,
-			e.getKeyChar(), keyCode));
+		final KyReleasedEvent evt =
+			new KyReleasedEvent(display, modifiers, e.getKeyChar(), keyCode);
+		eventService.publish(evt);
+		if (evt.isConsumed()) e.consume();
 	}
 
 }
