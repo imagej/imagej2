@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools.global;
+package imagej.core.tools;
 
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
@@ -46,7 +46,7 @@ import imagej.ext.tool.ToolService;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Pan Activator", global = true)
+@Tool(name = "Pan Activator", alwaysActive = true)
 public class PanActivator extends AbstractTool {
 
 	/** Key used to activate pan tool. */

@@ -45,7 +45,7 @@ import imagej.ext.IndexItemInfo;
 public class ToolInfo extends IndexItemInfo<ITool> {
 
 	/** Whether the tool is active all the time, rather than on the toolbar. */
-	private boolean global;
+	private boolean alwaysActive;
 
 	public ToolInfo(final String className) {
 		setClassName(className);
@@ -59,14 +59,14 @@ public class ToolInfo extends IndexItemInfo<ITool> {
 		setIconPath(tool.iconPath());
 		setPriority(tool.priority());
 		setEnabled(tool.enabled());
-		global = tool.global();
+		alwaysActive = tool.alwaysActive();
 	}
 
 	// -- ToolInfo methods --
 
 	/** Gets whether tool is always active, rather than part of the toolbar. */
-	public boolean isGlobal() {
-		return global;
+	public boolean isAlwaysActive() {
+		return alwaysActive;
 	}
 
 }

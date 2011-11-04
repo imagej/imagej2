@@ -1,5 +1,5 @@
 
-package imagej.core.tools.global;
+package imagej.core.tools;
 
 import imagej.ImageJ;
 import imagej.ext.display.event.input.KyPressedEvent;
@@ -9,7 +9,7 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
-@Tool(name = "Keyboard Shortcuts", global = true, priority = Integer.MIN_VALUE)
+@Tool(name = "Keyboard Shortcuts", alwaysActive = true, priority = Integer.MIN_VALUE)
 public class AcceleratorHandler extends AbstractTool {
 
 	private final ModuleService moduleService;

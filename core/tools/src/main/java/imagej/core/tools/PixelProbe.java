@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools.global;
+package imagej.core.tools;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Probe", global = true)
+@Tool(name = "Probe", alwaysActive = true)
 public class PixelProbe extends AbstractTool {
 
 	// -- ITool methods --

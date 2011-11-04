@@ -32,9 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools.global;
+package imagej.core.tools;
 
-import imagej.core.tools.TunePlayer;
 import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.plugin.PluginService;
@@ -46,7 +45,7 @@ import imagej.ext.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Konami", global = true)
+@Tool(name = "Konami", alwaysActive = true)
 public class KonamiHandler extends AbstractTool {
 
 	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,

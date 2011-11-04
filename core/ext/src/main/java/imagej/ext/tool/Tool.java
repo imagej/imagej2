@@ -77,7 +77,7 @@ public @interface Tool {
 	boolean enabled() default true;
 
 	/** When true, tool has no button but rather is active all the time. */
-	boolean global() default false;
+	boolean alwaysActive() default false;
 
 	/**
 	 * When true, tool receives events when the main ImageJ application frame is
