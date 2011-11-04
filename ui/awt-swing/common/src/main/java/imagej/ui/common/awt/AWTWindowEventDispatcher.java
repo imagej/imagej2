@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.common.awt;
 
 import imagej.event.EventService;
-import imagej.event.ImageJEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.window.WinActivatedEvent;
@@ -43,6 +42,7 @@ import imagej.ext.display.event.window.WinClosedEvent;
 import imagej.ext.display.event.window.WinClosingEvent;
 import imagej.ext.display.event.window.WinDeactivatedEvent;
 import imagej.ext.display.event.window.WinDeiconifiedEvent;
+import imagej.ext.display.event.window.WinEvent;
 import imagej.ext.display.event.window.WinIconifiedEvent;
 import imagej.ext.display.event.window.WinOpenedEvent;
 
@@ -50,7 +50,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 /**
- * Rebroadcasts AWT window events as {@link ImageJEvent}s.
+ * Rebroadcasts AWT {@link WindowEvent}s as ImageJ {@link WinEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -67,7 +67,9 @@ public class AWTWindowEventDispatcher implements EventDispatcher,
 	private final EventService eventService;
 
 	/** Creates an AWT event dispatcher for the given display. */
-	public AWTWindowEventDispatcher(final Display<?> display, final EventService eventService) {
+	public AWTWindowEventDispatcher(final Display<?> display,
+		final EventService eventService)
+	{
 		this.display = display;
 		this.eventService = eventService;
 	}

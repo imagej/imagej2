@@ -36,12 +36,12 @@ package imagej.ui.common.awt;
 
 import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
-import imagej.event.ImageJEvent;
 import imagej.ext.display.event.input.InputModifiers;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsEnteredEvent;
+import imagej.ext.display.event.input.MsEvent;
 import imagej.ext.display.event.input.MsExitedEvent;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
@@ -55,12 +55,12 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 /**
- * Rebroadcasts AWT events as {@link ImageJEvent}s.
+ * Rebroadcasts AWT {@link MouseEvent}s as ImageJ {@link MsEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTMouseEventDispatcher extends AWTEventDispatcher implements
+public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	MouseListener, MouseMotionListener, MouseWheelListener
 {
 
