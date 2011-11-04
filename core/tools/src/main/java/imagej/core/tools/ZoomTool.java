@@ -71,16 +71,16 @@ public class ZoomTool extends AbstractTool {
 	//   make sure elsewhere that the zoom plugins get called appropriately.
 	
 	@Override
-	public boolean onMouseDown(final MsPressedEvent evt) {
+	public void onMouseDown(final MsPressedEvent evt) {
 		mouseDown.x = evt.getX();
 		mouseDown.y = evt.getY();
-		return true;
+		evt.consume();
 	}
 
 	@Override
-	public boolean onMouseUp(final MsReleasedEvent evt) {
+	public void onMouseUp(final MsReleasedEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return false;
+		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		mouseUp.x = evt.getX();
@@ -117,20 +117,20 @@ public class ZoomTool extends AbstractTool {
 				imageDisplay.getCanvas().zoomIn(mouseDown);
 			}
 		}
-		return true;
+		evt.consume();
 	}
 
 	@Override
-	public boolean onMouseMove(final MsMovedEvent evt) {
+	public void onMouseMove(final MsMovedEvent evt) {
 		mousePos.x = evt.getX();
 		mousePos.y = evt.getY();
-		return true;
+		evt.consume();
 	}
 
 	@Override
-	public boolean onMouseWheel(final MsWheelEvent evt) {
+	public void onMouseWheel(final MsWheelEvent evt) {
 		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return false;
+		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
@@ -140,7 +140,7 @@ public class ZoomTool extends AbstractTool {
 		else {
 			imageDisplay.getCanvas().zoomOut(center);
 		}
-		return true;
+		evt.consume();
 	}
 
 }

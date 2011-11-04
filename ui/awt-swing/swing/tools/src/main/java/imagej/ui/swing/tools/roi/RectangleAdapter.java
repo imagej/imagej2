@@ -133,19 +133,19 @@ public class RectangleAdapter extends
 	 */
 	Point anchor = new Point();
 	@Override
-	public boolean onMouseDown(final MsPressedEvent evt) {
+	public void onMouseDown(final MsPressedEvent evt) {
 		anchor.x = evt.getX();
 		anchor.y = evt.getY();
-		return true;
+		evt.consume();
 	}
 	
 	@Override
-	public boolean onMouseDrag(final MsDraggedEvent evt) {
+	public void onMouseDrag(final MsDraggedEvent evt) {
 		final EventService eventService = evt.getContext().getService(EventService.class);
 		String message = String.format("x=%d, y=%d, w=%d, h=%d", 
 					anchor.x, anchor.y, evt.getX()-anchor.x, evt.getY()-anchor.y);
 		eventService.publish(new StatusEvent(message));
-		return true;
+		evt.consume();
 	}
 
 }
