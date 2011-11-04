@@ -36,6 +36,7 @@ package imagej.ui.swing.sdi.display;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.display.AbstractSwingImageDisplay;
 import imagej.ui.swing.display.SwingDisplayWindow;
@@ -56,6 +57,8 @@ public class SwingSdiImageDisplay extends AbstractSwingImageDisplay {
 		super(new SwingDisplayWindow());
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
 
+		sdiWindow
+			.addKyEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
 		sdiWindow.addWinEventDispatcher(new AWTWindowEventDispatcher(this,
 			eventService));
 	}
