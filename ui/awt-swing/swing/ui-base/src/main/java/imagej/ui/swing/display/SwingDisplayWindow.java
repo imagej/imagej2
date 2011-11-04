@@ -36,7 +36,6 @@ package imagej.ui.swing.display;
 
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
@@ -60,20 +59,23 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 		setLocation(StaticSwingUtils.nextFramePosition());
 	}
 
-	@Override
-	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		if (dispatcher instanceof AWTWindowEventDispatcher) {
-			addWindowListener((AWTWindowEventDispatcher) dispatcher);
-		}
-		if (dispatcher instanceof AWTKeyEventDispatcher) {
-			addKeyListener((AWTKeyEventDispatcher) dispatcher);
-		}
+	// -- SwingDisplayWindow methods --
+
+	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+		addKeyListener(dispatcher);
 	}
+
+	public void addWinEventDispatcher(final AWTWindowEventDispatcher dispatcher) {
+		addWindowListener(dispatcher);
+	}
+
+	// -- DisplayWindow methods --
 
 	@Override
 	public void setContent(final DisplayPanel panel) {
+		// TODO - eliminate hacky cast
 		this.panel = (SwingDisplayPanel) panel;
-		setContentPane(this.panel); 
+		setContentPane(this.panel);
 	}
 
 	@Override
@@ -81,7 +83,7 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 		pack();
 		setVisible(visible);
 	}
-	
+
 	@Override
 	public void close() {
 		setVisible(false);

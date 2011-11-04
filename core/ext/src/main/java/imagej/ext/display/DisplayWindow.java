@@ -44,8 +44,6 @@ public interface DisplayWindow {
 
 	void setTitle(String s);
 
-	void addEventDispatcher(EventDispatcher dispatcher);
-	
 	void setContent(DisplayPanel panel);
 
 	void pack();  // or reformat, or (re)validate, or somesuch.

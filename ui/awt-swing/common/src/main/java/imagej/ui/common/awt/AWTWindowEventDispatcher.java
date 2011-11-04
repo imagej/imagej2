@@ -36,7 +36,6 @@ package imagej.ui.common.awt;
 
 import imagej.event.EventService;
 import imagej.ext.display.Display;
-import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.display.event.window.WinClosedEvent;
 import imagej.ext.display.event.window.WinClosingEvent;
@@ -55,9 +54,7 @@ import java.awt.event.WindowListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class AWTWindowEventDispatcher implements EventDispatcher,
-	WindowListener
-{
+public class AWTWindowEventDispatcher implements WindowListener {
 
 	// TODO: Use WindowAdapter ? Currently,
 	// not implementing WindowStateListener windowStateChanged(WindowEvent) and

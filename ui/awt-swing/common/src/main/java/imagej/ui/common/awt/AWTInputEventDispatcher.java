@@ -34,18 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.input.InputModifiers;
 
 import java.awt.event.InputEvent;
 
 /**
- * Abstract superclass of AWT {@link EventDispatcher} implementations for
+ * Abstract superclass of AWT event dispatcher implementations for
  * {@link InputEvent}s.
  * 
  * @author Curtis Rueden
  */
-public abstract class AWTInputEventDispatcher implements EventDispatcher {
+public abstract class AWTInputEventDispatcher {
 
 	public InputModifiers createModifiers(final int modsEx) {
 		final boolean altDown = isOn(modsEx, InputEvent.ALT_DOWN_MASK);

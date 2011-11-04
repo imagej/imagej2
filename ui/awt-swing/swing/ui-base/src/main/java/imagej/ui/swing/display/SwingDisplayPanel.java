@@ -45,7 +45,6 @@ import imagej.data.display.ImageDisplayPanel;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.EventDispatcher;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
@@ -140,6 +139,18 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		add(sliderPanel, BorderLayout.SOUTH);
 
 		window.setContent(this);
+	}
+	
+	// -- SwingDisplayPanel methods --
+
+	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+		addKeyListener(dispatcher);
+	}
+	
+	public void addMsEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
+		addMouseListener(dispatcher);
+		addMouseMotionListener(dispatcher);
+		addMouseWheelListener(dispatcher);
 	}
 
 	// -- ImageDisplayPanel methods --
@@ -249,18 +260,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 			border = new LineBorder(AWTColors.getColor(color), width);
 		}
 		imagePane.setBorder(border);
-	}
-
-	@Override
-	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		if (dispatcher instanceof AWTKeyEventDispatcher) {
-			addKeyListener((AWTKeyEventDispatcher) dispatcher);
-		}
-		if (dispatcher instanceof AWTMouseEventDispatcher) {
-			addMouseListener((AWTMouseEventDispatcher) dispatcher);
-			addMouseMotionListener((AWTMouseEventDispatcher) dispatcher);
-			addMouseWheelListener((AWTMouseEventDispatcher) dispatcher);
-		}
 	}
 
 	// -- Helper methods --

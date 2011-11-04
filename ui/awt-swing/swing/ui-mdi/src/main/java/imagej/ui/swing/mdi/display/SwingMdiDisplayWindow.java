@@ -37,7 +37,6 @@ package imagej.ui.swing.mdi.display;
 import imagej.ImageJ;
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.EventDispatcher;
 import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
 import imagej.ui.swing.StaticSwingUtils;
@@ -73,16 +72,20 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 		setLocation(StaticSwingUtils.nextFramePosition());
 	}
 
-	@Override
-	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		if (dispatcher instanceof InternalFrameEventDispatcher) {
-			addInternalFrameListener((InternalFrameEventDispatcher) dispatcher);
-		}
+	// -- SwingMdiDisplayWindow methods --
+
+	public void addWinEventDispatcher(
+		final InternalFrameEventDispatcher dispatcher)
+	{
+		addInternalFrameListener(dispatcher);
 	}
+
+	// -- DisplayWindow methods --
 
 	@Override
 	public void setContent(final DisplayPanel panel) {
-		this.setContentPane((SwingDisplayPanel)panel);
+		// TODO - eliminate hacky cast
+		this.setContentPane((SwingDisplayPanel) panel);
 	}
 
 	@Override

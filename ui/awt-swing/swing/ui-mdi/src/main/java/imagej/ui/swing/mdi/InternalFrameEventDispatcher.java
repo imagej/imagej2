@@ -37,7 +37,6 @@ package imagej.ui.swing.mdi;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.ext.display.Display;
-import imagej.ext.display.EventDispatcher;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.display.event.window.WinClosedEvent;
 import imagej.ext.display.event.window.WinClosingEvent;
@@ -55,15 +54,15 @@ import javax.swing.event.InternalFrameListener;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class InternalFrameEventDispatcher implements EventDispatcher,
-	InternalFrameListener
-{
+public class InternalFrameEventDispatcher implements InternalFrameListener {
 
 	private final Display<?> display;
 	private final EventService eventService;
 
 	/** Creates an AWT event dispatcher for the given display. */
-	public InternalFrameEventDispatcher(final Display<?> display, final EventService eventService) {
+	public InternalFrameEventDispatcher(final Display<?> display,
+		final EventService eventService)
+	{
 		this.eventService = eventService;
 		this.display = display;
 	}

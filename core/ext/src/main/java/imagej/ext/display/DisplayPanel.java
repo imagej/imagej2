@@ -52,12 +52,6 @@ public interface DisplayPanel {
 	// CTR TEMP - needed for now during refactoring process
 	DisplayWindow getWindow();
 
-	/**
-	 * Handle keyboard, mouse and window events.
-	 * @param dispatcher
-	 */
-	void addEventDispatcher(EventDispatcher dispatcher);
-
 	/** TODO */
 	void makeActive();
 
