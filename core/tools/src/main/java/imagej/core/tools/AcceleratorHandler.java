@@ -47,7 +47,7 @@ import imagej.ext.tool.Tool;
  * Handles keyboard accelerator combinations in certain special cases.
  * <p>
  * Specifically, we want to handle key presses even if the current UI's built-in
- * event handler passes them up. For example, with the Swing UI, the menu
+ * event handler would pass them up. For example, with the Swing UI, the menu
  * infrastructure fires a menu item if the associated accelerator is pressed,
  * but we need to fire the linked module regardless of which window is active;
  * i.e., on Windows and Linux platforms, image windows do not have a menu bar
