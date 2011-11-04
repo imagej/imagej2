@@ -47,6 +47,12 @@ public class ToolInfo extends IndexItemInfo<ITool> {
 	/** Whether the tool is active all the time, rather than on the toolbar. */
 	private boolean alwaysActive;
 
+	/**
+	 * Whether the tool receives input events when the main application frame has
+	 * the focus.
+	 */
+	private boolean activeInAppFrame;
+
 	public ToolInfo(final String className) {
 		setClassName(className);
 	}
@@ -60,6 +66,7 @@ public class ToolInfo extends IndexItemInfo<ITool> {
 		setPriority(tool.priority());
 		setEnabled(tool.enabled());
 		alwaysActive = tool.alwaysActive();
+		activeInAppFrame = tool.activeInAppFrame();
 	}
 
 	// -- ToolInfo methods --
@@ -67,6 +74,14 @@ public class ToolInfo extends IndexItemInfo<ITool> {
 	/** Gets whether tool is always active, rather than part of the toolbar. */
 	public boolean isAlwaysActive() {
 		return alwaysActive;
+	}
+
+	/**
+	 * Gets whether the tool receives input events when the main application frame
+	 * has the focus.
+	 */
+	public boolean isActiveInAppFrame() {
+		return activeInAppFrame;
 	}
 
 }
