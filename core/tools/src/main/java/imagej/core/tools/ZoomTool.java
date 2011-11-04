@@ -66,10 +66,10 @@ public class ZoomTool extends AbstractTool {
 
 	// -- ITool methods --
 
-	// NB
-	//   removed onKeyDown() method because zoom events were doubling.
-	//   make sure elsewhere that the zoom plugins get called appropriately.
-	
+	// NB: We do not respond to onKeyDown() for plus and minus here, because
+	// the ZoomIn and ZoomOut plugins already register those as accelerators.
+	// So they will work regardless of which tool is selected anyway.
+
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
 		mouseDown.x = evt.getX();

@@ -48,9 +48,7 @@ import imagej.ext.plugin.Plugin;
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "Out -", weight = 2) })
-// NB - if accelerator defined then zoom happens twice when that exact key
-// sequence entered. Difficult to eradicate this behavior. 
+	@Menu(label = "Out", weight = 2, accelerator = "control MINUS") })
 public class ZoomOut implements ImageJPlugin {
 
 	@Parameter
