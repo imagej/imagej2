@@ -155,6 +155,10 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		subscribeToEvents();
 	}
 
+	/**
+	 * Configures the application frame for subclass-specific settings (e.g., SDI
+	 * or MDI).
+	 */
 	protected abstract void setupAppFrame();
 
 	/**
