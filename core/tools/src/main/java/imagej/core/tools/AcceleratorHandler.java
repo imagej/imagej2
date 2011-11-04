@@ -9,7 +9,8 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
-@Tool(name = "Keyboard Shortcuts", alwaysActive = true, priority = Integer.MIN_VALUE)
+@Tool(name = "Keyboard Shortcuts", alwaysActive = true,
+	activeInAppFrame = true, priority = Integer.MIN_VALUE)
 public class AcceleratorHandler extends AbstractTool {
 
 	private final ModuleService moduleService;
