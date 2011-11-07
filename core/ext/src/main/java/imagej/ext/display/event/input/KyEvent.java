@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display.event.input;
 
+import imagej.ext.Accelerator;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
-import imagej.ext.plugin.Menu;
 
 /**
  * An event indicating keyboard activity in a display.
@@ -70,40 +70,12 @@ public abstract class KyEvent extends InputEvent {
 	}
 
 	/**
-	 * Converts the key event into the corresponding accelerator string.
+	 * Converts the key event into a corresponding accelerator.
 	 * 
-	 * @return the string required as accelerator in the annotation of a plugin in
-	 *         order to match the current key event.
-	 * @see Menu for the syntax of accelerator strings.
+	 * @return an accelerator matching the key code and modifiers of the event.
 	 */
-	public String getAcceleratorString() {
-		return getAcceleratorString(false);
-	}
-
-	/**
-	 * Converts the key event into the corresponding accelerator string.
-	 * 
-	 * @param forceControlModifier always pretend that the Control key (or on
-	 *          Apple, the Command key) has been pressed.
-	 * @return the string required as accelerator in the annotation of a plugin in
-	 *         order to match the current key event.
-	 * @see Menu for the syntax of accelerator strings.
-	 */
-	public String getAcceleratorString(final boolean forceControlModifier) {
-		final InputModifiers modifiers = getModifiers();
-		final StringBuilder builder = new StringBuilder();
-		if (modifiers.isAltDown()) builder.append("alt ");
-		if (modifiers.isAltGrDown()) builder.append("altGraph ");
-		if (forceControlModifier || modifiers.isCtrlDown()) {
-			builder.append("control ");
-		}
-		if (modifiers.isMetaDown()) builder.append("meta ");
-		if (modifiers.isShiftDown()) builder.append("shift ");
-		char ch = getCharacter();
-		if (ch > 0) {
-			builder.append(getCode().toString());
-		}
-		return builder.toString();
+	public Accelerator getAccelerator() {
+		return new Accelerator(getCode(), getModifiers());
 	}
 
 	// -- Object methods --
@@ -111,7 +83,7 @@ public abstract class KyEvent extends InputEvent {
 	@Override
 	public String toString() {
 		return super.toString() + "\n\tcharacter = '" + character + "'\n\tcode = " +
-			code + "\n\taccelerator = " + getAcceleratorString();
+			code + "\n\taccelerator = " + getAccelerator();
 	}
-
+	
 }

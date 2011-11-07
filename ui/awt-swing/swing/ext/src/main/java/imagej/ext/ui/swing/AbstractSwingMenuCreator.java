@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.Accelerator;
 import imagej.ext.menu.AbstractMenuCreator;
 import imagej.ext.menu.ShadowMenu;
 
@@ -41,7 +42,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -130,8 +130,9 @@ public abstract class AbstractSwingMenuCreator<T> extends
 	}
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
-		final String accelerator = shadow.getMenuEntry().getAccelerator();
-		return KeyStroke.getKeyStroke(accelerator);
+		final Accelerator accelerator = shadow.getMenuEntry().getAccelerator();
+		if (accelerator == null) return null;
+		return KeyStroke.getKeyStroke(accelerator.toString());
 	}
 
 	private Icon loadIcon(final ShadowMenu shadow) {

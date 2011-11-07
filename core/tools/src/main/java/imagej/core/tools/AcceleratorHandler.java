@@ -35,7 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ImageJ;
-import imagej.ext.display.event.input.KyEvent;
+import imagej.ext.Accelerator;
+import imagej.ext.InputModifiers;
+import imagej.ext.KeyCode;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
@@ -57,9 +59,7 @@ import imagej.ext.tool.Tool;
  * <p>
  * This tool also handles the case where the accelerator lacks the platform's
  * modifier key; e.g., if you press L (rather than Ctrl+L or Cmd+L) it will take
- * care of launching the Command Finder plugin. This works because the
- * {@link KyEvent#getAcceleratorString()} method takes care to attach the
- * relevant modifier flag when constructing the accelerator string.
+ * care of launching the Command Finder plugin.
  * </p>
  * 
  * @author Johannes Schindelin
@@ -71,7 +71,7 @@ public class AcceleratorHandler extends AbstractTool {
 
 	private final ModuleService moduleService;
 	private final PluginService pluginService;
-	
+
 	public AcceleratorHandler() {
 		moduleService = ImageJ.get(ModuleService.class);
 		pluginService = ImageJ.get(PluginService.class);
@@ -82,17 +82,19 @@ public class AcceleratorHandler extends AbstractTool {
 		ModuleInfo moduleInfo = null;
 
 		// look up the module corresponding to this key press
-		final String accel = evt.getAcceleratorString();
-		moduleInfo = moduleService.getModuleForAccelerator(accel);
+		final Accelerator acc = evt.getAccelerator();
+		moduleInfo = moduleService.getModuleForAccelerator(acc);
 
-		// TODO: ask options service whether the Control modifier should be forced
-		final boolean addControlAutomatically = true;
+		// TODO: ask options service whether the default modifier should be forced
+		final boolean addModifierAutomatically = true;
 
-		if (moduleInfo == null && addControlAutomatically) {
+		if (moduleInfo == null && addModifierAutomatically) {
 			// look up the module corresponding to this key press, plus control
-			final String ctrlAccel = evt.getAcceleratorString(true);
-			if (!accel.equals(ctrlAccel)) {
-				moduleInfo = moduleService.getModuleForAccelerator(ctrlAccel);
+			final KeyCode keyCode = acc.getKeyCode();
+			final InputModifiers modifiers = forceDefaultModifier(acc.getModifiers());
+			final Accelerator modAcc = new Accelerator(keyCode, modifiers);
+			if (!acc.equals(modAcc)) {
+				moduleInfo = moduleService.getModuleForAccelerator(modAcc);
 			}
 		}
 		if (moduleInfo == null) return;
@@ -102,6 +104,22 @@ public class AcceleratorHandler extends AbstractTool {
 
 		// consume event, so that nothing else tries to handle it
 		evt.consume();
+	}
+
+	// -- Helper methods --
+
+	private InputModifiers forceDefaultModifier(final InputModifiers modifiers) {
+		final boolean forceMeta = Accelerator.isCtrlReplacedWithMeta();
+		final boolean forceCtrl = !forceMeta;
+
+		final boolean alt = modifiers.isAltDown();
+		final boolean altGr = modifiers.isAltGrDown();
+		final boolean ctrl = forceCtrl || modifiers.isCtrlDown();
+		final boolean meta = forceMeta || modifiers.isMetaDown();
+		final boolean shift = modifiers.isShiftDown();
+
+		return new InputModifiers(alt, altGr, ctrl, meta, shift, false, false,
+			false);
 	}
 
 }

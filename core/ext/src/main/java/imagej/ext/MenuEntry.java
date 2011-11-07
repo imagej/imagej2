@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
-import java.util.regex.Pattern;
-
 /**
  * One component of a menu path, for use with {@link MenuPath}.
  * 
@@ -46,6 +44,7 @@ public class MenuEntry {
 
 	public static final double DEFAULT_WEIGHT = Double.POSITIVE_INFINITY;
 
+	// TODO - May want to move these constants somewhere more ImageJ-specific.
 	public static final double FILE_WEIGHT = 0;
 	public static final double EDIT_WEIGHT = 1;
 	public static final double IMAGE_WEIGHT = 2;
@@ -58,26 +57,26 @@ public class MenuEntry {
 	private String name;
 	private double weight = DEFAULT_WEIGHT;
 	private char mnemonic;
-	private String accelerator;
+	private Accelerator accelerator;
 	private String iconPath;
 
 	public MenuEntry(final String name) {
-		this.name = name;
+		setName(name);
 	}
 
 	public MenuEntry(final String name, final double weight) {
-		this.name = name;
-		this.weight = weight;
+		setName(name);
+		setWeight(weight);
 	}
 
 	public MenuEntry(final String name, final double weight, final char mnemonic,
-		final String accelerator, final String iconPath)
+		final Accelerator acc, final String iconPath)
 	{
-		this.name = name;
-		this.weight = weight;
-		this.mnemonic = mnemonic;
-		setAccelerator(accelerator);
-		this.iconPath = iconPath;
+		setName(name);
+		setWeight(weight);
+		setMnemonic(mnemonic);
+		setAccelerator(acc);
+		setIconPath(iconPath);
 	}
 
 	public void setName(final String name) {
@@ -88,7 +87,7 @@ public class MenuEntry {
 		return name;
 	}
 
-	public void setWeight(final int weight) {
+	public void setWeight(final double weight) {
 		this.weight = weight;
 	}
 
@@ -104,11 +103,11 @@ public class MenuEntry {
 		return mnemonic;
 	}
 
-	public void setAccelerator(final String accelerator) {
-		this.accelerator = normalizeAccelerator(accelerator);
+	public void setAccelerator(final Accelerator accelerator) {
+		this.accelerator = accelerator;
 	}
 
-	public String getAccelerator() {
+	public Accelerator getAccelerator() {
 		return accelerator;
 	}
 
@@ -135,64 +134,6 @@ public class MenuEntry {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	// -- Helper methods --
-
-	/**
-	 * Ensures the accelerator is properly formatted. Two correctly formatted
-	 * accelerators that represent the same keystroke must be comparable with
-	 * {@link String#equals}.
-	 */
-	private static String normalizeAccelerator(final String accelerator) {
-		if (accelerator == null) return null;
-
-		// allow use of caret for control (e.g., "^X" to represent "control X")
-		final String accel = accelerator.replaceAll(Pattern.quote("^"), "control ");
-
-		final String[] components = accel.split(" ");
-		if (components.length == 0) return accel;
-
-		// determine which modifiers are used
-		boolean alt = false, altGraph = false;
-		boolean control = false, meta = false, shift = false;
-		for (int i = 0; i < components.length - 1; i++) {
-			if (components[i].equalsIgnoreCase("alt")) alt = true;
-			else if (components[i].equalsIgnoreCase("altGraph")) altGraph = true;
-			else if (components[i].equalsIgnoreCase("ctrl") ||
-				components[i].equalsIgnoreCase("control"))
-			{
-				control = true;
-			}
-			else if (components[i].equalsIgnoreCase("meta")) meta = true;
-			else if (components[i].equalsIgnoreCase("shift")) shift = true;
-		}
-
-		// sort the modifiers alphabetically
-		final StringBuilder builder = new StringBuilder();
-		if (alt) builder.append("alt ");
-		if (altGraph) builder.append("altGraph ");
-		if (control) builder.append("control ");
-		if (meta) builder.append("meta ");
-		if (shift) builder.append("shift ");
-
-		// upper case the key code
-		builder.append(components[components.length - 1].toUpperCase());
-		
-		final String normalAccel = builder.toString();
-
-		// TODO - isolate/refactor platform-specific logic
-		// on Mac, use Command instead of Control for keyboard shortcuts
-		if (isMac() && normalAccel.indexOf("meta ") < 0) {
-			// only if meta not already in use
-			return normalAccel.replaceAll("control ", "meta ");
-		}
-
-		return normalAccel;
-	}
-
-	private static boolean isMac() {
-		return System.getProperty("os.name").startsWith("Mac");
 	}
 
 }

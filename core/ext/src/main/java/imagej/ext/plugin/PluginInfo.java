@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
+import imagej.ext.Accelerator;
 import imagej.ext.IndexItemInfo;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
@@ -134,9 +135,9 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 			final String name = menu[i].label();
 			final double weight = menu[i].weight();
 			final char mnemonic = menu[i].mnemonic();
-			final String accel = menu[i].accelerator();
+			final Accelerator acc = Accelerator.create(menu[i].accelerator());
 			final String iconPath = menu[i].iconPath();
-			menuPath.add(new MenuEntry(name, weight, mnemonic, accel, iconPath));
+			menuPath.add(new MenuEntry(name, weight, mnemonic, acc, iconPath));
 		}
 		return menuPath;
 	}
