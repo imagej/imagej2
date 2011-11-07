@@ -122,11 +122,12 @@ public class Accelerator {
 	 * @see KeyCode for the complete list of special character codes.
 	 */
 	public static Accelerator create(final String acc) {
+		if (acc == null || acc.isEmpty()) return null;
+
 		// allow use of caret for control (e.g., "^X" to represent "control X")
 		final String a = acc.replaceAll(Pattern.quote("^"), "control ");
 
 		final String[] components = a.split(" ");
-		if (components.length == 0) return null;
 
 		// determine which modifiers are used
 		boolean alt = false, altGr = false;
