@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ui.ApplicationFrame;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.util.Prefs;
 
 import java.awt.HeadlessException;
@@ -56,10 +55,4 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 		setLocation(lastX, lastY);
 	}
 	
-	// -- SwingApplicationFrame methods --
-
-	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
-		addKeyListener(dispatcher);
-	}
-
 }
