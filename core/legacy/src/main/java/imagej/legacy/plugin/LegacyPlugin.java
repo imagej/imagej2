@@ -37,6 +37,7 @@ package imagej.legacy.plugin;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.gui.Roi;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -234,10 +235,15 @@ public class LegacyPlugin implements ImageJPlugin {
 		// flag does not track everything (such as metadata changes?) and thus
 		// we might still have to do some minor harmonization. Investigate.
 
+		final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
+		final ImagePlus currImp = WindowManager.getCurrentImage();
+
+		// see method below
+		finishInProgressPastes(currImp, imps);
+		
 		// the IJ1 plugin may not have any outputs but just changes current
 		// ImagePlus make sure we catch any changes via harmonization
 		final List<ImageDisplay> displays = new ArrayList<ImageDisplay>();
-		final ImagePlus currImp = WindowManager.getCurrentImage();
 		if (currImp != null) {
 			ImageDisplay display = map.lookupDisplay(currImp);
 			if (display != null) {
@@ -251,7 +257,6 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// also harmonize any outputs
 
-		final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
 		for (final ImagePlus imp : imps) {
 			if (imp.getStack().getSize() == 0) { // totally emptied by plugin
 				// TODO - do we need to delete display or is it already done?
@@ -292,5 +297,29 @@ public class LegacyPlugin implements ImageJPlugin {
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 		dialog.prompt();
+	}
+	
+	// Finishes any in progress paste() operations. Done before harmonization.
+	// In IJ1 the paste operations are usually handled by ImageCanvas::paint().
+	// In IJ2 that method is never called. It would be nice to hook something
+	// that calls paint() via the legacy injector but that may raise additional
+	// problems. This is a simple fix.
+	
+	private void finishInProgressPastes(
+		ImagePlus currImp, Set<ImagePlus> outputList)
+	{
+		endPaste(currImp);
+		for (final ImagePlus imp : outputList) { // potentially empty list
+			if (imp == currImp) continue;
+			endPaste(imp);
+		}
+	}
+	
+	private void endPaste(ImagePlus imp) {
+		if (imp == null) return;
+		Roi roi = imp.getRoi();
+		if (roi == null) return;
+		if (roi.getPasteMode() == Roi.NOT_PASTING) return;
+		roi.endPaste();
 	}
 }
