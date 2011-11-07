@@ -36,6 +36,7 @@ package imagej.ext.display.event.input;
 
 import imagej.ext.display.Display;
 import imagej.ext.display.KeyCode;
+import imagej.ext.plugin.Menu;
 
 /**
  * An event indicating keyboard activity in a display.
@@ -72,6 +73,7 @@ public abstract class KyEvent extends InputEvent {
 	 * 
 	 * @return the string required as accelerator in the annotation of a plugin in
 	 *         order to match the current key event.
+	 * @see Menu for the syntax of accelerator strings.
 	 */
 	public String getAcceleratorString() {
 		return getAcceleratorString(false);
@@ -84,6 +86,7 @@ public abstract class KyEvent extends InputEvent {
 	 *          Apple, the Command key) has been pressed.
 	 * @return the string required as accelerator in the annotation of a plugin in
 	 *         order to match the current key event.
+	 * @see Menu for the syntax of accelerator strings.
 	 */
 	public String getAcceleratorString(final boolean forceControlModifier) {
 		final InputModifiers modifiers = getModifiers();
