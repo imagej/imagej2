@@ -96,15 +96,15 @@ public class InputModifiers {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if (altDown) sb.append(", Alt");
-		if (altGrDown) sb.append(", AltGr");
-		if (ctrlDown) sb.append(", Ctrl");
-		if (metaDown) sb.append(", Meta");
-		if (shiftDown) sb.append(", Shift");
-		if (leftButtonDown) sb.append(", Left Button");
-		if (middleButtonDown) sb.append(", Middle Button");
-		if (rightButtonDown) sb.append(", Right Button");
-		return sb.toString();
+		if (altDown) sb.append(" alt");
+		if (altGrDown) sb.append(" altGraph");
+		if (ctrlDown) sb.append(" control");
+		if (metaDown) sb.append(" meta");
+		if (shiftDown) sb.append(" shift");
+		if (leftButtonDown) sb.append(" leftButton");
+		if (middleButtonDown) sb.append(" middleButton");
+		if (rightButtonDown) sb.append(" rightButton");
+		return sb.toString().trim();
 	}
 
 }
