@@ -61,6 +61,7 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 	// -- SwingApplicationFrame methods --
 	
 	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+		addKeyListener(dispatcher);
 		addKeyDispatcher(dispatcher, getContentPane());
 	}
 
