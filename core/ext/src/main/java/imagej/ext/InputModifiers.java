@@ -94,6 +94,26 @@ public class InputModifiers {
 	// -- Object methods --
 
 	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof InputModifiers)) return false;
+		final InputModifiers modifiers = (InputModifiers) o;
+		if (!isAltDown() == modifiers.isAltDown()) return false;
+		if (!isAltGrDown() == modifiers.isAltGrDown()) return false;
+		if (!isCtrlDown() == modifiers.isCtrlDown()) return false;
+		if (!isMetaDown() == modifiers.isMetaDown()) return false;
+		if (!isShiftDown() == modifiers.isShiftDown()) return false;
+		if (!isLeftButtonDown() == modifiers.isLeftButtonDown()) return false;
+		if (!isMiddleButtonDown() == modifiers.isMiddleButtonDown()) return false;
+		if (!isRightButtonDown() == modifiers.isRightButtonDown()) return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 		if (altDown) sb.append(" alt");
