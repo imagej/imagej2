@@ -89,13 +89,15 @@ public abstract class KyEvent extends InputEvent {
 		final InputModifiers modifiers = getModifiers();
 		final StringBuilder builder = new StringBuilder();
 		if (modifiers.isAltDown()) builder.append("alt ");
-		if (forceControlModifier || modifiers.isCtrlDown()) builder
-			.append("control ");
+		if (forceControlModifier || modifiers.isCtrlDown()) {
+			builder.append("control ");
+		}
 		if (modifiers.isMetaDown()) builder.append("meta ");
 		if (modifiers.isShiftDown()) builder.append("shift ");
 		char ch = getCharacter();
-		if (ch > 0)
+		if (ch > 0) {
 			builder.append(getCode().toString());
+		}
 		return builder.toString();
 	}
 
