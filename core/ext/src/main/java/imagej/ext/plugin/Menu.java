@@ -68,15 +68,14 @@ public @interface Menu {
 	char mnemonic() default '\0';
 
 	/**
-	 * Keyboard shortcut to activate the menu item (e.g., "control a"). The string
-	 * must have the following syntax:
+	 * Keyboard shortcut to activate the menu item. The string must have the
+	 * following syntax:
 	 * 
 	 * <pre>
-	 * 	    &lt;modifiers&gt;* (&lt;keyCode&gt; | &lt;key&gt;)
+	 * 	    &lt;modifiers&gt;* &lt;keyCode&gt;
 	 * 
 	 * 	    modifiers := shift | control | ctrl | meta | alt | altGraph 
 	 * 	    keyCode := {@link KeyCode} field (e.g., COMMA or UP)
-	 * 	    key := string of length 1 giving Unicode character
 	 * </pre>
 	 * 
 	 * Here are some examples:
