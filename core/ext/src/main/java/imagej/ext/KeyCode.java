@@ -606,9 +606,13 @@ public enum KeyCode {
 	private static final Map<Integer, KeyCode> CODES =
 		new HashMap<Integer, KeyCode>();
 
+	private static final Map<String, KeyCode> NAMES =
+		new HashMap<String, KeyCode>();
+
 	static {
 		for (final KeyCode keyCode : values()) {
 			CODES.put(keyCode.getCode(), keyCode);
+			NAMES.put(keyCode.name(), keyCode);
 		}
 	}
 
@@ -629,6 +633,16 @@ public enum KeyCode {
 	 */
 	public static KeyCode get(final int code) {
 		final KeyCode keyCode = CODES.get(code);
+		if (keyCode == null) return UNDEFINED;
+		return keyCode;
+	}
+
+	/**
+	 * Gets the KeyCode with the given name, or {@link #UNDEFINED} if no such
+	 * code.
+	 */
+	public static KeyCode get(final String name) {
+		final KeyCode keyCode = NAMES.get(name);
 		if (keyCode == null) return UNDEFINED;
 		return keyCode;
 	}
