@@ -319,9 +319,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 			final IntCoords farCornerPanel = imageToPanelCoords(farCornerImage);
 
 			// if boundaries take up less than min allowed pixels in either dimension
-			if (farCornerPanel.x - nearCornerPanel.x < MIN_ALLOWED_VIEW_SIZE ||
-				farCornerPanel.y - nearCornerPanel.y < MIN_ALLOWED_VIEW_SIZE)
-			{
+			int panelX = farCornerPanel.x - nearCornerPanel.x;
+			int panelY = farCornerPanel.y - nearCornerPanel.y;
+			if ((panelX < MIN_ALLOWED_VIEW_SIZE) &&
+					(panelY < MIN_ALLOWED_VIEW_SIZE)) {
 				return true;
 			}
 		}
