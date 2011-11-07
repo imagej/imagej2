@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.ui.awt;
 
 import imagej.ImageJ;
+import imagej.ext.Accelerator;
 import imagej.ext.menu.AbstractMenuCreator;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.module.ModuleInfo;
@@ -52,7 +53,9 @@ import java.awt.event.ActionListener;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public abstract class AbstractAWTMenuCreator<T> extends AbstractMenuCreator<T, Menu> {
+public abstract class AbstractAWTMenuCreator<T> extends
+	AbstractMenuCreator<T, Menu>
+{
 
 	@Override
 	protected void addLeafToMenu(final ShadowMenu shadow, final Menu target) {
@@ -87,14 +90,14 @@ public abstract class AbstractAWTMenuCreator<T> extends AbstractMenuCreator<T, M
 
 	// -- Helper methods --
 
-	private void assignProperties(final MenuItem menuItem,
-		final ShadowMenu shadow)
+	private void
+		assignProperties(final MenuItem menuItem, final ShadowMenu shadow)
 	{
-		final String accelerator = shadow.getMenuEntry().getAccelerator();
-
-		if (accelerator != null && accelerator.length() > 0) {
-			final Accelerator acc = new Accelerator(accelerator);
-			final MenuShortcut shortcut = new MenuShortcut(acc.keyCode, acc.shift);
+		final Accelerator acc = shadow.getMenuEntry().getAccelerator();
+		if (acc != null) {
+			final int code = acc.getKeyCode().getCode();
+			final boolean shift = acc.getModifiers().isShiftDown();
+			final MenuShortcut shortcut = new MenuShortcut(code, shift);
 			menuItem.setShortcut(shortcut);
 		}
 	}

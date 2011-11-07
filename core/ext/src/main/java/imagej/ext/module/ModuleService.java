@@ -38,6 +38,7 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
+import imagej.ext.Accelerator;
 import imagej.ext.MenuPath;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
@@ -125,14 +126,14 @@ public class ModuleService extends AbstractService {
 	/**
 	 * Gets the module for a given keyboard shortcut.
 	 * 
-	 * @param accelerator the normalized accelerator string.
+	 * @param acc the accelerator for which to search.
 	 * @return the module info for the corresponding module, or null.
 	 */
-	public ModuleInfo getModuleForAccelerator(final String accelerator) {
+	public ModuleInfo getModuleForAccelerator(final Accelerator acc) {
 		for (final ModuleInfo info : getModules()) {
 			final MenuPath menuPath = info.getMenuPath();
 			if (menuPath == null || menuPath.isEmpty()) continue;
-			if (accelerator.equals(menuPath.getLeaf().getAccelerator())) return info;
+			if (acc.equals(menuPath.getLeaf().getAccelerator())) return info;
 		}
 		return null;
 	}

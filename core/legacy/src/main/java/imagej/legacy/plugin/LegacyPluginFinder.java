@@ -37,6 +37,9 @@ package imagej.legacy.plugin;
 import ij.IJ;
 import ij.Menus;
 import imagej.ImageJ;
+import imagej.ext.Accelerator;
+import imagej.ext.InputModifiers;
+import imagej.ext.KeyCode;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
 import imagej.ext.plugin.ImageJPlugin;
@@ -51,8 +54,6 @@ import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.MenuShortcut;
-import java.awt.Toolkit;
-import java.awt.event.InputEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,8 +65,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.swing.KeyStroke;
 
 /**
  * Discovers legacy ImageJ 1.x plugins.
@@ -114,8 +113,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		Log.info("Found " + commands.size() + " legacy plugins.");
 		for (final Object key : commands.keySet()) {
-			final PluginInfo<ImageJPlugin> pe =
-				createEntry(key, commands, menuTable);
+			final PluginInfo<ImageJPlugin> pe = createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
 		}
 	}
@@ -195,15 +193,16 @@ public class LegacyPluginFinder implements IPluginFinder {
 		final MenuEntry entry = new MenuEntry(name, weight);
 		final MenuShortcut shortcut = menuItem.getShortcut();
 		if (shortcut != null) {
-			final int keyCode = shortcut.getKey();
-			final int shortcutMask =
-				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-			final int shiftMask =
-				shortcut.usesShiftModifier() ? InputEvent.SHIFT_MASK : 0;
-			final int modifiers = shortcutMask | shiftMask;
-			final KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
-			final String accelerator = keyStroke.toString();
-			entry.setAccelerator(accelerator);
+			// convert AWT MenuShortcut to ImageJ Accelerator
+			final int code = shortcut.getKey();
+			final boolean meta = Accelerator.isCtrlReplacedWithMeta();
+			final boolean ctrl = !meta;
+			final boolean shift = shortcut.usesShiftModifier();
+			final KeyCode keyCode = KeyCode.get(code);
+			final InputModifiers modifiers =
+				new InputModifiers(false, false, ctrl, meta, shift, false, false, false);
+			final Accelerator acc = new Accelerator(keyCode, modifiers);
+			entry.setAccelerator(acc);
 		}
 		path.add(entry);
 

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import imagej.ext.KeyCode;
+import imagej.ext.Accelerator;
 import imagej.ext.MenuEntry;
 
 import java.lang.annotation.Target;
@@ -68,26 +68,9 @@ public @interface Menu {
 	char mnemonic() default '\0';
 
 	/**
-	 * Keyboard shortcut to activate the menu item. The string must have the
-	 * following syntax:
+	 * Keyboard shortcut to activate the menu item.
 	 * 
-	 * <pre>
-	 * 	    &lt;modifiers&gt;* &lt;keyCode&gt;
-	 * 
-	 * 	    modifiers := shift | control | ctrl | meta | alt | altGraph 
-	 * 	    keyCode := {@link KeyCode} field (e.g., COMMA or UP)
-	 * </pre>
-	 * 
-	 * Here are some examples:
-	 * <ul>
-	 * <li>"INSERT"</li>
-	 * <li>"control DELETE"</li>
-	 * <li>"alt shift X"</li>
-	 * </ul>
-	 * 
-	 * @see javax.swing.KeyStroke#getKeyStroke(String) for the syntax on which
-	 *      this one is based.
-	 * @see KeyCode for the complete list of special character code strings.
+	 * @see Accelerator#create(String) for information on the syntax.
 	 */
 	String accelerator() default "";
 
