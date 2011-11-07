@@ -44,10 +44,10 @@ public class InputModifiers {
 	private final boolean altDown, altGrDown, ctrlDown, metaDown, shiftDown;
 	private final boolean leftButtonDown, middleButtonDown, rightButtonDown;
 
-	public InputModifiers(final boolean altDown,
-		final boolean altGrDown, final boolean ctrlDown, final boolean metaDown,
-		final boolean shiftDown, final boolean leftButtonDown,
-		final boolean middleButtonDown, final boolean rightButtonDown)
+	public InputModifiers(final boolean altDown, final boolean altGrDown,
+		final boolean ctrlDown, final boolean metaDown, final boolean shiftDown,
+		final boolean leftButtonDown, final boolean middleButtonDown,
+		final boolean rightButtonDown)
 	{
 		this.altDown = altDown;
 		this.altGrDown = altGrDown;
@@ -62,7 +62,7 @@ public class InputModifiers {
 	public boolean isAltDown() {
 		return altDown;
 	}
-	
+
 	public boolean isAltGrDown() {
 		return altGrDown;
 	}
@@ -78,11 +78,11 @@ public class InputModifiers {
 	public boolean isShiftDown() {
 		return shiftDown;
 	}
-	
+
 	public boolean isLeftButtonDown() {
 		return leftButtonDown;
 	}
-	
+
 	public boolean isMiddleButtonDown() {
 		return middleButtonDown;
 	}
@@ -95,7 +95,7 @@ public class InputModifiers {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		if (altDown) sb.append(" alt");
 		if (altGrDown) sb.append(" altGraph");
 		if (ctrlDown) sb.append(" control");

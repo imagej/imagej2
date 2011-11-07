@@ -97,7 +97,8 @@ public class AcceleratorHandler extends AbstractTool {
 				moduleInfo = moduleService.getModuleForAccelerator(modAcc);
 			}
 		}
-		if (moduleInfo == null) return;
+
+		if (moduleInfo == null) return; // no matching module found
 
 		// run via plugin service, so that preprocessors are run
 		pluginService.run(moduleInfo);
