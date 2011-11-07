@@ -374,9 +374,11 @@ public class ToolService extends AbstractService {
 
 	/** Checks that an event is OK to be dispatched to a particular tool. */
 	protected boolean eventOk(final DisplayEvent event, final ITool tool) {
+		if (event.getDisplay() != null) return true;
 		// NB: An event with a null display came from the main app frame.
 		// We only pass these events on to tools flagged with activeInAppFrame.
-		return event.getDisplay() != null || tool.getInfo().isActiveInAppFrame();
+		final ToolInfo toolInfo = tool == null ? null : tool.getInfo();
+		return toolInfo != null && toolInfo.isActiveInAppFrame();
 	}
 
 }
