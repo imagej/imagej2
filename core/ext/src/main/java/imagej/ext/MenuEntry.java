@@ -34,10 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
+import java.util.regex.Pattern;
+
 /**
  * One component of a menu path, for use with {@link MenuPath}.
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
 public class MenuEntry {
 
@@ -105,44 +108,6 @@ public class MenuEntry {
 		this.accelerator = normalizeAccelerator(accelerator);
 	}
 
-	/**
-	 * Ensures the accelerator is properly formatted. Two properly formatted
-	 * accelerators that represent the same keystroke must be comparable with
-	 * {@link String#equals}.
-	 */
-	private static String normalizeAccelerator(final String accelerator) {
-		final String[] components = accelerator.split(" ");
-		if (components.length == 0) return accelerator;
-
-		// determine which modifiers are used
-		boolean alt = false, altGraph = false;
-		boolean control = false, meta = false, shift = false;
-		for (int i = 0; i < components.length - 1; i++) {
-			if (components[i].equalsIgnoreCase("alt")) alt = true;
-			else if (components[i].equalsIgnoreCase("altGraph")) altGraph = true;
-			else if (components[i].equalsIgnoreCase("ctrl") ||
-				components[i].equalsIgnoreCase("control"))
-			{
-				control = true;
-			}
-			else if (components[i].equalsIgnoreCase("meta")) meta = true;
-			else if (components[i].equalsIgnoreCase("shift")) shift = true;
-		}
-
-		// sort the modifiers alphabetically
-		final StringBuilder builder = new StringBuilder();
-		if (alt) builder.append("alt ");
-		if (altGraph) builder.append("altGraph ");
-		if (control) builder.append("control ");
-		if (meta) builder.append("meta ");
-		if (shift) builder.append("shift ");
-
-		// upper case the key code
-		builder.append(components[components.length - 1].toUpperCase());
-
-		return builder.toString();
-	}
-
 	public String getAccelerator() {
 		return accelerator;
 	}
@@ -170,6 +135,64 @@ public class MenuEntry {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Ensures the accelerator is properly formatted. Two correctly formatted
+	 * accelerators that represent the same keystroke must be comparable with
+	 * {@link String#equals}.
+	 */
+	private static String normalizeAccelerator(final String accelerator) {
+		if (accelerator == null) return null;
+
+		// allow use of caret for control (e.g., "^X" to represent "control X")
+		final String accel = accelerator.replaceAll(Pattern.quote("^"), "control ");
+
+		final String[] components = accel.split(" ");
+		if (components.length == 0) return accel;
+
+		// determine which modifiers are used
+		boolean alt = false, altGraph = false;
+		boolean control = false, meta = false, shift = false;
+		for (int i = 0; i < components.length - 1; i++) {
+			if (components[i].equalsIgnoreCase("alt")) alt = true;
+			else if (components[i].equalsIgnoreCase("altGraph")) altGraph = true;
+			else if (components[i].equalsIgnoreCase("ctrl") ||
+				components[i].equalsIgnoreCase("control"))
+			{
+				control = true;
+			}
+			else if (components[i].equalsIgnoreCase("meta")) meta = true;
+			else if (components[i].equalsIgnoreCase("shift")) shift = true;
+		}
+
+		// sort the modifiers alphabetically
+		final StringBuilder builder = new StringBuilder();
+		if (alt) builder.append("alt ");
+		if (altGraph) builder.append("altGraph ");
+		if (control) builder.append("control ");
+		if (meta) builder.append("meta ");
+		if (shift) builder.append("shift ");
+
+		// upper case the key code
+		builder.append(components[components.length - 1].toUpperCase());
+		
+		final String normalAccel = builder.toString();
+
+		// TODO - isolate/refactor platform-specific logic
+		// on Mac, use Command instead of Control for keyboard shortcuts
+		if (isMac() && normalAccel.indexOf("meta ") < 0) {
+			// only if meta not already in use
+			return normalAccel.replaceAll("control ", "meta ");
+		}
+
+		return normalAccel;
+	}
+
+	private static boolean isMac() {
+		return System.getProperty("os.name").startsWith("Mac");
 	}
 
 }

@@ -130,18 +130,7 @@ public abstract class AbstractSwingMenuCreator<T> extends
 	}
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
-		// TODO - isolate/refactor platform-specific logic
-		String accelerator = shadow.getMenuEntry().getAccelerator();
-		if (accelerator != null) {
-			// allow use of ^X to represent control X in keyboard accel parameters
-			// NB: extra space REQUIRED
-			accelerator = accelerator.replaceAll(Pattern.quote("^"), "control ");
-			// on Mac, use Command instead of Control for keyboard shortcuts
-			if (isMac() && accelerator.indexOf("meta") < 0) {
-				// only if meta not already in use
-				accelerator = accelerator.replaceAll("control", "meta");
-			}
-		}
+		final String accelerator = shadow.getMenuEntry().getAccelerator();
 		return KeyStroke.getKeyStroke(accelerator);
 	}
 
@@ -172,10 +161,6 @@ public abstract class AbstractSwingMenuCreator<T> extends
 			}
 		});
 		menuItem.setEnabled(shadow.getModuleInfo().isEnabled());
-	}
-
-	private boolean isMac() {
-		return System.getProperty("os.name").startsWith("Mac");
 	}
 
 }
