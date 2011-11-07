@@ -79,9 +79,22 @@ public class AcceleratorHandler extends AbstractTool {
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
+		ModuleInfo moduleInfo = null;
+
+		// look up the module corresponding to this key press
+		final String accel = evt.getAcceleratorString();
+		moduleInfo = moduleService.getModuleForAccelerator(accel);
+
 		// TODO: ask options service whether the Control modifier should be forced
-		final ModuleInfo moduleInfo =
-			moduleService.getModuleForAccelerator(evt.getAcceleratorString(true));
+		final boolean addControlAutomatically = true;
+
+		if (moduleInfo == null && addControlAutomatically) {
+			// look up the module corresponding to this key press, plus control
+			final String ctrlAccel = evt.getAcceleratorString(true);
+			if (!accel.equals(ctrlAccel)) {
+				moduleInfo = moduleService.getModuleForAccelerator(ctrlAccel);
+			}
+		}
 		if (moduleInfo == null) return;
 
 		// run via plugin service, so that preprocessors are run
