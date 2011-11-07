@@ -38,7 +38,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.Roi;
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -52,7 +51,6 @@ import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
-import imagej.object.ObjectService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
@@ -81,7 +79,14 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Parameter(type = ItemIO.OUTPUT)
 	private List<ImageDisplay> outputs;
 
+	@Parameter(required = true, persist = false)
 	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
+	private LegacyService legacyService;
+
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
 
 	// -- LegacyPlugin methods --
 
@@ -95,7 +100,6 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Override
 	public void run() {
 		
-		imageDisplayService = ImageJ.get(ImageDisplayService.class);
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
 		
@@ -108,7 +112,6 @@ public class LegacyPlugin implements ImageJPlugin {
 			return;
 		}
 
-		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		final LegacyImageMap map = legacyService.getImageMap();
 
 		// sync legacy images to match existing modern displays
@@ -209,9 +212,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	{
 		// TODO - track events and keep a dirty bit, then only harmonize those
 		// displays that have changed. See ticket #546.
-		final ObjectService objectService = ImageJ.get(ObjectService.class);
 		final List<ImageDisplay> imageDisplays =
-			objectService.getObjects(ImageDisplay.class);
+				imageDisplayService.getImageDisplays();
 		for (final ImageDisplay display : imageDisplays) {
 			ImagePlus imp = map.lookupImagePlus(display);
 			if (imp == null) {
@@ -291,7 +293,7 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	private void notifyUser(String message) {
-		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
+		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt(message, "Error",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
