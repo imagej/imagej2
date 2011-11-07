@@ -69,7 +69,7 @@ public abstract class KyEvent extends InputEvent {
 	}
 
 	/**
-	 * Converts the current key event into the corresponding accelerator string.
+	 * Converts the key event into the corresponding accelerator string.
 	 * 
 	 * @return the string required as accelerator in the annotation of a plugin in
 	 *         order to match the current key event.
@@ -80,7 +80,7 @@ public abstract class KyEvent extends InputEvent {
 	}
 
 	/**
-	 * Converts the current key event into the corresponding accelerator string.
+	 * Converts the key event into the corresponding accelerator string.
 	 * 
 	 * @param forceControlModifier always pretend that the Control key (or on
 	 *          Apple, the Command key) has been pressed.
