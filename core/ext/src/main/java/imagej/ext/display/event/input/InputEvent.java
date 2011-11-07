@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display.event.input;
 
+import imagej.ext.InputModifiers;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayEvent;
 

@@ -34,8 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display.event.input;
 
+import imagej.ext.InputModifiers;
+import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
-import imagej.ext.display.KeyCode;
 
 /**
  * An event indicating keyboard activity in a display.

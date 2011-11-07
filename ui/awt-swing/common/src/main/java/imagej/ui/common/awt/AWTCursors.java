@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.ext.display.MouseCursor;
+import imagej.ext.MouseCursor;
 
 import java.awt.Cursor;
 

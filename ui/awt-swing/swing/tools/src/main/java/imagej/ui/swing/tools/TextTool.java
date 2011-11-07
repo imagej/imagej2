@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools;
 
-import imagej.ext.display.MouseCursor;
+import imagej.ext.MouseCursor;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 

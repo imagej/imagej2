@@ -45,7 +45,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.KeyCode;
+import imagej.ext.KeyCode;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;

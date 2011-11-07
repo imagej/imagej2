@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.display.event.input;
+package imagej.ext;
 
 /**
  * A class encapsulating keyboard modifier key states.

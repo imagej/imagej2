@@ -40,7 +40,7 @@ import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.MouseCursor;
+import imagej.ext.MouseCursor;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.util.IntCoords;

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.tool;
 
-import imagej.ext.display.MouseCursor;
+import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsClickedEvent;

@@ -36,7 +36,7 @@ package imagej.ui.common.awt;
 
 import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
-import imagej.ext.display.event.input.InputModifiers;
+import imagej.ext.InputModifiers;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
