@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext;
 
 /**
- * A class encapsulating keyboard modifier key states.
+ * A UI-independent representation of keyboard modifier key states.
  * 
  * @author Curtis Rueden
  */
