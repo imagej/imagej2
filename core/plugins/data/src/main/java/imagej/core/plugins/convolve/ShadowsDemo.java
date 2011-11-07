@@ -42,6 +42,7 @@ import imagej.data.display.OverlayService;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
+import imagej.ext.display.Display;
 import imagej.ext.display.KeyCode;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
@@ -74,13 +75,19 @@ public class ShadowsDemo implements ImageJPlugin {
 	@Parameter(required = true, persist = false)
 	private EventService eventService;
 
+	@Parameter(required = true, persist = false)
+	private ImageDisplayService imgDispService;
+
+	@Parameter(required = true, persist = false)
+	private OverlayService overlayService;
+
 	@Parameter
 	private Dataset input;
 
 	// -- private instance variables --
 
 	private boolean userHasQuit = false;
-	private ImageDisplay currDisplay;
+	private ImageDisplay currDisplay = null;
 	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
 
@@ -93,8 +100,7 @@ public class ShadowsDemo implements ImageJPlugin {
 	@Override
 	public void run() {
 
-		final ImageDisplay display =
-			ImageJ.get(ImageDisplayService.class).getActiveImageDisplay();
+		final ImageDisplay display = imgDispService.getActiveImageDisplay();
 		if (display == null) return;
 		currDisplay = display;
 		if (unsupportedImage()) {
@@ -104,8 +110,7 @@ public class ShadowsDemo implements ImageJPlugin {
 		subscribeToEvents();
 		eventService.publish(new StatusEvent("Press ESC to terminate"));
 
-		final RealRect selection =
-			ImageJ.get(OverlayService.class).getSelectionBounds(currDisplay);
+		final RealRect selection = overlayService.getSelectionBounds(currDisplay);
 		final Dataset originalData = input.duplicate();
 		userHasQuit = false;
 		while (!userHasQuit) {
@@ -153,10 +158,16 @@ public class ShadowsDemo implements ImageJPlugin {
 
 			@Override
 			public void onEvent(final KyPressedEvent event) {
-				if (event.getDisplay() == currDisplay &&
-					event.getCode() == KeyCode.ESCAPE)
-				{
-					userHasQuit = true;
+				if (event.getCode() == KeyCode.ESCAPE) {
+					Display<?> display = event.getDisplay();
+					if (display != null) {
+						if (display == currDisplay)
+							userHasQuit = true;
+					}
+					else { // display == null : event from application bar
+						if (imgDispService.getActiveImageDisplay() == currDisplay)
+							userHasQuit = true;
+					}
 				}
 			}
 		};
