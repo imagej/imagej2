@@ -92,6 +92,7 @@ public abstract class KyEvent extends InputEvent {
 		final InputModifiers modifiers = getModifiers();
 		final StringBuilder builder = new StringBuilder();
 		if (modifiers.isAltDown()) builder.append("alt ");
+		if (modifiers.isAltGrDown()) builder.append("altGraph ");
 		if (forceControlModifier || modifiers.isCtrlDown()) {
 			builder.append("control ");
 		}
