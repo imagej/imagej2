@@ -45,7 +45,7 @@ import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.MouseCursor;
+import imagej.ext.MouseCursor;
 import imagej.ext.tool.ITool;
 import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;

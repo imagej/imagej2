@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.ext.display.MouseCursor;
+import imagej.ext.MouseCursor;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 

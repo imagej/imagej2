@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ext.display.KeyCode;
+import imagej.ext.KeyCode;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;

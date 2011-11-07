@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.common.awt;
 
 import imagej.event.EventService;
+import imagej.ext.InputModifiers;
+import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
-import imagej.ext.display.KeyCode;
-import imagej.ext.display.event.input.InputModifiers;
 import imagej.ext.display.event.input.KyEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;

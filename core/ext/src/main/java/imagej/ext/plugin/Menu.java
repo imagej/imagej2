@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
+import imagej.ext.KeyCode;
 import imagej.ext.MenuEntry;
-import imagej.ext.display.KeyCode;
 
 import java.lang.annotation.Target;
 

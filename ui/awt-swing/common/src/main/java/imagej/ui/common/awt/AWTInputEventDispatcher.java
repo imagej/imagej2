@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.common.awt;
 
-import imagej.ext.display.event.input.InputModifiers;
+import imagej.ext.InputModifiers;
 
 import java.awt.event.InputEvent;
 
