@@ -58,8 +58,8 @@ public class SwingSdiImageDisplay extends AbstractSwingImageDisplay {
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
 
 		sdiWindow
-			.addKyEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
-		sdiWindow.addWinEventDispatcher(new AWTWindowEventDispatcher(this,
+			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
+		sdiWindow.addEventDispatcher(new AWTWindowEventDispatcher(this,
 			eventService));
 	}
 

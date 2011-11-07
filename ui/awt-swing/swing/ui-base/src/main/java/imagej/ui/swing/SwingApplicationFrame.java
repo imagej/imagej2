@@ -35,8 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ui.ApplicationFrame;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.util.Prefs;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
@@ -55,4 +58,26 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 		setLocation(lastX, lastY);
 	}
 	
+	// -- SwingApplicationFrame methods --
+	
+	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+		addKeyDispatcher(dispatcher, getContentPane());
+	}
+
+	// -- Helper methods --
+		
+	/** Recursively listens for keyboard events on the given component. */
+	private void addKeyDispatcher(final AWTKeyEventDispatcher keyDispatcher,
+		final Component comp)
+	{
+		comp.addKeyListener(keyDispatcher);
+		if (!(comp instanceof Container)) return;
+		final Container c = (Container) comp;
+		final int childCount = c.getComponentCount();
+		for (int i = 0; i < childCount; i++) {
+			final Component child = c.getComponent(i);
+			addKeyDispatcher(keyDispatcher, child);
+		}
+	}
+
 }

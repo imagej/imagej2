@@ -54,8 +54,6 @@ import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -151,7 +149,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		// listen for keyboard events on all components of the app frame
 		final AWTKeyEventDispatcher keyDispatcher =
 			new AWTKeyEventDispatcher(null, eventService);
-		addKeyDispatcher(keyDispatcher, appFrame.getContentPane());
+		appFrame.addEventDispatcher(keyDispatcher);
 
 		appFrame.pack();
 		appFrame.setVisible(true);
@@ -247,20 +245,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final SwingDisplayWindow displayWindow =
 			(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
 		return displayWindow;
-	}
-
-	/** Recursively listens for keyboard events on the given component. */
-	private void addKeyDispatcher(final AWTKeyEventDispatcher keyDispatcher,
-		final Component comp)
-	{
-		comp.addKeyListener(keyDispatcher);
-		if (!(comp instanceof Container)) return;
-		final Container c = (Container) comp;
-		final int childCount = c.getComponentCount();
-		for (int i = 0; i < childCount; i++) {
-			final Component child = c.getComponent(i);
-			addKeyDispatcher(keyDispatcher, child);
-		}
 	}
 
 }

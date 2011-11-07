@@ -77,8 +77,8 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		imgPanel = new SwingDisplayPanel(this, window);
 
 		imgCanvas
-			.addKyEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
-		imgCanvas.addMsEventDispatcher(new AWTMouseEventDispatcher(this,
+			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
+		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
 			eventService, false));
 		subscribeToEvents();
 	}

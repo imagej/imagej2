@@ -43,8 +43,6 @@ import imagej.event.EventSubscriber;
 import imagej.ext.display.MouseCursor;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;
 import imagej.util.Log;
@@ -143,16 +141,6 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 			calcReasonableDimensions(maxDims, image.getWidth(), image.getHeight());
 		setPreferredSize(dimensions);
 		repaint();
-	}
-
-	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
-		addKeyListener(dispatcher);
-	}
-
-	public void addMsEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
-		addMouseListener(dispatcher);
-		addMouseMotionListener(dispatcher);
-		addMouseWheelListener(dispatcher);
 	}
 
 	// -- Component methods --

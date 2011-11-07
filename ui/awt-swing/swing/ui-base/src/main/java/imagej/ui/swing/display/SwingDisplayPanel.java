@@ -46,7 +46,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.DisplayWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
@@ -143,16 +142,10 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	
 	// -- SwingDisplayPanel methods --
 
-	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
 		addKeyListener(dispatcher);
 	}
 	
-	public void addMsEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
-		addMouseListener(dispatcher);
-		addMouseMotionListener(dispatcher);
-		addMouseWheelListener(dispatcher);
-	}
-
 	// -- ImageDisplayPanel methods --
 
 	/**

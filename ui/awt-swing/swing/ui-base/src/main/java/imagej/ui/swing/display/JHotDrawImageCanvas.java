@@ -304,11 +304,11 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		return drawingEditor;
 	}
 
-	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
 		drawingView.addKeyListener(dispatcher);
 	}
 	
-	public void addMsEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
+	public void addEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
 		drawingView.addMouseListener(dispatcher);
 		drawingView.addMouseMotionListener(dispatcher);
 		drawingView.addMouseWheelListener(dispatcher);

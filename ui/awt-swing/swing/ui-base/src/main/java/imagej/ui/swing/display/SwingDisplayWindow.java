@@ -61,11 +61,11 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 
 	// -- SwingDisplayWindow methods --
 
-	public void addKyEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
+	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
 		addKeyListener(dispatcher);
 	}
 
-	public void addWinEventDispatcher(final AWTWindowEventDispatcher dispatcher) {
+	public void addEventDispatcher(final AWTWindowEventDispatcher dispatcher) {
 		addWindowListener(dispatcher);
 	}
 
