@@ -59,8 +59,8 @@ public class ReciprocalDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
-	ImageDisplay display;
+	@Parameter(required = true, persist = false)
+	private ImageDisplay display;
 
 	// -- public interface --
 

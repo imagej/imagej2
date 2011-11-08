@@ -54,11 +54,11 @@ public class AddSpecificNoiseToDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
-	ImageDisplay display;
+	@Parameter(required = true, persist = false)
+	private ImageDisplay display;
 
 	@Parameter(label = "Standard deviation")
-	double stdDev;
+	private double stdDev;
 
 	// -- public interface --
 

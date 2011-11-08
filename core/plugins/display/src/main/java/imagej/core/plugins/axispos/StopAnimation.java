@@ -51,8 +51,8 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Stop Animation", weight = 2) })
 public class StopAnimation implements ImageJPlugin {
 
-	@Parameter
-	ImageDisplay display;
+	@Parameter(required = true, persist = false)
+	private ImageDisplay display;
 	
 	@Override
 	public void run() {

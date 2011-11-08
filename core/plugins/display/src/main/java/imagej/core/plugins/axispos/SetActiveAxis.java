@@ -65,9 +65,9 @@ public class SetActiveAxis extends DynamicPlugin {
 
 	private static final String NAME_KEY = "Axis";
 
-	ImageDisplay display;
+	private ImageDisplay display;
 
-	String axisName;
+	private String axisName;
 
 	public SetActiveAxis() {
 		final ImageDisplayService imageDisplayService =
