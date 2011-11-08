@@ -53,7 +53,7 @@ public class StopAnimation implements ImageJPlugin {
 
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
-	
+
 	@Override
 	public void run() {
 		Animator.terminateAnimation(display);

@@ -51,15 +51,17 @@ import net.imglib2.type.numeric.RealType;
 
 /**
  * Plugin that auto-thresholds each channel.
- * 
- * This is modeled after the ImageJ 1.x ContrastAdjuster plugin, but I'd like
- * to improve upon it since it can be pretty harsh for many images. 
- * 
+ * <p>
+ * This is modeled after the ImageJ 1.x ContrastAdjuster plugin, but I'd like to
+ * improve upon it since it can be pretty harsh for many images.
+ * </p>
+ * <p>
  * One consideration is to do Histogram equalization as described here:
- * http://en.wikipedia.org/wiki/Histogram_equalization but this requires more 
+ * http://en.wikipedia.org/wiki/Histogram_equalization but this requires more
  * than setting the min and max of the RealLUTConverters and would more likely
  * involve assigning new LUT(s) or something since the mapping isn't linear.
  * This would probably make sense as a separate plugin altogether.
+ * </p>
  * 
  * @author Adam Fraser
  */
@@ -96,28 +98,31 @@ public class AutoContrast implements ImageJPlugin {
 			count = histogram[i];
 			if (count > limit) count = 0;
 			found = count > threshold;
-		} while (!found && i < BINS - 1);
+		}
+		while (!found && i < BINS - 1);
 		final int hmin = i;
-		
+
 		i = BINS;
 		do {
 			i--;
 			count = histogram[i];
 			if (count > limit) count = 0;
 			found = count > threshold;
-		} while (!found && i > 0);
+		}
+		while (!found && i > 0);
 		final int hmax = i;
-		
+
 		double min;
 		double max;
 		final double histMin = dataset.getType().getMinValue();
-		final double histMax = dataset.getType().getMaxValue(); 
-		final double binSize = (histMax - histMin) / (double) (BINS-1);
-		System.out.println("Bin size = "+binSize);
+		final double histMax = dataset.getType().getMaxValue();
+		final double binSize = (histMax - histMin) / (BINS - 1);
+		System.out.println("Bin size = " + binSize);
 		if (hmax >= hmin) {
 			min = histMin + hmin * binSize;
 			max = histMin + hmax * binSize;
-			// XXX: http://rsbweb.nih.gov/ij/source/ij/plugin/frame/ContrastAdjuster.java
+			// XXX:
+			// http://rsbweb.nih.gov/ij/source/ij/plugin/frame/ContrastAdjuster.java
 //			if (RGBImage && roi!=null) 
 //				imp.setRoi(roi);
 		}
@@ -125,19 +130,19 @@ public class AutoContrast implements ImageJPlugin {
 			// reset by clamping the histogram
 			double mn = Double.MAX_VALUE;
 			double mx = Double.MIN_VALUE;
-			for(int ch=0; ch<getNumChannels(dataset); ch++){
+			for (int ch = 0; ch < getNumChannels(dataset); ch++) {
 				if (ch < mn) mn = ch;
 				if (ch > mx) mx = ch;
 			}
 			max = mx;
 			min = mn;
-			
+
 			// alternatively we could set the values to the raw min, max
 //			min = histMin;
 //			max = histMax;
 			autoThreshold = AUTO_THRESHOLD;
 		}
-		System.out.println("New min,max = "+min+", "+max);
+		System.out.println("New min,max = " + min + ", " + max);
 		setMinMax(min, max);
 	}
 
@@ -151,7 +156,7 @@ public class AutoContrast implements ImageJPlugin {
 		//
 		final double histMin = dataset.getType().getMinValue();
 		final double histMax = dataset.getType().getMaxValue();
-		System.out.println(histMin+" -- "+histMax);
+		System.out.println(histMin + " -- " + histMax);
 //		final double[] range = computeMinMax(dataset);
 
 		final Cursor<? extends RealType<?>> c =
@@ -171,7 +176,7 @@ public class AutoContrast implements ImageJPlugin {
 			new GetImgMinMax(d.getImgPlus());
 		cmm.process();
 		return new double[] { cmm.getMin().getRealDouble(),
-							  cmm.getMax().getRealDouble() };
+			cmm.getMax().getRealDouble() };
 	}
 
 	private int computeBin(final double value, final double histMin,
@@ -202,12 +207,12 @@ public class AutoContrast implements ImageJPlugin {
 		view.getProjector().map();
 		view.update();
 	}
-	
-	private int getNumChannels(final Dataset dataset){
-		Axis[] axes = dataset.getAxes();
-		for (int d=0; d < axes.length; d++){
+
+	private int getNumChannels(final Dataset dataset) {
+		final Axis[] axes = dataset.getAxes();
+		for (int d = 0; d < axes.length; d++) {
 			if (axes[d].getLabel() == "Channel") {
-				return (int) dataset.getDims()[d];	
+				return (int) dataset.getDims()[d];
 			}
 		}
 		return 0;

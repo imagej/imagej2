@@ -49,8 +49,8 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Selection", mnemonic = 's'),
-	@Menu(label = "Select None", mnemonic = 'n',
-		accelerator = "control shift a", weight = 4) })
+	@Menu(label = "Select None", mnemonic = 'n', accelerator = "control shift a",
+		weight = 4) })
 public class SelectNone implements ImageJPlugin {
 
 	@Parameter
