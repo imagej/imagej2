@@ -58,8 +58,8 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(label = "Value")
-	private double constant;
+	@Parameter
+	private double value;
 
 	// -- public interface --
 
@@ -75,7 +75,7 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
-		return new RealDivideConstant(constant, dbzVal);
+		return new RealDivideConstant(value, dbzVal);
 	}
 
 }

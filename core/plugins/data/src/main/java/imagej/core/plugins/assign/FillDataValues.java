@@ -59,13 +59,13 @@ public class FillDataValues implements ImageJPlugin {
 	private ImageDisplay display;
 
 	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
-	private double constant;
+	private double value;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		UnaryOperation<Real,Real> op = new RealConstant(constant);
+		UnaryOperation<Real,Real> op = new RealConstant(value);
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
