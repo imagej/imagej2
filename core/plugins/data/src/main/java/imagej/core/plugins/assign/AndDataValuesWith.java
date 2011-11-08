@@ -56,13 +56,13 @@ public class AndDataValuesWith extends AbstractAssignPlugin {
 	// -- instance variables that are Parameters --
 	
 	@Parameter(label = "Value (binary)")
-	private long constant;
+	private long value;
 	
 	// -- public interface --
 	
 	@Override
 	public UnaryOperation<Real,Real> getOperation() {
-		return new RealAndConstant(constant);
+		return new RealAndConstant(value);
 	}
 	
 }

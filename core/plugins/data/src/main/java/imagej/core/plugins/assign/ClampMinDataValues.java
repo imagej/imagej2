@@ -55,14 +55,14 @@ public class ClampMinDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(label = "Value")
-	private double constant;
+	@Parameter
+	private double value;
 
 	// -- public interface --
 
 	@Override
 	public UnaryOperation<Real,Real> getOperation() {
-		return new RealMinConstant(constant);
+		return new RealMinConstant(value);
 	}
 
 }

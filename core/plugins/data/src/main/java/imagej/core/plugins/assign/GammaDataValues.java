@@ -56,14 +56,14 @@ public class GammaDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(label = "Value", min="0.05", max = "5.00", stepSize = "0.05")
-	private double constant;
+	@Parameter(min="0.05", max = "5.00", stepSize = "0.05")
+	private double value;
 
 	// -- public interface --
 
 	@Override
 	public UnaryOperation<Real,Real> getOperation() {
-		return new RealGammaConstant(constant);
+		return new RealGammaConstant(value);
 	}
 
 }

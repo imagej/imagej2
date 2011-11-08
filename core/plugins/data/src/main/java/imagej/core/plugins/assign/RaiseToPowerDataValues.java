@@ -55,14 +55,14 @@ public class RaiseToPowerDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(label = "Value")
-	private double constant;
+	@Parameter
+	private double value;
 
 	// -- public interface --
 
 	@Override
 	public UnaryOperation<Real,Real> getOperation() {
-		return new RealPowerConstant(constant);
+		return new RealPowerConstant(value);
 	}
 
 }
