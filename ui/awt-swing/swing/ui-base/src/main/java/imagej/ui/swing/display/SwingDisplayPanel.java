@@ -41,9 +41,9 @@ import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayPanel;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
+import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
@@ -88,7 +88,7 @@ import net.miginfocom.swing.MigLayout;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
+public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	private final ImageDisplay display;
 	private final JLabel imageLabel;
@@ -96,7 +96,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	private final JPanel sliderPanel;
 	private final DisplayWindow window;
 	private boolean initialScaleCalculated = false;
-
 
 	protected final Map<Axis, Long> axisPositions = new HashMap<Axis, Long>();
 
@@ -146,39 +145,16 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		addKeyListener(dispatcher);
 	}
 	
-	// -- ImageDisplayPanel methods --
-
-	/**
-	 * Get the position of some axis other than X and Y
-	 * 
-	 * @param axis - the axis
-	 * @return the position of that axis on the sliderPanel
-	 */
-	@Override
-	public long getAxisPosition(final Axis axis) {
-		if (axisPositions.containsKey(axis)) {
-			return axisPositions.get(axis);
-		}
-		return 0;
-	}
-
-	@Override
-	public void setAxisPosition(final Axis axis, final long position) {
-		axisPositions.put(axis, position);
-		final JScrollBar scrollBar = axisSliders.get(axis);
-		if (scrollBar != null) scrollBar.setValue((int) position);
-	}
-
-	@Override
-	public DisplayWindow getWindow() {
-		return window;
-	}
-
 	// -- DisplayPanel methods --
 
 	@Override
 	public ImageDisplay getDisplay() {
 		return display;
+	}
+
+	@Override
+	public DisplayWindow getWindow() {
+		return window;
 	}
 
 	@Override
@@ -376,6 +352,21 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		int b = lut.get(2, last);
 		final ColorRGB color = new ColorRGB(r, g, b);
 		setBorderColor(color);
+	}
+
+	// CTR TODO - migrate axis position tracking to AbstractImageDisplay
+
+	protected long getAxisPosition(final Axis axis) {
+		if (axisPositions.containsKey(axis)) {
+			return axisPositions.get(axis);
+		}
+		return 0;
+	}
+
+	protected void setAxisPosition(final Axis axis, final long position) {
+		axisPositions.put(axis, position);
+		final JScrollBar scrollBar = axisSliders.get(axis);
+		if (scrollBar != null) scrollBar.setValue((int) position);
 	}
 
 }

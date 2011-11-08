@@ -60,14 +60,15 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	/** Sets the axis currently designated as active. */
 	void setActiveAxis(Axis axis);
 
+	long getAxisPosition(Axis axis);
+
+	void setAxisPosition(final Axis axis, final long position);
+
 	/** Gets the image canvas upon which this display's output is painted. */
 	ImageCanvas getCanvas();
 
 	/** Tests whether this display contains the given data object (via a view). */
 	boolean containsData(Data data);
-
-	@Override
-	ImageDisplayPanel getPanel();
 
 	// CTR TODO - eliminate the methods below.
 

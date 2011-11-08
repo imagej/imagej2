@@ -145,7 +145,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			for (final Axis axis : getAxes()) {
 				final int index = getAxisIndex(axis);
 				if (index >= 0) {
-					view.setPosition(getPanel().getAxisPosition(axis), index);
+					view.setPosition(getAxisPosition(axis), index);
 				}
 			}
 			view.update();
@@ -332,12 +332,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					final long value = event.getValue();
 					long newPos = value;
 					if (event.isRelative()) {
-						final long currPos = getPanel().getAxisPosition(axis);
+						final long currPos = getAxisPosition(axis);
 						newPos = currPos + value;
 					}
 					final long max = event.getMax();
 					if (newPos >= 0 && newPos < max) {
-						getPanel().setAxisPosition(axis, newPos);
+						setAxisPosition(axis, newPos);
 						update();
 					}
 				}
