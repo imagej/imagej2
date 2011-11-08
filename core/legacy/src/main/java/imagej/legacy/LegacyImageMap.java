@@ -235,11 +235,11 @@ public class LegacyImageMap {
 				public void onEvent(final DisplayDeletedEvent event) {
 
 					// Need to make sure:
-					// IJ2 Windows always close when IJ1 close expected
-					// Stack to Images, Split Channels, etc.
-					// No ImagePlus/Display mapping becomes a zombie in the
-					// LegacyImageMap failing to get garbage collected.
-					// That IJ2 does not think IJ1 initiated the ij1.close()
+					// - IJ2 Windows always close when IJ1 close expected
+					//     Stack to Images, Split Channels, etc.
+					// - No ImagePlus/Display mapping becomes a zombie in the
+					//     LegacyImageMap failing to get garbage collected.
+					// - That IJ2 does not think IJ1 initiated the ij1.close()
 					if (event.getObject() instanceof ImageDisplay) {
 						final ImagePlus imp =
 							lookupImagePlus((ImageDisplay) event.getObject());
