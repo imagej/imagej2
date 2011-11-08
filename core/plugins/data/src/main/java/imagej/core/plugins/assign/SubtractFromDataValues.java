@@ -47,8 +47,7 @@ import net.imglib2.ops.operation.unary.real.RealSubtractConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Subtract...", weight = 2) })
 public class SubtractFromDataValues extends AbstractAssignPlugin {
@@ -61,15 +60,15 @@ public class SubtractFromDataValues extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real,Real> getOperation() {
+	public UnaryOperation<Real, Real> getOperation() {
 		return new RealSubtractConstant(value);
 	}
 
 	public double getValue() {
 		return value;
 	}
-	
-	public void setValue(double value) {
+
+	public void setValue(final double value) {
 		this.value = value;
 	}
 

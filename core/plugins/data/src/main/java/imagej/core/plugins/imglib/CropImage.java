@@ -73,15 +73,15 @@ public class CropImage implements ImageJPlugin {
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
-	
+
 	@Parameter
 	private OverlayService overlayService;
-	
+
 	@Parameter
 	private ImageDisplay display;
 
 	// -- other instance variables --
-	
+
 	private Img inputImage;
 	private long minX, maxX, minY, maxY;
 	private int xIndex, yIndex;
@@ -97,19 +97,19 @@ public class CropImage implements ImageJPlugin {
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		final RealRect bounds = overlayService.getSelectionBounds(display);
 
-		ImgPlus<? extends RealType<?>> croppedData =
-				generateCroppedData(dataset, bounds);
+		final ImgPlus<? extends RealType<?>> croppedData =
+			generateCroppedData(dataset, bounds);
 
 		// remove all overlays
-		//   TODO - could be a problem when multiple datasets in one display
-		//   TODO - could just remove those that are not wholly contained in
-		//     crop region. Could translate or recreate others.
-		for (Overlay overlay : overlayService.getOverlays(display)) {
+		// TODO - could be a problem when multiple datasets in one display
+		// TODO - could just remove those that are not wholly contained in
+		// crop region. Could translate or recreate others.
+		for (final Overlay overlay : overlayService.getOverlays(display)) {
 			overlayService.removeOverlay(display, overlay);
 		}
 
 		// BDZ - HACK - FIXME
-	  // 10-14-11 resetting zoom will cause canvas to prefer new smaller size
+		// 10-14-11 resetting zoom will cause canvas to prefer new smaller size
 		// and sizeAppropriately() correctly. TODO sizeAppropriately() changed
 		// recently. This tweak maybe not needed anymore. Could instead add some
 		// code to tell canvas it's size is invalid. Or have panel listen for
@@ -122,15 +122,15 @@ public class CropImage implements ImageJPlugin {
 		// note 11-1-11: removed to see if needed. Remove all these comments and
 		// this hack if unneeded after #826 handled.
 		//
-		//display.getCanvas().setZoom(1);
+		// display.getCanvas().setZoom(1);
 
 		dataset.setImgPlus(croppedData);
 
-		//   TODO - could create an overlay that selects all afterwards or
-		//   move original one. Or just make sure region is marked as selected
-		//for (final DataView view : display) {
-		//	view.setSelected(true);
-		//}
+		// TODO - could create an overlay that selects all afterwards or
+		// move original one. Or just make sure region is marked as selected
+		// for (final DataView view : display) {
+		// view.setSelected(true);
+		// }
 	}
 
 	// -- private interface --
@@ -138,8 +138,8 @@ public class CropImage implements ImageJPlugin {
 	/**
 	 * Creates an ImgPlus containing data from crop region of an input Dataset
 	 */
-	private ImgPlus<? extends RealType<?>>
-		generateCroppedData(Dataset ds, RealRect bounds)
+	private ImgPlus<? extends RealType<?>> generateCroppedData(final Dataset ds,
+		final RealRect bounds)
 	{
 		setup(ds, bounds);
 		copyPixels();
@@ -147,11 +147,11 @@ public class CropImage implements ImageJPlugin {
 	}
 
 	/**
-	 *  Initializes working variables used by copyPixels()
+	 * Initializes working variables used by copyPixels()
 	 */
-	private void setup(Dataset dataset, RealRect bounds) {
+	private void setup(final Dataset dataset, final RealRect bounds) {
 		inputImage = dataset.getImgPlus();
-		
+
 		minX = (long) bounds.x;
 		minY = (long) bounds.y;
 		maxX = (long) (bounds.x + bounds.width - 1);
@@ -175,27 +175,27 @@ public class CropImage implements ImageJPlugin {
 	 */
 	private void copyPixels() {
 		final RandomAccess<? extends RealType<?>> inputAccessor =
-				inputImage.randomAccess();
+			inputImage.randomAccess();
 
-			final Cursor<? extends RealType<?>> outputCursor =
-				outputImage.localizingCursor();
+		final Cursor<? extends RealType<?>> outputCursor =
+			outputImage.localizingCursor();
 
-			final long[] tmpPosition = new long[outputImage.numDimensions()];
+		final long[] tmpPosition = new long[outputImage.numDimensions()];
 
-			while (outputCursor.hasNext()) {
-				outputCursor.next();
+		while (outputCursor.hasNext()) {
+			outputCursor.next();
 
-				outputCursor.localize(tmpPosition);
+			outputCursor.localize(tmpPosition);
 
-				tmpPosition[xIndex] += minX;
-				tmpPosition[yIndex] += minY;
+			tmpPosition[xIndex] += minX;
+			tmpPosition[yIndex] += minY;
 
-				inputAccessor.setPosition(tmpPosition);
+			inputAccessor.setPosition(tmpPosition);
 
-				final double value = inputAccessor.get().getRealDouble();
+			final double value = inputAccessor.get().getRealDouble();
 
-				outputCursor.get().setReal(value);
-			}
+			outputCursor.get().setReal(value);
+		}
 	}
 
 }

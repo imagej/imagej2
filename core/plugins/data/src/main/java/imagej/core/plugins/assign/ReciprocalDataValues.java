@@ -85,8 +85,8 @@ public class ReciprocalDataValues implements ImageJPlugin {
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 

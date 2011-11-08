@@ -49,10 +49,8 @@ import net.imglib2.ops.operation.unary.real.RealSqr;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Square", weight = 15) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Square", weight = 15) })
 public class SquareDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
@@ -64,16 +62,17 @@ public class SquareDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real,Real> op = new RealSqr();
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
+		final UnaryOperation<Real, Real> op = new RealSqr();
+		final InplaceUnaryTransform transform =
+			new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
-	
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 

@@ -48,9 +48,8 @@ import net.imglib2.ops.operation.unary.real.RealConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Fill", weight = 28, accelerator = "control F")})
+@Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
+	@Menu(label = "Fill", weight = 28, accelerator = "control F") })
 public class FillDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
@@ -58,31 +57,33 @@ public class FillDataValues implements ImageJPlugin {
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
-	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
+	@Parameter(
+		label = "TODO - later use current FG color but for now ask - Value")
 	private double value;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		UnaryOperation<Real,Real> op = new RealConstant(value);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
+		final UnaryOperation<Real, Real> op = new RealConstant(value);
+		final InplaceUnaryTransform transform =
+			new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
-	
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 
 	public double getValue() {
 		return value;
 	}
-	
-	public void setValue(double value) {
+
+	public void setValue(final double value) {
 		this.value = value;
 	}
 

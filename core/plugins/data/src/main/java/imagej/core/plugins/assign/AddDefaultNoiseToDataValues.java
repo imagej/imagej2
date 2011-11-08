@@ -46,8 +46,7 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Add Noise", weight = 1) })
 public class AddDefaultNoiseToDataValues implements ImageJPlugin {
@@ -61,7 +60,7 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		AddNoiseToDataValues noiseAdder = new AddNoiseToDataValues(display);
+		final AddNoiseToDataValues noiseAdder = new AddNoiseToDataValues(display);
 		noiseAdder.setStdDev(25.0);
 		noiseAdder.run();
 	}
@@ -69,8 +68,8 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 

@@ -75,28 +75,30 @@ public class InvertDataValues implements ImageJPlugin {
 	// -- public interface --
 
 	/**
-	 * Fills the output image from the input image */
+	 * Fills the output image from the input image
+	 */
 	@Override
 	public void run() {
 		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
 		// this is similar to IJ1
 		if (dataset.isInteger() && !dataset.isSigned() &&
-				dataset.getType().getBitsPerPixel() == 8) {
+			dataset.getType().getBitsPerPixel() == 8)
+		{
 			min = 0;
 			max = 255;
 		}
-		else
-			calcValueRange();
-		UnaryOperation<Real,Real> op = new RealInvert(min, max);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
+		else calcValueRange();
+		final UnaryOperation<Real, Real> op = new RealInvert(min, max);
+		final InplaceUnaryTransform transform =
+			new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
 
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 
@@ -110,10 +112,10 @@ public class InvertDataValues implements ImageJPlugin {
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 
-		Cursor<? extends RealType<?>> cursor = dataset.getImgPlus().cursor();
+		final Cursor<? extends RealType<?>> cursor = dataset.getImgPlus().cursor();
 
 		while (cursor.hasNext()) {
-			double value = cursor.next().getRealDouble();
+			final double value = cursor.next().getRealDouble();
 
 			if (value < min) min = value;
 			if (value > max) max = value;

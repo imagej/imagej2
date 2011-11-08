@@ -69,7 +69,9 @@ public class Convolve3x3Operation {
 	 * Constructor. takes an input Dataset and a kernel that will be used to
 	 * calculate data values.
 	 */
-	public Convolve3x3Operation(final Dataset input, RealRect selection, final double[] kernel) {
+	public Convolve3x3Operation(final Dataset input, final RealRect selection,
+		final double[] kernel)
+	{
 		this.kernel = kernel;
 		this.neighOperation =
 			new Neighborhood3x3Operation(input, selection, new ConvolveWatcher(input));

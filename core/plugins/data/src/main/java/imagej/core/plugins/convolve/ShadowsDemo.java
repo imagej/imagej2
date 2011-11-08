@@ -158,14 +158,13 @@ public class ShadowsDemo implements ImageJPlugin {
 			@Override
 			public void onEvent(final KyPressedEvent event) {
 				if (event.getCode() == KeyCode.ESCAPE) {
-					Display<?> display = event.getDisplay();
+					final Display<?> display = event.getDisplay();
 					if (display != null) {
-						if (display == currDisplay)
-							userHasQuit = true;
+						if (display == currDisplay) userHasQuit = true;
 					}
 					else { // display == null : event from application bar
-						if (imgDispService.getActiveImageDisplay() == currDisplay)
-							userHasQuit = true;
+						if (imgDispService.getActiveImageDisplay() == currDisplay) userHasQuit =
+							true;
 					}
 				}
 			}

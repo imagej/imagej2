@@ -81,8 +81,8 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 	public double getValue() {
 		return value;
 	}
-	
-	public void setValue(double value) {
+
+	public void setValue(final double value) {
 		this.value = value;
 	}
 

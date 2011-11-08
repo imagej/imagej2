@@ -49,8 +49,7 @@ import net.imglib2.ops.operation.unary.real.RealSqrt;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Square Root", weight = 16) })
 public class SquareRootDataValues implements ImageJPlugin {
@@ -64,16 +63,17 @@ public class SquareRootDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real,Real> op = new RealSqrt();
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
+		final UnaryOperation<Real, Real> op = new RealSqrt();
+		final InplaceUnaryTransform transform =
+			new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
-	
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 
