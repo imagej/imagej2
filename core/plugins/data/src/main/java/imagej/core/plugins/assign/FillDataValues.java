@@ -55,7 +55,7 @@ public class FillDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
