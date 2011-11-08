@@ -38,7 +38,7 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating a display window was deiconified.
- *
+ * 
  * @author Curtis Rueden
  */
 public class WinDeiconifiedEvent extends WinEvent {

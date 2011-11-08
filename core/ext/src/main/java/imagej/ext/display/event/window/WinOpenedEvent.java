@@ -38,7 +38,7 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating a display window has been opened.
- *
+ * 
  * @author Curtis Rueden
  */
 public class WinOpenedEvent extends WinEvent {

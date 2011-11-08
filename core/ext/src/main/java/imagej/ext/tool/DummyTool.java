@@ -36,7 +36,7 @@ package imagej.ext.tool;
 
 /**
  * A tool that does nothing.
- *
+ * 
  * @author Curtis Rueden
  */
 public class DummyTool extends AbstractTool {

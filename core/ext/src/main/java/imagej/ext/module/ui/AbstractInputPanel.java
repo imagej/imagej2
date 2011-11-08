@@ -42,7 +42,7 @@ import java.util.Map;
 
 /**
  * Abstract superclass of UI-specific {@link InputPanel} implementations.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class AbstractInputPanel implements InputPanel {
@@ -130,13 +130,20 @@ public abstract class AbstractInputPanel implements InputPanel {
 
 	@Override
 	public void refresh() {
-		for (final InputWidget w : numberWidgets.values()) w.refreshWidget();
-		for (final InputWidget w : toggleWidgets.values()) w.refreshWidget();
-		for (final InputWidget w : textFieldWidgets.values()) w.refreshWidget();
-		for (final InputWidget w : choiceWidgets.values()) w.refreshWidget();
-		for (final InputWidget w : fileWidgets.values()) w.refreshWidget();
-		for (final InputWidget w : colorWidgets.values()) w.refreshWidget();
-		for (final InputWidget w : objectWidgets.values()) w.refreshWidget();
+		for (final InputWidget w : numberWidgets.values())
+			w.refreshWidget();
+		for (final InputWidget w : toggleWidgets.values())
+			w.refreshWidget();
+		for (final InputWidget w : textFieldWidgets.values())
+			w.refreshWidget();
+		for (final InputWidget w : choiceWidgets.values())
+			w.refreshWidget();
+		for (final InputWidget w : fileWidgets.values())
+			w.refreshWidget();
+		for (final InputWidget w : colorWidgets.values())
+			w.refreshWidget();
+		for (final InputWidget w : objectWidgets.values())
+			w.refreshWidget();
 	}
 
 }

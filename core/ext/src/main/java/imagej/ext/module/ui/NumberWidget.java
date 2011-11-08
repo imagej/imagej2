@@ -36,7 +36,7 @@ package imagej.ext.module.ui;
 
 /**
  * Widget interface for number choosers.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface NumberWidget extends InputWidget {

@@ -137,10 +137,9 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 			sValue = Prefs.get(prefClass, prefKey);
 		}
 		else sValue = Prefs.get(persistKey);
-		
+
 		// if persisted value has never been set before return null
-		if (sValue == null)
-			return null;
+		if (sValue == null) return null;
 
 		return ClassUtils.convert(sValue, getType());
 	}

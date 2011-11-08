@@ -36,13 +36,13 @@ package imagej.ext.display;
 
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 public interface TextDisplayPanel extends DisplayPanel {
-	
+
 	void append(String text);
 
-	void clear();	
+	void clear();
 
 }

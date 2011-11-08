@@ -52,9 +52,8 @@ import imagej.ext.module.process.ModuleProcessor;
  * other plugins ({@link ModulePreprocessor} and {@link ModulePostprocessor}
  * respectively).</li>
  * </ul>
- * What all plugins have in common is that they can be annotated using the
- * @{@link Plugin} annotation, and discovered if present on the classpath at
- * runtime.
+ * What all plugins have in common is that they are declared using an annotation
+ * (@{@link Plugin}), and discovered if present on the classpath at runtime.
  * </p>
  * 
  * @author Curtis Rueden

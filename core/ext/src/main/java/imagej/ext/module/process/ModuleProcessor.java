@@ -40,7 +40,7 @@ import imagej.ext.module.Module;
  * A module processor defines some sort of processing that occurs on a module
  * instance, typically immediately preceding (see {@link ModulePreprocessor}) or
  * following (see {@link ModulePostprocessor}) the module execution.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface ModuleProcessor {

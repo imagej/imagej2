@@ -184,7 +184,8 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		Number stepSize = NumberUtils.toNumber(itemStep, saneType);
 		if (stepSize == null) stepSize = NumberUtils.toNumber("1", type);
 
-		final Number iValue = NumberUtils.clampToRange(type, initialValue, min, max);
+		final Number iValue =
+			NumberUtils.clampToRange(type, initialValue, min, max);
 		model.setValue(iValue);
 		inputPanel.addNumber(model, min, max, stepSize);
 	}

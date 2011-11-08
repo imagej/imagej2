@@ -36,14 +36,25 @@ package imagej.ext.plugin;
 
 /**
  * An exception thrown when something goes wrong with a plugin.
- *
+ * 
  * @author Curtis Rueden
  */
 public class PluginException extends Exception {
 
-  public PluginException() { super(); }
-  public PluginException(String s) { super(s); }
-  public PluginException(String s, Throwable cause) { super(s, cause); }
-  public PluginException(Throwable cause) { super(cause); }
+	public PluginException() {
+		super();
+	}
+
+	public PluginException(final String s) {
+		super(s);
+	}
+
+	public PluginException(final String s, final Throwable cause) {
+		super(s, cause);
+	}
+
+	public PluginException(final Throwable cause) {
+		super(cause);
+	}
 
 }

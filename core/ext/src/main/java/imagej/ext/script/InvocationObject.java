@@ -37,8 +37,8 @@ package imagej.ext.script;
 import java.util.ArrayList;
 
 /**
- * Holds a module or plugin reference that was invoked in a macro recording,
- * and the parameters that were passed to it.
+ * Holds a module or plugin reference that was invoked in a macro recording, and
+ * the parameters that were passed to it.
  * 
  * @author Grant Harris
  */

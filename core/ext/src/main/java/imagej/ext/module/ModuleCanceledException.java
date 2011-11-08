@@ -36,14 +36,25 @@ package imagej.ext.module;
 
 /**
  * An exception thrown when a module execution is canceled.
- *
+ * 
  * @author Curtis Rueden
  */
 public class ModuleCanceledException extends ModuleException {
 
-  public ModuleCanceledException() { super(); }
-  public ModuleCanceledException(String s) { super(s); }
-  public ModuleCanceledException(String s, Throwable cause) { super(s, cause); }
-  public ModuleCanceledException(Throwable cause) { super(cause); }
+	public ModuleCanceledException() {
+		super();
+	}
+
+	public ModuleCanceledException(final String s) {
+		super(s);
+	}
+
+	public ModuleCanceledException(final String s, final Throwable cause) {
+		super(s, cause);
+	}
+
+	public ModuleCanceledException(final Throwable cause) {
+		super(cause);
+	}
 
 }

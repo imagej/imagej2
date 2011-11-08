@@ -117,7 +117,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 		try {
 			run();
 		}
-		catch (RuntimeException e) {
+		catch (final RuntimeException e) {
 			Log.error("Module threw exception", e);
 			throw e;
 		}

@@ -48,8 +48,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 /**
- * Executes a script, using the file extension to choose the appropriate
- * engine.
+ * Executes a script, using the file extension to choose the appropriate engine.
  * 
  * @author Johannes Schindelin
  * @author Grant Harris
@@ -66,22 +65,25 @@ public class ScriptPlugin implements ImageJPlugin {
 		// languages
 		final ScriptEngineManager scriptManager = new ScriptEngineManager();
 		// Could use a FileChooser to select script, then
-		String fileExtension = FileUtils.getFileExtension(path);
-		final ScriptEngine engine = scriptManager.getEngineByExtension(fileExtension);
+		final String fileExtension = FileUtils.getFileExtension(path);
+		final ScriptEngine engine =
+			scriptManager.getEngineByExtension(fileExtension);
 		try {
 			engine.put(ScriptEngine.FILENAME, path.getPath());
 			// TODO
 			// Bind java objects to script engine and for script access
 			// e.g. get current Display
 			// scriptEngine.put("currentDisplay", currentDisplay) ;
-			// same effect as: getBindings(ScriptContext.ENGINE_SCOPE).put. 
+			// same effect as: getBindings(ScriptContext.ENGINE_SCOPE).put.
 			final Object result = engine.eval(new FileReader(path));
 			if (result != null) {
 				System.out.println(result.toString());
 			}
-		} catch (final ScriptException e) {
+		}
+		catch (final ScriptException e) {
 			e.printStackTrace(System.err);
-		} catch (final IOException e) {
+		}
+		catch (final IOException e) {
 			e.printStackTrace(System.err);
 		}
 	}

@@ -38,7 +38,7 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating a display window is in the process of closing.
- *
+ * 
  * @author Curtis Rueden
  */
 public class WinClosingEvent extends WinEvent {

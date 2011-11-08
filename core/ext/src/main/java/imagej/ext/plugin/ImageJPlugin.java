@@ -36,7 +36,7 @@ package imagej.ext.plugin;
 
 /**
  * An executable ImageJ plugin.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface ImageJPlugin extends RunnablePlugin {
