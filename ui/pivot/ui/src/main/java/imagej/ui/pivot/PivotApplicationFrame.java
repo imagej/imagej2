@@ -44,5 +44,17 @@ import org.apache.pivot.wtk.Frame;
  * @author Curtis Rueden
  */
 public class PivotApplicationFrame extends Frame implements ApplicationFrame {
-	// no implementation needed
+	
+	// -- ApplicationFrame methods --
+
+	@Override
+	public int getLocationX() {
+		return getLocation().x;
+	}
+
+	@Override
+	public int getLocationY() {
+		return getLocation().y;
+	}
+	
 }
