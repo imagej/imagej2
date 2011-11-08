@@ -40,5 +40,9 @@ package imagej.ui;
  * @author Grant Harris
  */
 public interface ApplicationFrame {
-	// marker interface
+
+	void setLocation(int x, int y);
+	int getLocationX();
+	int getLocationY();
+
 }

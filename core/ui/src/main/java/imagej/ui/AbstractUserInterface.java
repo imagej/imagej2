@@ -35,7 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 import imagej.ImageJ;
+import imagej.event.EventService;
+import imagej.event.EventSubscriber;
+import imagej.platform.event.AppQuitEvent;
 import imagej.util.Prefs;
+
+import java.util.ArrayList;
 
 /**
  * Abstract superclass for {@link IUserInterface} implementations.
@@ -45,14 +50,18 @@ import imagej.util.Prefs;
 public abstract class AbstractUserInterface implements IUserInterface {
 
 	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
+	private static final String LAST_X = "lastXLocation";
+	private static final String LAST_Y = "lastYLocation";
 
 	private UIService uiService;
+	private EventService eventService;
 
 	// -- UserInterface methods --
 
 	@Override
 	public void initialize(final UIService service) {
 		uiService = service;
+		eventService = uiService.getEventService();
 		createUI();
 		displayReadme();
 	}
@@ -89,8 +98,33 @@ public abstract class AbstractUserInterface implements IUserInterface {
 
 	// -- Internal methods --
 
+	/**
+	 * Subclasses override to control UI creation. They must also call
+	 * super.createUI() after creating the {@link ApplicationFrame} but before
+	 * showing it (assuming the UI has an {@link ApplicationFrame}).
+	 */
 	protected void createUI() {
-		// does nothing by default
+		subscribeToEvents();
+		restoreLocation();
+	}
+
+	/** Persists the application frame's current location. */
+	protected void saveLocation() {
+		final ApplicationFrame appFrame = getApplicationFrame();
+		if (appFrame != null) {
+			Prefs.put(getClass(), LAST_X, appFrame.getLocationX());
+			Prefs.put(getClass(), LAST_Y, appFrame.getLocationY());
+		}
+	}
+
+	/** Restores the application frame's current location. */
+	protected void restoreLocation() {
+		final ApplicationFrame appFrame = getApplicationFrame();
+		if (appFrame != null) {
+			final int lastX = Prefs.getInt(getClass(), LAST_X, 0);
+			final int lastY = Prefs.getInt(getClass(), LAST_Y, 0);
+			appFrame.setLocation(lastX, lastY);
+		}
 	}
 
 	// -- Helper methods --
@@ -101,6 +135,23 @@ public abstract class AbstractUserInterface implements IUserInterface {
 		if (firstRun != null) return;
 		Prefs.put(getClass(), PREF_FIRST_RUN, false);
 		uiService.getPluginService().run(ShowReadme.class);
+	}
+
+	private ArrayList<EventSubscriber<?>> subscribers;
+
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		final EventSubscriber<AppQuitEvent> quitSubscriber =
+			new EventSubscriber<AppQuitEvent>() {
+
+				@Override
+				public void onEvent(final AppQuitEvent event) {
+					saveLocation();
+				}
+			};
+		subscribers.add(quitSubscriber);
+		eventService.subscribe(AppQuitEvent.class, quitSubscriber);
 	}
 
 }

@@ -36,7 +36,6 @@ package imagej.ui.swing;
 
 import imagej.ui.ApplicationFrame;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.util.Prefs;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -53,9 +52,6 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 
 	public SwingApplicationFrame(final String title) throws HeadlessException {
 		super(title);
-		int lastX = Prefs.getInt(AbstractSwingUI.LAST_X_KEY, 0);
-		int lastY = Prefs.getInt(AbstractSwingUI.LAST_Y_KEY, 0);
-		setLocation(lastX, lastY);
 	}
 	
 	// -- SwingApplicationFrame methods --
@@ -63,6 +59,18 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
 		addKeyListener(dispatcher);
 		addKeyDispatcher(dispatcher, getContentPane());
+	}
+
+	// -- ApplicationFrame methods --
+
+	@Override
+	public int getLocationX() {
+		return getLocation().x;
+	}
+
+	@Override
+	public int getLocationY() {
+		return getLocation().y;
 	}
 
 	// -- Helper methods --

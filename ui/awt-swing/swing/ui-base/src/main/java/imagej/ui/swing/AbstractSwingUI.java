@@ -51,7 +51,6 @@ import imagej.ui.OutputWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.display.SwingDisplayWindow;
-import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
 import java.awt.dnd.DropTarget;
@@ -72,11 +71,6 @@ import javax.swing.WindowConstants;
  * @author Grant Harris
  */
 public abstract class AbstractSwingUI extends AbstractUserInterface {
-
-	public static final String LAST_X_KEY =
-		"ImageJ.SwingApplicationFrame.lastXLocation";
-	public static final String LAST_Y_KEY =
-		"ImageJ.SwingApplicationFrame.lastYLocation";
 
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
@@ -129,18 +123,18 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 		setupAppFrame();
 
+		super.createUI();
+
 		// NB: The following setup happens for both SDI and MDI frames.
 
 		appFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		appFrame.addWindowListener(new WindowAdapter() {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void windowClosing(final WindowEvent evt) {
-				Prefs.put(LAST_X_KEY, appFrame.getX());
-				Prefs.put(LAST_Y_KEY, appFrame.getY());
 				getUIService().getEventService().publish(new AppQuitEvent());
 			}
+
 		});
 
 		appFrame.getContentPane().add(toolBar, BorderLayout.NORTH);
@@ -233,8 +227,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			eventService.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
 		}
 	}
-
-	// -- Helper methods --
 
 	protected SwingDisplayWindow getDisplayWindow(final Display<?> display) {
 		final DisplayPanel panel = display.getPanel();
