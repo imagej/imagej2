@@ -1,5 +1,5 @@
 //
-// AddToDataValues.java
+// RaiseToPowerDataValues.java
 //
 
 /*

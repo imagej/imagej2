@@ -32,6 +32,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*
+Adapted from Superliminal Software's Static Utilities collection:
+  http://www.superliminal.com/sources/sources.htm#Java%20Code
+
+The Superliminal Software web site states:
+"You're completely free to use them for any purpose whatsoever."
+*/
+
 package imagej.ui.swing;
 
 import java.awt.Component;
@@ -65,14 +73,6 @@ import javax.swing.SwingUtilities;
 
 /**
  * A collection of generally useful Swing utility methods.
- *
- * Copyright:    Copyright (c) 2004
- * Company:      Superliminal Software
- *
- * Added to imagej.ui.swing by GBH, Jun 2011.
- *
- * Originally from:
- *    http://www.superliminal.com/sources/sources.htm#Java%20Code
  *
  * @author Melinda Green
  */

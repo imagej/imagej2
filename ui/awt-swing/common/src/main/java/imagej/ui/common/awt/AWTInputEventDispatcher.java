@@ -1,5 +1,5 @@
 //
-// AWTEventDispatcher.java
+// AWTInputEventDispatcher.java
 //
 
 /*
