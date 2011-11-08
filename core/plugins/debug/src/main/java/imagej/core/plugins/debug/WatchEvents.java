@@ -182,8 +182,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 		final boolean isDisplayEvent =
 			evt instanceof DisplayEvent && !(evt instanceof MsMovedEvent);
 
-		final boolean okApplication = showApp
-				&& evt instanceof ApplicationEvent;
+		final boolean okApplication = showApp && evt instanceof ApplicationEvent;
 		final boolean okDisplay = showDisplay && isDisplayEvent;
 		final boolean okMsMoved = showMsMoved && evt instanceof MsMovedEvent;
 		final boolean okMsButton = showMsButton && evt instanceof MsButtonEvent;

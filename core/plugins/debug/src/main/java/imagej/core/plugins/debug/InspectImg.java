@@ -43,7 +43,7 @@ import imagej.ext.plugin.Plugin;
 
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Image")
@@ -54,7 +54,7 @@ public class InspectImg implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		Inspector.inspect(view);		
+		Inspector.inspect(view);
 	}
-	
+
 }

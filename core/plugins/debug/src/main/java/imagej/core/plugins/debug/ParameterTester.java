@@ -184,8 +184,8 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		Log.info("-- Text --");
 		Log.info("\tchar = " + "'" + pChar + "' [" +
 			Character.getNumericValue(pChar) + "]");
-		final String oCharValue = oChar == null ? "null" :
-			"" + Character.getNumericValue(oChar);
+		final String oCharValue =
+			oChar == null ? "null" : "" + Character.getNumericValue(oChar);
 		Log.info("\tCharacter = " + "'" + oChar + "' [" + oCharValue + "]");
 		Log.info("\tString = " + string);
 
