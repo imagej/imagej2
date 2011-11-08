@@ -39,7 +39,6 @@ import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayPanel;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.roi.Overlay;
@@ -256,13 +255,12 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 						final Overlay overlay = e.getOverlay();
 						final SwingOverlayView v =
 							new SwingOverlayView(display, overlay, e.getFigure());
-						final ImageDisplayPanel panel = display.getPanel();
 						overlay.setAxis(Axes.X, Axes.X.ordinal());
 						overlay.setAxis(Axes.Y, Axes.Y.ordinal());
 						for (int i = 2; i < display.numDimensions(); i++) {
 							final Axis axis = display.axis(i);
 							if (overlay.getAxisIndex(axis) < 0) {
-								overlay.setPosition(axis, panel.getAxisPosition(axis));
+								overlay.setPosition(axis, display.getAxisPosition(axis));
 							}
 						}
 						display.add(v);
