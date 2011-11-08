@@ -58,8 +58,7 @@ public class DeleteSelected implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final ArrayList<DataView> views =
-			new ArrayList<DataView>(display);
+		final ArrayList<DataView> views = new ArrayList<DataView>(display);
 		for (final DataView view : views) {
 			if (view.isSelected()) {
 				display.remove(view);

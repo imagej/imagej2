@@ -72,9 +72,9 @@ public final class AxisUtils {
 		final int axisIndex = ds.getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		final long max = ds.getExtents().dimension(axisIndex);
-		final EventService eventService =
-			ImageJ.get(EventService.class);
-		eventService.publish(new AxisPositionEvent(display, axis, change, max, relative));
+		final EventService eventService = ImageJ.get(EventService.class);
+		eventService.publish(new AxisPositionEvent(display, axis, change, max,
+			relative));
 	}
 
 }
