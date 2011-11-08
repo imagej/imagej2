@@ -79,8 +79,7 @@ public class CodeHacker {
 	 * @param methodSig Method signature of the method to modify; e.g.,
 	 *          "public void updateAndDraw()"
 	 */
-	public void
-		insertAfterMethod(final String fullClass, final String methodSig)
+	public void insertAfterMethod(final String fullClass, final String methodSig)
 	{
 		insertAfterMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
@@ -95,8 +94,8 @@ public class CodeHacker {
 	 * @param newCode The string of code to add; e.g., System.out.println(\"Hello
 	 *          World!\");
 	 */
-	public void insertAfterMethod(final String fullClass,
-		final String methodSig, final String newCode)
+	public void insertAfterMethod(final String fullClass, final String methodSig,
+		final String newCode)
 	{
 		try {
 			getMethod(fullClass, methodSig).insertAfter(newCode);

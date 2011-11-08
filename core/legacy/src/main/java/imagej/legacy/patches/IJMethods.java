@@ -59,12 +59,12 @@ public class IJMethods {
 	}
 
 	/** Appends {@link IJ#showProgress(int, int)}. */
-	public static void
-		showProgress(final int currentIndex, final int finalIndex)
+	public static void showProgress(final int currentIndex, final int finalIndex)
 	{
 		Log.debug("showProgress: " + currentIndex + "/" + finalIndex);
 		// report progress through global event mechanism
-		ImageJ.get(EventService.class).publish(new StatusEvent(currentIndex, finalIndex));
+		ImageJ.get(EventService.class).publish(
+			new StatusEvent(currentIndex, finalIndex));
 	}
 
 	/** Appends {@link IJ#showStatus(String)}. */

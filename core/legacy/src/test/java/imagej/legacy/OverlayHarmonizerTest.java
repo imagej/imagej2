@@ -1,5 +1,5 @@
 //
-// OverlayTranslatorTest.java
+// OverlayHarmonizerTest.java
 //
 
 /*

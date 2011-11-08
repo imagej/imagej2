@@ -1,5 +1,5 @@
 //
-//
+// CompositeHarmonizer.java
 //
 
 /*
@@ -38,12 +38,11 @@ import ij.CompositeImage;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
-
 /**
- * This class sets composite channel count for Displays from ImagePlus data. 
- *  
+ * This class sets composite channel count for {@link Dataset}s to match a given
+ * {@link ImagePlus}.
+ * 
  * @author Barry DeZonia
- *
  */
 public class CompositeHarmonizer implements DataHarmonizer {
 
@@ -52,20 +51,20 @@ public class CompositeHarmonizer implements DataHarmonizer {
 	 * simultaneously based on an input {@link ImagePlus}'s makeup.
 	 */
 	@Override
-	public void updateDataset(Dataset ds, ImagePlus imp) {
+	public void updateDataset(final Dataset ds, final ImagePlus imp) {
 		if ((imp instanceof CompositeImage) &&
-				(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE))
-			{
-				ds.setCompositeChannelCount(imp.getNChannels());
-			}
-			else if (imp.getType() == ImagePlus.COLOR_RGB && imp.getNChannels() == 1) {
-				ds.setCompositeChannelCount(3);
-			}
-			else ds.setCompositeChannelCount(1);
+			(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE))
+		{
+			ds.setCompositeChannelCount(imp.getNChannels());
+		}
+		else if (imp.getType() == ImagePlus.COLOR_RGB && imp.getNChannels() == 1) {
+			ds.setCompositeChannelCount(3);
+		}
+		else ds.setCompositeChannelCount(1);
 	}
 
 	@Override
-	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
 		// this operation doesn't make sense for an ImagePlus
 		throw new UnsupportedOperationException("unimplemented");
 	}

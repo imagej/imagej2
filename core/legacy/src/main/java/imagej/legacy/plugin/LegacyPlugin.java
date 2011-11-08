@@ -99,13 +99,13 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		
+
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
-		
+
 		if (!isLegacyCompatible(activeDisplay)) {
 			final String err =
-					"The active dataset is too large to be represented inside IJ1.";
+				"The active dataset is too large to be represented inside IJ1.";
 			Log.error(err);
 			notifyUser(err);
 			outputs = new ArrayList<ImageDisplay>();
@@ -116,8 +116,8 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// sync legacy images to match existing modern displays
 		final ImageTranslator imageTranslator = new DefaultImageTranslator();
-		final Harmonizer harmonizer =	new Harmonizer(imageTranslator);
-		
+		final Harmonizer harmonizer = new Harmonizer(imageTranslator);
+
 		final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
 		final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
 
@@ -134,15 +134,18 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		try {
 
-			Set<Thread> originalThreads = getCurrentThreads();
+			final Set<Thread> originalThreads = getCurrentThreads();
 
 			// execute the legacy plugin
 			IJ.runPlugIn(className, arg);
 
 			// we always sleep at least once to make sure plugin has time to hatch
-			// it's first thread if its going to create any.			
-			try {	Thread.sleep(50); } catch (InterruptedException e) {/**/}
-			
+			// it's first thread if its going to create any.
+			try {
+				Thread.sleep(50);
+			}
+			catch (final InterruptedException e) {/**/}
+
 			// wait for any threads hatched by plugin to terminate
 			waitForPluginThreads(originalThreads);
 
@@ -166,8 +169,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				// REMOVED next line to fix #803. May leave extra windows open.
 				// outputs.remove(display);
 				// Now only close displays that have not been changed
-				if (!outputs.contains(disp))
-					disp.close();
+				if (!outputs.contains(disp)) disp.close();
 			}
 		}
 
@@ -183,7 +185,7 @@ public class LegacyPlugin implements ImageJPlugin {
 	// -- Helper methods --
 
 	private Set<Thread> getCurrentThreads() {
-		ThreadGroup group = Thread.currentThread().getThreadGroup();
+		final ThreadGroup group = Thread.currentThread().getThreadGroup();
 		Thread[] threads;
 		int numThreads;
 		int size = 25;
@@ -191,29 +193,32 @@ public class LegacyPlugin implements ImageJPlugin {
 			threads = new Thread[size];
 			numThreads = group.enumerate(threads);
 			size *= 2;
-		} while (numThreads > threads.length);
-		Set<Thread> threadSet = new HashSet<Thread>();
+		}
+		while (numThreads > threads.length);
+		final Set<Thread> threadSet = new HashSet<Thread>();
 		for (int i = 0; i < numThreads; i++)
 			threadSet.add(threads[i]);
 		return threadSet;
 	}
-	
-	private void waitForPluginThreads(Set<Thread> threadsToIgnore) {
-		Set<Thread> currentThreads = getCurrentThreads();
-		for (Thread thread : currentThreads) {
+
+	private void waitForPluginThreads(final Set<Thread> threadsToIgnore) {
+		final Set<Thread> currentThreads = getCurrentThreads();
+		for (final Thread thread : currentThreads) {
 			if ((thread != Thread.currentThread()) &&
-					(!threadsToIgnore.contains(thread)))
-				try { thread.join(); } catch (InterruptedException e) {/**/}
+				(!threadsToIgnore.contains(thread))) try {
+				thread.join();
+			}
+			catch (final InterruptedException e) {/**/}
 		}
 	}
-	
+
 	private void updateImagePlusesFromDisplays(final LegacyImageMap map,
 		final Harmonizer harmonizer)
 	{
 		// TODO - track events and keep a dirty bit, then only harmonize those
 		// displays that have changed. See ticket #546.
 		final List<ImageDisplay> imageDisplays =
-				imageDisplayService.getImageDisplays();
+			imageDisplayService.getImageDisplays();
 		for (final ImageDisplay display : imageDisplays) {
 			ImagePlus imp = map.lookupImagePlus(display);
 			if (imp == null) {
@@ -242,7 +247,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// see method below
 		finishInProgressPastes(currImp, imps);
-		
+
 		// the IJ1 plugin may not have any outputs but just changes current
 		// ImagePlus make sure we catch any changes via harmonization
 		final List<ImageDisplay> displays = new ArrayList<ImageDisplay>();
@@ -292,7 +297,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		return LegacyUtils.dimensionsIJ1Compatible(ds);
 	}
 
-	private void notifyUser(String message) {
+	private void notifyUser(final String message) {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt(message, "Error",
@@ -300,15 +305,15 @@ public class LegacyPlugin implements ImageJPlugin {
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 		dialog.prompt();
 	}
-	
+
 	// Finishes any in progress paste() operations. Done before harmonization.
 	// In IJ1 the paste operations are usually handled by ImageCanvas::paint().
 	// In IJ2 that method is never called. It would be nice to hook something
 	// that calls paint() via the legacy injector but that may raise additional
 	// problems. This is a simple fix.
-	
-	private void finishInProgressPastes(
-		ImagePlus currImp, Set<ImagePlus> outputList)
+
+	private void finishInProgressPastes(final ImagePlus currImp,
+		final Set<ImagePlus> outputList)
 	{
 		endPaste(currImp);
 		for (final ImagePlus imp : outputList) { // potentially empty list
@@ -316,10 +321,10 @@ public class LegacyPlugin implements ImageJPlugin {
 			endPaste(imp);
 		}
 	}
-	
-	private void endPaste(ImagePlus imp) {
+
+	private void endPaste(final ImagePlus imp) {
 		if (imp == null) return;
-		Roi roi = imp.getRoi();
+		final Roi roi = imp.getRoi();
 		if (roi == null) return;
 		if (roi.getPasteMode() == Roi.NOT_PASTING) return;
 		roi.endPaste();

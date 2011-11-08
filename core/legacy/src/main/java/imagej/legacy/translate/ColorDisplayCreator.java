@@ -1,5 +1,5 @@
 //
-//
+// ColorDisplayCreator.java
 //
 
 /*
@@ -42,35 +42,42 @@ import imagej.data.display.ImageDisplay;
 import imagej.ext.display.DisplayService;
 import net.imglib2.img.Axis;
 
-
 /**
- * Creates ImageDisplays from ImagePluses containing color data
+ * Creates {@link ImageDisplay}s from {@link ImagePlus}es containing color data.
  * 
  * @author Barry DeZonia
- *
  */
 public class ColorDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
-	private final ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
-	private final CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
+	private final ColorPixelHarmonizer pixelHarmonizer =
+		new ColorPixelHarmonizer();
+	private final ColorTableHarmonizer colorTableHarmonizer =
+		new ColorTableHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer =
+		new MetadataHarmonizer();
+	private final CompositeHarmonizer compositeHarmonizer =
+		new CompositeHarmonizer();
 	private final OverlayHarmonizer overlayHarmonizer = new OverlayHarmonizer();
-	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays while
-	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction as
+
+	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
+	// while
+	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction
+	// as
 	// Harmonizer always catches that case.
-	
+
 	// -- public interface --
 
 	@Override
-	public ImageDisplay createDisplay(ImagePlus imp) {
+	public ImageDisplay createDisplay(final ImagePlus imp) {
 		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	@Override
-	public ImageDisplay createDisplay(ImagePlus imp, Axis[] preferredOrder) {
+	public ImageDisplay createDisplay(final ImagePlus imp,
+		final Axis[] preferredOrder)
+	{
 		final Dataset ds = makeColorDataset(imp, preferredOrder);
 		pixelHarmonizer.updateDataset(ds, imp);
 		metadataHarmonizer.updateDataset(ds, imp);
@@ -86,7 +93,7 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 		return display;
 	}
-	
+
 	// -- private interface --
 
 	/**

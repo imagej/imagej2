@@ -47,8 +47,8 @@ import java.awt.Point;
 public class ImageJMethods {
 
 	/** Replaces {@link ImageJ#getLocationOnScreen()}. */
-	public static Point getLocationOnScreen(
-		@SuppressWarnings("unused") final ImageJ obj)
+	public static Point getLocationOnScreen(@SuppressWarnings("unused")
+	final ImageJ obj)
 	{
 		Log.debug("getLocationOnScreen");
 		// TODO: Return coordinates of IJ2 window.

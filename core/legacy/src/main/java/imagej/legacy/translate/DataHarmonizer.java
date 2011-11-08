@@ -1,5 +1,5 @@
 //
-//
+// DataHarmonizer.java
 //
 
 /*
@@ -37,16 +37,16 @@ package imagej.legacy.translate;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
-
 /**
- * General interface for all DataHarmonizers. A DataHarmonizer keeps some
- * aspect of a Dataset/ImagePlus pairing in sync. Aspects include pixel
- * values, metadata, etc. depending upon each implementation. 
- *  
+ * General interface for all data harmonizers. A data harmonizer keeps some
+ * aspect of a {@link Dataset}/{@link ImagePlus} pairing in sync. Aspects
+ * include pixel values, metadata, etc. depending upon each implementation.
+ * 
  * @author Barry DeZonia
- *
  */
 public interface DataHarmonizer {
+
 	void updateDataset(Dataset ds, ImagePlus imp);
+
 	void updateLegacyImage(Dataset ds, ImagePlus imp);
 }

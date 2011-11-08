@@ -1,5 +1,5 @@
 //
-//
+// ColorPixelHarmonizer.java
 //
 
 /*
@@ -42,11 +42,10 @@ import net.imglib2.img.Axes;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Supports bidirectional synchronization between color ImagePluses and
- * merged Datasets
+ * Supports bidirectional synchronization between color {@link ImagePlus}es and
+ * merged {@link Dataset}s.
  * 
  * @author Barry DeZonia
- *
  */
 public class ColorPixelHarmonizer implements DataHarmonizer {
 
@@ -57,7 +56,7 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 	 * {@link ImageProcessor}::get(). Does not change the Dataset's metadata.
 	 */
 	@Override
-	public void updateDataset(Dataset ds, ImagePlus imp) {
+	public void updateDataset(final Dataset ds, final ImagePlus imp) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
@@ -99,7 +98,7 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 		}
 		ds.update();
 	}
-	
+
 	/**
 	 * Assigns the data values of a color {@link ImagePlus} from a paired
 	 * {@link Dataset}. Assumes the Dataset and ImagePlus have compatible
@@ -108,7 +107,7 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 	 * {@link ImageProcessor}::set(). Does not change the ImagePlus' metadata.
 	 */
 	@Override
-	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);

@@ -61,15 +61,15 @@ public class LegacyUtilsTest {
 	 */
 	@Test
 	public void testStackKiller() {
-		ImageStack stack = new ImageStack(2,2);
-		byte[] slice = new byte[]{1,2,3,4};
+		final ImageStack stack = new ImageStack(2, 2);
+		final byte[] slice = new byte[] { 1, 2, 3, 4 };
 		stack.addSlice("one slice", slice);
-		ImagePlus imp = new ImagePlus("fred",stack);
+		final ImagePlus imp = new ImagePlus("fred", stack);
 		assertEquals(stack, imp.getStack());
-		byte[] slice2 = new byte[]{5,6,7,8};
-		ByteProcessor proc = new ByteProcessor(2,2,slice2,null);
+		final byte[] slice2 = new byte[] { 5, 6, 7, 8 };
+		final ByteProcessor proc = new ByteProcessor(2, 2, slice2, null);
 		imp.setProcessor(proc);
-		ImageStack secondStack = imp.getStack();
+		final ImageStack secondStack = imp.getStack();
 		assertNotSame(stack, secondStack);
 		assertEquals(slice, stack.getPixels(1));
 		assertEquals(slice2, secondStack.getPixels(1));

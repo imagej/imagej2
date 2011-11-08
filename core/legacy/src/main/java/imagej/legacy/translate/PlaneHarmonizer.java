@@ -1,5 +1,5 @@
 //
-//
+// PlaneHarmonizer.java
 //
 
 /*
@@ -42,14 +42,12 @@ import imagej.data.Position;
 import imagej.util.Log;
 import net.imglib2.img.Axes;
 
-
 /**
- * Synchronizes internal plane reference values between a Dataset and an
- * ImagePlus. After synchronization each one of them will share the same plane
- * memory references.
- *  
+ * Synchronizes internal plane reference values between a {@link Dataset} and an
+ * {@link ImagePlus}. After synchronization each one of them will share the same
+ * plane memory references.
+ * 
  * @author Barry DeZonia
- *
  */
 public class PlaneHarmonizer implements DataHarmonizer {
 
@@ -59,7 +57,7 @@ public class PlaneHarmonizer implements DataHarmonizer {
 	 * dimensions and backing type.
 	 */
 	@Override
-	public void updateDataset(Dataset ds, ImagePlus imp) {
+	public void updateDataset(final Dataset ds, final ImagePlus imp) {
 		final int c = imp.getNChannels();
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
@@ -75,7 +73,7 @@ public class PlaneHarmonizer implements DataHarmonizer {
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
-		
+
 		if (imp.getStackSize() == 1) {
 			ds.setPlane(0, imp.getProcessor().getPixels());
 		}
@@ -108,7 +106,7 @@ public class PlaneHarmonizer implements DataHarmonizer {
 	 * is not X or Dataset axis 1 is not Y.
 	 */
 	@Override
-	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
 		final int[] dimIndices = new int[5];
 		final int[] dimValues = new int[5];
 		LegacyUtils.getImagePlusDims(ds, dimIndices, dimValues);
@@ -132,9 +130,8 @@ public class PlaneHarmonizer implements DataHarmonizer {
 		final Position planePos = extents.createPosition();
 
 		// copy planes by reference
-		
-		if (imp.getStackSize() == 1)
-			imp.getProcessor().setPixels(ds.getPlane(0));
+
+		if (imp.getStackSize() == 1) imp.getProcessor().setPixels(ds.getPlane(0));
 		else {
 			int stackPosition = 1;
 			for (int t = 0; t < tCount; t++) {
@@ -146,7 +143,8 @@ public class PlaneHarmonizer implements DataHarmonizer {
 						final int planeNum = (int) planePos.getIndex();
 						final Object plane = ds.getPlane(planeNum, false);
 						if (plane == null) {
-							Log.error(message("Couldn't extract plane from Dataset ", c, z, t));
+							Log
+								.error(message("Couldn't extract plane from Dataset ", c, z, t));
 						}
 						stack.setPixels(plane, stackPosition++);
 					}
@@ -155,12 +153,11 @@ public class PlaneHarmonizer implements DataHarmonizer {
 		}
 	}
 
-
 	// -- private interface --
-	
+
 	/** Formats an error message. */
-	private String message(final String message, final long c,
-		final long z, final long t)
+	private String message(final String message, final long c, final long z,
+		final long t)
 	{
 		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}

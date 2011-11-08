@@ -1,5 +1,5 @@
 //
-//
+// GrayPixelHarmonizer.java
 //
 
 /*
@@ -44,14 +44,13 @@ import net.imglib2.img.Axis;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
- * Supports bidirectional synchronization between ImagePluses and gray Datasets.
- * Single channel color ImagePluses are not supported here. But multichannel
- * color ImagePluses are handled and treated as gray data.
+ * Supports bidirectional synchronization between {@link ImagePlus}es and gray
+ * {@link Dataset}s. Single channel color {@link ImagePlus}es are not supported
+ * here. But multichannel color {@link ImagePlus}es are handled and treated as
+ * gray data.
  * 
  * @author Barry DeZonia
- *
  */
 public class GrayPixelHarmonizer implements DataHarmonizer {
 
@@ -64,7 +63,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	 * Dataset's metadata.
 	 */
 	@Override
-	public void updateDataset(Dataset ds, ImagePlus imp) {
+	public void updateDataset(final Dataset ds, final ImagePlus imp) {
 		final RealType<?> type = ds.getType();
 		final double typeMin = type.getMinValue();
 		final double typeMax = type.getMaxValue();
@@ -117,7 +116,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	 * as 0/255 value images. Does not change the ImagePlus' metadata.
 	 */
 	@Override
-	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
 		final boolean bitData = ds.getType() instanceof BitType;
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
@@ -158,13 +157,14 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	}
 
 	// -- private interface --
-	
+
 	/**
-	 * Fills IJ1 incompatible indices of a position array. The channel from IJ1
-	 * is rasterized into potentially multiple indices in IJ2's position array.
-	 * For instance an IJ2 image with CHANNELs and SPECTRA get encoded as
-	 * multiple channels in IJ!. When coming back from IJ1 need to rasterize
-	 * the its single channel index back into (CHANNEL,SPECTRA) pairs.
+	 * Fills IJ1 incompatible indices of a position array. The channel from IJ1 is
+	 * rasterized into potentially multiple indices in IJ2's position array. For
+	 * instance an IJ2 image with CHANNELs and SPECTRA get encoded as multiple
+	 * channels in IJ!. When coming back from IJ1 need to rasterize the its single
+	 * channel index back into (CHANNEL,SPECTRA) pairs.
+	 * 
 	 * @param dims - the dimensions of the IJ2 Dataset
 	 * @param axes - the axes labels that match the Dataset dimensions
 	 * @param channelIndex - the index of the IJ1 encoded channel position

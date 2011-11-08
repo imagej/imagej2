@@ -43,8 +43,8 @@ import net.imglib2.img.Axis;
 
 /**
  * The default {@link ImageTranslator} between legacy and modern ImageJ image
- * structures. It delegates to the appropriate more specific translators
- * based on the type of data being translated.
+ * structures. It delegates to the appropriate more specific translators based
+ * on the type of data being translated.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
@@ -55,23 +55,22 @@ public class DefaultImageTranslator implements ImageTranslator {
 	private final DisplayCreator grayDisplayCreator;
 	private final ImagePlusCreator colorImagePlusCreator;
 	private final ImagePlusCreator grayImagePlusCreator;
-	
+
 	public DefaultImageTranslator() {
 		colorDisplayCreator = new ColorDisplayCreator();
 		grayDisplayCreator = new GrayDisplayCreator();
 		colorImagePlusCreator = new ColorImagePlusCreator();
 		grayImagePlusCreator = new GrayImagePlusCreator();
 	}
-	
+
 	/**
 	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
 	 * data when possible.
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
-		
-		if ((imp.getType() == ImagePlus.COLOR_RGB) &&
-				(imp.getNChannels() == 1)) {
+
+		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
 			return colorDisplayCreator.createDisplay(imp);
 		}
 
@@ -86,9 +85,8 @@ public class DefaultImageTranslator implements ImageTranslator {
 	public ImageDisplay createDisplay(final ImagePlus imp,
 		final Axis[] preferredOrder)
 	{
-		
-		if ((imp.getType() == ImagePlus.COLOR_RGB) &&
-				(imp.getNChannels() == 1)) {
+
+		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
 			return colorDisplayCreator.createDisplay(imp, preferredOrder);
 		}
 
@@ -104,9 +102,9 @@ public class DefaultImageTranslator implements ImageTranslator {
 
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
-		
+
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
-		
+
 		if (ds.isRGBMerged()) {
 			return colorImagePlusCreator.createLegacyImage(display);
 		}
