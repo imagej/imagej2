@@ -49,5 +49,17 @@ public class AWTApplicationFrame extends Frame implements ApplicationFrame {
 	public AWTApplicationFrame(final String title) throws HeadlessException {
 		super(title);
 	}
+	
+	// -- ApplicationFrame methods --
+
+	@Override
+	public int getLocationX() {
+		return getLocation().x;
+	}
+
+	@Override
+	public int getLocationY() {
+		return getLocation().y;
+	}
 
 }
