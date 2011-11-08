@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealPowerConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Power...", weight = 5) })
-public class RaiseToPowerDataValues extends AbstractPreviewPlugin {
+public class RaiseToPowerDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 

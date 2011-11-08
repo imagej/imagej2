@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealSubtractConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Subtract...", weight = 2) })
-public class SubtractFromDataValues extends AbstractPreviewPlugin {
+public class SubtractFromDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 

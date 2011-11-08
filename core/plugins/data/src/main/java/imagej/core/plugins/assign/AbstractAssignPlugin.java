@@ -54,11 +54,11 @@ import net.imglib2.ops.image.RealImageAssignment;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Base class for the various math plugins. They are previewable.
+ * Base class for previewable math plugins.
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractPreviewPlugin
+public abstract class AbstractAssignPlugin
 	implements ImageJPlugin, PreviewPlugin
 {
 	// -- instance variables --
