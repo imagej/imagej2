@@ -48,10 +48,8 @@ import net.imglib2.ops.operation.unary.real.RealExp;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Exp", weight = 14) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Exp", weight = 14) })
 public class ExpDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
@@ -63,16 +61,17 @@ public class ExpDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real,Real> op = new RealExp();
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
+		final UnaryOperation<Real, Real> op = new RealExp();
+		final InplaceUnaryTransform transform =
+			new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
-	
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 

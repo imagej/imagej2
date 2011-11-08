@@ -49,10 +49,8 @@ import net.imglib2.ops.operation.unary.real.RealAbs;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Abs", weight = 19) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Abs", weight = 19) })
 public class AbsDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
@@ -64,16 +62,17 @@ public class AbsDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperation<Real,Real> op = new RealAbs();
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
+		final UnaryOperation<Real, Real> op = new RealAbs();
+		final InplaceUnaryTransform transform =
+			new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
 
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 

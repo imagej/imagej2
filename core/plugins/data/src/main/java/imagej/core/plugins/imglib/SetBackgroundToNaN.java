@@ -50,8 +50,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "NaN Background", weight = 17) })
 public class SetBackgroundToNaN implements ImageJPlugin {
@@ -61,16 +60,16 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(label =
-		"TODO - should use current threshold - for now ask - Low threshold")
+	@Parameter(
+		label = "TODO - should use current threshold - for now ask - Low threshold")
 	private double loThreshold;
 
-	@Parameter(label =
-		"TODO - should use current threshold - for now ask - High threshold")
+	@Parameter(
+		label = "TODO - should use current threshold - for now ask - High threshold")
 	private double hiThreshold;
 
 	private Img<? extends RealType<?>> inputImage;
-	
+
 	// -- public interface --
 
 	@Override
@@ -86,34 +85,33 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	// -- private interface --
 
 	private void checkInput() {
-		if (input == null)
-			throw new IllegalArgumentException("input Dataset is null");
-		
-		if (input.getImgPlus() == null)
-			throw new IllegalArgumentException("input Image is null");
-			
-		if (loThreshold > hiThreshold)
-			throw new IllegalArgumentException(
-				"threshold values incorrectly specified (min > max)");
+		if (input == null) throw new IllegalArgumentException(
+			"input Dataset is null");
+
+		if (input.getImgPlus() == null) throw new IllegalArgumentException(
+			"input Image is null");
+
+		if (loThreshold > hiThreshold) throw new IllegalArgumentException(
+			"threshold values incorrectly specified (min > max)");
 	}
-	
+
 	private void setupWorkingData() {
 		inputImage = input.getImgPlus();
 	}
-	
+
 	private void assignPixels() {
-		Cursor<? extends RealType<?>> cursor = inputImage.cursor();
+		final Cursor<? extends RealType<?>> cursor = inputImage.cursor();
 
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			
-			double inputValue = cursor.get().getRealDouble();
 
-			if ((inputValue < loThreshold) || (inputValue > hiThreshold))
-				cursor.get().setReal(Double.NaN);
+			final double inputValue = cursor.get().getRealDouble();
+
+			if ((inputValue < loThreshold) || (inputValue > hiThreshold)) cursor
+				.get().setReal(Double.NaN);
 		}
 	}
-	
+
 	private void cleanup() {
 		// nothing to do
 	}

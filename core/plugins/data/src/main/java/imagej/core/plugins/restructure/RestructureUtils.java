@@ -48,63 +48,65 @@ import net.imglib2.type.numeric.RealType;
  * Utility class used by the restructure plugins
  * 
  * @author Barry DeZonia
- *
  */
 public class RestructureUtils {
-	
+
 	private RestructureUtils() {
 		// utility class : uninstantiable
 	}
-	
+
 	/**
-	 * Gets the dimensions of the output data */
-	public static long[] getDimensions(Dataset ds, Axis oneToModify, long delta) {
-		long[] dimensions = ds.getDims();
-		int axisIndex = ds.getAxisIndex(oneToModify);
+	 * Gets the dimensions of the output data
+	 */
+	public static long[] getDimensions(final Dataset ds, final Axis oneToModify,
+		final long delta)
+	{
+		final long[] dimensions = ds.getDims();
+		final int axisIndex = ds.getAxisIndex(oneToModify);
 		dimensions[axisIndex] += delta;
 		return dimensions;
 	}
 
 	/**
-	 * Creates a new ImgPlus with specified dimensions and axes. Uses same
-	 * factory as input Dataset. Maintains type, name, and calibration values.
-	 * All data values are initialized to 0. 
+	 * Creates a new ImgPlus with specified dimensions and axes. Uses same factory
+	 * as input Dataset. Maintains type, name, and calibration values. All data
+	 * values are initialized to 0.
 	 */
-	@SuppressWarnings({"rawtypes","unchecked"})
-	public static ImgPlus<? extends RealType<?>>
-		createNewImgPlus(Dataset ds, long[] dimensions, Axis[] axes)
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static ImgPlus<? extends RealType<?>> createNewImgPlus(
+		final Dataset ds, final long[] dimensions, final Axis[] axes)
 	{
-		ImgFactory factory = ds.getImgPlus().getImg().factory();
-		Img<? extends RealType<?>> img =
+		final ImgFactory factory = ds.getImgPlus().getImg().factory();
+		final Img<? extends RealType<?>> img =
 			factory.create(dimensions, ds.getType());
-		String name = ds.getName();
-		double[] calibration = new double[axes.length];
+		final String name = ds.getName();
+		final double[] calibration = new double[axes.length];
 		for (int i = 0; i < axes.length; i++) {
-			int index = ds.getAxisIndex(axes[i]);
-			if (index >= 0)
-				calibration[i] = ds.getImgPlus().calibration(index);
-			else
-				calibration[i] = Double.NaN;
+			final int index = ds.getAxisIndex(axes[i]);
+			if (index >= 0) calibration[i] = ds.getImgPlus().calibration(index);
+			else calibration[i] = Double.NaN;
 		}
-		return new ImgPlus(img, name, axes, calibration); 
+		return new ImgPlus(img, name, axes, calibration);
 	}
 
 	/**
 	 * Copies a region of data from a srcImgPlus to a dstImgPlus. region is
-	 * defined by a number of planes along an axis that is present in both
-	 * input ImgPluses */
-	public static void copyData(ImgPlus<? extends RealType<?>> srcImgPlus,
-		ImgPlus<? extends RealType<?>> dstImgPlus, Axis axis,
-		long srcStartPos, long dstStartPos, long numHyperplanes)
+	 * defined by a number of planes along an axis that is present in both input
+	 * ImgPluses
+	 */
+	public static void copyData(final ImgPlus<? extends RealType<?>> srcImgPlus,
+		final ImgPlus<? extends RealType<?>> dstImgPlus, final Axis axis,
+		final long srcStartPos, final long dstStartPos, final long numHyperplanes)
 	{
 		if (numHyperplanes == 0) return;
-		long[] srcOrigin = calcOrigin(srcImgPlus, axis, srcStartPos);
-		long[] dstOrigin = calcOrigin(dstImgPlus, axis, dstStartPos);
-		
-		long[] srcSpan = calcSpan(srcImgPlus, axis, numHyperplanes);
-		long[] dstSpan = calcSpan(dstImgPlus, axis, numHyperplanes);
-		
-		copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin, dstSpan);
+		final long[] srcOrigin = calcOrigin(srcImgPlus, axis, srcStartPos);
+		final long[] dstOrigin = calcOrigin(dstImgPlus, axis, dstStartPos);
+
+		final long[] srcSpan = calcSpan(srcImgPlus, axis, numHyperplanes);
+		final long[] dstSpan = calcSpan(dstImgPlus, axis, numHyperplanes);
+
+		copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin,
+			dstSpan);
 	}
 
 	/**
@@ -112,41 +114,47 @@ public class RestructureUtils {
 	 * {@link ImgPlus}. Spans may have different number of dimensions but must be
 	 * shape compatible with axes in same relative order.
 	 */
-	public static void copyHyperVolume(ImgPlus<? extends RealType<?>> srcImgPlus,
-		long[] srcOrigin, long[] srcSpan,
-		ImgPlus<? extends RealType<?>> dstImgPlus,
-		long[] dstOrigin, long[] dstSpan)
+	public static void copyHyperVolume(
+		final ImgPlus<? extends RealType<?>> srcImgPlus, final long[] srcOrigin,
+		final long[] srcSpan, final ImgPlus<? extends RealType<?>> dstImgPlus,
+		final long[] dstOrigin, final long[] dstSpan)
 	{
 		checkSpanShapes(srcSpan, dstSpan);
-		RandomAccess<? extends RealType<?>> srcAccessor = srcImgPlus.getImg().randomAccess();
-		RandomAccess<? extends RealType<?>> dstAccessor = dstImgPlus.getImg().randomAccess();
-		long[] srcOffsets = new long[srcOrigin.length];
+		final RandomAccess<? extends RealType<?>> srcAccessor =
+			srcImgPlus.getImg().randomAccess();
+		final RandomAccess<? extends RealType<?>> dstAccessor =
+			dstImgPlus.getImg().randomAccess();
+		final long[] srcOffsets = new long[srcOrigin.length];
 		for (int i = 0; i < srcOffsets.length; i++)
-			srcOffsets[i] = srcSpan[i]-1;
-		long[] dstOffsets = new long[dstOrigin.length];
+			srcOffsets[i] = srcSpan[i] - 1;
+		final long[] dstOffsets = new long[dstOrigin.length];
 		for (int i = 0; i < dstOffsets.length; i++)
-			dstOffsets[i] = dstSpan[i]-1;
-		RegionIndexIterator iterS = new RegionIndexIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
-		RegionIndexIterator iterD = new RegionIndexIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
+			dstOffsets[i] = dstSpan[i] - 1;
+		final RegionIndexIterator iterS =
+			new RegionIndexIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
+		final RegionIndexIterator iterD =
+			new RegionIndexIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
 		while (iterS.hasNext() && iterD.hasNext()) {
 			iterS.fwd();
 			iterD.fwd();
 			srcAccessor.setPosition(iterS.getPosition());
 			dstAccessor.setPosition(iterD.getPosition());
-			double value = srcAccessor.get().getRealDouble();
+			final double value = srcAccessor.get().getRealDouble();
 			dstAccessor.get().setReal(value);
 		}
 	}
 
 	/**
 	 * Returns a span array covering the specified hyperplanes. Only the axis
-	 * along which the cut is being made has nonmaximal dimension. That
-	 * dimension is set to the passed in number of elements to be preserved.
+	 * along which the cut is being made has nonmaximal dimension. That dimension
+	 * is set to the passed in number of elements to be preserved.
 	 */
-	private static long[] calcSpan(ImgPlus<?> imgPlus, Axis axis, long numElements) {
-		long[] span = new long[imgPlus.numDimensions()];
+	private static long[] calcSpan(final ImgPlus<?> imgPlus, final Axis axis,
+		final long numElements)
+	{
+		final long[] span = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(span);
-		int axisIndex = imgPlus.getAxisIndex(axis);
+		final int axisIndex = imgPlus.getAxisIndex(axis);
 		span[axisIndex] = numElements;
 		return span;
 	}
@@ -157,22 +165,26 @@ public class RestructureUtils {
 	 * dimension is set to the passed in start position of the hyperplane along
 	 * the axis.
 	 */
-	private static long[] calcOrigin(ImgPlus<?> imgPlus, Axis axis, long startPos) {
-		long[] origin = new long[imgPlus.numDimensions()];
-		int axisIndex = imgPlus.getAxisIndex(axis);
+	private static long[] calcOrigin(final ImgPlus<?> imgPlus, final Axis axis,
+		final long startPos)
+	{
+		final long[] origin = new long[imgPlus.numDimensions()];
+		final int axisIndex = imgPlus.getAxisIndex(axis);
 		origin[axisIndex] = startPos;
 		return origin;
 	}
-	
-	private static void checkSpanShapes(long[] srcSpan, long[] dstSpan) {
-		Extents srcExtents = new Extents(srcSpan);
-		Extents dstExtents = new Extents(dstSpan);
-		if (srcExtents.numElements() != dstExtents.numElements())
-			throw new IllegalArgumentException("hypervolume regions not shape compatible");
+
+	private static void
+		checkSpanShapes(final long[] srcSpan, final long[] dstSpan)
+	{
+		final Extents srcExtents = new Extents(srcSpan);
+		final Extents dstExtents = new Extents(dstSpan);
+		if (srcExtents.numElements() != dstExtents.numElements()) throw new IllegalArgumentException(
+			"hypervolume regions not shape compatible");
 		// TODO
 		// we could do a lot more checking but won't for now
-		//   checks would be that all axes are the same ones and any missing ones
-		//   in span I have size==1 in other span J. and test the axes are in the
-		//   same relative order.
+		// checks would be that all axes are the same ones and any missing ones
+		// in span I have size==1 in other span J. and test the axes are in the
+		// same relative order.
 	}
 }

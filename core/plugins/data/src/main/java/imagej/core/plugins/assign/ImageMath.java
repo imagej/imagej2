@@ -85,10 +85,10 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true, persist=false)
+	@Parameter(required = true, persist = false)
 	private Dataset input1;
 
-	@Parameter(required = true, persist=false)
+	@Parameter(required = true, persist = false)
 	private Dataset input2;
 
 	@Parameter(type = ItemIO.OUTPUT)
@@ -101,10 +101,10 @@ public class ImageMath implements ImageJPlugin {
 
 	@Parameter(label = "Create new window")
 	private boolean newWindow = true;
-	
+
 	@Parameter(label = "Floating point result")
 	private boolean overrideType;
-	
+
 	// -- other instance variables --
 
 	private final HashMap<String, BinaryOperation<Real, Real, Real>> operators;
@@ -112,8 +112,8 @@ public class ImageMath implements ImageJPlugin {
 	// -- constructor --
 
 	/**
-	 * Constructs the ImageMath object by initializing which binary operations
-	 * are available.
+	 * Constructs the ImageMath object by initializing which binary operations are
+	 * available.
 	 */
 	public ImageMath() {
 		operators = new HashMap<String, BinaryOperation<Real, Real, Real>>();
@@ -155,12 +155,13 @@ public class ImageMath implements ImageJPlugin {
 			signed = true;
 		}
 		// TODO : HACK - this next line works but always creates a PlanarImg
-		output = DatasetFactory.create(span, "Result of operation",
-			input1.getAxes(), bits, signed,	floating);
+		output =
+			DatasetFactory.create(span, "Result of operation", input1.getAxes(),
+				bits, signed, floating);
 		// This is what I'd like to do
 		// output = DatasetFactory.create(input1.getType(), span,
-		//   "Result of operation", input1.getAxes());
-		
+		// "Result of operation", input1.getAxes());
+
 		assignPixelValues(span);
 
 		// replace original data if desired by user
@@ -215,30 +216,28 @@ public class ImageMath implements ImageJPlugin {
 	}
 
 	// -- private helpers --
-	
-	private long[] calcOverlappedSpan(long[] dimsA, long[] dimsB) {
-		if (dimsA.length != dimsB.length)
-			return null;
-		
+
+	private long[] calcOverlappedSpan(final long[] dimsA, final long[] dimsB) {
+		if (dimsA.length != dimsB.length) return null;
+
 		final long[] overlap = new long[dimsA.length];
-		
+
 		for (int i = 0; i < overlap.length; i++)
 			overlap[i] = Math.min(dimsA[i], dimsB[i]);
-		
+
 		return overlap;
 	}
-	
+
 	private void warnBadSpan() {
 		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt("Input images have different number of dimensions",
-				"Image Calculator",
-				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				"Image Calculator", DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 		dialog.prompt();
 	}
 
-	private void assignPixelValues(long[] span) {
+	private void assignPixelValues(final long[] span) {
 		final long[] origin = new long[span.length];
 		final BinaryOperation<Real, Real, Real> binOp = operators.get(opName);
 		final Function<long[], Real> f1 =
@@ -247,17 +246,18 @@ public class ImageMath implements ImageJPlugin {
 			new RealImageFunction(input2.getImgPlus().getImg());
 		final GeneralBinaryFunction<long[], Real, Real, Real> binFunc =
 			new GeneralBinaryFunction<long[], Real, Real, Real>(f1, f2, binOp);
-		final RealImageAssignment assigner = new
-			RealImageAssignment(output.getImgPlus().getImg(), origin, span, binFunc);
+		final RealImageAssignment assigner =
+			new RealImageAssignment(output.getImgPlus().getImg(), origin, span,
+				binFunc);
 		assigner.assign();
 	}
 
-	private void copyDataIntoInput1(long[] span) {
+	private void copyDataIntoInput1(final long[] span) {
 		final ImgPlus<? extends RealType<?>> srcImgPlus = output.getImgPlus();
 		final ImgPlus<? extends RealType<?>> dstImgPlus = input1.getImgPlus();
-		RestructureUtils.copyHyperVolume(
-			srcImgPlus, new long[span.length], span,
+		RestructureUtils.copyHyperVolume(srcImgPlus, new long[span.length], span,
 			dstImgPlus, new long[span.length], span);
 		input1.update();
 	}
+
 }

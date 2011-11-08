@@ -59,9 +59,10 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractAssignPlugin
-	implements ImageJPlugin, PreviewPlugin
+public abstract class AbstractAssignPlugin implements ImageJPlugin,
+	PreviewPlugin
 {
+
 	// -- instance variables that are Parameters --
 
 	@Parameter(required = true, persist = false)
@@ -73,30 +74,31 @@ public abstract class AbstractAssignPlugin
 	// -- instance variables --
 
 	private Dataset dataset;
-	
+
 	private RealRect bounds;
-	
+
 	private double[] dataBackup;
 
 	private long[] planeOrigin;
-	
+
 	private long[] planeSpan;
 
 	private long[] imageOrigin;
-	
+
 	private long[] imageSpan;
 
 	private RegionIndexIterator iter;
 
 	private RandomAccess<? extends RealType<?>> accessor;
-	
+
 	// -- public interface --
-	
+
 	@Override
 	public void run() {
 		if (dataset == null) {
 			initialize();
-		} else if (preview) {
+		}
+		else if (preview) {
 			restoreViewedPlane();
 		}
 		transformDataset();
@@ -108,23 +110,20 @@ public abstract class AbstractAssignPlugin
 			initialize();
 			saveViewedPlane();
 		}
-		else
-			restoreViewedPlane();
-		if (preview)
-			transformViewedPlane();
+		else restoreViewedPlane();
+		if (preview) transformViewedPlane();
 	}
 
 	@Override
 	public void cancel() {
-		if (preview)
-			restoreViewedPlane();
+		if (preview) restoreViewedPlane();
 	}
 
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
-	public void setDisplay(ImageDisplay display) {
+
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
 
@@ -132,14 +131,14 @@ public abstract class AbstractAssignPlugin
 		return dataset;
 	}
 
-	public void setDataset(Dataset dataset) {
+	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 	}
-	
-	public abstract UnaryOperation<Real,Real> getOperation();
-	
+
+	public abstract UnaryOperation<Real, Real> getOperation();
+
 	// -- private helpers --
-	
+
 	// NB
 	// - It is possible to design an elegant plane cloner but can only assume
 	// certain types. And since dataset.setPlane() does not copy data if not
@@ -148,28 +147,28 @@ public abstract class AbstractAssignPlugin
 	// about all types being native types. And again can't set data.
 	// - so we opt for copying to an array of doubles. However this could
 	// cause precision loss for long data
-	
+
 	private void initialize() {
-		final ImageDisplayService displayService = ImageJ.get(ImageDisplayService.class);
+		final ImageDisplayService displayService =
+			ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 
 		dataset = displayService.getActiveDataset(display);
 		bounds = overlayService.getSelectionBounds(display);
 
 		// check dimensions of Dataset
-		int xIndex = dataset.getAxisIndex(Axes.X);
-		int yIndex = dataset.getAxisIndex(Axes.Y);
-		if ((xIndex < 0) || (yIndex < 0))
-			throw new IllegalArgumentException("display does not have XY planes");
-		long[] dims = dataset.getDims();
-		long w = (long) bounds.width;
-		long h = (long) bounds.height;
-		if (w*h > Integer.MAX_VALUE)
-			throw new IllegalArgumentException(
-				"plane region too large to copy into memory");
-		
+		final int xIndex = dataset.getAxisIndex(Axes.X);
+		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		if ((xIndex < 0) || (yIndex < 0)) throw new IllegalArgumentException(
+			"display does not have XY planes");
+		final long[] dims = dataset.getDims();
+		final long w = (long) bounds.width;
+		final long h = (long) bounds.height;
+		if (w * h > Integer.MAX_VALUE) throw new IllegalArgumentException(
+			"plane region too large to copy into memory");
+
 		// calc origin of preview plane
-		Position planePos = display.getActiveView().getPlanePosition();
+		final Position planePos = display.getActiveView().getPlanePosition();
 		planeOrigin = new long[dims.length];
 		planeOrigin[xIndex] = (long) bounds.x;
 		planeOrigin[yIndex] = (long) bounds.y;
@@ -178,14 +177,14 @@ public abstract class AbstractAssignPlugin
 			if ((i == xIndex) || (i == yIndex)) continue;
 			planeOrigin[i] = planePos.getLongPosition(p++);
 		}
-		
+
 		// calc span of preview plane
 		planeSpan = new long[dims.length];
 		for (int i = 0; i < planeSpan.length; i++)
 			planeSpan[i] = 1;
 		planeSpan[xIndex] = w;
 		planeSpan[yIndex] = h;
-		
+
 		// calc origin of image for actual data changes
 		imageOrigin = new long[dims.length];
 		for (int i = 0; i < imageOrigin.length; i++)
@@ -201,14 +200,16 @@ public abstract class AbstractAssignPlugin
 		imageSpan[yIndex] = h;
 
 		// calc plane offsets for region iterator
-		long[] planeOffsets = new long[planeSpan.length];
+		final long[] planeOffsets = new long[planeSpan.length];
 		for (int i = 0; i < planeOffsets.length; i++)
 			planeOffsets[i] = planeSpan[i] - 1;
-		
+
 		// setup region iterator
 		accessor = dataset.getImgPlus().randomAccess();
-		iter = new RegionIndexIterator(planeOrigin, new long[planeOrigin.length], planeOffsets);
-		dataBackup = new double[(int)(w*h)];
+		iter =
+			new RegionIndexIterator(planeOrigin, new long[planeOrigin.length],
+				planeOffsets);
+		dataBackup = new double[(int) (w * h)];
 	}
 
 	private void saveViewedPlane() {
@@ -222,9 +223,9 @@ public abstract class AbstractAssignPlugin
 			dataBackup[index++] = accessor.get().getRealDouble();
 		}
 	}
-	
+
 	private void restoreViewedPlane() {
-		
+
 		// restore data from our double[]
 		int index = 0;
 		iter.reset();
@@ -244,13 +245,13 @@ public abstract class AbstractAssignPlugin
 		transformData(planeOrigin, planeSpan);
 	}
 
-	private void transformData(long[] origin, long[] span) {
-		RealImageFunction imageFunc =
+	private void transformData(final long[] origin, final long[] span) {
+		final RealImageFunction imageFunc =
 			new RealImageFunction(dataset.getImgPlus().getImg());
-		UnaryOperation<Real,Real> op = getOperation();
-		GeneralUnaryFunction<long[], Real, Real> function =
+		final UnaryOperation<Real, Real> op = getOperation();
+		final GeneralUnaryFunction<long[], Real, Real> function =
 			new GeneralUnaryFunction<long[], Real, Real>(imageFunc, op);
-		RealImageAssignment assigner =
+		final RealImageAssignment assigner =
 			new RealImageAssignment(dataset.getImgPlus().getImg(), origin, span,
 				function, new long[span.length], new long[span.length]);
 		assigner.assign();

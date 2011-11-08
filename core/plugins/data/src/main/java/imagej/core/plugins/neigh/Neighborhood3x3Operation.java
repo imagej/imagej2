@@ -47,8 +47,8 @@ import net.imglib2.view.Views;
 
 /**
  * Neighborhood3x3Operation - a helper class for 3x3 neighborhood operation
- * plugins such as SmoothDataValues, SharpenDataValues, and FindEdges. Does
- * the work of communicating with a Neighborhood3x3Watcher.
+ * plugins such as SmoothDataValues, SharpenDataValues, and FindEdges. Does the
+ * work of communicating with a Neighborhood3x3Watcher.
  * 
  * @author Barry DeZonia
  */
@@ -56,15 +56,16 @@ public class Neighborhood3x3Operation {
 
 	// -- instance variables --
 
-	private Dataset input;
+	private final Dataset input;
 	private Img<? extends RealType<?>> inputImage;
 	private Img<? extends RealType<?>> inputImageCopy;
-	private RealRect selection;
-	private Neighborhood3x3Watcher watcher;
+	private final RealRect selection;
+	private final Neighborhood3x3Watcher watcher;
 
 	// -- constructor --
 
-	public Neighborhood3x3Operation(Dataset input, RealRect selection, Neighborhood3x3Watcher watcher)
+	public Neighborhood3x3Operation(final Dataset input,
+		final RealRect selection, final Neighborhood3x3Watcher watcher)
 	{
 		this.input = input;
 		this.watcher = watcher;
@@ -76,8 +77,7 @@ public class Neighborhood3x3Operation {
 
 	// -- public interface --
 
-	public void run()
-	{
+	public void run() {
 		checkInput();
 		setupWorkingData();
 		runAssignment();
@@ -89,30 +89,28 @@ public class Neighborhood3x3Operation {
 	 * Make sure we have an input image and that it's dimensionality is correct
 	 */
 	private void checkInput() {
-		if (input == null)
-			throw new IllegalArgumentException("input Dataset is null");
-		
-		if (input.getImgPlus() == null)
-			throw new IllegalArgumentException("input Img is null");
+		if (input == null) throw new IllegalArgumentException(
+			"input Dataset is null");
 
-		//if (input.getImage().numDimensions() != 2)
-		//	throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().numDimensions() + " dimensions");
+		if (input.getImgPlus() == null) throw new IllegalArgumentException(
+			"input Img is null");
+
+		// if (input.getImage().numDimensions() != 2)
+		// throw new IllegalArgumentException("input image is not 2d but has " +
+		// input.getImage().numDimensions() + " dimensions");
 	}
 
-
-	private void setupWorkingData()
-	{
+	private void setupWorkingData() {
 		inputImage = input.getImgPlus();
 		inputImageCopy = cloneImage(inputImage);
 	}
 
-	private void runAssignment()
-	{
-		long[] planeDims = new long[inputImage.numDimensions() - 2];
+	private void runAssignment() {
+		final long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = inputImage.dimension(i+2);
-		Extents extents = new Extents(planeDims);
-		Position planePos = extents.createPosition();
+			planeDims[i] = inputImage.dimension(i + 2);
+		final Extents extents = new Extents(planeDims);
+		final Position planePos = extents.createPosition();
 		if (planeDims.length == 0) { // dataset is 2d only
 			applyOperationToPlane(planePos);
 		}
@@ -124,56 +122,54 @@ public class Neighborhood3x3Operation {
 		}
 		input.update();
 	}
-	
-	private void applyOperationToPlane(Position planePos) {
 
-		long[] imageDims = new long[inputImage.numDimensions()];
+	private void applyOperationToPlane(final Position planePos) {
+
+		final long[] imageDims = new long[inputImage.numDimensions()];
 		inputImage.dimensions(imageDims);
-		
-		if (selection.width == 0)
-			selection.width = (int) imageDims[0];
 
-		if (selection.height == 0)
-			selection.height = (int) imageDims[1];
+		if (selection.width == 0) selection.width = (int) imageDims[0];
+
+		if (selection.height == 0) selection.height = (int) imageDims[1];
 
 		// output is done by changin input image in place
-		RandomAccess<? extends RealType<?>> outputAccessor =
+		final RandomAccess<? extends RealType<?>> outputAccessor =
 			inputImage.randomAccess();
 
 		// input is a copy of the original data with out of bounds access enabled
-		RandomAccessible<? extends RealType<?>> inputInterval =
+		final RandomAccessible<? extends RealType<?>> inputInterval =
 			Views.extendMirrorSingle(inputImageCopy);
 
-		RandomAccess<? extends RealType<?>> extendedInput =
+		final RandomAccess<? extends RealType<?>> extendedInput =
 			inputInterval.randomAccess();
 
 		// initialize the watcher
 		watcher.setup();
-		
-		long[] inputPosition = new long[imageDims.length];
-		long[] localInputPosition = new long[imageDims.length];
+
+		final long[] inputPosition = new long[imageDims.length];
+		final long[] localInputPosition = new long[imageDims.length];
 
 		for (int i = 2; i < inputPosition.length; i++) {
-			inputPosition[i] = planePos.getLongPosition(i-2);
-			localInputPosition[i] = planePos.getLongPosition(i-2);
+			inputPosition[i] = planePos.getLongPosition(i - 2);
+			localInputPosition[i] = planePos.getLongPosition(i - 2);
 		}
 
-		long minX = (long) selection.x;
-		long minY = (long) selection.y;
-		long width = (long) selection.width;
-		long height = (long) selection.height;
-		for (long y = minY; y < minY+height; y++) {
+		final long minX = (long) selection.x;
+		final long minY = (long) selection.y;
+		final long width = (long) selection.width;
+		final long height = (long) selection.height;
+		for (long y = minY; y < minY + height; y++) {
 			inputPosition[1] = y;
-			for (long x = minX; x < minX+width; x++) {
+			for (long x = minX; x < minX + width; x++) {
 				inputPosition[0] = x;
 				watcher.initializeNeighborhood(inputPosition);
-	
+
 				for (int dy = -1; dy <= 1; dy++) {
 					localInputPosition[1] = inputPosition[1] + dy;
 					for (int dx = -1; dx <= 1; dx++) {
 						localInputPosition[0] = inputPosition[0] + dx;
 						extendedInput.setPosition(localInputPosition);
-						double localValue = extendedInput.get().getRealDouble();
+						final double localValue = extendedInput.get().getRealDouble();
 						watcher.visitLocation(dx, dy, localValue);
 					}
 				}
@@ -187,30 +183,30 @@ public class Neighborhood3x3Operation {
 	// TODO - eliminate when ImgLib allows ability to duplicate/clone an Img
 	// TODO - find a way to eliminate use of raw types here
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Img<? extends RealType<?>> cloneImage(Img image) {
+	private Img<? extends RealType<?>> cloneImage(final Img image) {
 		// TODO - used to be able to call Image::clone()
-		//  For now copy data by hand
+		// For now copy data by hand
 
-		long[] dimensions = new long[image.numDimensions()];
+		final long[] dimensions = new long[image.numDimensions()];
 		image.dimensions(dimensions);
-		
-		Img<? extends RealType<?>> copyOfImg =
-			image.factory().create(dimensions, image.firstElement());
-		
-		long[] position = new long[dimensions.length];
-		
-		Cursor<? extends RealType<?>> cursor = image.localizingCursor();
 
-		RandomAccess<? extends RealType<?>> access = copyOfImg.randomAccess();
-		
+		final Img<? extends RealType<?>> copyOfImg =
+			image.factory().create(dimensions, image.firstElement());
+
+		final long[] position = new long[dimensions.length];
+
+		final Cursor<? extends RealType<?>> cursor = image.localizingCursor();
+
+		final RandomAccess<? extends RealType<?>> access = copyOfImg.randomAccess();
+
 		while (cursor.hasNext()) {
 			cursor.next();
-			double currValue = cursor.get().getRealDouble();
+			final double currValue = cursor.get().getRealDouble();
 			cursor.localize(position);
 			access.setPosition(position);
 			access.get().setReal(currValue);
 		}
-		
+
 		return copyOfImg;
 	}
 }

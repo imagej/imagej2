@@ -47,8 +47,7 @@ import net.imglib2.ops.operation.unary.real.RealMultiplyConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Multiply...", weight = 3) })
 public class MultiplyDataValuesBy extends AbstractAssignPlugin {
@@ -61,15 +60,15 @@ public class MultiplyDataValuesBy extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real,Real> getOperation() {
+	public UnaryOperation<Real, Real> getOperation() {
 		return new RealMultiplyConstant(value);
 	}
 
 	public double getValue() {
 		return value;
 	}
-	
-	public void setValue(double value) {
+
+	public void setValue(final double value) {
 		this.value = value;
 	}
 

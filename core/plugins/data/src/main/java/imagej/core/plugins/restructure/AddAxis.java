@@ -152,8 +152,8 @@ public class AddAxis extends DynamicPlugin {
 	 * Creates a long[] that consists of all the dimensions from a Dataset and an
 	 * additional value appended.
 	 */
-	private long[] getNewDimensions(final Dataset ds,
-		final long lastDimensionSize)
+	private long[]
+		getNewDimensions(final Dataset ds, final long lastDimensionSize)
 	{
 		final long[] origDims = ds.getDims();
 		final long[] newDims = new long[origDims.length + 1];

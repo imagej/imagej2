@@ -47,10 +47,8 @@ import net.imglib2.ops.operation.unary.real.RealMinConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Min...", weight = 9) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Min...", weight = 9) })
 public class ClampMinDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
@@ -61,15 +59,15 @@ public class ClampMinDataValues extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real,Real> getOperation() {
+	public UnaryOperation<Real, Real> getOperation() {
 		return new RealMinConstant(value);
 	}
 
 	public double getValue() {
 		return value;
 	}
-	
-	public void setValue(double value) {
+
+	public void setValue(final double value) {
 		this.value = value;
 	}
 

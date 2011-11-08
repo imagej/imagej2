@@ -47,29 +47,27 @@ import net.imglib2.ops.operation.unary.real.RealAndConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "AND...", weight = 6) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "AND...", weight = 6) })
 public class AndDataValuesWith extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
-	
+
 	@Parameter(label = "Value (binary)")
 	private long value;
-	
+
 	// -- public interface --
-	
+
 	@Override
-	public UnaryOperation<Real,Real> getOperation() {
+	public UnaryOperation<Real, Real> getOperation() {
 		return new RealAndConstant(value);
 	}
-	
+
 	public long getValue() {
 		return value;
 	}
-	
-	public void setValue(long value) {
+
+	public void setValue(final long value) {
 		this.value = value;
 	}
 

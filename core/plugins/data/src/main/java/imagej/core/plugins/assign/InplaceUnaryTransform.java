@@ -76,7 +76,9 @@ public class InplaceUnaryTransform {
 		final GeneralUnaryFunction<long[], Real, Real> function =
 			new GeneralUnaryFunction<long[], Real, Real>(f1, operation);
 		setOriginAndSpan(display);
-		assigner = new RealImageAssignment(imgPlus.getImg(), origin, span, function, new long[span.length], new long[span.length]);
+		assigner =
+			new RealImageAssignment(imgPlus.getImg(), origin, span, function,
+				new long[span.length], new long[span.length]);
 	}
 
 	// -- public interface --

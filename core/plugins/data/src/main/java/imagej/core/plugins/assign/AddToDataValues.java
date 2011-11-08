@@ -60,15 +60,15 @@ public class AddToDataValues extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real,Real> getOperation() {
+	public UnaryOperation<Real, Real> getOperation() {
 		return new RealAddConstant(value);
 	}
 
 	public double getValue() {
 		return value;
 	}
-	
-	public void setValue(double value) {
+
+	public void setValue(final double value) {
 		this.value = value;
 	}
 

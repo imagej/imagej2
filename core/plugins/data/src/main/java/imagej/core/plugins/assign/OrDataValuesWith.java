@@ -47,10 +47,8 @@ import net.imglib2.ops.operation.unary.real.RealOrConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "OR...", weight = 7) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "OR...", weight = 7) })
 public class OrDataValuesWith extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
@@ -61,15 +59,15 @@ public class OrDataValuesWith extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real,Real> getOperation() {
+	public UnaryOperation<Real, Real> getOperation() {
 		return new RealOrConstant(value);
 	}
 
 	public long getValue() {
 		return value;
 	}
-	
-	public void setValue(long value) {
+
+	public void setValue(final long value) {
 		this.value = value;
 	}
 
