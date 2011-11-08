@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -56,17 +55,8 @@ public class SubtractFromDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-
-	// -- instance variables that are Parameters --
-
-	@Parameter
-	ImageDisplay display;
-
 	@Parameter(label = "Value")
 	private double constant;
-
-	@Parameter(label = "Preview")
-	private boolean preview;
 
 	// -- public interface --
 
@@ -75,13 +65,4 @@ public class SubtractFromDataValues extends AbstractAssignPlugin {
 		return new RealSubtractConstant(constant);
 	}
 
-	@Override
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-
-	@Override
-	public boolean previewOn() {
-		return preview;
-	}
 }

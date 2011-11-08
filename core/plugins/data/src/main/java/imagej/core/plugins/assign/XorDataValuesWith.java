@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -56,14 +55,8 @@ public class XorDataValuesWith extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
-	ImageDisplay display;
-
 	@Parameter(label = "Value (binary)")
 	private long constant;
-
-	@Parameter(label = "Preview")
-	private boolean preview;
 
 	// -- public interface --
 
@@ -72,13 +65,4 @@ public class XorDataValuesWith extends AbstractAssignPlugin {
 		return new RealXorConstant(constant);
 	}
 
-	@Override
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-
-	@Override
-	public boolean previewOn() {
-		return preview;
-	}
 }
