@@ -40,7 +40,7 @@ import imagej.util.ColorRGB;
 
 /**
  * The panel housing a particular {@link Display}.
- *
+ * 
  * @author Grant Harris
  * @author Curtis Rueden
  */

@@ -36,7 +36,7 @@ package imagej.ext.module.ui;
 
 /**
  * Widget interface for text fields.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface TextFieldWidget extends InputWidget {

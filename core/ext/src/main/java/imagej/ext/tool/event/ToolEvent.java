@@ -39,12 +39,12 @@ import imagej.ext.tool.ITool;
 
 /**
  * An event indicating something has happened to a tool.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class ToolEvent extends ImageJEvent {
 
-	private ITool tool;
+	private final ITool tool;
 
 	public ToolEvent(final ITool tool) {
 		this.tool = tool;

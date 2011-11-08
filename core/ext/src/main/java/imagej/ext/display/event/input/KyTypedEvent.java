@@ -40,7 +40,7 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating keyboard activity in a display.
- *
+ * 
  * @author Curtis Rueden
  */
 public class KyTypedEvent extends KyEvent {

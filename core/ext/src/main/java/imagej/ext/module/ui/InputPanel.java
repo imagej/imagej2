@@ -60,8 +60,7 @@ public interface InputPanel {
 	 * @param max maximum allowed value
 	 * @param stepSize distance between steps when operating widget
 	 */
-	void addNumber(WidgetModel model,
-		Number min, Number max, Number stepSize);
+	void addNumber(WidgetModel model, Number min, Number max, Number stepSize);
 
 	/**
 	 * Adds a checkbox field.

@@ -39,7 +39,7 @@ import imagej.ext.module.ModuleItem;
 
 /**
  * The backing data model for a particular {@link InputWidget}.
- *
+ * 
  * @author Curtis Rueden
  */
 public class WidgetModel {
@@ -52,8 +52,8 @@ public class WidgetModel {
 
 	private boolean initialized;
 
-	public WidgetModel(final InputPanel inputPanel,
-		final Module module, final ModuleItem<?> item)
+	public WidgetModel(final InputPanel inputPanel, final Module module,
+		final ModuleItem<?> item)
 	{
 		this.inputPanel = inputPanel;
 		this.module = module;
@@ -80,7 +80,7 @@ public class WidgetModel {
 
 	public void setValue(final Object value) {
 		final String name = item.getName();
-		if (objectsEqual(module.getInput(name),value)) return; // no change
+		if (objectsEqual(module.getInput(name), value)) return; // no change
 		module.setInput(name, value);
 		if (initialized) {
 			item.callback(module);
@@ -107,9 +107,8 @@ public class WidgetModel {
 		return s;
 	}
 
-	private boolean objectsEqual(Object obj1, Object obj2) {
-		if (obj1 == null)
-			return (obj2 == null);
+	private boolean objectsEqual(final Object obj1, final Object obj2) {
+		if (obj1 == null) return obj2 == null;
 		return obj1.equals(obj2);
 	}
 }

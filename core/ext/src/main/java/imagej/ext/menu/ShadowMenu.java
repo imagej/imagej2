@@ -272,7 +272,8 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		for (int i=0; i<=menuDepth; i++) sb.append("\t");
+		for (int i = 0; i <= menuDepth; i++)
+			sb.append("\t");
 		final String name = getName();
 		sb.append(name == null ? "[-]" : name);
 		for (final ShadowMenu child : getChildren()) {

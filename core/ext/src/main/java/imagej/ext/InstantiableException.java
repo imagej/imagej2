@@ -36,14 +36,25 @@ package imagej.ext;
 
 /**
  * An exception thrown when an {@link Instantiable} cannot create an object.
- *
+ * 
  * @author Curtis Rueden
  */
 public class InstantiableException extends Exception {
 
-  public InstantiableException() { super(); }
-  public InstantiableException(String s) { super(s); }
-  public InstantiableException(String s, Throwable cause) { super(s, cause); }
-  public InstantiableException(Throwable cause) { super(cause); }
+	public InstantiableException() {
+		super();
+	}
+
+	public InstantiableException(final String s) {
+		super(s);
+	}
+
+	public InstantiableException(final String s, final Throwable cause) {
+		super(s, cause);
+	}
+
+	public InstantiableException(final Throwable cause) {
+		super(cause);
+	}
 
 }

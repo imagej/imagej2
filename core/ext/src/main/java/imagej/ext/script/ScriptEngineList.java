@@ -52,11 +52,11 @@ public class ScriptEngineList implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		ScriptEngineManager sem = new ScriptEngineManager();
-		//Gets all available script engine factories as a list
-		List<ScriptEngineFactory> sefList = sem.getEngineFactories();
-		for (ScriptEngineFactory sef : sefList) {
-			//Print available script engine name
+		final ScriptEngineManager sem = new ScriptEngineManager();
+		// Gets all available script engine factories as a list
+		final List<ScriptEngineFactory> sefList = sem.getEngineFactories();
+		for (final ScriptEngineFactory sef : sefList) {
+			// Print available script engine name
 			System.out.format("Engine Name : %s \n", sef.getEngineName());
 		}
 		// TODO - Output to TextDisplay.

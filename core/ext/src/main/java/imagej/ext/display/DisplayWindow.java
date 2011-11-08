@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display;
 
-
 /**
- * A user interface window associated with a Display, containing a {@link DisplayPanel}.
+ * A user interface window associated with a Display, containing a
+ * {@link DisplayPanel}.
  * 
  * @author Grant Harris
  */
@@ -46,8 +46,8 @@ public interface DisplayWindow {
 
 	void setContent(DisplayPanel panel);
 
-	void pack();  // or reformat, or (re)validate, or somesuch.
-	
+	void pack(); // or reformat, or (re)validate, or somesuch.
+
 	/*
 	 * Places this component  into the desktop environment.
 	 * It should do appropriate size and locate the window.
@@ -55,9 +55,9 @@ public interface DisplayWindow {
 	 * for instance in a tabbed enviroment, it is added to the appropriate set of tabs.
 	 */
 	void showDisplay(boolean visible);
-	
+
 	void requestFocus();
-	
+
 	void close();
 
 }

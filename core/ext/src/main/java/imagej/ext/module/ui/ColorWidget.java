@@ -38,7 +38,7 @@ import imagej.util.ColorRGB;
 
 /**
  * Widget interface for color choosers.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface ColorWidget extends InputWidget {

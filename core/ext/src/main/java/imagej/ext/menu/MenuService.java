@@ -101,10 +101,11 @@ public class MenuService extends AbstractService {
 
 	/**
 	 * Populates a UI-specific menu structure.
+	 * 
 	 * @param creator the {@link MenuCreator} to use to populate the menus.
 	 * @param menu the destination menu structure to populate.
 	 */
-	public <T> T createMenus(final MenuCreator<T> creator, T menu) {
+	public <T> T createMenus(final MenuCreator<T> creator, final T menu) {
 		creator.createMenus(rootMenu, menu);
 		return menu;
 	}
@@ -115,8 +116,7 @@ public class MenuService extends AbstractService {
 	}
 
 	/** Selects or deselects the given plugin in the menu structure. */
-	public void setSelected(final RunnablePlugin plugin, final boolean selected)
-	{
+	public void setSelected(final RunnablePlugin plugin, final boolean selected) {
 		setSelected(plugin.getClass(), selected);
 	}
 
@@ -177,8 +177,7 @@ public class MenuService extends AbstractService {
 				}
 			};
 		subscribers.add(modulesRemovedSubscriber);
-		eventService
-			.subscribe(ModulesRemovedEvent.class, modulesRemovedSubscriber);
+		eventService.subscribe(ModulesRemovedEvent.class, modulesRemovedSubscriber);
 
 		final EventSubscriber<ModulesUpdatedEvent> modulesUpdatedSubscriber =
 			new EventSubscriber<ModulesUpdatedEvent>() {

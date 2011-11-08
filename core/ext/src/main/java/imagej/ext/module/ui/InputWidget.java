@@ -36,7 +36,7 @@ package imagej.ext.module.ui;
 
 /**
  * Top-level widget interface.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface InputWidget {

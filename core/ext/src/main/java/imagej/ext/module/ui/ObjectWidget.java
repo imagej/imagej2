@@ -36,7 +36,7 @@ package imagej.ext.module.ui;
 
 /**
  * Widget interface for object selectors.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface ObjectWidget extends InputWidget {

@@ -39,12 +39,12 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating something has happened to a display.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class DisplayEvent extends ImageJEvent {
 
-	private Display<?> display;
+	private final Display<?> display;
 
 	public DisplayEvent(final Display<?> display) {
 		this.display = display;

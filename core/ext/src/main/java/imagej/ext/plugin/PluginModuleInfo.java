@@ -95,8 +95,7 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	private final List<ModuleItem<?>> inputList = new ArrayList<ModuleItem<?>>();
 
 	/** Ordered list of output items. */
-	private final List<ModuleItem<?>> outputList =
-		new ArrayList<ModuleItem<?>>();
+	private final List<ModuleItem<?>> outputList = new ArrayList<ModuleItem<?>>();
 
 	// -- Constructors --
 

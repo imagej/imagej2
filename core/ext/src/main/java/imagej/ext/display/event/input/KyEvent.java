@@ -85,5 +85,5 @@ public abstract class KyEvent extends InputEvent {
 		return super.toString() + "\n\tcharacter = '" + character + "'\n\tcode = " +
 			code + "\n\taccelerator = " + getAccelerator();
 	}
-	
+
 }

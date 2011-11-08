@@ -38,7 +38,7 @@ import imagej.ext.display.Display;
 
 /**
  * An event indicating a display has become the active one.
- *
+ * 
  * @author Grant Harris
  */
 public class DisplayActivatedEvent extends DisplayEvent {

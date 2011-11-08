@@ -57,9 +57,7 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  */
-public class DefaultModuleInfo extends AbstractUIDetails implements
-	ModuleInfo
-{
+public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo {
 
 	/** Table of inputs, keyed on name. */
 	private final Map<String, ModuleItem<?>> inputMap =
@@ -73,8 +71,7 @@ public class DefaultModuleInfo extends AbstractUIDetails implements
 	private final List<ModuleItem<?>> inputList = new ArrayList<ModuleItem<?>>();
 
 	/** Ordered list of output items. */
-	private final List<ModuleItem<?>> outputList =
-		new ArrayList<ModuleItem<?>>();
+	private final List<ModuleItem<?>> outputList = new ArrayList<ModuleItem<?>>();
 
 	private Class<? extends Module> moduleClass;
 

@@ -38,7 +38,7 @@ import imagej.ext.tool.ITool;
 
 /**
  * An event indicating a tool has been deactivated.
- *
+ * 
  * @author Curtis Rueden
  */
 public class ToolDeactivatedEvent extends ToolEvent {

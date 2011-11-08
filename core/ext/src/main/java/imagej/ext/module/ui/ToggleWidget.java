@@ -36,7 +36,7 @@ package imagej.ext.module.ui;
 
 /**
  * Widget interface for boolean toggles.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface ToggleWidget extends InputWidget {

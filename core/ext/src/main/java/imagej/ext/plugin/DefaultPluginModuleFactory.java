@@ -57,13 +57,13 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 				return (Module) pluginClass.newInstance();
 			}
 		}
-		catch (InstantiableException e) {
+		catch (final InstantiableException e) {
 			throw new ModuleException(e);
 		}
-		catch (InstantiationException e) {
+		catch (final InstantiationException e) {
 			throw new ModuleException(e);
 		}
-		catch (IllegalAccessException e) {
+		catch (final IllegalAccessException e) {
 			throw new ModuleException(e);
 		}
 

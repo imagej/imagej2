@@ -36,14 +36,25 @@ package imagej.ext.module;
 
 /**
  * An exception thrown when something goes wrong with a module.
- *
+ * 
  * @author Curtis Rueden
  */
 public class ModuleException extends Exception {
 
-  public ModuleException() { super(); }
-  public ModuleException(String s) { super(s); }
-  public ModuleException(String s, Throwable cause) { super(s, cause); }
-  public ModuleException(Throwable cause) { super(cause); }
+	public ModuleException() {
+		super();
+	}
+
+	public ModuleException(final String s) {
+		super(s);
+	}
+
+	public ModuleException(final String s, final Throwable cause) {
+		super(s, cause);
+	}
+
+	public ModuleException(final Throwable cause) {
+		super(cause);
+	}
 
 }
