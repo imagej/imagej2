@@ -65,4 +65,12 @@ public class MultiplyDataValuesBy extends AbstractAssignPlugin {
 		return new RealMultiplyConstant(value);
 	}
 
+	public double getValue() {
+		return value;
+	}
+	
+	public void setValue(double value) {
+		this.value = value;
+	}
+
 }

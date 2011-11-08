@@ -68,4 +68,13 @@ public class SquareRootDataValues implements ImageJPlugin {
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(display, op);
 		transform.run();
 	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+	
+	public void setDisplay(ImageDisplay display) {
+		this.display = display;
+	}
+
 }

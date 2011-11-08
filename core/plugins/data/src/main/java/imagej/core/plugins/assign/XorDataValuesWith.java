@@ -64,5 +64,13 @@ public class XorDataValuesWith extends AbstractAssignPlugin {
 	public UnaryOperation<Real,Real> getOperation() {
 		return new RealXorConstant(value);
 	}
+	
+	public long getValue() {
+		return value;
+	}
+	
+	public void setValue(long value) {
+		this.value = value;
+	}
 
 }

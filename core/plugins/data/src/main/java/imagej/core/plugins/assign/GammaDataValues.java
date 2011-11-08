@@ -66,4 +66,12 @@ public class GammaDataValues extends AbstractAssignPlugin {
 		return new RealGammaConstant(value);
 	}
 
+	public double getValue() {
+		return value;
+	}
+	
+	public void setValue(double value) {
+		this.value = value;
+	}
+
 }
