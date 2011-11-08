@@ -41,6 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
@@ -61,6 +62,14 @@ import net.imglib2.type.numeric.RealType;
 public abstract class AbstractAssignPlugin
 	implements ImageJPlugin, PreviewPlugin
 {
+	// -- instance variables that are Parameters --
+
+	@Parameter(required = true, persist = false)
+	protected ImageDisplay display;
+
+	@Parameter(label = "Preview")
+	protected boolean preview;
+
 	// -- instance variables --
 
 	private Dataset dataset;
@@ -87,7 +96,7 @@ public abstract class AbstractAssignPlugin
 	public void run() {
 		if (dataset == null) {
 			initialize();
-		} else if (previewOn()) {
+		} else if (preview) {
 			restoreViewedPlane();
 		}
 		transformDataset();
@@ -101,18 +110,16 @@ public abstract class AbstractAssignPlugin
 		}
 		else
 			restoreViewedPlane();
-		if (previewOn())
+		if (preview)
 			transformViewedPlane();
 	}
 
 	@Override
 	public void cancel() {
-		if (previewOn())
+		if (preview)
 			restoreViewedPlane();
 	}
 
-	public abstract ImageDisplay getDisplay();
-	public abstract boolean previewOn();
 	public abstract UnaryOperation<Real,Real> getOperation();
 	
 	// -- private helpers --
@@ -130,8 +137,8 @@ public abstract class AbstractAssignPlugin
 		final ImageDisplayService displayService = ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 
-		dataset = displayService.getActiveDataset(getDisplay());
-		bounds = overlayService.getSelectionBounds(getDisplay());
+		dataset = displayService.getActiveDataset(display);
+		bounds = overlayService.getSelectionBounds(display);
 
 		// check dimensions of Dataset
 		int xIndex = dataset.getAxisIndex(Axes.X);
@@ -146,7 +153,7 @@ public abstract class AbstractAssignPlugin
 				"plane region too large to copy into memory");
 		
 		// calc origin of preview plane
-		Position planePos = getDisplay().getActiveView().getPlanePosition();
+		Position planePos = display.getActiveView().getPlanePosition();
 		planeOrigin = new long[dims.length];
 		planeOrigin[xIndex] = (long) bounds.x;
 		planeOrigin[yIndex] = (long) bounds.y;

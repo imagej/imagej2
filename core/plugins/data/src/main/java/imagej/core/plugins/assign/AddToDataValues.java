@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -55,14 +54,8 @@ public class AddToDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
-	ImageDisplay display;
-
 	@Parameter(label = "Value")
 	private double constant;
-
-	@Parameter(label = "Preview")
-	private boolean preview;
 
 	// -- public interface --
 
@@ -71,13 +64,4 @@ public class AddToDataValues extends AbstractAssignPlugin {
 		return new RealAddConstant(constant);
 	}
 
-	@Override
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-
-	@Override
-	public boolean previewOn() {
-		return preview;
-	}
 }
