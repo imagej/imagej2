@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Set...", weight = 12) })
-public class SetDataValues extends AbstractPreviewPlugin {
+public class SetDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 

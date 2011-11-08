@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealOrConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "OR...", weight = 7) })
-public class OrDataValuesWith extends AbstractPreviewPlugin {
+public class OrDataValuesWith extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 

@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealMultiplyConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Multiply...", weight = 3) })
-public class MultiplyDataValuesBy extends AbstractPreviewPlugin {
+public class MultiplyDataValuesBy extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 

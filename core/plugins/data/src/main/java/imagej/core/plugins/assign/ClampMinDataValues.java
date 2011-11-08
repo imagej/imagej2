@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealMinConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Min...", weight = 9) })
-public class ClampMinDataValues extends AbstractPreviewPlugin {
+public class ClampMinDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 

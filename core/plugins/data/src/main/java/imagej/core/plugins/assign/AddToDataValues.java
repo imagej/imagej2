@@ -51,7 +51,7 @@ import net.imglib2.ops.operation.unary.real.RealAddConstant;
 @Plugin(iconPath = "/icons/plugins/sum.png", menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) })
-public class AddToDataValues extends AbstractPreviewPlugin {
+public class AddToDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 

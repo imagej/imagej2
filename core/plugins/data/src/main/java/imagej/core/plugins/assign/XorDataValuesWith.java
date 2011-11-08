@@ -52,7 +52,7 @@ import net.imglib2.ops.operation.unary.real.RealXorConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "XOR...", weight = 8) })
-public class XorDataValuesWith extends AbstractPreviewPlugin {
+public class XorDataValuesWith extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
