@@ -100,19 +100,8 @@ public class Harmonizer {
 			rebuildImagePlusData(display, imp);
 		}
 		else {
-			if ((!dimensionsCompatible(ds, imp)) || (imp.getStack().getSize() == 0)) { // NB
-																																									// -
-																																									// in
-																																									// IJ1
-																																									// stack
-																																									// size
-																																									// can
-																																									// be
-																																									// zero
-																																									// for
-																																									// single
-																																									// slice
-																																									// image!
+			// NB - in IJ1 stack size can be zero for single slice image!
+			if ((!dimensionsCompatible(ds, imp)) || (imp.getStack().getSize() == 0)) {
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -147,12 +136,17 @@ public class Harmonizer {
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
-		final Integer oldBitDepth = bitDepthMap.get(imp);
-		// if old bit depth is null then plugin created a new display and it's
-		// contents are already up to date
+		Integer oldBitDepth = bitDepthMap.get(imp);
+		
+		// NB
+		// if old bit depth is null then plugin created a new display. although
+		// nearly every time the data is already correct there are places in IJ1
+		// (such as the Histogram plugin) where the data in the created display
+		// has not been updated to reflect values in imp. So record the bit depth
+		// but don't return or pixels won't get synchronized correctly.
 		if (oldBitDepth == null) {
+			oldBitDepth = imp.getBitDepth();
 			bitDepthMap.put(imp, imp.getBitDepth());
-			return;
 		}
 		if (imp.getBitDepth() != oldBitDepth) {
 			final ImageDisplay tmp = imageTranslator.createDisplay(imp, ds.getAxes());
