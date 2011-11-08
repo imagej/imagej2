@@ -23,6 +23,9 @@ my %knownAuthors = (
   "Stephan Preibisch" => 1,
   "Stephan Saalfeld" => 1,
   "Wayne Rasband" => 1,
+
+  "Melinda Green" => 1,
+  "Werner Randelshofer" => 1,
 );
 
 # parse command line arguments
@@ -49,7 +52,7 @@ for my $file (@src) {
   process($file);
 }
 
-sub process {
+sub process($) {
   my ($file) = @_;
 
   my $dir = `dirname "$file"`;
@@ -77,6 +80,32 @@ sub process {
   }
   $i += @copyright;
 
+  # check for optional additional comments
+  my $blank = 0;
+  while (1) {
+    if ($data[$i] =~ /^\/\//) {
+      # single line comments are OK; continue
+      $blank = 0;
+    }
+    elsif ($data[$i] =~ /^\/\*/) {
+      # multi-line comments are OK; search for end of comment
+      while ($i < @data && $data[$i++] !~ /\*\//) { }
+      $blank = 0;
+    }
+    elsif ($data[$i] =~ /^\s*$/) {
+      if ($blank) {
+        print "$file: duplicate blank line at line #$i\n";
+        return;
+      }
+      $blank = 1;
+    }
+    else {
+      # not an additional comment; move on
+      last;
+    }
+    $i++;
+  }
+
   # check package statement
   if ($data[$i++] !~ /^package .*;$/) {
     print "$file: invalid package\n";
@@ -84,7 +113,7 @@ sub process {
   }
 
   # check import statements
-  my $blank = 0;
+  $blank = 0;
   while (1) {
     my $line = trim($data[$i++]);
     if ($line =~ /^$/) {
