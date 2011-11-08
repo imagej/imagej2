@@ -69,4 +69,12 @@ public class AbsDataValues implements ImageJPlugin {
 		transform.run();
 	}
 
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+	
+	public void setDisplay(ImageDisplay display) {
+		this.display = display;
+	}
+
 }

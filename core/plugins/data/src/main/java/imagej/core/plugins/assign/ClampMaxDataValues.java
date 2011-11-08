@@ -65,4 +65,12 @@ public class ClampMaxDataValues extends AbstractAssignPlugin {
 		return new RealMaxConstant(value);
 	}
 
+	public double getValue() {
+		return value;
+	}
+	
+	public void setValue(double value) {
+		this.value = value;
+	}
+
 }

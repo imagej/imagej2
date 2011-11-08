@@ -170,6 +170,50 @@ public class ImageMath implements ImageJPlugin {
 		}
 	}
 
+	public Dataset getInput1() {
+		return input1;
+	}
+
+	public void setInput1(final Dataset input1) {
+		this.input1 = input1;
+	}
+
+	public Dataset getInput2() {
+		return input2;
+	}
+
+	public void setInput2(final Dataset input2) {
+		this.input2 = input2;
+	}
+
+	public Dataset getOutput() {
+		return output;
+	}
+
+	public String getOpName() {
+		return opName;
+	}
+
+	public void setOpName(final String opName) {
+		this.opName = opName;
+	}
+
+	public boolean isNewWindow() {
+		return newWindow;
+	}
+
+	public void setNewWindow(final boolean newWindow) {
+		this.newWindow = newWindow;
+	}
+
+	public boolean isOverrideType() {
+		return overrideType;
+	}
+
+	public void setOverrideType(final boolean overrideType) {
+		this.overrideType = overrideType;
+	}
+
 	// -- private helpers --
 	
 	private long[] calcOverlappedSpan(long[] dimsA, long[] dimsB) {

@@ -78,4 +78,12 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 		return new RealDivideConstant(value, dbzVal);
 	}
 
+	public double getValue() {
+		return value;
+	}
+	
+	public void setValue(double value) {
+		this.value = value;
+	}
+
 }

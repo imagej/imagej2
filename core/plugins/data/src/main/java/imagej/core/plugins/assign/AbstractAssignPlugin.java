@@ -120,6 +120,22 @@ public abstract class AbstractAssignPlugin
 			restoreViewedPlane();
 	}
 
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+	
+	public void setDisplay(ImageDisplay display) {
+		this.display = display;
+	}
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(Dataset dataset) {
+		this.dataset = dataset;
+	}
+	
 	public abstract UnaryOperation<Real,Real> getOperation();
 	
 	// -- private helpers --
@@ -240,5 +256,5 @@ public abstract class AbstractAssignPlugin
 		assigner.assign();
 		dataset.update();
 	}
-	
+
 }

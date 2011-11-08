@@ -65,4 +65,12 @@ public class SubtractFromDataValues extends AbstractAssignPlugin {
 		return new RealSubtractConstant(value);
 	}
 
+	public double getValue() {
+		return value;
+	}
+	
+	public void setValue(double value) {
+		this.value = value;
+	}
+
 }
