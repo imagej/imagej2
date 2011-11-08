@@ -1,5 +1,5 @@
 //
-// AbstractPreviewPlugin.java
+// AbstractAssignPlugin.java
 //
 
 /*

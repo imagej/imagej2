@@ -32,6 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+// NOTE - this code adapted from IJ1's DragAndDrop class
+// Original contributor: Wayne Rasband
+
 package imagej.ui.swing;
 
 import imagej.ImageJ;
@@ -67,10 +70,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.imglib2.display.ColorTable8;
-
-
-// NOTE - this code adapted from IJ1's DragAndDrop class
-//   Original contributor: Wayne Rasband
 
 /**
  * SwingDropListener implements the drag and drop functionality of IJ2 that is
