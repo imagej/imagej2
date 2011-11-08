@@ -1,5 +1,5 @@
 //
-//
+// LegacyUtils.java
 //
 
 /*
@@ -48,7 +48,6 @@ import net.imglib2.type.numeric.RealType;
  * A bag of static methods used throughout the translation layer
  * 
  * @author Barry DeZonia
- *
  */
 public class LegacyUtils {
 
@@ -58,11 +57,11 @@ public class LegacyUtils {
 		Axes.CHANNEL, Axes.Z, Axes.TIME };
 
 	// -- public static methods --
-	
+
 	// TODO - deleteImagePlus() could be better located in some other class.
-	//   It's use of an ImagePlus does not fit in with theme of other methods
-	//   in this class.
-	
+	// It's use of an ImagePlus does not fit in with theme of other methods
+	// in this class.
+
 	/**
 	 * Modifies IJ1 data structures so that there are no dangling references to an
 	 * obsolete ImagePlus.
@@ -95,9 +94,8 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Returns the number of channels required in IJ1 to represent all the axes
-	 * of an IJ2 Dataset. Incompatible IJ2 axes are encoded as extra channels
-	 * in IJ1.
+	 * Returns the number of channels required in IJ1 to represent all the axes of
+	 * an IJ2 Dataset. Incompatible IJ2 axes are encoded as extra channels in IJ1.
 	 */
 	static long ij1ChannelCount(final long[] dims, final Axis[] axes) {
 		long cCount = 1;
@@ -114,11 +112,10 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Determines if a Dataset's dimensions cannot be represented within
-	 * an IJ1 ImageStack. Returns true if the Dataset does not have X or
-	 * Y axes. Returns true if the XY plane size is greater than
-	 * Integer.MAX_VALUE. Returns true if the number of planes is greater
-	 * than Integer.MAX_VALUE. 
+	 * Determines if a Dataset's dimensions cannot be represented within an IJ1
+	 * ImageStack. Returns true if the Dataset does not have X or Y axes. Returns
+	 * true if the XY plane size is greater than Integer.MAX_VALUE. Returns true
+	 * if the number of planes is greater than Integer.MAX_VALUE.
 	 */
 	public static boolean dimensionsIJ1Compatible(final Dataset ds) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
@@ -152,7 +149,7 @@ public class LegacyUtils {
 	}
 
 	// -- package access static methods --
-	
+
 	static Axis[] getPreferredAxisOrder() {
 		return defaultAxes;
 	}
@@ -215,9 +212,7 @@ public class LegacyUtils {
 	 * makes a set of dimensions in a given Axis order. Assumes that all
 	 * nontrivial dimensions have already been prescreened to be included
 	 */
-	static long[] orderedDims(final Axis[] axes,
-		final int[] fullDimensions)
-	{
+	static long[] orderedDims(final Axis[] axes, final int[] fullDimensions) {
 		final long[] orderedDims = new long[axes.length];
 		int index = 0;
 		for (final Axis axis : axes) {
@@ -326,7 +321,6 @@ public class LegacyUtils {
 		else throw new IllegalArgumentException(
 			"incompatible dimension type specified");
 	}
-
 
 	/** Returns true if a {@link Dataset} is backed by {@link PlanarAccess}. */
 	private static boolean ij1StorageCompatible(final Dataset ds) {

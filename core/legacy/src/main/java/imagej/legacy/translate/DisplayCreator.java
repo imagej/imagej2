@@ -1,5 +1,5 @@
 //
-//
+// DisplayCreator.java
 //
 
 /*
@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import net.imglib2.img.Axis;
 
 /**
- * The interface for creating ImageDisplays from ImagePluses.
+ * The interface for creating {@link ImageDisplay}s from {@link ImagePlus}es.
  * 
  * @author Barry DeZonia
  */

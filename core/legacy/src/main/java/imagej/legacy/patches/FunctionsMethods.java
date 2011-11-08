@@ -52,7 +52,7 @@ public class FunctionsMethods {
 	// until we verify this implementation is a problem. On 10-19-11 BDZ
 	// found that not tracking this at all seems to be okay as #554 does not
 	// happen.
-	
+
 	public static int InsideBatchDrawing = 0;
 
 	private FunctionsMethods() {
@@ -60,21 +60,21 @@ public class FunctionsMethods {
 	}
 
 	/** Prepends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageBefore(
-		@SuppressWarnings("unused") final ImagePlus imp2)
+	public static void displayBatchModeImageBefore(@SuppressWarnings("unused")
+	final ImagePlus imp2)
 	{
 		// NOTE - BDZ - removing for now - see if any problems rear their head.
-		//   Was for bug #554
-		//InsideBatchDrawing++;
+		// Was for bug #554
+		// InsideBatchDrawing++;
 	}
 
 	/** Appends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageAfter(
-		@SuppressWarnings("unused") final ImagePlus imp2)
+	public static void displayBatchModeImageAfter(@SuppressWarnings("unused")
+	final ImagePlus imp2)
 	{
 		// NOTE - BDZ - removing for now - see if any problems rear their head.
-		//   Was for bug #554
-		//InsideBatchDrawing--;
+		// Was for bug #554
+		// InsideBatchDrawing--;
 	}
 
 }

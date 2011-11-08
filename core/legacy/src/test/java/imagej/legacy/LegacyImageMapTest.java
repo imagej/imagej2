@@ -172,7 +172,7 @@ public class LegacyImageMapTest {
 			NewImage.createShortImage("name", 4, 7, c * z * t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		*/
-		
+
 		// CTR FIXME - Fix comparison tests.
 //		ds0 = map.registerLegacyImage(imp);
 //		//map.reconcileDifferences(ds0, imp);

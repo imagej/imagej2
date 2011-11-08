@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.translate;
 
-
 /**
  * The interface for translating between legacy and modern ImageJ image
  * structures.

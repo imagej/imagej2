@@ -1,5 +1,5 @@
 //
-//
+// MetadataHarmonizer.java
 //
 
 /*
@@ -39,18 +39,17 @@ import ij.measure.Calibration;
 import imagej.data.Dataset;
 import net.imglib2.img.Axes;
 
-
 /**
- * Synchronizes metadata bidirectionally between a Dataset and an ImagePlus
- *  
+ * Synchronizes metadata bidirectionally between a {@link Dataset} and an
+ * {@link ImagePlus}.
+ * 
  * @author Barry DeZonia
- *
  */
 public class MetadataHarmonizer implements DataHarmonizer {
 
 	/** Sets a {@link Dataset}'s metadata to match a given {@link ImagePlus}. */
 	@Override
-	public void updateDataset(Dataset ds, ImagePlus imp) {
+	public void updateDataset(final Dataset ds, final ImagePlus imp) {
 		ds.setName(imp.getTitle());
 		// copy calibration info where possible
 		final int xIndex = ds.getAxisIndex(Axes.X);
@@ -70,7 +69,7 @@ public class MetadataHarmonizer implements DataHarmonizer {
 
 	/** Sets an {@link ImagePlus}' metadata to match a given {@link Dataset}. */
 	@Override
-	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
 		imp.setTitle(ds.getName());
 		// copy calibration info where possible
 		final Calibration cal = imp.getCalibration();

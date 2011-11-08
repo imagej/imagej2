@@ -1,5 +1,5 @@
 //
-//
+// ColorTableHarmonizer.java
 //
 
 /*
@@ -54,12 +54,11 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
- * This class synchronizes Display ColorTables with ImagePlus LUTs. 
- *  
+ * This class synchronizes {@link ImageDisplay} {@link ColorTable}s with
+ * {@link ImagePlus} {@link LUT}s.
+ * 
  * @author Barry DeZonia
- *
  */
 public class ColorTableHarmonizer implements DisplayHarmonizer {
 
@@ -68,25 +67,24 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	 * LUTs of a given ImagePlus or CompositeImage.
 	 */
 	@Override
-	public void updateDisplay(ImageDisplay disp, ImagePlus imp) {
+	public void updateDisplay(final ImageDisplay disp, final ImagePlus imp) {
 		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
 		final List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(disp, colorTables, sixteenBitLuts);
 		assignChannelMinMax(disp, imp);
 	}
 
-
 	/**
 	 * Sets LUTs of an ImagePlus or CompositeImage. If given an ImagePlus this
 	 * method sets it's single LUT from the first ColorTable of the active view
 	 * that displays the active Dataset of the given ImageDisplay. If given a
-	 * CompositeImage this method sets all it's LUTs from the ColorTables of
-	 * the active view of the given ImageDisplay. In both cases if there is no
-	 * active view for the ImageDisplay the LUTs are assigned with sensible
-	 * default values.
+	 * CompositeImage this method sets all it's LUTs from the ColorTables of the
+	 * active view of the given ImageDisplay. In both cases if there is no active
+	 * view for the ImageDisplay the LUTs are assigned with sensible default
+	 * values.
 	 */
 	@Override
-	public void updateLegacyImage(ImageDisplay disp, ImagePlus imp) {
+	public void updateLegacyImage(final ImageDisplay disp, final ImagePlus imp) {
 		final DatasetView activeView = (DatasetView) disp.getActiveView();
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
@@ -106,14 +104,13 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 				final Dataset ds = imageDisplayService.getActiveDataset(disp);
 				setImagePlusLutToFirstInDataset(ds, imp);
 			}
-			else
-				setImagePlusLutToFirstInView(activeView, imp);
+			else setImagePlusLutToFirstInView(activeView, imp);
 		}
 		assignImagePlusMinMax(disp, imp);
 	}
 
 	// -- private interface --
-	
+
 	/**
 	 * For each channel in CompositeImage, sets LUT to one from default
 	 * progression
@@ -141,8 +138,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			boolean allGrayLuts = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable8 cTable = cTables.get(i);
-				if ((allGrayLuts) && (!ColorTables.isGrayColorTable(cTable)))
-					allGrayLuts = false;
+				if ((allGrayLuts) && (!ColorTables.isGrayColorTable(cTable))) allGrayLuts =
+					false;
 				final LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
@@ -201,10 +198,10 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			if (min[c] < overallMin) overallMin = min[c];
 			if (max[c] > overallMax) overallMax = max[c];
 		}
-		
+
 		if (imp instanceof CompositeImage) {
-			CompositeImage ci = (CompositeImage) imp;
-			LUT[] luts = ci.getLuts();
+			final CompositeImage ci = (CompositeImage) imp;
+			final LUT[] luts = ci.getLuts();
 			if (channelCount != luts.length) {
 				throw new IllegalArgumentException("Channel mismatch: " +
 					converters.size() + " vs. " + luts.length);
@@ -218,7 +215,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			imp.setDisplayRange(overallMin, overallMax);
 		}
 	}
-	
+
 	/**
 	 * Makes a ColorTable8 from an IndexColorModel. Note that IJ1 LUT's are a kind
 	 * of IndexColorModel.
@@ -247,7 +244,6 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		return new LUT(reds, greens, blues);
 	}
 
-
 	/** Assigns the color tables of the active view of a ImageDisplay. */
 	private void assignColorTables(final ImageDisplay disp,
 		final List<ColorTable<?>> colorTables, @SuppressWarnings("unused")
@@ -267,8 +263,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		// TODO - removing this old code allows color tables to be applied to
 		// gray images. Does this break anything? Note that avoiding this code
 		// fixes #550, #765, #768, and #774.
-		//final ColorMode currMode = dsView.getColorMode();
-		//if (currMode == ColorMode.GRAYSCALE) return;
+		// final ColorMode currMode = dsView.getColorMode();
+		// if (currMode == ColorMode.GRAYSCALE) return;
 
 		// either we're given one color table for whole dataset
 		if (colorTables.size() == 1) {
@@ -288,11 +284,11 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/**
-	 * Assigns the per-channel min/max values of active view of given
-	 * ImageDisplay to the specified ImagePlus/CompositeImage range(s).
+	 * Assigns the per-channel min/max values of active view of given ImageDisplay
+	 * to the specified ImagePlus/CompositeImage range(s).
 	 */
-	private void assignChannelMinMax(final ImageDisplay disp,
-		final ImagePlus imp)
+	private void
+		assignChannelMinMax(final ImageDisplay disp, final ImagePlus imp)
 	{
 		final DataView dataView = disp.getActiveView();
 		if (!(dataView instanceof DatasetView)) return;
@@ -332,9 +328,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/** Creates a list of ColorTables from an ImagePlus. */
-	private List<ColorTable<?>> colorTablesFromImagePlus(
-		final ImagePlus imp)
-	{
+	private List<ColorTable<?>> colorTablesFromImagePlus(final ImagePlus imp) {
 		final List<ColorTable<?>> colorTables = new ArrayList<ColorTable<?>>();
 		final LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage

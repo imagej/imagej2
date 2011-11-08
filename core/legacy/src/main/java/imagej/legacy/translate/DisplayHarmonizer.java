@@ -1,5 +1,5 @@
 //
-//
+// DisplayHarmonizer.java
 //
 
 /*
@@ -37,16 +37,16 @@ package imagej.legacy.translate;
 import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 
-
 /**
  * General interface for all DisplayHarmonizers. A DisplayHarmonizer keeps some
  * aspect of a Display/ImagePlus pairing in sync. Aspects include color table
- * values, etc. depending upon each implementation. 
- *  
+ * values, etc. depending upon each implementation.
+ * 
  * @author Barry DeZonia
- *
  */
 public interface DisplayHarmonizer {
+
 	void updateDisplay(ImageDisplay disp, ImagePlus imp);
+
 	void updateLegacyImage(ImageDisplay disp, ImagePlus imp);
 }

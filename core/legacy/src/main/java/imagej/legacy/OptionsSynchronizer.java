@@ -506,7 +506,7 @@ public class OptionsSynchronizer {
 		optionsProfilePlot.setWidth(ij.gui.PlotWindow.plotWidth);
 
 		final OptionsProxy optionsProxy =
-				optionsService.getOptions(OptionsProxy.class);
+			optionsService.getOptions(OptionsProxy.class);
 		optionsProxy.setUseSystemProxy(ij.Prefs.useSystemProxies);
 
 		final OptionsRoundedRectangleTool optionsRoundedRectangleTool =

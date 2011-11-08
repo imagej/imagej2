@@ -1,5 +1,5 @@
 //
-//
+// GrayDisplayCreator.java
 //
 
 /*
@@ -47,44 +47,53 @@ import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
- * Creates ImageDisplays from ImagePluses containing gray data values
+ * Creates {@link ImageDisplay}s from {@link ImagePlus}es containing gray data
+ * values.
  * 
  * @author Barry DeZonia
- *
  */
 public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
-	
+
 	private final GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
-	private final CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
+	private final ColorTableHarmonizer colorTableHarmonizer =
+		new ColorTableHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer =
+		new MetadataHarmonizer();
+	private final CompositeHarmonizer compositeHarmonizer =
+		new CompositeHarmonizer();
 	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
 	private final OverlayHarmonizer overlayHarmonizer = new OverlayHarmonizer();
-	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays while
-	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction as
+
+	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
+	// while
+	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction
+	// as
 	// Harmonizer always catches that case.
-	
+
 	// -- public interface --
 
 	@Override
-	public ImageDisplay createDisplay(ImagePlus imp) {
+	public ImageDisplay createDisplay(final ImagePlus imp) {
 		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	@Override
-	public ImageDisplay createDisplay(ImagePlus imp, Axis[] preferredOrder) {
-		if (imp.getType() == ImagePlus.COLOR_RGB)
-			return colorCase(imp, preferredOrder);
-		return grayCase(imp,preferredOrder);
+	public ImageDisplay createDisplay(final ImagePlus imp,
+		final Axis[] preferredOrder)
+	{
+		if (imp.getType() == ImagePlus.COLOR_RGB) return colorCase(imp,
+			preferredOrder);
+		return grayCase(imp, preferredOrder);
 	}
 
 	// -- private interface --
 
-	private ImageDisplay colorCase(ImagePlus imp, Axis[] preferredOrder) {
+	private ImageDisplay colorCase(final ImagePlus imp,
+		final Axis[] preferredOrder)
+	{
 		final Dataset ds = makeGrayDatasetFromColorImp(imp, preferredOrder);
 		setDatasetGrayDataFromColorImp(ds, imp);
 		metadataHarmonizer.updateDataset(ds, imp);
@@ -97,11 +106,13 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 		colorTableHarmonizer.updateDisplay(display, imp);
 		overlayHarmonizer.updateDisplay(display, imp);
-		
+
 		return display;
 	}
-	
-	private ImageDisplay grayCase(ImagePlus imp, Axis[] preferredOrder) {
+
+	private ImageDisplay
+		grayCase(final ImagePlus imp, final Axis[] preferredOrder)
+	{
 		Dataset ds;
 		if (preferredOrder[0] == Axes.X && preferredOrder[1] == Axes.Y) {
 			ds = makeExactDataset(imp, preferredOrder);
@@ -120,10 +131,10 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 		colorTableHarmonizer.updateDisplay(display, imp);
 		overlayHarmonizer.updateDisplay(display, imp);
-		
+
 		return display;
 	}
-	
+
 	/**
 	 * Makes a gray {@link Dataset} from a Color {@link ImagePlus} whose channel
 	 * count > 1. The Dataset will have isRgbMerged() false, 3 times as many

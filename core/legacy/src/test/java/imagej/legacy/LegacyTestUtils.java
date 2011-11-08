@@ -118,9 +118,9 @@ public class LegacyTestUtils {
 							accessor.setPosition(pos);
 							final double ij1Value = proc.getf(x, y);
 							final double ij2Value = accessor.get().getRealDouble();
-							if (Math.abs(ij1Value - ij2Value) > 0.1) System.out
-								.println("x=" + x + " y=" + y + " c=" + c + " z=" + z + " t=" +
-									t + " && ij1=" + ij1Value + " ij2=" + ij2Value);
+							if (Math.abs(ij1Value - ij2Value) > 0.1) System.out.println("x=" +
+								x + " y=" + y + " c=" + c + " z=" + z + " t=" + t + " && ij1=" +
+								ij1Value + " ij2=" + ij2Value);
 							assertEquals(ij1Value, ij2Value, 0.0001);
 						}
 					}

@@ -67,9 +67,9 @@ public final class ImageWindowMethods {
 	}
 
 	/** Appends {@link ImageWindow#close()}. */
-	public static void close(ImageWindow obj) {
-		ImagePlus imp = obj.getImagePlus();
-		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp)))
-			LegacyOutputTracker.getClosedImps().add(imp);
+	public static void close(final ImageWindow obj) {
+		final ImagePlus imp = obj.getImagePlus();
+		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp))) LegacyOutputTracker
+			.getClosedImps().add(imp);
 	}
 }

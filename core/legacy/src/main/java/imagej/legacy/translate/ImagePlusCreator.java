@@ -1,5 +1,5 @@
 //
-//
+// ImagePlusCreator.java
 //
 
 /*
@@ -38,7 +38,7 @@ import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 
 /**
- * The interface for creating ImagePluses from ImageDisplays
+ * The interface for creating {@link ImagePlus}es from {@link ImageDisplay}s.
  * 
  * @author Barry DeZonia
  */

@@ -1,5 +1,5 @@
 //
-//
+// GrayImagePlusCreator.java
 //
 
 /*
@@ -43,43 +43,43 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 
-
 /**
- * Creates ImagePluses from ImageDisplays containing gray data
+ * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing gray data.
  * 
  * @author Barry DeZonia
- *
  */
 public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
-	
+
 	private final GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
+	private final ColorTableHarmonizer colorTableHarmonizer =
+		new ColorTableHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer =
+		new MetadataHarmonizer();
 	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
-	
+
 	// -- public interface --
 
 	@Override
-	public ImagePlus createLegacyImage(ImageDisplay display) {
+	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final ImageDisplayService imageDisplayService =
-				ImageJ.get(ImageDisplayService.class);
-			final Dataset dataset = imageDisplayService.getActiveDataset(display);
-			ImagePlus imp;
-			if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
-				imp =	makeExactImagePlus(dataset);
-			}
-			else {
-				imp = makeNearestTypeGrayImagePlus(dataset);
-				pixelHarmonizer.updateLegacyImage(dataset, imp);
-			}
-			metadataHarmonizer.updateLegacyImage(dataset, imp);
-			if (shouldBeComposite(dataset, imp)) {
-				imp = makeCompositeImage(imp);
-			}
-			colorTableHarmonizer.updateLegacyImage(display, imp);
-			return imp;
+			ImageJ.get(ImageDisplayService.class);
+		final Dataset dataset = imageDisplayService.getActiveDataset(display);
+		ImagePlus imp;
+		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
+			imp = makeExactImagePlus(dataset);
+		}
+		else {
+			imp = makeNearestTypeGrayImagePlus(dataset);
+			pixelHarmonizer.updateLegacyImage(dataset, imp);
+		}
+		metadataHarmonizer.updateLegacyImage(dataset, imp);
+		if (shouldBeComposite(dataset, imp)) {
+			imp = makeCompositeImage(imp);
+		}
+		colorTableHarmonizer.updateLegacyImage(display, imp);
+		return imp;
 	}
 
 	// -- private interface --

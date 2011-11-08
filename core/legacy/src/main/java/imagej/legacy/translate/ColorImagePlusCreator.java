@@ -1,5 +1,5 @@
 //
-//
+// ColorImagePlusCreator.java
 //
 
 /*
@@ -42,18 +42,20 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 
 /**
- * Creates ImagePluses from ImageDisplays containing color merged data
- *  
+ * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing color
+ * merged data.
+ * 
  * @author Barry DeZonia
- *
  */
 public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final ColorPixelHarmonizer pixelHarmonizer = new ColorPixelHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
-	
+	private final ColorPixelHarmonizer pixelHarmonizer =
+		new ColorPixelHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer =
+		new MetadataHarmonizer();
+
 	// -- public interface --
 
 	/**

@@ -1,5 +1,5 @@
 //
-// OverlayTranslator.java
+// OverlayHarmonizer.java
 //
 
 /*
@@ -90,15 +90,15 @@ import net.imglib2.type.logic.BitType;
 public class OverlayHarmonizer implements DisplayHarmonizer {
 
 	/**
-	 * Updates the given {@link ImageDisplay} to contain {@link Overlay}s corresponding
-	 * to the given {@link ImagePlus}'s ROI.
+	 * Updates the given {@link ImageDisplay} to contain {@link Overlay}s
+	 * corresponding to the given {@link ImagePlus}'s ROI.
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		final Roi oldROI = createROI(overlayService.getOverlays(display));
 		if (oldROI instanceof ShapeRoi) {
-			final float[] oldPath = ((ShapeRoi)oldROI).getShapeAsArray();
+			final float[] oldPath = ((ShapeRoi) oldROI).getShapeAsArray();
 			final Roi newROI = imp.getRoi();
 			if (newROI instanceof ShapeRoi) {
 				final float[] newPath = ((ShapeRoi) newROI).getShapeAsArray();
@@ -110,13 +110,12 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 							break;
 						}
 					}
-					if (same &&
-							oldROI.getStrokeWidth() == newROI.getStrokeWidth() &&
-							oldROI.getFillColor().equals(newROI.getFillColor()))
+					if (same && oldROI.getStrokeWidth() == newROI.getStrokeWidth() &&
+						oldROI.getFillColor().equals(newROI.getFillColor()))
 					{
 						// must test further but colors might be uninitialized by IJ1
-						Color oldColor = oldROI.getStrokeColor();
-						Color newColor = newROI.getStrokeColor();
+						final Color oldColor = oldROI.getStrokeColor();
+						final Color newColor = newROI.getStrokeColor();
 						if (oldColor == null) {
 							if (newColor == null) return;
 						}
@@ -136,9 +135,9 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		}
 		else {
 		*/
-			final List<Overlay> overlays = getOverlays(imp);
-			overlayService.addOverlays(display, overlays);
-		//}
+		final List<Overlay> overlays = getOverlays(imp);
+		overlayService.addOverlays(display, overlays);
+		// }
 	}
 
 	/**
@@ -146,7 +145,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	 * being visualized in the given {@link ImageDisplay}.
 	 */
 	@Override
-	public void updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
+	public void
+		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		final List<Overlay> overlays = overlayService.getOverlays(display);
@@ -322,18 +322,13 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return new ShapeRoi(imagejroi);
 	}
 
-	private void
-		assignPropertiesToRoi(final Roi roi, final Overlay overlay)
-	{
+	private void assignPropertiesToRoi(final Roi roi, final Overlay overlay) {
 		roi.setStrokeWidth((float) overlay.getLineWidth());
 		roi.setStrokeColor(AWTColors.getColor(overlay.getLineColor()));
-		Color fillColor = AWTColors.getColor(overlay.getFillColor());
-		Color colorWithAlpha =
-				new Color(
-					fillColor.getRed(),
-					fillColor.getGreen(),
-					fillColor.getBlue(),
-					overlay.getAlpha());
+		final Color fillColor = AWTColors.getColor(overlay.getFillColor());
+		final Color colorWithAlpha =
+			new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(),
+				overlay.getAlpha());
 		roi.setFillColor(colorWithAlpha);
 	}
 
@@ -359,9 +354,9 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return false;
 	}
 	*/
-	
-	private void createOverlays(final Roi roi,
-		final ArrayList<Overlay> overlays, int xOff, int yOff)
+
+	private void createOverlays(final Roi roi, final ArrayList<Overlay> overlays,
+		final int xOff, final int yOff)
 	{
 		if (roi == null) return;
 
@@ -407,8 +402,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
 				final Roi[] rois = shapeRoi.getRois();
-				int xO = xOff + xOff + shapeRoi.getBounds().x;
-				int yO = yOff + shapeRoi.getBounds().y;
+				final int xO = xOff + xOff + shapeRoi.getBounds().x;
+				final int yO = yOff + shapeRoi.getBounds().y;
 				final ArrayList<Overlay> subOverlays = new ArrayList<Overlay>();
 				for (final Roi r : rois)
 					createOverlays(r, subOverlays, xO, yO);
@@ -419,8 +414,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 					overlays.add(subOverlays.get(0));
 					return;
 				}
-				final CompositeRegionOfInterest croi =
-					new CompositeRegionOfInterest(2);
+				final CompositeRegionOfInterest croi = new CompositeRegionOfInterest(2);
 				for (final Overlay overlay : subOverlays) {
 					final RegionOfInterest subRoi = overlay.getRegionOfInterest();
 					if (subRoi == null) {
@@ -511,15 +505,17 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 
 	@SuppressWarnings("unused")
-	private Overlay createDefaultOverlay(final Roi roi, int xO, int yO) {
+	private Overlay
+		createDefaultOverlay(final Roi roi, final int xO, final int yO)
+	{
 		final Rectangle bounds = roi.getBounds();
 		final NativeImg<BitType, BitAccess> nativeImg =
 			new ArrayImgFactory<BitType>().createBitInstance(new long[] {
 				bounds.width, bounds.height }, 1);
 		final BitType t = new BitType(nativeImg);
 		nativeImg.setLinkedType(t);
-		int xOff = bounds.x;
-		int yOff = bounds.y;
+		final int xOff = bounds.x;
+		final int yOff = bounds.y;
 		final Img<BitType> img =
 			new ImgTranslationAdapter<BitType, Img<BitType>>(nativeImg, new long[] {
 				xOff, yOff });
@@ -537,8 +533,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return new BinaryMaskOverlay(broi);
 	}
 
-	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi)
-	{
+	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi) {
 		overlay.setLineWidth(roi.getStrokeWidth());
 		final Color strokeColor = roi.getStrokeColor();
 		final Color fillColor = roi.getFillColor();

@@ -1,5 +1,5 @@
 //
-//
+// Harmonizer.java
 //
 
 /*
@@ -50,35 +50,39 @@ import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
- * Provides methods for synchronizing data between an ImageDisplay and an
- * ImagePlus.
+ * Provides methods for synchronizing data between an {@link ImageDisplay} and
+ * an {@link ImagePlus}.
  * 
  * @author Barry DeZonia
- * 
  */
 public class Harmonizer {
 
 	// -- instance variables --
 
 	private final ImageTranslator imageTranslator;
-	private final Map<ImagePlus, Integer> bitDepthMap = new HashMap<ImagePlus, Integer>();
-	
-	private final GrayPixelHarmonizer grayPixelHarmonizer = new GrayPixelHarmonizer();
-	private final ColorPixelHarmonizer colorPixelHarmonizer = new ColorPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer = new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer = new MetadataHarmonizer();
-	private final CompositeHarmonizer compositeHarmonizer = new CompositeHarmonizer();
+	private final Map<ImagePlus, Integer> bitDepthMap =
+		new HashMap<ImagePlus, Integer>();
+
+	private final GrayPixelHarmonizer grayPixelHarmonizer =
+		new GrayPixelHarmonizer();
+	private final ColorPixelHarmonizer colorPixelHarmonizer =
+		new ColorPixelHarmonizer();
+	private final ColorTableHarmonizer colorTableHarmonizer =
+		new ColorTableHarmonizer();
+	private final MetadataHarmonizer metadataHarmonizer =
+		new MetadataHarmonizer();
+	private final CompositeHarmonizer compositeHarmonizer =
+		new CompositeHarmonizer();
 	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
 	private final OverlayHarmonizer overlayHarmonizer = new OverlayHarmonizer();
-	
+
 	// -- constructor --
 
-	public Harmonizer(ImageTranslator trans) {
-		imageTranslator = trans; 
+	public Harmonizer(final ImageTranslator trans) {
+		imageTranslator = trans;
 	}
-	
+
 	// -- public interface --
 
 	/**
@@ -96,8 +100,19 @@ public class Harmonizer {
 			rebuildImagePlusData(display, imp);
 		}
 		else {
-			if ((!dimensionsCompatible(ds, imp)) || (imp.getStack().getSize() == 0))
-			{ // NB - in IJ1 stack size can be zero for single slice image!
+			if ((!dimensionsCompatible(ds, imp)) || (imp.getStack().getSize() == 0)) { // NB
+																																									// -
+																																									// in
+																																									// IJ1
+																																									// stack
+																																									// size
+																																									// can
+																																									// be
+																																									// zero
+																																									// for
+																																									// single
+																																									// slice
+																																									// image!
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -115,25 +130,24 @@ public class Harmonizer {
 
 	/**
 	 * Changes the data within a {@link ImageDisplay} to match data in an
-	 * {@link ImagePlus}. Assumes the given ImagePlus is not a degenerate
-	 * set of data (an empty stack).
+	 * {@link ImagePlus}. Assumes the given ImagePlus is not a degenerate set of
+	 * data (an empty stack).
 	 */
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
-		
+
 		// NB - if ImagePlus is degenerate the following code can fail. This is
 		// because imglib cannot represent an empty data container. So we catch
 		// the issue here:
-		
-		if (imp.getStack().getSize() == 0)
-			throw new IllegalArgumentException(
-				"cannot update a display with an ImagePlus that has an empty stack");
-			
+
+		if (imp.getStack().getSize() == 0) throw new IllegalArgumentException(
+			"cannot update a display with an ImagePlus that has an empty stack");
+
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
-		Integer oldBitDepth = bitDepthMap.get(imp);
+		final Integer oldBitDepth = bitDepthMap.get(imp);
 		// if old bit depth is null then plugin created a new display and it's
 		// contents are already up to date
 		if (oldBitDepth == null) {
@@ -189,11 +203,12 @@ public class Harmonizer {
 	 * {@link Dataset}. Best fit means the IJ1 type that is the best at preserving
 	 * data.
 	 */
-	private boolean imagePlusIsNearestType(final Dataset ds, final ImagePlus imp) {
+	private boolean imagePlusIsNearestType(final Dataset ds, final ImagePlus imp)
+	{
 		final int impType = imp.getType();
 
-		if (impType == ImagePlus.COLOR_RGB)
-			return LegacyUtils.isColorCompatible(ds);
+		if (impType == ImagePlus.COLOR_RGB) return LegacyUtils
+			.isColorCompatible(ds);
 
 		final RealType<?> dsType = ds.getType();
 		final boolean isSigned = ds.isSigned();
@@ -211,14 +226,14 @@ public class Harmonizer {
 		// isSigned || !isInteger || bitPerPix > 16
 		return impType == ImagePlus.GRAY32;
 	}
-	
+
 	/**
 	 * Changes the shape of an existing {@link Dataset} to match that of an
 	 * {@link ImagePlus}. Assumes that the Dataset type is correct. Does not set
 	 * the data values or change the metadata.
 	 */
 	// assumes the data type of the given Dataset is fine as is
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void reshapeDataset(final Dataset ds, final ImagePlus imp) {
 		final long[] newDims = ds.getDims();
 		final double[] cal = new double[newDims.length];
@@ -249,8 +264,7 @@ public class Harmonizer {
 	 * Determines whether a {@link Dataset} and an {@link ImagePlus} have
 	 * compatible dimensionality.
 	 */
-	private boolean dimensionsCompatible(final Dataset ds, final ImagePlus imp)
-	{
+	private boolean dimensionsCompatible(final Dataset ds, final ImagePlus imp) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
@@ -269,13 +283,13 @@ public class Harmonizer {
 		if (t != imp.getNFrames()) return false;
 		// channel case a little different
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+			final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 			if (cIndex < 0) return false;
-			long c = dimensions[cIndex];
+			final long c = dimensions[cIndex];
 			if (c != imp.getNChannels() * 3) return false;
 		}
 		else { // not color data
-			long c = LegacyUtils.ij1ChannelCount(dimensions, ds.getAxes());
+			final long c = LegacyUtils.ij1ChannelCount(dimensions, ds.getAxes());
 			if (c != imp.getNChannels()) return false;
 		}
 
