@@ -48,47 +48,44 @@ public class FileUtilsTest {
 
 	@Test
 	public void testShortenPath() {
-		assertEquals(FileUtils.shortenPath("C:\\Documents and Settings\\All Users"
-			+ "\\Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt"),
+		assertEquals("C:\\Documents and Settings\\"
+			+ "All Users\\Application Data\\Apple Computer\\...\\SC Info.txt",
+			FileUtils.shortenPath("C:\\Documents and Settings\\All Users"
+				+ "\\Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt"));
+		assertEquals("C:\\Documents and Settings\\All Users\\Application Data\\"
+			+ "Apple Computer\\iTunes\\...\\SC Info.txt", FileUtils.shortenPath(
 			"C:\\Documents and Settings\\All Users\\"
-				+ "Application Data\\Apple Computer\\...\\SC Info.txt");
-		assertEquals(FileUtils.shortenPath(
-			"C:\\Documents and Settings\\All Users\\"
-				+ "Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt", 5),
-			"C:\\Documents and Settings\\All Users\\"
-				+ "Application Data\\Apple Computer\\iTunes\\...\\SC Info.txt");
-		assertEquals(FileUtils.shortenPath("C:\\temp"), "C:\\temp");
-		assertEquals(FileUtils.shortenPath("C:\\1\\2\\3\\4\\5\\test.txt"),
-			"C:\\1\\2\\3\\4\\...\\test.txt");
-		assertEquals(FileUtils.shortenPath("C:/1/2/test.txt"), "C:/1/2/test.txt");
-		assertEquals(FileUtils.shortenPath("C:/1/2/3/4/5/test.txt"),
-			"C:/1/2/3/4/.../test.txt");
-		assertEquals(FileUtils.shortenPath("\\\\server\\p1\\p2\\p3\\p4\\p5\\p6"),
-			"\\\\server\\p1\\p2\\p3\\p4\\...\\p6");
-		assertEquals(FileUtils.shortenPath("\\\\server\\p1\\p2\\p3"),
-			"\\\\server\\p1\\p2\\p3");
-		assertEquals(FileUtils
-			.shortenPath("http://www.rgagnon.com/p1/p2/p3/p4/p5/pb.html"),
-			"http://www.rgagnon.com/p1/p2/p3/.../pb.html");
+				+ "Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt", 5));
+		assertEquals("C:\\temp", FileUtils.shortenPath("C:\\temp"));
+		assertEquals("C:\\1\\2\\3\\4\\...\\test.txt", FileUtils
+			.shortenPath("C:\\1\\2\\3\\4\\5\\test.txt"));
+		assertEquals("C:/1/2/test.txt", FileUtils.shortenPath("C:/1/2/test.txt"));
+		assertEquals("C:/1/2/3/4/.../test.txt", FileUtils
+			.shortenPath("C:/1/2/3/4/5/test.txt"));
+		assertEquals("\\\\server\\p1\\p2\\p3\\p4\\...\\p6", FileUtils
+			.shortenPath("\\\\server\\p1\\p2\\p3\\p4\\p5\\p6"));
+		assertEquals("\\\\server\\p1\\p2\\p3", FileUtils
+			.shortenPath("\\\\server\\p1\\p2\\p3"));
+		assertEquals("http://www.rgagnon.com/p1/p2/p3/.../pb.html", FileUtils
+			.shortenPath("http://www.rgagnon.com/p1/p2/p3/p4/p5/pb.html"));
 	}
 
 	@Test
 	public void testLimitPath() {
-		assertEquals(FileUtils.limitPath("C:\\Documents and Settings\\All Users\\"
-			+ "Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt", 20),
-			"C:\\Doc...SC Info.txt");
-		assertEquals(FileUtils.limitPath("C:\\temp", 20), "C:\\temp");
-		assertEquals(FileUtils.limitPath("C:\\1\\2\\3\\4\\5\\test.txt", 20),
-			"C:\\1\\2\\3\\...test.txt");
-		assertEquals(FileUtils.limitPath("C:/1/2/testfile.txt", 15),
-			"...testfile.txt");
-		assertEquals(FileUtils.limitPath("C:/1/2/3/4/5/test.txt", 15),
-			"C:/1...test.txt");
-		assertEquals(FileUtils.limitPath("\\\\server\\p1\\p2\\p3\\p4\\p5\\p6", 20),
-			"\\\\server\\p1\\p2\\...p6");
-		assertEquals(FileUtils.limitPath(
-			"http://www.rgagnon.com/p1/p2/p3/p4/p5/pb.html", 20),
-			"http://www...pb.html");
+		assertEquals("C:\\Doc...SC Info.txt", FileUtils.limitPath(
+			"C:\\Documents and Settings\\All Users\\"
+				+ "Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt", 20));
+		assertEquals("C:\\temp", FileUtils.limitPath("C:\\temp", 20));
+		assertEquals("C:\\1\\2\\3\\...test.txt", FileUtils.limitPath(
+			"C:\\1\\2\\3\\4\\5\\test.txt", 20));
+		assertEquals("...testfile.txt", FileUtils.limitPath("C:/1/2/testfile.txt",
+			15));
+		assertEquals("C:/1...test.txt", FileUtils.limitPath(
+			"C:/1/2/3/4/5/test.txt", 15));
+		assertEquals("\\\\server\\p1\\p2\\...p6", FileUtils.limitPath(
+			"\\\\server\\p1\\p2\\p3\\p4\\p5\\p6", 20));
+		assertEquals("http://www...pb.html", FileUtils.limitPath(
+			"http://www.rgagnon.com/p1/p2/p3/p4/p5/pb.html", 20));
 	}
 
 }
