@@ -48,14 +48,24 @@ public final class FileUtils {
 	}
 
 	/**
-	 * Extract the file extension from a file
+	 * Extracts the file extension from a file.
 	 * 
 	 * @param file the file object
 	 * @return the file extension, or the empty string when the file name does not
 	 *         contain dots
 	 */
 	public static String getFileExtension(final File file) {
-		final String path = file.getPath();
+		return getFileExtension(file.getPath());
+	}
+
+	/**
+	 * Extracts the file extension from a file name.
+	 * 
+	 * @param path the path to the file (relative or absolute)
+	 * @return the file extension, or the empty string when the file name does not
+	 *         contain dots
+	 */
+	public static String getFileExtension(final String path) {
 		final int dot = path.lastIndexOf('.');
 		if (dot < 0) {
 			return "";
