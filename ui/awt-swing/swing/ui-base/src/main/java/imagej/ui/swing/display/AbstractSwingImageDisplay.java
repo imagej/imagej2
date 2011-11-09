@@ -37,20 +37,11 @@ package imagej.ui.swing.display;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.AbstractImageDisplay;
-import imagej.data.display.DataView;
-import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
-import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.event.window.WinActivatedEvent;
-import imagej.ext.tool.ToolService;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.imglib2.img.Axis;
 
 /**
@@ -65,24 +56,21 @@ import net.imglib2.img.Axis;
 public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 	protected final DisplayWindow window;
-	protected final SwingDisplayPanel imgPanel;
-
 	private final JHotDrawImageCanvas imgCanvas;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
+	private final SwingDisplayPanel imgPanel;
 
 	public AbstractSwingImageDisplay(final DisplayWindow window) {
+		super();
 		this.window = window;
 
 		imgCanvas = new JHotDrawImageCanvas(this);
-		imgPanel = new SwingDisplayPanel(this, window);
-
-		imgCanvas
-			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
+		imgCanvas.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
 			eventService, false));
-		subscribeToEvents();
+		setCanvas(imgCanvas);
+
+		imgPanel = new SwingDisplayPanel(this, window);
+		setPanel(imgPanel);
 	}
 
 	// -- ImageDisplay methods --
@@ -125,11 +113,6 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		return imgCanvas;
 	}
 
-	@Override
-	public void redoWindowLayout() {
-		imgPanel.redoLayout();
-	}
-
 	// -- Display methods --
 
 	@Override
@@ -138,56 +121,6 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	}
 
 	// -- Helper methods --
-
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents() {
-
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
-			new EventSubscriber<WinActivatedEvent>() {
-
-				@Override
-				public void onEvent(final WinActivatedEvent event) {
-					if (event.getDisplay() != AbstractSwingImageDisplay.this) return;
-					// final UserInterface ui = ImageJ.get(UIService.class).getUI();
-					// final ToolService toolMgr = ui.getToolBar().getToolService();
-					final ToolService toolService = ImageJ.get(ToolService.class);
-					imgCanvas.setCursor(toolService.getActiveTool().getCursor());
-				}
-			};
-		subscribers.add(winActivatedSubscriber);
-		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
-
-		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
-			new EventSubscriber<DatasetRestructuredEvent>() {
-
-				@Override
-				public void onEvent(final DatasetRestructuredEvent event) {
-					// NOTE - this code used to just note that a rebuild was necessary
-					// and had the rebuild done in update(). But due to timing of
-					// events it is possible to get the update() before this call.
-					// So make this do a rebuild. In some cases update() will be
-					// called twice. Not sure if avoiding this was the reason we used
-					// to just record and do work in update. Or if that code was to
-					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
-					// and bug #605. BDZ
-					final Dataset dataset = event.getObject();
-					for (final DataView view : AbstractSwingImageDisplay.this) {
-						if (dataset == view.getData()) {
-							// BDZ - calls to imgCanvas.setZoom(0) followed by
-							// imgCanvas.panReset() removed from here to fix bug #797.
-							AbstractSwingImageDisplay.this.redoWindowLayout();
-							AbstractSwingImageDisplay.this.update();
-							return;
-						}
-					}
-				}
-			};
-		subscribers.add(restructureSubscriber);
-		eventService.subscribe(DatasetRestructuredEvent.class,
-			restructureSubscriber);
-	}
 
 	/** Name this display with unique id. */
 	private void createName(final String baseName) {

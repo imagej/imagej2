@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
+import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
@@ -42,11 +43,14 @@ import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
+import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.AbstractDisplay;
 import imagej.ext.display.event.DisplayDeletedEvent;
+import imagej.ext.display.event.window.WinActivatedEvent;
+import imagej.ext.tool.ToolService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,14 +72,19 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {
 
+	private ImageCanvas canvas;
+
 	/** List of event subscribers, to avoid garbage collection. */
 	private final List<EventSubscriber<?>> subscribers =
 		new ArrayList<EventSubscriber<?>>();
 
-	private EventSubscriber<ZoomEvent> zoomSubscriber;
-	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
-	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
+	private EventSubscriber<AxisPositionEvent> axisPositionSubscriber;
+	private EventSubscriber<DataRestructuredEvent> dataRestructuredSubscriber;
+	private EventSubscriber<DataUpdatedEvent> dataUpdatedSubscriber;
+	private EventSubscriber<DatasetRestructuredEvent> datasetRestructuredSubscriber;
+	private EventSubscriber<DatasetUpdatedEvent> datasetUpdatedSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
+	private EventSubscriber<ZoomEvent> zoomSubscriber;
 
 	private Axis activeAxis = null;
 
@@ -83,8 +92,27 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
+
 		initScaleConverter();
 		subscribeToEvents();
+	}
+
+	// -- AbstractImageDisplay methods --
+
+	protected void setCanvas(final ImageCanvas canvas) {
+		this.canvas = canvas;
+	}
+
+	protected void initActiveAxis() {
+		if (activeAxis == null) {
+			final Axis[] axes = getAxes();
+			for (final Axis axis : axes) {
+				if (axis == Axes.X) continue;
+				if (axis == Axes.Y) continue;
+				setActiveAxis(axis);
+				return;
+			}
+		}
 	}
 
 	// -- ImageDisplay methods --
@@ -105,6 +133,11 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
+	public ImageCanvas getCanvas() {
+		return canvas;
+	}
+
+	@Override
 	public boolean containsData(final Data data) {
 		for (final DataView view : this) {
 			if (data == view.getData()) return true;
@@ -112,16 +145,9 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		return false;
 	}
 
-	public void initActiveAxis() {
-		if (activeAxis == null) {
-			final Axis[] axes = getAxes();
-			for (final Axis axis : axes) {
-				if (axis == Axes.X) continue;
-				if (axis == Axes.Y) continue;
-				setActiveAxis(axis);
-				return;
-			}
-		}
+	@Override
+	public void redoWindowLayout() {
+		getPanel().redoLayout();
 	}
 
 	// -- Display methods --
@@ -266,65 +292,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	/** Updates the display when the linked object changes. */
 	private void subscribeToEvents() {
-		final EventSubscriber<DataUpdatedEvent> dataUpdatedSubscriber =
-			new EventSubscriber<DataUpdatedEvent>() {
-
-				@Override
-				public void onEvent(final DataUpdatedEvent event) {
-					for (final DataView view : AbstractImageDisplay.this) {
-						if (event.getObject() == view.getData()) {
-							view.update();
-							update();
-							return;
-						}
-					}
-				}
-			};
-		eventService.subscribe(DataUpdatedEvent.class, dataUpdatedSubscriber);
-		subscribers.add(dataUpdatedSubscriber);
-
-		final EventSubscriber<DataRestructuredEvent> dataRestructedSubscriber =
-			new EventSubscriber<DataRestructuredEvent>() {
-
-				@Override
-				public void onEvent(final DataRestructuredEvent event) {
-					for (final DataView view : AbstractImageDisplay.this) {
-						if (event.getObject() == view.getData()) {
-							view.rebuild();
-							update();
-							return;
-						}
-					}
-				}
-			};
-		eventService.subscribe(DataRestructuredEvent.class,
-			dataRestructedSubscriber);
-		subscribers.add(dataRestructedSubscriber);
-
-		zoomSubscriber = new EventSubscriber<ZoomEvent>() {
-
-			@Override
-			public void onEvent(final ZoomEvent event) {
-				if (event.getCanvas() != getCanvas()) return;
-				getPanel().setLabel(makeLabel());
-			}
-		};
-		eventService.subscribe(ZoomEvent.class, zoomSubscriber);
-
-		updateSubscriber = new EventSubscriber<DatasetUpdatedEvent>() {
-
-			@Override
-			public void onEvent(final DatasetUpdatedEvent event) {
-				final DataView view = getActiveView();
-				if (view == null) return;
-				final Dataset ds = getDataset(view);
-				if (event.getObject() != ds) return;
-				getPanel().setLabel(makeLabel());
-			}
-		};
-		eventService.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
-
-		axisMoveSubscriber = new EventSubscriber<AxisPositionEvent>() {
+		axisPositionSubscriber = new EventSubscriber<AxisPositionEvent>() {
 
 			@Override
 			public void onEvent(final AxisPositionEvent event) {
@@ -344,7 +312,82 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				}
 			}
 		};
-		eventService.subscribe(AxisPositionEvent.class, axisMoveSubscriber);
+		eventService.subscribe(AxisPositionEvent.class, axisPositionSubscriber);
+
+		dataRestructuredSubscriber = new EventSubscriber<DataRestructuredEvent>() {
+
+			@Override
+			public void onEvent(final DataRestructuredEvent event) {
+				for (final DataView view : AbstractImageDisplay.this) {
+					if (event.getObject() == view.getData()) {
+						view.rebuild();
+						update();
+						return;
+					}
+				}
+			}
+		};
+		eventService.subscribe(DataRestructuredEvent.class,
+			dataRestructuredSubscriber);
+		subscribers.add(dataRestructuredSubscriber);
+
+		dataUpdatedSubscriber = new EventSubscriber<DataUpdatedEvent>() {
+
+			@Override
+			public void onEvent(final DataUpdatedEvent event) {
+				for (final DataView view : AbstractImageDisplay.this) {
+					if (event.getObject() == view.getData()) {
+						view.update();
+						update();
+						return;
+					}
+				}
+			}
+		};
+		eventService.subscribe(DataUpdatedEvent.class, dataUpdatedSubscriber);
+		subscribers.add(dataUpdatedSubscriber);
+
+		datasetRestructuredSubscriber =
+			new EventSubscriber<DatasetRestructuredEvent>() {
+
+				@Override
+				public void onEvent(final DatasetRestructuredEvent event) {
+					// NOTE - this code used to just note that a rebuild was necessary
+					// and had the rebuild done in update(). But due to timing of
+					// events it is possible to get the update() before this call.
+					// So make this do a rebuild. In some cases update() will be
+					// called twice. Not sure if avoiding this was the reason we used
+					// to just record and do work in update. Or if that code was to
+					// avoid some other bug. Changing on 8-18-11. Fixed bug #627
+					// and bug #605. BDZ
+					final Dataset dataset = event.getObject();
+					for (final DataView view : AbstractImageDisplay.this) {
+						if (dataset == view.getData()) {
+							// BDZ - calls to imgCanvas.setZoom(0) followed by
+							// imgCanvas.panReset() removed from here to fix bug #797.
+							AbstractImageDisplay.this.redoWindowLayout();
+							AbstractImageDisplay.this.update();
+							return;
+						}
+					}
+				}
+			};
+		subscribers.add(datasetRestructuredSubscriber);
+		eventService.subscribe(DatasetRestructuredEvent.class,
+			datasetRestructuredSubscriber);
+
+		datasetUpdatedSubscriber = new EventSubscriber<DatasetUpdatedEvent>() {
+
+			@Override
+			public void onEvent(final DatasetUpdatedEvent event) {
+				final DataView view = getActiveView();
+				if (view == null) return;
+				final Dataset ds = getDataset(view);
+				if (event.getObject() != ds) return;
+				getPanel().setLabel(makeLabel());
+			}
+		};
+		eventService.subscribe(DatasetUpdatedEvent.class, datasetUpdatedSubscriber);
 
 		displayDeletedSubscriber = new EventSubscriber<DisplayDeletedEvent>() {
 
@@ -358,18 +401,49 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			}
 		};
 		eventService.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+
+		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
+			new EventSubscriber<WinActivatedEvent>() {
+
+				@Override
+				public void onEvent(final WinActivatedEvent event) {
+					if (event.getDisplay() != AbstractImageDisplay.this) return;
+					// final UserInterface ui = ImageJ.get(UIService.class).getUI();
+					// final ToolService toolMgr = ui.getToolBar().getToolService();
+					final ToolService toolService = ImageJ.get(ToolService.class);
+					getCanvas().setCursor(toolService.getActiveTool().getCursor());
+				}
+			};
+		subscribers.add(winActivatedSubscriber);
+		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
+
+		zoomSubscriber = new EventSubscriber<ZoomEvent>() {
+
+			@Override
+			public void onEvent(final ZoomEvent event) {
+				if (event.getCanvas() != getCanvas()) return;
+				getPanel().setLabel(makeLabel());
+			}
+		};
+		eventService.subscribe(ZoomEvent.class, zoomSubscriber);
+
 	}
 
 	// NB - this method necessary to make sure resources get returned via GC.
 	// Else there is a memory leak.
 	private void unsubscribeFromEvents() {
-		eventService.unsubscribe(ZoomEvent.class, zoomSubscriber);
-		// eventService.unsubscribe(DatasetRestructuredEvent.class,
-		// dataRestructedSubscriber);
-		eventService.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
-		eventService.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
+		eventService.unsubscribe(AxisPositionEvent.class, axisPositionSubscriber);
+		eventService.unsubscribe(DataRestructuredEvent.class,
+			dataRestructuredSubscriber);
+		eventService.unsubscribe(DataUpdatedEvent.class,
+			dataUpdatedSubscriber);
+		eventService.unsubscribe(DatasetRestructuredEvent.class,
+			datasetRestructuredSubscriber);
+		eventService.unsubscribe(DatasetUpdatedEvent.class,
+			datasetUpdatedSubscriber);
 		eventService.unsubscribe(DisplayDeletedEvent.class,
 			displayDeletedSubscriber);
+		eventService.unsubscribe(ZoomEvent.class, zoomSubscriber);
 	}
 
 	protected void closeHelper() {

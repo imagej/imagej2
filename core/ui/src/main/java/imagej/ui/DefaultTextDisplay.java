@@ -37,7 +37,6 @@ package imagej.ui;
 import imagej.ImageJ;
 import imagej.ext.display.AbstractTextDisplay;
 import imagej.ext.display.TextDisplay;
-import imagej.ext.display.TextDisplayPanel;
 import imagej.ext.plugin.Plugin;
 
 import java.util.Collection;
@@ -87,11 +86,7 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 		outputWindow.dispose();
 	}
 
-	@Override
-	public TextDisplayPanel getPanel() {
-		// CTR FIXME
-		return null;
-	}
+	// FIXME - return a non-null DisplayPanel?
 
 	// -- List methods --
 

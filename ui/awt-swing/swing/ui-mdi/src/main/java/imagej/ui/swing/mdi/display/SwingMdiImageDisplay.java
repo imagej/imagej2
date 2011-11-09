@@ -57,7 +57,7 @@ public class SwingMdiImageDisplay extends AbstractSwingImageDisplay {
 		super(new SwingMdiDisplayWindow());
 		final SwingMdiDisplayWindow mdiWindow = (SwingMdiDisplayWindow) window;
 
-		imgPanel
+		getPanel()
 			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
 		mdiWindow.addEventDispatcher(new InternalFrameEventDispatcher(this,
 			eventService));
