@@ -57,6 +57,9 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	/** List of objects being displayed. */
 	private final ArrayList<E> objects;
 
+	// TODO - potentially eliminate this?
+	private DisplayPanel panel;
+
 	/** The name of the display. */
 	private String name;
 
@@ -66,6 +69,13 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 		eventService = ImageJ.get(EventService.class);
 		this.type = type;
 		objects = new ArrayList<E>();
+	}
+
+	// -- AbstractDisplay methods --
+
+	// TODO - potentially eliminate this?
+	protected void setPanel(final DisplayPanel panel) {
+		this.panel = panel;
 	}
 
 	// -- Display methods --
@@ -87,6 +97,11 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 		@SuppressWarnings("unchecked")
 		final E typedObj = (E) o;
 		add(typedObj);
+	}
+
+	@Override
+	public DisplayPanel getPanel() {
+		return panel;
 	}
 
 	@Override
