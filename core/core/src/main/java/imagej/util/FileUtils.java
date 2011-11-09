@@ -65,8 +65,8 @@ public final class FileUtils {
 	 * @return the file extension, or the empty string when the file name does not
 	 *         contain dots
 	 */
-	public static String getFileExtension(final File file) {
-		return getFileExtension(file.getPath());
+	public static String getExtension(final File file) {
+		return getExtension(file.getPath());
 	}
 
 	/**
@@ -76,7 +76,7 @@ public final class FileUtils {
 	 * @return the file extension, or the empty string when the file name does not
 	 *         contain dots
 	 */
-	public static String getFileExtension(final String path) {
+	public static String getExtension(final String path) {
 		final int dot = path.lastIndexOf('.');
 		if (dot < 0) {
 			return "";
