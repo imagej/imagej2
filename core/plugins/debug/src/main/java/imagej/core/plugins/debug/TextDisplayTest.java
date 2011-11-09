@@ -55,4 +55,8 @@ public class TextDisplayTest implements ImageJPlugin {
 		output = "Hello " + System.getProperty("user.name") + "!";
 	}
 
+	public String getOutput() {
+		return output;
+	}
+
 }
