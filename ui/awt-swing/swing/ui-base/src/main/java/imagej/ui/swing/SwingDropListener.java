@@ -78,6 +78,8 @@ import net.imglib2.display.ColorTable8;
  * @author Barry DeZonia
  */
 public class SwingDropListener implements DropTargetListener {
+	
+	// FIXME: no Swing-specific functionality here. Move deeper in stack.
 
 	// -- instance variables --
 	
