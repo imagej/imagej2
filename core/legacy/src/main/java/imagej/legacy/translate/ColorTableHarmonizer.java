@@ -88,12 +88,12 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final DatasetView activeView = (DatasetView) disp.getActiveView();
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
-			if (activeView == null) {
-				setCompositeImageLutsToDefault(ci);
-			}
-			else {
-				setCompositeImageLuts(ci, activeView.getColorTables());
-			}
+			List<ColorTable8> colorTables =
+					(activeView == null) ? null : activeView.getColorTables();
+			setCompositeImageLuts(ci, colorTables);
+			int composChannCount = (activeView == null) ?
+				1 : activeView.getData().getCompositeChannelCount();
+			setCompositeImageMode(ci, composChannCount, colorTables);
 		}
 		else { // regular ImagePlus
 			// NOTE to fix bug #849 the nonnull case was added below. This reflects
@@ -124,7 +124,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/**
-	 * For each channel in CompositeImage, sets LUT to one from a given
+	 * For each channel in CompositeImage, sets LUT to one from given
 	 * ColorTables
 	 */
 	private void setCompositeImageLuts(final CompositeImage ci,
@@ -132,18 +132,30 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	{
 		if (cTables == null || cTables.size() == 0) {
 			setCompositeImageLutsToDefault(ci);
-			ci.setMode(CompositeImage.COMPOSITE);
 		}
 		else {
-			boolean allGrayLuts = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable8 cTable = cTables.get(i);
-				if ((allGrayLuts) && (!ColorTables.isGrayColorTable(cTable))) allGrayLuts =
-					false;
 				final LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
-			if (allGrayLuts) {
+		}
+	}
+
+	/** Sets the correct IJ1 CompositeImage display mode based upon input data
+	 *  values.
+	 */
+	private void setCompositeImageMode(CompositeImage ci, int composCount, List<ColorTable8> cTables) {
+		if ((composCount > 1) || (cTables == null) || (cTables.size() == 0))
+			ci.setMode(CompositeImage.COMPOSITE);
+		else {
+			boolean allGrayTables = true;
+			for (int i = 0; i < ci.getNChannels(); i++) {
+				final ColorTable8 cTable = cTables.get(i);
+				if ((allGrayTables) && (!ColorTables.isGrayColorTable(cTable)))
+					allGrayTables =	false;
+			}
+			if (allGrayTables) {
 				ci.setMode(CompositeImage.GRAYSCALE);
 			}
 			else {
@@ -151,7 +163,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			}
 		}
 	}
-
+	
 	/** Sets the single LUT of an ImagePlus to the first ColorTable of a Dataset */
 	private void setImagePlusLutToFirstInDataset(final Dataset ds,
 		final ImagePlus imp)
