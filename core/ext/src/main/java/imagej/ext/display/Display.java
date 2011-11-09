@@ -41,9 +41,9 @@ import java.util.List;
 /**
  * A display is a particular type of {@link IPlugin} intended to visualize
  * objects somehow. The most common type of display is the
- * <code>imagej.data.display.ImageDisplay</code>, which displays images
- * onscreen. However, in principle there are no limits to the sorts of objects
- * that can be handled.
+ * <code>imagej.data.display.ImageDisplay</code>, which displays images.
+ * However, in principle there are no limits to the sorts of objects that can be
+ * handled.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
