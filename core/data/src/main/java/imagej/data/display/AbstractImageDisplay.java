@@ -76,9 +76,9 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
 	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
-	
+
 	private Axis activeAxis = null;
-	
+
 	private ScaleConverter scaleConverter;
 
 	public AbstractImageDisplay() {
@@ -114,8 +114,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	public void initActiveAxis() {
 		if (activeAxis == null) {
-			Axis[] axes = getAxes();
-			for (Axis axis : axes) {
+			final Axis[] axes = getAxes();
+			for (final Axis axis : axes) {
 				if (axis == Axes.X) continue;
 				if (axis == Axes.Y) continue;
 				setActiveAxis(axis);
@@ -123,7 +123,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			}
 		}
 	}
-	
+
 	// -- Display methods --
 
 	@Override
@@ -297,9 +297,10 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					}
 				}
 			};
-		eventService.subscribe(DataRestructuredEvent.class, dataRestructedSubscriber);
+		eventService.subscribe(DataRestructuredEvent.class,
+			dataRestructedSubscriber);
 		subscribers.add(dataRestructedSubscriber);
-		
+
 		zoomSubscriber = new EventSubscriber<ZoomEvent>() {
 
 			@Override
@@ -367,7 +368,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		// dataRestructedSubscriber);
 		eventService.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
 		eventService.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
-		eventService.unsubscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+		eventService.unsubscribe(DisplayDeletedEvent.class,
+			displayDeletedSubscriber);
 	}
 
 	protected void closeHelper() {
@@ -399,18 +401,17 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] +
 				"; ");
 		}
-		
+
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-		
+
 		sb.append(dataset.getTypeLabelLong());
-		
+
 		final double zoomFactor = getCanvas().getZoomFactor();
-		if (zoomFactor != 1)
-			sb.append(" (" + scaleConverter.getString(zoomFactor) + ")");
-		
+		if (zoomFactor != 1) sb.append(" (" + scaleConverter.getString(zoomFactor) +
+			")");
+
 		return sb.toString();
 	}
-
 
 	protected Dataset getDataset(final DataView view) {
 		final Data dataObject = view.getData();
@@ -425,47 +426,50 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		scaleConverter = new FractionalScaleConverter();
 		scaleConverter = new PercentScaleConverter();
 	}
-	
+
 	private interface ScaleConverter {
+
 		String getString(double realScale);
 	}
 
 	private class PercentScaleConverter implements ScaleConverter {
 
 		@Override
-		public String getString(double realScale) {
+		public String getString(final double realScale) {
 			return String.format("%.2f%%", realScale * 100);
 		}
-		
+
 	}
 
 	private class FractionalScaleConverter implements ScaleConverter {
+
 		@Override
-		public String getString(double realScale) {
-			FractionalScale fracScale = new FractionalScale(realScale);
+		public String getString(final double realScale) {
+			final FractionalScale fracScale = new FractionalScale(realScale);
 			// is fractional scale invalid?
 			if (fracScale.getDenom() == 0) {
-				if (realScale >= 1)
-					return String.format("%.2fX", realScale);
+				if (realScale >= 1) return String.format("%.2fX", realScale);
 				// else scale < 1
-				return String.format("1/%.2fX", (1/realScale));
+				return String.format("1/%.2fX", (1 / realScale));
 			}
 			// or de we have a whole number scale?
-			else if (fracScale.getDenom() == 1)
-					return String.format("%dX", fracScale.getNumer());
+			else if (fracScale.getDenom() == 1) return String.format("%dX", fracScale
+				.getNumer());
 			// else have valid fraction
-			return String.format("%d/%dX",fracScale.getNumer(),fracScale.getDenom());
+			return String
+				.format("%d/%dX", fracScale.getNumer(), fracScale.getDenom());
 		}
 	}
-	
+
 	private class FractionalScale {
+
 		private int numer, denom;
-		
-		FractionalScale(double realScale) {
+
+		FractionalScale(final double realScale) {
 			numer = 0;
 			denom = 0;
 			if (realScale >= 1) {
-				double floor = Math.floor(realScale);
+				final double floor = Math.floor(realScale);
 				if ((realScale - floor) < 0.0001) {
 					numer = (int) floor;
 					denom = 1;
@@ -476,8 +480,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				}
 			}
 			else { // factor < 1
-				double recip = 1.0 / realScale;
-				double floor = Math.floor(recip);
+				final double recip = 1.0 / realScale;
+				final double floor = Math.floor(recip);
 				if ((recip - floor) < 0.0001) {
 					numer = 1;
 					denom = (int) floor;
@@ -488,8 +492,13 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				}
 			}
 		}
-		
-		int getNumer() { return numer; }
-		int getDenom() { return denom; }
+
+		int getNumer() {
+			return numer;
+		}
+
+		int getDenom() {
+			return denom;
+		}
 	}
 }
