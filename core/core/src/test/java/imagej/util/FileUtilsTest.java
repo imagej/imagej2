@@ -47,11 +47,11 @@ import org.junit.Test;
 public class FileUtilsTest {
 
 	@Test
-	public void testGetFileExtension() {
-		assertEquals("ext", FileUtils.getFileExtension("/path/to/file.ext"));
-		assertEquals("", FileUtils.getFileExtension("/path/to/file"));
-		assertEquals("a", FileUtils.getFileExtension("/etc/init.d/xyz/file.a"));
-		assertEquals("", FileUtils.getFileExtension("/etc/init.d/xyz/file"));
+	public void testGetExtension() {
+		assertEquals("ext", FileUtils.getExtension("/path/to/file.ext"));
+		assertEquals("", FileUtils.getExtension("/path/to/file"));
+		assertEquals("a", FileUtils.getExtension("/etc/init.d/xyz/file.a"));
+		assertEquals("", FileUtils.getExtension("/etc/init.d/xyz/file"));
 	}
 
 	@Test

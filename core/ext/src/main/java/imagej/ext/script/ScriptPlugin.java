@@ -65,7 +65,7 @@ public class ScriptPlugin implements ImageJPlugin {
 		// languages
 		final ScriptEngineManager scriptManager = new ScriptEngineManager();
 		// Could use a FileChooser to select script, then
-		final String fileExtension = FileUtils.getFileExtension(path);
+		final String fileExtension = FileUtils.getExtension(path);
 		final ScriptEngine engine =
 			scriptManager.getEngineByExtension(fileExtension);
 		try {
