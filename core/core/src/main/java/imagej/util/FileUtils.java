@@ -66,7 +66,10 @@ public final class FileUtils {
 	 *         contain dots
 	 */
 	public static String getExtension(final File file) {
-		return getExtension(file.getPath());
+		final String name = file.getName();
+		final int dot = name.lastIndexOf('.');
+		if (dot < 0) return "";
+		return name.substring(dot + 1);
 	}
 
 	/**
@@ -77,11 +80,7 @@ public final class FileUtils {
 	 *         contain dots
 	 */
 	public static String getExtension(final String path) {
-		final int dot = path.lastIndexOf('.');
-		if (dot < 0) {
-			return "";
-		}
-		return path.substring(dot + 1);
+		return getExtension(new File(path));
 	}
 
 	/**
