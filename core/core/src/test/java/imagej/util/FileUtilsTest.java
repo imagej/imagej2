@@ -47,6 +47,14 @@ import org.junit.Test;
 public class FileUtilsTest {
 
 	@Test
+	public void testGetFileExtension() {
+		assertEquals("ext", FileUtils.getFileExtension("/path/to/file.ext"));
+		assertEquals("", FileUtils.getFileExtension("/path/to/file"));
+		assertEquals("a", FileUtils.getFileExtension("/etc/init.d/xyz/file.a"));
+		assertEquals("", FileUtils.getFileExtension("/etc/init.d/xyz/file"));
+	}
+
+	@Test
 	public void testShortenPath() {
 		assertEquals("C:\\Documents and Settings\\"
 			+ "All Users\\Application Data\\Apple Computer\\...\\SC Info.txt",
