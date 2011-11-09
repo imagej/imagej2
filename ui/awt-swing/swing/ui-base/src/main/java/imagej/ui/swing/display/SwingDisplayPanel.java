@@ -40,6 +40,7 @@ import imagej.data.Dataset;
 import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
+import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
@@ -80,9 +81,9 @@ import net.miginfocom.swing.MigLayout;
 
 /**
  * Swing implementation of image display panel. Contains a label, a graphics
- * pane containing an ImageCanvas, and panel containing dimensional controllers
- * (sliderPanel). This panel is added to a top-level display container
- * (DisplayWindow).
+ * pane containing an {@link ImageCanvas}, and panel containing dimensional
+ * controllers. This panel is added to a top-level {@link DisplayWindow} display
+ * container.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -138,13 +139,13 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		window.setContent(this);
 	}
-	
+
 	// -- SwingDisplayPanel methods --
 
 	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
 		addKeyListener(dispatcher);
 	}
-	
+
 	// -- DisplayPanel methods --
 
 	@Override
@@ -181,17 +182,20 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	void sizeAppropriately() {
 		final JHotDrawImageCanvas canvas =
-				(JHotDrawImageCanvas) display.getCanvas();
+			(JHotDrawImageCanvas) display.getCanvas();
 		final Dimension canvasSize = canvas.getPreferredSize();
 		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
 		// width determined by scaled image canvas width
 		final int labelPlusSliderHeight =
-				imageLabel.getPreferredSize().height + sliderPanel.getPreferredSize().height;
+			imageLabel.getPreferredSize().height +
+				sliderPanel.getPreferredSize().height;
 		final int extraSpace = 32;
-		final int maxViewHeight = deskBounds.height - labelPlusSliderHeight - extraSpace;
+		final int maxViewHeight =
+			deskBounds.height - labelPlusSliderHeight - extraSpace;
 		final int maxViewWidth = deskBounds.width - extraSpace;
 		double scale = 1.0;
-		if ((canvasSize.width > maxViewWidth) || (canvasSize.height > maxViewHeight))
+		if ((canvasSize.width > maxViewWidth) ||
+			(canvasSize.height > maxViewHeight))
 		{
 			final double canvasAspect = 1.0 * canvasSize.width / canvasSize.height;
 			final double viewAspect = 1.0 * maxViewWidth / maxViewHeight;
@@ -206,13 +210,13 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		}
 		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
 		canvas.setZoom(zoomLevel);
-		//canvasSize = canvas.getPreferredSize();
+		// canvasSize = canvas.getPreferredSize();
 		if (!initialScaleCalculated) {
 			canvas.setInitialScale(canvas.getZoomFactor());
 			initialScaleCalculated = true;
 		}
 	}
-	
+
 	@Override
 	public void setLabel(final String s) {
 		imageLabel.setText(s);
@@ -337,19 +341,18 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		}
 	}
 
-
 	protected void updateBorder(final int c) {
 		final ImageDisplayService imageDisplayService =
-				ImageJ.get(ImageDisplayService.class);
+			ImageJ.get(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
 		final RealLUTConverter<? extends RealType<?>> converter =
-				view.getConverters().get(c);
+			view.getConverters().get(c);
 		final ColorTable8 lut = converter.getLUT();
 		final int last = lut.getLength() - 1;
-		int r = lut.get(0, last);
-		int g = lut.get(1, last);
-		int b = lut.get(2, last);
+		final int r = lut.get(0, last);
+		final int g = lut.get(1, last);
+		final int b = lut.get(2, last);
 		final ColorRGB color = new ColorRGB(r, g, b);
 		setBorderColor(color);
 	}
