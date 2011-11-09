@@ -205,10 +205,22 @@ public class LegacyPlugin implements ImageJPlugin {
 		final Set<Thread> currentThreads = getCurrentThreads();
 		for (final Thread thread : currentThreads) {
 			if ((thread != Thread.currentThread()) &&
-				(!threadsToIgnore.contains(thread))) try {
-				thread.join();
+					(!threadsToIgnore.contains(thread)))
+			{
+			  // NB
+				// Ignore some threads that IJ1 hatches in it's UI that never terminate
+				// until IJ1 UI elements go away. These might be IJ1 bugs.
+				//   1) StackWindow slider selector thread
+				if (thread.getName().equals("zSelector")) continue;
+				
+				// make other threads join
+				try {
+					thread.join();
+				}
+				catch (final InterruptedException e) {
+					// do nothing
+				}
 			}
-			catch (final InterruptedException e) {/**/}
 		}
 	}
 
