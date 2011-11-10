@@ -38,7 +38,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -289,8 +288,7 @@ public class Animator implements ImageJPlugin {
 			delta = 1;
 			isRelative = true;
 
-			eventService.publish(new AxisPositionEvent(display, axis, first, total,
-				false));
+			display.setAxisPosition(axis, first);
 		}
 
 		/**
@@ -411,8 +409,9 @@ public class Animator implements ImageJPlugin {
 				}
 			}
 
-			eventService.publish(new AxisPositionEvent(display, axis, delta, total,
-				isRelative));
+			final long pos =
+				isRelative ? display.getAxisPosition(axis) + delta : delta;
+			display.setAxisPosition(axis, pos);
 		}
 	}
 

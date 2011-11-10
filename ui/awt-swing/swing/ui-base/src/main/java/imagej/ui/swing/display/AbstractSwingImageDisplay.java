@@ -42,7 +42,6 @@ import imagej.ext.display.DisplayService;
 import imagej.ext.display.DisplayWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
-import net.imglib2.img.Axis;
 
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
@@ -76,18 +75,6 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	// -- ImageDisplay methods --
 
 	@Override
-	public long getAxisPosition(final Axis axis) {
-		// FIXME
-		return imgPanel.getAxisPosition(axis);
-	}
-
-	@Override
-	public void setAxisPosition(final Axis axis, final long position) {
-		// FIXME
-		imgPanel.setAxisPosition(axis, position);
-	}
-
-	@Override
 	public void display(final Dataset dataset) {
 		// GBH: Regarding naming/id of the display...
 		// For now, we will use the original (first) dataset name
@@ -95,16 +82,16 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		createName(datasetName);
 		window.setTitle(this.getName());
 		add(new SwingDatasetView(this, dataset));
-		initActiveAxis();
 		redoWindowLayout();
+		initActiveAxis();
 		update();
 	}
 
 	@Override
 	public void display(final Overlay overlay) {
 		add(new SwingOverlayView(this, overlay));
-		initActiveAxis();
 		redoWindowLayout();
+		initActiveAxis();
 		update();
 	}
 

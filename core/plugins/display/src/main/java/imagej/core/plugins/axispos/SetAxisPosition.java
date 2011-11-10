@@ -34,14 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.event.AxisPositionEvent;
-import imagej.event.EventService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import net.imglib2.img.Axis;
 
 /**
  * Sets the position of the current axis to a user specified value
@@ -53,10 +51,6 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Set Axis Position...") })
 public class SetAxisPosition implements ImageJPlugin {
 
-	// TODO - want to set max value to that of correct axis of correct Dataset
-	// Might need to make this a Dynamic plugin. Waiting for multistep
-	// initialization code to be put in place.
-
 	@Parameter
 	private ImageDisplay display;
 
@@ -66,9 +60,9 @@ public class SetAxisPosition implements ImageJPlugin {
 	@Override
 	public void run() {
 		Animator.terminateAnimation(display);
+		final Axis axis = display.getActiveAxis();
 		final long newPosition = oneBasedPosition - 1;
-		final EventService eventService = ImageJ.get(EventService.class);
-		eventService.publish(new AxisPositionEvent(display, newPosition, false));
+		display.setAxisPosition(axis, newPosition);
 	}
 
 }

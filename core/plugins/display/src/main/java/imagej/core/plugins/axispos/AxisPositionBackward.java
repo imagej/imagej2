@@ -34,14 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.event.AxisPositionEvent;
-import imagej.event.EventService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import net.imglib2.img.Axis;
 
 // TODO - Accelerator of "shift COMMA" will not work on some keyboard layouts.
 // Making it "LESS" does not work; it appears correctly in the menu
@@ -65,8 +63,8 @@ public class AxisPositionBackward implements ImageJPlugin {
 	@Override
 	public void run() {
 		Animator.terminateAnimation(display);
-		final EventService eventService = ImageJ.get(EventService.class);
-		eventService.publish(new AxisPositionEvent(display, -1, true));
+		final Axis axis = display.getActiveAxis();
+		display.setAxisPosition(axis, display.getAxisPosition(axis) - 1);
 	}
 
 }
