@@ -178,7 +178,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		if (currDisplay == null) return;
 		harvestInputs();
 		final Axis axis = Axes.get(axisName);
-		final int axisIndex = dataset.getImgPlus().getAxisIndex(axis);
+		final int axisIndex = dataset.getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		final long totalHyperplanes = dataset.getImgPlus().dimension(axisIndex);
 		setFirstAndLast(totalHyperplanes);
