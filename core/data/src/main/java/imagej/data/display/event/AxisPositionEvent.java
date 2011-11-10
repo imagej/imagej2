@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display.event;
 
-import imagej.ext.display.Display;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.display.event.DisplayEvent;
 import net.imglib2.img.Axis;
 
@@ -49,11 +49,35 @@ public class AxisPositionEvent extends DisplayEvent {
 	private final long value;
 	private final long max;
 	private final boolean relative;
+	
+	// CTR TODO: Eliminate max parameter. It is an artifact of the Animator
+	// plugin, which should be managing its mins and maxes itself, rather than
+	// relying on this event to keep track of it.
 
-	public AxisPositionEvent(final Display<?> display, final Axis axis,
+	public AxisPositionEvent(final ImageDisplay display,
+		final long value, final boolean relative)
+	{
+		this(display, display.getActiveAxis(), value, relative);
+	}
+
+	public AxisPositionEvent(final ImageDisplay display, final Axis axis,
+		final long value, final boolean relative)
+	{
+		this(display, axis, value, getAxisMax(display, axis), relative);
+	}
+
+	private static long getAxisMax(ImageDisplay display, Axis axis) {
+		final int axisIndex = display.getAxisIndex(axis);
+		return display.getExtents().dimension(axisIndex);
+	}
+
+	public AxisPositionEvent(final ImageDisplay display, final Axis axis,
 		final long value, final long max, final boolean relative)
 	{
 		super(display);
+		if (display.getAxisIndex(axis) < 0) {
+			throw new IllegalArgumentException("Invalid axis: " + axis);
+		}
 		this.axis = axis;
 		this.value = value;
 		this.max = max;

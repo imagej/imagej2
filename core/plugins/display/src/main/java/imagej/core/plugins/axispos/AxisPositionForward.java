@@ -34,7 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
+import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.event.AxisPositionEvent;
+import imagej.event.EventService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -62,7 +65,8 @@ public class AxisPositionForward implements ImageJPlugin {
 	@Override
 	public void run() {
 		Animator.terminateAnimation(display);
-		AxisUtils.changeCurrentAxisPosition(display, +1, true);
+		final EventService eventService = ImageJ.get(EventService.class);
+		eventService.publish(new AxisPositionEvent(display, +1, true));
 	}
 
 }
