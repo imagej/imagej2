@@ -187,7 +187,6 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		options.setFirst(first);
 		options.setLast(last);
 		options.setFps(fps);
-		options.setTotal(totalHyperplanes);
 		Animator.optionsUpdated(currDisplay);
 	}
 
