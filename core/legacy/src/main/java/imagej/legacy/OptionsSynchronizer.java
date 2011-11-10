@@ -44,6 +44,7 @@ import ij.gui.TextRoi;
 import ij.gui.Toolbar;
 import ij.io.FileSaver;
 import ij.plugin.Colors;
+import ij.plugin.OverlayCommands;
 import ij.plugin.filter.Analyzer;
 import ij.process.ColorProcessor;
 import ij.process.FloatBlitter;
@@ -61,13 +62,16 @@ import imagej.options.plugins.OptionsInputOutput;
 import imagej.options.plugins.OptionsLineWidth;
 import imagej.options.plugins.OptionsMemoryAndThreads;
 import imagej.options.plugins.OptionsMisc;
+import imagej.options.plugins.OptionsOverlay;
 import imagej.options.plugins.OptionsPointTool;
 import imagej.options.plugins.OptionsProfilePlot;
 import imagej.options.plugins.OptionsProxy;
 import imagej.options.plugins.OptionsRoundedRectangleTool;
+import imagej.util.ClassUtils;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.lang.reflect.Field;
 
 /**
  * The options synchronizer bidirectionally synchronizes IJ2 options with IJ1
@@ -98,6 +102,7 @@ public class OptionsSynchronizer {
 		lineWidthOptions();
 		memoryAndThreadsOptions();
 		miscOptions();
+		overlayOptions();
 		pointOptions();
 		profilePlotOptions();
 		proxyOptions();
@@ -109,7 +114,7 @@ public class OptionsSynchronizer {
 	 * Updates IJ2 options dialog settings to reflect values set by IJ1 plugins.
 	 */
 	public void updateIJ2SettingsFromIJ1() {
-		setOptionsFromPublicStatics();
+		setOptionsFromStatics();
 	}
 
 	// -- helpers --
@@ -308,6 +313,18 @@ public class OptionsSynchronizer {
 		}
 	}
 
+	private void overlayOptions() {
+		final OptionsOverlay optionsOverlay =
+				optionsService.getOptions(OptionsOverlay.class);
+		Roi defaultRoi = getDefaultRoi();
+		String c = optionsOverlay.getFillColor();
+		if (c != null && !c.equals("none"))
+			defaultRoi.setFillColor(Color.getColor(c));
+		c = optionsOverlay.getStrokeColor();
+		defaultRoi.setStrokeColor(Color.getColor(c));
+		defaultRoi.setStrokeWidth(optionsOverlay.getWidth());
+	}
+	
 	private void pointOptions() {
 		final OptionsPointTool optionsPointTool =
 			optionsService.getOptions(OptionsPointTool.class);
@@ -391,7 +408,7 @@ public class OptionsSynchronizer {
 		// Prefs.get(SettingsKeys.OPTIONS_WAND_TOLERANCE, 0.0);
 	}
 
-	private void setOptionsFromPublicStatics() {
+	private void setOptionsFromStatics() {
 		final OptionsAppearance optionsAppearance =
 			optionsService.getOptions(OptionsAppearance.class);
 		optionsAppearance.setAntialiasedToolIcons(Prefs.antialiasedTools);
@@ -513,5 +530,24 @@ public class OptionsSynchronizer {
 			optionsService.getOptions(OptionsRoundedRectangleTool.class);
 		final int crnDiam = Toolbar.getRoundRectArcSize();
 		optionsRoundedRectangleTool.setCornerDiameter(crnDiam);
+		
+		final OptionsOverlay optionsOverlay =
+				optionsService.getOptions(OptionsOverlay.class);
+		Roi defaultRoi = getDefaultRoi();
+		Color c = defaultRoi.getFillColor();
+		optionsOverlay.setFillColor(c == null ? "none" : c.toString());
+		c = defaultRoi.getStrokeColor();
+		optionsOverlay.setStrokeColor(
+			c == null ?
+			Roi.getColor().toString() :
+			defaultRoi.getStrokeColor().toString());
+		optionsOverlay.setWidth(defaultRoi.getStrokeWidth());
+	}
+	
+	private Roi getDefaultRoi() {
+		Field field =
+				ClassUtils.getField("ij.plugin.OverlayCommands", "defaultRoi");
+		Object obj = ClassUtils.getValue(field, null);
+		return (Roi) obj;
 	}
 }
