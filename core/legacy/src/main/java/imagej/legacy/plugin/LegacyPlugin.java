@@ -207,11 +207,8 @@ public class LegacyPlugin implements ImageJPlugin {
 			if ((thread != Thread.currentThread()) &&
 					(!threadsToIgnore.contains(thread)))
 			{
-			  // NB
-				// Ignore some threads that IJ1 hatches in it's UI that never terminate
-				// until IJ1 UI elements go away. These might be IJ1 bugs.
-				//   1) StackWindow slider selector thread
-				if (thread.getName().equals("zSelector")) continue;
+				// Ignore some threads that IJ1 hatches that never terminate
+				if (whitelisted(thread)) continue;
 				
 				// make other threads join
 				try {
@@ -316,6 +313,32 @@ public class LegacyPlugin implements ImageJPlugin {
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 		dialog.prompt();
+	}
+
+	/**
+	 * Identifies threads that IJ1 hatches that don't terminate in a timely way
+	 */
+	private boolean whitelisted(Thread thread) {
+		
+		//   StackWindow slider selector thread: thread does not go away until the
+		//   window closes.
+		if (thread.getName().equals("zSelector")) return true;
+		
+		/*
+			// select by class name
+			System.out.println("---"+thread.getClass().getDeclaringClass());
+			System.out.println("---"+thread.getClass().getEnclosingClass());
+			System.out.println("---"+thread.getClass().getCanonicalName());
+			System.out.println("---"+thread.getClass().getName());
+			System.out.println("---"+thread.getClass().getSimpleName());
+			System.out.println("---"+thread.getClass().getClass());
+			System.out.println("---"+thread.getClass().getInterfaces());
+			
+			// select by name of runnable class it owns
+			//System.out.println(thread.HOW???);
+		*/
+		
+		return false;
 	}
 
 	// Finishes any in progress paste() operations. Done before harmonization.
