@@ -46,66 +46,28 @@ import net.imglib2.img.Axis;
 public class AxisPositionEvent extends DisplayEvent {
 
 	private final Axis axis;
-	private final long value;
-	private final long max;
-	private final boolean relative;
 	
-	// CTR TODO: Eliminate max parameter. It is an artifact of the Animator
-	// plugin, which should be managing its mins and maxes itself, rather than
-	// relying on this event to keep track of it.
-
-	public AxisPositionEvent(final ImageDisplay display,
-		final long value, final boolean relative)
-	{
-		this(display, display.getActiveAxis(), value, relative);
+	public AxisPositionEvent(final ImageDisplay display) {
+		this(display, display.getActiveAxis());
 	}
 
-	public AxisPositionEvent(final ImageDisplay display, final Axis axis,
-		final long value, final boolean relative)
-	{
-		this(display, axis, value, getAxisMax(display, axis), relative);
-	}
-
-	private static long getAxisMax(ImageDisplay display, Axis axis) {
-		final int axisIndex = display.getAxisIndex(axis);
-		return display.getExtents().dimension(axisIndex);
-	}
-
-	public AxisPositionEvent(final ImageDisplay display, final Axis axis,
-		final long value, final long max, final boolean relative)
-	{
+	public AxisPositionEvent(final ImageDisplay display, final Axis axis) {
 		super(display);
 		if (display.getAxisIndex(axis) < 0) {
 			throw new IllegalArgumentException("Invalid axis: " + axis);
 		}
 		this.axis = axis;
-		this.value = value;
-		this.max = max;
-		this.relative = relative;
 	}
 
 	public Axis getAxis() {
 		return axis;
 	}
 
-	public long getValue() {
-		return value;
-	}
-
-	public long getMax() {
-		return max;
-	}
-
-	public boolean isRelative() {
-		return relative;
-	}
-
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\taxis = " + axis + "\n\tvalue = " + value +
-			"\n\tmax = " + max + "\n\trelative = " + relative;
+		return super.toString() + "\n\taxis = " + axis;
 	}
 
 }

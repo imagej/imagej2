@@ -54,8 +54,9 @@ import imagej.ext.tool.ToolService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -74,11 +75,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	private ImageCanvas canvas;
 
-	/** List of event subscribers, to avoid garbage collection. */
-	private final List<EventSubscriber<?>> subscribers =
-		new ArrayList<EventSubscriber<?>>();
-
-	private EventSubscriber<AxisPositionEvent> axisPositionSubscriber;
 	private EventSubscriber<DataRestructuredEvent> dataRestructuredSubscriber;
 	private EventSubscriber<DataUpdatedEvent> dataUpdatedSubscriber;
 	private EventSubscriber<DatasetRestructuredEvent> datasetRestructuredSubscriber;
@@ -87,6 +83,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	private EventSubscriber<ZoomEvent> zoomSubscriber;
 
 	private Axis activeAxis = null;
+
+	private final Map<Axis, Long> axisPositions = new HashMap<Axis, Long>();
 
 	private ScaleConverter scaleConverter;
 
@@ -129,7 +127,38 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void setActiveAxis(final Axis axis) {
+		if (!axisPositions.containsKey(axis)) {
+			throw new IllegalArgumentException("Unknown axis: " + axis);
+		}
 		activeAxis = axis;
+	}
+
+	@Override
+	public long getAxisPosition(final Axis axis) {
+		if (axisPositions.containsKey(axis)) {
+			return axisPositions.get(axis);
+		}
+		throw new IllegalArgumentException("Unknown axis: " + axis);
+	}
+
+	@Override
+	public void setAxisPosition(final Axis axis, final long position) {
+		final int axisIndex = getAxisIndex(axis);
+		if (axisIndex < 0) {
+			throw new IllegalArgumentException("Invalid axis: " + axis);
+		}
+
+		// clamp new position value to [min, max]
+		final Extents extents = getExtents();
+		final long min = extents.min(axisIndex);
+		final long max = extents.max(axisIndex);
+		long pos = position;
+		if (pos < min) pos = min;
+		if (pos > max) pos = max;
+
+		// update position and notify interested parties of the change
+		axisPositions.put(axis, pos);
+		eventService.publish(new AxisPositionEvent(this, axis));
 	}
 
 	@Override
@@ -147,6 +176,29 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void redoWindowLayout() {
+		final long[] min = new long[numDimensions()];
+		Arrays.fill(min, Long.MAX_VALUE);
+		final long[] max = new long[numDimensions()];
+		Arrays.fill(max, Long.MIN_VALUE);
+
+		final Axis[] axes = getAxes();
+		final Extents extents = getExtents();
+
+		// remove obsolete axes
+		for (final Axis axis : axisPositions.keySet()) {
+			if (getAxisIndex(axis) >= 0) continue; // axis still active
+			axisPositions.remove(axis);
+		}
+
+		// add new axes
+		for (int i = 0; i < axes.length; i++) {
+			final Axis axis = axes[i];
+			if (axisPositions.containsKey(axis)) continue; // axis already exists
+			if (Axes.isXY(axis)) continue; // do not track position of planar axes
+			setAxisPosition(axis, extents.min(i)); // start at minimum value
+		}
+
+		// rebuild panel
 		getPanel().redoLayout();
 	}
 
@@ -170,9 +222,9 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		for (final DataView view : this) {
 			for (final Axis axis : getAxes()) {
 				final int index = getAxisIndex(axis);
-				if (index >= 0) {
-					view.setPosition(getAxisPosition(axis), index);
-				}
+				if (index < 0) continue;
+				if (Axes.isXY(axis)) continue;
+				view.setPosition(getAxisPosition(axis), index);
 			}
 			view.update();
 		}
@@ -292,28 +344,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	/** Updates the display when the linked object changes. */
 	private void subscribeToEvents() {
-		axisPositionSubscriber = new EventSubscriber<AxisPositionEvent>() {
-
-			@Override
-			public void onEvent(final AxisPositionEvent event) {
-				if (event.getDisplay() == AbstractImageDisplay.this) {
-					final Axis axis = event.getAxis();
-					final long value = event.getValue();
-					long newPos = value;
-					if (event.isRelative()) {
-						final long currPos = getAxisPosition(axis);
-						newPos = currPos + value;
-					}
-					final long max = event.getMax();
-					if (newPos >= 0 && newPos < max) {
-						setAxisPosition(axis, newPos);
-						update();
-					}
-				}
-			}
-		};
-		eventService.subscribe(AxisPositionEvent.class, axisPositionSubscriber);
-
 		dataRestructuredSubscriber = new EventSubscriber<DataRestructuredEvent>() {
 
 			@Override
@@ -329,7 +359,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		};
 		eventService.subscribe(DataRestructuredEvent.class,
 			dataRestructuredSubscriber);
-		subscribers.add(dataRestructuredSubscriber);
 
 		dataUpdatedSubscriber = new EventSubscriber<DataUpdatedEvent>() {
 
@@ -345,7 +374,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			}
 		};
 		eventService.subscribe(DataUpdatedEvent.class, dataUpdatedSubscriber);
-		subscribers.add(dataUpdatedSubscriber);
 
 		datasetRestructuredSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>() {
@@ -372,7 +400,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					}
 				}
 			};
-		subscribers.add(datasetRestructuredSubscriber);
 		eventService.subscribe(DatasetRestructuredEvent.class,
 			datasetRestructuredSubscriber);
 
@@ -414,7 +441,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					getCanvas().setCursor(toolService.getActiveTool().getCursor());
 				}
 			};
-		subscribers.add(winActivatedSubscriber);
 		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
 
 		zoomSubscriber = new EventSubscriber<ZoomEvent>() {
@@ -432,7 +458,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// NB - this method necessary to make sure resources get returned via GC.
 	// Else there is a memory leak.
 	private void unsubscribeFromEvents() {
-		eventService.unsubscribe(AxisPositionEvent.class, axisPositionSubscriber);
 		eventService.unsubscribe(DataRestructuredEvent.class,
 			dataRestructuredSubscriber);
 		eventService.unsubscribe(DataUpdatedEvent.class,
@@ -492,21 +517,20 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}
 
-	// -- private interface --
-
-	@SuppressWarnings("synthetic-access")
 	private void initScaleConverter() {
 		// TODO - handle scale conversion / label setting elsewhere
 		scaleConverter = new FractionalScaleConverter();
 		scaleConverter = new PercentScaleConverter();
 	}
 
-	private interface ScaleConverter {
+	// -- Helper classes --
+
+	protected interface ScaleConverter {
 
 		String getString(double realScale);
 	}
 
-	private class PercentScaleConverter implements ScaleConverter {
+	protected class PercentScaleConverter implements ScaleConverter {
 
 		@Override
 		public String getString(final double realScale) {
@@ -515,7 +539,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	}
 
-	private class FractionalScaleConverter implements ScaleConverter {
+	protected class FractionalScaleConverter implements ScaleConverter {
 
 		@Override
 		public String getString(final double realScale) {
@@ -535,7 +559,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 	}
 
-	private class FractionalScale {
+	protected class FractionalScale {
 
 		private int numer, denom;
 
@@ -575,4 +599,5 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			return denom;
 		}
 	}
+
 }
