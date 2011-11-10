@@ -44,7 +44,6 @@ import ij.gui.TextRoi;
 import ij.gui.Toolbar;
 import ij.io.FileSaver;
 import ij.plugin.Colors;
-import ij.plugin.OverlayCommands;
 import ij.plugin.filter.Analyzer;
 import ij.process.ColorProcessor;
 import ij.process.FloatBlitter;
