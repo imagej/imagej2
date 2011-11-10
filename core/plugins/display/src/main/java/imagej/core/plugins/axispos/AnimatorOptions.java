@@ -49,17 +49,15 @@ public class AnimatorOptions {
 	private double fps;
 	private long first;
 	private long last;
-	private long total;
 	private boolean backAndForth;
 
 	public AnimatorOptions(final Axis axis, final double fps, final long first,
-		final long last, final long total, final boolean backAndForth)
+		final long last, final boolean backAndForth)
 	{
 		this.axis = axis;
 		this.fps = fps;
 		this.first = first;
 		this.last = last;
-		this.total = total;
 		this.backAndForth = backAndForth;
 	}
 
@@ -93,14 +91,6 @@ public class AnimatorOptions {
 
 	public void setLast(final long last) {
 		this.last = last;
-	}
-
-	public long getTotal() {
-		return total;
-	}
-
-	public void setTotal(final long total) {
-		this.total = total;
 	}
 
 	public boolean isBackAndForth() {

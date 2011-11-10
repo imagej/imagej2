@@ -184,7 +184,7 @@ public class Animator implements ImageJPlugin {
 		final boolean backAndForth = false;
 
 		// return options
-		return new AnimatorOptions(axis, fps, first, last, total, backAndForth);
+		return new AnimatorOptions(axis, fps, first, last, backAndForth);
 	}
 
 	/**
@@ -249,7 +249,6 @@ public class Animator implements ImageJPlugin {
 		private Axis axis;
 		private long first;
 		private long last;
-		private long total;
 		private double fps;
 		private boolean backAndForth;
 
@@ -279,7 +278,6 @@ public class Animator implements ImageJPlugin {
 			axis = options.getAxis();
 			first = options.getFirst();
 			last = options.getLast();
-			total = options.getTotal();
 			fps = options.getFps();
 			backAndForth = options.isBackAndForth();
 
