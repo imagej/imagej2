@@ -246,6 +246,8 @@ public final class EventService extends AbstractService {
 		public EventMethodSubscriber(final Object o, final Method m) {
 			this.o = o;
 			this.m = m;
+			// allow calling of non-public methods
+			m.setAccessible(true);
 		}
 
 		@Override
