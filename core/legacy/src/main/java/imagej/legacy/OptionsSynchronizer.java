@@ -316,11 +316,13 @@ public class OptionsSynchronizer {
 		final OptionsOverlay optionsOverlay =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
-		String c = optionsOverlay.getFillColor();
-		if (c != null && !c.equals("none"))
-			defaultRoi.setFillColor(Color.getColor(c));
-		c = optionsOverlay.getStrokeColor();
-		defaultRoi.setStrokeColor(Color.getColor(c));
+		Color color;
+		String colorName = optionsOverlay.getFillColor();
+		color = getColor(colorName, null);
+		defaultRoi.setFillColor(color);
+		colorName = optionsOverlay.getStrokeColor();
+		color = getColor(colorName, null);
+		defaultRoi.setStrokeColor(color);
 		defaultRoi.setStrokeWidth(optionsOverlay.getWidth());
 	}
 	
@@ -416,6 +418,7 @@ public class OptionsSynchronizer {
 		optionsAppearance.setInterpZoomedImages(Prefs.interpolateScaledImages);
 		optionsAppearance.setNoImageBorder(Prefs.noBorder);
 		optionsAppearance.setUseInvertingLUT(Prefs.useInvertingLut);
+		optionsAppearance.save();
 
 		final OptionsArrowTool optionsArrowTool =
 			optionsService.getOptions(OptionsArrowTool.class);
@@ -434,23 +437,27 @@ public class OptionsSynchronizer {
 		optionsArrowTool.setArrowStyle(arrowStyleName);
 		final int arrowWidth = (int) Arrow.getDefaultWidth();
 		optionsArrowTool.setArrowWidth(arrowWidth);
+		optionsArrowTool.save();
 
 		final OptionsColors optionsColors =
 			optionsService.getOptions(OptionsColors.class);
 		optionsColors.setFgColor(Toolbar.getForegroundColor().toString());
 		optionsColors.setBgColor(Toolbar.getBackgroundColor().toString());
 		optionsColors.setSelColor(Roi.getColor().toString());
+		optionsColors.save();
 
 		final OptionsConversions optionsConversions =
 			optionsService.getOptions(OptionsConversions.class);
 		optionsConversions.setScaleWhenConverting(ImageConverter.getDoScaling());
 		optionsConversions.setWeightedRgbConversions(Prefs.weightedColor);
+		optionsConversions.save();
 
 		final OptionsDicom optionsDicom =
 			optionsService.getOptions(OptionsDicom.class);
 		optionsDicom.setOpenAs32bitFloat(Prefs.openDicomsAsFloat);
 		optionsDicom.setRotateXZ(Prefs.flipXZ);
 		optionsDicom.setRotateYZ(Prefs.rotateYZ);
+		optionsDicom.save();
 
 		final OptionsFont optionsFont =
 			optionsService.getOptions(OptionsFont.class);
@@ -463,6 +470,7 @@ public class OptionsSynchronizer {
 		else if (tmp == Font.ITALIC) fontStyleString = "Italic";
 		else fontStyleString = "";
 		optionsFont.setFontStyle(fontStyleString);
+		optionsFont.save();
 
 		final OptionsInputOutput optionsInputOutput =
 			optionsService.getOptions(OptionsInputOutput.class);
@@ -474,16 +482,19 @@ public class OptionsSynchronizer {
 		optionsInputOutput.setSaveRowNumbers(!Prefs.dontSaveRowNumbers);
 		optionsInputOutput.setTransparentIndex(Prefs.getTransparentIndex());
 		optionsInputOutput.setUseJFileChooser(Prefs.useJFileChooser);
+		optionsInputOutput.save();
 
 		final OptionsLineWidth optionsLineWidth =
 			optionsService.getOptions(OptionsLineWidth.class);
 		optionsLineWidth.setLineWidth(Line.getWidth());
+		optionsLineWidth.save();
 
 		final OptionsMemoryAndThreads optionsMemoryAndThreads =
 			optionsService.getOptions(OptionsMemoryAndThreads.class);
 		optionsMemoryAndThreads.setMultipleBuffers(Prefs.keepUndoBuffers);
 		optionsMemoryAndThreads.setRunGcOnClick(!Prefs.noClickToGC);
 		optionsMemoryAndThreads.setStackThreads(Prefs.getThreads());
+		optionsMemoryAndThreads.save();
 
 		final OptionsMisc optionsMisc =
 			optionsService.getOptions(OptionsMisc.class);
@@ -496,6 +507,7 @@ public class OptionsSynchronizer {
 		optionsMisc.setUsePtrCursor(Prefs.usePointerCursor);
 		optionsMisc.setRequireCommandKey(Prefs.requireControlKey);
 		optionsMisc.setRunSingleInstanceListener(Prefs.runSocketListener);
+		optionsMisc.save();
 
 		final OptionsPointTool optionsPointTool =
 			optionsService.getOptions(OptionsPointTool.class);
@@ -505,6 +517,7 @@ public class OptionsSynchronizer {
 		optionsPointTool.setLabelPoints(!Prefs.noPointLabels);
 		optionsPointTool.setMarkWidth(Analyzer.markWidth);
 		optionsPointTool.setSelectionColor(Roi.getColor().toString());
+		optionsPointTool.save();
 
 		final OptionsProfilePlot optionsProfilePlot =
 			optionsService.getOptions(OptionsProfilePlot.class);
@@ -520,15 +533,18 @@ public class OptionsSynchronizer {
 		optionsProfilePlot.setMinY(yMin);
 		optionsProfilePlot.setVertProfile(Prefs.verticalProfile);
 		optionsProfilePlot.setWidth(ij.gui.PlotWindow.plotWidth);
+		optionsProfilePlot.save();
 
 		final OptionsProxy optionsProxy =
 			optionsService.getOptions(OptionsProxy.class);
 		optionsProxy.setUseSystemProxy(ij.Prefs.useSystemProxies);
+		optionsProxy.save();
 
 		final OptionsRoundedRectangleTool optionsRoundedRectangleTool =
 			optionsService.getOptions(OptionsRoundedRectangleTool.class);
 		final int crnDiam = Toolbar.getRoundRectArcSize();
 		optionsRoundedRectangleTool.setCornerDiameter(crnDiam);
+		optionsRoundedRectangleTool.save();
 		
 		final OptionsOverlay optionsOverlay =
 				optionsService.getOptions(OptionsOverlay.class);
@@ -541,6 +557,7 @@ public class OptionsSynchronizer {
 			Roi.getColor().toString() :
 			defaultRoi.getStrokeColor().toString());
 		optionsOverlay.setWidth(defaultRoi.getStrokeWidth());
+		optionsOverlay.save();
 	}
 	
 	private Roi getDefaultRoi() {
