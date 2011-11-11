@@ -37,8 +37,8 @@ package imagej.ext.menu;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.event.ModulesAddedEvent;
@@ -46,9 +46,6 @@ import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Service for keeping track of the application's menu structure.
@@ -64,9 +61,6 @@ public class MenuService extends AbstractService {
 
 	/** Menu tree structure. */
 	private ShadowMenu rootMenu;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- Constructors --
 
@@ -149,46 +143,24 @@ public class MenuService extends AbstractService {
 	@Override
 	public void initialize() {
 		rootMenu = new ShadowMenu(this);
-		subscribeToEvents();
+		super.initialize();
 	}
 
-	// -- Helper methods --
+	// -- Event handlers --
 
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
+	@EventHandler
+	protected void onEvent(final ModulesAddedEvent event) {
+		getMenu().addAll(event.getItems());
+	}
 
-		final EventSubscriber<ModulesAddedEvent> modulesAddedSubscriber =
-			new EventSubscriber<ModulesAddedEvent>() {
+	@EventHandler
+	protected void onEvent(final ModulesRemovedEvent event) {
+		getMenu().removeAll(event.getItems());
+	}
 
-				@Override
-				public void onEvent(final ModulesAddedEvent event) {
-					getMenu().addAll(event.getItems());
-				}
-			};
-		subscribers.add(modulesAddedSubscriber);
-		eventService.subscribe(ModulesAddedEvent.class, modulesAddedSubscriber);
-
-		final EventSubscriber<ModulesRemovedEvent> modulesRemovedSubscriber =
-			new EventSubscriber<ModulesRemovedEvent>() {
-
-				@Override
-				public void onEvent(final ModulesRemovedEvent event) {
-					getMenu().removeAll(event.getItems());
-				}
-			};
-		subscribers.add(modulesRemovedSubscriber);
-		eventService.subscribe(ModulesRemovedEvent.class, modulesRemovedSubscriber);
-
-		final EventSubscriber<ModulesUpdatedEvent> modulesUpdatedSubscriber =
-			new EventSubscriber<ModulesUpdatedEvent>() {
-
-				@Override
-				public void onEvent(final ModulesUpdatedEvent event) {
-					getMenu().updateAll(event.getItems());
-				}
-			};
-		subscribers.add(modulesUpdatedSubscriber);
-		eventService.subscribe(ModulesUpdatedEvent.class, modulesUpdatedSubscriber);
+	@EventHandler
+	protected void onEvent(final ModulesUpdatedEvent event) {
+		getMenu().updateAll(event.getItems());
 	}
 
 }

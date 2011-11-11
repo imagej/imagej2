@@ -37,8 +37,8 @@ package imagej.io;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
 import imagej.ext.menu.MenuService;
@@ -88,9 +88,6 @@ public final class RecentFileService extends AbstractService {
 
 	private List<String> recentFiles;
 	private Map<String, ModuleInfo> recentModules;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	public RecentFileService() {
 		// NB: Required by SezPoz.
@@ -160,32 +157,23 @@ public final class RecentFileService extends AbstractService {
 	public void initialize() {
 		recentFiles = new ArrayList<String>();
 		recentModules = new HashMap<String, ModuleInfo>();
-		subscribeToEvents();
+		super.initialize();
 	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final FileOpenedEvent event) {
+		add(event.getPath());
+	}
+
+	// TODO
+	// FileSavedEvent
+	// ?? FileClosedEvent
+	// DisplayCreatedEvent
+	// DisplayDeletedEvent
 
 	// -- Helper methods --
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<FileOpenedEvent> fileOpenedSubscriber =
-			new EventSubscriber<FileOpenedEvent>() {
-
-				@Override
-				public void onEvent(final FileOpenedEvent event) {
-					add(event.getPath());
-				}
-
-			};
-		subscribers.add(fileOpenedSubscriber);
-		eventService.subscribe(FileOpenedEvent.class, fileOpenedSubscriber);
-
-		// TODO
-		// FileSavedEvent
-		// ?? FileClosedEvent
-		// DisplayCreatedEvent
-		// DisplayDeletedEvent
-	}
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String path) {

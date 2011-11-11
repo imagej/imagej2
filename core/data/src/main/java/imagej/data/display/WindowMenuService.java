@@ -37,8 +37,8 @@ package imagej.data.display;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
 import imagej.ext.display.Display;
@@ -82,9 +82,6 @@ public final class WindowMenuService extends AbstractService {
 	private List<String> openWindows;
 
 	private Map<String, ModuleInfo> windowModules;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	/*
 	 * order in menu, 'weight'
@@ -156,12 +153,36 @@ public final class WindowMenuService extends AbstractService {
 	}
 
 	// -- IService methods --
+
 	@Override
 	public void initialize() {
 		openWindows = new ArrayList<String>();
 		windowModules = new HashMap<String, ModuleInfo>();
-		subscribeToEvents();
+		super.initialize();
 	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent event) {
+		final Display<?> display = event.getObject();
+		add(display.getName());
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayActivatedEvent event) {
+		final Display<?> display = event.getDisplay();
+		// @TODO - needs checkbox menu functionality
+		// setActiveWindow(display);
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent event) {
+		final Display<?> display = event.getObject();
+		remove(display.getName());
+	}
+
+	// -- Helper methods --
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String displayName) {
@@ -211,54 +232,6 @@ public final class WindowMenuService extends AbstractService {
 	private String shortPath(final String path) {
 		// TODO - shorten path name as needed
 		return path;
-	}
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		// Created
-		final EventSubscriber<DisplayCreatedEvent> displayCreatedSubscriber =
-			new EventSubscriber<DisplayCreatedEvent>() {
-
-				@Override
-				public void onEvent(final DisplayCreatedEvent event) {
-					final Display<?> display = event.getObject();
-					add(display.getName());
-				}
-
-			};
-		subscribers.add(displayCreatedSubscriber);
-		eventService.subscribe(DisplayCreatedEvent.class, displayCreatedSubscriber);
-
-		// Activated
-		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
-			new EventSubscriber<DisplayActivatedEvent>() {
-
-				@Override
-				public void onEvent(final DisplayActivatedEvent event) {
-					final Display<?> display = event.getDisplay();
-					// @TODO - needs checkbox menu functionality
-					// setActiveWindow(display);
-				}
-
-			};
-		subscribers.add(displayActivatedSubscriber);
-		eventService.subscribe(DisplayActivatedEvent.class,
-			displayActivatedSubscriber);
-
-		// Deleted
-		final EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber =
-			new EventSubscriber<DisplayDeletedEvent>() {
-
-				@Override
-				public void onEvent(final DisplayDeletedEvent event) {
-					final Display<?> display = event.getObject();
-					remove(display.getName());
-				}
-
-			};
-		subscribers.add(displayDeletedSubscriber);
-		eventService.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
 	}
 
 }

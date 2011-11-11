@@ -38,8 +38,8 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.Dataset;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.window.WinClosedEvent;
@@ -59,9 +59,6 @@ public final class ImageDisplayService extends AbstractService {
 
 	private final EventService eventService;
 	private final DisplayService displayService;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	public ImageDisplayService() {
 		// NB: Required by SezPoz.
@@ -140,41 +137,23 @@ public final class ImageDisplayService extends AbstractService {
 		return displayService.getDisplaysOfType(ImageDisplay.class);
 	}
 
-	// -- IService methods --
+	// -- Event handlers --
 
-	@Override
-	public void initialize() {
-		subscribeToEvents();
-	}
+	// CTR FIXME display views should not be disposed here!
+	// This is the job of the display itself when display.dispose()
+	// and/or display.close() gets called.
 
-	// -- Helper methods --
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		// dispose views when display window is closed
-		final EventSubscriber<WinClosedEvent> winClosedSubscriber =
-			new EventSubscriber<WinClosedEvent>() {
-
-				// CTR FIXME display views should not be disposed here!
-				// This is the job of the display itself when display.dispose()
-				// and/or display.close() gets called.
-
-				@Override
-				public void onEvent(final WinClosedEvent event) {
-					final Display<?> display = event.getDisplay();
-					if (!(display instanceof ImageDisplay)) return;
-					final ImageDisplay imageDisplay = (ImageDisplay) display;
-					final ArrayList<DataView> views =
-						new ArrayList<DataView>(imageDisplay);
-					for (final DataView view : views) {
-						view.dispose();
-					}
-				}
-
-			};
-		subscribers.add(winClosedSubscriber);
-		eventService.subscribe(WinClosedEvent.class, winClosedSubscriber);
+	/** Disposes views when display window is closed. */
+	@EventHandler
+	protected void onEvent(final WinClosedEvent event) {
+		final Display<?> display = event.getDisplay();
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
+		final ArrayList<DataView> views =
+			new ArrayList<DataView>(imageDisplay);
+		for (final DataView view : views) {
+			view.dispose();
+		}
 	}
 
 }
