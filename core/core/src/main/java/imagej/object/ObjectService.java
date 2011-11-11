@@ -37,14 +37,13 @@ package imagej.object;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsAddedEvent;
 import imagej.object.event.ObjectsRemovedEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,9 +66,6 @@ public final class ObjectService extends AbstractService {
 	/** Index of registered objects. */
 	private final ObjectIndex<Object> objectIndex = new ObjectIndex<Object>(
 		Object.class);
-
-	/** Maintains the list of event subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- Constructors --
 
@@ -111,39 +107,16 @@ public final class ObjectService extends AbstractService {
 		eventService.publish(new ObjectsRemovedEvent(obj));
 	}
 
-	// -- IService methods --
+	// -- Event handlers --
 
-	@Override
-	public void initialize() {
-		subscribeToEvents();
+	@EventHandler
+	protected void onEvent(final ObjectCreatedEvent event) {
+		addObject(event.getObject());
 	}
 
-	// -- Helper methods --
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<ObjectCreatedEvent> objectCreatedSubscriber =
-			new EventSubscriber<ObjectCreatedEvent>() {
-
-				@Override
-				public void onEvent(final ObjectCreatedEvent event) {
-					addObject(event.getObject());
-				}
-			};
-		subscribers.add(objectCreatedSubscriber);
-		eventService.subscribe(ObjectCreatedEvent.class, objectCreatedSubscriber);
-
-		final EventSubscriber<ObjectDeletedEvent> objectDeletedSubscriber =
-			new EventSubscriber<ObjectDeletedEvent>() {
-
-				@Override
-				public void onEvent(final ObjectDeletedEvent event) {
-					removeObject(event.getObject());
-				}
-			};
-		subscribers.add(objectDeletedSubscriber);
-		eventService.subscribe(ObjectDeletedEvent.class, objectDeletedSubscriber);
+	@EventHandler
+	protected void onEvent(final ObjectDeletedEvent event) {
+		removeObject(event.getObject());
 	}
 
 }

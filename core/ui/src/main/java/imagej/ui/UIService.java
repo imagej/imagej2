@@ -37,8 +37,8 @@ package imagej.ui;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginService;
@@ -72,9 +72,6 @@ public final class UIService extends AbstractService {
 
 	/** Available user interfaces. */
 	private List<IUserInterface> availableUIs;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- Constructors --
 
@@ -146,7 +143,19 @@ public final class UIService extends AbstractService {
 	@Override
 	public void initialize() {
 		launchUI();
-		subscribeToEvents();
+		super.initialize();
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final MenuEvent event) {
+		// TODO - This rebuilds the entire menu structure whenever the
+		// menus change at all. Better would be to listen to MenusAddedEvent,
+		// MenusRemovedEvent and MenusUpdatedEvent separately and surgically
+		// adjust the menus accordingly. But this would require updates to
+		// the MenuCreator API to be more powerful.
+		getUI().createMenus();
 	}
 
 	// -- Helper methods --
@@ -183,26 +192,6 @@ public final class UIService extends AbstractService {
 			}
 		}
 		return uis;
-	}
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<MenuEvent> menuSubscriber =
-			new EventSubscriber<MenuEvent>() {
-
-				@Override
-				public void onEvent(final MenuEvent event) {
-					// TODO - This rebuilds the entire menu structure whenever the
-					// menus change at all. Better would be to listen to MenusAddedEvent,
-					// MenusRemovedEvent and MenusUpdatedEvent separately and surgically
-					// adjust the menus accordingly. But this would require updates to
-					// the MenuCreator API to be more powerful.
-					getUI().createMenus();
-				}
-			};
-		subscribers.add(menuSubscriber);
-		eventService.subscribe(MenuEvent.class, menuSubscriber);
 	}
 
 }

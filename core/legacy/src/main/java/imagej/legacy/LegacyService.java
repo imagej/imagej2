@@ -43,8 +43,8 @@ import imagej.Service;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.KeyCode;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
@@ -52,9 +52,6 @@ import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Service for working with legacy ImageJ 1.x.
@@ -90,9 +87,6 @@ public final class LegacyService extends AbstractService {
 
 	/** Method of synchronizing IJ2 & IJ1 options. */
 	private OptionsSynchronizer optionsSynchronizer;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- Constructors --
 
@@ -185,75 +179,51 @@ public final class LegacyService extends AbstractService {
 
 		updateIJ1Settings();
 
-		subscribeToEvents();
+		super.initialize();
 	}
 
-	// -- Helper methods --
+	// -- Event handlers --
 
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
+	/**
+	 * Keeps the active legacy {@link ImagePlus} in sync with the active modern
+	 * {@link ImageDisplay}.
+	 */
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused")
+		final DisplayActivatedEvent event)
+	{
+		syncActiveImage();
+	}
 
-		// keep the active legacy ImagePlus in sync with the active modern
-		// ImageDisplay
-		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
-			new EventSubscriber<DisplayActivatedEvent>() {
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused")
+		final OptionsEvent event)
+	{
+		updateIJ1Settings();
+	}
 
-				@Override
-				public void onEvent(final DisplayActivatedEvent event) {
-					syncActiveImage();
-				}
-			};
-		subscribers.add(displayActivatedSubscriber);
-		eventService.subscribe(DisplayActivatedEvent.class,
-			displayActivatedSubscriber);
+	@EventHandler
+	protected void onEvent(final KyPressedEvent event) {
+		final KeyCode code = event.getCode();
+		if (code == KeyCode.SPACE) IJ.setKeyDown(KeyCode.SPACE.getCode());
+		if (code == KeyCode.ALT) IJ.setKeyDown(KeyCode.ALT.getCode());
+		if (code == KeyCode.SHIFT) IJ.setKeyDown(KeyCode.SHIFT.getCode());
+		if (code == KeyCode.CONTROL) IJ.setKeyDown(KeyCode.CONTROL.getCode());
+		if (IJ.isMacintosh() && code == KeyCode.META) {
+			IJ.setKeyDown(KeyCode.CONTROL.getCode());
+		}
+	}
 
-		final EventSubscriber<OptionsEvent> optionSubscriber =
-			new EventSubscriber<OptionsEvent>() {
-
-				@Override
-				public void onEvent(final OptionsEvent event) {
-					updateIJ1Settings();
-				}
-
-			};
-		subscribers.add(optionSubscriber);
-		eventService.subscribe(OptionsEvent.class, optionSubscriber);
-
-		final EventSubscriber<KyPressedEvent> pressSubscriber =
-			new EventSubscriber<KyPressedEvent>() {
-
-				@Override
-				public void onEvent(final KyPressedEvent event) {
-					final KeyCode code = event.getCode();
-					if (code == KeyCode.SPACE) IJ.setKeyDown(KeyCode.SPACE.getCode());
-					if (code == KeyCode.ALT) IJ.setKeyDown(KeyCode.ALT.getCode());
-					if (code == KeyCode.SHIFT) IJ.setKeyDown(KeyCode.SHIFT.getCode());
-					if (code == KeyCode.CONTROL) IJ.setKeyDown(KeyCode.CONTROL.getCode());
-					if (IJ.isMacintosh() && code == KeyCode.META) {
-						IJ.setKeyDown(KeyCode.CONTROL.getCode());
-					}
-				}
-			};
-		subscribers.add(pressSubscriber);
-		eventService.subscribe(KyPressedEvent.class, pressSubscriber);
-
-		final EventSubscriber<KyReleasedEvent> releaseSubscriber =
-			new EventSubscriber<KyReleasedEvent>() {
-
-				@Override
-				public void onEvent(final KyReleasedEvent event) {
-					final KeyCode code = event.getCode();
-					if (code == KeyCode.SPACE) IJ.setKeyUp(KeyCode.SPACE.getCode());
-					if (code == KeyCode.ALT) IJ.setKeyUp(KeyCode.ALT.getCode());
-					if (code == KeyCode.SHIFT) IJ.setKeyUp(KeyCode.SHIFT.getCode());
-					if (code == KeyCode.CONTROL) IJ.setKeyUp(KeyCode.CONTROL.getCode());
-					if (IJ.isMacintosh() && code == KeyCode.CONTROL) {
-						IJ.setKeyUp(KeyCode.CONTROL.getCode());
-					}
-				}
-			};
-		subscribers.add(releaseSubscriber);
-		eventService.subscribe(KyReleasedEvent.class, releaseSubscriber);
+	@EventHandler
+	protected void onEvent(final KyReleasedEvent event) {
+		final KeyCode code = event.getCode();
+		if (code == KeyCode.SPACE) IJ.setKeyUp(KeyCode.SPACE.getCode());
+		if (code == KeyCode.ALT) IJ.setKeyUp(KeyCode.ALT.getCode());
+		if (code == KeyCode.SHIFT) IJ.setKeyUp(KeyCode.SHIFT.getCode());
+		if (code == KeyCode.CONTROL) IJ.setKeyUp(KeyCode.CONTROL.getCode());
+		if (IJ.isMacintosh() && code == KeyCode.CONTROL) {
+			IJ.setKeyUp(KeyCode.CONTROL.getCode());
+		}
 	}
 
 }

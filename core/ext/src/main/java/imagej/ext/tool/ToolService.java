@@ -37,8 +37,8 @@ package imagej.ext.tool;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.event.DisplayEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
@@ -83,9 +83,6 @@ public class ToolService extends AbstractService {
 
 	private List<ITool> alwaysActiveToolList;
 	private List<ITool> toolList;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	private ITool activeTool;
 
@@ -162,7 +159,97 @@ public class ToolService extends AbstractService {
 	public void initialize() {
 		createTools();
 		activeTool = new DummyTool();
-		subscribeToEvents();
+		super.initialize();
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final KyPressedEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onKeyDown(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onKeyDown(event);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final KyReleasedEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onKeyUp(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onKeyUp(event);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final MsPressedEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onMouseDown(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onMouseDown(event);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final MsReleasedEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onMouseUp(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onMouseUp(event);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final MsClickedEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onMouseClick(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onMouseClick(event);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final MsMovedEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onMouseMove(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onMouseMove(event);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final MsDraggedEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onMouseDrag(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onMouseDrag(event);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final MsWheelEvent event) {
+		if (event.isConsumed()) return;
+		final ITool aTool = getActiveTool();
+		if (eventOk(event, aTool)) aTool.onMouseWheel(event);
+		for (final ITool tool : getAlwaysActiveTools()) {
+			if (event.isConsumed()) break;
+			if (eventOk(event, tool)) tool.onMouseWheel(event);
+		}
 	}
 
 	// -- Helper methods --
@@ -230,150 +317,8 @@ public class ToolService extends AbstractService {
 		return Collections.unmodifiableList(list);
 	}
 
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<KyPressedEvent> kyPressedSubscriber =
-			new EventSubscriber<KyPressedEvent>() {
-
-				@Override
-				public void onEvent(final KyPressedEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onKeyDown(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onKeyDown(event);
-					}
-				}
-			};
-		subscribers.add(kyPressedSubscriber);
-		eventService.subscribe(KyPressedEvent.class, kyPressedSubscriber);
-
-		final EventSubscriber<KyReleasedEvent> kyReleasedSubscriber =
-			new EventSubscriber<KyReleasedEvent>() {
-
-				@Override
-				public void onEvent(final KyReleasedEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onKeyUp(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onKeyUp(event);
-					}
-				}
-			};
-		subscribers.add(kyReleasedSubscriber);
-		eventService.subscribe(KyReleasedEvent.class, kyReleasedSubscriber);
-
-		final EventSubscriber<MsPressedEvent> msPressedSubscriber =
-			new EventSubscriber<MsPressedEvent>() {
-
-				@Override
-				public void onEvent(final MsPressedEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onMouseDown(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onMouseDown(event);
-					}
-				}
-			};
-		subscribers.add(msPressedSubscriber);
-		eventService.subscribe(MsPressedEvent.class, msPressedSubscriber);
-
-		final EventSubscriber<MsReleasedEvent> msReleasedSubscriber =
-			new EventSubscriber<MsReleasedEvent>() {
-
-				@Override
-				public void onEvent(final MsReleasedEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onMouseUp(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onMouseUp(event);
-					}
-				}
-			};
-		subscribers.add(msReleasedSubscriber);
-		eventService.subscribe(MsReleasedEvent.class, msReleasedSubscriber);
-
-		final EventSubscriber<MsClickedEvent> msClickedSubscriber =
-			new EventSubscriber<MsClickedEvent>() {
-
-				@Override
-				public void onEvent(final MsClickedEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onMouseClick(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onMouseClick(event);
-					}
-				}
-			};
-		subscribers.add(msClickedSubscriber);
-		eventService.subscribe(MsClickedEvent.class, msClickedSubscriber);
-
-		final EventSubscriber<MsMovedEvent> msMovedSubscriber =
-			new EventSubscriber<MsMovedEvent>() {
-
-				@Override
-				public void onEvent(final MsMovedEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onMouseMove(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onMouseMove(event);
-					}
-				}
-			};
-		subscribers.add(msMovedSubscriber);
-		eventService.subscribe(MsMovedEvent.class, msMovedSubscriber);
-
-		final EventSubscriber<MsDraggedEvent> msDraggedSubscriber =
-			new EventSubscriber<MsDraggedEvent>() {
-
-				@Override
-				public void onEvent(final MsDraggedEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onMouseDrag(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onMouseDrag(event);
-					}
-				}
-			};
-		subscribers.add(msDraggedSubscriber);
-		eventService.subscribe(MsDraggedEvent.class, msDraggedSubscriber);
-
-		final EventSubscriber<MsWheelEvent> msWheelSubscriber =
-			new EventSubscriber<MsWheelEvent>() {
-
-				@Override
-				public void onEvent(final MsWheelEvent event) {
-					if (event.isConsumed()) return;
-					final ITool aTool = getActiveTool();
-					if (eventOk(event, aTool)) aTool.onMouseWheel(event);
-					for (final ITool tool : getAlwaysActiveTools()) {
-						if (event.isConsumed()) break;
-						if (eventOk(event, tool)) tool.onMouseWheel(event);
-					}
-				}
-			};
-		subscribers.add(msWheelSubscriber);
-		eventService.subscribe(MsWheelEvent.class, msWheelSubscriber);
-	}
-
-	// -- Helper methods --
-
 	/** Checks that an event is OK to be dispatched to a particular tool. */
-	protected boolean eventOk(final DisplayEvent event, final ITool tool) {
+	private boolean eventOk(final DisplayEvent event, final ITool tool) {
 		if (event.getDisplay() != null) return true;
 		// NB: An event with a null display came from the main app frame.
 		// We only pass these events on to tools flagged with activeInAppFrame.

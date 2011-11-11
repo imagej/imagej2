@@ -40,15 +40,14 @@ import imagej.Service;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,9 +61,6 @@ public final class TypeChangeService extends AbstractService {
 	private final EventService eventService;
 	private final PluginService pluginService;
 	private final ImageDisplayService imageDisplayService;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- Constructors --
 
@@ -115,32 +111,14 @@ public final class TypeChangeService extends AbstractService {
 		eventService.publish(new ModulesUpdatedEvent(plugins));
 	}
 
-	// -- IService methods --
+	// -- Event handlers --
 
-	@Override
-	public void initialize() {
-		subscribeToEvents();
-	}
-
-	// -- Helper methods --
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
-			new EventSubscriber<DisplayActivatedEvent>() {
-
-				@Override
-				public void onEvent(final DisplayActivatedEvent event) {
-					final Display<?> display = event.getDisplay();
-					if (display instanceof ImageDisplay) {
-						refreshSelectedType((ImageDisplay) display);
-					}
-				}
-			};
-		subscribers.add(displayActivatedSubscriber);
-		eventService.subscribe(DisplayActivatedEvent.class,
-			displayActivatedSubscriber);
+	@EventHandler
+	protected void onEvent(final DisplayActivatedEvent event) {
+		final Display<?> display = event.getDisplay();
+		if (display instanceof ImageDisplay) {
+			refreshSelectedType((ImageDisplay) display);
+		}
 	}
 
 }

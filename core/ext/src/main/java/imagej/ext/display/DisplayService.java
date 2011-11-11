@@ -37,8 +37,8 @@ package imagej.ext.display;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayCreatedEvent;
@@ -74,9 +74,6 @@ public final class DisplayService extends AbstractService {
 	// iterate through the list of known displays for the first match.
 
 	private Display<?> activeDisplay;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	public DisplayService() {
 		// NB: Required by SezPoz.
@@ -239,48 +236,30 @@ public final class DisplayService extends AbstractService {
 	@Override
 	public void initialize() {
 		activeDisplay = null;
-		subscribeToEvents();
+		super.initialize();
 	}
 
-	// -- Helper methods --
+	// -- Event handlers --
 
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
+	/** Deletes the display when display window is closed. */
+	@EventHandler
+	protected void onEvent(final WinClosedEvent event) {
+		final Display<?> display = event.getDisplay();
 
-		// dispose views and delete display when display window is closed
-		final EventSubscriber<WinClosedEvent> winClosedSubscriber =
-			new EventSubscriber<WinClosedEvent>() {
+		// HACK - Necessary to plug memory leak when closing the last window.
+		if (getDisplays().size() == 1) {
+			setActiveDisplay(null);
+		}
 
-				@Override
-				public void onEvent(final WinClosedEvent event) {
-					final Display<?> display = event.getDisplay();
+		// CTR TODO - is there a better way to publish DisplayDeletedEvents?
+		getEventService().publish(new DisplayDeletedEvent(display));
+	}
 
-					// HACK - Necessary to plug memory leak when closing the last window.
-					if (getDisplays().size() == 1) {
-						setActiveDisplay(null);
-					}
-
-					// CTR TODO - is there a better way to publish DisplayDeletedEvents?
-					getEventService().publish(new DisplayDeletedEvent(display));
-				}
-
-			};
-		subscribers.add(winClosedSubscriber);
-		eventService.subscribe(WinClosedEvent.class, winClosedSubscriber);
-
-		// set display to active when its window is activated
-		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
-			new EventSubscriber<WinActivatedEvent>() {
-
-				@Override
-				public void onEvent(final WinActivatedEvent event) {
-					final Display<?> display = event.getDisplay();
-					setActiveDisplay(display);
-				}
-
-			};
-		subscribers.add(winActivatedSubscriber);
-		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
+	/** Sets the display to active when its window is activated. */
+	@EventHandler
+	protected void onEvent(final WinActivatedEvent event) {
+		final Display<?> display = event.getDisplay();
+		setActiveDisplay(display);
 	}
 
 }

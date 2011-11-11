@@ -37,15 +37,12 @@ package imagej.core.plugins.app;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.plugin.PluginService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Service for executing plugins in response to application events.
@@ -57,9 +54,6 @@ public final class AppEventService extends AbstractService {
 
 	private final EventService eventService;
 	private final PluginService pluginService;
-
-	/** Maintain list of subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- Constructors --
 
@@ -87,51 +81,27 @@ public final class AppEventService extends AbstractService {
 		return pluginService;
 	}
 
-	// -- IService methods --
+	// -- Event handlers --
 
-	@Override
-	public void initialize() {
-		subscribeToEvents();
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused")
+	final AppAboutEvent event)
+	{
+		getPluginService().run(AboutImageJ.class);
 	}
 
-	// -- Helper methods --
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused")
+	final AppPreferencesEvent event)
+	{
+		getPluginService().run(ShowPrefs.class);
+	}
 
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<AppAboutEvent> appAboutSubscriber =
-			new EventSubscriber<AppAboutEvent>() {
-
-				@Override
-				public void onEvent(final AppAboutEvent event) {
-					getPluginService().run(AboutImageJ.class);
-				}
-			};
-		subscribers.add(appAboutSubscriber);
-		eventService.subscribe(AppAboutEvent.class, appAboutSubscriber);
-
-		final EventSubscriber<AppPreferencesEvent> appPreferencesSubscriber =
-			new EventSubscriber<AppPreferencesEvent>() {
-
-				@Override
-				public void onEvent(final AppPreferencesEvent event) {
-					getPluginService().run(ShowPrefs.class);
-				}
-			};
-		subscribers.add(appPreferencesSubscriber);
-		eventService
-			.subscribe(AppPreferencesEvent.class, appPreferencesSubscriber);
-
-		final EventSubscriber<AppQuitEvent> appQuitSubscriber =
-			new EventSubscriber<AppQuitEvent>() {
-
-				@Override
-				public void onEvent(final AppQuitEvent event) {
-					getPluginService().run(QuitProgram.class);
-				}
-			};
-		subscribers.add(appQuitSubscriber);
-		eventService.subscribe(AppQuitEvent.class, appQuitSubscriber);
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused")
+	final AppQuitEvent event)
+	{
+		getPluginService().run(QuitProgram.class);
 	}
 
 }
