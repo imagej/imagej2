@@ -79,8 +79,8 @@ public class OptionsOverlay extends OptionsPlugin {
 		return width;
 	}
 	
-	public void setWidth(final float w) {
-		width = w;
+	public void setWidth(final float width) {
+		this.width = width;
 	}
 	
 	public String getFillColor() {
