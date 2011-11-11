@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej;
 
+import imagej.event.EventService;
+
 /**
  * Abstract superclass of {@link IService} implementations.
  * 
@@ -44,11 +46,20 @@ public abstract class AbstractService implements IService {
 	/** Application context of this service. */
 	private final ImageJ context;
 
+	/** Maintain list of event subscribers, to avoid garbage collection. */
+	@SuppressWarnings("unused")
+	private Object eventSubscribers;
+
 	public AbstractService(final ImageJ context) {
 		this.context = context;
 	}
 
 	// -- IService methods --
+
+	@Override
+	public void initialize() {
+		eventSubscribers = context.getService(EventService.class).subscribe(this);
+	}
 
 	@Override
 	public ImageJ getContext() {
