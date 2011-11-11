@@ -41,6 +41,7 @@ package imagej;
  */
 public abstract class AbstractService implements IService {
 
+	/** Application context of this service. */
 	private final ImageJ context;
 
 	public AbstractService(final ImageJ context) {
