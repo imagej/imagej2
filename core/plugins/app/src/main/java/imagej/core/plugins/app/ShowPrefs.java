@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
-import imagej.ext.module.ItemVisibility;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.Prefs;
 
 /**
  * TODO
@@ -47,12 +47,13 @@ import imagej.ext.plugin.Plugin;
 @Plugin
 public class ShowPrefs implements ImageJPlugin {
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
-	public final String message = "Unimplemented";
+	@Parameter(label = "Clear all preferences")
+	private boolean clearAll = false;
 
 	@Override
 	public void run() {
-		// TODO
+		if (clearAll)
+			Prefs.clearAll();
 	}
 
 }
