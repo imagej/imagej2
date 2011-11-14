@@ -41,9 +41,10 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 /**
- * Terminates running animation of current Display.
+ * Plugin for terminating an {@link ImageDisplay}'s running animation.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
@@ -52,11 +53,14 @@ import imagej.ext.plugin.Plugin;
 public class StopAnimation implements ImageJPlugin {
 
 	@Parameter(required = true, persist = false)
+	private AnimationService animationService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
-		Animator.terminateAnimation(display);
+		animationService.stop(display);
 	}
 
 }

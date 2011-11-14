@@ -57,12 +57,15 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Axis Position Backward", accelerator = "shift COMMA") })
 public class AxisPositionBackward implements ImageJPlugin {
 
-	@Parameter
+	@Parameter(required = true, persist = false)
+	private AnimationService animationService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
-		Animator.terminateAnimation(display);
+		animationService.stop(display);
 		final Axis axis = display.getActiveAxis();
 		display.setAxisPosition(axis, display.getAxisPosition(axis) - 1);
 	}
