@@ -313,6 +313,10 @@ public class OptionsSynchronizer {
 	}
 
 	private void overlayOptions() {
+		/* TODO
+		 * Reenable when our OptionsOverlay class fully replaces IJ1's
+		 * RoiProperties behavior.
+		 * 
 		final OptionsOverlay optionsOverlay =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
@@ -324,6 +328,7 @@ public class OptionsSynchronizer {
 		color = getColor(colorName, null);
 		defaultRoi.setStrokeColor(color);
 		defaultRoi.setStrokeWidth(optionsOverlay.getWidth());
+		*/
 	}
 	
 	private void pointOptions() {
@@ -546,6 +551,20 @@ public class OptionsSynchronizer {
 		optionsRoundedRectangleTool.setCornerDiameter(crnDiam);
 		optionsRoundedRectangleTool.save();
 		
+		/* TODO - there is something to note about disabled OptionsOverlay code.
+		 * As implemented there would be synchronization issues. No matter what
+		 * fill color is set to in IJ2, IJ1 thinks it's None (because fill color
+		 * of a Roi is a protected member and someone is setting it to null).
+		 * And then the none choice gets synchronized back to IJ2. I think what
+		 * we need to do is totally replace the IJ1 Overlay Options (RoiProperites)
+		 * class with our own for behavior. And then still figure out fill color
+		 * sync issue for compatibility.
+		 */
+		
+		/* TODO Disabled
+		 * Restore when our OptionsOverlay class fully replaces IJ1's
+		 * RoiProperties behavior.
+		 * 
 		final OptionsOverlay optionsOverlay =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
@@ -558,12 +577,18 @@ public class OptionsSynchronizer {
 			defaultRoi.getStrokeColor().toString());
 		optionsOverlay.setWidth(defaultRoi.getStrokeWidth());
 		optionsOverlay.save();
+		*/
 	}
 	
+	/* TODO Disabled
+	 * Restore when our OptionsOverlay class fully replaces IJ1's
+	 * RoiProperties behavior.
+	 * 
 	private Roi getDefaultRoi() {
 		Field field =
 				ClassUtils.getField("ij.plugin.OverlayCommands", "defaultRoi");
 		Object obj = ClassUtils.getValue(field, null);
 		return (Roi) obj;
 	}
+	*/
 }
