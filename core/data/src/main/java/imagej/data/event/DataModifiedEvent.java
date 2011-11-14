@@ -44,18 +44,18 @@ import imagej.object.event.ObjectModifiedEvent;
  */
 public abstract class DataModifiedEvent extends ObjectModifiedEvent {
 
-	private final Data dataObject;
+	private final Data data;
 
-	public DataModifiedEvent(final Data dataObject) {
-		super(dataObject);
-		this.dataObject = dataObject;
+	public DataModifiedEvent(final Data data) {
+		super(data);
+		this.data = data;
 	}
 
 	// -- ObjectEvent methods --
 
 	@Override
 	public Data getObject() {
-		return dataObject;
+		return data;
 	}
 
 }

@@ -225,9 +225,9 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		if (display == null) return result;
 		for (final DataView view : display) {
 			if (!view.isSelected()) continue;
-			final Data dataObject = view.getData();
-			if (!(dataObject instanceof Overlay)) continue;
-			final Overlay overlay = (Overlay) dataObject;
+			final Data data = view.getData();
+			if (!(data instanceof Overlay)) continue;
+			final Overlay overlay = (Overlay) data;
 			result.add(overlay);
 		}
 		return result;

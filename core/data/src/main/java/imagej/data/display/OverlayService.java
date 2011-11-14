@@ -88,9 +88,9 @@ public final class OverlayService extends AbstractService {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
 			for (final DataView view : display) {
-				final Data dataObject = view.getData();
-				if (!(dataObject instanceof Overlay)) continue;
-				final Overlay overlay = (Overlay) dataObject;
+				final Data data = view.getData();
+				if (!(data instanceof Overlay)) continue;
+				final Overlay overlay = (Overlay) data;
 				overlays.add(overlay);
 			}
 		}
@@ -115,8 +115,8 @@ public final class OverlayService extends AbstractService {
 		final ArrayList<DataView> overlayViews = new ArrayList<DataView>();
 		final List<DataView> views = display;
 		for (final DataView view : views) {
-			final Data dataObject = view.getData();
-			if (dataObject == overlay) overlayViews.add(view);
+			final Data data = view.getData();
+			if (data == overlay) overlayViews.add(view);
 		}
 		for (final DataView view : overlayViews) {
 			display.remove(view);
@@ -138,9 +138,9 @@ public final class OverlayService extends AbstractService {
 		// get total XY extents of the display by checking all datasets
 		double width = 0, height = 0;
 		for (final DataView view : display) {
-			final Data dataObject = view.getData();
-			if (!(dataObject instanceof Dataset)) continue;
-			final Dataset dataset = (Dataset) dataObject;
+			final Data data = view.getData();
+			if (!(data instanceof Dataset)) continue;
+			final Dataset dataset = (Dataset) data;
 			final Extents extents = dataset.getExtents();
 			final double w = extents.dimension(0);
 			final double h = extents.dimension(1);
@@ -159,10 +159,10 @@ public final class OverlayService extends AbstractService {
 		double yMax = Double.NEGATIVE_INFINITY;
 		for (final DataView view : display) {
 			if (!view.isSelected()) continue; // ignore non-selected objects
-			final Data dataObject = view.getData();
-			if (!(dataObject instanceof Overlay)) continue; // ignore non-overlays
+			final Data data = view.getData();
+			if (!(data instanceof Overlay)) continue; // ignore non-overlays
 
-			final Overlay overlay = (Overlay) dataObject;
+			final Overlay overlay = (Overlay) data;
 			final RegionOfInterest roi = overlay.getRegionOfInterest();
 			final double min0 = roi.realMin(0);
 			final double max0 = roi.realMax(0);

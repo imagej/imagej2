@@ -44,18 +44,18 @@ import imagej.object.event.ObjectCreatedEvent;
  */
 public class DataCreatedEvent extends ObjectCreatedEvent {
 
-	private final Data dataObject;
+	private final Data data;
 
-	public DataCreatedEvent(final Data dataObject) {
-		super(dataObject);
-		this.dataObject = dataObject;
+	public DataCreatedEvent(final Data data) {
+		super(data);
+		this.data = data;
 	}
 
 	// -- ObjectEvent methods --
 
 	@Override
 	public Data getObject() {
-		return dataObject;
+		return data;
 	}
 
 }

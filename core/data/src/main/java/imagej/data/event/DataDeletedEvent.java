@@ -44,18 +44,18 @@ import imagej.object.event.ObjectDeletedEvent;
  */
 public class DataDeletedEvent extends ObjectDeletedEvent {
 
-	private final Data dataObject;
+	private final Data data;
 
-	public DataDeletedEvent(final Data dataObject) {
-		super(dataObject);
-		this.dataObject = dataObject;
+	public DataDeletedEvent(final Data data) {
+		super(data);
+		this.data = data;
 	}
 
 	// -- ObjectEvent methods --
 
 	@Override
 	public Data getObject() {
-		return dataObject;
+		return data;
 	}
 
 }

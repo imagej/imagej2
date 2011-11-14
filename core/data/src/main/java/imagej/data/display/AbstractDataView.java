@@ -51,7 +51,7 @@ import imagej.event.EventService;
 public abstract class AbstractDataView implements DataView {
 
 	private final ImageDisplay display;
-	private final Data dataObject;
+	private final Data data;
 
 	protected final EventService eventService;
 
@@ -67,11 +67,11 @@ public abstract class AbstractDataView implements DataView {
 	 */
 	private boolean selected;
 
-	public AbstractDataView(final ImageDisplay display, final Data dataObject) {
+	public AbstractDataView(final ImageDisplay display, final Data data) {
 		eventService = ImageJ.get(EventService.class);
 		this.display = display;
-		this.dataObject = dataObject;
-		dataObject.incrementReferences();
+		this.data = data;
+		data.incrementReferences();
 	}
 
 	// -- DataView methods --
@@ -83,7 +83,7 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public Data getData() {
-		return dataObject;
+		return data;
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public abstract class AbstractDataView implements DataView {
 	public void dispose() {
 		if (disposed) return;
 		disposed = true;
-		dataObject.decrementReferences();
+		data.decrementReferences();
 	}
 
 	// -- Helper methods --

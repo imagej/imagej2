@@ -177,12 +177,9 @@ public class WatchOverlays implements ImageJPlugin {
 		if (display != null) {
 			for (final DataView view : display) {
 				// SwingOverlayView sov = (SwingOverlayView) view;
-				final Data dataObject = view.getData();
-				dataObject.getClass().getSimpleName();
-				if (!(dataObject instanceof Overlay)) {
-					continue;
-				}
-				final Overlay overlay = (Overlay) dataObject;
+				final Data data = view.getData();
+				if (!(data instanceof Overlay)) continue;
+				final Overlay overlay = (Overlay) data;
 				overlays.add(overlay);
 			}
 		}
@@ -193,9 +190,9 @@ public class WatchOverlays implements ImageJPlugin {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		for (final DataView view : display) {
 			final Position planePosition = view.getPlanePosition();
-			final Data dataObject = view.getData();
-			if (dataObject instanceof Overlay) {
-				isVisible((Overlay) dataObject, planePosition);
+			final Data data = view.getData();
+			if (data instanceof Overlay) {
+				isVisible((Overlay) data, planePosition);
 			}
 
 		}
