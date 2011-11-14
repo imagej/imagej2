@@ -88,15 +88,16 @@ public class Animator implements ImageJPlugin {
 		"Animation paused. Press '\\' to continue or ESC to terminate.";
 	private static final String DONE_STATUS = "Animation terminated.";
 
-	// -- static variables - only one for all Animator instances --
-
-	private static EventSubscriber<KyPressedEvent> KEYPRESS_SUBSCRIBER;
-	private static EventSubscriber<DisplayDeletedEvent> DISPLAY_SUBSCRIBER;
-	private static EventSubscriber<DatasetRestructuredEvent> RESTRUCTURE_SUBSCRIBER;
 	private static final Map<ImageDisplay, Animation> ANIMATIONS =
 		new ConcurrentHashMap<ImageDisplay, Animation>();
 	private static final Map<ImageDisplay, AnimatorOptions> OPTIONS =
 		new ConcurrentHashMap<ImageDisplay, AnimatorOptions>();
+
+	// -- static variables - only one for all Animator instances --
+
+	private static EventSubscriber<KyPressedEvent> kyPressedSubscriber;
+	private static EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
+	private static EventSubscriber<DatasetRestructuredEvent> datasetRestructuredSubscriber;
 
 	// -- package access static methods --
 
@@ -148,7 +149,7 @@ public class Animator implements ImageJPlugin {
 	@Override
 	public void run() {
 		synchronized (ANIMATIONS) {
-			if (KEYPRESS_SUBSCRIBER == null) subscribeToEvents();
+			if (kyPressedSubscriber == null) subscribeToEvents();
 		}
 		final Dataset ds =
 			ImageJ.get(ImageDisplayService.class)
@@ -194,27 +195,37 @@ public class Animator implements ImageJPlugin {
 	 */
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
-		KEYPRESS_SUBSCRIBER = new EventSubscriber<KyPressedEvent>() {
+		kyPressedSubscriber = new EventSubscriber<KyPressedEvent>() {
 
 			@Override
 			public void onEvent(final KyPressedEvent event) {
 				final Animation a = ANIMATIONS.get(event.getDisplay());
 				if (a != null && event.getCode() == KeyCode.ESCAPE) a.stop();
 			}
-		};
-		eventService.subscribe(KEYPRESS_SUBSCRIBER);
 
-		DISPLAY_SUBSCRIBER = new EventSubscriber<DisplayDeletedEvent>() {
+			@Override
+			public Class<KyPressedEvent> getEventClass() {
+				return KyPressedEvent.class;
+			}
+		};
+		eventService.subscribe(kyPressedSubscriber);
+
+		displayDeletedSubscriber = new EventSubscriber<DisplayDeletedEvent>() {
 
 			@Override
 			public void onEvent(final DisplayDeletedEvent event) {
 				final Animation a = ANIMATIONS.get(event.getObject());
 				if (a != null) a.stop();
 			}
-		};
-		eventService.subscribe(DISPLAY_SUBSCRIBER);
 
-		RESTRUCTURE_SUBSCRIBER = new EventSubscriber<DatasetRestructuredEvent>() {
+			@Override
+			public Class<DisplayDeletedEvent> getEventClass() {
+				return DisplayDeletedEvent.class;
+			}
+		};
+		eventService.subscribe(displayDeletedSubscriber);
+
+		datasetRestructuredSubscriber = new EventSubscriber<DatasetRestructuredEvent>() {
 
 			@Override
 			public void onEvent(final DatasetRestructuredEvent event) {
@@ -228,8 +239,13 @@ public class Animator implements ImageJPlugin {
 					if (a != null) a.stop();
 				}
 			}
+
+			@Override
+			public Class<DatasetRestructuredEvent> getEventClass() {
+				return DatasetRestructuredEvent.class;
+			}
 		};
-		eventService.subscribe(RESTRUCTURE_SUBSCRIBER);
+		eventService.subscribe(datasetRestructuredSubscriber);
 	}
 
 	/**

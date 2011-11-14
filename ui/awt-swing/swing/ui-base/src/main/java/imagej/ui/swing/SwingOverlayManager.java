@@ -44,6 +44,7 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayService;
@@ -56,7 +57,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
@@ -86,110 +86,69 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 	private static final long serialVersionUID = -6498169032123522303L;
 	private JList olist = null;
 	private boolean selecting = false; // flag to prevent event feedback loops
+
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
+	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
-	private void subscribeToEvents(final EventService eventService) {
-
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<OverlayCreatedEvent> creationSubscriber =
-			new EventSubscriber<OverlayCreatedEvent>() {
-
-				@Override
-				@SuppressWarnings("synthetic-access")
-				public void onEvent(final OverlayCreatedEvent event) {
-					System.out.println("\tCREATED: " + event.toString());
-					olist.updateUI();
-				}
-
-			};
-		subscribers.add(creationSubscriber);
-		eventService.subscribe(creationSubscriber);
-		//
-		final EventSubscriber<OverlayDeletedEvent> deletionSubscriber =
-			new EventSubscriber<OverlayDeletedEvent>() {
-
-				@Override
-				@SuppressWarnings("synthetic-access")
-				public void onEvent(final OverlayDeletedEvent event) {
-					System.out.println("\tDELETED: " + event.toString());
-					olist.updateUI();
-				}
-
-			};
-		subscribers.add(deletionSubscriber);
-		eventService.subscribe(deletionSubscriber);
-		//
-		// No need to update unless thumbnail will be redrawn.
-//		final EventSubscriber<OverlayRestructuredEvent> restructureSubscriber =
-//				new EventSubscriber<OverlayRestructuredEvent>() {
-//
-//					@Override
-//					public void onEvent(OverlayRestructuredEvent event) {
-//						System.out.println("\tRESTRUCTURED: " + event.toString());
-//						olist.updateUI();
-//					}
-//
-//				};
-//		subscribers.add(restructureSubscriber);
-//		eventService.subscribe(OverlayRestructuredEvent.class, restructureSubscriber);
-		//
-		/*
-		 * Update when a display is activated 
-		 */
-		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
-			new EventSubscriber<DisplayActivatedEvent>() {
-
-				@Override
-				@SuppressWarnings("synthetic-access")
-				public void onEvent(final DisplayActivatedEvent event) {
-					olist.updateUI();
-				}
-
-			};
-		subscribers.add(displayActivatedSubscriber);
-		eventService.subscribe(displayActivatedSubscriber);
-
-		final EventSubscriber<DataViewSelectionEvent> viewSelectionSubscriber =
-			new EventSubscriber<DataViewSelectionEvent>() {
-
-				@Override
-				@SuppressWarnings("synthetic-access")
-				public void onEvent(final DataViewSelectionEvent event) {
-					if (selecting) return;
-					selecting = true;
-					// Select or deselect the corresponding overlay in the list
-					final Object overlay = event.getView().getData();
-					if (event.isSelected()) {
-						final int[] current_sel = olist.getSelectedIndices();
-						olist.setSelectedValue(overlay, true);
-						final int[] new_sel = olist.getSelectedIndices();
-						final int[] sel =
-							Arrays.copyOf(current_sel, current_sel.length + new_sel.length);
-						System.arraycopy(new_sel, 0, sel, current_sel.length,
-							new_sel.length);
-						olist.setSelectedIndices(sel);
-					}
-					else {
-						for (final int i : olist.getSelectedIndices()) {
-							if (olist.getModel().getElementAt(i) == overlay) {
-								olist.removeSelectionInterval(i, i);
-							}
-						}
-					}
-					selecting = false;
-				}
-			};
-		subscribers.add(viewSelectionSubscriber);
-		eventService.subscribe(viewSelectionSubscriber);
-		//
+	@EventHandler
+	protected void onEvent(final OverlayCreatedEvent event) {
+		System.out.println("\tCREATED: " + event.toString());
+		olist.updateUI();
 	}
 
-	/*
+	@EventHandler
+	protected void onEvent(final OverlayDeletedEvent event) {
+		System.out.println("\tDELETED: " + event.toString());
+		olist.updateUI();
+	}
+
+	// No need to update unless thumbnail will be redrawn.
+//	@EventHandler
+//	protected void onEvent(OverlayRestructuredEvent event) {
+//		System.out.println("\tRESTRUCTURED: " + event.toString());
+//		olist.updateUI();
+//	}
+
+	/**
+	 * Update when a display is activated.
+	 */
+	@EventHandler
+	protected void onEvent(
+		@SuppressWarnings("unused") final DisplayActivatedEvent event)
+	{
+		olist.updateUI();
+	}
+
+	@EventHandler
+	protected void onEvent(final DataViewSelectionEvent event) {
+		if (selecting) return;
+		selecting = true;
+		// Select or deselect the corresponding overlay in the list
+		final Object overlay = event.getView().getData();
+		if (event.isSelected()) {
+			final int[] current_sel = olist.getSelectedIndices();
+			olist.setSelectedValue(overlay, true);
+			final int[] new_sel = olist.getSelectedIndices();
+			final int[] sel =
+				Arrays.copyOf(current_sel, current_sel.length + new_sel.length);
+			System.arraycopy(new_sel, 0, sel, current_sel.length,
+				new_sel.length);
+			olist.setSelectedIndices(sel);
+		}
+		else {
+			for (final int i : olist.getSelectedIndices()) {
+				if (olist.getModel().getElementAt(i) == overlay) {
+					olist.removeSelectionInterval(i, i);
+				}
+			}
+		}
+		selecting = false;
+	}
+
+	/**
 	 * Constructor. Create a JList to list the overlays. 
 	 */
-
 	public SwingOverlayManager(final EventService eventService) {
 		olist = new JList(new OverlayListModel());
 		olist.setCellRenderer(new OverlayRenderer());
@@ -256,14 +215,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		olist.addListSelectionListener(listSelectionListener);
-		subscribeToEvents(eventService);
-//		Events.subscribe(OverlayCreatedEvent.class, creationSubscriber);
-//		Events.subscribe(OverlayDeletedEvent.class, deletionSubscriber);
-//		// No need to update unless thumbnail will be redrawn.
-////		Events.subscribe(OverlayRestructuredEvent.class, restructureSubscriber);
-//		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
-//		Events.subscribe(DataViewSelectionEvent.class, viewSelectedSubscriber);
-
+		subscribers = eventService.subscribeAll(this);
 	}
 
 	@Override

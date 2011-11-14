@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.awt;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
@@ -42,21 +43,23 @@ import imagej.ui.StatusBar;
 
 import java.awt.Graphics;
 import java.awt.Label;
+import java.util.List;
 
 /**
  * AWT implementation of {@link StatusBar}.
  *
  * @author Curtis Rueden
  */
-public class AWTStatusBar extends Label
-	implements StatusBar, EventSubscriber<StatusEvent>
-{
+public class AWTStatusBar extends Label implements StatusBar {
 
 	private int value;
 	private int maximum;
 
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
+
 	public AWTStatusBar() {
-		ImageJ.get(EventService.class).subscribe(this);
+		subscribers = ImageJ.get(EventService.class).subscribeAll(this);
 	}
 
 	// -- Component methods --
@@ -87,10 +90,10 @@ public class AWTStatusBar extends Label
 		repaint();
 	}
 
-	// -- EventSubscriber methods --
+	// -- Event handlers --
 
-	@Override
-	public void onEvent(final StatusEvent event) {
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
 		final String message = event.getStatusMessage();
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();

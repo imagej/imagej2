@@ -41,6 +41,7 @@ import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayPanel;
@@ -58,6 +59,7 @@ import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -100,7 +102,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
 
-	private EventSubscriber<AxisPositionEvent> axisPositionSubscriber;
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	public SwingDisplayPanel(final AbstractSwingImageDisplay display,
 		final DisplayWindow window)
@@ -129,7 +132,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		window.setContent(this);
 
-		subscribeToEvents();
+		subscribers = ImageJ.get(EventService.class).subscribeAll(this);
 	}
 
 	// -- SwingDisplayPanel methods --
@@ -226,26 +229,16 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		imagePane.setBorder(border);
 	}
 
-	// -- Helper methods --
+	// -- Event handlers --
 
-	private void subscribeToEvents() {
-		final EventService eventService = ImageJ.get(EventService.class);
-		axisPositionSubscriber = new EventSubscriber<AxisPositionEvent>() {
-
-			@Override
-			public void onEvent(final AxisPositionEvent event) {
-				onAxisPositionEvent(event);
-			}
-
-		};
-		eventService.subscribe(axisPositionSubscriber);
-	}
-
-	protected void onAxisPositionEvent(AxisPositionEvent event) {
+	@EventHandler
+	protected void onEvent(AxisPositionEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
 		final Axis axis = event.getAxis();
 		updateAxis(axis);
 	}
+
+	// -- Helper methods --
 
 	private void createSliders() {
 		final Axis[] axes = display.getAxes();

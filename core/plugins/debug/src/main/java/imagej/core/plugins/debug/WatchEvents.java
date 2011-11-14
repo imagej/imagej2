@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
@@ -59,6 +60,7 @@ import imagej.ui.UIService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -68,11 +70,14 @@ import java.util.Locale;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
-public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
+public class WatchEvents implements ImageJPlugin {
 
 	private EventService eventService;
 
 	private OutputWindow window;
+
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	@SuppressWarnings("unused")
@@ -171,14 +176,14 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 		window = ImageJ.get(UIService.class).createOutputWindow("Event Watcher");
 		window.setVisible(true);
 		eventService = ImageJ.get(EventService.class);
-		eventService.subscribeStrongly(this);
+		subscribers = eventService.subscribeAll(this);
 		// TODO - unsubscribe when the output window is closed
 	}
 
-	// -- EventSubscriber methods --
+	// -- Event handlers --
 
-	@Override
-	public void onEvent(final ImageJEvent evt) {
+	@EventHandler
+	protected void onEvent(final ImageJEvent evt) {
 		final boolean isDisplayEvent =
 			evt instanceof DisplayEvent && !(evt instanceof MsMovedEvent);
 

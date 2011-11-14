@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
@@ -56,7 +57,7 @@ import java.awt.BorderLayout;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -77,7 +78,9 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	private SwingStatusBar statusBar;
 
 	protected final EventService eventService;
-	private ArrayList<EventSubscriber<?>> subscribers;
+
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	public AbstractSwingUI() {
 		// At this stage, the userIntService field is not initialized
@@ -154,7 +157,12 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		new DropTarget(statusBar, dropListener);
 		new DropTarget(appFrame, dropListener);
 
-		subscribeToEvents();
+		if (getUIService().getPlatformService().isMenuBarDuplicated()) {
+			// NB: If menu bars are supposed to be duplicated across all window
+			// frames, listen for display creations and deletions and clone the menu
+			// bar accordingly.
+			subscribers = eventService.subscribeAll(this);
+		}
 	}
 
 	/**
@@ -187,46 +195,26 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		f.setMenuBar(null);
 	}
 
-	// -- Helper methods --
+	// -- Event handlers --
 
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		if (getUIService().getPlatformService().isMenuBarDuplicated()) {
-			// NB: If menu bars are supposed to be duplicated across all window
-			// frames, listen for display creations and deletions and clone the menu
-			// bar accordingly.
-
-			final EventSubscriber<DisplayCreatedEvent> createSubscriber =
-				new EventSubscriber<DisplayCreatedEvent>() {
-
-					@Override
-					public void onEvent(final DisplayCreatedEvent event) {
-						final SwingDisplayWindow displayWindow =
-							getDisplayWindow(event.getObject());
-						// add a copy of the JMenuBar to the new display
-						if (displayWindow != null && displayWindow.getJMenuBar() == null) {
-							createMenuBar(displayWindow);
-						}
-					}
-				};
-			subscribers.add(createSubscriber);
-			eventService.subscribe(createSubscriber);
-
-			final EventSubscriber<DisplayDeletedEvent> deleteSubscriber =
-				new EventSubscriber<DisplayDeletedEvent>() {
-
-					@Override
-					public void onEvent(final DisplayDeletedEvent event) {
-						final SwingDisplayWindow displayWindow =
-							getDisplayWindow(event.getObject());
-						if (displayWindow != null) deleteMenuBar(displayWindow);
-					}
-				};
-			subscribers.add(deleteSubscriber);
-			eventService.subscribe(deleteSubscriber);
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent event) {
+		final SwingDisplayWindow displayWindow =
+			getDisplayWindow(event.getObject());
+		// add a copy of the JMenuBar to the new display
+		if (displayWindow != null && displayWindow.getJMenuBar() == null) {
+			createMenuBar(displayWindow);
 		}
 	}
+
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent event) {
+		final SwingDisplayWindow displayWindow =
+			getDisplayWindow(event.getObject());
+		if (displayWindow != null) deleteMenuBar(displayWindow);
+	}
+
+	// -- Helper methods --
 
 	protected SwingDisplayWindow getDisplayWindow(final Display<?> display) {
 		final DisplayPanel panel = display.getPanel();

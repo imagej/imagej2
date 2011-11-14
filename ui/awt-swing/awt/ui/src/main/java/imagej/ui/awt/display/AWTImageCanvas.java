@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.data.display.CanvasHelper;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.MouseCursor;
@@ -57,6 +58,7 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * An AWT implementation of {@link ImageCanvas}.
@@ -70,9 +72,7 @@ import java.awt.image.BufferedImage;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class AWTImageCanvas extends Panel implements ImageCanvas,
-	EventSubscriber<ToolActivatedEvent>
-{
+public class AWTImageCanvas extends Panel implements ImageCanvas {
 
 	private static final double MAX_SCREEN_PROPORTION = 0.85;
 
@@ -95,13 +95,16 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 
 	private Dimension previousPanelSize;
 
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
+
 	/** Creates an image canvas with no default image. */
 	public AWTImageCanvas() {
 		display = null; // TODO
 		canvasHelper = new CanvasHelper(this);
 //		setOpaque(false);
 		addResizeListener();
-		ImageJ.get(EventService.class).subscribe(this);
+		subscribers = ImageJ.get(EventService.class).subscribeAll(this);
 	}
 
 	/** Creates an image canvas with the specified image. */
@@ -307,10 +310,10 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 		return canvasHelper.getZoomFactor();
 	}
 
-	// -- EventSubscriber methods --
+	// -- Event handlers --
 
-	@Override
-	public void onEvent(final ToolActivatedEvent event) {
+	@EventHandler
+	protected void onEvent(final ToolActivatedEvent event) {
 		setCursor(event.getTool().getCursor());
 	}
 

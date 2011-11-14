@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
@@ -144,33 +145,15 @@ public class SwingScriptRecorder implements ImageJPlugin {
 	}
 
 	private void startRecording() {
-		// subscribe to Events
-		subscribeToEvents();
-
+		eventService.subscribeAll(this);
 	}
 
 	private void stopRecording() {
-		unSubscribeFromEvents();
+		eventService.unsubscribe(subscribers);
 		promptForGenerate();
 	}
 
-	final EventSubscriber<ImageJEvent> imageJEventSubscriber =
-		new EventSubscriber<ImageJEvent>() {
-
-			@Override
-			public void onEvent(final ImageJEvent event) {
-				processEvent(event);
-			}
-
-		};
-
-	private void subscribeToEvents() {
-		eventService.subscribe(imageJEventSubscriber);
-	}
-
-	private void unSubscribeFromEvents() {
-		eventService.unsubscribe(imageJEventSubscriber);
-	}
+	private List<EventSubscriber<?>> subscribers;
 
 	public void append(final String text) {
 		textArea.append(text);
@@ -182,7 +165,8 @@ public class SwingScriptRecorder implements ImageJPlugin {
 		textArea.setText("");
 	}
 
-	public void processEvent(final ImageJEvent evt) {
+	@EventHandler
+	protected void onEvent(final ImageJEvent evt) {
 //		if (evt instanceof ImageJEvent) {
 //			emitMessage("Event: " + evt.getClass());
 //			showFields(evt);

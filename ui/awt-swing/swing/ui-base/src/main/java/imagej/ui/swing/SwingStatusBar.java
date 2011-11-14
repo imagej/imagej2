@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
@@ -43,6 +44,7 @@ import imagej.ui.StatusBar;
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -55,14 +57,15 @@ import javax.swing.border.BevelBorder;
  * 
  * @author Curtis Rueden
  */
-public class SwingStatusBar extends JPanel implements StatusBar,
-	EventSubscriber<StatusEvent>, MouseListener
-{
+public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	private final EventService eventService;
 	
 	private final JLabel statusText;
 	private final JProgressBar progressBar;
+
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	public SwingStatusBar(final EventService eventService) {
 		this.eventService = eventService;
@@ -74,7 +77,7 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 		setLayout(new BorderLayout());
 		add(statusText, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.EAST);
-		eventService.subscribe(this);
+		subscribers = eventService.subscribeAll(this);
 		statusText.addMouseListener(this);
 	}
 
@@ -105,26 +108,6 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 		}
 	}
 
-	// -- EventSubscriber methods --
-
-	@Override
-	public void onEvent(final StatusEvent event) {
-		final String message = event.getStatusMessage();
-		final int val = event.getProgressValue();
-		final int max = event.getProgressMaximum();
-		final boolean warning = event.isWarning();
-		if (warning) {
-			// report warning messages to the user in a dialog box
-			JOptionPane.showMessageDialog(this, message, "ImageJ",
-				JOptionPane.WARNING_MESSAGE);
-		}
-		else {
-			// report status updates in the status bar
-			setStatus(message);
-			setProgress(val, max);
-		}
-	}
-
 	// -- MouseListener methods --
 
 	@Override
@@ -151,6 +134,26 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 	@Override
 	public void mouseReleased(final MouseEvent e) {
 		// NB: no action needed
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
+		final String message = event.getStatusMessage();
+		final int val = event.getProgressValue();
+		final int max = event.getProgressMaximum();
+		final boolean warning = event.isWarning();
+		if (warning) {
+			// report warning messages to the user in a dialog box
+			JOptionPane.showMessageDialog(this, message, "ImageJ",
+				JOptionPane.WARNING_MESSAGE);
+		}
+		else {
+			// report status updates in the status bar
+			setStatus(message);
+			setProgress(val, max);
+		}
 	}
 
 	// -- Helper methods --

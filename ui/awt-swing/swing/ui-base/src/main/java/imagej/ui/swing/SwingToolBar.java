@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
@@ -51,6 +52,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
@@ -84,32 +86,15 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 
-	final private EventSubscriber<ToolActivatedEvent> toolActivatedEventSubscriber =
-		new EventSubscriber<ToolActivatedEvent>() {
-
-			@Override
-			public void onEvent(final ToolActivatedEvent event) {
-				onToolActivatedEvent(event);
-			}
-		};
-
-	final private EventSubscriber<ToolDeactivatedEvent> toolDeactivatedEventSubscriber =
-		new EventSubscriber<ToolDeactivatedEvent>() {
-
-			@Override
-			public void onEvent(final ToolDeactivatedEvent event) {
-				onToolDeactivatedEvent(event);
-
-			}
-		};
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	public SwingToolBar(final EventService eventService) {
 		this.eventService = eventService;
 		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
-		eventService.subscribe(toolActivatedEventSubscriber);
-		eventService.subscribe(toolDeactivatedEventSubscriber);
+		subscribers = eventService.subscribeAll(this);
 	}
 
 	// -- ToolBar methods --
@@ -118,7 +103,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	public ToolService getToolService() {
 		return toolService;
 	}
-
+	
 	// -- Helper methods --
 
 	private void populateToolBar() {
@@ -203,7 +188,10 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		return button;
 	}
 
-	public void onToolActivatedEvent(final ToolActivatedEvent event) {
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final ToolActivatedEvent event) {
 		final ToolInfo info = event.getTool().getInfo();
 		if (info == null) return; // no info, no button
 		final String name = info.getName();
@@ -215,7 +203,8 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		Log.debug("Selected " + name + " button.");
 	}
 
-	public void onToolDeactivatedEvent(final ToolDeactivatedEvent event) {
+	@EventHandler
+	protected void onEvent(final ToolDeactivatedEvent event) {
 		final ToolInfo info = event.getTool().getInfo();
 		if (info == null) return; // no info, no button
 		final String name = info.getName();

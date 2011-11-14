@@ -39,6 +39,7 @@ import imagej.data.Position;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
+import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
 
 import java.util.ArrayList;
@@ -81,12 +82,13 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
 
-	private ArrayList<EventSubscriber<?>> subscribers;
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	public AbstractDatasetView(final ImageDisplay display, final Dataset dataset) {
 		super(display, dataset);
 		this.dataset = dataset;
-		subscribeToEvents();
+		subscribers = eventService.subscribeAll(this);
 	}
 
 	// -- DatasetView methods --
@@ -333,57 +335,34 @@ public abstract class AbstractDatasetView extends AbstractDataView
 					dataset.getExtents().dimension(channelDimIndex);
 	}
 
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
+	// -- Event handlers --
 
-		final EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
-			new EventSubscriber<DatasetTypeChangedEvent>() {
+	@EventHandler
+	protected void onEvent(final DatasetTypeChangedEvent event) {
+		if (dataset == event.getObject()) {
+			rebuild();
+		}
+	}
 
-				@Override
-				public void onEvent(final DatasetTypeChangedEvent event) {
-					if (dataset == event.getObject()) {
-						rebuild();
-					}
-				}
+	@EventHandler
+	protected void onEvent(final DatasetRGBChangedEvent event) {
+		if (dataset == event.getObject()) {
+			rebuild();
+		}
+	}
 
-			};
-		subscribers.add(typeChangeSubscriber);
-		eventService.subscribe(typeChangeSubscriber);
-
-		final EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
-			new EventSubscriber<DatasetRGBChangedEvent>() {
-
-				@Override
-				public void onEvent(final DatasetRGBChangedEvent event) {
-					if (dataset == event.getObject()) {
-						rebuild();
-					}
-				}
-
-			};
-		subscribers.add(rgbChangeSubscriber);
-		eventService.subscribe(rgbChangeSubscriber);
-
-		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
-			new EventSubscriber<DatasetUpdatedEvent>() {
-
-				@Override
-				public void onEvent(final DatasetUpdatedEvent event) {
-					if (event instanceof DatasetTypeChangedEvent) {
-						return;
-					}
-					if (event instanceof DatasetRGBChangedEvent) {
-						return;
-					}
-					if (dataset == event.getObject()) {
-						projector.map();
-					}
-				}
-
-			};
-		subscribers.add(updateSubscriber);
-		eventService.subscribe(updateSubscriber);
+	@EventHandler
+	protected void onEvent(final DatasetUpdatedEvent event) {
+		// FIXME: eliminate hacky logic here
+		if (event instanceof DatasetTypeChangedEvent) {
+			return;
+		}
+		if (event instanceof DatasetRGBChangedEvent) {
+			return;
+		}
+		if (dataset == event.getObject()) {
+			projector.map();
+		}
 	}
 
 }
