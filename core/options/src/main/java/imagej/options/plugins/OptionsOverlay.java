@@ -44,10 +44,19 @@ import imagej.options.OptionsPlugin;
  * 
  * @author Barry DeZonia
  */
+/*
+ * TODO
+ * 
+ * Note - this class is designed to replace the IJ1 RoiProperties dialog.
+ * That dialog currently has settings that are not saved. However it has
+ * additional behavior that our options plugin will need to replicate in
+ * the future. Removing this from the menus and OptionsSynchronizer for now.
+ * 
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Overlay Options...") })
+*/
 public class OptionsOverlay extends OptionsPlugin {
 
 	@Parameter(label = "Stroke Color", choices = { "red", "green", "blue",
