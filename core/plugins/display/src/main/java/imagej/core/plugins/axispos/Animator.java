@@ -34,37 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
-import imagej.ImageJ;
-import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.event.DatasetRestructuredEvent;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
-import imagej.ext.KeyCode;
-import imagej.ext.display.Display;
-import imagej.ext.display.DisplayService;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import net.imglib2.img.Axis;
-
 /**
- * This class is responsible for running animations of stack data. One can
- * start, pause, resume, and stop animations via the '\' and ESC keys.
- * Animations can be modified during execution by running the
+ * Plugin for toggling an {@link ImageDisplay}'s running animation. Animation
+ * can be toggled via the backslash key, or stopped with ESC. The animation's
+ * behavior can be modified during execution by running the
  * {@link AnimatorOptionsPlugin}.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
@@ -72,360 +55,19 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
 public class Animator implements ImageJPlugin {
 
-	// - parameters - one per Animator instance --
+	// -- Plugin parameters --
 
 	@Parameter(required = true, persist = false)
-	private EventService eventService;
+	private AnimationService animationService;
 
-	@Parameter
-	private ImageDisplay activeImageDisplay;
+	@Parameter(required = true, persist = false)
+	private ImageDisplay imageDisplay;
 
-	// -- private constants --
+	// -- Runnable methods --
 
-	private static final String REGULAR_STATUS =
-		"Press ESC to terminate. Pressing '\\' pauses.";
-	private static final String PAUSED_STATUS =
-		"Animation paused. Press '\\' to continue or ESC to terminate.";
-	private static final String DONE_STATUS = "Animation terminated.";
-
-	private static final Map<ImageDisplay, Animation> ANIMATIONS =
-		new ConcurrentHashMap<ImageDisplay, Animation>();
-	private static final Map<ImageDisplay, AnimatorOptions> OPTIONS =
-		new ConcurrentHashMap<ImageDisplay, AnimatorOptions>();
-
-	// -- static variables - only one for all Animator instances --
-
-	private static EventSubscriber<KyPressedEvent> kyPressedSubscriber;
-	private static EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
-	private static EventSubscriber<DatasetRestructuredEvent> datasetRestructuredSubscriber;
-
-	// -- package access static methods --
-
-	/** Called from AnimatorOptionsPlugin. */
-	static AnimatorOptions getOptions(final ImageDisplay display) {
-		AnimatorOptions options = OPTIONS.get(display);
-		if (options == null) {
-			options = defaultOptions(display);
-			OPTIONS.put(display, options);
-		}
-		return options;
-	}
-
-	/** Called from AnimatorOptionsPlugin. */
-	static void optionsUpdated(final ImageDisplay display) {
-		final Animation a = ANIMATIONS.get(display);
-		if (a != null) {
-			a.pause();
-			a.initFromOptions();
-			a.resume();
-		}
-	}
-
-	/**
-	 * Terminate a single animation. Called from StopAnimation plugin and various
-	 * axis position plugins.
-	 */
-	static void terminateAnimation(final ImageDisplay display) {
-		final Animation a = ANIMATIONS.get(display);
-		if (a != null) a.stop();
-	}
-
-	/** Terminate all animations. Called from StopAllAnimations plugin. */
-	static void terminateAll() {
-		final DisplayService service = ImageJ.get(DisplayService.class);
-		final List<Display<?>> displays = service.getDisplays();
-		for (final Display<?> d : displays) {
-			final Animation a = ANIMATIONS.get(d);
-			if (a != null) a.stop();
-		}
-	}
-
-	// -- public instance methods --
-
-	/**
-	 * Starts a new animation or modifies an existing animation. Only does any
-	 * work when the active display's {@link Dataset} has 3 or more axes.
-	 */
 	@Override
 	public void run() {
-		synchronized (ANIMATIONS) {
-			if (kyPressedSubscriber == null) subscribeToEvents();
-		}
-		final Dataset ds =
-			ImageJ.get(ImageDisplayService.class)
-				.getActiveDataset(activeImageDisplay);
-		if (ds == null) return;
-		if (ds.getDims().length <= 2) return;
-		Animation a = ANIMATIONS.get(activeImageDisplay);
-		if (a == null) {
-			a = new Animation(activeImageDisplay);
-			a.start();
-		}
-		else if (a.isPaused()) a.resume();
-		else a.pause();
-	}
-
-	// -- private helpers --
-
-	/**
-	 * Creates an AnimatorOptions structure populated with default values
-	 * appropriate to the input {@link ImageDisplay}.
-	 */
-	private static AnimatorOptions defaultOptions(final ImageDisplay display) {
-		// NOTE - elsewhere we've been careful to make sure this method never
-		// gets called for displays whose dataset has 2 or fewer dimensions.
-		// So can safely grab Dataset values for axis index 2.
-		final Dataset ds =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
-		final long total = ds.getImgPlus().dimension(2);
-		final Axis axis = ds.getAxes()[2];
-		final double fps = 8;
-		final long first = 0;
-		final long last = total - 1;
-		final boolean backAndForth = false;
-
-		// return options
-		return new AnimatorOptions(axis, fps, first, last, backAndForth);
-	}
-
-	/**
-	 * Subscribes to events that are of interest to the Animator. ESC key press
-	 * will terminate a running animation. So will a {@link DisplayDeletedEvent}
-	 * and a {@link DatasetRestructuredEvent}.
-	 */
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents() {
-		kyPressedSubscriber = new EventSubscriber<KyPressedEvent>() {
-
-			@Override
-			public void onEvent(final KyPressedEvent event) {
-				final Animation a = ANIMATIONS.get(event.getDisplay());
-				if (a != null && event.getCode() == KeyCode.ESCAPE) a.stop();
-			}
-
-			@Override
-			public Class<KyPressedEvent> getEventClass() {
-				return KyPressedEvent.class;
-			}
-		};
-		eventService.subscribe(kyPressedSubscriber);
-
-		displayDeletedSubscriber = new EventSubscriber<DisplayDeletedEvent>() {
-
-			@Override
-			public void onEvent(final DisplayDeletedEvent event) {
-				final Animation a = ANIMATIONS.get(event.getObject());
-				if (a != null) a.stop();
-			}
-
-			@Override
-			public Class<DisplayDeletedEvent> getEventClass() {
-				return DisplayDeletedEvent.class;
-			}
-		};
-		eventService.subscribe(displayDeletedSubscriber);
-
-		datasetRestructuredSubscriber = new EventSubscriber<DatasetRestructuredEvent>() {
-
-			@Override
-			public void onEvent(final DatasetRestructuredEvent event) {
-				// NOTE - this event might get captured wel after an animation update
-				// took place with a modified Dataset.
-				final List<Display<?>> displays =
-					ImageJ.get(DisplayService.class).getDisplaysContaining(
-						event.getObject());
-				for (final Display<?> display : displays) {
-					final Animation a = ANIMATIONS.get(display);
-					if (a != null) a.stop();
-				}
-			}
-
-			@Override
-			public Class<DatasetRestructuredEvent> getEventClass() {
-				return DatasetRestructuredEvent.class;
-			}
-		};
-		eventService.subscribe(datasetRestructuredSubscriber);
-	}
-
-	/**
-	 * The Animation class takes care of running an animation along an axis.
-	 * Multiple animations can be running concurrently. Each animation runs in its
-	 * own thread. Running animations can be modified through the
-	 * {@link AnimatorOptionsPlugin}.
-	 */
-	@SuppressWarnings("synthetic-access")
-	private class Animation implements Runnable {
-
-		private final ImageDisplay display;
-		private boolean quitting;
-		private boolean paused;
-
-		private Axis axis;
-		private long first;
-		private long last;
-		private double fps;
-		private boolean backAndForth;
-
-		private long increment;
-		private long currPos;
-		private long delta;
-		private boolean isRelative;
-
-		/**
-		 * Create an Animation on an ImageDisplay. There should only be one
-		 * Animation per ImageDisplay.
-		 */
-		Animation(final ImageDisplay display) {
-			this.display = display;
-			this.paused = false;
-			this.quitting = false;
-		}
-
-		/**
-		 * Sets the Animation's iteration variables from the AnimatorOptions
-		 * associated with this Animation. Can be called multiple times for an
-		 * Animation via the AnimatorOptionsPlugin indirectly.
-		 */
-		synchronized void initFromOptions() {
-			final AnimatorOptions options = OPTIONS.get(display);
-
-			axis = options.getAxis();
-			first = options.getFirst();
-			last = options.getLast();
-			fps = options.getFps();
-			backAndForth = options.isBackAndForth();
-
-			increment = 1;
-			currPos = options.getFirst();
-			delta = 1;
-			isRelative = true;
-
-			display.setAxisPosition(axis, first);
-		}
-
-		/**
-		 * Starts an Animation
-		 */
-		void start() {
-			paused = false;
-			ANIMATIONS.put(display, this);
-			if (OPTIONS.get(display) == null) OPTIONS.put(display,
-				defaultOptions(display));
-			new Thread(this).start();
-			eventService.publish(new StatusEvent(REGULAR_STATUS));
-		}
-
-		/**
-		 * Pauses an Animation
-		 */
-		void pause() {
-			paused = true;
-			eventService.publish(new StatusEvent(PAUSED_STATUS));
-		}
-
-		/**
-		 * Resumes a paused Animation
-		 */
-		void resume() {
-			paused = false;
-			eventService.publish(new StatusEvent(REGULAR_STATUS));
-		}
-
-		/**
-		 * Terminates an Animation
-		 */
-		void stop() {
-			quitting = true;
-			ANIMATIONS.remove(display);
-			eventService.publish(new StatusEvent(DONE_STATUS));
-		}
-
-		/**
-		 * Returns true if an Animation is currently paused.
-		 */
-		boolean isPaused() {
-			return paused;
-		}
-
-		/**
-		 * This is the only public method of an Animation. Called from the
-		 * Animation's own Thread.
-		 */
-		@Override
-		public void run() {
-
-			initFromOptions();
-
-			while (!quitting) {
-
-				if (paused) {
-					try {
-						Thread.sleep(1000);
-					}
-					catch (final Exception e) {
-						// do nothing
-					}
-					continue;
-				}
-
-				updatePosition();
-
-				try {
-					Thread.sleep((long) (1000 / fps));
-				}
-				catch (final Exception e) {
-					// do nothing
-				}
-			}
-
-		}
-
-		private synchronized void updatePosition() {
-			// reached right end
-			if ((increment > 0) && (currPos == last)) {
-				if (!backAndForth) {
-					isRelative = false;
-					delta = first;
-					currPos = first;
-				}
-				else {
-					increment = -increment;
-					isRelative = true;
-					delta = -1;
-					currPos--;
-				}
-			}
-			// reached left end
-			else if ((increment < 0) && (currPos == first)) {
-				if (!backAndForth) {
-					isRelative = false;
-					delta = last;
-					currPos = last;
-				}
-				else {
-					increment = -increment;
-					isRelative = true;
-					delta = +1;
-					currPos++;
-				}
-			}
-			else { // somewhere in the middle
-				isRelative = true;
-				if (increment > 0) {
-					delta = +1;
-					currPos++;
-				}
-				else { // increment < 0
-					delta = -1;
-					currPos--;
-				}
-			}
-
-			final long pos =
-				isRelative ? display.getAxisPosition(axis) + delta : delta;
-			display.setAxisPosition(axis, pos);
-		}
+		animationService.toggle(imageDisplay);
 	}
 
 }

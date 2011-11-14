@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.axispos;
 
 import imagej.ImageJ;
-import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
@@ -44,16 +43,12 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
 /**
- * This class manipulates options that affect the {@link Animator} class' run()
- * method.
+ * Plugin for adjusting options that affect the behavior of animations.
  * 
  * @author Barry DeZonia
  */
@@ -71,59 +66,61 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	private static final String FPS_KEY = "Speed (0.1 - 1000 fps)";
 	private static final String BACK_FORTH_KEY = "Loop back and forth";
 
-	// -- instance variables --
+	// -- parameters --
 
-	private ImageDisplay currDisplay;
-	private Dataset dataset;
+//	@Parameter
+	private String axisName;
 
-	String axisName;
-	private long oneBasedFirst;
-	private long oneBasedLast;
-
+//	@Parameter
 	private long first;
+
+//	@Parameter
 	private long last;
+
+//	@Parameter
 	private double fps;
+
+//	@Parameter
 	private boolean backForth;
 
-	private AnimatorOptions options;
+	// -- instance variables --
+
+	private ImageDisplay display;
+	private Animation animation;
+
+	private long oneBasedFirst;
+	private long oneBasedLast;
 
 	/**
 	 * construct the DynamicPlugin from a Display's Dataset
 	 */
 	public AnimatorOptionsPlugin() {
-
 		// make sure input is okay
-
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
+		display = imageDisplayService.getActiveImageDisplay();
+		if (display == null) return;
 
-		currDisplay = imageDisplayService.getActiveImageDisplay();
-		if (currDisplay == null) return;
-
-		dataset = imageDisplayService.getActiveDataset(currDisplay);
-		if (dataset == null) return;
-		if (dataset.getImgPlus().numDimensions() <= 2) return;
-
-		options = Animator.getOptions(currDisplay);
+		final AnimationService animationService =
+			ImageJ.get(AnimationService.class);
+		animation = animationService.getAnimation(display);
 
 		// axis name field initialization
-
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
-		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		final Axis[] axes = display.getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis candidateAxis : Axes.values()) {
-			if ((candidateAxis == Axes.X) || (candidateAxis == Axes.Y)) continue;
-			if (datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
-				.getLabel());
+		for (final Axis axis : axes) {
+			if (Axes.isXY(axis)) continue;
+			choices.add(axis.getLabel());
 		}
 		name.setChoices(choices);
 		name.setPersisted(false);
 		addInput(name);
-		setInput(NAME_KEY, new String(options.getAxis().getLabel()));
+		final Axis curAxis = animation.getAxis();
+		if (curAxis != null) setInput(NAME_KEY, curAxis.toString());
 
 		// first position field initialization
-
 		final DefaultModuleItem<Long> firstPos =
 			new DefaultModuleItem<Long>(this, FIRST_POS_KEY, Long.class);
 		firstPos.setPersisted(false);
@@ -133,10 +130,9 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		// field's max value from chosen axis max.
 		// firstPos.setMaximumValue(new Long(options.total));
 		addInput(firstPos);
-		setInput(FIRST_POS_KEY, new Long(options.getFirst() + 1));
+		setInput(FIRST_POS_KEY, animation.getFirst() + 1);
 
 		// last position field initialization
-
 		final DefaultModuleItem<Long> lastPos =
 			new DefaultModuleItem<Long>(this, LAST_POS_KEY, Long.class);
 		lastPos.setPersisted(false);
@@ -146,25 +142,23 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		// field's max value from chosen axis max.
 		// lastPos.setMaximumValue(new Long(options.total));
 		addInput(lastPos);
-		setInput(LAST_POS_KEY, new Long(options.getLast() + 1));
+		setInput(LAST_POS_KEY, animation.getLast() + 1);
 
 		// frames per second field initialization
-
 		final DefaultModuleItem<Double> framesPerSec =
 			new DefaultModuleItem<Double>(this, FPS_KEY, Double.class);
 		framesPerSec.setPersisted(false);
 		framesPerSec.setMinimumValue(0.1);
 		framesPerSec.setMaximumValue(1000.0);
 		addInput(framesPerSec);
-		setInput(FPS_KEY, new Double(options.getFps()));
+		setInput(FPS_KEY, animation.getFps());
 
 		// back and forth field initialization
-
 		final DefaultModuleItem<Boolean> backForthBool =
 			new DefaultModuleItem<Boolean>(this, BACK_FORTH_KEY, Boolean.class);
 		backForthBool.setPersisted(false);
 		addInput(backForthBool);
-		setInput(BACK_FORTH_KEY, new Boolean(options.isBackAndForth()));
+		setInput(BACK_FORTH_KEY, animation.isBackAndForth());
 	}
 
 	/**
@@ -175,38 +169,37 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	 */
 	@Override
 	public void run() {
-		if (currDisplay == null) return;
+		if (display == null) return;
 		harvestInputs();
 		final Axis axis = Axes.get(axisName);
-		final int axisIndex = dataset.getAxisIndex(axis);
+		final int axisIndex = display.getAxisIndex(axis);
 		if (axisIndex < 0) return;
-		final long totalHyperplanes = dataset.getImgPlus().dimension(axisIndex);
+		final long totalHyperplanes = display.getExtents().dimension(axisIndex);
 		setFirstAndLast(totalHyperplanes);
-		options.setAxis(axis);
-		options.setBackAndForth(backForth);
-		options.setFirst(first);
-		options.setLast(last);
-		options.setFps(fps);
-		Animator.optionsUpdated(currDisplay);
+
+		// update animation settings
+		final boolean active = animation.isActive();
+		animation.stop();
+		animation.setAxis(axis);
+		animation.setBackAndForth(backForth);
+		animation.setFirst(first);
+		animation.setLast(last);
+		animation.setFps(fps);
+		if (active) animation.start();
 	}
 
 	// -- private helpers --
 
-	/**
-	 * Harvest the user's input values from the dialog
-	 */
+	/** Harvests the user's input values from the dialog. */
 	private void harvestInputs() {
-		final Map<String, Object> inputs = getInputs();
-		axisName = (String) inputs.get(NAME_KEY);
-		oneBasedFirst = (Long) inputs.get(FIRST_POS_KEY);
-		oneBasedLast = (Long) inputs.get(LAST_POS_KEY);
-		fps = (Double) inputs.get(FPS_KEY);
-		backForth = (Boolean) inputs.get(BACK_FORTH_KEY);
+		axisName = (String) getInput(NAME_KEY);
+		oneBasedFirst = (Long) getInput(FIRST_POS_KEY);
+		oneBasedLast = (Long) getInput(LAST_POS_KEY);
+		fps = (Double) getInput(FPS_KEY);
+		backForth = (Boolean) getInput(BACK_FORTH_KEY);
 	}
 
-	/**
-	 * Sets the zero-based indices of the first and last frames
-	 */
+	/** Sets the zero-based indices of the first and last frames. */
 	private void setFirstAndLast(final long totalHyperplanes) {
 		first = Math.min(oneBasedFirst, oneBasedLast) - 1;
 		last = Math.max(oneBasedFirst, oneBasedLast) - 1;
@@ -215,4 +208,5 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		if (first >= totalHyperplanes) first = totalHyperplanes - 1;
 		if (last >= totalHyperplanes) last = totalHyperplanes - 1;
 	}
+
 }

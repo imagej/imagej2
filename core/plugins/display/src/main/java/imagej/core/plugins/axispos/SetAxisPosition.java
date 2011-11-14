@@ -42,7 +42,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.img.Axis;
 
 /**
- * Sets the position of the current axis to a user specified value
+ * Sets the position of the current axis to a user-specified value.
  * 
  * @author Barry DeZonia
  */
@@ -51,7 +51,10 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Set Axis Position...") })
 public class SetAxisPosition implements ImageJPlugin {
 
-	@Parameter
+	@Parameter(required = true, persist = false)
+	private AnimationService animationService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	@Parameter(label = "Position", min = "1")
@@ -59,7 +62,7 @@ public class SetAxisPosition implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		Animator.terminateAnimation(display);
+		animationService.stop(display);
 		final Axis axis = display.getActiveAxis();
 		final long newPosition = oneBasedPosition - 1;
 		display.setAxisPosition(axis, newPosition);
