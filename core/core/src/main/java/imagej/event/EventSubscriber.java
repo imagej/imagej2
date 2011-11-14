@@ -35,8 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.event;
 
 /**
- * Interface for subscribers that wish to be notified of ImageJ events (in no
- * particular order).
+ * Interface for subscribers that wish to be notified of ImageJ events.
+ * <p>
+ * There is no defined order to the notifications. This is an intentional
+ * limitation, to keep the event subsystem from growing too complex. We have
+ * found that when event handlers need to make assumptions about the order
+ * events are delivered, there is generally something wrong with the event
+ * delivery pattern in question. A better solution is to fire more granular
+ * types of events at multiple stages of the program's workflow.
+ * </p>
  * 
  * @author Curtis Rueden
  * @param <E> Type of event for which to listen
