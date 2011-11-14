@@ -171,7 +171,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent> {
 		window = ImageJ.get(UIService.class).createOutputWindow("Event Watcher");
 		window.setVisible(true);
 		eventService = ImageJ.get(EventService.class);
-		eventService.subscribeStrongly(ImageJEvent.class, this);
+		eventService.subscribeStrongly(this);
 		// TODO - unsubscribe when the output window is closed
 	}
 

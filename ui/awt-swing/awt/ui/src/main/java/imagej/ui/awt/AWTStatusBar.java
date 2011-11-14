@@ -56,7 +56,7 @@ public class AWTStatusBar extends Label
 	private int maximum;
 
 	public AWTStatusBar() {
-		ImageJ.get(EventService.class).subscribe(StatusEvent.class, this);
+		ImageJ.get(EventService.class).subscribe(this);
 	}
 
 	// -- Component methods --

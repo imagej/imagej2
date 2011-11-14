@@ -211,7 +211,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 					}
 				};
 			subscribers.add(createSubscriber);
-			eventService.subscribe(DisplayCreatedEvent.class, createSubscriber);
+			eventService.subscribe(createSubscriber);
 
 			final EventSubscriber<DisplayDeletedEvent> deleteSubscriber =
 				new EventSubscriber<DisplayDeletedEvent>() {
@@ -224,7 +224,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 					}
 				};
 			subscribers.add(deleteSubscriber);
-			eventService.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
+			eventService.subscribe(deleteSubscriber);
 		}
 	}
 

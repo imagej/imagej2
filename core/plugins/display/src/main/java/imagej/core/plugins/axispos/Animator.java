@@ -202,7 +202,7 @@ public class Animator implements ImageJPlugin {
 				if (a != null && event.getCode() == KeyCode.ESCAPE) a.stop();
 			}
 		};
-		eventService.subscribe(KyPressedEvent.class, KEYPRESS_SUBSCRIBER);
+		eventService.subscribe(KEYPRESS_SUBSCRIBER);
 
 		DISPLAY_SUBSCRIBER = new EventSubscriber<DisplayDeletedEvent>() {
 
@@ -212,7 +212,7 @@ public class Animator implements ImageJPlugin {
 				if (a != null) a.stop();
 			}
 		};
-		eventService.subscribe(DisplayDeletedEvent.class, DISPLAY_SUBSCRIBER);
+		eventService.subscribe(DISPLAY_SUBSCRIBER);
 
 		RESTRUCTURE_SUBSCRIBER = new EventSubscriber<DatasetRestructuredEvent>() {
 
@@ -229,8 +229,7 @@ public class Animator implements ImageJPlugin {
 				}
 			}
 		};
-		eventService.subscribe(DatasetRestructuredEvent.class,
-			RESTRUCTURE_SUBSCRIBER);
+		eventService.subscribe(RESTRUCTURE_SUBSCRIBER);
 	}
 
 	/**

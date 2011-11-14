@@ -96,7 +96,7 @@ public class WatchOverlays implements ImageJPlugin {
 				}
 			};
 		subscribers.add(objectsUpdatedSubscriber);
-		eventService.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
+		eventService.subscribe(objectsUpdatedSubscriber);
 		//
 //		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
 //				new EventSubscriber<WinActivatedEvent>() {
@@ -117,7 +117,7 @@ public class WatchOverlays implements ImageJPlugin {
 				}
 			};
 		subscribers.add(DisplaySelectedSubscriber);
-		eventService.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
+		eventService.subscribe(DisplaySelectedSubscriber);
 	}
 
 	private void updateOverlaysShown() {

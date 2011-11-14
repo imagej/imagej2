@@ -116,7 +116,7 @@ public class WatchDisplays implements ImageJPlugin {
 
 			};
 		subscribers.add(objectsUpdatedSubscriber);
-		eventService.subscribe(ObjectsListEvent.class, objectsUpdatedSubscriber);
+		eventService.subscribe(objectsUpdatedSubscriber);
 
 //		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
 //				new EventSubscriber<WinActivatedEvent>() {
@@ -140,7 +140,7 @@ public class WatchDisplays implements ImageJPlugin {
 
 			};
 		subscribers.add(DisplaySelectedSubscriber);
-		eventService.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
+		eventService.subscribe(DisplaySelectedSubscriber);
 
 	}
 

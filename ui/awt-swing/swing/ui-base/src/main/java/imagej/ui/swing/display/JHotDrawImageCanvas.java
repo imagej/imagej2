@@ -160,10 +160,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		activateTool(activeTool);
 		final EventService eventService =
 				ImageJ.get(EventService.class);
-		eventService.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
-		eventService.subscribe(DataViewSelectedEvent.class, viewSelectedEvent);
-		eventService.subscribe(DataViewDeselectedEvent.class,
-			viewDeselectedEvent);
+		eventService.subscribe(toolActivatedSubscriber);
+		eventService.subscribe(viewSelectedEvent);
+		eventService.subscribe(viewDeselectedEvent);
 
 		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
 

@@ -97,24 +97,6 @@ public final class EventService extends AbstractService {
 		unsubscribe(c, subscriber);
 	}
 
-	public <E extends ImageJEvent> void subscribe(final Class<E> c,
-		final EventSubscriber<E> subscriber)
-	{
-		eventBus.subscribe(c, subscriber);
-	}
-
-	public <E extends ImageJEvent> void subscribeStrongly(final Class<E> c,
-		final EventSubscriber<E> subscriber)
-	{
-		eventBus.subscribeStrongly(c, subscriber);
-	}
-
-	public <E extends ImageJEvent> void unsubscribe(final Class<E> c,
-		final EventSubscriber<E> subscriber)
-	{
-		eventBus.unsubscribe(c, subscriber);
-	}
-
 	public void subscribe(final List<EventSubscriber<?>> subscribers) {
 		for (final EventSubscriber<?> subscriber : subscribers) {
 			subscribe(subscriber);
@@ -191,6 +173,24 @@ public final class EventService extends AbstractService {
 	}
 
 	// -- Helper methods --
+
+	private <E extends ImageJEvent> void subscribe(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		eventBus.subscribe(c, subscriber);
+	}
+
+	private <E extends ImageJEvent> void subscribeStrongly(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		eventBus.subscribeStrongly(c, subscriber);
+	}
+
+	private <E extends ImageJEvent> void unsubscribe(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		eventBus.unsubscribe(c, subscriber);
+	}
 
 	private <E extends ImageJEvent> EventSubscriber<E> subscribe(
 		final Class<E> eventClass, final Object o, final Method m)

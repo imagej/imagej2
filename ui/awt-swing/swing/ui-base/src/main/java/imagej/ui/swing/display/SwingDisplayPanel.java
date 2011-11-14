@@ -238,7 +238,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			}
 
 		};
-		eventService.subscribe(AxisPositionEvent.class, axisPositionSubscriber);
+		eventService.subscribe(axisPositionSubscriber);
 	}
 
 	protected void onAxisPositionEvent(AxisPositionEvent event) {

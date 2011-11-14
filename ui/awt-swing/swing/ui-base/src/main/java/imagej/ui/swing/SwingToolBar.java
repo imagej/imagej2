@@ -108,10 +108,8 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
-		eventService.subscribe(ToolActivatedEvent.class,
-			toolActivatedEventSubscriber);
-		eventService.subscribe(ToolDeactivatedEvent.class,
-			toolDeactivatedEventSubscriber);
+		eventService.subscribe(toolActivatedEventSubscriber);
+		eventService.subscribe(toolDeactivatedEventSubscriber);
 	}
 
 	// -- ToolBar methods --
