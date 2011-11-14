@@ -138,9 +138,6 @@ public class SwingScriptRecorder implements ImageJPlugin {
 
 		});
 		frame.getContentPane().add(button, BorderLayout.NORTH);
-		frame.pack();
-		frame.setVisible(true); // BDZ says why are we calling this twice in 3
-														// lines?
 		frame.setBounds(new Rectangle(400, 400, 700, 300));
 		frame.setVisible(true);
 		StaticSwingUtils.locateUpperRight(frame);
