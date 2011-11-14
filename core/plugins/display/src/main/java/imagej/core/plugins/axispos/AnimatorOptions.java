@@ -88,9 +88,6 @@ public class AnimatorOptions extends DynamicPlugin {
 	private ImageDisplay display;
 	private Animation animation;
 
-	/**
-	 * construct the DynamicPlugin from a Display's Dataset
-	 */
 	public AnimatorOptions() {
 		// make sure input is okay
 		final ImageDisplayService imageDisplayService =
@@ -200,9 +197,9 @@ public class AnimatorOptions extends DynamicPlugin {
 	}
 
 	/**
-	 * Updates the current display's set of animation options. Each display has
-	 * its own set of options. Any animation launched on a display will use its
-	 * set of options. Options can be changed during the run of an animation.
+	 * Updates a display's set of animation options. Each display has its own set
+	 * of options. Any animation launched on a display will use its set of
+	 * options. Options can be changed during the run of an animation.
 	 */
 	@Override
 	public void run() {
