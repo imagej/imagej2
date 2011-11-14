@@ -43,7 +43,7 @@ import net.imglib2.img.Axis;
  * Multiple animations can be running concurrently. Each animation runs in its
  * own thread. Animations can be started or stopped using the {@link Animator}
  * plugin. Animation behavior can be modified through the
- * {@link AnimatorOptionsPlugin} plugin.
+ * {@link AnimatorOptions} plugin.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
