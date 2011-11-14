@@ -40,6 +40,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import net.imglib2.img.Axis;
  * Plugin for adjusting options that affect the behavior of animations.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
@@ -58,38 +60,33 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Animation Options...", weight = 4) })
 public class AnimatorOptionsPlugin extends DynamicPlugin {
 
-	// -- private constants --
-
-	private static final String NAME_KEY = "Axis";
-	private static final String FIRST_POS_KEY = "First position";
-	private static final String LAST_POS_KEY = "Last position";
-	private static final String FPS_KEY = "Speed (0.1 - 1000 fps)";
-	private static final String BACK_FORTH_KEY = "Loop back and forth";
-
 	// -- parameters --
 
-//	@Parameter
+	@Parameter(label = "Axis", persist = false)
+	@SuppressWarnings("unused")
 	private String axisName;
 
-//	@Parameter
+	@Parameter(label = "First position", persist = false, min = "1")
+	@SuppressWarnings("unused")
 	private long first;
 
-//	@Parameter
+	@Parameter(label = "Last position", persist = false, min = "1")
+	@SuppressWarnings("unused")
 	private long last;
 
-//	@Parameter
+	@Parameter(label = "Speed (0.1 - 1000 fps)", persist = false, min = "0.1",
+		max = "1000")
+	@SuppressWarnings("unused")
 	private double fps;
 
-//	@Parameter
+	@Parameter(label = "Loop back and forth", persist = false)
+	@SuppressWarnings("unused")
 	private boolean backForth;
 
 	// -- instance variables --
 
 	private ImageDisplay display;
 	private Animation animation;
-
-	private long oneBasedFirst;
-	private long oneBasedLast;
 
 	/**
 	 * construct the DynamicPlugin from a Display's Dataset
@@ -106,72 +103,111 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		animation = animationService.getAnimation(display);
 
 		// axis name field initialization
-		final DefaultModuleItem<String> name =
-			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<String> axisNameItem =
+			(DefaultModuleItem<String>) getInfo().getInput("axisName");
 		final Axis[] axes = display.getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final Axis axis : axes) {
 			if (Axes.isXY(axis)) continue;
 			choices.add(axis.getLabel());
 		}
-		name.setChoices(choices);
-		name.setPersisted(false);
-		addInput(name);
+		axisNameItem.setChoices(choices);
 		final Axis curAxis = animation.getAxis();
-		if (curAxis != null) setInput(NAME_KEY, curAxis.toString());
+		if (curAxis != null) setAxis(curAxis);
 
 		// first position field initialization
-		final DefaultModuleItem<Long> firstPos =
-			new DefaultModuleItem<Long>(this, FIRST_POS_KEY, Long.class);
-		firstPos.setPersisted(false);
-		firstPos.setMinimumValue(1L);
 		// TODO - can't set max value as it varies based upon the axis the user
 		// selects at dialog run time. Need a callback that can manipulate the
 		// field's max value from chosen axis max.
-		// firstPos.setMaximumValue(new Long(options.total));
-		addInput(firstPos);
-		setInput(FIRST_POS_KEY, animation.getFirst() + 1);
+		// firstItem.setMaximumValue(new Long(options.total));
+		setFirst(animation.getFirst() + 1);
 
 		// last position field initialization
-		final DefaultModuleItem<Long> lastPos =
-			new DefaultModuleItem<Long>(this, LAST_POS_KEY, Long.class);
-		lastPos.setPersisted(false);
-		lastPos.setMinimumValue(1L);
 		// TODO - can't set max value as it varies based upon the axis the user
 		// selects at dialog run time. Need a callback that can manipulate the
 		// field's max value from chosen axis max.
-		// lastPos.setMaximumValue(new Long(options.total));
-		addInput(lastPos);
-		setInput(LAST_POS_KEY, animation.getLast() + 1);
+		// lastItem.setMaximumValue(new Long(options.total));
+		setLast(animation.getLast() + 1);
 
 		// frames per second field initialization
-		final DefaultModuleItem<Double> framesPerSec =
-			new DefaultModuleItem<Double>(this, FPS_KEY, Double.class);
-		framesPerSec.setPersisted(false);
-		framesPerSec.setMinimumValue(0.1);
-		framesPerSec.setMaximumValue(1000.0);
-		addInput(framesPerSec);
-		setInput(FPS_KEY, animation.getFps());
+		setFPS(animation.getFps());
 
 		// back and forth field initialization
-		final DefaultModuleItem<Boolean> backForthBool =
-			new DefaultModuleItem<Boolean>(this, BACK_FORTH_KEY, Boolean.class);
-		backForthBool.setPersisted(false);
-		addInput(backForthBool);
-		setInput(BACK_FORTH_KEY, animation.isBackAndForth());
+		setBackAndForth(animation.isBackAndForth());
+	}
+
+	// CTR TODO - Solve issues with DynamicPlugin + @Parameter:
+	//
+	// 1) Values assigned to the @Parameter fields at any point will not be
+	// reflected in the module itself (e.g., when the input dialog pops up).
+	// This is because AbstractModule (and by extension DefaultModule) keeps
+	// its own copy of all the values in an internal table. The @Parameter
+	// logic works with non-dynamic plugins because PluginModule overrides
+	// Module.setInput(String, Object) and Module.setOutput(String, Object)
+	// to write to the @Parameter field directly.
+	// 2) Similarly, reading @Parameter fields in the run method will not work,
+	// because they will not have been updated to match the DynamicPlugin's
+	// internal table of values.
+	//
+	// How can we keep the values of the @Parameter variables in sync?
+	// At minimum, DynamicPlugin could have two public methods for syncing,
+	// one for each direction. Would be nice if it wasn't necessary to call
+	// them explicitly, though.
+	//
+	// In the meantime, we must be careful to always get and set the parameter
+	// values using the accessors and mutators below, rather than accessing the
+	// @Parameter fields directly.
+
+	public Axis getAxis() {
+		return Axes.get((String) getInput("axisName"));
+	}
+
+	public void setAxis(final Axis axis) {
+		setInput("axisName", axis.toString());
+	}
+
+	public double getFPS() {
+		return (Double) getInput("fps");
+	}
+
+	public void setFPS(final double fps) {
+		setInput("fps", fps);
+	}
+
+	public long getFirst() {
+		return (Long) getInput("first");
+	}
+
+	public void setFirst(final long first) {
+		setInput("first", first);
+	}
+
+	public long getLast() {
+		return (Long) getInput("last");
+	}
+
+	public void setLast(final long last) {
+		setInput("last", last);
+	}
+
+	public boolean isBackAndForth() {
+		return (Boolean) getInput("backForth");
+	}
+
+	public void setBackAndForth(final boolean backAndForth) {
+		setInput("backForth", backAndForth);
 	}
 
 	/**
-	 * Harvests the input values from the user and updates the current display's
-	 * set of animation options. Each display has it's own set of options. Any
-	 * animation launched on a display will use it's set of options. Options can
-	 * be changed during the run of an animation.
+	 * Updates the current display's set of animation options. Each display has
+	 * its own set of options. Any animation launched on a display will use its
+	 * set of options. Options can be changed during the run of an animation.
 	 */
 	@Override
 	public void run() {
 		if (display == null) return;
-		harvestInputs();
-		final Axis axis = Axes.get(axisName);
+		final Axis axis = getAxis();
 		final int axisIndex = display.getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		final long totalHyperplanes = display.getExtents().dimension(axisIndex);
@@ -181,32 +217,24 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 		final boolean active = animation.isActive();
 		animation.stop();
 		animation.setAxis(axis);
-		animation.setBackAndForth(backForth);
-		animation.setFirst(first);
-		animation.setLast(last);
-		animation.setFps(fps);
+		animation.setBackAndForth(isBackAndForth());
+		animation.setFirst(getFirst() - 1);
+		animation.setLast(getLast() - 1);
+		animation.setFps(getFPS());
 		if (active) animation.start();
 	}
 
 	// -- private helpers --
 
-	/** Harvests the user's input values from the dialog. */
-	private void harvestInputs() {
-		axisName = (String) getInput(NAME_KEY);
-		oneBasedFirst = (Long) getInput(FIRST_POS_KEY);
-		oneBasedLast = (Long) getInput(LAST_POS_KEY);
-		fps = (Double) getInput(FPS_KEY);
-		backForth = (Boolean) getInput(BACK_FORTH_KEY);
-	}
-
 	/** Sets the zero-based indices of the first and last frames. */
 	private void setFirstAndLast(final long totalHyperplanes) {
-		first = Math.min(oneBasedFirst, oneBasedLast) - 1;
-		last = Math.max(oneBasedFirst, oneBasedLast) - 1;
-		if (first < 0) first = 0;
-		if (last < 0) last = 0;
-		if (first >= totalHyperplanes) first = totalHyperplanes - 1;
-		if (last >= totalHyperplanes) last = totalHyperplanes - 1;
+		long f = getFirst(), l = getLast();
+		if (f < 1) f = 1;
+		if (l < 1) l = 1;
+		if (f > totalHyperplanes) f = totalHyperplanes;
+		if (l > totalHyperplanes) l = totalHyperplanes;
+		setFirst(f);
+		setLast(l);
 	}
 
 }
