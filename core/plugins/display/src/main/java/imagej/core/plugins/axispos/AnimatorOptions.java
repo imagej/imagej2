@@ -58,7 +58,7 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
 	@Menu(label = "Animation Options...", weight = 4) })
-public class AnimatorOptionsPlugin extends DynamicPlugin {
+public class AnimatorOptions extends DynamicPlugin {
 
 	// -- parameters --
 
@@ -91,7 +91,7 @@ public class AnimatorOptionsPlugin extends DynamicPlugin {
 	/**
 	 * construct the DynamicPlugin from a Display's Dataset
 	 */
-	public AnimatorOptionsPlugin() {
+	public AnimatorOptions() {
 		// make sure input is okay
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
