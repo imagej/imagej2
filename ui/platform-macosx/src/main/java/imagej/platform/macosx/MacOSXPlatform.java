@@ -54,13 +54,8 @@ import imagej.platform.PlatformService;
 @Platform(osName = "Mac OS X")
 public class MacOSXPlatform implements IPlatform {
 
-	private MacOSXAppListener appListener;
-
-	// -- MacOSXPlatform methods --
-
-	public MacOSXAppListener getAppListener() {
-		return appListener;
-	}
+	@SuppressWarnings("unused")
+	private MacOSXAppEventDispatcher appEventDispatcher;
 
 	// -- PlatformHandler methods --
 
@@ -72,7 +67,7 @@ public class MacOSXPlatform implements IPlatform {
 		// translate Mac OS X application events into ImageJ events
 		final Application app = Application.getApplication();
 		final EventService eventService = platformService.getEventService();
-		appListener = new MacOSXAppListener(app, eventService);
+		appEventDispatcher = new MacOSXAppEventDispatcher(app, eventService);
 
 		// duplicate menu bar across all window frames
 		platformService.setMenuBarDuplicated(true);
