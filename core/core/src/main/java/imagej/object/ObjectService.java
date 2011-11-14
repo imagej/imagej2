@@ -82,6 +82,10 @@ public final class ObjectService extends AbstractService {
 
 	// -- ObjectService methods --
 
+	public EventService getEventService() {
+		return eventService;
+	}
+
 	/** Gets the index of available objects. */
 	public ObjectIndex<Object> getIndex() {
 		return objectIndex;
