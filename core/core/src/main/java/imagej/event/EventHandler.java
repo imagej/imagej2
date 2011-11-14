@@ -43,6 +43,18 @@ import java.lang.annotation.Target;
  * Annotation identifying an event handler method. This annotation allows a
  * class to subscribe to multiple types of events by implementing multiple event
  * handling methods and annotating each with @{@link EventHandler}.
+ * <p>
+ * Note to developers: This annotation serves exactly the same purpose as
+ * EventBus's @{link org.bushe.swing.event.annotation.EventSubscriber}
+ * annotation, recapitulating a subset of the same functionality. We do this to
+ * avoid third party code depending directly on EventBus. That is, we do not
+ * wish to require ImageJ developers to
+ * <code>import org.bushe.swing.event.*</code> or similar. In this way, EventBus
+ * is isolated as only a transitive dependency of downstream code, rather than a
+ * direct dependency. Unfortunately, because Java annotation interfaces cannot
+ * utilize inheritance, we have to recapitulate the functionality rather than
+ * extend it (as we are able to do with {@link EventSubscriber}).
+ * </p>
  * 
  * @author Curtis Rueden
  * @see EventService
