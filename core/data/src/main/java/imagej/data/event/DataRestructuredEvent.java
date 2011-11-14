@@ -44,8 +44,8 @@ import imagej.data.Data;
  */
 public abstract class DataRestructuredEvent extends DataModifiedEvent {
 
-	public DataRestructuredEvent(final Data dataObject) {
-		super(dataObject);
+	public DataRestructuredEvent(final Data data) {
+		super(data);
 	}
 
 }

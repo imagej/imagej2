@@ -45,8 +45,8 @@ import imagej.data.Data;
  */
 public abstract class DataUpdatedEvent extends DataModifiedEvent {
 
-	public DataUpdatedEvent(final Data dataObject) {
-		super(dataObject);
+	public DataUpdatedEvent(final Data data) {
+		super(data);
 	}
 
 }

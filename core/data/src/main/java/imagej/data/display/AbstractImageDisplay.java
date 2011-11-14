@@ -466,8 +466,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	protected Dataset getDataset(final DataView view) {
-		final Data dataObject = view.getData();
-		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
+		final Data data = view.getData();
+		return data instanceof Dataset ? (Dataset) data : null;
 	}
 
 	private void initScaleConverter() {
