@@ -42,6 +42,7 @@ import imagej.util.Log;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bushe.swing.event.SwingEventService;
@@ -97,19 +98,19 @@ public final class EventService extends AbstractService {
 		unsubscribe(c, subscriber);
 	}
 
-	public void subscribe(final List<EventSubscriber<?>> subscribers) {
+	public void subscribe(final Collection<EventSubscriber<?>> subscribers) {
 		for (final EventSubscriber<?> subscriber : subscribers) {
 			subscribe(subscriber);
 		}
 	}
 
-	public void subscribeStrongly(final List<EventSubscriber<?>> subscribers) {
+	public void subscribeStrongly(final Collection<EventSubscriber<?>> subscribers) {
 		for (final EventSubscriber<?> subscriber : subscribers) {
 			subscribeStrongly(subscriber);
 		}
 	}
 
-	public void unsubscribe(final List<EventSubscriber<?>> subscribers) {
+	public void unsubscribe(final Collection<EventSubscriber<?>> subscribers) {
 		for (final EventSubscriber<?> subscriber : subscribers) {
 			unsubscribe(subscriber);
 		}
