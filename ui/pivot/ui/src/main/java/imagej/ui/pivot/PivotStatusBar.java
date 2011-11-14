@@ -34,9 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.pivot;
 
+import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
+
+import java.util.List;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
@@ -47,18 +51,20 @@ import org.apache.pivot.wtk.Meter;
  *
  * @author Curtis Rueden
  */
-public final class PivotStatusBar extends BoxPane
-	implements StatusBar, EventSubscriber<StatusEvent>
-{
+public final class PivotStatusBar extends BoxPane implements StatusBar {
 
 	private final Label label;
 	private final Meter meter;
 
-	public PivotStatusBar() {
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
+
+	public PivotStatusBar(final EventService eventService) {
 		label = new Label();
 		add(label);
 		meter = new Meter();
 		add(meter);
+		subscribers = eventService.subscribeAll(this);
 	}
 
 	// -- StatusBar methods --
@@ -78,10 +84,10 @@ public final class PivotStatusBar extends BoxPane
 		}
 	}
 	
-	// -- EventSubscriber methods --
+	// -- Event handlers --
 
-	@Override
-	public void onEvent(final StatusEvent event) {
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
 		final String message = event.getStatusMessage();
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();

@@ -55,4 +55,6 @@ public interface EventSubscriber<E extends ImageJEvent> extends
 	@Override
 	void onEvent(E event);
 
+	Class<E> getEventClass();
+
 }

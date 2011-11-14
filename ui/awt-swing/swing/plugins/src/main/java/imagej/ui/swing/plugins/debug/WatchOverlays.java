@@ -43,6 +43,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.event.DisplayActivatedEvent;
@@ -74,50 +75,33 @@ public class WatchOverlays implements ImageJPlugin {
 	private static SwingOutputWindow window;
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
+	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
 	@Override
 	public void run() {
 		window = new SwingOutputWindow("Overlays in Current Display");
 		updateOverlaysShown();
-		subscribeToEvents();
+		subscribers = eventService.subscribeAll(this);
 	}
 
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
+	@EventHandler
+	protected void onEvent(
+		@SuppressWarnings("unused") final ObjectsListEvent event)
+	{
+		updateOverlaysShown();
+	}
 
-		final EventSubscriber<ObjectsListEvent> objectsUpdatedSubscriber =
-			new EventSubscriber<ObjectsListEvent>() {
+//	@EventHandler
+//	protected void onEvent(final WinActivatedEvent event) {
+//		updateOverlaysShown();
+//	}
 
-				@Override
-				public void onEvent(final ObjectsListEvent event) {
-					updateOverlaysShown();
-				}
-			};
-		subscribers.add(objectsUpdatedSubscriber);
-		eventService.subscribe(objectsUpdatedSubscriber);
-		//
-//		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
-//				new EventSubscriber<WinActivatedEvent>() {
-//					@Override
-//					public void onEvent(final WinActivatedEvent event) {
-//						updateOverlaysShown();
-//					}
-//				};
-//		subscribers.add(WinActivatedSubscriber);
-//		Events.subscribe(WinActivatedEvent.class, WinActivatedSubscriber);
-
-		final EventSubscriber<DisplayActivatedEvent> DisplaySelectedSubscriber =
-			new EventSubscriber<DisplayActivatedEvent>() {
-
-				@Override
-				public void onEvent(final DisplayActivatedEvent event) {
-					updateOverlaysShown();
-				}
-			};
-		subscribers.add(DisplaySelectedSubscriber);
-		eventService.subscribe(DisplaySelectedSubscriber);
+	@EventHandler
+	protected void onEvent(
+		@SuppressWarnings("unused") final DisplayActivatedEvent event)
+	{
+		updateOverlaysShown();
 	}
 
 	private void updateOverlaysShown() {
@@ -218,7 +202,8 @@ public class WatchOverlays implements ImageJPlugin {
 		return overlays;
 	}
 
-	public boolean isVisible(final Overlay overlay, final Position planePosition)
+	public boolean
+		isVisible(final Overlay overlay, final Position planePosition)
 	{
 		for (int i = 2; i < overlay.numDimensions(); i++) {
 			final Axis axis = overlay.axis(i);

@@ -38,6 +38,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
@@ -51,6 +52,9 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 import imagej.util.RealRect;
+
+import java.util.List;
+
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
@@ -87,8 +91,8 @@ public class ShadowsDemo implements ImageJPlugin {
 
 	private boolean userHasQuit = false;
 	private ImageDisplay currDisplay = null;
-	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
-	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
+
+	private List<EventSubscriber<?>> subscribers;
 
 	// -- public interface --
 
@@ -106,7 +110,7 @@ public class ShadowsDemo implements ImageJPlugin {
 			Log.error("This command only works with a single plane of data");
 			return;
 		}
-		subscribeToEvents();
+		subscribers = eventService.subscribeAll(this);
 		eventService.publish(new StatusEvent("Press ESC to terminate"));
 
 		final RealRect selection = overlayService.getSelectionBounds(currDisplay);
@@ -128,7 +132,10 @@ public class ShadowsDemo implements ImageJPlugin {
 			}
 		}
 		eventService.publish(new StatusEvent("Shadows demo terminated"));
-		unsubscribeFromEvents();
+
+		// unsubscribe from events; this keeps ImageJ from maintaining
+		// dangling references to obsolete event listeners
+		eventService.unsubscribe(subscribers);
 	}
 
 	/**
@@ -148,46 +155,24 @@ public class ShadowsDemo implements ImageJPlugin {
 		return false;
 	}
 
-	/**
-	 * Subscribes to events that will track when the user has decided to quit.
-	 */
-	@SuppressWarnings("synthetic-access")
-	private void subscribeToEvents() {
-		kyPressSubscriber = new EventSubscriber<KyPressedEvent>() {
-
-			@Override
-			public void onEvent(final KyPressedEvent event) {
-				if (event.getCode() == KeyCode.ESCAPE) {
-					final Display<?> display = event.getDisplay();
-					if (display != null) {
-						if (display == currDisplay) userHasQuit = true;
-					}
-					else { // display == null : event from application bar
-						if (imgDispService.getActiveImageDisplay() == currDisplay) userHasQuit =
-							true;
-					}
+	@EventHandler
+	protected void onEvent(final KyPressedEvent event) {
+		if (event.getCode() == KeyCode.ESCAPE) {
+			final Display<?> display = event.getDisplay();
+			if (display != null) {
+				if (display == currDisplay) userHasQuit = true;
+			}
+			else { // display == null : event from application bar
+				if (imgDispService.getActiveImageDisplay() == currDisplay) {
+					userHasQuit = true;
 				}
 			}
-		};
-		eventService.subscribe(kyPressSubscriber);
-
-		displaySubscriber = new EventSubscriber<DisplayDeletedEvent>() {
-
-			@Override
-			public void onEvent(final DisplayDeletedEvent event) {
-				if (event.getObject() == currDisplay) userHasQuit = true;
-			}
-		};
-		eventService.subscribe(displaySubscriber);
+		}
 	}
 
-	/**
-	 * Unsubscribes from events. this keeps IJ2 from maintaining dangling
-	 * references to obsolete event listeners.
-	 */
-	private void unsubscribeFromEvents() {
-		eventService.unsubscribe(kyPressSubscriber);
-		eventService.unsubscribe(displaySubscriber);
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent event) {
+		if (event.getObject() == currDisplay) userHasQuit = true;
 	}
 
 }

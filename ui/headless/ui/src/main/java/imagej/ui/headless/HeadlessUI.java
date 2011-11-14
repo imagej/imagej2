@@ -34,19 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.headless;
 
-import imagej.event.EventSubscriber;
+import imagej.event.EventHandler;
 import imagej.event.StatusEvent;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
+import imagej.ui.IUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.StatusBar;
 import imagej.ui.ToolBar;
-import imagej.ui.UserInterface;
 import imagej.ui.UIService;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.util.Log;
 
 import java.io.BufferedReader;
@@ -65,7 +65,7 @@ import javax.script.ScriptException;
  * @author Curtis Rueden
  */
 @UserInterface
-public class HeadlessUI implements IUserInterface, EventSubscriber<StatusEvent> {
+public class HeadlessUI implements IUserInterface {
 
 	private UIService uiService;
 
@@ -198,10 +198,10 @@ public class HeadlessUI implements IUserInterface, EventSubscriber<StatusEvent> 
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	// -- EventSubscriber methods --
+	// -- Event handlers --
 
-	@Override
-	public void onEvent(final StatusEvent event) {
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
 		final String message = event.getStatusMessage();
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();

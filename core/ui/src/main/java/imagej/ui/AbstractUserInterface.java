@@ -35,12 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.platform.event.AppQuitEvent;
 import imagej.util.Prefs;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract superclass for {@link IUserInterface} implementations.
@@ -55,6 +56,9 @@ public abstract class AbstractUserInterface implements IUserInterface {
 
 	private UIService uiService;
 	private EventService eventService;
+
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	// -- UserInterface methods --
 
@@ -104,7 +108,7 @@ public abstract class AbstractUserInterface implements IUserInterface {
 	 * showing it (assuming the UI has an {@link ApplicationFrame}).
 	 */
 	protected void createUI() {
-		subscribeToEvents();
+		subscribers = eventService.subscribeAll(this);
 		restoreLocation();
 	}
 
@@ -127,6 +131,15 @@ public abstract class AbstractUserInterface implements IUserInterface {
 		}
 	}
 
+	// -- Event handlers --
+
+	// TODO - migrate event handling logic to UIService
+
+	@EventHandler
+	public void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+		saveLocation();
+	}
+
 	// -- Helper methods --
 
 	/** Shows the readme, if this is the first time ImageJ has run. */
@@ -135,23 +148,6 @@ public abstract class AbstractUserInterface implements IUserInterface {
 		if (firstRun != null) return;
 		Prefs.put(getClass(), PREF_FIRST_RUN, false);
 		uiService.getPluginService().run(ShowReadme.class);
-	}
-
-	private ArrayList<EventSubscriber<?>> subscribers;
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<AppQuitEvent> quitSubscriber =
-			new EventSubscriber<AppQuitEvent>() {
-
-				@Override
-				public void onEvent(final AppQuitEvent event) {
-					saveLocation();
-				}
-			};
-		subscribers.add(quitSubscriber);
-		eventService.subscribe(quitSubscriber);
 	}
 
 }

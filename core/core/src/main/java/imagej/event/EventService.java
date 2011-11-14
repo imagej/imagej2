@@ -46,6 +46,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bushe.swing.event.SwingEventService;
+import org.bushe.swing.event.annotation.AbstractProxySubscriber;
+import org.bushe.swing.event.annotation.BaseProxySubscriber;
+import org.bushe.swing.event.annotation.ReferenceStrength;
 
 /**
  * Service for publishing and subscribing to ImageJ events.
@@ -56,7 +59,7 @@ import org.bushe.swing.event.SwingEventService;
 @Service
 public final class EventService extends AbstractService {
 
-	private org.bushe.swing.event.EventService eventBus;
+	protected org.bushe.swing.event.EventService eventBus;
 
 	// -- Constructors --
 
@@ -80,15 +83,13 @@ public final class EventService extends AbstractService {
 	public <E extends ImageJEvent> void subscribe(
 		final EventSubscriber<E> subscriber)
 	{
-		final Class<E> c = getEventClass(subscriber);
-		subscribe(c, subscriber);
+		subscribe(subscriber.getEventClass(), subscriber);
 	}
 
 	public <E extends ImageJEvent> void unsubscribe(
 		final EventSubscriber<E> subscriber)
 	{
-		final Class<E> c = getEventClass(subscriber);
-		unsubscribe(c, subscriber);
+		unsubscribe(subscriber.getEventClass(), subscriber);
 	}
 
 	public void subscribe(final Collection<EventSubscriber<?>> subscribers) {
@@ -114,7 +115,7 @@ public final class EventService extends AbstractService {
 	 *         to fall out of scope or they will be garbage collected (in which
 	 *         case events will not be delivered to them!).
 	 */
-	public List<EventSubscriber<?>> subscribe(final Object o) {
+	public List<EventSubscriber<?>> subscribeAll(final Object o) {
 		final List<EventSubscriber<?>> subscribers =
 			new ArrayList<EventSubscriber<?>>();
 
@@ -175,32 +176,11 @@ public final class EventService extends AbstractService {
 	}
 
 	private <E extends ImageJEvent> EventSubscriber<E> subscribe(
-		final Class<E> eventClass, final Object o, final Method m)
+		final Class<E> c, final Object o, final Method m)
 	{
-		final EventMethodSubscriber<E> subscriber =
-			new EventMethodSubscriber<E>(o, m);
-		subscribe(eventClass, subscriber);
+		final ProxySubscriber<E> subscriber = new ProxySubscriber<E>(c, o, m);
+		subscribe(c, subscriber);
 		return subscriber;
-	}
-
-	/**
-	 * Gets the event class for the given {@link EventSubscriber}.
-	 * <p>
-	 * This method works by scanning for an appropriate <code>onEvent</code>
-	 * method via reflection, and extracting the {@link Class} of the argument.
-	 * </p>
-	 */
-	private <E extends ImageJEvent> Class<E> getEventClass(
-		final EventSubscriber<E> subscriber)
-	{
-		for (final Method m : subscriber.getClass().getDeclaredMethods()) {
-			if (!m.getName().equals("onEvent")) continue;
-			final Class<? extends ImageJEvent> eventClass = getEventClass(m);
-			@SuppressWarnings("unchecked")
-			final Class<E> typedClass = (Class<E>) eventClass;
-			return typedClass;
-		}
-		return null;
 	}
 
 	/** Gets the event class parameter of the given method. */
@@ -217,36 +197,67 @@ public final class EventService extends AbstractService {
 
 	// -- Helper classes --
 
-	/** Helper class used by {@link #subscribe(Object)}. */
-	private class EventMethodSubscriber<E extends ImageJEvent> implements
-		EventSubscriber<E>
+	/**
+	 * Helper class used by {@link #subscribeAll(Object)}.
+	 * <p>
+	 * Recapitulates some logic from {@link BaseProxySubscriber}, because that
+	 * class implements {@link org.bushe.swing.event.EventSubscriber} as a raw
+	 * type, which is incompatible with this class implementing ImageJ's
+	 * {@link EventSubscriber} as a typed interface; it becomes impossible to
+	 * implement both <code>onEvent(Object)</code> and <code>onEvent(E)</code>.
+	 * </p>
+	 */
+	private class ProxySubscriber<E extends ImageJEvent> extends
+		AbstractProxySubscriber implements EventSubscriber<E>
 	{
 
-		private final Object o;
-		private final Method m;
+		private final Class<E> c;
 
-		public EventMethodSubscriber(final Object o, final Method m) {
-			this.o = o;
-			this.m = m;
+		public ProxySubscriber(final Class<E> c, final Object o, final Method m) {
+			super(o, m, ReferenceStrength.WEAK, eventBus, false);
+			this.c = c;
+
 			// allow calling of non-public methods
 			m.setAccessible(true);
 		}
 
+		/**
+		 * Handles the event publication by pushing it to the real subscriber's
+		 * subscription method.
+		 * 
+		 * @param event The event to publish.
+		 */
 		@Override
 		public void onEvent(final E event) {
 			try {
-				m.invoke(o, event);
-			}
-			catch (final IllegalArgumentException e) {
-				Log.error("Event handler threw exception", e);
+				final Object obj = getProxiedSubscriber();
+				if (obj == null) {
+					// has been garbage collected
+					return;
+				}
+				final Method subscriptionMethod = getSubscriptionMethod();
+				subscriptionMethod.invoke(obj, event);
 			}
 			catch (final IllegalAccessException e) {
-				Log.error("Event handler threw exception", e);
+				Log.error("Exception when invoking annotated method from " +
+					"EventService publication.  Event class:" + event.getClass() +
+					", Event:" + event + ", subscriber:" + getProxiedSubscriber() +
+					", subscription Method=" + getSubscriptionMethod(), e);
 			}
 			catch (final InvocationTargetException e) {
-				Log.error("Event handler threw exception", e);
+				Log.error("InvocationTargetException when invoking " +
+					"annotated method from EventService publication.  Event class:" +
+					event.getClass() + ", Event:" + event + ", subscriber:" +
+					getProxiedSubscriber() + ", subscription Method=" +
+					getSubscriptionMethod(), e);
 			}
 		}
+
+		@Override
+		public Class<E> getEventClass() {
+			return c;
+		}
+
 	}
 
 }

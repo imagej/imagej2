@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swt;
 
+import java.util.List;
+
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
@@ -49,19 +52,20 @@ import org.eclipse.swt.widgets.ProgressBar;
  *
  * @author Curtis Rueden
  */
-public class SWTStatusBar extends Composite
-	implements StatusBar, EventSubscriber<StatusEvent>
-{
+public class SWTStatusBar extends Composite implements StatusBar {
 
 	private final Label label;
 	private final ProgressBar progressBar;
+
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	public SWTStatusBar(final Composite parent, final EventService eventService) {
 		super(parent, 0);
 		setLayout(new MigLayout());
 		label = new Label(this, 0);
 		progressBar = new ProgressBar(this, 0);
-		eventService.subscribe(this);
+		subscribers = eventService.subscribeAll(this);
 	}
 
 	@Override
@@ -75,8 +79,8 @@ public class SWTStatusBar extends Composite
 		progressBar.setMaximum(max);
 	}
 
-	@Override
-	public void onEvent(final StatusEvent event) {
+	@EventHandler
+	protected void onEvent(final StatusEvent event) {
 		final String message = event.getStatusMessage();
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();

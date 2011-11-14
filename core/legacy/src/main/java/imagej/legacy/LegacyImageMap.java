@@ -40,6 +40,7 @@ import ij.gui.Roi;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.roi.Overlay;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.event.DisplayDeletedEvent;
@@ -47,7 +48,7 @@ import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,18 +95,16 @@ public class LegacyImageMap {
 	private final DefaultImageTranslator imageTranslator;
 
 	/** List of event subscribers, to avoid garbage collection. */
-	private final ArrayList<EventSubscriber<?>> subscribers;
-	private final EventService eventService;
+	@SuppressWarnings("unused")
+	private final List<EventSubscriber<?>> subscribers;
 
 	// -- Constructor --
 
 	public LegacyImageMap(final EventService eventService) {
-		this.eventService = eventService;
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
 		imageTranslator = new DefaultImageTranslator();
-		subscribers = new ArrayList<EventSubscriber<?>>();
-		subscribeToEvents();
+		subscribers = eventService.subscribeAll(this);
 	}
 
 	// -- LegacyImageMap methods --
@@ -212,48 +211,39 @@ public class LegacyImageMap {
 		}
 	}
 
-	private void subscribeToEvents() {
-		/* Removing this code to fix bug #835. Rely on LegacyPlugin to create
-			ImagePluses as they are needed. 
-		final EventSubscriber<DisplayCreatedEvent> creationSubscriber =
-			new EventSubscriber<DisplayCreatedEvent>() {
+	// -- Event handlers --
 
-				@Override
-				public void onEvent(final DisplayCreatedEvent event) {
-					if(event.getObject() instanceof ImageDisplay) 
-						registerDisplay((ImageDisplay)event.getObject());
-				}
-			};
-		subscribers.add(creationSubscriber);
-		eventService.subscribe(DisplayCreatedEvent.class, creationSubscriber);
-		*/
+	/*
+	Removing this code to fix bug #835. Rely on LegacyPlugin to create
+	ImagePluses as they are needed.
 
-		final EventSubscriber<DisplayDeletedEvent> deletionSubscriber =
-			new EventSubscriber<DisplayDeletedEvent>() {
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent event) {
+		if (event.getObject() instanceof ImageDisplay) {
+			registerDisplay((ImageDisplay) event.getObject());
+		}
+	}
+	*/
 
-				@Override
-				public void onEvent(final DisplayDeletedEvent event) {
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent event) {
 
-					// Need to make sure:
-					// - IJ2 Windows always close when IJ1 close expected
-					//     Stack to Images, Split Channels, etc.
-					// - No ImagePlus/Display mapping becomes a zombie in the
-					//     LegacyImageMap failing to get garbage collected.
-					// - That IJ2 does not think IJ1 initiated the ij1.close()
-					if (event.getObject() instanceof ImageDisplay) {
-						final ImagePlus imp =
-							lookupImagePlus((ImageDisplay) event.getObject());
+		// Need to make sure:
+		// - IJ2 Windows always close when IJ1 close expected
+		//     Stack to Images, Split Channels, etc.
+		// - No ImagePlus/Display mapping becomes a zombie in the
+		//     LegacyImageMap failing to get garbage collected.
+		// - That IJ2 does not think IJ1 initiated the ij1.close()
+		if (event.getObject() instanceof ImageDisplay) {
+			final ImagePlus imp =
+					lookupImagePlus((ImageDisplay) event.getObject());
 
-						if (imp != null) LegacyOutputTracker.closeInitiatedByIJ2(imp);
+			if (imp != null) LegacyOutputTracker.closeInitiatedByIJ2(imp);
 
-						unregisterDisplay((ImageDisplay) event.getObject());
+			unregisterDisplay((ImageDisplay) event.getObject());
 
-						if (imp != null) LegacyOutputTracker.closeCompletedByIJ2(imp);
-					}
-				}
-			};
-		subscribers.add(deletionSubscriber);
-		eventService.subscribe(deletionSubscriber);
+			if (imp != null) LegacyOutputTracker.closeCompletedByIJ2(imp);
+		}
 	}
 
 }

@@ -64,6 +64,7 @@ import org.apache.pivot.wtk.Orientation;
 public class PivotUI implements Application, IUserInterface {
 
 	private UIService uiService;
+	private EventService eventService;
 
 	private PivotApplicationFrame frame;
 	private PivotToolBar toolBar;
@@ -79,7 +80,7 @@ public class PivotUI implements Application, IUserInterface {
 	{
 		frame = new PivotApplicationFrame();
 		toolBar = new PivotToolBar();
-		statusBar = new PivotStatusBar();
+		statusBar = new PivotStatusBar(eventService);
 
 		contentPane = new BoxPane();
 		contentPane.setOrientation(Orientation.VERTICAL);
@@ -115,6 +116,7 @@ public class PivotUI implements Application, IUserInterface {
 	@Override
 	public void initialize(final UIService service) {
 		uiService = service;
+		eventService = uiService.getEventService();
 		final String[] args = { getClass().getName() };
 		DesktopApplicationContext.main(args);
 	}

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
@@ -47,7 +48,6 @@ import imagej.object.event.ObjectsListEvent;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -64,6 +64,7 @@ public class WatchDisplays implements ImageJPlugin {
 	private EventService eventService;
 
 	private static SwingOutputWindow window;
+
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
@@ -73,7 +74,7 @@ public class WatchDisplays implements ImageJPlugin {
 		StaticSwingUtils.locateLowerRight(window);
 		window.setVisible(true);
 		showDisplays();
-		subscribeToEvents();
+		subscribers = eventService.subscribeAll(this);
 	}
 
 	public void showDisplays() {
@@ -103,45 +104,19 @@ public class WatchDisplays implements ImageJPlugin {
 		}
 	}
 
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
+	@EventHandler
+	protected void onEvent(final ObjectsListEvent event) {
+		showDisplays();
+	}
 
-		final EventSubscriber<ObjectsListEvent> objectsUpdatedSubscriber =
-			new EventSubscriber<ObjectsListEvent>() {
+//	@EventHandler
+//	protected void onEvent(final WinActivatedEvent event) {
+//		showDisplays();
+//	}
 
-				@Override
-				public void onEvent(final ObjectsListEvent event) {
-					showDisplays();
-				}
-
-			};
-		subscribers.add(objectsUpdatedSubscriber);
-		eventService.subscribe(objectsUpdatedSubscriber);
-
-//		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
-//				new EventSubscriber<WinActivatedEvent>() {
-//
-//					@Override
-//					public void onEvent(final WinActivatedEvent event) {
-//						showDisplays();
-//					}
-//
-//				};
-//		subscribers.add(WinActivatedSubscriber);
-//		Events.subscribe(WinActivatedEvent.class, WinActivatedSubscriber);
-
-		final EventSubscriber<DisplayActivatedEvent> DisplaySelectedSubscriber =
-			new EventSubscriber<DisplayActivatedEvent>() {
-
-				@Override
-				public void onEvent(final DisplayActivatedEvent event) {
-					showDisplays();
-				}
-
-			};
-		subscribers.add(DisplaySelectedSubscriber);
-		eventService.subscribe(DisplaySelectedSubscriber);
-
+	@EventHandler
+	public void onEvent(final DisplayActivatedEvent event) {
+		showDisplays();
 	}
 
 }
