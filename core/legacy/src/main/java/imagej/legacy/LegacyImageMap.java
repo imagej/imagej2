@@ -253,7 +253,7 @@ public class LegacyImageMap {
 				}
 			};
 		subscribers.add(deletionSubscriber);
-		eventService.subscribe(DisplayDeletedEvent.class, deletionSubscriber);
+		eventService.subscribe(deletionSubscriber);
 	}
 
 }

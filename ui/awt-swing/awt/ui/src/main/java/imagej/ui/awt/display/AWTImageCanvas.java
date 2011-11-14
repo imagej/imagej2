@@ -101,7 +101,7 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 		canvasHelper = new CanvasHelper(this);
 //		setOpaque(false);
 		addResizeListener();
-		ImageJ.get(EventService.class).subscribe(ToolActivatedEvent.class, this);
+		ImageJ.get(EventService.class).subscribe(this);
 	}
 
 	/** Creates an image canvas with the specified image. */

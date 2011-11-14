@@ -105,7 +105,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		subscribers.add(creationSubscriber);
-		eventService.subscribe(OverlayCreatedEvent.class, creationSubscriber);
+		eventService.subscribe(creationSubscriber);
 		//
 		final EventSubscriber<OverlayDeletedEvent> deletionSubscriber =
 			new EventSubscriber<OverlayDeletedEvent>() {
@@ -119,7 +119,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		subscribers.add(deletionSubscriber);
-		eventService.subscribe(OverlayDeletedEvent.class, deletionSubscriber);
+		eventService.subscribe(deletionSubscriber);
 		//
 		// No need to update unless thumbnail will be redrawn.
 //		final EventSubscriber<OverlayRestructuredEvent> restructureSubscriber =
@@ -149,7 +149,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		subscribers.add(displayActivatedSubscriber);
-		eventService.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
+		eventService.subscribe(displayActivatedSubscriber);
 
 		final EventSubscriber<DataViewSelectionEvent> viewSelectionSubscriber =
 			new EventSubscriber<DataViewSelectionEvent>() {
@@ -182,8 +182,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 				}
 			};
 		subscribers.add(viewSelectionSubscriber);
-		eventService.subscribe(DataViewSelectionEvent.class,
-			viewSelectionSubscriber);
+		eventService.subscribe(viewSelectionSubscriber);
 		//
 	}
 

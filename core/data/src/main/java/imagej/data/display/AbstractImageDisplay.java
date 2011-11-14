@@ -357,8 +357,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				}
 			}
 		};
-		eventService.subscribe(DataRestructuredEvent.class,
-			dataRestructuredSubscriber);
+		eventService.subscribe(dataRestructuredSubscriber);
 
 		dataUpdatedSubscriber = new EventSubscriber<DataUpdatedEvent>() {
 
@@ -373,7 +372,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				}
 			}
 		};
-		eventService.subscribe(DataUpdatedEvent.class, dataUpdatedSubscriber);
+		eventService.subscribe(dataUpdatedSubscriber);
 
 		datasetRestructuredSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>() {
@@ -400,8 +399,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					}
 				}
 			};
-		eventService.subscribe(DatasetRestructuredEvent.class,
-			datasetRestructuredSubscriber);
+		eventService.subscribe(datasetRestructuredSubscriber);
 
 		datasetUpdatedSubscriber = new EventSubscriber<DatasetUpdatedEvent>() {
 
@@ -414,7 +412,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				getPanel().setLabel(makeLabel());
 			}
 		};
-		eventService.subscribe(DatasetUpdatedEvent.class, datasetUpdatedSubscriber);
+		eventService.subscribe(datasetUpdatedSubscriber);
 
 		displayDeletedSubscriber = new EventSubscriber<DisplayDeletedEvent>() {
 
@@ -427,7 +425,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				}
 			}
 		};
-		eventService.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+		eventService.subscribe(displayDeletedSubscriber);
 
 		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
 			new EventSubscriber<WinActivatedEvent>() {
@@ -441,7 +439,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 					getCanvas().setCursor(toolService.getActiveTool().getCursor());
 				}
 			};
-		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
+		eventService.subscribe(winActivatedSubscriber);
 
 		zoomSubscriber = new EventSubscriber<ZoomEvent>() {
 
@@ -451,24 +449,19 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 				getPanel().setLabel(makeLabel());
 			}
 		};
-		eventService.subscribe(ZoomEvent.class, zoomSubscriber);
+		eventService.subscribe(zoomSubscriber);
 
 	}
 
 	// NB - this method necessary to make sure resources get returned via GC.
 	// Else there is a memory leak.
 	private void unsubscribeFromEvents() {
-		eventService.unsubscribe(DataRestructuredEvent.class,
-			dataRestructuredSubscriber);
-		eventService.unsubscribe(DataUpdatedEvent.class,
-			dataUpdatedSubscriber);
-		eventService.unsubscribe(DatasetRestructuredEvent.class,
-			datasetRestructuredSubscriber);
-		eventService.unsubscribe(DatasetUpdatedEvent.class,
-			datasetUpdatedSubscriber);
-		eventService.unsubscribe(DisplayDeletedEvent.class,
-			displayDeletedSubscriber);
-		eventService.unsubscribe(ZoomEvent.class, zoomSubscriber);
+		eventService.unsubscribe(dataRestructuredSubscriber);
+		eventService.unsubscribe(dataUpdatedSubscriber);
+		eventService.unsubscribe(datasetRestructuredSubscriber);
+		eventService.unsubscribe(datasetUpdatedSubscriber);
+		eventService.unsubscribe(displayDeletedSubscriber);
+		eventService.unsubscribe(zoomSubscriber);
 	}
 
 	protected void closeHelper() {

@@ -169,7 +169,7 @@ public class ShadowsDemo implements ImageJPlugin {
 				}
 			}
 		};
-		eventService.subscribe(KyPressedEvent.class, kyPressSubscriber);
+		eventService.subscribe(kyPressSubscriber);
 
 		displaySubscriber = new EventSubscriber<DisplayDeletedEvent>() {
 
@@ -178,7 +178,7 @@ public class ShadowsDemo implements ImageJPlugin {
 				if (event.getObject() == currDisplay) userHasQuit = true;
 			}
 		};
-		eventService.subscribe(DisplayDeletedEvent.class, displaySubscriber);
+		eventService.subscribe(displaySubscriber);
 	}
 
 	/**
@@ -186,8 +186,8 @@ public class ShadowsDemo implements ImageJPlugin {
 	 * references to obsolete event listeners.
 	 */
 	private void unsubscribeFromEvents() {
-		eventService.unsubscribe(KyPressedEvent.class, kyPressSubscriber);
-		eventService.unsubscribe(DisplayDeletedEvent.class, displaySubscriber);
+		eventService.unsubscribe(kyPressSubscriber);
+		eventService.unsubscribe(displaySubscriber);
 	}
 
 }

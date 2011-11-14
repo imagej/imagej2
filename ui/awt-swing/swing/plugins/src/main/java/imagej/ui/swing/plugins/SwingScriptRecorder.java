@@ -168,11 +168,11 @@ public class SwingScriptRecorder implements ImageJPlugin {
 		};
 
 	private void subscribeToEvents() {
-		eventService.subscribe(ImageJEvent.class, imageJEventSubscriber);
+		eventService.subscribe(imageJEventSubscriber);
 	}
 
 	private void unSubscribeFromEvents() {
-		eventService.unsubscribe(ImageJEvent.class, imageJEventSubscriber);
+		eventService.unsubscribe(imageJEventSubscriber);
 	}
 
 	public void append(final String text) {

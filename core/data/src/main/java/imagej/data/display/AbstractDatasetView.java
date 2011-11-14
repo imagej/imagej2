@@ -349,7 +349,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 			};
 		subscribers.add(typeChangeSubscriber);
-		eventService.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
+		eventService.subscribe(typeChangeSubscriber);
 
 		final EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
 			new EventSubscriber<DatasetRGBChangedEvent>() {
@@ -363,7 +363,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 			};
 		subscribers.add(rgbChangeSubscriber);
-		eventService.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
+		eventService.subscribe(rgbChangeSubscriber);
 
 		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
 			new EventSubscriber<DatasetUpdatedEvent>() {
@@ -383,7 +383,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 			};
 		subscribers.add(updateSubscriber);
-		eventService.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
+		eventService.subscribe(updateSubscriber);
 	}
 
 }

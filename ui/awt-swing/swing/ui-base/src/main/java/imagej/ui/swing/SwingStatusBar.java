@@ -74,7 +74,7 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 		setLayout(new BorderLayout());
 		add(statusText, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.EAST);
-		eventService.subscribe(StatusEvent.class, this);
+		eventService.subscribe(this);
 		statusText.addMouseListener(this);
 	}
 

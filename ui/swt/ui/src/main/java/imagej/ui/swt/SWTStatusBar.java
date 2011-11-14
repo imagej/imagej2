@@ -61,7 +61,7 @@ public class SWTStatusBar extends Composite
 		setLayout(new MigLayout());
 		label = new Label(this, 0);
 		progressBar = new ProgressBar(this, 0);
-		eventService.subscribe(StatusEvent.class, this);
+		eventService.subscribe(this);
 	}
 
 	@Override

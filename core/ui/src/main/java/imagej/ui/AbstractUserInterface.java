@@ -151,7 +151,7 @@ public abstract class AbstractUserInterface implements IUserInterface {
 				}
 			};
 		subscribers.add(quitSubscriber);
-		eventService.subscribe(AppQuitEvent.class, quitSubscriber);
+		eventService.subscribe(quitSubscriber);
 	}
 
 }
