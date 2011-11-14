@@ -1,5 +1,5 @@
 //
-// MacOSXAppListener.java
+// MacOSXAppEventDispatcher.java
 //
 
 /*
