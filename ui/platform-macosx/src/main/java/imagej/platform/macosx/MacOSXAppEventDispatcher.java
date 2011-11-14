@@ -74,7 +74,7 @@ import imagej.platform.event.AppVisibleEvent;
  * 
  * @author Curtis Rueden
  */
-public class MacOSXAppListener implements AboutHandler,
+public class MacOSXAppEventDispatcher implements AboutHandler,
 	AppForegroundListener, AppHiddenListener, AppReOpenedListener,
 	PreferencesHandler, PrintFilesHandler, QuitHandler, ScreenSleepListener,
 	SystemSleepListener, UserSessionListener
@@ -82,7 +82,7 @@ public class MacOSXAppListener implements AboutHandler,
 
 	private final EventService eventService;
 
-	public MacOSXAppListener(final Application app, final EventService eventService) {
+	public MacOSXAppEventDispatcher(final Application app, final EventService eventService) {
 		this.eventService = eventService;
 		app.setAboutHandler(this);
 		app.setPreferencesHandler(this);
