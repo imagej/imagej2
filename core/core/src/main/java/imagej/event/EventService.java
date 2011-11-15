@@ -80,12 +80,6 @@ public final class EventService extends AbstractService {
 		eventBus.publish(e);
 	}
 
-	public <E extends ImageJEvent> void subscribe(
-		final EventSubscriber<E> subscriber)
-	{
-		subscribe(subscriber.getEventClass(), subscriber);
-	}
-
 	public void unsubscribe(final Collection<EventSubscriber<?>> subscribers) {
 		for (final EventSubscriber<?> subscriber : subscribers) {
 			unsubscribe(subscriber);
