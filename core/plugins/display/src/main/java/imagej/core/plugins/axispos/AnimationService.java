@@ -70,6 +70,14 @@ public class AnimationService extends AbstractService {
 	private final Map<ImageDisplay, Animation> animations =
 		new ConcurrentHashMap<ImageDisplay, Animation>();
 
+	// -- Constructors --
+
+	public AnimationService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
 	public AnimationService(final ImageJ context, final EventService eventService)
 	{
 		super(context);
