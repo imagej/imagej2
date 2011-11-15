@@ -111,15 +111,14 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 	
 	@Override
 	public long[] getDims() {
-		final int numDims = getExtents().numDimensions();
-		final long[] dims = new long[numDims];
+		final long[] dims = new long[numDimensions()];
 		getExtents().dimensions(dims);
 		return dims;
 	}
 
 	@Override
 	public Axis[] getAxes() {
-		final Axis[] axes = new Axis[getExtents().numDimensions()];
+		final Axis[] axes = new Axis[numDimensions()];
 		axes(axes);
 		return axes;
 	}
