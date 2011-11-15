@@ -42,12 +42,6 @@ package imagej.ext;
  */
 public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 
-	int FIRST_PRIORITY = 0;
-	int HIGH_PRIORITY = 25;
-	int NORMAL_PRIORITY = 50;
-	int LOW_PRIORITY = 75;
-	int LAST_PRIORITY = 100;
-
 	/**
 	 * Gets an appropriate title for the object, for use in a user interface. The
 	 * result is prioritized as follows:
