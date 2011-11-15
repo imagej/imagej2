@@ -34,11 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.IntCoords;
 
 /**
  * Zooms in on the center of the image at the user-specified magnification
@@ -50,15 +53,30 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) })
 public class ZoomUserDefined implements ImageJPlugin {
 
+	// -- instance variables --
+	
 	@Parameter
 	private ImageDisplay display;
 
-	@Parameter(label = "Zoom (%) :", min = "0.1", max = "10000000")
+	@Parameter(label = "Zoom (%) :", min = "0.1", max = "500000")
 	private double userDefinedScale = 100;
 
+	@Parameter(label = "X center:")
+	private long centerX = 1L;
+	
+	@Parameter(label = "Y center:")
+	private long centerY = 1L;
+	
+	// -- public interface --
+	
 	@Override
 	public void run() {
-		display.getCanvas().setZoom(userDefinedScale / 100.0);
+		double percentX = 1.0 * centerX / getDim(display, Axes.X);
+		double percentY = 1.0 * centerY / getDim(display, Axes.Y);
+		int cx = (int) (percentX * display.getCanvas().getCanvasWidth());
+		int cy = (int) (percentY * display.getCanvas().getCanvasHeight());
+		IntCoords center = new IntCoords(cx, cy);
+		display.getCanvas().setZoom(userDefinedScale/100.0, center);
 	}
 
 	public double getUserDefinedScale() {
@@ -69,4 +87,22 @@ public class ZoomUserDefined implements ImageJPlugin {
 		this.userDefinedScale = userDefinedScale;
 	}
 
+	// -- private helpers --
+	
+	// TO BE USED WHEN PARAMETER INITIALIZERS ARE IN PLACE
+
+	private void calcCenterX() {
+		centerX = getDim(display, Axes.X) / 2;
+	}
+	
+	private void calcCenterY() {
+		centerY = getDim(display, Axes.Y) / 2;
+	}
+	
+	private static long getDim(ImageDisplay display, Axis axis) {
+		long[] dims = display.getDims();
+		int axisIndex = display.getAxisIndex(axis);
+		if (axisIndex < 0) return 1;
+		return dims[axisIndex];
+	}
 }
