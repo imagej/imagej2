@@ -91,8 +91,9 @@ public class SwingFileWidget extends SwingInputWidget
 	@Override
 	public void refreshWidget() {
 		final File value = (File) getModel().getValue();
+		final File widgetValue = new File(path.getText());
+		if (widgetValue.equals(value)) return; // no change
 		final String text = value == null ? "" : value.toString();
-		if (text.equals(path.getText())) return; // no change
 		path.setText(text);
 	}
 
