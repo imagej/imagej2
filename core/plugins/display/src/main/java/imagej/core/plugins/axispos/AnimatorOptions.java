@@ -68,7 +68,8 @@ public class AnimatorOptions extends DynamicPlugin {
 	@SuppressWarnings("unused")
 	private AnimationService animationService;
 
-	@Parameter(label = "Axis", persist = false, initializer = "initAxis")
+	@Parameter(label = "Axis", persist = false, initializer = "initAxis",
+		callback = "axisChanged")
 	@SuppressWarnings("unused")
 	private String axisName;
 
@@ -174,17 +175,13 @@ public class AnimatorOptions extends DynamicPlugin {
 	 */
 	@Override
 	public void run() {
-		final Axis axis = getAxis();
-		final int axisIndex = getDisplay().getAxisIndex(axis);
-		if (axisIndex < 0) return;
-		final long max = getDisplay().getExtents().dimension(axisIndex);
-		clampFirstAndLast(max);
+		clampFirstAndLast();
 
 		// update animation settings
 		final Animation animation = getAnimation();
 		final boolean active = animation.isActive();
 		animation.stop();
-		animation.setAxis(axis);
+		animation.setAxis(getAxis());
 		animation.setBackAndForth(isBackAndForth());
 		animation.setFirst(getFirst() - 1);
 		animation.setLast(getLast() - 1);
@@ -236,10 +233,19 @@ public class AnimatorOptions extends DynamicPlugin {
 		setBackAndForth(getAnimation().isBackAndForth());
 	}
 
+	// -- Callback methods --
+
+	/** Updates the first and last values when the axis changes. */
+	protected void axisChanged() {
+		setLast(getAxisLength());
+		clampFirstAndLast();
+	}
+
 	// -- Helper methods --
 
 	/** Ensures the first and last values fall within the allowed range. */
-	private void clampFirstAndLast(final long max) {
+	private void clampFirstAndLast() {
+		final long max = getAxisLength();
 		long f = getFirst(), l = getLast();
 		if (f < 1) f = 1;
 		if (l < 1) l = 1;
@@ -247,6 +253,13 @@ public class AnimatorOptions extends DynamicPlugin {
 		if (l > max) l = max;
 		setFirst(f);
 		setLast(l);
+	}
+
+	/** Gets the length of the selected axis. */
+	private long getAxisLength() {
+		final int axisIndex = getDisplay().getAxisIndex(getAxis());
+		if (axisIndex < 0) return -1;
+		return getDisplay().getExtents().dimension(axisIndex);
 	}
 
 	private Animation getAnimation() {
