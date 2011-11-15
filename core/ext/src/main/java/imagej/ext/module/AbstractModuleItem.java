@@ -52,8 +52,10 @@ import java.util.List;
 public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 
 	private final ModuleInfo info;
+	private Method initializerMethod;
+	private boolean initializerLoaded = false;
 	private Method callbackMethod;
-	private boolean callbackInitialized = false;
+	private boolean callbackLoaded = false;
 
 	public AbstractModuleItem(final ModuleInfo info) {
 		this.info = info;
@@ -160,25 +162,53 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	}
 
 	@Override
+	public String getInitializer() {
+		return null;
+	}
+
+	@Override
+	public void initialize(final Module module) {
+		if (!initializerLoaded) {
+			initializerLoaded = true;
+			initializerMethod = findMethod(getInitializer());
+		}
+		if (initializerMethod == null) return;
+		final Object obj = module.getDelegateObject();
+		final String objClass = obj.getClass().getName();
+		Log.debug(objClass + ": executing initializer function: " +
+			getInitializer());
+		try {
+			initializerMethod.invoke(obj);
+		}
+		catch (final Exception e) {
+			// NB: Several types of exceptions; simpler to handle them all the same.
+			Log.warn(objClass + ": error executing initializer method \"" +
+				getInitializer() + "\" for module item " + getName(), e);
+		}
+	}
+
+	@Override
 	public String getCallback() {
 		return null;
 	}
 
 	@Override
 	public void callback(final Module module) {
-		if (!callbackInitialized) callbackMethod = findCallbackMethod();
+		if (!callbackLoaded) {
+			callbackLoaded = true;
+			callbackMethod = findMethod(getCallback());
+		}
 		if (callbackMethod == null) return;
-		final String callback = getCallback();
 		final Object obj = module.getDelegateObject();
 		final String objClass = obj.getClass().getName();
+		Log.debug(objClass + ": executing callback function: " + getCallback());
 		try {
-			Log.debug(objClass + ": executing callback function: " + callback);
 			callbackMethod.invoke(obj);
 		}
 		catch (final Exception e) {
 			// NB: Several types of exceptions; simpler to handle them all the same.
-			Log.warn(objClass + ": error executing callback method \"" + callback +
-				"\" for module item " + getName(), e);
+			Log.warn(objClass + ": error executing callback method \"" +
+				getCallback() + "\" for module item " + getName(), e);
 		}
 	}
 
@@ -268,22 +298,20 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		return ClassUtils.loadClass(info.getDelegateClassName());
 	}
 
-	private Method findCallbackMethod() {
-		callbackInitialized = true;
-		final String callback = getCallback();
-		if (callback == null || callback.isEmpty()) return null;
+	private Method findMethod(final String methodName) {
+		if (methodName == null || methodName.isEmpty()) return null;
 
 		final Class<?> c = getDelegateClass();
 		try {
-			// TODO - support inherited callback methods
-			final Method m = c.getDeclaredMethod(callback);
+			// TODO - support inherited methods
+			final Method m = c.getDeclaredMethod(methodName);
 			m.setAccessible(true);
 			return m;
 		}
 		catch (final Exception e) {
 			// NB: Multiple types of exceptions; simpler to handle them all the same.
-			Log.warn("Cannot find callback method \"" + info.getDelegateClassName() +
-				"#" + callback + "\" for module item " + getName(), e);
+			Log.warn("Cannot find method \"" + info.getDelegateClassName() + "#" +
+				methodName + "\" for module item " + getName(), e);
 		}
 		return null;
 	}
