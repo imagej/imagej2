@@ -88,7 +88,7 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 	}
 
 	@Override
-	public int getPriority() {
+	public double getPriority() {
 		return info.getPriority();
 	}
 
@@ -123,7 +123,7 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 	}
 
 	@Override
-	public void setPriority(final int priority) {
+	public void setPriority(final double priority) {
 		info.setPriority(priority);
 	}
 

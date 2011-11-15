@@ -68,10 +68,17 @@ public @interface Tool {
 	String iconPath() default "";
 
 	/**
-	 * Where the tool should appear in the user interface. The toolbar displays
-	 * tools sorted by priority.
+	 * For tools in the toolbar (i.e., not-always-active tools), the priority
+	 * defines where the tool should appear in the user interface. The toolbar
+	 * displays tools sorted by priority.
+	 * <p>
+	 * For always-active tools, the priority defines the order in which they
+	 * receive events. An always-active tool can consume an event, preventing
+	 * lower-priority always-active tools from receiving it, so the priority order
+	 * is important.
+	 * </p>
 	 */
-	int priority() default Integer.MAX_VALUE;
+	double priority() default Double.POSITIVE_INFINITY;
 
 	/** When false, grays out the tool in the user interface. */
 	boolean enabled() default true;
@@ -81,7 +88,7 @@ public @interface Tool {
 
 	/**
 	 * When true, tool receives events when the main ImageJ application frame is
-	 * active. When false, tool only receives events when an image window is
+	 * active. When false, tool only receives events when a display window is
 	 * active.
 	 */
 	boolean activeInAppFrame() default false;

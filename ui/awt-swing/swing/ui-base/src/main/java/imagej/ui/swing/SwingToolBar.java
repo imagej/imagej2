@@ -107,22 +107,20 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		int lastPriority = Integer.MAX_VALUE;
+		ITool lastTool = null;
 		for (final ITool tool : toolService.getTools()) {
-			final ToolInfo entry = tool.getInfo();
 			try {
 				final AbstractButton button = createButton(tool);
 				toolButtons.put(tool.getInfo().getName(), button);
 
-				// add a separator between tools with clustered priorities
-				final int priority = entry.getPriority();
-				if (priority - lastPriority > 10) addSeparator();
-				lastPriority = priority;
+				// add a separator between tools where applicable
+				if (toolService.isSeparatorNeeded(tool, lastTool)) addSeparator();
+				lastTool = tool;
 
 				add(button);
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid tool: " + entry, e);
+				Log.warn("Invalid tool: " + tool.getInfo(), e);
 			}
 		}
 	}

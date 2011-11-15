@@ -47,7 +47,7 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class)
+@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_LOW_PRIORITY)
 public class HeadlessInputHarvester extends AbstractInputHarvesterPlugin {
 
 	@Override

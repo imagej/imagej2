@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.Shell;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class)
+@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_LOW_PRIORITY)
 public class SWTInputHarvester extends AbstractInputHarvesterPlugin {
 
 	private static final Display DISPLAY = new Display();
