@@ -66,9 +66,6 @@ public class InitPreprocessor implements PreprocessorPlugin {
 		for (final ModuleItem<?> item : module.getInfo().inputs()) {
 			item.initialize(module);
 		}
-		for (final ModuleItem<?> item : module.getInfo().outputs()) {
-			item.initialize(module);
-		}
 	}
 
 }
