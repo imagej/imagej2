@@ -188,7 +188,7 @@ public class AnimatorOptions extends DynamicPlugin {
 		animation.setBackAndForth(isBackAndForth());
 		animation.setFirst(getFirst() - 1);
 		animation.setLast(getLast() - 1);
-		animation.setFps(getFPS());
+		animation.setFPS(getFPS());
 		if (active) animation.start();
 	}
 
@@ -228,7 +228,7 @@ public class AnimatorOptions extends DynamicPlugin {
 
 	/** Initializes fps value. */
 	protected void initFPS() {
-		setFPS(getAnimation().getFps());
+		setFPS(getAnimation().getFPS());
 	}
 
 	/** Initializes backForth value. */

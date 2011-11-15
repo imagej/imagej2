@@ -122,11 +122,11 @@ public class Animation implements Runnable {
 		clampPosition();
 	}
 
-	public double getFps() {
+	public double getFPS() {
 		return fps;
 	}
 
-	public void setFps(final double fps) {
+	public void setFPS(final double fps) {
 		this.fps = fps;
 	}
 
