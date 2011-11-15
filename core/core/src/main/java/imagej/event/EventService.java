@@ -80,12 +80,6 @@ public final class EventService extends AbstractService {
 		eventBus.publish(e);
 	}
 
-	public void unsubscribe(final Collection<EventSubscriber<?>> subscribers) {
-		for (final EventSubscriber<?> subscriber : subscribers) {
-			unsubscribe(subscriber);
-		}
-	}
-
 	/**
 	 * Subscribes all of the given object's @{@link EventHandler} annotated
 	 * methods. This allows a single class to subscribe to multiple types of
@@ -115,6 +109,12 @@ public final class EventService extends AbstractService {
 		}
 
 		return subscribers;
+	}
+
+	public void unsubscribe(final Collection<EventSubscriber<?>> subscribers) {
+		for (final EventSubscriber<?> subscriber : subscribers) {
+			unsubscribe(subscriber);
+		}
 	}
 
 	public <E extends ImageJEvent> List<EventSubscriber<E>> getSubscribers(
