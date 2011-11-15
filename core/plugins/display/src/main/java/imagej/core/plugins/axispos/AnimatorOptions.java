@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -60,79 +58,41 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Animation Options...", weight = 4) })
 public class AnimatorOptions extends DynamicPlugin {
 
-	// -- parameters --
+	// -- Parameters --
 
-	@Parameter(label = "Axis", persist = false)
+	@Parameter(required = true, persist = false)
+	@SuppressWarnings("unused")
+	private ImageDisplay display;
+
+	@Parameter(required = true, persist = false)
+	@SuppressWarnings("unused")
+	private AnimationService animationService;
+
+	@Parameter(label = "Axis", persist = false, initializer = "initAxis")
 	@SuppressWarnings("unused")
 	private String axisName;
 
-	@Parameter(label = "First position", persist = false, min = "1")
+	@Parameter(label = "First position", persist = false,
+		initializer = "initFirst", min = "1")
 	@SuppressWarnings("unused")
 	private long first;
 
-	@Parameter(label = "Last position", persist = false, min = "1")
+	@Parameter(label = "Last position", persist = false,
+		initializer = "initLast", min = "1")
 	@SuppressWarnings("unused")
 	private long last;
 
-	@Parameter(label = "Speed (0.1 - 1000 fps)", persist = false, min = "0.1",
-		max = "1000")
+	@Parameter(label = "Speed (0.1 - 1000 fps)", persist = false,
+		initializer = "initFPS", min = "0.1", max = "1000")
 	@SuppressWarnings("unused")
 	private double fps;
 
-	@Parameter(label = "Loop back and forth", persist = false)
+	@Parameter(label = "Loop back and forth", persist = false,
+		initializer = "initBackAndForth")
 	@SuppressWarnings("unused")
 	private boolean backForth;
 
-	// -- instance variables --
-
-	private ImageDisplay display;
-	private Animation animation;
-
-	public AnimatorOptions() {
-		// make sure input is okay
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
-		display = imageDisplayService.getActiveImageDisplay();
-		if (display == null) return;
-
-		final AnimationService animationService =
-			ImageJ.get(AnimationService.class);
-		animation = animationService.getAnimation(display);
-
-		// axis name field initialization
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> axisNameItem =
-			(DefaultModuleItem<String>) getInfo().getInput("axisName");
-		final Axis[] axes = display.getAxes();
-		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis axis : axes) {
-			if (Axes.isXY(axis)) continue;
-			choices.add(axis.getLabel());
-		}
-		axisNameItem.setChoices(choices);
-		final Axis curAxis = animation.getAxis();
-		if (curAxis != null) setAxis(curAxis);
-
-		// first position field initialization
-		// TODO - can't set max value as it varies based upon the axis the user
-		// selects at dialog run time. Need a callback that can manipulate the
-		// field's max value from chosen axis max.
-		// firstItem.setMaximumValue(new Long(options.total));
-		setFirst(animation.getFirst() + 1);
-
-		// last position field initialization
-		// TODO - can't set max value as it varies based upon the axis the user
-		// selects at dialog run time. Need a callback that can manipulate the
-		// field's max value from chosen axis max.
-		// lastItem.setMaximumValue(new Long(options.total));
-		setLast(animation.getLast() + 1);
-
-		// frames per second field initialization
-		setFPS(animation.getFps());
-
-		// back and forth field initialization
-		setBackAndForth(animation.isBackAndForth());
-	}
+	// -- AnimatorOptions methods --
 
 	// CTR TODO - Solve issues with DynamicPlugin + @Parameter:
 	//
@@ -143,7 +103,8 @@ public class AnimatorOptions extends DynamicPlugin {
 	// logic works with non-dynamic plugins because PluginModule overrides
 	// Module.setInput(String, Object) and Module.setOutput(String, Object)
 	// to write to the @Parameter field directly.
-	// 2) Similarly, reading @Parameter fields in the run method will not work,
+	//
+	// 2) Similarly, accessing @Parameter fields in the run method will not work,
 	// because they will not have been updated to match the DynamicPlugin's
 	// internal table of values.
 	//
@@ -155,6 +116,14 @@ public class AnimatorOptions extends DynamicPlugin {
 	// In the meantime, we must be careful to always get and set the parameter
 	// values using the accessors and mutators below, rather than accessing the
 	// @Parameter fields directly.
+
+	public ImageDisplay getDisplay() {
+		return (ImageDisplay) getInput("display");
+	}
+
+	public AnimationService getAnimationService() {
+		return (AnimationService) getInput("animationService");
+	}
 
 	public Axis getAxis() {
 		return Axes.get((String) getInput("axisName"));
@@ -196,6 +165,8 @@ public class AnimatorOptions extends DynamicPlugin {
 		setInput("backForth", backAndForth);
 	}
 
+	// -- Runnable methods --
+
 	/**
 	 * Updates a display's set of animation options. Each display has its own set
 	 * of options. Any animation launched on a display will use its set of
@@ -203,14 +174,14 @@ public class AnimatorOptions extends DynamicPlugin {
 	 */
 	@Override
 	public void run() {
-		if (display == null) return;
 		final Axis axis = getAxis();
-		final int axisIndex = display.getAxisIndex(axis);
+		final int axisIndex = getDisplay().getAxisIndex(axis);
 		if (axisIndex < 0) return;
-		final long totalHyperplanes = display.getExtents().dimension(axisIndex);
-		setFirstAndLast(totalHyperplanes);
+		final long max = getDisplay().getExtents().dimension(axisIndex);
+		clampFirstAndLast(max);
 
 		// update animation settings
+		final Animation animation = getAnimation();
 		final boolean active = animation.isActive();
 		animation.stop();
 		animation.setAxis(axis);
@@ -221,17 +192,65 @@ public class AnimatorOptions extends DynamicPlugin {
 		if (active) animation.start();
 	}
 
-	// -- private helpers --
+	// -- Initializer methods --
 
-	/** Sets the zero-based indices of the first and last frames. */
-	private void setFirstAndLast(final long totalHyperplanes) {
+	/** Initializes axisName value. */
+	protected void initAxis() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<String> axisNameItem =
+			(DefaultModuleItem<String>) getInfo().getInput("axisName");
+		final Axis[] axes = getDisplay().getAxes();
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Axis axis : axes) {
+			if (Axes.isXY(axis)) continue;
+			choices.add(axis.getLabel());
+		}
+		axisNameItem.setChoices(choices);
+		final Axis curAxis = getAnimation().getAxis();
+		if (curAxis != null) setAxis(curAxis);
+	}
+
+	/** Initializes first value. */
+	protected void initFirst() {
+		// TODO - can't set max value as it varies based upon the axis the user
+		// selects at dialog run time. Need a callback that can manipulate the
+		// field's max value from chosen axis max.
+		setFirst(getAnimation().getFirst() + 1);
+	}
+
+	/** Initializes last value. */
+	protected void initLast() {
+		// TODO - can't set max value as it varies based upon the axis the user
+		// selects at dialog run time. Need a callback that can manipulate the
+		// field's max value from chosen axis max.
+		setLast(getAnimation().getLast() + 1);
+	}
+
+	/** Initializes fps value. */
+	protected void initFPS() {
+		setFPS(getAnimation().getFps());
+	}
+
+	/** Initializes backForth value. */
+	protected void initBackAndForth() {
+		setBackAndForth(getAnimation().isBackAndForth());
+	}
+
+	// -- Helper methods --
+
+	/** Ensures the first and last values fall within the allowed range. */
+	private void clampFirstAndLast(final long max) {
 		long f = getFirst(), l = getLast();
 		if (f < 1) f = 1;
 		if (l < 1) l = 1;
-		if (f > totalHyperplanes) f = totalHyperplanes;
-		if (l > totalHyperplanes) l = totalHyperplanes;
+		if (f > max) f = max;
+		if (l > max) l = max;
 		setFirst(f);
 		setLast(l);
+	}
+
+	private Animation getAnimation() {
+		return getAnimationService().getAnimation(getDisplay());
 	}
 
 }
