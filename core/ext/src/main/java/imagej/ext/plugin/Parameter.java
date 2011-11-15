@@ -118,6 +118,13 @@ public @interface Parameter {
 	String persistKey() default "";
 
 	/**
+	 * Defines a function that is called during preprocessing to initialize the
+	 * parameter value.
+	 * @see InitPreprocessor
+	 */
+	String initializer() default "";
+
+	/**
 	 * Defines a function that is called whenever this parameter changes.
 	 * <p>
 	 * This mechanism enables interdependent parameters of various types. For

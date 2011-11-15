@@ -77,6 +77,16 @@ public interface ModuleItem<T> extends BasicDetails {
 	/** Saves the item's persisted value. */
 	void saveValue(T value);
 
+	/** Gets the function that is called to initialize the item's value. */
+	String getInitializer();
+
+	/**
+	 * Invokes this item's initializer function, if any, on the given module.
+	 * 
+	 * @see #getInitializer()
+	 */
+	void initialize(Module module);
+
 	/**
 	 * Gets the function that is called whenever this item changes.
 	 * <p>

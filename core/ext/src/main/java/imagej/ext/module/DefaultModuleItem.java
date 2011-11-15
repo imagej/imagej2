@@ -54,6 +54,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 	private boolean required;
 	private boolean persisted;
 	private String persistKey;
+	private String initializer;
 	private String callback;
 	private WidgetStyle widgetStyle;
 	private T minimumValue;
@@ -82,6 +83,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		required = super.isRequired();
 		persisted = super.isPersisted();
 		persistKey = super.getPersistKey();
+		initializer = super.getInitializer();
 		callback = super.getCallback();
 		widgetStyle = super.getWidgetStyle();
 		minimumValue = super.getMinimumValue();
@@ -104,6 +106,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		required = item.isRequired();
 		persisted = item.isPersisted();
 		persistKey = item.getPersistKey();
+		initializer = item.getInitializer();
 		callback = item.getCallback();
 		widgetStyle = item.getWidgetStyle();
 		minimumValue = item.getMinimumValue();
@@ -136,6 +139,10 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 
 	public void setPersistKey(final String persistKey) {
 		this.persistKey = persistKey;
+	}
+
+	public void setInitializer(final String initializer) {
+		this.initializer = initializer;
 	}
 
 	public void setCallback(final String callback) {
@@ -197,6 +204,11 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 	@Override
 	public String getPersistKey() {
 		return persistKey;
+	}
+
+	@Override
+	public String getInitializer() {
+		return initializer;
 	}
 
 	@Override

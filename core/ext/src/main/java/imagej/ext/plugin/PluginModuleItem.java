@@ -120,6 +120,11 @@ public class PluginModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	@Override
+	public String getInitializer() {
+		return getParameter().initializer();
+	}
+
+	@Override
 	public String getCallback() {
 		return getParameter().callback();
 	}
