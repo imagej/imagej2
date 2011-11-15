@@ -64,23 +64,20 @@ public @interface Plugin {
 
 	/**
 	 * Priority for processors that must go first in the processor chain.
-	 * 
-	 * @see DebugPreprocessor
-	 * @see DebugPostprocessor
+	 * Examples: {@link DebugPreprocessor}, {@link DebugPostprocessor}
 	 */
 	double FIRST_PRIORITY = Double.NEGATIVE_INFINITY;
 
 	/**
 	 * Priority for processors that strongly prefer to be early in the processor
-	 * chain.
-	 * 
-	 * @see ActiveDisplayPreprocessor
-	 * @see ServicePreprocessor
+	 * chain. Examples: {@link ActiveDisplayPreprocessor},
+	 * {@link ServicePreprocessor}
 	 */
 	double VERY_HIGH_PRIORITY = -10000;
 
 	/**
 	 * Priority for processors that prefer to be earlier in the processor chain.
+	 * Example: {@link InitPreprocessor}
 	 */
 	double HIGH_PRIORITY = -100;
 
@@ -92,10 +89,8 @@ public @interface Plugin {
 
 	/**
 	 * Priority for processors that strongly prefer to be late in the processor
-	 * chain.
-	 * 
-	 * @see DisplayPostprocessor
-	 * @see AbstractInputHarvesterPlugin UI-specific subclasses.
+	 * chain. Examples: {@link DisplayPostprocessor}, UI-specific subclasses of
+	 * {@link AbstractInputHarvesterPlugin}.
 	 */
 	double VERY_LOW_PRIORITY = 10000;
 
@@ -103,7 +98,7 @@ public @interface Plugin {
 	double LAST_PRIORITY = Double.POSITIVE_INFINITY;
 
 	/**
-	 * The type of plugin; e.g., {@link ImageJPlugin}, {@link PreprocessorPlugin}
+	 * The type of plugin; e.g., {@link ImageJPlugin}, {@link PreprocessorPlugin},
 	 * {@link PostprocessorPlugin} or {@link Display}.
 	 */
 	Class<?> type() default ImageJPlugin.class;
