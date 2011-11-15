@@ -74,7 +74,7 @@ public class WatchDisplays implements ImageJPlugin {
 		StaticSwingUtils.locateLowerRight(window);
 		window.setVisible(true);
 		showDisplays();
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	public void showDisplays() {

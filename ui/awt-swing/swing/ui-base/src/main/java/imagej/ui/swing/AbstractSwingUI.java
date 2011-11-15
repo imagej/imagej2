@@ -161,7 +161,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			// NB: If menu bars are supposed to be duplicated across all window
 			// frames, listen for display creations and deletions and clone the menu
 			// bar accordingly.
-			subscribers = eventService.subscribeAll(this);
+			subscribers = eventService.subscribe(this);
 		}
 	}
 

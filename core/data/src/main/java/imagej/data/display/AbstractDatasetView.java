@@ -88,7 +88,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	public AbstractDatasetView(final ImageDisplay display, final Dataset dataset) {
 		super(display, dataset);
 		this.dataset = dataset;
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	// -- DatasetView methods --

@@ -215,7 +215,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener {
 
 			};
 		olist.addListSelectionListener(listSelectionListener);
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	@Override

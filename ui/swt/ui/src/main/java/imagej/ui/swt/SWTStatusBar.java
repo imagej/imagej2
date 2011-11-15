@@ -65,7 +65,7 @@ public class SWTStatusBar extends Composite implements StatusBar {
 		setLayout(new MigLayout());
 		label = new Label(this, 0);
 		progressBar = new ProgressBar(this, 0);
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	@Override

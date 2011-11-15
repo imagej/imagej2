@@ -110,7 +110,7 @@ public class ShadowsDemo implements ImageJPlugin {
 			Log.error("This command only works with a single plane of data");
 			return;
 		}
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 		eventService.publish(new StatusEvent("Press ESC to terminate"));
 
 		final RealRect selection = overlayService.getSelectionBounds(currDisplay);

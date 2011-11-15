@@ -64,7 +64,7 @@ public final class PivotStatusBar extends BoxPane implements StatusBar {
 		add(label);
 		meter = new Meter();
 		add(meter);
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	// -- StatusBar methods --
