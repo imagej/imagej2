@@ -108,7 +108,7 @@ public abstract class AbstractUserInterface implements IUserInterface {
 	 * showing it (assuming the UI has an {@link ApplicationFrame}).
 	 */
 	protected void createUI() {
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 		restoreLocation();
 	}
 

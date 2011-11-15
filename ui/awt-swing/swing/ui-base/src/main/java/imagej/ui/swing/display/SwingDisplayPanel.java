@@ -132,7 +132,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		window.setContent(this);
 
-		subscribers = ImageJ.get(EventService.class).subscribeAll(this);
+		subscribers = ImageJ.get(EventService.class).subscribe(this);
 	}
 
 	// -- SwingDisplayPanel methods --

@@ -82,7 +82,7 @@ public class WatchOverlays implements ImageJPlugin {
 	public void run() {
 		window = new SwingOutputWindow("Overlays in Current Display");
 		updateOverlaysShown();
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	@EventHandler

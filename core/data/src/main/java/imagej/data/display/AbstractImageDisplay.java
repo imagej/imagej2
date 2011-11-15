@@ -89,7 +89,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		super(DataView.class);
 
 		initScaleConverter();
-		subscribers = eventService.subscribeAll(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	// -- AbstractImageDisplay methods --

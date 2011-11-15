@@ -59,7 +59,7 @@ public class AWTStatusBar extends Label implements StatusBar {
 	private List<EventSubscriber<?>> subscribers;
 
 	public AWTStatusBar() {
-		subscribers = ImageJ.get(EventService.class).subscribeAll(this);
+		subscribers = ImageJ.get(EventService.class).subscribe(this);
 	}
 
 	// -- Component methods --

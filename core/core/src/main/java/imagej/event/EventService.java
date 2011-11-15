@@ -91,7 +91,7 @@ public final class EventService extends AbstractService {
 	 *         to fall out of scope or they will be garbage collected (in which
 	 *         case events will not be delivered to them!).
 	 */
-	public List<EventSubscriber<?>> subscribeAll(final Object o) {
+	public List<EventSubscriber<?>> subscribe(final Object o) {
 		final List<EventSubscriber<?>> subscribers =
 			new ArrayList<EventSubscriber<?>>();
 
@@ -186,7 +186,7 @@ public final class EventService extends AbstractService {
 	// -- Helper classes --
 
 	/**
-	 * Helper class used by {@link #subscribeAll(Object)}.
+	 * Helper class used by {@link #subscribe(Object)}.
 	 * <p>
 	 * Recapitulates some logic from {@link BaseProxySubscriber}, because that
 	 * class implements {@link org.bushe.swing.event.EventSubscriber} as a raw

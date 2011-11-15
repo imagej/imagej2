@@ -145,7 +145,7 @@ public class SwingScriptRecorder implements ImageJPlugin {
 	}
 
 	private void startRecording() {
-		eventService.subscribeAll(this);
+		eventService.subscribe(this);
 	}
 
 	private void stopRecording() {

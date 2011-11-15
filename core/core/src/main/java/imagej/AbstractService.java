@@ -58,7 +58,7 @@ public abstract class AbstractService implements IService {
 
 	@Override
 	public void initialize() {
-		eventSubscribers = context.getService(EventService.class).subscribeAll(this);
+		eventSubscribers = context.getService(EventService.class).subscribe(this);
 	}
 
 	@Override
