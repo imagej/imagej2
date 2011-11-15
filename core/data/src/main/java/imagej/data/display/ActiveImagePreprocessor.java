@@ -60,7 +60,7 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Plugin.HIGH_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_HIGH_PRIORITY)
 public class ActiveImagePreprocessor implements PreprocessorPlugin {
 
 	// -- ModulePreprocessor methods --

@@ -51,7 +51,7 @@ import javax.swing.JPanel;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class)
+@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_LOW_PRIORITY)
 public class SwingInputHarvester extends AbstractInputHarvesterPlugin {
 
 	// -- InputHarvester methods --

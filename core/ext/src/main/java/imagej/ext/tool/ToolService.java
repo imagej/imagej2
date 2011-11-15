@@ -76,6 +76,8 @@ import net.java.sezpoz.IndexItem;
 @Service
 public class ToolService extends AbstractService {
 
+	private static final double SEPARATOR_DISTANCE = 10;
+
 	private final EventService eventService;
 
 	private Map<String, ITool> alwaysActiveTools;
@@ -151,6 +153,17 @@ public class ToolService extends AbstractService {
 		this.activeTool = activeTool;
 		activeTool.activate();
 		eventService.publish(new ToolActivatedEvent(activeTool));
+	}
+
+	/**
+	 * Returns true if the two specified tools should have a separator between
+	 * them on the tool bar.
+	 */
+	public boolean isSeparatorNeeded(final ITool tool1, final ITool tool2) {
+		if (tool1 == null || tool2 == null) return false;
+		double priority1 = tool1.getInfo().getPriority();
+		double priority2 = tool2.getInfo().getPriority();
+		return Math.abs(priority1 - priority2) >= SEPARATOR_DISTANCE;
 	}
 
 	// -- IService methods --

@@ -34,7 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import imagej.ext.module.process.ModulePreprocessor;
+import imagej.ext.display.ActiveDisplayPreprocessor;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayPostprocessor;
+import imagej.ext.plugin.debug.DebugPostprocessor;
+import imagej.ext.plugin.debug.DebugPreprocessor;
+import imagej.ext.plugin.process.PostprocessorPlugin;
+import imagej.ext.plugin.process.PreprocessorPlugin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -56,15 +62,49 @@ import net.java.sezpoz.Indexable;
 @Indexable(type = IPlugin.class)
 public @interface Plugin {
 
-	int FIRST_PRIORITY = 0;
-	int HIGH_PRIORITY = 25;
-	int NORMAL_PRIORITY = 50;
-	int LOW_PRIORITY = 75;
-	int LAST_PRIORITY = 100;
+	/**
+	 * Priority for processors that must go first in the processor chain.
+	 * 
+	 * @see DebugPreprocessor
+	 * @see DebugPostprocessor
+	 */
+	double FIRST_PRIORITY = Double.NEGATIVE_INFINITY;
 
 	/**
-	 * The type of plugin; e.g., {@link ImageJPlugin} or
-	 * {@link ModulePreprocessor}.
+	 * Priority for processors that strongly prefer to be early in the processor
+	 * chain.
+	 * 
+	 * @see ActiveDisplayPreprocessor
+	 * @see ServicePreprocessor
+	 */
+	double VERY_HIGH_PRIORITY = -10000;
+
+	/**
+	 * Priority for processors that prefer to be earlier in the processor chain.
+	 */
+	double HIGH_PRIORITY = -100;
+
+	/** Default priority for processors. */
+	double NORMAL_PRIORITY = 0;
+
+	/** Priority for processors that prefer to be later in the processor chain. */
+	double LOW_PRIORITY = 100;
+
+	/**
+	 * Priority for processors that strongly prefer to be late in the processor
+	 * chain.
+	 * 
+	 * @see DisplayPostprocessor
+	 * @see AbstractInputHarvesterPlugin UI-specific subclasses.
+	 */
+	double VERY_LOW_PRIORITY = 10000;
+
+	/** Priority for processors that must go at the end of the processor chain. */
+	double LAST_PRIORITY = Double.POSITIVE_INFINITY;
+
+	/**
+	 * The type of plugin; e.g., {@link ImageJPlugin}, {@link PreprocessorPlugin}
+	 * {@link PostprocessorPlugin} or {@link Display}.
 	 */
 	Class<?> type() default ImageJPlugin.class;
 
@@ -99,9 +139,22 @@ public @interface Plugin {
 
 	/**
 	 * The plugin index returns plugins sorted by priority. This is useful for
-	 * {@link ModulePreprocessor}s to control the order of their execution.
+	 * {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s to control the
+	 * order of their execution.
+	 * <p>
+	 * Any double value is allowed, but for convenience, there are some presets:
+	 * </p>
+	 * <ul>
+	 * <li>{@link #FIRST_PRIORITY}</li>
+	 * <li>{@link #VERY_HIGH_PRIORITY}</li>
+	 * <li>{@link #HIGH_PRIORITY}</li>
+	 * <li>{@link #NORMAL_PRIORITY}</li>
+	 * <li>{@link #LOW_PRIORITY}</li>
+	 * <li>{@link #VERY_LOW_PRIORITY}</li>
+	 * <li>{@link #LAST_PRIORITY}</li>
+	 * </ul>
 	 */
-	int priority() default NORMAL_PRIORITY;
+	double priority() default NORMAL_PRIORITY;
 
 	/**
 	 * Whether the plugin can be selected in the user interface. A plugin's

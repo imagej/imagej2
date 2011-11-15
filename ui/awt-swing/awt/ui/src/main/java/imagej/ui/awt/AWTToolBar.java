@@ -90,21 +90,19 @@ public class AWTToolBar extends Panel implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		int lastPriority = Integer.MAX_VALUE;
+		ITool lastTool = null;
 		for (final ITool tool : toolService.getTools()) {
-			final ToolInfo entry = tool.getInfo();
 			try {
 				final Button button = createButton(tool);
-				toolButtons.put(entry.getName(), button);
+				toolButtons.put(tool.getInfo().getName(), button);
 				add(button);
 
-				// add a separator between tools with clustered priorities
-				final int priority = entry.getPriority();
-				if (priority - lastPriority > 10) add(new Label(" "));
-				lastPriority = priority;
+				// add a separator between tools where applicable
+				if (toolService.isSeparatorNeeded(tool, lastTool)) add(new Label(" "));
+				lastTool = tool;
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid tool: " + entry, e);
+				Log.warn("Invalid tool: " + tool.getInfo(), e);
 			}
 		}
 	}

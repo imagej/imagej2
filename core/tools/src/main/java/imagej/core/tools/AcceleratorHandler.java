@@ -65,8 +65,7 @@ import imagej.ext.tool.Tool;
  * @author Johannes Schindelin
  * @author Curtis Rueden
  */
-@Tool(name = "Keyboard Shortcuts", alwaysActive = true,
-	activeInAppFrame = true, priority = Integer.MIN_VALUE)
+@Tool(name = "Keyboard Shortcuts", alwaysActive = true, activeInAppFrame = true)
 public class AcceleratorHandler extends AbstractTool {
 
 	private final ModuleService moduleService;

@@ -61,7 +61,7 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	String getIconPath();
 
 	/** Gets the sort priority of the object. */
-	int getPriority();
+	double getPriority();
 
 	/**
 	 * Gets whether the object can be selected (e.g., checking and unchecking its
@@ -91,7 +91,7 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	void setIconPath(String iconPath);
 
 	/** Sets the sort priority of the object. */
-	void setPriority(int priority);
+	void setPriority(double priority);
 
 	/** Sets whether the object should be enabled in the user interface. */
 	void setEnabled(boolean enabled);

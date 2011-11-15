@@ -51,7 +51,7 @@ import org.apache.pivot.wtk.Sheet;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class)
+@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_LOW_PRIORITY)
 public class PivotInputHarvester extends AbstractInputHarvesterPlugin {
 
 	@Override

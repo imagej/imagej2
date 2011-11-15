@@ -59,7 +59,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 	private String iconPath;
 
 	/** Sort priority of the object. */
-	private int priority = Integer.MAX_VALUE;
+	private double priority = Double.POSITIVE_INFINITY;
 
 	/** Whether the object can be selected in the user interface. */
 	private boolean selectable;
@@ -96,7 +96,8 @@ public abstract class AbstractUIDetails implements UIDetails {
 
 	@Override
 	public int compareTo(final UIDetails obj) {
-		return priority - obj.getPriority();
+		if (priority == obj.getPriority()) return 0;
+		return priority < obj.getPriority() ? -1 : 1;
 	}
 
 	// -- UIDetails methods --
@@ -131,7 +132,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 	}
 
 	@Override
-	public int getPriority() {
+	public double getPriority() {
 		return priority;
 	}
 
@@ -171,7 +172,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 	}
 
 	@Override
-	public void setPriority(final int priority) {
+	public void setPriority(final double priority) {
 		this.priority = priority;
 	}
 
