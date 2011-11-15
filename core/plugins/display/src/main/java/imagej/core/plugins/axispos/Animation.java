@@ -36,6 +36,7 @@ package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
 import imagej.util.Log;
+import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
 /**
@@ -71,8 +72,20 @@ public class Animation implements Runnable {
 
 		// assign default animation options
 		if (display.numDimensions() > 2) {
-			axis = display.getAxes()[2];
-			last = display.getExtents().dimension(2) - 1;
+			if (display.getAxisIndex(Axes.TIME) >= 0) {
+				// animation over time is preferred by default
+				axis = Axes.TIME;
+			}
+			else if (display.getAxisIndex(Axes.Z) >= 0) {
+				// failing that, animation over Z is OK
+				axis = Axes.Z;
+			}
+			else {
+				// no preferred animation axes; use first non-spatial axis
+				axis = display.getAxes()[2];
+			}
+			final int axisIndex = display.getAxisIndex(axis);
+			last = display.getExtents().dimension(axisIndex) - 1;
 		}
 	}
 
