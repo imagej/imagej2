@@ -52,7 +52,7 @@ import javax.swing.WindowConstants;
  */
 public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 
-	SwingDisplayPanel panel;
+	private SwingDisplayPanel panel;
 
 	public SwingDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
