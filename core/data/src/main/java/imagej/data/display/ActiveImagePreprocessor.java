@@ -1,5 +1,5 @@
 //
-// ActiveImageDisplayPreprocessor.java
+// ActiveImagePreprocessor.java
 //
 
 /*
@@ -61,7 +61,7 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * @author Curtis Rueden
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Plugin.HIGH_PRIORITY)
-public class ActiveImageDisplayPreprocessor implements PreprocessorPlugin {
+public class ActiveImagePreprocessor implements PreprocessorPlugin {
 
 	// -- ModulePreprocessor methods --
 
