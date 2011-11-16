@@ -67,6 +67,7 @@ import imagej.options.plugins.OptionsProfilePlot;
 import imagej.options.plugins.OptionsProxy;
 import imagej.options.plugins.OptionsRoundedRectangleTool;
 import imagej.util.ClassUtils;
+import imagej.util.ColorRGB;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -145,9 +146,11 @@ public class OptionsSynchronizer {
 		final OptionsArrowTool optionsArrowTool =
 			optionsService.getOptions(OptionsArrowTool.class);
 
-		// TODO - for this next setting there is nothing to synchronize. Changing
-		// this setting runs some code in IJ1's UI. Might need some code on the IJ2
-		// side that mirrors the behavior.
+		// TODO - arrow color support: when the arrow color is edited in the IJ1
+		// arrow tool options dialog the foreground color is changed to match.
+		// Might need to set IJ1's Toolbar foreground color to our arrow color. But
+		// this likely has unintended side effects if its set during every options
+		// synchronization. Think about what is best. Ignore for now.
 		// String color = optionsArrowTool.getArrowColor();
 		final boolean doubleHeaded = optionsArrowTool.isArrowDoubleHeaded();
 		final boolean outline = optionsArrowTool.isArrowOutline();
@@ -207,13 +210,13 @@ public class OptionsSynchronizer {
 
 		final double[] weights = ColorProcessor.getWeightingFactors();
 		final boolean weighted =
-			!(weights[0] == 1d / 3d && weights[1] == 1d / 3d && weights[2] == 1d / 3d);
+			!(weights[0] == 1d/3d && weights[1] == 1d/3d && weights[2] == 1d/3d);
 		ImageConverter.setDoScaling(optionsConversions.isScaleWhenConverting());
 		Prefs.weightedColor = optionsConversions.isWeightedRgbConversions();
-		if (!Prefs.weightedColor) ColorProcessor.setWeightingFactors(1d / 3d,
-			1d / 3d, 1d / 3d);
-		else if (Prefs.weightedColor && !weighted) ColorProcessor
-			.setWeightingFactors(0.299, 0.587, 0.114);
+		if (!Prefs.weightedColor)
+			ColorProcessor.setWeightingFactors(1d/3d, 1d/3d, 1d/3d);
+		else if (Prefs.weightedColor && !weighted)
+			ColorProcessor.setWeightingFactors(0.299, 0.587, 0.114);
 	}
 
 	private void dicomOptions() {
@@ -313,22 +316,19 @@ public class OptionsSynchronizer {
 	}
 
 	private void overlayOptions() {
-		/* TODO
-		 * Reenable when our OptionsOverlay class fully replaces IJ1's
-		 * RoiProperties behavior.
-		 * 
-		final OptionsOverlay optionsOverlay =
+		final OptionsOverlay options =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
+		defaultRoi.setStrokeWidth(options.getLineWidth());
 		Color color;
-		String colorName = optionsOverlay.getFillColor();
-		color = getColor(colorName, null);
-		defaultRoi.setFillColor(color);
-		colorName = optionsOverlay.getStrokeColor();
-		color = getColor(colorName, null);
-		defaultRoi.setStrokeColor(color);
-		defaultRoi.setStrokeWidth(optionsOverlay.getWidth());
-		*/
+		if (options.getFillColor() != null) {
+			color = toColorAWT(options.getFillColor());
+			defaultRoi.setFillColor(color);
+		}
+		if (options.getLineColor() != null) {
+			color = toColorAWT(options.getLineColor());
+			defaultRoi.setStrokeColor(color);
+		}
 	}
 	
 	private void pointOptions() {
@@ -376,10 +376,6 @@ public class OptionsSynchronizer {
 		final OptionsProxy optionsProxy =
 			optionsService.getOptions(OptionsProxy.class);
 
-		// TODO
-		// This next setting affects IJ1 dialog. Nothing programmatic can be set.
-		// Need pure IJ2 plugins when this setting is utilized.
-		// Prefs.get(SettingsKeys.OPTIONS_PROXY_AUTHENTICATE);
 		final String server = optionsProxy.getProxyServer();
 		if (server != null) {
 			Prefs.set("proxy.server", server);
@@ -409,7 +405,9 @@ public class OptionsSynchronizer {
 		// IJ1 WandToolOptions does not mess with preferences in any way. There
 		// is no way in IJ1 to set values without running dialog. Programmatic
 		// approach is out. Can't synchronize unless Wayne adds code. May not be
-		// needed because Wand is not ever active in IJ2. Right?
+		// needed because Wand is not ever active in IJ2. Right? No. Macros call
+		// IJ.doWand() eventually.
+		
 		// Prefs.get(SettingsKeys.OPTIONS_WAND_MODE, "Legacy");
 		// Prefs.get(SettingsKeys.OPTIONS_WAND_TOLERANCE, 0.0);
 	}
@@ -561,34 +559,39 @@ public class OptionsSynchronizer {
 		 * sync issue for compatibility.
 		 */
 		
-		/* TODO Disabled
-		 * Restore when our OptionsOverlay class fully replaces IJ1's
-		 * RoiProperties behavior.
-		 * 
 		final OptionsOverlay optionsOverlay =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
 		Color c = defaultRoi.getFillColor();
-		optionsOverlay.setFillColor(c == null ? "none" : c.toString());
+		ColorRGB crgb = toColorRGB(c);
+		optionsOverlay.setFillColor(c == null ? null : crgb);
 		c = defaultRoi.getStrokeColor();
-		optionsOverlay.setStrokeColor(
-			c == null ?
-			Roi.getColor().toString() :
-			defaultRoi.getStrokeColor().toString());
-		optionsOverlay.setWidth(defaultRoi.getStrokeWidth());
+		optionsOverlay.setLineColor(
+			c == null ? toColorRGB(Roi.getColor()) :
+			toColorRGB(defaultRoi.getStrokeColor()));
+		optionsOverlay.setLineWidth(defaultRoi.getStrokeWidth());
 		optionsOverlay.save();
-		*/
+		
+		// NB - OverlayProperties plugin has no settable defaults. Do nothing.
 	}
 	
-	/* TODO Disabled
-	 * Restore when our OptionsOverlay class fully replaces IJ1's
-	 * RoiProperties behavior.
-	 * 
 	private Roi getDefaultRoi() {
 		Field field =
 				ClassUtils.getField("ij.plugin.OverlayCommands", "defaultRoi");
 		Object obj = ClassUtils.getValue(field, null);
 		return (Roi) obj;
 	}
-	*/
+	
+	private Color toColorAWT(ColorRGB color) {
+		String colorName = color.toHTMLColor();
+		return Colors.decode(colorName, Color.yellow);
+	}
+	
+	private ColorRGB toColorRGB(Color color) {
+		if (color == null) return null;
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+		return new ColorRGB(r,g,b);
+	}
 }
