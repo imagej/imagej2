@@ -52,7 +52,7 @@ import java.util.List;
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Reset", weight = 17) })
+	@Menu(label = "Reset", weight = 18) })
 public class OptionsReset implements ImageJPlugin {
 
 	@Override
