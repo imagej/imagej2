@@ -47,7 +47,7 @@ import imagej.options.OptionsPlugin;
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Misc...", weight = 16) })
+	@Menu(label = "Misc...", weight = 17) })
 public class OptionsMisc extends OptionsPlugin {
 
 	// TODO - use double instead of string for divide by zero value?
