@@ -41,7 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Predefined {@link ColorRGB} objects and related utility methods.
+ * Predefined {@link ColorRGB} objects and related utility methods. These colors
+ * match <a href="http://www.w3schools.com/cssref/css_colornames.asp">those
+ * defined in CSS</a>.
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden
