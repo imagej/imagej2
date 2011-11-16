@@ -322,11 +322,11 @@ public class OptionsSynchronizer {
 		defaultRoi.setStrokeWidth(options.getLineWidth());
 		Color color;
 		if (options.getFillColor() != null) {
-			color = toColorAWT(options.getFillColor());
+			color = LegacyColorMap.getIJ1Color(options.getFillColor());
 			defaultRoi.setFillColor(color);
 		}
 		if (options.getLineColor() != null) {
-			color = toColorAWT(options.getLineColor());
+			color = LegacyColorMap.getIJ1Color(options.getLineColor());
 			defaultRoi.setStrokeColor(color);
 		}
 	}
@@ -563,16 +563,15 @@ public class OptionsSynchronizer {
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
 		Color c = defaultRoi.getFillColor();
-		ColorRGB crgb = toColorRGB(c);
+		ColorRGB crgb = LegacyColorMap.getIJ2Color(c);
 		optionsOverlay.setFillColor(c == null ? null : crgb);
 		c = defaultRoi.getStrokeColor();
 		optionsOverlay.setLineColor(
-			c == null ? toColorRGB(Roi.getColor()) :
-			toColorRGB(defaultRoi.getStrokeColor()));
+			c == null ?
+				LegacyColorMap.getIJ2Color(Roi.getColor()) :
+				LegacyColorMap.getIJ2Color(c));
 		optionsOverlay.setLineWidth(defaultRoi.getStrokeWidth());
 		optionsOverlay.save();
-		
-		// NB - OverlayProperties plugin has no settable defaults. Do nothing.
 	}
 	
 	private Roi getDefaultRoi() {
@@ -580,18 +579,5 @@ public class OptionsSynchronizer {
 				ClassUtils.getField("ij.plugin.OverlayCommands", "defaultRoi");
 		Object obj = ClassUtils.getValue(field, null);
 		return (Roi) obj;
-	}
-	
-	private Color toColorAWT(ColorRGB color) {
-		String colorName = color.toHTMLColor();
-		return Colors.decode(colorName, Color.yellow);
-	}
-	
-	private ColorRGB toColorRGB(Color color) {
-		if (color == null) return null;
-		int r = color.getRed();
-		int g = color.getGreen();
-		int b = color.getBlue();
-		return new ColorRGB(r,g,b);
 	}
 }

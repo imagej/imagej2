@@ -105,7 +105,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		persist = false, choices = { noLineDecoration, arrowLineDecoration })
 	private String endLineArrowStyle;
 
-	@Parameter(label = "Update the defaults", persist = false)
+	@Parameter(label = "Update default overlay settings", persist = false)
 	private boolean updateDefaults = false;
 	
 	@Parameter(persist = false)
@@ -265,6 +265,6 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		options.setAlpha(getAlpha());
 		options.setStartArrowStyle(getStartLineArrowStyle());
 		options.setEndArrowStyle(getEndLineArrowStyle());
-		options.save();
+		options.run();
 	}
 }

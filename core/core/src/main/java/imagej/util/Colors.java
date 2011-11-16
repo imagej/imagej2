@@ -251,4 +251,33 @@ public final class Colors {
 		return COLORS.values();
 	}
 
+	/** Returns the preset color closest to a given color. The definition of
+	 * closest is the nearest color in RGB space. */
+	public static ColorRGB getClosestPresetColor(ColorRGB color) {
+		
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+		
+		ColorRGB bestSoFar = null;
+		double distance = Double.POSITIVE_INFINITY;
+		boolean firstPass = true;
+		for (ColorRGB presetColor : COLORS.values()) {
+			if (firstPass) {
+				bestSoFar = presetColor;
+				firstPass = false;
+			}
+			else { // not first pass
+				double dr = (presetColor.getRed() - r);
+				double dg = (presetColor.getGreen() - g);
+				double db = (presetColor.getBlue() - b);
+				double thisDist = dr*dr + dg*dg + db*db;
+				if (thisDist < distance) {
+					bestSoFar = presetColor;
+					distance = thisDist;
+				}
+			}
+		}
+		return bestSoFar;
+	}
 }
