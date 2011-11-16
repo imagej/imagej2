@@ -46,6 +46,8 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
+import imagej.options.OptionsService;
+import imagej.options.plugins.OptionsOverlay;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
@@ -87,8 +89,8 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "Fill color", persist = false)
 	private ColorRGB fillColor;
 
-	@Parameter(label = "Alpha", description = "The opacity or alpha of the "
-		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
+	@Parameter(label = "Alpha", description = "The opacity or alpha of the " +
+		"interior of the overlay (0=transparent, 255=opaque)", persist = false,
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int alpha;
 
@@ -103,6 +105,12 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		persist = false, choices = { noLineDecoration, arrowLineDecoration })
 	private String endLineArrowStyle;
 
+	@Parameter(label = "Update the defaults", persist = false)
+	private boolean updateDefaults = false;
+	
+	@Parameter(persist = false)
+	private OptionsService os;
+	
 	public OverlayProperties() {
 		// set default values to match the first selected overlay
 		final List<Overlay> selected = getSelectedOverlays();
@@ -188,6 +196,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			}
 			overlay.update();
 		}
+		if (updateDefaults) updateDefaults();
 	}
 
 	@Override
@@ -220,6 +229,20 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		return Overlay.LineStyle.valueOf(lineStyle);
 	}
 
+	public Overlay.ArrowStyle getStartLineArrowStyle() {
+		if (startLineArrowStyle.equals(arrowLineDecoration))
+			return Overlay.ArrowStyle.ARROW;
+		return Overlay.ArrowStyle.NONE;
+	}
+
+	public Overlay.ArrowStyle getEndLineArrowStyle() {
+		if (endLineArrowStyle.equals(arrowLineDecoration))
+			return Overlay.ArrowStyle.ARROW;
+		return Overlay.ArrowStyle.NONE;
+	}
+
+	// -- private helpers --
+	
 	private List<Overlay> getSelectedOverlays() {
 		final ArrayList<Overlay> result = new ArrayList<Overlay>();
 		if (display == null) return result;
@@ -233,4 +256,15 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		return result;
 	}
 
+	private void updateDefaults() {
+		OptionsOverlay options = os.getOptions(OptionsOverlay.class);
+		options.setLineWidth(getLineWidth());
+		options.setLineColor(getLineColor());
+		options.setLineStyle(getLineStyle());
+		options.setFillColor(getFillColor());
+		options.setAlpha(getAlpha());
+		options.setStartArrowStyle(getStartLineArrowStyle());
+		options.setEndArrowStyle(getEndLineArrowStyle());
+		options.save();
+	}
 }
