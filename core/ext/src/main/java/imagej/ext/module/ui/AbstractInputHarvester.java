@@ -213,9 +213,9 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	}
 
 	private void addToggle(final InputPanel inputPanel, final WidgetModel model,
-		final boolean initialValue)
+		final Boolean initialValue)
 	{
-		model.setValue(initialValue);
+		model.setValue(initialValue == null ? Boolean.FALSE : initialValue);
 		inputPanel.addToggle(model);
 	}
 
