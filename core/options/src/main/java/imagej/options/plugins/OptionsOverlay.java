@@ -56,9 +56,9 @@ import imagej.util.Colors;
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Overlay...", weight = 16)}, label="Default Overlay Settings")
+	@Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Overlay", mnemonic = 'o'),
+	@Menu(label = "Overlay Options...")}, label="Default Overlay Settings")
 public class OptionsOverlay extends OptionsPlugin {
 
 	// -- public statics --
@@ -83,16 +83,13 @@ public class OptionsOverlay extends OptionsPlugin {
 		dashLineStyle, dotLineStyle, dotDashLineStyle, noLineStyle })
 	private String lineStyle = solidLineStyle;
 
-	@Parameter(label = "Filled")
-	private boolean filled = false;
-	
 	@Parameter(label = "Fill color")
 	private ColorRGB fillColor = Colors.YELLOW;
 
 	@Parameter(label = "Fill opacity", description = "The opacity or alpha of the "
 		+ "interior of the overlay (0=transparent, 255=opaque)",
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-	private int alpha = 255;
+	private int alpha = 0;
 
 	@Parameter(
 		label = "Line start arrow style",
@@ -145,14 +142,6 @@ public class OptionsOverlay extends OptionsPlugin {
 		return LineStyle.NONE;
 	}
 
-	public boolean isFilled() {
-		return filled;
-	}
-	
-	public void setFilled(boolean b) {
-		filled = b;
-	}
-	
 	public void setFillColor(ColorRGB color) {
 		fillColor = color;
 	}
