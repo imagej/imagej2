@@ -49,7 +49,6 @@ import imagej.ext.plugin.PreviewPlugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsOverlay;
 import imagej.util.ColorRGB;
-import imagej.util.Colors;
 
 import java.util.ArrayList;
 import java.util.List;
