@@ -42,7 +42,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 import imagej.util.ColorRGB;
-import imagej.util.Colors;
 import imagej.util.JavaColorMap;
 
 // TODO - this dialog has limited color support. Users can assign any color
