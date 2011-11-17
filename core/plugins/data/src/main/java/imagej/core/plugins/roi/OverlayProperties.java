@@ -143,6 +143,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 					break;
 				case ARROW:
 					startLineArrowStyle = arrowLineDecoration;
+					break;
 			}
 			switch (overlay.getLineEndArrowStyle()) {
 				case NONE:
@@ -150,6 +151,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 					break;
 				case ARROW:
 					endLineArrowStyle = arrowLineDecoration;
+					break;
 			}
 		}
 	}
@@ -159,13 +161,13 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		// change properties of all selected overlays
 		final List<Overlay> selected = getSelectedOverlays();
 		for (final Overlay overlay : selected) {
-			overlay.setLineColor(lineColor);
-			overlay.setLineWidth(lineWidth);
-			overlay.setFillColor(fillColor);
-			overlay.setAlpha(alpha);
-			overlay.setLineStyle(decodeLineStyle(lineStyle));
-			overlay.setLineStartArrowStyle(decodeArrowStyle(startLineArrowStyle));
-			overlay.setLineEndArrowStyle(decodeArrowStyle(endLineArrowStyle));
+			overlay.setLineColor(getLineColor());
+			overlay.setLineWidth(getLineWidth());
+			overlay.setFillColor(getFillColor());
+			overlay.setAlpha(getAlpha());
+			overlay.setLineStyle(getLineStyle());
+			overlay.setLineStartArrowStyle(getStartLineArrowStyle());
+			overlay.setLineEndArrowStyle(getEndLineArrowStyle());
 			overlay.update();
 		}
 		if (updateDefaults) updateDefaults();
