@@ -69,7 +69,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	static final protected String dashLineStyle = "Dash";
 	static final protected String dotLineStyle = "Dot";
 	static final protected String dotDashLineStyle = "Dot-dash";
-	static final protected String noneLineStyle = "None";
+	static final protected String noLineStyle = "None";
 	static final protected String arrowLineDecoration = "Arrow";
 	static final protected String noLineDecoration = "None";
 
@@ -83,7 +83,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	private double lineWidth;
 
 	@Parameter(label = "Line style", persist = false, choices = { solidLineStyle,
-		dashLineStyle, dotLineStyle, dotDashLineStyle, noneLineStyle })
+		dashLineStyle, dotLineStyle, dotDashLineStyle, noLineStyle })
 	private String lineStyle = "Solid";
 
 	@Parameter(label = "Fill color", persist = false)
@@ -134,7 +134,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 					lineStyle = dotDashLineStyle;
 					break;
 				case NONE:
-					lineStyle = noneLineStyle;
+					lineStyle = noLineStyle;
 					break;
 			}
 			switch (overlay.getLineStartArrowStyle()) {
@@ -163,37 +163,9 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			overlay.setLineWidth(lineWidth);
 			overlay.setFillColor(fillColor);
 			overlay.setAlpha(alpha);
-			if (lineStyle.equals(solidLineStyle)) {
-				overlay.setLineStyle(LineStyle.SOLID);
-			}
-			else if (lineStyle.equals(dashLineStyle)) {
-				overlay.setLineStyle(LineStyle.DASH);
-			}
-			else if (lineStyle.equals(dotLineStyle)) {
-				overlay.setLineStyle(LineStyle.DOT);
-			}
-			else if (lineStyle.equals(dotDashLineStyle)) {
-				overlay.setLineStyle(LineStyle.DOT_DASH);
-			}
-			else if (lineStyle.equals(noneLineStyle)) {
-				overlay.setLineStyle(LineStyle.NONE);
-			}
-			else {
-				throw new UnsupportedOperationException("Unimplemented style: " +
-					lineStyle);
-			}
-			if (startLineArrowStyle.equals(arrowLineDecoration)) {
-				overlay.setLineStartArrowStyle(ArrowStyle.ARROW);
-			}
-			else {
-				overlay.setLineStartArrowStyle(ArrowStyle.NONE);
-			}
-			if (endLineArrowStyle.equals(arrowLineDecoration)) {
-				overlay.setLineEndArrowStyle(ArrowStyle.ARROW);
-			}
-			else {
-				overlay.setLineEndArrowStyle(ArrowStyle.NONE);
-			}
+			overlay.setLineStyle(decodeLineStyle(lineStyle));
+			overlay.setLineStartArrowStyle(decodeArrowStyle(startLineArrowStyle));
+			overlay.setLineEndArrowStyle(decodeArrowStyle(endLineArrowStyle));
 			overlay.update();
 		}
 		if (updateDefaults) updateDefaults();
@@ -226,19 +198,15 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	}
 
 	public Overlay.LineStyle getLineStyle() {
-		return Overlay.LineStyle.valueOf(lineStyle);
+		return decodeLineStyle(lineStyle);
 	}
 
 	public Overlay.ArrowStyle getStartLineArrowStyle() {
-		if (startLineArrowStyle.equals(arrowLineDecoration))
-			return Overlay.ArrowStyle.ARROW;
-		return Overlay.ArrowStyle.NONE;
+		return decodeArrowStyle(startLineArrowStyle);
 	}
 
 	public Overlay.ArrowStyle getEndLineArrowStyle() {
-		if (endLineArrowStyle.equals(arrowLineDecoration))
-			return Overlay.ArrowStyle.ARROW;
-		return Overlay.ArrowStyle.NONE;
+		return decodeArrowStyle(endLineArrowStyle);
 	}
 
 	// -- private helpers --
@@ -261,11 +229,44 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		options.setLineWidth(getLineWidth());
 		options.setLineColor(getLineColor());
 		options.setLineStyle(getLineStyle());
-		// NB - not setting options.setFill(true/false);
 		options.setFillColor(getFillColor());
 		options.setAlpha(getAlpha());
 		options.setStartArrowStyle(getStartLineArrowStyle());
 		options.setEndArrowStyle(getEndLineArrowStyle());
 		options.run();
 	}
+	
+	private Overlay.LineStyle decodeLineStyle(String style) {
+		if (style.equals(solidLineStyle)) {
+			return LineStyle.SOLID;
+		}
+		else if (style.equals(dashLineStyle)) {
+			return LineStyle.DASH;
+		}
+		else if (style.equals(dotLineStyle)) {
+			return LineStyle.DOT;
+		}
+		else if (style.equals(dotDashLineStyle)) {
+			return LineStyle.DOT_DASH;
+		}
+		else if (style.equals(noLineStyle)) {
+			return LineStyle.NONE;
+		}
+		else {
+			throw new UnsupportedOperationException("Unimplemented style: " +	style);
+		}
+	}
+	
+	private Overlay.ArrowStyle decodeArrowStyle(String style) {
+		if (style.equals(arrowLineDecoration)) {
+			return ArrowStyle.ARROW;
+		}
+		else if (style.equals(noLineDecoration)) {
+			return ArrowStyle.NONE;
+		}
+		else {
+			throw new UnsupportedOperationException("Unimplemented style: " +	style);
+		}
+	}
+
 }
