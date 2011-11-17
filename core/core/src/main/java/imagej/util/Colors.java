@@ -234,6 +234,7 @@ public final class Colors {
 
 	/** Gets the name of the preset matching the given color. */
 	public static String getName(final ColorRGB color) {
+		if (color == null) return null;
 		for (final String name : COLORS.keySet()) {
 			final ColorRGB value = COLORS.get(name);
 			if (color.equals(value)) return name;
