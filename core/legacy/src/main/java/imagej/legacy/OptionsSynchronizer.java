@@ -321,7 +321,7 @@ public class OptionsSynchronizer {
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
 		// NB - setStrokeWidth() must be called before setFillColor() or fill info
-		// gets lost!
+		// gets lost going to IJ1 when stroke width > 1.
 		defaultRoi.setStrokeWidth(options.getLineWidth());
 		Color color = AWTColors.getColor(options.getLineColor());
 		defaultRoi.setStrokeColor(color);
