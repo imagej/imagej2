@@ -325,7 +325,7 @@ public class OptionsSynchronizer {
 		defaultRoi.setStrokeWidth(options.getLineWidth());
 		Color color = AWTColors.getColor(options.getLineColor());
 		defaultRoi.setStrokeColor(color);
-		if (!options.isFilled()) {
+		if (options.getAlpha() == 0) {
 			defaultRoi.setFillColor(null);
 		}
 		else {
@@ -557,9 +557,8 @@ public class OptionsSynchronizer {
 		Roi defaultRoi = getDefaultRoi();
 		Color c = defaultRoi.getFillColor();
 		if (c == null)
-			optionsOverlay.setFilled(false);
+			optionsOverlay.setAlpha(0);
 		else {
-			optionsOverlay.setFilled(true);
 			optionsOverlay.setAlpha(c.getAlpha());
 			ColorRGB crgb = AWTColors.getColorRGB(c);
 			optionsOverlay.setFillColor(crgb);
