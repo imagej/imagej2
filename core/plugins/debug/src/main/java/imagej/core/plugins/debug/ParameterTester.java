@@ -127,7 +127,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter
 	private ColorRGB color;
 
-	@Parameter
+	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
 	@Parameter(label = "spinner", style = WidgetStyle.NUMBER_SPINNER, min = "0",
