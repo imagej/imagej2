@@ -49,6 +49,7 @@ import imagej.ext.plugin.PreviewPlugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsOverlay;
 import imagej.util.ColorRGB;
+import imagej.util.Colors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -261,6 +262,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		options.setLineWidth(getLineWidth());
 		options.setLineColor(getLineColor());
 		options.setLineStyle(getLineStyle());
+		// NB - not setting options.setFill(true/false);
 		options.setFillColor(getFillColor());
 		options.setAlpha(getAlpha());
 		options.setStartArrowStyle(getStartLineArrowStyle());
