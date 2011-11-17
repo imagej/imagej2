@@ -320,7 +320,11 @@ public class OptionsSynchronizer {
 		final OptionsOverlay options =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
-		Color color;
+		// NB - setStrokeWidth() must be called before setFillColor() or fill info
+		// gets lost!
+		defaultRoi.setStrokeWidth(options.getLineWidth());
+		Color color = AWTColors.getColor(options.getLineColor());
+		defaultRoi.setStrokeColor(color);
 		if (!options.isFilled()) {
 			defaultRoi.setFillColor(null);
 		}
@@ -328,9 +332,6 @@ public class OptionsSynchronizer {
 			color = AWTColors.getColor(options.getFillColor(), options.getAlpha());
 			defaultRoi.setFillColor(color);
 		}
-		color = AWTColors.getColor(options.getLineColor());
-		defaultRoi.setStrokeColor(color);
-		defaultRoi.setStrokeWidth(options.getLineWidth());
 	}
 	
 	private void pointOptions() {
