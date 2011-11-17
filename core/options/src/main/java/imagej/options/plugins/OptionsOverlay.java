@@ -42,7 +42,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 import imagej.util.ColorRGB;
-import imagej.util.JavaColorMap;
+import imagej.util.Colors;
 
 // TODO - this dialog has limited color support. Users can assign any color
 // via rgb but the dialog can only show a few due to the existence of
@@ -73,24 +73,8 @@ public class OptionsOverlay extends OptionsPlugin {
 
 	// -- private statics --
 	
-	static final private String noColorStr = "none";
-	static final private String redStr = "red";
-	static final private String greenStr = "green";
-	static final private String blueStr = "blue";
-	static final private String cyanStr = "cyan";
-	static final private String magentaStr = "magenta";
-	static final private String yellowStr = "yellow";
-	static final private String pinkStr = "pink";
-	static final private String orangeStr = "orange";
-	static final private String blackStr = "black";
-	static final private String grayStr = "gray";
-	static final private String whiteStr = "white";
-	
-	@Parameter(label = "Line color", choices = {redStr, greenStr, blueStr,
-		cyanStr, magentaStr, yellowStr, pinkStr, orangeStr, blackStr,
-		grayStr, whiteStr}
-	)
-	private String lineColor = yellowStr;
+	@Parameter(label = "Line color")
+	private ColorRGB lineColor = Colors.YELLOW;
 
 	@Parameter(label = "Line width", min = "0.1")
 	private double lineWidth = 1;
@@ -99,13 +83,13 @@ public class OptionsOverlay extends OptionsPlugin {
 		dashLineStyle, dotLineStyle, dotDashLineStyle, noLineStyle })
 	private String lineStyle = solidLineStyle;
 
-	@Parameter(label = "Fill color", choices = {noColorStr, redStr, greenStr,
-		blueStr, cyanStr, magentaStr, yellowStr, pinkStr, orangeStr, blackStr,
-		grayStr, whiteStr}
-	)
-	private String fillColor = noColorStr;
+	@Parameter(label = "Filled")
+	private boolean filled = false;
+	
+	@Parameter(label = "Fill color")
+	private ColorRGB fillColor = Colors.YELLOW;
 
-	@Parameter(label = "Alpha", description = "The opacity or alpha of the "
+	@Parameter(label = "Fill opacity", description = "The opacity or alpha of the "
 		+ "interior of the overlay (0=transparent, 255=opaque)",
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int alpha = 255;
@@ -127,15 +111,12 @@ public class OptionsOverlay extends OptionsPlugin {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	// NB - to be compatible with dialog UI must restrict input values
-	
 	public void setLineColor(ColorRGB color) {
-		lineColor = getColorName(color);
-		if (lineColor == null) lineColor = yellowStr;
+		lineColor = color;
 	}
 	
 	public ColorRGB getLineColor() {
-		return getColor(lineColor);
+		return lineColor;
 	}
 	
 	public void setLineWidth(double width) {
@@ -163,16 +144,21 @@ public class OptionsOverlay extends OptionsPlugin {
 		if (lineStyle.equals(solidLineStyle)) return LineStyle.SOLID;
 		return LineStyle.NONE;
 	}
-	
-	// NB - to be compatible with dialog UI must restrict input values
 
+	public boolean isFilled() {
+		return filled;
+	}
+	
+	public void setFilled(boolean b) {
+		filled = b;
+	}
+	
 	public void setFillColor(ColorRGB color) {
-		fillColor = getColorName(color);
-		if (fillColor == null) fillColor = noColorStr;
+		fillColor = color;
 	}
 	
 	public ColorRGB getFillColor() {
-		return getColor(fillColor);
+		return fillColor;
 	}
 	
 	public void setAlpha(int alpha) {
@@ -207,37 +193,5 @@ public class OptionsOverlay extends OptionsPlugin {
 		if (endLineArrowStyle.equals(arrowLineDecoration))
 			return ArrowStyle.ARROW;
 		return ArrowStyle.NONE;
-	}
-
-	// -- private helpers --
-	
-	private String getColorName(ColorRGB color) {
-		if (color.equals(JavaColorMap.BASIC_BLACK)) return blackStr;
-		if (color.equals(JavaColorMap.BASIC_BLUE)) return blueStr;
-		if (color.equals(JavaColorMap.BASIC_CYAN)) return cyanStr;
-		if (color.equals(JavaColorMap.BASIC_GRAY)) return grayStr;
-		if (color.equals(JavaColorMap.BASIC_GREEN)) return greenStr;
-		if (color.equals(JavaColorMap.BASIC_MAGENTA)) return magentaStr;
-		if (color.equals(JavaColorMap.BASIC_ORANGE)) return orangeStr;
-		if (color.equals(JavaColorMap.BASIC_PINK)) return pinkStr;
-		if (color.equals(JavaColorMap.BASIC_RED)) return redStr;
-		if (color.equals(JavaColorMap.BASIC_WHITE)) return whiteStr;
-		if (color.equals(JavaColorMap.BASIC_YELLOW)) return yellowStr;
-		return null;
-	}
-	
-	private ColorRGB getColor(String colorName) {
-		if (colorName.equals(blackStr)) return JavaColorMap.BASIC_BLACK;
-		if (colorName.equals(blueStr)) return JavaColorMap.BASIC_BLUE;
-		if (colorName.equals(cyanStr)) return JavaColorMap.BASIC_CYAN;
-		if (colorName.equals(grayStr)) return JavaColorMap.BASIC_GRAY;
-		if (colorName.equals(greenStr)) return JavaColorMap.BASIC_GREEN;
-		if (colorName.equals(magentaStr)) return JavaColorMap.BASIC_MAGENTA;
-		if (colorName.equals(orangeStr)) return JavaColorMap.BASIC_ORANGE;
-		if (colorName.equals(pinkStr)) return JavaColorMap.BASIC_PINK;
-		if (colorName.equals(redStr)) return JavaColorMap.BASIC_RED;
-		if (colorName.equals(whiteStr)) return JavaColorMap.BASIC_WHITE;
-		if (colorName.equals(yellowStr)) return JavaColorMap.BASIC_YELLOW;
-		return null;
 	}
 }

@@ -68,6 +68,7 @@ import imagej.options.plugins.OptionsProxy;
 import imagej.options.plugins.OptionsRoundedRectangleTool;
 import imagej.util.ClassUtils;
 import imagej.util.ColorRGB;
+import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -319,16 +320,17 @@ public class OptionsSynchronizer {
 		final OptionsOverlay options =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
-		defaultRoi.setStrokeWidth(options.getLineWidth());
 		Color color;
-		if (options.getFillColor() != null) {
-			color = LegacyColorMap.getIJ1Color(options.getFillColor());
+		if (!options.isFilled()) {
+			defaultRoi.setFillColor(null);
+		}
+		else {
+			color = AWTColors.getColor(options.getFillColor(), options.getAlpha());
 			defaultRoi.setFillColor(color);
 		}
-		if (options.getLineColor() != null) {
-			color = LegacyColorMap.getIJ1Color(options.getLineColor());
-			defaultRoi.setStrokeColor(color);
-		}
+		color = AWTColors.getColor(options.getLineColor());
+		defaultRoi.setStrokeColor(color);
+		defaultRoi.setStrokeWidth(options.getLineWidth());
 	}
 	
 	private void pointOptions() {
@@ -549,27 +551,21 @@ public class OptionsSynchronizer {
 		optionsRoundedRectangleTool.setCornerDiameter(crnDiam);
 		optionsRoundedRectangleTool.save();
 		
-		/* TODO - there is something to note about disabled OptionsOverlay code.
-		 * As implemented there would be synchronization issues. No matter what
-		 * fill color is set to in IJ2, IJ1 thinks it's None (because fill color
-		 * of a Roi is a protected member and someone is setting it to null).
-		 * And then the none choice gets synchronized back to IJ2. I think what
-		 * we need to do is totally replace the IJ1 Overlay Options (RoiProperites)
-		 * class with our own for behavior. And then still figure out fill color
-		 * sync issue for compatibility.
-		 */
-		
 		final OptionsOverlay optionsOverlay =
 				optionsService.getOptions(OptionsOverlay.class);
 		Roi defaultRoi = getDefaultRoi();
 		Color c = defaultRoi.getFillColor();
-		ColorRGB crgb = LegacyColorMap.getIJ2Color(c);
-		optionsOverlay.setFillColor(c == null ? null : crgb);
+		if (c == null)
+			optionsOverlay.setFilled(false);
+		else {
+			optionsOverlay.setFilled(true);
+			optionsOverlay.setAlpha(c.getAlpha());
+			ColorRGB crgb = AWTColors.getColorRGB(c);
+			optionsOverlay.setFillColor(crgb);
+		}
 		c = defaultRoi.getStrokeColor();
-		optionsOverlay.setLineColor(
-			c == null ?
-				LegacyColorMap.getIJ2Color(Roi.getColor()) :
-				LegacyColorMap.getIJ2Color(c));
+		if (c == null) c = Roi.getColor();
+		if (c != null) optionsOverlay.setLineColor(AWTColors.getColorRGB(c));
 		optionsOverlay.setLineWidth(defaultRoi.getStrokeWidth());
 		optionsOverlay.save();
 	}
