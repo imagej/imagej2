@@ -127,8 +127,9 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 
 		// are types different
 		boolean typeChanged = false;
-		if (imgPlus.getImg().cursor().get().getClass() != this.imgPlus.getImg()
-			.cursor().get().getClass()) typeChanged = true;
+		if (imgPlus.firstElement().getClass() != getType().getClass()) {
+			typeChanged = true;
+		}
 
 		this.imgPlus = imgPlus;
 		this.extents = extents(imgPlus);
