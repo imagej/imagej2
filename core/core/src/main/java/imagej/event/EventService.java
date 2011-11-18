@@ -94,20 +94,7 @@ public final class EventService extends AbstractService {
 	public List<EventSubscriber<?>> subscribe(final Object o) {
 		final List<EventSubscriber<?>> subscribers =
 			new ArrayList<EventSubscriber<?>>();
-
-		for (final Method m : o.getClass().getDeclaredMethods()) {
-			final EventHandler ann = m.getAnnotation(EventHandler.class);
-			if (ann == null) continue; // not an event handler method
-
-			final Class<? extends ImageJEvent> eventClass = getEventClass(m);
-			if (eventClass == null) {
-				Log.warn("Invalid EventHandler method: " + m);
-				continue;
-			}
-
-			subscribers.add(subscribe(eventClass, o, m));
-		}
-
+		subscribeRecursively(subscribers, o.getClass(), o);
 		return subscribers;
 	}
 
@@ -144,6 +131,29 @@ public final class EventService extends AbstractService {
 	}
 
 	// -- Helper methods --
+
+	/**
+	 * Recursively scans for @{@link EventHandler} annotated methods, and
+	 * subscribes them to the event service.
+	 */
+	private void subscribeRecursively(final List<EventSubscriber<?>> subscribers,
+		final Class<?> type, final Object o)
+	{
+		if (type == null || type == Object.class) return;
+		for (final Method m : type.getDeclaredMethods()) {
+			final EventHandler ann = m.getAnnotation(EventHandler.class);
+			if (ann == null) continue; // not an event handler method
+
+			final Class<? extends ImageJEvent> eventClass = getEventClass(m);
+			if (eventClass == null) {
+				Log.warn("Invalid EventHandler method: " + m);
+				continue;
+			}
+
+			subscribers.add(subscribe(eventClass, o, m));
+		}
+		subscribeRecursively(subscribers, type.getSuperclass(), o);
+	}
 
 	private <E extends ImageJEvent> void subscribe(final Class<E> c,
 		final EventSubscriber<E> subscriber)
