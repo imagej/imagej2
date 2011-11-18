@@ -44,6 +44,7 @@ import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
 import imagej.platform.PlatformService;
+import imagej.thread.ThreadService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ import net.java.sezpoz.IndexItem;
 public final class UIService extends AbstractService {
 
 	private final EventService eventService;
+	private final ThreadService threadService;
 	private final PlatformService platformService;
 	private final PluginService pluginService;
 	private final MenuService menuService;
@@ -82,11 +84,13 @@ public final class UIService extends AbstractService {
 	}
 
 	public UIService(final ImageJ context, final EventService eventService,
-		final PlatformService platformService, final PluginService pluginService,
-		final MenuService menuService, final ToolService toolService)
+		final ThreadService threadService, final PlatformService platformService,
+		final PluginService pluginService, final MenuService menuService,
+		final ToolService toolService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.threadService = threadService;
 		this.platformService = platformService;
 		this.pluginService = pluginService;
 		this.menuService = menuService;
@@ -97,6 +101,10 @@ public final class UIService extends AbstractService {
 
 	public EventService getEventService() {
 		return eventService;
+	}
+
+	public ThreadService getThreadService() {
+		return threadService;
 	}
 
 	public PlatformService getPlatformService() {
@@ -179,8 +187,8 @@ public final class UIService extends AbstractService {
 	/** Discovers user interfaces using SezPoz. */
 	private List<IUserInterface> discoverUIs() {
 		final List<IUserInterface> uis = new ArrayList<IUserInterface>();
-		for (final IndexItem<UserInterface, IUserInterface> item : Index.load(UserInterface.class,
-			IUserInterface.class))
+		for (final IndexItem<UserInterface, IUserInterface> item : Index.load(
+			UserInterface.class, IUserInterface.class))
 		{
 			try {
 				final IUserInterface ui = item.instance();
