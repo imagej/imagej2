@@ -232,18 +232,17 @@ public final class EventService extends AbstractService {
 				if (obj == null) return; // has been garbage collected
 				getSubscriptionMethod().invoke(obj, event);
 			}
-			catch (final IllegalAccessException e) {
-				Log.error("Exception when invoking annotated method from " +
-					"EventService publication.  Event class:" + event.getClass() +
-					", Event:" + event + ", subscriber:" + getProxiedSubscriber() +
-					", subscription Method=" + getSubscriptionMethod(), e);
+			catch (final IllegalAccessException exc) {
+				Log.error("Exception during event handling:" +
+					"\n\t[Event] " + event.getClass().getName() + ":" + event +
+					"\n\t[Subscriber] " + getProxiedSubscriber() +
+					"\n\t[Method] " + getSubscriptionMethod(), exc);
 			}
-			catch (final InvocationTargetException e) {
-				Log.error("InvocationTargetException when invoking " +
-					"annotated method from EventService publication.  Event class:" +
-					event.getClass() + ", Event:" + event + ", subscriber:" +
-					getProxiedSubscriber() + ", subscription Method=" +
-					getSubscriptionMethod(), e);
+			catch (final InvocationTargetException exc) {
+				Log.error("Exception during event handling:" +
+					"\n\t[Event] " + event.getClass().getName() + event +
+					"\n\t[Subscriber] " + getProxiedSubscriber() +
+					"\n\t[Method] " + getSubscriptionMethod(), exc.getCause());
 			}
 		}
 
