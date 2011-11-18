@@ -52,7 +52,6 @@ import org.apache.pivot.wtk.Orientation;
  * 
  * @author Curtis Rueden
  */
-@UserInterface
 public class PivotApplication implements Application {
 
 	private ImageJ context;
