@@ -34,11 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.pivot;
 
-import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.ext.menu.MenuService;
-import imagej.ext.ui.pivot.PivotMenuCreator;
-import imagej.platform.event.AppMenusCreatedEvent;
+import java.util.concurrent.Callable;
+
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -48,12 +45,7 @@ import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.DesktopApplicationContext;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.Orientation;
 
 /**
  * Apache Pivot-based user interface for ImageJ.
@@ -61,64 +53,16 @@ import org.apache.pivot.wtk.Orientation;
  * @author Curtis Rueden
  */
 @UserInterface
-public class PivotUI implements Application, IUserInterface {
+public class PivotUI implements IUserInterface, Callable<Object> {
 
 	private UIService uiService;
-	private EventService eventService;
 
-	private PivotApplicationFrame frame;
-	private PivotToolBar toolBar;
-	private PivotStatusBar statusBar;
-
-	private BoxPane contentPane;
-
-	// -- Application methods --
-
-	@Override
-	public void startup(final Display display,
-		final Map<String, String> properties)
-	{
-		frame = new PivotApplicationFrame();
-		toolBar = new PivotToolBar();
-		statusBar = new PivotStatusBar(eventService);
-
-		contentPane = new BoxPane();
-		contentPane.setOrientation(Orientation.VERTICAL);
-		frame.setContent(contentPane);
-		createMenus();
-
-		contentPane.add(toolBar);
-		contentPane.add(statusBar);
-
-		frame.setTitle("ImageJ");
-		frame.setMaximized(true);
-		frame.open(display);
-	}
-
-	@Override
-	public boolean shutdown(final boolean optional) {
-		if (frame != null) frame.close();
-		return false;
-	}
-
-	@Override
-	public void suspend() {
-		// NB: no action needed.
-	}
-
-	@Override
-	public void resume() {
-		// NB: no action needed.
-	}
-
-	// -- UserInterface methods --
+	// -- IUserInterface methods --
 
 	@Override
 	public void initialize(final UIService service) {
 		uiService = service;
-		eventService = uiService.getEventService();
-		final String[] args = { getClass().getName() };
-		DesktopApplicationContext.main(args);
+		uiService.getThreadService().run(this);
 	}
 
 	@Override
@@ -128,11 +72,7 @@ public class PivotUI implements Application, IUserInterface {
 
 	@Override
 	public void createMenus() {
-		final MenuService menuService = ImageJ.get(MenuService.class);
-		final BoxPane menuPane =
-			menuService.createMenus(new PivotMenuCreator(), new BoxPane());
-		contentPane.add(menuPane);
-		ImageJ.get(EventService.class).publish(new AppMenusCreatedEvent(menuPane));
+		//
 	}
 
 	@Override
@@ -142,7 +82,7 @@ public class PivotUI implements Application, IUserInterface {
 
 	@Override
 	public PivotApplicationFrame getApplicationFrame() {
-		return frame;
+		return null;
 	}
 
 	@Override
@@ -152,12 +92,12 @@ public class PivotUI implements Application, IUserInterface {
 
 	@Override
 	public PivotToolBar getToolBar() {
-		return toolBar;
+		return null;
 	}
 
 	@Override
 	public PivotStatusBar getStatusBar() {
-		return statusBar;
+		return null;
 	}
 
 	@Override
@@ -170,6 +110,15 @@ public class PivotUI implements Application, IUserInterface {
 		final MessageType msg, final OptionType option)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	// -- Callable methods --
+
+	@Override
+	public Object call() {
+		final String[] args = { PivotApplication.class.getName() };
+		DesktopApplicationContext.main(args);
+		return null;
 	}
 
 }
