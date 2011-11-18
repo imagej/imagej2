@@ -229,12 +229,8 @@ public final class EventService extends AbstractService {
 		public void onEvent(final E event) {
 			try {
 				final Object obj = getProxiedSubscriber();
-				if (obj == null) {
-					// has been garbage collected
-					return;
-				}
-				final Method subscriptionMethod = getSubscriptionMethod();
-				subscriptionMethod.invoke(obj, event);
+				if (obj == null) return; // has been garbage collected
+				getSubscriptionMethod().invoke(obj, event);
 			}
 			catch (final IllegalAccessException e) {
 				Log.error("Exception when invoking annotated method from " +
