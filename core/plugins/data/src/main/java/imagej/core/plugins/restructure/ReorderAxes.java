@@ -36,7 +36,6 @@ package imagej.core.plugins.restructure;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
@@ -56,8 +55,7 @@ import net.imglib2.type.numeric.RealType;
 
 // TODO
 // - can reorder X & Y out of 1st two positions. This could be useful in future
-//     but might need to block right now. Similarly the DeleteAxis plugin can
-//     totally delete X & Y I think.
+//     but might need to block right now.
 
 /**
  * Changes the internal ImgPlus of a Dataset so that its data values stay the
@@ -69,19 +67,19 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Axes...") })
 public class ReorderAxes extends DynamicPlugin {
 
+	// -- instance variables --
+	
 	private Dataset dataset;
-
-	String[] axisNames;
+	private String[] axisNames;
 	private int[] permutationAxisIndices;
 	private Axis[] desiredAxisOrder;
 
+	// -- public interface --
+	
 	public ReorderAxes() {
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
-		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
-		if (display == null) return;
-		dataset = imageDisplayService.getActiveDataset(display);
-
+		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset();
+		if (dataset == null) return;
+		
 		final Axis[] axes = dataset.getAxes();
 
 		final ArrayList<String> choices = new ArrayList<String>();
@@ -99,6 +97,7 @@ public class ReorderAxes extends DynamicPlugin {
 	/** Runs the plugin and reorders axes as specified by user. */
 	@Override
 	public void run() {
+		if (dataset == null) return;
 		getAxisNamesInOrder();
 		setupDesiredAxisOrder();
 		if (inputBad()) return;
@@ -111,7 +110,7 @@ public class ReorderAxes extends DynamicPlugin {
 		dataset.setCompositeChannelCount(count);
 	}
 
-	// -- helpers --
+	// -- private helpers --
 
 	/*
 	private void reportDims(ImgPlus<?> imgPlus) {
