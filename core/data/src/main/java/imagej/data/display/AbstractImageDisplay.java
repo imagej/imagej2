@@ -55,10 +55,10 @@ import imagej.ext.tool.ToolService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -81,7 +81,11 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	private Axis activeAxis = null;
 
-	private final Map<Axis, Long> axisPositions = new HashMap<Axis, Long>();
+	// NB: If axisPositions is a HashMap rather than a ConcurrentHashMap,
+	// the Delete Axis plugin throws a ConcurrentModificationException.
+
+	private final Map<Axis, Long> axisPositions =
+		new ConcurrentHashMap<Axis, Long>();
 
 	private ScaleConverter scaleConverter;
 
