@@ -135,7 +135,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		if (axisPositions.containsKey(axis)) {
 			return axisPositions.get(axis);
 		}
-		throw new IllegalArgumentException("Unknown axis: " + axis);
+		return 0; // untracked axes are all at position 0 by default
 	}
 
 	@Override
