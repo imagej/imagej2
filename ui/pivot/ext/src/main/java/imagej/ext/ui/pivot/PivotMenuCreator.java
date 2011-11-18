@@ -44,6 +44,7 @@ import imagej.util.Log;
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
+import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Menu;
 import org.apache.pivot.wtk.Menu.SectionSequence;
@@ -127,7 +128,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		button.setAction(new Action() {
 
 			@Override
-			public void perform() {
+			public void perform(final Component c) {
 				ImageJ.get(PluginService.class).run(info);
 			}
 		});

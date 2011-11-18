@@ -23,7 +23,7 @@
 	</modules>
 
 	<properties>
-		<pivot.version>1.4</pivot.version>
+		<pivot.version>2.0</pivot.version>
 	</properties>
 
 	<!-- NB: for project parent, in case of partial checkout -->
