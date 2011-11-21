@@ -340,7 +340,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@EventHandler
 	public void onEvent(final DataRestructuredEvent event) {
-		for (final DataView view : AbstractImageDisplay.this) {
+		for (final DataView view : this) {
 			if (event.getObject() == view.getData()) {
 				view.rebuild();
 				update();
@@ -351,7 +351,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@EventHandler
 	protected void onEvent(final DataUpdatedEvent event) {
-		for (final DataView view : AbstractImageDisplay.this) {
+		for (final DataView view : this) {
 			if (event.getObject() == view.getData()) {
 				view.update();
 				update();
@@ -371,7 +371,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		// avoid some other bug. Changing on 8-18-11. Fixed bug #627
 		// and bug #605. BDZ
 		final Dataset dataset = event.getObject();
-		for (final DataView view : AbstractImageDisplay.this) {
+		for (final DataView view : this) {
 			if (dataset == view.getData()) {
 				// BDZ - calls to imgCanvas.setZoom(0) followed by
 				// imgCanvas.panReset() removed from here to fix bug #797.
@@ -393,7 +393,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
-		if (event.getObject() == AbstractImageDisplay.this) {
+		if (event.getObject() == this) {
 			closeHelper();
 			// NB - we've avoided dispose() since its been called elsewhere.
 			// If call close() here instead get duplicated WindowClosingEvents.
@@ -402,7 +402,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
-		if (event.getDisplay() != AbstractImageDisplay.this) return;
+		if (event.getDisplay() != this) return;
 		// final UserInterface ui = ImageJ.get(UIService.class).getUI();
 		// final ToolService toolMgr = ui.getToolBar().getToolService();
 		final ToolService toolService = ImageJ.get(ToolService.class);
