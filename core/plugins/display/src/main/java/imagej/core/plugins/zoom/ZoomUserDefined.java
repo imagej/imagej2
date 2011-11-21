@@ -34,10 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import imagej.ImageJ;
+import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.data.display.ImageDisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -51,28 +53,42 @@ import imagej.util.IntCoords;
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) })
-public class ZoomUserDefined implements ImageJPlugin {
+public class ZoomUserDefined extends DynamicPlugin {
+
+	// -- constants --
+	
+	private static final String DISPLAY = "display";
+	private static final String ZOOM = "userDefinedScale";
+	private static final String CTR_U = "centerU";
+	private static final String CTR_V = "centerV";
 
 	// -- instance variables --
 	
-	@Parameter
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
-	@Parameter(label = "Zoom (%) :", min = "0.1", max = "500000")
-	private double userDefinedScale = 100;
+	@Parameter(label = "Zoom (%) :", initializer = "initAll")
+	private double userDefinedScale;
 
-	@Parameter(label = "X center:")
-	private long centerX = 1L;
+	@Parameter(label = "X center:", persist = false)
+	private long centerU;
 	
-	@Parameter(label = "Y center:")
-	private long centerY = 1L;
+	@Parameter(label = "Y center:", persist = false)
+	private long centerV;
+	
+	private long maxU, maxV;
+	
 	
 	// -- public interface --
 	
 	@Override
 	public void run() {
-		double percentX = 1.0 * centerX / getDim(display, Axes.X);
-		double percentY = 1.0 * centerY / getDim(display, Axes.Y);
+		display = getDisplay();
+		centerU = getCenterU();
+		centerV = getCenterV();
+		userDefinedScale = getZoomPercent();
+		double percentX = 1.0 * centerU / maxU;
+		double percentY = 1.0 * centerV / maxV;
 		int cx = (int) (percentX * display.getCanvas().getCanvasWidth());
 		int cy = (int) (percentY * display.getCanvas().getCanvasHeight());
 		IntCoords center = new IntCoords(cx, cy);
@@ -88,21 +104,69 @@ public class ZoomUserDefined implements ImageJPlugin {
 	}
 
 	// -- private helpers --
-	
-	// TO BE USED WHEN PARAMETER INITIALIZERS ARE IN PLACE
 
-	private void calcCenterX() {
-		centerX = getDim(display, Axes.X) / 2;
+	@SuppressWarnings("unused")
+	private void initAll() {
+		initZoom();
+		initCenter();
+	}
+
+	private void initZoom() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Double> zoomItem =
+				(DefaultModuleItem<Double>) getInfo().getInput(ZOOM);
+		zoomItem.setMinimumValue(0.1);
+		zoomItem.setMaximumValue(500000.0);
+		setZoomPercent(100);
 	}
 	
-	private void calcCenterY() {
-		centerY = getDim(display, Axes.Y) / 2;
+	private void initCenter() {
+		maxU = getDataset().getImgPlus().dimension(0);
+		maxV = getDataset().getImgPlus().dimension(1);
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> centerXItem =
+				(DefaultModuleItem<Long>) getInfo().getInput(CTR_U);
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> centerYItem =
+				(DefaultModuleItem<Long>) getInfo().getInput(CTR_V);
+		centerXItem.setMinimumValue(0L);
+		centerXItem.setMaximumValue(maxU-1);
+		centerYItem.setMinimumValue(0L);
+		centerYItem.setMaximumValue(maxV-1);
+		setCenterU(maxU / 2);
+		setCenterV(maxV / 2);
+	}
+
+	private long getCenterU() {
+		return (Long) getInput(CTR_U);
+	}
+
+	private void setCenterU(long u) {
+		setInput(CTR_U, u);
+	}
+
+	private long getCenterV() {
+		return (Long) getInput(CTR_V);
+	}
+
+	private void setCenterV(long v) {
+		setInput(CTR_V, v);
+	}
+
+	private double getZoomPercent() {
+		return (Double) getInput(ZOOM);
 	}
 	
-	private static long getDim(ImageDisplay display, Axis axis) {
-		long[] dims = display.getDims();
-		int axisIndex = display.getAxisIndex(axis);
-		if (axisIndex < 0) return 1;
-		return dims[axisIndex];
+	private void setZoomPercent(double d) {
+		setInput(ZOOM, d);
+	}
+	
+	private ImageDisplay getDisplay() {
+		return (ImageDisplay) getInput(DISPLAY);
+	}
+	
+	private Dataset getDataset() {
+		ImageDisplayService s = ImageJ.get(ImageDisplayService.class);
+		return s.getActiveDataset(getDisplay());
 	}
 }
