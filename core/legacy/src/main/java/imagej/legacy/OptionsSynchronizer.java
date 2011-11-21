@@ -66,6 +66,7 @@ import imagej.options.plugins.OptionsPointTool;
 import imagej.options.plugins.OptionsProfilePlot;
 import imagej.options.plugins.OptionsProxy;
 import imagej.options.plugins.OptionsRoundedRectangleTool;
+import imagej.options.plugins.OptionsWandTool;
 import imagej.util.ClassUtils;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
@@ -200,9 +201,9 @@ public class OptionsSynchronizer {
 		else if (version.equals("1.5")) Prefs.set("javac.target", 1);
 		else if (version.equals("1.6")) Prefs.set("javac.target", 2);
 		else if (version.equals("1.7")) Prefs.set("javac.target", 3);
-		// TODO
-		// this next key has no way to be set programmatically in IJ1
-		// Prefs.get(SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO, false);
+		
+		setIJ1CompilerTarget(optionsCompiler.getTargetJavaVersion());
+		setIJ1CompilerDebugFlag(optionsCompiler.isGenerateDebugInfo());
 	}
 
 	private void conversionsOptions() {
@@ -319,7 +320,7 @@ public class OptionsSynchronizer {
 	private void overlayOptions() {
 		final OptionsOverlay options =
 				optionsService.getOptions(OptionsOverlay.class);
-		Roi defaultRoi = getDefaultRoi();
+		Roi defaultRoi = getIJ1DefaultRoi();
 		// NB - setStrokeWidth() must be called before setFillColor() or fill info
 		// gets lost going to IJ1 when stroke width > 1.
 		defaultRoi.setStrokeWidth(options.getLineWidth());
@@ -393,6 +394,8 @@ public class OptionsSynchronizer {
 
 		final int crnDiam = optionsRoundedRectangleTool.getCornerDiameter();
 		Toolbar.setRoundRectArcSize(crnDiam);
+		double width = optionsRoundedRectangleTool.getStrokeWidth();
+		setIJ1DefaultStrokeWidth(width);
 		// TODO
 		// IJ1 RectToolOptions does not manipulate Prefs much. It fires
 		// code to change behavior when dialog entries changed. No programmatic
@@ -400,19 +403,18 @@ public class OptionsSynchronizer {
 		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, none); ?how to
 		// handle "none"?
 		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, Color.black);
-		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_WIDTH, 2);
+		
+		// NB BDZ thinks these prefs are unimportant. We use Overlay "Properties"
+		// dialog in IJ2 to change these.
 	}
 
 	private void wandToolOptions() {
-		// TODO
-		// IJ1 WandToolOptions does not mess with preferences in any way. There
-		// is no way in IJ1 to set values without running dialog. Programmatic
-		// approach is out. Can't synchronize unless Wayne adds code. May not be
-		// needed because Wand is not ever active in IJ2. Right? No. Macros call
-		// IJ.doWand() eventually.
-		
-		// Prefs.get(SettingsKeys.OPTIONS_WAND_MODE, "Legacy");
-		// Prefs.get(SettingsKeys.OPTIONS_WAND_TOLERANCE, 0.0);
+		final OptionsWandTool optionsWand =
+				optionsService.getOptions(OptionsWandTool.class);
+		String mode = optionsWand.getMode();
+		double tol = optionsWand.getTolerance();
+		setIJ1WandMode(mode);
+		setIJ1WandTolerance(tol);
 	}
 
 	private void setOptionsFromStatics() {
@@ -451,6 +453,14 @@ public class OptionsSynchronizer {
 		optionsColors.setBgColor(Toolbar.getBackgroundColor().toString());
 		optionsColors.setSelColor(Roi.getColor().toString());
 		optionsColors.save();
+
+		final OptionsCompiler optionsCompiler =
+				optionsService.getOptions(OptionsCompiler.class);
+		boolean debug = getIJ1CompilerDebugFlag();
+		String target = getIJ1CompilerTarget();
+		optionsCompiler.setTargetJavaVersion(target);
+		optionsCompiler.setGenerateDebugInfo(debug);
+		optionsCompiler.save();
 
 		final OptionsConversions optionsConversions =
 			optionsService.getOptions(OptionsConversions.class);
@@ -514,6 +524,23 @@ public class OptionsSynchronizer {
 		optionsMisc.setRequireCommandKey(Prefs.requireControlKey);
 		optionsMisc.setRunSingleInstanceListener(Prefs.runSocketListener);
 		optionsMisc.save();
+		
+		final OptionsOverlay optionsOverlay =
+				optionsService.getOptions(OptionsOverlay.class);
+		Roi defaultRoi = getIJ1DefaultRoi();
+		Color c = defaultRoi.getFillColor();
+		if (c == null)
+			optionsOverlay.setAlpha(0);
+		else {
+			optionsOverlay.setAlpha(c.getAlpha());
+			ColorRGB crgb = AWTColors.getColorRGB(c);
+			optionsOverlay.setFillColor(crgb);
+		}
+		c = defaultRoi.getStrokeColor();
+		if (c == null) c = Roi.getColor();
+		if (c != null) optionsOverlay.setLineColor(AWTColors.getColorRGB(c));
+		optionsOverlay.setLineWidth(defaultRoi.getStrokeWidth());
+		optionsOverlay.save();
 
 		final OptionsPointTool optionsPointTool =
 			optionsService.getOptions(OptionsPointTool.class);
@@ -549,31 +576,98 @@ public class OptionsSynchronizer {
 		final OptionsRoundedRectangleTool optionsRoundedRectangleTool =
 			optionsService.getOptions(OptionsRoundedRectangleTool.class);
 		final int crnDiam = Toolbar.getRoundRectArcSize();
+		final double width = getIJ1DefaultStrokeWidth();
 		optionsRoundedRectangleTool.setCornerDiameter(crnDiam);
+		optionsRoundedRectangleTool.setStrokeWidth((int)width);
 		optionsRoundedRectangleTool.save();
 		
-		final OptionsOverlay optionsOverlay =
-				optionsService.getOptions(OptionsOverlay.class);
-		Roi defaultRoi = getDefaultRoi();
-		Color c = defaultRoi.getFillColor();
-		if (c == null)
-			optionsOverlay.setAlpha(0);
-		else {
-			optionsOverlay.setAlpha(c.getAlpha());
-			ColorRGB crgb = AWTColors.getColorRGB(c);
-			optionsOverlay.setFillColor(crgb);
-		}
-		c = defaultRoi.getStrokeColor();
-		if (c == null) c = Roi.getColor();
-		if (c != null) optionsOverlay.setLineColor(AWTColors.getColorRGB(c));
-		optionsOverlay.setLineWidth(defaultRoi.getStrokeWidth());
-		optionsOverlay.save();
+		final OptionsWandTool optionsWandTool =
+			optionsService.getOptions(OptionsWandTool.class);
+		String mode = getIJ1WandMode();
+		double tol = getIJ1WandTolerance();
+		optionsWandTool.setMode(mode);
+		optionsWandTool.setTolerance(tol);
+		optionsWandTool.save();
 	}
 	
-	private Roi getDefaultRoi() {
+	private Roi getIJ1DefaultRoi() {
 		Field field =
-				ClassUtils.getField("ij.plugin.OverlayCommands", "defaultRoi");
+			ClassUtils.getField("ij.plugin.OverlayCommands", "defaultRoi");
 		Object obj = ClassUtils.getValue(field, null);
 		return (Roi) obj;
+	}
+
+	private void setIJ1CompilerDebugFlag(boolean b) {
+		Field field =
+			ClassUtils.getField("ij.plugin.Compiler", "generateDebuggingInfo");
+		ClassUtils.setValue(field, null, b);
+	}
+	
+	private boolean getIJ1CompilerDebugFlag() {
+		Field field =
+			ClassUtils.getField("ij.plugin.Compiler", "generateDebuggingInfo");
+		return (Boolean) ClassUtils.getValue(field, null);
+	}
+	
+	private void setIJ1CompilerTarget(String target) {
+		Field field =
+			ClassUtils.getField("ij.plugin.Compiler", "target");
+		int t = 1; 
+		if (target.equals("1.4"))
+			t = 0;
+		else if (target.equals("1.5"))
+			t = 1;
+		else if (target.equals("1.6"))
+			t = 2;
+		else if (target.equals("1.7"))
+			t = 3;
+		ClassUtils.setValue(field, null, t);
+	}
+	
+	private String getIJ1CompilerTarget() {
+		Field field =
+			ClassUtils.getField("ij.plugin.Compiler", "target");
+		int t = (Integer) ClassUtils.getValue(field, null);
+		if (t == 0) return "1.4";
+		if (t == 1) return "1.5";
+		if (t == 2) return "1.6";
+		if (t == 3) return "1.7";
+		return "1.5";
+	}
+	
+	private void setIJ1DefaultStrokeWidth(double width) {
+		Field field =
+			ClassUtils.getField("ij.plugin.RectToolOptions", "defaultStrokeWidth");
+		ClassUtils.setValue(field, null, width);
+	}
+	
+	private double getIJ1DefaultStrokeWidth() {
+		Field field =
+			ClassUtils.getField("ij.plugin.RectToolOptions", "defaultStrokeWidth");
+		return (Double) ClassUtils.getValue(field, null);
+	}
+	
+	private void setIJ1WandMode(String mode) {
+		Field field =
+			ClassUtils.getField("ij.plugin.WandToolOptions", "mode");
+		ClassUtils.setValue(field, null, mode);
+	}
+	
+	private String getIJ1WandMode() {
+		Field field =
+			ClassUtils.getField("ij.plugin.WandToolOptions", "mode");
+		return (String) ClassUtils.getValue(field, null);
+	}
+	
+	private void setIJ1WandTolerance(double tol) {
+		Field field =
+			ClassUtils.getField("ij.plugin.WandToolOptions", "tolerance");
+		ClassUtils.setValue(field, null, tol);
+	}
+	
+	private double getIJ1WandTolerance() {
+		Field field =
+			ClassUtils.getField("ij.plugin.WandToolOptions", "tolerance");
+		return (Double) ClassUtils.getValue(field, null);
 	}
 }
