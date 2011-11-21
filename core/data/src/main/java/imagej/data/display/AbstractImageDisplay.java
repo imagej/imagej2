@@ -109,6 +109,36 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 	}
 
+	// -- AbstractDisplay methods --
+
+	@Override
+	protected void rebuild() {
+		final long[] min = new long[numDimensions()];
+		Arrays.fill(min, Long.MAX_VALUE);
+		final long[] max = new long[numDimensions()];
+		Arrays.fill(max, Long.MIN_VALUE);
+
+		final Axis[] axes = getAxes();
+		final Extents extents = getExtents();
+
+		// remove obsolete axes
+		for (final Axis axis : axisPositions.keySet()) {
+			if (getAxisIndex(axis) >= 0) continue; // axis still active
+			axisPositions.remove(axis);
+		}
+
+		// add new axes
+		for (int i = 0; i < axes.length; i++) {
+			final Axis axis = axes[i];
+			if (axisPositions.containsKey(axis)) continue; // axis already exists
+			if (Axes.isXY(axis)) continue; // do not track position of planar axes
+			setAxisPosition(axis, extents.min(i)); // start at minimum value
+		}
+
+		// rebuild panel
+		getPanel().redoLayout();
+	}
+
 	// -- ImageDisplay methods --
 
 	@Override
@@ -170,34 +200,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		return false;
 	}
 
-	@Override
-	public void redoWindowLayout() {
-		final long[] min = new long[numDimensions()];
-		Arrays.fill(min, Long.MAX_VALUE);
-		final long[] max = new long[numDimensions()];
-		Arrays.fill(max, Long.MIN_VALUE);
-
-		final Axis[] axes = getAxes();
-		final Extents extents = getExtents();
-
-		// remove obsolete axes
-		for (final Axis axis : axisPositions.keySet()) {
-			if (getAxisIndex(axis) >= 0) continue; // axis still active
-			axisPositions.remove(axis);
-		}
-
-		// add new axes
-		for (int i = 0; i < axes.length; i++) {
-			final Axis axis = axes[i];
-			if (axisPositions.containsKey(axis)) continue; // axis already exists
-			if (Axes.isXY(axis)) continue; // do not track position of planar axes
-			setAxisPosition(axis, extents.min(i)); // start at minimum value
-		}
-
-		// rebuild panel
-		getPanel().redoLayout();
-	}
-
 	// -- Display methods --
 
 	@Override
@@ -215,6 +217,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void update() {
+		super.update();
 		for (final DataView view : this) {
 			for (final Axis axis : getAxes()) {
 				final int index = getAxisIndex(axis);
@@ -375,8 +378,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			if (dataset == view.getData()) {
 				// BDZ - calls to imgCanvas.setZoom(0) followed by
 				// imgCanvas.panReset() removed from here to fix bug #797.
-				AbstractImageDisplay.this.redoWindowLayout();
-				AbstractImageDisplay.this.update();
+				rebuild();
+				update();
 				return;
 			}
 		}

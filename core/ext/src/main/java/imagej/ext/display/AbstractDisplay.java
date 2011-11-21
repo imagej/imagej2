@@ -57,6 +57,9 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	/** List of objects being displayed. */
 	private final ArrayList<E> objects;
 
+	/** Flag set when display needs to be fully rebuilt. */
+	private boolean structureChanged;
+
 	// TODO - potentially eliminate this?
 	private DisplayPanel panel;
 
@@ -77,6 +80,8 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	protected void setPanel(final DisplayPanel panel) {
 		this.panel = panel;
 	}
+
+	protected abstract void rebuild();
 
 	// -- Display methods --
 
@@ -100,6 +105,14 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
+	public void update() {
+		if (structureChanged) {
+			rebuild();
+			structureChanged = false;
+		}
+	}
+
+	@Override
 	public DisplayPanel getPanel() {
 		return panel;
 	}
@@ -119,13 +132,13 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public void add(final int index, final E element) {
 		objects.add(index, element);
-		eventService.publish(new DisplayUpdatedEvent(this));
+		announceStructureChange();
 	}
 
 	@Override
 	public boolean addAll(final int index, final Collection<? extends E> c) {
 		final boolean changed = objects.addAll(index, c);
-		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
+		if (changed) announceStructureChange();
 		return changed;
 	}
 
@@ -157,14 +170,14 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public E remove(final int index) {
 		final E result = objects.remove(index);
-		if (result != null) eventService.publish(new DisplayUpdatedEvent(this));
+		if (result != null) announceStructureChange();
 		return result;
 	}
 
 	@Override
 	public E set(final int index, final E element) {
 		final E result = objects.set(index, element);
-		if (result != null) eventService.publish(new DisplayUpdatedEvent(this));
+		if (result != null) announceStructureChange();
 		return result;
 	}
 
@@ -179,7 +192,7 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	public boolean add(final E o) {
 		checkObject(o);
 		final boolean changed = objects.add(o);
-		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
+		if (changed) announceStructureChange();
 		return changed;
 	}
 
@@ -189,14 +202,15 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 			checkObject(o);
 		}
 		final boolean changed = objects.addAll(c);
-		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
+		if (changed) announceStructureChange();
 		return changed;
 	}
 
 	@Override
 	public void clear() {
+		final boolean changed = objects.size() > 0;
 		objects.clear();
-		eventService.publish(new DisplayUpdatedEvent(this));
+		if (changed) announceStructureChange();
 	}
 
 	@Override
@@ -222,21 +236,21 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public boolean remove(final Object o) {
 		final boolean changed = objects.remove(o);
-		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
+		if (changed) announceStructureChange();
 		return changed;
 	}
 
 	@Override
 	public boolean removeAll(final Collection<?> c) {
 		final boolean changed = objects.removeAll(c);
-		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
+		if (changed) announceStructureChange();
 		return changed;
 	}
 
 	@Override
 	public boolean retainAll(final Collection<?> c) {
 		final boolean changed = objects.retainAll(c);
-		if (changed) eventService.publish(new DisplayUpdatedEvent(this));
+		if (changed) announceStructureChange();
 		return changed;
 	}
 
@@ -265,6 +279,11 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 		if (!canDisplay(o)) {
 			throw new IllegalArgumentException("Unsupported object: " + o);
 		}
+	}
+
+	protected void announceStructureChange() {
+		structureChanged = true;
+		eventService.publish(new DisplayUpdatedEvent(this));
 	}
 
 }
