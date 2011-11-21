@@ -38,7 +38,6 @@ import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
-import imagej.data.Position;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DataRestructuredEvent;
@@ -87,12 +86,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	private final Map<Axis, Long> axisPositions =
 		new ConcurrentHashMap<Axis, Long>();
 
-	private ScaleConverter scaleConverter;
-
 	public AbstractImageDisplay() {
 		super(DataView.class);
-
-		initScaleConverter();
 		subscribers = eventService.subscribe(this);
 	}
 
@@ -438,123 +433,9 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		getPanel().getWindow().close();
 	}
 
-	protected String makeLabel() {
-		// CTR TODO - Fix window label to show beyond just the active view.
-		final DataView view = getActiveView();
-		final Dataset dataset = getDataset(view);
-
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
-		final long[] dims = dataset.getDims();
-		final Axis[] axes = dataset.getAxes();
-		final Position pos = view.getPlanePosition();
-
-		final StringBuilder sb = new StringBuilder();
-		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (Axes.isXY(axes[i])) continue;
-			p++;
-			if (dims[i] == 1) continue;
-			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] +
-				"; ");
-		}
-
-		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-
-		sb.append(dataset.getTypeLabelLong());
-
-		final double zoomFactor = getCanvas().getZoomFactor();
-		if (zoomFactor != 1) sb.append(" (" + scaleConverter.getString(zoomFactor) +
-			")");
-
-		return sb.toString();
-	}
-
 	protected Dataset getDataset(final DataView view) {
 		final Data data = view.getData();
 		return data instanceof Dataset ? (Dataset) data : null;
-	}
-
-	private void initScaleConverter() {
-		// TODO - handle scale conversion / label setting elsewhere
-		scaleConverter = new FractionalScaleConverter();
-		scaleConverter = new PercentScaleConverter();
-	}
-
-	// -- Helper classes --
-
-	protected interface ScaleConverter {
-
-		String getString(double realScale);
-	}
-
-	protected class PercentScaleConverter implements ScaleConverter {
-
-		@Override
-		public String getString(final double realScale) {
-			return String.format("%.2f%%", realScale * 100);
-		}
-
-	}
-
-	protected class FractionalScaleConverter implements ScaleConverter {
-
-		@Override
-		public String getString(final double realScale) {
-			final FractionalScale fracScale = new FractionalScale(realScale);
-			// is fractional scale invalid?
-			if (fracScale.getDenom() == 0) {
-				if (realScale >= 1) return String.format("%.2fX", realScale);
-				// else scale < 1
-				return String.format("1/%.2fX", (1 / realScale));
-			}
-			// or de we have a whole number scale?
-			else if (fracScale.getDenom() == 1) return String.format("%dX", fracScale
-				.getNumer());
-			// else have valid fraction
-			return String
-				.format("%d/%dX", fracScale.getNumer(), fracScale.getDenom());
-		}
-	}
-
-	protected class FractionalScale {
-
-		private int numer, denom;
-
-		FractionalScale(final double realScale) {
-			numer = 0;
-			denom = 0;
-			if (realScale >= 1) {
-				final double floor = Math.floor(realScale);
-				if ((realScale - floor) < 0.0001) {
-					numer = (int) floor;
-					denom = 1;
-				}
-				else if (realScale == 1.5) {
-					numer = 3;
-					denom = 2;
-				}
-			}
-			else { // factor < 1
-				final double recip = 1.0 / realScale;
-				final double floor = Math.floor(recip);
-				if ((recip - floor) < 0.0001) {
-					numer = 1;
-					denom = (int) floor;
-				}
-				else if (realScale == 0.75) {
-					numer = 3;
-					denom = 4;
-				}
-			}
-		}
-
-		int getNumer() {
-			return numer;
-		}
-
-		int getDenom() {
-			return denom;
-		}
 	}
 
 }
