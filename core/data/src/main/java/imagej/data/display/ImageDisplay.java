@@ -78,8 +78,6 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	@Deprecated
 	void display(Overlay overlay);
 
-	/** Forces the display window to redo its layout. */
-	void redoWindowLayout();
-
 	String makeLabel();
+
 }

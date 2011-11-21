@@ -63,7 +63,6 @@ public class DeleteSelected implements ImageJPlugin {
 			if (view.isSelected()) {
 				display.remove(view);
 				view.dispose();
-				display.redoWindowLayout();
 				display.update();
 			}
 		}

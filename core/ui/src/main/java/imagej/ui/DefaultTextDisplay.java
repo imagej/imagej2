@@ -55,6 +55,13 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 	private int lastIndex;
 	private boolean cleared;
 
+	// -- AbstractDisplay methods --
+
+	@Override
+	protected void rebuild() {
+		// NB: no action needed
+	}
+
 	// -- TextDisplay methods --
 
 	@Override
@@ -79,7 +86,7 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 		}
 		outputWindow.setVisible(true);
 	}
-	
+
 	@Override
 	public void close() {
 		outputWindow.setVisible(false);

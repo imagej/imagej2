@@ -240,7 +240,6 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 							}
 						}
 						display.add(v);
-						display.redoWindowLayout();
 						display.update();
 						if (drawingView.getSelectedFigures().contains(e.getFigure())) {
 							v.setSelected(true);

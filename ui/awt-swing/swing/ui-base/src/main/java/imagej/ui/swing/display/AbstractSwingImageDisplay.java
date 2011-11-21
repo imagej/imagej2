@@ -93,17 +93,15 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		createName(datasetName);
 		window.setTitle(this.getName());
 		add(new SwingDatasetView(this, dataset));
-		redoWindowLayout();
-		initActiveAxis();
 		update();
+		initActiveAxis();
 	}
 
 	@Override
 	public void display(final Overlay overlay) {
 		add(new SwingOverlayView(this, overlay));
-		redoWindowLayout();
-		initActiveAxis();
 		update();
+		initActiveAxis();
 	}
 
 	@Override
