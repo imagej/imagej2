@@ -247,7 +247,8 @@ public final class ClassUtils {
 	public static void setValue(final Field field, final Object instance,
 		final Object value)
 	{
-		if (instance == null) return;
+		if ((instance == null) && (!Modifier.isStatic(field.getModifiers())))
+			return;
 		try {
 			field.setAccessible(true);
 			field.set(instance, convert(value, field.getType()));
