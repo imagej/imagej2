@@ -150,6 +150,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		return imgPanel;
 	}
 
+	@SuppressWarnings("unused")
 	@EventHandler
 	public void onEvent(OptionsEvent e) {
 		scaleConverter = getScaleConverter();
