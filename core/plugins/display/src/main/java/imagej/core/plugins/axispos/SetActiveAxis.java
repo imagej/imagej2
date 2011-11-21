@@ -41,6 +41,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -63,38 +64,61 @@ import net.imglib2.img.Axis;
 		@Menu(label = "Set Active Axis...") })
 public class SetActiveAxis extends DynamicPlugin {
 
-	private static final String NAME_KEY = "Axis";
+	// -- instance variables --
+	
+	private static final String DISPLAY = "display";
+	private static final String AXIS_NAME = "axisName";
 
+	@SuppressWarnings("unused")
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
+	@SuppressWarnings("unused")
+	@Parameter(persist = false, initializer = "initAxisName")
 	private String axisName;
 
+	// -- constructor --
+	
 	public SetActiveAxis() {
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
-		display = imageDisplayService.getActiveImageDisplay();
-		if (display == null) return;
-		final Dataset dataset = imageDisplayService.getActiveDataset(display);
-		final DefaultModuleItem<String> name =
-			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
-		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
-		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis candidateAxis : Axes.values()) {
-			// TODO - remove someday when we allow X or Y sliders
-			if ((candidateAxis == Axes.X) || (candidateAxis == Axes.Y)) continue;
-			if (datasetAxes.contains(candidateAxis)) {
-				choices.add(candidateAxis.getLabel());
-			}
-		}
-		name.setChoices(choices);
-		addInput(name);
 	}
 
+	// public interface --
+	
 	@Override
 	public void run() {
-		final Map<String, Object> inputs = getInputs();
-		axisName = (String) inputs.get(NAME_KEY);
-		final Axis newActiveAxis = Axes.get(axisName);
-		if (newActiveAxis != null) display.setActiveAxis(newActiveAxis);
+		ImageDisplay disp = getDisplay();
+		String axis = getAxisName();
+		final Axis newActiveAxis = Axes.get(axis);
+		if (newActiveAxis != null) disp.setActiveAxis(newActiveAxis);
+	}
+	
+	// -- private helpers --
+	
+	private ImageDisplay getDisplay() {
+		return (ImageDisplay) getInput(DISPLAY); 
+	}
+	
+	private String getAxisName() {
+		return (String) getInput(AXIS_NAME); 
+	}
+
+	private Dataset getDataset() {
+		final ImageDisplayService imageDisplayService =
+				ImageJ.get(ImageDisplayService.class);
+		return imageDisplayService.getActiveDataset(getDisplay());
+	}
+	
+	@SuppressWarnings("unused")
+	private void initAxisName() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<String> axisNameItem =
+			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
+		final Axis[] axes = getDataset().getAxes();
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Axis a : axes) {
+			if (a.isXY()) continue;
+			choices.add(a.getLabel());
+		}
+		axisNameItem.setChoices(choices);
 	}
 }
