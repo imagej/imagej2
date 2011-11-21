@@ -34,19 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.restructure;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -62,50 +57,39 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Axis...") })
 public class AddAxis extends DynamicPlugin {
 
-	private static final String NAME_KEY = "Axis to add";
-	private static final String SIZE_KEY = "Axis size";
+	// -- constants --
+	
+	private static final String DATASET = "dataset";
+	private static final String AXIS_NAME = "axisName";
+	private static final String AXIS_SIZE = "axisSize";
 
+	// -- instance variables --
+	
+	@Parameter(required = true, persist = false)
 	private Dataset dataset;
+	
+	@Parameter(label = "Axis to add", persist = false, 
+			initializer = "initAll")
 	private String axisName;
+
+	@Parameter(label = "Axis size", persist = false)
 	private long axisSize;
 
+	// -- public interface --
+	
 	public AddAxis() {
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
-		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
-		if (display == null) return;
-		dataset = imageDisplayService.getActiveDataset(display);
-
-		final DefaultModuleItem<String> name =
-			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
-		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
-		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis candidateAxis : Axes.values()) {
-			if (!datasetAxes.contains(candidateAxis)) {
-				choices.add(candidateAxis.getLabel());
-			}
-		}
-		name.setChoices(choices);
-		addInput(name);
-
-		final DefaultModuleItem<Long> size =
-			new DefaultModuleItem<Long>(this, SIZE_KEY, Long.class);
-		size.setMinimumValue(2L);
-		addInput(size);
 	}
 
-	// private long axisSize;
-
 	/**
-	 * Creates new ImgPlus data with an additonal axis. sets pixels of 1st
-	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus to
-	 * the input Dataset.
+	 * Creates new ImgPlus data with an additional axis. Sets pixels of 1st
+	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus
+	 * to the input Dataset.
 	 */
 	@Override
 	public void run() {
-		final Map<String, Object> inputs = getInputs();
-		axisName = (String) inputs.get(NAME_KEY);
-		axisSize = (Long) inputs.get(SIZE_KEY);
+		dataset = getDataset();
+		axisName = getAxisName();
+		axisSize = getAxisSize();
 		final Axis axis = Axes.get(axisName);
 		if (inputBad(axis)) return;
 		final Axis[] newAxes = getNewAxes(dataset, axis);
@@ -118,6 +102,15 @@ public class AddAxis extends DynamicPlugin {
 		dataset.setImgPlus(dstImgPlus);
 	}
 
+	// -- protected interface --
+
+	protected void initAll() {
+		initAxisName();
+		initAxisSize();
+	}
+	
+	// -- private helpers --
+	
 	/**
 	 * Detects if user specified data is invalid
 	 */
@@ -182,6 +175,43 @@ public class AddAxis extends DynamicPlugin {
 
 		RestructureUtils.copyHyperVolume(srcImgPlus, srcOrigin, srcSpan,
 			dstImgPlus, dstOrigin, dstSpan);
+	}
+
+	private Dataset getDataset() {
+		return (Dataset) getInput(DATASET);
+	}
+
+	private long getAxisSize() {
+		return (Long) getInput(AXIS_SIZE);
+	}
+	
+	private void setAxisSize(long size) {
+		setInput(AXIS_SIZE, size);
+	}
+	
+	private String getAxisName() {
+		return (String) getInput(AXIS_NAME);
+	}
+
+	private void initAxisName() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<String> axisNameItem =
+			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Axis a : Axes.values()) {
+			if (Axes.isXY(a)) continue;
+			if (getDataset().getAxisIndex(a) < 0)
+				choices.add(a.getLabel());
+		}
+		axisNameItem.setChoices(choices);
+	}
+	
+	private void initAxisSize() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> axisSizeModuleItem =
+				(DefaultModuleItem<Long>) getInfo().getInput(AXIS_SIZE);
+		axisSizeModuleItem.setMinimumValue(2L);
+		setAxisSize(2);
 	}
 
 }

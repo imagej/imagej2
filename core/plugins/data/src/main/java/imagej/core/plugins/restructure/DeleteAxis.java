@@ -34,19 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.restructure;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -62,39 +57,28 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Axis...") })
 public class DeleteAxis extends DynamicPlugin {
 
-	private static final String NAME_KEY = "Axis to delete";
-	private static final String POSITION_KEY = "Index of hyperplane to keep";
-
+	// -- constants --
+	
+	private static final String DATASET = "dataset";
+	private static final String AXIS_NAME = "axisName";
+	private static final String POSITION = "planePos";
+	
+	// -- instance variables --
+	
+	@Parameter(required = true, persist = false)
 	private Dataset dataset;
-	private String axisToDelete;
-	private long oneBasedHyperplanePos;
 
-	private long hyperPlaneToKeep;
+	@Parameter(label = "Axis to delete", persist = false,
+			initializer = "initAll", callback = "axisChanged")
+	private String axisName;
+	
+	@Parameter(label = "Index of hyperplane to keep", persist = false,
+			callback = "axisChanged")
+	private long planePos;
 
+	// -- public interface --
+	
 	public DeleteAxis() {
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
-		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
-		if (display == null) return;
-		dataset = imageDisplayService.getActiveDataset(display);
-
-		final DefaultModuleItem<String> name =
-			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
-		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
-		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis candidateAxis : Axes.values()) {
-			if (Axes.isXY(candidateAxis)) continue;
-			if (datasetAxes.contains(candidateAxis)) choices.add(candidateAxis
-				.getLabel());
-		}
-		name.setChoices(choices);
-		addInput(name);
-
-		final DefaultModuleItem<Long> pos =
-			new DefaultModuleItem<Long>(this, POSITION_KEY, Long.class);
-		pos.setMinimumValue(1L);
-		// TODO - set max value to number of hyperplanes along desired axis
-		addInput(pos);
 	}
 
 	/**
@@ -104,14 +88,17 @@ public class DeleteAxis extends DynamicPlugin {
 	 */
 	@Override
 	public void run() {
-		final Map<String, Object> inputs = getInputs();
-		axisToDelete = (String) inputs.get(NAME_KEY);
-		oneBasedHyperplanePos = (Long) inputs.get(POSITION_KEY);
-		hyperPlaneToKeep = oneBasedHyperplanePos - 1;
-		final Axis axis = Axes.get(axisToDelete);
-		if (inputBad(axis)) return;
-		final Axis[] newAxes = getNewAxes(dataset, axis);
-		final long[] newDimensions = getNewDimensions(dataset, axis);
+
+		// I don't think this is needed and it could cause unexpected behavior
+		//clampPlanePos();
+		
+		dataset = getDataset();
+		axisName = getAxisName();
+		planePos = getPosition();
+		final Axis a = Axes.get(axisName);
+		if (inputBad(a)) return;
+		final Axis[] newAxes = getNewAxes(dataset, a);
+		final long[] newDimensions = getNewDimensions(dataset, a);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
 		final int compositeCount =
@@ -122,6 +109,21 @@ public class DeleteAxis extends DynamicPlugin {
 		dataset.setImgPlus(dstImgPlus);
 	}
 
+	// -- protected interface --
+
+	protected void initAll() {
+		initAxisName();
+		initPosition();
+	}
+	
+	/** Updates the last value when the axis changes. */
+	protected void axisChanged() {
+		initPositionRange();
+		clampPosition();
+	}
+	
+	// -- private helpers --
+	
 	/**
 	 * Detects if user specified data is invalid
 	 */
@@ -135,7 +137,7 @@ public class DeleteAxis extends DynamicPlugin {
 
 		// hyperplane index out of range
 		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
-		if ((hyperPlaneToKeep < 0) || (hyperPlaneToKeep >= axisSize)) return true;
+		if ((planePos < 1) || (planePos > axisSize)) return true;
 
 		return false;
 	}
@@ -185,9 +187,9 @@ public class DeleteAxis extends DynamicPlugin {
 		srcImgPlus.dimensions(srcSpan);
 		dstImgPlus.dimensions(dstSpan);
 
-		final Axis axis = Axes.get(axisToDelete);
+		final Axis axis = Axes.get(axisName);
 		final int axisIndex = srcImgPlus.getAxisIndex(axis);
-		srcOrigin[axisIndex] = this.hyperPlaneToKeep;
+		srcOrigin[axisIndex] = planePos - 1;
 		srcSpan[axisIndex] = 1;
 
 		RestructureUtils.copyHyperVolume(srcImgPlus, srcOrigin, srcSpan,
@@ -200,5 +202,68 @@ public class DeleteAxis extends DynamicPlugin {
 		if (output.getAxisIndex(Axes.CHANNEL) < 0) return 1;
 		return compositeCount;
 
+	}
+	
+	private Dataset getDataset() {
+		return (Dataset) getInput(DATASET);
+	}
+
+	private long getPosition() {
+		return (Long) getInput(POSITION);
+	}
+	
+	private void setPosition(long pos) {
+		setInput(POSITION, pos);
+	}
+	
+	private String getAxisName() {
+		return (String) getInput(AXIS_NAME);
+	}
+
+	private void initAxisName() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<String> axisNameItem =
+			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
+		final Axis[] axes = getDataset().getAxes();
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Axis a : axes) {
+			if (Axes.isXY(a)) continue;
+			choices.add(a.getLabel());
+		}
+		axisNameItem.setChoices(choices);
+	}
+
+	private void initPosition() {
+		long max = getDataset().getImgPlus().dimension(0);
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> positionItem =
+				(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
+		positionItem.setMinimumValue(1L);
+		positionItem.setMaximumValue(max);
+		setPosition(1);
+	}
+	
+	private void initPositionRange() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> positionItem =
+			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
+		long dimLen = currDimLen();
+		positionItem.setMinimumValue(1L);
+		positionItem.setMaximumValue(dimLen);
+	}
+	
+	/** Ensures the first and last values fall within the allowed range. */
+	private void clampPosition() {
+		long max = currDimLen();
+		long pos = getPosition();
+		if (pos < 1) pos = 1;
+		if (pos > max) pos = max;
+		setPosition(pos);
+ 	}
+
+	private long currDimLen() {
+		Axis axis = Axes.get(getAxisName());
+		int axisIndex = getDataset().getAxisIndex(axis);
+		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 }
