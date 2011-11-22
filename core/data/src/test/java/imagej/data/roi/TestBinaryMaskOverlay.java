@@ -36,6 +36,7 @@ package imagej.data.roi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import imagej.ImageJ;
 import imagej.util.ColorRGB;
 
 import java.io.ByteArrayInputStream;
@@ -54,6 +55,7 @@ import net.imglib2.img.basictypeaccess.BitAccess;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -63,6 +65,11 @@ import org.junit.Test;
  */
 public class TestBinaryMaskOverlay {
 
+	@BeforeClass
+	public static void setup() {
+		ImageJ.createContext();
+	}
+	
 	private Img<BitType> makeImg(final boolean[][] imgArray) {
 		final NativeImg<BitType, ? extends BitAccess> img =
 			new ArrayImgFactory<BitType>().createBitInstance(new long[] {
