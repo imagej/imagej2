@@ -216,9 +216,9 @@ public class DeleteData extends DynamicPlugin {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
-		final Axis[] axes = getDataset().getAxes();
+		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis a : axes) {
+		for (final AxisType a : axes) {
 			choices.add(a.getLabel());
 		}
 		axisNameItem.setChoices(choices);

@@ -45,9 +45,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

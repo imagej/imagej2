@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -50,6 +48,8 @@ import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsAppearance;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
@@ -118,7 +118,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		final int xIndex = dataset.getAxisIndex(Axes.X);
 		final int yIndex = dataset.getAxisIndex(Axes.Y);
 		final long[] dims = dataset.getDims();
-		final Axis[] axes = dataset.getAxes();
+		final AxisType[] axes = dataset.getAxes();
 		final Position pos = view.getPlanePosition();
 
 		final StringBuilder sb = new StringBuilder();
