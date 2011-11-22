@@ -119,14 +119,16 @@ public abstract class AbstractModule implements Module {
 
 	@Override
 	public void setInputs(final Map<String, Object> inputs) {
-		this.inputs.clear();
-		this.inputs.putAll(inputs);
+		for (final String name : inputs.keySet()) {
+			setInput(name, inputs.get(name));
+		}
 	}
 
 	@Override
 	public void setOutputs(final Map<String, Object> outputs) {
-		this.outputs.clear();
-		this.outputs.putAll(outputs);
+		for (final String name : outputs.keySet()) {
+			setOutput(name, outputs.get(name));
+		}
 	}
 
 	@Override

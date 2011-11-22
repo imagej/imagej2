@@ -153,20 +153,6 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 		ClassUtils.setValue(item.getField(), plugin, value);
 	}
 
-	@Override
-	public void setInputs(final Map<String, Object> inputs) {
-		for (final String name : inputs.keySet()) {
-			setInput(name, inputs.get(name));
-		}
-	}
-
-	@Override
-	public void setOutputs(final Map<String, Object> outputs) {
-		for (final String name : outputs.keySet()) {
-			setOutput(name, outputs.get(name));
-		}
-	}
-
 	// -- Runnable methods --
 
 	@Override
