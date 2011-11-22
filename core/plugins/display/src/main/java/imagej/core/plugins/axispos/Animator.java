@@ -44,7 +44,7 @@ import imagej.ext.plugin.Plugin;
  * Plugin for toggling an {@link ImageDisplay}'s running animation. Animation
  * can be toggled via the backslash key, or stopped with ESC. The animation's
  * behavior can be modified during execution by running the
- * {@link AnimatorOptions} plugin.
+ * {@link AnimationOptions} plugin.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
