@@ -218,10 +218,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 					numer = (int) floor;
 					denom = 1;
 				}
-				else if (realScale == 1.5) {
-					numer = 3;
-					denom = 2;
-				}
+				else chooseBestFraction(realScale);
 			}
 			else { // factor < 1
 				final double recip = 1.0 / realScale;
@@ -230,10 +227,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 					numer = 1;
 					denom = (int) floor;
 				}
-				else if (realScale == 0.75) {
-					numer = 3;
-					denom = 4;
-				}
+				else chooseBestFraction(realScale);
 			}
 		}
 
@@ -243,6 +237,19 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 		int getDenom() {
 			return denom;
+		}
+		
+		private void chooseBestFraction(final double scale) {
+			for (int n = 1; n < 30; n++) {
+				for (int d = 1; d < 30; d++) {
+					double frac = 1.0 * n / d;
+					if (Math.abs(scale-frac) < 0.0001) {
+						numer = n;
+						denom = d;
+						return;
+					}
+				}
+			}
 		}
 	}
 
