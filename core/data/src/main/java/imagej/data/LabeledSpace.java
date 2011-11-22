@@ -35,9 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data;
 
 import imagej.data.display.ImageDisplay;
-import net.imglib2.EuclideanSpace;
 import net.imglib2.img.Axis;
-import net.imglib2.meta.LabeledAxes;
+import net.imglib2.meta.CalibratedSpace;
 import net.imglib2.meta.Named;
 
 /**
@@ -48,7 +47,7 @@ import net.imglib2.meta.Named;
  * @see Data
  * @see ImageDisplay
  */
-public interface LabeledSpace extends EuclideanSpace, LabeledAxes, Named {
+public interface LabeledSpace extends CalibratedSpace, Named {
 	
 	// CTR TODO - add dimension(int) method, similar to net.imglib2.Interval
 
