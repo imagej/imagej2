@@ -40,6 +40,7 @@ import imagej.Service;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
+import imagej.data.roi.DefaultOverlaySettings;
 import imagej.data.roi.Overlay;
 import imagej.object.ObjectService;
 import imagej.util.RealRect;
@@ -58,7 +59,8 @@ import net.imglib2.roi.RegionOfInterest;
 public final class OverlayService extends AbstractService {
 
 	private final ObjectService objectService;
-
+	private DefaultOverlaySettings defaultSettings;
+	
 	// -- Constructors --
 
 	public OverlayService() {
@@ -194,6 +196,12 @@ public final class OverlayService extends AbstractService {
 		return new RealRect(xMin, yMin, xMax - xMin, yMax - yMin);
 	}
 
+	public DefaultOverlaySettings getDefaultSettings() {
+		if (defaultSettings == null)
+			defaultSettings = new DefaultOverlaySettings();
+		return defaultSettings;
+	}
+	
 	// -- IService methods --
 
 	@Override

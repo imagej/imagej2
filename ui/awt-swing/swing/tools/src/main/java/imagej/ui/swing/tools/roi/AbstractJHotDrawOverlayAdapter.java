@@ -34,8 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
+import imagej.ImageJ;
 import imagej.data.display.DataView;
-import imagej.data.roi.AbstractOverlay;
+import imagej.data.display.OverlayService;
+import imagej.data.roi.DefaultOverlaySettings;
 import imagej.data.roi.Overlay;
 import imagej.ext.tool.AbstractTool;
 import imagej.ui.swing.roi.IJHotDrawOverlayAdapter;
@@ -68,11 +70,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	static final protected double[] dashLineStyle = { 4, 4 };
 	static final protected double[] dotLineStyle = { 1, 2 };
 	static final protected double[] dotDashLineStyle = { 6, 2, 1, 2 };
-	static final Color defaultStrokeColor = new Color(
-		AbstractOverlay.defaultLineColor.getARGB());
 
 	private int priority;
-
+	
 	@Override
 	public int getPriority() {
 		return priority;
@@ -148,4 +148,24 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 		overlay.setAlpha(imageJColor.getAlpha());
 	}
 
+	public Color getDefaultStrokeColor() {
+		DefaultOverlaySettings settings =
+				ImageJ.get(OverlayService.class).getDefaultSettings();
+		ColorRGB color = settings.getDefaultLineColor();
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+		return new Color(r,g,b,255);
+	}
+	
+	public Color getDefaultFillColor() {
+		DefaultOverlaySettings settings =
+				ImageJ.get(OverlayService.class).getDefaultSettings();
+		ColorRGB color = settings.getDefaultFillColor();
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+		int a = settings.getDefaultAlpha();
+		return new Color(r,g,b,a);
+	}
 }

@@ -77,7 +77,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	@Override
 	public Figure createDefaultFigure() {
 		final LineFigure figure = new LineFigure();
-		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
+		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
 

@@ -40,7 +40,6 @@ import imagej.data.roi.Overlay;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -92,8 +91,8 @@ public class EllipseAdapter extends
 	@Override
 	public Figure createDefaultFigure() {
 		final EllipseFigure figure = new EllipseFigure();
-		figure.set(AttributeKeys.FILL_COLOR, new Color(255, 255, 255, 0));
-		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
+		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
+		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
 

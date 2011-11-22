@@ -34,8 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.roi;
 
+import imagej.ImageJ;
 import imagej.data.AbstractData;
 import imagej.data.Extents;
+import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
@@ -67,16 +69,23 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	Externalizable
 {
 
-	public final static ColorRGB defaultLineColor = new ColorRGB(255, 255, 0);
-	public final static ColorRGB defaultFillColor = new ColorRGB(0, 255, 0);
-	protected ArrowStyle startArrowStyle = ArrowStyle.NONE;
-	protected ArrowStyle endArrowStyle = ArrowStyle.NONE;
+	// TODO - move statics to a Overlay related helper class that can be owned.
+	// This would allow multiple contexts to have their own settings.
+	
+	// -- statics --
+	
 	private static final long serialVersionUID = 1L;
-	protected ColorRGB fillColor = defaultFillColor;
-	protected int alpha = 0;
-	protected ColorRGB lineColor = defaultLineColor;
-	protected double lineWidth = 1.0;
-	protected Overlay.LineStyle lineStyle = Overlay.LineStyle.SOLID;
+
+	// -- instance variables --
+	
+	protected ArrowStyle startArrowStyle;
+	protected ArrowStyle endArrowStyle;
+	protected ColorRGB fillColor;
+	protected int alpha;
+	protected ColorRGB lineColor;
+	protected double lineWidth;
+	protected Overlay.LineStyle lineStyle;
+	
 	final protected List<Axis> axes = new ArrayList<Axis>();
 	final protected List<Double> calibrations = new ArrayList<Double>();
 
@@ -93,6 +102,18 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 			}
 		});
 
+	public AbstractOverlay() {
+		DefaultOverlaySettings settings =
+				ImageJ.get(OverlayService.class).getDefaultSettings();
+		startArrowStyle = settings.getDefaultStartArrowStyle();
+		endArrowStyle = settings.getDefaultEndArrowStyle();
+		fillColor = settings.getDefaultFillColor();
+		alpha = settings.getDefaultAlpha();
+		lineColor = settings.getDefaultLineColor();
+		lineWidth = settings.getDefaultLineWidth();
+		lineStyle = settings.getDefaultLineStyle();
+	}
+	
 	// -- AbstractData methods --
 
 	@Override
