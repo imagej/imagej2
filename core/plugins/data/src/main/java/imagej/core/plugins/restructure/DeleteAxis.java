@@ -221,9 +221,9 @@ public class DeleteAxis extends DynamicPlugin {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
-		final Axis[] axes = getDataset().getAxes();
+		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis a : axes) {
+		for (final AxisType a : axes) {
 			if (Axes.isXY(a)) continue;
 			choices.add(a.getLabel());
 		}
@@ -259,7 +259,7 @@ public class DeleteAxis extends DynamicPlugin {
  	}
 
 	private long currDimLen() {
-		Axis axis = Axes.get(getAxisName());
+		AxisType axis = Axes.get(getAxisName());
 		int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}

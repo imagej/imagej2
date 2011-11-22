@@ -66,6 +66,9 @@ public class ZoomUserDefined extends DynamicPlugin {
 	// -- instance variables --
 	
 	@Parameter(required = true, persist = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	@Parameter(label = "Zoom (%) :", persist = false, initializer = "initAll")
