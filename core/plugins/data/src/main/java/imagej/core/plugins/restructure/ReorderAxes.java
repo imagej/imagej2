@@ -57,6 +57,11 @@ import net.imglib2.type.numeric.RealType;
 // - can reorder X & Y out of 1st two positions. This could be useful in future
 //     but might need to block right now.
 
+// FIXME: update and simplify code to match other dynamic plugins
+// - use @Parameters where possible
+// - add public getters and setters for all module inputs and outputs
+// - add callbacks as appropriate to keep input valid
+
 /**
  * Changes the internal ImgPlus of a Dataset so that its data values stay the
  * same but the order of the axes is changed.
