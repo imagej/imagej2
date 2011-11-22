@@ -57,29 +57,54 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Axis...") })
 public class DeleteAxis extends DynamicPlugin {
 
-	// -- constants --
-	
-	private static final String DATASET = "dataset";
+	// -- Constants --
+
 	private static final String AXIS_NAME = "axisName";
 	private static final String POSITION = "planePos";
-	
-	// -- instance variables --
-	
+
+	// -- Parameters --
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
 	@Parameter(label = "Axis to delete", persist = false,
-			initializer = "initAll", callback = "axisChanged")
+		initializer = "initAll", callback = "parameterChanged")
 	private String axisName;
-	
-	@Parameter(label = "Index of hyperplane to keep", persist = false,
-			callback = "axisChanged")
-	private long planePos;
 
-	// -- public interface --
-	
+	@Parameter(label = "Index of hyperplane to keep", persist = false,
+		callback = "parameterChanged")
+	private long position;
+
+	// -- DeleteAxis methods --
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
+	}
+
+	public AxisType getAxis() {
+		return Axes.get(axisName);
+	}
+
+	public void setAxis(final AxisType axis) {
+		axisName = axis.toString();
+	}
+
+	public long getPosition() {
+		return position;
+	}
+
+	public void setPosition(final long position) {
+		this.position = position;
+	}
+
+	// -- Runnable methods --
+
 	/**
-	 * Creates new ImgPlus data with one less axis. sets pixels of ImgPlus to user
+	 * Creates new ImgPlus data with one less axis. Sets pixels of ImgPlus to user
 	 * specified hyperplane within original ImgPlus data. Assigns the new ImgPlus
 	 * to the input Dataset.
 	 */
@@ -87,15 +112,12 @@ public class DeleteAxis extends DynamicPlugin {
 	public void run() {
 
 		// I don't think this is needed and it could cause unexpected behavior
-		//clampPlanePos();
-		
-		dataset = getDataset();
-		axisName = getAxisName();
-		planePos = getPosition();
-		final AxisType a = Axes.get(axisName);
-		if (inputBad(a)) return;
-		final AxisType[] newAxes = getNewAxes(dataset, a);
-		final long[] newDimensions = getNewDimensions(dataset, a);
+		// clampPlanePos();
+
+		final AxisType axis = getAxis();
+		if (inputBad(axis)) return;
+		final AxisType[] newAxes = getNewAxes(dataset, axis);
+		final long[] newDimensions = getNewDimensions(dataset, axis);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
 		final int compositeCount =
@@ -106,21 +128,23 @@ public class DeleteAxis extends DynamicPlugin {
 		dataset.setImgPlus(dstImgPlus);
 	}
 
-	// -- protected interface --
+	// -- Initializers --
 
 	protected void initAll() {
 		initAxisName();
 		initPosition();
 	}
-	
+
+	// -- Callbacks --
+
 	/** Updates the last value when the axis changes. */
-	protected void axisChanged() {
+	protected void parameterChanged() {
 		initPositionRange();
 		clampPosition();
 	}
-	
-	// -- private helpers --
-	
+
+	// -- Helper methods --
+
 	/**
 	 * Detects if user specified data is invalid
 	 */
@@ -134,7 +158,7 @@ public class DeleteAxis extends DynamicPlugin {
 
 		// hyperplane index out of range
 		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
-		if ((planePos < 1) || (planePos > axisSize)) return true;
+		if ((position < 1) || (position > axisSize)) return true;
 
 		return false;
 	}
@@ -186,7 +210,7 @@ public class DeleteAxis extends DynamicPlugin {
 
 		final AxisType axis = Axes.get(axisName);
 		final int axisIndex = srcImgPlus.getAxisIndex(axis);
-		srcOrigin[axisIndex] = planePos - 1;
+		srcOrigin[axisIndex] = position - 1;
 		srcSpan[axisIndex] = 1;
 
 		RestructureUtils.copyHyperVolume(srcImgPlus, srcOrigin, srcSpan,
@@ -199,22 +223,6 @@ public class DeleteAxis extends DynamicPlugin {
 		if (output.getAxisIndex(Axes.CHANNEL) < 0) return 1;
 		return compositeCount;
 
-	}
-	
-	private Dataset getDataset() {
-		return (Dataset) getInput(DATASET);
-	}
-
-	private long getPosition() {
-		return (Long) getInput(POSITION);
-	}
-	
-	private void setPosition(long pos) {
-		setInput(POSITION, pos);
-	}
-	
-	private String getAxisName() {
-		return (String) getInput(AXIS_NAME);
 	}
 
 	private void initAxisName() {
@@ -231,36 +239,36 @@ public class DeleteAxis extends DynamicPlugin {
 	}
 
 	private void initPosition() {
-		long max = getDataset().getImgPlus().dimension(0);
+		final long max = getDataset().getImgPlus().dimension(0);
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
-				(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
+			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
 		positionItem.setMinimumValue(1L);
 		positionItem.setMaximumValue(max);
 		setPosition(1);
 	}
-	
+
 	private void initPositionRange() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
-		long dimLen = currDimLen();
+		final long dimLen = currDimLen();
 		positionItem.setMinimumValue(1L);
 		positionItem.setMaximumValue(dimLen);
 	}
-	
+
 	/** Ensures the first and last values fall within the allowed range. */
 	private void clampPosition() {
-		long max = currDimLen();
+		final long max = currDimLen();
 		long pos = getPosition();
 		if (pos < 1) pos = 1;
 		if (pos > max) pos = max;
 		setPosition(pos);
- 	}
+	}
 
 	private long currDimLen() {
-		AxisType axis = Axes.get(getAxisName());
-		int axisIndex = getDataset().getAxisIndex(axis);
+		final AxisType axis = getAxis();
+		final int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 }

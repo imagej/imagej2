@@ -57,33 +57,64 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Data...") })
 public class AddData extends DynamicPlugin {
 
-	// -- constants --
-	
-	private static final String DATASET = "dataset";
-	private static final String AXIS_NAME = "axisToModify";
-	private static final String POSITION = "oneBasedInsPos";
-	private static final String QUANTITY = "numAdding";
+	// -- Constants --
 
-	// -- instance variables --
-	
+	private static final String AXIS_NAME = "axisName";
+	private static final String POSITION = "position";
+	private static final String QUANTITY = "quantity";
+
+	// -- Parameters --
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
-	
+
 	@Parameter(label = "Axis to modify", persist = false,
-			initializer = "initAll", callback = "somethingChanged")
-	private String axisToModify;
-	
+		initializer = "initAll", callback = "parameterChanged")
+	private String axisName;
+
 	@Parameter(label = "Insertion position", persist = false,
-			callback = "somethingChanged")
-	private long oneBasedInsPos;
-	
+		callback = "parameterChanged")
+	private long position = 1;
+
 	@Parameter(label = "Insertion quantity", persist = false,
-			callback = "somethingChanged")
-	private long numAdding;
+		callback = "parameterChanged")
+	private long quantity = 1;
 
-	private long insertPosition;
+	// -- AddData methods --
 
-	// -- public interface --
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
+	}
+
+	public AxisType getAxis() {
+		return Axes.get(axisName);
+	}
+
+	public void setAxis(final AxisType axis) {
+		axisName = axis.toString();
+	}
+
+	public long getPosition() {
+		return position;
+	}
+
+	public void setPosition(final long position) {
+		this.position = position;
+	}
+
+	public long getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(final long quantity) {
+		this.quantity = quantity;
+	}
+
+	// -- Runnable methods --
 
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
@@ -91,16 +122,11 @@ public class AddData extends DynamicPlugin {
 	 */
 	@Override
 	public void run() {
-		dataset = getDataset();
-		axisToModify = getAxisName();
-		oneBasedInsPos = getPosition();
-		numAdding = getQuantity();
-		insertPosition = oneBasedInsPos - 1;
-		final AxisType axis = Axes.get(axisToModify);
+		final AxisType axis = Axes.get(axisName);
 		if (inputBad(axis)) return;
 		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
-			RestructureUtils.getDimensions(dataset, axis, numAdding);
+			RestructureUtils.getDimensions(dataset, axis, quantity);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
@@ -111,23 +137,25 @@ public class AddData extends DynamicPlugin {
 		dataset.setImgPlus(dstImgPlus);
 	}
 
-	// -- protected interface --
+	// -- Initializers --
 
 	protected void initAll() {
 		initAxisName();
 		initPosition();
 		initQuantity();
 	}
-	
-	protected void somethingChanged() {
+
+	// -- Callbacks --
+
+	protected void parameterChanged() {
 		initPositionRange();
 		initQuantityRange();
 		clampPosition();
 		clampQuantity();
 	}
-	
-	// -- private helpers --
-	
+
+	// -- Helper methods --
+
 	/**
 	 * Detects if user specified data is invalid
 	 */
@@ -143,10 +171,10 @@ public class AddData extends DynamicPlugin {
 		if (axisIndex < 0) return true;
 
 		// bad value for startPosition
-		if ((insertPosition < 0) || (insertPosition > axisSize)) return true;
+		if (position < 1 || position >= axisSize) return true;
 
 		// bad value for numAdding
-		if ((numAdding <= 0) || ((Long.MAX_VALUE - numAdding) < axisSize)) return true;
+		if (quantity <= 0 || Long.MAX_VALUE - quantity < axisSize) return true;
 
 		// if here everything is okay
 		return false;
@@ -156,14 +184,16 @@ public class AddData extends DynamicPlugin {
 	 * Fills the newly created ImgPlus with data values from a smaller source
 	 * image. Copies data from existing hyperplanes.
 	 */
-	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
-		final ImgPlus<? extends RealType<?>> dstImgPlus, final AxisType modifiedAxis)
+	private void
+		fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
+			final ImgPlus<? extends RealType<?>> dstImgPlus,
+			final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
 		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
 		final long axisSize = dimensions[axisIndex];
-		final long numBeforeInsert = insertPosition;
-		final long numInInsertion = numAdding;
+		final long numBeforeInsert = position - 1; // one-based position
+		final long numInInsertion = quantity;
 		final long numAfterInsertion = axisSize - numBeforeInsert;
 
 		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis, 0, 0,
@@ -200,8 +230,8 @@ public class AddData extends DynamicPlugin {
 		}
 
 		// was composite on a subset of channels that divides channels evenly
-		if (((numOrigChannels % currComposCount) == 0) &&
-			((numNewChannels % currComposCount) == 0))
+		if (numOrigChannels % currComposCount == 0 &&
+			numNewChannels % currComposCount == 0)
 		{
 			return currComposCount;
 		}
@@ -209,31 +239,7 @@ public class AddData extends DynamicPlugin {
 		// cannot figure out a good count - no longer composite
 		return 1;
 	}
-	
-	private Dataset getDataset() {
-		return (Dataset) getInput(DATASET);
-	}
-	
-	private String getAxisName() {
-		return (String) getInput(AXIS_NAME);
-	}
-	
-	private long getPosition() {
-		return (Long) getInput(POSITION);
-	}
-	
-	private void setPosition(long pos) {
-		setInput(POSITION, pos);
-	}
-	
-	private long getQuantity() {
-		return (Long) getInput(QUANTITY);
-	}
-	
-	private void setQuantity(long val) {
-		setInput(QUANTITY, val);
-	}
-	
+
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
@@ -245,62 +251,60 @@ public class AddData extends DynamicPlugin {
 		}
 		axisNameItem.setChoices(choices);
 	}
-	
+
 	private void initPosition() {
-		long max = getDataset().getImgPlus().dimension(0);
+		final long max = getDataset().getImgPlus().dimension(0);
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
-				(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
+			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
 		positionItem.setMinimumValue(1L);
 		positionItem.setMaximumValue(max);
-		setPosition(1);
 	}
-	
+
 	private void initQuantity() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> quantityItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
 		quantityItem.setMinimumValue(1L);
-		setQuantity(1);
 	}
 
 	private void initPositionRange() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
-		long dimLen = currDimLen();
+		final long dimLen = currDimLen();
 		positionItem.setMinimumValue(1L);
-		positionItem.setMaximumValue(dimLen+1);
+		positionItem.setMaximumValue(dimLen + 1);
 	}
-	
+
 	private void initQuantityRange() {
-		long max = Long.MAX_VALUE;
+		final long max = Long.MAX_VALUE;
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> quantityItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
 		quantityItem.setMinimumValue(1L);
-		quantityItem.setMaximumValue(max-getPosition()+1);
+		quantityItem.setMaximumValue(max - getPosition() + 1);
 	}
-	
+
 	private void clampPosition() {
-		long max = currDimLen() + 1;
+		final long max = currDimLen() + 1;
 		long pos = getPosition();
 		if (pos < 1) pos = 1;
 		if (pos > max) pos = max;
 		setPosition(pos);
 	}
-	
+
 	private void clampQuantity() {
-		long max = Long.MAX_VALUE - getPosition() + 1;
+		final long max = Long.MAX_VALUE - getPosition() + 1;
 		long total = getQuantity();
 		if (total < 1) total = 1;
 		if (total > max) total = max;
 		setQuantity(total);
 	}
-	
+
 	private long currDimLen() {
-		AxisType axis = Axes.get(getAxisName());
-		int axisIndex = getDataset().getAxisIndex(axis);
+		final AxisType axis = getAxis();
+		final int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 }
