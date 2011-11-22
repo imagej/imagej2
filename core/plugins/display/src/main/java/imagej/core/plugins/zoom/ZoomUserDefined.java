@@ -52,7 +52,8 @@ import imagej.util.IntCoords;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) })
+	@Menu(label = "Zoom", mnemonic = 'z'),
+	@Menu(label = "Set...", weight = 6) })
 public class ZoomUserDefined extends DynamicPlugin {
 
 	// -- constants --
@@ -67,7 +68,7 @@ public class ZoomUserDefined extends DynamicPlugin {
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
-	@Parameter(label = "Zoom (%) :", initializer = "initAll")
+	@Parameter(label = "Zoom (%) :", persist = false, initializer = "initAll")
 	private double userDefinedScale;
 
 	@Parameter(label = "X center:", persist = false)
