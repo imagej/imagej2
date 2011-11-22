@@ -341,17 +341,26 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	// -- Event handlers --
 
+	// TODO - displays should not listen for Data events. Views should listen for
+	// data events, adjust themseleves, and generate view events. The display
+	// classes should listen for view events and refresh themselves as necessary.
+	
 	@EventHandler
-	public void onEvent(final DataRestructuredEvent event) {
+	protected void onEvent(final DataRestructuredEvent event) {
 		for (final DataView view : this) {
 			if (event.getObject() == view.getData()) {
-				view.rebuild();
+				view.rebuild(); // BDZ added
+				rebuild();
 				update();
 				return;
 			}
 		}
 	}
 
+	// TODO - displays should not listen for Data events. Views should listen for
+	// data events, adjust themseleves, and generate view events. The display
+	// classes should listen for view events and refresh themselves as necessary.
+	
 	@EventHandler
 	protected void onEvent(final DataUpdatedEvent event) {
 		for (final DataView view : this) {
@@ -363,28 +372,10 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 	}
 
-	@EventHandler
-	protected void onEvent(final DatasetRestructuredEvent event) {
-		// NOTE - this code used to just note that a rebuild was necessary
-		// and had the rebuild done in update(). But due to timing of
-		// events it is possible to get the update() before this call.
-		// So make this do a rebuild. In some cases update() will be
-		// called twice. Not sure if avoiding this was the reason we used
-		// to just record and do work in update. Or if that code was to
-		// avoid some other bug. Changing on 8-18-11. Fixed bug #627
-		// and bug #605. BDZ
-		final Dataset dataset = event.getObject();
-		for (final DataView view : this) {
-			if (dataset == view.getData()) {
-				// BDZ - calls to imgCanvas.setZoom(0) followed by
-				// imgCanvas.panReset() removed from here to fix bug #797.
-				rebuild();
-				update();
-				return;
-			}
-		}
-	}
-
+	// TODO - displays should not listen for Data events. Views should listen for
+	// data events, adjust themseleves, and generate view events. The display
+	// classes should listen for view events and refresh themselves as necessary.
+	
 	@EventHandler
 	protected void onEvent(final DatasetUpdatedEvent event) {
 		final DataView view = getActiveView();
