@@ -59,8 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * TODO - better Javadoc. The abstract display handles axes resolution,
@@ -78,13 +78,13 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	private List<EventSubscriber<?>> subscribers;
 
-	private Axis activeAxis = null;
+	private AxisType activeAxis = null;
 
 	// NB: If axisPositions is a HashMap rather than a ConcurrentHashMap,
 	// the Delete Axis plugin throws a ConcurrentModificationException.
 
-	private final Map<Axis, Long> axisPositions =
-		new ConcurrentHashMap<Axis, Long>();
+	private final Map<AxisType, Long> axisPositions =
+		new ConcurrentHashMap<AxisType, Long>();
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
@@ -99,8 +99,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	protected void initActiveAxis() {
 		if (activeAxis == null) {
-			final Axis[] axes = getAxes();
-			for (final Axis axis : axes) {
+			final AxisType[] axes = getAxes();
+			for (final AxisType axis : axes) {
 				if (axis == Axes.X) continue;
 				if (axis == Axes.Y) continue;
 				setActiveAxis(axis);
@@ -118,18 +118,18 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		final long[] max = new long[numDimensions()];
 		Arrays.fill(max, Long.MIN_VALUE);
 
-		final Axis[] axes = getAxes();
+		final AxisType[] axes = getAxes();
 		final Extents extents = getExtents();
 
 		// remove obsolete axes
-		for (final Axis axis : axisPositions.keySet()) {
+		for (final AxisType axis : axisPositions.keySet()) {
 			if (getAxisIndex(axis) >= 0) continue; // axis still active
 			axisPositions.remove(axis);
 		}
 
 		// add new axes
 		for (int i = 0; i < axes.length; i++) {
-			final Axis axis = axes[i];
+			final AxisType axis = axes[i];
 			if (axisPositions.containsKey(axis)) continue; // axis already exists
 			if (Axes.isXY(axis)) continue; // do not track position of planar axes
 			setAxisPosition(axis, extents.min(i)); // start at minimum value
@@ -147,12 +147,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public Axis getActiveAxis() {
+	public AxisType getActiveAxis() {
 		return activeAxis;
 	}
 
 	@Override
-	public void setActiveAxis(final Axis axis) {
+	public void setActiveAxis(final AxisType axis) {
 		if (!axisPositions.containsKey(axis)) {
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
@@ -160,7 +160,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public long getAxisPosition(final Axis axis) {
+	public long getAxisPosition(final AxisType axis) {
 		if (axisPositions.containsKey(axis)) {
 			return axisPositions.get(axis);
 		}
@@ -168,7 +168,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public void setAxisPosition(final Axis axis, final long position) {
+	public void setAxisPosition(final AxisType axis, final long position) {
 		final int axisIndex = getAxisIndex(axis);
 		if (axisIndex < 0) {
 			throw new IllegalArgumentException("Invalid axis: " + axis);
@@ -219,7 +219,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	public void update() {
 		super.update();
 		for (final DataView view : this) {
-			for (final Axis axis : getAxes()) {
+			for (final AxisType axis : getAxes()) {
 				final int index = getAxisIndex(axis);
 				if (index < 0) continue;
 				if (Axes.isXY(axis)) continue;
@@ -241,12 +241,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		// CTR TODO - reconcile multiple copies of same axis with different lengths.
 
 		final ArrayList<Long> dimsList = new ArrayList<Long>();
-		final HashSet<Axis> axes = new HashSet<Axis>();
+		final HashSet<AxisType> axes = new HashSet<AxisType>();
 		for (final DataView view : this) {
 			final Data data = view.getData();
 			final long[] dataDims = data.getDims();
 			for (int i = 0; i < dataDims.length; i++) {
-				final Axis axis = data.axis(i);
+				final AxisType axis = data.axis(i);
 				if (!axes.contains(axis)) {
 					axes.add(axis);
 					dimsList.add(dataDims[i]);
@@ -261,25 +261,25 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public Axis[] getAxes() {
+	public AxisType[] getAxes() {
 		// This logic scans the axes of all constituent data objects, and merges
 		// them into a single aggregate coordinate space. The current implementation
 		// is not performance optimized.
 
 		// CTR TODO - reconcile multiple copies of same axis with different lengths.
 
-		final ArrayList<Axis> axes = new ArrayList<Axis>();
+		final ArrayList<AxisType> axes = new ArrayList<AxisType>();
 		for (final DataView view : this) {
 			final Data data = view.getData();
 			final int nAxes = data.numDimensions();
 			for (int i = 0; i < nAxes; i++) {
-				final Axis axis = data.axis(i);
+				final AxisType axis = data.axis(i);
 				if (!axes.contains(axis)) {
 					axes.add(axis);
 				}
 			}
 		}
-		return axes.toArray(new Axis[0]);
+		return axes.toArray(new AxisType[0]);
 	}
 
 	@Override
@@ -297,8 +297,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// -- LabeledAxes methods --
 
 	@Override
-	public int getAxisIndex(final Axis axis) {
-		final Axis[] axes = getAxes();
+	public int getAxisIndex(final AxisType axis) {
+		final AxisType[] axes = getAxes();
 		for (int i = 0; i < axes.length; i++) {
 			if (axes[i] == axis) return i;
 		}
@@ -306,18 +306,18 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public Axis axis(final int d) {
+	public AxisType axis(final int d) {
 		// TODO - avoid array allocation
 		return getAxes()[d];
 	}
 
 	@Override
-	public void axes(final Axis[] axes) {
+	public void axes(final AxisType[] axes) {
 		System.arraycopy(getAxes(), 0, axes, 0, axes.length);
 	}
 
 	@Override
-	public void setAxis(final Axis axis, final int d) {
+	public void setAxis(final AxisType axis, final int d) {
 		throw new UnsupportedOperationException(
 			"You can't change the axes of a display");
 	}

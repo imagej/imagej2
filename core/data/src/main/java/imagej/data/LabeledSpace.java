@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data;
 
 import imagej.data.display.ImageDisplay;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedSpace;
 import net.imglib2.meta.Named;
 
@@ -55,7 +55,7 @@ public interface LabeledSpace extends CalibratedSpace, Named {
 	long[] getDims();
 
 	/** Gets the dimensional axis labels of the data. */
-	Axis[] getAxes();
+	AxisType[] getAxes();
 
 	/** Gets the dimensional extents of the data. */
 	Extents getExtents();

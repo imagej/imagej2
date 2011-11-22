@@ -43,8 +43,8 @@ import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * Plugin for adjusting options that affect the behavior of animations.
@@ -126,11 +126,11 @@ public class AnimatorOptions extends DynamicPlugin {
 		return (AnimationService) getInput("animationService");
 	}
 
-	public Axis getAxis() {
+	public AxisType getAxis() {
 		return Axes.get((String) getInput("axisName"));
 	}
 
-	public void setAxis(final Axis axis) {
+	public void setAxis(final AxisType axis) {
 		setInput("axisName", axis.toString());
 	}
 
@@ -196,14 +196,14 @@ public class AnimatorOptions extends DynamicPlugin {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput("axisName");
-		final Axis[] axes = getDisplay().getAxes();
+		final AxisType[] axes = getDisplay().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis axis : axes) {
+		for (final AxisType axis : axes) {
 			if (Axes.isXY(axis)) continue;
 			choices.add(axis.getLabel());
 		}
 		axisNameItem.setChoices(choices);
-		final Axis curAxis = getAnimation().getAxis();
+		final AxisType curAxis = getAnimation().getAxis();
 		if (curAxis != null) setAxis(curAxis);
 	}
 

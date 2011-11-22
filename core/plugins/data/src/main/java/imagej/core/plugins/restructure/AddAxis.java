@@ -43,9 +43,9 @@ import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -77,9 +77,6 @@ public class AddAxis extends DynamicPlugin {
 
 	// -- public interface --
 	
-	public AddAxis() {
-	}
-
 	/**
 	 * Creates new ImgPlus data with an additional axis. Sets pixels of 1st
 	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus
@@ -90,9 +87,9 @@ public class AddAxis extends DynamicPlugin {
 		dataset = getDataset();
 		axisName = getAxisName();
 		axisSize = getAxisSize();
-		final Axis axis = Axes.get(axisName);
+		final AxisType axis = Axes.get(axisName);
 		if (inputBad(axis)) return;
-		final Axis[] newAxes = getNewAxes(dataset, axis);
+		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axisSize);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
@@ -114,7 +111,7 @@ public class AddAxis extends DynamicPlugin {
 	/**
 	 * Detects if user specified data is invalid
 	 */
-	private boolean inputBad(final Axis axis) {
+	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) return true;
 
@@ -132,9 +129,9 @@ public class AddAxis extends DynamicPlugin {
 	 * Creates an Axis[] that consists of all the axes from a Dataset and an
 	 * additional axis appended.
 	 */
-	private Axis[] getNewAxes(final Dataset ds, final Axis axis) {
-		final Axis[] origAxes = ds.getAxes();
-		final Axis[] newAxes = new Axis[origAxes.length + 1];
+	private AxisType[] getNewAxes(final Dataset ds, final AxisType axis) {
+		final AxisType[] origAxes = ds.getAxes();
+		final AxisType[] newAxes = new AxisType[origAxes.length + 1];
 		for (int i = 0; i < origAxes.length; i++)
 			newAxes[i] = origAxes[i];
 		newAxes[newAxes.length - 1] = axis;
@@ -198,7 +195,7 @@ public class AddAxis extends DynamicPlugin {
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis a : Axes.values()) {
+		for (final AxisType a : Axes.values()) {
 			if (Axes.isXY(a)) continue;
 			if (getDataset().getAxisIndex(a) < 0)
 				choices.add(a.getLabel());

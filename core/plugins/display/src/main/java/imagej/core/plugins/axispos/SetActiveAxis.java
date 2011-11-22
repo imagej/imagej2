@@ -49,8 +49,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * Changes the axis to move along to user specified value. This axis of movement
@@ -77,18 +77,13 @@ public class SetActiveAxis extends DynamicPlugin {
 	@Parameter(persist = false, initializer = "initAxisName")
 	private String axisName;
 
-	// -- constructor --
-	
-	public SetActiveAxis() {
-	}
-
 	// public interface --
 	
 	@Override
 	public void run() {
 		ImageDisplay disp = getDisplay();
 		String axis = getAxisName();
-		final Axis newActiveAxis = Axes.get(axis);
+		final AxisType newActiveAxis = Axes.get(axis);
 		if (newActiveAxis != null) disp.setActiveAxis(newActiveAxis);
 	}
 	
@@ -113,9 +108,9 @@ public class SetActiveAxis extends DynamicPlugin {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
-		final Axis[] axes = getDataset().getAxes();
+		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final Axis a : axes) {
+		for (final AxisType a : axes) {
 			if (a.isXY()) continue;
 			choices.add(a.getLabel());
 		}

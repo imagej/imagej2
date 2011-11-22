@@ -40,7 +40,7 @@ import java.io.ObjectOutput;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.img.Axes;
+import net.imglib2.meta.Axes;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
 /**

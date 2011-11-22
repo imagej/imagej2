@@ -46,7 +46,7 @@ import java.util.List;
 
 import net.imglib2.Cursor;
 import net.imglib2.display.RealLUTConverter;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -209,7 +209,7 @@ public class AutoContrast implements ImageJPlugin {
 	}
 
 	private int getNumChannels(final Dataset dataset) {
-		final Axis[] axes = dataset.getAxes();
+		final AxisType[] axes = dataset.getAxes();
 		for (int d = 0; d < axes.length; d++) {
 			if (axes[d].getLabel() == "Channel") {
 				return (int) dataset.getDims()[d];

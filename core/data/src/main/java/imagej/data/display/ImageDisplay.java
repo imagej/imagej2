@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.LabeledSpace;
 import imagej.data.roi.Overlay;
 import imagej.ext.display.Display;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 /**
  * An image display is a {@link Display} for visualizing {@link Data} objects.
@@ -55,14 +55,14 @@ public interface ImageDisplay extends Display<DataView>, LabeledSpace {
 	DataView getActiveView();
 
 	/** Gets the axis currently designated as active. */
-	Axis getActiveAxis();
+	AxisType getActiveAxis();
 
 	/** Sets the axis currently designated as active. */
-	void setActiveAxis(Axis axis);
+	void setActiveAxis(AxisType axis);
 
-	long getAxisPosition(Axis axis);
+	long getAxisPosition(AxisType axis);
 
-	void setAxisPosition(final Axis axis, final long position);
+	void setAxisPosition(final AxisType axis, final long position);
 
 	/** Gets the image canvas upon which this display's output is painted. */
 	ImageCanvas getCanvas();

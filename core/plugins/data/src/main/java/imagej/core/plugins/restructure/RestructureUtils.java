@@ -37,10 +37,10 @@ package imagej.core.plugins.restructure;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.AxisType;
 import net.imglib2.ops.RegionIndexIterator;
 import net.imglib2.type.numeric.RealType;
 
@@ -58,7 +58,7 @@ public class RestructureUtils {
 	/**
 	 * Gets the dimensions of the output data
 	 */
-	public static long[] getDimensions(final Dataset ds, final Axis oneToModify,
+	public static long[] getDimensions(final Dataset ds, final AxisType oneToModify,
 		final long delta)
 	{
 		final long[] dimensions = ds.getDims();
@@ -74,7 +74,7 @@ public class RestructureUtils {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static ImgPlus<? extends RealType<?>> createNewImgPlus(
-		final Dataset ds, final long[] dimensions, final Axis[] axes)
+		final Dataset ds, final long[] dimensions, final AxisType[] axes)
 	{
 		final ImgFactory factory = ds.getImgPlus().getImg().factory();
 		final Img<? extends RealType<?>> img =
@@ -95,7 +95,7 @@ public class RestructureUtils {
 	 * ImgPluses
 	 */
 	public static void copyData(final ImgPlus<? extends RealType<?>> srcImgPlus,
-		final ImgPlus<? extends RealType<?>> dstImgPlus, final Axis axis,
+		final ImgPlus<? extends RealType<?>> dstImgPlus, final AxisType axis,
 		final long srcStartPos, final long dstStartPos, final long numHyperplanes)
 	{
 		if (numHyperplanes == 0) return;
@@ -149,7 +149,7 @@ public class RestructureUtils {
 	 * along which the cut is being made has nonmaximal dimension. That dimension
 	 * is set to the passed in number of elements to be preserved.
 	 */
-	private static long[] calcSpan(final ImgPlus<?> imgPlus, final Axis axis,
+	private static long[] calcSpan(final ImgPlus<?> imgPlus, final AxisType axis,
 		final long numElements)
 	{
 		final long[] span = new long[imgPlus.numDimensions()];
@@ -165,7 +165,7 @@ public class RestructureUtils {
 	 * dimension is set to the passed in start position of the hyperplane along
 	 * the axis.
 	 */
-	private static long[] calcOrigin(final ImgPlus<?> imgPlus, final Axis axis,
+	private static long[] calcOrigin(final ImgPlus<?> imgPlus, final AxisType axis,
 		final long startPos)
 	{
 		final long[] origin = new long[imgPlus.numDimensions()];

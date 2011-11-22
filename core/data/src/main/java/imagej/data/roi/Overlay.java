@@ -37,7 +37,7 @@ package imagej.data.roi;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
@@ -141,7 +141,7 @@ public interface Overlay extends Data {
 	 * @param axis localize to this axis
 	 * @param position localize at this position
 	 */
-	void setPosition(Axis axis, long position);
+	void setPosition(AxisType axis, long position);
 
 	/**
 	 * Get the position of this overlay's plane perpendicular
@@ -150,7 +150,7 @@ public interface Overlay extends Data {
 	 * @param axis
 	 * @return Long position or null
 	 */
-	Long getPosition(Axis axis);
+	Long getPosition(AxisType axis);
 
 	/**
 	 * @return the arrow style at the start of a line or path (if appropriate)

@@ -72,8 +72,8 @@ import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 import org.jhotdraw.draw.DefaultDrawing;
 import org.jhotdraw.draw.DefaultDrawingEditor;
@@ -234,7 +234,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 						overlay.setAxis(Axes.X, Axes.X.ordinal());
 						overlay.setAxis(Axes.Y, Axes.Y.ordinal());
 						for (int i = 2; i < display.numDimensions(); i++) {
-							final Axis axis = display.axis(i);
+							final AxisType axis = display.axis(i);
 							if (overlay.getAxisIndex(axis) < 0) {
 								overlay.setPosition(axis, display.getAxisPosition(axis));
 							}

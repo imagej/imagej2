@@ -39,8 +39,8 @@ import ij.ImageStack;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 
@@ -70,7 +70,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
 		final long[] dims = ds.getDims();
-		final Axis[] axes = ds.getAxes();
+		final AxisType[] axes = ds.getAxes();
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
@@ -121,7 +121,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
 		final long[] dims = ds.getDims();
-		final Axis[] axes = ds.getAxes();
+		final AxisType[] axes = ds.getAxes();
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
@@ -170,12 +170,12 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	 * @param channelIndex - the index of the IJ1 encoded channel position
 	 * @param pos - the position array to fill with rasterized values
 	 */
-	private void fillChannelIndices(final long[] dims, final Axis[] axes,
+	private void fillChannelIndices(final long[] dims, final AxisType[] axes,
 		final long channelIndex, final long[] pos)
 	{
 		long workingIndex = channelIndex;
 		for (int i = 0; i < dims.length; i++) {
-			final Axis axis = axes[i];
+			final AxisType axis = axes[i];
 			// skip axes we don't encode as channels
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;

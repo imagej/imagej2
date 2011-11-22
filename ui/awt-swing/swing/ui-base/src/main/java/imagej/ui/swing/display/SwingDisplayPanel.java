@@ -73,8 +73,8 @@ import javax.swing.border.LineBorder;
 
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.RealLUTConverter;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 import net.miginfocom.swing.MigLayout;
 
@@ -97,10 +97,10 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	private final DisplayWindow window;
 	private boolean initialScaleCalculated = false;
 
-	private final Map<Axis, JScrollBar> axisSliders =
-		new ConcurrentHashMap<Axis, JScrollBar>();
+	private final Map<AxisType, JScrollBar> axisSliders =
+		new ConcurrentHashMap<AxisType, JScrollBar>();
 
-	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
+	private final Map<AxisType, JLabel> axisLabels = new HashMap<AxisType, JLabel>();
 
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
@@ -234,18 +234,18 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	@EventHandler
 	protected void onEvent(AxisPositionEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
-		final Axis axis = event.getAxis();
+		final AxisType axis = event.getAxis();
 		updateAxis(axis);
 	}
 
 	// -- Helper methods --
 
 	private void createSliders() {
-		final Axis[] axes = display.getAxes();
+		final AxisType[] axes = display.getAxes();
 		final Extents extents = display.getExtents();
 
 		// remove obsolete sliders
-		for (final Axis axis : axisSliders.keySet()) {
+		for (final AxisType axis : axisSliders.keySet()) {
 			if (display.getAxisIndex(axis) >= 0) continue; // axis still active
 			sliderPanel.remove(axisSliders.get(axis));
 			sliderPanel.remove(axisLabels.get(axis));
@@ -255,7 +255,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		
 		// configure sliders to match axes and extents
 		for (int i = 0; i < axes.length; i++) {
-			final Axis axis = axes[i];
+			final AxisType axis = axes[i];
 			if (Axes.isXY(axis)) continue; // skip spatial axes
 			final int min = (int) extents.min(i);
 			final int max = (int) extents.max(i) + 1;
@@ -295,7 +295,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		}
 	}
 
-	private void updateAxis(final Axis axis) {
+	private void updateAxis(final AxisType axis) {
 		final int value = (int) getDisplay().getAxisPosition(axis);
 		final JScrollBar scrollBar = axisSliders.get(axis);
 		if (scrollBar != null) scrollBar.setValue(value);

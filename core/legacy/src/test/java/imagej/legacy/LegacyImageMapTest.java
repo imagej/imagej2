@@ -42,9 +42,9 @@ import imagej.data.Dataset;
 import imagej.data.DatasetFactory;
 import imagej.event.EventService;
 import net.imglib2.Cursor;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 import org.junit.Test;
@@ -80,8 +80,8 @@ public class LegacyImageMapTest {
 	public void testRegisterDataset() {
 		Dataset ds0;
 		final ImagePlus imp1, imp2;
-		final Axis[] axes =
-			new Axis[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+		final AxisType[] axes =
+			new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 
 		// register a gray dataset
 		ds0 =

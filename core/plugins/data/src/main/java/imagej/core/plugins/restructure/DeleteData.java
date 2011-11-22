@@ -43,9 +43,9 @@ import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -86,9 +86,6 @@ public class DeleteData extends DynamicPlugin {
 
 	// -- public interface --
 	
-	public DeleteData() {
-	}
-
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
@@ -100,9 +97,9 @@ public class DeleteData extends DynamicPlugin {
 		oneBasedDelPos = getPosition();
 		numDeleting = getQuantity();
 		deletePosition = oneBasedDelPos - 1;
-		final Axis axis = Axes.get(axisToModify);
+		final AxisType axis = Axes.get(axisToModify);
 		if (inputBad(axis)) return;
-		final Axis[] axes = dataset.getAxes();
+		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, -numDeleting);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -135,7 +132,7 @@ public class DeleteData extends DynamicPlugin {
 	/**
 	 * Detects if user specified data is invalid
 	 */
-	private boolean inputBad(final Axis axis) {
+	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) return true;
 
@@ -164,7 +161,7 @@ public class DeleteData extends DynamicPlugin {
 	 * image. Copies data from those hyperplanes not being cut.
 	 */
 	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
-		final ImgPlus<? extends RealType<?>> dstImgPlus, final Axis modifiedAxis)
+		final ImgPlus<? extends RealType<?>> dstImgPlus, final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
 		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
@@ -181,7 +178,7 @@ public class DeleteData extends DynamicPlugin {
 	}
 
 	private int compositeStatus(final int compositeCount,
-		final ImgPlus<?> output, final Axis axis)
+		final ImgPlus<?> output, final AxisType axis)
 	{
 		if (axis == Axes.CHANNEL) {
 			final int axisIndex = output.getAxisIndex(Axes.CHANNEL);
@@ -282,7 +279,7 @@ public class DeleteData extends DynamicPlugin {
 	}
 	
 	private long currDimLen() {
-		Axis axis = Axes.get(getAxisName());
+		AxisType axis = Axes.get(getAxisName());
 		int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}

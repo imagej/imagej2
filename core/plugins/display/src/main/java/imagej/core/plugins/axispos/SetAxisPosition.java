@@ -39,7 +39,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 /**
  * Sets the position of the current axis to a user-specified value.
@@ -63,7 +63,7 @@ public class SetAxisPosition implements ImageJPlugin {
 	@Override
 	public void run() {
 		animationService.stop(display);
-		final Axis axis = display.getActiveAxis();
+		final AxisType axis = display.getActiveAxis();
 		final long newPosition = oneBasedPosition - 1;
 		display.setAxisPosition(axis, newPosition);
 	}

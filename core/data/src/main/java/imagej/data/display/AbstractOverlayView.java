@@ -36,7 +36,7 @@ package imagej.data.display;
 
 import imagej.ImageJ;
 import imagej.data.roi.Overlay;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 /**
  * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.
@@ -66,7 +66,7 @@ public abstract class AbstractOverlayView extends AbstractDataView {
 	@Override
 	public boolean isVisible() {
 		for (int i = 2; i < overlay.numDimensions(); i++) {
-			final Axis axis = overlay.axis(i);
+			final AxisType axis = overlay.axis(i);
 			final Long pos = overlay.getPosition(axis);
 			if ((pos != null) &&
 				!pos.equals(getPlanePosition().getLongPosition(i - 2)))

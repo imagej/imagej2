@@ -36,7 +36,7 @@ package imagej.data.display.event;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.event.DisplayEvent;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 /**
  * An event indicating that a display's dimensional position has changed.
@@ -45,13 +45,13 @@ import net.imglib2.img.Axis;
  */
 public class AxisPositionEvent extends DisplayEvent {
 
-	private final Axis axis;
+	private final AxisType axis;
 	
 	public AxisPositionEvent(final ImageDisplay display) {
 		this(display, display.getActiveAxis());
 	}
 
-	public AxisPositionEvent(final ImageDisplay display, final Axis axis) {
+	public AxisPositionEvent(final ImageDisplay display, final AxisType axis) {
 		super(display);
 		if (display.getAxisIndex(axis) < 0) {
 			throw new IllegalArgumentException("Invalid axis: " + axis);
@@ -59,7 +59,7 @@ public class AxisPositionEvent extends DisplayEvent {
 		this.axis = axis;
 	}
 
-	public Axis getAxis() {
+	public AxisType getAxis() {
 		return axis;
 	}
 

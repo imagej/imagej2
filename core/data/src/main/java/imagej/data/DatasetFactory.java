@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.planar.PlanarImgFactory;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
@@ -82,7 +82,7 @@ public final class DatasetFactory {
 	 *           and floating parameters do not form a valid data type.
 	 */
 	public static Dataset create(final long[] dims, final String name,
-		final Axis[] axes, final int bitsPerPixel, final boolean signed,
+		final AxisType[] axes, final int bitsPerPixel, final boolean signed,
 		final boolean floating)
 	{
 		if (bitsPerPixel == 1) {
@@ -131,7 +131,7 @@ public final class DatasetFactory {
 	 * @return The newly created dataset.
 	 */
 	public static <T extends RealType<T> & NativeType<T>> Dataset create(
-		final T type, final long[] dims, final String name, final Axis[] axes)
+		final T type, final long[] dims, final String name, final AxisType[] axes)
 	{
 		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
 		return create(imgFactory, type, dims, name, axes);
@@ -150,7 +150,7 @@ public final class DatasetFactory {
 	 */
 	public static <T extends RealType<T> & NativeType<T>> Dataset create(
 		final ImgFactory<T> factory, final T type, final long[] dims,
-		final String name, final Axis[] axes)
+		final String name, final AxisType[] axes)
 	{
 		final Img<T> img = factory.create(dims, type);
 		final ImgPlus<T> imgPlus = new ImgPlus<T>(img, name, axes, null);

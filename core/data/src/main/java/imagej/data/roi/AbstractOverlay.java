@@ -55,8 +55,8 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
@@ -86,14 +86,14 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	protected double lineWidth;
 	protected Overlay.LineStyle lineStyle;
 	
-	final protected List<Axis> axes = new ArrayList<Axis>();
+	final protected List<AxisType> axes = new ArrayList<AxisType>();
 	final protected List<Double> calibrations = new ArrayList<Double>();
 
-	final protected SortedMap<Axis, Long> axisPositions =
-		new TreeMap<Axis, Long>(new Comparator<Axis>() {
+	final protected SortedMap<AxisType, Long> axisPositions =
+		new TreeMap<AxisType, Long>(new Comparator<AxisType>() {
 
 			@Override
-			public int compare(final Axis axis1, final Axis axis2) {
+			public int compare(final AxisType axis1, final AxisType axis2) {
 				if ((axis1 instanceof Axes) && (axis2 instanceof Axes)) {
 					return new Integer(((Axes) axis1).ordinal()).compareTo(((Axes) axis2)
 						.ordinal());
@@ -209,7 +209,7 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 			out.writeDouble(calibrations.get(i));
 		}
 		out.writeInt(axisPositions.size());
-		for (final Axis axis : axisPositions.keySet()) {
+		for (final AxisType axis : axisPositions.keySet()) {
 			writeAxis(out, axis);
 			out.writeLong(axisPositions.get(axis));
 		}
@@ -246,7 +246,7 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		return new String(buffer);
 	}
 
-	static private void writeAxis(final ObjectOutput out, final Axis axis)
+	static private void writeAxis(final ObjectOutput out, final AxisType axis)
 		throws IOException
 	{
 		writeString(out, axis.getLabel());
@@ -273,24 +273,24 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		}
 		final int nPositions = in.readInt();
 		for (int i = 0; i < nPositions; i++) {
-			final Axis axis = readAxis(in);
+			final AxisType axis = readAxis(in);
 			axisPositions.put(axis, in.readLong());
 		}
 		startArrowStyle = ArrowStyle.valueOf(readString(in));
 		endArrowStyle = ArrowStyle.valueOf(readString(in));
 	}
 
-	static private Axis readAxis(final ObjectInput in) throws IOException {
+	static private AxisType readAxis(final ObjectInput in) throws IOException {
 		return Axes.get(new String(readString(in)));
 	}
 
 	@Override
-	public int getAxisIndex(final Axis axis) {
+	public int getAxisIndex(final AxisType axis) {
 		int index = axes.indexOf(axis);
 		if (index >= 0) return index;
 		if (axisPositions.containsKey(axis)) {
 			index = axes.size();
-			for (final Axis other : axisPositions.keySet()) {
+			for (final AxisType other : axisPositions.keySet()) {
 				if (other == axis) return index;
 				index++;
 			}
@@ -299,26 +299,26 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	}
 
 	@Override
-	public Axis axis(final int d) {
+	public AxisType axis(final int d) {
 		if (d < axes.size()) {
 			return axes.get(d);
 		}
 		int index = axes.size();
-		for (final Axis axis : axisPositions.keySet()) {
+		for (final AxisType axis : axisPositions.keySet()) {
 			if (index++ == d) return axis;
 		}
 		return null;
 	}
 
 	@Override
-	public void axes(final Axis[] axesToFill) {
+	public void axes(final AxisType[] axesToFill) {
 		for (int i = 0; (i < axesToFill.length) && (i < this.axes.size()); i++) {
 			axesToFill[i] = this.axes.get(i);
 		}
 	}
 
 	@Override
-	public void setAxis(final Axis axis, final int d) {
+	public void setAxis(final AxisType axis, final int d) {
 		while (this.axes.size() <= d) {
 			this.axes.add(null);
 			this.calibrations.add(1.0);
@@ -356,12 +356,12 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	}
 
 	@Override
-	public void setPosition(final Axis axis, final long position) {
+	public void setPosition(final AxisType axis, final long position) {
 		axisPositions.put(axis, position);
 	}
 
 	@Override
-	public Long getPosition(final Axis axis) {
+	public Long getPosition(final AxisType axis) {
 		if (axisPositions.containsKey(axis)) {
 			return axisPositions.get(axis);
 		}

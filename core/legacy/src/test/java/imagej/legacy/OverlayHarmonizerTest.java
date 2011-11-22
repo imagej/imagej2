@@ -64,8 +64,6 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealRandomAccess;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.NativeImg;
@@ -73,6 +71,8 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.BitAccess;
 import net.imglib2.img.basictypeaccess.ByteAccess;
 import net.imglib2.img.transform.ImgTranslationAdapter;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
@@ -190,7 +190,7 @@ public class OverlayHarmonizerTest {
 				ra.get().set(data[i][j]);
 			}
 		}
-		return new ImgLibDataset(new ImgPlus<ByteType>(img, name, new Axis[] {
+		return new ImgLibDataset(new ImgPlus<ByteType>(img, name, new AxisType[] {
 			Axes.X, Axes.Y }));
 	}
 

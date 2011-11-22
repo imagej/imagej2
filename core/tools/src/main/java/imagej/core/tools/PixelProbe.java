@@ -50,8 +50,8 @@ import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
 import net.imglib2.img.Img;
+import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 /**

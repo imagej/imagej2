@@ -43,8 +43,8 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.Cursor;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -166,7 +166,7 @@ public class NewImage implements ImageJPlugin {
 		// create the dataset
 		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = { width, height };
-		final Axis[] axes = { Axes.X, Axes.Y };
+		final AxisType[] axes = { Axes.X, Axes.Y };
 		dataset =
 			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 

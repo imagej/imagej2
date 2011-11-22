@@ -46,8 +46,6 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -62,6 +60,8 @@ import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
@@ -310,22 +310,22 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	// -- LabeledAxes methods --
 
 	@Override
-	public int getAxisIndex(final Axis axis) {
+	public int getAxisIndex(final AxisType axis) {
 		return imgPlus.getAxisIndex(axis);
 	}
 
 	@Override
-	public Axis axis(final int d) {
+	public AxisType axis(final int d) {
 		return imgPlus.axis(d);
 	}
 
 	@Override
-	public void axes(final Axis[] axes) {
+	public void axes(final AxisType[] axes) {
 		imgPlus.axes(axes);
 	}
 
 	@Override
-	public void setAxis(final Axis axis, final int d) {
+	public void setAxis(final AxisType axis, final int d) {
 		imgPlus.setAxis(axis, d);
 		update();
 	}
@@ -584,7 +584,7 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 	}
 
 	private <T extends RealType<?>> ImgPlus<T> wrapAsImgPlus(final Img<T> newImg,
-		final Axis[] axes, final double[] calib)
+		final AxisType[] axes, final double[] calib)
 	{
 		return new ImgPlus<T>(newImg, getName(), axes, calib);
 	}
