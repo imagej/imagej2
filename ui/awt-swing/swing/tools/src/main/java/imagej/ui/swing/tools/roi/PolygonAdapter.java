@@ -41,7 +41,6 @@ import imagej.ext.tool.Tool;
 import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
 import imagej.util.Log;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.util.Arrays;
@@ -153,8 +152,8 @@ public class PolygonAdapter extends
 	@Override
 	public Figure createDefaultFigure() {
 		final BezierFigure figure = new PolygonFigure();
-		figure.set(AttributeKeys.FILL_COLOR, new Color(255, 255, 255, 0));
-		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
+		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
+		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
 

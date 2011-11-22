@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options.plugins;
 
+import imagej.ImageJ;
+import imagej.data.display.OverlayService;
+import imagej.data.roi.DefaultOverlaySettings;
 import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.data.roi.Overlay.LineStyle;
 import imagej.ext.module.ui.WidgetStyle;
@@ -108,10 +111,27 @@ public class OptionsOverlay extends OptionsPlugin {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
+	@Override
+	public void run() {
+		// TODO - do not refer to AbstractOverlay. Rather define a class that holds
+		// these constants.
+		DefaultOverlaySettings settings =
+				ImageJ.get(OverlayService.class).getDefaultSettings();
+		
+		settings.setDefaultLineColor(getLineColor());
+		settings.setDefaultLineWidth(getLineWidth());
+		settings.setDefaultLineStyle(getLineStyle());
+		settings.setDefaultFillColor(getFillColor());
+		settings.setDefaultAlpha(getAlpha());
+		settings.setDefaultStartArrowStyle(getStartArrowStyle());
+		settings.setDefaultEndArrowStyle(getEndArrowStyle());
+		super.run();
+	}
+	
 	public void setLineColor(ColorRGB color) {
 		lineColor = color;
 	}
-	
+
 	public ColorRGB getLineColor() {
 		return lineColor;
 	}
