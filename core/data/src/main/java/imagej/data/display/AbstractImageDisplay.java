@@ -388,7 +388,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
 		if (event.getObject() == this) {
-			closeHelper();
+			closeHelper(); 
 			// NB - we've avoided dispose() since its been called elsewhere.
 			// If call close() here instead get duplicated WindowClosingEvents.
 		}
