@@ -61,109 +61,79 @@ public class AnimatorOptions extends DynamicPlugin {
 	// -- Parameters --
 
 	@Parameter(required = true, persist = false)
-	@SuppressWarnings("unused")
 	private ImageDisplay display;
 
 	@Parameter(required = true, persist = false)
-	@SuppressWarnings("unused")
 	private AnimationService animationService;
 
 	@Parameter(label = "Axis", persist = false, initializer = "initAxis",
 		callback = "axisChanged")
-	@SuppressWarnings("unused")
 	private String axisName;
 
 	@Parameter(label = "First position", persist = false,
 		initializer = "initFirst", min = "1")
-	@SuppressWarnings("unused")
 	private long first;
 
 	@Parameter(label = "Last position", persist = false,
 		initializer = "initLast", min = "1")
-	@SuppressWarnings("unused")
 	private long last;
 
 	@Parameter(label = "Speed (0.1 - 1000 fps)", persist = false,
 		initializer = "initFPS", min = "0.1", max = "1000")
-	@SuppressWarnings("unused")
 	private double fps;
 
 	@Parameter(label = "Loop back and forth", persist = false,
 		initializer = "initBackAndForth")
-	@SuppressWarnings("unused")
-	private boolean backForth;
+	private boolean backAndForth;
 
 	// -- AnimatorOptions methods --
 
-	// CTR TODO - Solve issues with DynamicPlugin + @Parameter:
-	//
-	// 1) Values assigned to the @Parameter fields at any point will not be
-	// reflected in the module itself (e.g., when the input dialog pops up).
-	// This is because AbstractModule (and by extension DefaultModule) keeps
-	// its own copy of all the values in an internal table. The @Parameter
-	// logic works with non-dynamic plugins because PluginModule overrides
-	// Module.setInput(String, Object) and Module.setOutput(String, Object)
-	// to write to the @Parameter field directly.
-	//
-	// 2) Similarly, accessing @Parameter fields in the run method will not work,
-	// because they will not have been updated to match the DynamicPlugin's
-	// internal table of values.
-	//
-	// How can we keep the values of the @Parameter variables in sync?
-	// At minimum, DynamicPlugin could have two public methods for syncing,
-	// one for each direction. Would be nice if it wasn't necessary to call
-	// them explicitly, though.
-	//
-	// In the meantime, we must be careful to always get and set the parameter
-	// values using the accessors and mutators below, rather than accessing the
-	// @Parameter fields directly.
-
 	public ImageDisplay getDisplay() {
-		return (ImageDisplay) getInput("display");
+		return display;
 	}
 
 	public AnimationService getAnimationService() {
-		return (AnimationService) getInput("animationService");
+		return animationService;
 	}
 
 	public AxisType getAxis() {
-		return Axes.get((String) getInput("axisName"));
+		return Axes.get(axisName);
 	}
 
 	public void setAxis(final AxisType axis) {
-		setInput("axisName", axis.toString());
+		axisName = axis.toString();
 	}
 
 	public double getFPS() {
-		return (Double) getInput("fps");
+		return fps;
 	}
 
 	public void setFPS(final double fps) {
-		setInput("fps", fps);
+		this.fps = fps;
 	}
 
 	public long getFirst() {
-		return (Long) getInput("first");
+		return first;
 	}
 
 	public void setFirst(final long first) {
-		setInput("first", first);
+		this.first = first;
 	}
 
 	public long getLast() {
-		return (Long) getInput("last");
+		return last;
 	}
 
 	public void setLast(final long last) {
-		setInput("last", last);
+		this.last = last;
 	}
 
 	public boolean isBackAndForth() {
-		return (Boolean) getInput("backForth");
+		return backAndForth;
 	}
 
 	public void setBackAndForth(final boolean backAndForth) {
-		setInput("backForth", backAndForth);
+		this.backAndForth = backAndForth;
 	}
 
 	// -- Runnable methods --
@@ -228,7 +198,7 @@ public class AnimatorOptions extends DynamicPlugin {
 		setFPS(getAnimation().getFPS());
 	}
 
-	/** Initializes backForth value. */
+	/** Initializes backAndForth value. */
 	protected void initBackAndForth() {
 		setBackAndForth(getAnimation().isBackAndForth());
 	}
