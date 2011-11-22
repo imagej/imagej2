@@ -218,7 +218,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 					numer = (int) floor;
 					denom = 1;
 				}
-				else chooseBestFraction(realScale);
+				else lookForBestFraction(realScale);
 			}
 			else { // factor < 1
 				final double recip = 1.0 / realScale;
@@ -227,7 +227,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 					numer = 1;
 					denom = (int) floor;
 				}
-				else chooseBestFraction(realScale);
+				else lookForBestFraction(realScale);
 			}
 		}
 
@@ -239,9 +239,14 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 			return denom;
 		}
 		
-		private void chooseBestFraction(final double scale) {
-			for (int n = 1; n < 30; n++) {
-				for (int d = 1; d < 30; d++) {
+		// This method attempts to find a simple fraction that describes the
+		// specified scale. It searches a small set of number to minimize
+		// time spent. If it fails to find scale it leaves fraction unchanged.
+		
+		private void lookForBestFraction(final double scale) {
+			final int quickRange = 30;
+			for (int n = 1; n <= quickRange; n++) {
+				for (int d = 1; d <= quickRange; d++) {
 					double frac = 1.0 * n / d;
 					if (Math.abs(scale-frac) < 0.0001) {
 						numer = n;
