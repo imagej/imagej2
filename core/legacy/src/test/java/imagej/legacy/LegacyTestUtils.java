@@ -40,8 +40,8 @@ import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -51,15 +51,15 @@ import net.imglib2.type.numeric.RealType;
  */
 public class LegacyTestUtils {
 
-	public static boolean allNull(final Axis[] axes) {
-		for (final Axis axis : axes)
+	public static boolean allNull(final AxisType[] axes) {
+		for (final AxisType axis : axes)
 			if (axis != null) return false;
 		return true;
 	}
 
-	public static boolean repeated(final Axis[] axes) {
+	public static boolean repeated(final AxisType[] axes) {
 		int cCount = 0, zCount = 0, tCount = 0;
-		for (final Axis axis : axes) {
+		for (final AxisType axis : axes) {
 			if (axis == Axes.CHANNEL) cCount++;
 			if (axis == Axes.Z) zCount++;
 			if (axis == Axes.TIME) tCount++;

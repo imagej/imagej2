@@ -39,7 +39,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 /**
  * The default {@link ImageTranslator} between legacy and modern ImageJ image
@@ -83,7 +83,7 @@ public class DefaultImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
-		final Axis[] preferredOrder)
+		final AxisType[] preferredOrder)
 	{
 
 		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {

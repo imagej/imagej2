@@ -36,8 +36,8 @@ package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
 import imagej.util.Log;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * The Animation class takes care of running an animation along an axis.
@@ -56,7 +56,7 @@ public class Animation implements Runnable {
 	private boolean active;
 	private Thread thread;
 
-	private Axis axis;
+	private AxisType axis;
 	private long first;
 	private long last;
 	private double fps = 8;
@@ -126,11 +126,11 @@ public class Animation implements Runnable {
 	}
 
 	/** Gets the axis over which to animate. */
-	public Axis getAxis() {
+	public AxisType getAxis() {
 		return axis;
 	}
 
-	public void setAxis(final Axis axis) {
+	public void setAxis(final AxisType axis) {
 		this.axis = axis;
 		clampPosition();
 	}

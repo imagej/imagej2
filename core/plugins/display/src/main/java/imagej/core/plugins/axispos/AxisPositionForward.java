@@ -39,7 +39,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 // TODO - Accelerator of "shift PERIOD" will not work on some keyboard layouts.
 // Making it "GREATER" does not work; it appears correctly in the menu
@@ -66,7 +66,7 @@ public class AxisPositionForward implements ImageJPlugin {
 	@Override
 	public void run() {
 		animationService.stop(display);
-		final Axis axis = display.getActiveAxis();
+		final AxisType axis = display.getActiveAxis();
 		display.setAxisPosition(axis, display.getAxisPosition(axis) + 1);
 	}
 

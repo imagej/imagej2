@@ -36,7 +36,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 /**
  * The interface for creating {@link ImageDisplay}s from {@link ImagePlus}es.
@@ -47,6 +47,6 @@ public interface DisplayCreator {
 
 	ImageDisplay createDisplay(final ImagePlus imp);
 
-	ImageDisplay createDisplay(final ImagePlus imp, Axis[] preferredOrder);
+	ImageDisplay createDisplay(final ImagePlus imp, AxisType[] preferredOrder);
 
 }

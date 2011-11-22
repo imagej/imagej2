@@ -47,9 +47,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.ops.RegionIndexIterator;
 import net.imglib2.type.numeric.RealType;
 
@@ -72,7 +72,7 @@ public class ReorderAxes extends DynamicPlugin {
 	private Dataset dataset;
 	private String[] axisNames;
 	private int[] permutationAxisIndices;
-	private Axis[] desiredAxisOrder;
+	private AxisType[] desiredAxisOrder;
 
 	// -- public interface --
 	
@@ -80,7 +80,7 @@ public class ReorderAxes extends DynamicPlugin {
 		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset();
 		if (dataset == null) return;
 		
-		final Axis[] axes = dataset.getAxes();
+		final AxisType[] axes = dataset.getAxes();
 
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (int i = 0; i < axes.length; i++) {
@@ -143,7 +143,7 @@ public class ReorderAxes extends DynamicPlugin {
 	 * those present in the input Dataset.
 	 */
 	private void setupDesiredAxisOrder() {
-		desiredAxisOrder = new Axis[axisNames.length];
+		desiredAxisOrder = new AxisType[axisNames.length];
 		for (int i = 0; i < axisNames.length; i++)
 			desiredAxisOrder[i] = Axes.get(axisNames[i]);
 	}
@@ -167,8 +167,8 @@ public class ReorderAxes extends DynamicPlugin {
 	 * Takes a given set of axes (usually a subset of all possible axes) and
 	 * returns a permuted set of axes that reflect the user specified axis order
 	 */
-	private Axis[] getPermutedAxes(final Axis[] currAxes) {
-		final Axis[] permuted = new Axis[currAxes.length];
+	private AxisType[] getPermutedAxes(final AxisType[] currAxes) {
+		final AxisType[] permuted = new AxisType[currAxes.length];
 		int index = 0;
 		for (int i = 0; i < desiredAxisOrder.length; i++)
 			for (int j = 0; j < currAxes.length; j++) {
@@ -185,11 +185,11 @@ public class ReorderAxes extends DynamicPlugin {
 	 * actually permute positions.
 	 */
 	private void setupPermutationVars() {
-		final Axis[] currAxes = dataset.getAxes();
-		final Axis[] permutedAxes = getPermutedAxes(currAxes);
+		final AxisType[] currAxes = dataset.getAxes();
+		final AxisType[] permutedAxes = getPermutedAxes(currAxes);
 		permutationAxisIndices = new int[currAxes.length];
 		for (int i = 0; i < currAxes.length; i++) {
-			final Axis axis = currAxes[i];
+			final AxisType axis = currAxes[i];
 			final int newIndex = getNewAxisIndex(permutedAxes, axis);
 			permutationAxisIndices[i] = newIndex;
 		}
@@ -211,9 +211,9 @@ public class ReorderAxes extends DynamicPlugin {
 			new RegionIndexIterator(inputOrigin, new long[inputOrigin.length],
 				inputOffsets);
 		final long[] origDims = dataset.getDims();
-		final Axis[] origAxes = dataset.getAxes();
+		final AxisType[] origAxes = dataset.getAxes();
 		final long[] newDims = getNewDims(origDims);
-		final Axis[] newAxes = getNewAxes(origAxes);
+		final AxisType[] newAxes = getNewAxes(origAxes);
 		final ImgPlus<? extends RealType<?>> newImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDims, newAxes);
 		newImgPlus.setCompositeChannelCount(dataset.getCompositeChannelCount());
@@ -237,7 +237,7 @@ public class ReorderAxes extends DynamicPlugin {
 	 * Returns the axis index of an Axis given a permuted set of axes.
 	 */
 	private int
-		getNewAxisIndex(final Axis[] permutedAxes, final Axis originalAxis)
+		getNewAxisIndex(final AxisType[] permutedAxes, final AxisType originalAxis)
 	{
 		for (int i = 0; i < permutedAxes.length; i++) {
 			if (permutedAxes[i] == originalAxis) return i;
@@ -259,8 +259,8 @@ public class ReorderAxes extends DynamicPlugin {
 	 * Taking the original axes order this method returns the new axes in the
 	 * order of the permuted space.
 	 */
-	private Axis[] getNewAxes(final Axis[] origAxes) {
-		final Axis[] newAxes = new Axis[origAxes.length];
+	private AxisType[] getNewAxes(final AxisType[] origAxes) {
+		final AxisType[] newAxes = new AxisType[origAxes.length];
 		permute(origAxes, newAxes);
 		return newAxes;
 	}
@@ -278,7 +278,7 @@ public class ReorderAxes extends DynamicPlugin {
 	 * Permutes from an axis order in the original space into an axis order in the
 	 * permuted space
 	 */
-	private void permute(final Axis[] origAxes, final Axis[] permutedAxes) {
+	private void permute(final AxisType[] origAxes, final AxisType[] permutedAxes) {
 		for (int i = 0; i < origAxes.length; i++)
 			permutedAxes[permutationAxisIndices[i]] = origAxes[i];
 	}

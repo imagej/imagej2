@@ -40,7 +40,7 @@ import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.util.Log;
-import net.imglib2.img.Axes;
+import net.imglib2.meta.Axes;
 
 /**
  * Synchronizes internal plane reference values between a {@link Dataset} and an

@@ -37,7 +37,7 @@ package imagej.legacy.translate;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import imagej.data.Dataset;
-import net.imglib2.img.Axes;
+import net.imglib2.meta.Axes;
 
 /**
  * Synchronizes metadata bidirectionally between a {@link Dataset} and an

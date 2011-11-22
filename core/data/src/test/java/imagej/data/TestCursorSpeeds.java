@@ -37,9 +37,9 @@ package imagej.data;
 import static org.junit.Assert.assertTrue;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
@@ -60,13 +60,13 @@ public class TestCursorSpeeds {
 	public void testCursorSpeeds() {
 		final long[] dims = new long[] { X, Y, Z };
 		final Dataset ds1 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk1", new Axis[] {
+			DatasetFactory.create(new UnsignedByteType(), dims, "junk1", new AxisType[] {
 				Axes.X, Axes.Y, Axes.Z });
 		final Dataset ds2 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk2", new Axis[] {
+			DatasetFactory.create(new UnsignedByteType(), dims, "junk2", new AxisType[] {
 				Axes.X, Axes.Y, Axes.Z });
 		final Dataset ds3 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk3", new Axis[] {
+			DatasetFactory.create(new UnsignedByteType(), dims, "junk3", new AxisType[] {
 				Axes.X, Axes.Y, Axes.Z });
 
 		fill(ds1);

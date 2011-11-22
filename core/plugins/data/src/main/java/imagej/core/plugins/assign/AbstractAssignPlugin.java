@@ -45,7 +45,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
+import net.imglib2.meta.Axes;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.RegionIndexIterator;
 import net.imglib2.ops.UnaryOperation;

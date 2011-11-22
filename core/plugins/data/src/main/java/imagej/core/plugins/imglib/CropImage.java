@@ -47,9 +47,9 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axes;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 // TODO - the IJ1 crop plugin can do a lot more than this can.

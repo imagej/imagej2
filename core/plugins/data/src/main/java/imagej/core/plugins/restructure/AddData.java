@@ -43,9 +43,9 @@ import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -84,9 +84,6 @@ public class AddData extends DynamicPlugin {
 	private long insertPosition;
 
 	// -- public interface --
-	
-	public AddData() {
-	}
 
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
@@ -99,9 +96,9 @@ public class AddData extends DynamicPlugin {
 		oneBasedInsPos = getPosition();
 		numAdding = getQuantity();
 		insertPosition = oneBasedInsPos - 1;
-		final Axis axis = Axes.get(axisToModify);
+		final AxisType axis = Axes.get(axisToModify);
 		if (inputBad(axis)) return;
-		final Axis[] axes = dataset.getAxes();
+		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, numAdding);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -134,7 +131,7 @@ public class AddData extends DynamicPlugin {
 	/**
 	 * Detects if user specified data is invalid
 	 */
-	private boolean inputBad(final Axis axis) {
+	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) return true;
 
@@ -160,7 +157,7 @@ public class AddData extends DynamicPlugin {
 	 * image. Copies data from existing hyperplanes.
 	 */
 	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
-		final ImgPlus<? extends RealType<?>> dstImgPlus, final Axis modifiedAxis)
+		final ImgPlus<? extends RealType<?>> dstImgPlus, final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
 		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
@@ -176,7 +173,7 @@ public class AddData extends DynamicPlugin {
 	}
 
 	private int compositeStatus(final Dataset origData,
-		final ImgPlus<?> dstImgPlus, final Axis axis)
+		final ImgPlus<?> dstImgPlus, final AxisType axis)
 	{
 
 		// adding along non-channel axis

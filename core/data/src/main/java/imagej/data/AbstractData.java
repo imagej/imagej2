@@ -39,7 +39,7 @@ import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventService;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.AxisType;
 
 /**
  * Base implementation of {@link Data}.
@@ -117,8 +117,8 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 	}
 
 	@Override
-	public Axis[] getAxes() {
-		final Axis[] axes = new Axis[numDimensions()];
+	public AxisType[] getAxes() {
+		final AxisType[] axes = new AxisType[numDimensions()];
 		axes(axes);
 		return axes;
 	}

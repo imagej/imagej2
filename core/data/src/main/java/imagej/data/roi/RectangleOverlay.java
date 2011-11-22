@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import net.imglib2.img.Axes;
+import net.imglib2.meta.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**

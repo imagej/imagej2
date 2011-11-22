@@ -55,8 +55,8 @@ import imagej.util.RealRect;
 
 import java.util.List;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * Implements IJ1's Shadows Demo plugin functionality.
@@ -143,10 +143,10 @@ public class ShadowsDemo implements ImageJPlugin {
 	 * This mirrors IJ1's behavior.
 	 */
 	private boolean unsupportedImage() {
-		final Axis[] axes = input.getAxes();
+		final AxisType[] axes = input.getAxes();
 		final long[] dims = input.getDims();
 		for (int i = 0; i < axes.length; i++) {
-			final Axis axis = axes[i];
+			final AxisType axis = axes[i];
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
 			if ((axis == Axes.CHANNEL) && input.isRGBMerged()) continue;

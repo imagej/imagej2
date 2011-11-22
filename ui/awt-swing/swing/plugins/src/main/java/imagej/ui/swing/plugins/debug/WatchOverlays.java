@@ -57,8 +57,8 @@ import imagej.ui.swing.SwingOutputWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
@@ -203,7 +203,7 @@ public class WatchOverlays implements ImageJPlugin {
 		isVisible(final Overlay overlay, final Position planePosition)
 	{
 		for (int i = 2; i < overlay.numDimensions(); i++) {
-			final Axis axis = overlay.axis(i);
+			final AxisType axis = overlay.axis(i);
 			final Long pos = overlay.getPosition(axis);
 			if (pos != null && !pos.equals(planePosition.getLongPosition(i - 2))) {
 				return false;

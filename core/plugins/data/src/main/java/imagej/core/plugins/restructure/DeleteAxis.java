@@ -43,9 +43,9 @@ import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -78,9 +78,6 @@ public class DeleteAxis extends DynamicPlugin {
 
 	// -- public interface --
 	
-	public DeleteAxis() {
-	}
-
 	/**
 	 * Creates new ImgPlus data with one less axis. sets pixels of ImgPlus to user
 	 * specified hyperplane within original ImgPlus data. Assigns the new ImgPlus
@@ -95,9 +92,9 @@ public class DeleteAxis extends DynamicPlugin {
 		dataset = getDataset();
 		axisName = getAxisName();
 		planePos = getPosition();
-		final Axis a = Axes.get(axisName);
+		final AxisType a = Axes.get(axisName);
 		if (inputBad(a)) return;
-		final Axis[] newAxes = getNewAxes(dataset, a);
+		final AxisType[] newAxes = getNewAxes(dataset, a);
 		final long[] newDimensions = getNewDimensions(dataset, a);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
@@ -127,7 +124,7 @@ public class DeleteAxis extends DynamicPlugin {
 	/**
 	 * Detects if user specified data is invalid
 	 */
-	private boolean inputBad(final Axis axis) {
+	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) return true;
 
@@ -146,11 +143,11 @@ public class DeleteAxis extends DynamicPlugin {
 	 * Creates an Axis[] that consists of all the axes from a Dataset minus a user
 	 * specified axis
 	 */
-	private Axis[] getNewAxes(final Dataset ds, final Axis axis) {
-		final Axis[] origAxes = ds.getAxes();
-		final Axis[] newAxes = new Axis[origAxes.length - 1];
+	private AxisType[] getNewAxes(final Dataset ds, final AxisType axis) {
+		final AxisType[] origAxes = ds.getAxes();
+		final AxisType[] newAxes = new AxisType[origAxes.length - 1];
 		int index = 0;
-		for (final Axis a : origAxes)
+		for (final AxisType a : origAxes)
 			if (a != axis) newAxes[index++] = a;
 		return newAxes;
 	}
@@ -159,13 +156,13 @@ public class DeleteAxis extends DynamicPlugin {
 	 * Creates a long[] that consists of all the dimensions from a Dataset minus a
 	 * user specified axis.
 	 */
-	private long[] getNewDimensions(final Dataset ds, final Axis axis) {
+	private long[] getNewDimensions(final Dataset ds, final AxisType axis) {
 		final long[] origDims = ds.getDims();
-		final Axis[] origAxes = ds.getAxes();
+		final AxisType[] origAxes = ds.getAxes();
 		final long[] newDims = new long[origAxes.length - 1];
 		int index = 0;
 		for (int i = 0; i < origAxes.length; i++) {
-			final Axis a = origAxes[i];
+			final AxisType a = origAxes[i];
 			if (a != axis) newDims[index++] = origDims[i];
 		}
 		return newDims;
@@ -187,7 +184,7 @@ public class DeleteAxis extends DynamicPlugin {
 		srcImgPlus.dimensions(srcSpan);
 		dstImgPlus.dimensions(dstSpan);
 
-		final Axis axis = Axes.get(axisName);
+		final AxisType axis = Axes.get(axisName);
 		final int axisIndex = srcImgPlus.getAxisIndex(axis);
 		srcOrigin[axisIndex] = planePos - 1;
 		srcSpan[axisIndex] = 1;

@@ -50,8 +50,8 @@ import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
-import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 /**
