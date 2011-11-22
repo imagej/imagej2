@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -52,19 +51,17 @@ import imagej.util.IntCoords;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "Set...", weight = 6) })
+	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) })
 public class ZoomUserDefined extends DynamicPlugin {
 
-	// -- constants --
-	
-	private static final String DISPLAY = "display";
+	// -- Constants --
+
 	private static final String ZOOM = "userDefinedScale";
 	private static final String CTR_U = "centerU";
 	private static final String CTR_V = "centerV";
 
-	// -- instance variables --
-	
+	// -- Parameters --
+
 	@Parameter(required = true, persist = false)
 	private ImageDisplayService imageDisplayService;
 
@@ -72,105 +69,116 @@ public class ZoomUserDefined extends DynamicPlugin {
 	private ImageDisplay display;
 
 	@Parameter(label = "Zoom (%) :", persist = false, initializer = "initAll")
-	private double userDefinedScale;
+	private double zoomPercent;
 
 	@Parameter(label = "X center:", persist = false)
 	private long centerU;
-	
+
 	@Parameter(label = "Y center:", persist = false)
 	private long centerV;
-	
+
+	// -- Fields --
+
 	private long maxU, maxV;
-	
-	
-	// -- public interface --
-	
+
+	// -- ZoomUserDefined methods --
+
+	public ImageDisplayService getImageDisplayService() {
+		return imageDisplayService;
+	}
+
+	public void setImageDisplayService(
+		final ImageDisplayService imageDisplayService)
+	{
+		this.imageDisplayService = imageDisplayService;
+	}
+
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(final ImageDisplay display) {
+		this.display = display;
+	}
+
+	public double getZoomPercent() {
+		return zoomPercent;
+	}
+
+	public void setZoomPercent(final double zoomPercent) {
+		this.zoomPercent = zoomPercent;
+	}
+
+	public long getCenterU() {
+		return centerU;
+	}
+
+	public void setCenterU(final long centerU) {
+		this.centerU = centerU;
+	}
+
+	public long getCenterV() {
+		return centerV;
+	}
+
+	public void setCenterV(final long centerV) {
+		this.centerV = centerV;
+	}
+
+	// -- Runnable methods --
+
 	@Override
 	public void run() {
-		display = getDisplay();
-		centerU = getCenterU();
-		centerV = getCenterV();
-		userDefinedScale = getZoomPercent();
-		double percentX = 1.0 * centerU / maxU;
-		double percentY = 1.0 * centerV / maxV;
-		int cx = (int) (percentX * display.getCanvas().getCanvasWidth());
-		int cy = (int) (percentY * display.getCanvas().getCanvasHeight());
-		IntCoords center = new IntCoords(cx, cy);
-		display.getCanvas().setZoom(userDefinedScale/100.0, center);
+		final double percentX = 1.0 * centerU / maxU;
+		final double percentY = 1.0 * centerV / maxV;
+		final int cx = (int) (percentX * display.getCanvas().getCanvasWidth());
+		final int cy = (int) (percentY * display.getCanvas().getCanvasHeight());
+		final IntCoords center = new IntCoords(cx, cy);
+		display.getCanvas().setZoom(zoomPercent / 100.0, center);
 	}
 
 	public double getUserDefinedScale() {
-		return userDefinedScale;
+		return zoomPercent;
 	}
 
 	public void setUserDefinedScale(final double userDefinedScale) {
-		this.userDefinedScale = userDefinedScale;
+		this.zoomPercent = userDefinedScale;
 	}
 
-	// -- private helpers --
+	// -- Initializers --
 
-	@SuppressWarnings("unused")
-	private void initAll() {
+	protected void initAll() {
 		initZoom();
 		initCenter();
 	}
 
+	// -- Helper methods --
+
 	private void initZoom() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Double> zoomItem =
-				(DefaultModuleItem<Double>) getInfo().getInput(ZOOM);
+			(DefaultModuleItem<Double>) getInfo().getInput(ZOOM);
 		zoomItem.setMinimumValue(0.1);
 		zoomItem.setMaximumValue(500000.0);
 		setZoomPercent(100);
 	}
-	
+
 	private void initCenter() {
-		maxU = getDataset().getImgPlus().dimension(0);
-		maxV = getDataset().getImgPlus().dimension(1);
+		final Dataset dataset = imageDisplayService.getActiveDataset(display);
+		maxU = dataset.getImgPlus().dimension(0);
+		maxV = dataset.getImgPlus().dimension(1);
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> centerXItem =
-				(DefaultModuleItem<Long>) getInfo().getInput(CTR_U);
+			(DefaultModuleItem<Long>) getInfo().getInput(CTR_U);
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> centerYItem =
-				(DefaultModuleItem<Long>) getInfo().getInput(CTR_V);
+			(DefaultModuleItem<Long>) getInfo().getInput(CTR_V);
 		centerXItem.setMinimumValue(0L);
-		centerXItem.setMaximumValue(maxU-1);
+		centerXItem.setMaximumValue(maxU - 1);
 		centerYItem.setMinimumValue(0L);
-		centerYItem.setMaximumValue(maxV-1);
+		centerYItem.setMaximumValue(maxV - 1);
 		setCenterU(maxU / 2);
 		setCenterV(maxV / 2);
 	}
 
-	private long getCenterU() {
-		return (Long) getInput(CTR_U);
-	}
-
-	private void setCenterU(long u) {
-		setInput(CTR_U, u);
-	}
-
-	private long getCenterV() {
-		return (Long) getInput(CTR_V);
-	}
-
-	private void setCenterV(long v) {
-		setInput(CTR_V, v);
-	}
-
-	private double getZoomPercent() {
-		return (Double) getInput(ZOOM);
-	}
-	
-	private void setZoomPercent(double d) {
-		setInput(ZOOM, d);
-	}
-	
-	private ImageDisplay getDisplay() {
-		return (ImageDisplay) getInput(DISPLAY);
-	}
-	
-	private Dataset getDataset() {
-		ImageDisplayService s = ImageJ.get(ImageDisplayService.class);
-		return s.getActiveDataset(getDisplay());
-	}
 }

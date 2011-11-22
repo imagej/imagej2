@@ -58,50 +58,76 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Data...") })
 public class DeleteData extends DynamicPlugin {
 
-	// -- constants --
-	
-	private static final String DATASET = "dataset";
+	// -- Constants --
+
 	private static final String AXIS_NAME = "axisToModify";
 	private static final String POSITION = "oneBasedDelPos";
 	private static final String QUANTITY = "numDeleting";
 
-	// -- instance variables --
-	
+	// -- Parameters --
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
-	
+
 	@Parameter(label = "Axis to modify", persist = false,
-			initializer = "initAll", callback = "somethingChanged")
-	private String axisToModify;
-	
+		initializer = "initAll", callback = "parameterChanged")
+	private String axisName;
+
 	@Parameter(label = "Deletion position", persist = false,
-			callback = "somethingChanged")
-	private long oneBasedDelPos;
-	
+		callback = "parameterChanged")
+	private long position = 1;
+
 	@Parameter(label = "Deletion quantity", persist = false,
-			callback = "somethingChanged")
-	private long numDeleting;
+		callback = "parameterChanged")
+	private long quantity = 1;
 
-	private long deletePosition;
+	// -- DeleteData methods --
 
-	// -- public interface --
-	
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
+	}
+
+	public String getAxisName() {
+		return axisName;
+	}
+
+	public void setAxisName(final String axisName) {
+		this.axisName = axisName;
+	}
+
+	public long getPosition() {
+		return position;
+	}
+
+	public void setPosition(final long position) {
+		this.position = position;
+	}
+
+	public long getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(final long quantity) {
+		this.quantity = quantity;
+	}
+
+	// -- Runnable methods --
+
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
 	 */
 	@Override
 	public void run() {
-		dataset = getDataset();
-		axisToModify = getAxisName();
-		oneBasedDelPos = getPosition();
-		numDeleting = getQuantity();
-		deletePosition = oneBasedDelPos - 1;
-		final AxisType axis = Axes.get(axisToModify);
+		final AxisType axis = Axes.get(axisName);
 		if (inputBad(axis)) return;
 		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
-			RestructureUtils.getDimensions(dataset, axis, -numDeleting);
+			RestructureUtils.getDimensions(dataset, axis, -quantity);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
 		final int compositeChannelCount =
@@ -112,7 +138,7 @@ public class DeleteData extends DynamicPlugin {
 		dataset.setImgPlus(dstImgPlus);
 	}
 
-	// -- protected interface --
+	// -- Initializers --
 
 	protected void initAll() {
 		initAxisName();
@@ -120,18 +146,18 @@ public class DeleteData extends DynamicPlugin {
 		initQuantity();
 	}
 
-	protected void somethingChanged() {
+	// -- Callbacks --
+
+	protected void parameterChanged() {
 		initPositionRange();
 		initQuantityRange();
 		clampPosition();
 		clampQuantity();
 	}
 
-	// -- private helpers --
-	
-	/**
-	 * Detects if user specified data is invalid
-	 */
+	// -- Helper methods --
+
+	/** Detects if user-specified data is invalid. */
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) return true;
@@ -144,13 +170,13 @@ public class DeleteData extends DynamicPlugin {
 		if (axisIndex < 0) return true;
 
 		// bad value for startPosition
-		if ((deletePosition < 0) || (deletePosition >= axisSize)) return true;
+		if (position < 1 || position > axisSize) return true;
 
 		// bad value for numDeleting
-		if (numDeleting <= 0) return true;
+		if (quantity <= 0) return true;
 
 		// trying to delete all hyperplanes along axis
-		if (numDeleting >= axisSize) return true;
+		if (quantity >= axisSize) return true;
 
 		// if here everything is okay
 		return false;
@@ -160,14 +186,16 @@ public class DeleteData extends DynamicPlugin {
 	 * Fills the newly created ImgPlus with data values from a larger source
 	 * image. Copies data from those hyperplanes not being cut.
 	 */
-	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
-		final ImgPlus<? extends RealType<?>> dstImgPlus, final AxisType modifiedAxis)
+	private void
+		fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
+			final ImgPlus<? extends RealType<?>> dstImgPlus,
+			final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
 		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
 		final long axisSize = dimensions[axisIndex];
-		final long numBeforeCut = deletePosition;
-		long numInCut = numDeleting;
+		final long numBeforeCut = position - 1; // one based position
+		long numInCut = quantity;
 		if (numBeforeCut + numInCut > axisSize) numInCut = axisSize - numBeforeCut;
 		final long numAfterCut = axisSize - (numBeforeCut + numInCut);
 
@@ -187,31 +215,7 @@ public class DeleteData extends DynamicPlugin {
 		}
 		return compositeCount;
 	}
-	
-	private Dataset getDataset() {
-		return (Dataset) getInput(DATASET);
-	}
-	
-	private String getAxisName() {
-		return (String) getInput(AXIS_NAME);
-	}
-	
-	private long getPosition() {
-		return (Long) getInput(POSITION);
-	}
-	
-	private void setPosition(long pos) {
-		setInput(POSITION, pos);
-	}
-	
-	private long getQuantity() {
-		return (Long) getInput(QUANTITY);
-	}
-	
-	private void setQuantity(long val) {
-		setInput(QUANTITY, val);
-	}
-	
+
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
@@ -223,29 +227,27 @@ public class DeleteData extends DynamicPlugin {
 		}
 		axisNameItem.setChoices(choices);
 	}
-	
+
 	private void initPosition() {
-		long max = getDataset().getImgPlus().dimension(0);
+		final long max = getDataset().getImgPlus().dimension(0);
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
-				(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
+			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
 		positionItem.setMinimumValue(1L);
 		positionItem.setMaximumValue(max);
-		setPosition(1);
 	}
-	
+
 	private void initQuantity() {
-		long max = getDataset().getImgPlus().dimension(0);
+		final long max = getDataset().getImgPlus().dimension(0);
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> quantityItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
 		quantityItem.setMinimumValue(1L);
 		quantityItem.setMaximumValue(max);
-		setQuantity(1);
 	}
 
 	private void initPositionRange() {
-		long dimLen = currDimLen();
+		final long dimLen = currDimLen();
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
@@ -254,33 +256,34 @@ public class DeleteData extends DynamicPlugin {
 	}
 
 	private void initQuantityRange() {
-		long max = currDimLen();
+		final long max = currDimLen();
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> quantityItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
 		quantityItem.setMinimumValue(1L);
-		quantityItem.setMaximumValue(max-getPosition()+1);
+		quantityItem.setMaximumValue(max - getPosition() + 1);
 	}
-	
+
 	private void clampPosition() {
-		long max = currDimLen();
+		final long max = currDimLen();
 		long pos = getPosition();
 		if (pos < 1) pos = 1;
 		if (pos > max) pos = max;
 		setPosition(pos);
 	}
-	
+
 	private void clampQuantity() {
-		long max = currDimLen() - getPosition() + 1;
+		final long max = currDimLen() - getPosition() + 1;
 		long total = getQuantity();
 		if (total < 1) total = 1;
 		if (total > max) total = max;
 		setQuantity(total);
 	}
-	
+
 	private long currDimLen() {
-		AxisType axis = Axes.get(getAxisName());
-		int axisIndex = getDataset().getAxisIndex(axis);
+		final AxisType axis = Axes.get(getAxisName());
+		final int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
+
 }

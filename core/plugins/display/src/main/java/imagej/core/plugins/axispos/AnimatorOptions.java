@@ -66,7 +66,7 @@ public class AnimatorOptions extends DynamicPlugin {
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
-	@Parameter(label = "Axis", persist = false, initializer = "initAxis",
+	@Parameter(label = "Axis", persist = false, initializer = "initAxisName",
 		callback = "axisChanged")
 	private String axisName;
 
@@ -170,7 +170,7 @@ public class AnimatorOptions extends DynamicPlugin {
 	// -- Initializer methods --
 
 	/** Initializes axisName value. */
-	protected void initAxis() {
+	protected void initAxisName() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput("axisName");

@@ -57,36 +57,57 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Axis...") })
 public class AddAxis extends DynamicPlugin {
 
-	// -- constants --
-	
-	private static final String DATASET = "dataset";
+	// -- Constants --
+
 	private static final String AXIS_NAME = "axisName";
 	private static final String AXIS_SIZE = "axisSize";
 
-	// -- instance variables --
-	
+	// -- Parameters --
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
-	
-	@Parameter(label = "Axis to add", persist = false, 
-			initializer = "initAll")
+
+	@Parameter(label = "Axis to add", persist = false, initializer = "initAll")
 	private String axisName;
 
 	@Parameter(label = "Axis size", persist = false)
-	private long axisSize;
+	private long axisSize = 2;
 
-	// -- public interface --
-	
+	// -- AddAxis methods --
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
+	}
+
+	public AxisType getAxis() {
+		return Axes.get(axisName);
+	}
+
+	public void setAxis(final AxisType axis) {
+		axisName = axis.toString();
+	}
+
+	public long getAxisSize() {
+		return axisSize;
+	}
+
+	public void setAxisSize(final long axisSize) {
+		this.axisSize = axisSize;
+	}
+
+	// -- Runnable methods --
+
 	/**
 	 * Creates new ImgPlus data with an additional axis. Sets pixels of 1st
-	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus
-	 * to the input Dataset.
+	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus to
+	 * the input Dataset.
 	 */
 	@Override
 	public void run() {
-		dataset = getDataset();
-		axisName = getAxisName();
-		axisSize = getAxisSize();
 		final AxisType axis = Axes.get(axisName);
 		if (inputBad(axis)) return;
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
@@ -99,15 +120,15 @@ public class AddAxis extends DynamicPlugin {
 		dataset.setImgPlus(dstImgPlus);
 	}
 
-	// -- protected interface --
+	// -- Initializers --
 
 	protected void initAll() {
 		initAxisName();
 		initAxisSize();
 	}
-	
-	// -- private helpers --
-	
+
+	// -- Helper methods --
+
 	/**
 	 * Detects if user specified data is invalid
 	 */
@@ -174,41 +195,23 @@ public class AddAxis extends DynamicPlugin {
 			dstImgPlus, dstOrigin, dstSpan);
 	}
 
-	private Dataset getDataset() {
-		return (Dataset) getInput(DATASET);
-	}
-
-	private long getAxisSize() {
-		return (Long) getInput(AXIS_SIZE);
-	}
-	
-	private void setAxisSize(long size) {
-		setInput(AXIS_SIZE, size);
-	}
-	
-	private String getAxisName() {
-		return (String) getInput(AXIS_NAME);
-	}
-
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final AxisType a : Axes.values()) {
-			if (Axes.isXY(a)) continue;
-			if (getDataset().getAxisIndex(a) < 0)
-				choices.add(a.getLabel());
+		for (final AxisType axis : Axes.values()) {
+			if (Axes.isXY(axis)) continue;
+			if (getDataset().getAxisIndex(axis) < 0) choices.add(axis.getLabel());
 		}
 		axisNameItem.setChoices(choices);
 	}
-	
+
 	private void initAxisSize() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> axisSizeModuleItem =
-				(DefaultModuleItem<Long>) getInfo().getInput(AXIS_SIZE);
+			(DefaultModuleItem<Long>) getInfo().getInput(AXIS_SIZE);
 		axisSizeModuleItem.setMinimumValue(2L);
-		setAxisSize(2);
 	}
 
 }

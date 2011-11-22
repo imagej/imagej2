@@ -34,10 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
-import imagej.ImageJ;
-import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -61,51 +58,51 @@ import net.imglib2.meta.AxisType;
 		@Menu(label = "Set Active Axis...") })
 public class SetActiveAxis extends DynamicPlugin {
 
-	// -- instance variables --
-	
-	private static final String DISPLAY = "display";
+	// -- Constants --
+
 	private static final String AXIS_NAME = "axisName";
 
-	@SuppressWarnings("unused")
+	// -- Parameters --
+
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
-	@SuppressWarnings("unused")
 	@Parameter(persist = false, initializer = "initAxisName")
 	private String axisName;
 
-	// public interface --
-	
-	@Override
-	public void run() {
-		ImageDisplay disp = getDisplay();
-		String axis = getAxisName();
-		final AxisType newActiveAxis = Axes.get(axis);
-		if (newActiveAxis != null) disp.setActiveAxis(newActiveAxis);
-	}
-	
-	// -- private helpers --
-	
-	private ImageDisplay getDisplay() {
-		return (ImageDisplay) getInput(DISPLAY); 
-	}
-	
-	private String getAxisName() {
-		return (String) getInput(AXIS_NAME); 
+	// -- SetActiveAxis methods --
+
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
-	private Dataset getDataset() {
-		final ImageDisplayService imageDisplayService =
-				ImageJ.get(ImageDisplayService.class);
-		return imageDisplayService.getActiveDataset(getDisplay());
+	public void setDisplay(final ImageDisplay display) {
+		this.display = display;
 	}
-	
-	@SuppressWarnings("unused")
-	private void initAxisName() {
+
+	public AxisType getAxis() {
+		return Axes.get(axisName);
+	}
+
+	public void setAxis(final AxisType axis) {
+		axisName = axis.toString();
+	}
+
+	// -- Runnable methods --
+
+	@Override
+	public void run() {
+		final AxisType axis = getAxis();
+		if (axis != null) display.setActiveAxis(axis);
+	}
+
+	// -- Initializers --
+
+	protected void initAxisName() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
 			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
-		final AxisType[] axes = getDataset().getAxes();
+		final AxisType[] axes = display.getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
 			if (a.isXY()) continue;
@@ -113,4 +110,5 @@ public class SetActiveAxis extends DynamicPlugin {
 		}
 		axisNameItem.setChoices(choices);
 	}
+
 }
