@@ -104,25 +104,14 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 
 	public AbstractOverlay() {
 		OverlayService service = ImageJ.get(OverlayService.class);
-		if (service == null) {
-			startArrowStyle = ArrowStyle.NONE;
-			endArrowStyle = ArrowStyle.NONE;
-			fillColor = new ColorRGB(0,255,0);
-			alpha = 0;
-			lineColor = new ColorRGB(255,255,0);
-			lineWidth = 1;
-			lineStyle = LineStyle.SOLID;
-		}
-		else {
-			DefaultOverlaySettings settings =	service.getDefaultSettings();
-			startArrowStyle = settings.getDefaultStartArrowStyle();
-			endArrowStyle = settings.getDefaultEndArrowStyle();
-			fillColor = settings.getDefaultFillColor();
-			alpha = settings.getDefaultAlpha();
-			lineColor = settings.getDefaultLineColor();
-			lineWidth = settings.getDefaultLineWidth();
-			lineStyle = settings.getDefaultLineStyle();
-		}
+		DefaultOverlaySettings settings =	service.getDefaultSettings();
+		startArrowStyle = settings.getDefaultStartArrowStyle();
+		endArrowStyle = settings.getDefaultEndArrowStyle();
+		fillColor = settings.getDefaultFillColor();
+		alpha = settings.getDefaultAlpha();
+		lineColor = settings.getDefaultLineColor();
+		lineWidth = settings.getDefaultLineWidth();
+		lineStyle = settings.getDefaultLineStyle();
 	}
 	
 	// -- AbstractData methods --
