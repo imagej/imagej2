@@ -37,10 +37,8 @@ package imagej.ext.plugin;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.AbstractModule;
 import imagej.ext.module.ModuleException;
-import imagej.ext.module.ModuleItem;
 import imagej.util.ClassUtils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -132,16 +130,6 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 	}
 
 	@Override
-	public Map<String, Object> getInputs() {
-		return createMap(info.inputs());
-	}
-
-	@Override
-	public Map<String, Object> getOutputs() {
-		return createMap(info.outputs());
-	}
-
-	@Override
 	public void setInput(final String name, final Object value) {
 		final PluginModuleItem<?> item = info.getInput(name);
 		ClassUtils.setValue(item.getField(), plugin, value);
@@ -178,17 +166,6 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 			setInput(name, value);
 			setResolved(name, true);
 		}
-	}
-
-	private Map<String, Object> createMap(final Iterable<ModuleItem<?>> items) {
-		final Map<String, Object> map = new HashMap<String, Object>();
-		for (final ModuleItem<?> item : items) {
-			final PluginModuleItem<?> pmi = (PluginModuleItem<?>) item;
-			final String name = item.getName();
-			final Object value = ClassUtils.getValue(pmi.getField(), plugin);
-			map.put(name, value);
-		}
-		return map;
 	}
 
 }

@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -99,12 +98,12 @@ public abstract class AbstractModule implements Module {
 
 	@Override
 	public Map<String, Object> getInputs() {
-		return Collections.unmodifiableMap(inputs);
+		return createMap(info.inputs(), false);
 	}
 
 	@Override
 	public Map<String, Object> getOutputs() {
-		return Collections.unmodifiableMap(outputs);
+		return createMap(info.outputs(), true);
 	}
 
 	@Override
@@ -140,6 +139,20 @@ public abstract class AbstractModule implements Module {
 	public void setResolved(final String name, final boolean resolved) {
 		if (resolved) resolvedInputs.add(name);
 		else resolvedInputs.remove(name);
+	}
+
+	// -- Helper methods --
+
+	private Map<String, Object> createMap(final Iterable<ModuleItem<?>> items,
+		boolean outputMap)
+	{
+		final Map<String, Object> map = new HashMap<String, Object>();
+		for (final ModuleItem<?> item : items) {
+			final String name = item.getName();
+			final Object value = outputMap ? getOutput(name) : getInput(name);
+			map.put(name, value);
+		}
+		return map;
 	}
 
 }
