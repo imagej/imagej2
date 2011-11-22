@@ -61,10 +61,10 @@ public class AnimatorOptions extends DynamicPlugin {
 	// -- Parameters --
 
 	@Parameter(required = true, persist = false)
-	private ImageDisplay display;
+	private AnimationService animationService;
 
 	@Parameter(required = true, persist = false)
-	private AnimationService animationService;
+	private ImageDisplay display;
 
 	@Parameter(label = "Axis", persist = false, initializer = "initAxis",
 		callback = "axisChanged")
@@ -88,12 +88,20 @@ public class AnimatorOptions extends DynamicPlugin {
 
 	// -- AnimatorOptions methods --
 
+	public AnimationService getAnimationService() {
+		return animationService;
+	}
+
+	public void setAnimationService(final AnimationService animationService) {
+		this.animationService = animationService;
+	}
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}
 
-	public AnimationService getAnimationService() {
-		return animationService;
+	public void setDisplay(final ImageDisplay display) {
+		this.display = display;
 	}
 
 	public AxisType getAxis() {
