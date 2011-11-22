@@ -34,7 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
+import java.lang.reflect.Field;
+
 import imagej.ext.module.DefaultModule;
+import imagej.util.ClassUtils;
 
 /**
  * A class which can be extended to provide an ImageJ plugin with a variable
@@ -65,6 +68,34 @@ public abstract class DynamicPlugin extends DefaultModule implements
 	@Override
 	public DynamicPluginInfo getInfo() {
 		return info;
+	}
+
+	@Override
+	public Object getInput(final String name) {
+		final Field field = info.getInputField(name);
+		if (field == null) return super.getInput(name);
+		return ClassUtils.getValue(field, this);
+	}
+
+	@Override
+	public Object getOutput(final String name) {
+		final Field field = info.getOutputField(name);
+		if (field == null) return super.getInput(name);
+		return ClassUtils.getValue(field, this);
+	}
+
+	@Override
+	public void setInput(final String name, final Object value) {
+		final Field field = info.getInputField(name);
+		if (field == null) super.setInput(name, value);
+		else ClassUtils.setValue(field, this, value);
+	}
+
+	@Override
+	public void setOutput(final String name, final Object value) {
+		final Field field = info.getOutputField(name);
+		if (field == null) super.setOutput(name, value);
+		else ClassUtils.setValue(field, this, value);
 	}
 
 }

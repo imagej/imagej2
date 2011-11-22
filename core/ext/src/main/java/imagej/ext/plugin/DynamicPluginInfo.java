@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
+import java.lang.reflect.Field;
+
 import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.UIDetails;
@@ -68,6 +70,26 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 		final PluginService pluginService = ImageJ.get(PluginService.class);
 		info = pluginService.getRunnablePlugin(pluginClass);
 		populateItems();
+	}
+
+	/**
+	 * Gets the {@link Field} corresponding to the given @{@link Parameter}
+	 * annotated module input, or null if the input does not exist or was not
+	 * declared using the @{@link Parameter} mechanism.
+	 */
+	protected Field getInputField(final String name) {
+		final PluginModuleItem<?> item = info.getInput(name);
+		return item == null ? null : item.getField();
+	}
+
+	/**
+	 * Gets the {@link Field} corresponding to the given @{@link Parameter}
+	 * annotated module output, or null if the output does not exist or was not
+	 * declared using the @{@link Parameter} mechanism.
+	 */
+	protected Field getOutputField(final String name) {
+		final PluginModuleItem<?> item = info.getOutput(name);
+		return item == null ? null : item.getField();
 	}
 
 	// -- UIDetails methods --
