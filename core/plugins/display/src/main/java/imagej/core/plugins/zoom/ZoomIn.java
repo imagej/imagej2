@@ -48,7 +48,7 @@ import imagej.ext.plugin.Plugin;
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "In", weight = 1, accelerator = "control EQUALS") })
+	@Menu(label = "In", weight = 1, accelerator = "PLUS") })
 public class ZoomIn implements ImageJPlugin {
 
 	@Parameter
