@@ -35,14 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
+import imagej.ext.display.Display;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
-import imagej.util.IntCoords;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -52,106 +51,84 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Grant Harris
  */
-@Tool(name = "Axis Accelerator Keyboard Shortcuts", alwaysActive = true,
-	activeInAppFrame = true, priority = Integer.MIN_VALUE)
+@Tool(name = "Axis Position Shortcuts", alwaysActive = true,
+	activeInAppFrame = true)
 public class AxisAccelerator extends AbstractTool {
 
-	/* Keyboard accelerators for changing the displayed axes.
-	 * This mimics ImageJ, using forward and backward with '<' and '>' with
-		No-modifier for channels
-		Ctrl-modifier for slices
-		Alt-modifier to frames 
-	 */
 	@Override
-	public void onKeyDown(KyPressedEvent evt) {
-		final ImageDisplayService imageDisplayService =
-			evt.getContext().getService(ImageDisplayService.class);
+	public void onKeyDown(final KyPressedEvent evt) {
+		final Display<?> display = evt.getDisplay();
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
-		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
-		if (display == null) {
-			return;
-		}
-		if (display.getAxes().length < 3) {
-			return;
-		}
-		//		
-		KeyCode keyCode = evt.getCode();
-		InputModifiers mods = evt.getModifiers();
+		final KeyCode keyCode = evt.getCode();
+		final char keyChar = evt.getCharacter();
 
-		// Set Axis based on modifier
-		AxisType axis = Axes.CHANNEL;
-		if (display.getAxes().length == 3) {
-			// default to only non-XY axis
-			axis = display.getAxes()[2];
-		} else {
-			//if(mods.isShiftDown()) {axis = Axes.__;} 
-			if (mods.isAltDown()) {
-				axis = Axes.TIME;
-			}
-			if (mods.isCtrlDown()) {
-				axis = Axes.Z;
-			}
-		}
-		int increment = 0;
-		// Move up or down based on KeyCode
-		if (keyCode == KeyCode.PERIOD || keyCode == KeyCode.GREATER
-				|| keyCode == KeyCode.KP_RIGHT || keyCode == KeyCode.RIGHT) {
+		// determine direction to move based on key press
+		final int increment;
+		if (keyCode == KeyCode.PERIOD || keyCode == KeyCode.GREATER ||
+			keyCode == KeyCode.KP_RIGHT || keyCode == KeyCode.RIGHT || keyChar == '>')
+		{
 			increment = 1;
 		}
-		if (keyCode == KeyCode.COMMA || keyCode == KeyCode.LESS
-				|| keyCode == KeyCode.KP_LEFT || keyCode == KeyCode.LEFT) {
+		else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.LESS ||
+			keyCode == KeyCode.KP_LEFT || keyCode == KeyCode.LEFT || keyChar == '<')
+		{
 			increment = -1;
 		}
-		if (increment != 0 && display.getAxisIndex(axis) > -1) {
-			display.setAxisPosition(axis, display.getAxisPosition(axis) + increment);
-			// consume event, so that nothing else tries to handle it
-			//  ???? +++ evt.consume();
-		}
+		else return; // inapplicable key
+
+		final AxisType axis = getAxis(imageDisplay, evt.getModifiers());
+		if (axis == null) return;
+
+		final long pos = imageDisplay.getAxisPosition(axis) + increment;
+		imageDisplay.setAxisPosition(axis, pos);
+		evt.consume();
 	}
 
-	/*
-	 * MouseWheel behavior:
-	 * Stepping through C, if multiple channels.
-	 * Stepping through Z when control held, if multiple focal planes.
-	 * Stepping through T when alt held, if multiple time points.
-	 * For single channel data, panning the display up and down when zoomed in. 
-	 */
-	
-	private static final int PAN_AMOUNT = 10;
-
 	@Override
-	public void onMouseWheel(MsWheelEvent evt) {
-		final ImageDisplayService imageDisplayService =
-			evt.getContext().getService(ImageDisplayService.class);
+	public void onMouseWheel(final MsWheelEvent evt) {
+		final Display<?> display = evt.getDisplay();
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
-		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
-		if (display == null) {
-			return;
+		final AxisType axis = getAxis(imageDisplay, evt.getModifiers());
+		if (axis == null) return;
+
+		final int rotation = evt.getWheelRotation();
+
+		final long pos = imageDisplay.getAxisPosition(axis) + rotation;
+		imageDisplay.setAxisPosition(axis, pos);
+		evt.consume();
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Determines the axis to move based on the keyboard modifiers used.
+	 * <ul>
+	 * <li>No modifier moves channel axis</li>
+	 * <li>Ctrl modifier moves Z axis</li>
+	 * <li>Alt modifier moves Time axis</li>
+	 * <li>If preferred axis does not exist, first avilable axis is used</li>
+	 * </ul>
+	 */
+	private AxisType
+		getAxis(final ImageDisplay display, final InputModifiers mods)
+	{
+		if (display.numDimensions() < 3) return null;
+
+		// determine preferred axis based on keyboard modifier used
+		final AxisType axis;
+		if (mods.isAltDown()) axis = Axes.TIME;
+		else if (mods.isCtrlDown() || mods.isMetaDown()) axis = Axes.Z;
+		else axis = Axes.CHANNEL;
+
+		if (display.getAxisIndex(axis) < 0) {
+			// preferred axis does not exist; return first available axis instead
+			return display.axis(2);
 		}
-		int rotation = evt.getWheelRotation();
-		if (display.getAxes().length < 3) {
-			// pan up or down
-			display.getCanvas().pan(new IntCoords(0, rotation * PAN_AMOUNT));
-			return;
-		}
-		InputModifiers mods = evt.getModifiers();
-		// Set Axis based on modifier
-		AxisType axis = Axes.CHANNEL;
-		if (display.getAxes().length == 3) {
-			// default to only non-XY axis
-			axis = display.getAxes()[2];
-		} else {
-			//if(mods.isShiftDown()) {axis = Axes.__;} 
-			if (mods.isAltDown()) {
-				axis = Axes.TIME;
-			}
-			if (mods.isCtrlDown()) {
-				axis = Axes.Z;
-			}
-		}
-		if (display.getAxisIndex(axis) > -1) {
-			display.setAxisPosition(axis, display.getAxisPosition(axis) + rotation);
-		}
+		return axis;
 	}
 
 }
