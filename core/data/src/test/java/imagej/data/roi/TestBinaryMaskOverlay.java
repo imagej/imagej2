@@ -37,6 +37,7 @@ package imagej.data.roi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import imagej.ImageJ;
+import imagej.data.display.OverlayService;
 import imagej.util.ColorRGB;
 
 import java.io.ByteArrayInputStream;
@@ -65,9 +66,13 @@ import org.junit.Test;
  */
 public class TestBinaryMaskOverlay {
 
+	// TODO - Evaluate whether it is really the best option to force creation
+	// of an ImageJ context in the test harness so that overlay tests can pass.
+
 	@BeforeClass
+	@SuppressWarnings("unchecked")
 	public static void setup() {
-		ImageJ.createContext();
+		ImageJ.createContext(OverlayService.class);
 	}
 	
 	private Img<BitType> makeImg(final boolean[][] imgArray) {
