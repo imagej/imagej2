@@ -54,7 +54,7 @@ import net.imglib2.meta.AxisType;
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
-	@Menu(label = "Axis Position Forward", accelerator = "shift PERIOD") })
+	@Menu(label = "Axis Position Forward", accelerator = "GREATER") })
 public class AxisPositionForward implements ImageJPlugin {
 
 	@Parameter(required = true, persist = false)
