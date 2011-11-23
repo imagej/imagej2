@@ -1,5 +1,5 @@
 //
-// AxisAccelerator.java
+// AxisPositionHandler.java
 //
 
 /*
