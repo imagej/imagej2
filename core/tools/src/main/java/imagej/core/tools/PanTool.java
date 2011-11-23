@@ -40,6 +40,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
+import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
@@ -115,6 +116,18 @@ public class PanTool extends AbstractTool {
 		imageDisplay.getCanvas().pan(new IntCoords(xDelta, yDelta));
 		lastX = evt.getX();
 		lastY = evt.getY();
+		evt.consume();
+	}
+
+	@Override
+	public void onMouseWheel(final MsWheelEvent evt) {
+		final Display<?> display = evt.getDisplay();
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
+
+		// pan up or down
+		final int rotation = evt.getWheelRotation();
+		imageDisplay.getCanvas().pan(new IntCoords(0, rotation * PAN_AMOUNT));
 		evt.consume();
 	}
 
