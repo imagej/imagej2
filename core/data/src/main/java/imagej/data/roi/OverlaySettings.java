@@ -1,5 +1,5 @@
 //
-// DefaultOverlaySettings.java
+// OverlaySettings.java
 //
 
 /*
@@ -31,53 +31,90 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
 
+import imagej.data.display.OverlayService;
 import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.data.roi.Overlay.LineStyle;
 import imagej.util.ColorRGB;
-
+import imagej.util.Colors;
 
 /**
- * Utility class that gives access to default ovelay settings such as fill,
- * transparency, arrow styles, etc. There is one DefaultOverlaySettings class
- * per OverlayService instance.
+ * Utility class that gives access to default overlay settings such as fill,
+ * transparency, arrow styles, etc. There is one OverlaySettings class per
+ * {@link OverlayService} instance.
  * 
  * @author Barry DeZonia
- *
  */
-public class DefaultOverlaySettings {
-	
+public class OverlaySettings {
+
 	// -- instance variables --
-	
-	private double defaultLineWidth = 1.0;
-	private LineStyle defaultLineStyle = LineStyle.SOLID;
-	private ColorRGB defaultLineColor = new ColorRGB(255, 255, 0);
-	private ColorRGB defaultFillColor = new ColorRGB(0, 255, 0);
-	private int defaultAlpha = 0;
-	private ArrowStyle defaultStartArrowStyle = ArrowStyle.NONE;
-	private ArrowStyle defaultEndArrowStyle = ArrowStyle.NONE;
+
+	private double lineWidth = 1.0;
+	private LineStyle lineStyle = LineStyle.SOLID;
+	private ColorRGB lineColor = Colors.YELLOW;
+	private ColorRGB fillColor = Colors.LIME;
+	private int alpha = 0;
+	private ArrowStyle startArrowStyle = ArrowStyle.NONE;
+	private ArrowStyle endArrowStyle = ArrowStyle.NONE;
 
 	// -- accessors --
-	
-	public double getDefaultLineWidth() { return defaultLineWidth; }
-	public void setDefaultLineWidth(double width) { defaultLineWidth = width; }
 
-	public LineStyle getDefaultLineStyle() { return defaultLineStyle; }
-	public void setDefaultLineStyle(LineStyle style) { defaultLineStyle = style; }
+	public double getLineWidth() {
+		return lineWidth;
+	}
 
-	public ColorRGB getDefaultLineColor() { return defaultLineColor; }
-	public void setDefaultLineColor(ColorRGB c) { defaultLineColor = c; }
-	
-	public ColorRGB getDefaultFillColor() { return defaultFillColor; }
-	public void setDefaultFillColor(ColorRGB c) { defaultFillColor = c; }
-	
-	public int getDefaultAlpha() { return defaultAlpha; }
-	public void setDefaultAlpha(int alpha) { defaultAlpha = alpha; }
-	
-	public ArrowStyle getDefaultStartArrowStyle() { return defaultStartArrowStyle; }
-	public void setDefaultStartArrowStyle(ArrowStyle style) { defaultStartArrowStyle = style; }
-	
-	public ArrowStyle getDefaultEndArrowStyle() { return defaultEndArrowStyle; }
-	public void setDefaultEndArrowStyle(ArrowStyle style) { defaultEndArrowStyle = style; }
+	public void setLineWidth(final double width) {
+		lineWidth = width;
+	}
+
+	public LineStyle getLineStyle() {
+		return lineStyle;
+	}
+
+	public void setLineStyle(final LineStyle style) {
+		lineStyle = style;
+	}
+
+	public ColorRGB getLineColor() {
+		return lineColor;
+	}
+
+	public void setLineColor(final ColorRGB c) {
+		lineColor = c;
+	}
+
+	public ColorRGB getFillColor() {
+		return fillColor;
+	}
+
+	public void setFillColor(final ColorRGB c) {
+		fillColor = c;
+	}
+
+	public int getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(final int alpha) {
+		this.alpha = alpha;
+	}
+
+	public ArrowStyle getStartArrowStyle() {
+		return startArrowStyle;
+	}
+
+	public void setStartArrowStyle(final ArrowStyle style) {
+		startArrowStyle = style;
+	}
+
+	public ArrowStyle getEndArrowStyle() {
+		return endArrowStyle;
+	}
+
+	public void setEndArrowStyle(final ArrowStyle style) {
+		endArrowStyle = style;
+	}
+
 }
