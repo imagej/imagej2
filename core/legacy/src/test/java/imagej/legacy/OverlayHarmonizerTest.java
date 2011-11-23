@@ -41,11 +41,9 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.ByteProcessor;
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.ImgLibDataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
 import imagej.data.roi.BinaryMaskOverlay;
 import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
@@ -80,7 +78,6 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.ByteType;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -89,15 +86,6 @@ import org.junit.Test;
  * @author Lee Kamentsky
  */
 public class OverlayHarmonizerTest {
-
-	// TODO - Evaluate whether it is really the best option to force creation
-	// of an ImageJ context in the test harness so that overlay tests can pass.
-
-	@BeforeClass
-	@SuppressWarnings("unchecked")
-	public static void setup() {
-		ImageJ.createContext(OverlayService.class);
-	}
 
 	private PolygonOverlay makePolygonOverlay(final double[] x, final double[] y)
 	{
