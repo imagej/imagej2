@@ -53,7 +53,7 @@ import net.imglib2.meta.AxisType;
  */
 @Tool(name = "Axis Position Shortcuts", alwaysActive = true,
 	activeInAppFrame = true)
-public class AxisAccelerator extends AbstractTool {
+public class AxisPositionHandler extends AbstractTool {
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
