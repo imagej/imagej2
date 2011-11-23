@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.restructure;
 
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -60,19 +61,22 @@ public class DeleteAxis extends DynamicPlugin {
 	// -- Constants --
 
 	private static final String AXIS_NAME = "axisName";
-	private static final String POSITION = "planePos";
+	private static final String POSITION = "position";
 
 	// -- Parameters --
+
+	@Parameter(required = true, persist = false)
+	private ImageDisplay display;
 
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
 	@Parameter(label = "Axis to delete", persist = false,
-		initializer = "initAll", callback = "parameterChanged")
+		initializer = "initAll", callback = "axisChanged")
 	private String axisName;
 
 	@Parameter(label = "Index of hyperplane to keep", persist = false,
-		callback = "parameterChanged")
+		callback = "positionChanged")
 	private long position;
 
 	// -- DeleteAxis methods --
@@ -110,10 +114,6 @@ public class DeleteAxis extends DynamicPlugin {
 	 */
 	@Override
 	public void run() {
-
-		// I don't think this is needed and it could cause unexpected behavior
-		// clampPlanePos();
-
 		final AxisType axis = getAxis();
 		if (inputBad(axis)) return;
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
@@ -138,8 +138,19 @@ public class DeleteAxis extends DynamicPlugin {
 	// -- Callbacks --
 
 	/** Updates the last value when the axis changes. */
-	protected void parameterChanged() {
-		initPositionRange();
+	protected void axisChanged() {
+		int axisIndex = getAxisIndex();
+		long value = getAxisPos(axisIndex) + 1;
+		long max = currDimLen();
+		initPositionRange(1,max);
+		setPosition(value);
+		clampPosition();
+	}
+	
+	// TODO - temporary workaround to allow parameter max to be enforced. Should
+	// be removed when ticket #886 addressed.
+	
+	protected void positionChanged() {
 		clampPosition();
 	}
 
@@ -239,36 +250,45 @@ public class DeleteAxis extends DynamicPlugin {
 	}
 
 	private void initPosition() {
-		final long max = getDataset().getImgPlus().dimension(0);
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> positionItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
-		positionItem.setMinimumValue(1L);
-		positionItem.setMaximumValue(max);
-		setPosition(1);
+		int activeAxis = 2;
+		long max = getDataset().getImgPlus().dimension(activeAxis);
+		long value = getAxisPos(activeAxis) + 1;
+		initPositionRange(1, max);
+		setPosition(value);
 	}
 
-	private void initPositionRange() {
+	private void initPositionRange(long min, long max) {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
-		final long dimLen = currDimLen();
-		positionItem.setMinimumValue(1L);
-		positionItem.setMaximumValue(dimLen);
+		positionItem.setMinimumValue(min); // works the first time
+		// TODO - temporarily disabled since parameter mins and maxes cannot be
+		// changed on the fly. Should be enabled when ticket #886 addressed.
+		//positionItem.setMaximumValue(max);
 	}
 
 	/** Ensures the first and last values fall within the allowed range. */
 	private void clampPosition() {
 		final long max = currDimLen();
 		long pos = getPosition();
-		if (pos < 1) pos = 1;
-		if (pos > max) pos = max;
-		setPosition(pos);
+		if (pos < 1)
+			setPosition(1);
+		else if (pos > max)
+			setPosition(max);
 	}
 
 	private long currDimLen() {
 		final AxisType axis = getAxis();
 		final int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
+	}
+	
+	private long getAxisPos(int axisNum) {
+		return display.getActiveView().getPosition(axisNum);
+	}
+	
+	private int getAxisIndex() {
+		AxisType axis = Axes.get(axisName);
+		return getDataset().getAxisIndex(axis);
 	}
 }
