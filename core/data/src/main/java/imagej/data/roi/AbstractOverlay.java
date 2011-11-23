@@ -34,10 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.roi;
 
-import imagej.ImageJ;
 import imagej.data.AbstractData;
 import imagej.data.Extents;
-import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
@@ -69,15 +67,10 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	Externalizable
 {
 
-	// TODO - move statics to a Overlay related helper class that can be owned.
-	// This would allow multiple contexts to have their own settings.
-	
-	// -- statics --
-	
 	private static final long serialVersionUID = 1L;
 
 	// -- instance variables --
-	
+
 	protected ArrowStyle startArrowStyle;
 	protected ArrowStyle endArrowStyle;
 	protected ColorRGB fillColor;
@@ -85,7 +78,7 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	protected ColorRGB lineColor;
 	protected double lineWidth;
 	protected Overlay.LineStyle lineStyle;
-	
+
 	final protected List<AxisType> axes = new ArrayList<AxisType>();
 	final protected List<Double> calibrations = new ArrayList<Double>();
 
@@ -103,17 +96,15 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		});
 
 	public AbstractOverlay() {
-		OverlayService service = ImageJ.get(OverlayService.class);
-		DefaultOverlaySettings settings =	service.getDefaultSettings();
-		startArrowStyle = settings.getDefaultStartArrowStyle();
-		endArrowStyle = settings.getDefaultEndArrowStyle();
-		fillColor = settings.getDefaultFillColor();
-		alpha = settings.getDefaultAlpha();
-		lineColor = settings.getDefaultLineColor();
-		lineWidth = settings.getDefaultLineWidth();
-		lineStyle = settings.getDefaultLineStyle();
+		// TODO: Apply OverlayService's settings to each new overlay.
+		// As it stands, each new overlay receives the default settings only.
+		this(new OverlaySettings());
 	}
-	
+
+	public AbstractOverlay(final OverlaySettings settings) {
+		applySettings(settings);
+	}
+
 	// -- AbstractData methods --
 
 	@Override
@@ -123,7 +114,7 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 
 	// TODO - Decide whether this should really be public. If not, don't call it
 	// elsewhere. But if so, add it to the proper interface.
-	
+
 	@Override
 	public void delete() {
 		eventService.publish(new OverlayDeletedEvent(this));
@@ -387,7 +378,7 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	public void setLineEndArrowStyle(final ArrowStyle style) {
 		endArrowStyle = style;
 	}
-	
+
 	// -- Data methods --
 
 	@Override
@@ -401,11 +392,23 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	}
 
 	// -- LabeledSpace methods --
-	
+
 	@Override
 	public Extents getExtents() {
 		// FIXME
 		return null;
 	}
-	
+
+	// -- Helper methods --
+
+	private void applySettings(final OverlaySettings settings) {
+		startArrowStyle = settings.getStartArrowStyle();
+		endArrowStyle = settings.getEndArrowStyle();
+		fillColor = settings.getFillColor();
+		alpha = settings.getAlpha();
+		lineColor = settings.getLineColor();
+		lineWidth = settings.getLineWidth();
+		lineStyle = settings.getLineStyle();
+	}
+
 }

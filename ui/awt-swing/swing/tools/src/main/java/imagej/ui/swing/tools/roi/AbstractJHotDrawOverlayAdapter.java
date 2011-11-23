@@ -37,7 +37,7 @@ package imagej.ui.swing.tools.roi;
 import imagej.ImageJ;
 import imagej.data.display.DataView;
 import imagej.data.display.OverlayService;
-import imagej.data.roi.DefaultOverlaySettings;
+import imagej.data.roi.OverlaySettings;
 import imagej.data.roi.Overlay;
 import imagej.ext.tool.AbstractTool;
 import imagej.ui.swing.roi.IJHotDrawOverlayAdapter;
@@ -149,9 +149,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	}
 
 	public Color getDefaultStrokeColor() {
-		DefaultOverlaySettings settings =
+		OverlaySettings settings =
 				ImageJ.get(OverlayService.class).getDefaultSettings();
-		ColorRGB color = settings.getDefaultLineColor();
+		ColorRGB color = settings.getLineColor();
 		int r = color.getRed();
 		int g = color.getGreen();
 		int b = color.getBlue();
@@ -159,13 +159,13 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	}
 	
 	public Color getDefaultFillColor() {
-		DefaultOverlaySettings settings =
+		OverlaySettings settings =
 				ImageJ.get(OverlayService.class).getDefaultSettings();
-		ColorRGB color = settings.getDefaultFillColor();
+		ColorRGB color = settings.getFillColor();
 		int r = color.getRed();
 		int g = color.getGreen();
 		int b = color.getBlue();
-		int a = settings.getDefaultAlpha();
+		int a = settings.getAlpha();
 		return new Color(r,g,b,a);
 	}
 }
