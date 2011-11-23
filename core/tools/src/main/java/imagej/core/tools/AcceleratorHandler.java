@@ -45,7 +45,7 @@ import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
 /**
- * Handles keyboard accelerator combinations.
+ * Handles keyboard accelerator combinations that launch modules.
  * <p>
  * Specifically, we want to handle key presses even if the current UI's built-in
  * event handler would pass them up. For example, with the Swing UI, the menu
