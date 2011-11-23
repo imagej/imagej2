@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
-import imagej.ImageJ;
 import imagej.data.display.WindowMenuService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -62,6 +61,9 @@ public class QuitProgram implements ImageJPlugin {
 	@Parameter(required = true, persist = false)
 	private WindowMenuService windowMenuService;
 
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
+
 	@Override
 	public void run() {
 		if (windowMenuService.getOpenWindows().size() > 0) {
@@ -78,7 +80,7 @@ public class QuitProgram implements ImageJPlugin {
 	}
 
 	private boolean promptForQuit() {
-		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
+		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt(MESSAGE, "Quit",
 				DialogPrompt.MessageType.QUESTION_MESSAGE,

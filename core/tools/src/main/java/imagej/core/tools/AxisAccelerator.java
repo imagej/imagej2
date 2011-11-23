@@ -33,17 +33,12 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 package imagej.core.tools;
 
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
-import imagej.ext.display.event.input.KyEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
-import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
@@ -68,21 +63,8 @@ import net.imglib2.meta.AxisType;
  * @author Grant Harris
  */
 @Tool(name = "Axis Accelerator Keyboard Shortcuts", alwaysActive = true,
-activeInAppFrame = true, priority = Integer.MIN_VALUE)
+	activeInAppFrame = true, priority = Integer.MIN_VALUE)
 public class AxisAccelerator extends AbstractTool {
-
-	/** Keys. */
-	private final ModuleService moduleService;
-	private final PluginService pluginService;
-	private final EventService eventService;
-	private final ImageDisplayService imageDisplayService;
-
-	public AxisAccelerator() {
-		moduleService = ImageJ.get(ModuleService.class);
-		pluginService = ImageJ.get(PluginService.class);
-		imageDisplayService = ImageJ.get(ImageDisplayService.class);
-		eventService = ImageJ.get(EventService.class);
-	}
 
 	/* Keyboard accelerators for changing the displayed axes.
 	 * This mimics ImageJ, using forward and backward with '<' and '>' with
@@ -92,6 +74,8 @@ public class AxisAccelerator extends AbstractTool {
 	 */
 	@Override
 	public void onKeyDown(KyPressedEvent evt) {
+		final ImageDisplayService imageDisplayService =
+			evt.getContext().getService(ImageDisplayService.class);
 
 		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) {
@@ -144,8 +128,12 @@ public class AxisAccelerator extends AbstractTool {
 	 */
 	
 	private static final int PAN_AMOUNT = 10;
+
 	@Override
 	public void onMouseWheel(MsWheelEvent evt) {
+		final ImageDisplayService imageDisplayService =
+			evt.getContext().getService(ImageDisplayService.class);
+
 		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) {
 			return;

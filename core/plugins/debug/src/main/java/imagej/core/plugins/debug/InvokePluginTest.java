@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.debug;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.util.Log;
@@ -53,15 +53,14 @@ import java.util.concurrent.Future;
 @Plugin(menuPath = "Plugins>Sandbox>InvokePluginTest")
 public class InvokePluginTest implements ImageJPlugin {
 
-	private final ModuleService moduleService = ImageJ.get(ModuleService.class);
-	private final PluginService pluginService = ImageJ.get(PluginService.class);
+	@Parameter(required = true, persist = false)
+	private ModuleService moduleService;
+
+	@Parameter(required = true, persist = false)
+	private PluginService pluginService;
 
 	@Override
 	public void run() {
-		testRun();
-	}
-
-	void testRun() {
 		final String name = "Untitled";
 		final String bitDepth = "8-bit";
 		final boolean signed = false;

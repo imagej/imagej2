@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -54,12 +53,14 @@ import imagej.util.RealRect;
 	@Menu(label = "To Selection", weight = 5) })
 public class ZoomToFitSelection implements ImageJPlugin {
 
-	@Parameter
+	@Parameter(required = true, persist = false)
+	private OverlayService overlayService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
-		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		final RealRect selection = overlayService.getSelectionBounds(display);
 
 		final double scale = display.getCanvas().getZoomFactor();

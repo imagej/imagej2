@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -67,7 +66,13 @@ public class SaltAndPepper implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
+	@Parameter(required = true, persist = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
+	private OverlayService overlayService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	// -- other instance variables --
@@ -93,15 +98,12 @@ public class SaltAndPepper implements ImageJPlugin {
 	// -- private interface --
 
 	private void initializeMembers() {
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
-		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 		input = imageDisplayService.getActiveDataset(display);
 		selection = overlayService.getSelectionBounds(display);
 	}
 
 	private void checkInput() {
-		input = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		input = imageDisplayService.getActiveDataset(display);
 		if (input == null) {
 			throw new IllegalArgumentException("input Dataset is null");
 		}

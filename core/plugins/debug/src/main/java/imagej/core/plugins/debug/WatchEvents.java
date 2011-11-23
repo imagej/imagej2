@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.debug;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -68,16 +67,18 @@ import java.util.Locale;
  * perhaps.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
 public class WatchEvents implements ImageJPlugin {
 
+	// -- Parameters --
+
+	@Parameter(required = true, persist = false)
 	private EventService eventService;
 
-	private OutputWindow window;
-
-	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	@SuppressWarnings("unused")
@@ -118,6 +119,13 @@ public class WatchEvents implements ImageJPlugin {
 
 	@Parameter(label = "ToolEvent")
 	private boolean showTool = true;
+
+	// -- Fields --
+
+	private OutputWindow window;
+
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	// -- WatchEvents methods --
 
@@ -173,9 +181,8 @@ public class WatchEvents implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		window = ImageJ.get(UIService.class).createOutputWindow("Event Watcher");
+		window = uiService.createOutputWindow("Event Watcher");
 		window.setVisible(true);
-		eventService = ImageJ.get(EventService.class);
 		subscribers = eventService.subscribe(this);
 		// TODO - unsubscribe when the output window is closed
 	}

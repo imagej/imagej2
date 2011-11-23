@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -65,6 +64,9 @@ public class InvertDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter(required = true, persist = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	// -- instance variables --
@@ -79,7 +81,7 @@ public class InvertDataValues implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 		// this is similar to IJ1
 		if (dataset.isInteger() && !dataset.isSigned() &&
 			dataset.getType().getBitsPerPixel() == 8)

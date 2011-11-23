@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
 import imagej.ext.Accelerator;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
@@ -68,16 +67,13 @@ import imagej.ext.tool.Tool;
 @Tool(name = "Keyboard Shortcuts", alwaysActive = true, activeInAppFrame = true)
 public class AcceleratorHandler extends AbstractTool {
 
-	private final ModuleService moduleService;
-	private final PluginService pluginService;
-
-	public AcceleratorHandler() {
-		moduleService = ImageJ.get(ModuleService.class);
-		pluginService = ImageJ.get(PluginService.class);
-	}
-
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
+		final ModuleService moduleService =
+			evt.getContext().getService(ModuleService.class);
+		final PluginService pluginService =
+			evt.getContext().getService(PluginService.class);
+
 		ModuleInfo moduleInfo = null;
 
 		// look up the module corresponding to this key press

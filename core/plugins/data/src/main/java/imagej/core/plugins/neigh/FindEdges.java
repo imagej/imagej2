@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.neigh;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -56,7 +55,13 @@ public class FindEdges implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
+	@Parameter(required = true, persist = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
+	private OverlayService overlayService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --
@@ -66,10 +71,8 @@ public class FindEdges implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		final Dataset input =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
-		final RealRect selection =
-			ImageJ.get(OverlayService.class).getSelectionBounds(display);
+		final Dataset input = imageDisplayService.getActiveDataset(display);
+		final RealRect selection = overlayService.getSelectionBounds(display);
 		final Neighborhood3x3Operation operation =
 			new Neighborhood3x3Operation(input, selection,
 				new FindEdgesWatcher(input));
