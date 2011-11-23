@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -64,17 +63,21 @@ public class FlipHorizontally implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
+	@Parameter(required = true, persist = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
+	private OverlayService overlayService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		final Dataset input =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
-		final RealRect selection =
-			ImageJ.get(OverlayService.class).getSelectionBounds(display);
+		final Dataset input = imageDisplayService.getActiveDataset(display);
+		final RealRect selection = overlayService.getSelectionBounds(display);
 		flipPixels(input, selection);
 	}
 

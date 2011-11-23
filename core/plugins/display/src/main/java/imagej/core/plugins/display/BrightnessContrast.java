@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.display;
 
-import imagej.ImageJ;
 import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -67,9 +65,8 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 	private static final int SLIDER_RANGE = 256;
 	private static final String SLIDER_MAX = "" + (SLIDER_RANGE - 1);
 
-	@Parameter
-	private DatasetView view = ImageJ.get(ImageDisplayService.class)
-		.getActiveDatasetView();
+	@Parameter(required = true, persist = false)
+	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
 	private double min = 0;

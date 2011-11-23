@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -58,14 +57,17 @@ import net.imglib2.type.numeric.RealType;
  */
 public abstract class TypeChanger implements ImageJPlugin {
 
-	@Parameter(required = true)
+	@Parameter(required = true, persist = false)
+	private MenuService menuService;
+
+	@Parameter(required = true, persist = false)
 	protected Dataset input;
 
 	protected <T extends RealType<T> & NativeType<T>> void changeType(
 		final T newType)
 	{
 		changeType(input, newType);
-		ImageJ.get(MenuService.class).setSelected(this, true);
+		menuService.setSelected(this, true);
 	}
 
 	/**

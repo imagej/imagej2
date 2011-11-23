@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.ImageJ;
 import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
 import imagej.data.DatasetFactory;
@@ -84,6 +83,9 @@ import net.imglib2.type.numeric.RealType;
 public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
+
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
 
 	@Parameter(required = true, persist = false)
 	private Dataset input1;
@@ -229,7 +231,7 @@ public class ImageMath implements ImageJPlugin {
 	}
 
 	private void warnBadSpan() {
-		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
+		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt("Input images have different number of dimensions",
 				"Image Calculator", DialogPrompt.MessageType.INFORMATION_MESSAGE,

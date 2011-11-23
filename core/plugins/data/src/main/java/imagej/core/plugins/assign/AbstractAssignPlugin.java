@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.ImageDisplay;
@@ -64,6 +63,12 @@ public abstract class AbstractAssignPlugin implements ImageJPlugin,
 {
 
 	// -- instance variables that are Parameters --
+
+	@Parameter(required = true, persist = false)
+	protected ImageDisplayService displayService;
+
+	@Parameter(required = true, persist = false)
+	protected OverlayService overlayService;
 
 	@Parameter(required = true, persist = false)
 	protected ImageDisplay display;
@@ -149,10 +154,6 @@ public abstract class AbstractAssignPlugin implements ImageJPlugin,
 	// cause precision loss for long data
 
 	private void initialize() {
-		final ImageDisplayService displayService =
-			ImageJ.get(ImageDisplayService.class);
-		final OverlayService overlayService = ImageJ.get(OverlayService.class);
-
 		dataset = displayService.getActiveDataset(display);
 		bounds = overlayService.getSelectionBounds(display);
 

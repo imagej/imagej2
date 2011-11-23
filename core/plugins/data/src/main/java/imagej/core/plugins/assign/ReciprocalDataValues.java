@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -60,14 +59,17 @@ public class ReciprocalDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter(required = true, persist = false)
+	private OptionsService optionsService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		final OptionsService service = ImageJ.get(OptionsService.class);
-		final OptionsMisc optionsMisc = service.getOptions(OptionsMisc.class);
+		final OptionsMisc optionsMisc =
+			optionsService.getOptions(OptionsMisc.class);
 		final String dbzString = optionsMisc.getDivByZeroVal();
 		double dbzVal;
 		try {

@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -58,6 +57,9 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
+	@Parameter(required = true, persist = false)
+	private OptionsService optionsService;
+
 	@Parameter
 	private double value;
 
@@ -65,8 +67,8 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 
 	@Override
 	public UnaryOperation<Real, Real> getOperation() {
-		final OptionsService service = ImageJ.get(OptionsService.class);
-		final OptionsMisc optionsMisc = service.getOptions(OptionsMisc.class);
+		final OptionsMisc optionsMisc =
+			optionsService.getOptions(OptionsMisc.class);
 		final String dbzString = optionsMisc.getDivByZeroVal();
 		double dbzVal;
 		try {
