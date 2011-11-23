@@ -1,5 +1,5 @@
 //
-// AnimatorOptions.java
+// AnimationOptions.java
 //
 
 /*
