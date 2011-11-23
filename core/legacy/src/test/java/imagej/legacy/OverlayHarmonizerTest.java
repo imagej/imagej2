@@ -80,6 +80,7 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.ByteType;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -92,8 +93,11 @@ public class OverlayHarmonizerTest {
 	// TODO - Evaluate whether it is really the best option to force creation
 	// of an ImageJ context in the test harness so that overlay tests can pass.
 
-	@SuppressWarnings({ "unchecked", "unused" })
-	private final ImageJ context = ImageJ.createContext(OverlayService.class);
+	@BeforeClass
+	@SuppressWarnings("unchecked")
+	public static void setup() {
+		ImageJ.createContext(OverlayService.class);
+	}
 
 	private PolygonOverlay makePolygonOverlay(final double[] x, final double[] y)
 	{
