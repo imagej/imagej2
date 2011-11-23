@@ -47,12 +47,14 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+
 
 /**
  * Based on AcceleratorHandler...
- * Handles keyboard accelerator combinations for changing the axis positions....
+ * Handles keyboard and mousewheel accelerator combinations for 
+ * changing the axis positions....
  * <p>
  * Specifically, we want to handle key presses even if the current UI's built-in
  * event handler would pass them up. For example, with the Swing UI, the menu
@@ -61,13 +63,6 @@ import net.imglib2.img.Axis;
  * i.e., on Windows and Linux platforms, image windows do not have a menu bar
  * attached, so the Swing menu infrastructure does not handle key presses when
  * an image window is active.
- * </p>
- * <p>
- * This tool also handles the case where the accelerator lacks the platform's
- * modifier key; e.g., if you press L (rather than Ctrl+L or Cmd+L) it will take
- * care of launching the Command Finder plugin. This works because the
- * {@link KyEvent#getAcceleratorString()} method takes care to attach the
- * relevant modifier flag when constructing the accelerator string.
  * </p>
  * 
  * @author Grant Harris
@@ -89,7 +84,7 @@ public class AxisAccelerator extends AbstractTool {
 		eventService = ImageJ.get(EventService.class);
 	}
 
-	/*
+	/* Keyboard accelerators for changing the displayed axes.
 	 * This mimics ImageJ, using forward and backward with '<' and '>' with
 		No-modifier for channels
 		Ctrl-modifier for slices
@@ -110,7 +105,7 @@ public class AxisAccelerator extends AbstractTool {
 		InputModifiers mods = evt.getModifiers();
 
 		// Set Axis based on modifier
-		Axis axis = Axes.CHANNEL;
+		AxisType axis = Axes.CHANNEL;
 		if (display.getAxes().length == 3) {
 			// default to only non-XY axis
 			axis = display.getAxes()[2];
@@ -163,7 +158,7 @@ public class AxisAccelerator extends AbstractTool {
 		}
 		InputModifiers mods = evt.getModifiers();
 		// Set Axis based on modifier
-		Axis axis = Axes.CHANNEL;
+		AxisType axis = Axes.CHANNEL;
 		if (display.getAxes().length == 3) {
 			// default to only non-XY axis
 			axis = display.getAxes()[2];
