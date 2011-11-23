@@ -40,6 +40,7 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import net.imglib2.meta.Axes;
@@ -52,7 +53,7 @@ import net.imglib2.meta.AxisType;
  * @author Grant Harris
  */
 @Tool(name = "Axis Position Shortcuts", alwaysActive = true,
-	activeInAppFrame = true)
+	activeInAppFrame = true, priority = Plugin.NORMAL_PRIORITY)
 public class AxisPositionHandler extends AbstractTool {
 
 	@Override
