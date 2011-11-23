@@ -60,9 +60,9 @@ public class DeleteData extends DynamicPlugin {
 
 	// -- Constants --
 
-	private static final String AXIS_NAME = "axisToModify";
-	private static final String POSITION = "oneBasedDelPos";
-	private static final String QUANTITY = "numDeleting";
+	private static final String AXIS_NAME = "axisName";
+	private static final String POSITION = "position";
+	private static final String QUANTITY = "quantity";
 
 	// -- Parameters --
 
@@ -149,8 +149,8 @@ public class DeleteData extends DynamicPlugin {
 	// -- Callbacks --
 
 	protected void parameterChanged() {
-		initPositionRange();
-		initQuantityRange();
+		setPositionRange();
+		setQuantityRange();
 		clampPosition();
 		clampQuantity();
 	}
@@ -230,54 +230,38 @@ public class DeleteData extends DynamicPlugin {
 
 	private void initPosition() {
 		final long max = getDataset().getImgPlus().dimension(0);
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> positionItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
-		positionItem.setMinimumValue(1L);
-		positionItem.setMaximumValue(max);
+		setItemRange(POSITION, 1, max);
+		setPosition(1);
 	}
 
 	private void initQuantity() {
 		final long max = getDataset().getImgPlus().dimension(0);
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> quantityItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
-		quantityItem.setMinimumValue(1L);
-		quantityItem.setMaximumValue(max);
+		setItemRange(QUANTITY, 1, max);
+		setQuantity(1);
 	}
 
-	private void initPositionRange() {
-		final long dimLen = currDimLen();
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> positionItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
-		positionItem.setMinimumValue(1L);
-		positionItem.setMaximumValue(dimLen);
-	}
-
-	private void initQuantityRange() {
+	private void setPositionRange() {
 		final long max = currDimLen();
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> quantityItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
-		quantityItem.setMinimumValue(1L);
-		quantityItem.setMaximumValue(max - getPosition() + 1);
+		setItemRange(POSITION, 1, max);
+	}
+
+	private void setQuantityRange() {
+		final long max = currDimLen() - getPosition() + 1;
+		setItemRange(QUANTITY, 1, max);
 	}
 
 	private void clampPosition() {
 		final long max = currDimLen();
-		long pos = getPosition();
-		if (pos < 1) pos = 1;
-		if (pos > max) pos = max;
-		setPosition(pos);
+		final long pos = getPosition();
+		if (pos < 1) setPosition(1);
+		else if (pos > max) setPosition(max);
 	}
 
 	private void clampQuantity() {
 		final long max = currDimLen() - getPosition() + 1;
-		long total = getQuantity();
-		if (total < 1) total = 1;
-		if (total > max) total = max;
-		setQuantity(total);
+		final long total = getQuantity();
+		if (total < 1) setQuantity(1);
+		else if (total > max) setQuantity(max);
 	}
 
 	private long currDimLen() {
@@ -286,4 +270,12 @@ public class DeleteData extends DynamicPlugin {
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 
+	private void setItemRange(String fieldName, long min, long max) {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> item =
+			(DefaultModuleItem<Long>) getInfo().getInput(fieldName);
+		item.setMinimumValue(min);
+		// TODO - disable until we fix ticket #886
+		//item.setMaximumValue(max);
+	}
 }

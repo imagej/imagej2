@@ -270,7 +270,7 @@ public class DeleteAxis extends DynamicPlugin {
 	/** Ensures the first and last values fall within the allowed range. */
 	private void clampPosition() {
 		final long max = currDimLen();
-		long pos = getPosition();
+		final long pos = getPosition();
 		if (pos < 1)
 			setPosition(1);
 		else if (pos > max)

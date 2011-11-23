@@ -148,8 +148,8 @@ public class AddData extends DynamicPlugin {
 	// -- Callbacks --
 
 	protected void parameterChanged() {
-		initPositionRange();
-		initQuantityRange();
+		setPositionRange();
+		setQuantityRange();
 		clampPosition();
 		clampQuantity();
 	}
@@ -254,57 +254,51 @@ public class AddData extends DynamicPlugin {
 
 	private void initPosition() {
 		final long max = getDataset().getImgPlus().dimension(0);
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> positionItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
-		positionItem.setMinimumValue(1L);
-		positionItem.setMaximumValue(max);
+		setItemRange(POSITION, 1, max);
+		setPosition(1);
 	}
 
 	private void initQuantity() {
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> quantityItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
-		quantityItem.setMinimumValue(1L);
+		setItemRange(QUANTITY, 1, Long.MAX_VALUE);
+		setQuantity(1);
 	}
 
-	private void initPositionRange() {
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> positionItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
+	private void setPositionRange() {
 		final long dimLen = currDimLen();
-		positionItem.setMinimumValue(1L);
-		positionItem.setMaximumValue(dimLen + 1);
+		setItemRange(POSITION, 1, dimLen+1);
 	}
 
-	private void initQuantityRange() {
-		final long max = Long.MAX_VALUE;
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> quantityItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(QUANTITY);
-		quantityItem.setMinimumValue(1L);
-		quantityItem.setMaximumValue(max - getPosition() + 1);
+	private void setQuantityRange() {
+		final long max = Long.MAX_VALUE - getPosition() + 1;
+		setItemRange(QUANTITY, 1, max);
 	}
 
 	private void clampPosition() {
 		final long max = currDimLen() + 1;
-		long pos = getPosition();
-		if (pos < 1) pos = 1;
-		if (pos > max) pos = max;
-		setPosition(pos);
+		final long pos = getPosition();
+		if (pos < 1) setPosition(1);
+		else if (pos > max) setPosition(max);
 	}
 
 	private void clampQuantity() {
 		final long max = Long.MAX_VALUE - getPosition() + 1;
-		long total = getQuantity();
-		if (total < 1) total = 1;
-		if (total > max) total = max;
-		setQuantity(total);
+		final long total = getQuantity();
+		if (total < 1) setQuantity(1);
+		else if (total > max) setQuantity(max);
 	}
 
 	private long currDimLen() {
 		final AxisType axis = getAxis();
 		final int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
+	}
+	
+	private void setItemRange(String fieldName, long min, long max) {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> item =
+			(DefaultModuleItem<Long>) getInfo().getInput(fieldName);
+		item.setMinimumValue(min);
+		// TODO - disable until we fix ticket #886
+		//item.setMaximumValue(max);
 	}
 }
