@@ -34,14 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
-import imagej.ImageJ;
 import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -61,15 +57,15 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- instance variables --
 
-	private final ImageDisplay display;
-
 	private final Dataset dataset;
+
+	private final RealRect bounds;
+
+	private final FlipCoordinateTransformer flipper;
 
 	private final String errMessage = "No error";
 
 	private Img<? extends RealType<?>> outputImage;
-
-	private final FlipCoordinateTransformer flipper;
 
 	private long[] inputDimensions;
 
@@ -105,12 +101,11 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- constructor --
 
-	public XYFlipper(final ImageDisplay display,
+	public XYFlipper(final Dataset dataset, final RealRect bounds,
 		final FlipCoordinateTransformer flipper)
 	{
-		this.display = display;
-		this.dataset =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		this.dataset = dataset;
+		this.bounds = bounds;
 		this.flipper = flipper;
 	}
 
@@ -159,18 +154,15 @@ public class XYFlipper implements OutputAlgorithm {
 		final long width = inputDimensions[0];
 		final long height = inputDimensions[1];
 
-		final RealRect selectedRegion =
-			ImageJ.get(OverlayService.class).getSelectionBounds(display);
-
 		long rx, ry, rw, rh;
 
-		if (flipper.isShapePreserving() && (selectedRegion.width > 0) &&
-			(selectedRegion.height > 0))
+		if (flipper.isShapePreserving() && (bounds.width > 0) &&
+			(bounds.height > 0))
 		{
-			rx = (long) selectedRegion.x;
-			ry = (long) selectedRegion.y;
-			rw = (long) selectedRegion.width;
-			rh = (long) selectedRegion.height;
+			rx = (long) bounds.x;
+			ry = (long) bounds.y;
+			rw = (long) bounds.width;
+			rh = (long) bounds.height;
 		}
 		else {
 			rx = 0;

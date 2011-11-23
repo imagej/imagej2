@@ -34,16 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
-import imagej.ImageJ;
 import imagej.core.plugins.imglib.ImgLibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.RealRect;
 
 // TODO - IJ1 updates the calibration so that pixel width & depth swap after this operation. Must implement here.
 
@@ -60,7 +61,13 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
+	@Parameter(required = true, persist = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
+	private OverlayService overlayService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --
@@ -68,11 +75,11 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void run() {
-		final Dataset input =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		final Dataset input = imageDisplayService.getActiveDataset(display);
+		final RealRect bounds = overlayService.getSelectionBounds(display);
 		final FlipCoordinateTransformer flipTransformer =
 			new NinetyLeftTransformer();
-		final XYFlipper flipper = new XYFlipper(display, flipTransformer);
+		final XYFlipper flipper = new XYFlipper(input, bounds, flipTransformer);
 		final ImgLibDataTransform runner = new ImgLibDataTransform(input, flipper);
 		runner.run();
 	}
