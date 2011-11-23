@@ -46,7 +46,7 @@ import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
 
 /**
- * Tool for zooming in and out of a display.
+ * Tool for zooming in and out of a display using the mouse.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -67,7 +67,7 @@ public class ZoomTool extends AbstractTool {
 	// -- ITool methods --
 
 	// NB: We do not respond to onKeyDown() for plus and minus here, because
-	// the ZoomIn and ZoomOut plugins already register those as accelerators.
+	// the ZoomHandler always-active tool deals with those shortcuts.
 	// So they will work regardless of which tool is selected anyway.
 
 	@Override

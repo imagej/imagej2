@@ -1,5 +1,5 @@
 //
-// ZoomOut.java
+// ZoomHandler.java
 //
 
 /*
@@ -32,31 +32,45 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.zoom;
+package imagej.core.tools;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
+import imagej.ext.KeyCode;
+import imagej.ext.display.Display;
+import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
 
 /**
- * Zooms out on the the currently displayed image. Zoom multiplier is taken from
- * the current ImageDisplay's zoom factor value.
+ * Handles keyboard operations that change the zoom (when the {@link ZoomTool}
+ * is not activated).
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "Out", weight = 2, accelerator = "MINUS") })
-public class ZoomOut implements ImageJPlugin {
-
-	@Parameter
-	private ImageDisplay display;
+@Tool(name = "Zoom Shortcuts", alwaysActive = true, activeInAppFrame = true,
+	priority = Plugin.NORMAL_PRIORITY)
+public class ZoomHandler extends AbstractTool {
 
 	@Override
-	public void run() {
-		display.getCanvas().zoomOut();
+	public void onKeyDown(final KyPressedEvent evt) {
+		final Display<?> display = evt.getDisplay();
+		if (!(display instanceof ImageDisplay)) return;
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
+
+		final KeyCode keyCode = evt.getCode();
+		final char keyChar = evt.getCharacter();
+
+		if (keyCode == KeyCode.EQUALS || keyCode == KeyCode.PLUS ||
+			keyChar == '=' || keyChar == '+')
+		{
+			imageDisplay.getCanvas().zoomIn();
+			evt.consume();
+		}
+		else if (keyCode == KeyCode.MINUS || keyChar == '-') {
+			imageDisplay.getCanvas().zoomOut();
+			evt.consume();
+		}
 	}
 
 }
