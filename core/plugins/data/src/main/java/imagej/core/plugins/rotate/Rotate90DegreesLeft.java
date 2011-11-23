@@ -73,13 +73,13 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 	// -- public interface --
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void run() {
 		final Dataset input = imageDisplayService.getActiveDataset(display);
 		final RealRect bounds = overlayService.getSelectionBounds(display);
 		final FlipCoordinateTransformer flipTransformer =
 			new NinetyLeftTransformer();
 		final XYFlipper flipper = new XYFlipper(input, bounds, flipTransformer);
+		@SuppressWarnings("unchecked")
 		final ImgLibDataTransform runner = new ImgLibDataTransform(input, flipper);
 		runner.run();
 	}
