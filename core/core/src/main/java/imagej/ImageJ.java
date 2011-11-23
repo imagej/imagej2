@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej;
 
+import imagej.event.ImageJEvent;
 import imagej.util.Log;
 
 import java.util.Arrays;
@@ -144,7 +145,17 @@ public class ImageJ {
 	/**
 	 * Gets the service of the given class for the current ImageJ application
 	 * context.
+	 * 
+	 * @deprecated Avoid using this method. If you are writing a plugin, you can
+	 *             annotate the {@link IService} you want as a @Parameter, with
+	 *             required=true and persist=false. If you are writing a tool, you
+	 *             can obtain the {@link ImageJ} context by calling
+	 *             {@link ImageJEvent#getContext()}, and then asking that context
+	 *             for needed {@link IService} instances by calling
+	 *             {@link ImageJ#getService(Class)}. See the classes in
+	 *             core/plugins and core/tools for many examples.
 	 */
+	@Deprecated
 	public static <S extends IService> S get(final Class<S> serviceClass) {
 		final ImageJ context = getContext();
 		if (context == null) return null; // no context
