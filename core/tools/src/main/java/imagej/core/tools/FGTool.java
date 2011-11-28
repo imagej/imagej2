@@ -65,7 +65,7 @@ import net.imglib2.type.numeric.RealType;
  */
 @Tool(name = "FGTool",
 	description = "Drawing value tool (sets foreground color/value)",
-/*iconPath = "/icons/tools/picker.png",*/
+	iconPath = "/icons/tools/fgtool.png",
 	priority = FGTool.PRIORITY)
 public class FGTool extends AbstractTool {
 
