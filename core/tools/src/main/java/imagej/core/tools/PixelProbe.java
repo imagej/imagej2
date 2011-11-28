@@ -47,6 +47,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
+import imagej.util.ColorRGB;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 import net.imglib2.RandomAccess;
@@ -105,13 +106,22 @@ public class PixelProbe extends AbstractTool {
 
 		setPosition(randomAccess, cx, cy, planePos, xAxis, yAxis);
 
-		final double value = randomAccess.get().getRealDouble();
 		final String message;
-		if (dataset.isInteger()) {
-			message = String.format("x=%d, y=%d, value=%d", cx, cy, (long) value);
+		
+		// color dataset?
+		if (dataset.isRGBMerged()) {
+			final ColorRGB color = getColor(dataset, randomAccess);
+			message = String.format("x=%d, y=%d, value=%d,%d,%d", cx, cy,
+				color.getRed(), color.getGreen(), color.getBlue());
 		}
-		else {
-			message = String.format("x=%d, y=%d, value=%f", cx, cy, value);
+		else {  // gray dataset
+			final double value = randomAccess.get().getRealDouble();
+			if (dataset.isInteger()) {
+				message = String.format("x=%d, y=%d, value=%d", cx, cy, (long) value);
+			}
+			else {
+				message = String.format("x=%d, y=%d, value=%f", cx, cy, value);
+			}
 		}
 		eventService.publish(new StatusEvent(message));
 	}
@@ -124,10 +134,28 @@ public class PixelProbe extends AbstractTool {
 	{
 		int i = 0;
 		for (int d = 0; d < randomAccess.numDimensions(); d++) {
-			if (d == xAxis) randomAccess.setPosition(cx, d);
-			else if (d == yAxis) randomAccess.setPosition(cy, d);
+			if (d == xAxis) randomAccess.setPosition(cx, xAxis);
+			else if (d == yAxis) randomAccess.setPosition(cy, yAxis);
 			else randomAccess.setPosition(planePos.getLongPosition(i++), d);
 		}
 	}
 
+	private ColorRGB getColor(Dataset dataset,
+		RandomAccess<? extends RealType<?>> access)
+	{
+		int r,g,b;
+		
+		int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
+		
+		access.setPosition(0, channelAxis);
+		r = (int) access.get().getRealDouble();
+		
+		access.setPosition(1, channelAxis);
+		g = (int) access.get().getRealDouble();
+		
+		access.setPosition(2, channelAxis);
+		b = (int) access.get().getRealDouble();
+		
+		return new ColorRGB(r,g,b);
+	}
 }
