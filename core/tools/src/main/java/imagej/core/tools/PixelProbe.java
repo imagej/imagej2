@@ -70,10 +70,11 @@ public class PixelProbe extends AbstractTool {
 
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
-		final ImageJ context = evt.getContext();
-		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
-		final EventService eventService = context.getService(EventService.class);
+
+    final ImageJ context = evt.getContext();
+    final ImageDisplayService imageDisplayService =
+    		context.getService(ImageDisplayService.class);
+    final EventService eventService = context.getService(EventService.class);
 
 		final Display<?> display = evt.getDisplay();
 		if (!(display instanceof ImageDisplay)) return;
@@ -143,19 +144,13 @@ public class PixelProbe extends AbstractTool {
 	private ColorRGB getColor(Dataset dataset,
 		RandomAccess<? extends RealType<?>> access)
 	{
-		int r,g,b;
-		
 		int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
-		
 		access.setPosition(0, channelAxis);
-		r = (int) access.get().getRealDouble();
-		
+		int r = (int) access.get().getRealDouble();
 		access.setPosition(1, channelAxis);
-		g = (int) access.get().getRealDouble();
-		
+		int g = (int) access.get().getRealDouble();
 		access.setPosition(2, channelAxis);
-		b = (int) access.get().getRealDouble();
-		
+		int b = (int) access.get().getRealDouble();
 		return new ColorRGB(r,g,b);
 	}
 }
