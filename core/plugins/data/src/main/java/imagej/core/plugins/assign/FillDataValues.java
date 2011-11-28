@@ -34,17 +34,27 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.core.tools.FGTool;
+import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.tool.ToolService;
+import imagej.util.ColorRGB;
+import imagej.util.RealRect;
+import net.imglib2.Cursor;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
 import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealConstant;
+import net.imglib2.type.numeric.RealType;
 
 /**
- * Fills an output Dataset with a user defined constant value.
+ * Fills the selected region of an input Dataset with the foreground value.
  * 
  * @author Barry DeZonia
  */
@@ -55,20 +65,31 @@ public class FillDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter(required = true, persist = false)
+	private OverlayService overlayService;
+	
+	@Parameter(required = true, persist = false)
+	private ToolService toolService;
+	
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
-	@Parameter(
-		label = "TODO - later use current FG color but for now ask - Value")
-	private double value;
-
+	@Parameter(required = true, persist = false)
+	private Dataset dataset;
+	
 	// -- public interface --
 
 	@Override
 	public void run() {
-		final UnaryOperation<Real, Real> op = new RealConstant(value);
-		final InplaceUnaryTransform transform =
-			new InplaceUnaryTransform(display, op);
-		transform.run();
+		final FGTool cp = toolService.getTool(FGTool.class);
+		if (cp == null) return;
+		if (dataset.isRGBMerged()) {
+			final ColorRGB color = cp.getFgColor(); 
+			fillSelectedRegionWithColor(color);
+		}
+		else { // gray data
+			final double value = cp.getFgValue();
+			fillSelectedRegionWithValue(value);
+		}
 	}
 
 	public ImageDisplay getDisplay() {
@@ -79,12 +100,44 @@ public class FillDataValues implements ImageJPlugin {
 		this.display = display;
 	}
 
-	public double getValue() {
-		return value;
+	// -- private helpers --
+	
+	private void fillSelectedRegionWithValue(double value) {
+		final UnaryOperation<Real, Real> op = new RealConstant(value);
+		final InplaceUnaryTransform transform =
+				new InplaceUnaryTransform(display, op);
+		transform.run();
 	}
-
-	public void setValue(final double value) {
-		this.value = value;
+	
+	// TODO - make something like this Dataset API maybe. or somewhere else.
+	
+	private void fillSelectedRegionWithColor(ColorRGB color) {
+		RealRect bounds = overlayService.getSelectionBounds(display);
+		long minX = (long) bounds.x;
+		long minY = (long) bounds.y;
+		long maxX = (long) (bounds.x + bounds.width - 1);
+		long maxY = (long) (bounds.y + bounds.height - 1);
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+		long[] pos = new long[dataset.numDimensions()];
+		int xIndex = dataset.getAxisIndex(Axes.X);
+		int yIndex = dataset.getAxisIndex(Axes.Y);
+		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
+		Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
+		while (cursor.hasNext()) {
+			RealType<?> pixRef = cursor.next();
+			cursor.localize(pos);
+			if ((pos[xIndex] < minX) || (pos[xIndex] > maxX)) continue;
+			if ((pos[yIndex] < minY) || (pos[yIndex] > maxY)) continue;
+			if (pos[chIndex] == 0)
+				pixRef.setReal(r);
+			else if (pos[chIndex] == 1)
+				pixRef.setReal(g);
+			else
+				pixRef.setReal(b);
+		}
+		dataset.update();
 	}
-
 }
