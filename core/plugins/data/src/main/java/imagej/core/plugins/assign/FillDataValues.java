@@ -90,7 +90,7 @@ public class FillDataValues implements ImageJPlugin {
 		}
 		else { // gray data
 			final double value = cp.getFgValue();
-			fillSelectedRegionWithValue(value);
+			fillSelectedRegionWithValue(display, value);
 		}
 	}
 
@@ -104,10 +104,10 @@ public class FillDataValues implements ImageJPlugin {
 
 	// -- private helpers --
 	
-	private void fillSelectedRegionWithValue(double value) {
+	private void fillSelectedRegionWithValue(ImageDisplay disp, double value) {
 		final UnaryOperation<Real, Real> op = new RealConstant(value);
 		final InplaceUnaryTransform transform =
-				new InplaceUnaryTransform(display, op);
+				new InplaceUnaryTransform(disp, op);
 		transform.run();
 	}
 	
