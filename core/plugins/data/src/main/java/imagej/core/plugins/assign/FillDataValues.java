@@ -37,6 +37,7 @@ package imagej.core.plugins.assign;
 import imagej.core.tools.FGTool;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -71,20 +72,21 @@ public class FillDataValues implements ImageJPlugin {
 	private ToolService toolService;
 	
 	@Parameter(required = true, persist = false)
+	private ImageDisplayService dispService;
+	
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
-	@Parameter(required = true, persist = false)
-	private Dataset dataset;
-	
 	// -- public interface --
 
 	@Override
 	public void run() {
 		final FGTool cp = toolService.getTool(FGTool.class);
 		if (cp == null) return;
+		Dataset dataset = dispService.getActiveDataset(display);
 		if (dataset.isRGBMerged()) {
 			final ColorRGB color = cp.getFgColor(); 
-			fillSelectedRegionWithColor(color);
+			fillSelectedRegionWithColor(dataset, color);
 		}
 		else { // gray data
 			final double value = cp.getFgValue();
@@ -111,7 +113,7 @@ public class FillDataValues implements ImageJPlugin {
 	
 	// TODO - make something like this Dataset API maybe. or somewhere else.
 	
-	private void fillSelectedRegionWithColor(ColorRGB color) {
+	private void fillSelectedRegionWithColor(Dataset dataset, ColorRGB color) {
 		RealRect bounds = overlayService.getSelectionBounds(display);
 		long minX = (long) bounds.x;
 		long minY = (long) bounds.y;
