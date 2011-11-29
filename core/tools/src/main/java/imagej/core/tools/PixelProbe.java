@@ -34,123 +34,46 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DataView;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
-import imagej.ext.display.Display;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.ColorRGB;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
-import net.imglib2.RandomAccess;
-import net.imglib2.img.Img;
-import net.imglib2.meta.Axes;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * Displays pixel values under the cursor.
  * 
  * @author Barry DeZonia
- * @author Rick Lentz
- * @author Grant Harris
- * @author Curtis Rueden
  */
 @Tool(name = "Probe", alwaysActive = true)
 public class PixelProbe extends AbstractTool {
 
+	private PixelHelper helper = new PixelHelper();
+	
 	// -- ITool methods --
 
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
 
-    final ImageJ context = evt.getContext();
-    final ImageDisplayService imageDisplayService =
-    		context.getService(ImageDisplayService.class);
-    final EventService eventService = context.getService(EventService.class);
+		if (!helper.processEvent(evt)) return;
 
-		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
-		final ImageDisplay imageDisplay = (ImageDisplay) display;
-
-		final ImageCanvas canvas = imageDisplay.getCanvas();
-		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
-		if (!canvas.isInImage(mousePos)) {
-			eventService.publish(new StatusEvent(null));
-			return;
-		}
-
-		// mouse is over image
-
-		// TODO - update tool to probe more than just the active view
-		final DataView activeView = imageDisplay.getActiveView();
-		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
-
-		final RealCoords coords = canvas.panelToImageCoords(mousePos);
-		final int cx = coords.getIntX();
-		final int cy = coords.getIntY();
-
-		final Position planePos = activeView.getPlanePosition();
-
-		final Img<? extends RealType<?>> image = dataset.getImgPlus();
-		final RandomAccess<? extends RealType<?>> randomAccess =
-			image.randomAccess();
-		final int xAxis = dataset.getAxisIndex(Axes.X);
-		final int yAxis = dataset.getAxisIndex(Axes.Y);
-
-		setPosition(randomAccess, cx, cy, planePos, xAxis, yAxis);
-
-		final String message;
-		
-		// color dataset?
-		if (dataset.isRGBMerged()) {
-			final ColorRGB color = getColor(dataset, randomAccess);
+		long cx = helper.getCX();
+		long cy = helper.getCY();
+		String message;
+		if (helper.isPureRGBCase()) {
+			final ColorRGB color = helper.getColor();
 			message = String.format("x=%d, y=%d, value=%d,%d,%d", cx, cy,
 				color.getRed(), color.getGreen(), color.getBlue());
 		}
 		else {  // gray dataset
-			final double value = randomAccess.get().getRealDouble();
-			if (dataset.isInteger()) {
+			final double value = helper.getValue();
+			if (helper.isIntegerCase()) {
 				message = String.format("x=%d, y=%d, value=%d", cx, cy, (long) value);
 			}
-			else {
+			else { // is float case
 				message = String.format("x=%d, y=%d, value=%f", cx, cy, value);
 			}
 		}
-		eventService.publish(new StatusEvent(message));
+		helper.updateStatus(message);
 	}
 
-	// -- private interface --
-
-	private void setPosition(
-		final RandomAccess<? extends RealType<?>> randomAccess, final int cx,
-		final int cy, final Position planePos, final int xAxis, final int yAxis)
-	{
-		int i = 0;
-		for (int d = 0; d < randomAccess.numDimensions(); d++) {
-			if (d == xAxis) randomAccess.setPosition(cx, xAxis);
-			else if (d == yAxis) randomAccess.setPosition(cy, yAxis);
-			else randomAccess.setPosition(planePos.getLongPosition(i++), d);
-		}
-	}
-
-	private ColorRGB getColor(Dataset dataset,
-		RandomAccess<? extends RealType<?>> access)
-	{
-		int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
-		access.setPosition(0, channelAxis);
-		int r = (int) access.get().getRealDouble();
-		access.setPosition(1, channelAxis);
-		int g = (int) access.get().getRealDouble();
-		access.setPosition(2, channelAxis);
-		int b = (int) access.get().getRealDouble();
-		return new ColorRGB(r,g,b);
-	}
 }

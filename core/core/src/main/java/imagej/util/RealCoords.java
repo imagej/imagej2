@@ -59,6 +59,14 @@ public class RealCoords {
 		return (int) (y + 0.5);
 	}
 
+	public long getLongX() {
+		return (long) (x + 0.5);
+	}
+
+	public long getLongY() {
+		return (long) (y + 0.5);
+	}
+
 	@Override
 	public String toString() {
 		return "[Coords: x=" + x + ",y=" + y + "]";
