@@ -34,28 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
-import imagej.ext.display.Display;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.ColorRGB;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
-import net.imglib2.RandomAccess;
-import net.imglib2.display.ColorTable8;
-import net.imglib2.img.Img;
-import net.imglib2.meta.Axes;
-import net.imglib2.type.numeric.RealType;
 
 // TODO - this code adapted from PixelProbe. Update both this and that to
 // share some code.
@@ -77,6 +59,7 @@ public class FGTool extends AbstractTool {
 
 	// -- instance variables --
 	
+	private PixelHelper helper = new PixelHelper();
 	private ColorRGB fgColor = new ColorRGB(0,0,0);
 	private double fgValue = 0;
 
@@ -96,89 +79,17 @@ public class FGTool extends AbstractTool {
 	@Override
 	public void onMouseClick(final MsClickedEvent evt) {
 
-    final ImageJ context = evt.getContext();
-    final ImageDisplayService imageDisplayService =
-    		context.getService(ImageDisplayService.class);
-    final EventService eventService = context.getService(EventService.class);
+		if (!helper.processEvent(evt)) return;
 
-		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
-		final ImageDisplay imageDisplay = (ImageDisplay) display;
-
-		final ImageCanvas canvas = imageDisplay.getCanvas();
-		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
-		if (!canvas.isInImage(mousePos)) {
-			eventService.publish(new StatusEvent(null));
-			return;
-		}
-
-		// mouse is over image
-
-		// TODO - update tool to probe more than just the active view
-		final DataView activeView = imageDisplay.getActiveView();
-		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
-
-		final RealCoords coords = canvas.panelToImageCoords(mousePos);
-		final int cx = coords.getIntX();
-		final int cy = coords.getIntY();
-
-		final Position planePos = activeView.getPlanePosition();
-
-		final Img<? extends RealType<?>> image = dataset.getImgPlus();
-		final RandomAccess<? extends RealType<?>> randomAccess =
-			image.randomAccess();
-		final int xAxis = dataset.getAxisIndex(Axes.X);
-		final int yAxis = dataset.getAxisIndex(Axes.Y);
-
-		setPosition(randomAccess, cx, cy, planePos, xAxis, yAxis);
-
-		// color dataset?
-		if (dataset.isRGBMerged()) {
-			// NB - don't set fgValue in any way
-			fgColor = getColor(dataset, randomAccess);
-		}
-		else {  // gray dataset
-			fgValue = randomAccess.get().getRealDouble();
-			DatasetView view = imageDisplayService.getActiveDatasetView(imageDisplay);
-			ColorTable8 ctab = view.getColorTables().get(0);
-			final double min = randomAccess.get().getMinValue();
-			final double max = randomAccess.get().getMaxValue();
-			final double percent = (fgValue - min) / (max - min);
-			final int byteVal = (int) Math.round(255*percent);
-			int r = ctab.get(0, byteVal);
-			int g = ctab.get(1, byteVal);
-			int b = ctab.get(2, byteVal);
-			fgColor = new ColorRGB(r, g, b);
+		fgColor = helper.getColor();
+		if (!helper.isPureRGBCase()) {
+			fgValue = helper.getValue();
 		}
 		String message = String.format("(%d,%d,%d)",
 			fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue());
-		eventService.publish(new StatusEvent(message));
+		helper.updateStatus(message);
 	}
 
 	// -- private interface --
 
-	private void setPosition(
-		final RandomAccess<? extends RealType<?>> randomAccess, final int cx,
-		final int cy, final Position planePos, final int xAxis, final int yAxis)
-	{
-		int i = 0;
-		for (int d = 0; d < randomAccess.numDimensions(); d++) {
-			if (d == xAxis) randomAccess.setPosition(cx, xAxis);
-			else if (d == yAxis) randomAccess.setPosition(cy, yAxis);
-			else randomAccess.setPosition(planePos.getLongPosition(i++), d);
-		}
-	}
-
-	private ColorRGB getColor(Dataset dataset,
-		RandomAccess<? extends RealType<?>> access)
-	{
-		int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
-		access.setPosition(0, channelAxis);
-		int r = (int) access.get().getRealDouble();
-		access.setPosition(1, channelAxis);
-		int g = (int) access.get().getRealDouble();
-		access.setPosition(2, channelAxis);
-		int b = (int) access.get().getRealDouble();
-		return new ColorRGB(r,g,b);
-	}
 }
