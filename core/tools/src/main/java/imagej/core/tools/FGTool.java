@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DataView;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -51,6 +52,7 @@ import imagej.util.ColorRGB;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
@@ -137,11 +139,16 @@ public class FGTool extends AbstractTool {
 		}
 		else {  // gray dataset
 			fgValue = randomAccess.get().getRealDouble();
+			DatasetView view = imageDisplayService.getActiveDatasetView(imageDisplay);
+			ColorTable8 ctab = view.getColorTables().get(0);
 			final double min = randomAccess.get().getMinValue();
 			final double max = randomAccess.get().getMaxValue();
 			final double percent = (fgValue - min) / (max - min);
 			final int byteVal = (int) Math.round(255*percent);
-			fgColor = new ColorRGB(byteVal, byteVal, byteVal);
+			int r = ctab.get(0, byteVal);
+			int g = ctab.get(1, byteVal);
+			int b = ctab.get(2, byteVal);
+			fgColor = new ColorRGB(r, g, b);
 		}
 		String message = String.format("(%d,%d,%d)",
 			fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue());
