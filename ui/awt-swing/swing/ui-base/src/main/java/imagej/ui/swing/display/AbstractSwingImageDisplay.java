@@ -255,7 +255,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		// time spent. If it fails to find scale it leaves fraction unchanged.
 		
 		private void lookForBestFraction(final double scale) {
-			final int quickRange = 30;
+			final int quickRange = 32;
 			for (int n = 1; n <= quickRange; n++) {
 				for (int d = 1; d <= quickRange; d++) {
 					double frac = 1.0 * n / d;
