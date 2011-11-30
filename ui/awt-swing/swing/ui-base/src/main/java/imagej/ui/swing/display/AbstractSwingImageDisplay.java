@@ -156,6 +156,17 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	
 	// -- Helper methods --
 
+	/** Name this display with unique id. */
+	private void createName(final String baseName) {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		String theName = baseName;
+		int n = 0;
+		while (!displayService.isUniqueName(theName)) {
+			n++;
+			theName = baseName + "-" + n;
+		}
+		this.setName(theName);
+	}
 
 	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
@@ -240,7 +251,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		}
 		
 		// This method attempts to find a simple fraction that describes the
-		// specified scale. It searches a small set of number to minimize
+		// specified scale. It searches a small set of numbers to minimize
 		// time spent. If it fails to find scale it leaves fraction unchanged.
 		
 		private void lookForBestFraction(final double scale) {
@@ -256,18 +267,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 				}
 			}
 		}
+		
 	}
-
-	/** Name this display with unique id. */
-	private void createName(final String baseName) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		String theName = baseName;
-		int n = 0;
-		while (!displayService.isUniqueName(theName)) {
-			n++;
-			theName = baseName + "-" + n;
-		}
-		this.setName(theName);
-	}
-
+	
 }
