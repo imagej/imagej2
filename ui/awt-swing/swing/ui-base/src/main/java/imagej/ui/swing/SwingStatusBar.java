@@ -39,6 +39,8 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
+import imagej.options.OptionsService;
+import imagej.options.plugins.OptionsMemoryAndThreads;
 import imagej.ui.StatusBar;
 
 import java.awt.BorderLayout;
@@ -127,7 +129,11 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	@Override
 	public void mousePressed(final MouseEvent e) {
-		System.gc();
+		OptionsService service = ImageJ.get(OptionsService.class);
+		OptionsMemoryAndThreads options =
+				service.getOptions(OptionsMemoryAndThreads.class);
+		if (options.isRunGcOnClick())
+			System.gc();
 		eventService.publish(new StatusEvent(getInfoString(true)));
 	}
 
