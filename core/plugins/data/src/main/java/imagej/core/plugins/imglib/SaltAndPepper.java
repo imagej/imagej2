@@ -44,6 +44,9 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 import imagej.util.RealRect;
 
 import java.util.Random;
@@ -53,9 +56,9 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Implements the same functionality as IJ1's Salt and Pepper plugin. Assigns
- * random pixels to 255 or 0. 0 and 255 assignments are each evenly balanced at
- * 2.5% of the image. Currently only works on 2d images.
+ * Adds salt and pepper noise to an image. Image must be an integral type.
+ * Assigns random pixels to max or min pixel values. These assignments are
+ * evenly balanced and total 5% of the image.
  * 
  * @author Barry DeZonia
  */
@@ -73,6 +76,9 @@ public class SaltAndPepper implements ImageJPlugin {
 	private OverlayService overlayService;
 
 	@Parameter(required = true, persist = false)
+	private UIService uiService;
+
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	// -- other instance variables --
@@ -82,13 +88,17 @@ public class SaltAndPepper implements ImageJPlugin {
 	private Img<? extends RealType<?>> inputImage;
 	private RandomAccess<? extends RealType<?>> accessor;
 	private long[] position;
+	private double minPixValue;
+	private double maxPixValue;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		initializeMembers();
-		checkInput();
+		if (!inputOkay()) {
+			informUser();
+			return;
+		}
 		setupWorkingData();
 		assignPixels();
 		cleanup();
@@ -97,23 +107,17 @@ public class SaltAndPepper implements ImageJPlugin {
 
 	// -- private interface --
 
-	private void initializeMembers() {
+	private boolean inputOkay() {
 		input = imageDisplayService.getActiveDataset(display);
-		selection = overlayService.getSelectionBounds(display);
-	}
-
-	private void checkInput() {
-		input = imageDisplayService.getActiveDataset(display);
-		if (input == null) {
-			throw new IllegalArgumentException("input Dataset is null");
-		}
-
-		if (input.getImgPlus() == null) {
-			throw new IllegalArgumentException("input Image is null");
-		}
+		if (input == null) return false;
+		if (input.getImgPlus() == null) return false;
+		return input.isInteger() && !input.isRGBMerged();
 	}
 
 	private void setupWorkingData() {
+		selection = overlayService.getSelectionBounds(display);
+		minPixValue = input.getType().getMinValue();
+		maxPixValue = input.getType().getMaxValue();
 		inputImage = input.getImgPlus();
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
@@ -130,12 +134,12 @@ public class SaltAndPepper implements ImageJPlugin {
 		final Extents extents = new Extents(planeDims);
 		final Position planePos = extents.createPosition();
 		if (planeDims.length == 0) { // 2d only
-			assignPixelsInXYPlane(planePos, rng);
+			assignPlanePixels(planePos, rng);
 		}
 		else { // 3 or more dimsensions
 			while (planePos.hasNext()) {
 				planePos.fwd();
-				assignPixelsInXYPlane(planePos, rng);
+				assignPlanePixels(planePos, rng);
 			}
 		}
 	}
@@ -144,15 +148,14 @@ public class SaltAndPepper implements ImageJPlugin {
 		// nothing to do
 	}
 
-	private void assignPixelsInXYPlane(final Position planePos, final Random rng)
+	private void assignPlanePixels(final Position planePos, final Random rng)
 	{
-
-		// set non-XY coordinate values once
+		// set plane coordinate values once
 		for (int i = 2; i < position.length; i++)
 			position[i] = planePos.getLongPosition(i - 2);
 
-		final long ox = (long) selection.x;
-		final long oy = (long) selection.y;
+		final long ou = (long) selection.x;
+		final long ov = (long) selection.y;
 		long w = (long) selection.width;
 		long h = (long) selection.height;
 
@@ -163,15 +166,15 @@ public class SaltAndPepper implements ImageJPlugin {
 		final long numPixels = (long) (percentToChange * w * h);
 
 		for (long p = 0; p < numPixels / 2; p++) {
-			long randomX, randomY;
+			long randomU, randomV;
 
-			randomX = ox + nextLong(rng, w);
-			randomY = oy + nextLong(rng, h);
-			setPixel(randomX, randomY, 255);
+			randomU = ou + nextLong(rng, w);
+			randomV = ov + nextLong(rng, h);
+			setPixel(randomU, randomV, maxPixValue);
 
-			randomX = ox + nextLong(rng, w);
-			randomY = oy + nextLong(rng, h);
-			setPixel(randomX, randomY, 0);
+			randomU = ou + nextLong(rng, w);
+			randomV = ov + nextLong(rng, h);
+			setPixel(randomU, randomV, minPixValue);
 		}
 	}
 
@@ -181,14 +184,24 @@ public class SaltAndPepper implements ImageJPlugin {
 	}
 
 	/**
-	 * Sets a value at a specific (x,y) location in the image to a given value
+	 * Sets a value at a specific (u,v) location in the image to a given value
 	 */
-	private void setPixel(final long x, final long y, final double value) {
-		position[0] = x;
-		position[1] = y;
-
+	private void setPixel(final long u, final long v, final double value) {
+		position[0] = u;
+		position[1] = v;
 		accessor.setPosition(position);
-
 		accessor.get().setReal(value);
 	}
+	
+	private void informUser() {
+		final IUserInterface ui = uiService.getUI();
+		final DialogPrompt dialog =
+			ui.dialogPrompt(
+				"This plugin requires an integral dataset",
+				"Unsupported image type",
+				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+		dialog.prompt();
+	}
+
 }
