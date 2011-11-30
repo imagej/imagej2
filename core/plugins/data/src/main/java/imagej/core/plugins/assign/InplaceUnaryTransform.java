@@ -118,8 +118,8 @@ public class InplaceUnaryTransform {
 		span = new long[dims.length];
 		for (int i = 0; i < span.length; i++)
 			span[i] = dims[i] - 1;
-		span[xIndex] = w - 1;
-		span[yIndex] = h - 1;
+		span[xIndex] = w;
+		span[yIndex] = h;
 	}
 
 }
