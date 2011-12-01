@@ -48,7 +48,7 @@ import imagej.ui.swing.tools.roi.LineAdapter;
 	enabled = false)
 public class AngleTool extends AbstractTool {
 
-	public static final int PRIORITY = LineAdapter.PRIORITY + 1;
+	public static final int PRIORITY = LineAdapter.PRIORITY - 1;
 
 	// TODO
 

@@ -48,7 +48,7 @@ import imagej.ext.tool.Tool;
 	enabled = false)
 public class PointTool extends AbstractTool {
 
-	public static final int PRIORITY = AngleTool.PRIORITY + 1;
+	public static final int PRIORITY = AngleTool.PRIORITY - 1;
 
 	@Override
 	public MouseCursor getCursor() {

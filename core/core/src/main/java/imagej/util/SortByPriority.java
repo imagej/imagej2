@@ -67,7 +67,7 @@ public abstract class SortByPriority<T> extends ArrayList<T> {
 			public int compare(final T a, final T b) {
 				double priorityA = getPriority(a);
 				double priorityB = getPriority(b);
-				return priorityA < priorityB ? -1 : (priorityA > priorityB ? +1 : 0);
+				return priorityA < priorityB ? +1 : (priorityA > priorityB ? -1 : 0);
 			}
 		});
 	}

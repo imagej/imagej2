@@ -40,35 +40,35 @@ public class Priority {
 	 * Priority for processors that must go first in the processor chain.
 	 * Examples: {@link DebugPreprocessor}, {@link DebugPostprocessor}
 	 */
-	public static final double FIRST_PRIORITY = Double.NEGATIVE_INFINITY;
+	public static final double FIRST_PRIORITY = Double.POSITIVE_INFINITY;
 
 	/**
 	 * Priority for processors that strongly prefer to be early in the processor
 	 * chain. Examples: {@link ActiveDisplayPreprocessor},
 	 * {@link ServicePreprocessor}
 	 */
-	public static final double VERY_HIGH_PRIORITY = -10000;
+	public static final double VERY_HIGH_PRIORITY = +10000;
 
 	/**
 	 * Priority for processors that prefer to be earlier in the processor chain.
 	 * Example: {@link InitPreprocessor}
 	 */
-	public static final double HIGH_PRIORITY = -100;
+	public static final double HIGH_PRIORITY = +100;
 
 	/** Default priority for processors. */
 	public static final double NORMAL_PRIORITY = 0;
 
 	/** Priority for processors that prefer to be later in the processor chain. */
-	public static final double LOW_PRIORITY = 100;
+	public static final double LOW_PRIORITY = -100;
 
 	/**
 	 * Priority for processors that strongly prefer to be late in the processor
 	 * chain. Examples: {@link DisplayPostprocessor}, UI-specific subclasses of
 	 * {@link AbstractInputHarvesterPlugin}.
 	 */
-	public static final double VERY_LOW_PRIORITY = 10000;
+	public static final double VERY_LOW_PRIORITY = -10000;
 
 	/** Priority for processors that must go at the end of the processor chain. */
-	public static final double LAST_PRIORITY = Double.POSITIVE_INFINITY;
+	public static final double LAST_PRIORITY = Double.NEGATIVE_INFINITY;
 
 }

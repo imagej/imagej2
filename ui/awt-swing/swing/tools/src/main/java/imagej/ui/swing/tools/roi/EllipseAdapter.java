@@ -63,7 +63,7 @@ public class EllipseAdapter extends
 	AbstractJHotDrawOverlayAdapter<EllipseOverlay>
 {
 
-	public static final int PRIORITY = RectangleAdapter.PRIORITY + 1;
+	public static final int PRIORITY = RectangleAdapter.PRIORITY - 1;
 
 	static protected EllipseOverlay downcastOverlay(final Overlay roi) {
 		assert (roi instanceof EllipseOverlay);

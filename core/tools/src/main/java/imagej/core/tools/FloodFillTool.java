@@ -49,7 +49,7 @@ import imagej.ext.tool.Tool;
 	priority = FloodFillTool.PRIORITY, enabled = false)
 public class FloodFillTool extends AbstractTool {
 
-	public static final int PRIORITY = 304;
+	public static final int PRIORITY = -304;
 
 	// TODO
 

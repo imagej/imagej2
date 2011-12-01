@@ -49,7 +49,7 @@ import imagej.ext.tool.Tool;
 	enabled = false)
 public class EraserTool extends AbstractTool {
 
-	public static final int PRIORITY = 302;
+	public static final int PRIORITY = -302;
 
 	// TODO
 
