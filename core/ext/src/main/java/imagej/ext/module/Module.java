@@ -73,6 +73,13 @@ public interface Module extends Runnable {
 	 */
 	void cancel();
 
+	/**
+	 * Invokes this module's initializer function, if any.
+	 * 
+	 * @see ModuleInfo#getInitializer()
+	 */
+	void initialize();
+
 	/** Gets metadata about this module. */
 	ModuleInfo getInfo();
 

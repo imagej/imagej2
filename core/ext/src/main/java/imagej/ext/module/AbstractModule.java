@@ -57,6 +57,8 @@ public abstract class AbstractModule implements Module {
 	/** Table indicating resolved inputs. */
 	private final HashSet<String> resolvedInputs;
 
+	private MethodRef initializerRef;
+
 	public AbstractModule(final ModuleInfo info) {
 		this.info = info;
 		inputs = new HashMap<String, Object>();
@@ -74,6 +76,15 @@ public abstract class AbstractModule implements Module {
 	@Override
 	public void cancel() {
 		// do nothing by default
+	}
+
+	@Override
+	public void initialize() {
+		if (initializerRef == null) {
+			initializerRef =
+				new MethodRef(info.getDelegateClassName(), info.getInitializer());
+		}
+		initializerRef.execute(getDelegateObject());
 	}
 
 	@Override

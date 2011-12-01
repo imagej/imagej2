@@ -164,6 +164,11 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 	}
 
 	@Override
+	public String getInitializer() {
+		return null;
+	}
+
+	@Override
 	public void update(final EventService eventService) {
 		eventService.publish(new ModulesUpdatedEvent(this));
 	}

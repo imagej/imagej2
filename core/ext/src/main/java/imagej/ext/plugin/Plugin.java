@@ -37,6 +37,7 @@ package imagej.ext.plugin;
 import imagej.ext.display.ActiveDisplayPreprocessor;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayPostprocessor;
+import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.debug.DebugPostprocessor;
 import imagej.ext.plugin.debug.DebugPreprocessor;
 import imagej.ext.plugin.process.PostprocessorPlugin;
@@ -172,5 +173,15 @@ public @interface Plugin {
 
 	/** When false, the user interface will not provide a cancel button. */
 	boolean cancelable() default true;
+
+	/**
+	 * Defines a function that is called during preprocessing to assign the
+	 * plugin's initial input values. This initializer is called before the
+	 * individual @{@link Parameter#initializer()} (i.e.,
+	 * {@link ModuleItem#getInitializer()}) methods.
+	 * 
+	 * @see InitPreprocessor
+	 */
+	String initializer() default "";
 
 }

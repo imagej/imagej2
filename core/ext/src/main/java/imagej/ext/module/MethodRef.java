@@ -1,5 +1,5 @@
 //
-// InitPreprocessor.java
+// MethodRef.java
 //
 
 /*
@@ -32,45 +32,62 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.plugin;
+package imagej.ext.module;
 
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
-import imagej.ext.plugin.process.PreprocessorPlugin;
+import imagej.util.ClassUtils;
+import imagej.util.Log;
+
+import java.lang.reflect.Method;
 
 /**
- * A preprocessor plugin that populates initial parameter values.
- * <p>
- * First, the {@link Module}'s global initializer method is called (i.e.,
- * {@link Module#initialize()}), followed by the individal {@link ModuleItem}
- * initializer methods (i.e., {@link ModuleItem#initialize(Module)}).
- * </p>
+ * A reference to a {@link Method}, which can be invoked at will.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Plugin.HIGH_PRIORITY)
-public class InitPreprocessor implements PreprocessorPlugin {
+public class MethodRef {
 
-	// -- ModulePreprocessor methods --
+	private final Method method;
+	private final String label;
 
-	@Override
-	public boolean canceled() {
-		return false;
+	public MethodRef(final String className, final String methodName,
+		final Class<?>... params)
+	{
+		method = findMethod(className, methodName, params);
+		label = method == null ? null : makeLabel(className, methodName);
 	}
 
-	@Override
-	public String getMessage() {
-		return null;
-	}
-
-	// -- ModuleProcessor methods --
-
-	@Override
-	public void process(final Module module) {
-		module.initialize();
-		for (final ModuleItem<?> item : module.getInfo().inputs()) {
-			item.initialize(module);
+	public void execute(final Object obj, final Object... args) {
+		if (method == null) return;
+		Log.debug("Executing method: " + label);
+		try {
+			method.invoke(obj, args);
+		}
+		catch (final Exception e) {
+			// NB: Several types of exceptions; simpler to handle them all the same.
+			Log.warn("Error executing method: " + label, e);
 		}
 	}
 
+	private Method findMethod(final String className, final String methodName,
+		final Class<?>... params)
+	{
+		if (methodName == null || methodName.isEmpty()) return null;
+		final Class<?> c = ClassUtils.loadClass(className);
+		if (c == null) return null;
+		try {
+			// TODO - support inherited methods
+			final Method m = c.getDeclaredMethod(methodName, params);
+			m.setAccessible(true);
+			return m;
+		}
+		catch (final Exception e) {
+			// NB: Multiple types of exceptions; simpler to handle them all the same.
+			Log.warn("Cannot find method: " + makeLabel(c.getName(), methodName), e);
+		}
+		return null;
+	}
+
+	private String makeLabel(final String className, final String methodName) {
+		return className + "#" + methodName;
+	}
 }
