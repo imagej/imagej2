@@ -92,6 +92,18 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 		return item == null ? null : item.getField();
 	}
 
+	// -- ModuleInfo methods --
+
+	@Override
+	public boolean canPreview() {
+		return info.canPreview();
+	}
+
+	@Override
+	public boolean canCancel() {
+		return info.canCancel();
+	}
+
 	// -- UIDetails methods --
 
 	@Override
