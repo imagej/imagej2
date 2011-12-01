@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import java.util.Iterator;
+
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -43,6 +45,7 @@ import imagej.data.roi.Overlay;
 import imagej.event.EventHandler;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.DisplayWindow;
+import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsAppearance;
@@ -63,7 +66,7 @@ import net.imglib2.meta.AxisType;
 public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 	protected final DisplayWindow window;
-	private final JHotDrawImageCanvas imgCanvas;
+	private JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayPanel imgPanel;
 	private ScaleConverter scaleConverter;
 
@@ -152,6 +155,22 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 	@EventHandler
 	public void onEvent(OptionsEvent e) {
 		scaleConverter = getScaleConverter();
+	}
+
+	// NB - fixes bug #893
+	// TODO - find the best place(s) to be taking care of this bookkeeping
+	
+	@Override
+	@EventHandler
+	public void onEvent(DisplayDeletedEvent e) {
+		if (e.getObject() == this) {
+			Iterator<DataView> iter = iterator();
+			while (iter.hasNext()) {
+				DataView view = iter.next();
+				view.dispose();
+			}
+			clear();
+		}
 	}
 	
 	// -- Helper methods --
