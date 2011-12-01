@@ -59,7 +59,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 	private String iconPath;
 
 	/** Sort priority of the object. */
-	private double priority = Double.POSITIVE_INFINITY;
+	private double priority = Priority.LAST_PRIORITY;
 
 	/** Whether the object can be selected in the user interface. */
 	private boolean selectable;

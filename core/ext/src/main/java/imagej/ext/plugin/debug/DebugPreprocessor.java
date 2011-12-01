@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin.debug;
 
+import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
@@ -44,7 +45,7 @@ import imagej.util.Log;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Plugin.FIRST_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
 public class DebugPreprocessor implements PreprocessorPlugin {
 
 	// -- ModulePreprocessor methods --

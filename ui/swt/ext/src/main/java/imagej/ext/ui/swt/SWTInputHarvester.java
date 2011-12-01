@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.swt;
 
+import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ui.InputHarvester;
 import imagej.ext.module.ui.InputPanel;
@@ -57,7 +58,7 @@ import org.eclipse.swt.widgets.Shell;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_LOW_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
 public class SWTInputHarvester extends AbstractInputHarvesterPlugin {
 
 	private static final Display DISPLAY = new Display();

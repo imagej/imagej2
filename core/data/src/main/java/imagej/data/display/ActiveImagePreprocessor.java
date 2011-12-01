@@ -36,6 +36,7 @@ package imagej.data.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.module.ModuleService;
@@ -60,7 +61,7 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_HIGH_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
 public class ActiveImagePreprocessor implements PreprocessorPlugin {
 
 	// -- ModulePreprocessor methods --
