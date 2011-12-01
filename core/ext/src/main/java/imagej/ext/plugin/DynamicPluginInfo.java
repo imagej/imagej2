@@ -104,6 +104,11 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 		return info.canCancel();
 	}
 
+	@Override
+	public String getInitializer() {
+		return info.getInitializer();
+	}
+
 	// -- UIDetails methods --
 
 	@Override

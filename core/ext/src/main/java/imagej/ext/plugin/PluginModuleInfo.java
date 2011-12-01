@@ -206,6 +206,11 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	}
 
 	@Override
+	public String getInitializer() {
+		return plugin.initializer();
+	}
+
+	@Override
 	public void update(final EventService eventService) {
 		eventService.publish(new ModulesUpdatedEvent(this));
 	}

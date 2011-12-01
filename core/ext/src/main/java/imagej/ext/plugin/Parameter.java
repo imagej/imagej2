@@ -36,6 +36,7 @@ package imagej.ext.plugin;
 
 import imagej.ext.module.ItemIO;
 import imagej.ext.module.ItemVisibility;
+import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ui.WidgetStyle;
 
 import java.lang.annotation.ElementType;
@@ -119,7 +120,10 @@ public @interface Parameter {
 
 	/**
 	 * Defines a function that is called during preprocessing to initialize the
-	 * parameter value.
+	 * parameter value. This initializer is called after the global
+	 * {@link Plugin#initializer()} (i.e., {@link ModuleInfo#getInitializer()})
+	 * method.
+	 * 
 	 * @see InitPreprocessor
 	 */
 	String initializer() default "";

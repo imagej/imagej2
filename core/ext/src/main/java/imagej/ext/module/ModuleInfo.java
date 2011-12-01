@@ -100,6 +100,9 @@ public interface ModuleInfo extends UIDetails {
 	 */
 	boolean canCancel();
 
+	/** Gets the function that is called to initialize the module's values. */
+	String getInitializer();
+
 	/**
 	 * Notifies interested parties that the module info has been modified. This
 	 * mechanism is useful for updating any corresponding user interface such as
