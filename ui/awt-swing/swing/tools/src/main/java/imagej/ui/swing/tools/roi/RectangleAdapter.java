@@ -69,7 +69,7 @@ public class RectangleAdapter extends
 	AbstractJHotDrawOverlayAdapter<RectangleOverlay>
 {
 
-	public static final int PRIORITY = SelectionTool.PRIORITY + 1;
+	public static final int PRIORITY = SelectionTool.PRIORITY - 1;
 
 	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
 		assert (roi instanceof RectangleOverlay);

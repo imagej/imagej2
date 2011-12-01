@@ -48,7 +48,7 @@ import imagej.ui.swing.tools.roi.PolygonAdapter;
 	enabled = false)
 public class FreehandTool extends AbstractTool {
 
-	public static final int PRIORITY = PolygonAdapter.PRIORITY + 1;
+	public static final int PRIORITY = PolygonAdapter.PRIORITY - 1;
 
 	// TODO
 

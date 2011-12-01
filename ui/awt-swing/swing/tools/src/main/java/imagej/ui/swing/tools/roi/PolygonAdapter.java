@@ -72,7 +72,7 @@ public class PolygonAdapter extends
 	AbstractJHotDrawOverlayAdapter<PolygonOverlay>
 {
 
-	public static final int PRIORITY = EllipseAdapter.PRIORITY + 1;
+	public static final int PRIORITY = EllipseAdapter.PRIORITY - 1;
 
 	static private BezierFigure downcastFigure(final Figure figure) {
 		assert figure instanceof BezierFigure;

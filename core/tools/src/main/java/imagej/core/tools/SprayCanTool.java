@@ -48,7 +48,7 @@ import imagej.ext.tool.Tool;
 	enabled = false)
 public class SprayCanTool extends AbstractTool {
 
-	public static final int PRIORITY = 303;
+	public static final int PRIORITY = -303;
 
 	// TODO
 

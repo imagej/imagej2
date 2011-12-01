@@ -55,7 +55,7 @@ public class FGTool extends AbstractTool {
 
 	// -- constants --
 	
-	public static final int PRIORITY = 299;
+	public static final int PRIORITY = -299;
 
 	// -- instance variables --
 	

@@ -61,7 +61,7 @@ import org.jhotdraw.geom.BezierPath.Node;
 @JHotDrawOverlayAdapter(priority = LineAdapter.PRIORITY)
 public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 
-	public static final int PRIORITY = FreehandTool.PRIORITY + 1;
+	public static final int PRIORITY = FreehandTool.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {

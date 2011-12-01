@@ -49,7 +49,7 @@ import imagej.ext.tool.Tool;
 	enabled = false)
 public class ArrowTool extends AbstractTool {
 
-	public static final int PRIORITY = 305;
+	public static final int PRIORITY = -305;
 
 	// TODO
 

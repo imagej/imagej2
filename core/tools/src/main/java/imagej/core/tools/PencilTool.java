@@ -48,7 +48,7 @@ import imagej.ext.tool.Tool;
 	enabled = false)
 public class PencilTool extends AbstractTool {
 
-	public static final int PRIORITY = 301;
+	public static final int PRIORITY = -301;
 
 	// TODO
 

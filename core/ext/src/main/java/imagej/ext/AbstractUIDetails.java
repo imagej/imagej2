@@ -97,7 +97,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 	@Override
 	public int compareTo(final UIDetails obj) {
 		if (priority == obj.getPriority()) return 0;
-		return priority < obj.getPriority() ? -1 : 1;
+		return priority > obj.getPriority() ? -1 : 1;
 	}
 
 	// -- UIDetails methods --
