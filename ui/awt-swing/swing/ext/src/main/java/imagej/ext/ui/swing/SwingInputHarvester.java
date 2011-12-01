@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ui.InputHarvester;
 import imagej.ext.module.ui.InputPanel;
@@ -51,7 +52,7 @@ import javax.swing.JPanel;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Plugin.VERY_LOW_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
 public class SwingInputHarvester extends AbstractInputHarvesterPlugin {
 
 	// -- InputHarvester methods --

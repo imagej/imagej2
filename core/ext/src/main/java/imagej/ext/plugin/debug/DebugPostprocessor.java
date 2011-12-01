@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin.debug;
 
+import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PostprocessorPlugin;
@@ -46,7 +47,7 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PostprocessorPlugin.class, priority = Plugin.FIRST_PRIORITY)
+@Plugin(type = PostprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
 public class DebugPostprocessor implements PostprocessorPlugin {
 
 	@Override

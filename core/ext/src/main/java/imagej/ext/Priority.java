@@ -1,5 +1,5 @@
 //
-// PivotInputHarvester.java
+// Priority.java
 //
 
 /*
@@ -32,44 +32,43 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.ui.pivot;
+package imagej.ext;
 
-import imagej.ext.Priority;
-import imagej.ext.module.Module;
-import imagej.ext.module.ui.InputHarvester;
-import imagej.ext.module.ui.InputPanel;
-import imagej.ext.plugin.AbstractInputHarvesterPlugin;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.process.PreprocessorPlugin;
+public class Priority {
 
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.Sheet;
+	/**
+	 * Priority for processors that must go first in the processor chain.
+	 * Examples: {@link DebugPreprocessor}, {@link DebugPostprocessor}
+	 */
+	public static final double FIRST_PRIORITY = Double.NEGATIVE_INFINITY;
 
-/**
- * PivotInputHarvester is an {@link InputHarvester} that collects input
- * parameter values from the user using a {@link PivotInputPanel} dialog box.
- * 
- * @author Curtis Rueden
- * @author Barry DeZonia
- */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class PivotInputHarvester extends AbstractInputHarvesterPlugin {
+	/**
+	 * Priority for processors that strongly prefer to be early in the processor
+	 * chain. Examples: {@link ActiveDisplayPreprocessor},
+	 * {@link ServicePreprocessor}
+	 */
+	public static final double VERY_HIGH_PRIORITY = -10000;
 
-	@Override
-	public PivotInputPanel createInputPanel() {
-		return new PivotInputPanel();
-	}
+	/**
+	 * Priority for processors that prefer to be earlier in the processor chain.
+	 * Example: {@link InitPreprocessor}
+	 */
+	public static final double HIGH_PRIORITY = -100;
 
-	@Override
-	public boolean
-		harvestInputs(final InputPanel inputPanel, final Module module)
-	{
-		final Sheet dialog = new Sheet();
-		dialog.setTitle(module.getInfo().getLabel());
-		dialog.add(((PivotInputPanel) inputPanel).getPanel());
-		dialog.open((Display) null);// FIXME
-		final boolean success = dialog.getResult();
-		return success;
-	}
+	/** Default priority for processors. */
+	public static final double NORMAL_PRIORITY = 0;
+
+	/** Priority for processors that prefer to be later in the processor chain. */
+	public static final double LOW_PRIORITY = 100;
+
+	/**
+	 * Priority for processors that strongly prefer to be late in the processor
+	 * chain. Examples: {@link DisplayPostprocessor}, UI-specific subclasses of
+	 * {@link AbstractInputHarvesterPlugin}.
+	 */
+	public static final double VERY_LOW_PRIORITY = 10000;
+
+	/** Priority for processors that must go at the end of the processor chain. */
+	public static final double LAST_PRIORITY = Double.POSITIVE_INFINITY;
 
 }

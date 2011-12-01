@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.display;
 
 import imagej.ImageJ;
+import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.Plugin;
@@ -52,7 +53,7 @@ import java.util.Map;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-@Plugin(type = PostprocessorPlugin.class, priority = Plugin.VERY_LOW_PRIORITY)
+@Plugin(type = PostprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
 public class DisplayPostprocessor implements PostprocessorPlugin {
 
 	@Override
