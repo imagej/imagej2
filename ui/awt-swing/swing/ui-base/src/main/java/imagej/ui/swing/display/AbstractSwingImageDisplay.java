@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import java.util.Iterator;
-
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -45,7 +43,6 @@ import imagej.data.roi.Overlay;
 import imagej.event.EventHandler;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsAppearance;
@@ -66,7 +63,7 @@ import net.imglib2.meta.AxisType;
 public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 	protected final DisplayWindow window;
-	private JHotDrawImageCanvas imgCanvas;
+	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayPanel imgPanel;
 	private ScaleConverter scaleConverter;
 
@@ -153,7 +150,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 	@SuppressWarnings("unused")
 	@EventHandler
-	public void onEvent(OptionsEvent e) {
+	public void onEvent(final OptionsEvent e) {
 		scaleConverter = getScaleConverter();
 	}
 
@@ -173,11 +170,11 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
-		OptionsService service = ImageJ.get(OptionsService.class);
-		OptionsAppearance options = service.getOptions(OptionsAppearance.class);
-		
-		if (options.isDisplayFractionalScales())
-			return new FractionalScaleConverter();
+		final OptionsService service = ImageJ.get(OptionsService.class);
+		final OptionsAppearance options =
+			service.getOptions(OptionsAppearance.class);
+
+		if (options.isDisplayFractionalScales()) return new FractionalScaleConverter();
 
 		return new PercentScaleConverter();
 	}
@@ -205,17 +202,16 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 			final FractionalScale fracScale = new FractionalScale(realScale);
 			// is fractional scale invalid?
 			if (fracScale.getDenom() == 0) {
-				if (realScale >= 1)
-					return String.format("%.2fX", realScale);
+				if (realScale >= 1) return String.format("%.2fX", realScale);
 				// else scale < 1
 				return String.format("1/%.2fX", (1 / realScale));
 			}
 			// or do we have a whole number scale?
-			else if (fracScale.getDenom() == 1)
-				return String.format("%dX", fracScale.getNumer());
+			else if (fracScale.getDenom() == 1) return String.format("%dX", fracScale
+				.getNumer());
 			// else have valid fraction
-			return
-				String.format("%d/%dX", fracScale.getNumer(), fracScale.getDenom());
+			return String
+				.format("%d/%dX", fracScale.getNumer(), fracScale.getDenom());
 		}
 	}
 
@@ -252,17 +248,17 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		int getDenom() {
 			return denom;
 		}
-		
+
 		// This method attempts to find a simple fraction that describes the
 		// specified scale. It searches a small set of numbers to minimize
 		// time spent. If it fails to find scale it leaves fraction unchanged.
-		
+
 		private void lookForBestFraction(final double scale) {
 			final int quickRange = 32;
 			for (int n = 1; n <= quickRange; n++) {
 				for (int d = 1; d <= quickRange; d++) {
-					double frac = 1.0 * n / d;
-					if (Math.abs(scale-frac) < 0.0001) {
+					final double frac = 1.0 * n / d;
+					if (Math.abs(scale - frac) < 0.0001) {
 						numer = n;
 						denom = d;
 						return;
@@ -270,7 +266,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 				}
 			}
 		}
-		
+
 	}
-	
+
 }
