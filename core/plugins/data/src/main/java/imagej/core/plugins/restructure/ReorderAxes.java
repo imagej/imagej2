@@ -34,12 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.restructure;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 
@@ -57,10 +56,7 @@ import net.imglib2.type.numeric.RealType;
 // - can reorder X & Y out of 1st two positions. This could be useful in future
 //     but might need to block right now.
 
-// FIXME: update and simplify code to match other dynamic plugins
-// - use @Parameters where possible
-// - add public getters and setters for all module inputs and outputs
-// - add callbacks as appropriate to keep input valid
+// TODO: add callbacks as appropriate to keep input valid
 
 /**
  * Changes the internal ImgPlus of a Dataset so that its data values stay the
@@ -69,35 +65,32 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Axes...") })
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Axes...") },
+	initializer = "initAxes")
 public class ReorderAxes extends DynamicPlugin {
 
-	// -- instance variables --
-	
+	// -- Parameters --
+
+	@Parameter(required = true, persist = false)
 	private Dataset dataset;
+
+	// -- Fields --
+
 	private String[] axisNames;
 	private int[] permutationAxisIndices;
 	private AxisType[] desiredAxisOrder;
 
-	// -- public interface --
-	
-	public ReorderAxes() {
-		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset();
-		if (dataset == null) return;
-		
-		final AxisType[] axes = dataset.getAxes();
+	// -- ReorderAxes methods --
 
-		final ArrayList<String> choices = new ArrayList<String>();
-		for (int i = 0; i < axes.length; i++) {
-			choices.add(axes[i].getLabel());
-		}
-		for (int i = 0; i < axes.length; i++) {
-			final DefaultModuleItem<String> name =
-				new DefaultModuleItem<String>(this, name(i), String.class);
-			name.setChoices(choices);
-			addInput(name);
-		}
+	public Dataset getDataset() {
+		return dataset;
 	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
+	}
+
+	// -- Runnable methods --
 
 	/** Runs the plugin and reorders axes as specified by user. */
 	@Override
@@ -115,21 +108,26 @@ public class ReorderAxes extends DynamicPlugin {
 		dataset.setCompositeChannelCount(count);
 	}
 
-	// -- private helpers --
+	// -- Initializers --
 
-	/*
-	private void reportDims(ImgPlus<?> imgPlus) {
-		System.out.println("Dimension report");
-		long[] dims = new long[imgPlus.numDimensions()];
-		imgPlus.dimensions(dims);
-		Axis[] axes = new Axis[dims.length];
-		imgPlus.axes(axes);
-		for (int i = 0; i < dims.length; i++) {
-			System.out.println(dims[i]+" "+axes[i]);
+	protected void initAxes() {
+		final AxisType[] axes = dataset.getAxes();
+
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (int i = 0; i < axes.length; i++) {
+			choices.add(axes[i].getLabel());
 		}
-		System.out.println();
+		for (int i = 0; i < axes.length; i++) {
+			final DefaultModuleItem<String> axisItem =
+				new DefaultModuleItem<String>(this, name(i), String.class);
+			axisItem.setChoices(choices);
+			axisItem.setPersisted(false);
+			axisItem.setValue(this, axes[i].getLabel());
+			addInput(axisItem);
+		}
 	}
-	*/
+
+	// -- Helper methods --
 
 	private String name(final int i) {
 		return "Axis #" + i;
@@ -241,8 +239,8 @@ public class ReorderAxes extends DynamicPlugin {
 	/**
 	 * Returns the axis index of an Axis given a permuted set of axes.
 	 */
-	private int
-		getNewAxisIndex(final AxisType[] permutedAxes, final AxisType originalAxis)
+	private int getNewAxisIndex(final AxisType[] permutedAxes,
+		final AxisType originalAxis)
 	{
 		for (int i = 0; i < permutedAxes.length; i++) {
 			if (permutedAxes[i] == originalAxis) return i;
@@ -283,7 +281,9 @@ public class ReorderAxes extends DynamicPlugin {
 	 * Permutes from an axis order in the original space into an axis order in the
 	 * permuted space
 	 */
-	private void permute(final AxisType[] origAxes, final AxisType[] permutedAxes) {
+	private void
+		permute(final AxisType[] origAxes, final AxisType[] permutedAxes)
+	{
 		for (int i = 0; i < origAxes.length; i++)
 			permutedAxes[permutationAxisIndices[i]] = origAxes[i];
 	}
