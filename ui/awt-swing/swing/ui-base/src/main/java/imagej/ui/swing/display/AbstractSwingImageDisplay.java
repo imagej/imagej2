@@ -157,22 +157,6 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		scaleConverter = getScaleConverter();
 	}
 
-	// NB - fixes bug #893
-	// TODO - find the best place(s) to be taking care of this bookkeeping
-	
-	@Override
-	@EventHandler
-	public void onEvent(DisplayDeletedEvent e) {
-		if (e.getObject() == this) {
-			Iterator<DataView> iter = iterator();
-			while (iter.hasNext()) {
-				DataView view = iter.next();
-				view.dispose();
-			}
-			clear();
-		}
-	}
-	
 	// -- Helper methods --
 
 	/** Name this display with unique id. */

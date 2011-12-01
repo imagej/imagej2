@@ -388,9 +388,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
 		if (event.getObject() == this) {
-			closeHelper(); 
-			// NB - we've avoided dispose() since its been called elsewhere.
-			// If call close() here instead get duplicated WindowClosingEvents.
+			closeHelper();
+			// NB: If call close() here instead get duplicated WindowClosingEvents.
 		}
 	}
 
@@ -418,6 +417,11 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	protected void closeHelper() {
+		// NB: Fixes bug #893.
+		for (final DataView view : this) {
+			view.dispose();
+		}
+		clear();
 		unsubscribeFromEvents();
 	}
 
