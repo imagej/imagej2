@@ -49,15 +49,16 @@ import java.util.Map;
  * Default {@link ModuleInfo} implementation.
  * <p>
  * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
- * {@link List}s, internally. The {@link Module} {@link Class} given in the
- * constructor is given as the delegate class name for
+ * {@link ArrayList}s, internally. The {@link Module} {@link Class} given in the
+ * {@link #setModuleClass(Class)} method is given as the delegate class name for
  * {@link #getDelegateClassName()}, and instantiated using a constructor that
  * takes a single {@link ModuleInfo} parameter.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo {
+public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
+{
 
 	/** Table of inputs, keyed on name. */
 	private final Map<String, ModuleItem<?>> inputMap =
@@ -71,11 +72,12 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo {
 	private final List<ModuleItem<?>> inputList = new ArrayList<ModuleItem<?>>();
 
 	/** Ordered list of output items. */
-	private final List<ModuleItem<?>> outputList = new ArrayList<ModuleItem<?>>();
+	private final List<ModuleItem<?>> outputList =
+		new ArrayList<ModuleItem<?>>();
 
 	private Class<? extends Module> moduleClass;
 
-	// -- AbstractModuleInfo methods --
+	// -- DefaultModuleInfo methods --
 
 	/** Sets the module class described by this {@link ModuleInfo}. */
 	public void setModuleClass(final Class<? extends Module> moduleClass) {
