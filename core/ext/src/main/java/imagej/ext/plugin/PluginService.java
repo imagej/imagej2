@@ -46,6 +46,7 @@ import imagej.ext.plugin.finder.PluginFinder;
 import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
 import imagej.util.Log;
+import imagej.util.SortByPriority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,9 +107,19 @@ public class PluginService extends AbstractService {
 		moduleService.removeModules(getRunnablePlugins());
 
 		pluginIndex.clear();
-		for (final IndexItem<PluginFinder, IPluginFinder> item : Index.load(
-			PluginFinder.class, IPluginFinder.class))
-		{
+		final SortByPriority<IndexItem<PluginFinder, IPluginFinder>> sorted =
+			new SortByPriority<IndexItem<PluginFinder, IPluginFinder>>(Index.load(
+				PluginFinder.class, IPluginFinder.class))
+			{
+
+				@Override
+				public double getPriority(
+					final IndexItem<PluginFinder, IPluginFinder> item)
+				{
+					return item.annotation().priority();
+				}
+			};
+		for (final IndexItem<PluginFinder, IPluginFinder> item : sorted) {
 			try {
 				final IPluginFinder finder = item.instance();
 				final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();

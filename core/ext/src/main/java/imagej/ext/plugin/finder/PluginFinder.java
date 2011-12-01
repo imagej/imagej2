@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin.finder;
 
+import imagej.ext.Priority;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -53,4 +55,7 @@ import net.java.sezpoz.Indexable;
 @Indexable(type = IPluginFinder.class)
 public @interface PluginFinder {
 	// indexable annotation interface for use with SezPoz
+
+	double priority() default Priority.NORMAL_PRIORITY;
+
 }
