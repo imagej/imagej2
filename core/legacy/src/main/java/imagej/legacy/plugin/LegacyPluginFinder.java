@@ -42,6 +42,7 @@ import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
+import imagej.ext.Priority;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -76,7 +77,7 @@ import java.util.Set;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@PluginFinder
+@PluginFinder(priority = Priority.LOW_PRIORITY /* need ImageJPluginFinder for OptionsSynchronizer */)
 public class LegacyPluginFinder implements IPluginFinder {
 
 	private static final String LEGACY_PLUGIN_CLASS = LegacyPlugin.class
