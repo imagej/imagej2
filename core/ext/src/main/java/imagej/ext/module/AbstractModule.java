@@ -155,7 +155,7 @@ public abstract class AbstractModule implements Module {
 	// -- Helper methods --
 
 	private Map<String, Object> createMap(final Iterable<ModuleItem<?>> items,
-		boolean outputMap)
+		final boolean outputMap)
 	{
 		final Map<String, Object> map = new HashMap<String, Object>();
 		for (final ModuleItem<?> item : items) {
