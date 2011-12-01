@@ -35,15 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.plugin;
 
 import imagej.ext.Priority;
-import imagej.ext.display.ActiveDisplayPreprocessor;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayPostprocessor;
 import imagej.ext.module.ModuleItem;
-import imagej.ext.plugin.debug.DebugPostprocessor;
-import imagej.ext.plugin.debug.DebugPreprocessor;
 import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
-
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
