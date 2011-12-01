@@ -42,7 +42,6 @@ import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
-import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventHandler;
@@ -76,7 +75,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	private ImageCanvas canvas;
 
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	private AxisType activeAxis = null;
 
@@ -344,7 +343,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// TODO - displays should not listen for Data events. Views should listen for
 	// data events, adjust themseleves, and generate view events. The display
 	// classes should listen for view events and refresh themselves as necessary.
-	
+
 	@EventHandler
 	protected void onEvent(final DataRestructuredEvent event) {
 		for (final DataView view : this) {
@@ -360,7 +359,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// TODO - displays should not listen for Data events. Views should listen for
 	// data events, adjust themseleves, and generate view events. The display
 	// classes should listen for view events and refresh themselves as necessary.
-	
+
 	@EventHandler
 	protected void onEvent(final DataUpdatedEvent event) {
 		for (final DataView view : this) {
@@ -375,7 +374,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// TODO - displays should not listen for Data events. Views should listen for
 	// data events, adjust themseleves, and generate view events. The display
 	// classes should listen for view events and refresh themselves as necessary.
-	
+
 	@EventHandler
 	protected void onEvent(final DatasetUpdatedEvent event) {
 		final DataView view = getActiveView();
