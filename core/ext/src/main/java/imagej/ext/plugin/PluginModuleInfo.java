@@ -202,12 +202,12 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 
 	@Override
 	public boolean canCancel() {
-		return plugin.cancelable();
+		return plugin == null ? false : plugin.cancelable();
 	}
 
 	@Override
 	public String getInitializer() {
-		return plugin.initializer();
+		return plugin == null ? null : plugin.initializer();
 	}
 
 	@Override
