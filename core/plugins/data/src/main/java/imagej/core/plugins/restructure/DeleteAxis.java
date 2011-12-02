@@ -146,8 +146,8 @@ public class DeleteAxis extends DynamicPlugin {
 
 	/** Updates the last value when the axis changes. */
 	protected void axisChanged() {
-		int axisIndex = getAxisIndex();
-		long value = getAxisPos(axisIndex) + 1;
+		final AxisType axis = Axes.get(axisName);
+		long value = display.getAxisPosition(axis) + 1;
 		long max = currDimLen();
 		initPositionRange(1,max);
 		setPosition(value);
@@ -259,7 +259,8 @@ public class DeleteAxis extends DynamicPlugin {
 	private void initPosition() {
 		int activeAxis = 2;
 		long max = getDataset().getImgPlus().dimension(activeAxis);
-		long value = getAxisPos(activeAxis) + 1;
+		AxisType axis = getDataset().axis(2);
+		long value = display.getAxisPosition(axis) + 1;
 		initPositionRange(1, max);
 		setPosition(value);
 	}
@@ -290,15 +291,6 @@ public class DeleteAxis extends DynamicPlugin {
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 	
-	private long getAxisPos(int axisNum) {
-		return display.getActiveView().getPosition(axisNum);
-	}
-	
-	private int getAxisIndex() {
-		AxisType axis = Axes.get(axisName);
-		return getDataset().getAxisIndex(axis);
-	}
-
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
