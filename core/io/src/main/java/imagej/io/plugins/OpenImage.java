@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.data.ImgLibDataset;
+import imagej.data.DefaultDataset;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.module.ItemIO;
@@ -87,7 +87,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 		try {
 			imageOpener.addStatusListener(this);
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			dataset = new ImgLibDataset(imgPlus);
+			dataset = new DefaultDataset(imgPlus);
 			eventService.publish(new FileOpenedEvent(id));
 		}
 		catch (final ImgIOException e) {

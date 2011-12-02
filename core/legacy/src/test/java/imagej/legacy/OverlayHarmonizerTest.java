@@ -42,7 +42,7 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.ByteProcessor;
 import imagej.data.Dataset;
-import imagej.data.ImgLibDataset;
+import imagej.data.DefaultDataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.roi.BinaryMaskOverlay;
 import imagej.data.roi.EllipseOverlay;
@@ -190,7 +190,7 @@ public class OverlayHarmonizerTest {
 				ra.get().set(data[i][j]);
 			}
 		}
-		return new ImgLibDataset(new ImgPlus<ByteType>(img, name, new AxisType[] {
+		return new DefaultDataset(new ImgPlus<ByteType>(img, name, new AxisType[] {
 			Axes.X, Axes.Y }));
 	}
 

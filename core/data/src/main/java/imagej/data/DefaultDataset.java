@@ -1,5 +1,5 @@
 //
-// ImgLibDataset.java
+// DefaultDataset.java
 //
 
 /*
@@ -72,14 +72,14 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class ImgLibDataset extends AbstractData implements Dataset {
+public class DefaultDataset extends AbstractData implements Dataset {
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
 	private boolean isDirty;
 	private Extents extents;
 
-	public ImgLibDataset(final ImgPlus<? extends RealType<?>> imgPlus) {
+	public DefaultDataset(final ImgPlus<? extends RealType<?>> imgPlus) {
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;
@@ -238,7 +238,7 @@ public class ImgLibDataset extends AbstractData implements Dataset {
 		@SuppressWarnings("rawtypes")
 		final ImgPlus untypedImg = imgPlus;
 		@SuppressWarnings("unchecked")
-		final Dataset d = new ImgLibDataset(createBlankCopy(untypedImg));
+		final Dataset d = new DefaultDataset(createBlankCopy(untypedImg));
 		d.setRGBMerged(isRGBMerged());
 		return d;
 	}
