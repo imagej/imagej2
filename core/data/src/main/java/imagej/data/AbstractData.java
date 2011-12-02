@@ -39,6 +39,15 @@ import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
 import imagej.data.roi.Overlay;
 import imagej.event.EventService;
+
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import net.imglib2.meta.AxisType;
 
 /**
@@ -49,13 +58,19 @@ import net.imglib2.meta.AxisType;
  * @see Dataset
  * @see Overlay
  */
-public abstract class AbstractData implements Data, Comparable<Data> {
+public abstract class AbstractData implements Data, Comparable<Data>,
+	Externalizable
+{
 
-	private int refs = 0;
-	
+	// TODO: Eliminate these parallel lists in favor of a single List<Axis>.
+	private final List<AxisType> axes = new ArrayList<AxisType>();
+	private final List<Double> calibrations = new ArrayList<Double>();
+
+	protected final EventService eventService;
+
 	private String name;
 
-	final protected EventService eventService;
+	private int refs = 0;
 
 	public AbstractData() {
 		eventService = ImageJ.get(EventService.class);
@@ -124,6 +139,68 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 		return axes;
 	}
 
+	// -- CalibratedSpace methods --
+
+	@Override
+	public int getAxisIndex(final AxisType axis) {
+		return axes.indexOf(axis);
+	}
+
+	@Override
+	public AxisType axis(final int d) {
+		if (d < 0 || d >= axes.size()) {
+			throw new IllegalArgumentException("Index out of range: " + d);
+		}
+		return axes.get(d);
+	}
+
+	@Override
+	public void axes(final AxisType[] axesToFill) {
+		for (int i = 0; i < axesToFill.length && i < axes.size(); i++) {
+			axesToFill[i] = axes.get(i);
+		}
+	}
+
+	@Override
+	public void setAxis(final AxisType axis, final int d) {
+		while (axes.size() <= d) {
+			this.axes.add(null);
+			this.calibrations.add(1.0);
+		}
+		this.axes.set(d, axis);
+	}
+
+	@Override
+	public double calibration(final int d) {
+		if (d >= calibrations.size()) return 1.0;
+		return calibrations.get(d);
+	}
+
+	@Override
+	public void calibration(final double[] cal) {
+		for (int i = 0; (i < cal.length) && (i < this.calibrations.size()); i++) {
+			cal[i] = this.calibrations.get(i);
+		}
+		if (cal.length > calibrations.size()) {
+			Arrays.fill(cal, calibrations.size(), cal.length, 1.0);
+		}
+	}
+
+	@Override
+	public void setCalibration(final double cal, final int d) {
+		while (calibrations.size() <= d) {
+			calibrations.add(1.0);
+		}
+		calibrations.set(d, cal);
+	}
+
+	// -- EuclideanSpace methods --
+
+	@Override
+	public int numDimensions() {
+		return axes.size();
+	}
+
 	// -- Named methods --
 
 	@Override
@@ -141,6 +218,26 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 	@Override
 	public int compareTo(final Data data) {
 		return getName().compareTo(data.getName());
+	}
+
+	// -- Externalizable methods --
+
+	@Override
+	public void writeExternal(final ObjectOutput out) throws IOException {
+		out.writeObject(axes);
+		out.writeObject(calibrations);
+	}
+
+	@Override
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
+		final List<AxisType> axisList = (List<AxisType>) in.readObject();
+		axes.clear();
+		axes.addAll(axisList);
+		final List<Double> calibrationList = (List<Double>) in.readObject();
+		calibrations.clear();
+		calibrations.addAll(calibrationList);
 	}
 
 }
