@@ -227,7 +227,7 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 	@Override
 	public Extents getExtents() {
 		// FIXME
-		return null;
+		return new Extents(new long[0]);
 	}
 
 	// -- Externalizable methods --
