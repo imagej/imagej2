@@ -178,7 +178,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@EventHandler
 	protected void onViewSelected(final DataViewSelectedEvent event) {
 		final DataView view = event.getView();
-		if ((view.getDisplay() == display) && (view instanceof FigureView)) {
+		if (display.contains(view) && view instanceof FigureView) {
 			final Figure figure = ((FigureView) view).getFigure();
 			if (!drawingView.getSelectedFigures().contains(figure)) {
 				drawingView.addToSelection(figure);
@@ -189,7 +189,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@EventHandler
 	protected void onViewDeselected(final DataViewDeselectedEvent event) {
 		final DataView view = event.getView();
-		if ((view.getDisplay() == display) && (view instanceof FigureView)) {
+		if (display.contains(view) && view instanceof FigureView) {
 			final Figure figure = ((FigureView) view).getFigure();
 			if (drawingView.getSelectedFigures().contains(figure)) {
 				drawingView.removeFromSelection(figure);

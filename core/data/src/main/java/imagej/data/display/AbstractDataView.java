@@ -50,7 +50,6 @@ import imagej.event.EventService;
  */
 public abstract class AbstractDataView implements DataView {
 
-	private final ImageDisplay display;
 	private final Data data;
 
 	protected final EventService eventService;
@@ -67,19 +66,13 @@ public abstract class AbstractDataView implements DataView {
 	 */
 	private boolean selected;
 
-	public AbstractDataView(final ImageDisplay display, final Data data) {
+	public AbstractDataView(final Data data) {
 		eventService = ImageJ.get(EventService.class);
-		this.display = display;
 		this.data = data;
 		data.incrementReferences();
 	}
 
 	// -- DataView methods --
-
-	@Override
-	public ImageDisplay getDisplay() {
-		return display;
-	}
 
 	@Override
 	public Data getData() {
