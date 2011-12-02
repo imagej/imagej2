@@ -273,6 +273,29 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		publish(new DatasetRGBChangedEvent(this));
 	}
 
+	@Override
+	public void copyDataFrom(final Dataset other) {
+		// create a new img to hold data using our own factory
+		@SuppressWarnings("rawtypes")
+		final ImgFactory factory = getImgPlus().getImg().factory();
+		@SuppressWarnings("unchecked")
+		final Img<? extends RealType<?>> newImg =
+			factory.create(other.getDims(), other.getType());
+
+		// copy the data into the new img
+		copyDataValues(other.getImgPlus().getImg(), newImg);
+
+		// create new imgplus to contain data using the current name
+		final double[] calib = new double[other.getDims().length];
+		other.calibration(calib);
+		final ImgPlus<? extends RealType<?>> newImgPlus =
+			wrapAsImgPlus(newImg, other.getAxes(), calib);
+
+		// set my instance vars to the new values
+		setRGBMerged(other.isRGBMerged());
+		setImgPlus(newImgPlus);
+	}
+
 	// -- Data methods --
 
 	@Override
@@ -294,20 +317,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		return extents;
 	}
 
-	// -- Named methods --
-
-	@Override
-	public String getName() {
-		return imgPlus.getName();
-	}
-
-	@Override
-	public void setName(final String name) {
-		imgPlus.setName(name);
-		update();
-	}
-
-	// -- LabeledAxes methods --
+	// -- CalibratedSpace methods --
 
 	@Override
 	public int getAxisIndex(final AxisType axis) {
@@ -343,6 +353,26 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public void setCalibration(final double cal, final int d) {
 		imgPlus.setCalibration(cal, d);
+		update();
+	}
+
+	// -- EuclideanSpace methods --
+
+	@Override
+	public int numDimensions() {
+		return imgPlus.numDimensions();
+	}
+
+	// -- Named methods --
+
+	@Override
+	public String getName() {
+		return imgPlus.getName();
+	}
+
+	@Override
+	public void setName(final String name) {
+		imgPlus.setName(name);
 		update();
 	}
 
@@ -424,34 +454,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public int getColorTableCount() {
 		return imgPlus.getColorTableCount();
-	}
-
-	@Override
-	public void copyDataFrom(final Dataset other) {
-		// create a new img to hold data using our own factory
-		@SuppressWarnings("rawtypes")
-		final ImgFactory factory = getImgPlus().getImg().factory();
-		@SuppressWarnings("unchecked")
-		final Img<? extends RealType<?>> newImg =
-			factory.create(other.getDims(), other.getType());
-
-		// copy the data into the new img
-		copyDataValues(other.getImgPlus().getImg(), newImg);
-
-		// create new imgplus to contain data using the current name
-		final double[] calib = new double[other.getDims().length];
-		other.calibration(calib);
-		final ImgPlus<? extends RealType<?>> newImgPlus =
-			wrapAsImgPlus(newImg, other.getAxes(), calib);
-
-		// set my instance vars to the new values
-		setRGBMerged(other.isRGBMerged());
-		setImgPlus(newImgPlus);
-	}
-
-	@Override
-	public int numDimensions() {
-		return imgPlus.numDimensions();
 	}
 
 	// -- Helper methods --
