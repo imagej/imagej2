@@ -106,7 +106,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	private String endLineArrowStyle;
 
 	@Parameter(label = "Update default overlay settings", persist = false)
-	private final boolean updateDefaults = false;
+	private boolean updateDefaults = false;
 
 	@Parameter(persist = false)
 	private OptionsService os;
@@ -209,6 +209,14 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	public Overlay.ArrowStyle getEndLineArrowStyle() {
 		return decodeArrowStyle(endLineArrowStyle);
+	}
+
+	public boolean isUpdateDefaults() {
+		return updateDefaults;
+	}
+
+	public void setUpdateDefaults(final boolean updateDefaults) {
+		this.updateDefaults = updateDefaults;
 	}
 
 	// -- private helpers --
