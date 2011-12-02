@@ -40,6 +40,9 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
@@ -55,7 +58,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Data...") })
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Data...") },
+	initializer = "initAll")
 public class DeleteData extends DynamicPlugin {
 
 	// -- Constants --
@@ -67,10 +71,13 @@ public class DeleteData extends DynamicPlugin {
 	// -- Parameters --
 
 	@Parameter(required = true, persist = false)
+	private UIService uiService;
+	
+	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
 	@Parameter(label = "Axis to modify", persist = false,
-		initializer = "initAll", callback = "parameterChanged")
+		callback = "parameterChanged")
 	private String axisName;
 
 	@Parameter(label = "Deletion position", persist = false,
@@ -124,7 +131,7 @@ public class DeleteData extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) return;
+		if (inputBad(axis)) { informUser(); return; }
 		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, -quantity);
@@ -277,5 +284,16 @@ public class DeleteData extends DynamicPlugin {
 		item.setMinimumValue(min);
 		// TODO - disable until we fix ticket #886
 		//item.setMaximumValue(max);
+	}
+
+	private void informUser() {
+		final IUserInterface ui = uiService.getUI();
+		final DialogPrompt dialog =
+			ui.dialogPrompt(
+				"Data unchanged: bad combination of input parameters",
+				"Invalid parameter combination",
+				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+		dialog.prompt();
 	}
 }

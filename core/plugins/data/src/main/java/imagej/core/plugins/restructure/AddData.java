@@ -40,6 +40,9 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
@@ -54,7 +57,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Data...") })
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Data...") },
+	initializer = "initAll")
 public class AddData extends DynamicPlugin {
 
 	// -- Constants --
@@ -66,10 +70,13 @@ public class AddData extends DynamicPlugin {
 	// -- Parameters --
 
 	@Parameter(required = true, persist = false)
+	private UIService uiService;
+	
+	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
 	@Parameter(label = "Axis to modify", persist = false,
-		initializer = "initAll", callback = "parameterChanged")
+		callback = "parameterChanged")
 	private String axisName;
 
 	@Parameter(label = "Insertion position", persist = false,
@@ -123,7 +130,7 @@ public class AddData extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) return;
+		if (inputBad(axis)) { informUser(); return; }
 		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, quantity);
@@ -171,10 +178,10 @@ public class AddData extends DynamicPlugin {
 		if (axisIndex < 0) return true;
 
 		// bad value for startPosition
-		if (position < 1 || position >= axisSize) return true;
+		if (position < 1 || position > axisSize+1) return true;
 
 		// bad value for numAdding
-		if (quantity <= 0 || Long.MAX_VALUE - quantity < axisSize) return true;
+		if (quantity <= 0 || (quantity + axisSize) > Long.MAX_VALUE) return true;
 
 		// if here everything is okay
 		return false;
@@ -300,5 +307,16 @@ public class AddData extends DynamicPlugin {
 		item.setMinimumValue(min);
 		// TODO - disable until we fix ticket #886
 		//item.setMaximumValue(max);
+	}
+
+	private void informUser() {
+		final IUserInterface ui = uiService.getUI();
+		final DialogPrompt dialog =
+			ui.dialogPrompt(
+				"Data unchanged: bad combination of input parameters",
+				"Invalid parameter combination",
+				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+		dialog.prompt();
 	}
 }

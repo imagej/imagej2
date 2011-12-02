@@ -40,6 +40,9 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
@@ -54,7 +57,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Axis...") })
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Axis...") },
+	initializer = "initAll")
 public class AddAxis extends DynamicPlugin {
 
 	// -- Constants --
@@ -65,9 +69,12 @@ public class AddAxis extends DynamicPlugin {
 	// -- Parameters --
 
 	@Parameter(required = true, persist = false)
+	private UIService uiService;
+	
+	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
-	@Parameter(label = "Axis to add", persist = false, initializer = "initAll")
+	@Parameter(label = "Axis to add", persist = false)
 	private String axisName;
 
 	@Parameter(label = "Axis size", persist = false)
@@ -109,7 +116,7 @@ public class AddAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) return;
+		if (inputBad(axis)) { informUser(); return; }
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axisSize);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -214,4 +221,14 @@ public class AddAxis extends DynamicPlugin {
 		axisSizeModuleItem.setMinimumValue(2L);
 	}
 
+	private void informUser() {
+		final IUserInterface ui = uiService.getUI();
+		final DialogPrompt dialog =
+			ui.dialogPrompt(
+				"Data unchanged: bad combination of input parameters",
+				"Invalid parameter combination",
+				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+		dialog.prompt();
+	}
 }

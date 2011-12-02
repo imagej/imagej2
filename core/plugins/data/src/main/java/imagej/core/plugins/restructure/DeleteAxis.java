@@ -41,6 +41,9 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
@@ -55,7 +58,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Axis...") })
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Axis...") },
+	initializer = "initAll")
 public class DeleteAxis extends DynamicPlugin {
 
 	// -- Constants --
@@ -66,13 +70,16 @@ public class DeleteAxis extends DynamicPlugin {
 	// -- Parameters --
 
 	@Parameter(required = true, persist = false)
+	private UIService uiService;
+	
+	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
 	@Parameter(label = "Axis to delete", persist = false,
-		initializer = "initAll", callback = "axisChanged")
+		callback = "axisChanged")
 	private String axisName;
 
 	@Parameter(label = "Index of hyperplane to keep", persist = false,
@@ -115,7 +122,7 @@ public class DeleteAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = getAxis();
-		if (inputBad(axis)) return;
+		if (inputBad(axis)) { informUser(); return; }
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axis);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -290,5 +297,16 @@ public class DeleteAxis extends DynamicPlugin {
 	private int getAxisIndex() {
 		AxisType axis = Axes.get(axisName);
 		return getDataset().getAxisIndex(axis);
+	}
+
+	private void informUser() {
+		final IUserInterface ui = uiService.getUI();
+		final DialogPrompt dialog =
+			ui.dialogPrompt(
+				"Data unchanged: bad combination of input parameters",
+				"Invalid parameter combination",
+				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+		dialog.prompt();
 	}
 }
