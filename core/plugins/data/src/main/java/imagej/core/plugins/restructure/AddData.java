@@ -181,8 +181,8 @@ public class AddData extends DynamicPlugin {
 		if (position < 1 || position > axisSize+1) return true;
 
 		// bad value for numAdding
-		if (quantity <= 0 || (quantity + axisSize) > Long.MAX_VALUE) return true;
-
+		if (quantity <= 0 || (quantity > Long.MAX_VALUE - axisSize)) return true;
+		
 		// if here everything is okay
 		return false;
 	}
