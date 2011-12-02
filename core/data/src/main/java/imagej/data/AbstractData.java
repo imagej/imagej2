@@ -62,7 +62,7 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 	}
 
 	// -- AbstractData methods --
-	
+
 	/**
 	 * Informs interested parties that the data object has become relevant and
 	 * should be registered. Called the first time the reference count is
@@ -78,20 +78,20 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 	 * should be deleted. Called when the reference count is decremented to zero.
 	 * Classes that extend this class may choose to override this method to
 	 * publish more specific events.
-	 * */
+	 */
 	protected void delete() {
 		eventService.publish(new DataDeletedEvent(this));
 	}
 
 	// -- Object methods --
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
 
 	// -- Data methods --
-	
+
 	@Override
 	public void incrementReferences() {
 		refs++;
@@ -100,15 +100,16 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 
 	@Override
 	public void decrementReferences() {
-		if (refs == 0)
-			throw new IllegalArgumentException(
+		if (refs == 0) {
+			throw new IllegalStateException(
 				"decrementing reference count when it is already 0");
+		}
 		refs--;
 		if (refs == 0) delete();
 	}
 
 	// -- LabeledSpace methods --
-	
+
 	@Override
 	public long[] getDims() {
 		final long[] dims = new long[numDimensions()];
@@ -124,19 +125,19 @@ public abstract class AbstractData implements Data, Comparable<Data> {
 	}
 
 	// -- Named methods --
-	
+
 	@Override
 	public String getName() {
 		return name;
 	}
 
 	@Override
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
 	// -- Comparable methods --
-	
+
 	@Override
 	public int compareTo(final Data data) {
 		return getName().compareTo(data.getName());
