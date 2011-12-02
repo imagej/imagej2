@@ -89,8 +89,8 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "Fill color", persist = false)
 	private ColorRGB fillColor;
 
-	@Parameter(label = "Alpha", description = "The opacity or alpha of the " +
-		"interior of the overlay (0=transparent, 255=opaque)", persist = false,
+	@Parameter(label = "Alpha", description = "The opacity or alpha of the "
+		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int alpha;
 
@@ -106,11 +106,11 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	private String endLineArrowStyle;
 
 	@Parameter(label = "Update default overlay settings", persist = false)
-	private boolean updateDefaults = false;
-	
+	private final boolean updateDefaults = false;
+
 	@Parameter(persist = false)
 	private OptionsService os;
-	
+
 	public OverlayProperties() {
 		// set default values to match the first selected overlay
 		final List<Overlay> selected = getSelectedOverlays();
@@ -212,7 +212,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	}
 
 	// -- private helpers --
-	
+
 	private List<Overlay> getSelectedOverlays() {
 		final ArrayList<Overlay> result = new ArrayList<Overlay>();
 		if (display == null) return result;
@@ -227,7 +227,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	}
 
 	private void updateDefaults() {
-		OptionsOverlay options = os.getOptions(OptionsOverlay.class);
+		final OptionsOverlay options = os.getOptions(OptionsOverlay.class);
 		options.setLineWidth(getLineWidth());
 		options.setLineColor(getLineColor());
 		options.setLineStyle(getLineStyle());
@@ -237,8 +237,8 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		options.setEndArrowStyle(getEndLineArrowStyle());
 		options.run();
 	}
-	
-	private Overlay.LineStyle decodeLineStyle(String style) {
+
+	private Overlay.LineStyle decodeLineStyle(final String style) {
 		if (style.equals(solidLineStyle)) {
 			return LineStyle.SOLID;
 		}
@@ -255,11 +255,11 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			return LineStyle.NONE;
 		}
 		else {
-			throw new UnsupportedOperationException("Unimplemented style: " +	style);
+			throw new UnsupportedOperationException("Unimplemented style: " + style);
 		}
 	}
-	
-	private Overlay.ArrowStyle decodeArrowStyle(String style) {
+
+	private Overlay.ArrowStyle decodeArrowStyle(final String style) {
 		if (style.equals(arrowLineDecoration)) {
 			return ArrowStyle.ARROW;
 		}
@@ -267,7 +267,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			return ArrowStyle.NONE;
 		}
 		else {
-			throw new UnsupportedOperationException("Unimplemented style: " +	style);
+			throw new UnsupportedOperationException("Unimplemented style: " + style);
 		}
 	}
 
