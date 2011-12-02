@@ -46,7 +46,7 @@ import java.util.List;
 
 /**
  * Runs the Edit::Options::Misc dialog.
- * 
+ *  
  * @author Barry DeZonia
  */
 @Plugin(menu = {
