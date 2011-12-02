@@ -293,7 +293,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		return getAxes().length;
 	}
 
-	// -- LabeledAxes methods --
+	// -- CalibratedSpace methods --
 
 	@Override
 	public int getAxisIndex(final AxisType axis) {
