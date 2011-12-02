@@ -49,7 +49,7 @@ public abstract class AbstractOverlayView extends AbstractDataView {
 
 	public AbstractOverlayView(final ImageDisplay display, final Overlay overlay)
 	{
-		super(display, overlay);
+		super(overlay);
 		this.overlay = overlay;
 		final long[] dims =
 			ImageJ.get(ImageDisplayService.class).getActiveDataset(display).getDims();

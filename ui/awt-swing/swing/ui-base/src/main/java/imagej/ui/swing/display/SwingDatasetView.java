@@ -62,7 +62,7 @@ public class SwingDatasetView extends AbstractDatasetView implements FigureView
 	public SwingDatasetView(final AbstractSwingImageDisplay display,
 		final Dataset dataset)
 	{
-		super(display, dataset);
+		super(dataset);
 		needsUpdate = false;
 		final JHotDrawImageCanvas canvas = display.getCanvas();
 		final Drawing drawing = canvas.getDrawing();

@@ -85,8 +85,8 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
-	public AbstractDatasetView(final ImageDisplay display, final Dataset dataset) {
-		super(display, dataset);
+	public AbstractDatasetView(final Dataset dataset) {
+		super(dataset);
 		this.dataset = dataset;
 		subscribers = eventService.subscribe(this);
 	}

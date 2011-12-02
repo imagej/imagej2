@@ -56,9 +56,6 @@ import imagej.data.roi.Overlay;
  */
 public interface DataView {
 
-	/** Gets the {@link ImageDisplay} containing this view. */
-	ImageDisplay getDisplay();
-
 	/** Gets the {@link Data} represented by this view. */
 	Data getData();
 
