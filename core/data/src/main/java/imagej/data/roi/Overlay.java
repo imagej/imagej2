@@ -56,12 +56,8 @@ public interface Overlay extends Data {
 		SOLID, DASH, DOT, DOT_DASH, NONE
 	}
 
-	/**
-	 * @author Lee Kamentsky
-	 * 
-	 * Arrow decorations for the start and end.
-	 */
-	static enum ArrowStyle {
+	/** Arrow decorations for the start and end. */
+	enum ArrowStyle {
 		NONE,
 		ARROW
 	}
@@ -75,6 +71,51 @@ public interface Overlay extends Data {
 	RegionOfInterest getRegionOfInterest();
 
 	/**
+	 * Get the position of this overlay's plane perpendicular
+	 * to the given axis. If the overlay isn't localized within
+	 * this axis, returns null.
+	 * @param axis
+	 * @return Long position or null
+	 */
+	Long getPosition(AxisType axis);
+
+	/**
+	 * An overlay is often localized to a plane, for instance when
+	 * a rectangle is drawn at one level of a z-stack. A caller can
+	 * localize the overlay to one plane in an axis by calling this
+	 * method with the given axis and position.
+	 * 
+	 * @param axis localize to this axis
+	 * @param position localize at this position
+	 */
+	void setPosition(AxisType axis, long position);
+
+	/**
+	 * @return the opacity of the interior of the overlay, from 0-255
+	 */
+	int getAlpha();
+
+	/**
+	 * @param alpha the opacity of the interior of the overlay, from 0-255
+	 */
+	void setAlpha(int alpha);
+
+	/**
+	 * @return the fill color for overlays that have an interior
+	 */
+	ColorRGB getFillColor();
+
+	/**
+	 * @param fillColor the fill color for overlays that have an interior
+	 */
+	void setFillColor(ColorRGB fillColor);
+
+	/**
+	 * @return the color of the outline line of the overlay
+	 */
+	ColorRGB getLineColor();
+
+	/**
 	 * Set the color of the outline line of the overlay, if appropriate
 	 * 
 	 * @param lineColor
@@ -82,9 +123,15 @@ public interface Overlay extends Data {
 	void setLineColor(ColorRGB lineColor);
 
 	/**
+	 * @return the width of the outline line in pixels
+	 */
+	double getLineWidth();
+
+	/**
 	 * Set the width of the outline line of the overlay, if appropriate
 	 * 
-	 * @param lineWidth the width in pixels
+	 * @param lineWidth the width to be used when painting lines and shape
+	 *          borders, in pixels.
 	 */
 	void setLineWidth(double lineWidth);
 
@@ -101,56 +148,6 @@ public interface Overlay extends Data {
 	 * @param style - style of line
 	 */
 	void setLineStyle(LineStyle style);
-
-	/**
-	 * @return the color of the outline line of the overlay
-	 */
-	ColorRGB getLineColor();
-
-	/**
-	 * @return the width of the outline line in pixels
-	 */
-	double getLineWidth();
-
-	/**
-	 * @return the fill color for overlays that have an interior
-	 */
-	ColorRGB getFillColor();
-
-	/**
-	 * @param fillColor the fill color for overlays that have an interior
-	 */
-	void setFillColor(ColorRGB fillColor);
-
-	/**
-	 * @return the opacity of the interior of the overlay, from 0-255
-	 */
-	int getAlpha();
-
-	/**
-	 * @param alpha the opacity of the interior of the overlay, from 0-255
-	 */
-	void setAlpha(int alpha);
-
-	/**
-	 * An overlay is often localized to a plane, for instance when
-	 * a rectangle is drawn at one level of a z-stack. A caller can
-	 * localize the overlay to one plane in an axis by calling this
-	 * method with the given axis and position.
-	 * 
-	 * @param axis localize to this axis
-	 * @param position localize at this position
-	 */
-	void setPosition(AxisType axis, long position);
-
-	/**
-	 * Get the position of this overlay's plane perpendicular
-	 * to the given axis. If the overlay isn't localized within
-	 * this axis, returns null.
-	 * @param axis
-	 * @return Long position or null
-	 */
-	Long getPosition(AxisType axis);
 
 	/**
 	 * @return the arrow style at the start of a line or path (if appropriate)
@@ -171,5 +168,5 @@ public interface Overlay extends Data {
 	 * @param style the arrow style to be shown at the end of a line or path
 	 */
 	void setLineEndArrowStyle(ArrowStyle style);
-	
+
 }

@@ -129,13 +129,16 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	}
 
 	@Override
-	public ColorRGB getFillColor() {
-		return fillColor;
+	public Long getPosition(final AxisType axis) {
+		if (axisPositions.containsKey(axis)) {
+			return axisPositions.get(axis);
+		}
+		return null;
 	}
 
 	@Override
-	public void setFillColor(final ColorRGB fillColor) {
-		this.fillColor = fillColor;
+	public void setPosition(final AxisType axis, final long position) {
+		axisPositions.put(axis, position);
 	}
 
 	@Override
@@ -146,6 +149,16 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	@Override
 	public void setAlpha(final int alpha) {
 		this.alpha = alpha;
+	}
+
+	@Override
+	public ColorRGB getFillColor() {
+		return fillColor;
+	}
+
+	@Override
+	public void setFillColor(final ColorRGB fillColor) {
+		this.fillColor = fillColor;
 	}
 
 	@Override
@@ -165,10 +178,6 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		return lineWidth;
 	}
 
-	/**
-	 * @param lineWidth the width to be used when painting lines and shape
-	 *          borders, in pixels.
-	 */
 	@Override
 	public void setLineWidth(final double lineWidth) {
 		if (this.lineWidth != lineWidth) {
@@ -187,93 +196,26 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 	}
 
 	@Override
-	public void writeExternal(final ObjectOutput out) throws IOException {
-		out.writeObject(lineColor);
-		out.writeDouble(lineWidth);
-		out.writeInt(lineStyle.name().length());
-		out.writeChars(lineStyle.name());
-		out.writeObject(fillColor);
-		out.writeInt(alpha);
-		out.writeInt(axes.size());
-		for (int i = 0; i < axes.size(); i++) {
-			writeAxis(out, axes.get(i));
-			out.writeDouble(calibrations.get(i));
-		}
-		out.writeInt(axisPositions.size());
-		for (final AxisType axis : axisPositions.keySet()) {
-			writeAxis(out, axis);
-			out.writeLong(axisPositions.get(axis));
-		}
-		writeString(out, startArrowStyle.name());
-		writeString(out, endArrowStyle.name());
-	}
-
-	/**
-	 * Helper function to write a string to the object output
-	 * 
-	 * @param out
-	 * @param s
-	 * @throws IOException
-	 */
-	static protected void writeString(final ObjectOutput out, final String s)
-		throws IOException
-	{
-		out.writeInt(s.length());
-		out.writeChars(s);
-	}
-
-	/**
-	 * Helper function to read a string
-	 * 
-	 * @param in
-	 * @return string read from in
-	 * @throws IOException
-	 */
-	static protected String readString(final ObjectInput in) throws IOException {
-		final int length = in.readInt();
-		final char[] buffer = new char[length];
-		for (int i = 0; i < length; i++)
-			buffer[i] = in.readChar();
-		return new String(buffer);
-	}
-
-	static private void writeAxis(final ObjectOutput out, final AxisType axis)
-		throws IOException
-	{
-		writeString(out, axis.getLabel());
+	public ArrowStyle getLineStartArrowStyle() {
+		return startArrowStyle;
 	}
 
 	@Override
-	public void readExternal(final ObjectInput in) throws IOException,
-		ClassNotFoundException
-	{
-		lineColor = (ColorRGB) in.readObject();
-		lineWidth = in.readDouble();
-		final char[] buffer = new char[in.readInt()];
-		for (int i = 0; i < buffer.length; i++)
-			buffer[i] = in.readChar();
-		lineStyle = Overlay.LineStyle.valueOf(new String(buffer));
-		fillColor = (ColorRGB) in.readObject();
-		alpha = in.readInt();
-		final int nAxes = in.readInt();
-		this.axes.clear();
-		this.calibrations.clear();
-		for (int i = 0; i < nAxes; i++) {
-			axes.add(readAxis(in));
-			calibrations.add(in.readDouble());
-		}
-		final int nPositions = in.readInt();
-		for (int i = 0; i < nPositions; i++) {
-			final AxisType axis = readAxis(in);
-			axisPositions.put(axis, in.readLong());
-		}
-		startArrowStyle = ArrowStyle.valueOf(readString(in));
-		endArrowStyle = ArrowStyle.valueOf(readString(in));
+	public void setLineStartArrowStyle(final ArrowStyle style) {
+		startArrowStyle = style;
 	}
 
-	static private AxisType readAxis(final ObjectInput in) throws IOException {
-		return Axes.get(new String(readString(in)));
+	@Override
+	public ArrowStyle getLineEndArrowStyle() {
+		return endArrowStyle;
 	}
+
+	@Override
+	public void setLineEndArrowStyle(final ArrowStyle style) {
+		endArrowStyle = style;
+	}
+
+	// -- CalibratedSpace methods --
 
 	@Override
 	public int getAxisIndex(final AxisType axis) {
@@ -341,42 +283,11 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		calibrations.set(d, cal);
 	}
 
+	// -- EuclideanSpace methods --
+
 	@Override
 	public int numDimensions() {
 		return axes.size() + axisPositions.size();
-	}
-
-	@Override
-	public void setPosition(final AxisType axis, final long position) {
-		axisPositions.put(axis, position);
-	}
-
-	@Override
-	public Long getPosition(final AxisType axis) {
-		if (axisPositions.containsKey(axis)) {
-			return axisPositions.get(axis);
-		}
-		return null;
-	}
-
-	@Override
-	public ArrowStyle getLineStartArrowStyle() {
-		return startArrowStyle;
-	}
-
-	@Override
-	public void setLineStartArrowStyle(final ArrowStyle style) {
-		startArrowStyle = style;
-	}
-
-	@Override
-	public ArrowStyle getLineEndArrowStyle() {
-		return endArrowStyle;
-	}
-
-	@Override
-	public void setLineEndArrowStyle(final ArrowStyle style) {
-		endArrowStyle = style;
 	}
 
 	// -- Data methods --
@@ -399,6 +310,59 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		return null;
 	}
 
+	// -- Externalizable methods --
+
+	@Override
+	public void writeExternal(final ObjectOutput out) throws IOException {
+		out.writeObject(lineColor);
+		out.writeDouble(lineWidth);
+		out.writeInt(lineStyle.name().length());
+		out.writeChars(lineStyle.name());
+		out.writeObject(fillColor);
+		out.writeInt(alpha);
+		out.writeInt(axes.size());
+		for (int i = 0; i < axes.size(); i++) {
+			writeAxis(out, axes.get(i));
+			out.writeDouble(calibrations.get(i));
+		}
+		out.writeInt(axisPositions.size());
+		for (final AxisType axis : axisPositions.keySet()) {
+			writeAxis(out, axis);
+			out.writeLong(axisPositions.get(axis));
+		}
+		writeString(out, startArrowStyle.name());
+		writeString(out, endArrowStyle.name());
+	}
+
+	@Override
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
+		lineColor = (ColorRGB) in.readObject();
+		lineWidth = in.readDouble();
+		final char[] buffer = new char[in.readInt()];
+		for (int i = 0; i < buffer.length; i++) {
+			buffer[i] = in.readChar();
+		}
+		lineStyle = Overlay.LineStyle.valueOf(new String(buffer));
+		fillColor = (ColorRGB) in.readObject();
+		alpha = in.readInt();
+		final int nAxes = in.readInt();
+		this.axes.clear();
+		this.calibrations.clear();
+		for (int i = 0; i < nAxes; i++) {
+			axes.add(readAxis(in));
+			calibrations.add(in.readDouble());
+		}
+		final int nPositions = in.readInt();
+		for (int i = 0; i < nPositions; i++) {
+			final AxisType axis = readAxis(in);
+			axisPositions.put(axis, in.readLong());
+		}
+		startArrowStyle = ArrowStyle.valueOf(readString(in));
+		endArrowStyle = ArrowStyle.valueOf(readString(in));
+	}
+
 	// -- Helper methods --
 
 	private void applySettings(final OverlaySettings settings) {
@@ -409,6 +373,37 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		lineColor = settings.getLineColor();
 		lineWidth = settings.getLineWidth();
 		lineStyle = settings.getLineStyle();
+	}
+
+	/** Helper function to write a string to the object output. */
+	private void writeString(final ObjectOutput out, final String s)
+		throws IOException
+	{
+		out.writeInt(s.length());
+		out.writeChars(s);
+	}
+
+	/**
+	 * Helper function to read a string.
+	 * 
+	 * @return string read from in
+	 */
+	private String readString(final ObjectInput in) throws IOException {
+		final int length = in.readInt();
+		final char[] buffer = new char[length];
+		for (int i = 0; i < length; i++)
+			buffer[i] = in.readChar();
+		return new String(buffer);
+	}
+
+	private void writeAxis(final ObjectOutput out, final AxisType axis)
+		throws IOException
+	{
+		writeString(out, axis.getLabel());
+	}
+
+	private AxisType readAxis(final ObjectInput in) throws IOException {
+		return Axes.get(new String(readString(in)));
 	}
 
 }
