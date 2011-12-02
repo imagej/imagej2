@@ -49,12 +49,16 @@ import net.imglib2.type.numeric.RealType;
  */
 public interface Dataset extends Data, Metadata {
 
+	/** TODO */
 	boolean isDirty();
 
+	/** TODO */
 	void setDirty(boolean value);
 
+	/** TODO */
 	ImgPlus<? extends RealType<?>> getImgPlus();
 
+	/** TODO */
 	void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus);
 
 	/**
@@ -73,12 +77,16 @@ public interface Dataset extends Data, Metadata {
 	 */
 	Object getPlane(final int planeNumber, boolean copyOK);
 
+	/** TODO */
 	void setPlane(final int no, final Object newPlane);
 
+	/** TODO */
 	RealType<?> getType();
 
+	/** TODO */
 	boolean isSigned();
 
+	/** TODO */
 	boolean isInteger();
 
 	/** Gets a short string description of the dataset's pixel type. */
@@ -113,8 +121,10 @@ public interface Dataset extends Data, Metadata {
 	 */
 	boolean isRGBMerged();
 
+	/** TODO */
 	void typeChange();
 
+	/** TODO */
 	void rgbChange();
 
 	/**
