@@ -52,6 +52,7 @@ import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -183,13 +184,23 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	}
 
 	@Override
-	public long getPosition(final int dim) {
+	public long getPosition(final AxisType axis) {
+		// FIXME
+		final int dim = getData().getAxisIndex(axis);
+		if (dim < 0) {
+			throw new IllegalArgumentException("Unknown axis: " + axis);
+		}
 		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return 0;
 		return projector.getLongPosition(dim);
 	}
 
 	@Override
-	public void setPosition(final long value, final int dim) {
+	public void setPosition(final AxisType axis, final long value) {
+		// FIXME
+		final int dim = getData().getAxisIndex(axis);
+		if (dim < 0) {
+			throw new IllegalArgumentException("Unknown axis: " + axis);
+		}
 		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return;
 		final long currentValue = projector.getLongPosition(dim);
 		if (value == currentValue) {
@@ -204,7 +215,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 		projector.map();
 
-		super.setPosition(value, dim);
+		super.setPosition(axis, value);
 	}
 
 	@Override

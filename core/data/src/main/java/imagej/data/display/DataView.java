@@ -38,6 +38,7 @@ import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.roi.Overlay;
+import net.imglib2.meta.AxisType;
 
 /**
  * A view provides visualization settings for an associated {@link Data} object
@@ -65,11 +66,11 @@ public interface DataView {
 	/** Gets the 1-dimensional plane index of this view. */
 	long getPlaneIndex();
 
-	/** gets the position of the given dimensional axis. */
-	long getPosition(final int dim);
+	/** Gets the position of the given dimensional axis. */
+	long getPosition(AxisType axis);
 
 	/** Sets the position of the given dimensional axis. */
-	void setPosition(final long value, final int dim);
+	void setPosition(AxisType axis, long value);
 
 	/**
 	 * Set the view's selection state.

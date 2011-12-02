@@ -42,6 +42,7 @@ import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.event.EventService;
+import net.imglib2.meta.AxisType;
 
 /**
  * Abstract superclass for {@link DataView}s.
@@ -90,12 +91,22 @@ public abstract class AbstractDataView implements DataView {
 	}
 
 	@Override
-	public long getPosition(final int dim) {
+	public long getPosition(final AxisType axis) {
+		// FIXME
+		final int dim = data.getAxisIndex(axis);
+		if (dim < 0) {
+			throw new IllegalArgumentException("Unknown axis: " + axis);
+		}
 		return position[dim];
 	}
 	
 	@Override
-	public void setPosition(final long value, final int dim) {
+	public void setPosition(final AxisType axis, final long value) {
+		// FIXME
+		final int dim = data.getAxisIndex(axis);
+		if (dim < 0) {
+			throw new IllegalArgumentException("Unknown axis: " + axis);
+		}
 		position[dim] = value;
 		if (dim >= 2)
 			planePosition.setPosition(value, dim-2);
