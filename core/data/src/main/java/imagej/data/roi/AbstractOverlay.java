@@ -42,18 +42,12 @@ import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
 import imagej.util.ColorRGB;
 
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
@@ -63,37 +57,20 @@ import net.imglib2.roi.RegionOfInterest;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public class AbstractOverlay extends AbstractData implements Overlay,
-	Externalizable
-{
+public class AbstractOverlay extends AbstractData implements Overlay {
 
 	private static final long serialVersionUID = 1L;
 
-	// -- instance variables --
+	private final Map<AxisType, Long> positions =
+		new HashMap<AxisType, Long>();
 
-	protected ArrowStyle startArrowStyle;
-	protected ArrowStyle endArrowStyle;
-	protected ColorRGB fillColor;
-	protected int alpha;
-	protected ColorRGB lineColor;
-	protected double lineWidth;
-	protected Overlay.LineStyle lineStyle;
-
-	final protected List<AxisType> axes = new ArrayList<AxisType>();
-	final protected List<Double> calibrations = new ArrayList<Double>();
-
-	final protected SortedMap<AxisType, Long> axisPositions =
-		new TreeMap<AxisType, Long>(new Comparator<AxisType>() {
-
-			@Override
-			public int compare(final AxisType axis1, final AxisType axis2) {
-				if ((axis1 instanceof Axes) && (axis2 instanceof Axes)) {
-					return new Integer(((Axes) axis1).ordinal()).compareTo(((Axes) axis2)
-						.ordinal());
-				}
-				return axis1.getLabel().compareTo(axis2.getLabel());
-			}
-		});
+	private int alpha;
+	private ColorRGB fillColor;
+	private ColorRGB lineColor;
+	private double lineWidth;
+	private Overlay.LineStyle lineStyle;
+	private ArrowStyle startArrowStyle;
+	private ArrowStyle endArrowStyle;
 
 	public AbstractOverlay() {
 		// TODO: Apply OverlayService's settings to each new overlay.
@@ -128,17 +105,35 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		return null;
 	}
 
+	// CTR: TODO: Eliminate getPosition and setPosition from Overlay API.
+	//
+	// These methods are redundant with DataView, and actually misplaced.
+	// An Overlay should not contain any dimensions other than its actual ones
+	// (so all normal 2D overlays have only XY for now; in future we could have
+	// overlays of 3D+, but not now).
+	//
+	// The JHotDraw figures need to be linked to an OverlayView, not an Overlay
+	// directly.
+	//
+	// Further, DataView needs to support localizing the position across any
+	// dimensional axis, not just those present in the linked Data object.
+	// So a 2D overlay can be localized in the Display's space with no fuss.
+	//
+	// We still need the concept of a composite data object, and/or composite data
+	// view -- further thought is needed. But for beta1, we may not need it.
+	// On the other hand, the axis compositing logic done in AbstractImageDisplay
+	// would fit very well in a CompositeData or CompositeDataView object. If we
+	// go that route sooner, the Display can be simplified to allow only one
+	// object at a time, rather than a list. What would the consequences be?
+
 	@Override
 	public Long getPosition(final AxisType axis) {
-		if (axisPositions.containsKey(axis)) {
-			return axisPositions.get(axis);
-		}
-		return null;
+		return positions.get(axis);
 	}
 
 	@Override
 	public void setPosition(final AxisType axis, final long position) {
-		axisPositions.put(axis, position);
+		positions.put(axis, position);
 	}
 
 	@Override
@@ -215,81 +210,6 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		endArrowStyle = style;
 	}
 
-	// -- CalibratedSpace methods --
-
-	@Override
-	public int getAxisIndex(final AxisType axis) {
-		int index = axes.indexOf(axis);
-		if (index >= 0) return index;
-		if (axisPositions.containsKey(axis)) {
-			index = axes.size();
-			for (final AxisType other : axisPositions.keySet()) {
-				if (other == axis) return index;
-				index++;
-			}
-		}
-		return -1;
-	}
-
-	@Override
-	public AxisType axis(final int d) {
-		if (d < axes.size()) {
-			return axes.get(d);
-		}
-		int index = axes.size();
-		for (final AxisType axis : axisPositions.keySet()) {
-			if (index++ == d) return axis;
-		}
-		return null;
-	}
-
-	@Override
-	public void axes(final AxisType[] axesToFill) {
-		for (int i = 0; (i < axesToFill.length) && (i < this.axes.size()); i++) {
-			axesToFill[i] = this.axes.get(i);
-		}
-	}
-
-	@Override
-	public void setAxis(final AxisType axis, final int d) {
-		while (this.axes.size() <= d) {
-			this.axes.add(null);
-			this.calibrations.add(1.0);
-		}
-		this.axes.set(d, axis);
-	}
-
-	@Override
-	public double calibration(final int d) {
-		if (d >= calibrations.size()) return 1.0;
-		return calibrations.get(d);
-	}
-
-	@Override
-	public void calibration(final double[] cal) {
-		for (int i = 0; (i < cal.length) && (i < this.calibrations.size()); i++) {
-			cal[i] = this.calibrations.get(i);
-		}
-		if (cal.length > calibrations.size()) {
-			Arrays.fill(cal, calibrations.size(), cal.length, 1.0);
-		}
-	}
-
-	@Override
-	public void setCalibration(final double cal, final int d) {
-		while (calibrations.size() <= d) {
-			calibrations.add(1.0);
-		}
-		calibrations.set(d, cal);
-	}
-
-	// -- EuclideanSpace methods --
-
-	@Override
-	public int numDimensions() {
-		return axes.size() + axisPositions.size();
-	}
-
 	// -- Data methods --
 
 	@Override
@@ -314,53 +234,28 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
+		out.writeInt(alpha);
+		out.writeObject(fillColor);
 		out.writeObject(lineColor);
 		out.writeDouble(lineWidth);
-		out.writeInt(lineStyle.name().length());
-		out.writeChars(lineStyle.name());
-		out.writeObject(fillColor);
-		out.writeInt(alpha);
-		out.writeInt(axes.size());
-		for (int i = 0; i < axes.size(); i++) {
-			writeAxis(out, axes.get(i));
-			out.writeDouble(calibrations.get(i));
-		}
-		out.writeInt(axisPositions.size());
-		for (final AxisType axis : axisPositions.keySet()) {
-			writeAxis(out, axis);
-			out.writeLong(axisPositions.get(axis));
-		}
-		writeString(out, startArrowStyle.name());
-		writeString(out, endArrowStyle.name());
+		out.writeObject(lineStyle.toString());
+		out.writeObject(startArrowStyle.toString());
+		out.writeObject(endArrowStyle.toString());
+		super.writeExternal(out);
 	}
 
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
 	{
+		alpha = in.readInt();
+		fillColor = (ColorRGB) in.readObject();
 		lineColor = (ColorRGB) in.readObject();
 		lineWidth = in.readDouble();
-		final char[] buffer = new char[in.readInt()];
-		for (int i = 0; i < buffer.length; i++) {
-			buffer[i] = in.readChar();
-		}
-		lineStyle = Overlay.LineStyle.valueOf(new String(buffer));
-		fillColor = (ColorRGB) in.readObject();
-		alpha = in.readInt();
-		final int nAxes = in.readInt();
-		this.axes.clear();
-		this.calibrations.clear();
-		for (int i = 0; i < nAxes; i++) {
-			axes.add(readAxis(in));
-			calibrations.add(in.readDouble());
-		}
-		final int nPositions = in.readInt();
-		for (int i = 0; i < nPositions; i++) {
-			final AxisType axis = readAxis(in);
-			axisPositions.put(axis, in.readLong());
-		}
-		startArrowStyle = ArrowStyle.valueOf(readString(in));
-		endArrowStyle = ArrowStyle.valueOf(readString(in));
+		lineStyle = Overlay.LineStyle.valueOf((String) in.readObject());
+		startArrowStyle = ArrowStyle.valueOf((String) in.readObject());
+		endArrowStyle = ArrowStyle.valueOf((String) in.readObject());
+		super.readExternal(in);
 	}
 
 	// -- Helper methods --
@@ -373,37 +268,6 @@ public class AbstractOverlay extends AbstractData implements Overlay,
 		lineColor = settings.getLineColor();
 		lineWidth = settings.getLineWidth();
 		lineStyle = settings.getLineStyle();
-	}
-
-	/** Helper function to write a string to the object output. */
-	private void writeString(final ObjectOutput out, final String s)
-		throws IOException
-	{
-		out.writeInt(s.length());
-		out.writeChars(s);
-	}
-
-	/**
-	 * Helper function to read a string.
-	 * 
-	 * @return string read from in
-	 */
-	private String readString(final ObjectInput in) throws IOException {
-		final int length = in.readInt();
-		final char[] buffer = new char[length];
-		for (int i = 0; i < length; i++)
-			buffer[i] = in.readChar();
-		return new String(buffer);
-	}
-
-	private void writeAxis(final ObjectOutput out, final AxisType axis)
-		throws IOException
-	{
-		writeString(out, axis.getLabel());
-	}
-
-	private AxisType readAxis(final ObjectInput in) throws IOException {
-		return Axes.get(new String(readString(in)));
 	}
 
 }
