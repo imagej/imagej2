@@ -65,7 +65,7 @@ public class DatasetTest {
 	private Dataset createDataset(final ImgFactory<IntType> factory) {
 		final Img<IntType> img = factory.create(DIMENSIONS, new IntType());
 		final ImgPlus<IntType> imgPlus = new ImgPlus<IntType>(img);
-		return new ImgLibDataset(imgPlus);
+		return new DefaultDataset(imgPlus);
 	}
 
 	private Dataset createPlanarDataset() {

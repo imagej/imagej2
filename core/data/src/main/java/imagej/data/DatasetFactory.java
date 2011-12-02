@@ -154,7 +154,7 @@ public final class DatasetFactory {
 	{
 		final Img<T> img = factory.create(dims, type);
 		final ImgPlus<T> imgPlus = new ImgPlus<T>(img, name, axes, null);
-		return new ImgLibDataset(imgPlus);
+		return new DefaultDataset(imgPlus);
 	}
 
 	// -- Helper methods --
