@@ -300,8 +300,6 @@ public abstract class AbstractDatasetView extends AbstractDataView
 			// not provided in metadata, so calculate the min/max
 			// TODO: this currently applies the global min/max to all channels...
 			// need to change ComputeMinMax to find min/max per channel
-//			final GetImgMinMax<? extends RealType<?>> cmm =
-//				new GetImgMinMax(dataset.getImgPlus().getImg());
 			final ComputeMinMax<? extends RealType<?>> cmm =
 				new ComputeMinMax(dataset.getImgPlus().getImg());
 			cmm.process();
