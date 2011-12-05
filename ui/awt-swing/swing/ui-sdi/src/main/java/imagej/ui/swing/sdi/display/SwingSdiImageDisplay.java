@@ -39,7 +39,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.display.AbstractSwingImageDisplay;
-import imagej.ui.swing.display.SwingDisplayWindow;
 
 import javax.swing.JFrame;
 
