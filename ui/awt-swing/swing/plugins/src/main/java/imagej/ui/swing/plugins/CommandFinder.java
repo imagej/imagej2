@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins;
 
-import imagej.ImageJ;
 import imagej.ext.MenuEntry;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.swing.SwingUtils;
@@ -56,9 +56,13 @@ import javax.swing.JOptionPane;
 	@Menu(label = "Find Commands...", accelerator = "control L") })
 public class CommandFinder implements ImageJPlugin {
 
+	@Parameter(required = true, persist = false)
+	private PluginService pluginService;
+
 	@Override
 	public void run() {
-		final CommandFinderPanel commandFinderPanel = new CommandFinderPanel();
+		final CommandFinderPanel commandFinderPanel =
+			new CommandFinderPanel(pluginService.getModuleService());
 		final int rval =
 			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
@@ -69,7 +73,7 @@ public class CommandFinder implements ImageJPlugin {
 		if (info == null) return; // no command selected
 
 		// execute selected command
-		ImageJ.get(PluginService.class).run(info);
+		pluginService.run(info);
 	}
 
 }

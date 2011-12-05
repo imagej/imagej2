@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins;
 
-import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
@@ -75,8 +74,8 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	
 	private final List<Command> commands;
 
-	public CommandFinderPanel() {
-		commands = buildCommands();
+	public CommandFinderPanel(final ModuleService moduleService) {
+		commands = buildCommands(moduleService);
 
 		searchField = new JTextField(12);
 		commandsList = new JList();
@@ -195,10 +194,9 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	// -- Helper methods --
 
 	/** Builds the master list of available commands. */
-	private ArrayList<Command> buildCommands() {
+	private ArrayList<Command> buildCommands(final ModuleService moduleService) {
 		final ArrayList<Command> list = new ArrayList<Command>();
 
-		final ModuleService moduleService = ImageJ.get(ModuleService.class);
 		final List<ModuleInfo> modules = moduleService.getModules();
 		for (final ModuleInfo info : modules) {
 			list.add(new Command(info));
