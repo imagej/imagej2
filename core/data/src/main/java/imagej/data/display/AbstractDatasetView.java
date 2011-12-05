@@ -53,6 +53,7 @@ import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.stats.ComputeMinMax;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -298,9 +299,11 @@ public abstract class AbstractDatasetView extends AbstractDataView
 		if (Double.isNaN(max) || Double.isNaN(min)) {
 			// not provided in metadata, so calculate the min/max
 			// TODO: this currently applies the global min/max to all channels...
-			// need to change GetImgMinMax to find min/max per channel
-			final GetImgMinMax<? extends RealType<?>> cmm =
-				new GetImgMinMax(dataset.getImgPlus().getImg());
+			// need to change ComputeMinMax to find min/max per channel
+//			final GetImgMinMax<? extends RealType<?>> cmm =
+//				new GetImgMinMax(dataset.getImgPlus().getImg());
+			final ComputeMinMax<? extends RealType<?>> cmm =
+				new ComputeMinMax(dataset.getImgPlus().getImg());
 			cmm.process();
 			min = cmm.getMin().getRealDouble();
 			max = cmm.getMax().getRealDouble();
