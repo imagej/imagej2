@@ -36,7 +36,6 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
-import imagej.data.display.GetImgMinMax;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -168,15 +167,6 @@ public class AutoContrast implements ImageJPlugin {
 			histogram[bin]++;
 		}
 		return histogram;
-	}
-
-	private double[] computeMinMax(final Dataset d) {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final GetImgMinMax<? extends RealType<?>> cmm =
-			new GetImgMinMax(d.getImgPlus());
-		cmm.process();
-		return new double[] { cmm.getMin().getRealDouble(),
-			cmm.getMax().getRealDouble() };
 	}
 
 	private int computeBin(final double value, final double histMin,
