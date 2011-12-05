@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.display;
+package imagej.ui.swing.sdi.display;
 
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayWindow;
@@ -40,6 +40,7 @@ import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 
+import imagej.ui.swing.display.SwingDisplayPanel;
 import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
