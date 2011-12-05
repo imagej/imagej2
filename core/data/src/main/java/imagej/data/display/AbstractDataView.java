@@ -61,7 +61,7 @@ public abstract class AbstractDataView implements DataView {
 
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
-	
+
 	/**
 	 * True if view is selected, false if not.
 	 */
@@ -99,7 +99,7 @@ public abstract class AbstractDataView implements DataView {
 		}
 		return position[dim];
 	}
-	
+
 	@Override
 	public void setPosition(final AxisType axis, final long value) {
 		// FIXME
@@ -108,24 +108,16 @@ public abstract class AbstractDataView implements DataView {
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		position[dim] = value;
-		if (dim >= 2)
-			planePosition.setPosition(value, dim-2);
+		if (dim >= 2) planePosition.setPosition(value, dim - 2);
 	}
 
 	@Override
-	public void dispose() {
-		if (disposed) return;
-		disposed = true;
-		data.decrementReferences();
-	}
-
-	// -- Helper methods --
-
-	@Override
-	public void setSelected(boolean isSelected) {
+	public void setSelected(final boolean isSelected) {
 		if (selected != isSelected) {
 			selected = isSelected;
-			DataViewSelectionEvent event = isSelected? new DataViewSelectedEvent(this): new DataViewDeselectedEvent(this);
+			final DataViewSelectionEvent event =
+				isSelected ? new DataViewSelectedEvent(this)
+					: new DataViewDeselectedEvent(this);
 			eventService.publish(event);
 		}
 	}
@@ -140,14 +132,23 @@ public abstract class AbstractDataView implements DataView {
 		return true;
 	}
 
-	public void setDimensions(long[] dims) {
+	@Override
+	public void dispose() {
+		if (disposed) return;
+		disposed = true;
+		data.decrementReferences();
+	}
+
+	// -- Helper methods --
+
+	protected void setDimensions(final long[] dims) {
 		position = new long[dims.length];
-		planeDims = new long[dims.length-2];
+		planeDims = new long[dims.length - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = dims[i+2];
-		Extents extents = new Extents(planeDims);
+			planeDims[i] = dims[i + 2];
+		final Extents extents = new Extents(planeDims);
 		planePosition = extents.createPosition();
 		planePosition.first();
 	}
-	
+
 }
