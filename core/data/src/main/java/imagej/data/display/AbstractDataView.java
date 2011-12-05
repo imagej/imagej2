@@ -42,6 +42,10 @@ import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.event.EventService;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import net.imglib2.meta.AxisType;
 
 /**
@@ -54,6 +58,18 @@ public abstract class AbstractDataView implements DataView {
 	private final Data data;
 
 	protected final EventService eventService;
+
+	/**
+	 * View's position along each applicable dimensional axis.
+	 * <p>
+	 * Note that axes keyed here may go beyond those of the linked {@link Data}
+	 * object, if the view is part of a larger aggregate coordinate space.
+	 * </p>
+	 * <p>
+	 * By default, each axis is at position 0 unless otherwise specified.
+	 * </p>
+	 */
+	private final Map<AxisType, Long> pos = new HashMap<AxisType, Long>();
 
 	private long[] planeDims;
 	private long[] position;
