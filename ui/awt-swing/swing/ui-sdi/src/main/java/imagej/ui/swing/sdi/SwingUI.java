@@ -34,6 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.sdi;
 
+import imagej.event.EventHandler;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayPanel;
+import imagej.ext.display.event.DisplayCreatedEvent;
+import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -41,9 +46,13 @@ import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 
+import imagej.ui.swing.display.SwingDisplayPanel;
+import imagej.ui.swing.sdi.display.SwingDisplayWindow;
 import java.awt.BorderLayout;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  * Swing-based SDI user interface for ImageJ.
@@ -72,6 +81,50 @@ public class SwingUI extends AbstractSwingUI {
 		appFrame.setContentPane(pane);
 		pane.setLayout(new BorderLayout());
 		appFrame.pack();
+	}
+
+	
+	protected void deleteMenuBar(final JFrame f) {
+		f.setJMenuBar(null);
+		// HACK - w/o this next call the JMenuBars do not get garbage collected.
+		// At least its true on the Mac. This might be a Java bug. Update:
+		// I hunted on web and have found multiple people with the same problem.
+		// The Apple ScreenMenus don't GC when a Frame disposes. Their workaround
+		// was exactly the same. I have not found any official documentation of
+		// this issue.
+		f.setMenuBar(null);
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent event) {
+		final SwingDisplayWindow displayWindow =
+			getDisplayWindow(event.getObject());
+		// add a copy of the JMenuBar to the new display
+		if (displayWindow != null && displayWindow.getJMenuBar() == null) {
+			createMenuBar(displayWindow);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent event) {
+		final SwingDisplayWindow displayWindow =
+			getDisplayWindow(event.getObject());
+		if (displayWindow != null) deleteMenuBar(displayWindow);
+	}
+
+	// -- Helper methods --
+
+	protected SwingDisplayWindow getDisplayWindow(final Display<?> display) {
+		final DisplayPanel panel = display.getPanel();
+		if (!(panel instanceof SwingDisplayPanel)) return null;
+		final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
+		// CTR FIXME - Clear up confusion surrounding SwingDisplayPanel and
+		// SwingDisplayWindow in SDI vs. MDI contexts. Avoid casting!
+		final SwingDisplayWindow displayWindow =
+			(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
+		return displayWindow;
 	}
 
 }
