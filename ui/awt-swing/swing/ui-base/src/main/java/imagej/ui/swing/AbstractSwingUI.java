@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.ImageJ;
-import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
@@ -69,15 +67,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
 
-	protected final EventService eventService;
-
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
-
-	public AbstractSwingUI() {
-		// At this stage, the userIntService field is not initialized
-		eventService = ImageJ.get(EventService.class);
-	}
 
 	// -- UserInterface methods --
 
@@ -99,7 +90,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	public void createMenus() {
 		final JMenuBar menuBar = createMenuBar(appFrame);
-		eventService.publish(new AppMenusCreatedEvent(menuBar));
+		getEventService().publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 	@Override
@@ -112,8 +103,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	protected void createUI() {
 		appFrame = new SwingApplicationFrame("ImageJ");
-		toolBar = new SwingToolBar(eventService);
-		statusBar = new SwingStatusBar(eventService);
+		toolBar = new SwingToolBar(getEventService());
+		statusBar = new SwingStatusBar(getEventService());
 		createMenus();
 
 		setupAppFrame();
@@ -137,7 +128,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 		// listen for keyboard events on all components of the app frame
 		final AWTKeyEventDispatcher keyDispatcher =
-			new AWTKeyEventDispatcher(null, eventService);
+			new AWTKeyEventDispatcher(null, getEventService());
 		appFrame.addEventDispatcher(keyDispatcher);
 
 		appFrame.pack();
@@ -153,7 +144,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			// NB: If menu bars are supposed to be duplicated across all window
 			// frames, listen for display creations and deletions and clone the menu
 			// bar accordingly.
-			subscribers = eventService.subscribe(this);
+			subscribers = getEventService().subscribe(this);
 		}
 	}
 
@@ -168,7 +159,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * and adds it to the given {@link JFrame}.
 	 */
 	protected JMenuBar createMenuBar(final JFrame f) {
-		final MenuService menuService = ImageJ.get(MenuService.class);
+		final MenuService menuService = getUIService().getMenuService();
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		f.setJMenuBar(menuBar);
