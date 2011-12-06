@@ -18,11 +18,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
@@ -46,6 +41,12 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>${imglib2.version}</version>
 		</dependency>
 	</dependencies>
 

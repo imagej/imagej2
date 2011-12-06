@@ -14,7 +14,7 @@
 	<artifactId>ij-app</artifactId>
 
 	<name>ImageJ Application</name>
-	<description>The app component is the top-level ImageJ application. It brings together all the components into the final application. It currently launches the Swing user interface, but other interfaces are equally possible.</description>
+	<description>The app component is the top-level ImageJ application. It brings together all the components into the final application. It launches the Swing user interface by default, but other interfaces are equally possible.</description>
 
 	<dependencies>
 		<dependency>
@@ -81,6 +81,13 @@
 			<artifactId>ij-tools</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.java.sezpoz</groupId>
+			<artifactId>sezpoz</artifactId>
+			<version>${sezpoz.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
