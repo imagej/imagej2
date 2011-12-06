@@ -41,9 +41,7 @@ import imagej.ImageJ;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
 import imagej.event.StatusEvent;
-import imagej.ext.plugin.PluginService;
 import imagej.io.plugins.NewImage;
 import imagej.io.plugins.OpenImage;
 import imagej.ui.OutputWindow;
@@ -83,13 +81,13 @@ public class SwingDropListener implements DropTargetListener {
 
 	// -- instance variables --
 	
-	private EventService eventService;
+	protected UIService uiService;
 	private DropHandler dropHandler;
 
 	// -- constructor --
 	
-	public SwingDropListener() {
-		eventService = ImageJ.get(EventService.class);
+	public SwingDropListener(final UIService uiService) {
+		this.uiService = uiService;
 		dropHandler = new DropHandler();
 	}
 	
@@ -97,13 +95,13 @@ public class SwingDropListener implements DropTargetListener {
 	
 	@Override
 	public void dragEnter(DropTargetDragEvent dtde) {
-		eventService.publish(new StatusEvent("< <Drag and Drop> >"));
+		uiService.getEventService().publish(new StatusEvent("< <Drag and Drop> >"));
 		dtde.acceptDrag(DnDConstants.ACTION_COPY);
 	}
 
 	@Override
 	public void dragExit(DropTargetEvent dte) {
-		eventService.publish(new StatusEvent(""));
+		uiService.getEventService().publish(new StatusEvent(""));
 	}
 
 	@Override
@@ -267,13 +265,13 @@ public class SwingDropListener implements DropTargetListener {
 	  private void loadImage(File f) {
 	  	Map<String,Object> params = new HashMap<String,Object>();
 	  	params.put("inputFile",f);
-	 		ImageJ.get(PluginService.class).run(OpenImage.class, params);
+	  	uiService.getPluginService().run(OpenImage.class, params);
 	  }
 
 	  private void openAsTextFile(String filename) {
 	  	String title = shortName(filename);
 			List<String> fileContents = loadFileContents(filename);
-			OutputWindow window = ImageJ.get(UIService.class).createOutputWindow(title);
+			OutputWindow window = uiService.createOutputWindow(title);
 			for (String line : fileContents)
 				window.append(line + '\n');
 			window.setVisible(true);
@@ -339,7 +337,7 @@ public class SwingDropListener implements DropTargetListener {
 	  	params.put("fillType",NewImage.RAMP);
 	  	params.put("width",256L);
 	  	params.put("height",50L);
-	 		ImageJ.get(PluginService.class).run(NewImage.class, params);
+	  	uiService.getPluginService().run(NewImage.class, params);
 		}
 		
 	  private String shortName(String filename) {
@@ -350,4 +348,5 @@ public class SwingDropListener implements DropTargetListener {
 	  	return shortname;
 	  }
 	}
+
 }

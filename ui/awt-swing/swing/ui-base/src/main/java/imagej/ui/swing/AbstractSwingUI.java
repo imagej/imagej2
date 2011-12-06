@@ -135,7 +135,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.setVisible(true);
 
 		// setup drag and drop targets
-		final SwingDropListener dropListener = new SwingDropListener();
+		final SwingDropListener dropListener =
+			new SwingDropListener(getUIService());
 		new DropTarget(toolBar, dropListener);
 		new DropTarget(statusBar, dropListener);
 		new DropTarget(appFrame, dropListener);
