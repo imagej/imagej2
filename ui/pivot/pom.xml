@@ -7,11 +7,11 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ui</artifactId>
+		<artifactId>pom-ij-ui</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pom-ui-pivot</artifactId>
+	<artifactId>pom-ij-ui-pivot</artifactId>
 	<packaging>pom</packaging>
 
 	<name>ImageJ POM: Pivot UI</name>
