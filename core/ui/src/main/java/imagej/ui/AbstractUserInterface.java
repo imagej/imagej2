@@ -55,7 +55,6 @@ public abstract class AbstractUserInterface implements IUserInterface {
 	private static final String LAST_Y = "lastYLocation";
 
 	private UIService uiService;
-	private EventService eventService;
 
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
@@ -65,7 +64,6 @@ public abstract class AbstractUserInterface implements IUserInterface {
 	@Override
 	public void initialize(final UIService service) {
 		uiService = service;
-		eventService = uiService.getEventService();
 		createUI();
 		displayReadme();
 	}
@@ -108,7 +106,7 @@ public abstract class AbstractUserInterface implements IUserInterface {
 	 * showing it (assuming the UI has an {@link ApplicationFrame}).
 	 */
 	protected void createUI() {
-		subscribers = eventService.subscribe(this);
+		subscribers = getEventService().subscribe(this);
 		restoreLocation();
 	}
 
@@ -141,6 +139,10 @@ public abstract class AbstractUserInterface implements IUserInterface {
 	}
 
 	// -- Helper methods --
+
+	protected EventService getEventService() {
+		return uiService.getEventService();
+	}
 
 	/** Shows the readme, if this is the first time ImageJ has run. */
 	private void displayReadme() {
