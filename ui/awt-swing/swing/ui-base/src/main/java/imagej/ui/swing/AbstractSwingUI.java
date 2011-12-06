@@ -43,6 +43,7 @@ import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTDropListener;
 
 import java.awt.BorderLayout;
 import java.awt.dnd.DropTarget;
@@ -135,8 +136,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.setVisible(true);
 
 		// setup drag and drop targets
-		final SwingDropListener dropListener =
-			new SwingDropListener(getUIService());
+		final AWTDropListener dropListener = new AWTDropListener(getUIService());
 		new DropTarget(toolBar, dropListener);
 		new DropTarget(statusBar, dropListener);
 		new DropTarget(appFrame, dropListener);
