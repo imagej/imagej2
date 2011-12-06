@@ -36,9 +36,9 @@ package imagej.ui.swing.display;
 
 import imagej.data.display.AbstractOverlayView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.roi.Overlay;
-import imagej.ui.swing.roi.IJHotDrawOverlayAdapter;
-import imagej.ui.swing.roi.JHotDrawAdapterFinder;
+import imagej.data.overlay.Overlay;
+import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapterFinder;
 
 import java.awt.EventQueue;
 

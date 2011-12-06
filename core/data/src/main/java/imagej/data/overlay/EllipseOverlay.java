@@ -1,5 +1,5 @@
 //
-// CompositeOverlay.java
+// EllipseOverlay.java
 //
 
 /*
@@ -32,29 +32,53 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.roi;
+package imagej.data.overlay;
 
-import net.imglib2.roi.CompositeRegionOfInterest;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+import net.imglib2.meta.Axes;
+import net.imglib2.roi.EllipseRegionOfInterest;
 
 /**
- * A composite of several overlays.
+ * An ellipse bounded by an axis-aligned rectangle, backed by
+ * an {@link EllipseRegionOfInterest}.
  * 
  * @author Lee Kamentsky
  */
-public class CompositeOverlay extends
-	AbstractROIOverlay<CompositeRegionOfInterest>
+public class EllipseOverlay extends
+	AbstractROIOverlay<EllipseRegionOfInterest>
 {
 
-	public CompositeOverlay() {
-		this(2);
+	public EllipseOverlay() {
+		super(new EllipseRegionOfInterest(2));
+		setAxis(Axes.X, Axes.X.ordinal());
+		setAxis(Axes.Y, Axes.Y.ordinal());
 	}
 
-	public CompositeOverlay(final int numDimensions) {
-		super(new CompositeRegionOfInterest(numDimensions));
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void writeExternal(final ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		final EllipseRegionOfInterest roi = getRegionOfInterest();
+		out.writeDouble(roi.getOrigin(0));
+		out.writeDouble(roi.getOrigin(1));
+		out.writeDouble(roi.getRadius(0));
+		out.writeDouble(roi.getRadius(1));
 	}
 
-	public CompositeOverlay(final CompositeRegionOfInterest roi) {
-		super(roi);
+	@Override
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
+		super.readExternal(in);
+		final EllipseRegionOfInterest roi = getRegionOfInterest();
+		roi.setOrigin(in.readDouble(), 0);
+		roi.setOrigin(in.readDouble(), 1);
+		roi.setRadius(in.readDouble(), 0);
+		roi.setRadius(in.readDouble(), 1);
 	}
 
 }

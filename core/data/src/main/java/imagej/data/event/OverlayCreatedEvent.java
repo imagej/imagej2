@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 
 /**
  * An event indicating a new {@link Overlay} has been created.

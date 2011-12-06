@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.options.plugins;
 
 import imagej.data.display.OverlayService;
-import imagej.data.roi.Overlay.ArrowStyle;
-import imagej.data.roi.Overlay.LineStyle;
-import imagej.data.roi.OverlaySettings;
+import imagej.data.overlay.OverlaySettings;
+import imagej.data.overlay.Overlay.ArrowStyle;
+import imagej.data.overlay.Overlay.LineStyle;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;

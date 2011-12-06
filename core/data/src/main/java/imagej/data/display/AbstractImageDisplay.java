@@ -43,7 +43,7 @@ import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.AbstractDisplay;

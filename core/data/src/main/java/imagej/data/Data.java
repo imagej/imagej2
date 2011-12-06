@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 
 /**
  * A data object is the superinterface for all types of N-dimensional data

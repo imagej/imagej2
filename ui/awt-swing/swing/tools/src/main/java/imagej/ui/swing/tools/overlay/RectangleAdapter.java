@@ -32,18 +32,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.tools.roi;
+package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.DataView;
-import imagej.data.roi.Overlay;
-import imagej.data.roi.RectangleOverlay;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.RectangleOverlay;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.tool.Tool;
-import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
-import imagej.ui.swing.roi.SelectionTool;
+import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.SelectionTool;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;

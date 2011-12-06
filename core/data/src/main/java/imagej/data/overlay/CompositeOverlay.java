@@ -1,5 +1,5 @@
 //
-// SelectionTool.java
+// CompositeOverlay.java
 //
 
 /*
@@ -32,25 +32,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.roi;
+package imagej.data.overlay;
 
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
-
-import org.jhotdraw.draw.tool.DelegationSelectionTool;
+import net.imglib2.roi.CompositeRegionOfInterest;
 
 /**
- * The selection tool allows the user to switch to JHotDraw's
- * {@link DelegationSelectionTool} which lets the user move and stretch their
- * overlays.
+ * A composite of several overlays.
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = "Selection", description = "Selection Tool: "
-	+ "adjusts the shape and position of an overlay via handles.",
-	iconPath = "/icons/tools/selection.png", priority = SelectionTool.PRIORITY)
-public class SelectionTool extends AbstractTool {
+public class CompositeOverlay extends
+	AbstractROIOverlay<CompositeRegionOfInterest>
+{
 
-	public final static int PRIORITY = 100;
+	public CompositeOverlay() {
+		this(2);
+	}
+
+	public CompositeOverlay(final int numDimensions) {
+		super(new CompositeRegionOfInterest(numDimensions));
+	}
+
+	public CompositeOverlay(final CompositeRegionOfInterest roi) {
+		super(roi);
+	}
 
 }

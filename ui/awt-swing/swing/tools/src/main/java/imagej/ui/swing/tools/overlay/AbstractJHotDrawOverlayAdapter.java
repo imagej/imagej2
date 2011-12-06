@@ -32,15 +32,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.tools.roi;
+package imagej.ui.swing.tools.overlay;
 
 import imagej.ImageJ;
 import imagej.data.display.DataView;
 import imagej.data.display.OverlayService;
-import imagej.data.roi.OverlaySettings;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.OverlaySettings;
 import imagej.ext.tool.AbstractTool;
-import imagej.ui.swing.roi.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.util.ColorRGB;
 import imagej.util.ColorRGBA;
 import imagej.util.awt.AWTColors;

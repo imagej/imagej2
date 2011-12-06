@@ -32,14 +32,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.roi;
+package imagej.core.plugins.overlay;
 
 import imagej.data.Data;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.roi.Overlay;
-import imagej.data.roi.Overlay.ArrowStyle;
-import imagej.data.roi.Overlay.LineStyle;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.Overlay.ArrowStyle;
+import imagej.data.overlay.Overlay.LineStyle;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;

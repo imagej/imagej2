@@ -1,5 +1,5 @@
 //
-// AbstractROIOverlay.java
+// JHotDrawOverlayAdapter.java
 //
 
 /*
@@ -32,35 +32,26 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.roi;
+package imagej.ui.swing.overlay;
 
-import net.imglib2.roi.RegionOfInterest;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import net.java.sezpoz.Indexable;
 
 /**
- * An overlay that has an associated region of interest
+ * Add this annotation to any ImageJHotDrawROIAdapter and SezPoz will make it
+ * available to ImageJ and let people use JHotDraw to edit it.
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
-	AbstractOverlay
-{
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+@Indexable(type = IJHotDrawOverlayAdapter.class)
+public @interface JHotDrawOverlayAdapter {
 
-	private static final long serialVersionUID = 1L;
-
-	private final R roi;
-
-	protected AbstractROIOverlay(final R roi) {
-		this.roi = roi;
-	}
-
-	// TODO - Have this class implement ROIOverlay which defines
-	// getRegionOfInterest(), rather than having the base Overlay interface have
-	// that method. This avoids confusion with non-ROI Overlay implementation (so
-	// no getRegionOfInterest() method returning null for them).
-
-	@Override
-	public R getRegionOfInterest() {
-		return roi;
-	}
+	int priority() default 0;
 
 }
