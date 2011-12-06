@@ -76,58 +76,58 @@ import net.imglib2.display.ColorTable8;
  * @author Barry DeZonia
  */
 public class SwingDropListener implements DropTargetListener {
-	
+
 	// FIXME: no Swing-specific functionality here. Move deeper in stack.
 
 	// -- instance variables --
-	
+
 	protected UIService uiService;
-	private DropHandler dropHandler;
+	private final DropHandler dropHandler;
 
 	// -- constructor --
-	
+
 	public SwingDropListener(final UIService uiService) {
 		this.uiService = uiService;
 		dropHandler = new DropHandler();
 	}
-	
+
 	// -- public interface --
-	
+
 	@Override
-	public void dragEnter(DropTargetDragEvent dtde) {
+	public void dragEnter(final DropTargetDragEvent dtde) {
 		uiService.getEventService().publish(new StatusEvent("< <Drag and Drop> >"));
 		dtde.acceptDrag(DnDConstants.ACTION_COPY);
 	}
 
 	@Override
-	public void dragExit(DropTargetEvent dte) {
+	public void dragExit(final DropTargetEvent dte) {
 		uiService.getEventService().publish(new StatusEvent(""));
 	}
 
 	@Override
-	public void dragOver(DropTargetDragEvent dtde) {
+	public void dragOver(final DropTargetDragEvent dtde) {
 		// do nothing
 	}
 
 	@Override
-	public void dropActionChanged(DropTargetDragEvent dtde) {
+	public void dropActionChanged(final DropTargetDragEvent dtde) {
 		// do nothing
 	}
-	
+
 	@Override
-	public void drop(DropTargetDropEvent dtde) {
+	public void drop(final DropTargetDropEvent dtde) {
 		dtde.acceptDrop(DnDConstants.ACTION_COPY);
 		doDrop(dtde);
 	}
 
 	// -- private helpers --
-	
-	private void doDrop(DropTargetDropEvent dtde) {
+
+	private void doDrop(final DropTargetDropEvent dtde) {
 		try {
-			List<Object> inputs = buildInputs(dtde);
+			final List<Object> inputs = buildInputs(dtde);
 			for (int i = 0; i < inputs.size(); i++) {
 				final Object input = inputs.get(i);
-				Thread thread = new Thread(new Runnable() {
+				final Thread thread = new Thread(new Runnable() {
 
 					@SuppressWarnings("synthetic-access")
 					@Override
@@ -135,218 +135,220 @@ public class SwingDropListener implements DropTargetListener {
 						dropHandler.handleInput(input);
 					}
 				});
-				thread.setPriority(Math.max(thread.getPriority()-1, Thread.MIN_PRIORITY));
+				thread.setPriority(Math.max(thread.getPriority() - 1,
+					Thread.MIN_PRIORITY));
 				thread.start();
 			}
 		}
-		catch(Exception e)  {
+		catch (final Exception e) {
 			dtde.dropComplete(false);
 			return;
 		}
 		dtde.dropComplete(true);
 	}
-	
-	private List<Object> buildInputs(DropTargetDropEvent dtde) {
-		List<Object> inputs = new ArrayList<Object>();
-		Transferable t = dtde.getTransferable();
+
+	private List<Object> buildInputs(final DropTargetDropEvent dtde) {
+		final List<Object> inputs = new ArrayList<Object>();
+		final Transferable t = dtde.getTransferable();
 		try {
-			for (DataFlavor flavor : t.getTransferDataFlavors()) {
+			for (final DataFlavor flavor : t.getTransferDataFlavors()) {
 				if (flavor.isFlavorJavaFileListType()) {
-					Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
+					final Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
 					@SuppressWarnings("unchecked")
-					List<Object> fileList = (List<Object>) data;
+					final List<Object> fileList = (List<Object>) data;
 					inputs.addAll(fileList);
 					break;
 				}
 				else if (flavor.isFlavorTextType()) {
-					Object obj = t.getTransferData(flavor);
+					final Object obj = t.getTransferData(flavor);
 					if (!(obj instanceof String)) continue;
 					String s = obj.toString().trim();
-					if (s.indexOf("href=\"")!=-1 || s.indexOf("src=\"")!=-1) {
+					if (s.indexOf("href=\"") != -1 || s.indexOf("src=\"") != -1) {
 						s = parseHTML(s);
 						inputs.add(s);
 						break;
 					}
-					BufferedReader br = new BufferedReader(new StringReader(s));
+					final BufferedReader br = new BufferedReader(new StringReader(s));
 					String tmp;
 					while (null != (tmp = br.readLine())) {
-						tmp = java.net.URLDecoder.decode(tmp.replaceAll("\\+","%2b"), "UTF-8");
+						tmp =
+							java.net.URLDecoder.decode(tmp.replaceAll("\\+", "%2b"), "UTF-8");
 						if (tmp.startsWith("file://")) tmp = tmp.substring(7);
-						if (tmp.startsWith("http://"))
-							inputs.add(s);
-						else
-							inputs.add(tmp);
+						if (tmp.startsWith("http://")) inputs.add(s);
+						else inputs.add(tmp);
 					}
 					break;
 				}
 			}
 		}
-		catch (UnsupportedFlavorException e) { /*do nothing */ }
-		catch (UnsupportedEncodingException e) { /*do nothing */ }
-		catch (IOException e) { /*do nothing */ }
-		
+		catch (final UnsupportedFlavorException e) {
+			// ignore
+		}
+		catch (final UnsupportedEncodingException e) {
+			// ignore
+		}
+		catch (final IOException e) {
+			// ignore
+		}
+
 		return inputs;
 	}
 
-	private String parseHTML(String s) {
-  	int index1 = s.indexOf("src=\"");
-  	if (index1>=0) {
-  		int index2 = s.indexOf("\"", index1+5);
-  		if (index2>0)
-  			return s.substring(index1+5, index2);
-  	}
-  	index1 = s.indexOf("href=\"");
-  	if (index1>=0) {
-  		int index2 = s.indexOf("\"", index1+6);
-  		if (index2>0)
-  			return s.substring(index1+6, index2);
-  	}
-  	return s;
-  }
+	private String parseHTML(final String s) {
+		int index1 = s.indexOf("src=\"");
+		if (index1 >= 0) {
+			final int index2 = s.indexOf("\"", index1 + 5);
+			if (index2 > 0) return s.substring(index1 + 5, index2);
+		}
+		index1 = s.indexOf("href=\"");
+		if (index1 >= 0) {
+			final int index2 = s.indexOf("\"", index1 + 6);
+			if (index2 > 0) return s.substring(index1 + 6, index2);
+		}
+		return s;
+	}
 
 	// TODO -- RELOCATE THE FOLLOWING CODE TO VARIOUS DropHandler implementations
 	// later. They should be sezpoz discoverable. This code is a partial HACK
 	// that allows beta1's drag and drop to actually do something. See ticket
 	// #860.
-	
+
 	private class DropHandler {
-		
+
 		public DropHandler() {
 			// nothing to do
 		}
-		
-		public void handleInput(Object input) {
-			if (input instanceof String)
-				handleInputAsFileName((String) input);
-			if (input instanceof File)
-				handleInputAsFile((File) input);
-		}
-		
-	  private void handleInputAsFileName(String filename) {
-	  	// is it a LUT?
-	  	if (filename.toLowerCase().endsWith(".lut")) {
-	  		importLut(filename);
-	  		return;
-	  	}
-	  	
-	  	// default case
-	  	openAsTextFile(filename);
-	  }
 
-	  private void handleInputAsFile(File file) {
-			String filename = file.getAbsolutePath();
-			if (isKnownImageType(filename))
-				loadImage(file);
+		public void handleInput(final Object input) {
+			if (input instanceof String) handleInputAsFileName((String) input);
+			if (input instanceof File) handleInputAsFile((File) input);
+		}
+
+		private void handleInputAsFileName(final String filename) {
+			// is it a LUT?
+			if (filename.toLowerCase().endsWith(".lut")) {
+				importLut(filename);
+				return;
+			}
+
+			// default case
+			openAsTextFile(filename);
+		}
+
+		private void handleInputAsFile(final File file) {
+			final String filename = file.getAbsolutePath();
+			if (isKnownImageType(filename)) loadImage(file);
 			else {
 				handleInputAsFileName(filename);
 			}
-	  }
-	  
-	  private boolean isKnownImageType(String filename) {
-	  	/*
-	  	 * way that relies on BioFormats : avoid
-	  	 * 
-	  	IFormatReader reader = null;
-	  	try {
-	  		reader = ImgOpener.createReader(filename, false);
-	  	} catch (FormatException e) {
-	  		// fall through
-	  	} catch (IOException e) {
-	  		// fall through
-	  	}
-	  	return reader != null;
-	  	 *
-	  	 */
-	  	// TODO - actually do something
-	  	return true;  // always open as image
-	  	// return false;  // always open as LUT or TEXT
-	  }
-	  
-	  private void loadImage(File f) {
-	  	Map<String,Object> params = new HashMap<String,Object>();
-	  	params.put("inputFile",f);
-	  	uiService.getPluginService().run(OpenImage.class, params);
-	  }
+		}
 
-	  private void openAsTextFile(String filename) {
-	  	String title = shortName(filename);
-			List<String> fileContents = loadFileContents(filename);
-			OutputWindow window = uiService.createOutputWindow(title);
-			for (String line : fileContents)
+		private boolean isKnownImageType(final String filename) {
+			/*
+			 * way that relies on BioFormats : avoid
+			 * 
+			IFormatReader reader = null;
+			try {
+				reader = ImgOpener.createReader(filename, false);
+			} catch (FormatException e) {
+				// fall through
+			} catch (IOException e) {
+				// fall through
+			}
+			return reader != null;
+			 *
+			 */
+			// TODO - actually do something
+			return true; // always open as image
+			// return false; // always open as LUT or TEXT
+		}
+
+		private void loadImage(final File f) {
+			final Map<String, Object> params = new HashMap<String, Object>();
+			params.put("inputFile", f);
+			uiService.getPluginService().run(OpenImage.class, params);
+		}
+
+		private void openAsTextFile(final String filename) {
+			final String title = shortName(filename);
+			final List<String> fileContents = loadFileContents(filename);
+			final OutputWindow window = uiService.createOutputWindow(title);
+			for (final String line : fileContents)
 				window.append(line + '\n');
 			window.setVisible(true);
-	  }
-	  
-		private void importLut(String filename) {
-			List<ImageDisplay> imageDisplays =
-					ImageJ.get(ImageDisplayService.class).getImageDisplays();
+		}
+
+		private void importLut(final String filename) {
+			final List<ImageDisplay> imageDisplays =
+				ImageJ.get(ImageDisplayService.class).getImageDisplays();
 			if (imageDisplays.size() == 0) {
 				createSmallRampedImage(filename);
 				// TODO TEMP HACK pause long enough so active image is set
 				try {
 					Thread.sleep(2500);
-				} catch (Exception e) {/**/}
+				}
+				catch (final Exception e) {/**/}
 			}
 			applyLutToActiveImage(filename);
 		}
 
-		private void applyLutToActiveImage(String filename) {
-			ImageDisplay display = ImageJ.get(ImageDisplayService.class).getActiveImageDisplay();
-			ColorTable8 colorTable = loadColorTable(filename);
-			DatasetView view = (DatasetView) display.getActiveView();
+		private void applyLutToActiveImage(final String filename) {
+			final ImageDisplay display =
+				ImageJ.get(ImageDisplayService.class).getActiveImageDisplay();
+			final ColorTable8 colorTable = loadColorTable(filename);
+			final DatasetView view = (DatasetView) display.getActiveView();
 			// TODO - broken - THESE NEXT TWO LINES SEEM TO HAVE NO EFFECT
 			view.setColorTable(colorTable, 0);
 			view.update();
 		}
-		
-		private List<String> loadFileContents(String filename) {
-			List<String> contents = new LinkedList<String>();
+
+		private List<String> loadFileContents(final String filename) {
+			final List<String> contents = new LinkedList<String>();
 			try {
-				FileReader fileReader = new FileReader(filename);
-				BufferedReader reader = new BufferedReader(fileReader);
+				final FileReader fileReader = new FileReader(filename);
+				final BufferedReader reader = new BufferedReader(fileReader);
 				while (reader.ready()) {
 					contents.add(reader.readLine());
 				}
 			}
-			catch (Exception e) {
+			catch (final Exception e) {
 				// do nothing
 			}
 			return contents;
 		}
-		
-		private ColorTable8 loadColorTable(String filename) {
+
+		private ColorTable8 loadColorTable(final String filename) {
 			// TODO do something sensible by loading ColorTable from
 			// .lut file
-			byte[] reds = new byte[256];
-			byte[] greens = new byte[256];
-			byte[] blues = new byte[256];
+			final byte[] reds = new byte[256];
+			final byte[] greens = new byte[256];
+			final byte[] blues = new byte[256];
 			for (int i = 0; i < 256; i++) {
 				reds[i] = (byte) i;
-				greens[i] = (byte)(255 - i/2);
+				greens[i] = (byte) (255 - i / 2);
 				blues[i] = (byte) (i * 0.8);
 			}
-			return new ColorTable8(reds,greens,blues);
+			return new ColorTable8(reds, greens, blues);
 		}
-		
-		private void createSmallRampedImage(String filename) {
-	  	Map<String,Object> params = new HashMap<String,Object>();
-	  	params.put("name",shortName(filename));
-	  	params.put("bitDepth",NewImage.DEPTH8);
-	  	params.put("signed",false);
-	  	params.put("floating",false);
-	  	params.put("fillType",NewImage.RAMP);
-	  	params.put("width",256L);
-	  	params.put("height",50L);
-	  	uiService.getPluginService().run(NewImage.class, params);
+
+		private void createSmallRampedImage(final String filename) {
+			final Map<String, Object> params = new HashMap<String, Object>();
+			params.put("name", shortName(filename));
+			params.put("bitDepth", NewImage.DEPTH8);
+			params.put("signed", false);
+			params.put("floating", false);
+			params.put("fillType", NewImage.RAMP);
+			params.put("width", 256L);
+			params.put("height", 50L);
+			uiService.getPluginService().run(NewImage.class, params);
 		}
-		
-	  private String shortName(String filename) {
-	  	String shortname = filename;
-	  	int lastSlash = filename.lastIndexOf(File.separatorChar);
-	  	if (lastSlash >= 0)
-	  		shortname = filename.substring(lastSlash+1);
-	  	return shortname;
-	  }
+
+		private String shortName(final String filename) {
+			String shortname = filename;
+			final int lastSlash = filename.lastIndexOf(File.separatorChar);
+			if (lastSlash >= 0) shortname = filename.substring(lastSlash + 1);
+			return shortname;
+		}
 	}
 
 }
