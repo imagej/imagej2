@@ -6,6 +6,10 @@
 #   find . -name '*.java' -exec bash scripts/add-header.sh {} \;
 
 file="$1"
+
+test // = "$(head -n 1 $file 2>/dev/null)" &&
+exit
+
 name="$(basename "$file")"
 basedir="$(dirname "$0")/.."
 tmp="$file.tmp"
