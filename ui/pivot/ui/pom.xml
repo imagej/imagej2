@@ -47,6 +47,7 @@
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.pivot</groupId>
 			<artifactId>pivot-core</artifactId>

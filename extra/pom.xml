@@ -19,7 +19,6 @@
 
 	<modules>
 		<module>native-library-util</module>
-		<!-- <module>sandbox</module> -->
 		<module>visad-plugin</module>
 		<module>workflow</module>
 		<module>workflowpipes</module>
