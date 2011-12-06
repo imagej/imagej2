@@ -1,5 +1,5 @@
 //
-// JHotDrawOverlayAdapter.java
+// SelectionTool.java
 //
 
 /*
@@ -32,26 +32,25 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.roi;
+package imagej.ui.swing.overlay;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
 
-import net.java.sezpoz.Indexable;
+import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 /**
- * Add this annotation to any ImageJHotDrawROIAdapter and SezPoz will make it
- * available to ImageJ and let people use JHotDraw to edit it.
+ * The selection tool allows the user to switch to JHotDraw's
+ * {@link DelegationSelectionTool} which lets the user move and stretch their
+ * overlays.
  * 
  * @author Lee Kamentsky
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = IJHotDrawOverlayAdapter.class)
-public @interface JHotDrawOverlayAdapter {
+@Tool(name = "Selection", description = "Selection Tool: "
+	+ "adjusts the shape and position of an overlay via handles.",
+	iconPath = "/icons/tools/selection.png", priority = SelectionTool.PRIORITY)
+public class SelectionTool extends AbstractTool {
 
-	int priority() default 0;
+	public final static int PRIORITY = 100;
 
 }

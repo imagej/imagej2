@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 
 /**
  * An event indicating an {@link Overlay}'s dimensional extents may have

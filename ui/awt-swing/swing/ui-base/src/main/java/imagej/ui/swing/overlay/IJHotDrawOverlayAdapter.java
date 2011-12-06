@@ -32,10 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.roi;
+package imagej.ui.swing.overlay;
 
 import imagej.data.display.DataView;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 
 import org.jhotdraw.draw.Figure;
 

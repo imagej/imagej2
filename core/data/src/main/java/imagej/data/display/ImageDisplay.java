@@ -37,7 +37,7 @@ package imagej.data.display;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.LabeledSpace;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 import imagej.ext.display.Display;
 import net.imglib2.meta.AxisType;
 

@@ -32,13 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.tools.roi;
+package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.DataView;
-import imagej.data.roi.Overlay;
-import imagej.data.roi.PolygonOverlay;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.PolygonOverlay;
 import imagej.ext.tool.Tool;
-import imagej.ui.swing.roi.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.util.Log;
 
 import java.awt.Point;

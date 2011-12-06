@@ -32,11 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.roi;
+package imagej.core.plugins.overlay;
 
 import imagej.data.Dataset;
-import imagej.data.roi.BinaryMaskOverlay;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.BinaryMaskOverlay;
+import imagej.data.overlay.Overlay;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;

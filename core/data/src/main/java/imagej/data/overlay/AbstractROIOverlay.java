@@ -1,5 +1,5 @@
 //
-// EllipseOverlay.java
+// AbstractROIOverlay.java
 //
 
 /*
@@ -32,53 +32,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.roi;
+package imagej.data.overlay;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
-import net.imglib2.meta.Axes;
-import net.imglib2.roi.EllipseRegionOfInterest;
+import net.imglib2.roi.RegionOfInterest;
 
 /**
- * An ellipse bounded by an axis-aligned rectangle, backed by
- * an {@link EllipseRegionOfInterest}.
+ * An overlay that has an associated region of interest
  * 
  * @author Lee Kamentsky
  */
-public class EllipseOverlay extends
-	AbstractROIOverlay<EllipseRegionOfInterest>
+public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
+	AbstractOverlay
 {
-
-	public EllipseOverlay() {
-		super(new EllipseRegionOfInterest(2));
-		setAxis(Axes.X, Axes.X.ordinal());
-		setAxis(Axes.Y, Axes.Y.ordinal());
-	}
 
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public void writeExternal(final ObjectOutput out) throws IOException {
-		super.writeExternal(out);
-		final EllipseRegionOfInterest roi = getRegionOfInterest();
-		out.writeDouble(roi.getOrigin(0));
-		out.writeDouble(roi.getOrigin(1));
-		out.writeDouble(roi.getRadius(0));
-		out.writeDouble(roi.getRadius(1));
+	private final R roi;
+
+	protected AbstractROIOverlay(final R roi) {
+		this.roi = roi;
 	}
 
+	// TODO - Have this class implement ROIOverlay which defines
+	// getRegionOfInterest(), rather than having the base Overlay interface have
+	// that method. This avoids confusion with non-ROI Overlay implementation (so
+	// no getRegionOfInterest() method returning null for them).
+
 	@Override
-	public void readExternal(final ObjectInput in) throws IOException,
-		ClassNotFoundException
-	{
-		super.readExternal(in);
-		final EllipseRegionOfInterest roi = getRegionOfInterest();
-		roi.setOrigin(in.readDouble(), 0);
-		roi.setOrigin(in.readDouble(), 1);
-		roi.setRadius(in.readDouble(), 0);
-		roi.setRadius(in.readDouble(), 1);
+	public R getRegionOfInterest() {
+		return roi;
 	}
 
 }

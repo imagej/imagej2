@@ -38,7 +38,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 import imagej.ext.MenuEntry;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;

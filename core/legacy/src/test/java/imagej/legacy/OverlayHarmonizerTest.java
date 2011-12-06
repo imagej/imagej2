@@ -44,11 +44,11 @@ import ij.process.ByteProcessor;
 import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.roi.BinaryMaskOverlay;
-import imagej.data.roi.EllipseOverlay;
-import imagej.data.roi.Overlay;
-import imagej.data.roi.PolygonOverlay;
-import imagej.data.roi.RectangleOverlay;
+import imagej.data.overlay.BinaryMaskOverlay;
+import imagej.data.overlay.EllipseOverlay;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.PolygonOverlay;
+import imagej.data.overlay.RectangleOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
 
 import java.awt.Transparency;

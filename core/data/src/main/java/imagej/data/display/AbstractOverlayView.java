@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display;
 
 import imagej.ImageJ;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 import net.imglib2.meta.AxisType;
 
 /**

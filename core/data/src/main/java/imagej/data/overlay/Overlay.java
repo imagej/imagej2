@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.roi;
+package imagej.data.overlay;
 
 import imagej.data.Data;
 import imagej.data.Dataset;

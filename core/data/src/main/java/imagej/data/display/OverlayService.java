@@ -40,8 +40,8 @@ import imagej.Service;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
-import imagej.data.roi.OverlaySettings;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.OverlaySettings;
 import imagej.object.ObjectService;
 import imagej.util.RealRect;
 

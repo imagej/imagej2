@@ -32,10 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.roi;
+package imagej.data.overlay;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.util.ColorRGB;
 
 import java.io.ByteArrayInputStream;

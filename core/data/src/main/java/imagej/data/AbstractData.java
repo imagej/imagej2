@@ -37,7 +37,7 @@ package imagej.data;
 import imagej.ImageJ;
 import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 import imagej.event.EventService;
 
 import java.io.Externalizable;

@@ -36,7 +36,7 @@ package imagej.ui.swing.tools;
 
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
-import imagej.ui.swing.tools.roi.LineAdapter;
+import imagej.ui.swing.tools.overlay.LineAdapter;
 
 /**
  * TODO

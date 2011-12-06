@@ -39,7 +39,7 @@ import ij.gui.ImageWindow;
 import ij.gui.Roi;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;

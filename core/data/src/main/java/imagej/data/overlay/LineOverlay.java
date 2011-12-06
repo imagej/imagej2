@@ -1,5 +1,5 @@
 //
-// RectangleOverlay.java
+// LineOverlay.java
 //
 
 /*
@@ -32,55 +32,97 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.roi;
+package imagej.data.overlay;
 
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
-import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
- * A rectangular region of interest.
+ * Represents a line going from here to there, possibly with arrows on one end,
+ * the other or both.
  * 
  * @author Lee Kamentsky
  */
-public class RectangleOverlay extends
-	AbstractROIOverlay<RectangleRegionOfInterest>
-{
+public class LineOverlay extends AbstractOverlay {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private RealPoint ptStart;
+	private RealPoint ptEnd;
 
-	public RectangleOverlay() {
-		super(new RectangleRegionOfInterest(new double[] { 0, 0 }, new double[] {
-			0, 0 }));
-		setAxis(Axes.X, Axes.X.ordinal());
-		setAxis(Axes.Y, Axes.Y.ordinal());
+	public LineOverlay() {
+		ptStart = new RealPoint(2);
+		ptEnd = new RealPoint(2);
+		this.setAxis(Axes.X, 0);
+		this.setAxis(Axes.Y, 1);
 	}
 
+	public LineOverlay(final RealLocalizable ptStart, final RealLocalizable ptEnd)
+	{
+		assert ptStart.numDimensions() == ptEnd.numDimensions();
+		this.ptStart = new RealPoint(ptStart);
+		this.ptEnd = new RealPoint(ptEnd);
+	}
+
+	public RealLocalizable getLineStart() {
+		return ptStart;
+	}
+
+	public RealLocalizable getLineEnd() {
+		return ptEnd;
+	}
+
+	public void setLineStart(final RealLocalizable pt) {
+		ptStart.setPosition(pt);
+	}
+
+	public void setLineEnd(final RealLocalizable pt) {
+		ptEnd.setPosition(pt);
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.AbstractOverlay#numDimensions()
+	 */
+	@Override
+	public int numDimensions() {
+		return ptStart.numDimensions();
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.AbstractOverlay#writeExternal(java.io.ObjectOutput)
+	 */
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		final RectangleRegionOfInterest roi = getRegionOfInterest();
-		out.writeDouble(roi.getOrigin(0));
-		out.writeDouble(roi.getOrigin(1));
-		out.writeDouble(roi.getExtent(0));
-		out.writeDouble(roi.getExtent(1));
+		out.writeInt(this.numDimensions());
+		for (final RealLocalizable pt : new RealLocalizable[] { ptStart, ptEnd }) {
+			for (int i = 0; i < numDimensions(); i++) {
+				out.writeDouble(pt.getDoublePosition(i));
+			}
+		}
 	}
 
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.AbstractOverlay#readExternal(java.io.ObjectInput)
+	 */
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
 	{
 		super.readExternal(in);
-		final RectangleRegionOfInterest roi = getRegionOfInterest();
-		roi.setOrigin(in.readDouble(), 0);
-		roi.setOrigin(in.readDouble(), 1);
-		roi.setExtent(in.readDouble(), 0);
-		roi.setExtent(in.readDouble(), 1);
+		final int nDimensions = in.readInt();
+		final RealPoint[] pts = new RealPoint[2];
+		final double[] position = new double[nDimensions];
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < nDimensions; j++) {
+				position[j] = in.readDouble();
+			}
+			pts[i] = new RealPoint(position);
+		}
+		ptStart = pts[0];
+		ptEnd = pts[1];
 	}
 }

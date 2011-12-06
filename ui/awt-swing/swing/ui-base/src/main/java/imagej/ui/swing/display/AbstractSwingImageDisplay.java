@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.AbstractImageDisplay;
 import imagej.data.display.DataView;
-import imagej.data.roi.Overlay;
+import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.DisplayWindow;
