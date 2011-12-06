@@ -1,5 +1,5 @@
 //
-// SwingDropListener.java
+// AWTDropListener.java
 //
 
 /*
@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // NOTE - this code adapted from IJ1's DragAndDrop class
 // Original contributor: Wayne Rasband
 
-package imagej.ui.swing;
+package imagej.ui.common.awt;
 
 import imagej.ImageJ;
 import imagej.data.display.DatasetView;
@@ -70,14 +70,12 @@ import java.util.Map;
 import net.imglib2.display.ColorTable8;
 
 /**
- * SwingDropListener implements the drag and drop functionality of IJ2 that is
- * tied to dropping files on the swing application window items.
+ * Implements functionality that enables AWT-based user interfaces to open files
+ * in response to a drag and drop operation.
  * 
  * @author Barry DeZonia
  */
-public class SwingDropListener implements DropTargetListener {
-
-	// FIXME: no Swing-specific functionality here. Move deeper in stack.
+public class AWTDropListener implements DropTargetListener {
 
 	// -- instance variables --
 
@@ -86,7 +84,7 @@ public class SwingDropListener implements DropTargetListener {
 
 	// -- constructor --
 
-	public SwingDropListener(final UIService uiService) {
+	public AWTDropListener(final UIService uiService) {
 		this.uiService = uiService;
 		dropHandler = new DropHandler();
 	}
