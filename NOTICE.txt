@@ -67,13 +67,13 @@ License: 2-clause BSD
 Artifact: com.github.sbridges.object-inspector:object-inspector:jar:0.1
 
 ===============================================================================
-SciFIO - http://loci.wisc.edu/software/bio-formats/
+SCIFIO - http://loci.wisc.edu/software/bio-formats/
 
 License: GPL 2+ (slated to be BSD)
 
 Artifact: loci:scifio:jar:4.3.3-SNAPSHOT
 
-SciFIO dependencies:
+SCIFIO dependencies:
 com.jgoodies:forms:jar:1.2.1
 loci:jai_imageio:jar:4.3.3-SNAPSHOT
 loci:lwf-stubs:jar:4.3.3-SNAPSHOT
