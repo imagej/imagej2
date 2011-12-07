@@ -36,7 +36,7 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
-import imagej.data.LabeledSpace;
+import imagej.data.CalibratedInterval;
 import imagej.data.overlay.Overlay;
 import imagej.ext.display.Display;
 import net.imglib2.meta.AxisType;
@@ -49,7 +49,7 @@ import net.imglib2.meta.AxisType;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface ImageDisplay extends Display<DataView>, LabeledSpace {
+public interface ImageDisplay extends Display<DataView>, CalibratedInterval {
 
 	/** Gets the view currently designated as active. */
 	DataView getActiveView();

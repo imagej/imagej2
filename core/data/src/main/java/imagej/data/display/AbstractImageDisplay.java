@@ -228,7 +228,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		getPanel().setLabel(makeLabel());
 	}
 
-	// -- LabeledSpace methods --
+	// -- CalibratedInterval methods --
 
 	@Override
 	public long[] getDims() {

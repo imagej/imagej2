@@ -123,7 +123,7 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 		if (refs == 0) delete();
 	}
 
-	// -- LabeledSpace methods --
+	// -- CalibratedInterval methods --
 
 	@Override
 	public long[] getDims() {
