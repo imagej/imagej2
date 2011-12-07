@@ -221,7 +221,7 @@ public final class LegacyService extends AbstractService {
 		if (code == KeyCode.ALT) IJ.setKeyUp(KeyCode.ALT.getCode());
 		if (code == KeyCode.SHIFT) IJ.setKeyUp(KeyCode.SHIFT.getCode());
 		if (code == KeyCode.CONTROL) IJ.setKeyUp(KeyCode.CONTROL.getCode());
-		if (IJ.isMacintosh() && code == KeyCode.CONTROL) {
+		if (IJ.isMacintosh() && code == KeyCode.META) {
 			IJ.setKeyUp(KeyCode.CONTROL.getCode());
 		}
 	}
