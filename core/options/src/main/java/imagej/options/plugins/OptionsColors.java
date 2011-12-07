@@ -39,6 +39,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 import imagej.util.ColorRGB;
+import imagej.util.Colors;
 
 /**
  * Runs the Edit::Options::Colors dialog.
@@ -52,13 +53,13 @@ import imagej.util.ColorRGB;
 public class OptionsColors extends OptionsPlugin {
 
 	@Parameter(label = "Foreground")
-	private ColorRGB fgColor = new ColorRGB(0,0,0); // black
+	private ColorRGB fgColor = Colors.BLACK;
 
 	@Parameter(label = "Background")
-	private ColorRGB bgColor = new ColorRGB(255,255,255); // white
+	private ColorRGB bgColor = Colors.WHITE;
 
 	@Parameter(label = "Selection")
-	private ColorRGB selColor = new ColorRGB(255,255,0); // yellow
+	private ColorRGB selColor = Colors.YELLOW;
 
 	// -- OptionsColors methods --
 
