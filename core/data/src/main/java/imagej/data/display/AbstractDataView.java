@@ -98,7 +98,12 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public Position getPlanePosition() {
-		return planePosition;
+		final Position p = data.getExtents().createPosition();
+		for (int d=2; d<data.numDimensions(); d++) {
+			final AxisType axis = data.axis(d);
+			p.setPosition(getPosition(axis), d - 2);
+		}
+		return p;
 	}
 
 	@Override
