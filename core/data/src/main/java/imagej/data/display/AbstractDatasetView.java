@@ -186,23 +186,17 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 	@Override
 	public long getPosition(final AxisType axis) {
-		// FIXME
+		if (Axes.isXY(axis)) return 0;
 		final int dim = getData().getAxisIndex(axis);
-		if (dim < 0) {
-			throw new IllegalArgumentException("Unknown axis: " + axis);
-		}
-		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return 0;
-		return projector.getLongPosition(dim);
+		if (dim < 0) return 0;
+		return projector == null ? 0 : projector.getLongPosition(dim);
 	}
 
 	@Override
 	public void setPosition(final AxisType axis, final long value) {
-		// FIXME
+		if (Axes.isXY(axis)) return;
 		final int dim = getData().getAxisIndex(axis);
-		if (dim < 0) {
-			throw new IllegalArgumentException("Unknown axis: " + axis);
-		}
-		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return;
+		if (dim < 0) return;
 		final long currentValue = projector.getLongPosition(dim);
 		if (value == currentValue) {
 			return; // no change
