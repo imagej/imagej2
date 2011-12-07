@@ -235,11 +235,11 @@ public final class LegacyService extends AbstractService {
 	}
 	
 	private class IJ1EventListener implements IJEventListener {
-		@SuppressWarnings("synthetic-access")
-		private OptionsColors colorOpts = optionsService.getOptions(OptionsColors.class);
 		
 		@Override
 		public void eventOccurred(int eventID) {
+			@SuppressWarnings("synthetic-access")
+			OptionsColors colorOpts = optionsService.getOptions(OptionsColors.class);
 			ColorRGB color;
 			switch (eventID) {
 				case ij.IJEventListener.COLOR_PICKER_CLOSED:
