@@ -185,35 +185,6 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 	}
 
 	@Override
-	public long getPosition(final AxisType axis) {
-		if (Axes.isXY(axis)) return 0;
-		final int dim = getData().getAxisIndex(axis);
-		if (dim < 0) return 0;
-		return projector == null ? 0 : projector.getLongPosition(dim);
-	}
-
-	@Override
-	public void setPosition(final AxisType axis, final long value) {
-		if (Axes.isXY(axis)) return;
-		final int dim = getData().getAxisIndex(axis);
-		if (dim < 0) return;
-		final long currentValue = projector.getLongPosition(dim);
-		if (value == currentValue) {
-			return; // no change
-		}
-		projector.setPosition(value, dim);
-
-		// update color tables
-		if (dim != channelDimIndex) {
-			updateLUTs();
-		}
-
-		projector.map();
-
-		super.setPosition(axis, value);
-	}
-
-	@Override
 	public int getPreferredWidth() {
 		return getScreenImage().image().getWidth(null);
 	}
@@ -247,6 +218,37 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 		final boolean composite = isComposite();
 		projector = createProjector(composite);
 		projector.map();
+	}
+
+	// -- PositionableByAxis methods --
+
+	@Override
+	public long getLongPosition(final AxisType axis) {
+		if (Axes.isXY(axis)) return 0;
+		final int dim = getData().getAxisIndex(axis);
+		if (dim < 0) return 0;
+		return projector == null ? 0 : projector.getLongPosition(dim);
+	}
+
+	@Override
+	public void setPosition(final long position, final AxisType axis) {
+		if (Axes.isXY(axis)) return;
+		final int dim = getData().getAxisIndex(axis);
+		if (dim < 0) return;
+		final long currentValue = projector.getLongPosition(dim);
+		if (position == currentValue) {
+			return; // no change
+		}
+		projector.setPosition(position, dim);
+
+		// update color tables
+		if (dim != channelDimIndex) {
+			updateLUTs();
+		}
+
+		projector.map();
+
+		super.setPosition(position, axis);
 	}
 
 	// -- Helper methods --

@@ -37,8 +37,8 @@ package imagej.data.display;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
+import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
-import net.imglib2.meta.AxisType;
 
 /**
  * A view provides visualization settings for an associated {@link Data} object
@@ -55,21 +55,13 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Curtis Rueden
  */
-public interface DataView {
-
-	// CTR FIXME - extend Localizable and Positionable interfaces
+public interface DataView extends PositionableByAxis {
 
 	/** Gets the {@link Data} represented by this view. */
 	Data getData();
 
 	/** Gets the N-dimensional plane position of this view. */
 	Position getPlanePosition();
-
-	/** Gets the position of the given dimensional axis. */
-	long getPosition(AxisType axis);
-
-	/** Sets the position of the given dimensional axis. */
-	void setPosition(AxisType axis, long value);
 
 	/**
 	 * Set the view's selection state.

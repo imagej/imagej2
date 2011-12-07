@@ -65,7 +65,7 @@ public class SetAxisPosition implements ImageJPlugin {
 		animationService.stop(display);
 		final AxisType axis = display.getActiveAxis();
 		final long newPosition = oneBasedPosition - 1;
-		display.setAxisPosition(axis, newPosition);
+		display.setPosition(newPosition, axis);
 	}
 
 }

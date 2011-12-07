@@ -46,6 +46,7 @@ import imagej.event.EventService;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.imglib2.Localizable;
 import net.imglib2.meta.AxisType;
 
 /**
@@ -102,20 +103,9 @@ public abstract class AbstractDataView implements DataView {
 		final Position planePos = planeExtents.createPosition();
 		for (int d = 0; d < planePos.numDimensions(); d++) {
 			final AxisType axis = data.axis(d + 2);
-			planePos.setPosition(getPosition(axis), d);
+			planePos.setPosition(getLongPosition(axis), d);
 		}
 		return planePos;
-	}
-
-	@Override
-	public long getPosition(final AxisType axis) {
-		final Long value = pos.get(axis);
-		return value == null ? 0 : value;
-	}
-
-	@Override
-	public void setPosition(final AxisType axis, final long value) {
-		pos.put(axis, value);
 	}
 
 	@Override
@@ -144,6 +134,137 @@ public abstract class AbstractDataView implements DataView {
 		if (disposed) return;
 		disposed = true;
 		data.decrementReferences();
+	}
+
+	// -- PositionableByAxis methods --
+
+	@Override
+	public int getIntPosition(final AxisType axis) {
+		return (int) getLongPosition(axis);
+	}
+
+	@Override
+	public long getLongPosition(final AxisType axis) {
+		final Long value = pos.get(axis);
+		return value == null ? 0 : value;
+	}
+
+	@Override
+	public void setPosition(final long position, final AxisType axis) {
+		pos.put(axis, position);
+	}
+
+	// -- Localizable methods --
+
+	@Override
+	public void localize(final int[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void localize(final long[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public int getIntPosition(final int d) {
+		return getIntPosition(getData().axis(d));
+	}
+
+	@Override
+	public long getLongPosition(final int d) {
+		return getLongPosition(getData().axis(d));
+	}
+
+	// -- RealLocalizable methods --
+
+	@Override
+	public void localize(final float[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void localize(final double[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public float getFloatPosition(final int d) {
+		return getLongPosition(d);
+	}
+
+	@Override
+	public double getDoublePosition(final int d) {
+		return getLongPosition(d);
+	}
+
+	// -- EuclideanSpace methods --
+
+	@Override
+	public int numDimensions() {
+		return data.numDimensions();
+	}
+
+	// -- Positionable methods --
+
+	@Override
+	public void fwd(final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void bck(final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final int distance, final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final long distance, final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final Localizable localizable) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final int[] distance) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final long[] distance) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final Localizable localizable) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final int[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final long[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final int position, final int d) {
+		setPosition(position, getData().axis(d));
+	}
+
+	@Override
+	public void setPosition(final long position, final int d) {
+		setPosition(position, getData().axis(d));
 	}
 
 }
