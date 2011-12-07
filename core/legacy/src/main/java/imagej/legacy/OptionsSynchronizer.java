@@ -43,7 +43,6 @@ import ij.gui.Roi;
 import ij.gui.TextRoi;
 import ij.gui.Toolbar;
 import ij.io.FileSaver;
-import ij.plugin.Colors;
 import ij.plugin.filter.Analyzer;
 import ij.process.ColorProcessor;
 import ij.process.FloatBlitter;
@@ -120,20 +119,6 @@ public class OptionsSynchronizer {
 
 	// -- helpers --
 
-	private Color getColor(final String colorName,
-		final Color defaultColor)
-	{
-		return Colors.getColor(colorName, defaultColor);
-	}
-
-	private Color getAWTColor(ColorRGB rgb) {
-		return new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
-	}
-	
-	private ColorRGB getRGBColor(Color awt) {
-		return new ColorRGB(awt.getRed(), awt.getGreen(), awt.getBlue());
-	}
-	
 	private void appearanceOptions() {
 		final OptionsAppearance optionsAppearance =
 			optionsService.getOptions(OptionsAppearance.class);
@@ -192,10 +177,10 @@ public class OptionsSynchronizer {
 			optionsService.getOptions(OptionsColors.class);
 
 		Toolbar
-			.setForegroundColor(getAWTColor(optionsColors.getFgColor()));
+			.setForegroundColor(AWTColors.getColor(optionsColors.getFgColor()));
 		Toolbar
-			.setBackgroundColor(getAWTColor(optionsColors.getBgColor()));
-		Roi.setColor(getAWTColor(optionsColors.getSelColor()));
+			.setBackgroundColor(AWTColors.getColor(optionsColors.getBgColor()));
+		Roi.setColor(AWTColors.getColor(optionsColors.getSelColor()));
 	}
 
 	private void compilerOptions() {
@@ -351,7 +336,8 @@ public class OptionsSynchronizer {
 		Prefs.pointAutoNextSlice = optionsPointTool.isAutoNextSlice();
 		Prefs.noPointLabels = !optionsPointTool.isLabelPoints();
 		Analyzer.markWidth = optionsPointTool.getMarkWidth();
-		Roi.setColor(getColor(optionsPointTool.getSelectionColor(), Color.yellow));
+		// removing: set elsewhere - can get out of sync
+		//Roi.setColor(getColor(optionsPointTool.getSelectionColor(), Color.yellow));
 	}
 
 	private void profilePlotOptions() {
@@ -456,9 +442,9 @@ public class OptionsSynchronizer {
 
 		final OptionsColors optionsColors =
 			optionsService.getOptions(OptionsColors.class);
-		optionsColors.setFgColor(getRGBColor(Toolbar.getForegroundColor()));
-		optionsColors.setBgColor(getRGBColor(Toolbar.getBackgroundColor()));
-		optionsColors.setSelColor(getRGBColor(Roi.getColor()));
+		optionsColors.setFgColor(AWTColors.getColorRGB(Toolbar.getForegroundColor()));
+		optionsColors.setBgColor(AWTColors.getColorRGB(Toolbar.getBackgroundColor()));
+		optionsColors.setSelColor(AWTColors.getColorRGB(Roi.getColor()));
 		optionsColors.save();
 
 		final OptionsCompiler optionsCompiler =
@@ -556,7 +542,6 @@ public class OptionsSynchronizer {
 		optionsPointTool.setAutoNextSlice(Prefs.pointAutoNextSlice);
 		optionsPointTool.setLabelPoints(!Prefs.noPointLabels);
 		optionsPointTool.setMarkWidth(Analyzer.markWidth);
-		optionsPointTool.setSelectionColor(Roi.getColor().toString());
 		optionsPointTool.save();
 
 		final OptionsProfilePlot optionsProfilePlot =
