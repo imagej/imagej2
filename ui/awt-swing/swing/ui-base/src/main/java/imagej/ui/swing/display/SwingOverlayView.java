@@ -95,7 +95,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	public SwingOverlayView(final ImageDisplay display,
 		final Overlay overlay, Figure figure)
 	{
-		super(display, overlay);
+		super(overlay);
 		this.display = display;
 		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
 		if (figure == null) {
