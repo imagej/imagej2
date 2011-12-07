@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import java.awt.Color;
-
 import ij.IJ;
 import ij.IJEventListener;
 import ij.ImagePlus;
@@ -58,6 +56,7 @@ import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsColors;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
+import imagej.util.awt.AWTColors;
 
 /**
  * Service for working with legacy ImageJ 1.x.
@@ -244,19 +243,19 @@ public final class LegacyService extends AbstractService {
 			ColorRGB color;
 			switch (eventID) {
 				case ij.IJEventListener.COLOR_PICKER_CLOSED:
-					color = getIJ2Color(Toolbar.getForegroundColor());
+					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
 					colorOpts.setFgColor(color);
-					color = getIJ2Color(Toolbar.getBackgroundColor());
+					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
 					colorOpts.setBgColor(color);
 					colorOpts.save();
 					break;
 				case ij.IJEventListener.FOREGROUND_COLOR_CHANGED:
-					color = getIJ2Color(Toolbar.getForegroundColor());
+					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
 					colorOpts.setFgColor(color);
 					colorOpts.save();
 					break;
 				case ij.IJEventListener.BACKGROUND_COLOR_CHANGED:
-					color = getIJ2Color(Toolbar.getBackgroundColor());
+					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
 					colorOpts.setBgColor(color);
 					colorOpts.save();
 					break;
@@ -270,10 +269,6 @@ public final class LegacyService extends AbstractService {
 					/* do nothing */
 					break;
 			}
-		}
-
-		private ColorRGB getIJ2Color(Color ij1c) {
-			return new ColorRGB(ij1c.getRed(), ij1c.getGreen(), ij1c.getBlue());
 		}
 	}
 
