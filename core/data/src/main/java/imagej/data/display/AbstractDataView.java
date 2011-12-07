@@ -100,7 +100,6 @@ public abstract class AbstractDataView implements DataView {
 		}
 		final Extents planeExtents = new Extents(planeDims);
 		final Position planePos = planeExtents.createPosition();
-		planePos.first();
 		for (int d = 0; d < planePos.numDimensions(); d++) {
 			final AxisType axis = data.axis(d + 2);
 			planePos.setPosition(getPosition(axis), d);
