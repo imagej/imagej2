@@ -42,7 +42,6 @@ import net.imglib2.AbstractInterval;
  * the Extents.
  * 
  * @author Barry DeZonia
- *
  */
 public class Extents extends AbstractInterval {
 
