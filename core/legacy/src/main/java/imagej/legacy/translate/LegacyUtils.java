@@ -302,6 +302,7 @@ public class LegacyUtils {
 	 * Returns true if a {@link Dataset} can be represented by reference in IJ1.
 	 */
 	static boolean datasetIsIJ1Compatible(final Dataset ds) {
+		if (ds == null) return true;
 		final AxisType[] axes = ds.getAxes();
 		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
 		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
