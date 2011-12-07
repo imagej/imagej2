@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.IJ;
+import ij.IJEventListener;
 import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.AbstractService;
@@ -165,6 +166,7 @@ public final class LegacyService extends AbstractService {
 	// -- IService methods --
 
 	@Override
+	@SuppressWarnings("synthetic-access")
 	public void initialize() {
 		imageMap = new LegacyImageMap(eventService);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
@@ -177,6 +179,8 @@ public final class LegacyService extends AbstractService {
 			Log.warn("Failed to instantiate IJ1.", t);
 		}
 
+		IJ.addEventListener(new IJ1EventListener());
+		
 		updateIJ1Settings();
 
 		super.initialize();
@@ -224,6 +228,34 @@ public final class LegacyService extends AbstractService {
 		if (IJ.isMacintosh() && code == KeyCode.META) {
 			IJ.setKeyUp(KeyCode.CONTROL.getCode());
 		}
+	}
+	
+	private class IJ1EventListener implements IJEventListener {
+
+		@Override
+		public void eventOccurred(int eventID) {
+			switch (eventID) {
+				case ij.IJEventListener.COLOR_PICKER_CLOSED:
+					updateIJ2Settings();
+					break;
+				case ij.IJEventListener.FOREGROUND_COLOR_CHANGED:
+					updateIJ2Settings();
+					break;
+				case ij.IJEventListener.BACKGROUND_COLOR_CHANGED:
+					updateIJ2Settings();
+					break;
+				case ij.IJEventListener.LOG_WINDOW_CLOSED:
+					// TODO - do something???
+					break;
+				case ij.IJEventListener.TOOL_CHANGED:
+					// TODO - do something???
+					break;
+				default: // unknown event
+					/* do nothing */
+					break;
+			}
+		}
+		
 	}
 
 }
