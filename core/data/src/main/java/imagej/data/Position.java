@@ -341,9 +341,15 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void setPosition(long value, int dim) {
-		if ((value < parentSpace.min(dim)) || (value > parentSpace.max(dim))) {
-			throw new IllegalArgumentException(
-				"specified value would take position outside defined extents");
+		final long min = parentSpace.min(dim);
+		if (value < min) {
+			throw new IllegalArgumentException("invalid position for dimension #" +
+				dim + ": " + value + " < " + min);
+		}
+		final long max = parentSpace.max(dim);
+		if (value > max) {
+			throw new IllegalArgumentException("invalid position for dimension #" +
+				dim + ": " + value + " > " + max);
 		}
 		position[dim] = value;
 		if (this.isInvalid)
