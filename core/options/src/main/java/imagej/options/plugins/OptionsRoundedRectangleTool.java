@@ -34,10 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options.plugins;
 
+import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
+import imagej.util.ColorRGB;
+import imagej.util.Colors;
+
+// TODO - FIXME?
+//
+//   fill color and fill opacity not exactly same as IJ1. IJ1 had a few colors
+//   and a "none" choice. I broke into two things to simplify persistence. Note
+//   that the idea of a fill color and fill opacity can just be taken from the
+//   defined OptionsOverlay plugin so maybe it should go away here.
 
 /**
  * Runs the Edit::Options::Rounded Rectangle Tool dialog.
@@ -56,17 +66,16 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	@Parameter(label = "Corner Diameter", min = "0", max = "200")
 	private int cornerDiameter = 20;
 
-	// TODO - use ColorRGB for strokeColor
+	@Parameter(label = "Stroke Color")
+	private ColorRGB strokeColor = Colors.BLACK;
 
-	@Parameter(label = "Stroke Color", choices = { "black", "white", "red",
-		"green", "blue", "cyan", "magenta", "yellow", "gray" })
-	private String strokeColor = "black";
+	@Parameter(label = "Fill Color")
+	private ColorRGB fillColor = Colors.WHITE;
 
-	// TODO - use ColorRGB for fillColor
-
-	@Parameter(label = "Fill Color", choices = { "none", "black", "white", "red",
-		"green", "blue", "cyan", "magenta", "yellow", "gray" })
-	private String fillColor = "none";
+	@Parameter(label = "Fill Opacity", description = "The opacity or alpha of the "
+			+ "interior of the rounded rectangle (0=transparent, 255=opaque)",
+			style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
+		private int alpha = 0;
 
 	// -- OptionsRoundedRectangle methods --
 
@@ -82,12 +91,16 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 		return cornerDiameter;
 	}
 
-	public String getStrokeColor() {
+	public ColorRGB getStrokeColor() {
 		return strokeColor;
 	}
 
-	public String getFillColor() {
+	public ColorRGB getFillColor() {
 		return fillColor;
+	}
+	
+	public int getFillOpacity() {
+		return alpha;
 	}
 
 	public void setStrokeWidth(final int strokeWidth) {
@@ -98,11 +111,16 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 		this.cornerDiameter = cornerDiameter;
 	}
 
-	public void setStrokeColor(final String strokeColor) {
+	public void setStrokeColor(final ColorRGB strokeColor) {
 		this.strokeColor = strokeColor;
 	}
 
-	public void setFillColor(final String fillColor) {
+	public void setFillColor(final ColorRGB fillColor) {
 		this.fillColor = fillColor;
 	}
+
+	public void setFillOpacity(int alpha) {
+		this.alpha = alpha;
+	}
+
 }

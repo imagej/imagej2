@@ -46,12 +46,6 @@ import imagej.options.OptionsPlugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 
-// TODO - this dialog has limited color support. Users can assign any color
-// via rgb but the dialog can only show a few due to the existence of
-// "choices" arrays. Ideally this dialog would just display the color with a
-// color wheel and we'd get rid of the choices array. Then user could set
-// colors to anything.
-
 /**
  * Runs the Edit::Options::Overlay... dialog.
  * 
