@@ -38,14 +38,12 @@ import java.util.Hashtable;
 
 /**
  * The mode to use to display data in a view.
- *  
+ * 
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
 public enum ColorMode {
-	COLOR("Color"),
-	COMPOSITE("Composite"),
-	GRAYSCALE("Grayscale");
+	COLOR("Color"), COMPOSITE("Composite"), GRAYSCALE("Grayscale");
 
 	private static Hashtable<String, ColorMode> colorModes =
 		new Hashtable<String, ColorMode>();
@@ -82,6 +80,5 @@ public enum ColorMode {
 	public String toString() {
 		return label;
 	}
-
 
 }

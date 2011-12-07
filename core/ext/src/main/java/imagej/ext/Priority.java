@@ -34,6 +34,24 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
+import imagej.ext.display.ActiveDisplayPreprocessor;
+import imagej.ext.display.DisplayPostprocessor;
+import imagej.ext.plugin.AbstractInputHarvesterPlugin;
+import imagej.ext.plugin.InitPreprocessor;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.ServicePreprocessor;
+import imagej.ext.plugin.debug.DebugPostprocessor;
+import imagej.ext.plugin.debug.DebugPreprocessor;
+import imagej.ext.tool.Tool;
+
+/**
+ * Constants for specifying an item's priority.
+ * 
+ * @author Johannes Schindelin
+ * @author Curtis Rueden
+ * @see Plugin
+ * @see Tool
+ */
 public class Priority {
 
 	/**

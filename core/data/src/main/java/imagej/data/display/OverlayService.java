@@ -60,7 +60,7 @@ public final class OverlayService extends AbstractService {
 
 	private final ObjectService objectService;
 	private OverlaySettings defaultSettings;
-	
+
 	// -- Constructors --
 
 	public OverlayService() {
@@ -100,7 +100,8 @@ public final class OverlayService extends AbstractService {
 	}
 
 	/** Adds the list of {@link Overlay}s to the given {@link ImageDisplay}. */
-	public void addOverlays(final ImageDisplay display, final List<Overlay> overlays)
+	public void addOverlays(final ImageDisplay display,
+		final List<Overlay> overlays)
 	{
 		for (final Overlay overlay : overlays) {
 			display.display(overlay);
@@ -110,7 +111,8 @@ public final class OverlayService extends AbstractService {
 	/**
 	 * Removes an {@link Overlay} from the given {@link ImageDisplay}.
 	 * 
-	 * @param display the {@link ImageDisplay} from which the overlay should be removed
+	 * @param display the {@link ImageDisplay} from which the overlay should be
+	 *          removed
 	 * @param overlay the {@link Overlay} to remove
 	 */
 	public void removeOverlay(final ImageDisplay display, final Overlay overlay) {
@@ -131,8 +133,8 @@ public final class OverlayService extends AbstractService {
 	 * Gets the bounding box for the selected overlays in the given
 	 * {@link ImageDisplay}.
 	 * 
-	 * @param display the {@link ImageDisplay} from which the bounding box should be
-	 *          computed
+	 * @param display the {@link ImageDisplay} from which the bounding box should
+	 *          be computed
 	 * @return the smallest bounding box encompassing all selected overlays
 	 */
 	public RealRect getSelectionBounds(final ImageDisplay display) {
@@ -175,7 +177,7 @@ public final class OverlayService extends AbstractService {
 			if (max1 > yMax) yMax = max1;
 		}
 
-		// use entire XY extents if values are out of bounds 
+		// use entire XY extents if values are out of bounds
 		if (xMin < 0 || xMin > width) xMin = 0;
 		if (xMax < 0 || xMax > width) xMax = width;
 		if (yMin < 0 || yMin > height) yMin = 0;
@@ -197,11 +199,10 @@ public final class OverlayService extends AbstractService {
 	}
 
 	public OverlaySettings getDefaultSettings() {
-		if (defaultSettings == null)
-			defaultSettings = new OverlaySettings();
+		if (defaultSettings == null) defaultSettings = new OverlaySettings();
 		return defaultSettings;
 	}
-	
+
 	// -- IService methods --
 
 	@Override

@@ -56,11 +56,11 @@ import java.util.List;
 public class CanvasHelper implements Pannable, Zoomable {
 
 	private static final int MIN_ALLOWED_VIEW_SIZE = 25;
-	
+
 	private static double[] defaultZooms;
-	
+
 	static {
-		List<Double> midLevelZooms = new ArrayList<Double>();
+		final List<Double> midLevelZooms = new ArrayList<Double>();
 
 		midLevelZooms.add(1 / 32d);
 		midLevelZooms.add(1 / 24d);
@@ -83,31 +83,31 @@ public class CanvasHelper implements Pannable, Zoomable {
 		midLevelZooms.add(16d);
 		midLevelZooms.add(24d);
 		midLevelZooms.add(32d);
-		
+
 		final int EXTRA_ZOOMS = 25;
-		
-		List<Double> loZooms = new ArrayList<Double>();
+
+		final List<Double> loZooms = new ArrayList<Double>();
 		double prevDenom = 1 / midLevelZooms.get(0);
 		for (int i = 0; i < EXTRA_ZOOMS; i++) {
-			double newDenom = prevDenom + 16;
+			final double newDenom = prevDenom + 16;
 			loZooms.add(1 / newDenom);
 			prevDenom = newDenom;
 		}
 		Collections.reverse(loZooms);
-		
-		List<Double> hiZooms = new ArrayList<Double>();
-		double prevNumer = midLevelZooms.get(midLevelZooms.size()-1);
+
+		final List<Double> hiZooms = new ArrayList<Double>();
+		double prevNumer = midLevelZooms.get(midLevelZooms.size() - 1);
 		for (int i = 0; i < EXTRA_ZOOMS; i++) {
-			double newNumer = prevNumer + 16;
+			final double newNumer = prevNumer + 16;
 			hiZooms.add(newNumer / 1);
 			prevNumer = newNumer;
 		}
-		
-		List<Double> combinedZoomLevels = new ArrayList<Double>();
+
+		final List<Double> combinedZoomLevels = new ArrayList<Double>();
 		combinedZoomLevels.addAll(loZooms);
 		combinedZoomLevels.addAll(midLevelZooms);
 		combinedZoomLevels.addAll(hiZooms);
-		
+
 		defaultZooms = new double[combinedZoomLevels.size()];
 		for (int i = 0; i < defaultZooms.length; i++)
 			defaultZooms[i] = combinedZoomLevels.get(i);
@@ -131,7 +131,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 	private final EventService eventService;
 
 	// -- constructors --
-	
+
 	public CanvasHelper(final ImageCanvas canvas) {
 		this(canvas, defaultZoomLevels());
 	}
@@ -227,7 +227,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void zoomIn(final IntCoords center) {
-		final double newScale = nextLargerZoom(zoomLevels,scale);
+		final double newScale = nextLargerZoom(zoomLevels, scale);
 		if (newScale != scale) canvas.setZoom(newScale, center);
 	}
 
@@ -238,7 +238,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void zoomOut(final IntCoords center) {
-		final double newScale = nextSmallerZoom(zoomLevels,scale);
+		final double newScale = nextSmallerZoom(zoomLevels, scale);
 		if (newScale != scale) canvas.setZoom(newScale, center);
 	}
 
@@ -275,16 +275,16 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return initialScale;
 	}
 
-	public static double getBestZoomLevel(double fractionalScale) {
-		double[] levels = defaultZoomLevels();
+	public static double getBestZoomLevel(final double fractionalScale) {
+		final double[] levels = defaultZoomLevels();
 
-		int zoomIndex = lookupZoomIndex(levels, fractionalScale);
+		final int zoomIndex = lookupZoomIndex(levels, fractionalScale);
 
 		if (zoomIndex != -1) return levels[zoomIndex];
-		
+
 		return nextSmallerZoom(levels, fractionalScale);
 	}
-	
+
 	// -- Helper methods --
 
 	/** Gets the zoom center to use when none is specified. */
@@ -319,10 +319,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 			final IntCoords farCornerPanel = imageToPanelCoords(farCornerImage);
 
 			// if boundaries take up less than min allowed pixels in either dimension
-			int panelX = farCornerPanel.x - nearCornerPanel.x;
-			int panelY = farCornerPanel.y - nearCornerPanel.y;
-			if ((panelX < MIN_ALLOWED_VIEW_SIZE) &&
-					(panelY < MIN_ALLOWED_VIEW_SIZE)) {
+			final int panelX = farCornerPanel.x - nearCornerPanel.x;
+			final int panelY = farCornerPanel.y - nearCornerPanel.y;
+			if (panelX < MIN_ALLOWED_VIEW_SIZE && panelY < MIN_ALLOWED_VIEW_SIZE) {
 				return true;
 			}
 		}
@@ -330,7 +329,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 		return false;
 	}
 
-	private static double nextSmallerZoom(double[] zoomLevels, double currScale) {
+	private static double nextSmallerZoom(final double[] zoomLevels,
+		final double currScale)
+	{
 		final int index = Arrays.binarySearch(zoomLevels, currScale);
 
 		int nextIndex;
@@ -338,12 +339,14 @@ public class CanvasHelper implements Pannable, Zoomable {
 		else nextIndex = -(index + 1) - 1;
 
 		if (nextIndex < 0) nextIndex = 0;
-		if (nextIndex > zoomLevels.length-1) nextIndex = zoomLevels.length-1;
+		if (nextIndex > zoomLevels.length - 1) nextIndex = zoomLevels.length - 1;
 
 		return zoomLevels[nextIndex];
 	}
 
-	private static double nextLargerZoom(double[] zoomLevels, double currScale) {
+	private static double nextLargerZoom(final double[] zoomLevels,
+		final double currScale)
+	{
 		final int index = Arrays.binarySearch(zoomLevels, currScale);
 
 		int nextIndex;
@@ -351,7 +354,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 		else nextIndex = -(index + 1);
 
 		if (nextIndex < 0) nextIndex = 0;
-		if (nextIndex > zoomLevels.length-1) nextIndex = zoomLevels.length-1;
+		if (nextIndex > zoomLevels.length - 1) nextIndex = zoomLevels.length - 1;
 
 		return zoomLevels[nextIndex];
 	}
@@ -386,19 +389,19 @@ public class CanvasHelper implements Pannable, Zoomable {
 	// unfortunately can't rely on Java's binary search since we're using
 	// doubles and rounding errors could cause problems. write our own that
 	// searches zooms avoiding rounding problems.
-	private static int lookupZoomIndex(double[] levels, double requestedZoom) {
+	private static int lookupZoomIndex(final double[] levels,
+		final double requestedZoom)
+	{
 		int lo = 0;
 		int hi = levels.length - 1;
 		do {
-			int mid = (lo + hi) / 2;
-			double possibleZoom = levels[mid];
-			if (Math.abs(requestedZoom - possibleZoom) < 0.00001)
-				return mid;
-			if (requestedZoom < possibleZoom)
-				hi = mid - 1;
-			else
-				lo = mid + 1;
-		} while (hi >= lo);
+			final int mid = (lo + hi) / 2;
+			final double possibleZoom = levels[mid];
+			if (Math.abs(requestedZoom - possibleZoom) < 0.00001) return mid;
+			if (requestedZoom < possibleZoom) hi = mid - 1;
+			else lo = mid + 1;
+		}
+		while (hi >= lo);
 		return -1;
 	}
 }

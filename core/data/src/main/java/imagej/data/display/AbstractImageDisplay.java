@@ -121,7 +121,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 
 		// rebuild views
-		for (final DataView view: this) {
+		for (final DataView view : this) {
 			view.rebuild();
 		}
 

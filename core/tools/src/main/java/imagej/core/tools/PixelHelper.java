@@ -55,41 +55,58 @@ import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
-
-/** Gathers pixel information (location, color, value) of pixel associated
- 	* with a given mouse event.
- 	* 
-	* @author Barry DeZonia
-	* @author Rick Lentz
-	* @author Grant Harris
-	* @author Curtis Rueden
-	*/
+/**
+ * Gathers pixel information (location, color, value) of pixel associated with a
+ * given mouse event.
+ * 
+ * @author Barry DeZonia
+ * @author Rick Lentz
+ * @author Grant Harris
+ * @author Curtis Rueden
+ */
 public class PixelHelper {
 
 	// -- instance variables --
-	
-	private ColorRGB color = new ColorRGB(0,0,0);
+
+	private ColorRGB color = new ColorRGB(0, 0, 0);
 	private double value = 0;
 	private long cx = 0;
 	private long cy = 0;
 	private boolean isPureRGBCase = false;
 	private boolean isIntegerCase = false;
 	private EventService eventService = null;
-	
+
 	// -- public interface --
-	
-	public ColorRGB getColor() { return color; }
-	public double getValue() { return value; }
-	public long getCX() { return cx; }
-	public long getCY() { return cy; }
-	public boolean isPureRGBCase() { return isPureRGBCase; }
-	public boolean isIntegerCase() { return isIntegerCase; }
-	
-	public boolean processEvent(MsEvent evt) {
-    final ImageJ context = evt.getContext();
-    final ImageDisplayService imageDisplayService =
-    		context.getService(ImageDisplayService.class);
-    eventService = context.getService(EventService.class);
+
+	public ColorRGB getColor() {
+		return color;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public long getCX() {
+		return cx;
+	}
+
+	public long getCY() {
+		return cy;
+	}
+
+	public boolean isPureRGBCase() {
+		return isPureRGBCase;
+	}
+
+	public boolean isIntegerCase() {
+		return isIntegerCase;
+	}
+
+	public boolean processEvent(final MsEvent evt) {
+		final ImageJ context = evt.getContext();
+		final ImageDisplayService imageDisplayService =
+			context.getService(ImageDisplayService.class);
+		eventService = context.getService(EventService.class);
 
 		final Display<?> display = evt.getDisplay();
 		if (!(display instanceof ImageDisplay)) return false;
@@ -129,30 +146,31 @@ public class PixelHelper {
 			color = getColor(dataset, randomAccess);
 			value = 0;
 		}
-		else {  // gray dataset
+		else { // gray dataset
 			isPureRGBCase = false;
 			isIntegerCase = dataset.isInteger();
 			value = randomAccess.get().getRealDouble();
-			DatasetView view = imageDisplayService.getActiveDatasetView(imageDisplay);
-			ColorTable8 ctab = view.getColorTables().get(0);
+			final DatasetView view =
+				imageDisplayService.getActiveDatasetView(imageDisplay);
+			final ColorTable8 ctab = view.getColorTables().get(0);
 			final double min = randomAccess.get().getMinValue();
 			final double max = randomAccess.get().getMaxValue();
 			final double percent = (value - min) / (max - min);
-			final int byteVal = (int) Math.round(255*percent);
-			int r = ctab.get(0, byteVal);
-			int g = ctab.get(1, byteVal);
-			int b = ctab.get(2, byteVal);
+			final int byteVal = (int) Math.round(255 * percent);
+			final int r = ctab.get(0, byteVal);
+			final int g = ctab.get(1, byteVal);
+			final int b = ctab.get(2, byteVal);
 			color = new ColorRGB(r, g, b);
 		}
 		return true;
 	}
 
-	public void updateStatus(String message) {
+	public void updateStatus(final String message) {
 		eventService.publish(new StatusEvent(message));
 	}
-	
+
 	// -- private helpers --
-	
+
 	private void setPosition(
 		final RandomAccess<? extends RealType<?>> randomAccess, final long cx,
 		final long cy, final Position planePos, final int xAxis, final int yAxis)
@@ -165,16 +183,17 @@ public class PixelHelper {
 		}
 	}
 
-	private ColorRGB getColor(Dataset dataset,
-		RandomAccess<? extends RealType<?>> access)
+	private ColorRGB getColor(final Dataset dataset,
+		final RandomAccess<? extends RealType<?>> access)
 	{
-		int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
+		final int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
 		access.setPosition(0, channelAxis);
-		int r = (int) access.get().getRealDouble();
+		final int r = (int) access.get().getRealDouble();
 		access.setPosition(1, channelAxis);
-		int g = (int) access.get().getRealDouble();
+		final int g = (int) access.get().getRealDouble();
 		access.setPosition(2, channelAxis);
-		int b = (int) access.get().getRealDouble();
-		return new ColorRGB(r,g,b);
+		final int b = (int) access.get().getRealDouble();
+		return new ColorRGB(r, g, b);
 	}
+
 }

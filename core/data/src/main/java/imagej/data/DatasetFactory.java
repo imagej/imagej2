@@ -59,7 +59,7 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author Curtis Rueden
  */
 public final class DatasetFactory {
-	
+
 	// TODO - Decide whether to convert this from a utility class into a truly
 	// extensible factory implementation.
 
@@ -158,7 +158,7 @@ public final class DatasetFactory {
 	}
 
 	// -- Helper methods --
-	
+
 	private static void invalidParams(final int bitsPerPixel,
 		final boolean signed, final boolean floating)
 	{
