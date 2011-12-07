@@ -48,7 +48,6 @@ import ij.plugin.filter.Analyzer;
 import ij.process.ColorProcessor;
 import ij.process.FloatBlitter;
 import ij.process.ImageConverter;
-import imagej.options.OptionsPlugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsAppearance;
 import imagej.options.plugins.OptionsArrowTool;
@@ -121,7 +120,7 @@ public class OptionsSynchronizer {
 
 	// -- helpers --
 
-	private <O extends OptionsPlugin> Color getColor(final String colorName,
+	private Color getColor(final String colorName,
 		final Color defaultColor)
 	{
 		return Colors.getColor(colorName, defaultColor);
