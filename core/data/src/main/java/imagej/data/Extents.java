@@ -38,33 +38,33 @@ import net.imglib2.AbstractInterval;
 
 /**
  * This class wraps a pair of min and max dimensions encoded as long[]'s. It
- * facilitates the creation of {@link Position} indexes for iterating within
- * the Extents.
+ * facilitates the creation of {@link Position} indexes for iterating within the
+ * Extents.
  * 
  * @author Barry DeZonia
  */
 public class Extents extends AbstractInterval {
 
 	private final long numElements;
-	
+
 	/**
 	 * Constructor that takes a dimensional extent and sets min to a zero origin
 	 * and each max dim i to dims[i]-1.
 	 */
-	public Extents(long[] dims) {
+	public Extents(final long[] dims) {
 		super(dims);
 		numElements = calcNumElements();
 	}
 
 	/**
-	 * Constructor that takes min and max extents. No checking is done that min
-	 * <= max for all dim i.
+	 * Constructor that takes min and max extents. No checking is done that min <=
+	 * max for all dim i.
 	 */
-	public Extents(long[] min, long[] max) {
+	public Extents(final long[] min, final long[] max) {
 		super(min, max);
 		numElements = calcNumElements();
 	}
-	
+
 	/**
 	 * Returns a {@link Position} object that can be used to iterate these
 	 * Extents.
@@ -80,24 +80,24 @@ public class Extents extends AbstractInterval {
 		return numElements;
 	}
 
-	///**
-	// * Returns a long[] containing a subset of the dimensions. The dimensions to
-	// * choose are identified by offset and length. Throws exceptions when offset
-	// * or length are invalid.
-	// */
-	/*
-	public long[] subdimensions(int offset, int length) {
-		if ((offset < 0) || (offset >= numDimensions()))
-			throw new IllegalArgumentException("bad offset");
-		if ((length < 0) || (offset+length > numDimensions()))
-			throw new IllegalArgumentException("bad length");
-		long[] subDims = new long[length];
-		for (int i = 0; i < length; i++)
-			subDims[i] = dimension(i+offset);
-		return subDims;
-	}
-	*/
-	
+//	/**
+//	 * Returns a long[] containing a subset of the dimensions. The dimensions to
+//	 * choose are identified by offset and length. Throws exceptions when offset
+//	 * or length are invalid.
+//	 */
+//	public long[] subdimensions(final int offset, final int length) {
+//		if ((offset < 0) || (offset >= numDimensions())) {
+//			throw new IllegalArgumentException("bad offset");
+//		}
+//		if ((length < 0) || (offset + length > numDimensions())) {
+//			throw new IllegalArgumentException("bad length");
+//		}
+//		final long[] subDims = new long[length];
+//		for (int i = 0; i < length; i++)
+//			subDims[i] = dimension(i + offset);
+//		return subDims;
+//	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("{");
@@ -107,12 +107,11 @@ public class Extents extends AbstractInterval {
 		sb.append(" }");
 		return sb.toString();
 	}
-	
+
 	// -- private helpers --
-	
+
 	private long calcNumElements() {
-		if (min.length == 0)
-			return 0;
+		if (min.length == 0) return 0;
 		long elements = 1;
 		for (int i = 0; i < min.length; i++)
 			elements *= dimension(i);

@@ -40,7 +40,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 /**
- * Sort values obtained from an Iterator by priority
+ * Sort values obtained from an {@link Iterator} by priority.
+ * 
+ * @author Johannes Schindelin
  */
 public abstract class SortByPriority<T> extends ArrayList<T> {
 

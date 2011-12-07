@@ -62,8 +62,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public abstract class AbstractDatasetView extends AbstractDataView
-	implements DatasetView
+public abstract class AbstractDatasetView extends AbstractDataView implements
+	DatasetView
 {
 
 	private final Dataset dataset;
@@ -85,7 +85,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	public AbstractDatasetView(final Dataset dataset) {
 		super(dataset);
@@ -130,10 +130,10 @@ public abstract class AbstractDatasetView extends AbstractDataView
 		defaultLUTs.set(channel, colorTable);
 		updateLUTs();
 		// TODO - temp hacks towards fixing bug #668
-		//   For now we'll keep this method lightweight and dumb and require
-		//   callers to map() and update()
-		//projector.map();
-		//getDisplay().update();
+		// For now we'll keep this method lightweight and dumb and require
+		// callers to map() and update()
+		// projector.map();
+		// getDisplay().update();
 	}
 
 	@Override
@@ -234,7 +234,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 		// can get thrown. Basically if you add a channel to an image the converter
 		// size() can be out of sync.
 		converters.clear();
-		
+
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
 			resetColorTables(false);
@@ -282,7 +282,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void autoscale(final int c) {
 		// CTR FIXME - Autoscaling needs to be reworked.
-		
+
 		// Get min/max from metadata
 		double min = dataset.getImgPlus().getChannelMinimum(c);
 		double max = dataset.getImgPlus().getChannelMaximum(c);
@@ -304,7 +304,7 @@ public abstract class AbstractDatasetView extends AbstractDataView
 			dataset.getImgPlus().setChannelMaximum(c, type.getMaxValue());
 		}
 	}
-	
+
 	private void updateLUTs() {
 		if (converters.size() == 0) {
 			return; // converters not yet initialized
@@ -330,10 +330,8 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	}
 
 	private long getChannelCount() {
-		return
-				channelDimIndex < 0 ?
-					1 :
-					dataset.getExtents().dimension(channelDimIndex);
+		if (channelDimIndex < 0) return 1;
+		return dataset.getExtents().dimension(channelDimIndex);
 	}
 
 	// -- Event handlers --

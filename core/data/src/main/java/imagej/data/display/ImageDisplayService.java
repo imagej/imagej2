@@ -149,8 +149,7 @@ public final class ImageDisplayService extends AbstractService {
 		final Display<?> display = event.getDisplay();
 		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
-		final ArrayList<DataView> views =
-			new ArrayList<DataView>(imageDisplay);
+		final ArrayList<DataView> views = new ArrayList<DataView>(imageDisplay);
 		for (final DataView view : views) {
 			view.dispose();
 		}

@@ -108,7 +108,7 @@ public interface Dataset extends Data, Metadata {
 	// generic properties system (setProperty(String, Object),
 	// getProperty(String)) for storing arbitrary key/value pairs about the data.
 	// The property system can be part of Data, and implemented in AbstractData.
-	
+
 	/**
 	 * For use in legacy layer only, this flag allows the various legacy layer
 	 * image translators to support color images correctly.

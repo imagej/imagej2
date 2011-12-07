@@ -57,7 +57,7 @@ public interface ImageCanvas extends Pannable, Zoomable {
 
 	/** Gets the current width of the canvas viewport in pixels. */
 	int getViewportWidth();
-	
+
 	/** Gets the current height of the canvas viewport in pixels. */
 	int getViewportHeight();
 

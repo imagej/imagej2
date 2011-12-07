@@ -86,9 +86,9 @@ public final class WindowMenuService extends AbstractService {
 	/*
 	 * order in menu, 'weight'
 	 */
-	
-	private int order =  1000;  
-	
+
+	private int order = 1000;
+
 	public WindowMenuService() {
 		// NB: Required by SezPoz.
 		super(null);

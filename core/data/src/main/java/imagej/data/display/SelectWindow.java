@@ -56,7 +56,7 @@ public class SelectWindow implements ImageJPlugin {
 	// defaulting to true, but that can be set to false for plugins that need to
 	// prompt the user for a single parameter of that type. Then update the
 	// Active*Preprocessor classes to respect the flag.
-	
+
 	@Parameter
 	String displayToSelect;
 

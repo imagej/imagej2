@@ -55,8 +55,8 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * </p>
  * <p>
  * The same process is applied for {@link DataView} and {@link Dataset}
- * parameters, using the active {@link ImageDisplay}'s active
- * {@link DataView} and {@link Dataset}, respectively.
+ * parameters, using the active {@link ImageDisplay}'s active {@link DataView}
+ * and {@link Dataset}, respectively.
  * </p>
  * 
  * @author Curtis Rueden
@@ -86,8 +86,7 @@ public class ActiveImagePreprocessor implements PreprocessorPlugin {
 		if (activeDisplay == null) return;
 
 		// assign active display to single ImageDisplay input
-		final String displayInput =
-			getSingleInput(module, ImageDisplay.class);
+		final String displayInput = getSingleInput(module, ImageDisplay.class);
 		if (displayInput != null) {
 			module.setInput(displayInput, activeDisplay);
 			module.setResolved(displayInput, true);

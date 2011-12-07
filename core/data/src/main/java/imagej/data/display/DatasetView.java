@@ -76,5 +76,5 @@ public interface DatasetView extends DataView {
 
 	@Override
 	Dataset getData();
-	
+
 }

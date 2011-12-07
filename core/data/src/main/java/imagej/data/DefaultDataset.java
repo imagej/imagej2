@@ -365,74 +365,74 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	// -- Interval methods --
 
 	@Override
-	public long min(int d) {
+	public long min(final int d) {
 		return imgPlus.min(d);
 	}
 
 	@Override
-	public void min(long[] min) {
+	public void min(final long[] min) {
 		imgPlus.min(min);
 	}
 
 	@Override
-	public void min(Positionable min) {
+	public void min(final Positionable min) {
 		imgPlus.min(min);
 	}
 
 	@Override
-	public long max(int d) {
+	public long max(final int d) {
 		return imgPlus.max(d);
 	}
 
 	@Override
-	public void max(long[] max) {
+	public void max(final long[] max) {
 		imgPlus.max(max);
 	}
 
 	@Override
-	public void max(Positionable max) {
+	public void max(final Positionable max) {
 		imgPlus.max(max);
 	}
 
 	@Override
-	public void dimensions(long[] dimensions) {
+	public void dimensions(final long[] dimensions) {
 		imgPlus.dimensions(dimensions);
 	}
 
 	@Override
-	public long dimension(int d) {
+	public long dimension(final int d) {
 		return imgPlus.dimension(d);
 	}
 
 	// -- RealInterval methods --
 
 	@Override
-	public double realMin(int d) {
+	public double realMin(final int d) {
 		return imgPlus.realMin(d);
 	}
 
 	@Override
-	public void realMin(double[] min) {
+	public void realMin(final double[] min) {
 		imgPlus.realMin(min);
 	}
 
 	@Override
-	public void realMin(RealPositionable min) {
+	public void realMin(final RealPositionable min) {
 		imgPlus.realMin(min);
 	}
 
 	@Override
-	public double realMax(int d) {
+	public double realMax(final int d) {
 		return imgPlus.realMax(d);
 	}
 
 	@Override
-	public void realMax(double[] max) {
+	public void realMax(final double[] max) {
 		imgPlus.realMax(max);
 	}
 
 	@Override
-	public void realMax(RealPositionable max) {
+	public void realMax(final RealPositionable max) {
 		imgPlus.realMax(max);
 	}
 
