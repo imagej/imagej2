@@ -321,9 +321,8 @@ public abstract class AbstractDatasetView extends AbstractDataView
 	}
 
 	private ColorTable8 getCurrentLUT(final int cPos) {
-		Position pos = getPlanePosition();
+		final Position pos = getPlanePosition();
 		if (channelDimIndex >= 0) {
-			pos = new Position(pos);
 			pos.setPosition(cPos, channelDimIndex - 2);
 		}
 		final int no = (int) pos.getIndex();
