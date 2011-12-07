@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.overlay;
 
 import imagej.data.AbstractData;
-import imagej.data.Extents;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
@@ -45,9 +44,14 @@ import imagej.util.ColorRGB;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import net.imglib2.Positionable;
+import net.imglib2.RealPositionable;
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
@@ -61,8 +65,9 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Map<AxisType, Long> positions =
-		new HashMap<AxisType, Long>();
+	private final Map<AxisType, Long> positions = new HashMap<AxisType, Long>();
+	private final List<AxisType> axes = new ArrayList<AxisType>();
+	private final List<Double> cal = new ArrayList<Double>();
 
 	private int alpha;
 	private ColorRGB fillColor;
@@ -80,6 +85,10 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	public AbstractOverlay(final OverlaySettings settings) {
 		applySettings(settings);
+		axes.add(Axes.X);
+		axes.add(Axes.Y);
+		cal.add(1d);
+		cal.add(1d);
 	}
 
 	// -- AbstractData methods --
@@ -225,9 +234,132 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 	// -- CalibratedInterval methods --
 
 	@Override
-	public Extents getExtents() {
-		// FIXME
-		return new Extents(new long[0]);
+	public boolean isDiscrete() {
+		return false;
+	}
+
+	// -- CalibratedSpace methods --
+
+	@Override
+	public int getAxisIndex(final AxisType axis) {
+		return axes.indexOf(axis);
+	}
+
+	@Override
+	public AxisType axis(final int d) {
+		return axes.get(d);
+	}
+
+	@Override
+	public void axes(final AxisType[] target) {
+		for (int i = 0; i < target.length; i++)
+			target[i] = axis(i);
+	}
+
+	@Override
+	public void setAxis(final AxisType axis, final int d) {
+		axes.set(d, axis);
+	}
+
+	@Override
+	public double calibration(final int d) {
+		return cal.get(d);
+	}
+
+	@Override
+	public void calibration(final double[] target) {
+		for (int i = 0; i < target.length; i++)
+			target[i] = calibration(i);
+	}
+
+	@Override
+	public void setCalibration(final double value, final int d) {
+		cal.set(d, value);
+	}
+
+	// -- EuclideanSpace methods --
+
+	@Override
+	public int numDimensions() {
+		return 2;
+	}
+
+	// -- Interval methods --
+
+	@Override
+	public long min(final int d) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void min(final long[] min) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void min(final Positionable min) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long max(final int d) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void max(final long[] max) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void max(final Positionable max) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void dimensions(final long[] dimensions) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long dimension(final int d) {
+		throw new UnsupportedOperationException();
+	}
+
+	// -- RealInterval methods --
+
+	@Override
+	public double realMin(final int d) {
+		return getRegionOfInterest().realMin(d);
+	}
+
+	@Override
+	public void realMin(final double[] min) {
+		for (int i = 0; i < min.length; i++)
+			min[i] = realMin(i);
+	}
+
+	@Override
+	public void realMin(final RealPositionable min) {
+		for (int i = 0; i < min.numDimensions(); i++)
+			min.setPosition(realMin(i), i);
+	}
+
+	@Override
+	public double realMax(final int d) {
+		return getRegionOfInterest().realMax(d);
+	}
+
+	@Override
+	public void realMax(final double[] max) {
+		for (int i = 0; i < max.length; i++)
+			max[i] = realMax(i);
+	}
+
+	@Override
+	public void realMax(final RealPositionable max) {
+		for (int i = 0; i < max.numDimensions(); i++)
+			max.setPosition(realMax(i), i);
 	}
 
 	// -- Externalizable methods --

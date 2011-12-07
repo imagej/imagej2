@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.data.overlay.Overlay;
 import net.imglib2.meta.AxisType;
 
@@ -47,13 +46,12 @@ public abstract class AbstractOverlayView extends AbstractDataView {
 
 	private final Overlay overlay;
 
+	// CTR FIXME - remove display argument from constructor
+
 	public AbstractOverlayView(final ImageDisplay display, final Overlay overlay)
 	{
 		super(overlay);
 		this.overlay = overlay;
-		final long[] dims =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display).getDims();
-		setDimensions(dims);
 	}
 
 	// -- DataView methods --

@@ -44,9 +44,6 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import net.imglib2.meta.AxisType;
 
@@ -61,10 +58,6 @@ import net.imglib2.meta.AxisType;
 public abstract class AbstractData implements Data, Comparable<Data>,
 	Externalizable
 {
-
-	// TODO: Eliminate these parallel lists in favor of a single List<Axis>.
-	private final List<AxisType> axes = new ArrayList<AxisType>();
-	private final List<Double> calibrations = new ArrayList<Double>();
 
 	protected final EventService eventService;
 
@@ -126,79 +119,28 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 	// -- CalibratedInterval methods --
 
 	@Override
-	public long[] getDims() {
-		final long[] dims = new long[numDimensions()];
-		getExtents().dimensions(dims);
-		return dims;
-	}
-
-	@Override
 	public AxisType[] getAxes() {
 		final AxisType[] axes = new AxisType[numDimensions()];
 		axes(axes);
 		return axes;
 	}
 
-	// -- CalibratedSpace methods --
-
 	@Override
-	public int getAxisIndex(final AxisType axis) {
-		return axes.indexOf(axis);
+	public Extents getExtents() {
+		if (!isDiscrete()) throw new UnsupportedOperationException();
+		final long[] min = new long[numDimensions()];
+		final long[] max = new long[numDimensions()];
+		min(min);
+		max(max);
+		return new Extents(min, max);
 	}
 
 	@Override
-	public AxisType axis(final int d) {
-		if (d < 0 || d >= axes.size()) {
-			throw new IllegalArgumentException("Index out of range: " + d);
-		}
-		return axes.get(d);
-	}
-
-	@Override
-	public void axes(final AxisType[] axesToFill) {
-		for (int i = 0; i < axesToFill.length && i < axes.size(); i++) {
-			axesToFill[i] = axes.get(i);
-		}
-	}
-
-	@Override
-	public void setAxis(final AxisType axis, final int d) {
-		while (axes.size() <= d) {
-			this.axes.add(null);
-			this.calibrations.add(1.0);
-		}
-		this.axes.set(d, axis);
-	}
-
-	@Override
-	public double calibration(final int d) {
-		if (d >= calibrations.size()) return 1.0;
-		return calibrations.get(d);
-	}
-
-	@Override
-	public void calibration(final double[] cal) {
-		for (int i = 0; (i < cal.length) && (i < this.calibrations.size()); i++) {
-			cal[i] = this.calibrations.get(i);
-		}
-		if (cal.length > calibrations.size()) {
-			Arrays.fill(cal, calibrations.size(), cal.length, 1.0);
-		}
-	}
-
-	@Override
-	public void setCalibration(final double cal, final int d) {
-		while (calibrations.size() <= d) {
-			calibrations.add(1.0);
-		}
-		calibrations.set(d, cal);
-	}
-
-	// -- EuclideanSpace methods --
-
-	@Override
-	public int numDimensions() {
-		return axes.size();
+	public long[] getDims() {
+		if (!isDiscrete()) throw new UnsupportedOperationException();
+		final long[] dims = new long[numDimensions()];
+		dimensions(dims);
+		return dims;
 	}
 
 	// -- Named methods --
