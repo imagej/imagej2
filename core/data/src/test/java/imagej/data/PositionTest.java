@@ -203,7 +203,7 @@ public class PositionTest {
 			pos.fwd();
 			fail();
 		}
-		catch (final IllegalArgumentException e) {
+		catch (final IllegalStateException e) {
 			assertTrue(true);
 		}
 	}
@@ -221,7 +221,7 @@ public class PositionTest {
 			pos.bck();
 			fail();
 		}
-		catch (final IllegalArgumentException e) {
+		catch (final IllegalStateException e) {
 			assertTrue(true);
 		}
 	}
