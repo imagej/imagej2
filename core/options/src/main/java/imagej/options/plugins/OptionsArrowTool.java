@@ -38,6 +38,8 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
+import imagej.util.ColorRGB;
+import imagej.util.Colors;
 
 /**
  * Runs the Edit::Options::Arrow Tool dialog.
@@ -56,11 +58,8 @@ public class OptionsArrowTool extends OptionsPlugin {
 	@Parameter(label = "Size", min = "0", max = "30")
 	private int arrowSize = 10;
 
-	// TODO - use ColorRGB for arrowColor
-
-	@Parameter(label = "Color", choices = { "red", "green", "blue", "magenta",
-		"cyan", "yellow", "orange", "black", "white" })
-	private String arrowColor = "black";
+	@Parameter(label = "Color")
+	private ColorRGB arrowColor = Colors.BLACK;
 
 	// TODO - use enum for arrowStyle
 
@@ -88,7 +87,7 @@ public class OptionsArrowTool extends OptionsPlugin {
 		return arrowSize;
 	}
 
-	public String getArrowColor() {
+	public ColorRGB getArrowColor() {
 		return arrowColor;
 	}
 
@@ -112,7 +111,7 @@ public class OptionsArrowTool extends OptionsPlugin {
 		this.arrowSize = arrowSize;
 	}
 
-	public void setArrowColor(final String arrowColor) {
+	public void setArrowColor(final ColorRGB arrowColor) {
 		this.arrowColor = arrowColor;
 	}
 
