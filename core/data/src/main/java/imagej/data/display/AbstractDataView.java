@@ -108,23 +108,13 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public long getPosition(final AxisType axis) {
-		// FIXME
-		final int dim = data.getAxisIndex(axis);
-		if (dim < 0) {
-			throw new IllegalArgumentException("Unknown axis: " + axis);
-		}
-		return position[dim];
+		final Long value = pos.get(axis);
+		return value == null ? 0 : value;
 	}
 
 	@Override
 	public void setPosition(final AxisType axis, final long value) {
-		// FIXME
-		final int dim = data.getAxisIndex(axis);
-		if (dim < 0) {
-			throw new IllegalArgumentException("Unknown axis: " + axis);
-		}
-		position[dim] = value;
-		if (dim >= 2) planePosition.setPosition(value, dim - 2);
+		pos.put(axis, value);
 	}
 
 	@Override
