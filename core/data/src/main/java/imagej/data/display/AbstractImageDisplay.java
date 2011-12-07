@@ -56,6 +56,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.imglib2.EuclideanSpace;
+import net.imglib2.Localizable;
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
@@ -63,8 +65,8 @@ import net.imglib2.meta.AxisType;
 
 /**
  * TODO - better Javadoc. The abstract display handles axes resolution,
- * maintaining the dimensionality of the EuclideanSpace represented by the
- * display.
+ * maintaining the dimensionality of the {@link EuclideanSpace} represented by
+ * the display.
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden
@@ -141,7 +143,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		for (int i = 0; i < numDimensions(); i++) {
 			final AxisType axis = axis(i);
 			if (Axes.isXY(axis)) continue; // do not track position of planar axes
-			setAxisPosition(axis, min(i)); // start at minimum value
+			setPosition(min(i), axis); // start at minimum value
 		}
 
 		// rebuild panel
@@ -166,34 +168,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		activeAxis = axis;
-	}
-
-	@Override
-	public long getAxisPosition(final AxisType axis) {
-		if (getAxisIndex(axis) < 0) {
-			// untracked axes are all at position 0 by default
-			return 0;
-		}
-		return axisPositions.get(axis);
-	}
-
-	@Override
-	public void setAxisPosition(final AxisType axis, final long position) {
-		final int axisIndex = getAxisIndex(axis);
-		if (axisIndex < 0) {
-			throw new IllegalArgumentException("Invalid axis: " + axis);
-		}
-
-		// clamp new position value to [min, max]
-		final long min = min(axisIndex);
-		final long max = max(axisIndex);
-		long pos = position;
-		if (pos < min) pos = min;
-		if (pos > max) pos = max;
-
-		// update position and notify interested parties of the change
-		axisPositions.put(axis, pos);
-		eventService.publish(new AxisPositionEvent(this, axis));
 	}
 
 	@Override
@@ -231,7 +205,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			for (final AxisType axis : getAxes()) {
 				if (getAxisIndex(axis) < 0) continue;
 				if (Axes.isXY(axis)) continue;
-				view.setPosition(axis, getAxisPosition(axis));
+				view.setPosition(getLongPosition(axis), axis);
 			}
 			view.update();
 		}
@@ -376,6 +350,147 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@Override
 	public void setCalibration(final double cal, final int d) {
 		combinedInterval.setCalibration(cal, d);
+	}
+
+	// -- PositionableByAxis methods --
+
+	@Override
+	public int getIntPosition(final AxisType axis) {
+		return (int) getLongPosition(axis);
+	}
+
+	@Override
+	public long getLongPosition(final AxisType axis) {
+		if (getAxisIndex(axis) < 0) {
+			// untracked axes are all at position 0 by default
+			return 0;
+		}
+		return axisPositions.get(axis);
+	}
+
+	@Override
+	public void setPosition(final long position, final AxisType axis) {
+		final int axisIndex = getAxisIndex(axis);
+		if (axisIndex < 0) {
+			throw new IllegalArgumentException("Invalid axis: " + axis);
+		}
+
+		// clamp new position value to [min, max]
+		final long min = min(axisIndex);
+		final long max = max(axisIndex);
+		long pos = position;
+		if (pos < min) pos = min;
+		if (pos > max) pos = max;
+
+		// update position and notify interested parties of the change
+		axisPositions.put(axis, pos);
+		eventService.publish(new AxisPositionEvent(this, axis));
+	}
+
+	// -- Localizable methods --
+
+	@Override
+	public void localize(final int[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void localize(final long[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public int getIntPosition(final int d) {
+		return getIntPosition(axis(d));
+	}
+
+	@Override
+	public long getLongPosition(final int d) {
+		return getLongPosition(axis(d));
+	}
+
+	// -- RealLocalizable methods --
+
+	@Override
+	public void localize(final float[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void localize(final double[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public float getFloatPosition(final int d) {
+		return getLongPosition(d);
+	}
+
+	@Override
+	public double getDoublePosition(final int d) {
+		return getLongPosition(d);
+	}
+
+	// -- Positionable methods --
+
+	@Override
+	public void fwd(final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void bck(final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final int distance, final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final long distance, final int d) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final Localizable localizable) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final int[] distance) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void move(final long[] distance) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final Localizable localizable) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final int[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final long[] position) {
+		// CTR FIXME
+	}
+
+	@Override
+	public void setPosition(final int position, final int d) {
+		setPosition(position, axis(d));
+	}
+
+	@Override
+	public void setPosition(final long position, final int d) {
+		setPosition(position, axis(d));
 	}
 
 	// -- Event handlers --

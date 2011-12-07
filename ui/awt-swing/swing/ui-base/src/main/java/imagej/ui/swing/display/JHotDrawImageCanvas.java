@@ -236,7 +236,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 						for (int i = 2; i < display.numDimensions(); i++) {
 							final AxisType axis = display.axis(i);
 							if (overlay.getAxisIndex(axis) < 0) {
-								overlay.setPosition(axis, display.getAxisPosition(axis));
+								overlay.setPosition(axis, display.getLongPosition(axis));
 							}
 						}
 						display.add(v);

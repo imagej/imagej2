@@ -147,7 +147,7 @@ public class DeleteAxis extends DynamicPlugin {
 	/** Updates the last value when the axis changes. */
 	protected void axisChanged() {
 		final AxisType axis = Axes.get(axisName);
-		long value = display.getAxisPosition(axis) + 1;
+		long value = display.getLongPosition(axis) + 1;
 		long max = currDimLen();
 		initPositionRange(1,max);
 		setPosition(value);
@@ -260,7 +260,7 @@ public class DeleteAxis extends DynamicPlugin {
 		int activeAxis = 2;
 		long max = getDataset().getImgPlus().dimension(activeAxis);
 		AxisType axis = getDataset().axis(2);
-		long value = display.getAxisPosition(axis) + 1;
+		long value = display.getLongPosition(axis) + 1;
 		initPositionRange(1, max);
 		setPosition(value);
 	}

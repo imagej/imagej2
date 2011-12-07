@@ -114,7 +114,7 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 		return null;
 	}
 
-	// CTR: TODO: Eliminate getPosition and setPosition from Overlay API.
+	// CTR FIXME - Eliminate getPosition and setPosition from Overlay API.
 	//
 	// These methods are redundant with DataView, and actually misplaced.
 	// An Overlay should not contain any dimensions other than its actual ones

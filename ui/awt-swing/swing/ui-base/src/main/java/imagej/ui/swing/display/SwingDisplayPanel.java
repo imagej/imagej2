@@ -259,7 +259,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			if (Axes.isXY(axis)) continue; // skip spatial axes
 			final int min = (int) extents.min(i);
 			final int max = (int) extents.max(i) + 1;
-			final int value = (int) getDisplay().getAxisPosition(axis);
+			final int value = (int) getDisplay().getLongPosition(axis);
 
 			final JScrollBar axisSlider = axisSliders.get(axis);
 			if (axisSlider == null) {
@@ -275,7 +275,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	
 					@Override
 					public void adjustmentValueChanged(final AdjustmentEvent e) {
-						getDisplay().setAxisPosition(axis, slider.getValue());
+						getDisplay().setPosition(slider.getValue(), axis);
 					}
 				});
 				axisSliders.put(axis, slider);
@@ -296,7 +296,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	}
 
 	private void updateAxis(final AxisType axis) {
-		final int value = (int) getDisplay().getAxisPosition(axis);
+		final int value = (int) getDisplay().getLongPosition(axis);
 		final JScrollBar scrollBar = axisSliders.get(axis);
 		if (scrollBar != null) scrollBar.setValue(value);
 		if (axis == Axes.CHANNEL) updateBorder(value);

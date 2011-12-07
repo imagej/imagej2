@@ -37,6 +37,7 @@ package imagej.data.display;
 import imagej.data.CalibratedInterval;
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
 import imagej.ext.display.Display;
 import net.imglib2.meta.AxisType;
@@ -49,9 +50,9 @@ import net.imglib2.meta.AxisType;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface ImageDisplay extends Display<DataView>, CalibratedInterval {
-
-	// CTR FIXME - extend Localizable and Positionable interfaces
+public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
+	PositionableByAxis
+{
 
 	/** Gets the view currently designated as active. */
 	DataView getActiveView();
@@ -61,10 +62,6 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval {
 
 	/** Sets the axis currently designated as active. */
 	void setActiveAxis(AxisType axis);
-
-	long getAxisPosition(AxisType axis);
-
-	void setAxisPosition(final AxisType axis, final long position);
 
 	/** Gets the image canvas upon which this display's output is painted. */
 	ImageCanvas getCanvas();

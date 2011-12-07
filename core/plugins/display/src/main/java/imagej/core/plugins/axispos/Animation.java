@@ -187,7 +187,7 @@ public class Animation implements Runnable {
 	// -- Helper methods --
 
 	private synchronized void updatePosition() {
-		long currPos = display.getAxisPosition(axis);
+		long currPos = display.getLongPosition(axis);
 
 		// reached right end
 		if (increment > 0 && currPos == last) {
@@ -230,16 +230,16 @@ public class Animation implements Runnable {
 		}
 
 		final long pos =
-			isRelative ? display.getAxisPosition(axis) + delta : delta;
-		display.setAxisPosition(axis, pos);
+			isRelative ? display.getLongPosition(axis) + delta : delta;
+		display.setPosition(pos, axis);
 	}
 
 	/** Ensures the position of the relevant axis is within the legal range. */
 	private void clampPosition() {
 		if (axis == null) return;
-		final long pos = display.getAxisPosition(axis);
+		final long pos = display.getLongPosition(axis);
 		if (pos < first || pos > last) {
-			display.setAxisPosition(axis, first);
+			display.setPosition(first, axis);
 		}
 	}
 

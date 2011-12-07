@@ -41,7 +41,6 @@ import imagej.ext.Priority;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
-import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import net.imglib2.meta.Axes;
@@ -83,8 +82,8 @@ public class AxisPositionHandler extends AbstractTool {
 		final AxisType axis = getAxis(imageDisplay, evt.getModifiers());
 		if (axis == null) return;
 
-		final long pos = imageDisplay.getAxisPosition(axis) + increment;
-		imageDisplay.setAxisPosition(axis, pos);
+		final long pos = imageDisplay.getLongPosition(axis) + increment;
+		imageDisplay.setPosition(pos, axis);
 		evt.consume();
 	}
 
@@ -99,8 +98,8 @@ public class AxisPositionHandler extends AbstractTool {
 
 		final int rotation = evt.getWheelRotation();
 
-		final long pos = imageDisplay.getAxisPosition(axis) + rotation;
-		imageDisplay.setAxisPosition(axis, pos);
+		final long pos = imageDisplay.getLongPosition(axis) + rotation;
+		imageDisplay.setPosition(pos, axis);
 		evt.consume();
 	}
 
