@@ -34,10 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import java.awt.Color;
+
 import ij.IJ;
 import ij.IJEventListener;
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.gui.Toolbar;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
@@ -52,6 +55,8 @@ import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
+import imagej.options.plugins.OptionsColors;
+import imagej.util.ColorRGB;
 import imagej.util.Log;
 
 /**
@@ -231,18 +236,29 @@ public final class LegacyService extends AbstractService {
 	}
 	
 	private class IJ1EventListener implements IJEventListener {
-
+		@SuppressWarnings("synthetic-access")
+		private OptionsColors colorOpts = optionsService.getOptions(OptionsColors.class);
+		
 		@Override
 		public void eventOccurred(int eventID) {
+			ColorRGB color;
 			switch (eventID) {
 				case ij.IJEventListener.COLOR_PICKER_CLOSED:
-					updateIJ2Settings();
+					color = getIJ2Color(Toolbar.getForegroundColor());
+					colorOpts.setFgColor(color);
+					color = getIJ2Color(Toolbar.getBackgroundColor());
+					colorOpts.setBgColor(color);
+					colorOpts.save();
 					break;
 				case ij.IJEventListener.FOREGROUND_COLOR_CHANGED:
-					updateIJ2Settings();
+					color = getIJ2Color(Toolbar.getForegroundColor());
+					colorOpts.setFgColor(color);
+					colorOpts.save();
 					break;
 				case ij.IJEventListener.BACKGROUND_COLOR_CHANGED:
-					updateIJ2Settings();
+					color = getIJ2Color(Toolbar.getBackgroundColor());
+					colorOpts.setBgColor(color);
+					colorOpts.save();
 					break;
 				case ij.IJEventListener.LOG_WINDOW_CLOSED:
 					// TODO - do something???
@@ -255,7 +271,10 @@ public final class LegacyService extends AbstractService {
 					break;
 			}
 		}
-		
+
+		private ColorRGB getIJ2Color(Color ij1c) {
+			return new ColorRGB(ij1c.getRed(), ij1c.getGreen(), ij1c.getBlue());
+		}
 	}
 
 }

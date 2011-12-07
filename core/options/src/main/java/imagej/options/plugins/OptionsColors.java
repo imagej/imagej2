@@ -38,6 +38,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
+import imagej.util.ColorRGB;
 
 /**
  * Runs the Edit::Options::Colors dialog.
@@ -50,23 +51,14 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = "Colors...", weight = 9) })
 public class OptionsColors extends OptionsPlugin {
 
-	// TODO - use ColorRGB for fgColor
+	@Parameter(label = "Foreground")
+	private ColorRGB fgColor = new ColorRGB(0,0,0); // black
 
-	@Parameter(label = "Foreground", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" })
-	private String fgColor = "black";
+	@Parameter(label = "Background")
+	private ColorRGB bgColor = new ColorRGB(255,255,255); // white
 
-	// TODO - use ColorRGB for bgColor
-
-	@Parameter(label = "Background", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" })
-	private String bgColor = "white";
-
-	// TODO - use ColorRGB for selColor
-
-	@Parameter(label = "Selection", choices = { "red", "green", "blue",
-		"magenta", "cyan", "yellow", "orange", "black", "white" })
-	private String selColor = "yellow";
+	@Parameter(label = "Selection")
+	private ColorRGB selColor = new ColorRGB(255,255,0); // yellow
 
 	// -- OptionsColors methods --
 
@@ -74,27 +66,27 @@ public class OptionsColors extends OptionsPlugin {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 	
-	public String getFgColor() {
+	public ColorRGB getFgColor() {
 		return fgColor;
 	}
 
-	public String getBgColor() {
+	public ColorRGB getBgColor() {
 		return bgColor;
 	}
 
-	public String getSelColor() {
+	public ColorRGB getSelColor() {
 		return selColor;
 	}
 
-	public void setFgColor(final String fgColor) {
+	public void setFgColor(final ColorRGB fgColor) {
 		this.fgColor = fgColor;
 	}
 
-	public void setBgColor(final String bgColor) {
+	public void setBgColor(final ColorRGB bgColor) {
 		this.bgColor = bgColor;
 	}
 
-	public void setSelColor(final String selColor) {
+	public void setSelColor(final ColorRGB selColor) {
 		this.selColor = selColor;
 	}
 

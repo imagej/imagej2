@@ -126,6 +126,14 @@ public class OptionsSynchronizer {
 		return Colors.getColor(colorName, defaultColor);
 	}
 
+	private Color getAWTColor(ColorRGB rgb) {
+		return new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+	}
+	
+	private ColorRGB getRGBColor(Color awt) {
+		return new ColorRGB(awt.getRed(), awt.getGreen(), awt.getBlue());
+	}
+	
 	private void appearanceOptions() {
 		final OptionsAppearance optionsAppearance =
 			optionsService.getOptions(OptionsAppearance.class);
@@ -184,10 +192,10 @@ public class OptionsSynchronizer {
 			optionsService.getOptions(OptionsColors.class);
 
 		Toolbar
-			.setForegroundColor(getColor(optionsColors.getFgColor(), Color.white));
+			.setForegroundColor(getAWTColor(optionsColors.getFgColor()));
 		Toolbar
-			.setBackgroundColor(getColor(optionsColors.getBgColor(), Color.black));
-		Roi.setColor(getColor(optionsColors.getSelColor(), Color.yellow));
+			.setBackgroundColor(getAWTColor(optionsColors.getBgColor()));
+		Roi.setColor(getAWTColor(optionsColors.getSelColor()));
 	}
 
 	private void compilerOptions() {
@@ -448,9 +456,9 @@ public class OptionsSynchronizer {
 
 		final OptionsColors optionsColors =
 			optionsService.getOptions(OptionsColors.class);
-		optionsColors.setFgColor(Toolbar.getForegroundColor().toString());
-		optionsColors.setBgColor(Toolbar.getBackgroundColor().toString());
-		optionsColors.setSelColor(Roi.getColor().toString());
+		optionsColors.setFgColor(getRGBColor(Toolbar.getForegroundColor()));
+		optionsColors.setBgColor(getRGBColor(Toolbar.getBackgroundColor()));
+		optionsColors.setSelColor(getRGBColor(Roi.getColor()));
 		optionsColors.save();
 
 		final OptionsCompiler optionsCompiler =
