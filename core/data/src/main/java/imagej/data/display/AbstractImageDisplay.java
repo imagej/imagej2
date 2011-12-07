@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display;
 
 import imagej.ImageJ;
+import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
