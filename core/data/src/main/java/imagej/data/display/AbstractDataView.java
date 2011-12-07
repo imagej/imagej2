@@ -102,11 +102,6 @@ public abstract class AbstractDataView implements DataView {
 	}
 
 	@Override
-	public long getPlaneIndex() {
-		return planePosition.getIndex();
-	}
-
-	@Override
 	public long getPosition(final AxisType axis) {
 		// FIXME
 		final int dim = data.getAxisIndex(axis);

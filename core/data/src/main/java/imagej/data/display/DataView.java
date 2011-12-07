@@ -63,9 +63,6 @@ public interface DataView {
 	/** Gets the N-dimensional plane position of this view. */
 	Position getPlanePosition();
 
-	/** Gets the 1-dimensional plane index of this view. */
-	long getPlaneIndex();
-
 	/** Gets the position of the given dimensional axis. */
 	long getPosition(AxisType axis);
 
