@@ -53,6 +53,7 @@ import imagej.ext.tool.ToolService;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
@@ -80,8 +81,17 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	private AxisType activeAxis = null;
 
-	private final HashMap<AxisType, Long> axisPositions =
-		new HashMap<AxisType, Long>();
+	// NB - older comment - see 12-7-11 note
+	// If axisPositions is a HashMap rather than a ConcurrentHashMap, 
+	// the Delete Axis plugin throws a ConcurrentModificationException. 
+	private final ConcurrentHashMap<AxisType, Long> axisPositions = 
+		new ConcurrentHashMap<AxisType, Long>();
+	
+	// NB - after a rewrite around 12-7-11 by CTR a ConcurrentHashMap might not
+	// be needed. Initial testing seemed okay but will try and relax this
+	// constraint later. Comment out for now.
+	//private final HashMap<AxisType, Long> axisPositions =
+	//	new HashMap<AxisType, Long>();
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
