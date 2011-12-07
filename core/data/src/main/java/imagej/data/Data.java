@@ -43,7 +43,7 @@ import imagej.data.overlay.Overlay;
  * 
  * @author Curtis Rueden
  */
-public interface Data extends LabeledSpace {
+public interface Data extends CalibratedInterval {
 
 	/**
 	 * Informs interested parties that the data object has undergone a

@@ -222,7 +222,7 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 		eventService.publish(new OverlayRestructuredEvent(this));
 	}
 
-	// -- LabeledSpace methods --
+	// -- CalibratedInterval methods --
 
 	@Override
 	public Extents getExtents() {

@@ -310,7 +310,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		publish(new DatasetRestructuredEvent(this));
 	}
 
-	// -- LabeledSpace methods --
+	// -- CalibratedInterval methods --
 
 	@Override
 	public Extents getExtents() {

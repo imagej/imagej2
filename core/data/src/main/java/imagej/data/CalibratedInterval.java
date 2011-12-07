@@ -1,5 +1,5 @@
 //
-// LabeledSpace.java
+// CalibratedInterval.java
 //
 
 /*
@@ -47,7 +47,7 @@ import net.imglib2.meta.Named;
  * @see Data
  * @see ImageDisplay
  */
-public interface LabeledSpace extends CalibratedSpace, Named {
+public interface CalibratedInterval extends CalibratedSpace, Named {
 	
 	// CTR TODO - add dimension(int) method, similar to net.imglib2.Interval
 
