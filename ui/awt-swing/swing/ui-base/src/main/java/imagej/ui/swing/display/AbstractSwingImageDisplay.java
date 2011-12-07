@@ -72,9 +72,10 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		this.window = window;
 
 		imgCanvas = new JHotDrawImageCanvas(this);
-		imgCanvas.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
-		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
-			eventService, false));
+		imgCanvas.addEventDispatcher(
+				new AWTKeyEventDispatcher(this, eventService));
+		imgCanvas.addEventDispatcher(
+				new AWTMouseEventDispatcher(this, eventService, false));
 		setCanvas(imgCanvas);
 
 		imgPanel = new SwingDisplayPanel(this, window);
@@ -126,17 +127,27 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 			if (Axes.isXY(axes[i])) continue;
 			p++;
 			if (dims[i] == 1) continue;
-			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] +
-				"; ");
+			sb.append(axes[i]);
+			sb.append(": ");
+			sb.append(pos.getLongPosition(p) + 1);
+			sb.append("/");
+			sb.append(dims[i]);
+			sb.append("; ");
 		}
 
-		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
+		sb.append(dims[xIndex]);
+		sb.append("x");
+		sb.append(dims[yIndex]);
+		sb.append("; ");
 
 		sb.append(dataset.getTypeLabelLong());
 
 		final double zoomFactor = getCanvas().getZoomFactor();
-		if (zoomFactor != 1) sb.append(" (" + scaleConverter.getString(zoomFactor) +
-			")");
+		if (zoomFactor != 1) {
+			sb.append(" (");
+			sb.append(scaleConverter.getString(zoomFactor));
+			sb.append(")");
+		}
 
 		return sb.toString();
 	}
@@ -174,7 +185,8 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		final OptionsAppearance options =
 			service.getOptions(OptionsAppearance.class);
 
-		if (options.isDisplayFractionalScales()) return new FractionalScaleConverter();
+		if (options.isDisplayFractionalScales())
+			return new FractionalScaleConverter();
 
 		return new PercentScaleConverter();
 	}
@@ -199,19 +211,18 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 
 		@Override
 		public String getString(final double realScale) {
-			final FractionalScale fracScale = new FractionalScale(realScale);
+			final FractionalScale scale = new FractionalScale(realScale);
 			// is fractional scale invalid?
-			if (fracScale.getDenom() == 0) {
+			if (scale.getDenom() == 0) {
 				if (realScale >= 1) return String.format("%.2fX", realScale);
 				// else scale < 1
 				return String.format("1/%.2fX", (1 / realScale));
 			}
 			// or do we have a whole number scale?
-			else if (fracScale.getDenom() == 1) return String.format("%dX", fracScale
-				.getNumer());
+			else if (scale.getDenom() == 1)
+				return String.format("%dX", scale.getNumer());
 			// else have valid fraction
-			return String
-				.format("%d/%dX", fracScale.getNumer(), fracScale.getDenom());
+			return String.format("%d/%dX", scale.getNumer(), scale.getDenom());
 		}
 	}
 
@@ -228,7 +239,6 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 					numer = (int) floor;
 					denom = 1;
 				}
-				else lookForBestFraction(realScale);
 			}
 			else { // factor < 1
 				final double recip = 1.0 / realScale;
@@ -237,8 +247,9 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 					numer = 1;
 					denom = (int) floor;
 				}
-				else lookForBestFraction(realScale);
 			}
+			if (denom == 0)
+				lookForBestFraction(realScale);
 		}
 
 		int getNumer() {
