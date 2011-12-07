@@ -32,10 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data.display;
+package imagej.data;
 
-import imagej.data.CalibratedInterval;
-import imagej.data.Extents;
 
 import java.util.ArrayList;
 import java.util.HashMap;
