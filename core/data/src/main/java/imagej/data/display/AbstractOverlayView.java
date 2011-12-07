@@ -46,10 +46,7 @@ public abstract class AbstractOverlayView extends AbstractDataView {
 
 	private final Overlay overlay;
 
-	// CTR FIXME - remove display argument from constructor
-
-	public AbstractOverlayView(final ImageDisplay display, final Overlay overlay)
-	{
+	public AbstractOverlayView(final Overlay overlay) {
 		super(overlay);
 		this.overlay = overlay;
 	}
