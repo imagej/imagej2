@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
+import imagej.data.CalibratedInterval;
 import imagej.data.Data;
 import imagej.data.Dataset;
-import imagej.data.CalibratedInterval;
 import imagej.data.overlay.Overlay;
 import imagej.ext.display.Display;
 import net.imglib2.meta.AxisType;
@@ -50,6 +50,8 @@ import net.imglib2.meta.AxisType;
  * @author Grant Harris
  */
 public interface ImageDisplay extends Display<DataView>, CalibratedInterval {
+
+	// CTR FIXME - extend Localizable and Positionable interfaces
 
 	/** Gets the view currently designated as active. */
 	DataView getActiveView();

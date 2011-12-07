@@ -51,13 +51,11 @@ import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.tool.ToolService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import net.imglib2.Positionable;
+import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -77,13 +75,13 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	private final List<EventSubscriber<?>> subscribers;
 
+	/** Data structure that aggregates dimensional axes from constituent views. */
+	private final CombinedInterval combinedInterval = new CombinedInterval();
+
 	private AxisType activeAxis = null;
 
-	// NB: If axisPositions is a HashMap rather than a ConcurrentHashMap,
-	// the Delete Axis plugin throws a ConcurrentModificationException.
-
-	private final Map<AxisType, Long> axisPositions =
-		new ConcurrentHashMap<AxisType, Long>();
+	private final HashMap<AxisType, Long> axisPositions =
+		new HashMap<AxisType, Long>();
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
@@ -112,26 +110,27 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	protected void rebuild() {
-		final long[] min = new long[numDimensions()];
-		Arrays.fill(min, Long.MAX_VALUE);
-		final long[] max = new long[numDimensions()];
-		Arrays.fill(max, Long.MIN_VALUE);
-
-		final AxisType[] axes = getAxes();
-		final Extents extents = getExtents();
-
-		// remove obsolete axes
-		for (final AxisType axis : axisPositions.keySet()) {
-			if (getAxisIndex(axis) >= 0) continue; // axis still active
-			axisPositions.remove(axis);
+		// combine constituent views into a single aggregate spatial interval
+		combinedInterval.clear();
+		for (final DataView view : this) {
+			combinedInterval.add(view.getData());
+		}
+		combinedInterval.update();
+		if (!combinedInterval.isDiscrete()) {
+			throw new IllegalStateException("Invalid combination of views");
 		}
 
-		// add new axes
-		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
-			if (axisPositions.containsKey(axis)) continue; // axis already exists
+		// rebuild views
+		for (final DataView view: this) {
+			view.rebuild();
+		}
+
+		// reset position to 0^n
+		axisPositions.clear();
+		for (int i = 0; i < numDimensions(); i++) {
+			final AxisType axis = axis(i);
 			if (Axes.isXY(axis)) continue; // do not track position of planar axes
-			setAxisPosition(axis, extents.min(i)); // start at minimum value
+			setAxisPosition(axis, min(i)); // start at minimum value
 		}
 
 		// rebuild panel
@@ -152,7 +151,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void setActiveAxis(final AxisType axis) {
-		if (!axisPositions.containsKey(axis)) {
+		if (getAxisIndex(axis) < 0) {
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		activeAxis = axis;
@@ -160,10 +159,11 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public long getAxisPosition(final AxisType axis) {
-		if (axisPositions.containsKey(axis)) {
-			return axisPositions.get(axis);
+		if (getAxisIndex(axis) < 0) {
+			// untracked axes are all at position 0 by default
+			return 0;
 		}
-		return 0; // untracked axes are all at position 0 by default
+		return axisPositions.get(axis);
 	}
 
 	@Override
@@ -174,9 +174,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 
 		// clamp new position value to [min, max]
-		final Extents extents = getExtents();
-		final long min = extents.min(axisIndex);
-		final long max = extents.max(axisIndex);
+		final long min = min(axisIndex);
+		final long max = max(axisIndex);
 		long pos = position;
 		if (pos < min) pos = min;
 		if (pos > max) pos = max;
@@ -231,110 +230,141 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// -- CalibratedInterval methods --
 
 	@Override
-	public long[] getDims() {
-		// This logic scans the axes of all constituent data objects, and merges
-		// them into a single aggregate coordinate space. The current implementation
-		// is not performance optimized.
-
-		// CTR TODO - reconcile multiple copies of same axis with different lengths.
-
-		final ArrayList<Long> dimsList = new ArrayList<Long>();
-		final HashSet<AxisType> axes = new HashSet<AxisType>();
-		for (final DataView view : this) {
-			final Data data = view.getData();
-			final long[] dataDims = data.getDims();
-			for (int i = 0; i < dataDims.length; i++) {
-				final AxisType axis = data.axis(i);
-				if (!axes.contains(axis)) {
-					axes.add(axis);
-					dimsList.add(dataDims[i]);
-				}
-			}
-		}
-		final long[] dims = new long[dimsList.size()];
-		for (int i = 0; i < dims.length; i++) {
-			dims[i] = dimsList.get(i);
-		}
-		return dims;
+	public AxisType[] getAxes() {
+		return combinedInterval.getAxes();
 	}
 
 	@Override
-	public AxisType[] getAxes() {
-		// This logic scans the axes of all constituent data objects, and merges
-		// them into a single aggregate coordinate space. The current implementation
-		// is not performance optimized.
-
-		// CTR TODO - reconcile multiple copies of same axis with different lengths.
-
-		final ArrayList<AxisType> axes = new ArrayList<AxisType>();
-		for (final DataView view : this) {
-			final Data data = view.getData();
-			final int nAxes = data.numDimensions();
-			for (int i = 0; i < nAxes; i++) {
-				final AxisType axis = data.axis(i);
-				if (!axes.contains(axis)) {
-					axes.add(axis);
-				}
-			}
-		}
-		return axes.toArray(new AxisType[0]);
+	public boolean isDiscrete() {
+		return combinedInterval.isDiscrete();
 	}
 
 	@Override
 	public Extents getExtents() {
-		return new Extents(getDims());
+		return combinedInterval.getExtents();
+	}
+
+	@Override
+	public long[] getDims() {
+		return combinedInterval.getDims();
+	}
+
+	// -- Interval methods --
+
+	@Override
+	public long min(final int d) {
+		return combinedInterval.min(d);
+	}
+
+	@Override
+	public void min(final long[] min) {
+		combinedInterval.min(min);
+	}
+
+	@Override
+	public void min(final Positionable min) {
+		combinedInterval.min(min);
+	}
+
+	@Override
+	public long max(final int d) {
+		return combinedInterval.max(d);
+	}
+
+	@Override
+	public void max(final long[] max) {
+		combinedInterval.max(max);
+	}
+
+	@Override
+	public void max(final Positionable max) {
+		combinedInterval.max(max);
+	}
+
+	@Override
+	public void dimensions(final long[] dimensions) {
+		combinedInterval.dimensions(dimensions);
+	}
+
+	@Override
+	public long dimension(final int d) {
+		return combinedInterval.dimension(d);
+	}
+
+	// -- RealInterval methods --
+
+	@Override
+	public double realMin(final int d) {
+		return combinedInterval.realMin(d);
+	}
+
+	@Override
+	public void realMin(final double[] min) {
+		combinedInterval.realMin(min);
+	}
+
+	@Override
+	public void realMin(final RealPositionable min) {
+		combinedInterval.realMin(min);
+	}
+
+	@Override
+	public double realMax(final int d) {
+		return combinedInterval.realMax(d);
+	}
+
+	@Override
+	public void realMax(final double[] max) {
+		combinedInterval.realMax(max);
+	}
+
+	@Override
+	public void realMax(final RealPositionable max) {
+		combinedInterval.realMax(max);
 	}
 
 	// -- EuclideanSpace methods --
 
 	@Override
 	public int numDimensions() {
-		return getAxes().length;
+		return combinedInterval.numDimensions();
 	}
 
 	// -- CalibratedSpace methods --
 
 	@Override
 	public int getAxisIndex(final AxisType axis) {
-		final AxisType[] axes = getAxes();
-		for (int i = 0; i < axes.length; i++) {
-			if (axes[i] == axis) return i;
-		}
-		return -1;
+		return combinedInterval.getAxisIndex(axis);
 	}
 
 	@Override
 	public AxisType axis(final int d) {
-		// TODO - avoid array allocation
-		return getAxes()[d];
+		return combinedInterval.axis(d);
 	}
 
 	@Override
 	public void axes(final AxisType[] axes) {
-		System.arraycopy(getAxes(), 0, axes, 0, axes.length);
+		combinedInterval.axes(axes);
 	}
 
 	@Override
 	public void setAxis(final AxisType axis, final int d) {
-		throw new UnsupportedOperationException(
-			"You can't change the axes of a display");
+		combinedInterval.setAxis(axis, d);
 	}
 
 	@Override
 	public double calibration(final int d) {
-		// The display is calibrated in the base unit
-		return 1.0;
+		return combinedInterval.calibration(d);
 	}
 
 	@Override
 	public void calibration(final double[] cal) {
-		Arrays.fill(cal, 1.0);
+		combinedInterval.calibration(cal);
 	}
 
 	@Override
 	public void setCalibration(final double cal, final int d) {
-		throw new UnsupportedOperationException(
-			"You can't change the calibration of a display yet");
+		combinedInterval.setCalibration(cal, d);
 	}
 
 	// -- Event handlers --
@@ -347,7 +377,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	protected void onEvent(final DataRestructuredEvent event) {
 		for (final DataView view : this) {
 			if (event.getObject() == view.getData()) {
-				view.rebuild(); // BDZ added
 				rebuild();
 				update();
 				return;

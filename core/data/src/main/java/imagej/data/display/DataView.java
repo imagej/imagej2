@@ -57,6 +57,8 @@ import net.imglib2.meta.AxisType;
  */
 public interface DataView {
 
+	// CTR FIXME - extend Localizable and Positionable interfaces
+
 	/** Gets the {@link Data} represented by this view. */
 	Data getData();
 

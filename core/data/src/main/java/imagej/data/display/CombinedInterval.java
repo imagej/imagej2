@@ -1,0 +1,285 @@
+
+package imagej.data.display;
+
+import imagej.data.CalibratedInterval;
+import imagej.data.Extents;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import net.imglib2.Positionable;
+import net.imglib2.RealPositionable;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+
+/**
+ * A combined interval is an aggregation of other {@link CalibratedInterval}s,
+ * with common axes merged as appropriate. For example, combining three
+ * intervals with dimensions (X, Y, Z, CHANNEL), (X, Y, CHANNEL, TIME) and (X,
+ * Z, LIFETIME, TIME) will result in a coordinate space with dimensions (X, Y,
+ * Z, CHANNEL, TIME, LIFETIME).
+ * <p>
+ * No reconciliation is done to ensure that overlapping axes have equal
+ * dimensional lengths or calibrations, although discrete
+ * {@link CalibratedInterval}s are given priority over those without a discrete
+ * sampling (see {@link CalibratedInterval#isDiscrete()} for more information).
+ * As long as all constituent interval dimensions are part of at least one
+ * discrete interval, the combined interval will also be discrete, even if a
+ * subset of the constituent intervals are not.
+ * </p>
+ * 
+ * @author Curtis Rueden
+ */
+public class CombinedInterval extends ArrayList<CalibratedInterval> implements
+	CalibratedInterval
+{
+
+	/**
+	 * List of axis mappings from combined interval into constituent intervals.
+	 * Each axis maps to a particular axis index of one of the constituent
+	 * {@link CalibratedInterval} objects. This data structure answers the
+	 * question: "For the (e.g.) 2nd axis of this combined interval, which axis of
+	 * which constituent {@link CalibratedInterval} is used?"
+	 */
+	private final ArrayList<DimensionMapping> mappings =
+		new ArrayList<DimensionMapping>();
+
+	/**
+	 * Mapping from axis type to axis index. This data structure answers the
+	 * question: "Which axis of this combined interval is (e.g.)
+	 * {@link Axes#CHANNEL}?"
+	 */
+	private final HashMap<AxisType, Integer> indices =
+		new HashMap<AxisType, Integer>();
+
+	/** Number of dimensions with a discrete sampling. */
+	private boolean discrete;
+
+	/** Name of the combined interval. */
+	private String name;
+
+	// -- CombinedInterval methods --
+
+	public void update() {
+		// CTR TODO - reconcile multiple copies of same axis with different lengths
+		// or calibrations.
+		mappings.clear();
+		indices.clear();
+		for (final CalibratedInterval interval : this) {
+			for (int d = 0; d < interval.numDimensions(); d++) {
+				final AxisType axis = interval.axis(d);
+				if (!indices.containsKey(axis)) {
+					// new axis; add to mappings
+					final DimensionMapping mapping = new DimensionMapping();
+					mapping.interval = interval;
+					mapping.index = d;
+					indices.put(axis, mappings.size());
+					mappings.add(mapping);
+				}
+				final int index = indices.get(axis);
+				final DimensionMapping mapping = mappings.get(index);
+				if (interval.isDiscrete() && !mapping.interval.isDiscrete()) {
+					// replace interval without sampling with an interval that has one
+					mapping.interval = interval;
+					mapping.index = d;
+				}
+			}
+		}
+
+		// count number of dimensions with a discrete sampling
+		int discreteCount = 0;
+		for (final DimensionMapping mapping : mappings) {
+			if (mapping.interval.isDiscrete()) discreteCount++;
+		}
+		discrete = discreteCount == mappings.size();
+	}
+
+	// -- CalibratedInterval methods --
+
+	@Override
+	public AxisType[] getAxes() {
+		final AxisType[] axes = new AxisType[numDimensions()];
+		axes(axes);
+		return axes;
+	}
+
+	@Override
+	public boolean isDiscrete() {
+		return discrete;
+	}
+
+	@Override
+	public Extents getExtents() {
+		if (!isDiscrete()) throw new UnsupportedOperationException();
+		final long[] min = new long[numDimensions()];
+		final long[] max = new long[numDimensions()];
+		min(min);
+		max(max);
+		return new Extents(min, max);
+	}
+
+	@Override
+	public long[] getDims() {
+		if (!isDiscrete()) throw new UnsupportedOperationException();
+		final long[] dims = new long[numDimensions()];
+		dimensions(dims);
+		return dims;
+	}
+
+	// -- CalibratedSpace methods --
+
+	@Override
+	public int getAxisIndex(final AxisType axis) {
+		return indices.containsKey(axis) ? indices.get(axis) : -1;
+	}
+
+	@Override
+	public AxisType axis(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.axis(mapping.index);
+	}
+
+	@Override
+	public void axes(final AxisType[] axes) {
+		for (int i = 0; i < axes.length; i++)
+			axes[i] = axis(i);
+	}
+
+	@Override
+	public void setAxis(final AxisType axis, final int d) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public double calibration(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.calibration(mapping.index);
+	}
+
+	@Override
+	public void calibration(final double[] cal) {
+		for (int i = 0; i < cal.length; i++)
+			cal[i] = calibration(i);
+	}
+
+	@Override
+	public void setCalibration(final double cal, final int d) {
+		throw new UnsupportedOperationException();
+	}
+
+	// -- EuclideanSpace methods --
+
+	@Override
+	public int numDimensions() {
+		return mappings.size();
+	}
+
+	// -- Interval methods --
+
+	@Override
+	public long min(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.min(mapping.index);
+	}
+
+	@Override
+	public void min(final long[] min) {
+		for (int i = 0; i < min.length; i++)
+			min[i] = min(i);
+	}
+
+	@Override
+	public void min(final Positionable min) {
+		for (int i = 0; i < min.numDimensions(); i++)
+			min.setPosition(min(i), i);
+	}
+
+	@Override
+	public long max(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.max(mapping.index);
+	}
+
+	@Override
+	public void max(final long[] max) {
+		for (int i = 0; i < max.length; i++)
+			max[i] = max(i);
+	}
+
+	@Override
+	public void max(final Positionable max) {
+		for (int i = 0; i < max.numDimensions(); i++)
+			max.setPosition(max(i), i);
+	}
+
+	@Override
+	public void dimensions(final long[] dimensions) {
+		for (int i = 0; i < dimensions.length; i++)
+			dimensions[i] = dimension(i);
+	}
+
+	@Override
+	public long dimension(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.dimension(mapping.index);
+	}
+
+	// -- RealInterval methods --
+
+	@Override
+	public double realMin(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.realMin(mapping.index);
+	}
+
+	@Override
+	public void realMin(final double[] min) {
+		for (int i = 0; i < min.length; i++)
+			min[i] = realMin(i);
+	}
+
+	@Override
+	public void realMin(final RealPositionable min) {
+		for (int i = 0; i < min.numDimensions(); i++)
+			min.setPosition(realMin(i), i);
+	}
+
+	@Override
+	public double realMax(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.realMax(mapping.index);
+	}
+
+	@Override
+	public void realMax(final double[] max) {
+		for (int i = 0; i < max.length; i++)
+			max[i] = realMax(i);
+	}
+
+	@Override
+	public void realMax(final RealPositionable max) {
+		for (int i = 0; i < max.numDimensions(); i++)
+			max.setPosition(realMax(i), i);
+	}
+
+	// -- Named methods --
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	// -- Helper classes --
+
+	protected class DimensionMapping {
+
+		public CalibratedInterval interval;
+		public int index;
+	}
+
+}

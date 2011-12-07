@@ -229,10 +229,6 @@ public abstract class AbstractDatasetView extends AbstractDataView
 
 		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 
-		final long[] dims = new long[img.numDimensions()];
-		img.dimensions(dims);
-		setDimensions(dims);
-
 		// Make sure any calls to updateLUTs are ignored. If they happen before
 		// the converters are correctly defined (in createProjector) an exception
 		// can get thrown. Basically if you add a channel to an image the converter

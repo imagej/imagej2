@@ -71,10 +71,6 @@ public abstract class AbstractDataView implements DataView {
 	 */
 	private final Map<AxisType, Long> pos = new HashMap<AxisType, Long>();
 
-	private long[] planeDims;
-	private long[] position;
-	private Position planePosition;
-
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
 
@@ -149,18 +145,6 @@ public abstract class AbstractDataView implements DataView {
 		if (disposed) return;
 		disposed = true;
 		data.decrementReferences();
-	}
-
-	// -- Helper methods --
-
-	protected void setDimensions(final long[] dims) {
-		position = new long[dims.length];
-		planeDims = new long[dims.length - 2];
-		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = dims[i + 2];
-		final Extents extents = new Extents(planeDims);
-		planePosition = extents.createPosition();
-		planePosition.first();
 	}
 
 }

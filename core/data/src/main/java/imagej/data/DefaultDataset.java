@@ -43,7 +43,9 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.ImageJEvent;
 import imagej.util.Log;
 import net.imglib2.Cursor;
+import net.imglib2.Positionable;
 import net.imglib2.RandomAccess;
+import net.imglib2.RealPositionable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Img;
@@ -77,13 +79,11 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
 	private boolean isDirty;
-	private Extents extents;
 
 	public DefaultDataset(final ImgPlus<? extends RealType<?>> imgPlus) {
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;
-		extents = extents(imgPlus);
 	}
 
 	// -- AbstractData methods --
@@ -132,7 +132,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		}
 
 		this.imgPlus = imgPlus;
-		this.extents = extents(imgPlus);
 
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
@@ -313,8 +312,8 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	// -- CalibratedInterval methods --
 
 	@Override
-	public Extents getExtents() {
-		return extents;
+	public boolean isDiscrete() {
+		return true;
 	}
 
 	// -- CalibratedSpace methods --
@@ -361,6 +360,80 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public int numDimensions() {
 		return imgPlus.numDimensions();
+	}
+
+	// -- Interval methods --
+
+	@Override
+	public long min(int d) {
+		return imgPlus.min(d);
+	}
+
+	@Override
+	public void min(long[] min) {
+		imgPlus.min(min);
+	}
+
+	@Override
+	public void min(Positionable min) {
+		imgPlus.min(min);
+	}
+
+	@Override
+	public long max(int d) {
+		return imgPlus.max(d);
+	}
+
+	@Override
+	public void max(long[] max) {
+		imgPlus.max(max);
+	}
+
+	@Override
+	public void max(Positionable max) {
+		imgPlus.max(max);
+	}
+
+	@Override
+	public void dimensions(long[] dimensions) {
+		imgPlus.dimensions(dimensions);
+	}
+
+	@Override
+	public long dimension(int d) {
+		return imgPlus.dimension(d);
+	}
+
+	// -- RealInterval methods --
+
+	@Override
+	public double realMin(int d) {
+		return imgPlus.realMin(d);
+	}
+
+	@Override
+	public void realMin(double[] min) {
+		imgPlus.realMin(min);
+	}
+
+	@Override
+	public void realMin(RealPositionable min) {
+		imgPlus.realMin(min);
+	}
+
+	@Override
+	public double realMax(int d) {
+		return imgPlus.realMax(d);
+	}
+
+	@Override
+	public void realMax(double[] max) {
+		imgPlus.realMax(max);
+	}
+
+	@Override
+	public void realMax(RealPositionable max) {
+		imgPlus.realMax(max);
 	}
 
 	// -- Named methods --
@@ -507,12 +580,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 			final double value = inputAccessor.get().getRealDouble();
 			outputCursor.get().setReal(value);
 		}
-	}
-
-	private Extents extents(final ImgPlus<?> imgP) {
-		final long[] dims = new long[imgP.numDimensions()];
-		imgP.dimensions(dims);
-		return new Extents(dims);
 	}
 
 	private Object copyOfPlane(final int planeNum) {

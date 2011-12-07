@@ -35,29 +35,54 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data;
 
 import imagej.data.display.ImageDisplay;
+import imagej.data.overlay.Overlay;
+import net.imglib2.Interval;
+import net.imglib2.RealInterval;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedSpace;
 import net.imglib2.meta.Named;
 
 /**
- * A named Euclidean coordinate space with labeled dimensional axes. All
- * N-dimensional constructs in ImageJ should implement this interface.
+ * A named Euclidean coordinate space interval with labeled dimensional axes.
+ * All N-dimensional constructs in ImageJ should implement this interface.
+ * <p>
+ * If the N-dimensional construct is not expressed over a discrete source
+ * domain, the {@link #isDiscrete()} method will return false, and the methods
+ * of {@link Interval} will throw {@link UnsupportedOperationException}.
+ * </p>
  * 
  * @author Curtis Rueden
  * @see Data
  * @see ImageDisplay
  */
-public interface CalibratedInterval extends CalibratedSpace, Named {
-	
-	// CTR TODO - add dimension(int) method, similar to net.imglib2.Interval
+public interface CalibratedInterval extends CalibratedSpace, Interval, Named {
 
-	/** Gets the dimensional lengths of the data. */
-	long[] getDims();
-
-	/** Gets the dimensional axis labels of the data. */
+	/** Gets the dimensional axes of the space. */
 	AxisType[] getAxes();
 
-	/** Gets the dimensional extents of the data. */
+	/**
+	 * Gets whether the coordinate space provides a discrete sampling of its
+	 * values. E.g.: {@link Dataset} and {@link ImageDisplay} do, but
+	 * {@link Overlay} does not. If this method returns false, the methods of
+	 * {@link Interval} will throw {@link UnsupportedOperationException}. Either
+	 * way, the methods of {@link RealInterval} will be usable.
+	 */
+	boolean isDiscrete();
+
+	/**
+	 * Gets the dimensional extents of the space.
+	 * 
+	 * @throws UnsupportedOperationException if this object does not provide a
+	 *           discrete sampling.
+	 */
 	Extents getExtents();
+
+	/**
+	 * Gets the dimensional lengths of the space.
+	 * 
+	 * @throws UnsupportedOperationException if this object does not provide a
+	 *           discrete sampling.
+	 */
+	long[] getDims();
 
 }
