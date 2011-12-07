@@ -98,12 +98,18 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public Position getPlanePosition() {
-		final Position p = data.getExtents().createPosition();
-		for (int d=2; d<data.numDimensions(); d++) {
-			final AxisType axis = data.axis(d);
-			p.setPosition(getPosition(axis), d - 2);
+		final long[] planeDims = new long[data.numDimensions() - 2];
+		for (int d = 0; d < planeDims.length; d++) {
+			planeDims[d] = data.dimension(d + 2);
 		}
-		return p;
+		final Extents planeExtents = new Extents(planeDims);
+		final Position planePos = planeExtents.createPosition();
+		planePos.first();
+		for (int d = 0; d < planePos.numDimensions(); d++) {
+			final AxisType axis = data.axis(d + 2);
+			planePos.setPosition(getPosition(axis), d);
+		}
+		return planePos;
 	}
 
 	@Override
