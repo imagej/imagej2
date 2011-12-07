@@ -224,20 +224,23 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
+		final AxisType[] axes = getAxes();
+		final double[] cal = new double[numDimensions()];
+		calibration(cal);
 		out.writeObject(axes);
-		out.writeObject(calibrations);
+		out.writeObject(cal);
 	}
 
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
 	{
-		final List<AxisType> axisList = (List<AxisType>) in.readObject();
-		axes.clear();
-		axes.addAll(axisList);
-		final List<Double> calibrationList = (List<Double>) in.readObject();
-		calibrations.clear();
-		calibrations.addAll(calibrationList);
+		final AxisType[] axes = (AxisType[]) in.readObject();
+		final double[] cal = (double[]) in.readObject();
+		for (int d = 0; d < axes.length; d++) {
+			setAxis(axes[d], d);
+			setCalibration(cal[d], d);
+		}
 	}
 
 }
