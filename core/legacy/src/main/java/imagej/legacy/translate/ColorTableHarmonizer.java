@@ -72,6 +72,16 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(disp, colorTables, sixteenBitLuts);
 		assignChannelMinMax(disp, imp);
+
+		/* BDZ REMOVING on Dec-8-2011. Does not seem to be needed anymore. Resurrect
+		 * later if needed again.
+		// Force current plane to redraw : HACK to fix bug #668
+		final DataView dispView = disp.getActiveView();
+		if (dispView == null) return;
+		final DatasetView dsView = (DatasetView) dispView;
+		dsView.getProjector().map();
+		disp.update();
+		*/
 	}
 
 	/**
@@ -289,10 +299,6 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			for (int i = 0; i < colorTables.size(); i++)
 				dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 		}
-
-		// force current plane to redraw : HACK to fix bug #668
-		dsView.getProjector().map();
-		disp.update();
 	}
 
 	/**
