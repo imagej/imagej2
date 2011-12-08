@@ -48,6 +48,7 @@ import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsAppearance;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
+import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -143,7 +144,7 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		sb.append(dataset.getTypeLabelLong());
 		sb.append("; ");
 		
-		sb.append(bytesOfInfo(dataset));
+		sb.append(byteInfoString(dataset));
 		sb.append("; ");
 
 		final double zoomFactor = getCanvas().getZoomFactor();
@@ -183,29 +184,11 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		this.setName(theName);
 	}
 
-	private String bytesOfInfo(Dataset ds) {
-		double bitsPerPix = ds.getType().getBitsPerPixel();
-		long[] dims = ds.getDims();
-		long pixCount = 1;
-		for (long dimSize : dims)
-			pixCount *= dimSize;
-		double totBits = bitsPerPix * pixCount;
-		double totBytes = totBits / 8;
-		return labeledCount(totBytes);
+	private String byteInfoString(Dataset ds) {
+		final double byteCount = ds.getBytesOfInfo();
+		return UnitUtils.getAbbreviatedByteLabel(byteCount);
 	}
 
-	private String labeledCount(double totBytes) {
-		String[] labels = {"KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
-		for (int i = 0; i < labels.length; i++) {
-			int pow = i + 2;
-			if (totBytes < Math.pow(1024.0, pow))
-				return String.format("%.1f%s",
-					(totBytes / Math.pow(1024.0,pow-1)), labels[i]);
-		}
-		return String.format("%.1f%s", 
-			(totBytes / Math.pow(1024.0,labels.length)), labels[labels.length-1]);
-	}
-	
 	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
 		final OptionsService service = ImageJ.get(OptionsService.class);
