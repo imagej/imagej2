@@ -158,12 +158,14 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public void localize(final int[] position) {
-		// CTR FIXME
+		for (int i=0; i<position.length; i++)
+			position[i] = getIntPosition(i);
 	}
 
 	@Override
 	public void localize(final long[] position) {
-		// CTR FIXME
+		for (int i=0; i<position.length; i++)
+			position[i] = getLongPosition(i);
 	}
 
 	@Override
@@ -180,12 +182,14 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public void localize(final float[] position) {
-		// CTR FIXME
+		for (int i=0; i<position.length; i++)
+			position[i] = getFloatPosition(i);
 	}
 
 	@Override
 	public void localize(final double[] position) {
-		// CTR FIXME
+		for (int i=0; i<position.length; i++)
+			position[i] = getDoublePosition(i);
 	}
 
 	@Override
@@ -209,52 +213,58 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public void fwd(final int d) {
-		// CTR FIXME
+		setPosition(getLongPosition(d) + 1, d);
 	}
 
 	@Override
 	public void bck(final int d) {
-		// CTR FIXME
+		setPosition(getLongPosition(d) - 1, d);
 	}
 
 	@Override
 	public void move(final int distance, final int d) {
-		// CTR FIXME
+		setPosition(getLongPosition(d) + distance, d);
 	}
 
 	@Override
 	public void move(final long distance, final int d) {
-		// CTR FIXME
+		setPosition(getLongPosition(d) + distance, d);
 	}
 
 	@Override
 	public void move(final Localizable localizable) {
-		// CTR FIXME
+		for (int i=0; i<localizable.numDimensions(); i++)
+			move(localizable.getLongPosition(i), i);
 	}
 
 	@Override
 	public void move(final int[] distance) {
-		// CTR FIXME
+		for (int i=0; i<distance.length; i++)
+			move(distance[i], i);
 	}
 
 	@Override
 	public void move(final long[] distance) {
-		// CTR FIXME
+		for (int i=0; i<distance.length; i++)
+			move(distance[i], i);
 	}
 
 	@Override
 	public void setPosition(final Localizable localizable) {
-		// CTR FIXME
+		for (int i=0; i<localizable.numDimensions(); i++)
+			setPosition(localizable.getLongPosition(i), i);
 	}
 
 	@Override
 	public void setPosition(final int[] position) {
-		// CTR FIXME
+		for (int i=0; i<position.length; i++)
+			setPosition(position[i], i);
 	}
 
 	@Override
 	public void setPosition(final long[] position) {
-		// CTR FIXME
+		for (int i=0; i<position.length; i++)
+			setPosition(position[i], i);
 	}
 
 	@Override
