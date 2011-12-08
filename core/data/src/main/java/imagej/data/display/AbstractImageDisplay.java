@@ -52,7 +52,6 @@ import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.tool.ToolService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
