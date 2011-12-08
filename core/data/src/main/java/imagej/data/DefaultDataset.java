@@ -529,6 +529,18 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		return imgPlus.getColorTableCount();
 	}
 
+	@Override
+	public double getBytesOfInfo() {
+		final double bitsPerPix = getType().getBitsPerPixel();
+		final long[] dims = getDims();
+		long pixCount = 1;
+		for (long dimSize : dims)
+			pixCount *= dimSize;
+		final double totBits = bitsPerPix * pixCount;
+		return totBits / 8;
+	}
+
+
 	// -- Helper methods --
 
 	/**
