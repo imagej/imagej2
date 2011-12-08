@@ -135,4 +135,5 @@ public interface Dataset extends Data, Metadata {
 	 */
 	void copyDataFrom(final Dataset other);
 
+	double getBytesOfInfo();
 }
