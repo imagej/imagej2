@@ -141,10 +141,14 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		sb.append("; ");
 
 		sb.append(dataset.getTypeLabelLong());
+		sb.append("; ");
+		
+		sb.append(bytesOfInfo(dataset));
+		sb.append("; ");
 
 		final double zoomFactor = getCanvas().getZoomFactor();
 		if (zoomFactor != 1) {
-			sb.append(" (");
+			sb.append("(");
 			sb.append(scaleConverter.getString(zoomFactor));
 			sb.append(")");
 		}
@@ -179,6 +183,29 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		this.setName(theName);
 	}
 
+	private String bytesOfInfo(Dataset ds) {
+		double bitsPerPix = ds.getType().getBitsPerPixel();
+		long[] dims = ds.getDims();
+		long pixCount = 1;
+		for (long dimSize : dims)
+			pixCount *= dimSize;
+		double totBits = bitsPerPix * pixCount;
+		double totBytes = totBits / 8;
+		return labeledCount(totBytes);
+	}
+
+	private String labeledCount(double totBytes) {
+		String[] labels = {"KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
+		for (int i = 0; i < labels.length; i++) {
+			int pow = i + 2;
+			if (totBytes < Math.pow(1024.0, pow))
+				return String.format("%.1f%s",
+					(totBytes / Math.pow(1024.0,pow-1)), labels[i]);
+		}
+		return String.format("%.1f%s", 
+			(totBytes / Math.pow(1024.0,labels.length)), labels[labels.length-1]);
+	}
+	
 	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
 		final OptionsService service = ImageJ.get(OptionsService.class);
