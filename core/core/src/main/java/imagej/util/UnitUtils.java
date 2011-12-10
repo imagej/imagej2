@@ -47,14 +47,15 @@ public class UnitUtils {
 
 	public static String getAbbreviatedByteLabel(double totBytes) {
 		final String[] labels = {"KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
-		for (int i = 0; i < labels.length; i++) {
-			int pow = i + 2;
-			if (totBytes < Math.pow(1024.0, pow))
+		final int maxPow = labels.length;
+		for (int pow = 1; pow <= maxPow; pow++) {
+			int nextPow = pow+1;
+			if (totBytes < Math.pow(1024.0, nextPow))
 				return String.format("%.1f%s",
-					(totBytes / Math.pow(1024.0,pow-1)), labels[i]);
+					(totBytes / Math.pow(1024.0,pow)), labels[pow-1]);
 		}
 		return String.format("%.1f%s", 
-			(totBytes / Math.pow(1024.0,labels.length)), labels[labels.length-1]);
+			(totBytes / Math.pow(1024.0,maxPow)), labels[maxPow-1]);
 	}
 	
 }
