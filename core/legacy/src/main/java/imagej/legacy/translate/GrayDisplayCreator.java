@@ -168,6 +168,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final Dataset ds =
 			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
+		DatasetUtils.initColorTables(ds);
+
 		return ds;
 	}
 
@@ -248,6 +250,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 		planeHarmonizer.updateDataset(ds, imp);
 
+		DatasetUtils.initColorTables(ds);
+
 		return ds;
 	}
 
@@ -290,6 +294,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final Dataset ds =
 			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
+		DatasetUtils.initColorTables(ds);
+		
 		return ds;
 	}
 
@@ -323,5 +329,4 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private boolean isFloating(final ImagePlus imp) {
 		return isGray32PixelType(imp);
 	}
-
 }
