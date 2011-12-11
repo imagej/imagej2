@@ -84,16 +84,16 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	private AxisType activeAxis = null;
 
 	// NB - older comment - see 12-7-11 note
-	// If axisPositions is a HashMap rather than a ConcurrentHashMap, 
-	// the Delete Axis plugin throws a ConcurrentModificationException. 
-	private final ConcurrentHashMap<AxisType, Long> axisPositions = 
+	// If pos is a HashMap rather than a ConcurrentHashMap,
+	// the Delete Axis plugin throws a ConcurrentModificationException.
+	private final ConcurrentHashMap<AxisType, Long> pos =
 		new ConcurrentHashMap<AxisType, Long>();
-	
+
 	// NB - after a rewrite around 12-7-11 by CTR a ConcurrentHashMap might not
 	// be needed. Initial testing seemed okay but will try and relax this
 	// constraint later. Comment out for now.
-	//private final HashMap<AxisType, Long> axisPositions =
-	//	new HashMap<AxisType, Long>();
+	// private final HashMap<AxisType, Long> pos =
+	// new HashMap<AxisType, Long>();
 
 	public AbstractImageDisplay() {
 		super(DataView.class);
@@ -138,7 +138,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 
 		// reset position to 0^n
-		axisPositions.clear();
+		pos.clear();
 		for (int i = 0; i < numDimensions(); i++) {
 			final AxisType axis = axis(i);
 			if (Axes.isXY(axis)) continue; // do not track position of planar axes
@@ -364,7 +364,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			// untracked axes are all at position 0 by default
 			return 0;
 		}
-		final Long value = axisPositions.get(axis);
+		final Long value = pos.get(axis);
 		return value == null ? 0 : value;
 	}
 
@@ -378,12 +378,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		// clamp new position value to [min, max]
 		final long min = min(axisIndex);
 		final long max = max(axisIndex);
-		long pos = position;
-		if (pos < min) pos = min;
-		if (pos > max) pos = max;
+		long value = position;
+		if (value < min) value = min;
+		if (value > max) value = max;
 
 		// update position and notify interested parties of the change
-		axisPositions.put(axis, pos);
+		pos.put(axis, value);
 		eventService.publish(new AxisPositionEvent(this, axis));
 	}
 
