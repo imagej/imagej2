@@ -56,7 +56,7 @@ public class SplineFitterTest {
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			// just test that these don't crash
-			sf = new SplineFitter(null,null,-1);                 // pathological data
+			sf = new SplineFitter((int[]) null,(int[]) null,-1); // pathological data
 			sf = new SplineFitter(new int[]{},new int[]{},0);    // 0 items
 			sf = new SplineFitter(new int[]{1},new int[]{2},1);  // 1 item
 		}
