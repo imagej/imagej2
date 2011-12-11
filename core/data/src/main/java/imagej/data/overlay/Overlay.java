@@ -37,7 +37,6 @@ package imagej.data.overlay;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
-import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
@@ -69,26 +68,6 @@ public interface Overlay extends Data {
 	 * @return the region of interest or null if none supported.
 	 */
 	RegionOfInterest getRegionOfInterest();
-
-	/**
-	 * Get the position of this overlay's plane perpendicular
-	 * to the given axis. If the overlay isn't localized within
-	 * this axis, returns null.
-	 * @param axis
-	 * @return Long position or null
-	 */
-	Long getPosition(AxisType axis);
-
-	/**
-	 * An overlay is often localized to a plane, for instance when
-	 * a rectangle is drawn at one level of a z-stack. A caller can
-	 * localize the overlay to one plane in an axis by calling this
-	 * method with the given axis and position.
-	 * 
-	 * @param axis localize to this axis
-	 * @param position localize at this position
-	 */
-	void setPosition(AxisType axis, long position);
 
 	/**
 	 * @return the opacity of the interior of the overlay, from 0-255

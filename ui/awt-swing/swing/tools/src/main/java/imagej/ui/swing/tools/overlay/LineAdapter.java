@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.DataView;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.ext.tool.Tool;
@@ -82,10 +82,8 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final Overlay overlay, final Figure figure,
-		final DataView view)
-	{
-		super.updateFigure(overlay, figure, view);
+	public void updateFigure(final OverlayView overlay, final Figure figure) {
+		super.updateFigure(overlay, figure);
 		assert figure instanceof LineFigure;
 		final LineFigure line = (LineFigure) figure;
 		assert overlay instanceof LineOverlay;
@@ -97,7 +95,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final Overlay overlay) {
+	public void updateOverlay(final Figure figure, final OverlayView overlay) {
 		super.updateOverlay(figure, overlay);
 		assert figure instanceof LineFigure;
 		final LineFigure line = (LineFigure) figure;

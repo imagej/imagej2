@@ -45,9 +45,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
@@ -65,7 +63,6 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Map<AxisType, Long> positions = new HashMap<AxisType, Long>();
 	private final List<AxisType> axes = new ArrayList<AxisType>();
 	private final List<Double> cal = new ArrayList<Double>();
 
@@ -124,26 +121,12 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 	// The JHotDraw figures need to be linked to an OverlayView, not an Overlay
 	// directly.
 	//
-	// Further, DataView needs to support localizing the position across any
-	// dimensional axis, not just those present in the linked Data object.
-	// So a 2D overlay can be localized in the Display's space with no fuss.
-	//
 	// We still need the concept of a composite data object, and/or composite data
 	// view -- further thought is needed. But for beta1, we may not need it.
 	// On the other hand, the axis compositing logic done in AbstractImageDisplay
 	// would fit very well in a CompositeData or CompositeDataView object. If we
 	// go that route sooner, the Display can be simplified to allow only one
 	// object at a time, rather than a list. What would the consequences be?
-
-	@Override
-	public Long getPosition(final AxisType axis) {
-		return positions.get(axis);
-	}
-
-	@Override
-	public void setPosition(final AxisType axis, final long position) {
-		positions.put(axis, position);
-	}
 
 	@Override
 	public int getAlpha() {

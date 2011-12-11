@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.DataView;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.ext.tool.Tool;
@@ -97,11 +97,9 @@ public class EllipseAdapter extends
 	}
 
 	@Override
-	public void updateFigure(final Overlay o, final Figure f,
-		final DataView view)
-	{
-		super.updateFigure(o, f, view);
-		final EllipseOverlay overlay = downcastOverlay(o);
+	public void updateFigure(final OverlayView o, final Figure f) {
+		super.updateFigure(o, f);
+		final EllipseOverlay overlay = downcastOverlay(o.getData());
 		final EllipseFigure figure = downcastFigure(f);
 		final EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
 		final double centerX = eRoi.getOrigin(0);
@@ -114,9 +112,9 @@ public class EllipseAdapter extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final Overlay roi) {
-		super.updateOverlay(figure, roi);
-		final EllipseOverlay overlay = downcastOverlay(roi);
+	public void updateOverlay(final Figure figure, final OverlayView o) {
+		super.updateOverlay(figure, o);
+		final EllipseOverlay overlay = downcastOverlay(o.getData());
 		final EllipseFigure eFigure = downcastFigure(figure);
 		final Rectangle2D.Double r = eFigure.getBounds();
 		final RealPoint ptCenter =

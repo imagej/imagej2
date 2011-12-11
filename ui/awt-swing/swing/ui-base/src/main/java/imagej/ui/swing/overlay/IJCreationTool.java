@@ -34,7 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.ui.swing.display.SwingOverlayView;
 
 import java.util.EventListener;
 
@@ -56,10 +59,10 @@ public class IJCreationTool extends CreationTool {
 	 */
 	public class FigureCreatedEvent {
 
-		final protected Overlay overlay;
+		final protected OverlayView overlay;
 		final protected Figure figure;
 
-		FigureCreatedEvent(final Overlay overlay, final Figure figure) {
+		FigureCreatedEvent(final OverlayView overlay, final Figure figure) {
 			this.overlay = overlay;
 			this.figure = figure;
 		}
@@ -67,7 +70,7 @@ public class IJCreationTool extends CreationTool {
 		/**
 		 * @return the overlay
 		 */
-		public Overlay getOverlay() {
+		public OverlayView getOverlay() {
 			return overlay;
 		}
 
@@ -88,11 +91,15 @@ public class IJCreationTool extends CreationTool {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private final ImageDisplay display;
 	private final IJHotDrawOverlayAdapter adapter;
 	private final EventListenerList listeners = new EventListenerList();
 
-	public IJCreationTool(final IJHotDrawOverlayAdapter adapter) {
+	public IJCreationTool(final ImageDisplay display,
+		final IJHotDrawOverlayAdapter adapter)
+	{
 		super(adapter.createDefaultFigure());
+		this.display = display;
 		this.adapter = adapter;
 	}
 
@@ -106,7 +113,7 @@ public class IJCreationTool extends CreationTool {
 		listeners.remove(OverlayCreatedListener.class, listener);
 	}
 
-	protected void fireOverlayCreatedEvent(final Overlay overlay,
+	protected void fireOverlayCreatedEvent(final OverlayView overlay,
 		final Figure figure)
 	{
 		final FigureCreatedEvent e = new FigureCreatedEvent(overlay, figure);
@@ -126,8 +133,9 @@ public class IJCreationTool extends CreationTool {
 	protected void creationFinished(final Figure figure) {
 		super.creationFinished(figure);
 		final Overlay overlay = adapter.createNewOverlay();
-		adapter.updateOverlay(figure, overlay);
-		fireOverlayCreatedEvent(overlay, figure);
+		final SwingOverlayView view = new SwingOverlayView(display, overlay, figure);
+		adapter.updateOverlay(figure, view);
+		fireOverlayCreatedEvent(view, figure);
 	}
 
 }
