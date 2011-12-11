@@ -75,9 +75,7 @@ public abstract class AbstractDataView implements DataView {
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
 
-	/**
-	 * True if view is selected, false if not.
-	 */
+	/** True if view is selected, false if not. */
 	private boolean selected;
 
 	public AbstractDataView(final Data data) {
@@ -158,13 +156,13 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public void localize(final int[] position) {
-		for (int i=0; i<position.length; i++)
+		for (int i = 0; i < position.length; i++)
 			position[i] = getIntPosition(i);
 	}
 
 	@Override
 	public void localize(final long[] position) {
-		for (int i=0; i<position.length; i++)
+		for (int i = 0; i < position.length; i++)
 			position[i] = getLongPosition(i);
 	}
 
@@ -182,13 +180,13 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public void localize(final float[] position) {
-		for (int i=0; i<position.length; i++)
+		for (int i = 0; i < position.length; i++)
 			position[i] = getFloatPosition(i);
 	}
 
 	@Override
 	public void localize(final double[] position) {
-		for (int i=0; i<position.length; i++)
+		for (int i = 0; i < position.length; i++)
 			position[i] = getDoublePosition(i);
 	}
 
@@ -233,37 +231,37 @@ public abstract class AbstractDataView implements DataView {
 
 	@Override
 	public void move(final Localizable localizable) {
-		for (int i=0; i<localizable.numDimensions(); i++)
+		for (int i = 0; i < localizable.numDimensions(); i++)
 			move(localizable.getLongPosition(i), i);
 	}
 
 	@Override
 	public void move(final int[] distance) {
-		for (int i=0; i<distance.length; i++)
+		for (int i = 0; i < distance.length; i++)
 			move(distance[i], i);
 	}
 
 	@Override
 	public void move(final long[] distance) {
-		for (int i=0; i<distance.length; i++)
+		for (int i = 0; i < distance.length; i++)
 			move(distance[i], i);
 	}
 
 	@Override
 	public void setPosition(final Localizable localizable) {
-		for (int i=0; i<localizable.numDimensions(); i++)
+		for (int i = 0; i < localizable.numDimensions(); i++)
 			setPosition(localizable.getLongPosition(i), i);
 	}
 
 	@Override
 	public void setPosition(final int[] position) {
-		for (int i=0; i<position.length; i++)
+		for (int i = 0; i < position.length; i++)
 			setPosition(position[i], i);
 	}
 
 	@Override
 	public void setPosition(final long[] position) {
-		for (int i=0; i<position.length; i++)
+		for (int i = 0; i < position.length; i++)
 			setPosition(position[i], i);
 	}
 
