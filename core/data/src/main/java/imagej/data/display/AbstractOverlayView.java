@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display;
 
 import imagej.data.overlay.Overlay;
-import net.imglib2.meta.AxisType;
 
 /**
  * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.
@@ -58,20 +57,6 @@ public abstract class AbstractOverlayView extends AbstractDataView implements
 	@Override
 	public Overlay getData() {
 		return overlay;
-	}
-
-	@Override
-	public boolean isVisible() {
-		for (int i = 2; i < overlay.numDimensions(); i++) {
-			final AxisType axis = overlay.axis(i);
-			final Long pos = overlay.getPosition(axis);
-			if ((pos != null) &&
-				!pos.equals(getPlanePosition().getLongPosition(i - 2)))
-			{
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

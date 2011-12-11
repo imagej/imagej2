@@ -155,7 +155,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 				synchronized(SwingOverlayView.this) {
 					if (disposed || disposeScheduled) return;
 				}
-				if (isVisible()) {
+				if (display.isVisible(SwingOverlayView.this)) {
 					display.remove(SwingOverlayView.this);
 					dispose();
 					display.update();
@@ -252,7 +252,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		} finally {
 			updatingFigure = false;
 		}
-		show(isVisible());
+		show(display.isVisible(this));
 	}
 
 }

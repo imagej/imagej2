@@ -39,18 +39,26 @@ import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
+import net.imglib2.meta.AxisType;
 
 /**
  * A view provides visualization settings for an associated {@link Data} object
  * (such as a {@link Dataset} or {@link Overlay}) for use with an
  * {@link ImageDisplay}. The view keeps track of the currently visualized
- * position within the N-dimensional data space, as well as color settings and
- * other view-specific metadata.
+ * position within the N-dimensional data space (and beyond), as well as color
+ * settings and other view-specific metadata.
  * <p>
  * For example, a typical 2D display may have a number of sliders enabling a
  * user to select a particular plane of a {@link Dataset} for display. The view
  * keeps track of the current position and provides access to the resultant
  * plane.
+ * </p>
+ * <p>
+ * For dimensions outside the linked {@link Data} object's space, calling
+ * {@link #setPosition(long, AxisType)} embeds the view at the specified
+ * position along that axis. When the view is part of a display that contains
+ * that dimension, the view will only be visible when the display's position for
+ * that dimension matches the view's value.
  * </p>
  * 
  * @author Curtis Rueden
@@ -74,12 +82,6 @@ public interface DataView extends PositionableByAxis {
 	 * @return the view's selection state.
 	 */
 	boolean isSelected();
-
-	/**
-	 * @return true if the data object (or some part of it) is visible, given the
-	 *         current (hyper)plane position
-	 */
-	boolean isVisible();
 
 	// CTR TODO - reevaluate the methods below, and potentially eliminate some.
 

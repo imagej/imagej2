@@ -36,7 +36,6 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
-import imagej.data.Position;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -57,7 +56,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
@@ -164,27 +162,12 @@ public class WatchOverlays implements ImageJPlugin {
 	public List<Overlay> getOverlaysForCurrentSlice(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		for (final DataView view : display) {
-			final Position planePosition = view.getPlanePosition();
 			final Data data = view.getData();
-			if (data instanceof Overlay) {
-				isVisible((Overlay) data, planePosition);
+			if (data instanceof Overlay && display.isVisible(view)) {
+				overlays.add((Overlay) data);
 			}
-
 		}
 		return overlays;
-	}
-
-	public boolean
-		isVisible(final Overlay overlay, final Position planePosition)
-	{
-		for (int i = 2; i < overlay.numDimensions(); i++) {
-			final AxisType axis = overlay.axis(i);
-			final Long pos = overlay.getPosition(axis);
-			if (pos != null && !pos.equals(planePosition.getLongPosition(i - 2))) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

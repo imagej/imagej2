@@ -182,6 +182,30 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		return false;
 	}
 
+	@Override
+	public boolean isVisible(final DataView view) {
+		for (int i = 0; i < numDimensions(); i++) {
+			final AxisType axis = axis(i);
+			if (axis.isXY()) continue;
+			final long value = getLongPosition(axis);
+			final int index = view.getData().getAxisIndex(axis);
+			if (index < 0) {
+				// verify that the display's position matches the view's value
+				if (value != view.getLongPosition(axis)) return false;
+			}
+			else {
+				// verify that the display's position matches the data's range
+				final double min = index < 0 ? 0 : view.getData().realMin(index);
+				final double max = index < 0 ? 0 : view.getData().realMax(index);
+				if (value < min || value > max) {
+					// dimensional position is outside the data's range
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	// -- Display methods --
 
 	@Override
@@ -384,6 +408,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 		// update position and notify interested parties of the change
 		pos.put(axis, value);
+		// NB: DataView.setPosition is called only in update method.
 		eventService.publish(new AxisPositionEvent(this, axis));
 	}
 

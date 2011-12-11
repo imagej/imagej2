@@ -123,11 +123,6 @@ public abstract class AbstractDataView implements DataView {
 	}
 
 	@Override
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
 	public void dispose() {
 		if (disposed) return;
 		disposed = true;
