@@ -60,23 +60,13 @@ import net.java.sezpoz.IndexItem;
 @PluginFinder
 public class ImageJPluginFinder implements IPluginFinder {
 
-	/** Default class loader to use when querying SezPoz. */
-	private static ClassLoader defaultClassLoader;
-
 	/** Class loader to use when querying SezPoz. */
 	private final ClassLoader classLoader;
-
-	// -- Static utility methods --
-
-	/** Sets the default class loader to use when querying SezPoz. */
-	public static void setDefaultClassLoader(final ClassLoader cl) {
-		defaultClassLoader = cl;
-	}
 
 	// -- Constructors --
 
 	public ImageJPluginFinder() {
-		this(defaultClassLoader);
+		this(null);
 	}
 
 	public ImageJPluginFinder(final ClassLoader classLoader) {
