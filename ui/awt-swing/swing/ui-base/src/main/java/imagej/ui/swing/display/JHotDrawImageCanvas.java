@@ -39,9 +39,9 @@ import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
-import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -53,9 +53,9 @@ import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.overlay.IJCreationTool;
+import imagej.ui.swing.overlay.IJCreationTool.FigureCreatedEvent;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.SelectionTool;
-import imagej.ui.swing.overlay.IJCreationTool.FigureCreatedEvent;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -206,7 +206,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	protected void activateTool(final ITool iTool) {
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter) iTool;
-			final IJCreationTool creationTool = new IJCreationTool(adapter);
+			final IJCreationTool creationTool = new IJCreationTool(display, adapter);
 
 			// Listen for toolDone from the creation tool. This means that
 			// we finished using the JHotDraw tool and we deactivate it.
@@ -228,21 +228,18 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 					@SuppressWarnings("synthetic-access")
 					@Override
 					public void overlayCreated(final FigureCreatedEvent e) {
-						final Overlay overlay = e.getOverlay();
-						final SwingOverlayView v =
-							new SwingOverlayView(display, overlay, e.getFigure());
-						overlay.setAxis(Axes.X, Axes.X.ordinal());
-						overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-						for (int i = 2; i < display.numDimensions(); i++) {
+						final OverlayView overlay = e.getOverlay();
+						for (int i = 0; i < display.numDimensions(); i++) {
 							final AxisType axis = display.axis(i);
-							if (overlay.getAxisIndex(axis) < 0) {
-								overlay.setPosition(axis, display.getLongPosition(axis));
+							if (Axes.isXY(axis)) continue;
+							if (overlay.getData().getAxisIndex(axis) < 0) {
+								overlay.setPosition(display.getLongPosition(axis), axis);
 							}
 						}
-						display.add(v);
+						display.add(overlay);
 						display.update();
 						if (drawingView.getSelectedFigures().contains(e.getFigure())) {
-							v.setSelected(true);
+							overlay.setSelected(true);
 						}
 					}
 				});

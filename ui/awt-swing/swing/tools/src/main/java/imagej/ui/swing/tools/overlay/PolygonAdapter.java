@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.DataView;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.ext.tool.Tool;
@@ -158,10 +158,10 @@ public class PolygonAdapter extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final Overlay overlay) {
+	public void updateOverlay(final Figure figure, final OverlayView overlay) {
 		super.updateOverlay(figure, overlay);
 		final BezierFigure b = downcastFigure(figure);
-		final PolygonOverlay poverlay = downcastOverlay(overlay);
+		final PolygonOverlay poverlay = downcastOverlay(overlay.getData());
 		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
 		final int nodeCount = b.getNodeCount();
 		while (roi.getVertexCount() > nodeCount) {
@@ -188,12 +188,10 @@ public class PolygonAdapter extends
 	}
 
 	@Override
-	public void updateFigure(final Overlay overlay, final Figure figure,
-		final DataView view)
-	{
-		super.updateFigure(overlay, figure, view);
+	public void updateFigure(final OverlayView overlay, final Figure figure) {
+		super.updateFigure(overlay, figure);
 		final BezierFigure b = downcastFigure(figure);
-		final PolygonOverlay pOverlay = downcastOverlay(overlay);
+		final PolygonOverlay pOverlay = downcastOverlay(overlay.getData());
 		final PolygonRegionOfInterest roi = pOverlay.getRegionOfInterest();
 		final int vertexCount = roi.getVertexCount();
 		while (b.getNodeCount() > vertexCount)

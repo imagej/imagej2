@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.DataView;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.util.ColorRGB;
@@ -88,27 +88,25 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 	}
 
 	@Override
-	public void updateFigure(final Overlay overlay, final Figure figure,
-		final DataView view)
-	{
-		super.updateFigure(overlay, figure, view);
+	public void updateFigure(final OverlayView overlay, final Figure figure) {
+		super.updateFigure(overlay, figure);
 
 		// Override the base: set the fill color to transparent.
 		figure.set(AttributeKeys.FILL_COLOR, new Color(0, 0, 0, 0));
 		assert figure instanceof ImageFigure;
 		final ImageFigure imgf = (ImageFigure) figure;
-		final RegionOfInterest roi = overlay.getRegionOfInterest();
+		final RegionOfInterest roi = overlay.getData().getRegionOfInterest();
 		if (roi != null) {
 			final long minX = (long) Math.floor(roi.realMin(0));
 			final long maxX = (long) Math.ceil(roi.realMax(0)) + 1;
 			final long minY = (long) Math.floor(roi.realMin(1));
 			final long maxY = (long) Math.ceil(roi.realMax(1)) + 1;
-			final ColorRGB color = overlay.getFillColor();
+			final ColorRGB color = overlay.getData().getFillColor();
 			final IndexColorModel cm =
 				new IndexColorModel(1, 2, new byte[] { 0, (byte) color.getRed() },
 					new byte[] { 0, (byte) color.getGreen() }, new byte[] { 0,
 						(byte) color.getBlue() },
-					new byte[] { 0, (byte) overlay.getAlpha() });
+					new byte[] { 0, (byte) overlay.getData().getAlpha() });
 			final int w = (int) (maxX - minX);
 			final int h = (int) (maxY - minY);
 			final BufferedImage img =
@@ -122,7 +120,7 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 			final byte[] bankData = db.getData();
 			final RealRandomAccess<BitType> ra = roi.realRandomAccess();
 			for (int i = 2; i < ra.numDimensions(); i++) {
-				final long position = view.getPlanePosition().getLongPosition(i - 2);
+				final long position = overlay.getPlanePosition().getLongPosition(i - 2);
 				ra.setPosition(position, i);
 			}
 			int index = 0;

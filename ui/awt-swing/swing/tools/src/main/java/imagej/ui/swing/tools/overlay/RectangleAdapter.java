@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.DataView;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.event.EventService;
@@ -97,11 +97,10 @@ public class RectangleAdapter extends
 	}
 
 	@Override
-	public void updateFigure(final Overlay overlay, final Figure f,
-		final DataView view)
-	{
-		super.updateFigure(overlay, f, view);
-		final RectangleOverlay rectangleOverlay = downcastOverlay(overlay);
+	public void updateFigure(final OverlayView overlay, final Figure f) {
+		super.updateFigure(overlay, f);
+		final RectangleOverlay rectangleOverlay =
+			downcastOverlay(overlay.getData());
 		final RectangleRegionOfInterest roi =
 			rectangleOverlay.getRegionOfInterest();
 		final double x0 = roi.getOrigin(0);
@@ -114,9 +113,9 @@ public class RectangleAdapter extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final Overlay overlay) {
+	public void updateOverlay(final Figure figure, final OverlayView overlay) {
 		super.updateOverlay(figure, overlay);
-		final RectangleOverlay rOverlay = downcastOverlay(overlay);
+		final RectangleOverlay rOverlay = downcastOverlay(overlay.getData());
 		final RectangleRegionOfInterest roi = rOverlay.getRegionOfInterest();
 		final Rectangle2D.Double bounds = figure.getBounds();
 		roi.setOrigin(bounds.getMinX(), 0);

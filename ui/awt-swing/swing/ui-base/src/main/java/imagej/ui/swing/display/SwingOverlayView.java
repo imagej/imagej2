@@ -100,7 +100,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
 		if (figure == null) {
 			this.figure = adapter.createDefaultFigure();
-			adapter.updateFigure(overlay, this.figure, this);
+			adapter.updateFigure(this, this.figure);
 			EventQueue.invokeLater(new Runnable() {
 				
 				@Override
@@ -126,7 +126,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
-							adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
+							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this);
 							overlay.update();
 						} finally {
 							updatingOverlay = false;
@@ -141,7 +141,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
-							adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
+							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this);
 							overlay.rebuild();
 						} finally {
 							updatingOverlay = false;
@@ -248,7 +248,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		if (disposeScheduled) return;
 		updatingFigure = true;
 		try {
-			adapter.updateFigure(getData(), figure, this);
+			adapter.updateFigure(this, figure);
 		} finally {
 			updatingFigure = false;
 		}

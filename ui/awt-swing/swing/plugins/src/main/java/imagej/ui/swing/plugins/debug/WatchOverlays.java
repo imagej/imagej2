@@ -55,7 +55,6 @@ import imagej.ui.swing.SwingOutputWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.meta.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
@@ -108,8 +107,7 @@ public class WatchOverlays implements ImageJPlugin {
 
 		window.append("all --------------------\n");
 		for (final Overlay overlay : overlays) {
-			window.append(overlay.getRegionOfInterest().toString() + ": " +
-				overlay.getPosition(Axes.Z) + "\n");
+			window.append(overlay.getRegionOfInterest().toString() + "\n");
 		}
 
 		final ImageDisplay display = getCurrentImageDisplay();
