@@ -37,6 +37,7 @@ package imagej.core.plugins.debug;
 import imagej.data.Dataset;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
+import imagej.ext.module.ItemIO;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
@@ -154,65 +155,76 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		+ "displaying the given message in the ImageJ status bar.")
 	private String message = "Type a status message here.";
 
+	@Parameter(type = ItemIO.OUTPUT)
+	private String output;
+
+	public String getOutput() {
+		return output;
+	}
+
 	@Override
 	public void run() {
-		Log.info("ParameterTester results:");
+		final StringBuilder sb = new StringBuilder();
 
-		Log.info("");
-		Log.info("-- Toggles --");
-		Log.info("\tboolean = " + pBoolean);
-		Log.info("\tBoolean = " + oBoolean);
+		append(sb, "ParameterTester results:");
 
-		Log.info("");
-		Log.info("-- Numeric --");
-		Log.info("\tbyte = " + pByte);
-		Log.info("\tdouble = " + pDouble);
-		Log.info("\tfloat = " + pFloat);
-		Log.info("\tint = " + pInt);
-		Log.info("\tlong = " + pLong);
-		Log.info("\tshort = " + pShort);
-		Log.info("\tByte = " + oByte);
-		Log.info("\tDouble = " + oDouble);
-		Log.info("\tFloat = " + oFloat);
-		Log.info("\tInteger = " + oInt);
-		Log.info("\tLong = " + oLong);
-		Log.info("\tShort = " + oShort);
-		Log.info("\tBigInteger = " + bigInteger);
-		Log.info("\tBigDecimal = " + bigDecimal);
+		append(sb, "");
+		append(sb, "-- Toggles --");
+		append(sb, "\tboolean = " + pBoolean);
+		append(sb, "\tBoolean = " + oBoolean);
 
-		Log.info("");
-		Log.info("-- Text --");
-		Log.info("\tchar = " + "'" + pChar + "' [" +
+		append(sb, "");
+		append(sb, "-- Numeric --");
+		append(sb, "\tbyte = " + pByte);
+		append(sb, "\tdouble = " + pDouble);
+		append(sb, "\tfloat = " + pFloat);
+		append(sb, "\tint = " + pInt);
+		append(sb, "\tlong = " + pLong);
+		append(sb, "\tshort = " + pShort);
+		append(sb, "\tByte = " + oByte);
+		append(sb, "\tDouble = " + oDouble);
+		append(sb, "\tFloat = " + oFloat);
+		append(sb, "\tInteger = " + oInt);
+		append(sb, "\tLong = " + oLong);
+		append(sb, "\tShort = " + oShort);
+		append(sb, "\tBigInteger = " + bigInteger);
+		append(sb, "\tBigDecimal = " + bigDecimal);
+
+		append(sb, "");
+		append(sb, "-- Text --");
+		append(sb, "\tchar = " + "'" + pChar + "' [" +
 			Character.getNumericValue(pChar) + "]");
 		final String oCharValue =
 			oChar == null ? "null" : "" + Character.getNumericValue(oChar);
-		Log.info("\tCharacter = " + "'" + oChar + "' [" + oCharValue + "]");
-		Log.info("\tString = " + string);
+		append(sb, "\tCharacter = " + "'" + oChar + "' [" + oCharValue + "]");
+		append(sb, "\tString = " + string);
 
-		Log.info("");
-		Log.info("-- Choice --");
-		Log.info("\tchoice = " + choice);
+		append(sb, "");
+		append(sb, "-- Choice --");
+		append(sb, "\tchoice = " + choice);
 
-		Log.info("");
-		Log.info("-- Object --");
-		Log.info("\tDataset = " + dataset);
+		append(sb, "");
+		append(sb, "-- Object --");
+		append(sb, "\tDataset = " + dataset);
 
-		Log.info("");
-		Log.info("-- File --");
-		Log.info("\tFile = " + file);
+		append(sb, "");
+		append(sb, "-- File --");
+		append(sb, "\tFile = " + file);
 
-		Log.info("");
-		Log.info("-- Color --");
-		Log.info("\tcolor = " + color);
+		append(sb, "");
+		append(sb, "-- Color --");
+		append(sb, "\tcolor = " + color);
 
-		Log.info("");
-		Log.info("-- Miscellaneous --");
-		Log.info("\tspinner = " + spinnerNumber);
-		Log.info("\tslider = " + sliderNumber);
-		Log.info("\tscroll bar = " + scrollBarNumber);
-		Log.info("\tx = " + x);
-		Log.info("\t2x = " + twoX);
-		Log.info("\tmessage = " + message);
+		append(sb, "");
+		append(sb, "-- Miscellaneous --");
+		append(sb, "\tspinner = " + spinnerNumber);
+		append(sb, "\tslider = " + sliderNumber);
+		append(sb, "\tscroll bar = " + scrollBarNumber);
+		append(sb, "\tx = " + x);
+		append(sb, "\t2x = " + twoX);
+		append(sb, "\tmessage = " + message);
+
+		output = sb.toString();
 	}
 
 	private int previews = 0;
@@ -238,6 +250,10 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	private void twoXChanged() {
 		Log.info("ParameterTester: 2x changed");
 		x = twoX / 2;
+	}
+
+	private void append(final StringBuilder sb, final String s) {
+		append(sb, s + "\n");
 	}
 
 }
