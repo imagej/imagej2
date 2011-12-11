@@ -1,5 +1,5 @@
 //
-// AbstractOverlayView.java
+// OverlayView.java
 //
 
 /*
@@ -35,43 +35,16 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display;
 
 import imagej.data.overlay.Overlay;
-import net.imglib2.meta.AxisType;
+import imagej.ext.display.Display;
 
 /**
- * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.
+ * A linkage between an {@link Overlay} and a {@link Display}.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractOverlayView extends AbstractDataView implements
-	OverlayView
-{
-
-	private final Overlay overlay;
-
-	public AbstractOverlayView(final Overlay overlay) {
-		super(overlay);
-		this.overlay = overlay;
-	}
-
-	// -- OverlayView methods --
+public interface OverlayView extends DataView {
 
 	@Override
-	public Overlay getData() {
-		return overlay;
-	}
-
-	@Override
-	public boolean isVisible() {
-		for (int i = 2; i < overlay.numDimensions(); i++) {
-			final AxisType axis = overlay.axis(i);
-			final Long pos = overlay.getPosition(axis);
-			if ((pos != null) &&
-				!pos.equals(getPlanePosition().getLongPosition(i - 2)))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+	Overlay getData();
 
 }
