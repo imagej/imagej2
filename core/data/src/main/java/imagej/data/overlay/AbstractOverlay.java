@@ -172,9 +172,7 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void setLineColor(final ColorRGB lineColor) {
-		if (!this.lineColor.equals(lineColor)) {
-			this.lineColor = lineColor;
-		}
+		this.lineColor = lineColor;
 	}
 
 	@Override
@@ -184,9 +182,7 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void setLineWidth(final double lineWidth) {
-		if (this.lineWidth != lineWidth) {
-			this.lineWidth = lineWidth;
-		}
+		this.lineWidth = lineWidth;
 	}
 
 	@Override
