@@ -142,7 +142,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		for (int i = 0; i < numDimensions(); i++) {
 			final AxisType axis = axis(i);
 			if (Axes.isXY(axis)) continue; // do not track position of planar axes
-			setPosition(min(i), axis); // start at minimum value
+			pos.put(axis, min(i)); // start at minimum value
 		}
 
 		// rebuild panel
