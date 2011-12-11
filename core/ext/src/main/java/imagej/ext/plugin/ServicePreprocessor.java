@@ -51,8 +51,17 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_HIGH_PRIORITY)
 public class ServicePreprocessor implements PreprocessorPlugin {
+
+	private ImageJ theContext;
+
+	public ServicePreprocessor() {}
+
+	public ServicePreprocessor(final ImageJ context) {
+		theContext = context;
+	}
 
 	// -- PluginPreprocessor methods --
 
@@ -70,7 +79,8 @@ public class ServicePreprocessor implements PreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		final ImageJ context = ImageJ.getContext();
+		final ImageJ context =
+			theContext == null ? ImageJ.getContext() : theContext;
 
 		for (final ModuleItem<?> input : module.getInfo().inputs()) {
 			final Class<?> type = input.getType();
