@@ -364,7 +364,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			// untracked axes are all at position 0 by default
 			return 0;
 		}
-		return axisPositions.get(axis);
+		final Long value = axisPositions.get(axis);
+		return value == null ? 0 : value;
 	}
 
 	@Override
