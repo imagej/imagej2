@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins.debug;
 
-import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -72,6 +71,12 @@ public class WatchOverlays implements ImageJPlugin {
 	@Parameter(required = true, persist = false)
 	private EventService eventService;
 
+	@Parameter(required = true, persist = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = true, persist = false)
+	private ObjectService objectService;
+
 	private static SwingOutputWindow window;
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
@@ -92,11 +97,6 @@ public class WatchOverlays implements ImageJPlugin {
 		updateOverlaysShown();
 	}
 
-//	@EventHandler
-//	protected void onEvent(final WinActivatedEvent event) {
-//		updateOverlaysShown();
-//	}
-
 	@EventHandler
 	protected void onEvent(
 		@SuppressWarnings("unused") final DisplayActivatedEvent event)
@@ -106,7 +106,6 @@ public class WatchOverlays implements ImageJPlugin {
 
 	private void updateOverlaysShown() {
 		window.clear();
-		final ObjectService objectService = ImageJ.get(ObjectService.class);
 		final List<Overlay> overlays = objectService.getObjects(Overlay.class);
 
 		window.append("all --------------------\n");
@@ -119,8 +118,6 @@ public class WatchOverlays implements ImageJPlugin {
 		if (display == null) return;
 		window.append("For display " + display.getName() +
 			" --------------------\n");
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
 		final List<Overlay> overlays2 = getOverlaysFromDisplay(display);
 		for (final Overlay overlay : overlays2) {
 			window.append(overlay.getRegionOfInterest().toString() + "\n");
@@ -146,37 +143,15 @@ public class WatchOverlays implements ImageJPlugin {
 	}
 
 	private ImageDisplay getCurrentImageDisplay() {
-		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
 		final ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return null; // headless UI or no open images
 		return display;
 	}
 
-//		List<Overlay> overlays;
-//		final OverlayService overlayService = ImageJ.get(OverlayService.class);
-//		if (overlayService == null) {
-//			window.append("** overlayService==null");
-//			return;
-//		}
-//		AbstractDatasetView dsView = (AbstractDatasetView) display.getActiveView();
-//		if (dsView != null) {
-//			overlays = overlayService.getOverlays(dsView.getData());
-//		} else {
-//			window.append("** dsView==null");
-//			overlays = overlayService.getOverlays();
-//		}
-//		window.clear();
-//		for (Overlay overlay : overlays) {
-//			window.append(overlay.getRegionOfInterest().toString() + "\n");
-//			//Inspector.inspect(overlay);
-//		}
-
 	public List<Overlay> getOverlaysFromDisplay(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
 			for (final DataView view : display) {
-				// SwingOverlayView sov = (SwingOverlayView) view;
 				final Data data = view.getData();
 				if (!(data instanceof Overlay)) continue;
 				final Overlay overlay = (Overlay) data;
