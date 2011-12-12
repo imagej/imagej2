@@ -138,11 +138,17 @@ public class PluginService extends AbstractService {
 	/** Manually registers a plugin with the plugin service. */
 	public void addPlugin(final PluginInfo<?> plugin) {
 		pluginIndex.add(plugin);
+		if (plugin instanceof ModuleInfo) {
+			moduleService.addModule((ModuleInfo) plugin);
+		}
 	}
 
 	/** Manually unregisters a plugin with the plugin service. */
 	public void removePlugin(final PluginInfo<?> plugin) {
 		pluginIndex.remove(plugin);
+		if (plugin instanceof ModuleInfo) {
+			moduleService.removeModule((ModuleInfo) plugin);
+		}
 	}
 
 	/** Gets the list of known plugins. */
