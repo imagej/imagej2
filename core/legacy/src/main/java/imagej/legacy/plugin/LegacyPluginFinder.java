@@ -36,7 +36,6 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.Menus;
-import imagej.ImageJ;
 import imagej.ext.Accelerator;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
@@ -45,7 +44,6 @@ import imagej.ext.MenuPath;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
-import imagej.legacy.LegacyService;
 import imagej.util.Log;
 
 import java.awt.Menu;
@@ -100,9 +98,6 @@ public class LegacyPluginFinder {
 	// -- LegacyPluginFinder methods --
 
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
-		// ensure ImageJ v1.x is initialized
-		ImageJ.getContext().loadService(LegacyService.class);
-
 		final ij.ImageJ ij = IJ.getInstance();
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
 		final Map<String, MenuPath> menuTable = parseMenus(ij);
