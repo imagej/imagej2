@@ -36,7 +36,6 @@ package imagej.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
  * Useful methods for working with {@link Class} objects and primitive types.
@@ -224,15 +223,9 @@ public final class ClassUtils {
 	 * the value cannot be obtained.
 	 */
 	public static Object getValue(final Field field, final Object instance) {
-		if ((instance == null) && (!Modifier.isStatic(field.getModifiers())))
-			return null;
 		try {
 			field.setAccessible(true);
 			return field.get(instance);
-		}
-		catch (final IllegalArgumentException e) {
-			Log.error(e);
-			return null;
 		}
 		catch (final IllegalAccessException e) {
 			Log.error(e);
@@ -247,15 +240,9 @@ public final class ClassUtils {
 	public static void setValue(final Field field, final Object instance,
 		final Object value)
 	{
-		if ((instance == null) && (!Modifier.isStatic(field.getModifiers())))
-			return;
 		try {
 			field.setAccessible(true);
 			field.set(instance, convert(value, field.getType()));
-		}
-		catch (final IllegalArgumentException e) {
-			Log.error(e);
-			assert false;
 		}
 		catch (final IllegalAccessException e) {
 			Log.error(e);
