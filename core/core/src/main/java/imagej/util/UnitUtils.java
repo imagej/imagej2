@@ -35,27 +35,38 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.util;
 
 /**
+ * Utility methods for working with units.
  * 
  * @author Barry DeZonia
- *
+ * @author Curtis Rueden
  */
-public class UnitUtils {
-	
+public final class UnitUtils {
+
+	private static final String[] BYTE_UNITS = { "B", "KB", "MB", "GB", "TB",
+		"PB", "EB", "ZB", "YB" };
+
+	private static final double LOG1024 = Math.log(1024);
+
 	private UnitUtils() {
 		// prevent instantiation of utility class
 	}
 
-	public static String getAbbreviatedByteLabel(double totBytes) {
-		final String[] labels = {"KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
-		final int maxPow = labels.length;
-		for (int pow = 1; pow <= maxPow; pow++) {
-			int nextPow = pow+1;
-			if (totBytes < Math.pow(1024.0, nextPow))
-				return String.format("%.1f%s",
-					(totBytes / Math.pow(1024.0,pow)), labels[pow-1]);
+	public static String getAbbreviatedByteLabel(final double totBytes) {
+		if (totBytes < 0) {
+			throw new IllegalArgumentException("Bytes must be non-negative");
 		}
-		return String.format("%.1f%s", 
-			(totBytes / Math.pow(1024.0,maxPow)), labels[maxPow-1]);
+		if (totBytes == 0) return "0B";
+
+		// compute unit
+		final int rawPow = (int) (Math.log(totBytes) / LOG1024);
+		final int pow = Math.min(rawPow, BYTE_UNITS.length - 1);
+
+		// compute value from unit
+		final double value = totBytes / Math.pow(1024.0, pow);
+
+		// format result with 0 decimal places for bytes, or 1 for larger values
+		final String format = pow == 0 ? "%.0f%s" : "%.1f%s";
+		return String.format(format, value, BYTE_UNITS[pow]);
 	}
-	
+
 }
