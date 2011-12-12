@@ -176,10 +176,8 @@ public class OptionsSynchronizer {
 		final OptionsColors optionsColors =
 			optionsService.getOptions(OptionsColors.class);
 
-		Toolbar
-			.setForegroundColor(AWTColors.getColor(optionsColors.getFgColor()));
-		Toolbar
-			.setBackgroundColor(AWTColors.getColor(optionsColors.getBgColor()));
+		Toolbar.setForegroundColor(AWTColors.getColor(optionsColors.getFgColor()));
+		Toolbar.setBackgroundColor(AWTColors.getColor(optionsColors.getBgColor()));
 		Roi.setColor(AWTColors.getColor(optionsColors.getSelColor()));
 	}
 
@@ -193,7 +191,7 @@ public class OptionsSynchronizer {
 		else if (version.equals("1.5")) Prefs.set("javac.target", 1);
 		else if (version.equals("1.6")) Prefs.set("javac.target", 2);
 		else if (version.equals("1.7")) Prefs.set("javac.target", 3);
-		
+
 		setIJ1CompilerTarget(optionsCompiler.getTargetJavaVersion());
 		setIJ1CompilerDebugFlag(optionsCompiler.isGenerateDebugInfo());
 	}
@@ -204,13 +202,13 @@ public class OptionsSynchronizer {
 
 		final double[] weights = ColorProcessor.getWeightingFactors();
 		final boolean weighted =
-			!(weights[0] == 1d/3d && weights[1] == 1d/3d && weights[2] == 1d/3d);
+			!(weights[0] == 1d / 3d && weights[1] == 1d / 3d && weights[2] == 1d / 3d);
 		ImageConverter.setDoScaling(optionsConversions.isScaleWhenConverting());
 		Prefs.weightedColor = optionsConversions.isWeightedRgbConversions();
-		if (!Prefs.weightedColor)
-			ColorProcessor.setWeightingFactors(1d/3d, 1d/3d, 1d/3d);
-		else if (Prefs.weightedColor && !weighted)
-			ColorProcessor.setWeightingFactors(0.299, 0.587, 0.114);
+		if (!Prefs.weightedColor) ColorProcessor.setWeightingFactors(1d / 3d,
+			1d / 3d, 1d / 3d);
+		else if (Prefs.weightedColor && !weighted) ColorProcessor
+			.setWeightingFactors(0.299, 0.587, 0.114);
 	}
 
 	private void dicomOptions() {
@@ -311,8 +309,8 @@ public class OptionsSynchronizer {
 
 	private void overlayOptions() {
 		final OptionsOverlay options =
-				optionsService.getOptions(OptionsOverlay.class);
-		Roi defaultRoi = getIJ1DefaultRoi();
+			optionsService.getOptions(OptionsOverlay.class);
+		final Roi defaultRoi = getIJ1DefaultRoi();
 		// NB - setStrokeWidth() must be called before setFillColor() or fill info
 		// gets lost going to IJ1 when stroke width > 1.
 		defaultRoi.setStrokeWidth(options.getLineWidth());
@@ -326,7 +324,7 @@ public class OptionsSynchronizer {
 			defaultRoi.setFillColor(color);
 		}
 	}
-	
+
 	private void pointOptions() {
 		final OptionsPointTool optionsPointTool =
 			optionsService.getOptions(OptionsPointTool.class);
@@ -337,7 +335,8 @@ public class OptionsSynchronizer {
 		Prefs.noPointLabels = !optionsPointTool.isLabelPoints();
 		Analyzer.markWidth = optionsPointTool.getMarkWidth();
 		// removing: set elsewhere - can get out of sync
-		//Roi.setColor(getColor(optionsPointTool.getSelectionColor(), Color.yellow));
+		// Roi.setColor(getColor(optionsPointTool.getSelectionColor(),
+		// Color.yellow));
 	}
 
 	private void profilePlotOptions() {
@@ -387,7 +386,7 @@ public class OptionsSynchronizer {
 
 		final int crnDiam = optionsRoundedRectangleTool.getCornerDiameter();
 		Toolbar.setRoundRectArcSize(crnDiam);
-		double width = optionsRoundedRectangleTool.getStrokeWidth();
+		final double width = optionsRoundedRectangleTool.getStrokeWidth();
 		setIJ1DefaultStrokeWidth(width);
 		// TODO
 		// IJ1 RectToolOptions does not manipulate Prefs much. It fires
@@ -396,16 +395,16 @@ public class OptionsSynchronizer {
 		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, none); ?how to
 		// handle "none"?
 		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, Color.black);
-		
+
 		// NB BDZ thinks these prefs are unimportant. We use Overlay "Properties"
 		// dialog in IJ2 to change these.
 	}
 
 	private void wandToolOptions() {
 		final OptionsWandTool optionsWand =
-				optionsService.getOptions(OptionsWandTool.class);
-		String mode = optionsWand.getMode();
-		double tol = optionsWand.getTolerance();
+			optionsService.getOptions(OptionsWandTool.class);
+		final String mode = optionsWand.getMode();
+		final double tol = optionsWand.getTolerance();
 		setIJ1WandMode(mode);
 		setIJ1WandTolerance(tol);
 	}
@@ -442,15 +441,17 @@ public class OptionsSynchronizer {
 
 		final OptionsColors optionsColors =
 			optionsService.getOptions(OptionsColors.class);
-		optionsColors.setFgColor(AWTColors.getColorRGB(Toolbar.getForegroundColor()));
-		optionsColors.setBgColor(AWTColors.getColorRGB(Toolbar.getBackgroundColor()));
+		optionsColors.setFgColor(AWTColors.getColorRGB(Toolbar
+			.getForegroundColor()));
+		optionsColors.setBgColor(AWTColors.getColorRGB(Toolbar
+			.getBackgroundColor()));
 		optionsColors.setSelColor(AWTColors.getColorRGB(Roi.getColor()));
 		optionsColors.save();
 
 		final OptionsCompiler optionsCompiler =
-				optionsService.getOptions(OptionsCompiler.class);
-		boolean debug = getIJ1CompilerDebugFlag();
-		String target = getIJ1CompilerTarget();
+			optionsService.getOptions(OptionsCompiler.class);
+		final boolean debug = getIJ1CompilerDebugFlag();
+		final String target = getIJ1CompilerTarget();
 		optionsCompiler.setTargetJavaVersion(target);
 		optionsCompiler.setGenerateDebugInfo(debug);
 		optionsCompiler.save();
@@ -517,16 +518,15 @@ public class OptionsSynchronizer {
 		optionsMisc.setRequireCommandKey(Prefs.requireControlKey);
 		optionsMisc.setRunSingleInstanceListener(Prefs.runSocketListener);
 		optionsMisc.save();
-		
+
 		final OptionsOverlay optionsOverlay =
-				optionsService.getOptions(OptionsOverlay.class);
-		Roi defaultRoi = getIJ1DefaultRoi();
+			optionsService.getOptions(OptionsOverlay.class);
+		final Roi defaultRoi = getIJ1DefaultRoi();
 		Color c = defaultRoi.getFillColor();
-		if (c == null)
-			optionsOverlay.setAlpha(0);
+		if (c == null) optionsOverlay.setAlpha(0);
 		else {
 			optionsOverlay.setAlpha(c.getAlpha());
-			ColorRGB crgb = AWTColors.getColorRGB(c);
+			final ColorRGB crgb = AWTColors.getColorRGB(c);
 			optionsOverlay.setFillColor(crgb);
 		}
 		c = defaultRoi.getStrokeColor();
@@ -570,95 +570,89 @@ public class OptionsSynchronizer {
 		final int crnDiam = Toolbar.getRoundRectArcSize();
 		final double width = getIJ1DefaultStrokeWidth();
 		optionsRoundedRectangleTool.setCornerDiameter(crnDiam);
-		optionsRoundedRectangleTool.setStrokeWidth((int)width);
+		optionsRoundedRectangleTool.setStrokeWidth((int) width);
 		optionsRoundedRectangleTool.save();
-		
+
 		final OptionsWandTool optionsWandTool =
 			optionsService.getOptions(OptionsWandTool.class);
-		String mode = getIJ1WandMode();
-		double tol = getIJ1WandTolerance();
+		final String mode = getIJ1WandMode();
+		final double tol = getIJ1WandTolerance();
 		optionsWandTool.setMode(mode);
 		optionsWandTool.setTolerance(tol);
 		optionsWandTool.save();
 	}
-	
+
 	private Roi getIJ1DefaultRoi() {
-		Field field =
+		final Field field =
 			ClassUtils.getField("ij.plugin.OverlayCommands", "defaultRoi");
-		Object obj = ClassUtils.getValue(field, null);
+		final Object obj = ClassUtils.getValue(field, null);
 		return (Roi) obj;
 	}
 
-	private void setIJ1CompilerDebugFlag(boolean b) {
-		Field field =
+	private void setIJ1CompilerDebugFlag(final boolean b) {
+		final Field field =
 			ClassUtils.getField("ij.plugin.Compiler", "generateDebuggingInfo");
 		ClassUtils.setValue(field, null, b);
 	}
-	
+
 	private boolean getIJ1CompilerDebugFlag() {
-		Field field =
+		final Field field =
 			ClassUtils.getField("ij.plugin.Compiler", "generateDebuggingInfo");
 		return (Boolean) ClassUtils.getValue(field, null);
 	}
-	
-	private void setIJ1CompilerTarget(String target) {
-		Field field =
-			ClassUtils.getField("ij.plugin.Compiler", "target");
-		int t = 1; 
-		if (target.equals("1.4"))
-			t = 0;
-		else if (target.equals("1.5"))
-			t = 1;
-		else if (target.equals("1.6"))
-			t = 2;
-		else if (target.equals("1.7"))
-			t = 3;
+
+	private void setIJ1CompilerTarget(final String target) {
+		final Field field = ClassUtils.getField("ij.plugin.Compiler", "target");
+		int t = 1;
+		if (target.equals("1.4")) t = 0;
+		else if (target.equals("1.5")) t = 1;
+		else if (target.equals("1.6")) t = 2;
+		else if (target.equals("1.7")) t = 3;
 		ClassUtils.setValue(field, null, t);
 	}
-	
+
 	private String getIJ1CompilerTarget() {
-		Field field =
-			ClassUtils.getField("ij.plugin.Compiler", "target");
-		int t = (Integer) ClassUtils.getValue(field, null);
+		final Field field = ClassUtils.getField("ij.plugin.Compiler", "target");
+		final int t = (Integer) ClassUtils.getValue(field, null);
 		if (t == 0) return "1.4";
 		if (t == 1) return "1.5";
 		if (t == 2) return "1.6";
 		if (t == 3) return "1.7";
 		return "1.5";
 	}
-	
-	private void setIJ1DefaultStrokeWidth(double width) {
-		Field field =
+
+	private void setIJ1DefaultStrokeWidth(final double width) {
+		final Field field =
 			ClassUtils.getField("ij.plugin.RectToolOptions", "defaultStrokeWidth");
 		ClassUtils.setValue(field, null, width);
 	}
-	
+
 	private double getIJ1DefaultStrokeWidth() {
-		Field field =
+		final Field field =
 			ClassUtils.getField("ij.plugin.RectToolOptions", "defaultStrokeWidth");
 		return (Double) ClassUtils.getValue(field, null);
 	}
-	
-	private void setIJ1WandMode(String mode) {
-		Field field =
+
+	private void setIJ1WandMode(final String mode) {
+		final Field field =
 			ClassUtils.getField("ij.plugin.WandToolOptions", "mode");
 		ClassUtils.setValue(field, null, mode);
 	}
-	
+
 	private String getIJ1WandMode() {
-		Field field =
+		final Field field =
 			ClassUtils.getField("ij.plugin.WandToolOptions", "mode");
 		return (String) ClassUtils.getValue(field, null);
 	}
-	
-	private void setIJ1WandTolerance(double tol) {
-		Field field =
+
+	private void setIJ1WandTolerance(final double tol) {
+		final Field field =
 			ClassUtils.getField("ij.plugin.WandToolOptions", "tolerance");
 		ClassUtils.setValue(field, null, tol);
 	}
-	
+
 	private double getIJ1WandTolerance() {
-		Field field =
+		final Field field =
 			ClassUtils.getField("ij.plugin.WandToolOptions", "tolerance");
 		return (Double) ClassUtils.getValue(field, null);
 	}

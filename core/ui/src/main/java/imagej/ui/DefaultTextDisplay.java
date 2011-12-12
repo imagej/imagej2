@@ -65,7 +65,7 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 	// -- TextDisplay methods --
 
 	@Override
-	public void append(String text) {
+	public void append(final String text) {
 		add(text);
 	}
 
@@ -103,7 +103,8 @@ public class DefaultTextDisplay extends AbstractTextDisplay {
 	}
 
 	@Override
-	public boolean addAll(final int index, final Collection<? extends String> c) {
+	public boolean addAll(final int index, final Collection<? extends String> c)
+	{
 		throw new UnsupportedOperationException();
 	}
 

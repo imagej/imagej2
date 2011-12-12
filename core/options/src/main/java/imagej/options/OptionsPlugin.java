@@ -106,8 +106,8 @@ public class OptionsPlugin implements RunnablePlugin {
 
 	// -- Helper methods --
 
-	private <R extends RunnablePlugin> PluginModule<R>
-		createModule(final R plugin)
+	private <R extends RunnablePlugin> PluginModule<R> createModule(
+		final R plugin)
 	{
 		final PluginService pluginService = ImageJ.get(PluginService.class);
 		@SuppressWarnings("unchecked")
@@ -119,8 +119,7 @@ public class OptionsPlugin implements RunnablePlugin {
 
 	private <T> void loadInput(final Module module, final ModuleItem<T> input) {
 		final T value = input.loadValue();
-		if (value != null)
-			input.setValue(module, value);
+		if (value != null) input.setValue(module, value);
 	}
 
 	private <T> void saveInput(final Module module, final ModuleItem<T> input) {

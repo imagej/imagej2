@@ -36,7 +36,7 @@ package imagej.platform.event;
 
 /**
  * An event sent when the system enters and exits power save sleep.
- *
+ * 
  * @author Curtis Rueden
  */
 public class AppSystemSleepEvent extends AppSleepEvent {

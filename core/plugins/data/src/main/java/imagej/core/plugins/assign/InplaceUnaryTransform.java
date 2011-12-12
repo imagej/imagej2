@@ -52,8 +52,8 @@ import net.imglib2.type.numeric.RealType;
 /**
  * Helper class for use by many plugins that apply an {@link UnaryOperation} to
  * some input image. The run() method modifies the current selection of the
- * active {@link Dataset} of the given {@link ImageDisplay}. The given {@link
- * UnaryOperation} is applied on a pixel by pixel basis.
+ * active {@link Dataset} of the given {@link ImageDisplay}. The given
+ * {@link UnaryOperation} is applied on a pixel by pixel basis.
  * 
  * @author Barry DeZonia
  */

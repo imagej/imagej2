@@ -64,11 +64,10 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	// -- OptionsMemoryAndThreads methods --
 
-
 	public OptionsMemoryAndThreads() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public int getMaxMemory() {
 		return maxMemory;
 	}

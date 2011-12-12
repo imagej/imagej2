@@ -37,10 +37,9 @@ package imagej.platform.event;
 import imagej.event.ImageJEvent;
 
 /**
- * An event indicating an application-level occurrence.
- *
- * Exists mainly to facility handling of Mac-specific menu items.
- *
+ * An event indicating an application-level occurrence. Exists mainly to
+ * facility handling of Mac-specific menu items.
+ * 
  * @author Curtis Rueden
  */
 public abstract class ApplicationEvent extends ImageJEvent {

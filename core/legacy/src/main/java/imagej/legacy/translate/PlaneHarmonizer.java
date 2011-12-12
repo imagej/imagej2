@@ -143,8 +143,8 @@ public class PlaneHarmonizer implements DataHarmonizer {
 						final int planeNum = (int) planePos.getIndex();
 						final Object plane = ds.getPlane(planeNum, false);
 						if (plane == null) {
-							Log
-								.error(message("Couldn't extract plane from Dataset ", c, z, t));
+							Log.error(message("Couldn't extract plane from Dataset ", c, z,
+								t));
 						}
 						stack.setPixels(plane, stackPosition++);
 					}

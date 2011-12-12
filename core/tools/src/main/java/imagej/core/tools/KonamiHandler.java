@@ -48,9 +48,9 @@ import imagej.ext.tool.Tool;
 @Tool(name = "Konami", alwaysActive = true)
 public class KonamiHandler extends AbstractTool {
 
-	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,
-		KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
-		KeyCode.B, KeyCode.A };
+	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP,
+		KeyCode.DOWN, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT,
+		KeyCode.RIGHT, KeyCode.B, KeyCode.A };
 
 	private static final String JINGLE =
 		"T100 L32 B > C E G B > C E C < B G E C < L8 B";

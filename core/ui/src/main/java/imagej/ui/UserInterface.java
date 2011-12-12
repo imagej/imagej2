@@ -43,14 +43,14 @@ import net.java.sezpoz.Indexable;
 
 /**
  * Annotation indicating a discoverable user interface.
- *
+ * 
  * @author Curtis Rueden
  * @see IUserInterface
  * @see UIService
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=IUserInterface.class)
+@Indexable(type = IUserInterface.class)
 public @interface UserInterface {
 	// marker interface for discovery via SezPoz
 }

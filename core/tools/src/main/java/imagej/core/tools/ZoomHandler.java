@@ -39,7 +39,6 @@ import imagej.ext.KeyCode;
 import imagej.ext.Priority;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 

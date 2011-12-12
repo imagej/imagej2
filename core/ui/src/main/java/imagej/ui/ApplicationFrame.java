@@ -42,7 +42,9 @@ package imagej.ui;
 public interface ApplicationFrame {
 
 	void setLocation(int x, int y);
+
 	int getLocationX();
+
 	int getLocationY();
 
 }

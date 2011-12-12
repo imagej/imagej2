@@ -60,14 +60,14 @@ public class TestCursorSpeeds {
 	public void testCursorSpeeds() {
 		final long[] dims = new long[] { X, Y, Z };
 		final Dataset ds1 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk1", new AxisType[] {
-				Axes.X, Axes.Y, Axes.Z });
+			DatasetFactory.create(new UnsignedByteType(), dims, "junk1",
+				new AxisType[] { Axes.X, Axes.Y, Axes.Z });
 		final Dataset ds2 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk2", new AxisType[] {
-				Axes.X, Axes.Y, Axes.Z });
+			DatasetFactory.create(new UnsignedByteType(), dims, "junk2",
+				new AxisType[] { Axes.X, Axes.Y, Axes.Z });
 		final Dataset ds3 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk3", new AxisType[] {
-				Axes.X, Axes.Y, Axes.Z });
+			DatasetFactory.create(new UnsignedByteType(), dims, "junk3",
+				new AxisType[] { Axes.X, Axes.Y, Axes.Z });
 
 		fill(ds1);
 		localizingCursorSpeedTest(ds1, ds2);
@@ -119,10 +119,12 @@ public class TestCursorSpeeds {
 			.getImgPlus().getImg().cursor(), "regular cursor");
 	}
 
-	private void localizingCursorSpeedTest(final Dataset ds1, final Dataset ds2) {
+	private void localizingCursorSpeedTest(final Dataset ds1, final Dataset ds2)
+	{
 		for (int i = 0; i < 5; i++)
 			speedTest(ds1.getImgPlus().getImg(), ds2.getImgPlus().getImg(), ds2
-				.getImgPlus().getImg().localizingCursor(), "ignore - localizing cursor");
+				.getImgPlus().getImg().localizingCursor(),
+				"ignore - localizing cursor");
 		speedTest(ds1.getImgPlus().getImg(), ds2.getImgPlus().getImg(), ds2
 			.getImgPlus().getImg().localizingCursor(), "localizing cursor");
 	}

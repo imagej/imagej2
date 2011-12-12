@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 

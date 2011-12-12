@@ -36,7 +36,7 @@ package imagej.util;
 
 /**
  * A class for representing a rectangular region, in real coordinates.
- *
+ * 
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
@@ -84,8 +84,8 @@ public class RealRect {
 		tw += tx;
 		th += ty;
 		final boolean rtn =
-			(rw < rx || rw > tx) && (rh < ry || rh > ty) &&
-			(tw < tx || tw > rx) && (th < ty || th > ry);
+			(rw < rx || rw > tx) && (rh < ry || rh > ty) && (tw < tx || tw > rx) &&
+				(th < ty || th > ry);
 		return rtn;
 	}
 

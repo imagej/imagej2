@@ -46,8 +46,9 @@ public class MsWheelEvent extends MsEvent {
 
 	private final int wheelRotation;
 
-	public MsWheelEvent(final Display<?> display, final InputModifiers modifiers,
-		final int x, final int y, final int wheelRotation)
+	public MsWheelEvent(final Display<?> display,
+		final InputModifiers modifiers, final int x, final int y,
+		final int wheelRotation)
 	{
 		super(display, modifiers, x, y);
 		this.wheelRotation = wheelRotation;

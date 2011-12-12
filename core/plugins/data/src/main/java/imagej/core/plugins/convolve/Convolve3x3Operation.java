@@ -74,7 +74,8 @@ public class Convolve3x3Operation {
 	{
 		this.kernel = kernel;
 		this.neighOperation =
-			new Neighborhood3x3Operation(input, selection, new ConvolveWatcher(input));
+			new Neighborhood3x3Operation(input, selection,
+				new ConvolveWatcher(input));
 
 		if (kernel.length != 9) throw new IllegalArgumentException(
 			"kernel must contain nine elements (shaped 3x3)");

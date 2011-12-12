@@ -95,8 +95,9 @@ public final class WindowMenuService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public WindowMenuService(final ImageJ context, final MenuService menuService,
-		final ModuleService moduleService, final EventService eventService)
+	public WindowMenuService(final ImageJ context,
+		final MenuService menuService, final ModuleService moduleService,
+		final EventService eventService)
 	{
 		super(context);
 		this.eventService = eventService;

@@ -197,7 +197,8 @@ public class Neighborhood3x3Operation {
 
 		final Cursor<? extends RealType<?>> cursor = image.localizingCursor();
 
-		final RandomAccess<? extends RealType<?>> access = copyOfImg.randomAccess();
+		final RandomAccess<? extends RealType<?>> access =
+			copyOfImg.randomAccess();
 
 		while (cursor.hasNext()) {
 			cursor.next();

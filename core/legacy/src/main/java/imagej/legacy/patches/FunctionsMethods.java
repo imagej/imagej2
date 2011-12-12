@@ -60,8 +60,8 @@ public class FunctionsMethods {
 	}
 
 	/** Prepends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageBefore(@SuppressWarnings("unused")
-	final ImagePlus imp2)
+	public static void displayBatchModeImageBefore(
+		@SuppressWarnings("unused") final ImagePlus imp2)
 	{
 		// NOTE - BDZ - removing for now - see if any problems rear their head.
 		// Was for bug #554
@@ -69,8 +69,8 @@ public class FunctionsMethods {
 	}
 
 	/** Appends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageAfter(@SuppressWarnings("unused")
-	final ImagePlus imp2)
+	public static void displayBatchModeImageAfter(
+		@SuppressWarnings("unused") final ImagePlus imp2)
 	{
 		// NOTE - BDZ - removing for now - see if any problems rear their head.
 		// Was for bug #554

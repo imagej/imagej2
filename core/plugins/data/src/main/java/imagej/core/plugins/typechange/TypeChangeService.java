@@ -97,7 +97,8 @@ public final class TypeChangeService extends AbstractService {
 	/** Selects the module matching the active dataset's type. */
 	public void refreshSelectedType(final ImageDisplay display) {
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
-		final String typeLabel = dataset == null ? "" : dataset.getTypeLabelShort();
+		final String typeLabel =
+			dataset == null ? "" : dataset.getTypeLabelShort();
 		final String suffix = ".ChangeTo" + typeLabel.toUpperCase();
 
 		final List<PluginModuleInfo<TypeChanger>> plugins =

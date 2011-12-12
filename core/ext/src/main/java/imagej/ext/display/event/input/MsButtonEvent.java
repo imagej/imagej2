@@ -58,8 +58,8 @@ public abstract class MsButtonEvent extends MsEvent {
 	private final boolean isPopupTrigger;
 
 	public MsButtonEvent(final Display<?> display,
-		final InputModifiers modifiers, final int x, final int y, final int button,
-		final int numClicks, final boolean isPopupTrigger)
+		final InputModifiers modifiers, final int x, final int y,
+		final int button, final int numClicks, final boolean isPopupTrigger)
 	{
 		super(display, modifiers, x, y);
 		this.button = button;

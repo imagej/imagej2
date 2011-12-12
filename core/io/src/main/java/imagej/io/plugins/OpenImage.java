@@ -117,8 +117,8 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 	private long lastTime;
 
 	@Override
-	public void statusUpdated(loci.common.StatusEvent e) {
-		long time = System.currentTimeMillis();
+	public void statusUpdated(final loci.common.StatusEvent e) {
+		final long time = System.currentTimeMillis();
 		final int progress = e.getProgressValue();
 		final int maximum = e.getProgressMaximum();
 		final String message = e.getStatusMessage();

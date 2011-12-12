@@ -135,7 +135,7 @@ public class ColorDisplayCreator implements DisplayCreator {
 		ds.setRGBMerged(true);
 
 		DatasetUtils.initColorTables(ds);
-		
+
 		return ds;
 	}
 }

@@ -70,7 +70,7 @@ public class AddAxis extends DynamicPlugin {
 
 	@Parameter(required = true, persist = false)
 	private UIService uiService;
-	
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
@@ -116,7 +116,10 @@ public class AddAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) { informUser(); return; }
+		if (inputBad(axis)) {
+			informUser();
+			return;
+		}
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axisSize);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -170,8 +173,8 @@ public class AddAxis extends DynamicPlugin {
 	 * Creates a long[] that consists of all the dimensions from a Dataset and an
 	 * additional value appended.
 	 */
-	private long[]
-		getNewDimensions(final Dataset ds, final long lastDimensionSize)
+	private long[] getNewDimensions(final Dataset ds,
+		final long lastDimensionSize)
 	{
 		final long[] origDims = ds.getDims();
 		final long[] newDims = new long[origDims.length + 1];
@@ -224,8 +227,7 @@ public class AddAxis extends DynamicPlugin {
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-			ui.dialogPrompt(
-				"Data unchanged: bad combination of input parameters",
+			ui.dialogPrompt("Data unchanged: bad combination of input parameters",
 				"Invalid parameter combination",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);

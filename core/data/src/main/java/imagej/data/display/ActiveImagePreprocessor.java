@@ -61,7 +61,8 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_HIGH_PRIORITY)
 public class ActiveImagePreprocessor implements PreprocessorPlugin {
 
 	// -- ModulePreprocessor methods --
@@ -94,7 +95,8 @@ public class ActiveImagePreprocessor implements PreprocessorPlugin {
 
 		// assign active dataset view to single DatasetView input
 		final String datasetViewInput = getSingleInput(module, DatasetView.class);
-		final DatasetView activeDatasetView = displayService.getActiveDatasetView();
+		final DatasetView activeDatasetView =
+			displayService.getActiveDatasetView();
 		if (datasetViewInput != null && activeDatasetView != null) {
 			module.setInput(datasetViewInput, activeDatasetView);
 			module.setResolved(datasetViewInput, true);

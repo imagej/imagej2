@@ -136,8 +136,9 @@ public final class EventService extends AbstractService {
 	 * Recursively scans for @{@link EventHandler} annotated methods, and
 	 * subscribes them to the event service.
 	 */
-	private void subscribeRecursively(final List<EventSubscriber<?>> subscribers,
-		final Class<?> type, final Object o)
+	private void subscribeRecursively(
+		final List<EventSubscriber<?>> subscribers, final Class<?> type,
+		final Object o)
 	{
 		if (type == null || type == Object.class) return;
 		for (final Method m : type.getDeclaredMethods()) {
@@ -233,16 +234,16 @@ public final class EventService extends AbstractService {
 				getSubscriptionMethod().invoke(obj, event);
 			}
 			catch (final IllegalAccessException exc) {
-				Log.error("Exception during event handling:" +
-					"\n\t[Event] " + event.getClass().getName() + ":" + event +
-					"\n\t[Subscriber] " + getProxiedSubscriber() +
-					"\n\t[Method] " + getSubscriptionMethod(), exc);
+				Log.error("Exception during event handling:\n\t[Event] " +
+					event.getClass().getName() + ":" + event + "\n\t[Subscriber] " +
+					getProxiedSubscriber() + "\n\t[Method] " + getSubscriptionMethod(),
+					exc);
 			}
 			catch (final InvocationTargetException exc) {
-				Log.error("Exception during event handling:" +
-					"\n\t[Event] " + event.getClass().getName() + event +
-					"\n\t[Subscriber] " + getProxiedSubscriber() +
-					"\n\t[Method] " + getSubscriptionMethod(), exc.getCause());
+				Log.error("Exception during event handling:\n\t[Event] " +
+					event.getClass().getName() + event + "\n\t[Subscriber] " +
+					getProxiedSubscriber() + "\n\t[Method] " + getSubscriptionMethod(),
+					exc.getCause());
 			}
 		}
 

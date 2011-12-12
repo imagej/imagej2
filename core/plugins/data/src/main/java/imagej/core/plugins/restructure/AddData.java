@@ -71,7 +71,7 @@ public class AddData extends DynamicPlugin {
 
 	@Parameter(required = true, persist = false)
 	private UIService uiService;
-	
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
@@ -130,7 +130,10 @@ public class AddData extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) { informUser(); return; }
+		if (inputBad(axis)) {
+			informUser();
+			return;
+		}
 		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, quantity);
@@ -178,11 +181,11 @@ public class AddData extends DynamicPlugin {
 		if (axisIndex < 0) return true;
 
 		// bad value for startPosition
-		if (position < 1 || position > axisSize+1) return true;
+		if (position < 1 || position > axisSize + 1) return true;
 
 		// bad value for numAdding
 		if (quantity <= 0 || (quantity > Long.MAX_VALUE - axisSize)) return true;
-		
+
 		// if here everything is okay
 		return false;
 	}
@@ -191,10 +194,9 @@ public class AddData extends DynamicPlugin {
 	 * Fills the newly created ImgPlus with data values from a smaller source
 	 * image. Copies data from existing hyperplanes.
 	 */
-	private void
-		fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
-			final ImgPlus<? extends RealType<?>> dstImgPlus,
-			final AxisType modifiedAxis)
+	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
+		final ImgPlus<? extends RealType<?>> dstImgPlus,
+		final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
 		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
@@ -272,7 +274,7 @@ public class AddData extends DynamicPlugin {
 
 	private void setPositionRange() {
 		final long dimLen = currDimLen();
-		setItemRange(POSITION, 1, dimLen+1);
+		setItemRange(POSITION, 1, dimLen + 1);
 	}
 
 	private void setQuantityRange() {
@@ -299,21 +301,22 @@ public class AddData extends DynamicPlugin {
 		final int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
-	
-	private void setItemRange(String fieldName, long min, long max) {
+
+	private void setItemRange(final String fieldName, final long min,
+		final long max)
+	{
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> item =
 			(DefaultModuleItem<Long>) getInfo().getInput(fieldName);
 		item.setMinimumValue(min);
 		// TODO - disable until we fix ticket #886
-		//item.setMaximumValue(max);
+		// item.setMaximumValue(max);
 	}
 
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-			ui.dialogPrompt(
-				"Data unchanged: bad combination of input parameters",
+			ui.dialogPrompt("Data unchanged: bad combination of input parameters",
 				"Invalid parameter combination",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);

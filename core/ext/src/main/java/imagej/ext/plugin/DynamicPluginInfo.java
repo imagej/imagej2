@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import java.lang.reflect.Field;
-
 import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.UIDetails;
@@ -43,6 +41,8 @@ import imagej.ext.module.DefaultModuleInfo;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
+
+import java.lang.reflect.Field;
 
 /**
  * Helper class for maintaining a {@link DynamicPlugin}'s associated
@@ -64,8 +64,8 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 
 	// -- Internal methods --
 
-	protected void
-		setPluginClass(final Class<? extends DynamicPlugin> pluginClass)
+	protected void setPluginClass(
+		final Class<? extends DynamicPlugin> pluginClass)
 	{
 		final PluginService pluginService = ImageJ.get(PluginService.class);
 		info = pluginService.getRunnablePlugin(pluginClass);

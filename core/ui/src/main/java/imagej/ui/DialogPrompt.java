@@ -36,7 +36,7 @@ package imagej.ui;
 
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 public interface DialogPrompt {
@@ -56,36 +56,26 @@ public interface DialogPrompt {
 	 * }
 	 * 
 	 */
-		
+
 	Result prompt();
-	
+
 	/*
 	 * Types copied from Swing JOptionPane
 	 */
 	enum MessageType {
 
-		ERROR_MESSAGE,
-		INFORMATION_MESSAGE,
-		WARNING_MESSAGE,
-		QUESTION_MESSAGE,
-		PLAIN_MESSAGE
+		ERROR_MESSAGE, INFORMATION_MESSAGE, WARNING_MESSAGE, QUESTION_MESSAGE,
+			PLAIN_MESSAGE
 	}
 
 	enum OptionType {
 
-		DEFAULT_OPTION,
-		YES_NO_OPTION,
-		YES_NO_CANCEL_OPTION,
-		OK_CANCEL_OPTION
+		DEFAULT_OPTION, YES_NO_OPTION, YES_NO_CANCEL_OPTION, OK_CANCEL_OPTION
 	}
 
 	enum Result {
 
-		YES_OPTION,
-		NO_OPTION,
-		CANCEL_OPTION,
-		OK_OPTION,
-		CLOSED_OPTION
+		YES_OPTION, NO_OPTION, CANCEL_OPTION, OK_OPTION, CLOSED_OPTION
 	}
-	
+
 }

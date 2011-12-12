@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import java.lang.reflect.Field;
-
 import imagej.ext.module.DefaultModule;
 import imagej.util.ClassUtils;
+
+import java.lang.reflect.Field;
 
 /**
  * A class which can be extended to provide an ImageJ plugin with a variable

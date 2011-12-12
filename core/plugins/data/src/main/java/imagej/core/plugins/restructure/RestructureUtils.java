@@ -58,8 +58,8 @@ public class RestructureUtils {
 	/**
 	 * Gets the dimensions of the output data
 	 */
-	public static long[] getDimensions(final Dataset ds, final AxisType oneToModify,
-		final long delta)
+	public static long[] getDimensions(final Dataset ds,
+		final AxisType oneToModify, final long delta)
 	{
 		final long[] dimensions = ds.getDims();
 		final int axisIndex = ds.getAxisIndex(oneToModify);
@@ -131,9 +131,11 @@ public class RestructureUtils {
 		for (int i = 0; i < dstOffsets.length; i++)
 			dstOffsets[i] = dstSpan[i] - 1;
 		final RegionIndexIterator iterS =
-			new RegionIndexIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
+			new RegionIndexIterator(srcOrigin, new long[srcOrigin.length],
+				srcOffsets);
 		final RegionIndexIterator iterD =
-			new RegionIndexIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
+			new RegionIndexIterator(dstOrigin, new long[dstOrigin.length],
+				dstOffsets);
 		while (iterS.hasNext() && iterD.hasNext()) {
 			iterS.fwd();
 			iterD.fwd();
@@ -149,8 +151,8 @@ public class RestructureUtils {
 	 * along which the cut is being made has nonmaximal dimension. That dimension
 	 * is set to the passed in number of elements to be preserved.
 	 */
-	private static long[] calcSpan(final ImgPlus<?> imgPlus, final AxisType axis,
-		final long numElements)
+	private static long[] calcSpan(final ImgPlus<?> imgPlus,
+		final AxisType axis, final long numElements)
 	{
 		final long[] span = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(span);
@@ -165,8 +167,8 @@ public class RestructureUtils {
 	 * dimension is set to the passed in start position of the hyperplane along
 	 * the axis.
 	 */
-	private static long[] calcOrigin(final ImgPlus<?> imgPlus, final AxisType axis,
-		final long startPos)
+	private static long[] calcOrigin(final ImgPlus<?> imgPlus,
+		final AxisType axis, final long startPos)
 	{
 		final long[] origin = new long[imgPlus.numDimensions()];
 		final int axisIndex = imgPlus.getAxisIndex(axis);
@@ -174,8 +176,8 @@ public class RestructureUtils {
 		return origin;
 	}
 
-	private static void
-		checkSpanShapes(final long[] srcSpan, final long[] dstSpan)
+	private static void checkSpanShapes(final long[] srcSpan,
+		final long[] dstSpan)
 	{
 		final Extents srcExtents = new Extents(srcSpan);
 		final Extents dstExtents = new Extents(dstSpan);

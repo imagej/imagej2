@@ -45,8 +45,8 @@ import imagej.ext.display.Display;
 public class MsClickedEvent extends MsButtonEvent {
 
 	public MsClickedEvent(final Display<?> display,
-		final InputModifiers modifiers, final int x, final int y, final int button,
-		final int numClicks, final boolean isPopupTrigger)
+		final InputModifiers modifiers, final int x, final int y,
+		final int button, final int numClicks, final boolean isPopupTrigger)
 	{
 		super(display, modifiers, x, y, button, numClicks, isPopupTrigger);
 	}

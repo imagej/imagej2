@@ -212,7 +212,8 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public String getTypeLabelShort() {
 		if (isRGBMerged()) return "RGB";
 		final int bitsPerPixel = getType().getBitsPerPixel();
-		final String category = isInteger() ? isSigned() ? "int" : "uint" : "float";
+		final String category =
+			isInteger() ? isSigned() ? "int" : "uint" : "float";
 		return category + bitsPerPixel;
 	}
 
@@ -534,12 +535,11 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final double bitsPerPix = getType().getBitsPerPixel();
 		final long[] dims = getDims();
 		long pixCount = 1;
-		for (long dimSize : dims)
+		for (final long dimSize : dims)
 			pixCount *= dimSize;
 		final double totBits = bitsPerPix * pixCount;
 		return totBits / 8;
 	}
-
 
 	// -- Helper methods --
 
@@ -600,8 +600,8 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final long w = dimensions[0];
 		final long h = dimensions[1];
 		if (w * h > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("cannot create a plane of " + (w * h) +
-				" entities (MAX = " + Integer.MAX_VALUE + ")");
+			throw new IllegalArgumentException("cannot create a plane of " +
+				(w * h) + " entities (MAX = " + Integer.MAX_VALUE + ")");
 		}
 		final NativeType<?> nativeType = (NativeType<?>) getType();
 		@SuppressWarnings("rawtypes")
@@ -664,8 +664,8 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		return new ImgPlus<T>(blankImg, img);
 	}
 
-	private <T extends RealType<?>> ImgPlus<T> wrapAsImgPlus(final Img<T> newImg,
-		final AxisType[] axes, final double[] calib)
+	private <T extends RealType<?>> ImgPlus<T> wrapAsImgPlus(
+		final Img<T> newImg, final AxisType[] axes, final double[] calib)
 	{
 		return new ImgPlus<T>(newImg, getName(), axes, calib);
 	}

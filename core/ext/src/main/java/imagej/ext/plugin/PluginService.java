@@ -119,13 +119,14 @@ public class PluginService extends AbstractService {
 	}
 
 	/** Manually registers plugins with the plugin service. */
-	public <T extends PluginInfo<?>> void addPlugins(final Collection<T> plugins)
+	public <T extends PluginInfo<?>> void
+		addPlugins(final Collection<T> plugins)
 	{
 		pluginIndex.addAll(plugins);
 
 		// add new runnable plugins to module service
 		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (PluginInfo<?> info : plugins) {
+		for (final PluginInfo<?> info : plugins) {
 			if (info instanceof ModuleInfo) {
 				modules.add((ModuleInfo) info);
 			}
@@ -142,12 +143,14 @@ public class PluginService extends AbstractService {
 	}
 
 	/** Manually unregisters plugins with the plugin service. */
-	public <T extends PluginInfo<?>> void removePlugins(final Collection<T> plugins) {
+	public <T extends PluginInfo<?>> void removePlugins(
+		final Collection<T> plugins)
+	{
 		pluginIndex.removeAll(plugins);
 
 		// remove old runnable plugins to module service
 		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (PluginInfo<?> info : plugins) {
+		for (final PluginInfo<?> info : plugins) {
 			if (info instanceof ModuleInfo) {
 				modules.add((ModuleInfo) info);
 			}
@@ -316,8 +319,8 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module>
-		run(final String className, final Object... inputValues)
+	public Future<Module> run(final String className,
+		final Object... inputValues)
 	{
 		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
 		if (!checkPlugin(plugin, className)) return null;
@@ -400,7 +403,8 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module> run(final ModuleInfo info, final Object... inputValues)
+	public Future<Module>
+		run(final ModuleInfo info, final Object... inputValues)
 	{
 		return moduleService.run(info, pre(), post(), inputValues);
 	}

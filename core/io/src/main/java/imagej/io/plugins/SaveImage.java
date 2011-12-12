@@ -47,13 +47,13 @@ import javax.swing.JOptionPane;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Save", weight = 20, mnemonic = 's'
-	) })
-public class SaveImage implements ImageJPlugin
-{
+	@Menu(label = "Save", weight = 20, mnemonic = 's') })
+public class SaveImage implements ImageJPlugin {
+
 	@Override
 	public void run() {
-		JOptionPane.showMessageDialog(null, "This feature has not been implemented");
+		JOptionPane.showMessageDialog(null,
+			"This feature has not been implemented");
 	}
 
 }

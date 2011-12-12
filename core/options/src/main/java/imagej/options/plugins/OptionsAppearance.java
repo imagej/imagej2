@@ -74,13 +74,13 @@ public class OptionsAppearance extends OptionsPlugin {
 	// NOTE - this one is not part of IJ1 but an IJ2 enhancement
 	@Parameter(label = "Display fractional scales")
 	private boolean displayFractionalScales = false;
-	
+
 	// -- OptionsAppearance methods --
 
 	public OptionsAppearance() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public boolean isInterpZoomedImages() {
 		return interpZoomedImages;
 	}
@@ -112,7 +112,7 @@ public class OptionsAppearance extends OptionsPlugin {
 	public boolean isDisplayFractionalScales() {
 		return displayFractionalScales;
 	}
-	
+
 	public void setInterpZoomedImages(final boolean interpZoomedImages) {
 		this.interpZoomedImages = interpZoomedImages;
 	}
@@ -141,8 +141,8 @@ public class OptionsAppearance extends OptionsPlugin {
 		this.menuFontSize = menuFontSize;
 	}
 
-	public void setDisplayFractionalScales(boolean wantFractionalScales) {
+	public void setDisplayFractionalScales(final boolean wantFractionalScales) {
 		displayFractionalScales = wantFractionalScales;
 	}
-	
+
 }

@@ -157,7 +157,8 @@ public class ShadowMenuTest {
 		checkNode(fileExit, "Exit", 1, 1, 0);
 
 		final ShadowMenu fileNew = fileChildren.get(1);
-		final List<ShadowMenu> fileNewChildren = checkNode(fileNew, "New", 2, 1, 2);
+		final List<ShadowMenu> fileNewChildren =
+			checkNode(fileNew, "New", 2, 1, 2);
 
 		final ShadowMenu fileNewImage = fileNewChildren.get(0);
 		checkNode(fileNewImage, "Image", 1, 2, 0);

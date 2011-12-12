@@ -71,7 +71,7 @@ public class DeleteAxis extends DynamicPlugin {
 
 	@Parameter(required = true, persist = false)
 	private UIService uiService;
-	
+
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
@@ -122,7 +122,10 @@ public class DeleteAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = getAxis();
-		if (inputBad(axis)) { informUser(); return; }
+		if (inputBad(axis)) {
+			informUser();
+			return;
+		}
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axis);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -147,16 +150,16 @@ public class DeleteAxis extends DynamicPlugin {
 	/** Updates the last value when the axis changes. */
 	protected void axisChanged() {
 		final AxisType axis = Axes.get(axisName);
-		long value = display.getLongPosition(axis) + 1;
-		long max = currDimLen();
-		initPositionRange(1,max);
+		final long value = display.getLongPosition(axis) + 1;
+		final long max = currDimLen();
+		initPositionRange(1, max);
 		setPosition(value);
 		clampPosition();
 	}
-	
+
 	// TODO - temporary workaround to allow parameter max to be enforced. Should
 	// be removed when ticket #886 addressed.
-	
+
 	protected void positionChanged() {
 		clampPosition();
 	}
@@ -257,32 +260,30 @@ public class DeleteAxis extends DynamicPlugin {
 	}
 
 	private void initPosition() {
-		int activeAxis = 2;
-		long max = getDataset().getImgPlus().dimension(activeAxis);
-		AxisType axis = getDataset().axis(2);
-		long value = display.getLongPosition(axis) + 1;
+		final int activeAxis = 2;
+		final long max = getDataset().getImgPlus().dimension(activeAxis);
+		final AxisType axis = getDataset().axis(2);
+		final long value = display.getLongPosition(axis) + 1;
 		initPositionRange(1, max);
 		setPosition(value);
 	}
 
-	private void initPositionRange(long min, long max) {
+	private void initPositionRange(final long min, final long max) {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> positionItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
 		positionItem.setMinimumValue(min); // works the first time
 		// TODO - temporarily disabled since parameter mins and maxes cannot be
 		// changed on the fly. Should be enabled when ticket #886 addressed.
-		//positionItem.setMaximumValue(max);
+		// positionItem.setMaximumValue(max);
 	}
 
 	/** Ensures the first and last values fall within the allowed range. */
 	private void clampPosition() {
 		final long max = currDimLen();
 		final long pos = getPosition();
-		if (pos < 1)
-			setPosition(1);
-		else if (pos > max)
-			setPosition(max);
+		if (pos < 1) setPosition(1);
+		else if (pos > max) setPosition(max);
 	}
 
 	private long currDimLen() {
@@ -290,12 +291,11 @@ public class DeleteAxis extends DynamicPlugin {
 		final int axisIndex = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
-	
+
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-			ui.dialogPrompt(
-				"Data unchanged: bad combination of input parameters",
+			ui.dialogPrompt("Data unchanged: bad combination of input parameters",
 				"Invalid parameter combination",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);

@@ -190,7 +190,8 @@ public class LegacyImageMap {
 		// ensures that a ImageDisplay is only linked with one ImagePlus or
 		// CompositeImage.
 		imagePlusTable.remove(display);
-		for (final Entry<ImagePlus, ImageDisplay> entry : displayTable.entrySet()) {
+		for (final Entry<ImagePlus, ImageDisplay> entry : displayTable.entrySet())
+		{
 			if (entry.getValue() == display) {
 				displayTable.remove(entry.getKey());
 			}
@@ -230,13 +231,12 @@ public class LegacyImageMap {
 
 		// Need to make sure:
 		// - IJ2 Windows always close when IJ1 close expected
-		//     Stack to Images, Split Channels, etc.
+		// Stack to Images, Split Channels, etc.
 		// - No ImagePlus/Display mapping becomes a zombie in the
-		//     LegacyImageMap failing to get garbage collected.
+		// LegacyImageMap failing to get garbage collected.
 		// - That IJ2 does not think IJ1 initiated the ij1.close()
 		if (event.getObject() instanceof ImageDisplay) {
-			final ImagePlus imp =
-					lookupImagePlus((ImageDisplay) event.getObject());
+			final ImagePlus imp = lookupImagePlus((ImageDisplay) event.getObject());
 
 			if (imp != null) LegacyOutputTracker.closeInitiatedByIJ2(imp);
 

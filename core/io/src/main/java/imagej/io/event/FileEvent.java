@@ -38,7 +38,7 @@ import imagej.event.ImageJEvent;
 
 /**
  * An event indicating something has happened to a file.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class FileEvent extends ImageJEvent {

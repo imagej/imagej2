@@ -36,7 +36,7 @@ package imagej.io.event;
 
 /**
  * An event indicating a file has been saved.
- *
+ * 
  * @author Grant Harris
  */
 public class FileSavedEvent extends FileEvent {

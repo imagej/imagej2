@@ -35,13 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.platform.event;
 
 /**
- * An event sent when the application has been hidden or shown. 
+ * An event sent when the application has been hidden or shown.
  * 
  * @author Curtis Rueden
  */
 public class AppVisibleEvent extends ApplicationEvent {
 
-	private boolean visible;
+	private final boolean visible;
 
 	public AppVisibleEvent(final boolean visible) {
 		this.visible = visible;

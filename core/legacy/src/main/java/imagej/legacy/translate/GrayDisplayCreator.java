@@ -57,7 +57,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
-	private final GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
+	private final GrayPixelHarmonizer pixelHarmonizer =
+		new GrayPixelHarmonizer();
 	private final ColorTableHarmonizer colorTableHarmonizer =
 		new ColorTableHarmonizer();
 	private final MetadataHarmonizer metadataHarmonizer =
@@ -110,8 +111,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		return display;
 	}
 
-	private ImageDisplay
-		grayCase(final ImagePlus imp, final AxisType[] preferredOrder)
+	private ImageDisplay grayCase(final ImagePlus imp,
+		final AxisType[] preferredOrder)
 	{
 		Dataset ds;
 		if (preferredOrder[0] == Axes.X && preferredOrder[1] == Axes.Y) {
@@ -295,7 +296,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		DatasetUtils.initColorTables(ds);
-		
+
 		return ds;
 	}
 

@@ -37,9 +37,9 @@ package imagej.data.event;
 import imagej.data.Data;
 
 /**
- * An event indicating a {@link Data}'s data has been updated. This means
- * that sample values may have changed, but the dimensional structure is the
- * same as before.
+ * An event indicating a {@link Data}'s data has been updated. This means that
+ * sample values may have changed, but the dimensional structure is the same as
+ * before.
  * 
  * @author Curtis Rueden
  */

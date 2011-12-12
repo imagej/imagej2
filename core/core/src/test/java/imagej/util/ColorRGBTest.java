@@ -89,8 +89,8 @@ public class ColorRGBTest {
 
 	@Test
 	public void testGetARGB() {
-		assertEquals(255 * 256 * 256 * 256 + 256 * 256 + 2 * 256 + 3, new ColorRGB(
-			1, 2, 3).getARGB());
+		assertEquals(255 * 256 * 256 * 256 + 256 * 256 + 2 * 256 + 3,
+			new ColorRGB(1, 2, 3).getARGB());
 	}
 
 	@Test

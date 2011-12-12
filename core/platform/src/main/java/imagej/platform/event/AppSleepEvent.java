@@ -41,7 +41,7 @@ package imagej.platform.event;
  */
 public abstract class AppSleepEvent extends ApplicationEvent {
 
-	private boolean sleep;
+	private final boolean sleep;
 
 	public AppSleepEvent(final boolean sleep) {
 		this.sleep = sleep;

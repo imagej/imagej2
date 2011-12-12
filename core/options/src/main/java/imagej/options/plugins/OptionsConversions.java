@@ -61,7 +61,7 @@ public class OptionsConversions extends OptionsPlugin {
 	public OptionsConversions() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public boolean isScaleWhenConverting() {
 		return scaleWhenConverting;
 	}

@@ -47,7 +47,8 @@ public abstract class ModuleProcessEvent extends ModuleExecutionEvent {
 
 	private final ModuleProcessor processor;
 
-	public ModuleProcessEvent(final Module module, final ModuleProcessor processor)
+	public ModuleProcessEvent(final Module module,
+		final ModuleProcessor processor)
 	{
 		super(module);
 		this.processor = processor;

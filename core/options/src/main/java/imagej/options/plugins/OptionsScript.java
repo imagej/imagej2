@@ -60,7 +60,7 @@ public class OptionsScript extends OptionsPlugin {
 	public OptionsScript() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public String getScriptingLang() {
 		return scriptingLang;
 	}

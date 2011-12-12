@@ -66,7 +66,7 @@ public class OptionsColors extends OptionsPlugin {
 	public OptionsColors() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public ColorRGB getFgColor() {
 		return fgColor;
 	}

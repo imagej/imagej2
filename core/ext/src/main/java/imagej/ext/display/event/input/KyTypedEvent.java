@@ -45,8 +45,8 @@ import imagej.ext.display.Display;
  */
 public class KyTypedEvent extends KyEvent {
 
-	public KyTypedEvent(final Display<?> display, final InputModifiers modifiers,
-		final char character, final KeyCode code)
+	public KyTypedEvent(final Display<?> display,
+		final InputModifiers modifiers, final char character, final KeyCode code)
 	{
 		super(display, modifiers, character, code);
 	}

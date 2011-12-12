@@ -115,7 +115,8 @@ public final class OverlayService extends AbstractService {
 	 *          removed
 	 * @param overlay the {@link Overlay} to remove
 	 */
-	public void removeOverlay(final ImageDisplay display, final Overlay overlay) {
+	public void removeOverlay(final ImageDisplay display, final Overlay overlay)
+	{
 		final ArrayList<DataView> overlayViews = new ArrayList<DataView>();
 		final List<DataView> views = display;
 		for (final DataView view : views) {

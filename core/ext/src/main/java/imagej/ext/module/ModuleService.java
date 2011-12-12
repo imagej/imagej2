@@ -151,7 +151,8 @@ public class ModuleService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module> run(final ModuleInfo info, final Object... inputValues)
+	public Future<Module>
+		run(final ModuleInfo info, final Object... inputValues)
 	{
 		return run(info, null, null, inputValues);
 	}
@@ -171,10 +172,10 @@ public class ModuleService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module>
-		run(final ModuleInfo info, final List<? extends ModulePreprocessor> pre,
-			final List<? extends ModulePostprocessor> post,
-			final Object... inputValues)
+	public Future<Module> run(final ModuleInfo info,
+		final List<? extends ModulePreprocessor> pre,
+		final List<? extends ModulePostprocessor> post,
+		final Object... inputValues)
 	{
 		return run(info, pre, post, createMap(info, inputValues));
 	}
@@ -239,10 +240,10 @@ public class ModuleService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module>
-		run(final Module module, final List<? extends ModulePreprocessor> pre,
-			final List<? extends ModulePostprocessor> post,
-			final Object... inputValues)
+	public Future<Module> run(final Module module,
+		final List<? extends ModulePreprocessor> pre,
+		final List<? extends ModulePostprocessor> post,
+		final Object... inputValues)
 	{
 		return run(module, pre, post, createMap(module.getInfo(), inputValues));
 	}

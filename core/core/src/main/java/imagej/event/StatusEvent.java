@@ -65,7 +65,8 @@ public class StatusEvent extends ImageJEvent {
 		this(progress, maximum, null);
 	}
 
-	public StatusEvent(final int progress, final int maximum, final String message)
+	public StatusEvent(final int progress, final int maximum,
+		final String message)
 	{
 		this(progress, maximum, message, false);
 	}

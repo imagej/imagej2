@@ -36,7 +36,7 @@ package imagej.platform.event;
 
 /**
  * An event sent when the application is asked to re-open itself.
- *
+ * 
  * @author Curtis Rueden
  */
 public class AppReOpenEvent extends ApplicationEvent {

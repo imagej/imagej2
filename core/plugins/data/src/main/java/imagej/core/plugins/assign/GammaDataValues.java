@@ -48,10 +48,9 @@ import net.imglib2.ops.operation.unary.real.RealGammaConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = { @Menu(label = "Process", mnemonic = 'p'),
-		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Gamma...", weight = 11) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Gamma...", weight = 11) })
 public class GammaDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --

@@ -44,8 +44,8 @@ import imagej.ext.display.Display;
  */
 public class MsMovedEvent extends MsEvent {
 
-	public MsMovedEvent(final Display<?> display, final InputModifiers modifiers,
-		final int x, final int y)
+	public MsMovedEvent(final Display<?> display,
+		final InputModifiers modifiers, final int x, final int y)
 	{
 		super(display, modifiers, x, y);
 	}

@@ -52,7 +52,8 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final GrayPixelHarmonizer pixelHarmonizer = new GrayPixelHarmonizer();
+	private final GrayPixelHarmonizer pixelHarmonizer =
+		new GrayPixelHarmonizer();
 	private final ColorTableHarmonizer colorTableHarmonizer =
 		new ColorTableHarmonizer();
 	private final MetadataHarmonizer metadataHarmonizer =
