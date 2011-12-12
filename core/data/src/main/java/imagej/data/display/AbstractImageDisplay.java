@@ -137,12 +137,19 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			view.rebuild();
 		}
 
-		// reset position to 0^n
-		pos.clear();
+		// remove obsolete axes
+		for (final AxisType axis : pos.keySet()) {
+			if (getAxisIndex(axis) < 0) pos.remove(axis);
+		}
+
+		// initialize position of new axes
 		for (int i = 0; i < numDimensions(); i++) {
 			final AxisType axis = axis(i);
 			if (Axes.isXY(axis)) continue; // do not track position of planar axes
-			pos.put(axis, min(i)); // start at minimum value
+			if (!pos.containsKey(axis)) {
+				// start at minimum value
+				pos.put(axis, min(i));
+			}
 		}
 
 		// rebuild panel
