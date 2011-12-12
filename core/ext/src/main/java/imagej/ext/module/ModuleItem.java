@@ -71,10 +71,20 @@ public interface ModuleItem<T> extends BasicDetails {
 	/** Gets the key to use for saving the value persistently. */
 	String getPersistKey();
 
-	/** Loads the item's persisted value. */
+	/**
+	 * Loads the item's persisted value. This recalls the value last stored using
+	 * {@link #saveValue(Object)}.
+	 * <p>
+	 * Note that this is different than obtaining a module instance's current
+	 * value for the input; see {@link #getValue(Module)} for that.
+	 * </p>
+	 */
 	T loadValue();
 
-	/** Saves the item's persisted value. */
+	/**
+	 * Saves the given value to persistent storage. This allows later restoration
+	 * of the value via {@link #loadValue()}, even from a different JVM.
+	 */
 	void saveValue(T value);
 
 	/** Gets the function that is called to initialize the item's value. */
