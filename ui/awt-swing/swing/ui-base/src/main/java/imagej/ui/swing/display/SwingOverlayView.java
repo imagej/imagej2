@@ -142,7 +142,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 						updatingOverlay = true;
 						try {
 							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this);
-							overlay.rebuild();
+							overlay.update();
 						} finally {
 							updatingOverlay = false;
 						}
