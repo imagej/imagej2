@@ -49,6 +49,7 @@ import imagej.util.Log;
 import imagej.util.SortByPriority;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -143,12 +144,41 @@ public class PluginService extends AbstractService {
 		}
 	}
 
+	/** Manually registers plugins with the plugin service. */
+	public <T extends PluginInfo<?>> void addPlugins(final Collection<T> plugins)
+	{
+		pluginIndex.addAll(plugins);
+
+		// add new runnable plugins to module service
+		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+		for (PluginInfo<?> info : plugins) {
+			if (info instanceof ModuleInfo) {
+				modules.add((ModuleInfo) info);
+			}
+		}
+		moduleService.addModules(modules);
+	}
+
 	/** Manually unregisters a plugin with the plugin service. */
 	public void removePlugin(final PluginInfo<?> plugin) {
 		pluginIndex.remove(plugin);
 		if (plugin instanceof ModuleInfo) {
 			moduleService.removeModule((ModuleInfo) plugin);
 		}
+	}
+
+	/** Manually unregisters plugins with the plugin service. */
+	public <T extends PluginInfo<?>> void removePlugins(final Collection<T> plugins) {
+		pluginIndex.removeAll(plugins);
+
+		// remove old runnable plugins to module service
+		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+		for (PluginInfo<?> info : plugins) {
+			if (info instanceof ModuleInfo) {
+				modules.add((ModuleInfo) info);
+			}
+		}
+		moduleService.removeModules(modules);
 	}
 
 	/** Gets the list of known plugins. */
