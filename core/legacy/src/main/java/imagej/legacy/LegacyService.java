@@ -51,12 +51,17 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
+import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsColors;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
 import imagej.util.awt.AWTColors;
+
+import java.util.ArrayList;
 
 /**
  * Service for working with legacy ImageJ 1.x.
@@ -84,6 +89,7 @@ public final class LegacyService extends AbstractService {
 	}
 
 	private final EventService eventService;
+	private final PluginService pluginService;
 	private final OptionsService optionsService;
 	private final ImageDisplayService imageDisplayService;
 
@@ -102,11 +108,12 @@ public final class LegacyService extends AbstractService {
 	}
 
 	public LegacyService(final ImageJ context, final EventService eventService,
-		final OptionsService optionsService,
+		final PluginService pluginService, final OptionsService optionsService,
 		final ImageDisplayService imageDisplayService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.pluginService = pluginService;
 		this.optionsService = optionsService;
 		this.imageDisplayService = imageDisplayService;
 	}
@@ -115,6 +122,10 @@ public final class LegacyService extends AbstractService {
 
 	public EventService getEventService() {
 		return eventService;
+	}
+
+	public PluginService getPluginService() {
+		return pluginService;
 	}
 
 	public OptionsService getOptionsService() {
@@ -182,6 +193,11 @@ public final class LegacyService extends AbstractService {
 		catch (final Throwable t) {
 			Log.warn("Failed to instantiate IJ1.", t);
 		}
+
+		// discover legacy plugins
+		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
+		new LegacyPluginFinder().findPlugins(plugins);
+		pluginService.addPlugins(plugins);
 
 		IJ.addEventListener(new IJ1EventListener());
 		

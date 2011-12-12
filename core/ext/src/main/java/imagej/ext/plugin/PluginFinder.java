@@ -1,5 +1,5 @@
 //
-// ImageJPluginFinder.java
+// PluginFinder.java
 //
 
 /*
@@ -32,15 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.plugin.finder;
+package imagej.ext.plugin;
 
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.util.Log;
 
 import java.util.List;
@@ -57,25 +52,23 @@ import net.java.sezpoz.IndexItem;
  * 
  * @author Curtis Rueden
  */
-@PluginFinder
-public class ImageJPluginFinder implements IPluginFinder {
+public class PluginFinder {
 
 	/** Class loader to use when querying SezPoz. */
 	private final ClassLoader classLoader;
 
 	// -- Constructors --
 
-	public ImageJPluginFinder() {
+	public PluginFinder() {
 		this(null);
 	}
 
-	public ImageJPluginFinder(final ClassLoader classLoader) {
+	public PluginFinder(final ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
-	// -- IPluginFinder methods --
+	// -- PluginFinder methods --
 
-	@Override
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
 		final Index<Plugin, IPlugin> pluginIndex;
 		if (classLoader == null) {

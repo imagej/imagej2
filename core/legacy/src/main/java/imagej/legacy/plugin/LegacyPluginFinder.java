@@ -42,12 +42,9 @@ import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
-import imagej.ext.Priority;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.finder.IPluginFinder;
-import imagej.ext.plugin.finder.PluginFinder;
 import imagej.legacy.LegacyService;
 import imagej.util.Log;
 
@@ -77,8 +74,7 @@ import java.util.Set;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@PluginFinder(priority = Priority.LOW_PRIORITY /* need ImageJPluginFinder for OptionsSynchronizer */)
-public class LegacyPluginFinder implements IPluginFinder {
+public class LegacyPluginFinder {
 
 	private static final String LEGACY_PLUGIN_CLASS = LegacyPlugin.class
 		.getName();
@@ -101,9 +97,8 @@ public class LegacyPluginFinder implements IPluginFinder {
 		}
 	}
 
-	// -- IPluginFinder methods --
+	// -- LegacyPluginFinder methods --
 
-	@Override
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
 		// ensure ImageJ v1.x is initialized
 		ImageJ.getContext().loadService(LegacyService.class);

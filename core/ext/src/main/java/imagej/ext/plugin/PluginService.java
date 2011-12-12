@@ -41,21 +41,15 @@ import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.finder.IPluginFinder;
-import imagej.ext.plugin.finder.PluginFinder;
 import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
 import imagej.util.Log;
-import imagej.util.SortByPriority;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
 /**
  * Service for keeping track of available plugins. Available plugins are
@@ -108,29 +102,9 @@ public class PluginService extends AbstractService {
 		moduleService.removeModules(getRunnablePlugins());
 
 		pluginIndex.clear();
-		final SortByPriority<IndexItem<PluginFinder, IPluginFinder>> sorted =
-			new SortByPriority<IndexItem<PluginFinder, IPluginFinder>>(Index.load(
-				PluginFinder.class, IPluginFinder.class))
-			{
-
-				@Override
-				public double getPriority(
-					final IndexItem<PluginFinder, IPluginFinder> item)
-				{
-					return item.annotation().priority();
-				}
-			};
-		for (final IndexItem<PluginFinder, IPluginFinder> item : sorted) {
-			try {
-				final IPluginFinder finder = item.instance();
-				final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-				finder.findPlugins(plugins);
-				pluginIndex.addAll(plugins);
-			}
-			catch (final InstantiationException e) {
-				Log.error("Invalid plugin finder: " + item, e);
-			}
-		}
+		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
+		new PluginFinder().findPlugins(plugins);
+		pluginIndex.addAll(plugins);
 
 		// add new runnable plugins to module service
 		moduleService.addModules(getRunnablePlugins());
