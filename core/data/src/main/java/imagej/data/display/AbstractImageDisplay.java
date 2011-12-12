@@ -226,8 +226,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		super.update();
 		for (final DataView view : this) {
 			for (final AxisType axis : getAxes()) {
-				if (getAxisIndex(axis) < 0) continue;
 				if (Axes.isXY(axis)) continue;
+				if (view.getData().getAxisIndex(axis) < 0) continue;
 				view.setPosition(getLongPosition(axis), axis);
 			}
 			view.update();
