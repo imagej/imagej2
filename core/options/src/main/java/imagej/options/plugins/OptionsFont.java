@@ -72,7 +72,7 @@ public class OptionsFont extends OptionsPlugin {
 	public OptionsFont() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public String getFont() {
 		return font;
 	}

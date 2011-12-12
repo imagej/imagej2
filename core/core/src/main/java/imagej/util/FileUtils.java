@@ -184,7 +184,8 @@ public final class FileUtils {
 		// fill the array from the end
 		int i = 0;
 		for (; i < limit; i++) {
-			if (pathArray[pathindex - i] != '/' && pathArray[pathindex - i] != '\\') {
+			if (pathArray[pathindex - i] != '/' && pathArray[pathindex - i] != '\\')
+			{
 				shortPathArray[shortpathindex - i] = pathArray[pathindex - i];
 			}
 			else {

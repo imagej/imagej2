@@ -78,7 +78,7 @@ public class OptionsArrowTool extends OptionsPlugin {
 	public OptionsArrowTool() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public int getArrowWidth() {
 		return arrowWidth;
 	}

@@ -80,9 +80,11 @@ public class FileUtilsTest {
 
 	@Test
 	public void testLimitPath() {
-		assertEquals("C:\\Doc...SC Info.txt", FileUtils.limitPath(
-			"C:\\Documents and Settings\\All Users\\"
-				+ "Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt", 20));
+		assertEquals("C:\\Doc...SC Info.txt",
+			FileUtils
+				.limitPath("C:\\Documents and Settings\\All Users\\"
+					+ "Application Data\\Apple Computer\\iTunes\\SC Info\\SC Info.txt",
+					20));
 		assertEquals("C:\\temp", FileUtils.limitPath("C:\\temp", 20));
 		assertEquals("C:\\1\\2\\3\\...test.txt", FileUtils.limitPath(
 			"C:\\1\\2\\3\\4\\5\\test.txt", 20));

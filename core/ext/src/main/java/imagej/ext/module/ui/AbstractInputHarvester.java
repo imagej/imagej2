@@ -160,7 +160,8 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		return model;
 	}
 
-	private void addMessage(final InputPanel inputPanel, final WidgetModel model)
+	private void
+		addMessage(final InputPanel inputPanel, final WidgetModel model)
 	{
 		inputPanel.addMessage(model.getValue().toString());
 	}

@@ -37,8 +37,7 @@ package imagej.data.event;
 import imagej.data.Data;
 
 /**
- * An event indicating a {@link Data}'s dimensional extents may have
- * changed.
+ * An event indicating a {@link Data}'s dimensional extents may have changed.
  * 
  * @author Curtis Rueden
  */

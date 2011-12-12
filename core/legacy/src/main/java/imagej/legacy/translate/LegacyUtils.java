@@ -53,8 +53,8 @@ public class LegacyUtils {
 
 	// -- static variables --
 
-	private final static AxisType[] defaultAxes = new AxisType[] { Axes.X, Axes.Y,
-		Axes.CHANNEL, Axes.Z, Axes.TIME };
+	private final static AxisType[] defaultAxes = new AxisType[] { Axes.X,
+		Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 
 	// -- public static methods --
 
@@ -212,7 +212,8 @@ public class LegacyUtils {
 	 * makes a set of dimensions in a given Axis order. Assumes that all
 	 * nontrivial dimensions have already been prescreened to be included
 	 */
-	static long[] orderedDims(final AxisType[] axes, final int[] fullDimensions) {
+	static long[] orderedDims(final AxisType[] axes, final int[] fullDimensions)
+	{
 		final long[] orderedDims = new long[axes.length];
 		int index = 0;
 		for (final AxisType axis : axes) {

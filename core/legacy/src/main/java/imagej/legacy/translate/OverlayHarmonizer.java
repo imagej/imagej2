@@ -355,8 +355,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 	*/
 
-	private void createOverlays(final Roi roi, final ArrayList<Overlay> overlays,
-		final int xOff, final int yOff)
+	private void createOverlays(final Roi roi,
+		final ArrayList<Overlay> overlays, final int xOff, final int yOff)
 	{
 		if (roi == null) return;
 
@@ -414,7 +414,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 					overlays.add(subOverlays.get(0));
 					return;
 				}
-				final CompositeRegionOfInterest croi = new CompositeRegionOfInterest(2);
+				final CompositeRegionOfInterest croi =
+					new CompositeRegionOfInterest(2);
 				for (final Overlay overlay : subOverlays) {
 					final RegionOfInterest subRoi = overlay.getRegionOfInterest();
 					if (subRoi == null) {
@@ -505,8 +506,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 
 	@SuppressWarnings("unused")
-	private Overlay
-		createDefaultOverlay(final Roi roi, final int xO, final int yO)
+	private Overlay createDefaultOverlay(final Roi roi, final int xO,
+		final int yO)
 	{
 		final Rectangle bounds = roi.getBounds();
 		final NativeImg<BitType, BitAccess> nativeImg =
@@ -533,7 +534,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return new BinaryMaskOverlay(broi);
 	}
 
-	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi) {
+	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi)
+	{
 		overlay.setLineWidth(roi.getStrokeWidth());
 		final Color strokeColor = roi.getStrokeColor();
 		final Color fillColor = roi.getFillColor();

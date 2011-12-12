@@ -70,8 +70,8 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	boolean containsData(Data data);
 
 	/**
-	 * Tests whether the given view should currently be visible in this display.
-	 * A view is visible when the current position falls within the bounds of the
+	 * Tests whether the given view should currently be visible in this display. A
+	 * view is visible when the current position falls within the bounds of the
 	 * view's space, including constant-value dimensions beyond the view's linked
 	 * data's space.
 	 */

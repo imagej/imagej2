@@ -69,8 +69,8 @@ public class MenuEntry {
 		setWeight(weight);
 	}
 
-	public MenuEntry(final String name, final double weight, final char mnemonic,
-		final Accelerator acc, final String iconPath)
+	public MenuEntry(final String name, final double weight,
+		final char mnemonic, final Accelerator acc, final String iconPath)
 	{
 		setName(name);
 		setWeight(weight);

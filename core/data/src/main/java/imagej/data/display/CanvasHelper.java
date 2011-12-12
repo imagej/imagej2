@@ -212,8 +212,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 		// (center.x + newOffset.x) / desiredScale = (center.x + offset.x) / scale
 		// newOffset.x = -center.x + (center.x + offset.x) * desiredScale / scale
 
-		offset.x = (int) (-center.x + (center.x + offset.x) * desiredScale / scale);
-		offset.y = (int) (-center.y + (center.y + offset.y) * desiredScale / scale);
+		offset.x =
+			(int) (-center.x + (center.x + offset.x) * desiredScale / scale);
+		offset.y =
+			(int) (-center.y + (center.y + offset.y) * desiredScale / scale);
 		scale = desiredScale;
 
 		eventService.publish(new ZoomEvent(canvas, getZoomFactor(), center.x,

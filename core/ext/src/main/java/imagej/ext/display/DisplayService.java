@@ -166,7 +166,8 @@ public final class DisplayService extends AbstractService {
 	 * Gets a list of all available displays of the given type (e.g.,
 	 * <code>ImageDisplay.class</code>).
 	 */
-	public <D extends Display<?>> List<D> getDisplaysOfType(final Class<D> type) {
+	public <D extends Display<?>> List<D> getDisplaysOfType(final Class<D> type)
+	{
 		return objectService.getObjects(type);
 	}
 

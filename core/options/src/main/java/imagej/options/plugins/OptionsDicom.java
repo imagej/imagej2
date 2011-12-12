@@ -88,5 +88,5 @@ public class OptionsDicom extends OptionsPlugin {
 	public void setRotateXZ(final boolean rotateXZ) {
 		this.rotateXZ = rotateXZ;
 	}
-	
+
 }

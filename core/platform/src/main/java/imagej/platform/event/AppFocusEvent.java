@@ -42,7 +42,7 @@ package imagej.platform.event;
  */
 public class AppFocusEvent extends ApplicationEvent {
 
-	private boolean focus;
+	private final boolean focus;
 
 	public AppFocusEvent(final boolean focus) {
 		this.focus = focus;

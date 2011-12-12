@@ -110,7 +110,8 @@ public class MenuService extends AbstractService {
 	}
 
 	/** Selects or deselects the given plugin in the menu structure. */
-	public void setSelected(final RunnablePlugin plugin, final boolean selected) {
+	public void setSelected(final RunnablePlugin plugin, final boolean selected)
+	{
 		setSelected(plugin.getClass(), selected);
 	}
 

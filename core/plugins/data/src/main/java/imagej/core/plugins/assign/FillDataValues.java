@@ -67,13 +67,13 @@ public class FillDataValues implements ImageJPlugin {
 
 	@Parameter(required = true, persist = false)
 	private OverlayService overlayService;
-	
+
 	@Parameter(required = true, persist = false)
 	private ToolService toolService;
-	
+
 	@Parameter(required = true, persist = false)
 	private ImageDisplayService dispService;
-	
+
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
@@ -83,9 +83,9 @@ public class FillDataValues implements ImageJPlugin {
 	public void run() {
 		final FGTool cp = toolService.getTool(FGTool.class);
 		if (cp == null) return;
-		Dataset dataset = dispService.getActiveDataset(display);
+		final Dataset dataset = dispService.getActiveDataset(display);
 		if (dataset.isRGBMerged()) {
-			final ColorRGB color = cp.getFgColor(); 
+			final ColorRGB color = cp.getFgColor();
 			fillSelectedRegionWithColor(dataset, color);
 		}
 		else { // gray data
@@ -103,42 +103,43 @@ public class FillDataValues implements ImageJPlugin {
 	}
 
 	// -- private helpers --
-	
-	private void fillSelectedRegionWithValue(ImageDisplay disp, double value) {
+
+	private void fillSelectedRegionWithValue(final ImageDisplay disp,
+		final double value)
+	{
 		final UnaryOperation<Real, Real> op = new RealConstant(value);
 		final InplaceUnaryTransform transform =
-				new InplaceUnaryTransform(disp, op);
+			new InplaceUnaryTransform(disp, op);
 		transform.run();
 	}
-	
+
 	// TODO - make something like this Dataset API maybe. or somewhere else.
-	
-	private void fillSelectedRegionWithColor(Dataset dataset, ColorRGB color) {
-		RealRect bounds = overlayService.getSelectionBounds(display);
-		long minX = (long) bounds.x;
-		long minY = (long) bounds.y;
-		long maxX = (long) (bounds.x + bounds.width - 1);
-		long maxY = (long) (bounds.y + bounds.height - 1);
-		int r = color.getRed();
-		int g = color.getGreen();
-		int b = color.getBlue();
-		long[] pos = new long[dataset.numDimensions()];
-		int xIndex = dataset.getAxisIndex(Axes.X);
-		int yIndex = dataset.getAxisIndex(Axes.Y);
-		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-		Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
+
+	private void fillSelectedRegionWithColor(final Dataset dataset,
+		final ColorRGB color)
+	{
+		final RealRect bounds = overlayService.getSelectionBounds(display);
+		final long minX = (long) bounds.x;
+		final long minY = (long) bounds.y;
+		final long maxX = (long) (bounds.x + bounds.width - 1);
+		final long maxY = (long) (bounds.y + bounds.height - 1);
+		final int r = color.getRed();
+		final int g = color.getGreen();
+		final int b = color.getBlue();
+		final long[] pos = new long[dataset.numDimensions()];
+		final int xIndex = dataset.getAxisIndex(Axes.X);
+		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		final int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
+		final Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
 		while (cursor.hasNext()) {
-			RealType<?> pixRef = cursor.next();
+			final RealType<?> pixRef = cursor.next();
 			cursor.localize(pos);
 			if ((pos[xIndex] < minX) || (pos[xIndex] > maxX)) continue;
 			if ((pos[yIndex] < minY) || (pos[yIndex] > maxY)) continue;
-			if (pos[chIndex] == 0)
-				pixRef.setReal(r);
-			else if (pos[chIndex] == 1)
-				pixRef.setReal(g);
-			else
-				pixRef.setReal(b);
+			if (pos[chIndex] == 0) pixRef.setReal(r);
+			else if (pos[chIndex] == 1) pixRef.setReal(g);
+			else pixRef.setReal(b);
 		}
 		dataset.update();
 	}

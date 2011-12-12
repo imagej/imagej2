@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public final class Log {
@@ -48,74 +48,73 @@ public final class Log {
 		// prevent instantiation of utility class
 	}
 
-	private static Logger logger =
-		LoggerFactory.getLogger(Log.class);
+	private static Logger logger = LoggerFactory.getLogger(Log.class);
 
 	public static Logger getLogger() {
 		return logger;
 	}
 
-	public static void setLogger(Logger logger) {
+	public static void setLogger(final Logger logger) {
 		Log.logger = logger;
 	}
 
-	public static void debug(String msg) {
+	public static void debug(final String msg) {
 		logger.debug(msg);
 	}
 
-	public static void debug(Throwable t) {
+	public static void debug(final Throwable t) {
 		debug("Exception", t);
 	}
 
-	public static void debug(String msg, Throwable t) {
+	public static void debug(final String msg, final Throwable t) {
 		logger.debug(msg, t);
 	}
 
-	public static void error(String msg) {
+	public static void error(final String msg) {
 		logger.error(msg);
 	}
 
-	public static void error(Throwable t) {
+	public static void error(final Throwable t) {
 		error("Exception", t);
 	}
 
-	public static void error(String msg, Throwable t) {
+	public static void error(final String msg, final Throwable t) {
 		logger.error(msg, t);
 	}
 
-	public static void info(String msg) {
+	public static void info(final String msg) {
 		logger.info(msg);
 	}
 
-	public static void info(Throwable t) {
+	public static void info(final Throwable t) {
 		info("Exception", t);
 	}
 
-	public static void info(String msg, Throwable t) {
+	public static void info(final String msg, final Throwable t) {
 		logger.info(msg, t);
 	}
-	
-	public static void trace(String msg) {
+
+	public static void trace(final String msg) {
 		logger.trace(msg);
 	}
 
-	public static void trace(Throwable t) {
+	public static void trace(final Throwable t) {
 		trace("Exception", t);
 	}
 
-	public static void trace(String msg, Throwable t) {
+	public static void trace(final String msg, final Throwable t) {
 		logger.trace(msg, t);
 	}
 
-	public static void warn(String msg) {
+	public static void warn(final String msg) {
 		logger.warn(msg);
 	}
 
-	public static void warn(Throwable t) {
+	public static void warn(final Throwable t) {
 		warn("Exception", t);
 	}
 
-	public static void warn(String msg, Throwable t) {
+	public static void warn(final String msg, final Throwable t) {
 		logger.warn(msg, t);
 	}
 

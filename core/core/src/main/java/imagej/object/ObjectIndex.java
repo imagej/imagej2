@@ -194,8 +194,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	}
 
 	protected boolean addToList(final E obj, final List<E> list,
-		@SuppressWarnings("unused")
-		final boolean batch)
+		@SuppressWarnings("unused") final boolean batch)
 	{
 		if (list.contains(obj)) return false; // object already on the list
 		list.add(obj);
@@ -203,8 +202,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	}
 
 	protected boolean removeFromList(final Object obj, final List<E> list,
-		@SuppressWarnings("unused")
-		final boolean batch)
+		@SuppressWarnings("unused") final boolean batch)
 	{
 		return list.remove(obj);
 	}
@@ -212,7 +210,8 @@ public class ObjectIndex<E> implements Collection<E> {
 	// -- Helper methods --
 
 	/** Recursively adds the given object to type lists. */
-	private boolean register(final E o, final Class<?> type, final boolean batch)
+	private boolean
+		register(final E o, final Class<?> type, final boolean batch)
 	{
 		if (type == null) return false; // invalid class
 

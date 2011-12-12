@@ -82,8 +82,8 @@ public abstract class KyEvent extends InputEvent {
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tcharacter = '" + character + "'\n\tcode = " +
-			code + "\n\taccelerator = " + getAccelerator();
+		return super.toString() + "\n\tcharacter = '" + character +
+			"'\n\tcode = " + code + "\n\taccelerator = " + getAccelerator();
 	}
 
 }

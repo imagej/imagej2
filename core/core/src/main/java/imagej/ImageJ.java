@@ -85,7 +85,8 @@ public class ImageJ {
 	public static ImageJ createContext(
 		final Collection<Class<? extends IService>> serviceClasses)
 	{
-		final InitContextThread t = new InitContextThread(nextID++, serviceClasses);
+		final InitContextThread t =
+			new InitContextThread(nextID++, serviceClasses);
 		t.start();
 		try {
 			t.join();

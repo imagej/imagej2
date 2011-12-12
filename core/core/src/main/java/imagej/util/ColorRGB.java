@@ -145,7 +145,7 @@ public class ColorRGB implements Serializable {
 	 * @param color The color string to convert.
 	 * @return The resultant color object.
 	 */
-	public static ColorRGB fromHTMLColor(String color) {
+	public static ColorRGB fromHTMLColor(final String color) {
 		// 4.2.1
 		// The format of an RGB value in hexadecimal notation is a "#"
 		// immediately followed by either three or six hexadecimal characters.
@@ -159,8 +159,8 @@ public class ColorRGB implements Serializable {
 			if (color.length() == 4) {
 				hexColor =
 					new String(new char[] { color.charAt(0), color.charAt(1),
-						color.charAt(1), color.charAt(2), color.charAt(2), color.charAt(3),
-						color.charAt(3) });
+						color.charAt(1), color.charAt(2), color.charAt(2),
+						color.charAt(3), color.charAt(3) });
 			}
 			else hexColor = color;
 			final int red = Integer.parseInt(hexColor.substring(1, 3), 16);

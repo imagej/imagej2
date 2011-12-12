@@ -53,7 +53,8 @@ import java.util.Map;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-@Plugin(type = PostprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = PostprocessorPlugin.class,
+	priority = Priority.VERY_LOW_PRIORITY)
 public class DisplayPostprocessor implements PostprocessorPlugin {
 
 	@Override

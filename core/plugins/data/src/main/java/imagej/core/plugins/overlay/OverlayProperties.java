@@ -82,8 +82,9 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "Line width", persist = false, min = "0.1")
 	private double lineWidth;
 
-	@Parameter(label = "Line style", persist = false, choices = { solidLineStyle,
-		dashLineStyle, dotLineStyle, dotDashLineStyle, noLineStyle })
+	@Parameter(label = "Line style", persist = false,
+		choices = { solidLineStyle, dashLineStyle, dotLineStyle, dotDashLineStyle,
+			noLineStyle })
 	private String lineStyle = "Solid";
 
 	@Parameter(label = "Fill color", persist = false)

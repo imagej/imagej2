@@ -200,7 +200,7 @@ public final class LegacyService extends AbstractService {
 		pluginService.addPlugins(plugins);
 
 		IJ.addEventListener(new IJ1EventListener());
-		
+
 		updateIJ1Settings();
 
 		super.initialize();
@@ -213,15 +213,14 @@ public final class LegacyService extends AbstractService {
 	 * {@link ImageDisplay}.
 	 */
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused")
-		final DisplayActivatedEvent event)
+	protected void onEvent(
+		@SuppressWarnings("unused") final DisplayActivatedEvent event)
 	{
 		syncActiveImage();
 	}
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused")
-		final OptionsEvent event)
+	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent event)
 	{
 		updateIJ1Settings();
 	}
@@ -249,13 +248,14 @@ public final class LegacyService extends AbstractService {
 			IJ.setKeyUp(KeyCode.CONTROL.getCode());
 		}
 	}
-	
+
 	private class IJ1EventListener implements IJEventListener {
-		
+
 		@Override
-		public void eventOccurred(int eventID) {
+		public void eventOccurred(final int eventID) {
 			@SuppressWarnings("synthetic-access")
-			OptionsColors colorOpts = optionsService.getOptions(OptionsColors.class);
+			final OptionsColors colorOpts =
+				optionsService.getOptions(OptionsColors.class);
 			ColorRGB color;
 			switch (eventID) {
 				case ij.IJEventListener.COLOR_PICKER_CLOSED:

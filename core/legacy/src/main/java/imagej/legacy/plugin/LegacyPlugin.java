@@ -205,11 +205,11 @@ public class LegacyPlugin implements ImageJPlugin {
 		final Set<Thread> currentThreads = getCurrentThreads();
 		for (final Thread thread : currentThreads) {
 			if ((thread != Thread.currentThread()) &&
-					(!threadsToIgnore.contains(thread)))
+				(!threadsToIgnore.contains(thread)))
 			{
 				// Ignore some threads that IJ1 hatches that never terminate
 				if (whitelisted(thread)) continue;
-				
+
 				// make other threads join
 				try {
 					thread.join();
@@ -318,12 +318,12 @@ public class LegacyPlugin implements ImageJPlugin {
 	/**
 	 * Identifies threads that IJ1 hatches that don't terminate in a timely way
 	 */
-	private boolean whitelisted(Thread thread) {
-		
-		//   StackWindow slider selector thread: thread does not go away until the
-		//   window closes.
+	private boolean whitelisted(final Thread thread) {
+
+		// StackWindow slider selector thread: thread does not go away until the
+		// window closes.
 		if (thread.getName().equals("zSelector")) return true;
-		
+
 		/*
 			// select by class name
 			System.out.println("---"+thread.getClass().getDeclaringClass());
@@ -337,7 +337,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			// select by name of runnable class it owns
 			//System.out.println(thread.HOW???);
 		*/
-		
+
 		return false;
 	}
 

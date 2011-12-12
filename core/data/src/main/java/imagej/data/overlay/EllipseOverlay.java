@@ -42,8 +42,8 @@ import net.imglib2.meta.Axes;
 import net.imglib2.roi.EllipseRegionOfInterest;
 
 /**
- * An ellipse bounded by an axis-aligned rectangle, backed by
- * an {@link EllipseRegionOfInterest}.
+ * An ellipse bounded by an axis-aligned rectangle, backed by an
+ * {@link EllipseRegionOfInterest}.
  * 
  * @author Lee Kamentsky
  */

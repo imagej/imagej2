@@ -57,8 +57,7 @@ public interface Overlay extends Data {
 
 	/** Arrow decorations for the start and end. */
 	enum ArrowStyle {
-		NONE,
-		ARROW
+		NONE, ARROW
 	}
 
 	/**

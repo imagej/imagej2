@@ -49,25 +49,24 @@ import imagej.util.ColorRGB;
  */
 @Tool(name = "FGTool",
 	description = "Drawing value tool (sets foreground color/value)",
-	iconPath = "/icons/tools/fgtool.png",
-	priority = FGTool.PRIORITY)
+	iconPath = "/icons/tools/fgtool.png", priority = FGTool.PRIORITY)
 public class FGTool extends AbstractTool {
 
 	// -- constants --
-	
+
 	public static final int PRIORITY = -299;
 
 	// -- instance variables --
-	
-	private PixelHelper helper = new PixelHelper();
-	private ColorRGB fgColor = new ColorRGB(0,0,0);
+
+	private final PixelHelper helper = new PixelHelper();
+	private ColorRGB fgColor = new ColorRGB(0, 0, 0);
 	private double fgValue = 0;
 
 	// -- ValueTool methods --
-	
+
 	public ColorRGB getFgColor() {
-		return new ColorRGB(
-			fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue());
+		return new ColorRGB(fgColor.getRed(), fgColor.getGreen(), fgColor
+			.getBlue());
 	}
 
 	public double getFgValue() {
@@ -85,8 +84,9 @@ public class FGTool extends AbstractTool {
 		if (!helper.isPureRGBCase()) {
 			fgValue = helper.getValue();
 		}
-		String message = String.format("(%d,%d,%d)",
-			fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue());
+		final String message =
+			String.format("(%d,%d,%d)", fgColor.getRed(), fgColor.getGreen(),
+				fgColor.getBlue());
 		helper.updateStatus(message);
 	}
 

@@ -81,11 +81,10 @@ public class OptionsInputOutput extends OptionsPlugin {
 
 	// -- OptionsInputOutput methods --
 
-
 	public OptionsInputOutput() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public int getJpegQuality() {
 		return jpegQuality;
 	}

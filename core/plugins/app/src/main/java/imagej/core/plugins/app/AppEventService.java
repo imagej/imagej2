@@ -84,22 +84,21 @@ public final class AppEventService extends AbstractService {
 	// -- Event handlers --
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused")
-	final AppAboutEvent event)
+	protected void
+		onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
 	{
 		getPluginService().run(AboutImageJ.class);
 	}
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused")
-	final AppPreferencesEvent event)
+	protected void onEvent(
+		@SuppressWarnings("unused") final AppPreferencesEvent event)
 	{
 		getPluginService().run(ShowPrefs.class);
 	}
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused")
-	final AppQuitEvent event)
+	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event)
 	{
 		getPluginService().run(QuitProgram.class);
 	}

@@ -215,7 +215,7 @@ public final class RecentFileService extends AbstractService {
 		final ModuleInfo info = recentModules.get(path);
 
 		// TODO - update module weights
-		if(info != null) {
+		if (info != null) {
 			// notify interested parties
 			info.update(eventService);
 		}

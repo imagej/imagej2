@@ -46,7 +46,7 @@ import net.imglib2.meta.AxisType;
 public class AxisPositionEvent extends DisplayEvent {
 
 	private final AxisType axis;
-	
+
 	public AxisPositionEvent(final ImageDisplay display) {
 		this(display, display.getActiveAxis());
 	}

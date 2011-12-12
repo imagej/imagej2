@@ -101,7 +101,8 @@ public class Harmonizer {
 		}
 		else {
 			// NB - in IJ1 stack size can be zero for single slice image!
-			if ((!dimensionsCompatible(ds, imp)) || (imp.getStack().getSize() == 0)) {
+			if ((!dimensionsCompatible(ds, imp)) || (imp.getStack().getSize() == 0))
+			{
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -137,7 +138,7 @@ public class Harmonizer {
 
 		// did type of ImagePlus change?
 		Integer oldBitDepth = bitDepthMap.get(imp);
-		
+
 		// NB
 		// if old bit depth is null then plugin created a new display. although
 		// nearly every time the data is already correct there are places in IJ1
@@ -149,7 +150,8 @@ public class Harmonizer {
 			bitDepthMap.put(imp, imp.getBitDepth());
 		}
 		if (imp.getBitDepth() != oldBitDepth) {
-			final ImageDisplay tmp = imageTranslator.createDisplay(imp, ds.getAxes());
+			final ImageDisplay tmp =
+				imageTranslator.createDisplay(imp, ds.getAxes());
 			final Dataset dsTmp = imageDisplayService.getActiveDataset(tmp);
 			ds.setImgPlus(dsTmp.getImgPlus());
 			ds.setRGBMerged(dsTmp.isRGBMerged());
@@ -197,7 +199,8 @@ public class Harmonizer {
 	 * {@link Dataset}. Best fit means the IJ1 type that is the best at preserving
 	 * data.
 	 */
-	private boolean imagePlusIsNearestType(final Dataset ds, final ImagePlus imp)
+	private boolean
+		imagePlusIsNearestType(final Dataset ds, final ImagePlus imp)
 	{
 		final int impType = imp.getType();
 

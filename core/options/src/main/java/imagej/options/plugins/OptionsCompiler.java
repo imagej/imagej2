@@ -63,7 +63,7 @@ public class OptionsCompiler extends OptionsPlugin {
 	public OptionsCompiler() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public String getTargetJavaVersion() {
 		return targetJavaVersion;
 	}

@@ -148,8 +148,7 @@ public class SaltAndPepper implements ImageJPlugin {
 		// nothing to do
 	}
 
-	private void assignPlanePixels(final Position planePos, final Random rng)
-	{
+	private void assignPlanePixels(final Position planePos, final Random rng) {
 		// set plane coordinate values once
 		for (int i = 2; i < position.length; i++)
 			position[i] = planePos.getLongPosition(i - 2);
@@ -192,12 +191,11 @@ public class SaltAndPepper implements ImageJPlugin {
 		accessor.setPosition(position);
 		accessor.get().setReal(value);
 	}
-	
+
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-			ui.dialogPrompt(
-				"This plugin requires an integral dataset",
+			ui.dialogPrompt("This plugin requires an integral dataset",
 				"Unsupported image type",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);

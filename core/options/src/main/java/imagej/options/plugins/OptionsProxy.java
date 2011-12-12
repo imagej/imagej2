@@ -64,7 +64,7 @@ public class OptionsProxy extends OptionsPlugin {
 	public OptionsProxy() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public String getProxyServer() {
 		return proxyServer;
 	}

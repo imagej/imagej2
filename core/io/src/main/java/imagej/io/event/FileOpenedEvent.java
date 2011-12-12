@@ -36,7 +36,7 @@ package imagej.io.event;
 
 /**
  * An event indicating a file has been opened.
- *
+ * 
  * @author Grant Harris
  */
 public class FileOpenedEvent extends FileEvent {

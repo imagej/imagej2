@@ -88,7 +88,7 @@ public class OptionsProfilePlot extends OptionsPlugin {
 	public OptionsProfilePlot() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public int getWidth() {
 		return width;
 	}

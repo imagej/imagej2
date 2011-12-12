@@ -182,23 +182,26 @@ public final class Prefs {
 		prefs(c).putLong(key(c, name), value);
 	}
 
-	public static void clear(final Class<?> c)
-	{
-		try { prefs(c).clear(); } catch (BackingStoreException e) {/**/}
-	}
-	
-	public static void clearAll()
-	{
+	public static void clear(final Class<?> c) {
 		try {
-			String[] childNames = Preferences.userRoot().childrenNames();
-			for (String name : childNames)
-				Preferences.userRoot().node(name).removeNode();
+			prefs(c).clear();
 		}
-		catch (BackingStoreException e) {
+		catch (final BackingStoreException e) {
 			// do nothing
 		}
 	}
-	
+
+	public static void clearAll() {
+		try {
+			final String[] childNames = Preferences.userRoot().childrenNames();
+			for (final String name : childNames)
+				Preferences.userRoot().node(name).removeNode();
+		}
+		catch (final BackingStoreException e) {
+			// do nothing
+		}
+	}
+
 	// -- Helper methods --
 
 	private static Preferences prefs(final Class<?> c) {

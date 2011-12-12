@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.util;
 
 /**
- * This class represents an (X, Y) coordinate pair in real coordinates.
- * It is required for high precision image coordinates translation.
- *
+ * This class represents an (X, Y) coordinate pair in real coordinates. It is
+ * required for high precision image coordinates translation.
+ * 
  * @author Grant Harris
  * @author Curtis Rueden
  */

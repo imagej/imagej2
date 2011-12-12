@@ -44,14 +44,14 @@ import net.java.sezpoz.Indexable;
 /**
  * An annotation to indicate that a class provides configuration logic for a
  * particular deployment platform.
- *
+ * 
  * @author Curtis Rueden
  * @see IPlatform
  * @see PlatformService
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=IPlatform.class)
+@Indexable(type = IPlatform.class)
 public @interface Platform {
 
 	/** Java Runtime Environment vendor to match. */

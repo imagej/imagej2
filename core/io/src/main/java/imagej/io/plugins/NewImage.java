@@ -229,26 +229,27 @@ public class NewImage implements ImageJPlugin {
 		return !bitDepth.equals(DEPTH32) && !bitDepth.equals(DEPTH64);
 	}
 
-	private double rampedValue(long[] pos, long[] dims, RealType<?> type) {
+	private double rampedValue(final long[] pos, final long[] dims,
+		final RealType<?> type)
+	{
 		double origin = type.getMinValue();
 		double range = type.getMaxValue() - type.getMinValue();
 		if (floating) {
 			origin = 0;
 			range = 1;
 		}
-		
+
 		double numerator = 0;
 		double denominator = 0;
 		for (int i = 0; i < pos.length; i++) {
 			numerator += pos[i];
-			denominator += dims[i]-1;
+			denominator += dims[i] - 1;
 		}
-		
-		if (denominator == 0)
-			return origin;
-		
-		double percent = numerator / denominator;
-		
+
+		if (denominator == 0) return origin;
+
+		final double percent = numerator / denominator;
+
 		return origin + percent * range;
 	}
 }

@@ -42,8 +42,10 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Shadows", mnemonic = 's'), @Menu(label = "West", weight = 7) })
+@Plugin(
+	menu = { @Menu(label = "Process", mnemonic = 'p'),
+		@Menu(label = "Shadows", mnemonic = 's'),
+		@Menu(label = "West", weight = 7) })
 public class ShadowsWest extends AbstractShadows {
 
 	static final double[] KERNEL = { 1, 0, -1, 2, 1, -2, 1, 0, -1 };

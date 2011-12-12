@@ -49,10 +49,9 @@ import net.imglib2.ops.operation.unary.real.RealDivideConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = { @Menu(label = "Process", mnemonic = 'p'),
-		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Divide...", weight = 4) })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Divide...", weight = 4) })
 public class DivideDataValuesBy extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --

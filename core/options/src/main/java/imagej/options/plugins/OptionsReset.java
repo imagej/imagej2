@@ -46,20 +46,19 @@ import java.util.List;
 
 /**
  * Runs the Edit::Options::Misc dialog.
- *  
+ * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
+@Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Reset", weight = 18) })
 public class OptionsReset implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		OptionsService service = ImageJ.get(OptionsService.class);
-		List<OptionsPlugin> optionsPlugins = service.getOptions();
-		for (OptionsPlugin plugin : optionsPlugins) {
+		final OptionsService service = ImageJ.get(OptionsService.class);
+		final List<OptionsPlugin> optionsPlugins = service.getOptions();
+		for (final OptionsPlugin plugin : optionsPlugins) {
 			Prefs.clear(plugin.getClass());
 		}
 	}

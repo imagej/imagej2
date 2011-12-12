@@ -161,8 +161,8 @@ public class ToolService extends AbstractService {
 	 */
 	public boolean isSeparatorNeeded(final ITool tool1, final ITool tool2) {
 		if (tool1 == null || tool2 == null) return false;
-		double priority1 = tool1.getInfo().getPriority();
-		double priority2 = tool2.getInfo().getPriority();
+		final double priority1 = tool1.getInfo().getPriority();
+		final double priority2 = tool2.getInfo().getPriority();
 		return Math.abs(priority1 - priority2) >= SEPARATOR_DISTANCE;
 	}
 

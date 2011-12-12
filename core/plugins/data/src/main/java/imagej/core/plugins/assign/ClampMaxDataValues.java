@@ -47,8 +47,10 @@ import net.imglib2.ops.operation.unary.real.RealMaxConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) })
+@Plugin(
+	menu = { @Menu(label = "Process", mnemonic = 'p'),
+		@Menu(label = "Math", mnemonic = 'm'),
+		@Menu(label = "Max...", weight = 10) })
 public class ClampMaxDataValues extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --

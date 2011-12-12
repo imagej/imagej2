@@ -36,7 +36,7 @@ package imagej.platform.event;
 
 /**
  * An event sent when the application is asked to quit.
- *
+ * 
  * @author Curtis Rueden
  */
 public class AppQuitEvent extends ApplicationEvent {

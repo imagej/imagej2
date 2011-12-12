@@ -85,7 +85,8 @@ public class EasterEgg implements ImageJPlugin {
 
 	// -- Helper methods --
 
-	private char getChar(final double value, final double min, final double max) {
+	private char getChar(final double value, final double min, final double max)
+	{
 		final int len = CHARS.length();
 		final double norm = (value - min) / (max - min); // normalized to [0, 1]
 		final int index = (int) (len * norm);

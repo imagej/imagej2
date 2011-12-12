@@ -68,7 +68,8 @@ public class AxisPositionHandler extends AbstractTool {
 		// determine direction to move based on key press
 		final int increment;
 		if (keyCode == KeyCode.PERIOD || keyCode == KeyCode.GREATER ||
-			keyCode == KeyCode.KP_RIGHT || keyCode == KeyCode.RIGHT || keyChar == '>')
+			keyCode == KeyCode.KP_RIGHT || keyCode == KeyCode.RIGHT ||
+			keyChar == '>')
 		{
 			increment = 1;
 		}
@@ -114,8 +115,8 @@ public class AxisPositionHandler extends AbstractTool {
 	 * <li>If preferred axis does not exist, first avilable axis is used</li>
 	 * </ul>
 	 */
-	private AxisType
-		getAxis(final ImageDisplay display, final InputModifiers mods)
+	private AxisType getAxis(final ImageDisplay display,
+		final InputModifiers mods)
 	{
 		if (display.numDimensions() < 3) return null;
 

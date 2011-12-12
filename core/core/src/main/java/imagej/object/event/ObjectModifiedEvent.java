@@ -36,7 +36,7 @@ package imagej.object.event;
 
 /**
  * An event indicating an object has been modified somehow.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class ObjectModifiedEvent extends ObjectEvent {

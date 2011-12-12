@@ -113,11 +113,8 @@ public class ObjectIndexTest {
 	public void testIterator() {
 		final ObjectIndex<Object> objectIndex =
 			new ObjectIndex<Object>(Object.class);
-		final Object[] objects = {
-			new Integer(5),
-			new Float(2.5f),
-			new Integer(3)
-		};
+		final Object[] objects =
+			{ new Integer(5), new Float(2.5f), new Integer(3) };
 		for (final Object o : objects)
 			objectIndex.add(o);
 		final Iterator<Object> iter = objectIndex.iterator();
@@ -133,11 +130,8 @@ public class ObjectIndexTest {
 	public void testToArray() {
 		final ObjectIndex<Object> objectIndex =
 			new ObjectIndex<Object>(Object.class);
-		final Object[] objects = {
-			new Integer(5),
-			new Float(2.5f),
-			new Integer(3)
-		};
+		final Object[] objects =
+			{ new Integer(5), new Float(2.5f), new Integer(3) };
 		for (final Object o : objects)
 			objectIndex.add(o);
 		final Object[] result = objectIndex.toArray();

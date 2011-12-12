@@ -120,8 +120,8 @@ public final class PlatformService extends AbstractService {
 	/** Discovers target platform handlers using SezPoz. */
 	private List<IPlatform> discoverTargetPlatforms() {
 		final List<IPlatform> platforms = new ArrayList<IPlatform>();
-		for (final IndexItem<Platform, IPlatform> item : Index.load(Platform.class,
-			IPlatform.class))
+		for (final IndexItem<Platform, IPlatform> item : Index.load(
+			Platform.class, IPlatform.class))
 		{
 			if (!isTargetPlatform(item.annotation())) continue;
 			try {

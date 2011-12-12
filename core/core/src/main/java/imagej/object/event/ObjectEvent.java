@@ -38,12 +38,12 @@ import imagej.event.ImageJEvent;
 
 /**
  * An event indicating something has happened to an object.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class ObjectEvent extends ImageJEvent {
 
-	private Object object;
+	private final Object object;
 
 	public ObjectEvent(final Object object) {
 		this.object = object;

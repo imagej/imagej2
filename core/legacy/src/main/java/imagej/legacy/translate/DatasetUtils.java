@@ -37,40 +37,37 @@ package imagej.legacy.translate;
 import imagej.data.Dataset;
 
 /**
- * 
  * @author Barry DeZonia
- *
  */
 public class DatasetUtils {
 
 	// -- constructor --
-	
+
 	private DatasetUtils() {
 		// do not instantiate utility class
 	}
-	
+
 	// -- public interface --
-	
+
 	// TODO - move this code into DatasetFactory as default behavior????
 
 	/**
-	 * Allocates the color table array within a new planar Dataset (one table
-	 * per plane). Each color table will be assigned null.
+	 * Allocates the color table array within a new planar Dataset (one table per
+	 * plane). Each color table will be assigned null.
 	 * 
 	 * @param ds The Dataset to modify
 	 */
-	public static void initColorTables(Dataset ds) {
-		long[] dims = ds.getDims();
-		long numPlanes = planeCount(dims);
-		if (numPlanes > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("color table count cannot exceed "
-					+ Integer.MAX_VALUE);
-		ds.getImgPlus().initializeColorTables((int)numPlanes);
+	public static void initColorTables(final Dataset ds) {
+		final long[] dims = ds.getDims();
+		final long numPlanes = planeCount(dims);
+		if (numPlanes > Integer.MAX_VALUE) throw new IllegalArgumentException(
+			"color table count cannot exceed " + Integer.MAX_VALUE);
+		ds.getImgPlus().initializeColorTables((int) numPlanes);
 	}
 
 	// -- private helpers --
-	
-	private static long planeCount(long[] dims) {
+
+	private static long planeCount(final long[] dims) {
 		if (dims.length < 2) return 0;
 		if (dims.length == 2) return 1;
 		long count = 1;

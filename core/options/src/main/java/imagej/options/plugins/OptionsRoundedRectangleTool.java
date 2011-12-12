@@ -72,17 +72,18 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	@Parameter(label = "Fill Color")
 	private ColorRGB fillColor = Colors.WHITE;
 
-	@Parameter(label = "Fill Opacity", description = "The opacity or alpha of the "
+	@Parameter(label = "Fill Opacity",
+		description = "The opacity or alpha of the "
 			+ "interior of the rounded rectangle (0=transparent, 255=opaque)",
-			style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-		private int alpha = 0;
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
+	private int alpha = 0;
 
 	// -- OptionsRoundedRectangle methods --
 
 	public OptionsRoundedRectangleTool() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
-	
+
 	public int getStrokeWidth() {
 		return strokeWidth;
 	}
@@ -98,7 +99,7 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	public ColorRGB getFillColor() {
 		return fillColor;
 	}
-	
+
 	public int getFillOpacity() {
 		return alpha;
 	}
@@ -119,7 +120,7 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 		this.fillColor = fillColor;
 	}
 
-	public void setFillOpacity(int alpha) {
+	public void setFillOpacity(final int alpha) {
 		this.alpha = alpha;
 	}
 

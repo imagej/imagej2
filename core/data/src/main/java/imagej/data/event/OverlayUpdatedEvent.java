@@ -38,8 +38,8 @@ import imagej.data.overlay.Overlay;
 
 /**
  * An event indicating an {@link Overlay}'s data has been updated. This means
- * that coordinates may have changed, but the dimensional structure is the
- * same as before.
+ * that coordinates may have changed, but the dimensional structure is the same
+ * as before.
  * 
  * @author Curtis Rueden
  */

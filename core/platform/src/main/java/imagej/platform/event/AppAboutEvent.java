@@ -36,7 +36,7 @@ package imagej.platform.event;
 
 /**
  * An event sent when the application is asked to open its about window.
- *
+ * 
  * @author Curtis Rueden
  */
 public class AppAboutEvent extends ApplicationEvent {

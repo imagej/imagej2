@@ -85,9 +85,10 @@ public class LegacyInjector {
 			.insertBeforeMethod("ij.macro.Functions",
 				"void displayBatchModeImage(ij.ImagePlus imp2)",
 				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore($1);");
-		hacker.insertAfterMethod("ij.macro.Functions",
-			"void displayBatchModeImage(ij.ImagePlus imp2)",
-			"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($1);");
+		hacker
+			.insertAfterMethod("ij.macro.Functions",
+				"void displayBatchModeImage(ij.ImagePlus imp2)",
+				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($1);");
 		hacker.loadClass("ij.macro.Functions");
 
 		// override behavior of MacAdapter, if needed

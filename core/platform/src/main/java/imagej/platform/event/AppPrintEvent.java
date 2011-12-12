@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.platform.event;
 
 /**
- * An event sent when the app is asked to print a list of files. 
- *
+ * An event sent when the app is asked to print a list of files.
+ * 
  * @author Curtis Rueden
  */
 public class AppPrintEvent extends ApplicationEvent {

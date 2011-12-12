@@ -47,8 +47,8 @@ import imagej.util.ColorRGB;
 @Tool(name = "Probe", alwaysActive = true)
 public class PixelProbe extends AbstractTool {
 
-	private PixelHelper helper = new PixelHelper();
-	
+	private final PixelHelper helper = new PixelHelper();
+
 	// -- ITool methods --
 
 	@Override
@@ -56,15 +56,16 @@ public class PixelProbe extends AbstractTool {
 
 		if (!helper.processEvent(evt)) return;
 
-		long cx = helper.getCX();
-		long cy = helper.getCY();
+		final long cx = helper.getCX();
+		final long cy = helper.getCY();
 		String message;
 		if (helper.isPureRGBCase()) {
 			final ColorRGB color = helper.getColor();
-			message = String.format("x=%d, y=%d, value=%d,%d,%d", cx, cy,
-				color.getRed(), color.getGreen(), color.getBlue());
+			message =
+				String.format("x=%d, y=%d, value=%d,%d,%d", cx, cy, color.getRed(),
+					color.getGreen(), color.getBlue());
 		}
-		else {  // gray dataset
+		else { // gray dataset
 			final double value = helper.getValue();
 			if (helper.isIntegerCase()) {
 				message = String.format("x=%d, y=%d, value=%d", cx, cy, (long) value);

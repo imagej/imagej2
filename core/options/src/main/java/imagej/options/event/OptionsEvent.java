@@ -46,7 +46,7 @@ import imagej.options.OptionsPlugin;
  */
 public class OptionsEvent extends ImageJEvent {
 
-	private OptionsPlugin options;
+	private final OptionsPlugin options;
 
 	public OptionsEvent(final OptionsPlugin options) {
 		this.options = options;

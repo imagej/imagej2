@@ -153,7 +153,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(description = "Demonstrates preview functionality by "
 		+ "displaying the given message in the ImageJ status bar.")
-	private String message = "Type a status message here.";
+	private final String message = "Type a status message here.";
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private String output;

@@ -87,7 +87,8 @@ import org.junit.Test;
  */
 public class OverlayHarmonizerTest {
 
-	private PolygonOverlay makePolygonOverlay(final double[] x, final double[] y)
+	private PolygonOverlay
+		makePolygonOverlay(final double[] x, final double[] y)
 	{
 		assertEquals(x.length, y.length);
 		final PolygonOverlay overlay = new PolygonOverlay();
@@ -98,8 +99,8 @@ public class OverlayHarmonizerTest {
 		return overlay;
 	}
 
-	private RectangleOverlay makeRectangleOverlay(final double x, final double y,
-		final double w, final double h)
+	private RectangleOverlay makeRectangleOverlay(final double x,
+		final double y, final double w, final double h)
 	{
 		final RectangleOverlay overlay = new RectangleOverlay();
 		overlay.getRegionOfInterest().setOrigin(new double[] { x, y });
@@ -143,7 +144,8 @@ public class OverlayHarmonizerTest {
 			}
 		}
 		final Img<BitType> offsetImg =
-			new ImgTranslationAdapter<BitType, Img<BitType>>(img, new long[] { x, y });
+			new ImgTranslationAdapter<BitType, Img<BitType>>(img,
+				new long[] { x, y });
 		final BinaryMaskOverlay overlay =
 			new BinaryMaskOverlay(
 				new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(offsetImg));
@@ -178,8 +180,8 @@ public class OverlayHarmonizerTest {
 		final int w = data.length;
 		final int h = data[0].length;
 		final NativeImg<ByteType, ByteAccess> img =
-			new ArrayImgFactory<ByteType>()
-				.createByteInstance(new long[] { w, h }, 1);
+			new ArrayImgFactory<ByteType>().createByteInstance(new long[] { w, h },
+				1);
 		final ByteType t = new ByteType(img);
 		img.setLinkedType(t);
 		final RandomAccess<ByteType> ra = img.randomAccess();
@@ -202,8 +204,8 @@ public class OverlayHarmonizerTest {
 		return makePolygonROI(x, y, Roi.FREEROI);
 	}
 
-	private PolygonRoi
-		makePolygonROI(final int[] x, final int[] y, final int type)
+	private PolygonRoi makePolygonROI(final int[] x, final int[] y,
+		final int type)
 	{
 		return new PolygonRoi(x, y, x.length, type);
 	}
@@ -285,8 +287,8 @@ public class OverlayHarmonizerTest {
 		final OverlayHarmonizer ot = new OverlayHarmonizer();
 		final ImagePlus imagePlus =
 			makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
-		imagePlus.setRoi(makePolygonROI(new int[] { 0, 5, 5, 0, 0 }, new int[] { 0,
-			0, 5, 5, 0 }));
+		imagePlus.setRoi(makePolygonROI(new int[] { 0, 5, 5, 0, 0 }, new int[] {
+			0, 0, 5, 5, 0 }));
 		final List<Overlay> list = ot.getOverlays(imagePlus);
 		assertEquals(1, list.size());
 		assertTrue(list.get(0) instanceof PolygonOverlay);
