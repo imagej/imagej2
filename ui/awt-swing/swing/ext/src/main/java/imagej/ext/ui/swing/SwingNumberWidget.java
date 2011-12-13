@@ -53,6 +53,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -111,8 +112,8 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		add(spinner);
 		limitWidth(200);
 		spinner.addChangeListener(this);
-
 		refreshWidget();
+		syncSliders();
 	}
 
 	// -- NumberWidget methods --
