@@ -63,7 +63,21 @@ public interface IUserInterface {
 
 	OutputWindow newOutputWindow(String title);
 
+	/**
+	 * Displays a dialog prompt.
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @param title The title of the dialog.
+	 * @param messageType The type of message. This typically is rendered as an
+	 *          icon next to the message. For example,
+	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
+	 *          as an exclamation point.
+	 * @param optionType The choices available when dismissing the dialog. These
+	 *          choices are typically rendered as buttons for the user to click.
+	 * @return The DialogPrompt object used. The choice selected by the user can
+	 *         be obtained by calling {@link DialogPrompt#???}.
+	 */
 	DialogPrompt dialogPrompt(String message, String title,
-		DialogPrompt.MessageType msg, DialogPrompt.OptionType option);
+		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
 
 }
