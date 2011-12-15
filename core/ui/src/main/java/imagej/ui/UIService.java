@@ -146,6 +146,70 @@ public final class UIService extends AbstractService {
 		return userInterface.newOutputWindow(title);
 	}
 
+	/**
+	 * Displays a dialog prompt.
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @return The DialogPrompt object used. The choice selected by the user can
+	 *         be obtained by calling {@link DialogPrompt#???}.
+	 */
+	DialogPrompt dialogPrompt(final String message) {
+		return dialogPrompt(message, "ImageJ");
+	}
+
+	/**
+	 * Displays a dialog prompt.
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @param title The title of the dialog.
+	 * @return The DialogPrompt object used. The choice selected by the user can
+	 *         be obtained by calling {@link DialogPrompt#???}.
+	 */
+	DialogPrompt dialogPrompt(final String message, final String title) {
+		return dialogPrompt(message, title,
+			DialogPrompt.MessageType.INFORMATION_MESSAGE);
+	}
+
+	/**
+	 * Displays a dialog prompt.
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @param title The title of the dialog.
+	 * @param messageType The type of message. This typically is rendered as an
+	 *          icon next to the message. For example,
+	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
+	 *          as an exclamation point.
+	 * @return The DialogPrompt object used. The choice selected by the user can
+	 *         be obtained by calling {@link DialogPrompt#???}.
+	 */
+	DialogPrompt dialogPrompt(final String message, final String title,
+		final DialogPrompt.MessageType messageType)
+	{
+		return dialogPrompt(message, title, messageType,
+			DialogPrompt.OptionType.DEFAULT_OPTION);
+	}
+
+	/**
+	 * Displays a dialog prompt.
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @param title The title of the dialog.
+	 * @param messageType The type of message. This typically is rendered as an
+	 *          icon next to the message. For example,
+	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
+	 *          as an exclamation point.
+	 * @param optionType The choices available when dismissing the dialog. These
+	 *          choices are typically rendered as buttons for the user to click.
+	 * @return The DialogPrompt object used. The choice selected by the user can
+	 *         be obtained by calling {@link DialogPrompt#???}.
+	 */
+	DialogPrompt dialogPrompt(final String message, final String title,
+		final DialogPrompt.MessageType messageType,
+		final DialogPrompt.OptionType optionType)
+	{
+		return getUI().dialogPrompt(message, title, messageType, optionType);
+	}
+
 	// -- IService methods --
 
 	@Override
