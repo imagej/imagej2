@@ -128,7 +128,7 @@ public final class UIService extends AbstractService {
 		Log.info("Received command line arguments:");
 		for (final String arg : args)
 			Log.info("\t" + arg);
-		userInterface.processArgs(args);
+		getUI().processArgs(args);
 	}
 
 	/** Gets the active user interface. */
