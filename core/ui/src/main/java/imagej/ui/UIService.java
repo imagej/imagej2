@@ -153,7 +153,7 @@ public final class UIService extends AbstractService {
 	 * @return The DialogPrompt object used. The choice selected by the user can
 	 *         be obtained by calling {@link DialogPrompt#???}.
 	 */
-	DialogPrompt dialogPrompt(final String message) {
+	public DialogPrompt dialogPrompt(final String message) {
 		return dialogPrompt(message, "ImageJ");
 	}
 
@@ -165,7 +165,7 @@ public final class UIService extends AbstractService {
 	 * @return The DialogPrompt object used. The choice selected by the user can
 	 *         be obtained by calling {@link DialogPrompt#???}.
 	 */
-	DialogPrompt dialogPrompt(final String message, final String title) {
+	public DialogPrompt dialogPrompt(final String message, final String title) {
 		return dialogPrompt(message, title,
 			DialogPrompt.MessageType.INFORMATION_MESSAGE);
 	}
@@ -182,7 +182,7 @@ public final class UIService extends AbstractService {
 	 * @return The DialogPrompt object used. The choice selected by the user can
 	 *         be obtained by calling {@link DialogPrompt#???}.
 	 */
-	DialogPrompt dialogPrompt(final String message, final String title,
+	public DialogPrompt dialogPrompt(final String message, final String title,
 		final DialogPrompt.MessageType messageType)
 	{
 		return dialogPrompt(message, title, messageType,
@@ -203,7 +203,7 @@ public final class UIService extends AbstractService {
 	 * @return The DialogPrompt object used. The choice selected by the user can
 	 *         be obtained by calling {@link DialogPrompt#???}.
 	 */
-	DialogPrompt dialogPrompt(final String message, final String title,
+	public DialogPrompt dialogPrompt(final String message, final String title,
 		final DialogPrompt.MessageType messageType,
 		final DialogPrompt.OptionType optionType)
 	{
