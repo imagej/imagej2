@@ -137,6 +137,22 @@ public @interface Plugin {
 	boolean cancelable() default true;
 
 	/**
+	 * Provides a "hint" as to whether the plugin would execute correctly in a
+	 * headless context.
+	 * <p>
+	 * Plugin developers should not specify "headless = true" unless the plugin
+	 * refrains from using any UI-specific features (e.g., AWT or Swing calls).
+	 * </p>
+	 * <p>
+	 * Of course, merely setting this flag does not guarantee that the plugin will
+	 * not invoke any headless-incompatible functionality, but it provides an
+	 * extra safety net for downstream headless code that wishes to be
+	 * conservative in which plugins it allows to execute.
+	 * </p>
+	 */
+	boolean headless() default false;
+
+	/**
 	 * Defines a function that is called during preprocessing to assign the
 	 * plugin's initial input values. This initializer is called before the
 	 * individual @{@link Parameter#initializer()} (i.e.,
