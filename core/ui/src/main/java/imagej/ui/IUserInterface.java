@@ -64,7 +64,7 @@ public interface IUserInterface {
 	OutputWindow newOutputWindow(String title);
 
 	/**
-	 * Displays a dialog prompt.
+	 * Creates a dialog prompter.
 	 * 
 	 * @param message The message in the dialog itself.
 	 * @param title The title of the dialog.
@@ -74,8 +74,7 @@ public interface IUserInterface {
 	 *          as an exclamation point.
 	 * @param optionType The choices available when dismissing the dialog. These
 	 *          choices are typically rendered as buttons for the user to click.
-	 * @return The DialogPrompt object used. The choice selected by the user can
-	 *         be obtained by calling {@link DialogPrompt#???}.
+	 * @return The newly created DialogPrompt object.
 	 */
 	DialogPrompt dialogPrompt(String message, String title,
 		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);

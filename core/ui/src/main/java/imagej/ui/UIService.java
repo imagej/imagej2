@@ -150,11 +150,10 @@ public final class UIService extends AbstractService {
 	 * Displays a dialog prompt.
 	 * 
 	 * @param message The message in the dialog itself.
-	 * @return The DialogPrompt object used. The choice selected by the user can
-	 *         be obtained by calling {@link DialogPrompt#???}.
+	 * @return The choice selected by the user when dismissing the dialog.
 	 */
-	public DialogPrompt dialogPrompt(final String message) {
-		return dialogPrompt(message, "ImageJ");
+	public DialogPrompt.Result showDialog(final String message) {
+		return showDialog(message, "ImageJ");
 	}
 
 	/**
@@ -162,11 +161,12 @@ public final class UIService extends AbstractService {
 	 * 
 	 * @param message The message in the dialog itself.
 	 * @param title The title of the dialog.
-	 * @return The DialogPrompt object used. The choice selected by the user can
-	 *         be obtained by calling {@link DialogPrompt#???}.
+	 * @return The choice selected by the user when dismissing the dialog.
 	 */
-	public DialogPrompt dialogPrompt(final String message, final String title) {
-		return dialogPrompt(message, title,
+	public DialogPrompt.Result showDialog(final String message,
+		final String title)
+	{
+		return showDialog(message, title,
 			DialogPrompt.MessageType.INFORMATION_MESSAGE);
 	}
 
@@ -179,13 +179,12 @@ public final class UIService extends AbstractService {
 	 *          icon next to the message. For example,
 	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
 	 *          as an exclamation point.
-	 * @return The DialogPrompt object used. The choice selected by the user can
-	 *         be obtained by calling {@link DialogPrompt#???}.
+	 * @return The choice selected by the user when dismissing the dialog.
 	 */
-	public DialogPrompt dialogPrompt(final String message, final String title,
-		final DialogPrompt.MessageType messageType)
+	public DialogPrompt.Result showDialog(final String message,
+		final String title, final DialogPrompt.MessageType messageType)
 	{
-		return dialogPrompt(message, title, messageType,
+		return showDialog(message, title, messageType,
 			DialogPrompt.OptionType.DEFAULT_OPTION);
 	}
 
@@ -200,14 +199,15 @@ public final class UIService extends AbstractService {
 	 *          as an exclamation point.
 	 * @param optionType The choices available when dismissing the dialog. These
 	 *          choices are typically rendered as buttons for the user to click.
-	 * @return The DialogPrompt object used. The choice selected by the user can
-	 *         be obtained by calling {@link DialogPrompt#???}.
+	 * @return The choice selected by the user when dismissing the dialog.
 	 */
-	public DialogPrompt dialogPrompt(final String message, final String title,
-		final DialogPrompt.MessageType messageType,
+	public DialogPrompt.Result showDialog(final String message,
+		final String title, final DialogPrompt.MessageType messageType,
 		final DialogPrompt.OptionType optionType)
 	{
-		return getUI().dialogPrompt(message, title, messageType, optionType);
+		final DialogPrompt dialogPrompt =
+			getUI().dialogPrompt(message, title, messageType, optionType);
+		return dialogPrompt.prompt();
 	}
 
 	// -- IService methods --
