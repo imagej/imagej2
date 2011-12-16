@@ -116,6 +116,17 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
+	public <T extends RealType<T>> ImgPlus<T> typedImg(final T t) {
+		final ImgPlus<? extends RealType<?>> img = getImgPlus();
+		if (t.getClass().isAssignableFrom(img.firstElement().getClass())) {
+			@SuppressWarnings("unchecked")
+			ImgPlus<T> typedImg = (ImgPlus<T>) img;
+			return typedImg;
+		}
+		return null;
+	}
+
+	@Override
 	public void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus) {
 		// TODO- No longer necessary?????
 		// if (this.imgPlus.numDimensions() != imgPlus.numDimensions()) {
