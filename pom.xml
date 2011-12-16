@@ -12,7 +12,7 @@
 
 	<name>ImageJ Projects</name>
 	<description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
-	<url>http://imagejdev.org/</url>
+	<url>http://developer.imagej.net/</url>
 	<inceptionYear>1997</inceptionYear>
 
 	<modules>
@@ -110,14 +110,14 @@
 	<licenses>
 		<license>
 			<name>BSD</name>
-			<url>http://dev.imagejdev.org/svn/imagej/trunk/LICENSE.txt</url>
+			<url>http://code.imagej.net/svn/imagej/trunk/LICENSE.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
 
 	<organization>
 		<name>ImageJDev.org</name>
-		<url>http://imagejdev.org/</url>
+		<url>http://developer.imagej.net/</url>
 	</organization>
 
 	<developers>
@@ -246,12 +246,12 @@
 
 	<issueManagement>
 		<system>Trac</system>
-		<url>http://dev.imagejdev.org/trac/imagej/</url>
+		<url>http://code.imagej.net/trac/imagej/</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>Hudson</system>
-		<url>http://dev.imagejdev.org:8080/</url>
+		<url>http://code.imagej.net:8080/</url>
 	</ciManagement>
 
 	<mailingLists>
@@ -271,10 +271,10 @@
 		</mailingList>
 		<mailingList>
 			<name>ImageJ-devel</name>
-			<subscribe>http://imagejdev.org/mailman/listinfo/imagej-devel</subscribe>
-			<unsubscribe>http://imagejdev.org/mailman/listinfo/imagej-devel</unsubscribe>
-			<post>imagej-devel@imagejdev.org</post>
-			<archive>http://imagejdev.org/pipermail/imagej-devel/</archive>
+			<subscribe>http://developer.imagej.net/mailman/listinfo/imagej-devel</subscribe>
+			<unsubscribe>http://developer.imagej.net/mailman/listinfo/imagej-devel</unsubscribe>
+			<post>imagej-devel@developer.imagej.net</post>
+			<archive>http://developer.imagej.net/pipermail/imagej-devel/</archive>
 		</mailingList>
 		<mailingList>
 			<name>Fiji-users</name>
@@ -293,10 +293,10 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:svn:http://dev.imagejdev.org/svn/imagej</connection>
-		<developerConnection>scm:svn:http://dev.imagejdev.org/svn/imagej</developerConnection>
+		<connection>scm:svn:http://code.imagej.net/svn/imagej</connection>
+		<developerConnection>scm:svn:http://code.imagej.net/svn/imagej</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://dev.imagejdev.org/svn/imagej</url>
+		<url>http://code.imagej.net/svn/imagej</url>
 	</scm>
 
 	<repositories>
@@ -312,7 +312,7 @@
 		<!-- NB: for various dependencies -->
 		<repository>
 			<id>imagej.thirdparty</id>
-			<url>http://dev.imagejdev.org/maven2/thirdparty</url>
+			<url>http://code.imagej.net/maven2/thirdparty</url>
 		</repository>
 		<!-- NB: for sezpoz -->
 		<repository>
@@ -336,12 +336,12 @@
 		<repository>
 			<id>imagej.releases</id>
 			<name>ImageJ Releases Repository</name>
-			<url>dav:http://dev.imagejdev.org:8081/content/repositories/releases</url>
+			<url>dav:http://code.imagej.net/maven2/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>imagej.snapshots</id>
 			<name>ImageJ Snapshots Repository</name>
-			<url>dav:http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+			<url>dav:http://code.imagej.net/maven2/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
