@@ -65,12 +65,8 @@ import ij.process.ImageProcessor;
 
 /**
  * Displays an image using VisAD.
- *
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href="http://dev.imagejdev.org/trac/java/browser/trunk/projects/ij-visad/src/main/java/imagej/visad/VisADPlugin.java">Trac</a>,
- * <a href="http://dev.imagejdev.org/svn/java/trunk/projects/ij-visad/src/main/java/imagej/visad/VisADPlugin.java">SVN</a></dd>
- * </dl>
+ * 
+ * @author Curtis Rueden
  */
 public class VisADPlugin implements PlugIn {
 

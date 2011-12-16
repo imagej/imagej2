@@ -30,7 +30,7 @@ ImageJ v2.0.0-alpha5 has made substantial progress in many areas:
     + better legacy interactions
 
 For more details on the project, see the ImageJDev web site at:
-  http://imagejdev.org/
+  http://developer.imagej.net/
 
 
 LICENSING
