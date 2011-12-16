@@ -6,7 +6,7 @@
   <formats>
     <format>zip</format>
   </formats>
-  <baseDirectory>imagejdev</baseDirectory>
+  <baseDirectory>imagej2</baseDirectory>
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/main/assembly/application</directory>
