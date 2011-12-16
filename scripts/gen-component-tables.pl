@@ -19,7 +19,7 @@ my $nameColor = '#d8ecf8';
 my $descColor = '#eeeeee';
 my $columns = 4;
 
-my $baseURL = 'http://dev.imagejdev.org';
+my $baseURL = 'http://code.imagej.net';
 my $jenkinsURL = "$baseURL:8080";
 my $tracURL = "$baseURL/trac/imagej";
 
