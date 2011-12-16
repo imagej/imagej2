@@ -59,6 +59,9 @@ public interface Dataset extends Data, Metadata {
 	ImgPlus<? extends RealType<?>> getImgPlus();
 
 	/** TODO */
+	<T extends RealType<T>> ImgPlus<T> typedImg(T t);
+
+	/** TODO */
 	void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus);
 
 	/**
