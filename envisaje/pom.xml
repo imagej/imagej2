@@ -117,7 +117,7 @@
 		<!-- NB: for various dependencies -->
 		<repository>
 			<id>imagej.thirdparty</id>
-			<url>http://dev.imagejdev.org/maven2/thirdparty</url>
+			<url>http://code.imagej.net/maven2/thirdparty</url>
 		</repository>
 		<!-- NB: for sezpoz -->
 		<repository>
@@ -132,11 +132,11 @@
 		</repository>
 		<repository>
 			<id>imagej.releases</id>
-			<url>http://dev.imagejdev.org/maven2/releases</url>
+			<url>http://code.imagej.net/maven2/releases</url>
 		</repository>
 		<repository>
 			<id>imagej.snapshots</id>
-			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+			<url>http://code.imagej.net/maven2/snapshots</url>
 		</repository>
 	</repositories>
 	
@@ -154,12 +154,12 @@
 		<repository>
 			<id>imagej.releases</id>
 			<name>ImageJ Releases Repository</name>
-			<url>dav:http://dev.imagejdev.org:8081/content/repositories/releases</url>
+			<url>dav:http://code.imagej.net/maven2/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>imagej.snapshots</id>
 			<name>ImageJ Snapshots Repository</name>
-			<url>dav:http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+			<url>dav:http://code.imagej.net/maven2/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
