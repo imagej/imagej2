@@ -120,7 +120,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final ImgPlus<? extends RealType<?>> img = getImgPlus();
 		if (t.getClass().isAssignableFrom(img.firstElement().getClass())) {
 			@SuppressWarnings("unchecked")
-			ImgPlus<T> typedImg = (ImgPlus<T>) img;
+			final ImgPlus<T> typedImg = (ImgPlus<T>) img;
 			return typedImg;
 		}
 		return null;
