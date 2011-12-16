@@ -336,12 +336,12 @@
 		<repository>
 			<id>imagej.releases</id>
 			<name>ImageJ Releases Repository</name>
-			<url>dav:http://code.imagej.net/maven2/releases</url>
+			<url>dav:http://code.imagej.net:8081/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>imagej.snapshots</id>
 			<name>ImageJ Snapshots Repository</name>
-			<url>dav:http://code.imagej.net/maven2/snapshots</url>
+			<url>dav:http://code.imagej.net:8081/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
