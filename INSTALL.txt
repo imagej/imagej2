@@ -1,7 +1,7 @@
 For information on building ImageJ from source, see:
 
-  http://imagejdev.org/source-code
+  http://developer.imagej.net/source-code
 
 For a list of ImageJ development topics, see:
 
-  http://imagejdev.org/development
+  http://developer.imagej.net/development
