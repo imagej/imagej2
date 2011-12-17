@@ -110,7 +110,19 @@ public class ImageJ {
 		return context != null;
 	}
 
-	/** Gets the ImageJ application context for the current thread. */
+	/**
+	 * Gets the ImageJ application context for the current thread.
+	 * 
+	 * @deprecated Avoid using this method. If you are writing a plugin, you can
+	 *             annotate the {@link ImageJ} or {@link IService} you want as a
+	 *             @Parameter, with required=true and persist=false. If you are
+	 *             writing a tool, you can obtain the {@link ImageJ} context by
+	 *             calling {@link ImageJEvent#getContext()}, and then asking that
+	 *             context for needed {@link IService} instances by calling
+	 *             {@link ImageJ#getService(Class)}. See the classes in
+	 *             core/plugins and core/tools for many examples.
+	 */
+	@Deprecated
 	public static ImageJ getContext() {
 		// TODO - Eventually, to support non-singleton ImageJ instances, we can
 		// enable the code below and refactor things to support it.
@@ -148,11 +160,11 @@ public class ImageJ {
 	 * context.
 	 * 
 	 * @deprecated Avoid using this method. If you are writing a plugin, you can
-	 *             annotate the {@link IService} you want as a @Parameter, with
-	 *             required=true and persist=false. If you are writing a tool, you
-	 *             can obtain the {@link ImageJ} context by calling
-	 *             {@link ImageJEvent#getContext()}, and then asking that context
-	 *             for needed {@link IService} instances by calling
+	 *             annotate the {@link ImageJ} or {@link IService} you want as a
+	 *             @Parameter, with required=true and persist=false. If you are
+	 *             writing a tool, you can obtain the {@link ImageJ} context by
+	 *             calling {@link ImageJEvent#getContext()}, and then asking that
+	 *             context for needed {@link IService} instances by calling
 	 *             {@link ImageJ#getService(Class)}. See the classes in
 	 *             core/plugins and core/tools for many examples.
 	 */
