@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+ * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+ * Neither the names of the ImageJDev.org developers nor the
+names of its contributors may be used to endorse or promote products
+derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,8 +30,7 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-*/
-
+ */
 package imagej.io;
 
 import imagej.AbstractService;
@@ -50,7 +49,9 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.event.FileOpenedEvent;
 
-import java.util.ArrayList;
+import imagej.io.event.FileSavedEvent;
+import imagej.util.FileUtils;
+import imagej.util.Prefs;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -76,16 +77,13 @@ import java.util.Map;
 public final class RecentFileService extends AbstractService {
 
 	public static final int MAX_FILES_SHOWN = 10;
-
 	/** Maximum pathname length shown. */
 	private static final int MAX_DISPLAY_LENGTH = 40;
-
 	private static final String RECENT_MENU_NAME = "Open Recent";
-
+	private static final String RECENT_FILES_KEY = "recentfiles";
 	private EventService eventService;
 	private MenuService menuService;
 	private ModuleService moduleService;
-
 	private List<String> recentFiles;
 	private Map<String, ModuleInfo> recentModules;
 
@@ -96,9 +94,8 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	public RecentFileService(final ImageJ context,
-		final EventService eventService, final MenuService menuService,
-		final ModuleService moduleService)
-	{
+			final EventService eventService, final MenuService menuService,
+			final ModuleService moduleService) {
 		super(context);
 		this.eventService = eventService;
 		this.menuService = menuService;
@@ -106,7 +103,6 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	// -- RecentFileService methods --
-
 	public EventService getEventService() {
 		return eventService;
 	}
@@ -123,25 +119,30 @@ public final class RecentFileService extends AbstractService {
 	public void add(final String path) {
 		final boolean present = recentModules.containsKey(path);
 		if (present) {
-			remove(path);
-			updateInfo(path);
-		}
-		else {
+//			remove(path);
+//			updateInfo(path);
+		} else {
 			recentModules.put(path, createInfo(path));
+			recentFiles.add(path);
+			Prefs.putList(recentFiles, RECENT_FILES_KEY);
 		}
-		recentFiles.add(path);
 	}
 
 	/** Removes a path from the list of recent files. */
 	public boolean remove(final String path) {
 		final ModuleInfo info = recentModules.remove(path);
-		if (info != null) moduleService.removeModule(info);
-		return recentFiles.remove(path);
+		if (info != null) {
+			moduleService.removeModule(info);
+		}
+		boolean result = recentFiles.remove(path);
+		//Prefs.putList(recentFiles, RECENT_FILES_KEY);
+		return result;
 	}
 
 	/** Clears the list of recent files. */
 	public void clear() {
 		recentFiles.clear();
+		Prefs.clear(RECENT_FILES_KEY);
 		moduleService.removeModules(recentModules.values());
 		recentModules.clear();
 	}
@@ -152,18 +153,25 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	// -- IService methods --
-
 	@Override
 	public void initialize() {
-		recentFiles = new ArrayList<String>();
+		//recentFiles = new ArrayList<String>();
+		recentFiles = Prefs.getList(RECENT_FILES_KEY);
 		recentModules = new HashMap<String, ModuleInfo>();
 		super.initialize();
+		for (String path : recentFiles) {
+			recentModules.put(path, createInfo(path));
+		}
 	}
 
 	// -- Event handlers --
-
 	@EventHandler
 	protected void onEvent(final FileOpenedEvent event) {
+		add(event.getPath());
+	}
+
+	@EventHandler
+	protected void onEvent(final FileSavedEvent event) {
 		add(event.getPath());
 	}
 
@@ -172,13 +180,11 @@ public final class RecentFileService extends AbstractService {
 	// ?? FileClosedEvent
 	// DisplayCreatedEvent
 	// DisplayDeletedEvent
-
 	// -- Helper methods --
-
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String path) {
 		final PluginModuleInfo<ImageJPlugin> info =
-			new PluginModuleInfo<ImageJPlugin>("imagej.io.plugins.OpenImage",
+				new PluginModuleInfo<ImageJPlugin>("imagej.io.plugins.OpenImage",
 				ImageJPlugin.class);
 
 		// hard code path to open as a preset
@@ -200,7 +206,7 @@ public final class RecentFileService extends AbstractService {
 		// use the same icon as File > Open
 		final PluginService pluginService = ImageJ.get(PluginService.class);
 		final PluginModuleInfo<RunnablePlugin> fileOpen =
-			pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
+				pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
 		final String iconPath = fileOpen.getIconPath();
 		info.setIconPath(iconPath);
 		leaf.setIconPath(iconPath);
@@ -224,7 +230,7 @@ public final class RecentFileService extends AbstractService {
 	/** Shortens the given path to ensure it conforms to a maximum length. */
 	private String shortPath(final String path) {
 		// TODO - shorten path name as needed
-		return path;
+		return FileUtils.limitPath(path, MAX_DISPLAY_LENGTH);
 	}
 
 }
