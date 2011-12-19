@@ -75,7 +75,14 @@ public final class PlatformService extends AbstractService {
 	{
 		super(context);
 		this.eventService = eventService;
-		initialize();
+
+		final List<IPlatform> platforms = discoverTargetPlatforms();
+		targetPlatforms = Collections.unmodifiableList(platforms);
+		for (final IPlatform platform : platforms) {
+			Log.info("Configuring platform: " + platform.getClass().getName());
+			platform.configure(this);
+		}
+		if (platforms.size() == 0) Log.info("No platforms to configure.");
 	}
 
 	// -- PlatformService methods --
@@ -101,19 +108,6 @@ public final class PlatformService extends AbstractService {
 	/** Sets whether the menu bar should be duplicated for every window frame. */
 	public void setMenuBarDuplicated(final boolean menuBarDuplicated) {
 		this.menuBarDuplicated = menuBarDuplicated;
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		final List<IPlatform> platforms = discoverTargetPlatforms();
-		targetPlatforms = Collections.unmodifiableList(platforms);
-		for (final IPlatform platform : platforms) {
-			Log.info("Configuring platform: " + platform.getClass().getName());
-			platform.configure(this);
-		}
-		if (platforms.size() == 0) Log.info("No platforms to configure.");
 	}
 
 	// -- Helper methods --

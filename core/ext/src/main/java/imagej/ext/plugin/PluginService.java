@@ -80,7 +80,8 @@ public class PluginService extends AbstractService {
 	{
 		super(context);
 		this.moduleService = moduleService;
-		initialize();
+
+		reloadPlugins();
 	}
 
 	// -- PluginService methods --
@@ -465,13 +466,6 @@ public class PluginService extends AbstractService {
 		final Map<String, Object> inputMap)
 	{
 		return moduleService.run(module, pre(), post(), inputMap);
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		reloadPlugins();
 	}
 
 	// -- Helper methods --

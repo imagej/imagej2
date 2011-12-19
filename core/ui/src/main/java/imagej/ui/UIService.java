@@ -95,7 +95,10 @@ public final class UIService extends AbstractService {
 		this.pluginService = pluginService;
 		this.menuService = menuService;
 		this.toolService = toolService;
-		initialize();
+
+		launchUI();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- UIService methods --
@@ -209,14 +212,6 @@ public final class UIService extends AbstractService {
 		final DialogPrompt dialogPrompt =
 			getUI().dialogPrompt(message, title, messageType, optionType);
 		return dialogPrompt.prompt();
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		launchUI();
-		super.initialize();
 	}
 
 	// -- Event handlers --

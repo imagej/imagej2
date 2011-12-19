@@ -85,7 +85,6 @@ public class ModuleService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.threadService = threadService;
-		initialize();
 	}
 
 	// -- ModuleService methods --
@@ -306,13 +305,6 @@ public class ModuleService extends AbstractService {
 		final Class<T> type)
 	{
 		return getSingleItem(module, type, module.getInfo().outputs());
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		// no action needed
 	}
 
 	// -- Helper methods --

@@ -71,7 +71,13 @@ public final class EventService extends AbstractService {
 
 	public EventService(final ImageJ context) {
 		super(context);
-		initialize();
+
+		// TODO - Use ThreadSafeEventService instead of SwingEventService.
+		// Unfortunately, without further care elsewhere in the code (subject to
+		// further investigation), using it results in a race condition where
+		// JHotDraw partially repaints images before they are done being processed.
+		// See ticket #719: http://code.imagej.net/trac/imagej/ticket/719
+		eventBus = new SwingEventService();
 	}
 
 	// -- EventService methods --
@@ -117,18 +123,6 @@ public final class EventService extends AbstractService {
 		@SuppressWarnings("unchecked")
 		final List<EventSubscriber<E>> typedList = list;
 		return typedList;
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		// TODO - Use ThreadSafeEventService instead of SwingEventService.
-		// Unfortunately, without further care elsewhere in the code (subject to
-		// further investigation), using it results in a race condition where
-		// JHotDraw partially repaints images before they are done being processed.
-		// See ticket #719: http://code.imagej.net/trac/imagej/ticket/719
-		eventBus = new SwingEventService();
 	}
 
 	// -- Helper methods --

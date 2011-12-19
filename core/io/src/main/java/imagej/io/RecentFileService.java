@@ -100,7 +100,15 @@ public final class RecentFileService extends AbstractService {
 		this.eventService = eventService;
 		this.menuService = menuService;
 		this.moduleService = moduleService;
-		initialize();
+
+		//recentFiles = new ArrayList<String>();
+		recentFiles = Prefs.getList(RECENT_FILES_KEY);
+		recentModules = new HashMap<String, ModuleInfo>();
+		for (String path : recentFiles) {
+			recentModules.put(path, createInfo(path));
+		}
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- RecentFileService methods --
@@ -151,18 +159,6 @@ public final class RecentFileService extends AbstractService {
 	/** Gets the list of recent files. */
 	public List<String> getRecentFiles() {
 		return Collections.unmodifiableList(recentFiles);
-	}
-
-	// -- IService methods --
-	@Override
-	public void initialize() {
-		//recentFiles = new ArrayList<String>();
-		recentFiles = Prefs.getList(RECENT_FILES_KEY);
-		recentModules = new HashMap<String, ModuleInfo>();
-		super.initialize();
-		for (String path : recentFiles) {
-			recentModules.put(path, createInfo(path));
-		}
 	}
 
 	// -- Event handlers --

@@ -82,7 +82,8 @@ public class AnimationService extends AbstractService {
 	{
 		super(context);
 		this.eventService = eventService;
-		initialize();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- AnimationService methods --

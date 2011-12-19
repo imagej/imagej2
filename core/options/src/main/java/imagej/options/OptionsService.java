@@ -78,7 +78,6 @@ public class OptionsService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
-		initialize();
 	}
 
 	// -- OptionsService methods --
@@ -177,13 +176,6 @@ public class OptionsService extends AbstractService {
 
 		// persist the option value, and publish an OptionsEvent
 		module.run();
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		// no action needed
 	}
 
 	// -- Helper methods --
