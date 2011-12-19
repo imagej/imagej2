@@ -34,6 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -211,5 +216,185 @@ public final class Prefs {
 	private static String key(final Class<?> c, final String name) {
 		return c == null ? name : c.getSimpleName() + "." + name;
 	}
+	
+// public class PrefsUtil {
+/**
+ * Utility class for prefs
+ * from http://www.java2s.com/Code/Java/Development-Class/Utilityclassforpreferences.htm
+ * Copyright Javelin Software, All rights reserved.
+ * @author Robin Sharp
+ */
+	/**
+	 * Clear all the node
+	 */
+	public static void clear(String key) {
+		clear(prefs(null), key);
+	}
+	
+	public static void clear(Preferences preferences, String key) {
+		try {
+			if (preferences.nodeExists(key)) {
+				preferences.node(key).clear();
+			}
+		} catch (BackingStoreException bse) {
+			bse.printStackTrace();
+		}
+	}
+
+	/**
+	 * Remove the node
+	 */
+	public static void remove(Preferences preferences, String key) {
+		try {
+			if (preferences.nodeExists(key)) {
+				preferences.node(key).removeNode();
+			}
+		} catch (BackingStoreException bse) {
+			bse.printStackTrace();
+		}
+	}
+
+	/**
+	 * Puts a list into the preferences.
+	 */
+	public static void putMap(Map map, String key) {
+		putMap(prefs(null), map, key);
+	}
+	
+	public static void putMap(Preferences preferences, Map map, String key) {
+		putMap(preferences.node(key), map);
+	}
+
+	/**
+	 * Puts a list into the preferences.
+	 */
+	public static void putMap(Preferences preferences, Map map) {
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			Object value = entry.getValue();
+			preferences.put(entry.getKey().toString(), value == null ? null : value.toString());
+		}
+	}
+
+	/**
+	 * Gets a Map from the preferences.
+	 */
+	public static Map getMap(String key) {
+		return getMap(prefs(null), key);
+	}
+	
+	public static Map getMap(Preferences preferences, String key) {
+		return getMap(preferences.node(key));
+	}
+
+	/**
+	 * Gets a Map from the preferences.
+	 */
+	public static Map getMap(Preferences preferences) {
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		Map map = new HashMap();
+		try {
+			String[] keys = preferences.keys();
+			for (int index = 0; index < keys.length; index++) {
+				map.put(keys[index], preferences.get(keys[index], null));
+			}
+		} catch (BackingStoreException bse) {
+			bse.printStackTrace();
+		}
+		return map;
+	}
+
+	/**
+	 * Puts a list into the preferences starting with "0" then "1"
+	 */
+	public static void putList(List list, String key) {
+		putList(prefs(null), list, key);
+	}
+	
+	public static void putList(Preferences preferences, List list, String key) {
+		putList(preferences.node(key), list);
+	}
+
+	/**
+	 * Puts a list into the preferences starting with "0" then "1"
+	 */
+	public static void putList(Preferences preferences, List list) {
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		//System.out.println( "LIST=" + list );
+		for (int index = 0; list != null && index < list.size(); index++) {
+			Object value = list.get(index);
+			preferences.put("" + index, value == null ? null : value.toString());
+		}
+	}
+
+	/**
+	 * Gets a List from the preferences, starting with "0", then "1" etc
+	 */
+	public static List getList(String key) {
+		return getList(prefs(null), key);
+	}
+
+	public static List getList(Preferences preferences, String key) {
+		return getList(preferences.node(key));
+	}
+
+	/**
+	 * Gets a List from the preferences, starting with "0", then "1" etc
+	 * Returns an empty ArrayList if nothing in prefs.
+	 */
+	public static List getList(Preferences preferences) {
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		List list = new ArrayList();
+		for (int index = 0; index < 1000; index++) {
+			String value = preferences.get("" + index, null);
+			if (value == null) {
+				break;
+			}
+			//System.out.println( ""+index+ " " + value );
+			list.add(value);
+		}
+		return list;
+	}
+
+	// Tests for Map and List... 
+	
+	public static void main(String[] args) {
+		try {
+			Preferences prefs = Preferences.userNodeForPackage(String.class);
+			// Map...
+			Map map = new HashMap();
+			map.put("0", "A");
+			map.put("1", "B");
+			map.put("2", "C");
+			map.put("3", "D");
+			map.put("5", "f");
+			final String MAP_KEY = "MapKey";
+			putMap(prefs, map, MAP_KEY);
+			System.out.println(getMap(prefs, MAP_KEY));
+			clear(prefs, MAP_KEY);
+			// List...
+			String RECENT_FILES = "RecentFiles";
+			List recentFiles = new  ArrayList(); 
+			//List recentFiles = PrefsUtil.getList(prefs, RECENT_FILES);
+			recentFiles.add("some/path1");
+			recentFiles.add("some/path2");
+			recentFiles.add("some/path3");
+			putList(prefs, recentFiles, RECENT_FILES);
+			System.out.println(getList(prefs, RECENT_FILES));
+			clear(prefs, RECENT_FILES );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+//}	
 
 }
