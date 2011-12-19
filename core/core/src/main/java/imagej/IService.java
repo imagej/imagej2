@@ -44,8 +44,6 @@ package imagej;
  */
 public interface IService {
 
-	void initialize();
-
 	ImageJ getContext();
 
 }

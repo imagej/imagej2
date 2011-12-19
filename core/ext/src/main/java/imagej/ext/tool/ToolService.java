@@ -99,7 +99,11 @@ public class ToolService extends AbstractService {
 	public ToolService(final ImageJ context, final EventService eventService) {
 		super(context);
 		this.eventService = eventService;
-		initialize();
+
+		createTools();
+		activeTool = new DummyTool();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- ToolService methods --
@@ -165,15 +169,6 @@ public class ToolService extends AbstractService {
 		final double priority1 = tool1.getInfo().getPriority();
 		final double priority2 = tool2.getInfo().getPriority();
 		return Math.abs(priority1 - priority2) >= SEPARATOR_DISTANCE;
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		createTools();
-		activeTool = new DummyTool();
-		super.initialize();
 	}
 
 	// -- Event handlers --

@@ -76,7 +76,10 @@ public class MenuService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
-		initialize();
+
+		rootMenu = new ShadowMenu(this);
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- MenuService methods --
@@ -138,14 +141,6 @@ public class MenuService extends AbstractService {
 	public void setSelected(final ModuleInfo info, final boolean selected) {
 		info.setSelected(selected);
 		info.update(eventService);
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		rootMenu = new ShadowMenu(this);
-		super.initialize();
 	}
 
 	// -- Event handlers --

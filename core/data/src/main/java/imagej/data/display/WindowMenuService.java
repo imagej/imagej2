@@ -103,7 +103,11 @@ public final class WindowMenuService extends AbstractService {
 		this.eventService = eventService;
 		this.menuService = menuService;
 		this.moduleService = moduleService;
-		initialize();
+
+		openWindows = new ArrayList<String>();
+		windowModules = new HashMap<String, ModuleInfo>();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- WindowService methods --
@@ -152,15 +156,6 @@ public final class WindowMenuService extends AbstractService {
 	/** Gets the list of window files. */
 	public List<String> getOpenWindows() {
 		return Collections.unmodifiableList(openWindows);
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		openWindows = new ArrayList<String>();
-		windowModules = new HashMap<String, ModuleInfo>();
-		super.initialize();
 	}
 
 	// -- Event handlers --

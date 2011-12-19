@@ -72,7 +72,8 @@ public final class ImageDisplayService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.displayService = displayService;
-		initialize();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- ImageDisplayService methods --

@@ -116,7 +116,28 @@ public final class LegacyService extends AbstractService {
 		this.pluginService = pluginService;
 		this.optionsService = optionsService;
 		this.imageDisplayService = imageDisplayService;
-		initialize();
+
+		imageMap = new LegacyImageMap(eventService);
+		optionsSynchronizer = new OptionsSynchronizer(optionsService);
+
+		// initialize legacy ImageJ application
+		try {
+			new ij.ImageJ(ij.ImageJ.NO_SHOW);
+		}
+		catch (final Throwable t) {
+			Log.warn("Failed to instantiate IJ1.", t);
+		}
+
+		// discover legacy plugins
+		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
+		new LegacyPluginFinder().findPlugins(plugins);
+		pluginService.addPlugins(plugins);
+
+		IJ.addEventListener(new IJ1EventListener());
+
+		updateIJ1Settings();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- LegacyService methods --
@@ -177,34 +198,6 @@ public final class LegacyService extends AbstractService {
 
 	public void updateIJ2Settings() {
 		optionsSynchronizer.updateIJ2SettingsFromIJ1();
-	}
-
-	// -- IService methods --
-
-	@Override
-	@SuppressWarnings("synthetic-access")
-	public void initialize() {
-		imageMap = new LegacyImageMap(eventService);
-		optionsSynchronizer = new OptionsSynchronizer(optionsService);
-
-		// initialize legacy ImageJ application
-		try {
-			new ij.ImageJ(ij.ImageJ.NO_SHOW);
-		}
-		catch (final Throwable t) {
-			Log.warn("Failed to instantiate IJ1.", t);
-		}
-
-		// discover legacy plugins
-		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		new LegacyPluginFinder().findPlugins(plugins);
-		pluginService.addPlugins(plugins);
-
-		IJ.addEventListener(new IJ1EventListener());
-
-		updateIJ1Settings();
-
-		super.initialize();
 	}
 
 	// -- Event handlers --

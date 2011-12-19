@@ -88,7 +88,8 @@ public final class DisplayService extends AbstractService {
 		this.eventService = eventService;
 		this.objectService = objectService;
 		this.pluginService = pluginService;
-		initialize();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- DisplayService methods --
@@ -231,14 +232,6 @@ public final class DisplayService extends AbstractService {
 			}
 		}
 		return null;
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		activeDisplay = null;
-		super.initialize();
 	}
 
 	// -- Event handlers --

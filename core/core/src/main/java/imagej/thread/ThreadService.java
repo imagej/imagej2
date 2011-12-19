@@ -68,20 +68,14 @@ public final class ThreadService extends AbstractService implements
 
 	public ThreadService(final ImageJ context) {
 		super(context);
-		initialize();
+
+		executor = Executors.newCachedThreadPool(this);
 	}
 
 	// -- ThreadService methods --
 
 	public <V> Future<V> run(final Callable<V> code) {
 		return executor.submit(code);
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		executor = Executors.newCachedThreadPool(this);
 	}
 
 	// -- ThreadFactory methods --

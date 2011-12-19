@@ -57,13 +57,14 @@ public abstract class AbstractService implements IService {
 	// -- IService methods --
 
 	@Override
-	public void initialize() {
-		eventSubscribers = context.getService(EventService.class).subscribe(this);
-	}
-
-	@Override
 	public ImageJ getContext() {
 		return context;
+	}
+
+	// -- Internal methods --
+
+	protected void subscribeToEvents(final EventService eventService) {
+		eventSubscribers = eventService.subscribe(this);
 	}
 
 }

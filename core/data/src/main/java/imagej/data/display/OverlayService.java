@@ -73,7 +73,6 @@ public final class OverlayService extends AbstractService {
 	{
 		super(context);
 		this.objectService = objectService;
-		initialize();
 	}
 
 	// -- OverlayService methods --
@@ -203,13 +202,6 @@ public final class OverlayService extends AbstractService {
 	public OverlaySettings getDefaultSettings() {
 		if (defaultSettings == null) defaultSettings = new OverlaySettings();
 		return defaultSettings;
-	}
-
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		// NB: no action needed
 	}
 
 }

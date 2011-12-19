@@ -69,7 +69,8 @@ public final class AppEventService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
-		initialize();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- AppEventService methods --
