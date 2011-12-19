@@ -71,6 +71,7 @@ public final class EventService extends AbstractService {
 
 	public EventService(final ImageJ context) {
 		super(context);
+		initialize();
 	}
 
 	// -- EventService methods --

@@ -35,13 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej;
 
 import imagej.event.ImageJEvent;
-import imagej.util.Log;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Top-level application context for ImageJ, which initializes and maintains a
@@ -55,13 +52,6 @@ public class ImageJ {
 	/** Version of the ImageJ software. */
 	public static final String VERSION = "2.0.0-beta1-DEV";
 
-	/** Table of ImageJ application contexts. */
-	private static Map<Integer, ImageJ> contexts =
-		new ConcurrentHashMap<Integer, ImageJ>();
-
-	/** The next available application context ID. */
-	private static int nextID = 0;
-
 	/** Creates a new ImageJ application context with all available services. */
 	public static ImageJ createContext() {
 		return createContext((List<Class<? extends IService>>) null);
@@ -71,51 +61,37 @@ public class ImageJ {
 	public static ImageJ createContext(
 		final Class<? extends IService>... serviceClasses)
 	{
-		final List<Class<? extends IService>> serviceList;
+		final List<Class<? extends IService>> serviceClassList;
 		if (serviceClasses == null || serviceClasses.length == 0) {
-			serviceList = null;
+			serviceClassList = null;
 		}
 		else {
-			serviceList = Arrays.asList(serviceClasses);
+			serviceClassList = Arrays.asList(serviceClasses);
 		}
-		return createContext(serviceList);
+		return createContext(serviceClassList);
 	}
+
+	// TODO - remove this!
+	private static ImageJ staticContext;
 
 	/** Creates a new ImageJ application context with the specified services. */
 	public static ImageJ createContext(
 		final Collection<Class<? extends IService>> serviceClasses)
 	{
-		final InitContextThread t =
-			new InitContextThread(nextID++, serviceClasses);
-		t.start();
-		try {
-			t.join();
-		}
-		catch (final InterruptedException e) {
-			Log.error("Error creating application context", e);
-			return null;
-		}
-		return t.getContext();
+		final ImageJ context = new ImageJ();
+		staticContext = context; // TEMP
+		final ServiceHelper serviceHelper =
+			new ServiceHelper(context, serviceClasses);
+		serviceHelper.loadServices();
+		return context;
 	}
 
 	/**
-	 * Disposes of the ImageJ application context with the given ID.
-	 * 
-	 * @param id The ID of the ImageJ application context to delete.
-	 * @return true if the context was successfully deleted, or false if no such
-	 *         context exists.
-	 */
-	public static boolean disposeContext(final int id) {
-		final ImageJ context = contexts.remove(id);
-		return context != null;
-	}
-
-	/**
-	 * Gets the ImageJ application context for the current thread.
+	 * Gets the static ImageJ application context.
 	 * 
 	 * @deprecated Avoid using this method. If you are writing a plugin, you can
-	 *             annotate the {@link ImageJ} or {@link IService} you want as a
-	 *             @Parameter, with required=true and persist=false. If you are
+	 *             declare the {@link ImageJ} or {@link IService} you want as a
+	 *             parameter, with required=true and persist=false. If you are
 	 *             writing a tool, you can obtain the {@link ImageJ} context by
 	 *             calling {@link ImageJEvent#getContext()}, and then asking that
 	 *             context for needed {@link IService} instances by calling
@@ -124,35 +100,7 @@ public class ImageJ {
 	 */
 	@Deprecated
 	public static ImageJ getContext() {
-		// TODO - Eventually, to support non-singleton ImageJ instances, we can
-		// enable the code below and refactor things to support it.
-		final int id = getContextID();
-		if (id < 0) {
-			return getContext(0);
-//			throw new IllegalStateException("No application context from thread: " +
-//				Thread.currentThread().getName());
-		}
-		return getContext(id);
-	}
-
-	private static int getContextID() {
-		final String name = Thread.currentThread().getName();
-		final String prefix = "ImageJ-";
-		if (!name.startsWith(prefix)) return -1;
-		final int index = prefix.length();
-		final int dash = name.indexOf('-', index);
-		if (dash < 0) return -1;
-		try {
-			return Integer.parseInt(name.substring(index, dash));
-		}
-		catch (final NumberFormatException exc) {
-			return -1;
-		}
-	}
-
-	/** Gets the ImageJ application context with the given ID. */
-	public static ImageJ getContext(final int id) {
-		return contexts.get(id);
+		return staticContext;
 	}
 
 	/**
@@ -161,7 +109,7 @@ public class ImageJ {
 	 * 
 	 * @deprecated Avoid using this method. If you are writing a plugin, you can
 	 *             annotate the {@link ImageJ} or {@link IService} you want as a
-	 *             @Parameter, with required=true and persist=false. If you are
+	 *             parameter, with required=true and persist=false. If you are
 	 *             writing a tool, you can obtain the {@link ImageJ} context by
 	 *             calling {@link ImageJEvent#getContext()}, and then asking that
 	 *             context for needed {@link IService} instances by calling
@@ -175,67 +123,24 @@ public class ImageJ {
 		return context.getService(serviceClass);
 	}
 
-	private final int id;
-	private final ServiceHelper serviceHelper;
+	// -- Fields --
 
-	/** Creates a new ImageJ context with the given ID and services. */
-	protected ImageJ(final int id,
-		final Collection<Class<? extends IService>> serviceClasses)
-	{
-		this.id = id;
-		contexts.put(id, this);
-		serviceHelper = new ServiceHelper(this);
-		serviceHelper.loadServices(serviceClasses);
+	private final ServiceIndex serviceIndex;
+
+	/** Creates a new ImageJ context. */
+	public ImageJ() {
+		serviceIndex = new ServiceIndex();
 	}
 
 	// -- ImageJ methods --
 
-	/** Gets the ID code for this ImageJ application context. */
-	public int getID() {
-		return id;
-	}
-
-	/** Loads the service of the given class. */
-	public <S extends IService> void loadService(final Class<S> c) {
-		serviceHelper.loadService(c);
-	}
-
-	/** Loads the services of the given classes. */
-	public void loadServices(
-		final Collection<Class<? extends IService>> serviceClasses)
-	{
-		serviceHelper.loadServices(serviceClasses);
+	public ServiceIndex getServiceIndex() {
+		return serviceIndex;
 	}
 
 	/** Gets the service of the given class. */
 	public <S extends IService> S getService(final Class<S> c) {
-		return serviceHelper.getService(c);
-	}
-
-	// -- Helper classes --
-
-	private static class InitContextThread extends Thread {
-
-		private final int id;
-		private final Collection<Class<? extends IService>> serviceClasses;
-		private ImageJ context;
-
-		public InitContextThread(final int id,
-			final Collection<Class<? extends IService>> serviceClasses)
-		{
-			super("ImageJ-" + id + "-Initialization");
-			this.id = id;
-			this.serviceClasses = serviceClasses;
-		}
-
-		@Override
-		public void run() {
-			context = new ImageJ(id, serviceClasses);
-		}
-
-		public ImageJ getContext() {
-			return context;
-		}
+		return serviceIndex.getService(c);
 	}
 
 }

@@ -85,6 +85,7 @@ public class ModuleService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.threadService = threadService;
+		initialize();
 	}
 
 	// -- ModuleService methods --

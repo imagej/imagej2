@@ -68,6 +68,7 @@ public final class ThreadService extends AbstractService implements
 
 	public ThreadService(final ImageJ context) {
 		super(context);
+		initialize();
 	}
 
 	// -- ThreadService methods --
@@ -87,8 +88,9 @@ public final class ThreadService extends AbstractService implements
 
 	@Override
 	public Thread newThread(final Runnable r) {
+		final String contextHash = Integer.toHexString(getContext().hashCode());
 		final String threadName =
-			"ImageJ-" + getContext().getID() + "-Thread-" + nextThread++;
+			"ImageJ-" + contextHash + "-Thread-" + nextThread++;
 		return new Thread(r, threadName);
 	}
 

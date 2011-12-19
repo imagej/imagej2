@@ -80,6 +80,7 @@ public class PluginService extends AbstractService {
 	{
 		super(context);
 		this.moduleService = moduleService;
+		initialize();
 	}
 
 	// -- PluginService methods --

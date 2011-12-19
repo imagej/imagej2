@@ -116,6 +116,7 @@ public final class LegacyService extends AbstractService {
 		this.pluginService = pluginService;
 		this.optionsService = optionsService;
 		this.imageDisplayService = imageDisplayService;
+		initialize();
 	}
 
 	// -- LegacyService methods --

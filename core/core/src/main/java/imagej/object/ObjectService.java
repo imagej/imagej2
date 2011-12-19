@@ -78,6 +78,7 @@ public final class ObjectService extends AbstractService {
 	public ObjectService(final ImageJ context, final EventService eventService) {
 		super(context);
 		this.eventService = eventService;
+		initialize();
 	}
 
 	// -- ObjectService methods --

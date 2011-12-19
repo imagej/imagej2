@@ -103,6 +103,7 @@ public final class WindowMenuService extends AbstractService {
 		this.eventService = eventService;
 		this.menuService = menuService;
 		this.moduleService = moduleService;
+		initialize();
 	}
 
 	// -- WindowService methods --

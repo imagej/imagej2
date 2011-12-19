@@ -73,6 +73,7 @@ public final class OverlayService extends AbstractService {
 	{
 		super(context);
 		this.objectService = objectService;
+		initialize();
 	}
 
 	// -- OverlayService methods --

@@ -76,6 +76,7 @@ public class MenuService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
+		initialize();
 	}
 
 	// -- MenuService methods --

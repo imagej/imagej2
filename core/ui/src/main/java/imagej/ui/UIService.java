@@ -95,6 +95,7 @@ public final class UIService extends AbstractService {
 		this.pluginService = pluginService;
 		this.menuService = menuService;
 		this.toolService = toolService;
+		initialize();
 	}
 
 	// -- UIService methods --

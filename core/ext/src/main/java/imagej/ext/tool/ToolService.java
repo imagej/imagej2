@@ -99,6 +99,7 @@ public class ToolService extends AbstractService {
 	public ToolService(final ImageJ context, final EventService eventService) {
 		super(context);
 		this.eventService = eventService;
+		initialize();
 	}
 
 	// -- ToolService methods --

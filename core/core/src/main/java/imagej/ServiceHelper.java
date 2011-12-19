@@ -39,108 +39,115 @@ import imagej.util.Log;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Helper class for managing available services.
+ * Helper class for discovering and instantiating available services.
  * 
  * @author Curtis Rueden
- * @see ImageJ
  */
 public class ServiceHelper {
 
+	/** Associated application context. */
 	private final ImageJ context;
-	private final Map<Class<? extends IService>, IService> services;
-	private final Set<Class<? extends IService>> initialized;
 
-	/** Creates a new service helper with the given services. */
+	/** Classes to scan when searching for dependencies. */
+	private final Set<Class<? extends IService>> classPool;
+
+	/** Classes to instantiate as services. */
+	private final List<Class<? extends IService>> serviceClasses;
+
+	/**
+	 * Creates a new service helper for discovering and instantiating services.
+	 * 
+	 * @param context The application context for which services should be
+	 *          instantiated.
+	 */
 	public ServiceHelper(final ImageJ context) {
+		this(context, null);
+	}
+
+	/**
+	 * Creates a new service helper for discovering and instantiating services.
+	 * 
+	 * @param context The application context to which services should be added.
+	 * @param serviceClasses The service classes to instantiate.
+	 */
+	public ServiceHelper(final ImageJ context,
+		final Collection<Class<? extends IService>> serviceClasses)
+	{
 		this.context = context;
-		services = new ConcurrentHashMap<Class<? extends IService>, IService>();
-		initialized =
-			Collections.synchronizedSet(new HashSet<Class<? extends IService>>());
+		classPool = findServiceClasses();
+		this.serviceClasses = new ArrayList<Class<? extends IService>>();
+		if (serviceClasses == null) {
+			// load all discovered services
+			this.serviceClasses.addAll(classPool);
+		}
+		else {
+			// load only the services that were explicitly specified
+			this.serviceClasses.addAll(serviceClasses);
+		}
 	}
 
 	// -- ServiceHelper methods --
 
-	/** Loads the service of the given class. */
-	public <S extends IService> void loadService(final Class<S> c) {
-		final List<Class<? extends IService>> serviceClasses =
-			new ArrayList<Class<? extends IService>>();
-		serviceClasses.add(c);
-		loadServices(serviceClasses);
-	}
-
-	/** Loads the services of the given classes. */
-	public void loadServices(
-		final Collection<Class<? extends IService>> serviceClasses)
-	{
-		final Collection<Class<? extends IService>> classes;
-		if (serviceClasses == null) classes = findServiceClasses();
-		else classes = serviceClasses;
-
-		// instantiate service classes
-		for (final Class<? extends IService> c : classes) {
-			IService service = getService(c);
-			if (service == null) service = createService(c);
-			if (service == null) Log.error("Invalid service: " + c.getName());
-		}
-
-		// initialize service classes
-		for (final Class<? extends IService> c : classes) {
-			initializeService(c);
+	/**
+	 * Ensures all candidate service classes are registered in the index, locating
+	 * and instantiating compatible services as needed.
+	 */
+	public void loadServices() {
+		for (final Class<? extends IService> serviceClass : serviceClasses) {
+			loadService(serviceClass);
 		}
 	}
 
-	/** Gets the service of the given class. */
-	public <S extends IService> S getService(final Class<S> c) {
-		@SuppressWarnings("unchecked")
-		final S service = (S) services.get(c);
-		return service;
-	}
+	/**
+	 * Obtains a service compatible with the given class, instantiating it (and
+	 * registering it in the index) if necessary.
+	 * 
+	 * @return an existing compatible service if one is registered, or else the
+	 *         newly created service, or null if none can be instantiated
+	 * @throws IllegalArgumentException if no suitable service class is found
+	 */
+	public <S extends IService> S loadService(final Class<S> c) {
+		// if a compatible service already exists, return it
+		final S service = context.getServiceIndex().getService(c);
+		if (service != null) return service;
 
-	// -- Helper methods --
-
-	/** Discovers services present on the classpath. */
-	private List<Class<? extends IService>> findServiceClasses() {
-		final List<Class<? extends IService>> serviceList =
-			new ArrayList<Class<? extends IService>>();
-
-		// use SezPoz to discover all services
-		for (final IndexItem<Service, IService> item : Index.load(Service.class,
-			IService.class))
-		{
-			try {
+		// scan the class pool for a suitable match
+		for (final Class<? extends IService> serviceClass : classPool) {
+			if (c.isAssignableFrom(serviceClass)) {
+				// found a match; now instantiate it
 				@SuppressWarnings("unchecked")
-				final Class<? extends IService> c =
-					(Class<? extends IService>) item.element();
-				serviceList.add(c);
-			}
-			catch (final InstantiationException e) {
-				Log.error("Invalid service: " + item, e);
+				final S result = (S) createExactService(serviceClass);
+				return result;
 			}
 		}
 
-		return serviceList;
+		return createExactService(c);
 	}
 
-	/** Instantiates a service of the given class. */
-	private <S extends IService> S createService(final Class<S> c) {
+	/**
+	 * Instantiates a service of the given class, registering it in the index.
+	 * 
+	 * @return the newly created service, or null if the given class cannot be
+	 *         instantiated
+	 */
+	public <S extends IService> S createExactService(final Class<S> c) {
 		Log.debug("Creating service: " + c.getName());
 		try {
 			final Constructor<S> ctor = getConstructor(c);
-			if (ctor == null) return null; // invalid constructor
 			final S service = createService(ctor);
-			services.put(c, service);
+			context.getServiceIndex().add(service);
+			Log.info("Created service: " + c.getName());
 			return service;
 		}
 		catch (final Exception e) {
@@ -148,6 +155,8 @@ public class ServiceHelper {
 		}
 		return null;
 	}
+
+	// -- Helper methods --
 
 	/** Instantiates a service using the given constructor. */
 	private <S extends IService> S createService(final Constructor<S> ctor)
@@ -161,10 +170,10 @@ public class ServiceHelper {
 			if (IService.class.isAssignableFrom(type)) {
 				@SuppressWarnings("unchecked")
 				final Class<IService> c = (Class<IService>) type;
-				args[i] = getService(c);
+				args[i] = context.getServiceIndex().getService(c);
 				if (args[i] == null) {
-					// recursively create dependent service
-					args[i] = createService(c);
+					// recursively obtain needed services
+					args[i] = loadService(c);
 				}
 			}
 			else if (ImageJ.class.isAssignableFrom(type)) {
@@ -175,39 +184,78 @@ public class ServiceHelper {
 		return ctor.newInstance(args);
 	}
 
-	private <S extends IService> void initializeService(final Class<S> c) {
-		if (initialized.contains(c)) return; // already initialized
-		initialized.add(c);
+	/**
+	 * Gets a compatible constructor for creating a service of the given type. A
+	 * constructor is compatible if all its arguments are assignable to
+	 * {@link ImageJ} and {@link IService}. The method uses a greedy approach to
+	 * choosing the best constructor, preferring constructors with a larger number
+	 * of arguments, to populate the maximum number of services.
+	 * 
+	 * @return the best constructor to use for instantiating the service
+	 * @throws IllegalArgumentException if no compatible constructors exist
+	 */
+	private <S extends IService> Constructor<S> getConstructor(
+		final Class<S> serviceClass)
+	{
+		final Constructor<?>[] ctors = serviceClass.getConstructors();
 
-		// initialize dependencies first
-		final Constructor<S> ctor = getConstructor(c);
-		for (final Class<?> type : ctor.getParameterTypes()) {
-			if (IService.class.isAssignableFrom(type)) {
+		// sort constructors by number of parameters
+		Arrays.sort(ctors, new Comparator<Constructor<?>>() {
+
+			@Override
+			public int compare(final Constructor<?> c1, final Constructor<?> c2) {
+				return c2.getParameterTypes().length - c1.getParameterTypes().length;
+			}
+
+		});
+
+		for (final Constructor<?> ctorUntyped : ctors) {
+			@SuppressWarnings("unchecked")
+			final Constructor<S> ctor = (Constructor<S>) ctorUntyped;
+
+			final Class<?>[] types = ctor.getParameterTypes();
+			for (final Class<?> type : types) {
+				if (!ImageJ.class.isAssignableFrom(type) &&
+					!IService.class.isAssignableFrom(type))
+				{
+					// constructor has an argument of unknown type
+					continue;
+				}
+			}
+			return ctor;
+		}
+		throw new IllegalArgumentException(
+			"No appropriate constructor found for service class: " +
+				serviceClass.getName());
+	}
+
+	// CTR TODO - Add a level of indirection for usage of SezPoz.
+	// That way we can later include additional discovery methods.
+
+	/**
+	 * Discovers service implementations that are present on the classpath and
+	 * marked with the @{@link Service} annotation.
+	 */
+	private HashSet<Class<? extends IService>> findServiceClasses() {
+		final HashSet<Class<? extends IService>> serviceSet =
+			new HashSet<Class<? extends IService>>();
+
+		// use SezPoz to discover available services
+		for (final IndexItem<Service, IService> item : Index.load(Service.class,
+			IService.class))
+		{
+			try {
 				@SuppressWarnings("unchecked")
-				final Class<IService> serviceType = (Class<IService>) type;
-				initializeService(serviceType);
+				final Class<? extends IService> c =
+					(Class<? extends IService>) item.element();
+				serviceSet.add(c);
+			}
+			catch (final InstantiationException e) {
+				Log.error("Invalid service: " + item, e);
 			}
 		}
 
-		// initialize the service
-		Log.info("Initializing service: " + c.getName());
-		getService(c).initialize();
-	}
-
-	private <S extends IService> Constructor<S> getConstructor(final Class<S> c)
-	{
-		final Constructor<?>[] ctors = c.getConstructors();
-		if (ctors == null) return null;
-		for (final Constructor<?> ctor : ctors) {
-			final Class<?>[] types = ctor.getParameterTypes();
-			if (types == null || types.length == 0) continue; // no constructors
-			if (!ImageJ.class.isAssignableFrom(types[0])) continue; // wrong one
-			@SuppressWarnings("unchecked")
-			final Constructor<S> result = (Constructor<S>) ctor;
-			return result;
-		}
-		// no appropriate constructor found
-		return null;
+		return serviceSet;
 	}
 
 }
