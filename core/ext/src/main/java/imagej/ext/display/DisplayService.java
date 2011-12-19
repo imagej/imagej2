@@ -88,6 +88,7 @@ public final class DisplayService extends AbstractService {
 		this.eventService = eventService;
 		this.objectService = objectService;
 		this.pluginService = pluginService;
+		initialize();
 	}
 
 	// -- DisplayService methods --

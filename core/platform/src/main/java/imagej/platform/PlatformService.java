@@ -75,6 +75,7 @@ public final class PlatformService extends AbstractService {
 	{
 		super(context);
 		this.eventService = eventService;
+		initialize();
 	}
 
 	// -- PlatformService methods --

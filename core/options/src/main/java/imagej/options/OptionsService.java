@@ -78,6 +78,7 @@ public class OptionsService extends AbstractService {
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
+		initialize();
 	}
 
 	// -- OptionsService methods --

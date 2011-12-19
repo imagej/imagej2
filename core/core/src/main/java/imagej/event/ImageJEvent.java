@@ -72,7 +72,7 @@ public abstract class ImageJEvent {
 
 	@Override
 	public String toString() {
-		return "\n\tcontext = " + context.getID() + "\n\tconsumed = " + consumed;
+		return "\n\tcontext = " + context + "\n\tconsumed = " + consumed;
 	}
 
 }

@@ -100,6 +100,7 @@ public final class RecentFileService extends AbstractService {
 		this.eventService = eventService;
 		this.menuService = menuService;
 		this.moduleService = moduleService;
+		initialize();
 	}
 
 	// -- RecentFileService methods --

@@ -1,5 +1,5 @@
 //
-// AppEventService.java
+// ServiceIndex.java
 //
 
 /*
@@ -32,76 +32,32 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.app;
+package imagej;
 
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.ext.plugin.PluginService;
-import imagej.platform.event.AppAboutEvent;
-import imagej.platform.event.AppPreferencesEvent;
-import imagej.platform.event.AppQuitEvent;
+import imagej.object.ObjectIndex;
+
+import java.util.List;
 
 /**
- * Service for executing plugins in response to application events.
+ * Data structure for tracking registered services.
  * 
  * @author Curtis Rueden
  */
-@Service
-public final class AppEventService extends AbstractService {
+public class ServiceIndex extends ObjectIndex<IService> {
 
-	private final EventService eventService;
-	private final PluginService pluginService;
-
-	// -- Constructors --
-
-	public AppEventService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
+	public ServiceIndex() {
+		super(IService.class);
 	}
 
-	public AppEventService(final ImageJ context,
-		final EventService eventService, final PluginService pluginService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-		initialize();
-	}
+	// -- ServiceIndex methods --
 
-	// -- AppEventService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void
-		onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
-	{
-		getPluginService().run(AboutImageJ.class);
-	}
-
-	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final AppPreferencesEvent event)
-	{
-		getPluginService().run(ShowPrefs.class);
-	}
-
-	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event)
-	{
-		getPluginService().run(QuitProgram.class);
+	/** Gets the first available service compatible with the given class. */
+	public <S extends IService> S getService(final Class<S> c) {
+		final List<IService> list = get(c);
+		if (list.isEmpty()) return null;
+		@SuppressWarnings("unchecked")
+		final S service = (S) list.get(0);
+		return service;
 	}
 
 }

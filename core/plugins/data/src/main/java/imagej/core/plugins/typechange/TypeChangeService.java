@@ -78,6 +78,7 @@ public final class TypeChangeService extends AbstractService {
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 		this.imageDisplayService = imageDisplayService;
+		initialize();
 	}
 
 	// -- TypeChangeService methods --
