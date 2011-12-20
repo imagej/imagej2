@@ -363,6 +363,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setCalibration(final double cal, final int d) {
+		if (imgPlus.calibration(d) == cal) return;
 		imgPlus.setCalibration(cal, d);
 		update();
 	}
@@ -457,6 +458,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setName(final String name) {
+		if (imgPlus.getName().equals(name)) return;
 		imgPlus.setName(name);
 		update();
 	}
