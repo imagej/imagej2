@@ -302,6 +302,15 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			for (int i = 0; i < colorTables.size(); i++)
 				dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 		}
+		// TODO : note Dec 20, 2011 BDZ
+		// we should tell the dsView that it needs a redraw (projector.map()) to be
+		// done soon. We don't mess with a Dataset here. So a DatasetUpdatedEvent is
+		// not generated. And thus no redraw happens. Because of this the last LUT
+		// is not applied. For Blobs this means it does not display with a white
+		// background. We need to notify the view. Soon the display event updates
+		// will be modified and when that happens an update call of some kind needs
+		// to go here. Note that a clearly marked blobs workaround is located in
+		// Harmonizer that should go away when this issue here is resolved.
 	}
 
 	/**
