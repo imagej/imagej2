@@ -177,7 +177,7 @@ public class Harmonizer {
 		// TODO - this should not be necessary but Blobs will not display inverted
 		// without this. When we change the update mechanism so that drawing only
 		// happens in the display code after it has collected all info about updates
-		// we should remove this.
+		// we should remove this. See bug #915
 		ds.update();
 	}
 
