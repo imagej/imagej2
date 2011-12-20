@@ -173,7 +173,12 @@ public class Harmonizer {
 		compositeHarmonizer.updateDataset(ds, imp);
 		overlayHarmonizer.updateDisplay(display, imp);
 		colorTableHarmonizer.updateDisplay(display, imp);
-		// NB - make it the lower level methods' job to call ds.update()
+		
+		// TODO - this should not be necessary but Blobs will not display inverted
+		// without this. When we change the update mechanism so that drawing only
+		// happens in the display code after it has collected all info about updates
+		// we should remove this.
+		ds.update();
 	}
 
 	/**
