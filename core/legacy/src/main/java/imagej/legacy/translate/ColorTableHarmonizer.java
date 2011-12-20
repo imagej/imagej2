@@ -302,7 +302,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			for (int i = 0; i < colorTables.size(); i++)
 				dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 		}
-		// TODO : note Dec 20, 2011 BDZ
+		// TODO : note Dec 20, 2011 BDZ  See bug #915
 		// we should tell the dsView that it needs a redraw (projector.map()) to be
 		// done soon. We don't mess with a Dataset here. So a DatasetUpdatedEvent is
 		// not generated. And thus no redraw happens. Because of this the last LUT
