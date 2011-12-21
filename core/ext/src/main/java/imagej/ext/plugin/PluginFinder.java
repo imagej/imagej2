@@ -80,16 +80,16 @@ public class PluginFinder {
 
 		final int oldSize = plugins.size();
 		for (final IndexItem<Plugin, IPlugin> item : pluginIndex) {
-			final PluginInfo<?> entry = createInfo(item);
+			final PluginInfo<?> info = createInfo(item);
 
 			// CTR TEMP - add "IJ2" suffix to all modern plugins, for debugging
-			final MenuPath menuPath = entry.getMenuPath();
+			final MenuPath menuPath = info.getMenuPath();
 			if (menuPath != null && menuPath.size() > 0) {
 				final MenuEntry menuLeaf = menuPath.getLeaf();
 				menuLeaf.setName(menuLeaf.getName() + " [IJ2]");
 			}
 
-			plugins.add(entry);
+			plugins.add(info);
 		}
 		final int newSize = plugins.size();
 

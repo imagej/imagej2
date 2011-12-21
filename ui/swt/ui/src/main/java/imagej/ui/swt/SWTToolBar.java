@@ -87,13 +87,13 @@ public class SWTToolBar extends Composite implements ToolBar {
 
 	private void populateToolBar() {
 		for (final Tool tool : toolService.getTools()) {
-			final PluginInfo<Tool> entry = tool.getInfo();
+			final PluginInfo<Tool> info = tool.getInfo();
 			try {
 				final Button button = createButton(tool);
-				toolButtons.put(entry.getName(), button);
+				toolButtons.put(info.getName(), button);
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid tool: " + entry, e);
+				Log.warn("Invalid tool: " + info, e);
 			}
 		}
 	}
@@ -101,9 +101,9 @@ public class SWTToolBar extends Composite implements ToolBar {
 	private Button createButton(final Tool tool)
 		throws InstantiableException
 	{
-		final PluginInfo<Tool> entry = tool.getInfo();
-		final String name = entry.getName();
-		final URL iconURL = entry.getIconURL();
+		final PluginInfo<Tool> info = tool.getInfo();
+		final String name = info.getName();
+		final URL iconURL = info.getIconURL();
 
 		final Image iconImage = loadImage(iconURL);
 		final Button button = new Button(this, SWT.TOGGLE);

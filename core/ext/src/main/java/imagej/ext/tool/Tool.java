@@ -65,7 +65,7 @@ public interface Tool extends IPlugin {
 	PluginInfo<Tool> getInfo();
 
 	/** Sets the info describing the tool. */
-	void setInfo(final PluginInfo<Tool> entry);
+	void setInfo(final PluginInfo<Tool> info);
 
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();

@@ -128,12 +128,12 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	private AbstractButton createButton(final Tool tool)
 		throws InstantiableException
 	{
-		final PluginInfo<Tool> entry = tool.getInfo();
-		final String name = entry.getName();
-		final String label = entry.getLabel();
-		final String description = entry.getDescription();
-		final URL iconURL = entry.getIconURL();
-		final boolean enabled = entry.isEnabled();
+		final PluginInfo<Tool> info = tool.getInfo();
+		final String name = info.getName();
+		final String label = info.getLabel();
+		final String description = info.getDescription();
+		final URL iconURL = info.getIconURL();
+		final boolean enabled = info.isEnabled();
 
 		final JToggleButton button = new JToggleButton();
 
