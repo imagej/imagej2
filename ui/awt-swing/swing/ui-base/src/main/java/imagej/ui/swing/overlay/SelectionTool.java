@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.overlay;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
@@ -46,8 +47,8 @@ import org.jhotdraw.draw.tool.DelegationSelectionTool;
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = "Selection", description = "Selection Tool: "
-	+ "adjusts the shape and position of an overlay via handles.",
+@Plugin(type = Tool.class, name = "Selection", description = "Selection "
+	+ "Tool: adjusts the shape and position of an overlay via handles.",
 	iconPath = "/icons/tools/selection.png", priority = SelectionTool.PRIORITY)
 public class SelectionTool extends AbstractTool {
 

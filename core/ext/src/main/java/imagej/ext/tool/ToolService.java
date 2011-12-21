@@ -49,20 +49,16 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ext.tool.event.ToolDeactivatedEvent;
 import imagej.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
 /**
  * Service for keeping track of available tools, including which tool is active,
@@ -70,7 +66,7 @@ import net.java.sezpoz.IndexItem;
  * 
  * @author Grant Harris
  * @author Curtis Rueden
- * @see ITool
+ * @see Tool
  * @see Tool
  */
 @Service
@@ -79,14 +75,15 @@ public class ToolService extends AbstractService {
 	private static final double SEPARATOR_DISTANCE = 10;
 
 	private final EventService eventService;
+	private final PluginService pluginService;
 
-	private Map<String, ITool> alwaysActiveTools;
-	private Map<String, ITool> tools;
+	private Map<String, Tool> alwaysActiveTools;
+	private Map<String, Tool> tools;
 
-	private List<ITool> alwaysActiveToolList;
-	private List<ITool> toolList;
+	private List<Tool> alwaysActiveToolList;
+	private List<Tool> toolList;
 
-	private ITool activeTool;
+	private Tool activeTool;
 
 	// -- Constructors --
 
@@ -96,9 +93,12 @@ public class ToolService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public ToolService(final ImageJ context, final EventService eventService) {
+	public ToolService(final ImageJ context, final EventService eventService,
+		final PluginService pluginService)
+	{
 		super(context);
 		this.eventService = eventService;
+		this.pluginService = pluginService;
 
 		createTools();
 		activeTool = new DummyTool();
@@ -108,8 +108,16 @@ public class ToolService extends AbstractService {
 
 	// -- ToolService methods --
 
-	public ITool getTool(final String name) {
-		final ITool alwaysActiveTool = alwaysActiveTools.get(name);
+	public EventService getEventService() {
+		return eventService;
+	}
+
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
+	public Tool getTool(final String name) {
+		final Tool alwaysActiveTool = alwaysActiveTools.get(name);
 		if (alwaysActiveTool != null) return alwaysActiveTool;
 		return tools.get(name);
 	}
@@ -121,29 +129,29 @@ public class ToolService extends AbstractService {
 	 * @param toolClass the class of the tool to fetch
 	 * @return the tool, or null if no such tool
 	 */
-	public <T extends ITool> T getTool(final Class<T> toolClass) {
-		for (final ITool tool : alwaysActiveToolList) {
+	public <T extends Tool> T getTool(final Class<T> toolClass) {
+		for (final Tool tool : alwaysActiveToolList) {
 			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
 		}
-		for (final ITool tool : toolList) {
+		for (final Tool tool : toolList) {
 			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
 		}
 		return null;
 	}
 
-	public List<ITool> getTools() {
+	public List<Tool> getTools() {
 		return toolList;
 	}
 
-	public List<ITool> getAlwaysActiveTools() {
+	public List<Tool> getAlwaysActiveTools() {
 		return alwaysActiveToolList;
 	}
 
-	public ITool getActiveTool() {
+	public Tool getActiveTool() {
 		return activeTool;
 	}
 
-	public void setActiveTool(final ITool activeTool) {
+	public void setActiveTool(final Tool activeTool) {
 		if (this.activeTool == activeTool) return; // nothing to do
 		assert this.activeTool != null;
 		if (activeTool == null) {
@@ -164,7 +172,7 @@ public class ToolService extends AbstractService {
 	 * Returns true if the two specified tools should have a separator between
 	 * them on the tool bar.
 	 */
-	public boolean isSeparatorNeeded(final ITool tool1, final ITool tool2) {
+	public boolean isSeparatorNeeded(final Tool tool1, final Tool tool2) {
 		if (tool1 == null || tool2 == null) return false;
 		final double priority1 = tool1.getInfo().getPriority();
 		final double priority2 = tool2.getInfo().getPriority();
@@ -176,9 +184,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final KyPressedEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onKeyDown(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onKeyDown(event);
 		}
@@ -187,9 +195,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final KyReleasedEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onKeyUp(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onKeyUp(event);
 		}
@@ -198,9 +206,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final MsPressedEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onMouseDown(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onMouseDown(event);
 		}
@@ -209,9 +217,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final MsReleasedEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onMouseUp(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onMouseUp(event);
 		}
@@ -220,9 +228,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final MsClickedEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onMouseClick(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onMouseClick(event);
 		}
@@ -231,9 +239,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final MsMovedEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onMouseMove(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onMouseMove(event);
 		}
@@ -242,9 +250,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final MsDraggedEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onMouseDrag(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onMouseDrag(event);
 		}
@@ -253,9 +261,9 @@ public class ToolService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final MsWheelEvent event) {
 		if (event.isConsumed()) return;
-		final ITool aTool = getActiveTool();
+		final Tool aTool = getActiveTool();
 		if (eventOk(event, aTool)) aTool.onMouseWheel(event);
-		for (final ITool tool : getAlwaysActiveTools()) {
+		for (final Tool tool : getAlwaysActiveTools()) {
 			if (event.isConsumed()) break;
 			if (eventOk(event, tool)) tool.onMouseWheel(event);
 		}
@@ -265,14 +273,16 @@ public class ToolService extends AbstractService {
 
 	private void createTools() {
 		// discover available tools
-		final List<ToolInfo> toolEntries = findTools();
-		Collections.sort(toolEntries);
+		final List<PluginInfo<Tool>> toolEntries =
+			pluginService.getPluginsOfType(Tool.class);
 
 		// create tool instances
-		alwaysActiveTools = new HashMap<String, ITool>();
-		tools = new HashMap<String, ITool>();
-		for (final ToolInfo info : toolEntries) {
-			final ITool tool;
+		alwaysActiveTools = new HashMap<String, Tool>();
+		alwaysActiveToolList = new ArrayList<Tool>();
+		tools = new HashMap<String, Tool>();
+		toolList = new ArrayList<Tool>();
+		for (final PluginInfo<Tool> info : toolEntries) {
+			final Tool tool;
 			try {
 				tool = info.createInstance();
 				tool.setInfo(info);
@@ -283,55 +293,21 @@ public class ToolService extends AbstractService {
 			}
 			if (info.isAlwaysActive()) {
 				alwaysActiveTools.put(info.getName(), tool);
+				alwaysActiveToolList.add(tool);
 			}
 			else {
 				tools.put(info.getName(), tool);
+				toolList.add(tool);
 			}
 		}
-
-		// sort tools by priority
-		final Comparator<ITool> toolComparator = new Comparator<ITool>() {
-
-			@Override
-			public int compare(final ITool tool1, final ITool tool2) {
-				return tool1.getInfo().compareTo(tool2.getInfo());
-			}
-		};
-		alwaysActiveToolList =
-			createSortedList(alwaysActiveTools.values(), toolComparator);
-		toolList = createSortedList(tools.values(), toolComparator);
-	}
-
-	/** Discovers tools using SezPoz. */
-	private List<ToolInfo> findTools() {
-		final Index<Tool, ITool> toolIndex = Index.load(Tool.class, ITool.class);
-		final List<ToolInfo> entries = new ArrayList<ToolInfo>();
-		for (final IndexItem<Tool, ITool> item : toolIndex) {
-			entries.add(createInfo(item));
-		}
-		return entries;
-	}
-
-	private ToolInfo createInfo(final IndexItem<Tool, ITool> item) {
-		final String className = item.className();
-		final Tool tool = item.annotation();
-		return new ToolInfo(className, tool);
-	}
-
-	private <T> List<T> createSortedList(final Collection<T> c,
-		final Comparator<? super T> comparator)
-	{
-		final ArrayList<T> list = new ArrayList<T>(c);
-		Collections.sort(list, comparator);
-		return Collections.unmodifiableList(list);
 	}
 
 	/** Checks that an event is OK to be dispatched to a particular tool. */
-	private boolean eventOk(final DisplayEvent event, final ITool tool) {
+	private boolean eventOk(final DisplayEvent event, final Tool tool) {
 		if (event.getDisplay() != null) return true;
 		// NB: An event with a null display came from the main app frame.
 		// We only pass these events on to tools flagged with activeInAppFrame.
-		final ToolInfo toolInfo = tool == null ? null : tool.getInfo();
+		final PluginInfo<?> toolInfo = tool == null ? null : tool.getInfo();
 		return toolInfo != null && toolInfo.isActiveInAppFrame();
 	}
 

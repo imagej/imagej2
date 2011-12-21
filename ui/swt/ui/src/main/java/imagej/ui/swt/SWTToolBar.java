@@ -36,8 +36,8 @@ package imagej.ui.swt;
 
 import imagej.ImageJ;
 import imagej.ext.InstantiableException;
-import imagej.ext.tool.ITool;
-import imagej.ext.tool.ToolInfo;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
@@ -86,8 +86,8 @@ public class SWTToolBar extends Composite implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		for (final ITool tool : toolService.getTools()) {
-			final ToolInfo entry = tool.getInfo();
+		for (final Tool tool : toolService.getTools()) {
+			final PluginInfo<Tool> entry = tool.getInfo();
 			try {
 				final Button button = createButton(tool);
 				toolButtons.put(entry.getName(), button);
@@ -98,10 +98,10 @@ public class SWTToolBar extends Composite implements ToolBar {
 		}
 	}
 
-	private Button createButton(final ITool tool)
+	private Button createButton(final Tool tool)
 		throws InstantiableException
 	{
-		final ToolInfo entry = tool.getInfo();
+		final PluginInfo<Tool> entry = tool.getInfo();
 		final String name = entry.getName();
 		final URL iconURL = entry.getIconURL();
 

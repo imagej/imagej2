@@ -41,6 +41,7 @@ import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
@@ -52,7 +53,7 @@ import imagej.util.IntCoords;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Pan",
+@Plugin(type = Tool.class, name = "Pan",
 	description = "Scrolling tool (or press space bar and drag)",
 	iconPath = "/icons/tools/pan.png", priority = PanTool.PRIORITY)
 public class PanTool extends AbstractTool {

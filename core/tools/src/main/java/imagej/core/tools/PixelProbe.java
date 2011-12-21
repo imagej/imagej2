@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ext.display.event.input.MsMovedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.ColorRGB;
@@ -44,7 +45,7 @@ import imagej.util.ColorRGB;
  * 
  * @author Barry DeZonia
  */
-@Tool(name = "Probe", alwaysActive = true)
+@Plugin(type = Tool.class, name = "Probe", alwaysActive = true)
 public class PixelProbe extends AbstractTool {
 
 	private final PixelHelper helper = new PixelHelper();

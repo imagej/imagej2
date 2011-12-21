@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.tool.event;
 
-import imagej.ext.tool.ITool;
+import imagej.ext.tool.Tool;
 
 /**
  * An event indicating a tool has been activated.
@@ -43,7 +43,7 @@ import imagej.ext.tool.ITool;
  */
 public class ToolActivatedEvent extends ToolEvent {
 
-	public ToolActivatedEvent(final ITool tool) {
+	public ToolActivatedEvent(final Tool tool) {
 		super(tool);
 	}
 

@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.tools.overlay.PolygonAdapter;
@@ -43,9 +44,9 @@ import imagej.ui.swing.tools.overlay.PolygonAdapter;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Freehand", description = "Freehand overlays",
-	iconPath = "/icons/tools/freehand.png", priority = FreehandTool.PRIORITY,
-	enabled = false)
+@Plugin(type = Tool.class, name = "Freehand",
+	description = "Freehand overlays", iconPath = "/icons/tools/freehand.png",
+	priority = FreehandTool.PRIORITY, enabled = false)
 public class FreehandTool extends AbstractTool {
 
 	public static final int PRIORITY = PolygonAdapter.PRIORITY - 1;

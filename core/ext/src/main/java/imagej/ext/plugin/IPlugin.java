@@ -34,24 +34,36 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
+import imagej.ext.display.Display;
 import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
-import imagej.ext.module.process.ModuleProcessor;
+import imagej.ext.plugin.process.PostprocessorPlugin;
+import imagej.ext.plugin.process.PreprocessorPlugin;
+import imagej.ext.tool.Tool;
 
 /**
  * Top-level interface for plugins. Plugins discoverable at runtime must
  * implement this interface and be annotated with @{@link Plugin}.
  * <p>
  * There are several different kinds of plugins:
+ * </p>
  * <ul>
  * <li>{@link RunnablePlugin} - plugins that are executable as modules.</li>
- * <li>{@link ImageJPlugin} - plugins defined for use within ImageJ. All
- * {@link ImageJPlugin}s are executable.</li>
- * <li><code>Display</code> - plugins that display data.</li>
- * <li>{@link ModuleProcessor} - plugins that perform pre- or post-processing on
- * other plugins ({@link ModulePreprocessor} and {@link ModulePostprocessor}
- * respectively).</li>
+ * <li>{@link ImageJPlugin} - executable plugins that perform a discrete
+ * operation, accessible via the ImageJ menus.</li>
+ * <li>{@link Tool} - plugins that map user input (e.g., keyboard and mouse
+ * actions) to behavior. They are usually rendered as icons in the ImageJ
+ * toolbar.</li>
+ * <li>{@link Display} - plugins that visualize objects, often used to display
+ * module outputs.</li>
+ * <li>{@link PreprocessorPlugin} - plugins that perform pre-processing on
+ * modules. A {@link PreprocessorPlugin} is a discoverable
+ * {@link ModulePreprocessor}.</li>
+ * <li>{@link PostprocessorPlugin} - plugins that perform post-processing on
+ * modules. A {@link PostprocessorPlugin} is a discoverable
+ * {@link ModulePostprocessor}.</li>
  * </ul>
+ * <p>
  * What all plugins have in common is that they are declared using an annotation
  * (@{@link Plugin}), and discovered if present on the classpath at runtime.
  * </p>

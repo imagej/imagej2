@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.tool.event;
 
 import imagej.event.ImageJEvent;
-import imagej.ext.tool.ITool;
+import imagej.ext.tool.Tool;
 
 /**
  * An event indicating something has happened to a tool.
@@ -44,13 +44,13 @@ import imagej.ext.tool.ITool;
  */
 public abstract class ToolEvent extends ImageJEvent {
 
-	private final ITool tool;
+	private final Tool tool;
 
-	public ToolEvent(final ITool tool) {
+	public ToolEvent(final Tool tool) {
 		this.tool = tool;
 	}
 
-	public ITool getTool() {
+	public Tool getTool() {
 		return tool;
 	}
 

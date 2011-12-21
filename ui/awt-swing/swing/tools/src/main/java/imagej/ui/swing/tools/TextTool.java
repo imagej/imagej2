@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.tools;
 
 import imagej.ext.MouseCursor;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
@@ -43,7 +44,7 @@ import imagej.ext.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Text", description = "Text tool",
+@Plugin(type = Tool.class, name = "Text", description = "Text tool",
 	iconPath = "/icons/tools/text.png", priority = TextTool.PRIORITY,
 	enabled = false)
 public class TextTool extends AbstractTool {

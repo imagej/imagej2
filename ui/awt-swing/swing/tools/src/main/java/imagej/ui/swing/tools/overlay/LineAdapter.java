@@ -37,6 +37,7 @@ package imagej.ui.swing.tools.overlay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.FreehandTool;
@@ -55,9 +56,9 @@ import org.jhotdraw.geom.BezierPath.Node;
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = "Line", description = "Straight line overlays",
-	iconPath = "/icons/tools/line.png", priority = LineAdapter.PRIORITY,
-	enabled = true)
+@Plugin(type = Tool.class, name = "Line",
+	description = "Straight line overlays", iconPath = "/icons/tools/line.png",
+	priority = LineAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = LineAdapter.PRIORITY)
 public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 

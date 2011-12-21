@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
@@ -42,9 +43,9 @@ import imagej.ext.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Wand", description = "Wand (tracing) tool",
-	iconPath = "/icons/tools/wand.png", priority = WandTool.PRIORITY,
-	enabled = false)
+@Plugin(type = Tool.class, name = "Wand",
+	description = "Wand (tracing) tool", iconPath = "/icons/tools/wand.png",
+	priority = WandTool.PRIORITY, enabled = false)
 public class WandTool extends AbstractTool {
 
 	public static final int PRIORITY = -110;

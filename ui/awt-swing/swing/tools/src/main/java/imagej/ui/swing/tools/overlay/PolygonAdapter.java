@@ -37,6 +37,7 @@ package imagej.ui.swing.tools.overlay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.util.Log;
@@ -64,7 +65,7 @@ import org.jhotdraw.geom.BezierPath.Node;
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = "Polygon", description = "Polygon overlays",
+@Plugin(type = Tool.class, name = "Polygon", description = "Polygon overlays",
 	iconPath = "/icons/tools/polygon.png", priority = PolygonAdapter.PRIORITY,
 	enabled = true)
 @JHotDrawOverlayAdapter(priority = PolygonAdapter.PRIORITY)

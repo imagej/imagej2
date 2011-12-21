@@ -34,25 +34,38 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
+import imagej.ext.AbstractUIDetails;
 import imagej.ext.Accelerator;
-import imagej.ext.IndexItemInfo;
+import imagej.ext.Instantiable;
+import imagej.ext.InstantiableException;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
 import imagej.util.StringMaker;
+
+import java.net.URL;
 
 /**
  * A collection of metadata about a particular plugin. For performance reasons,
  * the metadata is populated without actually loading the plugin class, by
  * reading from an efficient binary cache (see {@link PluginService} for
  * details). As such, ImageJ can very quickly build a complex menu structure
- * containing all available plugins without waiting for the Java class loader.
+ * containing all available {@link ImageJPlugin}s without waiting for the Java
+ * class loader.
  * 
  * @author Curtis Rueden
  * @see ImageJPlugin
  * @see Plugin
  * @see PluginService
  */
-public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
+public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
+	Instantiable<P>
+{
+
+	/** Fully qualified class name of this plugin. */
+	private String className;
+
+	/** Class object for this plugin. Lazily loaded. */
+	private Class<P> pluginClass;
 
 	/** Type of this entry's plugin; e.g., {@link ImageJPlugin}. */
 	private Class<P> pluginType;
@@ -60,12 +73,14 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 	/** Annotation describing the plugin. */
 	protected Plugin plugin;
 
+	/** TODO */
 	public PluginInfo(final String className, final Class<P> pluginType) {
 		setClassName(className);
 		setPluginType(pluginType);
 		setMenuPath(null);
 	}
 
+	/** TODO */
 	public PluginInfo(final String className, final Class<P> pluginType,
 		final Plugin plugin)
 	{
@@ -76,21 +91,96 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 
 	// -- PluginInfo methods --
 
+	/** Sets the fully qualified name of the {@link Class} of the item objects. */
+	public void setClassName(final String className) {
+		this.className = className;
+	}
+
+	/** TODO */
 	public void setPluginType(final Class<P> pluginType) {
 		this.pluginType = pluginType;
 	}
 
+	/** TODO */
 	public Class<P> getPluginType() {
 		return pluginType;
+	}
+
+	/**
+	 * Gets the URL corresponding to the icon resource path.
+	 * 
+	 * @see #getIconPath()
+	 */
+	public URL getIconURL() throws InstantiableException {
+		// See also: imagej.ext.menu.ShadowMenu#getIconURL()
+		final String iconPath = getIconPath();
+		if (iconPath == null || iconPath.isEmpty()) return null;
+		return loadClass().getResource(iconPath);
+	}
+
+	/** Gets whether tool is always active, rather than part of the toolbar. */
+	public boolean isAlwaysActive() {
+		return plugin.alwaysActive();
+	}
+
+	/**
+	 * Gets whether the tool receives input events when the main application frame
+	 * has the focus.
+	 */
+	public boolean isActiveInAppFrame() {
+		return plugin.activeInAppFrame();
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		final StringMaker sm = new StringMaker(super.toString());
-		sm.append("pluginType", pluginType);
+		final StringMaker sm = new StringMaker();
+		sm.append("class", className);
+		sm.append(", ", super.toString());
+		sm.append(", pluginType", pluginType);
 		return sm.toString();
+	}
+
+	// -- Instantiable methods --
+
+	@Override
+	public String getClassName() {
+		return className;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Class<P> loadClass() throws InstantiableException {
+		if (pluginClass == null) {
+			final Class<?> c;
+			try {
+				c = Class.forName(className);
+			}
+			catch (final ClassNotFoundException e) {
+				throw new InstantiableException("Class not found: " + className, e);
+			}
+			pluginClass = (Class<P>) c;
+		}
+		return pluginClass;
+	}
+
+	@Override
+	public P createInstance() throws InstantiableException {
+		final Class<P> c = loadClass();
+
+		// instantiate plugin
+		final P instance;
+		try {
+			instance = c.newInstance();
+		}
+		catch (final InstantiationException e) {
+			throw new InstantiableException(e);
+		}
+		catch (final IllegalAccessException e) {
+			throw new InstantiableException(e);
+		}
+		return instance;
 	}
 
 	// -- Helper methods --

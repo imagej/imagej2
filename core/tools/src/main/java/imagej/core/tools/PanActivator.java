@@ -36,8 +36,8 @@ package imagej.core.tools;
 
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.ITool;
 import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 
@@ -46,22 +46,22 @@ import imagej.ext.tool.ToolService;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Pan Activator", alwaysActive = true)
+@Plugin(type = Tool.class, name = "Pan Activator", alwaysActive = true)
 public class PanActivator extends AbstractTool {
 
 	/** Key used to activate pan tool. */
 	private static final char KEY = ' ';
 
 	/** Previously active tool, from before pan key was held. */
-	private ITool priorTool;
+	private Tool priorTool;
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		if (evt.getCharacter() != KEY) return;
 		final ToolService toolService =
 			evt.getContext().getService(ToolService.class);
-		final ITool activeTool = toolService.getActiveTool();
-		final ITool panTool = toolService.getTool("Pan");
+		final Tool activeTool = toolService.getActiveTool();
+		final Tool panTool = toolService.getTool("Pan");
 		if (activeTool == panTool) return;
 		priorTool = activeTool;
 		toolService.setActiveTool(panTool);
