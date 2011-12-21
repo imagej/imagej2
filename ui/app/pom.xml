@@ -104,6 +104,7 @@
 					<descriptors>
 						<descriptor>src/main/assembly/application.xml</descriptor>
 					</descriptors>
+					<finalName>imagej-${project.version}</finalName>
 				</configuration>
 				<executions>
 					<execution>
@@ -283,6 +284,7 @@
 							<descriptors>
 								<descriptor>src/main/assembly/all.xml</descriptor>
 							</descriptors>
+							<finalName>imagej-${project.version}</finalName>
 							<archive>
 								<manifest>
 									<mainClass>imagej.Main</mainClass>
