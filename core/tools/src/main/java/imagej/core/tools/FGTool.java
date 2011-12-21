@@ -74,7 +74,7 @@ public class FGTool extends AbstractTool {
 		return fgValue;
 	}
 
-	// -- ITool methods --
+	// -- Tool methods --
 
 	@Override
 	public void onMouseClick(final MsClickedEvent evt) {

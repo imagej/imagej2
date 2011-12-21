@@ -199,7 +199,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	/** Gets the URL of the icon associated with this node's {@link MenuEntry}. */
 	public URL getIconURL() {
-		// See also: imagej.ext.IndexItemInfo#getIconURL()
+		// See also: imagej.ext.plugin.PluginInfo#getIconURL()
 		if (menuEntry == null) return null;
 		String iconPath = menuEntry.getIconPath();
 		if (iconPath == null || iconPath.isEmpty()) {
