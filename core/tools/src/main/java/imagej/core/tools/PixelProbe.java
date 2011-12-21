@@ -50,7 +50,7 @@ public class PixelProbe extends AbstractTool {
 
 	private final PixelHelper helper = new PixelHelper();
 
-	// -- ITool methods --
+	// -- Tool methods --
 
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {

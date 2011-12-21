@@ -65,7 +65,7 @@ public class ZoomTool extends AbstractTool {
 	private final IntCoords mouseDown = new IntCoords(0, 0);
 	private final IntCoords mouseUp = new IntCoords(0, 0);
 
-	// -- ITool methods --
+	// -- Tool methods --
 
 	// NB: We do not respond to onKeyDown() for plus and minus here, because
 	// the ZoomHandler always-active tool deals with those shortcuts.
