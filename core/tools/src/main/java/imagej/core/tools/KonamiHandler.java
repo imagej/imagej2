@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ext.KeyCode;
+import imagej.ext.Priority;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
@@ -46,12 +47,13 @@ import imagej.ext.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Konami", alwaysActive = true)
+@Plugin(type = Tool.class, name = "Konami", alwaysActive = true,
+	priority = Priority.FIRST_PRIORITY)
 public class KonamiHandler extends AbstractTool {
 
-	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP,
-		KeyCode.DOWN, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT,
-		KeyCode.RIGHT, KeyCode.B, KeyCode.A };
+	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,
+		KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
+		KeyCode.B, KeyCode.A };
 
 	private static final String JINGLE =
 		"T100 L32 B > C E G B > C E C < B G E C < L8 B";
@@ -64,6 +66,7 @@ public class KonamiHandler extends AbstractTool {
 	public void onKeyDown(final KyPressedEvent evt) {
 		if (evt.getCode() == CODE[index]) {
 			index++;
+			if (index > CODE.length - 2) evt.consume();
 			if (index == CODE.length) {
 				index = 0;
 				new TunePlayer().play(JINGLE);
