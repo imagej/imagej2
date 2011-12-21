@@ -37,6 +37,7 @@ package imagej.ui.swing.tools.overlay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 
@@ -55,7 +56,7 @@ import org.jhotdraw.draw.Figure;
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = "Oval", description = "Oval selections",
+@Plugin(type = Tool.class, name = "Oval", description = "Oval selections",
 	iconPath = "/icons/tools/oval.png", priority = EllipseAdapter.PRIORITY,
 	enabled = true)
 @JHotDrawOverlayAdapter(priority = EllipseAdapter.PRIORITY)

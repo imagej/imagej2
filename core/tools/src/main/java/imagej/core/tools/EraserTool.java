@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
@@ -44,7 +45,7 @@ import imagej.ext.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Eraser", description = "Eraser Tool",
+@Plugin(type = Tool.class, name = "Eraser", description = "Eraser Tool",
 	iconPath = "/icons/tools/eraser.png", priority = EraserTool.PRIORITY,
 	enabled = false)
 public class EraserTool extends AbstractTool {

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ext.display.event.input.MsClickedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.ColorRGB;
@@ -47,7 +48,7 @@ import imagej.util.ColorRGB;
  * 
  * @author Barry DeZonia
  */
-@Tool(name = "FGTool",
+@Plugin(type = Tool.class, name = "FGTool",
 	description = "Drawing value tool (sets foreground color/value)",
 	iconPath = "/icons/tools/fgtool.png", priority = FGTool.PRIORITY)
 public class FGTool extends AbstractTool {

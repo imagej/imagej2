@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
@@ -44,7 +45,7 @@ import imagej.ext.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "FloodFill", label = "Flood Fill",
+@Plugin(type = Tool.class, name = "FloodFill", label = "Flood Fill",
 	description = "Flood Fill Tool", iconPath = "/icons/tools/flood-fill.png",
 	priority = FloodFillTool.PRIORITY, enabled = false)
 public class FloodFillTool extends AbstractTool {

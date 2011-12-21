@@ -40,8 +40,8 @@ import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
-import imagej.ext.tool.ITool;
-import imagej.ext.tool.ToolInfo;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ext.tool.event.ToolDeactivatedEvent;
@@ -107,8 +107,8 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		ITool lastTool = null;
-		for (final ITool tool : toolService.getTools()) {
+		Tool lastTool = null;
+		for (final Tool tool : toolService.getTools()) {
 			try {
 				final AbstractButton button = createButton(tool);
 				toolButtons.put(tool.getInfo().getName(), button);
@@ -125,10 +125,10 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		}
 	}
 
-	private AbstractButton createButton(final ITool tool)
+	private AbstractButton createButton(final Tool tool)
 		throws InstantiableException
 	{
-		final ToolInfo entry = tool.getInfo();
+		final PluginInfo<Tool> entry = tool.getInfo();
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();
@@ -190,7 +190,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	@EventHandler
 	protected void onEvent(final ToolActivatedEvent event) {
-		final ToolInfo info = event.getTool().getInfo();
+		final PluginInfo<Tool> info = event.getTool().getInfo();
 		if (info == null) return; // no info, no button
 		final String name = info.getName();
 		if (name == null) return; // no name, no button?
@@ -203,7 +203,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	@EventHandler
 	protected void onEvent(final ToolDeactivatedEvent event) {
-		final ToolInfo info = event.getTool().getInfo();
+		final PluginInfo<Tool> info = event.getTool().getInfo();
 		if (info == null) return; // no info, no button
 		final String name = info.getName();
 		if (name == null) return; // no name, no button?

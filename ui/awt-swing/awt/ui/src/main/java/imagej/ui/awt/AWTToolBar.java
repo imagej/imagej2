@@ -38,8 +38,8 @@ import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
-import imagej.ext.tool.ITool;
-import imagej.ext.tool.ToolInfo;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
@@ -90,8 +90,8 @@ public class AWTToolBar extends Panel implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		ITool lastTool = null;
-		for (final ITool tool : toolService.getTools()) {
+		Tool lastTool = null;
+		for (final Tool tool : toolService.getTools()) {
 			try {
 				final Button button = createButton(tool);
 				toolButtons.put(tool.getInfo().getName(), button);
@@ -107,10 +107,10 @@ public class AWTToolBar extends Panel implements ToolBar {
 		}
 	}
 
-	private Button createButton(final ITool tool)
+	private Button createButton(final Tool tool)
 		throws InstantiableException
 	{
-		final ToolInfo entry = tool.getInfo();
+		final PluginInfo<Tool> entry = tool.getInfo();
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();

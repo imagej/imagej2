@@ -43,6 +43,7 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.ext.plugin.PluginInfo;
 
 /**
  * Abstract base class for ImageJ tools. A tool is a collection of rules binding
@@ -57,17 +58,17 @@ import imagej.ext.display.event.input.MsWheelEvent;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public abstract class AbstractTool implements ITool {
+public abstract class AbstractTool implements Tool {
 
-	private ToolInfo info;
+	private PluginInfo<Tool> info;
 
 	@Override
-	public ToolInfo getInfo() {
+	public PluginInfo<Tool> getInfo() {
 		return info;
 	}
 
 	@Override
-	public void setInfo(final ToolInfo info) {
+	public void setInfo(final PluginInfo<Tool> info) {
 		this.info = info;
 	}
 

@@ -46,7 +46,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.MouseCursor;
-import imagej.ext.tool.ITool;
+import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
@@ -132,7 +132,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-		final ITool activeTool = ImageJ.get(ToolService.class).getActiveTool();
+		final Tool activeTool = ImageJ.get(ToolService.class).getActiveTool();
 		activateTool(activeTool);
 		final EventService eventService =
 				ImageJ.get(EventService.class);
@@ -199,11 +199,11 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 	@EventHandler
 	protected void onToolActivatedEvent(final ToolActivatedEvent event) {
-		final ITool iTool = event.getTool();
+		final Tool iTool = event.getTool();
 		activateTool(iTool);
 	}
 
-	protected void activateTool(final ITool iTool) {
+	protected void activateTool(final Tool iTool) {
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter) iTool;
 			final IJCreationTool creationTool = new IJCreationTool(display, adapter);

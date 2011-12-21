@@ -1,5 +1,5 @@
 //
-// Tool.java
+// ITool.java
 //
 
 /*
@@ -34,63 +34,70 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.tool;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
+import imagej.ext.MouseCursor;
+import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.display.event.input.MsClickedEvent;
+import imagej.ext.display.event.input.MsDraggedEvent;
+import imagej.ext.display.event.input.MsMovedEvent;
+import imagej.ext.display.event.input.MsPressedEvent;
+import imagej.ext.display.event.input.MsReleasedEvent;
+import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
 
 /**
- * Annotation identifying a tool, which gets loaded by ImageJ's dynamic
- * discovery mechanism.
+ * Interface for ImageJ tools. Tools discoverable at runtime must implement this
+ * interface and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link Tool}.class. While it possible to create a tool merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link AbstractTool}, for convenience.
  * 
  * @author Rick Lentz
+ * @author Grant Harris
  * @author Curtis Rueden
- * @see ITool
  * @see ToolService
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = ITool.class)
-public @interface Tool {
+public interface Tool extends IPlugin {
 
-	/** The name of the tool. */
-	String name() default "";
+	/** Gets the info describing the tool. */
+	PluginInfo<Tool> getInfo();
 
-	/** The human-readable label to use (e.g., as a tool tip). */
-	String label() default "";
+	/** Sets the info describing the tool. */
+	void setInfo(final PluginInfo<Tool> entry);
 
-	/** A longer description of the tool (e.g., in the status bar). */
-	String description() default "";
+	/** The tool's mouse pointer. */
+	MouseCursor getCursor();
 
-	/** Path to the tool's icon (e.g., shown in the toolbar). */
-	String iconPath() default "";
+	/** Informs the tool that it is now active. */
+	void activate();
 
-	/**
-	 * For tools in the toolbar (i.e., not-always-active tools), the priority
-	 * defines where the tool should appear in the user interface. The toolbar
-	 * displays tools sorted by priority.
-	 * <p>
-	 * For always-active tools, the priority defines the order in which they
-	 * receive events. An always-active tool can consume an event, preventing
-	 * lower-priority always-active tools from receiving it, so the priority order
-	 * is important.
-	 * </p>
-	 */
-	double priority() default Double.POSITIVE_INFINITY;
+	/** Informs the tool that it is no longer active. */
+	void deactivate();
 
-	/** When false, grays out the tool in the user interface. */
-	boolean enabled() default true;
+	/** Occurs when a key on the keyboard is pressed while the tool is active. */
+	void onKeyDown(KyPressedEvent event);
 
-	/** When true, tool has no button but rather is active all the time. */
-	boolean alwaysActive() default false;
+	/** Occurs when a key on the keyboard is released while the tool is active. */
+	void onKeyUp(KyReleasedEvent event);
 
-	/**
-	 * When true, tool receives events when the main ImageJ application frame is
-	 * active. When false, tool only receives events when a display window is
-	 * active.
-	 */
-	boolean activeInAppFrame() default false;
+	/** Occurs when a mouse button is pressed while the tool is active. */
+	void onMouseDown(MsPressedEvent event);
+
+	/** Occurs when a mouse button is released while the tool is active. */
+	void onMouseUp(MsReleasedEvent event);
+
+	/** Occurs when a mouse button is double clicked while the tool is active. */
+	void onMouseClick(MsClickedEvent event);
+
+	/** Occurs when the mouse is moved while the tool is active. */
+	void onMouseMove(MsMovedEvent event);
+
+	/** Occurs when the mouse is dragged while the tool is active. */
+	void onMouseDrag(MsDraggedEvent event);
+
+	/** Occurs when the mouse wheel is moved while the tool is active. */
+	void onMouseWheel(MsWheelEvent event);
 
 }

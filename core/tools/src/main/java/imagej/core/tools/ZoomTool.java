@@ -41,6 +41,7 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
@@ -51,7 +52,7 @@ import imagej.util.IntCoords;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Tool(name = "Zoom",
+@Plugin(type = Tool.class, name = "Zoom",
 	description = "Magnifying glass (or use \"+\" and \"-\" keys)",
 	iconPath = "/icons/tools/zoom.png", priority = ZoomTool.PRIORITY)
 public class ZoomTool extends AbstractTool {

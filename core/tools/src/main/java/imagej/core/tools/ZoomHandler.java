@@ -39,6 +39,7 @@ import imagej.ext.KeyCode;
 import imagej.ext.Priority;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
@@ -48,8 +49,8 @@ import imagej.ext.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Zoom Shortcuts", alwaysActive = true, activeInAppFrame = true,
-	priority = Priority.NORMAL_PRIORITY)
+@Plugin(type = Tool.class, name = "Zoom Shortcuts", alwaysActive = true,
+	activeInAppFrame = true, priority = Priority.NORMAL_PRIORITY)
 public class ZoomHandler extends AbstractTool {
 
 	@Override

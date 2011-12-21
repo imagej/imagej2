@@ -41,6 +41,7 @@ import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.SelectionTool;
@@ -61,7 +62,8 @@ import org.jhotdraw.draw.RectangleFigure;
  * @author Lee Kamentsky
  * @author Grant Harris
  */
-@Tool(name = "Rectangle", description = "Rectangular overlays",
+@Plugin(type = Tool.class, name = "Rectangle",
+	description = "Rectangular overlays",
 	iconPath = "/icons/tools/rectangle.png",
 	priority = RectangleAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = RectangleAdapter.PRIORITY)

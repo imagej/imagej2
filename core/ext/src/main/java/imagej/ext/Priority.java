@@ -42,15 +42,13 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.ServicePreprocessor;
 import imagej.ext.plugin.debug.DebugPostprocessor;
 import imagej.ext.plugin.debug.DebugPreprocessor;
-import imagej.ext.tool.Tool;
 
 /**
  * Constants for specifying an item's priority.
  * 
  * @author Johannes Schindelin
  * @author Curtis Rueden
- * @see Plugin
- * @see Tool
+ * @see Plugin#priority()
  */
 public class Priority {
 

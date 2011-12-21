@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.tools.overlay.LineAdapter;
@@ -43,7 +44,7 @@ import imagej.ui.swing.tools.overlay.LineAdapter;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Angle", description = "Angle tool",
+@Plugin(type = Tool.class, name = "Angle", description = "Angle tool",
 	iconPath = "/icons/tools/angle.png", priority = AngleTool.PRIORITY,
 	enabled = false)
 public class AngleTool extends AbstractTool {

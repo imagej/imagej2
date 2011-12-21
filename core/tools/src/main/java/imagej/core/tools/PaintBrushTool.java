@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 
@@ -44,8 +45,8 @@ import imagej.ext.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Paintbrush", description = "Paintbrush Tool",
-	iconPath = "/icons/tools/paintbrush.png",
+@Plugin(type = Tool.class, name = "Paintbrush",
+	description = "Paintbrush Tool", iconPath = "/icons/tools/paintbrush.png",
 	priority = PaintBrushTool.PRIORITY, enabled = false)
 public class PaintBrushTool extends AbstractTool {
 

@@ -40,6 +40,7 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
@@ -64,7 +65,7 @@ import imagej.ext.tool.Tool;
  * @author Johannes Schindelin
  * @author Curtis Rueden
  */
-@Tool(name = "Keyboard Shortcuts", alwaysActive = true,
+@Plugin(type = Tool.class, name = "Keyboard Shortcuts", alwaysActive = true,
 	activeInAppFrame = true)
 public class AcceleratorHandler extends AbstractTool {
 
