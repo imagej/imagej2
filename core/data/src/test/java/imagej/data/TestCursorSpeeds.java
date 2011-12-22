@@ -79,7 +79,7 @@ public class TestCursorSpeeds {
 	// -- helpers --
 
 	private void fill(final Dataset ds) {
-		final Img<? extends RealType<?>> image1 = ds.getImgPlus().getImg();
+		final Img<? extends RealType<?>> image1 = ds.getImgPlus();
 		final Cursor<? extends RealType<?>> cursor = image1.cursor();
 		for (long i = 0; i < X * Y * Z; i++) {
 			cursor.next();
@@ -113,19 +113,19 @@ public class TestCursorSpeeds {
 
 	private void cursorSpeedTest(final Dataset ds1, final Dataset ds2) {
 		for (int i = 0; i < 5; i++)
-			speedTest(ds1.getImgPlus().getImg(), ds2.getImgPlus().getImg(), ds2
-				.getImgPlus().getImg().cursor(), "ignore - regular cursor");
-		speedTest(ds1.getImgPlus().getImg(), ds2.getImgPlus().getImg(), ds2
-			.getImgPlus().getImg().cursor(), "regular cursor");
+			speedTest(ds1.getImgPlus(), ds2.getImgPlus(), ds2
+				.getImgPlus().cursor(), "ignore - regular cursor");
+		speedTest(ds1.getImgPlus(), ds2.getImgPlus(), ds2
+			.getImgPlus().cursor(), "regular cursor");
 	}
 
 	private void localizingCursorSpeedTest(final Dataset ds1, final Dataset ds2)
 	{
 		for (int i = 0; i < 5; i++)
-			speedTest(ds1.getImgPlus().getImg(), ds2.getImgPlus().getImg(), ds2
-				.getImgPlus().getImg().localizingCursor(),
+			speedTest(ds1.getImgPlus(), ds2.getImgPlus(), ds2
+				.getImgPlus().localizingCursor(),
 				"ignore - localizing cursor");
-		speedTest(ds1.getImgPlus().getImg(), ds2.getImgPlus().getImg(), ds2
-			.getImgPlus().getImg().localizingCursor(), "localizing cursor");
+		speedTest(ds1.getImgPlus(), ds2.getImgPlus(), ds2
+			.getImgPlus().localizingCursor(), "localizing cursor");
 	}
 }
