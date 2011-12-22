@@ -173,7 +173,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	 */
 	@Override
 	public Object getPlane(final int planeNumber, final boolean copyOK) {
-		final Img<? extends RealType<?>> img = imgPlus;
+		final Img<? extends RealType<?>> img = imgPlus.getImg();
 		if (img instanceof PlanarAccess) {
 			final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
 			final Object plane = planarAccess.getPlane(planeNumber);
@@ -186,7 +186,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setPlane(final int no, final Object newPlane) {
-		final Img<? extends RealType<?>> img = imgPlus;
+		final Img<? extends RealType<?>> img = imgPlus.getImg();
 		if (!(img instanceof PlanarAccess)) {
 			// cannot set by reference
 			Log.error("Cannot set plane for non-planar image");
