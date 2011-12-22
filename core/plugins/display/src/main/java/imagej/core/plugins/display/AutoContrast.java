@@ -159,7 +159,7 @@ public class AutoContrast implements ImageJPlugin {
 //		final double[] range = computeMinMax(dataset);
 
 		final Cursor<? extends RealType<?>> c =
-			dataset.getImgPlus().getImg().cursor();
+			dataset.getImgPlus().cursor();
 		final int[] histogram = new int[BINS];
 		while (c.hasNext()) {
 			final double value = c.next().getRealDouble();
