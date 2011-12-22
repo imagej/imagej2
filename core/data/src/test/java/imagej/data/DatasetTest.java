@@ -125,7 +125,7 @@ public class DatasetTest {
 		final Dataset ds = createNonplanarDataset();
 
 		final RandomAccess<? extends RealType<?>> accessor =
-			ds.getImgPlus().getImg().randomAccess();
+			ds.getImgPlus().randomAccess();
 		final long[] pos = new long[DIMENSIONS.length];
 		for (int t = 0; t < TPLANES; t++) {
 			pos[4] = t;
