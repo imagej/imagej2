@@ -173,7 +173,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	 */
 	@Override
 	public Object getPlane(final int planeNumber, final boolean copyOK) {
-		final Img<? extends RealType<?>> img = imgPlus.getImg();
+		final Img<? extends RealType<?>> img = imgPlus;
 		if (img instanceof PlanarAccess) {
 			final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
 			final Object plane = planarAccess.getPlane(planeNumber);
@@ -186,7 +186,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setPlane(final int no, final Object newPlane) {
-		final Img<? extends RealType<?>> img = imgPlus.getImg();
+		final Img<? extends RealType<?>> img = imgPlus;
 		if (!(img instanceof PlanarAccess)) {
 			// cannot set by reference
 			Log.error("Cannot set plane for non-planar image");
@@ -256,7 +256,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void copyInto(final Dataset target) {
-		copyDataValues(imgPlus.getImg(), target.getImgPlus().getImg());
+		copyDataValues(imgPlus, target.getImgPlus());
 		target.update();
 	}
 
@@ -288,13 +288,13 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void copyDataFrom(final Dataset other) {
 		// create a new img to hold data using our own factory
 		@SuppressWarnings("rawtypes")
-		final ImgFactory factory = getImgPlus().getImg().factory();
+		final ImgFactory factory = getImgPlus().factory();
 		@SuppressWarnings("unchecked")
 		final Img<? extends RealType<?>> newImg =
 			factory.create(other.getDims(), other.getType());
 
 		// copy the data into the new img
-		copyDataValues(other.getImgPlus().getImg(), newImg);
+		copyDataValues(other.getImgPlus(), newImg);
 
 		// create new imgplus to contain data using the current name
 		final double[] calib = new double[other.getDims().length];
