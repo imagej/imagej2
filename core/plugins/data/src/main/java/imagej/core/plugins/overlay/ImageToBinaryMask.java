@@ -93,21 +93,20 @@ public class ImageToBinaryMask implements ImageJPlugin {
 	@Override
 	public void run() {
 		final ImgPlus<? extends RealType<?>> imgplus = input.getImgPlus();
-		final Img<? extends RealType<?>> img = imgplus.getImg();
-		final long[] dimensions = new long[img.numDimensions()];
-		final long[] position = new long[img.numDimensions()];
-		final long[] min = new long[img.numDimensions()];
-		final long[] max = new long[img.numDimensions()];
+		final long[] dimensions = new long[imgplus.numDimensions()];
+		final long[] position = new long[imgplus.numDimensions()];
+		final long[] min = new long[imgplus.numDimensions()];
+		final long[] max = new long[imgplus.numDimensions()];
 		Arrays.fill(min, Long.MAX_VALUE);
 		Arrays.fill(max, Long.MIN_VALUE);
 		/*
 		 * First pass - find minima and maxima so we can use a shrunken image in some cases.
 		 */
-		final Cursor<? extends RealType<?>> c = img.localizingCursor();
+		final Cursor<? extends RealType<?>> c = imgplus.localizingCursor();
 		while (c.hasNext()) {
 			c.next();
 			if (c.get().getRealDouble() >= threshold) {
-				for (int i = 0; i < img.numDimensions(); i++) {
+				for (int i = 0; i < imgplus.numDimensions(); i++) {
 					final long p = c.getLongPosition(i);
 					if (p < min[i]) min[i] = p;
 					if (p > max[i]) max[i] = p;
@@ -118,7 +117,7 @@ public class ImageToBinaryMask implements ImageJPlugin {
 			throw new IllegalStateException(
 				"The threshold value is lower than that of any pixel");
 		}
-		for (int i = 0; i < img.numDimensions(); i++) {
+		for (int i = 0; i < imgplus.numDimensions(); i++) {
 			dimensions[i] = max[i] - min[i] + 1;
 		}
 		final NativeImg<BitType, BitAccess> nativeMask =
