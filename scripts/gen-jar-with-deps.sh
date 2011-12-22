@@ -21,15 +21,18 @@ java -cp 'target/test-classes:target/classes:target/dependency/*' \
   imagej.util.CombineAnnotations
 
 # add source code
+echo "Copying source files..."
 # NB: This is a lame HACK because I am too stupid to figure out how to write a
 # proper Maven assembly descriptor that includes the source code of all IJ2
 # modules in the toplevel directory structure alongside the class files.
-cp -r \
-  ../../core/*/src/main/java/* \
-  ../../core/*/*/src/main/java/* \
-  ../../ui/*/src/main/java/* \
-  ../../ui/*/*/src/main/java/* \
-  "$EXTRA"
+files=`find ../../core ../../ui -name '*.java' | grep 'src/main/java/'`
+for f in $files
+do
+  dest=`echo $f | sed -e 's/.*\/src\/main\/java\///'`
+  dir=`echo $dest | sed -e 's/\/[^\/]*\.java//'`
+  mkdir -p "$EXTRA/$dir"
+  cp "$f" "$EXTRA/$dest"
+done
 
 # generate combined JAR file
 mvn -P deps,swing package
