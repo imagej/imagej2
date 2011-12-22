@@ -76,7 +76,7 @@ public class RestructureUtils {
 	public static ImgPlus<? extends RealType<?>> createNewImgPlus(
 		final Dataset ds, final long[] dimensions, final AxisType[] axes)
 	{
-		final ImgFactory factory = ds.getImgPlus().getImg().factory();
+		final ImgFactory factory = ds.getImgPlus().factory();
 		final Img<? extends RealType<?>> img =
 			factory.create(dimensions, ds.getType());
 		final String name = ds.getName();
@@ -121,9 +121,9 @@ public class RestructureUtils {
 	{
 		checkSpanShapes(srcSpan, dstSpan);
 		final RandomAccess<? extends RealType<?>> srcAccessor =
-			srcImgPlus.getImg().randomAccess();
+			srcImgPlus.randomAccess();
 		final RandomAccess<? extends RealType<?>> dstAccessor =
-			dstImgPlus.getImg().randomAccess();
+			dstImgPlus.randomAccess();
 		final long[] srcOffsets = new long[srcOrigin.length];
 		for (int i = 0; i < srcOffsets.length; i++)
 			srcOffsets[i] = srcSpan[i] - 1;
