@@ -44,7 +44,15 @@ import loci.wapmx.nativeutils.jniloader.DefaultJniExtractor;
 import loci.wapmx.nativeutils.jniloader.JniExtractor;
 
 /**
- *
+ * This class is a utility for loading native libraries.
+ * <p>
+ * An early approach, exemplified in the now-deprecated loadLibrary method,
+ * was to find a writable directory on the classpath and expand the appropriate
+ * native library there and load it.  This approach fails in Linux.
+ * <p>
+ * Current approach is to unpack the native library into a temporary file and
+ * load from there.
+ * 
  * @author Aivar Grislis
  */
 public class NativeLibraryUtil {
@@ -64,7 +72,7 @@ public class NativeLibraryUtil {
     private static String s_writableDirectory = null;
 
     /**
-     * Determines the underlying hardward platform and architecture.
+     * Determines the underlying hardware platform and architecture.
      *
      * @return enumerated architecture value
      */
@@ -102,7 +110,7 @@ public class NativeLibraryUtil {
                 }
             }   
         }
-        IJ.log("architectures is " + s_architecture + " os.name is " + System.getProperty("os.name").toLowerCase());
+        IJ.log("architecture is " + s_architecture + " os.name is " + System.getProperty("os.name").toLowerCase());
         return s_architecture;
     }
 
@@ -139,30 +147,9 @@ public class NativeLibraryUtil {
      */
     public static String getPlatformLibraryPath() {
         String path = "META-INF" + DELIM + "lib" + DELIM;
-        switch (getArchitecture()) {
-            case LINUX_32:
-                path += "i386-Linux-gpp";
-                break;
-            case LINUX_64:
-                path += "x86_64-Linux-gpp";
-                break;
-            case WINDOWS_32:
-                path += "x86-Windows-msvc";
-                break;
-            case WINDOWS_64:
-                path += "x86_64-Windows-msvc";
-                break;
-            case OSX_32:
-                path += "i386-MacOSX-gpp";
-                break;
-            case OSX_64:
-                path += "x86_64-MacOSX-gpp";
-                break;
-            case OSX_PPC:
-                path += "ppc-MacOSX-gpp";
-                break;
-        }
-        return path + DELIM;
+        path += getArchitecture().name().toLowerCase() + DELIM;
+        IJ.log("platform specific path is " + path);
+        return path;
     }
 
     /**
@@ -188,6 +175,7 @@ public class NativeLibraryUtil {
                 name = "lib" + libName + ".dylib";
                 break;
         }
+        IJ.log("native library name " + name);
         return name;
     }
 
@@ -260,6 +248,7 @@ public class NativeLibraryUtil {
      * Can be used in place of System.loadLibrary().
      * Extracts
      */
+    @Deprecated
     public static void loadLibrary(Class libraryJarClass, String libname) {
         extractNativeLibraryToPath(libraryJarClass, libname);
         System.loadLibrary(libname);
@@ -274,6 +263,7 @@ public class NativeLibraryUtil {
      * @param libname
      * @return
      */
+    @Deprecated
     public static boolean extractNativeLibraryToPath(Class libraryJarClass, String libname) {
         boolean success = false;
 
