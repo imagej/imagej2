@@ -38,6 +38,7 @@ import imagej.ext.InstantiableException;
 import imagej.ext.module.AbstractModule;
 import imagej.ext.module.ModuleException;
 import imagej.util.ClassUtils;
+import imagej.util.Log;
 
 import java.util.Map;
 
@@ -145,7 +146,12 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 
 	@Override
 	public void run() {
-		plugin.run();
+		try {
+			plugin.run();
+		}
+		catch (final Throwable t) {
+			Log.error(t);
+		}
 	}
 
 	// -- Helper methods --
