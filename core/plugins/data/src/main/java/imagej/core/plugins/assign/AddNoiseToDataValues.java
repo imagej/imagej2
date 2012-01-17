@@ -38,9 +38,9 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAddNoise;
+import net.imglib2.type.numeric.ComplexType;
 
 /**
  * Fills an output Dataset by applying random noise to an input Dataset. This
@@ -96,7 +96,7 @@ public class AddNoiseToDataValues {
 	public void run() {
 		calcTypeMinAndMax();
 
-		final UnaryOperation<Real, Real> op =
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
 			new RealAddNoise(rangeMin, rangeMax, rangeStdDev);
 
 		final InplaceUnaryTransform transform =

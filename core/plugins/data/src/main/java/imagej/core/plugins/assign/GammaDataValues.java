@@ -37,9 +37,9 @@ package imagej.core.plugins.assign;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealGammaConstant;
+import net.imglib2.type.numeric.ComplexType;
 
 /**
  * Fills an output Dataset with the result of applying the gamma function to an
@@ -61,7 +61,7 @@ public class GammaDataValues extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real, Real> getOperation() {
+	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
 		return new RealGammaConstant(value);
 	}
 

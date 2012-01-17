@@ -39,9 +39,9 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAbs;
+import net.imglib2.type.numeric.ComplexType;
 
 /**
  * Fills an output Dataset by applying the absolute value function to an input
@@ -62,7 +62,8 @@ public class AbsDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<Real, Real> op = new RealAbs();
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
+				new RealAbs();
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

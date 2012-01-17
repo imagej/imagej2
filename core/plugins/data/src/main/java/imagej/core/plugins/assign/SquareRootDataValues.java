@@ -39,9 +39,9 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealSqrt;
+import net.imglib2.type.numeric.ComplexType;
 
 /**
  * Fills an output Dataset by taking the square root of the data values of an
@@ -63,7 +63,8 @@ public class SquareRootDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<Real, Real> op = new RealSqrt();
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
+				new RealSqrt();
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

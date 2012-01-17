@@ -39,9 +39,9 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsMisc;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealDivideConstant;
+import net.imglib2.type.numeric.ComplexType;
 
 /**
  * Fills an output Dataset by dividing an input Dataset by a user defined
@@ -65,7 +65,7 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real, Real> getOperation() {
+	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
 		final OptionsMisc optionsMisc =
 			optionsService.getOptions(OptionsMisc.class);
 		final String dbzString = optionsMisc.getDivByZeroVal();

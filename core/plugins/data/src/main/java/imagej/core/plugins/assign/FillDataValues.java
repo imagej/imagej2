@@ -49,9 +49,9 @@ import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealConstant;
+import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -107,7 +107,8 @@ public class FillDataValues implements ImageJPlugin {
 	private void fillSelectedRegionWithValue(final ImageDisplay disp,
 		final double value)
 	{
-		final UnaryOperation<Real, Real> op = new RealConstant(value);
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
+				new RealConstant(value);
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(disp, op);
 		transform.run();
