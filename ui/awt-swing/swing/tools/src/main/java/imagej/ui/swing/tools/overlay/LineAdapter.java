@@ -96,17 +96,19 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlay) {
-		super.updateOverlay(figure, overlay);
+	public void updateOverlay(final Figure figure, final OverlayView overlayView)
+	{
+		super.updateOverlay(figure, overlayView);
 		assert figure instanceof LineFigure;
 		final LineFigure line = (LineFigure) figure;
+		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof LineOverlay;
-		final LineOverlay loverlay = (LineOverlay) overlay;
+		final LineOverlay lineOverlay = (LineOverlay) overlay;
 		final Node startNode = line.getNode(0);
-		loverlay.setLineStart(new RealPoint(new double[] {
+		lineOverlay.setLineStart(new RealPoint(new double[] {
 			startNode.getControlPoint(0).x, startNode.getControlPoint(0).y }));
 		final Node endNode = line.getNode(1);
-		loverlay.setLineEnd(new RealPoint(new double[] {
+		lineOverlay.setLineEnd(new RealPoint(new double[] {
 			endNode.getControlPoint(0).x, endNode.getControlPoint(0).y }));
 	}
 
