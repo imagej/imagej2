@@ -41,9 +41,9 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsMisc;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealReciprocal;
+import net.imglib2.type.numeric.ComplexType;
 
 /**
  * Fills an output Dataset by taking reciprocal values of an input Dataset. IJ1
@@ -78,7 +78,8 @@ public class ReciprocalDataValues implements ImageJPlugin {
 		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
-		final UnaryOperation<Real, Real> op = new RealReciprocal(dbzVal);
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
+				new RealReciprocal(dbzVal);
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

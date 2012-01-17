@@ -40,14 +40,15 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.util.RealRect;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.function.real.RealImageFunction;
-import net.imglib2.ops.image.RealImageAssignment;
+import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Helper class for use by many plugins that apply an {@link UnaryOperation} to
@@ -64,24 +65,26 @@ public class InplaceUnaryTransform {
 	private final Dataset dataset;
 	private long[] origin;
 	private long[] span;
-	private final RealImageAssignment assigner;
+	private final ImageAssignment assigner;
 
 	// -- constructor --
 
 	public InplaceUnaryTransform(final ImageDisplay display,
-		final UnaryOperation<Real, Real> operation)
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> operation)
 	{
 		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
-		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-		final RealImageFunction f1 = new RealImageFunction(imgPlus.getImg());
-		final GeneralUnaryFunction<long[], Real, Real> function =
-			new GeneralUnaryFunction<long[], Real, Real>(f1, operation);
+		//RealDataset realSet = null;
+		//final Img<? extends RealType<?>> img = realSet.getData();
+		final Img<? extends RealType<?>> img = dataset.getImgPlus();
+		final RealImageFunction<DoubleType> f1 = new RealImageFunction<DoubleType>(img, new DoubleType());
+		final GeneralUnaryFunction<long[], DoubleType, DoubleType> function =
+			new GeneralUnaryFunction<long[], DoubleType, DoubleType>(f1, operation, new DoubleType());
 		setOriginAndSpan(display);
 		assigner =
-			new RealImageAssignment(imgPlus.getImg(), origin, span, function,
+			new ImageAssignment(img, origin, span, function, null,
 				new long[span.length], new long[span.length]);
 	}
-
+	
 	// -- public interface --
 
 	public void run() {

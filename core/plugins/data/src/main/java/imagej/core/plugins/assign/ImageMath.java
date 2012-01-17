@@ -52,10 +52,9 @@ import java.util.HashMap;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.BinaryOperation;
 import net.imglib2.ops.Function;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.function.general.GeneralBinaryFunction;
 import net.imglib2.ops.function.real.RealImageFunction;
-import net.imglib2.ops.image.RealImageAssignment;
+import net.imglib2.ops.image.ImageAssignment;
 import net.imglib2.ops.operation.binary.real.RealAdd;
 import net.imglib2.ops.operation.binary.real.RealAnd;
 import net.imglib2.ops.operation.binary.real.RealAvg;
@@ -69,7 +68,9 @@ import net.imglib2.ops.operation.binary.real.RealMultiply;
 import net.imglib2.ops.operation.binary.real.RealOr;
 import net.imglib2.ops.operation.binary.real.RealSubtract;
 import net.imglib2.ops.operation.binary.real.RealXor;
+import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
@@ -109,7 +110,7 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- other instance variables --
 
-	private final HashMap<String, BinaryOperation<Real, Real, Real>> operators;
+	private final HashMap<String, BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>>> operators;
 
 	// -- constructor --
 
@@ -118,7 +119,7 @@ public class ImageMath implements ImageJPlugin {
 	 * available.
 	 */
 	public ImageMath() {
-		operators = new HashMap<String, BinaryOperation<Real, Real, Real>>();
+		operators = new HashMap<String, BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>>>();
 
 		operators.put("Add", new RealAdd());
 		operators.put("Subtract", new RealSubtract());
@@ -241,16 +242,15 @@ public class ImageMath implements ImageJPlugin {
 
 	private void assignPixelValues(final long[] span) {
 		final long[] origin = new long[span.length];
-		final BinaryOperation<Real, Real, Real> binOp = operators.get(opName);
-		final Function<long[], Real> f1 =
-			new RealImageFunction(input1.getImgPlus().getImg());
-		final Function<long[], Real> f2 =
-			new RealImageFunction(input2.getImgPlus().getImg());
-		final GeneralBinaryFunction<long[], Real, Real, Real> binFunc =
-			new GeneralBinaryFunction<long[], Real, Real, Real>(f1, f2, binOp);
-		final RealImageAssignment assigner =
-			new RealImageAssignment(output.getImgPlus().getImg(), origin, span,
-				binFunc);
+		final BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>> binOp = operators.get(opName);
+		final Function<long[], DoubleType> f1 =
+			new RealImageFunction<DoubleType>(input1.getImgPlus(), new DoubleType());
+		final Function<long[], DoubleType> f2 =
+			new RealImageFunction<DoubleType>(input2.getImgPlus(), new DoubleType());
+		final GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType> binFunc =
+			new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(f1, f2, binOp, new DoubleType());
+		final ImageAssignment assigner =
+			new ImageAssignment(output.getImgPlus(), origin, span, binFunc, null);
 		assigner.assign();
 	}
 

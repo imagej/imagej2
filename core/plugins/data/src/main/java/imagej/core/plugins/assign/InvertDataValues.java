@@ -43,9 +43,9 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.Cursor;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealInvert;
+import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -90,7 +90,8 @@ public class InvertDataValues implements ImageJPlugin {
 			max = 255;
 		}
 		else calcValueRange();
-		final UnaryOperation<Real, Real> op = new RealInvert(min, max);
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
+				new RealInvert(min, max);
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

@@ -37,9 +37,9 @@ package imagej.core.plugins.assign;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.Real;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealConstant;
+import net.imglib2.type.numeric.ComplexType;
 
 /**
  * Fills an output image with a user specified constant value. The dimensions of
@@ -61,7 +61,7 @@ public class SetDataValues extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<Real, Real> getOperation() {
+	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
 		return new RealConstant(value);
 	}
 
