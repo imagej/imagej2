@@ -37,6 +37,8 @@ package imagej.core.plugins.restructure;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable16;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -58,8 +60,8 @@ public class RestructureUtils {
 	/**
 	 * Gets the dimensions of the output data
 	 */
-	public static long[] getDimensions(final Dataset ds,
-		final AxisType oneToModify, final long delta)
+	public static long[] getDimensions(final Dataset ds, final AxisType oneToModify,
+		final long delta)
 	{
 		final long[] dimensions = ds.getDims();
 		final int axisIndex = ds.getAxisIndex(oneToModify);
@@ -131,11 +133,9 @@ public class RestructureUtils {
 		for (int i = 0; i < dstOffsets.length; i++)
 			dstOffsets[i] = dstSpan[i] - 1;
 		final RegionIndexIterator iterS =
-			new RegionIndexIterator(srcOrigin, new long[srcOrigin.length],
-				srcOffsets);
+			new RegionIndexIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
 		final RegionIndexIterator iterD =
-			new RegionIndexIterator(dstOrigin, new long[dstOrigin.length],
-				dstOffsets);
+			new RegionIndexIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
 		while (iterS.hasNext() && iterD.hasNext()) {
 			iterS.fwd();
 			iterD.fwd();
@@ -147,12 +147,53 @@ public class RestructureUtils {
 	}
 
 	/**
+	 * Modifies an given ImgPlus by allocating 1 color table reference for each
+	 * plane in the ImgPlus. 
+	 */
+	public static void allocateColorTables(ImgPlus<?> imgPlus) {
+		long planeCount = planeCount(imgPlus);
+		if (planeCount > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("allocating color tables: too many planes");
+		imgPlus.initializeColorTables((int)planeCount);
+	}
+
+	/**
+	 * Returns the number of planes present in an ImgPlus
+	 */
+	public static long planeCount(ImgPlus<?> imgPlus) {
+		int numD = imgPlus.numDimensions();
+		if (numD < 2) return 0;
+		if (numD == 2) return 1;
+		long count = 1;
+		for (int d = 2; d < numD; d++) {
+			count *= imgPlus.dimension(d);
+		}
+		return count;
+	}
+
+	/**
+	 * Copies color table references from a source ImgPlus to a destination
+	 * ImgPlus. The ImgPluses are assumed to have the same number of planes.
+	 */
+	public static void copyColorTables(ImgPlus<?> srcImgPlus, ImgPlus<?> dstImgPlus) {
+		int tableCount = srcImgPlus.getColorTableCount();
+		for (int i = 0; i < tableCount; i++) {
+			ColorTable8 c8 = srcImgPlus.getColorTable8(i);
+			ColorTable16 c16 = srcImgPlus.getColorTable16(i);
+			dstImgPlus.setColorTable(c8, i);
+			dstImgPlus.setColorTable(c16, i);
+		}
+	}
+	
+	// -- private helpers --
+	
+	/**
 	 * Returns a span array covering the specified hyperplanes. Only the axis
 	 * along which the cut is being made has nonmaximal dimension. That dimension
 	 * is set to the passed in number of elements to be preserved.
 	 */
-	private static long[] calcSpan(final ImgPlus<?> imgPlus,
-		final AxisType axis, final long numElements)
+	private static long[] calcSpan(final ImgPlus<?> imgPlus, final AxisType axis,
+		final long numElements)
 	{
 		final long[] span = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(span);
@@ -167,8 +208,8 @@ public class RestructureUtils {
 	 * dimension is set to the passed in start position of the hyperplane along
 	 * the axis.
 	 */
-	private static long[] calcOrigin(final ImgPlus<?> imgPlus,
-		final AxisType axis, final long startPos)
+	private static long[] calcOrigin(final ImgPlus<?> imgPlus, final AxisType axis,
+		final long startPos)
 	{
 		final long[] origin = new long[imgPlus.numDimensions()];
 		final int axisIndex = imgPlus.getAxisIndex(axis);
@@ -176,13 +217,18 @@ public class RestructureUtils {
 		return origin;
 	}
 
-	private static void checkSpanShapes(final long[] srcSpan,
-		final long[] dstSpan)
+	/**
+	 * Throws an exception if the number of elements in two spans differ. Currently
+	 * does not reason about span shapes.
+	 */
+	private static void
+		checkSpanShapes(final long[] srcSpan, final long[] dstSpan)
 	{
 		final Extents srcExtents = new Extents(srcSpan);
 		final Extents dstExtents = new Extents(dstSpan);
-		if (srcExtents.numElements() != dstExtents.numElements()) throw new IllegalArgumentException(
-			"hypervolume regions not shape compatible");
+		if (srcExtents.numElements() != dstExtents.numElements())
+			throw new IllegalArgumentException(
+				"hypervolume regions not shape compatible");
 		// TODO
 		// we could do a lot more checking but won't for now
 		// checks would be that all axes are the same ones and any missing ones
