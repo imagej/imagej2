@@ -66,8 +66,8 @@ public class InvokePluginTest implements ImageJPlugin {
 		final boolean signed = false;
 		final boolean floating = false;
 		final String fillType = "Ramp";
-		final int width = 512;
-		final int height = 512;
+		final long width = 512;
+		final long height = 512;
 		final Future<Module> future =
 			pluginService.run("imagej.io.plugins.NewImage", name, bitDepth, signed,
 				floating, fillType, width, height);
