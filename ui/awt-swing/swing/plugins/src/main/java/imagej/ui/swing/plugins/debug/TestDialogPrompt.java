@@ -36,27 +36,32 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
 
 /**
- * TODO
+ * 
+ * 1/22/12, GBH: Updated to use UIService.showDialog
  *
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Sandbox>TestDialogPrompt")
 public class TestDialogPrompt implements ImageJPlugin {
-
+	
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
+	
 	@Override
 	public void run() {
-		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
-		DialogPrompt dialog = ui.dialogPrompt("Message", "Title",
-				DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
-		DialogPrompt.Result result = dialog.prompt();
+		DialogPrompt.Result result = uiService.showDialog("This is the Question", "Question Dialog",
+				DialogPrompt.MessageType.QUESTION_MESSAGE, 
+				DialogPrompt.OptionType.YES_NO_OPTION);
 		if (result == DialogPrompt.Result.YES_OPTION) {
 			System.out.println("That's a YES");
+			uiService.createOutputWindow("Output Window");
 		}
 	}
 
