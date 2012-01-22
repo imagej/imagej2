@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.debug;
 
+import imagej.data.display.event.CanvasEvent;
+import imagej.data.display.event.DataViewEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
 import imagej.event.StatusEvent;
 import imagej.ext.display.event.DisplayEvent;
-import imagej.ext.display.event.input.KyEvent;
-import imagej.ext.display.event.input.MsButtonEvent;
-import imagej.ext.display.event.input.MsMovedEvent;
+import imagej.ext.display.event.input.*;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.event.ModuleEvent;
 import imagej.ext.plugin.ImageJPlugin;
@@ -65,6 +65,8 @@ import java.util.Locale;
 /**
  * Listens for all events. Useful for logging, history, macro recording,
  * perhaps.
+ * 
+ * 1/22/12, GBH:  Refined definition of a DisplayEvent (a not InputEvent or CanvasEvent)
  * 
  * @author Grant Harris
  * @author Curtis Rueden
@@ -191,14 +193,24 @@ public class WatchEvents implements ImageJPlugin {
 
 	@EventHandler
 	protected void onEvent(final ImageJEvent evt) {
-		final boolean isDisplayEvent =
-			evt instanceof DisplayEvent && !(evt instanceof MsMovedEvent);
-
 		final boolean okApplication = showApp && evt instanceof ApplicationEvent;
+		final boolean isDisplayEvent =
+			evt instanceof DisplayEvent && !(evt instanceof InputEvent) 
+				&& !(evt instanceof CanvasEvent);
 		final boolean okDisplay = showDisplay && isDisplayEvent;
+		/* DisplayEvent
+				InputEvent
+					KyEvent
+					MsEvent
+				CanvasEvent
+					ZoomEvent
+		TODO add DataViewEvent
+		*/
+						
 		final boolean okMsMoved = showMsMoved && evt instanceof MsMovedEvent;
 		final boolean okMsButton = showMsButton && evt instanceof MsButtonEvent;
 		final boolean okKy = showKy && evt instanceof KyEvent;
+		
 		final boolean okFile = showFile && evt instanceof FileEvent;
 		final boolean okList = showList && evt instanceof ListEvent;
 		final boolean okModule = showModule && evt instanceof ModuleEvent;
