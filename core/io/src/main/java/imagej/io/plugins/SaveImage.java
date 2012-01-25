@@ -37,9 +37,9 @@ package imagej.io.plugins;
 import imagej.data.Dataset;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-
-import javax.swing.JOptionPane;
+import imagej.ui.UIService;
 
 /**
  * Saves the current {@link Dataset} to disk.
@@ -50,10 +50,12 @@ import javax.swing.JOptionPane;
 	@Menu(label = "Save", weight = 20, mnemonic = 's') })
 public class SaveImage implements ImageJPlugin {
 
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
+
 	@Override
 	public void run() {
-		JOptionPane.showMessageDialog(null,
-			"This feature has not been implemented");
+		uiService.showDialog("This feature has not been implemented");
 	}
 
 }
