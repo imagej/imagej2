@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ImageJ;
+import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
@@ -61,6 +63,7 @@ public class PickerTool extends AbstractTool {
 	// -- instance variables --
 
 	private final PixelHelper helper = new PixelHelper();
+	private boolean altKeyDown = false;
 
 	// -- Tool methods --
 
@@ -72,32 +75,45 @@ public class PickerTool extends AbstractTool {
 		OptionsService service = ImageJ.get(OptionsService.class);
 		
 		OptionsColors options = service.getOptions(OptionsColors.class);
+
+		double value = helper.getValue();
+		ColorRGB color = helper.getColor();
 		
-		// foreground case?
-		if (evt.getButton() == MsClickedEvent.LEFT_BUTTON) {
+		// background case?
+		if (altKeyDown) {
 			if (helper.isPureRGBCase()) {
-				options.setFgColor(helper.getColor());
+				options.setBgColor(color);
 				options.save();
-				colorMessage("Foreground",helper.getColor());
+				colorMessage("Background",color);
 			}
 			else {
-				options.setFgGray(helper.getValue());
+				options.setBgGray(value);
 				options.save();
-				grayMessage("Foreground",helper.getValue());
+				grayMessage("Background",value);
 			}
 		}
-		else { // background case
+		else { // foreground case
 			if (helper.isPureRGBCase()) {
-				options.setBgColor(helper.getColor());
+				options.setFgColor(color);
 				options.save();
-				colorMessage("Background",helper.getColor());
+				colorMessage("Foreground",color);
 			}
 			else {
-				options.setBgGray(helper.getValue());
+				options.setFgGray(value);
 				options.save();
-				grayMessage("Background",helper.getValue());
+				grayMessage("Foreground",value);
 			}
 		}
+	}
+
+	@Override
+	public void onKeyDown(KyPressedEvent evt) {
+		altKeyDown = evt.getModifiers().isAltDown(); 
+	}
+	
+	@Override
+	public void onKeyUp(KyReleasedEvent evt) {
+		altKeyDown = evt.getModifiers().isAltDown(); 
 	}
 
 	// -- private interface --
