@@ -126,5 +126,10 @@ public abstract class AbstractTool implements Tool {
 	public void onMouseWheel(final MsWheelEvent evt) {
 		// do nothing by default
 	}
+	
+	@Override
+	public void configure() {
+		// do nothing by default
+	}
 
 }

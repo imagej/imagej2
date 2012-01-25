@@ -161,6 +161,13 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 			public void mouseEntered(final MouseEvent evt) {
 				eventService.publish(new StatusEvent(description));
 			}
+			
+			@Override
+			public void mousePressed(final MouseEvent evt) {
+				if (evt.getButton() == MouseEvent.NOBUTTON) return;
+				if (evt.getButton() == MouseEvent.BUTTON1) return;
+				tool.configure();
+			}
 		});
 
 		// activate tool when button pressed

@@ -1,5 +1,5 @@
 //
-// EraserTool.java
+//EraserTool.java
 //
 
 /*
@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+ * Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+ * Neither the names of the ImageJDev.org developers nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -34,24 +34,47 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.AbstractTool;
+import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.Tool;
+import imagej.options.OptionsService;
+import imagej.options.plugins.OptionsColors;
 
 /**
- * TODO
- * 
- * @author Rick Lentz
- * @author Grant Harris
- * @author Curtis Rueden
- */
+* @author Barry DeZonia
+*/
 @Plugin(type = Tool.class, name = "Eraser", description = "Eraser Tool",
-	iconPath = "/icons/tools/eraser.png", priority = EraserTool.PRIORITY,
-	enabled = false)
-public class EraserTool extends AbstractTool {
+	iconPath = "/icons/tools/eraser.png", priority = EraserTool.PRIORITY)
+public class EraserTool extends AbstractLineTool {
 
-	public static final int PRIORITY = -302;
+	public static final int PRIORITY = -300;
 
-	// TODO
+	public EraserTool() {
+		setLineWidth(5);
+	}
+	
+	@Override
+	public void configure() {
+		PluginService pluginService = ImageJ.get(PluginService.class);
+		pluginService.run(EraserToolConfigPlugin.class,this);
+	}
 
+	@Override
+	public void initAttributes(DrawingTool tool, boolean isColor) {
+
+		// set line width of drawingTool
+		tool.setLineWidth(getLineWidth());
+
+		OptionsService oSrv = ImageJ.get(OptionsService.class);
+		
+		OptionsColors opts = oSrv.getOptions(OptionsColors.class);
+		
+		if (isColor) {
+			tool.setColorValue(opts.getBgColor());
+		}
+		else {
+			tool.setGrayValue(opts.getBgGray());
+		}
+	}
 }

@@ -1,5 +1,5 @@
 //
-// PencilTool.java
+// PencilToolConfigPlugin.java
 //
 
 /*
@@ -34,47 +34,34 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.Tool;
-import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsColors;
+
 
 /**
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Pencil", description = "Pencil Tool",
-	iconPath = "/icons/tools/pencil.png", priority = PencilTool.PRIORITY)
-public class PencilTool extends AbstractLineTool {
+@Plugin(label="Pencil Tool")
+public class PencilToolConfigPlugin implements ImageJPlugin {
 
-	public static final int PRIORITY = -301;
-
-	public PencilTool() {
-		setLineWidth(1);
-	}
-
-	@Override
-	public void configure() {
-		PluginService pluginService = ImageJ.get(PluginService.class);
-		pluginService.run(PencilToolConfigPlugin.class,this);
-	}
+	@Parameter(required=true)
+	private PencilTool tool;
+	
+	// TODO - it would be nice to persist this pencil width. but the associated tool cannot
+	// persist its own width. thus you get in a situation that the dialog pencil width does
+	// not equal the tool's initial value which is confusing. Tools need to be able to
+	// persist some values to get around this.
+	
+	@Parameter(label = "Pencil Width (pixels)",	min = "1", max = "1000000", persist = false, initializer="init")
+	private long width;
 
 	@Override
-	public void initAttributes(DrawingTool tool, boolean isColor) {
-
-		// set line width of drawingTool
-		tool.setLineWidth(getLineWidth());
-
-		OptionsService oSrv = ImageJ.get(OptionsService.class);
-		
-		OptionsColors opts = oSrv.getOptions(OptionsColors.class);
-		
-		if (isColor) {
-			tool.setColorValue(opts.getFgColor());
-		}
-		else {
-			tool.setGrayValue(opts.getFgGray());
-		}
+	public void run() {
+		tool.setLineWidth(width);
+	}
+	
+	protected void init() {
+		width = tool.getLineWidth();
 	}
 }

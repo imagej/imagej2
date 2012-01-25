@@ -1,5 +1,5 @@
 //
-// FGTool.java
+// PaintbrushToolConfigPlugin.java
 //
 
 /*
@@ -34,63 +34,34 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ext.display.event.input.MsClickedEvent;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
-import imagej.util.ColorRGB;
 
-// TODO - this code adapted from PixelProbe. Update both this and that to
-// share some code.
 
 /**
- * Sets foreground value when tool is active and mouse clicked over an image.
- * 
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "FGTool",
-	description = "Drawing value tool (sets foreground color/value)",
-	iconPath = "/icons/tools/fgtool.png", priority = FGTool.PRIORITY)
-public class FGTool extends AbstractTool {
+@Plugin(label="Paintbrush Tool")
+public class PaintBrushToolConfigPlugin implements ImageJPlugin {
 
-	// -- constants --
-
-	public static final int PRIORITY = -299;
-
-	// -- instance variables --
-
-	private final PixelHelper helper = new PixelHelper();
-	private ColorRGB fgColor = new ColorRGB(0, 0, 0);
-	private double fgValue = 0;
-
-	// -- ValueTool methods --
-
-	public ColorRGB getFgColor() {
-		return new ColorRGB(fgColor.getRed(), fgColor.getGreen(), fgColor
-			.getBlue());
-	}
-
-	public double getFgValue() {
-		return fgValue;
-	}
-
-	// -- Tool methods --
+	@Parameter(required=true)
+	private PaintBrushTool tool;
+	
+	// TODO - it would be nice to persist this brush width. but the associated tool cannot
+	// persist its own width. thus you get in a situation that the dialog brush width does
+	// not equal the tool's initial value which is confusing. Tools need to be able to
+	// persist some values to get around this.
+	
+	@Parameter(label = "Brush Width (pixels)",	min = "1", max = "1000000", persist = false, initializer="init")
+	private long width;
 
 	@Override
-	public void onMouseClick(final MsClickedEvent evt) {
-
-		if (!helper.processEvent(evt)) return;
-
-		fgColor = helper.getColor();
-		if (!helper.isPureRGBCase()) {
-			fgValue = helper.getValue();
-		}
-		final String message =
-			String.format("(%d,%d,%d)", fgColor.getRed(), fgColor.getGreen(),
-				fgColor.getBlue());
-		helper.updateStatus(message);
+	public void run() {
+		tool.setLineWidth(width);
 	}
-
-	// -- private interface --
-
+	
+	protected void init() {
+		width = tool.getLineWidth();
+	}
 }
