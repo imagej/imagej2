@@ -60,6 +60,8 @@ import net.java.sezpoz.Indexable;
 @Indexable(type = IPlugin.class)
 public @interface Plugin {
 
+	String APPLICATION_MENU_ROOT = "app";
+
 	/**
 	 * The type of plugin; e.g., {@link ImageJPlugin}, {@link PreprocessorPlugin},
 	 * {@link PostprocessorPlugin} or {@link Display}.
@@ -91,6 +93,8 @@ public @interface Plugin {
 	 * not both.
 	 */
 	Menu[] menu() default {};
+
+	String menuRoot() default APPLICATION_MENU_ROOT;
 
 	/** Path to the plugin's icon (e.g., shown in the menu structure). */
 	String iconPath() default "";
