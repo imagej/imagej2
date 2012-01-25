@@ -73,16 +73,20 @@ public abstract class AbstractLineTool extends AbstractTool {
 	
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
-		initDrawingTool(evt);
-		if (drawingTool != null) {
-			drawingTool.moveTo(evt.getX(), evt.getY());
+		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON) {
+			initDrawingTool(evt);
+			if (drawingTool != null) {
+				drawingTool.moveTo(evt.getX(), evt.getY());
+			}
 		}
 		super.onMouseDown(evt);
 	}
 
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
-		drawingTool = null;
+		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON) {
+			drawingTool = null;
+		}
 		super.onMouseUp(evt);
 	}
 
@@ -124,25 +128,26 @@ public abstract class AbstractLineTool extends AbstractTool {
 		// get dataset associated with mouse down event
 		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
-		// try to avoid allocating objects when possible
-		if ((drawingTool == null) || (drawingTool.getDataset() != dataset))
-			drawingTool = new DrawingTool(dataset);
+		// allocate drawing tool
+		drawingTool = new DrawingTool(dataset);
 
+		// set the position of tool to current display's position
 		// FIXME - this will break when the view axes are different than the
-		// dataset's axes. this could happen from a view combining multiple datasets
+		// dataset's axes. this could happen from a display that combines multiple
+		// datasets. Or perhaps a display that ignores some axes from a dataset.
 		long[] currPos = new long[imageDisplay.numDimensions()];
 		for (int i = 0; i < currPos.length; i++)
 			currPos[i] = imageDisplay.getLongPosition(i);
 		drawingTool.setPosition(currPos);
 		
-		// TODO - change here to make this work on any two axes
+		// TODO - change here to make this work on any two arbitrary axes
 		drawingTool.setUAxis(0);
 		drawingTool.setVAxis(1);
 
-		initAttributes(dataset.isRGBMerged());
+		initDrawToolAttributes(dataset.isRGBMerged());
 	}
 
-	private void initAttributes(boolean isColorData) {
+	private void initDrawToolAttributes(boolean isColorData) {
 
 		// set line width of drawingTool
 		
