@@ -37,7 +37,7 @@ package imagej.core.plugins.assign;
 import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
 import imagej.data.DatasetFactory;
-import imagej.ext.MenuEntry;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -79,7 +79,9 @@ import net.imglib2.type.numeric.real.DoubleType;
  * @author Barry DeZonia
  */
 @Plugin(iconPath = "/icons/plugins/calculator.png", menu = {
-	@Menu(label = "Process", weight = MenuEntry.PROCESS_WEIGHT, mnemonic = 'p'),
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Image Calculator...", weight = 22) })
 public class ImageMath implements ImageJPlugin {
 

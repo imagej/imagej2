@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.integer.UnsignedIntType;
@@ -46,7 +47,9 @@ import net.imglib2.type.numeric.integer.UnsignedIntType;
  */
 @Plugin(type = TypeChanger.class, selectable = true,
 	selectionGroup = "typechange", menu = {
-		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = MenuConstants.IMAGE_LABEL,
+			weight = MenuConstants.IMAGE_WEIGHT,
+			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
 		@Menu(label = "Unsigned 32-bit", weight = 205) })
 public class ChangeToUINT32 extends TypeChanger {

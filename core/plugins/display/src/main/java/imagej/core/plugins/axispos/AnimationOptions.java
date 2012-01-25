@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -52,7 +53,9 @@ import net.imglib2.meta.AxisType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
 	@Menu(label = "Animation Options...", weight = 4) })

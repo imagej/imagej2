@@ -44,16 +44,6 @@ public class MenuEntry {
 
 	public static final double DEFAULT_WEIGHT = Double.POSITIVE_INFINITY;
 
-	// TODO - May want to move these constants somewhere more ImageJ-specific.
-	public static final double FILE_WEIGHT = 0;
-	public static final double EDIT_WEIGHT = 1;
-	public static final double IMAGE_WEIGHT = 2;
-	public static final double PROCESS_WEIGHT = 3;
-	public static final double ANALYZE_WEIGHT = 4;
-	public static final double PLUGINS_WEIGHT = 5;
-	public static final double WINDOW_WEIGHT = 6;
-	public static final double HELP_WEIGHT = 1e7;
-
 	private String name;
 	private double weight = DEFAULT_WEIGHT;
 	private char mnemonic;

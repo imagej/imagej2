@@ -38,6 +38,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -59,7 +60,9 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Fill", weight = 28, accelerator = "control F") })
 public class FillDataValues implements ImageJPlugin {
 

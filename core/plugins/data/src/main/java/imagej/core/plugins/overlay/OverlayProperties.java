@@ -40,6 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -60,7 +61,9 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Properties...", mnemonic = 'p') })
 public class OverlayProperties implements ImageJPlugin, PreviewPlugin {

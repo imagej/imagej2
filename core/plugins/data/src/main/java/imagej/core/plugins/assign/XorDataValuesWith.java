@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -47,7 +48,10 @@ import net.imglib2.type.numeric.ComplexType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "XOR...", weight = 8) })
 public class XorDataValuesWith extends AbstractAssignPlugin {
 

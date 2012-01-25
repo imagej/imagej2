@@ -36,6 +36,7 @@ package imagej.core.plugins.display;
 
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -47,7 +48,10 @@ import imagej.ext.plugin.PreviewPlugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Color"),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
+	@Menu(label = "Color"),
 	@Menu(label = "Edit Colors", weight = -5) },
 	iconPath = "/icons/plugins/color_wheel.png")
 public class EditColors implements ImageJPlugin, PreviewPlugin {

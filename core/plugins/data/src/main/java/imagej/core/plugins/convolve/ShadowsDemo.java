@@ -46,6 +46,7 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -63,7 +64,10 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Shadows", mnemonic = 's'),
 	@Menu(label = "Shadows Demo", weight = 200) })
 public class ShadowsDemo implements ImageJPlugin {

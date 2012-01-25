@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.type.numeric.integer.ShortType;
@@ -46,7 +47,9 @@ import net.imglib2.type.numeric.integer.ShortType;
  */
 @Plugin(type = TypeChanger.class, selectable = true,
 	selectionGroup = "typechange", menu = {
-		@Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = MenuConstants.IMAGE_LABEL,
+			weight = MenuConstants.IMAGE_WEIGHT,
+			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
 		@Menu(label = "Signed 16-bit", weight = 209) })
 public class ChangeToINT16 extends TypeChanger {

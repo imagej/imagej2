@@ -38,6 +38,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.data.overlay.OverlaySettings;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -52,7 +53,8 @@ import imagej.util.Colors;
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Overlay Options...") }, label = "Default Overlay Settings")
 public class OptionsOverlay extends OptionsPlugin {

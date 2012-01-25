@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.restructure;
 
 import imagej.data.Dataset;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
@@ -64,7 +65,9 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Axes...") },
 	initializer = "initAxes")
 public class ReorderAxes extends DynamicPlugin {

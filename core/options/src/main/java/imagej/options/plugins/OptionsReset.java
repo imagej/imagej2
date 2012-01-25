@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.options.plugins;
 
 import imagej.ImageJ;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
@@ -49,7 +50,9 @@ import java.util.List;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Reset", weight = 18) })
 public class OptionsReset implements ImageJPlugin {

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -46,7 +47,9 @@ import imagej.ui.UIService;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save", weight = 20, mnemonic = 's') })
 public class SaveImage implements ImageJPlugin {
 

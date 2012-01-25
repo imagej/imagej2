@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.ext.MenuEntry;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -65,7 +65,8 @@ import net.imglib2.type.numeric.RealType;
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Plugin(menu = {
-	@Menu(label = "Image", weight = MenuEntry.IMAGE_WEIGHT, mnemonic = 'i'),
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Crop", accelerator = "shift control X") })
 public class CropImage implements ImageJPlugin {
 
