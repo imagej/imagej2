@@ -124,7 +124,7 @@ public class AxisPositionHandler extends AbstractTool {
 
 		// determine preferred axis based on keyboard modifier used
 		final AxisType axis;
-		if (mods.isAltDown()) axis = Axes.TIME;
+		if (mods.isAltDown() || mods.isAltGrDown()) axis = Axes.TIME;
 		else if (mods.isCtrlDown() || mods.isMetaDown()) axis = Axes.Z;
 		else axis = Axes.CHANNEL;
 
