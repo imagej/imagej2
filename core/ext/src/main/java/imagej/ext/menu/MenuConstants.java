@@ -73,7 +73,7 @@ public final class MenuConstants {
 	public static final char IMAGE_MNEMONIC = 'i';
 	public static final char PROCESS_MNEMONIC = 'p';
 	public static final char ANALYZE_MNEMONIC = 'a';
-	public static final char PLUGINS_MNEMONIC = 'l';
+	public static final char PLUGINS_MNEMONIC = 'u';
 	public static final char WINDOW_MNEMONIC = 'w';
 	public static final char HELP_MNEMONIC = 'h';
 
