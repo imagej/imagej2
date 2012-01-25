@@ -75,7 +75,7 @@ public class DeleteData extends DynamicPlugin {
 
 	@Parameter(required = true, persist = false)
 	private UIService uiService;
-	
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
@@ -134,7 +134,10 @@ public class DeleteData extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) { informUser(); return; }
+		if (inputBad(axis)) {
+			informUser();
+			return;
+		}
 		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, -quantity);
@@ -149,7 +152,8 @@ public class DeleteData extends DynamicPlugin {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
-			ColorTableRemapper remapper = new ColorTableRemapper(new RemapAlgorithm());
+			final ColorTableRemapper remapper =
+				new ColorTableRemapper(new RemapAlgorithm());
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		// TODO - metadata, etc.?
@@ -235,38 +239,41 @@ public class DeleteData extends DynamicPlugin {
 	}
 
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
-		
+
 		@Override
-		public boolean isValidSourcePlane(long i) {
-			if (i < position-1) return true;
-			if (i >= position-1+quantity) return true;
+		public boolean isValidSourcePlane(final long i) {
+			if (i < position - 1) return true;
+			if (i >= position - 1 + quantity) return true;
 			return false;
 		}
-		
+
 		@Override
-		public void remapPlanePosition(long[] origPlaneDims, long[] origPlanePos, long[] newPlanePos) {
+		public void remapPlanePosition(final long[] origPlaneDims,
+			final long[] origPlanePos, final long[] newPlanePos)
+		{
 			final AxisType axis = Axes.get(axisName);
 			final int axisIndex = dataset.getAxisIndex(axis);
 			for (int i = 0; i < origPlanePos.length; i++) {
-				if (i != axisIndex-2) {
+				if (i != axisIndex - 2) {
 					newPlanePos[i] = origPlanePos[i];
 				}
 				else {
-					if (origPlanePos[i] < position-1)
-						newPlanePos[i] = origPlanePos[i];
-					else if (origPlanePos[i] >= position-1+quantity)
-						newPlanePos[i] = origPlanePos[i] - quantity;
+					if (origPlanePos[i] < position - 1) newPlanePos[i] = origPlanePos[i];
+					else if (origPlanePos[i] >= position - 1 + quantity) newPlanePos[i] =
+						origPlanePos[i] - quantity;
 					else {
-						//System.out.println("orig dims = "+Arrays.toString(origPlaneDims));
-						//System.out.println("orig pos  = "+Arrays.toString(origPlanePos));
-						//System.out.println("pos       = "+position);
-						//System.out.println("quantity  = "+quantity);
-						throw new IllegalArgumentException("position remap should not be happening here!");
+						// System.out.println("orig dims = "+Arrays.toString(origPlaneDims));
+						// System.out.println("orig pos  = "+Arrays.toString(origPlanePos));
+						// System.out.println("pos       = "+position);
+						// System.out.println("quantity  = "+quantity);
+						throw new IllegalArgumentException(
+							"position remap should not be happening here!");
 					}
 				}
 			}
 		}
 	}
+
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
@@ -321,20 +328,21 @@ public class DeleteData extends DynamicPlugin {
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 
-	private void setItemRange(final String fieldName, final long min, final long max) {
+	private void setItemRange(final String fieldName, final long min,
+		final long max)
+	{
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> item =
 			(DefaultModuleItem<Long>) getInfo().getInput(fieldName);
 		item.setMinimumValue(min);
 		// TODO - disable until we fix ticket #886
-		//item.setMaximumValue(max);
+		// item.setMaximumValue(max);
 	}
 
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-			ui.dialogPrompt(
-				"Data unchanged: bad combination of input parameters",
+			ui.dialogPrompt("Data unchanged: bad combination of input parameters",
 				"Invalid parameter combination",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);

@@ -121,7 +121,8 @@ public class ImageMath implements ImageJPlugin {
 	 * available.
 	 */
 	public ImageMath() {
-		operators = new HashMap<String, BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>>>();
+		operators =
+			new HashMap<String, BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>>>();
 
 		operators.put("Add", new RealAdd());
 		operators.put("Subtract", new RealSubtract());
@@ -244,13 +245,15 @@ public class ImageMath implements ImageJPlugin {
 
 	private void assignPixelValues(final long[] span) {
 		final long[] origin = new long[span.length];
-		final BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>> binOp = operators.get(opName);
+		final BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>> binOp =
+			operators.get(opName);
 		final Function<long[], DoubleType> f1 =
 			new RealImageFunction<DoubleType>(input1.getImgPlus(), new DoubleType());
 		final Function<long[], DoubleType> f2 =
 			new RealImageFunction<DoubleType>(input2.getImgPlus(), new DoubleType());
 		final GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType> binFunc =
-			new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(f1, f2, binOp, new DoubleType());
+			new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(f1,
+				f2, binOp, new DoubleType());
 		final ImageAssignment assigner =
 			new ImageAssignment(output.getImgPlus(), origin, span, binFunc, null);
 		assigner.assign();

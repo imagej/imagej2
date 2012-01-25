@@ -42,8 +42,8 @@ import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTDropListener;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
 
 import java.awt.BorderLayout;
 import java.awt.dnd.DropTarget;

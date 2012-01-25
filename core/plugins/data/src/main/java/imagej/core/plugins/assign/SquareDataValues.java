@@ -66,8 +66,7 @@ public class SquareDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
-				new RealSqr();
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op = new RealSqr();
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

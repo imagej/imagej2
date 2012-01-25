@@ -74,7 +74,7 @@ public class DeleteAxis extends DynamicPlugin {
 
 	@Parameter(required = true, persist = false)
 	private UIService uiService;
-	
+
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
 
@@ -90,9 +90,9 @@ public class DeleteAxis extends DynamicPlugin {
 	private long position;
 
 	// -- private members --
-	
+
 	private int axisIndex;
-	
+
 	// -- DeleteAxis methods --
 
 	public Dataset getDataset() {
@@ -129,7 +129,10 @@ public class DeleteAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = getAxis();
-		if (inputBad(axis)) { informUser(); return; }
+		if (inputBad(axis)) {
+			informUser();
+			return;
+		}
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axis);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -138,12 +141,13 @@ public class DeleteAxis extends DynamicPlugin {
 			compositeStatus(dataset.getCompositeChannelCount(), dstImgPlus);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		dstImgPlus.setCompositeChannelCount(compositeCount);
-		long[] origDims = dataset.getDims();
-		long[] origPlaneDims = new long[origDims.length-2];
+		final long[] origDims = dataset.getDims();
+		final long[] origPlaneDims = new long[origDims.length - 2];
 		for (int i = 0; i < origPlaneDims.length; i++)
-			origPlaneDims[i] = origDims[i+2];
+			origPlaneDims[i] = origDims[i + 2];
 		RestructureUtils.allocateColorTables(dstImgPlus);
-		ColorTableRemapper remapper = new ColorTableRemapper(new RemapAlgorithm(origPlaneDims));
+		final ColorTableRemapper remapper =
+			new ColorTableRemapper(new RemapAlgorithm(origPlaneDims));
 		remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
 		// TODO - metadata, etc.?
 		dataset.setImgPlus(dstImgPlus);
@@ -167,10 +171,10 @@ public class DeleteAxis extends DynamicPlugin {
 		setPosition(value);
 		clampPosition();
 	}
-	
+
 	// TODO - temporary workaround to allow parameter max to be enforced. Should
 	// be removed when ticket #886 addressed.
-	
+
 	protected void positionChanged() {
 		clampPosition();
 	}
@@ -256,26 +260,28 @@ public class DeleteAxis extends DynamicPlugin {
 	}
 
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
-		
-		private long[] origPlaneDims;
-		private long[] srcPlanePos;
-		
-		public RemapAlgorithm(long[] origPlaneDims) {
+
+		private final long[] origPlaneDims;
+		private final long[] srcPlanePos;
+
+		public RemapAlgorithm(final long[] origPlaneDims) {
 			this.origPlaneDims = origPlaneDims;
 			this.srcPlanePos = new long[origPlaneDims.length];
 		}
-		
+
 		@Override
-		public boolean isValidSourcePlane(long i) {
+		public boolean isValidSourcePlane(final long i) {
 			ColorTableRemapper.toND(origPlaneDims, i, srcPlanePos);
-			return srcPlanePos[axisIndex-2] == position-1;
+			return srcPlanePos[axisIndex - 2] == position - 1;
 		}
-		
+
 		@Override
-		public void remapPlanePosition(long[] origPlaneDims, long[] origPlanePos, long[] newPlanePos) {
+		public void remapPlanePosition(final long[] origPlaneDims,
+			final long[] origPlanePos, final long[] newPlanePos)
+		{
 			int curr = 0;
 			for (int i = 0; i < origPlaneDims.length; i++) {
-				if (i == axisIndex-2) continue;
+				if (i == axisIndex - 2) continue;
 				newPlanePos[curr++] = origPlanePos[i];
 			}
 		}
@@ -310,17 +316,15 @@ public class DeleteAxis extends DynamicPlugin {
 		positionItem.setMinimumValue(min); // works the first time
 		// TODO - temporarily disabled since parameter mins and maxes cannot be
 		// changed on the fly. Should be enabled when ticket #886 addressed.
-		//positionItem.setMaximumValue(max);
+		// positionItem.setMaximumValue(max);
 	}
 
 	/** Ensures the first and last values fall within the allowed range. */
 	private void clampPosition() {
 		final long max = currDimLen();
 		final long pos = getPosition();
-		if (pos < 1)
-			setPosition(1);
-		else if (pos > max)
-			setPosition(max);
+		if (pos < 1) setPosition(1);
+		else if (pos > max) setPosition(max);
 	}
 
 	private long currDimLen() {
@@ -328,12 +332,11 @@ public class DeleteAxis extends DynamicPlugin {
 		final int index = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(index);
 	}
-	
+
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-			ui.dialogPrompt(
-				"Data unchanged: bad combination of input parameters",
+			ui.dialogPrompt("Data unchanged: bad combination of input parameters",
 				"Invalid parameter combination",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);

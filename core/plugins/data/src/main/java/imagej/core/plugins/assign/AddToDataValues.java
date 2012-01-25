@@ -63,7 +63,7 @@ public class AddToDataValues extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<ComplexType<?>,ComplexType<?>> getOperation() {
+	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
 		return new RealAddConstant(value);
 	}
 

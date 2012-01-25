@@ -66,8 +66,7 @@ public class AbsDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
-				new RealAbs();
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op = new RealAbs();
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

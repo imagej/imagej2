@@ -92,7 +92,7 @@ public class InvertDataValues implements ImageJPlugin {
 		}
 		else calcValueRange();
 		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
-				new RealInvert(min, max);
+			new RealInvert(min, max);
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();
