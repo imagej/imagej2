@@ -52,7 +52,6 @@ import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 import imagej.ui.DialogPrompt;
-import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
 import imagej.util.Log;
 
@@ -307,12 +306,9 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	private void notifyUser(final String message) {
-		final IUserInterface ui = uiService.getUI();
-		final DialogPrompt dialog =
-			ui.dialogPrompt(message, "Error",
-				DialogPrompt.MessageType.INFORMATION_MESSAGE,
-				DialogPrompt.OptionType.DEFAULT_OPTION);
-		dialog.prompt();
+		uiService.showDialog(message, "Error",
+			DialogPrompt.MessageType.INFORMATION_MESSAGE,
+			DialogPrompt.OptionType.DEFAULT_OPTION);
 	}
 
 	/**

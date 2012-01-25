@@ -41,7 +41,6 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
-import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
 
 /**
@@ -82,12 +81,10 @@ public class QuitProgram implements ImageJPlugin {
 	}
 
 	private boolean promptForQuit() {
-		final IUserInterface ui = uiService.getUI();
-		final DialogPrompt dialog =
-			ui.dialogPrompt(MESSAGE, "Quit",
+		final DialogPrompt.Result result =
+			uiService.showDialog(MESSAGE, "Quit",
 				DialogPrompt.MessageType.QUESTION_MESSAGE,
 				DialogPrompt.OptionType.YES_NO_OPTION);
-		final DialogPrompt.Result result = dialog.prompt();
 		return result == DialogPrompt.Result.YES_OPTION;
 	}
 
