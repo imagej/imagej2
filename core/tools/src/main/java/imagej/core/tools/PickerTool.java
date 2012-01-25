@@ -83,27 +83,25 @@ public class PickerTool extends AbstractTool {
 		if (altKeyDown) {
 			if (helper.isPureRGBCase()) {
 				options.setBgColor(color);
-				options.save();
 				colorMessage("Background",color);
 			}
 			else {
 				options.setBgGray(value);
-				options.save();
 				grayMessage("Background",value);
 			}
 		}
 		else { // foreground case
 			if (helper.isPureRGBCase()) {
 				options.setFgColor(color);
-				options.save();
 				colorMessage("Foreground",color);
 			}
 			else {
 				options.setFgGray(value);
-				options.save();
 				grayMessage("Foreground",value);
 			}
 		}
+		
+		options.save();
 	}
 
 	@Override
@@ -127,11 +125,9 @@ public class PickerTool extends AbstractTool {
 	private void grayMessage(String label, double value) {
 		String message;
 		if (helper.isIntegerCase())
-			message = String.format("%s gray value = %d",
-				label, (long)value);
+			message = String.format("%s gray value = %d", label, (long)value);
 		else
-			message = String.format("%s gray value = %f",
-				label, value);
+			message = String.format("%s gray value = %f", label, value);
 		helper.updateStatus(message);
 	}
 }
