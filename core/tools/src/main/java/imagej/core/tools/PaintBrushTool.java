@@ -38,8 +38,6 @@ import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.Tool;
-import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsColors;
 
 /**
  * @author Barry DeZonia
@@ -61,21 +59,4 @@ public class PaintBrushTool extends AbstractLineTool {
 		pluginService.run(PaintBrushToolConfigPlugin.class,this);
 	}
 	
-	@Override
-	public void initAttributes(DrawingTool tool, boolean isColor) {
-
-		// set line width of drawingTool
-		tool.setLineWidth(getLineWidth());
-
-		OptionsService oSrv = ImageJ.get(OptionsService.class);
-		
-		OptionsColors opts = oSrv.getOptions(OptionsColors.class);
-		
-		if (isColor) {
-			tool.setColorValue(opts.getFgColor());
-		}
-		else {
-			tool.setGrayValue(opts.getFgGray());
-		}
-	}
 }

@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import java.util.Arrays;
+
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -42,12 +44,10 @@ import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
+import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsColors;
-
-// TODO FIXME - listen for dataset deleted events and null out the drawing
-// tool if the dataset matches
 
 /**
  * Abstract class that is used by PencilTool, PaintBrushTool, and their erase
@@ -60,9 +60,8 @@ public abstract class AbstractLineTool extends AbstractTool {
 
 	private DrawingTool drawingTool;
 	private long lineWidth = 1;
-	
-	abstract public void initAttributes(DrawingTool tool, boolean isColor);
-	
+	private boolean altKeyDown = false;
+
 	public void setLineWidth(long w) {
 		if (w < 1)
 			lineWidth = 1;
@@ -73,6 +72,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 	public long getLineWidth() {
 		return lineWidth;
 	}
+	
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
 		initDrawingTool(evt);
@@ -80,6 +80,12 @@ public abstract class AbstractLineTool extends AbstractTool {
 			drawingTool.moveTo(evt.getX(), evt.getY());
 		}
 		super.onMouseDown(evt);
+	}
+
+	@Override
+	public void onMouseUp(final MsReleasedEvent evt) {
+		drawingTool = null;
+		super.onMouseUp(evt);
 	}
 
 	@Override
@@ -91,7 +97,21 @@ public abstract class AbstractLineTool extends AbstractTool {
 		}
 		super.onMouseDrag(evt);
 	}
+
+	@Override
+	public void onKeyDown(KyPressedEvent evt) {
+		altKeyDown = evt.getModifiers().isAltDown() ||
+				evt.getModifiers().isAltGrDown();
+		super.onKeyDown(evt);
+	}
 	
+	@Override
+	public void onKeyUp(KyReleasedEvent evt) {
+		altKeyDown = evt.getModifiers().isAltDown() ||
+				evt.getModifiers().isAltGrDown();
+		super.onKeyUp(evt);
+	}
+
 	// -- private helpers --
 	
 	private void initDrawingTool(MsPressedEvent evt) {
@@ -109,14 +129,44 @@ public abstract class AbstractLineTool extends AbstractTool {
 		// try to avoid allocating objects when possible
 		if ((drawingTool == null) || (drawingTool.getDataset() != dataset))
 			drawingTool = new DrawingTool(dataset);
-		
-		// TODO : support arbitrary u/v axes, and arbitrary ortho slices
-		/*
-		drawingTool.setUAxis(zAxisIndex);
-		drawingTool.setVAxis(xAxisIndex);
-		drawingTool.setPlanePosition(viewsCurrPlanePosition);
-		*/
 
-		initAttributes(drawingTool, dataset.isRGBMerged());
+		// FIXME - this will break when the view axes are different than the
+		// dataset's axes. this could happen from a view combining multiple datasets
+		long[] currPos = new long[imageDisplay.numDimensions()];
+		for (int i = 0; i < currPos.length; i++)
+			currPos[i] = imageDisplay.getLongPosition(i);
+		drawingTool.setPosition(currPos);
+		
+		// TODO - change here to make this work on any two axes
+		drawingTool.setUAxis(0);
+		drawingTool.setVAxis(1);
+
+		initAttributes(dataset.isRGBMerged());
+	}
+
+	private void initAttributes(boolean isColorData) {
+
+		// set line width of drawingTool
+		
+		drawingTool.setLineWidth(getLineWidth());
+
+		// set color of drawingTool
+		
+		OptionsService oSrv = ImageJ.get(OptionsService.class);
+		
+		OptionsColors opts = oSrv.getOptions(OptionsColors.class);
+		
+		if (isColorData) {
+			if (altKeyDown)
+				drawingTool.setColorValue(opts.getBgColor());
+			else
+				drawingTool.setColorValue(opts.getFgColor());
+		}
+		else { // gray data
+			if (altKeyDown)
+				drawingTool.setGrayValue(opts.getBgGray());
+			else
+				drawingTool.setGrayValue(opts.getFgGray());
+		}
 	}
 }
