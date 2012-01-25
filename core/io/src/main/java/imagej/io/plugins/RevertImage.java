@@ -37,10 +37,9 @@ package imagej.io.plugins;
 import imagej.data.Dataset;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-
-import javax.swing.JOptionPane;
-
+import imagej.ui.UIService;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -57,13 +56,15 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
 
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
+
 	// @Parameter
 	// private Dataset dataset;
 
 	@Override
 	public void run() {
-		JOptionPane.showMessageDialog(null,
-			"This feature has not been implemented");
+		uiService.showDialog("This feature has not been implemented");
 
 		/*
 		// TODO - enable this in ImgLib
