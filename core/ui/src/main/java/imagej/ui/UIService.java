@@ -167,8 +167,8 @@ public final class UIService extends AbstractService {
 	 * @param title The title of the dialog.
 	 * @return The choice selected by the user when dismissing the dialog.
 	 */
-	public DialogPrompt.Result showDialog(final String message,
-		final String title)
+	public DialogPrompt.Result
+		showDialog(final String message, final String title)
 	{
 		return showDialog(message, title,
 			DialogPrompt.MessageType.INFORMATION_MESSAGE);
@@ -217,7 +217,9 @@ public final class UIService extends AbstractService {
 	// -- Event handlers --
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final MenuEvent event) {
+	protected void onEvent(@SuppressWarnings("unused")
+	final MenuEvent event)
+	{
 		// TODO - This rebuilds the entire menu structure whenever the
 		// menus change at all. Better would be to listen to MenusAddedEvent,
 		// MenusRemovedEvent and MenusUpdatedEvent separately and surgically

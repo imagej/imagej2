@@ -200,8 +200,7 @@ public class SaltAndPepper implements ImageJPlugin {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
 			ui.dialogPrompt("This plugin requires an integral dataset",
-				"Unsupported image type",
-				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				"Unsupported image type", DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 		dialog.prompt();
 	}

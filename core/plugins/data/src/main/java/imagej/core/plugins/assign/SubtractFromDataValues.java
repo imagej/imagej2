@@ -64,7 +64,7 @@ public class SubtractFromDataValues extends AbstractAssignPlugin {
 	// -- public interface --
 
 	@Override
-	public UnaryOperation<ComplexType<?>,ComplexType<?>> getOperation() {
+	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
 		return new RealSubtractConstant(value);
 	}
 

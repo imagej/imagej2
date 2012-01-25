@@ -65,8 +65,7 @@ public class LogDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
-				new RealLog();
+		final UnaryOperation<ComplexType<?>, ComplexType<?>> op = new RealLog();
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

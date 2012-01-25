@@ -78,8 +78,8 @@ public class FindEdges implements ImageJPlugin {
 		final Dataset input = imageDisplayService.getActiveDataset(display);
 		final RealRect selection = overlayService.getSelectionBounds(display);
 		final Neighborhood3x3Operation operation =
-			new Neighborhood3x3Operation(input, selection, new FindEdgesWatcher(
-				input));
+			new Neighborhood3x3Operation(input, selection,
+				new FindEdgesWatcher(input));
 		operation.run();
 	}
 

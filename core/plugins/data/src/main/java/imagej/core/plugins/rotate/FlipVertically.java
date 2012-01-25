@@ -130,9 +130,9 @@ public class FlipVertically implements ImageJPlugin {
 		input.update();
 	}
 
-	private void flipPlane(final Dataset input, final int xAxis,
-		final int yAxis, final long[] planeIndex, final long oX, final long oY,
-		final long width, final long height)
+	private void flipPlane(final Dataset input, final int xAxis, final int yAxis,
+		final long[] planeIndex, final long oX, final long oY, final long width,
+		final long height)
 	{
 		if (height == 1) return;
 

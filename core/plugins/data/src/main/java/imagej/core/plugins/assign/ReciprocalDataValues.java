@@ -83,7 +83,7 @@ public class ReciprocalDataValues implements ImageJPlugin {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
 		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
-				new RealReciprocal(dbzVal);
+			new RealReciprocal(dbzVal);
 		final InplaceUnaryTransform transform =
 			new InplaceUnaryTransform(display, op);
 		transform.run();

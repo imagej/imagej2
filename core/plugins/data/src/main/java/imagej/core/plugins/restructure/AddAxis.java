@@ -73,7 +73,7 @@ public class AddAxis extends DynamicPlugin {
 
 	@Parameter(required = true, persist = false)
 	private UIService uiService;
-	
+
 	@Parameter(required = true, persist = false)
 	private Dataset dataset;
 
@@ -119,7 +119,10 @@ public class AddAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) { informUser(); return; }
+		if (inputBad(axis)) {
+			informUser();
+			return;
+		}
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axisSize);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -127,7 +130,8 @@ public class AddAxis extends DynamicPlugin {
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		dstImgPlus.setCompositeChannelCount(dataset.getCompositeChannelCount());
 		RestructureUtils.allocateColorTables(dstImgPlus);
-		ColorTableRemapper remapper = new ColorTableRemapper(new RemapAlgorithm());
+		final ColorTableRemapper remapper =
+			new ColorTableRemapper(new RemapAlgorithm());
 		remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
 		// TODO - metadata, etc.?
 		dataset.setImgPlus(dstImgPlus);
@@ -209,20 +213,22 @@ public class AddAxis extends DynamicPlugin {
 	}
 
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
-		
+
 		@Override
-		public boolean isValidSourcePlane(long i) {
+		public boolean isValidSourcePlane(final long i) {
 			return true;
 		}
-		
+
 		@Override
-		public void remapPlanePosition(long[] origPlaneDims, long[] origPlanePos, long[] newPlanePos) {
+		public void remapPlanePosition(final long[] origPlaneDims,
+			final long[] origPlanePos, final long[] newPlanePos)
+		{
 			for (int i = 0; i < origPlaneDims.length; i++)
 				newPlanePos[i] = origPlanePos[i];
-			newPlanePos[newPlanePos.length-1] = 0;
-		}		
+			newPlanePos[newPlanePos.length - 1] = 0;
+		}
 	}
-	
+
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> axisNameItem =
@@ -245,8 +251,7 @@ public class AddAxis extends DynamicPlugin {
 	private void informUser() {
 		final IUserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-			ui.dialogPrompt(
-				"Data unchanged: bad combination of input parameters",
+			ui.dialogPrompt("Data unchanged: bad combination of input parameters",
 				"Invalid parameter combination",
 				DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);

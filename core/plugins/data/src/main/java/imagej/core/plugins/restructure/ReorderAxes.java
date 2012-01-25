@@ -107,7 +107,8 @@ public class ReorderAxes extends DynamicPlugin {
 		// reportDims(dataset.getImgPlus());
 		// reportDims(newImgPlus);
 		RestructureUtils.allocateColorTables(newImgPlus);
-		final ColorTableRemapper remapper = new ColorTableRemapper(new RemapAlgorithm());
+		final ColorTableRemapper remapper =
+			new ColorTableRemapper(new RemapAlgorithm());
 		remapper.remapColorTables(dataset.getImgPlus(), newImgPlus);
 		final int count = dataset.getCompositeChannelCount();
 		dataset.setImgPlus(newImgPlus);
@@ -296,28 +297,30 @@ public class ReorderAxes extends DynamicPlugin {
 
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
 
-		private long[] inputPos = new long[ReorderAxes.this.permutationAxisIndices.length];
-		private long[] outputPos = new long[ReorderAxes.this.permutationAxisIndices.length];
-		
+		private final long[] inputPos =
+			new long[ReorderAxes.this.permutationAxisIndices.length];
+		private final long[] outputPos =
+			new long[ReorderAxes.this.permutationAxisIndices.length];
+
 		@Override
-		public boolean isValidSourcePlane(long i) {
+		public boolean isValidSourcePlane(final long i) {
 			return true;
 		}
 
 		@Override
-		public void remapPlanePosition(long[] origPlaneDims, long[] origPlanePos,
-			long[] newPlanePos)
+		public void remapPlanePosition(final long[] origPlaneDims,
+			final long[] origPlanePos, final long[] newPlanePos)
 		{
 			inputPos[0] = 0;
 			inputPos[1] = 0;
 			for (int i = 0; i < origPlanePos.length; i++)
-				inputPos[2+i] = origPlanePos[i];
-			
+				inputPos[2 + i] = origPlanePos[i];
+
 			permute(inputPos, outputPos);
-			
+
 			for (int i = 0; i < newPlanePos.length; i++)
-				newPlanePos[i] = outputPos[i+2]; 
+				newPlanePos[i] = outputPos[i + 2];
 		}
-		
+
 	}
 }
