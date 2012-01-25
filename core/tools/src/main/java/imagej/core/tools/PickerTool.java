@@ -106,12 +106,16 @@ public class PickerTool extends AbstractTool {
 
 	@Override
 	public void onKeyDown(KyPressedEvent evt) {
-		altKeyDown = evt.getModifiers().isAltDown(); 
+		altKeyDown =
+				evt.getModifiers().isAltDown() ||
+				evt.getModifiers().isAltGrDown();
 	}
 	
 	@Override
 	public void onKeyUp(KyReleasedEvent evt) {
-		altKeyDown = evt.getModifiers().isAltDown(); 
+		altKeyDown =
+				evt.getModifiers().isAltDown() ||
+				evt.getModifiers().isAltGrDown();
 	}
 
 	// -- private interface --

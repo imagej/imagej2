@@ -97,7 +97,7 @@ public class DrawingTool {
 	 * Sets this DrawingHelper's internal position. Useful for changing plane
 	 * position. Also useful when changing U or V axes.
 	 */
-	public void setPlanePosition(long[] position) {
+	public void setPosition(long[] position) {
 		accessor.setPosition(position);
 	}
 	
