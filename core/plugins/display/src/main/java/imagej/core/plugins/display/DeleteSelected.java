@@ -36,6 +36,7 @@ package imagej.core.plugins.display;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -48,7 +49,9 @@ import java.util.ArrayList;
  * 
  * @author Lee Kamentsky
  */
-@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Remove Overlay", weight = 6, mnemonic = 'r') })
 public class DeleteSelected implements ImageJPlugin {

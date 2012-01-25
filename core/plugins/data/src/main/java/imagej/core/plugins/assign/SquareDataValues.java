@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.display.ImageDisplay;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -49,10 +50,11 @@ import net.imglib2.type.numeric.ComplexType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = { @Menu(label = "Process", mnemonic = 'p'),
-		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Square", weight = 15) })
+@Plugin(menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Square", weight = 15) })
 public class SquareDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

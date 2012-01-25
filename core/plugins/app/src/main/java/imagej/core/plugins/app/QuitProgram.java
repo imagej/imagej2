@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.app;
 
 import imagej.data.display.WindowMenuService;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -51,7 +52,8 @@ import imagej.ui.UIService;
  * @author Curtis Rueden
  */
 @Plugin(iconPath = "/icons/plugins/door_in.png", menu = {
-	@Menu(label = "File"),
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
 		accelerator = "control Q") })
 public class QuitProgram implements ImageJPlugin {

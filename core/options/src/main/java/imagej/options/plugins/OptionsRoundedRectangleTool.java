@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options.plugins;
 
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -55,7 +56,8 @@ import imagej.util.Colors;
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Rounded Rect Tool...", weight = 5) })
 public class OptionsRoundedRectangleTool extends OptionsPlugin {

@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.io.plugins;
 
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -46,7 +47,8 @@ import imagej.io.RecentFileService;
  * @author Curtis Rueden
  */
 @Plugin(label = "Clear Recent", menu = {
-	@Menu(label = "File", mnemonic = 'f'),
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),
 	@Menu(label = "Clear List", weight = RecentFileService.MAX_FILES_SHOWN + 10,
 		mnemonic = 'c') })

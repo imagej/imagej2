@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.display;
 
 import imagej.data.display.DatasetView;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -56,7 +57,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Plugin(menu = {
-	@Menu(label = "Image"),
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Brightness/Contrast", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/plugins/contrast.png")

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -49,7 +50,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = {
-	@Menu(label = "File", mnemonic = 'f'),
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
 		accelerator = "control R") })
 public class RevertImage<T extends RealType<T> & NativeType<T>> implements

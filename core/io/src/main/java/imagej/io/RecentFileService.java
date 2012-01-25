@@ -40,6 +40,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.menu.MenuService;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
@@ -191,7 +192,7 @@ public final class RecentFileService extends AbstractService {
 
 		// set menu path
 		final MenuPath menuPath = new MenuPath();
-		menuPath.add(new MenuEntry("File"));
+		menuPath.add(new MenuEntry(MenuConstants.FILE_LABEL));
 		menuPath.add(new MenuEntry(RECENT_MENU_NAME));
 		final MenuEntry leaf = new MenuEntry(shortPath(path));
 		menuPath.add(leaf);

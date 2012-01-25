@@ -36,6 +36,7 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -65,7 +66,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Adam Fraser
  */
 @Plugin(menu = {
-	@Menu(label = "Image"),
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Auto-Contrast", accelerator = "control shift alt L",
 		weight = 0) })

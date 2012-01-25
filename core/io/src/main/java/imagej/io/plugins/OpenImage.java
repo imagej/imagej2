@@ -38,6 +38,7 @@ import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -62,7 +63,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
-	@Menu(label = "File", mnemonic = 'f'),
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
 public class OpenImage<T extends RealType<T> & NativeType<T>> implements

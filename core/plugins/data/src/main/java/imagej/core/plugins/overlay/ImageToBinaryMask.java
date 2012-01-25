@@ -37,6 +37,7 @@ package imagej.core.plugins.overlay;
 import imagej.data.Dataset;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -63,7 +64,10 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Lee Kamentsky
  */
-@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'),
 	@Menu(label = "Convert to Mask", weight = 1) })
 public class ImageToBinaryMask implements ImageJPlugin {

@@ -45,6 +45,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.menu.MenuService;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
@@ -70,8 +71,6 @@ public final class WindowMenuService extends AbstractService {
 
 	/** Maximum title length shown. */
 	private static final int MAX_DISPLAY_LENGTH = 40;
-
-	private static final String WINDOW_MENU_NAME = "Window";
 
 	private final MenuService menuService;
 
@@ -194,7 +193,7 @@ public final class WindowMenuService extends AbstractService {
 
 		// set menu path
 		final MenuPath menuPath = new MenuPath();
-		menuPath.add(new MenuEntry(WINDOW_MENU_NAME));
+		menuPath.add(new MenuEntry(MenuConstants.WINDOW_LABEL));
 		final MenuEntry leaf = new MenuEntry(shortPath(displayName));
 		menuPath.add(leaf);
 		info.setMenuPath(menuPath);

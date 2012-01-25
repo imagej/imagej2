@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options.plugins;
 
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -45,7 +46,8 @@ import imagej.options.OptionsPlugin;
  * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Profile Plot Options...", weight = 4) })
 public class OptionsProfilePlot extends OptionsPlugin {

@@ -36,6 +36,7 @@ package imagej.core.plugins.display;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -47,7 +48,8 @@ import imagej.ext.plugin.Plugin;
  * @author Lee Kamentsky
  */
 @Plugin(menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Select All", mnemonic = 'a', accelerator = "control a",
 		weight = 4) })
