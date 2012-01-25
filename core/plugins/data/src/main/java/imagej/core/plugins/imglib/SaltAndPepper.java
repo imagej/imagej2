@@ -45,8 +45,6 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.DialogPrompt;
-import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
 import imagej.util.RealRect;
 
@@ -197,12 +195,8 @@ public class SaltAndPepper implements ImageJPlugin {
 	}
 
 	private void informUser() {
-		final IUserInterface ui = uiService.getUI();
-		final DialogPrompt dialog =
-			ui.dialogPrompt("This plugin requires an integral dataset",
-				"Unsupported image type", DialogPrompt.MessageType.INFORMATION_MESSAGE,
-				DialogPrompt.OptionType.DEFAULT_OPTION);
-		dialog.prompt();
+		uiService.showDialog("This plugin requires an integral dataset",
+			"Unsupported image type");
 	}
 
 }

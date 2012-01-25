@@ -41,8 +41,6 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.DialogPrompt;
-import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
 
 import java.util.ArrayList;
@@ -352,12 +350,8 @@ public class AddData extends DynamicPlugin {
 	}
 
 	private void informUser() {
-		final IUserInterface ui = uiService.getUI();
-		final DialogPrompt dialog =
-			ui.dialogPrompt("Data unchanged: bad combination of input parameters",
-				"Invalid parameter combination",
-				DialogPrompt.MessageType.INFORMATION_MESSAGE,
-				DialogPrompt.OptionType.DEFAULT_OPTION);
-		dialog.prompt();
+		uiService.showDialog("Data unchanged: bad combination of input parameters",
+			"Invalid parameter combination");
 	}
+
 }
