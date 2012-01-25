@@ -68,4 +68,5 @@ public interface DisplayPanel {
 	/** Sets the color of the display panel's border. */
 	void setBorderColor(ColorRGB color);
 
+	void redraw();
 }

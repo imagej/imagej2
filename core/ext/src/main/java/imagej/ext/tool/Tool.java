@@ -100,4 +100,6 @@ public interface Tool extends IPlugin {
 	/** Occurs when the mouse wheel is moved while the tool is active. */
 	void onMouseWheel(MsWheelEvent event);
 
+	/** Occurs when the user right clicks this tool's icon. */ 
+	void configure();
 }

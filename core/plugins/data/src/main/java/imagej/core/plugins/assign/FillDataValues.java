@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.core.tools.FGTool;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -43,7 +42,8 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.ToolService;
+import imagej.options.OptionsService;
+import imagej.options.plugins.OptionsColors;
 import imagej.util.ColorRGB;
 import imagej.util.RealRect;
 import net.imglib2.Cursor;
@@ -69,10 +69,10 @@ public class FillDataValues implements ImageJPlugin {
 	private OverlayService overlayService;
 
 	@Parameter(required = true, persist = false)
-	private ToolService toolService;
+	private ImageDisplayService dispService;
 
 	@Parameter(required = true, persist = false)
-	private ImageDisplayService dispService;
+	private OptionsService optionsService;
 
 	@Parameter(required = true, persist = false)
 	private ImageDisplay display;
@@ -81,15 +81,15 @@ public class FillDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final FGTool cp = toolService.getTool(FGTool.class);
-		if (cp == null) return;
+		final OptionsColors opts = optionsService.getOptions(OptionsColors.class);
+		if (opts == null) return;
 		final Dataset dataset = dispService.getActiveDataset(display);
 		if (dataset.isRGBMerged()) {
-			final ColorRGB color = cp.getFgColor();
+			final ColorRGB color = opts.getFgColor();
 			fillSelectedRegionWithColor(dataset, color);
 		}
 		else { // gray data
-			final double value = cp.getFgValue();
+			final double value = opts.getFgGray();
 			fillSelectedRegionWithValue(display, value);
 		}
 	}

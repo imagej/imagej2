@@ -238,6 +238,15 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		updateAxis(axis);
 	}
 
+	@Override
+	public void redraw() {
+		final ImageDisplayService imageDisplayService =
+				ImageJ.get(ImageDisplayService.class);
+			final DatasetView view = imageDisplayService.getActiveDatasetView(display);
+			if (view == null) return; // no active dataset
+			view.getProjector().map();
+	}
+	
 	// -- Helper methods --
 
 	private void createSliders() {

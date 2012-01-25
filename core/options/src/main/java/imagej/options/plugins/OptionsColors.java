@@ -52,15 +52,21 @@ import imagej.util.Colors;
 	@Menu(label = "Colors...", weight = 9) })
 public class OptionsColors extends OptionsPlugin {
 
-	@Parameter(label = "Foreground")
+	@Parameter(label = "Foreground color")
 	private ColorRGB fgColor = Colors.BLACK;
 
-	@Parameter(label = "Background")
+	@Parameter(label = "Background color")
 	private ColorRGB bgColor = Colors.WHITE;
 
-	@Parameter(label = "Selection")
+	@Parameter(label = "Selection color")
 	private ColorRGB selColor = Colors.YELLOW;
 
+	@Parameter(label = "Foreground gray")
+	private double fgGray = 0;
+	
+	@Parameter(label = "Background gray")
+	private double bgGray = 255;
+	
 	// -- OptionsColors methods --
 
 	public OptionsColors() {
@@ -79,6 +85,14 @@ public class OptionsColors extends OptionsPlugin {
 		return selColor;
 	}
 
+	public double getFgGray() {
+		return fgGray;
+	}
+	
+	public double getBgGray() {
+		return bgGray;
+	}
+	
 	public void setFgColor(final ColorRGB fgColor) {
 		this.fgColor = fgColor;
 	}
@@ -91,4 +105,11 @@ public class OptionsColors extends OptionsPlugin {
 		this.selColor = selColor;
 	}
 
+	public void setFgGray(double value) {
+		fgGray = value;
+	}
+	
+	public void setBgGray(double value) {
+		bgGray = value;
+	}
 }
