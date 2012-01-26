@@ -34,8 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.pivot;
 
-import java.util.concurrent.Callable;
-
+import imagej.ext.display.Display;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -44,6 +43,8 @@ import imagej.ui.IUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+
+import java.util.concurrent.Callable;
 
 import org.apache.pivot.wtk.DesktopApplicationContext;
 
@@ -108,6 +109,13 @@ public class PivotUI implements IUserInterface, Callable<Object> {
 	@Override
 	public DialogPrompt dialogPrompt(final String message, final String title,
 		final MessageType msg, final OptionType option)
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void showContextMenu(final String menuRoot, final Display<?> display,
+		final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

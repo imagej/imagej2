@@ -94,6 +94,12 @@ public @interface Plugin {
 	 */
 	Menu[] menu() default {};
 
+	/**
+	 * String identifier naming the menu to which this plugin belongs, or in the
+	 * case of a tool, the context menu that should be displayed while the tool is
+	 * active. The default value of {@link #APPLICATION_MENU_ROOT} references the
+	 * menu structure of the primary application window.
+	 */
 	String menuRoot() default APPLICATION_MENU_ROOT;
 
 	/** Path to the plugin's icon (e.g., shown in the menu structure). */

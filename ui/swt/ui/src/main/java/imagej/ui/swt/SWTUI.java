@@ -43,10 +43,10 @@ import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.OutputWindow;
-import imagej.ui.UserInterface;
-import imagej.ui.UIService;
 import imagej.ui.IUserInterface;
+import imagej.ui.OutputWindow;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Display;
@@ -138,6 +138,13 @@ public class SWTUI implements IUserInterface, Runnable {
 	@Override
 	public DialogPrompt dialogPrompt(final String message, final String title,
 		final MessageType msg, final OptionType option)
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void showContextMenu(final String menuRoot,
+		final imagej.ext.display.Display<?> display, final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

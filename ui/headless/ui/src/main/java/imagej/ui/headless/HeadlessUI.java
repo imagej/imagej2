@@ -36,6 +36,7 @@ package imagej.ui.headless;
 
 import imagej.event.EventHandler;
 import imagej.event.StatusEvent;
+import imagej.ext.display.Display;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
@@ -194,6 +195,13 @@ public class HeadlessUI implements IUserInterface {
 	@Override
 	public DialogPrompt dialogPrompt(final String message, final String title,
 		final MessageType msg, final OptionType option)
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void showContextMenu(final String menuRoot, final Display<?> display,
+		final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

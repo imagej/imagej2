@@ -78,6 +78,7 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 		setClassName(className);
 		setPluginType(pluginType);
 		setMenuPath(null);
+		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
 	}
 
 	/** TODO */
@@ -201,6 +202,8 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 			menuPath = new MenuPath(plugin.menuPath());
 		}
 		setMenuPath(menuPath);
+
+		setMenuRoot(plugin.menuRoot());
 
 		final String iconPath = plugin.iconPath();
 		setIconPath(iconPath);

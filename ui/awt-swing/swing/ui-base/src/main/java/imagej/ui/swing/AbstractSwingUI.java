@@ -34,10 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
+import imagej.ImageJ;
 import imagej.event.EventSubscriber;
+import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
+import imagej.ext.ui.swing.SwingJPopupMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
@@ -46,6 +49,7 @@ import imagej.ui.common.awt.AWTDropListener;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -53,6 +57,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
 
 /**
@@ -97,6 +102,26 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	public OutputWindow newOutputWindow(final String title) {
 		return new SwingOutputWindow(title);
+	}
+
+	@Override
+	public void showContextMenu(final String menuRoot, final Display<?> display,
+		final int x, final int y)
+	{
+		// CTR FIXME - eliminate deprecated method call to ImageJ.get
+		final MenuService menuService = ImageJ.get(MenuService.class);
+		// CTR FIXME - obtain appropriate menu from menu root, once API is in place
+		// final ShadowMenu shadowMenu = menuService.getMenu(menuRoot);
+		final ShadowMenu shadowMenu = menuService.getMenu();
+
+		final JPopupMenu popupMenu = new JPopupMenu();
+		new SwingJPopupMenuCreator().createMenus(shadowMenu, popupMenu);
+
+		// CTR TODO - get associated Swing component for the display externally,
+		// once DisplayPanel has been fully decoupled from Display
+		final Component invoker = (Component) display.getPanel();
+
+		popupMenu.show(invoker, x, y);
 	}
 
 	// -- Internal methods --
