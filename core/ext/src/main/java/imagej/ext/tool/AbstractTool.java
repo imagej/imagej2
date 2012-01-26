@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.tool;
 
+import imagej.ImageJ;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
@@ -62,6 +63,8 @@ public abstract class AbstractTool implements Tool {
 
 	private PluginInfo<Tool> info;
 
+	private ImageJ context;
+
 	@Override
 	public PluginInfo<Tool> getInfo() {
 		return info;
@@ -70,6 +73,16 @@ public abstract class AbstractTool implements Tool {
 	@Override
 	public void setInfo(final PluginInfo<Tool> info) {
 		this.info = info;
+	}
+
+	@Override
+	public ImageJ getContext() {
+		return context;
+	}
+
+	@Override
+	public void setContext(final ImageJ context) {
+		this.context = context;
 	}
 
 	@Override

@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
@@ -75,7 +74,7 @@ public class PickerTool extends AbstractTool {
 			return;
 		}
 
-		OptionsService service = ImageJ.get(OptionsService.class);
+		OptionsService service = evt.getContext().getService(OptionsService.class);
 		
 		OptionsColors options = service.getOptions(OptionsColors.class);
 

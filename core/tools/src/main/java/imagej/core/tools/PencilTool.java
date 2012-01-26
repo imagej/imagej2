@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.Tool;
@@ -56,7 +55,7 @@ public class PencilTool extends AbstractLineTool {
 
 	@Override
 	public void configure() {
-		PluginService pluginService = ImageJ.get(PluginService.class);
+		PluginService pluginService = getContext().getService(PluginService.class);
 		pluginService.run(PencilToolConfigPlugin.class,this);
 	}
 

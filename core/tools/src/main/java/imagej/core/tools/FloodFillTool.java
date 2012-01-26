@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.event.input.KyPressedEvent;
@@ -84,7 +83,7 @@ public class FloodFillTool extends AbstractTool {
 	/** Implements the configuration of this tool. */
 	@Override
 	public void configure() {
-		PluginService pluginService = ImageJ.get(PluginService.class);
+		PluginService pluginService = getContext().getService(PluginService.class);
 		pluginService.run(FloodFillToolConfigPlugin.class,this);
 	}
 
@@ -177,7 +176,7 @@ public class FloodFillTool extends AbstractTool {
 
 	/** Returns an OptionsColor instance */
 	private OptionsColors getColorOptions() {
-		OptionsService oSrv = ImageJ.get(OptionsService.class);
+		OptionsService oSrv = getContext().getService(OptionsService.class);
 		return oSrv.getOptions(OptionsColors.class);
 	}
 
