@@ -109,4 +109,5 @@ public interface Tool extends IPlugin {
 
 	/** Occurs when the user right clicks this tool's icon. */ 
 	void configure();
+
 }

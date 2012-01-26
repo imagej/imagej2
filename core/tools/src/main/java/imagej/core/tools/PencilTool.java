@@ -40,7 +40,7 @@ import imagej.ext.tool.Tool;
 
 /**
  * Tool implementation for pencil.
- *  
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Pencil", description = "Pencil Tool",
@@ -55,8 +55,9 @@ public class PencilTool extends AbstractLineTool {
 
 	@Override
 	public void configure() {
-		PluginService pluginService = getContext().getService(PluginService.class);
-		pluginService.run(PencilToolConfigPlugin.class,this);
+		final PluginService pluginService =
+			getContext().getService(PluginService.class);
+		pluginService.run(PencilToolConfigPlugin.class, this);
 	}
 
 }

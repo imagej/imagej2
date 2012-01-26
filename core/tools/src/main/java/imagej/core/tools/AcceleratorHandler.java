@@ -88,8 +88,7 @@ public class AcceleratorHandler extends AbstractTool {
 		if (moduleInfo == null && addModifierAutomatically) {
 			// look up the module corresponding to this key press, plus control
 			final KeyCode keyCode = acc.getKeyCode();
-			final InputModifiers modifiers =
-				forceDefaultModifier(acc.getModifiers());
+			final InputModifiers modifiers = forceDefaultModifier(acc.getModifiers());
 			final Accelerator modAcc = new Accelerator(keyCode, modifiers);
 			if (!acc.equals(modAcc)) {
 				moduleInfo = moduleService.getModuleForAccelerator(modAcc);

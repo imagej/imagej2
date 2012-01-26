@@ -40,7 +40,7 @@ import imagej.ext.tool.Tool;
 
 /**
  * Tool implementation for paint brush.
- *  
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Paintbrush",
@@ -56,8 +56,9 @@ public class PaintBrushTool extends AbstractLineTool {
 
 	@Override
 	public void configure() {
-		PluginService pluginService = getContext().getService(PluginService.class);
-		pluginService.run(PaintBrushToolConfigPlugin.class,this);
+		final PluginService pluginService =
+			getContext().getService(PluginService.class);
+		pluginService.run(PaintBrushToolConfigPlugin.class, this);
 	}
-	
+
 }

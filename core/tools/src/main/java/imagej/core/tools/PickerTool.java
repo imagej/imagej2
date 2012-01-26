@@ -1,5 +1,5 @@
 //
-// FGTool.java
+// PickerTool.java
 //
 
 /*
@@ -50,7 +50,9 @@ import imagej.util.ColorRGB;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Picker",
+@Plugin(
+	type = Tool.class,
+	name = "Picker",
 	description = "Drawing value tool (sets foreground/background colors/values)",
 	iconPath = "/icons/tools/picker.png", priority = PickerTool.PRIORITY)
 public class PickerTool extends AbstractTool {
@@ -74,70 +76,70 @@ public class PickerTool extends AbstractTool {
 			return;
 		}
 
-		OptionsService service = evt.getContext().getService(OptionsService.class);
-		
-		OptionsColors options = service.getOptions(OptionsColors.class);
+		final OptionsService service =
+			evt.getContext().getService(OptionsService.class);
 
-		double value = helper.getValue();
-		ColorRGB color = helper.getColor();
-		
+		final OptionsColors options = service.getOptions(OptionsColors.class);
+
+		final double value = helper.getValue();
+		final ColorRGB color = helper.getColor();
+
 		// background case?
 		if (altKeyDown) {
 			if (helper.isPureRGBCase()) {
 				options.setBgColor(color);
-				colorMessage("Background",color);
+				colorMessage("Background", color);
 			}
 			else {
 				options.setBgGray(value);
-				grayMessage("Background",value);
+				grayMessage("Background", value);
 			}
 		}
 		else { // foreground case
 			if (helper.isPureRGBCase()) {
 				options.setFgColor(color);
-				colorMessage("Foreground",color);
+				colorMessage("Foreground", color);
 			}
 			else {
 				options.setFgGray(value);
-				grayMessage("Foreground",value);
+				grayMessage("Foreground", value);
 			}
 		}
-		
+
 		options.save();
 
 		evt.consume();
 	}
 
 	@Override
-	public void onKeyDown(KyPressedEvent evt) {
+	public void onKeyDown(final KyPressedEvent evt) {
 		altKeyDown =
-				evt.getModifiers().isAltDown() ||
-				evt.getModifiers().isAltGrDown();
+			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 		evt.consume();
 	}
-	
+
 	@Override
-	public void onKeyUp(KyReleasedEvent evt) {
+	public void onKeyUp(final KyReleasedEvent evt) {
 		altKeyDown =
-				evt.getModifiers().isAltDown() ||
-				evt.getModifiers().isAltGrDown();
+			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 		evt.consume();
 	}
 
 	// -- private interface --
 
-	private void colorMessage(String label, ColorRGB color) {
-		String message = String.format("%s color = (%d,%d,%d)",
-				label, color.getRed(), color.getGreen(), color.getBlue());
+	private void colorMessage(final String label, final ColorRGB color) {
+		final String message =
+			String.format("%s color = (%d,%d,%d)", label, color.getRed(), color
+				.getGreen(), color.getBlue());
 		helper.updateStatus(message);
 	}
-	
-	private void grayMessage(String label, double value) {
+
+	private void grayMessage(final String label, final double value) {
 		String message;
-		if (helper.isIntegerCase())
-			message = String.format("%s gray value = %d", label, (long)value);
-		else
-			message = String.format("%s gray value = %f", label, value);
+		if (helper.isIntegerCase()) message =
+			String.format("%s gray value = %d", label, (long) value);
+		else message = String.format("%s gray value = %f", label, value);
 		helper.updateStatus(message);
 	}
+
 }

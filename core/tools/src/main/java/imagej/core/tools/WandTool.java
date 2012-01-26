@@ -43,9 +43,9 @@ import imagej.ext.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Wand",
-	description = "Wand (tracing) tool", iconPath = "/icons/tools/wand.png",
-	priority = WandTool.PRIORITY, enabled = false)
+@Plugin(type = Tool.class, name = "Wand", description = "Wand (tracing) tool",
+	iconPath = "/icons/tools/wand.png", priority = WandTool.PRIORITY,
+	enabled = false)
 public class WandTool extends AbstractTool {
 
 	public static final int PRIORITY = -110;
