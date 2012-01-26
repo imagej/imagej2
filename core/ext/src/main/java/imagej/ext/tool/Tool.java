@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.tool;
 
+import imagej.ImageJ;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
@@ -66,6 +67,12 @@ public interface Tool extends IPlugin {
 
 	/** Sets the info describing the tool. */
 	void setInfo(final PluginInfo<Tool> info);
+
+	/** Gets the application context of the tool. */
+	ImageJ getContext();
+
+	/** Sets the application context of the tool. */
+	void setContext(final ImageJ context);
 
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();
