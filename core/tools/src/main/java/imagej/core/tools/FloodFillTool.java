@@ -34,24 +34,162 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.display.event.input.MsButtonEvent;
+import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
+import imagej.options.OptionsService;
+import imagej.options.plugins.OptionsColors;
+import imagej.util.ColorRGB;
 
 /**
- * TODO
- * 
- * @author Rick Lentz
- * @author Grant Harris
- * @author Curtis Rueden
+ * Tool implementation for flood fill.
+ *  
+ * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "FloodFill", label = "Flood Fill",
 	description = "Flood Fill Tool", iconPath = "/icons/tools/flood-fill.png",
-	priority = FloodFillTool.PRIORITY, enabled = false)
+	priority = FloodFillTool.PRIORITY)
 public class FloodFillTool extends AbstractTool {
 
+	// -- instance variables --
+	
 	public static final int PRIORITY = -304;
 
-	// TODO
+	enum Connectivity {EIGHT,FOUR}
+	
+	private Connectivity connectivity = Connectivity.EIGHT;
 
+	private boolean altKeyDown = false;
+	
+	// -- public interface --
+	
+	/** Specify whether this flood fill operation should be 4 or 8 connected. */
+	public void setConnectivity(Connectivity c) {
+		connectivity = c;
+	}
+	
+	/** Gets this flood fill's current connectivity (4 or 8 connected). */
+	public Connectivity getConnectivity() {
+		return connectivity;
+	}
+
+	/** Implements the configuration of this tool. */
+	@Override
+	public void configure() {
+		PluginService pluginService = ImageJ.get(PluginService.class);
+		pluginService.run(FloodFillToolConfigPlugin.class,this);
+	}
+
+	/** Run flood fill when mouse clicked */
+	@Override
+	public void onMouseClick(MsClickedEvent evt) {
+		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
+			final ImageDisplay imageDisplay = (ImageDisplay)evt.getDisplay();
+			if (imageDisplay != null) {
+				PixelHelper helper = new PixelHelper();
+				if (helper.processEvent(evt)) {
+					DrawingTool drawingTool = initDrawingTool(helper.getDataset());
+					long[] currPos = getCurrPosition(imageDisplay);
+					floodFill(evt.getX(), evt.getY(), currPos, connectivity, drawingTool);
+					evt.getDisplay().getPanel().redraw();
+					evt.getDisplay().update();
+				}
+			}
+		}
+		super.onMouseClick(evt);
+	}
+
+	/** Tracks ALT key status. Changes color of fill between FG/BG. */
+	@Override
+	public void onKeyDown(KyPressedEvent evt) {
+		altKeyDown = evt.getModifiers().isAltDown() ||
+				evt.getModifiers().isAltGrDown();
+		super.onKeyDown(evt);
+	}
+	
+	/** Tracks ALT key status. Changes color of fill between FG/BG. */
+	@Override
+	public void onKeyUp(KyReleasedEvent evt) {
+		altKeyDown = evt.getModifiers().isAltDown() ||
+				evt.getModifiers().isAltGrDown();
+		super.onKeyUp(evt);
+	}
+
+	// -- private helpers --
+
+	/** Returns an initialized DrawingTool. */
+	private DrawingTool initDrawingTool(Dataset ds) {
+		DrawingTool tool = new DrawingTool(ds);
+		// TODO - change here to support arbitrary UV axes
+		tool.setUAxis(0);
+		tool.setVAxis(1);
+		tool.setLineWidth(1);
+		if (ds.isRGBMerged())
+			tool.setColorValue(getFillColor());
+		else
+			tool.setGrayValue(getFillValue());
+		return tool;
+	}
+	
+	/** Returns the current position shown in the associated ImageDisplay. */
+	private long[] getCurrPosition(ImageDisplay imageDisplay) {
+		// set the position of tool to current display's position
+		// FIXME - this will break when the view axes are different than the
+		// dataset's axes. this could happen from a display that combines multiple
+		// datasets. Or perhaps a display that ignores some axes from a dataset.
+		long[] currPos = new long[imageDisplay.numDimensions()];
+		for (int i = 0; i < currPos.length; i++)
+			currPos[i] = imageDisplay.getLongPosition(i);
+		return currPos;
+	}
+	
+	/**
+	 * Returns the fill value to use for gray datasets. It will be either the
+	 * foreground or background gray value depending upon whether the ALT key is
+	 * currently down.
+	 */
+	private double getFillValue() {
+		OptionsColors opts = getColorOptions();
+		if (altKeyDown)
+			return opts.getBgGray();
+		return opts.getFgGray();
+	}
+	
+	/**
+	 * Returns the fill color to use for color datasets. It will be either the
+	 * foreground or background color depending upon whether the ALT key is
+	 * currently down.
+	 */
+	private ColorRGB getFillColor() {
+		OptionsColors opts = getColorOptions();
+		if (altKeyDown)
+			return opts.getBgColor();
+		return opts.getFgColor();
+	}
+
+	/** Returns an OptionsColor instance */
+	private OptionsColors getColorOptions() {
+		OptionsService oSrv = ImageJ.get(OptionsService.class);
+		return oSrv.getOptions(OptionsColors.class);
+	}
+
+	/** Actually does the flood fill. */
+	private void floodFill(long u, long v, long[] position, Connectivity c,
+		DrawingTool dTool)
+	{
+		dTool.setPosition(position);
+		FloodFiller filler = new FloodFiller(dTool);
+		if (c == Connectivity.FOUR)
+			filler.fill4(u, v, position);
+		else
+			filler.fill8(u, v, position);
+	}
 }

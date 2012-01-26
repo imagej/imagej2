@@ -56,10 +56,15 @@ import imagej.options.plugins.OptionsColors;
  */
 public abstract class AbstractLineTool extends AbstractTool {
 
+	// -- instance variables --
+	
 	private DrawingTool drawingTool;
 	private long lineWidth = 1;
 	private boolean altKeyDown = false;
 
+	// -- public interface --
+	
+	/** Sets the drawing width for lines (in pixels). */
 	public void setLineWidth(long w) {
 		if (w < 1)
 			lineWidth = 1;
@@ -67,10 +72,12 @@ public abstract class AbstractLineTool extends AbstractTool {
 			lineWidth = w;
 	}
 	
+	/** Gets the drawing width for lines (in pixels). */
 	public long getLineWidth() {
 		return lineWidth;
 	}
 	
+	/** On mouse down the start point of a series of lines is established. */
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
 		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON) {
@@ -82,6 +89,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 		super.onMouseDown(evt);
 	}
 
+	/** On mouse up all resources are freed. */
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
 		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON) {
@@ -90,6 +98,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 		super.onMouseUp(evt);
 	}
 
+	/** On mouse drag a series of lines are drawn. */
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		if (drawingTool != null) {
@@ -100,6 +109,10 @@ public abstract class AbstractLineTool extends AbstractTool {
 		super.onMouseDrag(evt);
 	}
 
+	/**
+	 * Tracks the ALT key status. ALT key determines whether to draw in
+	 * foreground or background color.
+	 */
 	@Override
 	public void onKeyDown(KyPressedEvent evt) {
 		altKeyDown = evt.getModifiers().isAltDown() ||
@@ -107,6 +120,10 @@ public abstract class AbstractLineTool extends AbstractTool {
 		super.onKeyDown(evt);
 	}
 	
+	/**
+	 * Tracks the ALT key status. ALT key determines whether to draw in
+	 * foreground or background color.
+	 */
 	@Override
 	public void onKeyUp(KyReleasedEvent evt) {
 		altKeyDown = evt.getModifiers().isAltDown() ||
@@ -115,7 +132,8 @@ public abstract class AbstractLineTool extends AbstractTool {
 	}
 
 	// -- private helpers --
-	
+
+	/** Allocates and initializes a DrawingTool if possible. */
 	private void initDrawingTool(MsPressedEvent evt) {
 		
 		// lookup display info where mouse down event happened
@@ -147,6 +165,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 		initDrawToolAttributes(dataset.isRGBMerged());
 	}
 
+	/** Sets the DrawingTool's attributes (line width, drawing colors, etc.) */
 	private void initDrawToolAttributes(boolean isColorData) {
 
 		// set line width of drawingTool
