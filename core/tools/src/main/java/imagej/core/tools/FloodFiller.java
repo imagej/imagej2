@@ -74,7 +74,7 @@ public class FloodFiller {
 		  // find end of scan-line
 			while (u2<maxU && matches(accessor,u2,v,origColor,origValue)) u2++;                 
 			u2--;
-			fillLine(tool, u1, u2, v); // fill scan-line
+			tool.drawLine(u1, v, u2, v); // fill scan-line
 			boolean inScanLine = false;
 			for (long i=u1; i<=u2; i++) { // find scan-lines above this one
 				if (!inScanLine && v>0 && matches(accessor,i,v-1,origColor,origValue))
@@ -125,7 +125,7 @@ public class FloodFiller {
 			  // find end of scan-line
 				while (u2<maxU && matches(accessor,u2,v,origColor,origValue)) u2++;
 				u2--;
-				fillLine(tool, u1, u2, v); // fill scan-line
+				tool.drawLine(u1, v, u2, v); // fill scan-line
 			} 
 			if (v > 0) {
 				if (u1 > 0) {
@@ -242,14 +242,6 @@ public class FloodFiller {
 	}
 
 	/**
-	 *  Draws a horizontal line in the current UV plane of the current DrawingTool.
-	 *  The line runs from u1 to u2 at height v.
-	 */
-	private void fillLine(DrawingTool dTool, long u1, long u2, long v) {
-		dTool.drawLine(u1, v, u2, v);
-	}
-
-	/**
 	 * Pushes the specified (u,v) point on the working stacks.
 	 */
 	private void push(long u, long v) {
@@ -288,10 +280,8 @@ public class FloodFiller {
 		}
 		
 		public void push(long value) {
-			if (top == stack.length-1) {
-				long[] newArray = Arrays.copyOf(stack, stack.length*2);
-				stack = newArray;
-			}
+			if (top == stack.length-1)
+				stack = Arrays.copyOf(stack, stack.length*2);
 			top++;
 			stack[top] = value;
 		}
