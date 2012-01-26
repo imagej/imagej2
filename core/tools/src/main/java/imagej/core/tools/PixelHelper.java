@@ -85,11 +85,12 @@ public class PixelHelper {
 	}
 
 	/**
-	 * This method processes a mouse event and records information internally
+	 * This method takes a mouse event and records information internally
 	 * about the location, color, and type of data referenced at the mouse
-	 * position. After processing an event use member query methods to get info.
+	 * position. After event is recorded users should utilize member query
+	 * methods to get info about the event.
 	 */
-	public boolean processEvent(final MsEvent evt) {
+	public boolean recordEvent(final MsEvent evt) {
 		final ImageJ context = evt.getContext();
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);

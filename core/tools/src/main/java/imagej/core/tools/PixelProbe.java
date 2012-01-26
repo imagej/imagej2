@@ -52,10 +52,12 @@ public class PixelProbe extends AbstractTool {
 
 	// -- Tool methods --
 
+	// TODO - this tool does not consume the events. Not sure this is correct.
+	
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
 
-		if (!helper.processEvent(evt)) return;
+		if (!helper.recordEvent(evt)) return;
 
 		final long cx = helper.getCX();
 		final long cy = helper.getCY();

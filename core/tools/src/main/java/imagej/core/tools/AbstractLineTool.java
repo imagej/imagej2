@@ -40,6 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
@@ -86,16 +87,16 @@ public abstract class AbstractLineTool extends AbstractTool {
 				drawingTool.moveTo(evt.getX(), evt.getY());
 			}
 		}
-		super.onMouseDown(evt);
+		evt.consume();
 	}
 
 	/** On mouse up all resources are freed. */
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
-		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON) {
+		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
 			drawingTool = null;
 		}
-		super.onMouseUp(evt);
+		evt.consume();
 	}
 
 	/** On mouse drag a series of lines are drawn. */
@@ -106,7 +107,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 			evt.getDisplay().getPanel().redraw();
 			evt.getDisplay().update();
 		}
-		super.onMouseDrag(evt);
+		evt.consume();
 	}
 
 	/**
@@ -117,7 +118,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 	public void onKeyDown(KyPressedEvent evt) {
 		altKeyDown = evt.getModifiers().isAltDown() ||
 				evt.getModifiers().isAltGrDown();
-		super.onKeyDown(evt);
+		evt.consume();
 	}
 	
 	/**
@@ -128,7 +129,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 	public void onKeyUp(KyReleasedEvent evt) {
 		altKeyDown = evt.getModifiers().isAltDown() ||
 				evt.getModifiers().isAltGrDown();
-		super.onKeyUp(evt);
+		evt.consume();
 	}
 
 	// -- private helpers --
