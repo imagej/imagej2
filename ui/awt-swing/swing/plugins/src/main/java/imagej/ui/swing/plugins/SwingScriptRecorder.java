@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -53,7 +52,6 @@ import imagej.ext.script.CodeGeneratorJava;
 import imagej.ext.script.InvocationObject;
 import imagej.ext.script.ParameterObject;
 import imagej.ui.DialogPrompt;
-import imagej.ui.IUserInterface;
 import imagej.ui.UIService;
 import imagej.ui.swing.StaticSwingUtils;
 
@@ -86,6 +84,9 @@ public class SwingScriptRecorder implements ImageJPlugin {
 
 	@Parameter(required = true, persist = false)
 	private EventService eventService;
+
+	@Parameter(required = true, persist = false)
+	private UIService uiService;
 
 	// private static SwingOutputWindow window;
 	JTextArea textArea = new JTextArea();
@@ -254,12 +255,10 @@ public class SwingScriptRecorder implements ImageJPlugin {
 	}
 
 	private void promptForGenerate() {
-		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
-		final DialogPrompt dialog =
-			ui.dialogPrompt("Generate Code?", "Code Generator",
+		final DialogPrompt.Result result =
+			uiService.showDialog("Generate Code?", "Code Generator",
 				DialogPrompt.MessageType.QUESTION_MESSAGE,
 				DialogPrompt.OptionType.YES_NO_OPTION);
-		final DialogPrompt.Result result = dialog.prompt();
 		if (result == DialogPrompt.Result.YES_OPTION) {
 			System.out.println("That's a YES");
 			generateCode();
@@ -284,7 +283,6 @@ public class SwingScriptRecorder implements ImageJPlugin {
 			cg.statementTerminate();
 			append("Code generated: \n");
 			append(cg.getResult());
-			//System.out.println(cg.getResult());
 		}
 	}
 
