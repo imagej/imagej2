@@ -39,6 +39,7 @@ import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginService;
@@ -212,6 +213,16 @@ public final class UIService extends AbstractService {
 		final DialogPrompt dialogPrompt =
 			getUI().dialogPrompt(message, title, messageType, optionType);
 		return dialogPrompt.prompt();
+	}
+
+	/**
+	 * Displays a popup context menu for the given display at the specified
+	 * position.
+	 */
+	public void showContextMenu(final String menuRoot, final Display<?> display,
+		final int x, final int y)
+	{
+		userInterface.showContextMenu(menuRoot, display, x, y);
 	}
 
 	// -- Event handlers --

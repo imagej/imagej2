@@ -122,6 +122,11 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 	}
 
 	@Override
+	public String getMenuRoot() {
+		return info.getMenuRoot();
+	}
+
+	@Override
 	public String getIconPath() {
 		return info.getIconPath();
 	}
@@ -154,6 +159,11 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 	@Override
 	public void setMenuPath(final MenuPath menuPath) {
 		info.setMenuPath(menuPath);
+	}
+
+	@Override
+	public void setMenuRoot(final String menuRoot) {
+		info.setMenuRoot(menuRoot);
 	}
 
 	@Override

@@ -55,6 +55,9 @@ public abstract class AbstractUIDetails implements UIDetails {
 	/** Path to this object's suggested position in the menu structure. */
 	private MenuPath menuPath;
 
+	/** Name of the menu structure to which the object belongs. */
+	private String menuRoot;
+
 	/** Resource path to this object's icon. */
 	private String iconPath;
 
@@ -127,6 +130,11 @@ public abstract class AbstractUIDetails implements UIDetails {
 	}
 
 	@Override
+	public String getMenuRoot() {
+		return menuRoot;
+	}
+
+	@Override
 	public String getIconPath() {
 		return iconPath;
 	}
@@ -164,6 +172,11 @@ public abstract class AbstractUIDetails implements UIDetails {
 		else {
 			this.menuPath = menuPath;
 		}
+	}
+
+	@Override
+	public void setMenuRoot(final String menuRoot) {
+		this.menuRoot = menuRoot;
 	}
 
 	@Override

@@ -57,6 +57,9 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	/** Gets the path to the object's suggested position in the menu structure. */
 	MenuPath getMenuPath();
 
+	/** Gets the name of the menu structure to which the object belongs. */
+	String getMenuRoot();
+
 	/** Gets the resource path to an icon representing the object. */
 	String getIconPath();
 
@@ -86,6 +89,9 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 
 	/** Sets the path to the object's suggested position in the menu structure. */
 	void setMenuPath(MenuPath menuPath);
+
+	/** Sets the name of the menu structure to which the object belongs. */
+	void setMenuRoot(String menuRoot);
 
 	/** Sets the resource path to an icon representing the object. */
 	void setIconPath(String iconPath);

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.awt;
 
 import imagej.ImageJ;
+import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -43,10 +44,10 @@ import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.OutputWindow;
-import imagej.ui.UserInterface;
-import imagej.ui.UIService;
 import imagej.ui.IUserInterface;
+import imagej.ui.OutputWindow;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 
 import java.awt.BorderLayout;
 import java.awt.MenuBar;
@@ -144,6 +145,11 @@ public class AWTUI implements IUserInterface {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-
+	@Override
+	public void showContextMenu(final String menuRoot, final Display<?> display,
+		final int x, final int y)
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
 }

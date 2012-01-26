@@ -1,5 +1,5 @@
 //
-// IUserInterface.java
+// ContextMenuHandler.java
 //
 
 /*
@@ -32,59 +32,53 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.core.tools;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.event.input.MsButtonEvent;
+import imagej.ext.display.event.input.MsClickedEvent;
+import imagej.ext.display.event.input.MsPressedEvent;
+import imagej.ext.display.event.input.MsReleasedEvent;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
+import imagej.ui.UIService;
 
 /**
- * An end-user ImageJ application. User interfaces discoverable at runtime must
- * implement this interface and be annotated with @{@link UserInterface}.
+ * Handles display of general-purpose context menu (e.g., on right mouse click).
  * 
  * @author Curtis Rueden
- * @see UserInterface
- * @see UIService
  */
-public interface IUserInterface {
+@Plugin(type = Tool.class, name = "Context Menus", alwaysActive = true)
+public class ContextMenuHandler extends AbstractTool {
 
-	void initialize(UIService uiService);
+	@Override
+	public void onMouseDown(final MsPressedEvent evt) {
+		doPopupMenu(evt);
+	}
 
-	UIService getUIService();
+	@Override
+	public void onMouseUp(final MsReleasedEvent evt) {
+		doPopupMenu(evt);
+	}
 
-	void processArgs(final String[] args);
+	@Override
+	public void onMouseClick(final MsClickedEvent evt) {
+		doPopupMenu(evt);
+	}
 
-	/** Desktop for use with multi-document interfaces (MDI). */
-	Desktop getDesktop();
+	// -- Helper methods --
 
-	ApplicationFrame getApplicationFrame();
+	private void doPopupMenu(final MsButtonEvent evt) {
+		if (!evt.isPopupTrigger()) return;
 
-	ToolBar getToolBar();
+		final UIService uiService = evt.getContext().getService(UIService.class);
+		final String menuRoot = getInfo().getMenuRoot();
+		final Display<?> display = evt.getDisplay();
+		uiService.showContextMenu(menuRoot, display, evt.getX(), evt.getY());
 
-	StatusBar getStatusBar();
-
-	void createMenus();
-
-	OutputWindow newOutputWindow(String title);
-
-	/**
-	 * Creates a dialog prompter.
-	 * 
-	 * @param message The message in the dialog itself.
-	 * @param title The title of the dialog.
-	 * @param messageType The type of message. This typically is rendered as an
-	 *          icon next to the message. For example,
-	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
-	 *          as an exclamation point.
-	 * @param optionType The choices available when dismissing the dialog. These
-	 *          choices are typically rendered as buttons for the user to click.
-	 * @return The newly created DialogPrompt object.
-	 */
-	DialogPrompt dialogPrompt(String message, String title,
-		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
-
-	/**
-	 * Displays a popup context menu for the given display at the specified
-	 * position.
-	 */
-	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
+		// consume event, so that nothing else tries to handle it
+		evt.consume();
+	}
 
 }
