@@ -70,7 +70,10 @@ public class PickerTool extends AbstractTool {
 	@Override
 	public void onMouseClick(final MsClickedEvent evt) {
 
-		if (!helper.processEvent(evt)) return;
+		if (!helper.recordEvent(evt)) {
+			evt.consume();
+			return;
+		}
 
 		OptionsService service = ImageJ.get(OptionsService.class);
 		
@@ -102,6 +105,8 @@ public class PickerTool extends AbstractTool {
 		}
 		
 		options.save();
+
+		evt.consume();
 	}
 
 	@Override
@@ -109,6 +114,7 @@ public class PickerTool extends AbstractTool {
 		altKeyDown =
 				evt.getModifiers().isAltDown() ||
 				evt.getModifiers().isAltGrDown();
+		evt.consume();
 	}
 	
 	@Override
@@ -116,6 +122,7 @@ public class PickerTool extends AbstractTool {
 		altKeyDown =
 				evt.getModifiers().isAltDown() ||
 				evt.getModifiers().isAltGrDown();
+		evt.consume();
 	}
 
 	// -- private interface --

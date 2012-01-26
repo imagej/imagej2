@@ -95,7 +95,7 @@ public class FloodFillTool extends AbstractTool {
 			final ImageDisplay imageDisplay = (ImageDisplay)evt.getDisplay();
 			if (imageDisplay != null) {
 				PixelHelper helper = new PixelHelper();
-				if (helper.processEvent(evt)) {
+				if (helper.recordEvent(evt)) {
 					DrawingTool drawingTool = initDrawingTool(helper.getDataset());
 					long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(evt.getX(), evt.getY(), currPos, connectivity, drawingTool);
@@ -104,7 +104,7 @@ public class FloodFillTool extends AbstractTool {
 				}
 			}
 		}
-		super.onMouseClick(evt);
+		evt.consume();
 	}
 
 	/** Tracks ALT key status. Changes color of fill between FG/BG. */
@@ -112,7 +112,7 @@ public class FloodFillTool extends AbstractTool {
 	public void onKeyDown(KyPressedEvent evt) {
 		altKeyDown = evt.getModifiers().isAltDown() ||
 				evt.getModifiers().isAltGrDown();
-		super.onKeyDown(evt);
+		evt.consume();
 	}
 	
 	/** Tracks ALT key status. Changes color of fill between FG/BG. */
@@ -120,7 +120,7 @@ public class FloodFillTool extends AbstractTool {
 	public void onKeyUp(KyReleasedEvent evt) {
 		altKeyDown = evt.getModifiers().isAltDown() ||
 				evt.getModifiers().isAltGrDown();
-		super.onKeyUp(evt);
+		evt.consume();
 	}
 
 	// -- private helpers --

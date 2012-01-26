@@ -92,7 +92,8 @@ public class FloodFiller {
 									!matches(accessor,i,v+1,origColor,origValue))
 					inScanLine = false;
 			}
-		}        
+		}
+		//System.out.println("Stack allocated (but not necessarily used) "+uStack.stack.length);
 	}
 	
 	/**
@@ -168,6 +169,7 @@ public class FloodFiller {
 					inScanLine = false;
 			}
 		}
+		//System.out.println("Stack allocated (but not necessarily used) "+uStack.stack.length);
 	}
 
 	// -- private helpers --
