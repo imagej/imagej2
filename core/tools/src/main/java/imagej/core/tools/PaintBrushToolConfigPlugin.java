@@ -1,5 +1,5 @@
 //
-// PaintbrushToolConfigPlugin.java
+// PaintBrushToolConfigPlugin.java
 //
 
 /*
@@ -38,33 +38,33 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-
 /**
- * Implements the configuration code for the PaintBrushTool.
+ * Implements the configuration code for {@link PaintBrushTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(label="Paintbrush Tool")
+@Plugin(label = "Paintbrush Tool")
 public class PaintBrushToolConfigPlugin implements ImageJPlugin {
 
-	@Parameter(required=true)
+	@Parameter(required = true)
 	private PaintBrushTool tool;
-	
+
 	// TODO - it would be nice to persist this brush width. but the associated
 	// tool cannot persist its own width. thus you get in a situation that the
 	// dialog brush width does not equal the tool's initial value which is
 	// confusing. Tools need to be able to persist some values to get around this.
-	
-	@Parameter(label = "Brush Width (pixels)",	min = "1", persist = false,
-			initializer="init")
+
+	@Parameter(label = "Brush Width (pixels)", min = "1", persist = false,
+		initializer = "init")
 	private long width;
 
 	@Override
 	public void run() {
 		tool.setLineWidth(width);
 	}
-	
+
 	protected void init() {
 		width = tool.getLineWidth();
 	}
+
 }

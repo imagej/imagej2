@@ -50,7 +50,7 @@ import imagej.util.ColorRGB;
 
 /**
  * Tool implementation for flood fill.
- *  
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "FloodFill", label = "Flood Fill",
@@ -59,22 +59,24 @@ import imagej.util.ColorRGB;
 public class FloodFillTool extends AbstractTool {
 
 	// -- instance variables --
-	
+
 	public static final int PRIORITY = -304;
 
-	enum Connectivity {EIGHT,FOUR}
-	
+	enum Connectivity {
+		EIGHT, FOUR
+	}
+
 	private Connectivity connectivity = Connectivity.EIGHT;
 
 	private boolean altKeyDown = false;
-	
+
 	// -- public interface --
-	
+
 	/** Specify whether this flood fill operation should be 4 or 8 connected. */
-	public void setConnectivity(Connectivity c) {
+	public void setConnectivity(final Connectivity c) {
 		connectivity = c;
 	}
-	
+
 	/** Gets this flood fill's current connectivity (4 or 8 connected). */
 	public Connectivity getConnectivity() {
 		return connectivity;
@@ -83,20 +85,21 @@ public class FloodFillTool extends AbstractTool {
 	/** Implements the configuration of this tool. */
 	@Override
 	public void configure() {
-		PluginService pluginService = getContext().getService(PluginService.class);
-		pluginService.run(FloodFillToolConfigPlugin.class,this);
+		final PluginService pluginService =
+			getContext().getService(PluginService.class);
+		pluginService.run(FloodFillToolConfigPlugin.class, this);
 	}
 
 	/** Run flood fill when mouse clicked */
 	@Override
-	public void onMouseClick(MsClickedEvent evt) {
+	public void onMouseClick(final MsClickedEvent evt) {
 		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
-			final ImageDisplay imageDisplay = (ImageDisplay)evt.getDisplay();
+			final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
 			if (imageDisplay != null) {
-				PixelHelper helper = new PixelHelper();
+				final PixelHelper helper = new PixelHelper();
 				if (helper.recordEvent(evt)) {
-					DrawingTool drawingTool = initDrawingTool(helper.getDataset());
-					long[] currPos = getCurrPosition(imageDisplay);
+					final DrawingTool drawingTool = initDrawingTool(helper.getDataset());
+					final long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(evt.getX(), evt.getY(), currPos, connectivity, drawingTool);
 					evt.getDisplay().getPanel().redraw();
 					evt.getDisplay().update();
@@ -108,87 +111,82 @@ public class FloodFillTool extends AbstractTool {
 
 	/** Tracks ALT key status. Changes color of fill between FG/BG. */
 	@Override
-	public void onKeyDown(KyPressedEvent evt) {
-		altKeyDown = evt.getModifiers().isAltDown() ||
-				evt.getModifiers().isAltGrDown();
+	public void onKeyDown(final KyPressedEvent evt) {
+		altKeyDown =
+			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 		evt.consume();
 	}
-	
+
 	/** Tracks ALT key status. Changes color of fill between FG/BG. */
 	@Override
-	public void onKeyUp(KyReleasedEvent evt) {
-		altKeyDown = evt.getModifiers().isAltDown() ||
-				evt.getModifiers().isAltGrDown();
+	public void onKeyUp(final KyReleasedEvent evt) {
+		altKeyDown =
+			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 		evt.consume();
 	}
 
 	// -- private helpers --
 
 	/** Returns an initialized DrawingTool. */
-	private DrawingTool initDrawingTool(Dataset ds) {
-		DrawingTool tool = new DrawingTool(ds);
+	private DrawingTool initDrawingTool(final Dataset ds) {
+		final DrawingTool tool = new DrawingTool(ds);
 		// TODO - change here to support arbitrary UV axes
 		tool.setUAxis(0);
 		tool.setVAxis(1);
 		tool.setLineWidth(1);
-		if (ds.isRGBMerged())
-			tool.setColorValue(getFillColor());
-		else
-			tool.setGrayValue(getFillValue());
+		if (ds.isRGBMerged()) tool.setColorValue(getFillColor());
+		else tool.setGrayValue(getFillValue());
 		return tool;
 	}
-	
+
 	/** Returns the current position shown in the associated ImageDisplay. */
-	private long[] getCurrPosition(ImageDisplay imageDisplay) {
+	private long[] getCurrPosition(final ImageDisplay imageDisplay) {
 		// set the position of tool to current display's position
 		// FIXME - this will break when the view axes are different than the
 		// dataset's axes. this could happen from a display that combines multiple
 		// datasets. Or perhaps a display that ignores some axes from a dataset.
-		long[] currPos = new long[imageDisplay.numDimensions()];
+		final long[] currPos = new long[imageDisplay.numDimensions()];
 		for (int i = 0; i < currPos.length; i++)
 			currPos[i] = imageDisplay.getLongPosition(i);
 		return currPos;
 	}
-	
+
 	/**
 	 * Returns the fill value to use for gray datasets. It will be either the
 	 * foreground or background gray value depending upon whether the ALT key is
 	 * currently down.
 	 */
 	private double getFillValue() {
-		OptionsColors opts = getColorOptions();
-		if (altKeyDown)
-			return opts.getBgGray();
+		final OptionsColors opts = getColorOptions();
+		if (altKeyDown) return opts.getBgGray();
 		return opts.getFgGray();
 	}
-	
+
 	/**
 	 * Returns the fill color to use for color datasets. It will be either the
 	 * foreground or background color depending upon whether the ALT key is
 	 * currently down.
 	 */
 	private ColorRGB getFillColor() {
-		OptionsColors opts = getColorOptions();
-		if (altKeyDown)
-			return opts.getBgColor();
+		final OptionsColors opts = getColorOptions();
+		if (altKeyDown) return opts.getBgColor();
 		return opts.getFgColor();
 	}
 
 	/** Returns an OptionsColor instance */
 	private OptionsColors getColorOptions() {
-		OptionsService oSrv = getContext().getService(OptionsService.class);
+		final OptionsService oSrv = getContext().getService(OptionsService.class);
 		return oSrv.getOptions(OptionsColors.class);
 	}
 
 	/** Actually does the flood fill. */
-	private void floodFill(long u, long v, long[] position, Connectivity c,
-		DrawingTool dTool)
+	private void floodFill(final long u, final long v, final long[] position,
+		final Connectivity c, final DrawingTool dTool)
 	{
 		dTool.setPosition(position);
-		FloodFiller filler = new FloodFiller(dTool);
-		if (c == Connectivity.FOUR)
-			filler.fill4(u, v, position);
-		else
-			filler.fill8(u, v, position);
+		final FloodFiller filler = new FloodFiller(dTool);
+		if (c == Connectivity.FOUR) filler.fill4(u, v, position);
+		else filler.fill8(u, v, position);
 	}
+
 }

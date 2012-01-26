@@ -38,32 +38,31 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-
 /**
- * Implements the configuration code for the FloodFillTool.
+ * Implements the configuration code for {@link FloodFillTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(label="Flood Fill Tool")
+@Plugin(label = "Flood Fill Tool")
 public class FloodFillToolConfigPlugin implements ImageJPlugin {
 
 	// -- constants --
-	
+
 	private static final String FOUR = "4-connected";
 	private static final String EIGHT = "8-connected";
-	
+
 	// -- Parameters --
-	
-	@Parameter(required=true)
+
+	@Parameter(required = true)
 	private FloodFillTool tool;
-	
+
 	// TODO - it would be nice to persist this. but the associated tool cannot
 	// persist values. thus you get in a situation that the dialog connectivity
 	// does not equal the tool's initial value which is confusing. Tools need to
 	// be able to persist some values to get around this.
-	
-	@Parameter(label = "Flood Type:",	choices = {EIGHT,FOUR},
-			initializer = "init", persist = false)
+
+	@Parameter(label = "Flood Type:", choices = { EIGHT, FOUR },
+		initializer = "init", persist = false)
 	private String connectivity;
 
 	// -- public interface --
@@ -71,19 +70,17 @@ public class FloodFillToolConfigPlugin implements ImageJPlugin {
 	/** Configures the connectivity of the FloodFillTool */
 	@Override
 	public void run() {
-		if (connectivity.equals(FOUR))
-			tool.setConnectivity(FloodFillTool.Connectivity.FOUR);
-		else
-			tool.setConnectivity(FloodFillTool.Connectivity.EIGHT);
+		if (connectivity.equals(FOUR)) tool
+			.setConnectivity(FloodFillTool.Connectivity.FOUR);
+		else tool.setConnectivity(FloodFillTool.Connectivity.EIGHT);
 	}
-	
+
 	// -- initializer --
-	
+
 	protected void init() {
-		FloodFillTool.Connectivity neighCount = tool.getConnectivity();
-		if (neighCount.equals(FloodFillTool.Connectivity.FOUR))
-			connectivity = FOUR;
-		else
-			connectivity = EIGHT;
+		final FloodFillTool.Connectivity neighCount = tool.getConnectivity();
+		if (neighCount.equals(FloodFillTool.Connectivity.FOUR)) connectivity = FOUR;
+		else connectivity = EIGHT;
 	}
+
 }

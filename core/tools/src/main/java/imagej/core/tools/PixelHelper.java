@@ -162,18 +162,20 @@ public class PixelHelper {
 	public Dataset getDataset() {
 		return dataset;
 	}
-	
+
 	/**
 	 * Returns the color of the pixel associated with the processed mouse event.
 	 * Note that the color is exact for RGB images and an interpolated lookup in
-	 * the color table for gray images. */
+	 * the color table for gray images.
+	 */
 	public ColorRGB getColor() {
 		return color;
 	}
 
 	/**
 	 * Returns the value of the pixel associated with the processed mouse event.
-	 * Note that for color images this will be Double.NaN. */
+	 * Note that for color images this will be Double.NaN.
+	 */
 	public double getValue() {
 		return value;
 	}
@@ -188,21 +190,25 @@ public class PixelHelper {
 		return cy;
 	}
 
-	/** Returns true if the Dataset associated with the mouse event is merged
-	 *  color. */
+	/**
+	 * Returns true if the Dataset associated with the mouse event is merged
+	 * color.
+	 */
 	public boolean isPureRGBCase() {
 		return isPureRGBCase;
 	}
 
-	/** Returns true if the Dataset associated with the mouse event is a gray
-	 *  integral type. */
+	/**
+	 * Returns true if the Dataset associated with the mouse event is a gray
+	 * integral type.
+	 */
 	public boolean isIntegerCase() {
 		return isIntegerCase;
 	}
 
 	// -- private helpers --
 
-	/** Sets the position of a randomAccess to (u,v,planePos). */ 
+	/** Sets the position of a randomAccess to (u,v,planePos). */
 	private void setPosition(
 		final RandomAccess<? extends RealType<?>> randomAccess, final long cx,
 		final long cy, final Position planePos, final int xAxis, final int yAxis)
@@ -215,7 +221,8 @@ public class PixelHelper {
 		}
 	}
 
-	/** Gets the color of the pixel located at the given RandomAccess' current
+	/**
+	 * Gets the color of the pixel located at the given RandomAccess' current
 	 * position. Do not call this method if you do not have color data.
 	 */
 	private ColorRGB getColor(final Dataset ds,

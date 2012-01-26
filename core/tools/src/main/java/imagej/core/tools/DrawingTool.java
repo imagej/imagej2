@@ -41,42 +41,38 @@ import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
- * Draws data in an orthoplane of a Dataset. Many methods adapted from ImageJ's
- * ImageProcessor methods. Internally the drawing routines work in a UV plane.
- * U and V can be specified from existing coord axes (i.e UV can equal XY or ZT
- * or any other combination of Dataset axes).
+ * Draws data in an orthoplane of a {@link Dataset}. Many methods adapted from
+ * ImageJ1's ImageProcessor methods. Internally the drawing routines work in a
+ * UV plane. U and V can be specified from existing coord axes (i.e UV can equal
+ * XY or ZT or any other combination of Dataset axes).
  * 
  * @author Barry DeZonia
- *
  */
 public class DrawingTool {
 
 	// -- instance variables --
-	
+
 	private final Dataset dataset;
 	private int uAxis;
 	private int vAxis;
 	private final int colorAxis;
-	private RandomAccess<? extends RealType<?>> accessor;
+	private final RandomAccess<? extends RealType<?>> accessor;
 	private long lineWidth;
 	private ColorRGB colorValue;
 	private double grayValue;
 	private long u0, v0;
 	private long maxU, maxV;
-	
+
 	// -- constructor --
 
 	/**
 	 * Creates a DrawingTool to modify a specified Dataset.
 	 */
-	public DrawingTool(Dataset ds) {
+	public DrawingTool(final Dataset ds) {
 		this.dataset = ds;
-		if (ds.isRGBMerged())
-			this.colorAxis = ds.getAxisIndex(Axes.CHANNEL);
-		else
-			this.colorAxis = -1;
+		if (ds.isRGBMerged()) this.colorAxis = ds.getAxisIndex(Axes.CHANNEL);
+		else this.colorAxis = -1;
 		this.accessor = ds.getImgPlus().randomAccess();
 		this.lineWidth = 1;
 		this.grayValue = ds.getType().getMinValue();
@@ -97,7 +93,7 @@ public class DrawingTool {
 	}
 
 	/** Sets the U axis index this DrawingTool will work in. */
-	public void setUAxis(int axisNum) {
+	public void setUAxis(final int axisNum) {
 		uAxis = axisNum;
 		maxU = dataset.dimension(uAxis) - 1;
 	}
@@ -106,38 +102,38 @@ public class DrawingTool {
 	public int getUAxis() {
 		return uAxis;
 	}
-	
+
 	/** Sets the V axis index this DrawingTool will work in. */
-	public void setVAxis(int axisNum) {
+	public void setVAxis(final int axisNum) {
 		vAxis = axisNum;
 		maxV = dataset.dimension(vAxis) - 1;
 	}
-	
+
 	/** Returns the index of the V axis of this Drawing Tool. */
 	public int getVAxis() {
 		return vAxis;
 	}
-	
+
 	/**
 	 * Sets this DrawingHelper's current drawing position. Usually specified once
 	 * before a series of drawing operations are done. Useful for changing the
 	 * drawing plane position quickly. Also useful when changing U or V axes.
 	 */
-	public void setPosition(long[] position) {
+	public void setPosition(final long[] position) {
 		accessor.setPosition(position);
 	}
 
 	/** Gets this DrawingHelper's current drawing position. */
-	public void getPosition(long[] position) {
+	public void getPosition(final long[] position) {
 		for (int i = 0; i < accessor.numDimensions(); i++)
 			position[i] = accessor.getLongPosition(i);
 	}
 
 	/**
-	 *  Sets the current drawing line width. This affects how other methods draw
-	 *  such as lines, circles, dots, etc.
+	 * Sets the current drawing line width. This affects how other methods draw
+	 * such as lines, circles, dots, etc.
 	 */
-	public void setLineWidth(long lineWidth) {
+	public void setLineWidth(final long lineWidth) {
 		this.lineWidth = lineWidth;
 	}
 
@@ -147,12 +143,12 @@ public class DrawingTool {
 	}
 
 	// note: we cannot represent 64-bit integer data exactly in all cases
-	
-	/** 
-	 *  Sets the current drawing gray value. Any subsequent drawing operations use
-	 *  this gray value for gray level Datasets.
+
+	/**
+	 * Sets the current drawing gray value. Any subsequent drawing operations use
+	 * this gray value for gray level Datasets.
 	 */
-	public void setGrayValue(double value) {
+	public void setGrayValue(final double value) {
 		this.grayValue = value;
 	}
 
@@ -160,22 +156,22 @@ public class DrawingTool {
 	public double getGrayValue() {
 		return grayValue;
 	}
-	
+
 	/**
-	 *  Sets the current drawing color value. Any subsequent drawing operations
-	 *  use this color value for color Datasets.
+	 * Sets the current drawing color value. Any subsequent drawing operations use
+	 * this color value for color Datasets.
 	 */
-	public void setColorValue(ColorRGB color) {
+	public void setColorValue(final ColorRGB color) {
 		this.colorValue = color;
 	}
-	
+
 	/** Gets the current drawing color value. */
 	public ColorRGB getColorValue() {
 		return colorValue;
 	}
-	
+
 	/** Draws a pixel in the current UV plane at specified UV coordinates. */
-	public void drawPixel(long u, long v) {
+	public void drawPixel(final long u, final long v) {
 		if (u < 0) return;
 		if (v < 0) return;
 		if (u > maxU) return;
@@ -195,46 +191,45 @@ public class DrawingTool {
 			accessor.get().setReal(colorValue.getBlue());
 		}
 	}
-	
-	/** 
-	 *  Draws a dot in the current UV plane at specified UV coordinates. The size
-	 *  of the dot is determined by the current line width.
+
+	/**
+	 * Draws a dot in the current UV plane at specified UV coordinates. The size
+	 * of the dot is determined by the current line width.
 	 */
-	public void drawDot(long u, long v) {
-		if (lineWidth == 1)
-			drawPixel(u,v);
+	public void drawDot(final long u, final long v) {
+		if (lineWidth == 1) drawPixel(u, v);
 		else if (lineWidth == 2) {
-			drawPixel(u,v);
-			drawPixel(u,v-1);
-			drawPixel(u-1,v);
-			drawPixel(u-1,v-1);
+			drawPixel(u, v);
+			drawPixel(u, v - 1);
+			drawPixel(u - 1, v);
+			drawPixel(u - 1, v - 1);
 		}
 		else { // 3 or more pixels wide
-			drawCircle(u,v);
+			drawCircle(u, v);
 		}
 	}
 
 	/**
-	 *  Moves the drawing origin of the current UV plane to the specified
-	 *  coordinates.
+	 * Moves the drawing origin of the current UV plane to the specified
+	 * coordinates.
 	 */
-	public void moveTo(long u, long v) {
+	public void moveTo(final long u, final long v) {
 		u0 = u;
 		v0 = v;
 	}
 
 	/**
-	 *  Draws a line in the current UV plane from the current origin to the
-	 *  specified coordinate.
+	 * Draws a line in the current UV plane from the current origin to the
+	 * specified coordinate.
 	 */
-	public void lineTo(long u1, long v1) {
-		long du = u1-u0;
-		long dv = v1-v0;
-		long absdu = du >= 0 ? du : -du;
-		long absdv = dv >= 0 ? dv : -dv;
+	public void lineTo(final long u1, final long v1) {
+		final long du = u1 - u0;
+		final long dv = v1 - v0;
+		final long absdu = du >= 0 ? du : -du;
+		final long absdv = dv >= 0 ? dv : -dv;
 		long n = absdv > absdu ? absdv : absdu;
-		double uinc = (double)du/n;
-		double vinc = (double)dv/n;
+		final double uinc = (double) du / n;
+		final double vinc = (double) dv / n;
 		double u = u0;
 		double v = v0;
 		n++;
@@ -246,42 +241,45 @@ public class DrawingTool {
 			drawDot(Math.round(u), Math.round(v));
 			u += uinc;
 			v += vinc;
-		} while (--n>0);
+		}
+		while (--n > 0);
 	}
-		
+
 	/** Draws a line from (u1,v1) to (u2,v2). */
-	public void drawLine(long u1, long v1, long u2, long v2) {
+	public void drawLine(final long u1, final long v1, final long u2,
+		final long v2)
+	{
 		moveTo(u1, v1);
 		lineTo(u2, v2);
 	}
 
 	// TODO - performance improve drawCircle? Necessary? Test.
 	// TODO - make a version that draws the outline only. That version would need
-	//   user to provide radius. Line width would be the width of the outline.
-	// TODO - make an ellipse method. have drawCircle call it. 
+	// user to provide radius. Line width would be the width of the outline.
+	// TODO - make an ellipse method. have drawCircle call it.
 
 	/**
 	 * Draws a filled circle in the current UV plane centered at the specified UV
-	 * coordinates. The radius of the circle is equals the current line width. 
+	 * coordinates. The radius of the circle is equals the current line width.
 	 */
-	public void drawCircle(long uc, long vc) {
+	public void drawCircle(final long uc, final long vc) {
 		double r = lineWidth / 2.0;
-		long umin = (long) (uc - r + 0.5);
-		long vmin = (long) (vc - r + 0.5);
-		long umax = umin + lineWidth;
-		long vmax = vmin + lineWidth;
-		double r2 = r * r;
+		final long umin = (long) (uc - r + 0.5);
+		final long vmin = (long) (vc - r + 0.5);
+		final long umax = umin + lineWidth;
+		final long vmax = vmin + lineWidth;
+		final double r2 = r * r;
 		r -= 0.5;
-		double uoffset = umin + r;
-		double voffset = vmin + r;
+		final double uoffset = umin + r;
+		final double voffset = vmin + r;
 		double uu, vv;
 		for (long v = vmin; v < vmax; v++) {
 			for (long u = umin; u < umax; u++) {
 				uu = u - uoffset;
 				vv = v - voffset;
-				if ((uu*uu + vv*vv) <= r2)
-					drawPixel(u, v);
+				if ((uu * uu + vv * vv) <= r2) drawPixel(u, v);
 			}
 		}
 	}
+
 }

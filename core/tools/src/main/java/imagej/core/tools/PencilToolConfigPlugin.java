@@ -38,33 +38,33 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-
 /**
- * Implements the configuration code for the PencilTool.
+ * Implements the configuration code for {@link PencilTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(label="Pencil Tool")
+@Plugin(label = "Pencil Tool")
 public class PencilToolConfigPlugin implements ImageJPlugin {
 
-	@Parameter(required=true)
+	@Parameter(required = true)
 	private PencilTool tool;
-	
+
 	// TODO - it would be nice to persist this pencil width. but the associated
 	// tool cannot persist its own width. thus you get in a situation that the
 	// dialog pencil width does not equal the tool's initial value which is
 	// confusing. Tools need to be able to persist some values to get around this.
-	
-	@Parameter(label = "Pencil Width (pixels)",	min = "1", persist = false,
-			initializer="init")
+
+	@Parameter(label = "Pencil Width (pixels)", min = "1", persist = false,
+		initializer = "init")
 	private long width;
 
 	@Override
 	public void run() {
 		tool.setLineWidth(width);
 	}
-	
+
 	protected void init() {
 		width = tool.getLineWidth();
 	}
+
 }

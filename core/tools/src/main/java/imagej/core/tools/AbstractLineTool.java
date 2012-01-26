@@ -53,35 +53,32 @@ import imagej.options.plugins.OptionsColors;
  * modes to draw lines into a dataset using fg/bg values.
  * 
  * @author Barry DeZonia
- *
  */
 public abstract class AbstractLineTool extends AbstractTool {
 
 	// -- instance variables --
-	
+
 	private DrawingTool drawingTool;
 	private long lineWidth = 1;
 	private boolean altKeyDown = false;
 
 	// -- public interface --
-	
+
 	/** Sets the drawing width for lines (in pixels). */
-	public void setLineWidth(long w) {
-		if (w < 1)
-			lineWidth = 1;
-		else
-			lineWidth = w;
+	public void setLineWidth(final long w) {
+		if (w < 1) lineWidth = 1;
+		else lineWidth = w;
 	}
-	
+
 	/** Gets the drawing width for lines (in pixels). */
 	public long getLineWidth() {
 		return lineWidth;
 	}
-	
+
 	/** On mouse down the start point of a series of lines is established. */
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
-		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON) {
+		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
 			initDrawingTool(evt);
 			if (drawingTool != null) {
 				drawingTool.moveTo(evt.getX(), evt.getY());
@@ -111,37 +108,37 @@ public abstract class AbstractLineTool extends AbstractTool {
 	}
 
 	/**
-	 * Tracks the ALT key status. ALT key determines whether to draw in
-	 * foreground or background color.
+	 * Tracks the ALT key status. ALT key determines whether to draw in foreground
+	 * or background color.
 	 */
 	@Override
-	public void onKeyDown(KyPressedEvent evt) {
-		altKeyDown = evt.getModifiers().isAltDown() ||
-				evt.getModifiers().isAltGrDown();
+	public void onKeyDown(final KyPressedEvent evt) {
+		altKeyDown =
+			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 		evt.consume();
 	}
-	
+
 	/**
-	 * Tracks the ALT key status. ALT key determines whether to draw in
-	 * foreground or background color.
+	 * Tracks the ALT key status. ALT key determines whether to draw in foreground
+	 * or background color.
 	 */
 	@Override
-	public void onKeyUp(KyReleasedEvent evt) {
-		altKeyDown = evt.getModifiers().isAltDown() ||
-				evt.getModifiers().isAltGrDown();
+	public void onKeyUp(final KyReleasedEvent evt) {
+		altKeyDown =
+			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 		evt.consume();
 	}
 
 	// -- private helpers --
 
 	/** Allocates and initializes a DrawingTool if possible. */
-	private void initDrawingTool(MsPressedEvent evt) {
-		
+	private void initDrawingTool(final MsPressedEvent evt) {
+
 		// lookup display info where mouse down event happened
 		final ImageJ context = evt.getContext();
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
-		final ImageDisplay imageDisplay = (ImageDisplay)evt.getDisplay();
+		final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
 		if (imageDisplay == null) return;
 
 		// get dataset associated with mouse down event
@@ -154,11 +151,11 @@ public abstract class AbstractLineTool extends AbstractTool {
 		// FIXME - this will break when the view axes are different than the
 		// dataset's axes. this could happen from a display that combines multiple
 		// datasets. Or perhaps a display that ignores some axes from a dataset.
-		long[] currPos = new long[imageDisplay.numDimensions()];
+		final long[] currPos = new long[imageDisplay.numDimensions()];
 		for (int i = 0; i < currPos.length; i++)
 			currPos[i] = imageDisplay.getLongPosition(i);
 		drawingTool.setPosition(currPos);
-		
+
 		// TODO - change here to make this work on any two arbitrary axes
 		drawingTool.setUAxis(0);
 		drawingTool.setVAxis(1);
@@ -173,22 +170,19 @@ public abstract class AbstractLineTool extends AbstractTool {
 		final OptionsService optionsService)
 	{
 		// set line width of drawingTool
-		
+
 		drawingTool.setLineWidth(getLineWidth());
 
 		// set color of drawingTool
 		final OptionsColors opts = optionsService.getOptions(OptionsColors.class);
 		if (isColorData) {
-			if (altKeyDown)
-				drawingTool.setColorValue(opts.getBgColor());
-			else
-				drawingTool.setColorValue(opts.getFgColor());
+			if (altKeyDown) drawingTool.setColorValue(opts.getBgColor());
+			else drawingTool.setColorValue(opts.getFgColor());
 		}
 		else { // gray data
-			if (altKeyDown)
-				drawingTool.setGrayValue(opts.getBgGray());
-			else
-				drawingTool.setGrayValue(opts.getFgGray());
+			if (altKeyDown) drawingTool.setGrayValue(opts.getBgGray());
+			else drawingTool.setGrayValue(opts.getFgGray());
 		}
 	}
+
 }
