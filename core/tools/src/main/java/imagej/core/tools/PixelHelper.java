@@ -75,33 +75,20 @@ public class PixelHelper {
 	private boolean isPureRGBCase = false;
 	private boolean isIntegerCase = false;
 	private EventService eventService = null;
+	private Dataset dataset;
 
 	// -- public interface --
 
-	public ColorRGB getColor() {
-		return color;
+	/** Constructor */
+	public PixelHelper() {
+		// nothing to do
 	}
 
-	public double getValue() {
-		return value;
-	}
-
-	public long getCX() {
-		return cx;
-	}
-
-	public long getCY() {
-		return cy;
-	}
-
-	public boolean isPureRGBCase() {
-		return isPureRGBCase;
-	}
-
-	public boolean isIntegerCase() {
-		return isIntegerCase;
-	}
-
+	/**
+	 * This method processes a mouse event and records information internally
+	 * about the location, color, and type of data referenced at the mouse
+	 * position. After processing an event use member query methods to get info.
+	 */
 	public boolean processEvent(final MsEvent evt) {
 		final ImageJ context = evt.getContext();
 		final ImageDisplayService imageDisplayService =
@@ -123,7 +110,7 @@ public class PixelHelper {
 
 		// TODO - update tool to probe more than just the active view
 		final DataView activeView = imageDisplay.getActiveView();
-		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
+		dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
 		final RealCoords coords = canvas.panelToImageCoords(mousePos);
 		cx = coords.getLongX();
@@ -144,7 +131,7 @@ public class PixelHelper {
 			isPureRGBCase = true;
 			isIntegerCase = false;
 			color = getColor(dataset, randomAccess);
-			value = 0;
+			value = Double.NaN;
 		}
 		else { // gray dataset
 			isPureRGBCase = false;
@@ -165,12 +152,56 @@ public class PixelHelper {
 		return true;
 	}
 
+	/** Updates the status line with a given message. */
 	public void updateStatus(final String message) {
 		eventService.publish(new StatusEvent(message));
 	}
 
+	/** Returns the Dataset associated with the processed mouse event. */
+	public Dataset getDataset() {
+		return dataset;
+	}
+	
+	/**
+	 * Returns the color of the pixel associated with the processed mouse event.
+	 * Note that the color is exact for RGB images and an interpolated lookup in
+	 * the color table for gray images. */
+	public ColorRGB getColor() {
+		return color;
+	}
+
+	/**
+	 * Returns the value of the pixel associated with the processed mouse event.
+	 * Note that for color images this will be Double.NaN. */
+	public double getValue() {
+		return value;
+	}
+
+	/** Returns the X value of the mouse event in image coordinate space. */
+	public long getCX() {
+		return cx;
+	}
+
+	/** Returns the Y value of the mouse event in image coordinate space. */
+	public long getCY() {
+		return cy;
+	}
+
+	/** Returns true if the Dataset associated with the mouse event is merged
+	 *  color. */
+	public boolean isPureRGBCase() {
+		return isPureRGBCase;
+	}
+
+	/** Returns true if the Dataset associated with the mouse event is a gray
+	 *  integral type. */
+	public boolean isIntegerCase() {
+		return isIntegerCase;
+	}
+
 	// -- private helpers --
 
+	/** Sets the position of a randomAccess to (u,v,planePos). */ 
 	private void setPosition(
 		final RandomAccess<? extends RealType<?>> randomAccess, final long cx,
 		final long cy, final Position planePos, final int xAxis, final int yAxis)
@@ -183,10 +214,13 @@ public class PixelHelper {
 		}
 	}
 
-	private ColorRGB getColor(final Dataset dataset,
+	/** Gets the color of the pixel located at the given RandomAccess' current
+	 * position. Do not call this method if you do not have color data.
+	 */
+	private ColorRGB getColor(final Dataset ds,
 		final RandomAccess<? extends RealType<?>> access)
 	{
-		final int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
+		final int channelAxis = ds.getAxisIndex(Axes.CHANNEL);
 		access.setPosition(0, channelAxis);
 		final int r = (int) access.get().getRealDouble();
 		access.setPosition(1, channelAxis);

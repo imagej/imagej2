@@ -40,6 +40,8 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.Tool;
 
 /**
+ * Tool implementation for pencil.
+ *  
  * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Pencil", description = "Pencil Tool",

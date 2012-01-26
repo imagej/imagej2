@@ -40,6 +40,8 @@ import imagej.ext.plugin.Plugin;
 
 
 /**
+ * Implements the configuration code for the PaintBrushTool.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(label="Paintbrush Tool")
@@ -48,12 +50,13 @@ public class PaintBrushToolConfigPlugin implements ImageJPlugin {
 	@Parameter(required=true)
 	private PaintBrushTool tool;
 	
-	// TODO - it would be nice to persist this brush width. but the associated tool cannot
-	// persist its own width. thus you get in a situation that the dialog brush width does
-	// not equal the tool's initial value which is confusing. Tools need to be able to
-	// persist some values to get around this.
+	// TODO - it would be nice to persist this brush width. but the associated
+	// tool cannot persist its own width. thus you get in a situation that the
+	// dialog brush width does not equal the tool's initial value which is
+	// confusing. Tools need to be able to persist some values to get around this.
 	
-	@Parameter(label = "Brush Width (pixels)",	min = "1", max = "1000000", persist = false, initializer="init")
+	@Parameter(label = "Brush Width (pixels)",	min = "1", persist = false,
+			initializer="init")
 	private long width;
 
 	@Override
