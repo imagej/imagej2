@@ -268,7 +268,7 @@ public class FloodFiller {
 		
 		public StackOfLongs() {
 			top = -1;
-			stack = new long[100];
+			stack = new long[400];
 		}
 		
 		public boolean isEmpty() {
