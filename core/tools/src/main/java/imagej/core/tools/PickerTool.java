@@ -52,8 +52,8 @@ import imagej.util.ColorRGB;
  */
 @Plugin(
 	type = Tool.class,
-	name = "Color Picker",
-	description = "Color picker tool (sets foreground/background colors/values)",
+	name = "ColorPicker",
+	description = "Color Picker Tool (sets foreground/background colors/values)",
 	iconPath = "/icons/tools/picker.png", priority = PickerTool.PRIORITY)
 public class PickerTool extends AbstractTool {
 
