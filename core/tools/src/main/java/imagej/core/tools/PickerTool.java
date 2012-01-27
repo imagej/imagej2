@@ -85,21 +85,21 @@ public class PickerTool extends AbstractTool {
 		if (altKeyDown) {
 			if (helper.isPureRGBCase()) {
 				options.setBgColor(color);
-				colorMessage("Background", color);
+				colorMessage("BG", color);
 			}
 			else {
 				options.setBgGray(value);
-				grayMessage("Background", value);
+				grayMessage("BG", value);
 			}
 		}
 		else { // foreground case
 			if (helper.isPureRGBCase()) {
 				options.setFgColor(color);
-				colorMessage("Foreground", color);
+				colorMessage("FG", color);
 			}
 			else {
 				options.setFgGray(value);
-				grayMessage("Foreground", value);
+				grayMessage("FG", value);
 			}
 		}
 
@@ -126,14 +126,14 @@ public class PickerTool extends AbstractTool {
 	public String getDescription() {
 		OptionsColors opts = getOptions();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Foreground: ");
+		sb.append("Color picker FG: ");
 		ColorRGB fgColor = opts.getFgColor();
 		ColorRGB bgColor = opts.getBgColor();
 		double fgValue = opts.getFgGray();
 		double bgValue = opts.getBgGray();
 		sb.append(String.format("(%d,%d,%d) (%.3f)",
 			fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue(), fgValue));
-		sb.append("  Background: ");
+		sb.append("  BG: ");
 		sb.append(String.format("(%d,%d,%d) (%.3f)",
 			bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgValue));
 		return sb.toString();
