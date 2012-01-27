@@ -285,6 +285,7 @@ public class ToolService extends AbstractService {
 			final Tool tool;
 			try {
 				tool = info.createInstance();
+				tool.setContext(getContext());
 				tool.setInfo(info);
 			}
 			catch (final InstantiableException e) {

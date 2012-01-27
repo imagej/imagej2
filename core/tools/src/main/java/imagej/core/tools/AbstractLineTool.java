@@ -135,7 +135,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 	private void initDrawingTool(final MsPressedEvent evt) {
 
 		// lookup display info where mouse down event happened
-		final ImageJ context = evt.getContext();
+		final ImageJ context = getContext();
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
