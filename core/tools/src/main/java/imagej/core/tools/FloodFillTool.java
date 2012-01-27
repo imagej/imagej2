@@ -98,6 +98,7 @@ public class FloodFillTool extends AbstractTool {
 			if (imageDisplay != null) {
 				final PixelHelper helper = new PixelHelper();
 				if (helper.recordEvent(evt)) {
+					setContext(evt.getContext());
 					final DrawingTool drawingTool = initDrawingTool(helper.getDataset());
 					final long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(evt.getX(), evt.getY(), currPos, connectivity, drawingTool);

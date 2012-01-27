@@ -79,148 +79,145 @@ public class FloodFiller {
 	}
 
 	/**
-	 * Does a 4-connected flood fill using the current fill/draw value.
+	 * Does a 4-connected flood fill using the current fill/draw value. Returns
+	 * true if any pixels actually changed and false otherwise.
 	 */
-	public void fill4(final long u0, final long v0, final long[] position) {
+	public boolean fill4(final long u0, final long v0, final long[] position) {
 		final Dataset ds = tool.getDataset();
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
 		accessor.setPosition(position);
 		uAxis = tool.getUAxis();
 		vAxis = tool.getVAxis();
-		final long maxU = ds.dimension(uAxis);
-		final long maxV = ds.dimension(vAxis);
-		final ColorRGB origColor = getColor(accessor, u0, v0);
-		final Double origValue = getValue(accessor, u0, v0);
+		final long maxU = ds.dimension(uAxis) - 1;
+		final long maxV = ds.dimension(vAxis) - 1;
+		final ColorRGB origColor = getColor(accessor,u0,v0);
+		final double origValue = getValue(accessor,u0,v0);
+		// avoid degenerate case
+		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
+			return false;
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
 		while (!uStack.isEmpty()) {
 			final long u = popU();
 			final long v = popV();
-			if (!matches(accessor, u, v, origColor, origValue)) continue;
+			if (!matches(accessor,u,v,origColor,origValue)) continue;
 			long u1 = u;
 			long u2 = u;
 			// find start of scan-line
-			while (u1 >= 0 && matches(accessor, u1, v, origColor, origValue))
-				u1--;
+			while (u1>=0 && matches(accessor,u1,v,origColor,origValue)) u1--;
 			u1++;
-			// find end of scan-line
-			while (u2 < maxU && matches(accessor, u2, v, origColor, origValue))
-				u2++;
+		  // find end of scan-line
+			while (u2<=maxU && matches(accessor,u2,v,origColor,origValue)) u2++;                 
 			u2--;
-			tool.drawLine(u1, v, u2, v); // fill scan-line
+			// fill scan-line
+			tool.drawLine(u1, v, u2, v);
+			// find scan-lines above this one
 			boolean inScanLine = false;
-			for (long i = u1; i <= u2; i++) { // find scan-lines above this one
-				if (!inScanLine && v > 0 &&
-					matches(accessor, i, v - 1, origColor, origValue))
-				{
-					push(i, v - 1);
-					inScanLine = true;
-				}
-				else if (inScanLine && v > 0 &&
-					!matches(accessor, i, v - 1, origColor, origValue)) inScanLine =
-					false;
+			for (long i=u1; i<=u2; i++) {
+				if (!inScanLine && v>0 && matches(accessor,i,v-1,origColor,origValue))
+					{push(i, v-1); inScanLine = true;}
+				else if (inScanLine && v>0 &&
+									!matches(accessor,i,v-1,origColor,origValue))
+					inScanLine = false;
 			}
+			// find scan-lines below this one
 			inScanLine = false;
-			for (long i = u1; i <= u2; i++) { // find scan-lines below this one
-				if (!inScanLine && v < maxV - 1 &&
-					matches(accessor, i, v + 1, origColor, origValue))
-				{
-					push(i, v + 1);
-					inScanLine = true;
-				}
-				else if (inScanLine && v < maxV - 1 &&
-					!matches(accessor, i, v + 1, origColor, origValue)) inScanLine =
-					false;
+			for (long i=u1; i<=u2; i++) {
+				if (!inScanLine && v<maxV &&
+							matches(accessor,i,v+1,origColor,origValue))
+					{push(i, v+1); inScanLine = true;}
+				else if (inScanLine && v<maxV &&
+									!matches(accessor,i,v+1,origColor,origValue))
+					inScanLine = false;
 			}
 		}
 		// System.out.println("Stack allocated (but not necessarily used) "+uStack.stack.length);
+		return true;
 	}
 
 	/**
-	 * Does an 8-connected flood fill using the current fill/draw value.
+	 * Does an 8-connected flood fill using the current fill/draw value. Returns
+	 * true if any pixels actually changed and false otherwise.
 	 */
-	public void fill8(final long u0, final long v0, final long[] position) {
+	public boolean fill8(final long u0, final long v0, final long[] position) {
 		final Dataset ds = tool.getDataset();
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
 		accessor.setPosition(position);
 		uAxis = tool.getUAxis();
 		vAxis = tool.getVAxis();
-		final long maxU = ds.dimension(uAxis);
-		final long maxV = ds.dimension(vAxis);
-		final ColorRGB origColor = getColor(accessor, u0, v0);
-		final Double origValue = getValue(accessor, u0, v0);
+		final long maxU = ds.dimension(uAxis) - 1;
+		final long maxV = ds.dimension(vAxis) - 1;
+		final ColorRGB origColor = getColor(accessor,u0,v0);
+		final double origValue = getValue(accessor,u0,v0);
+		// avoid degenerate case
+		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
+			return false;
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
-		while (!uStack.isEmpty()) {
-			final long u = popU();
+		while(!uStack.isEmpty()) {
+			final long u = popU(); 
 			final long v = popV();
 			long u1 = u;
 			long u2 = u;
-			if (matches(accessor, u1, v, origColor, origValue)) {
+			if (matches(accessor,u,v,origColor,origValue)) {
 				// find start of scan-line
-				while (u1 >= 0 && matches(accessor, u1, v, origColor, origValue))
-					u1--;
+				while (u1>=0 && matches(accessor,u1,v,origColor,origValue)) u1--;
 				u1++;
-				// find end of scan-line
-				while (u2 < maxU && matches(accessor, u2, v, origColor, origValue))
-					u2++;
+			  // find end of scan-line
+				while (u2<=maxU && matches(accessor,u2,v,origColor,origValue)) u2++;
 				u2--;
 				tool.drawLine(u1, v, u2, v); // fill scan-line
 			}
 			if (v > 0) {
 				if (u1 > 0) {
-					if (matches(accessor, u1 - 1, v - 1, origColor, origValue)) {
-						push(u1 - 1, v - 1);
+					if (matches(accessor,u1-1,v-1,origColor,origValue)) {
+						push(u1-1, v-1);
 					}
 				}
-				if (u2 < maxU - 1) {
-					if (matches(accessor, u2 + 1, v - 1, origColor, origValue)) {
-						push(u2 + 1, v - 1);
+				if (u2 < maxU) {
+					if (matches(accessor,u2+1,v-1,origColor,origValue)) {
+						push(u2+1, v-1);
 					}
 				}
 			}
-			if (v < maxV - 1) {
+			if (v < maxV) {
 				if (u1 > 0) {
-					if (matches(accessor, u1 - 1, v + 1, origColor, origValue)) {
-						push(u1 - 1, v + 1);
+					if (matches(accessor,u1-1,v+1,origColor,origValue)) {
+						push(u1-1, v+1);
 					}
 				}
-				if (u2 < maxU - 1) {
-					if (matches(accessor, u2 + 1, v + 1, origColor, origValue)) {
-						push(u2 + 1, v + 1);
+				if (u2 < maxU) {
+					if (matches(accessor,u2+1,v+1,origColor,origValue)) {
+						push(u2+1, v+1);
 					}
 				}
 			}
+			// find scan-lines above this one
 			boolean inScanLine = false;
-			for (long i = u1; i <= u2; i++) { // find scan-lines above this one
-				if (!inScanLine && v > 0 &&
-					matches(accessor, i, v - 1, origColor, origValue))
-				{
-					push(i, v - 1);
-					inScanLine = true;
-				}
-				else if (inScanLine && v > 0 &&
-					!matches(accessor, i, v - 1, origColor, origValue)) inScanLine =
-					false;
+			for (long i=u1; i<=u2; i++) {
+				if (!inScanLine && v>0 && matches(accessor,i,v-1,origColor,origValue))
+					{push(i, v-1); inScanLine = true;}
+				else if (inScanLine && v>0 &&
+									!matches(accessor,i,v-1,origColor,origValue))
+					inScanLine = false;
 			}
+			// find scan-lines below this one
 			inScanLine = false;
-			for (long i = u1; i <= u2; i++) { // find scan-lines below this one
-				if (!inScanLine && v < maxV - 1 &&
-					matches(accessor, i, v + 1, origColor, origValue))
-				{
-					push(i, v + 1);
-					inScanLine = true;
-				}
-				else if (inScanLine && v < maxV - 1 &&
-					!matches(accessor, i, v + 1, origColor, origValue)) inScanLine =
-					false;
+			for (long i=u1; i<=u2; i++) {
+				if (!inScanLine && v<maxV &&
+							matches(accessor,i,v+1,origColor,origValue))
+					{push(i, v+1); inScanLine = true;}
+				else if (inScanLine && v<maxV &&
+									!matches(accessor,i,v+1,origColor,origValue))
+					inScanLine = false;
 			}
 		}
 		// System.out.println("Stack allocated (but not necessarily used) "+uStack.stack.length);
+		return true;
 	}
 
 	// -- private helpers --
@@ -293,7 +290,9 @@ public class FloodFiller {
 		return accessor.get().getRealDouble();
 	}
 
-	/** Pushes the specified (u,v) point on the working stacks. */
+	/**
+	 * Pushes the specified (u,v) point on the working stacks.
+	 */
 	private void push(final long u, final long v) {
 		uStack.push(u);
 		vStack.push(v);
@@ -329,8 +328,8 @@ public class FloodFiller {
 		}
 
 		public void push(final long value) {
-			if (top == stack.length - 1) stack =
-				Arrays.copyOf(stack, stack.length * 2);
+			if (top == stack.length - 1)
+				stack =	Arrays.copyOf(stack, stack.length * 2);
 			top++;
 			stack[top] = value;
 		}
