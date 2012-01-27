@@ -145,4 +145,8 @@ public abstract class AbstractTool implements Tool {
 		// do nothing by default
 	}
 
+	@Override
+	public String getDescription() {
+		return info.getDescription();
+	}
 }

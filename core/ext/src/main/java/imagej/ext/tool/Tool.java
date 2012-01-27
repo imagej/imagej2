@@ -110,4 +110,6 @@ public interface Tool extends IPlugin {
 	/** Occurs when the user right clicks this tool's icon. */ 
 	void configure();
 
+	/** Returns the text the tool provides when mouse hovers over tool */
+	String getDescription();
 }

@@ -76,10 +76,7 @@ public class PickerTool extends AbstractTool {
 			return;
 		}
 
-		final OptionsService service =
-			getContext().getService(OptionsService.class);
-
-		final OptionsColors options = service.getOptions(OptionsColors.class);
+		final OptionsColors options = getOptions();
 
 		final double value = helper.getValue();
 		final ColorRGB color = helper.getColor();
@@ -125,6 +122,23 @@ public class PickerTool extends AbstractTool {
 		evt.consume();
 	}
 
+	@Override
+	public String getDescription() {
+		OptionsColors opts = getOptions();
+		StringBuilder sb = new StringBuilder();
+		sb.append("Foreground: ");
+		ColorRGB fgColor = opts.getFgColor();
+		ColorRGB bgColor = opts.getBgColor();
+		double fgValue = opts.getFgGray();
+		double bgValue = opts.getBgGray();
+		sb.append(String.format("(%d,%d,%d) (%.3f)",
+			fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue(), fgValue));
+		sb.append("  Background: ");
+		sb.append(String.format("(%d,%d,%d) (%.3f)",
+			bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgValue));
+		return sb.toString();
+	}
+	
 	// -- private interface --
 
 	private void colorMessage(final String label, final ColorRGB color) {
@@ -142,4 +156,10 @@ public class PickerTool extends AbstractTool {
 		helper.updateStatus(message);
 	}
 
+	private OptionsColors getOptions() {
+		final OptionsService service =
+			getContext().getService(OptionsService.class);
+
+		return service.getOptions(OptionsColors.class);
+	}
 }

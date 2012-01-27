@@ -131,7 +131,6 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		final PluginInfo<Tool> info = tool.getInfo();
 		final String name = info.getName();
 		final String label = info.getLabel();
-		final String description = info.getDescription();
 		final URL iconURL = info.getIconURL();
 		final boolean enabled = info.isEnabled();
 
@@ -159,7 +158,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
-				eventService.publish(new StatusEvent(description));
+				eventService.publish(new StatusEvent(tool.getDescription()));
 			}
 			
 			@Override
