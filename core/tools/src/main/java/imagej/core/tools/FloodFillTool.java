@@ -101,7 +101,7 @@ public class FloodFillTool extends AbstractTool {
 					setContext(evt.getContext());
 					final DrawingTool drawingTool = initDrawingTool(helper.getDataset());
 					final long[] currPos = getCurrPosition(imageDisplay);
-					floodFill(evt.getX(), evt.getY(), currPos, connectivity, drawingTool);
+					floodFill(helper.getCX(), helper.getCY(), currPos, connectivity, drawingTool);
 					evt.getDisplay().getPanel().redraw();
 					evt.getDisplay().update();
 				}
