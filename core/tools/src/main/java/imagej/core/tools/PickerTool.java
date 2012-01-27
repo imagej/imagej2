@@ -77,7 +77,7 @@ public class PickerTool extends AbstractTool {
 		}
 
 		final OptionsService service =
-			evt.getContext().getService(OptionsService.class);
+			getContext().getService(OptionsService.class);
 
 		final OptionsColors options = service.getOptions(OptionsColors.class);
 

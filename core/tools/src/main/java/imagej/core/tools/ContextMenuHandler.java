@@ -72,7 +72,7 @@ public class ContextMenuHandler extends AbstractTool {
 	private void doPopupMenu(final MsButtonEvent evt) {
 		if (!evt.isPopupTrigger()) return;
 
-		final UIService uiService = evt.getContext().getService(UIService.class);
+		final UIService uiService = getContext().getService(UIService.class);
 		final String menuRoot = getInfo().getMenuRoot();
 		final Display<?> display = evt.getDisplay();
 		uiService.showContextMenu(menuRoot, display, evt.getX(), evt.getY());

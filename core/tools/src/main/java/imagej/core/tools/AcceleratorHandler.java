@@ -72,9 +72,9 @@ public class AcceleratorHandler extends AbstractTool {
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final ModuleService moduleService =
-			evt.getContext().getService(ModuleService.class);
+			getContext().getService(ModuleService.class);
 		final PluginService pluginService =
-			evt.getContext().getService(PluginService.class);
+			getContext().getService(PluginService.class);
 
 		ModuleInfo moduleInfo = null;
 

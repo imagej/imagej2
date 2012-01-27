@@ -71,7 +71,7 @@ public class KonamiHandler extends AbstractTool {
 				index = 0;
 				new TunePlayer().play(JINGLE);
 				final PluginService pluginService =
-					evt.getContext().getService(PluginService.class);
+					getContext().getService(PluginService.class);
 				pluginService.run(PLUGIN);
 			}
 		}
