@@ -34,165 +34,72 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display;
 
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-import imagej.event.EventHandler;
+import imagej.IService;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
-import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.DisplayCreatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.window.WinActivatedEvent;
-import imagej.ext.display.event.window.WinClosedEvent;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.object.ObjectService;
-import imagej.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service for working with {@link Display}s.
+ * Interface for service that tracks available {@link Display}s.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Service
-public final class DisplayService extends AbstractService {
+public interface DisplayService extends IService {
 
-	private final EventService eventService;
-	private final ObjectService objectService;
-	private final PluginService pluginService;
+	EventService getEventService();
 
-	// TODO - implement queue of most recently activated displays.
-	// Can actually keep a list of all known displays in this class, and pull
-	// the most recently activated one to the front. Then can have an API method
-	// for asking for "active" display of a particular type, and it will just
-	// iterate through the list of known displays for the first match.
+	ObjectService getObjectService();
 
-	private Display<?> activeDisplay;
-
-	public DisplayService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DisplayService(final ImageJ context, final EventService eventService,
-		final ObjectService objectService, final PluginService pluginService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.objectService = objectService;
-		this.pluginService = pluginService;
-
-		subscribeToEvents(eventService);
-	}
-
-	// -- DisplayService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	public ObjectService getObjectService() {
-		return objectService;
-	}
-
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	// -- DisplayService methods - active displays --
+	PluginService getPluginService();
 
 	/** Gets the currently active display. */
-	public Display<?> getActiveDisplay() {
-		return activeDisplay;
-	}
+	Display<?> getActiveDisplay();
 
 	/** Sets the currently active display. */
-	public void setActiveDisplay(final Display<?> display) {
-		activeDisplay = display;
-		eventService.publish(new DisplayActivatedEvent(display));
-	}
-
-	// -- DisplayService methods - display plugin discovery --
+	void setActiveDisplay(final Display<?> display);
 
 	/** Gets the list of known display plugins. */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<PluginInfo<Display<?>>> getDisplayPlugins() {
-		return (List) pluginService.getPluginsOfType(Display.class);
-	}
+	List<PluginInfo<Display<?>>> getDisplayPlugins();
 
 	/**
 	 * Gets the display plugin of the given class, or null if none.
 	 */
-	public <D extends Display<?>> PluginInfo<D> getDisplayPlugin(
-		final Class<D> pluginClass)
-	{
-		return pluginService.getPlugin(pluginClass);
-	}
+	<D extends Display<?>> PluginInfo<D> getDisplayPlugin(
+		final Class<D> pluginClass);
 
 	/**
 	 * Gets the display plugin of the given class name, or null if none.
 	 * 
 	 * @throws ClassCastException if the plugin found is not a display plugin.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public PluginInfo<Display<?>> getDisplayPlugin(final String className) {
-		return (PluginInfo) pluginService.getPlugin(className);
-	}
+	PluginInfo<Display<?>> getDisplayPlugin(final String className);
 
 	/**
 	 * Gets the list of display plugins of the given type (e.g.,
 	 * <code>ImageDisplay.class</code>).
 	 */
-	public <D extends Display<?>> List<PluginInfo<D>> getDisplayPluginsOfType(
-		final Class<D> type)
-	{
-		return pluginService.getPluginsOfType(type);
-	}
-
-	// -- DisplayService methods - display discovery --
+	<D extends Display<?>> List<PluginInfo<D>> getDisplayPluginsOfType(
+		final Class<D> type);
 
 	/** Gets a list of all available displays. */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<Display<?>> getDisplays() {
-		return (List) objectService.getObjects(Display.class);
-	}
+	List<Display<?>> getDisplays();
 
 	/**
 	 * Gets a list of all available displays of the given type (e.g.,
 	 * <code>ImageDisplay.class</code>).
 	 */
-	public <D extends Display<?>> List<D> getDisplaysOfType(final Class<D> type)
-	{
-		return objectService.getObjects(type);
-	}
+	<D extends Display<?>> List<D> getDisplaysOfType(final Class<D> type);
 
 	/** Gets a display by its name. */
-	public Display<?> getDisplay(final String name) {
-		for (final Display<?> display : getDisplays()) {
-			if (name.equalsIgnoreCase(display.getName())) {
-				return display;
-			}
-		}
-		return null;
-	}
+	Display<?> getDisplay(final String name);
 
 	/** Gets a list of displays containing the given object. */
-	public List<Display<?>> getDisplaysContaining(final Object o) {
-		final ArrayList<Display<?>> displays = new ArrayList<Display<?>>();
-		for (final Display<?> display : getDisplays()) {
-			if (display.contains(o)) displays.add(display);
-		}
-		return displays;
-	}
-
-	// -- DisplayService methods - display creation --
+	List<Display<?>> getDisplaysContaining(final Object o);
 
 	/**
 	 * Checks whether the given name is already taken by an existing display.
@@ -200,61 +107,9 @@ public final class DisplayService extends AbstractService {
 	 * @param name The name to check.
 	 * @return true if the name is available, false if already taken.
 	 */
-	public boolean isUniqueName(final String name) {
-		final List<Display<?>> displays = getDisplays();
-		for (final Display<?> display : displays) {
-			if (name.equalsIgnoreCase(display.getName())) {
-				return false;
-			}
-		}
-		return true;
-	}
+	boolean isUniqueName(final String name);
 
 	/** Creates a display for the given object. */
-	public Display<?> createDisplay(final String name, final Object o) {
-		// get available display plugins from the plugin service
-		final List<PluginInfo<Display<?>>> displayPlugins = getDisplayPlugins();
-
-		for (final PluginInfo<Display<?>> info : displayPlugins) {
-			try {
-				final Display<?> display = info.createInstance();
-				// display object using the first compatible Display
-				// TODO: how to handle multiple matches? prompt user with dialog box?
-				if (display.canDisplay(o)) {
-					display.setName(name);
-					display.display(o);
-					eventService.publish(new DisplayCreatedEvent(display));
-					return display;
-				}
-			}
-			catch (final InstantiableException e) {
-				Log.error("Invalid display plugin: " + info, e);
-			}
-		}
-		return null;
-	}
-
-	// -- Event handlers --
-
-	/** Deletes the display when display window is closed. */
-	@EventHandler
-	protected void onEvent(final WinClosedEvent event) {
-		final Display<?> display = event.getDisplay();
-
-		// HACK - Necessary to plug memory leak when closing the last window.
-		if (getDisplays().size() == 1) {
-			setActiveDisplay(null);
-		}
-
-		// CTR TODO - is there a better way to publish DisplayDeletedEvents?
-		getEventService().publish(new DisplayDeletedEvent(display));
-	}
-
-	/** Sets the display to active when its window is activated. */
-	@EventHandler
-	protected void onEvent(final WinActivatedEvent event) {
-		final Display<?> display = event.getDisplay();
-		setActiveDisplay(display);
-	}
+	Display<?> createDisplay(final String name, final Object o);
 
 }
