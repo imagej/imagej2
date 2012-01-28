@@ -34,93 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.tool;
 
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-import imagej.event.EventHandler;
+import imagej.IService;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
-import imagej.ext.display.event.DisplayEvent;
-import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.display.event.input.KyReleasedEvent;
-import imagej.ext.display.event.input.MsClickedEvent;
-import imagej.ext.display.event.input.MsDraggedEvent;
-import imagej.ext.display.event.input.MsMovedEvent;
-import imagej.ext.display.event.input.MsPressedEvent;
-import imagej.ext.display.event.input.MsReleasedEvent;
-import imagej.ext.display.event.input.MsWheelEvent;
-import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.event.ToolActivatedEvent;
-import imagej.ext.tool.event.ToolDeactivatedEvent;
-import imagej.util.Log;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Service for keeping track of available tools, including which tool is active,
- * and delegating UI events to the active tool.
+ * Interface for service that tracks available tools.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
- * @see Tool
- * @see Tool
  */
-@Service
-public class ToolService extends AbstractService {
+public interface ToolService extends IService {
 
-	private static final double SEPARATOR_DISTANCE = 10;
+	EventService getEventService();
 
-	private final EventService eventService;
-	private final PluginService pluginService;
+	PluginService getPluginService();
 
-	private Map<String, Tool> alwaysActiveTools;
-	private Map<String, Tool> tools;
-
-	private List<Tool> alwaysActiveToolList;
-	private List<Tool> toolList;
-
-	private Tool activeTool;
-
-	// -- Constructors --
-
-	public ToolService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public ToolService(final ImageJ context, final EventService eventService,
-		final PluginService pluginService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-
-		createTools();
-		activeTool = new DummyTool();
-
-		subscribeToEvents(eventService);
-	}
-
-	// -- ToolService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	public Tool getTool(final String name) {
-		final Tool alwaysActiveTool = alwaysActiveTools.get(name);
-		if (alwaysActiveTool != null) return alwaysActiveTool;
-		return tools.get(name);
-	}
+	Tool getTool(final String name);
 
 	/**
 	 * Get a tool given its class.
@@ -129,187 +61,20 @@ public class ToolService extends AbstractService {
 	 * @param toolClass the class of the tool to fetch
 	 * @return the tool, or null if no such tool
 	 */
-	public <T extends Tool> T getTool(final Class<T> toolClass) {
-		for (final Tool tool : alwaysActiveToolList) {
-			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
-		}
-		for (final Tool tool : toolList) {
-			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
-		}
-		return null;
-	}
+	<T extends Tool> T getTool(final Class<T> toolClass);
 
-	public List<Tool> getTools() {
-		return toolList;
-	}
+	List<Tool> getTools();
 
-	public List<Tool> getAlwaysActiveTools() {
-		return alwaysActiveToolList;
-	}
+	List<Tool> getAlwaysActiveTools();
 
-	public Tool getActiveTool() {
-		return activeTool;
-	}
+	Tool getActiveTool();
 
-	public void setActiveTool(final Tool activeTool) {
-		if (this.activeTool == activeTool) return; // nothing to do
-		assert this.activeTool != null;
-		if (activeTool == null) {
-			throw new IllegalArgumentException("Active tool cannot be null");
-		}
-
-		// deactivate old tool
-		this.activeTool.deactivate();
-		eventService.publish(new ToolDeactivatedEvent(this.activeTool));
-
-		// activate new tool
-		this.activeTool = activeTool;
-		activeTool.activate();
-		eventService.publish(new ToolActivatedEvent(activeTool));
-	}
+	void setActiveTool(final Tool activeTool);
 
 	/**
 	 * Returns true if the two specified tools should have a separator between
 	 * them on the tool bar.
 	 */
-	public boolean isSeparatorNeeded(final Tool tool1, final Tool tool2) {
-		if (tool1 == null || tool2 == null) return false;
-		final double priority1 = tool1.getInfo().getPriority();
-		final double priority2 = tool2.getInfo().getPriority();
-		return Math.abs(priority1 - priority2) >= SEPARATOR_DISTANCE;
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(final KyPressedEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onKeyDown(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onKeyDown(event);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final KyReleasedEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onKeyUp(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onKeyUp(event);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final MsPressedEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onMouseDown(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onMouseDown(event);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final MsReleasedEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onMouseUp(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onMouseUp(event);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final MsClickedEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onMouseClick(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onMouseClick(event);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final MsMovedEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onMouseMove(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onMouseMove(event);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final MsDraggedEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onMouseDrag(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onMouseDrag(event);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final MsWheelEvent event) {
-		if (event.isConsumed()) return;
-		final Tool aTool = getActiveTool();
-		if (eventOk(event, aTool)) aTool.onMouseWheel(event);
-		for (final Tool tool : getAlwaysActiveTools()) {
-			if (event.isConsumed()) break;
-			if (eventOk(event, tool)) tool.onMouseWheel(event);
-		}
-	}
-
-	// -- Helper methods --
-
-	private void createTools() {
-		// discover available tools
-		final List<PluginInfo<Tool>> toolEntries =
-			pluginService.getPluginsOfType(Tool.class);
-
-		// create tool instances
-		alwaysActiveTools = new HashMap<String, Tool>();
-		alwaysActiveToolList = new ArrayList<Tool>();
-		tools = new HashMap<String, Tool>();
-		toolList = new ArrayList<Tool>();
-		for (final PluginInfo<Tool> info : toolEntries) {
-			final Tool tool;
-			try {
-				tool = info.createInstance();
-				tool.setContext(getContext());
-				tool.setInfo(info);
-			}
-			catch (final InstantiableException e) {
-				Log.error("Invalid tool: " + info.getName(), e);
-				continue;
-			}
-			if (info.isAlwaysActive()) {
-				alwaysActiveTools.put(info.getName(), tool);
-				alwaysActiveToolList.add(tool);
-			}
-			else {
-				tools.put(info.getName(), tool);
-				toolList.add(tool);
-			}
-		}
-	}
-
-	/** Checks that an event is OK to be dispatched to a particular tool. */
-	private boolean eventOk(final DisplayEvent event, final Tool tool) {
-		if (event.getDisplay() != null) return true;
-		// NB: An event with a null display came from the main app frame.
-		// We only pass these events on to tools flagged with activeInAppFrame.
-		final PluginInfo<?> toolInfo = tool == null ? null : tool.getInfo();
-		return toolInfo != null && toolInfo.isActiveInAppFrame();
-	}
+	boolean isSeparatorNeeded(final Tool tool1, final Tool tool2);
 
 }
