@@ -34,95 +34,30 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object;
 
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-import imagej.event.EventHandler;
+import imagej.IService;
 import imagej.event.EventService;
-import imagej.object.event.ObjectCreatedEvent;
-import imagej.object.event.ObjectDeletedEvent;
-import imagej.object.event.ObjectsAddedEvent;
-import imagej.object.event.ObjectsRemovedEvent;
 
 import java.util.List;
 
 /**
- * Service for keeping track of registered objects. Automatically registers new
- * objects from {@link ObjectCreatedEvent}s, and removes objects from
- * {@link ObjectDeletedEvent}s.
- * <p>
- * This is useful to retrieve available objects of a particular type, such as
- * the list of <code>imagej.data.Dataset</code>s upon which a user can choose to
- * operate.
- * </p>
+ * Interface for object management service.
  * 
  * @author Curtis Rueden
  */
-@Service
-public final class ObjectService extends AbstractService {
+public interface ObjectService extends IService {
 
-	private final EventService eventService;
-
-	/** Index of registered objects. */
-	private final ObjectIndex<Object> objectIndex = new ObjectIndex<Object>(
-		Object.class);
-
-	// -- Constructors --
-
-	public ObjectService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public ObjectService(final ImageJ context, final EventService eventService) {
-		super(context);
-		this.eventService = eventService;
-
-		subscribeToEvents(eventService);
-	}
-
-	// -- ObjectService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
+	EventService getEventService();
 
 	/** Gets the index of available objects. */
-	public ObjectIndex<Object> getIndex() {
-		return objectIndex;
-	}
+	ObjectIndex<Object> getIndex();
 
 	/** Gets a list of all registered objects compatible with the given type. */
-	public <T> List<T> getObjects(final Class<T> type) {
-		final List<Object> list = objectIndex.get(type);
-		@SuppressWarnings("unchecked")
-		final List<T> result = (List<T>) list;
-		return result;
-	}
+	<T> List<T> getObjects(final Class<T> type);
 
 	/** Registers an object with the object service. */
-	public void addObject(final Object obj) {
-		objectIndex.add(obj);
-		eventService.publish(new ObjectsAddedEvent(obj));
-	}
+	void addObject(final Object obj);
 
 	/** Deregisters an object with the object service. */
-	public void removeObject(final Object obj) {
-		objectIndex.remove(obj);
-		eventService.publish(new ObjectsRemovedEvent(obj));
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(final ObjectCreatedEvent event) {
-		addObject(event.getObject());
-	}
-
-	@EventHandler
-	protected void onEvent(final ObjectDeletedEvent event) {
-		removeObject(event.getObject());
-	}
+	void removeObject(final Object obj);
 
 }
