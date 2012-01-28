@@ -34,12 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.swt;
 
-import imagej.ImageJ;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ui.AbstractInputPanel;
 import imagej.ext.module.ui.InputPanel;
 import imagej.ext.module.ui.WidgetModel;
-import imagej.object.ObjectService;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;
@@ -122,15 +120,7 @@ public class SWTInputPanel extends AbstractInputPanel {
 	@Override
 	public void addObject(final WidgetModel model) throws ModuleException {
 		addLabel(model.getWidgetLabel());
-		// CTR FIXME - Rectify with identical logic in other implementations.
-		// Should ij-object be merged with ij-core?
-		final Class<?> type = model.getItem().getType();
-		final ObjectService objectService = ImageJ.get(ObjectService.class);
-		final Object[] items = objectService.getObjects(type).toArray();
-		if (items.length == 0) {
-			// no valid objects of the given type
-			throw new ModuleException("No objects of type " + type.getName());
-		}
+		final Object[] items = getObjects(model);
 		final SWTObjectWidget objectWidget =
 			new SWTObjectWidget(panel, model, items);
 		objectWidgets.put(model.getItem().getName(), objectWidget);

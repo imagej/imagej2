@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module.ui;
 
+import imagej.ImageJ;
+import imagej.ext.module.ModuleException;
+import imagej.object.ObjectService;
 import imagej.util.ColorRGB;
 
 import java.io.File;
@@ -144,6 +147,21 @@ public abstract class AbstractInputPanel implements InputPanel {
 			w.refreshWidget();
 		for (final InputWidget w : objectWidgets.values())
 			w.refreshWidget();
+	}
+
+	// -- Internal methods --
+
+	protected Object[] getObjects(final WidgetModel model)
+		throws ModuleException
+	{
+		final Class<?> type = model.getItem().getType();
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		final Object[] items = objectService.getObjects(type).toArray();
+		if (items.length == 0) {
+			// no valid objects of the given type
+			throw new ModuleException("No objects of type " + type.getName());
+		}
+		return items;
 	}
 
 }
