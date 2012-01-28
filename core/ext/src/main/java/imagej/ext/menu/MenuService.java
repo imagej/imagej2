@@ -34,68 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.menu;
 
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-import imagej.event.EventHandler;
+import imagej.IService;
 import imagej.event.EventService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.event.ModulesAddedEvent;
-import imagej.ext.module.event.ModulesRemovedEvent;
-import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
 
 /**
- * Service for keeping track of the application's menu structure.
+ * Interface for service that tracks the application's menu structure.
  * 
  * @author Curtis Rueden
- * @see ShadowMenu
  */
-@Service
-public class MenuService extends AbstractService {
+public interface MenuService extends IService {
 
-	private final EventService eventService;
-	private final PluginService pluginService;
+	EventService getEventService();
 
-	/** Menu tree structure. */
-	private ShadowMenu rootMenu;
-
-	// -- Constructors --
-
-	public MenuService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public MenuService(final ImageJ context, final EventService eventService,
-		final PluginService pluginService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-
-		rootMenu = new ShadowMenu(this);
-
-		subscribeToEvents(eventService);
-	}
-
-	// -- MenuService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	public PluginService getPluginService() {
-		return pluginService;
-	}
+	PluginService getPluginService();
 
 	/** Gets the root node of the menu structure. */
-	public ShadowMenu getMenu() {
-		return rootMenu;
-	}
+	ShadowMenu getMenu();
 
 	/**
 	 * Populates a UI-specific menu structure.
@@ -103,61 +61,27 @@ public class MenuService extends AbstractService {
 	 * @param creator the {@link MenuCreator} to use to populate the menus.
 	 * @param menu the destination menu structure to populate.
 	 */
-	public <T> T createMenus(final MenuCreator<T> creator, final T menu) {
-		creator.createMenus(rootMenu, menu);
-		return menu;
-	}
+	<T> T createMenus(final MenuCreator<T> creator, final T menu);
 
 	/** Selects or deselects the given module in the menu structure. */
-	public void setSelected(final Module module, final boolean selected) {
-		setSelected(module.getInfo(), selected);
-	}
+	void setSelected(final Module module, final boolean selected);
 
 	/** Selects or deselects the given plugin in the menu structure. */
-	public void setSelected(final RunnablePlugin plugin, final boolean selected)
-	{
-		setSelected(plugin.getClass(), selected);
-	}
+	void setSelected(final RunnablePlugin plugin, final boolean selected);
 
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	public <R extends RunnablePlugin> void setSelected(
-		final Class<R> pluginClass, final boolean selected)
-	{
-		setSelected(pluginService.getRunnablePlugin(pluginClass), selected);
-	}
+	<R extends RunnablePlugin> void setSelected(final Class<R> pluginClass,
+		final boolean selected);
 
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	public <R extends RunnablePlugin> void setSelected(
-		final String pluginClassName, final boolean selected)
-	{
-		setSelected(pluginService.getRunnablePlugin(pluginClassName), selected);
-	}
+	<R extends RunnablePlugin> void setSelected(final String pluginClassName,
+		final boolean selected);
 
 	/** Selects or deselects the given module in the menu structure. */
-	public void setSelected(final ModuleInfo info, final boolean selected) {
-		info.setSelected(selected);
-		info.update(eventService);
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(final ModulesAddedEvent event) {
-		getMenu().addAll(event.getItems());
-	}
-
-	@EventHandler
-	protected void onEvent(final ModulesRemovedEvent event) {
-		getMenu().removeAll(event.getItems());
-	}
-
-	@EventHandler
-	protected void onEvent(final ModulesUpdatedEvent event) {
-		getMenu().updateAll(event.getItems());
-	}
+	void setSelected(final ModuleInfo info, final boolean selected);
 
 }
