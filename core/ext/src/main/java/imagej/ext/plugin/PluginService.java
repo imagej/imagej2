@@ -34,162 +34,64 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-import imagej.ext.InstantiableException;
+import imagej.IService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
-import imagej.util.Log;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
- * Service for keeping track of available plugins. Available plugins are
- * discovered using a library called SezPoz. Loading of the actual plugin
- * classes can be deferred until a particular plugin's first execution.
+ * Interface for service that keeps track of available plugins.
  * 
  * @author Curtis Rueden
- * @see IPlugin
- * @see Plugin
  */
-@Service
-public class PluginService extends AbstractService {
+public interface PluginService extends IService {
 
-	private final ModuleService moduleService;
-
-	/** Index of registered plugins. */
-	private final PluginIndex pluginIndex = new PluginIndex();
-
-	// -- Constructors --
-
-	public PluginService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public PluginService(final ImageJ context, final ModuleService moduleService)
-	{
-		super(context);
-		this.moduleService = moduleService;
-
-		reloadPlugins();
-	}
-
-	// -- PluginService methods --
-
-	public ModuleService getModuleService() {
-		return moduleService;
-	}
+	ModuleService getModuleService();
 
 	/** Gets the index of available plugins. */
-	public PluginIndex getIndex() {
-		return pluginIndex;
-	}
+	PluginIndex getIndex();
 
 	/**
 	 * Rediscovers all plugins available on the classpath. Note that this will
 	 * clear any individual plugins added programmatically.
 	 */
-	public void reloadPlugins() {
-		// remove old runnable plugins from module service
-		moduleService.removeModules(getRunnablePlugins());
-
-		pluginIndex.clear();
-		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		new PluginFinder().findPlugins(plugins);
-		pluginIndex.addAll(plugins);
-
-		// add new runnable plugins to module service
-		moduleService.addModules(getRunnablePlugins());
-	}
+	void reloadPlugins();
 
 	/** Manually registers a plugin with the plugin service. */
-	public void addPlugin(final PluginInfo<?> plugin) {
-		pluginIndex.add(plugin);
-		if (plugin instanceof ModuleInfo) {
-			moduleService.addModule((ModuleInfo) plugin);
-		}
-	}
+	void addPlugin(final PluginInfo<?> plugin);
 
 	/** Manually registers plugins with the plugin service. */
-	public <T extends PluginInfo<?>> void
-		addPlugins(final Collection<T> plugins)
-	{
-		pluginIndex.addAll(plugins);
-
-		// add new runnable plugins to module service
-		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final PluginInfo<?> info : plugins) {
-			if (info instanceof ModuleInfo) {
-				modules.add((ModuleInfo) info);
-			}
-		}
-		moduleService.addModules(modules);
-	}
+	<T extends PluginInfo<?>> void addPlugins(final Collection<T> plugins);
 
 	/** Manually unregisters a plugin with the plugin service. */
-	public void removePlugin(final PluginInfo<?> plugin) {
-		pluginIndex.remove(plugin);
-		if (plugin instanceof ModuleInfo) {
-			moduleService.removeModule((ModuleInfo) plugin);
-		}
-	}
+	void removePlugin(final PluginInfo<?> plugin);
 
 	/** Manually unregisters plugins with the plugin service. */
-	public <T extends PluginInfo<?>> void removePlugins(
-		final Collection<T> plugins)
-	{
-		pluginIndex.removeAll(plugins);
-
-		// remove old runnable plugins to module service
-		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final PluginInfo<?> info : plugins) {
-			if (info instanceof ModuleInfo) {
-				modules.add((ModuleInfo) info);
-			}
-		}
-		moduleService.removeModules(modules);
-	}
+	<T extends PluginInfo<?>> void removePlugins(final Collection<T> plugins);
 
 	/** Gets the list of known plugins. */
-	public List<PluginInfo<?>> getPlugins() {
-		return pluginIndex.getAll();
-	}
+	List<PluginInfo<?>> getPlugins();
 
 	/** Gets the first available plugin of the given class, or null if none. */
-	public <P extends IPlugin> PluginInfo<P>
-		getPlugin(final Class<P> pluginClass)
-	{
-		return first(getPluginsOfClass(pluginClass));
-	}
+	<P extends IPlugin> PluginInfo<P> getPlugin(final Class<P> pluginClass);
 
 	/**
 	 * Gets the first available plugin of the given class name, or null if none.
 	 */
-	public PluginInfo<IPlugin> getPlugin(final String className) {
-		return first(getPluginsOfClass(className));
-	}
+	PluginInfo<IPlugin> getPlugin(final String className);
 
 	/**
 	 * Gets the list of plugins of the given type (e.g., {@link ImageJPlugin}).
 	 */
-	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(
-		final Class<P> type)
-	{
-		final List<PluginInfo<?>> list = pluginIndex.get(type);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<P>> result = (List) list;
-		return result;
-	}
+	<P extends IPlugin> List<PluginInfo<P>>
+		getPluginsOfType(final Class<P> type);
 
 	/**
 	 * Gets the list of plugins of the given class.
@@ -198,13 +100,8 @@ public class PluginService extends AbstractService {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
-		final Class<P> pluginClass)
-	{
-		final ArrayList<PluginInfo<P>> result = new ArrayList<PluginInfo<P>>();
-		getPluginsOfClass(pluginClass.getName(), getPlugins(), result);
-		return result;
-	}
+	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
+		final Class<P> pluginClass);
 
 	/**
 	 * Gets the list of plugins with the given class name.
@@ -213,47 +110,27 @@ public class PluginService extends AbstractService {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	public List<PluginInfo<IPlugin>> getPluginsOfClass(final String className) {
-		final ArrayList<PluginInfo<IPlugin>> result =
-			new ArrayList<PluginInfo<IPlugin>>();
-		getPluginsOfClass(className, getPlugins(), result);
-		return result;
-	}
+	List<PluginInfo<IPlugin>> getPluginsOfClass(final String className);
 
 	/** Gets the list of executable plugins (i.e., {@link RunnablePlugin}s). */
-	public List<PluginModuleInfo<RunnablePlugin>> getRunnablePlugins() {
-		return getRunnablePluginsOfType(RunnablePlugin.class);
-	}
+	List<PluginModuleInfo<RunnablePlugin>> getRunnablePlugins();
 
 	/**
 	 * Gets the first available executable plugin of the given class, or null if
 	 * none.
 	 */
-	public <R extends RunnablePlugin> PluginModuleInfo<R> getRunnablePlugin(
-		final Class<R> pluginClass)
-	{
-		return first(getRunnablePluginsOfClass(pluginClass));
-	}
+	<R extends RunnablePlugin> PluginModuleInfo<R> getRunnablePlugin(
+		final Class<R> pluginClass);
 
 	/**
 	 * Gets the first available executable plugin of the given class name, or null
 	 * if none.
 	 */
-	public PluginModuleInfo<RunnablePlugin> getRunnablePlugin(
-		final String className)
-	{
-		return first(getRunnablePluginsOfClass(className));
-	}
+	PluginModuleInfo<RunnablePlugin> getRunnablePlugin(final String className);
 
 	/** Gets the list of executable plugins of the given type. */
-	public <R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfType(final Class<R> type)
-	{
-		final List<PluginInfo<?>> list = pluginIndex.get(type);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginModuleInfo<R>> result = (List) list;
-		return result;
-	}
+	<R extends RunnablePlugin> List<PluginModuleInfo<R>>
+		getRunnablePluginsOfType(final Class<R> type);
 
 	/**
 	 * Gets the list of executable plugins of the given class.
@@ -262,14 +139,8 @@ public class PluginService extends AbstractService {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	public <R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfClass(final Class<R> pluginClass)
-	{
-		final ArrayList<PluginModuleInfo<R>> result =
-			new ArrayList<PluginModuleInfo<R>>();
-		getPluginsOfClass(pluginClass.getName(), getRunnablePlugins(), result);
-		return result;
-	}
+	<R extends RunnablePlugin> List<PluginModuleInfo<R>>
+		getRunnablePluginsOfClass(final Class<R> pluginClass);
 
 	/**
 	 * Gets the list of executable plugins with the given class name.
@@ -278,35 +149,14 @@ public class PluginService extends AbstractService {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	public List<PluginModuleInfo<RunnablePlugin>> getRunnablePluginsOfClass(
-		final String className)
-	{
-		final ArrayList<PluginModuleInfo<RunnablePlugin>> result =
-			new ArrayList<PluginModuleInfo<RunnablePlugin>>();
-		getPluginsOfClass(className, getRunnablePlugins(), result);
-		return result;
-	}
+	List<PluginModuleInfo<RunnablePlugin>> getRunnablePluginsOfClass(
+		final String className);
 
 	/** Creates one instance each of the available plugins of the given type. */
-	public <P extends IPlugin> List<P> createInstances(final Class<P> type) {
-		return createInstances(getPluginsOfType(type));
-	}
+	<P extends IPlugin> List<P> createInstances(final Class<P> type);
 
 	/** Creates an instance of each of the plugins on the given list. */
-	public <P extends IPlugin> List<P> createInstances(
-		final List<PluginInfo<P>> infos)
-	{
-		final ArrayList<P> list = new ArrayList<P>();
-		for (final PluginInfo<P> info : infos) {
-			try {
-				list.add(info.createInstance());
-			}
-			catch (final InstantiableException e) {
-				Log.error("Cannot create plugin: " + info.getClassName());
-			}
-		}
-		return list;
-	}
+	<P extends IPlugin> List<P> createInstances(final List<PluginInfo<P>> infos);
 
 	/**
 	 * Executes the first runnable plugin of the given class name.
@@ -321,13 +171,7 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module> run(final String className,
-		final Object... inputValues)
-	{
-		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
-		if (!checkPlugin(plugin, className)) return null;
-		return run(plugin, inputValues);
-	}
+	Future<Module> run(final String className, final Object... inputValues);
 
 	/**
 	 * Executes the first runnable plugin of the given class name.
@@ -340,13 +184,8 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module> run(final String className,
-		final Map<String, Object> inputMap)
-	{
-		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
-		if (!checkPlugin(plugin, className)) return null;
-		return run(plugin, inputMap);
-	}
+	Future<Module>
+		run(final String className, final Map<String, Object> inputMap);
 
 	/**
 	 * Executes the first runnable plugin of the given class.
@@ -362,13 +201,8 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public <R extends RunnablePlugin> Future<Module> run(
-		final Class<R> pluginClass, final Object... inputValues)
-	{
-		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
-		if (!checkPlugin(plugin, pluginClass.getName())) return null;
-		return run(plugin, inputValues);
-	}
+	<R extends RunnablePlugin> Future<Module> run(final Class<R> pluginClass,
+		final Object... inputValues);
 
 	/**
 	 * Executes the first runnable plugin of the given class.
@@ -382,13 +216,8 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public <R extends RunnablePlugin> Future<Module> run(
-		final Class<R> pluginClass, final Map<String, Object> inputMap)
-	{
-		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
-		if (!checkPlugin(plugin, pluginClass.getName())) return null;
-		return run(plugin, inputMap);
-	}
+	<R extends RunnablePlugin> Future<Module> run(final Class<R> pluginClass,
+		final Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -405,11 +234,7 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module>
-		run(final ModuleInfo info, final Object... inputValues)
-	{
-		return moduleService.run(info, pre(), post(), inputValues);
-	}
+	Future<Module> run(final ModuleInfo info, final Object... inputValues);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -424,11 +249,8 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module> run(final ModuleInfo info,
-		final Map<String, Object> inputMap)
-	{
-		return moduleService.run(info, pre(), post(), inputMap);
-	}
+	Future<Module>
+		run(final ModuleInfo info, final Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -445,9 +267,7 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module> run(final Module module, final Object... inputValues) {
-		return moduleService.run(module, pre(), post(), inputValues);
-	}
+	Future<Module> run(final Module module, final Object... inputValues);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -462,50 +282,6 @@ public class PluginService extends AbstractService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	public Future<Module> run(final Module module,
-		final Map<String, Object> inputMap)
-	{
-		return moduleService.run(module, pre(), post(), inputMap);
-	}
-
-	// -- Helper methods --
-
-	private <T extends PluginInfo<?>> void getPluginsOfClass(
-		final String className, final List<? extends PluginInfo<?>> srcList,
-		final List<T> destList)
-	{
-		for (final PluginInfo<?> info : srcList) {
-			if (info.getClassName().equals(className)) {
-				@SuppressWarnings("unchecked")
-				final T match = (T) info;
-				destList.add(match);
-			}
-		}
-	}
-
-	/** Gets the first element of the given list, or null if none. */
-	private <T> T first(final List<T> list) {
-		if (list == null || list.size() == 0) return null;
-		return list.get(0);
-
-	}
-
-	private List<PreprocessorPlugin> pre() {
-		return createInstances(PreprocessorPlugin.class);
-	}
-
-	private List<PostprocessorPlugin> post() {
-		return createInstances(PostprocessorPlugin.class);
-	}
-
-	private boolean checkPlugin(final PluginModuleInfo<?> plugin,
-		final String name)
-	{
-		if (plugin == null) {
-			Log.error("No such plugin: " + name);
-			return false;
-		}
-		return true;
-	}
+	Future<Module> run(final Module module, final Map<String, Object> inputMap);
 
 }
