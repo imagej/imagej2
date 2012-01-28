@@ -1,5 +1,5 @@
 //
-// ThreadService.java
+// DefaultThreadService.java
 //
 
 /*
@@ -34,19 +34,58 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.thread;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
+import imagej.Service;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 /**
- * Interface for the thread handling service.
+ * Default service for managing active ImageJ threads.
  * 
  * @author Curtis Rueden
  */
-public interface ThreadService extends IService, ThreadFactory {
+@Service
+public final class DefaultThreadService extends AbstractService implements
+	ThreadService
+{
 
-	<V> Future<V> run(final Callable<V> code);
+	private ExecutorService executor;
+
+	private int nextThread = 0;
+
+	// -- Constructors --
+
+	public DefaultThreadService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public DefaultThreadService(final ImageJ context) {
+		super(context);
+
+		executor = Executors.newCachedThreadPool(this);
+	}
+
+	// -- ThreadService methods --
+
+	@Override
+	public <V> Future<V> run(final Callable<V> code) {
+		return executor.submit(code);
+	}
+
+	// -- ThreadFactory methods --
+
+	@Override
+	public Thread newThread(final Runnable r) {
+		final String contextHash = Integer.toHexString(getContext().hashCode());
+		final String threadName =
+			"ImageJ-" + contextHash + "-Thread-" + nextThread++;
+		return new Thread(r, threadName);
+	}
 
 }
