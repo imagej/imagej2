@@ -110,9 +110,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	{
 		// CTR FIXME - eliminate deprecated method call to ImageJ.get
 		final MenuService menuService = ImageJ.get(MenuService.class);
-		// CTR FIXME - obtain appropriate menu from menu root, once API is in place
-		// final ShadowMenu shadowMenu = menuService.getMenu(menuRoot);
-		final ShadowMenu shadowMenu = menuService.getMenu();
+		final ShadowMenu shadowMenu = menuService.getMenu(menuRoot);
 
 		final JPopupMenu popupMenu = new JPopupMenu();
 		new SwingJPopupMenuCreator().createMenus(shadowMenu, popupMenu);

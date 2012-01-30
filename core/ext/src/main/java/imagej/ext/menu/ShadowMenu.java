@@ -40,7 +40,6 @@ import imagej.ext.menu.event.MenusAddedEvent;
 import imagej.ext.menu.event.MenusRemovedEvent;
 import imagej.ext.menu.event.MenusUpdatedEvent;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
@@ -92,15 +91,6 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	/** Table of child nodes, keyed by name. */
 	private final Map<String, ShadowMenu> children;
-
-	/**
-	 * Constructs a root menu node populated with all available modules obtained
-	 * from the {@link PluginService}.
-	 */
-	public ShadowMenu(final MenuService menuService) {
-		this(menuService, menuService.getPluginService().getModuleService()
-			.getModules());
-	}
 
 	/** Constructs a root menu node populated with the given modules. */
 	public ShadowMenu(final MenuService menuService,
