@@ -103,7 +103,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		red = new SimpleAttributeSet();
 		StyleConstants.setForeground(red, Color.RED);
 
-		SwingTools.scrollPane(panel, 450, 350, rootPanel);
+		SwingTools.scrollPane(panel, 650, 450, rootPanel);
 
 		final JPanel buttons = new JPanel();
 		ok = SwingTools.button("OK", "OK", this, buttons);
