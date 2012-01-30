@@ -153,6 +153,8 @@ public class FilesUploader {
 	}
 
 	public void upload(final Progress progress) throws Exception {
+		if (uploader == null) throw new RuntimeException("No uploader set for " +
+			site.sshHost);
 		if (!loggedIn) throw new RuntimeException("Not logged in!");
 		if (new Conflicts(files).hasUploadConflicts()) throw new RuntimeException(
 			"Unresolved upload conflicts!");
