@@ -256,6 +256,13 @@ public class FileObject {
 		return description;
 	}
 
+	public void addDependency(final FilesCollection files,
+		final FileObject dependency)
+	{
+		final String filename = dependency.getFilename();
+		addDependency(filename, files.prefix(filename));
+	}
+
 	public void addDependency(final String filename, final File file) {
 		addDependency(filename, Util.getTimestamp(file), false);
 	}
