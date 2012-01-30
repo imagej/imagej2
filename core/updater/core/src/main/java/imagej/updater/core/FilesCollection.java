@@ -69,6 +69,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
 	protected File imagejRoot;
+	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 
 	public static class UpdateSite implements Cloneable {
 

@@ -40,7 +40,6 @@ import imagej.updater.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +54,6 @@ public class Conflicts {
 
 	protected final FilesCollection files;
 	protected List<Conflict> conflicts;
-	protected Set<FileObject> ignored;
 
 	public static class Conflict {
 
@@ -124,7 +122,6 @@ public class Conflicts {
 
 	public Conflicts(final FilesCollection files) {
 		this.files = files;
-		ignored = new HashSet<FileObject>();
 	}
 
 	public Iterable<Conflict> getConflicts(final boolean forUpload) {
@@ -144,8 +141,8 @@ public class Conflicts {
 				file, toInstall.get(file), obsoleted.get(file)));
 			else if (!file.willBeUpToDate()) {
 				if (file.isLocallyModified()) {
-					if (!ignored.contains(file)) conflicts.add(locallyModified(file,
-						toInstall.get(file)));
+					if (!files.ignoredConflicts.contains(file)) conflicts
+						.add(locallyModified(file, toInstall.get(file)));
 				}
 				else automatic.add(file);
 			}
@@ -205,7 +202,7 @@ public class Conflicts {
 			}
 			for (final Dependency dependency : file.getDependencies()) {
 				final FileObject dep = files.get(dependency.filename);
-				if (dep == null || ignored.contains(dep)) continue;
+				if (dep == null || files.ignoredConflicts.contains(dep)) continue;
 				if (dep.isInstallable() ||
 					(dep.isLocalOnly() && dep.getAction() != Action.UPLOAD) ||
 					dep.isObsolete() ||
@@ -307,7 +304,7 @@ public class Conflicts {
 
 			@Override
 			public void resolve() {
-				ignored.add(file);
+				files.ignoredConflicts.add(file);
 			}
 		};
 	}
