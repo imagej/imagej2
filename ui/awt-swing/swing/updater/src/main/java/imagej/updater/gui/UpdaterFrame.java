@@ -476,16 +476,16 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	List<FileAction> fileActions = new ArrayList<FileAction>();
 
-	class FileAction extends JButton implements ActionListener {
+	protected class FileAction extends JButton implements ActionListener {
 
-		String label, otherLabel;
-		Action action, otherAction;
+		protected String label, otherLabel;
+		protected Action action, otherAction;
 
-		FileAction(final String label, final Action action) {
+		public FileAction(final String label, final Action action) {
 			this(label, action, null, null);
 		}
 
-		FileAction(final String label, final Action action,
+		public FileAction(final String label, final Action action,
 			final String otherLabel, final Action otherAction)
 		{
 			super(label);
