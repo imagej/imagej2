@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.gui;
 
-import imagej.updater.core.PluginCollection;
-import imagej.updater.core.PluginObject;
+import imagej.updater.core.FileObject;
+import imagej.updater.core.FilesCollection;
 
 import javax.swing.JComboBox;
 
@@ -79,11 +79,11 @@ public class ViewOptions extends JComboBox {
 
 	protected interface CustomOption {
 
-		Iterable<PluginObject> getIterable();
+		Iterable<FileObject> getIterable();
 	}
 
 	public void addCustomOption(final String title,
-		final Iterable<PluginObject> iterable)
+		final Iterable<FileObject> iterable)
 	{
 		addItem(new CustomOption() {
 
@@ -93,18 +93,18 @@ public class ViewOptions extends JComboBox {
 			}
 
 			@Override
-			public Iterable<PluginObject> getIterable() {
+			public Iterable<FileObject> getIterable() {
 				return iterable;
 			}
 		});
 	}
 
-	public Iterable<PluginObject> getView(final PluginTable table) {
+	public Iterable<FileObject> getView(final PluginTable table) {
 		if (getSelectedIndex() >= customOptionStart) return ((CustomOption) getSelectedItem())
 			.getIterable();
 
-		final PluginCollection plugins =
-			PluginCollection.clone(table.getAllPlugins().notHidden());
+		final FilesCollection plugins =
+			FilesCollection.clone(table.getAllPlugins().notHidden());
 		plugins.sort();
 		switch ((Option) getSelectedItem()) {
 			case INSTALLED:

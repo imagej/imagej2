@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.ssh;
 
-import imagej.updater.core.PluginUploader;
+import imagej.updater.core.FilesUploader;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
 import imagej.util.Log;
@@ -200,7 +200,7 @@ final class SSHSessionCreator {
 		};
 	}
 
-	public static Session getSession(final PluginUploader uploader) {
+	public static Session getSession(final FilesUploader uploader) {
 		String username = uploader.getDefaultUsername();
 		final String sshHost = uploader.getUploadHost();
 		for (;;) {

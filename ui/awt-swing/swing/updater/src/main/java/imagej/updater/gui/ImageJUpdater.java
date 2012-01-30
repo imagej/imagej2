@@ -40,8 +40,8 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.updater.core.Checksummer;
-import imagej.updater.core.PluginCollection;
-import imagej.updater.core.PluginObject;
+import imagej.updater.core.FileObject;
+import imagej.updater.core.FilesCollection;
 import imagej.updater.core.XMLFileDownloader;
 import imagej.updater.gui.ViewOptions.Option;
 import imagej.updater.util.Canceled;
@@ -79,7 +79,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		}
 		Util.useSystemProxies();
 
-		final PluginCollection plugins = new PluginCollection();
+		final FilesCollection plugins = new FilesCollection();
 		try {
 			plugins.read();
 		}
@@ -135,8 +135,8 @@ public class ImageJUpdater implements ImageJPlugin {
 		// TODO: find .jar name from this class' resource
 		// TODO: mark all dependencies for update
 		// TODO: we may get away with a custom class loader... but probably not!
-		final PluginObject updater = plugins.getPlugin("plugins/Fiji_Updater.jar");
-		if ((updater != null && updater.getStatus() == PluginObject.Status.UPDATEABLE))
+		final FileObject updater = plugins.getPlugin("plugins/Fiji_Updater.jar");
+		if ((updater != null && updater.getStatus() == FileObject.Status.UPDATEABLE))
 		{
 			if (SwingTools.showQuestion(false, main, "Update the updater",
 				"There is an update available for the Updater. Install now?"))
@@ -169,7 +169,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		main.updatePluginsTable();
 	}
 
-	protected boolean overwriteWithUpdated(final PluginObject plugin) {
+	protected boolean overwriteWithUpdated(final FileObject plugin) {
 		File downloaded = new File(Util.prefix("update/" + plugin.filename));
 		if (!downloaded.exists()) return true; // assume all is well if there is no
 																						// updated file

@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.updater.gui;
 
 import imagej.updater.core.Checksummer;
-import imagej.updater.core.PluginCollection;
-import imagej.updater.core.PluginCollection.UpdateSite;
-import imagej.updater.core.PluginObject;
+import imagej.updater.core.FileObject;
+import imagej.updater.core.FilesCollection;
+import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.XMLFileReader;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
@@ -82,7 +82,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 {
 
 	protected UpdaterFrame updaterFrame;
-	protected PluginCollection plugins;
+	protected FilesCollection plugins;
 	protected List<String> names;
 
 	protected DataModel tableModel;
@@ -90,7 +90,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 	protected JButton add, edit, remove, close;
 	protected JCheckBox forUpload;
 
-	public SitesDialog(final UpdaterFrame owner, final PluginCollection plugins,
+	public SitesDialog(final UpdaterFrame owner, final FilesCollection plugins,
 		final boolean forUpload)
 	{
 		super(owner, "Manage update sites");
@@ -160,9 +160,9 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 	protected void delete(final int row) {
 		final String name = names.get(row);
-		final List<PluginObject> list = new ArrayList<PluginObject>();
+		final List<FileObject> list = new ArrayList<FileObject>();
 		int count = 0;
-		for (final PluginObject plugin : plugins.forUpdateSite(name))
+		for (final FileObject plugin : plugins.forUpdateSite(name))
 			switch (plugin.getStatus()) {
 				case NEW:
 				case NOT_INSTALLED:
@@ -179,9 +179,9 @@ public class SitesDialog extends JDialog implements ActionListener,
 			"'\n" +
 			"These files will not be deleted automatically.\n" +
 			"Note: even if marked as 'Local-only', they might be available from other sites.");
-		for (final PluginObject plugin : list) {
+		for (final FileObject plugin : list) {
 			plugin.updateSite = null;
-			plugin.setStatus(PluginObject.Status.LOCAL_ONLY);
+			plugin.setStatus(FileObject.Status.LOCAL_ONLY);
 		}
 		plugins.removeUpdateSite(name);
 		names.remove(row);
@@ -349,7 +349,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 			try {
 				new XMLFileReader(plugins).read(name);
 				final List<String> pluginsFromSite = new ArrayList<String>();
-				for (final PluginObject plugin : plugins.forUpdateSite(name))
+				for (final FileObject plugin : plugins.forUpdateSite(name))
 					pluginsFromSite.add(plugin.filename);
 				final Checksummer checksummer =
 					new Checksummer(plugins, updaterFrame.getProgress("Czechsummer"));
@@ -485,7 +485,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 	}
 
 	public static void main(final String[] args) {
-		final PluginCollection plugins = new PluginCollection();
+		final FilesCollection plugins = new FilesCollection();
 		try {
 			plugins.read();
 		}

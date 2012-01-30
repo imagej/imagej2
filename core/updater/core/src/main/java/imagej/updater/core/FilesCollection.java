@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.core.PluginObject.Action;
-import imagej.updater.core.PluginObject.Status;
+import imagej.updater.core.FileObject.Action;
+import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Util;
 
@@ -62,7 +62,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.xml.sax.SAXException;
 
 @SuppressWarnings("serial")
-public class PluginCollection extends ArrayList<PluginObject> {
+public class FilesCollection extends ArrayList<FileObject> {
 
 	public final static String DEFAULT_UPDATE_SITE = "Fiji";
 
@@ -116,7 +116,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 
 	protected Map<String, UpdateSite> updateSites;
 
-	public PluginCollection() {
+	public FilesCollection() {
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, Util.isDeveloper
 			? Util.SSH_HOST : null, Util.isDeveloper ? Util.UPDATE_DIRECTORY : null,
@@ -137,7 +137,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 			"Update site " + oldName + " does not exist!");
 
 		// handle all plugins
-		for (final PluginObject plugin : this)
+		for (final FileObject plugin : this)
 			if (plugin.updateSite.equals(oldName)) plugin.updateSite = newName;
 
 		// preserve order
@@ -165,9 +165,9 @@ public class PluginCollection extends ArrayList<PluginObject> {
 
 	public Collection<String> getSiteNamesToUpload() {
 		final Collection<String> set = new HashSet<String>();
-		for (final PluginObject plugin : toUpload(true))
+		for (final FileObject plugin : toUpload(true))
 			set.add(plugin.updateSite);
-		for (final PluginObject plugin : toRemove())
+		for (final FileObject plugin : toRemove())
 			set.add(plugin.updateSite);
 		// keep the update sites' order
 		final List<String> result = new ArrayList<String>();
@@ -185,14 +185,14 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return false;
 	}
 
-	public Action[] getActions(final PluginObject plugin) {
+	public Action[] getActions(final FileObject plugin) {
 		return plugin.isUploadable(this) ? plugin.getStatus().getDeveloperActions()
 			: plugin.getStatus().getActions();
 	}
 
-	public Action[] getActions(final Iterable<PluginObject> plugins) {
+	public Action[] getActions(final Iterable<FileObject> plugins) {
 		List<Action> result = null;
-		for (final PluginObject plugin : plugins) {
+		for (final FileObject plugin : plugins) {
 			final Action[] actions = getActions(plugin);
 			if (result == null) {
 				result = new ArrayList<Action>();
@@ -228,95 +228,95 @@ public class PluginCollection extends ArrayList<PluginObject> {
 
 	public interface Filter {
 
-		boolean matches(PluginObject plugin);
+		boolean matches(FileObject plugin);
 	}
 
-	public static PluginCollection clone(final Iterable<PluginObject> iterable) {
-		final PluginCollection result = new PluginCollection();
-		for (final PluginObject plugin : iterable)
+	public static FilesCollection clone(final Iterable<FileObject> iterable) {
+		final FilesCollection result = new FilesCollection();
+		for (final FileObject plugin : iterable)
 			result.add(plugin);
 		return result;
 	}
 
-	public void cloneUpdateSites(final PluginCollection other) {
+	public void cloneUpdateSites(final FilesCollection other) {
 		for (final String name : other.updateSites.keySet())
 			updateSites.put(name, (UpdateSite) other.updateSites.get(name).clone());
 	}
 
-	public Iterable<PluginObject> toUploadOrRemove() {
+	public Iterable<FileObject> toUploadOrRemove() {
 		return filter(or(is(Action.UPLOAD), is(Action.REMOVE)));
 	}
 
-	public Iterable<PluginObject> toUpload() {
+	public Iterable<FileObject> toUpload() {
 		return toUpload(false);
 	}
 
-	public Iterable<PluginObject> toUpload(final boolean includeMetadataChanges) {
+	public Iterable<FileObject> toUpload(final boolean includeMetadataChanges) {
 		if (!includeMetadataChanges) return filter(is(Action.UPLOAD));
 		return filter(or(is(Action.UPLOAD), new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.metadataChanged;
 			}
 		}));
 	}
 
-	public Iterable<PluginObject> toUpload(final String updateSite) {
+	public Iterable<FileObject> toUpload(final String updateSite) {
 		return filter(and(is(Action.UPLOAD), isUpdateSite(updateSite)));
 	}
 
-	public Iterable<PluginObject> toUninstall() {
+	public Iterable<FileObject> toUninstall() {
 		return filter(is(Action.UNINSTALL));
 	}
 
-	public Iterable<PluginObject> toRemove() {
+	public Iterable<FileObject> toRemove() {
 		return filter(is(Action.REMOVE));
 	}
 
-	public Iterable<PluginObject> toUpdate() {
+	public Iterable<FileObject> toUpdate() {
 		return filter(is(Action.UPDATE));
 	}
 
-	public Iterable<PluginObject> upToDate() {
+	public Iterable<FileObject> upToDate() {
 		return filter(is(Action.INSTALLED));
 	}
 
-	public Iterable<PluginObject> toInstall() {
+	public Iterable<FileObject> toInstall() {
 		return filter(is(Action.INSTALL));
 	}
 
-	public Iterable<PluginObject> toInstallOrUpdate() {
+	public Iterable<FileObject> toInstallOrUpdate() {
 		return filter(oneOf(new Action[] { Action.INSTALL, Action.UPDATE }));
 	}
 
-	public Iterable<PluginObject> notHidden() {
+	public Iterable<FileObject> notHidden() {
 		return filter(and(not(is(Status.OBSOLETE_UNINSTALLED)), doesPlatformMatch()));
 	}
 
-	public Iterable<PluginObject> uninstalled() {
+	public Iterable<FileObject> uninstalled() {
 		return filter(is(Status.NOT_INSTALLED));
 	}
 
-	public Iterable<PluginObject> installed() {
+	public Iterable<FileObject> installed() {
 		return filter(not(oneOf(new Status[] { Status.LOCAL_ONLY,
 			Status.NOT_INSTALLED })));
 	}
 
-	public Iterable<PluginObject> locallyModified() {
+	public Iterable<FileObject> locallyModified() {
 		return filter(oneOf(new Status[] { Status.MODIFIED,
 			Status.OBSOLETE_MODIFIED }));
 	}
 
-	public Iterable<PluginObject> forUpdateSite(final String name) {
+	public Iterable<FileObject> forUpdateSite(final String name) {
 		return filter(isUpdateSite(name));
 	}
 
-	public Iterable<PluginObject> fijiPlugins() {
+	public Iterable<FileObject> fijiPlugins() {
 		return filter(not(is(Status.LOCAL_ONLY)));
 	}
 
-	public Iterable<PluginObject> forCurrentTXT() {
+	public Iterable<FileObject> forCurrentTXT() {
 		return filter(and(not(oneOf(new Status[] { Status.LOCAL_ONLY,
 			Status.OBSOLETE, Status.OBSOLETE_MODIFIED, Status.OBSOLETE_UNINSTALLED
 		/* the old updater will only checksum these! */
@@ -324,11 +324,11 @@ public class PluginCollection extends ArrayList<PluginObject> {
 			"jars/", "retro/", "misc/" }), endsWith(".jar")))));
 	}
 
-	public Iterable<PluginObject> nonFiji() {
+	public Iterable<FileObject> nonFiji() {
 		return filter(is(Status.LOCAL_ONLY));
 	}
 
-	public Iterable<PluginObject> shownByDefault() {
+	public Iterable<FileObject> shownByDefault() {
 		/*
 		 * Let's not show the NOT_INSTALLED ones, as the user chose not
 		 * to have them.
@@ -339,35 +339,34 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return filter(or(oneOf(oneOf), is(Action.INSTALL)));
 	}
 
-	public Iterable<PluginObject> uploadable() {
+	public Iterable<FileObject> uploadable() {
 		return filter(new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
-				return plugin.isUploadable(PluginCollection.this);
+			public boolean matches(final FileObject plugin) {
+				return plugin.isUploadable(FilesCollection.this);
 			}
 		});
 	}
 
-	public Iterable<PluginObject> changes() {
+	public Iterable<FileObject> changes() {
 		return filter(new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.getAction() != plugin.getStatus().getActions()[0];
 			}
 		});
 	}
 
-	public static class FilteredIterator implements Iterator<PluginObject> {
+	public static class FilteredIterator implements Iterator<FileObject> {
 
 		Filter filter;
 		boolean opposite;
-		Iterator<PluginObject> iterator;
-		PluginObject next;
+		Iterator<FileObject> iterator;
+		FileObject next;
 
-		FilteredIterator(final Filter filter, final Iterable<PluginObject> plugins)
-		{
+		FilteredIterator(final Filter filter, final Iterable<FileObject> plugins) {
 			this.filter = filter;
 			iterator = plugins.iterator();
 			findNext();
@@ -379,8 +378,8 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		}
 
 		@Override
-		public PluginObject next() {
-			final PluginObject plugin = next;
+		public FileObject next() {
+			final FileObject plugin = next;
 			findNext();
 			return plugin;
 		}
@@ -399,26 +398,26 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		}
 	}
 
-	public static Iterable<PluginObject> filter(final Filter filter,
-		final Iterable<PluginObject> plugins)
+	public static Iterable<FileObject> filter(final Filter filter,
+		final Iterable<FileObject> plugins)
 	{
-		return new Iterable<PluginObject>() {
+		return new Iterable<FileObject>() {
 
 			@Override
-			public Iterator<PluginObject> iterator() {
+			public Iterator<FileObject> iterator() {
 				return new FilteredIterator(filter, plugins);
 			}
 		};
 	}
 
-	public static Iterable<PluginObject> filter(final String search,
-		final Iterable<PluginObject> plugins)
+	public static Iterable<FileObject> filter(final String search,
+		final Iterable<FileObject> plugins)
 	{
 		final String keyword = search.trim().toLowerCase();
 		return filter(new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.getFilename().trim().toLowerCase().indexOf(keyword) >= 0;
 			}
 		}, plugins);
@@ -428,7 +427,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return true;
 			}
 		};
@@ -440,7 +439,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.isUpdateablePlatform();
 			}
 		};
@@ -450,7 +449,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.getAction() == action;
 			}
 		};
@@ -460,7 +459,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.getAction() == plugin.getStatus().getNoAction();
 			}
 		};
@@ -473,7 +472,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return oneOf.contains(plugin.getAction());
 			}
 		};
@@ -483,7 +482,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.getStatus() == status;
 			}
 		};
@@ -493,7 +492,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.updateSite != null && // is null for non-Fiji files
 					plugin.updateSite.equals(updateSite);
 			}
@@ -507,7 +506,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return oneOf.contains(plugin.getStatus());
 			}
 		};
@@ -517,7 +516,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.filename.startsWith(prefix);
 			}
 		};
@@ -527,7 +526,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				for (final String prefix : prefixes)
 					if (plugin.filename.startsWith(prefix)) return true;
 				return false;
@@ -539,7 +538,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.filename.endsWith(suffix);
 			}
 		};
@@ -549,7 +548,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return !filter.matches(plugin);
 			}
 		};
@@ -559,7 +558,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return a.matches(plugin) || b.matches(plugin);
 			}
 		};
@@ -569,40 +568,40 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return a.matches(plugin) && b.matches(plugin);
 			}
 		};
 	}
 
-	public Iterable<PluginObject> filter(final Filter filter) {
+	public Iterable<FileObject> filter(final Filter filter) {
 		return filter(filter, this);
 	}
 
-	public PluginObject getPlugin(final String filename) {
-		for (final PluginObject plugin : this) {
+	public FileObject getPlugin(final String filename) {
+		for (final FileObject plugin : this) {
 			if (plugin.getFilename().equals(filename)) return plugin;
 		}
 		return null;
 	}
 
-	public PluginObject getPlugin(final String filename, final long timestamp) {
-		for (final PluginObject plugin : this)
+	public FileObject getPlugin(final String filename, final long timestamp) {
+		for (final FileObject plugin : this)
 			if (plugin.getFilename().equals(filename) &&
 				plugin.getTimestamp() == timestamp) return plugin;
 		return null;
 	}
 
-	public PluginObject getPluginFromDigest(final String filename,
+	public FileObject getPluginFromDigest(final String filename,
 		final String digest)
 	{
-		for (final PluginObject plugin : this)
+		for (final FileObject plugin : this)
 			if (plugin.getFilename().equals(filename) &&
 				plugin.getChecksum().equals(digest)) return plugin;
 		return null;
 	}
 
-	public Iterable<String> analyzeDependencies(final PluginObject plugin) {
+	public Iterable<String> analyzeDependencies(final FileObject plugin) {
 		try {
 			if (dependencyAnalyzer == null) dependencyAnalyzer =
 				new DependencyAnalyzer();
@@ -615,7 +614,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		}
 	}
 
-	public void updateDependencies(final PluginObject plugin) {
+	public void updateDependencies(final FileObject plugin) {
 		final Iterable<String> dependencies = analyzeDependencies(plugin);
 		if (dependencies == null) return;
 		for (final String dependency : dependencies)
@@ -623,7 +622,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public boolean has(final Filter filter) {
-		for (final PluginObject plugin : this)
+		for (final FileObject plugin : this)
 			if (filter.matches(plugin)) return true;
 		return false;
 	}
@@ -637,16 +636,16 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public boolean hasForcableUpdates() {
-		for (final PluginObject plugin : updateable(true))
+		for (final FileObject plugin : updateable(true))
 			if (!plugin.isUpdateable(false)) return true;
 		return false;
 	}
 
-	public Iterable<PluginObject> updateable(final boolean evenForcedOnes) {
+	public Iterable<FileObject> updateable(final boolean evenForcedOnes) {
 		return filter(new Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				return plugin.isUpdateable(evenForcedOnes) &&
 					plugin.isUpdateablePlatform();
 			}
@@ -654,13 +653,13 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public void markForUpdate(final boolean evenForcedUpdates) {
-		for (final PluginObject file : updateable(evenForcedUpdates)) {
-			plugin.setFirstValidAction(this, new Action[] { Action.UPDATE,
+		for (final FileObject file : updateable(evenForcedUpdates)) {
+			file.setFirstValidAction(this, new Action[] { Action.UPDATE,
 				Action.UNINSTALL, Action.INSTALL });
 		}
 	}
 
-	public String getURL(final PluginObject plugin) {
+	public String getURL(final FileObject plugin) {
 		final String siteName = plugin.updateSite;
 		assert (siteName != null && !siteName.equals(""));
 		final UpdateSite site = getUpdateSite(siteName);
@@ -669,18 +668,18 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public static class DependencyMap extends
-		HashMap<PluginObject, PluginCollection>
+		HashMap<FileObject, FilesCollection>
 	{
 
 		// returns true when the map did not have the dependency before
-		public boolean add(final PluginObject dependency,
-			final PluginObject dependencee)
+		public boolean
+			add(final FileObject dependency, final FileObject dependencee)
 		{
 			if (containsKey(dependency)) {
 				get(dependency).add(dependencee);
 				return false;
 			}
-			final PluginCollection list = new PluginCollection();
+			final FilesCollection list = new FilesCollection();
 			list.add(dependencee);
 			put(dependency, list);
 			return true;
@@ -690,11 +689,11 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	// TODO: for developers, there should be a consistency check:
 	// no dependencies on non-Fiji plugins, no circular dependencies,
 	// and no overring circular dependencies.
-	void addDependencies(final PluginObject plugin, final DependencyMap map,
+	void addDependencies(final FileObject plugin, final DependencyMap map,
 		final boolean overriding)
 	{
 		for (final Dependency dependency : plugin.getDependencies()) {
-			final PluginObject other = getPlugin(dependency.filename);
+			final FileObject other = getPlugin(dependency.filename);
 			if (other == null || overriding != dependency.overrides ||
 				!other.isUpdateablePlatform()) continue;
 			if (dependency.overrides) {
@@ -709,7 +708,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 
 	public DependencyMap getDependencies(final boolean overridingOnes) {
 		final DependencyMap result = new DependencyMap();
-		for (final PluginObject plugin : toInstallOrUpdate())
+		for (final FileObject plugin : toInstallOrUpdate())
 			addDependencies(plugin, result, overridingOnes);
 		return result;
 	}
@@ -717,15 +716,15 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	public void sort() {
 		// first letters in this order: 'C', 'I', 'f', 'p', 'j', 's', 'i', 'm', 'l,
 		// 'r'
-		Collections.sort(this, new Comparator<PluginObject>() {
+		Collections.sort(this, new Comparator<FileObject>() {
 
 			@Override
-			public int compare(final PluginObject a, final PluginObject b) {
+			public int compare(final FileObject a, final FileObject b) {
 				final int result = firstChar(a) - firstChar(b);
 				return result != 0 ? result : a.filename.compareTo(b.filename);
 			}
 
-			int firstChar(final PluginObject plugin) {
+			int firstChar(final FileObject plugin) {
 				final char c = plugin.filename.charAt(0);
 				final int index = "CIfpjsim".indexOf(c);
 				return index < 0 ? 0x200 + c : index;
@@ -733,12 +732,12 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		});
 	}
 
-	String checkForCircularDependency(final PluginObject plugin,
-		final Set<PluginObject> seen)
+	String checkForCircularDependency(final FileObject plugin,
+		final Set<FileObject> seen)
 	{
 		if (seen.contains(plugin)) return "";
 		final String result =
-			checkForCircularDependency(plugin, seen, new HashSet<PluginObject>());
+			checkForCircularDependency(plugin, seen, new HashSet<FileObject>());
 		if (result == null) return "";
 
 		// Display only the circular dependency
@@ -747,12 +746,12 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		return "Circular dependency detected: " + result.substring(off + 1) + "\n";
 	}
 
-	String checkForCircularDependency(final PluginObject plugin,
-		final Set<PluginObject> seen, final Set<PluginObject> chain)
+	String checkForCircularDependency(final FileObject plugin,
+		final Set<FileObject> seen, final Set<FileObject> chain)
 	{
 		if (seen.contains(plugin)) return null;
 		for (final String dependency : plugin.dependencies.keySet()) {
-			final PluginObject dep = getPlugin(dependency);
+			final FileObject dep = getPlugin(dependency);
 			if (dep == null) continue;
 			if (chain.contains(dep)) return " " + dependency;
 			chain.add(dep);
@@ -767,8 +766,8 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	/* returns null if consistent, error string when not */
 	public String checkConsistency() {
 		final StringBuilder result = new StringBuilder();
-		final Set<PluginObject> circularChecked = new HashSet<PluginObject>();
-		for (final PluginObject plugin : this) {
+		final Set<FileObject> circularChecked = new HashSet<FileObject>();
+		for (final FileObject plugin : this) {
 			result.append(checkForCircularDependency(plugin, circularChecked));
 			// only non-obsolete components can have dependencies
 			final Set<String> deps = plugin.dependencies.keySet();
@@ -776,7 +775,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 				.append("Obsolete plugin " + plugin + "has dependencies: " +
 					Util.join(", ", deps) + "!\n");
 			for (final String dependency : deps) {
-				final PluginObject dep = getPlugin(dependency);
+				final FileObject dep = getPlugin(dependency);
 				if (dep == null || dep.current == null) result.append("The plugin " +
 					plugin + " has the obsolete/local-only " + "dependency " +
 					dependency + "!\n");

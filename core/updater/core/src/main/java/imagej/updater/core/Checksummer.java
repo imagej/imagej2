@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.core.PluginObject.Status;
+import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Progress;
 import imagej.updater.util.Progressable;
 import imagej.updater.util.Util;
@@ -63,11 +63,11 @@ import java.util.zip.ZipException;
  */
 public class Checksummer extends Progressable {
 
-	protected PluginCollection plugins;
+	protected FilesCollection plugins;
 	protected int counter, total;
-	protected Map<String, PluginObject.Version> cachedChecksums;
+	protected Map<String, FileObject.Version> cachedChecksums;
 
-	public Checksummer(final PluginCollection plugins, final Progress progress) {
+	public Checksummer(final FilesCollection plugins, final Progress progress) {
 		this.plugins = plugins;
 		addProgress(progress);
 		setTitle("Czechsummer");
@@ -83,7 +83,7 @@ public class Checksummer extends Progressable {
 		}
 	}
 
-	public Map<String, PluginObject.Version> getCachedChecksums() {
+	public Map<String, FileObject.Version> getCachedChecksums() {
 		return cachedChecksums;
 	}
 
@@ -157,17 +157,17 @@ public class Checksummer extends Progressable {
 			timestamp = Util.getTimestamp(realPath);
 			checksum = getDigest(path, realPath, timestamp);
 
-			PluginObject plugin = plugins.getPlugin(path);
+			FileObject plugin = plugins.getPlugin(path);
 			if (plugin == null) {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
 					path + ", which is not known to the Updater");
 				if (imagejRoot == null) {
 					plugin =
-						new PluginObject(null, path, checksum, timestamp, Status.LOCAL_ONLY);
+						new FileObject(null, path, checksum, timestamp, Status.LOCAL_ONLY);
 					tryToGuessPlatform(plugin);
 				}
 				else {
-					plugin = new PluginObject(null, path, null, 0, Status.OBSOLETE);
+					plugin = new FileObject(null, path, null, 0, Status.OBSOLETE);
 					plugin.addPreviousVersion(checksum, timestamp);
 					// for re-upload
 					plugin.newChecksum = checksum;
@@ -217,12 +217,12 @@ public class Checksummer extends Progressable {
 		if (!Util.isDeveloper) throw new RuntimeException("Must be developer");
 		this.imagejRoot = new File(imagejRoot).getAbsolutePath() + "/";
 		updateFromLocal();
-		for (final PluginObject plugin : plugins)
+		for (final FileObject plugin : plugins)
 			if (plugin.isLocallyModified()) plugin.addPreviousVersion(
 				plugin.newChecksum, plugin.newTimestamp);
 	}
 
-	protected static boolean tryToGuessPlatform(final PluginObject plugin) {
+	protected static boolean tryToGuessPlatform(final FileObject plugin) {
 		// Look for platform names as subdirectories of lib/ and mm/
 		String platform;
 		if (plugin.filename.startsWith("lib/")) platform =
@@ -287,7 +287,7 @@ public class Checksummer extends Progressable {
 		final Set<String> alreadyQueued = new HashSet<String>();
 		for (final StringPair pair : queue)
 			alreadyQueued.add(pair.path);
-		for (final PluginObject plugin : plugins)
+		for (final FileObject plugin : plugins)
 			if (!alreadyQueued.contains(plugin.getFilename())) queueIfExists(plugin
 				.getFilename());
 	}
@@ -298,7 +298,7 @@ public class Checksummer extends Progressable {
 	}
 
 	protected void readCachedChecksums() {
-		cachedChecksums = new TreeMap<String, PluginObject.Version>();
+		cachedChecksums = new TreeMap<String, FileObject.Version>();
 		final File file = new File(Util.prefix(".checksums"));
 		if (!file.exists()) return;
 		try {
@@ -314,7 +314,7 @@ public class Checksummer extends Progressable {
 					final long timestamp =
 						Long.parseLong(line.substring(space + 1, space2));
 					final String filename = line.substring(space2 + 1);
-					cachedChecksums.put(filename, new PluginObject.Version(checksum,
+					cachedChecksums.put(filename, new FileObject.Version(checksum,
 						timestamp));
 				}
 				catch (final NumberFormatException e) {
@@ -335,7 +335,7 @@ public class Checksummer extends Progressable {
 			final Writer writer = new FileWriter(file);
 			for (final String filename : cachedChecksums.keySet())
 				if (new File(Util.prefix(filename)).exists()) {
-					final PluginObject.Version version = cachedChecksums.get(filename);
+					final FileObject.Version version = cachedChecksums.get(filename);
 					writer.write(version.checksum + " " + version.timestamp + " " +
 						filename + "\n");
 				}
@@ -351,10 +351,10 @@ public class Checksummer extends Progressable {
 		ZipException
 	{
 		if (cachedChecksums == null) readCachedChecksums();
-		final PluginObject.Version version = cachedChecksums.get(path);
+		final FileObject.Version version = cachedChecksums.get(path);
 		if (version != null && timestamp == version.timestamp) return version.checksum;
 		final String checksum = Util.getDigest(path, realPath);
-		cachedChecksums.put(path, new PluginObject.Version(checksum, timestamp));
+		cachedChecksums.put(path, new FileObject.Version(checksum, timestamp));
 		return checksum;
 	}
 }

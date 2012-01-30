@@ -35,13 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.updater.gui;
 
 import imagej.updater.core.Checksummer;
+import imagej.updater.core.FileObject;
+import imagej.updater.core.FileObject.Action;
+import imagej.updater.core.FileObject.Status;
+import imagej.updater.core.FilesCollection;
+import imagej.updater.core.FilesCollection.DependencyMap;
+import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
-import imagej.updater.core.PluginCollection;
-import imagej.updater.core.PluginCollection.DependencyMap;
-import imagej.updater.core.PluginObject;
-import imagej.updater.core.PluginObject.Action;
-import imagej.updater.core.PluginObject.Status;
-import imagej.updater.core.PluginUploader;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
@@ -94,7 +94,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	ListSelectionListener
 {
 
-	protected PluginCollection plugins;
+	protected FilesCollection plugins;
 
 	protected JTextField txtSearch;
 	protected ViewOptions viewOptions;
@@ -109,11 +109,11 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	boolean canUpload;
 	protected boolean hidden;
 
-	public UpdaterFrame(final PluginCollection plugins) {
+	public UpdaterFrame(final FilesCollection plugins) {
 		this(plugins, false);
 	}
 
-	public UpdaterFrame(final PluginCollection plugins, final boolean hidden) {
+	public UpdaterFrame(final FilesCollection plugins, final boolean hidden) {
 		super("ImageJ Updater");
 		setPreferredSize(new Dimension(780, 560));
 
@@ -333,7 +333,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 									@Override
 									public void run() {
-										for (final PluginObject plugin : table.getSelectedPlugins())
+										for (final FileObject plugin : table.getSelectedPlugins())
 											pluginChanges.run(plugin.filename);
 									}
 								}.start();
@@ -359,8 +359,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 									public void run() {
 										String list = "";
 										final List<String> files = new ArrayList<String>();
-										for (final PluginObject plugin : table.getSelectedPlugins())
-										{
+										for (final FileObject plugin : table.getSelectedPlugins()) {
 											list +=
 												("".equals(list) ? "" : " ") + plugin.filename +
 													"-rebuild";
@@ -505,7 +504,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		@Override
 		public void actionPerformed(final ActionEvent e) {
 			if (table.isEditing()) table.editingCanceled(null);
-			for (final PluginObject plugin : table.getSelectedPlugins()) {
+			for (final FileObject plugin : table.getSelectedPlugins()) {
 				if (action == null) plugin.setNoAction();
 				else if (!setAction(plugin)) continue;
 				table.firePluginChanged(plugin);
@@ -513,7 +512,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			pluginsChanged();
 		}
 
-		protected boolean setAction(final PluginObject plugin) {
+		protected boolean setAction(final FileObject plugin) {
 			return plugin.setFirstValidAction(plugins, new Action[] { action,
 				otherAction });
 		}
@@ -521,7 +520,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		public void enableIfValid() {
 			boolean enable = false, enableOther = false;
 
-			for (final PluginObject plugin : table.getSelectedPlugins()) {
+			for (final FileObject plugin : table.getSelectedPlugins()) {
 				final Status status = plugin.getStatus();
 				if (action == null) enable = true;
 				else if (status.isValid(action)) enable = true;
@@ -548,14 +547,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public void updatePluginsTable() {
-		Iterable<PluginObject> view = viewOptions.getView(table);
-		final Set<PluginObject> selected = new HashSet<PluginObject>();
-		for (final PluginObject plugin : table.getSelectedPlugins())
+		Iterable<FileObject> view = viewOptions.getView(table);
+		final Set<FileObject> selected = new HashSet<FileObject>();
+		for (final FileObject plugin : table.getSelectedPlugins())
 			selected.add(plugin);
 		table.clearSelection();
 
 		final String search = txtSearch.getText().trim();
-		if (!search.equals("")) view = PluginCollection.filter(search, view);
+		if (!search.equals("")) view = FilesCollection.filter(search, view);
 
 		// Directly update the table for display
 		table.setPlugins(view);
@@ -619,10 +618,10 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final Installer installer =
 			new Installer(plugins, getProgress("Installing..."));
 		try {
-			final PluginCollection uninstalled =
-				PluginCollection.clone(plugins.toUninstall());
+			final FilesCollection uninstalled =
+				FilesCollection.clone(plugins.toUninstall());
 			installer.start();
-			for (final PluginObject plugin : uninstalled)
+			for (final FileObject plugin : uninstalled)
 				if (!plugin.isFiji()) plugins.remove(plugin);
 				else plugin.setStatus(plugin.isObsolete() ? Status.OBSOLETE_UNINSTALLED
 					: Status.NOT_INSTALLED);
@@ -646,10 +645,10 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public void updateTheUpdater() {
-		final PluginCollection.Filter filter = new PluginCollection.Filter() {
+		final FilesCollection.Filter filter = new FilesCollection.Filter() {
 
 			@Override
-			public boolean matches(final PluginObject plugin) {
+			public boolean matches(final FileObject plugin) {
 				if (plugin.filename.equals("plugins/Fiji_Updater.jar")) {
 					plugin.setAction(plugins, Action.UPDATE);
 					return true;
@@ -657,8 +656,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				return false;
 			}
 		};
-		final PluginCollection justTheUpdater =
-			PluginCollection.clone(plugins.filter(filter));
+		final FilesCollection justTheUpdater =
+			FilesCollection.clone(plugins.filter(filter));
 		justTheUpdater.cloneUpdateSites(plugins);
 		final Installer installer =
 			new Installer(justTheUpdater, getProgress("Installing the updater..."));
@@ -698,7 +697,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	private void pluginsChangedWorker() {
 		// TODO: once this is editable, make sure changes are committed
 		pluginDetails.reset();
-		for (final PluginObject plugin : table.getSelectedPlugins())
+		for (final FileObject plugin : table.getSelectedPlugins())
 			pluginDetails.showPluginDetails(plugin);
 		if (pluginDetails.getDocument().getLength() > 0 &&
 			table.areAllSelectedPluginsUploadable()) pluginDetails
@@ -715,7 +714,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		int install = 0, uninstall = 0, upload = 0;
 		long bytesToDownload = 0, bytesToUpload = 0;
 
-		for (final PluginObject plugin : plugins)
+		for (final FileObject plugin : plugins)
 			switch (plugin.getAction()) {
 				case INSTALL:
 				case UPDATE:
@@ -732,7 +731,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			}
 		int implicated = 0;
 		final DependencyMap map = plugins.getDependencies(true);
-		for (final PluginObject plugin : map.keySet()) {
+		for (final FileObject plugin : map.keySet()) {
 			implicated++;
 			bytesToUpload += plugin.filesize;
 		}
@@ -769,7 +768,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	// checkWritable() is guaranteed to be called after Checksummer ran
 	public void checkWritable() {
 		String list = null;
-		for (final PluginObject plugin : plugins) {
+		for (final FileObject plugin : plugins) {
 			final File file = new File(Util.prefix(plugin.getFilename()));
 			if (!file.exists() || file.canWrite()) continue;
 			if (list == null) list = plugin.getFilename();
@@ -815,14 +814,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					"Which site do you want to upload to?", "Update site");
 			if (updateSiteName == null) return;
 		}
-		final PluginUploader uploader = new PluginUploader(plugins, updateSiteName);
+		final FilesUploader uploader = new FilesUploader(plugins, updateSiteName);
 
 		Progress progress = null;
 		try {
 			if (!uploader.login()) return;
 			progress = getProgress("Uploading...");
 			uploader.upload(progress);
-			for (final PluginObject plugin : plugins.toUploadOrRemove())
+			for (final FileObject plugin : plugins.toUploadOrRemove())
 				if (plugin.getAction() == Action.UPLOAD) {
 					plugin.markUploaded();
 					plugin.setStatus(Status.INSTALLED);
@@ -855,10 +854,10 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		throws InstantiationException
 	{
 		final String updateSiteName = "Dummy";
-		final PluginCollection plugins = new PluginCollection();
+		final FilesCollection plugins = new FilesCollection();
 		plugins.addUpdateSite(updateSiteName, url, sshHost, uploadDirectory, Long
 			.parseLong(Util.timestamp(-1)));
-		final PluginUploader uploader = new PluginUploader(plugins, updateSiteName);
+		final FilesUploader uploader = new FilesUploader(plugins, updateSiteName);
 		Progress progress = null;
 		try {
 			if (!uploader.login()) return false;
