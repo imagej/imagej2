@@ -330,14 +330,6 @@ public class FilesCollection extends ArrayList<FileObject> {
 		return filter(not(is(Status.LOCAL_ONLY)));
 	}
 
-	public Iterable<FileObject> forCurrentTXT() {
-		return filter(and(not(oneOf(new Status[] { Status.LOCAL_ONLY,
-			Status.OBSOLETE, Status.OBSOLETE_MODIFIED, Status.OBSOLETE_UNINSTALLED
-		/* the old updater will only checksum these! */
-		})), or(startsWith("fiji-"), and(startsWith(new String[] { "plugins/",
-			"jars/", "retro/", "misc/" }), endsWith(".jar")))));
-	}
-
 	public Iterable<FileObject> localOnly() {
 		return filter(is(Status.LOCAL_ONLY));
 	}
