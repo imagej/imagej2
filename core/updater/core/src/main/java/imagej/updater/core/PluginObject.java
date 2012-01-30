@@ -203,6 +203,7 @@ public class PluginObject {
 			categories = upstream.categories;
 			links = upstream.links;
 			filesize = upstream.filesize;
+			executable = upstream.executable;
 			if (current != null && !upstream.hasPreviousVersion(current.checksum)) addPreviousVersion(
 				current.checksum, current.timestamp);
 			current = upstream.current;
