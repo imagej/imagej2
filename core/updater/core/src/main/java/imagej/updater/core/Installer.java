@@ -104,7 +104,7 @@ public class Installer extends Downloader {
 		for (final PluginObject plugin : plugins.toInstallOrUpdate()) {
 			final String name = plugin.filename;
 			String saveTo = Util.prefixUpdate(name);
-			if (Util.isLauncher(name)) {
+			if (plugin.executable) {
 				saveTo = Util.prefix(name);
 				final File orig = new File(saveTo);
 				final File old = new File(saveTo + ".old");
@@ -170,7 +170,7 @@ public class Installer extends Downloader {
 		plugin.setLocalVersion(digest, plugin.getTimestamp());
 		plugin.setStatus(PluginObject.Status.INSTALLED);
 
-		if (Util.isLauncher(fileName) && !Util.platform.startsWith("win")) try {
+		if (plugin.executable && !Util.platform.startsWith("win")) try {
 			Runtime.getRuntime().exec(
 				new String[] { "chmod", "0755", download.destination });
 		}
