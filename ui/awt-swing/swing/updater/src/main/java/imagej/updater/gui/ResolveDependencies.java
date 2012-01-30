@@ -49,7 +49,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -428,43 +427,4 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		panel.insertComponent(new JSeparator());
 	}
 
-	private static FileObject fakeFile(final String label) {
-		final Random random = new Random();
-		String fakeChecksum = "";
-		for (int i = 0; i < 20; i++)
-			fakeChecksum +=
-				Integer.toHexString(random.nextInt() & 0xf) +
-					Integer.toHexString(random.nextInt() & 0xf);
-		final long fakeTimestamp =
-			19700000000000l + (random.nextLong() % 400000000000l);
-		return new FileObject("", label, fakeChecksum, fakeTimestamp,
-			FileObject.Status.NOT_INSTALLED);
-	}
-
-	public static void main(final String[] args) {
-		final FilesCollection files = new FilesCollection();
-		final ResolveDependencies frame = new ResolveDependencies(null, files);
-
-		FileObject file = fakeFile("Install_.jar");
-		file.addDependency("Obsoleted_.jar");
-		file.addDependency("Locally_Modified.jar");
-		file.setStatus(FileObject.Status.NOT_INSTALLED);
-		file.setAction(files, FileObject.Action.INSTALL);
-		files.add(file);
-		file = fakeFile("Obsoleting_.jar");
-		file.addDependency("Obsoleted_.jar");
-		file.setStatus(FileObject.Status.NOT_INSTALLED);
-		file.setAction(files, FileObject.Action.INSTALL);
-		files.add(file);
-		file = fakeFile("Locally_Modified.jar");
-		file.setStatus(FileObject.Status.MODIFIED);
-		file.setAction(files, FileObject.Action.MODIFIED);
-		files.add(file);
-		file = fakeFile("Obsoleted_.jar");
-		file.setStatus(FileObject.Status.OBSOLETE);
-		file.setAction(files, FileObject.Action.OBSOLETE);
-		files.add(file);
-
-		System.err.println("resolved: " + frame.resolve());
-	}
 }
