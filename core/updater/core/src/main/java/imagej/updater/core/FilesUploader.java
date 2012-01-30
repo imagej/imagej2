@@ -171,10 +171,31 @@ public class FilesUploader {
 		locks.add(Util.XML_COMPRESSED);
 
 		// verify that the files have not changed in the meantime
-		for (final Uploadable uploadable : uploadables)
+		final long[] timestamps = new long[uploadables.size()];
+		int counter = 0;
+		for (final Uploadable uploadable : uploadables) {
+			if (uploadable instanceof UploadableFile) {
+				final UploadableFile file = (UploadableFile) uploadable;
+				timestamps[counter] = Util.getTimestamp(file.source);
+			}
 			verifyUnchanged(uploadable, true);
+			counter++;
+		}
 
 		uploader.upload(uploadables, locks);
+
+		// verify that the files have not changed in the meantime
+		counter = 0;
+		for (final Uploadable uploadable : uploadables) {
+			if (uploadable instanceof UploadableFile) {
+				final UploadableFile file = (UploadableFile) uploadable;
+				if (timestamps[counter] != Util.getTimestamp(file.source)) throw new RuntimeException(
+					"Timestamp of " + file.getFilename() +
+						"changed since being checksummed (was " + timestamps[counter] +
+						" but is " + Util.getTimestamp(file.source) + "!)");
+			}
+			counter++;
+		}
 
 		site.setLastModified(getCurrentLastModified());
 	}
