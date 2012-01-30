@@ -294,8 +294,8 @@ public class Conflicts {
 			resolutions.add(dependencyResolution("Replace with dependency to " +
 				toUpload, file, dependency, toUpload.getFilename()));
 			resolutions.add(dependencyResolution("Replace all dependencies on " +
-				dependency + " with dependencies to " + toUpload, null, dependency,
-				toUpload.getFilename()));
+				dependency + " with " + toUpload, null, dependency, toUpload
+				.getFilename()));
 		}
 		return new Conflict(true, file, "Depends on " + dependency +
 			" which is about to be removed.", resolutions
