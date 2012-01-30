@@ -46,9 +46,9 @@ public class ViewOptions extends JComboBox {
 		ALL("all files"), INSTALLED("installed files only"), UNINSTALLED(
 			"uninstalled files only"), UPTODATE("only up-to-date files"), UPDATEABLE(
 			"updateable files only"),
-			LOCALLY_MODIFIED("locally modified files only"), FIJI(
-				"Downloaded files only"), OTHERS("Non-downloaded files only"), CHANGES(
-				"changes"), SELECTED("selected");
+			LOCALLY_MODIFIED("locally modified files only"), MANAGED(
+				"downloaded files only"), OTHERS("local-only files"),
+			CHANGES("changes"), SELECTED("selected");
 
 		String label;
 
@@ -117,8 +117,8 @@ public class ViewOptions extends JComboBox {
 				return files.shownByDefault();
 			case LOCALLY_MODIFIED:
 				return files.locallyModified();
-			case FIJI:
-				return files.fijiFiles();
+			case MANAGED:
+				return files.managedFiles();
 			case OTHERS:
 				return files.nonFiji();
 			case CHANGES:
