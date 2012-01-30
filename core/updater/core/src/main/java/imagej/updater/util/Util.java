@@ -163,14 +163,14 @@ public class Util {
 	}
 
 	// get digest of the file as according to fullPath
-	public static String getDigest(final String path, final String fullPath)
+	public static String getDigest(final String path, final File file)
 		throws NoSuchAlgorithmException, FileNotFoundException, IOException,
 		UnsupportedEncodingException
 	{
-		if (path.endsWith(".jar")) return getJarDigest(fullPath);
+		if (path.endsWith(".jar")) return getJarDigest(file);
 		final MessageDigest digest = getDigest();
 		digest.update(path.getBytes("ASCII"));
-		if (fullPath != null) updateDigest(new FileInputStream(fullPath), digest);
+		if (file != null) updateDigest(new FileInputStream(file), digest);
 		return toHex(digest.digest());
 	}
 
@@ -199,7 +199,7 @@ public class Util {
 		return new String(buffer);
 	}
 
-	public static String getJarDigest(final String path)
+	public static String getJarDigest(final File file)
 		throws FileNotFoundException, IOException
 	{
 		MessageDigest digest = null;
@@ -210,8 +210,8 @@ public class Util {
 			throw new RuntimeException(e);
 		}
 
-		if (path != null) {
-			final JarFile jar = new JarFile(path);
+		if (file != null) {
+			final JarFile jar = new JarFile(file);
 			final List<JarEntry> list = Collections.list(jar.entries());
 			Collections.sort(list, new JarEntryComparator());
 
@@ -234,16 +234,8 @@ public class Util {
 
 	}
 
-	// Gets the location of specified file when inside of saveDirectory
-	public static String
-		prefix(final String saveDirectory, final String filename)
-	{
-		return prefix(saveDirectory + File.separator + filename);
-	}
-
-	public static long getTimestamp(final String filename) {
-		final String fullPath = prefix(filename);
-		final long modified = new File(fullPath).lastModified();
+	public static long getTimestamp(final File file) {
+		final long modified = file.lastModified();
 		return Long.parseLong(timestamp(modified));
 	}
 
@@ -277,30 +269,6 @@ public class Util {
 			.parseInt(timestamp.substring(10, 12)), Integer.parseInt(timestamp
 			.substring(12, 14)));
 		return calendar.getTimeInMillis();
-	}
-
-	public static String getDigest(final String filename) {
-		try {
-			return getDigest(filename, prefix(filename));
-		}
-		catch (final Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static String prefix(String path) {
-		if (new File(path).isAbsolute()) return path;
-		if (File.separator.equals("\\")) path = path.replace("\\", "/");
-		return imagejRoot + path;
-	}
-
-	public static String prefixUpdate(final String path) {
-		return prefix("update/" + path);
-	}
-
-	public static boolean fileExists(final String filename) {
-		return new File(prefix(filename)).exists();
 	}
 
 	public static boolean isLauncher(final String filename) {

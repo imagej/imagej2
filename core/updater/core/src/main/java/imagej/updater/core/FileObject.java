@@ -257,8 +257,8 @@ public class FileObject {
 	}
 
 	// TODO: allow editing those via GUI
-	public void addDependency(final String filename) {
-		addDependency(filename, Util.getTimestamp(filename), false);
+	public void addDependency(final String filename, final File file) {
+		addDependency(filename, Util.getTimestamp(file), false);
 	}
 
 	public void addDependency(final String filename, final long timestamp,
@@ -370,7 +370,7 @@ public class FileObject {
 		if (action == Action.UPLOAD) {
 			final Iterable<String> dependencies = files.analyzeDependencies(this);
 			if (dependencies != null) for (final String dependency : dependencies)
-				addDependency(dependency);
+				addDependency(dependency, files.prefix(dependency));
 		}
 		this.action = action;
 	}
@@ -570,23 +570,23 @@ public class FileObject {
 			(evenForcedUpdates && (status.isValid(Action.UPDATE) || status == Status.OBSOLETE_MODIFIED));
 	}
 
-	public void stageForUninstall() throws IOException {
+	public void stageForUninstall(final FilesCollection files) throws IOException
+	{
 		if (action != Action.UNINSTALL) throw new RuntimeException(filename +
 			" was not marked " + "for uninstall");
-		if (filename.endsWith(".jar")) touch(Util.prefixUpdate(filename));
+		if (filename.endsWith(".jar")) touch(files.prefixUpdate(filename));
 		else {
 			String old = filename + ".old";
 			if (old.endsWith(".exe.old")) old =
 				old.substring(0, old.length() - 8) + ".old.exe";
-			new File(Util.prefix(filename)).renameTo(new File(Util.prefix(old)));
-			touch(Util.prefixUpdate(old));
+			files.prefix(filename).renameTo(files.prefix(old));
+			touch(files.prefixUpdate(old));
 		}
 		if (status != Status.LOCAL_ONLY) setStatus(isObsolete()
 			? Status.OBSOLETE_UNINSTALLED : Status.NOT_INSTALLED);
 	}
 
-	public static void touch(final String target) throws IOException {
-		final File file = new File(target);
+	public static void touch(final File file) throws IOException {
 		if (file.exists()) {
 			final long now = new Date().getTime();
 			file.setLastModified(now);

@@ -40,7 +40,6 @@ import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
@@ -161,7 +160,7 @@ public class FilesUploader {
 		final List<String> locks = new ArrayList<String>();
 		uploadables.add(new DbXmlFile());
 		for (final FileObject file : files.toUpload(siteName))
-			uploadables.add(new UploadableFile(file));
+			uploadables.add(new UploadableFile(files, file));
 
 		// must be last lock
 		locks.add(Util.XML_COMPRESSED);
@@ -180,7 +179,7 @@ public class FilesUploader {
 	{
 		if (!(file instanceof UploadableFile)) return;
 		final UploadableFile uploadable = (UploadableFile) file;
-		final long size = new File(uploadable.sourceFilename).length();
+		final long size = uploadable.source.length();
 		if (uploadable.filesize != size) throw new RuntimeException(
 			"File size of " + uploadable.file.filename +
 				" changed since being checksummed (was " + uploadable.filesize +
@@ -189,10 +188,10 @@ public class FilesUploader {
 			final long stored =
 				uploadable.file.getStatus() == FileObject.Status.LOCAL_ONLY
 					? uploadable.file.current.timestamp : uploadable.file.newTimestamp;
-			if (stored != Util.getTimestamp(uploadable.sourceFilename)) throw new RuntimeException(
+			if (stored != Util.getTimestamp(uploadable.source)) throw new RuntimeException(
 				"Timestamp of " + uploadable.file.filename +
 					" changed since being checksummed (was " + stored + " but is " +
-					Util.getTimestamp(uploadable.sourceFilename) + ")!");
+					Util.getTimestamp(uploadable.source) + ")!");
 		}
 	}
 
@@ -202,8 +201,7 @@ public class FilesUploader {
 			final UploadableFile uploadable = (UploadableFile) f;
 			final FileObject file = uploadable.file;
 			if (file == null) continue;
-			file.filesize =
-				uploadable.filesize = new File(uploadable.sourceFilename).length();
+			file.filesize = uploadable.filesize = uploadable.source.length();
 			file.newTimestamp = timestamp;
 			uploadable.filename = file.filename + "-" + timestamp;
 			if (file.getStatus() == FileObject.Status.LOCAL_ONLY) {

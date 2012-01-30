@@ -99,10 +99,10 @@ public class Downloader extends Progressable {
 		int currentTotal = connection.getContentLength();
 		if (currentTotal < 0) currentTotal = (int) current.getFilesize();
 
-		final String destination = current.getDestination();
+		final File destination = current.getDestination();
 		addItem(current);
 
-		final File parentDirectory = new File(destination).getParentFile();
+		final File parentDirectory = destination.getParentFile();
 		if (parentDirectory != null) parentDirectory.mkdirs();
 		final InputStream in = connection.getInputStream();
 		final OutputStream out = new FileOutputStream(destination);

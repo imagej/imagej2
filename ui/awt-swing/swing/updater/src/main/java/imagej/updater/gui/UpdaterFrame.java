@@ -761,7 +761,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	public void checkWritable() {
 		String list = null;
 		for (final FileObject object : files) {
-			final File file = new File(Util.prefix(object.getFilename()));
+			final File file = files.prefix(object.getFilename());
 			if (!file.exists() || file.canWrite()) continue;
 			if (list == null) list = object.getFilename();
 			else list += ", " + object.getFilename();

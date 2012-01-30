@@ -34,9 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.util;
 
+import java.io.File;
+
 public interface Downloadable {
 
-	public String getDestination();
+	public File getDestination();
 
 	public String getURL();
 

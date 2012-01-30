@@ -66,6 +66,7 @@ import org.xml.sax.SAXException;
 public class FilesCollection extends ArrayList<FileObject> {
 
 	public final static String DEFAULT_UPDATE_SITE = "Fiji";
+	protected File imagejRoot = new File(Util.imagejRoot);
 
 	public static class UpdateSite implements Cloneable {
 
@@ -120,7 +121,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 	public FilesCollection() {
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, null, null, Util
-			.getTimestamp(Util.XML_COMPRESSED));
+			.getTimestamp(prefix(Util.XML_COMPRESSED)));
 	}
 
 	public void addUpdateSite(final String name, final String url,
@@ -222,7 +223,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 	public void read() throws IOException, ParserConfigurationException,
 		SAXException
 	{
-		read(new File(Util.prefix(Util.XML_COMPRESSED)));
+		read(prefix(Util.XML_COMPRESSED));
 	}
 
 	public void read(final File file) throws IOException,
@@ -241,7 +242,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 		TransformerConfigurationException, ParserConfigurationException
 	{
 		new XMLFileWriter(this).write(new GZIPOutputStream(new FileOutputStream(
-			Util.prefix(Util.XML_COMPRESSED))), true);
+			prefix(Util.XML_COMPRESSED))), true);
 	}
 
 	protected static DependencyAnalyzer dependencyAnalyzer;
@@ -625,8 +626,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 		try {
 			if (dependencyAnalyzer == null) dependencyAnalyzer =
 				new DependencyAnalyzer();
-			final String path = Util.prefix(file.getFilename());
-			return dependencyAnalyzer.getDependencies(path);
+			return dependencyAnalyzer.getDependencies(imagejRoot, file.getFilename());
 		}
 		catch (final IOException e) {
 			e.printStackTrace();
@@ -638,7 +638,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 		final Iterable<String> dependencies = analyzeDependencies(file);
 		if (dependencies == null) return;
 		for (final String dependency : dependencies)
-			file.addDependency(dependency);
+			file.addDependency(dependency, prefix(dependency));
 	}
 
 	public boolean has(final Filter filter) {
@@ -800,6 +800,20 @@ public class FilesCollection extends ArrayList<FileObject> {
 			}
 		}
 		return result.length() > 0 ? result.toString() : null;
+	}
+
+	public File prefix(final String path) {
+		final File file = new File(path);
+		if (file.isAbsolute()) return file;
+		return new File(imagejRoot, path);
+	}
+
+	public File prefixUpdate(final String path) {
+		return prefix("update/" + path);
+	}
+
+	public boolean fileExists(final String filename) {
+		return prefix(filename).exists();
 	}
 
 	@Override
