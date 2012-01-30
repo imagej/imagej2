@@ -226,9 +226,9 @@ public class FloodFiller {
 	 * Returns true if the current pixel located at the given (u,v) coordinates is
 	 * the same as the specified color or gray values.
 	 */
-	private boolean
-		matches(final RandomAccess<? extends RealType<?>> accessor, final long u,
-			final long v, final ColorRGB origColor, final double origValue)
+	private boolean	matches(
+		final RandomAccess<? extends RealType<?>> accessor, final long u,
+		final long v, final ColorRGB origColor, final double origValue)
 	{
 		accessor.setPosition(u, uAxis);
 		accessor.setPosition(v, vAxis);
