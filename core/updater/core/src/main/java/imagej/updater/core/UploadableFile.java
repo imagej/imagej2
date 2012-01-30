@@ -51,7 +51,7 @@ import java.io.InputStream;
  */
 public class UploadableFile implements Uploadable {
 
-	FileObject plugin;
+	FileObject file;
 	String permissions, sourceFilename, filename;
 	long filesize;
 
@@ -59,10 +59,10 @@ public class UploadableFile implements Uploadable {
 		this(Util.prefix(target), target);
 	}
 
-	public UploadableFile(final FileObject plugin) {
-		this(Util.prefix(plugin.getFilename()), plugin.getFilename() + "-" +
-			plugin.getTimestamp());
-		this.plugin = plugin;
+	public UploadableFile(final FileObject file) {
+		this(Util.prefix(file.getFilename()), file.getFilename() + "-" +
+			file.getTimestamp());
+		this.file = file;
 	}
 
 	public UploadableFile(final String source, final String target) {

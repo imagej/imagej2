@@ -99,34 +99,34 @@ public class ViewOptions extends JComboBox {
 		});
 	}
 
-	public Iterable<FileObject> getView(final PluginTable table) {
+	public Iterable<FileObject> getView(final FileTable table) {
 		if (getSelectedIndex() >= customOptionStart) return ((CustomOption) getSelectedItem())
 			.getIterable();
 
-		final FilesCollection plugins =
-			FilesCollection.clone(table.getAllPlugins().notHidden());
-		plugins.sort();
+		final FilesCollection files =
+			FilesCollection.clone(table.getAllFiles().notHidden());
+		files.sort();
 		switch ((Option) getSelectedItem()) {
 			case INSTALLED:
-				return plugins.installed();
+				return files.installed();
 			case UNINSTALLED:
-				return plugins.uninstalled();
+				return files.uninstalled();
 			case UPTODATE:
-				return plugins.upToDate();
+				return files.upToDate();
 			case UPDATEABLE:
-				return plugins.shownByDefault();
+				return files.shownByDefault();
 			case LOCALLY_MODIFIED:
-				return plugins.locallyModified();
+				return files.locallyModified();
 			case FIJI:
-				return plugins.fijiPlugins();
+				return files.fijiFiles();
 			case OTHERS:
-				return plugins.nonFiji();
+				return files.nonFiji();
 			case CHANGES:
-				return plugins.changes();
+				return files.changes();
 			case SELECTED:
-				return table.getSelectedPlugins();
+				return table.getSelectedFiles();
 			default:
-				return plugins;
+				return files;
 		}
 	}
 }

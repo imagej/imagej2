@@ -1,5 +1,5 @@
 //
-// PluginDetails.java
+// FileDetails.java
 //
 
 /*
@@ -65,7 +65,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 @SuppressWarnings("serial")
-public class PluginDetails extends JTextPane implements UndoableEditListener {
+public class FileDetails extends JTextPane implements UndoableEditListener {
 
 	private final static AttributeSet bold, italic, normal, title;
 	private final static Cursor hand, defaultCursor;
@@ -84,7 +84,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	}
 
-	public PluginDetails(final UpdaterFrame updaterFrame) {
+	public FileDetails(final UpdaterFrame updaterFrame) {
 		this.updaterFrame = updaterFrame;
 		addMouseListener(new MouseAdapter() {
 
@@ -111,7 +111,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 
 		reset();
 		// TODO: enable depending on the update site
-		if (updaterFrame.plugins.hasUploadableSites()) getDocument()
+		if (updaterFrame.files.hasUploadableSites()) getDocument()
 			.addUndoableEditListener(this);
 	}
 
@@ -198,33 +198,33 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		styled(text, title);
 	}
 
-	public void description(final String description, final FileObject plugin) {
-		if (!updaterFrame.plugins.hasUploadableSites() &&
+	public void description(final String description, final FileObject file) {
+		if (!updaterFrame.files.hasUploadableSites() &&
 			(description == null || description.trim().equals(""))) return;
 		blankLine();
 		bold("Description:\n");
 		final int offset = getCaretPosition();
 		normal(description);
-		addEditableRegion(offset, "Description", plugin);
+		addEditableRegion(offset, "Description", file);
 	}
 
-	public void executable(final FileObject plugin) {
-		if (!updaterFrame.plugins.hasUploadableSites() && !plugin.executable) return;
+	public void executable(final FileObject file) {
+		if (!updaterFrame.files.hasUploadableSites() && !file.executable) return;
 		blankLine();
 		bold("Executable:\n");
 		final int offset = getCaretPosition();
-		normal(plugin.executable ? "true" : "false");
-		addEditableRegion(offset, "Executable", plugin);
+		normal(file.executable ? "true" : "false");
+		addEditableRegion(offset, "Executable", file);
 	}
 
 	public void list(String label, final boolean showLinks,
-		final Iterable<?> items, final String delim, final FileObject plugin)
+		final Iterable<?> items, final String delim, final FileObject file)
 	{
 		final List<Object> list = new ArrayList<Object>();
 		for (final Object object : items)
 			list.add(object);
 
-		if (!updaterFrame.plugins.hasUploadableSites() && list.size() == 0) return;
+		if (!updaterFrame.files.hasUploadableSites() && list.size() == 0) return;
 
 		blankLine();
 		final String tag = label;
@@ -239,7 +239,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 			if (showLinks) link(object.toString());
 			else normal(object.toString());
 		}
-		addEditableRegion(offset, tag, plugin);
+		addEditableRegion(offset, tag, file);
 	}
 
 	public void blankLine() {
@@ -265,36 +265,36 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 			months[Integer.parseInt(t.substring(4, 6))] + " " + t.substring(0, 4);
 	}
 
-	public void showPluginDetails(final FileObject plugin) {
+	public void showFileDetails(final FileObject file) {
 		if (!getText().equals("")) blankLine();
-		title(plugin.getFilename());
-		if (plugin.isUpdateable()) italic("\n(Update available)");
-		else if (!plugin.isFiji()) italic("(Local-only)");
-		if (plugin.isLocallyModified()) {
+		title(file.getFilename());
+		if (file.isUpdateable()) italic("\n(Update available)");
+		else if (!file.isFiji()) italic("(Local-only)");
+		if (file.isLocallyModified()) {
 			blankLine();
 			bold("Warning: ");
 			italic("This file was locally modified.");
 		}
 		blankLine();
-		if (plugin.current == null) bold("This file is no longer needed");
+		if (file.current == null) bold("This file is no longer needed");
 		else {
 			bold("Release date:\n");
-			normal(prettyPrintTimestamp(plugin.current.timestamp));
+			normal(prettyPrintTimestamp(file.current.timestamp));
 		}
-		description(plugin.getDescription(), plugin);
-		list("Author", false, plugin.getAuthors(), ", ", plugin);
-		if (updaterFrame.plugins.hasUploadableSites()) list("Platform", false,
-			plugin.getPlatforms(), ", ", plugin);
-		list("Category", false, plugin.getCategories(), ", ", plugin);
-		list("Link", true, plugin.getLinks(), "\n", plugin);
-		list("Dependency", false, plugin.getDependencies(), ",\n", plugin);
-		if (plugin.executable) executable(plugin);
-		if (plugin.updateSite != null &&
-			!plugin.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))
+		description(file.getDescription(), file);
+		list("Author", false, file.getAuthors(), ", ", file);
+		if (updaterFrame.files.hasUploadableSites()) list("Platform", false, file
+			.getPlatforms(), ", ", file);
+		list("Category", false, file.getCategories(), ", ", file);
+		list("Link", true, file.getLinks(), "\n", file);
+		list("Dependency", false, file.getDependencies(), ",\n", file);
+		if (file.executable) executable(file);
+		if (file.updateSite != null &&
+			!file.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))
 		{
 			blankLine();
 			bold("Update site:\n");
-			normal(plugin.updateSite);
+			normal(file.updateSite);
 		}
 
 		// scroll to top
@@ -303,14 +303,14 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 
 	class EditableRegion implements Comparable<EditableRegion> {
 
-		FileObject plugin;
+		FileObject file;
 		String tag;
 		Position start, end;
 
-		public EditableRegion(final FileObject plugin, final String tag,
+		public EditableRegion(final FileObject file, final String tag,
 			final Position start, final Position end)
 		{
-			this.plugin = plugin;
+			this.file = file;
 			this.tag = tag;
 			this.start = start;
 			this.end = end;
@@ -329,7 +329,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 	}
 
 	void addEditableRegion(final int startOffset, final String tag,
-		final FileObject plugin)
+		final FileObject file)
 	{
 		final int endOffset = getCaretPosition();
 		try {
@@ -339,7 +339,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 			start = getDocument().createPosition(startOffset - 1);
 			end = getDocument().createPosition(endOffset);
 
-			editables.put(start, new EditableRegion(plugin, tag, start, end));
+			editables.put(start, new EditableRegion(file, tag, start, end));
 			removeDummySpace();
 			dummySpace = end;
 		}
@@ -386,17 +386,17 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 			return false;
 		}
 
-		editable.plugin.metadataChanged = true;
+		editable.file.metadataChanged = true;
 		if (editable.tag.equals("Description")) {
-			editable.plugin.description = text.trim();
+			editable.file.description = text.trim();
 			return true;
 		}
 		else if (editable.tag.equals("Executable")) {
-			editable.plugin.executable = "true".equalsIgnoreCase(text.trim());
+			editable.file.executable = "true".equalsIgnoreCase(text.trim());
 			return true;
 		}
 		final String[] list = text.split(editable.tag.equals("Link") ? "\n" : ",");
-		editable.plugin.replaceList(editable.tag, list);
+		editable.file.replaceList(editable.tag, list);
 		return true;
 	}
 

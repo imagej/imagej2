@@ -61,13 +61,13 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLFileReader extends DefaultHandler {
 
-	private final FilesCollection plugins;
+	private final FilesCollection files;
 
 	// this is the name of the update site (null means we read the local
 	// db.xml.gz)
 	protected String updateSite;
 
-	// every plugin newer than this was not seen by the user yet
+	// every file newer than this was not seen by the user yet
 	protected long newTimestamp;
 
 	// There might have been warnings
@@ -77,8 +77,8 @@ public class XMLFileReader extends DefaultHandler {
 	private FileObject current;
 	private String currentTag, body;
 
-	public XMLFileReader(final FilesCollection plugins) {
-		this.plugins = plugins;
+	public XMLFileReader(final FilesCollection files) {
+		this.files = files;
 	}
 
 	public String getWarnings() {
@@ -88,7 +88,7 @@ public class XMLFileReader extends DefaultHandler {
 	public void read(final String updateSite)
 		throws ParserConfigurationException, IOException, SAXException
 	{
-		final UpdateSite site = plugins.getUpdateSite(updateSite);
+		final UpdateSite site = files.getUpdateSite(updateSite);
 		if (site == null) throw new IOException("Unknown update site: " + site);
 		final URL url = new URL(site.url + Util.XML_COMPRESSED);
 		final URLConnection connection = url.openConnection();
@@ -157,7 +157,7 @@ public class XMLFileReader extends DefaultHandler {
 			if (this.updateSite != null &&
 				!this.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))
 			{
-				final FileObject already = plugins.getPlugin(current.filename);
+				final FileObject already = files.getFile(current.filename);
 				if (already != null && !this.updateSite.equals(already.updateSite)) warnings
 					.append("Warning: '" + current.filename + "' from update site '" +
 						this.updateSite + "' shadows the one from update site '" +
@@ -179,7 +179,7 @@ public class XMLFileReader extends DefaultHandler {
 			current.addDependency(atts.getValue("filename"), getLong(atts,
 				"timestamp"), overrides != null && overrides.equals("true"));
 		}
-		else if (updateSite == null && currentTag.equals("update-site")) plugins
+		else if (updateSite == null && currentTag.equals("update-site")) files
 			.addUpdateSite(atts.getValue("name"), atts.getValue("url"), atts
 				.getValue("ssh-host"), atts.getValue("upload-directory"), Long
 				.parseLong(atts.getValue("timestamp")));
@@ -203,21 +203,20 @@ public class XMLFileReader extends DefaultHandler {
 				.setStatus(Status.OBSOLETE_UNINSTALLED);
 			else if (current.isNewerThan(newTimestamp)) {
 				current.setStatus(Status.NEW);
-				current.setAction(plugins, current.isUpdateablePlatform()
+				current.setAction(files, current.isUpdateablePlatform()
 					? FileObject.Action.INSTALL : FileObject.Action.NEW);
 			}
-			final FileObject plugin = plugins.getPlugin(current.filename);
+			final FileObject file = files.getFile(current.filename);
 			if (updateSite == null && current.updateSite != null &&
-				plugins.getUpdateSite(current.updateSite) == null) ; // ignore plugin
-																															// with invalid
-																															// update site
-			else if (plugin == null) plugins.add(current);
+				files.getUpdateSite(current.updateSite) == null) ; // ignore file
+																														// with invalid
+																														// update site
+			else if (file == null) files.add(current);
 			else {
-				plugin.merge(current);
+				file.merge(current);
 				if (updateSite != null &&
-					(plugin.updateSite == null || !plugin.updateSite
-						.equals(current.updateSite))) plugin.updateSite =
-					current.updateSite;
+					(file.updateSite == null || !file.updateSite
+						.equals(current.updateSite))) file.updateSite = current.updateSite;
 			}
 			current = null;
 		}

@@ -69,26 +69,26 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 	SimpleAttributeSet bold, indented, italic, normal, red;
 	JButton ok, cancel;
 
-	FilesCollection plugins;
+	FilesCollection files;
 	DependencyMap toInstall, obsoleted;
 	Collection<FileObject> automatic, ignore;
 	int conflicts;
 	boolean forUpload, wasCanceled;
 
 	public ResolveDependencies(final UpdaterFrame owner,
-		final FilesCollection plugins)
+		final FilesCollection files)
 	{
-		this(owner, plugins, false);
+		this(owner, files, false);
 	}
 
 	public ResolveDependencies(final UpdaterFrame owner,
-		final FilesCollection plugins, final boolean forUpload)
+		final FilesCollection files, final boolean forUpload)
 	{
 		super(owner, "Resolve dependencies");
 
 		updaterFrame = owner;
 		this.forUpload = forUpload;
-		this.plugins = plugins;
+		this.files = files;
 
 		rootPanel = SwingTools.verticalPanel();
 		setContentPane(rootPanel);
@@ -148,8 +148,8 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		}
 		else if (e.getSource() == ok) {
 			if (!ok.isEnabled()) return;
-			for (final FileObject plugin : automatic)
-				plugin.setFirstValidAction(plugins, new Action[] { Action.INSTALL,
+			for (final FileObject file : automatic)
+				file.setFirstValidAction(files, new Action[] { Action.INSTALL,
 					Action.UPDATE, Action.UNINSTALL });
 			dispose();
 		}
@@ -185,19 +185,19 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 	}
 
 	void listUpdateIssues() {
-		toInstall = plugins.getDependencies(false);
-		obsoleted = plugins.getDependencies(true);
+		toInstall = files.getDependencies(false);
+		obsoleted = files.getDependencies(true);
 
-		for (final FileObject plugin : toInstall.keySet())
-			if (obsoleted.get(plugin) != null) bothInstallAndUninstall(plugin);
-			else if (!plugin.willBeUpToDate()) {
-				if (plugin.isLocallyModified()) locallyModified(plugin);
-				else automatic.add(plugin);
+		for (final FileObject file : toInstall.keySet())
+			if (obsoleted.get(file) != null) bothInstallAndUninstall(file);
+			else if (!file.willBeUpToDate()) {
+				if (file.isLocallyModified()) locallyModified(file);
+				else automatic.add(file);
 			}
 
-		for (final FileObject plugin : obsoleted.keySet())
-			if (toInstall.get(plugin) != null && // handled above
-				!plugin.willNotBeInstalled()) needUninstall(plugin);
+		for (final FileObject file : obsoleted.keySet())
+			if (toInstall.get(file) != null && // handled above
+				!file.willNotBeInstalled()) needUninstall(file);
 
 		if (automatic.size() > 0) {
 			maybeAddSeparator();
@@ -207,86 +207,85 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		}
 	}
 
-	void bothInstallAndUninstall(final FileObject plugin) {
+	void bothInstallAndUninstall(final FileObject file) {
 		maybeAddSeparator();
-		final FilesCollection reasons =
-			FilesCollection.clone(toInstall.get(plugin));
-		reasons.addAll(obsoleted.get(plugin));
+		final FilesCollection reasons = FilesCollection.clone(toInstall.get(file));
+		reasons.addAll(obsoleted.get(file));
 		newText("Conflict: ", red);
-		addText(plugin.getFilename(), bold);
+		addText(file.getFilename(), bold);
 		addText(" is required by\n\n");
-		addList(toInstall.get(plugin));
+		addList(toInstall.get(file));
 		addText("\nbut made obsolete by\n\n");
-		addList(obsoleted.get(plugin));
+		addList(obsoleted.get(file));
 		addText("\n    ");
-		addIgnoreButton("Ignore this issue", plugin);
+		addIgnoreButton("Ignore this issue", file);
 		addText("    ");
 		addButton("Do not update " + reasons, reasons, null);
 	}
 
-	void needUninstall(final FileObject plugin) {
+	void needUninstall(final FileObject file) {
 		maybeAddSeparator();
-		final FilesCollection reasons = obsoleted.get(plugin);
+		final FilesCollection reasons = obsoleted.get(file);
 		newText("Conflict: ", red);
-		addText(plugin.getFilename(), bold);
+		addText(file.getFilename(), bold);
 		addText(" is locally modified but made obsolete by\n\n");
 		addList(reasons);
 		addText("\n    ");
-		addButton("Uninstall " + plugin, plugin, Action.UNINSTALL);
+		addButton("Uninstall " + file, file, Action.UNINSTALL);
 		addText("    ");
 		addButton("Do not update " + reasons, reasons, null);
 	}
 
-	void locallyModified(final FileObject plugin) {
-		if (ignore.contains(plugin)) return;
+	void locallyModified(final FileObject file) {
+		if (ignore.contains(file)) return;
 		maybeAddSeparator();
 		newText("Warning: ");
-		addText(plugin.getFilename(), bold);
+		addText(file.getFilename(), bold);
 		addText(" is locally modified and the Updater cannot determine its "
 			+ "status. A newer version might be required by\n\n");
-		addList(toInstall.get(plugin));
+		addList(toInstall.get(file));
 		addText("\n    ");
-		addIgnoreButton("Keep the local version", plugin);
+		addIgnoreButton("Keep the local version", file);
 		addText("    ");
-		final boolean toInstall = plugin.getStatus().isValid(Action.INSTALL);
-		addButton((toInstall ? "Install" : "Update") + " " + plugin, plugin,
-			toInstall ? Action.INSTALL : Action.UPDATE);
+		final boolean toInstall = file.getStatus().isValid(Action.INSTALL);
+		addButton((toInstall ? "Install" : "Update") + " " + file, file, toInstall
+			? Action.INSTALL : Action.UPDATE);
 	}
 
 	void listUploadIssues() {
 		toInstall = new FilesCollection.DependencyMap();
-		for (final FileObject plugin : plugins.toUpload())
-			for (final Dependency dependency : plugin.getDependencies()) {
-				final FileObject dep = plugins.getPlugin(dependency.filename);
+		for (final FileObject file : files.toUpload())
+			for (final Dependency dependency : file.getDependencies()) {
+				final FileObject dep = files.getFile(dependency.filename);
 				if (dep == null || ignore.contains(dep)) continue;
 				if (dep.isInstallable() ||
 					(!dep.isFiji() && dep.getAction() != Action.UPLOAD) ||
 					dep.isObsolete() ||
 					(dep.getStatus().isValid(Action.UPLOAD) && dep.getAction() != Action.UPLOAD)) toInstall
-					.add(dep, plugin);
+					.add(dep, file);
 			}
-		for (final FileObject plugin : toInstall.keySet())
-			needUpload(plugin);
+		for (final FileObject file : toInstall.keySet())
+			needUpload(file);
 
-		// Replace dependencies on to-be-removed plugins
-		for (final FileObject plugin : plugins.fijiPlugins()) {
-			if (plugin.getAction() == Action.REMOVE) continue;
-			for (final Dependency dependency : plugin.getDependencies())
-				if (plugins.getPlugin(dependency.filename) == null) dependencyNotUploaded(
-					plugin, dependency.filename);
-				else if (plugins.getPlugin(dependency.filename).getAction() == Action.REMOVE) dependencyRemoved(
-					plugin, dependency.filename);
+		// Replace dependencies on to-be-removed files
+		for (final FileObject file : files.fijiFiles()) {
+			if (file.getAction() == Action.REMOVE) continue;
+			for (final Dependency dependency : file.getDependencies())
+				if (files.getFile(dependency.filename) == null) dependencyNotUploaded(
+					file, dependency.filename);
+				else if (files.getFile(dependency.filename).getAction() == Action.REMOVE) dependencyRemoved(
+					file, dependency.filename);
 		}
 	}
 
-	void needUpload(final FileObject plugin) {
-		final boolean notFiji = !plugin.isFiji();
-		final boolean notInstalled = plugin.isInstallable();
-		final boolean obsolete = plugin.isObsolete();
-		final FilesCollection reasons = toInstall.get(plugin);
+	void needUpload(final FileObject file) {
+		final boolean notFiji = !file.isFiji();
+		final boolean notInstalled = file.isInstallable();
+		final boolean obsolete = file.isObsolete();
+		final FilesCollection reasons = toInstall.get(file);
 		maybeAddSeparator();
 		newText("Warning: ", notFiji || obsolete ? red : normal);
-		addText(plugin.getFilename(), bold);
+		addText(file.getFilename(), bold);
 		addText((notFiji ? "was not uploaded yet" : "is " +
 			(notInstalled ? "not installed" : (obsolete ? "marked obsolete"
 				: "locally modified"))) +
@@ -294,11 +293,11 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		addList(reasons);
 		addText("\n    ");
 		if (!notFiji && !obsolete) {
-			addIgnoreButton("Do not upload " + plugin, plugin);
+			addIgnoreButton("Do not upload " + file, file);
 			addText("    ");
 		}
 		if (!notInstalled) {
-			addButton("Upload " + plugin + (obsolete ? " again" : ""), plugin,
+			addButton("Upload " + file + (obsolete ? " again" : ""), file,
 				Action.UPLOAD);
 			addText("    ");
 		}
@@ -307,30 +306,30 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				for (final FileObject other : reasons)
-					other.removeDependency(plugin.getFilename());
+					other.removeDependency(file.getFilename());
 				listIssues();
 			}
 		});
 	}
 
-	void dependencyNotUploaded(final FileObject plugin, final String dependency) {
+	void dependencyNotUploaded(final FileObject file, final String dependency) {
 		maybeAddSeparator();
 		newText("Error: ", normal);
-		addText(plugin.getFilename(), bold);
+		addText(file.getFilename(), bold);
 		addText(" depends on " + dependency + " which was not uploaded.\n\n");
-		addDependencyButton("Break the dependency", plugin, dependency, null);
+		addDependencyButton("Break the dependency", file, dependency, null);
 	}
 
-	void dependencyRemoved(final FileObject plugin, final String dependency) {
+	void dependencyRemoved(final FileObject file, final String dependency) {
 		maybeAddSeparator();
 		newText("Warning: ", normal);
-		addText(plugin.getFilename(), bold);
+		addText(file.getFilename(), bold);
 		addText(" depends on " + dependency + " which is about to be removed.\n\n");
-		addDependencyButton("Break the dependency", plugin, dependency, null);
-		for (final FileObject toUpload : plugins.toUpload()) {
-			if (plugin.hasDependency(toUpload.getFilename())) continue;
+		addDependencyButton("Break the dependency", file, dependency, null);
+		for (final FileObject toUpload : files.toUpload()) {
+			if (file.hasDependency(toUpload.getFilename())) continue;
 			addText("    ");
-			addDependencyButton("Replace with dependency to " + toUpload, plugin,
+			addDependencyButton("Replace with dependency to " + toUpload, file,
 				dependency, toUpload.getFilename());
 			addText("    ");
 			addDependencyButton("Replace all dependencies on " + dependency +
@@ -339,55 +338,55 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		}
 	}
 
-	void addIgnoreButton(final String label, final FileObject plugin) {
+	void addIgnoreButton(final String label, final FileObject file) {
 		addButton(label, new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				ignore.add(plugin);
+				ignore.add(file);
 				listIssues();
 			}
 		});
 	}
 
-	void addDependencyButton(final String label, final FileObject plugin,
+	void addDependencyButton(final String label, final FileObject file,
 		final String removeDependency, final String addDependency)
 	{
 		addButton(label, new ActionListener() {
 
-			void replaceDependency(final FileObject plugin) {
-				plugin.removeDependency(removeDependency);
-				if (addDependency != null) plugin.addDependency(addDependency);
+			void replaceDependency(final FileObject file) {
+				file.removeDependency(removeDependency);
+				if (addDependency != null) file.addDependency(addDependency);
 			}
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				if (plugin != null) replaceDependency(plugin);
-				else for (final FileObject plugin : plugins)
-					if (plugin.hasDependency(removeDependency)) replaceDependency(plugin);
+				if (file != null) replaceDependency(file);
+				else for (final FileObject file : files)
+					if (file.hasDependency(removeDependency)) replaceDependency(file);
 				listIssues();
 			}
 		});
 	}
 
-	void addButton(final String label, final FileObject plugin,
-		final Action action)
+	void
+		addButton(final String label, final FileObject file, final Action action)
 	{
 		final Collection<FileObject> one = new ArrayList<FileObject>();
-		one.add(plugin);
+		one.add(file);
 		addButton(label, one, action);
 	}
 
-	void addButton(final String label, final Collection<FileObject> plugins,
+	void addButton(final String label, final Collection<FileObject> files,
 		final Action action)
 	{
 		addButton(label, new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				for (final FileObject plugin : plugins)
-					if (action == null) plugin.setNoAction();
-					else plugin.setAction(ResolveDependencies.this.plugins, action);
+				for (final FileObject file : files)
+					if (action == null) file.setNoAction();
+					else file.setAction(ResolveDependencies.this.files, action);
 				listIssues();
 			}
 		});
@@ -442,7 +441,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		panel.insertComponent(new JSeparator());
 	}
 
-	private static FileObject fakePlugin(final String label) {
+	private static FileObject fakeFile(final String label) {
 		final Random random = new Random();
 		String fakeChecksum = "";
 		for (int i = 0; i < 20; i++)
@@ -456,28 +455,28 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 	}
 
 	public static void main(final String[] args) {
-		final FilesCollection plugins = new FilesCollection();
-		final ResolveDependencies frame = new ResolveDependencies(null, plugins);
+		final FilesCollection files = new FilesCollection();
+		final ResolveDependencies frame = new ResolveDependencies(null, files);
 
-		FileObject plugin = fakePlugin("Install_.jar");
-		plugin.addDependency("Obsoleted_.jar");
-		plugin.addDependency("Locally_Modified.jar");
-		plugin.setStatus(FileObject.Status.NOT_INSTALLED);
-		plugin.setAction(plugins, FileObject.Action.INSTALL);
-		plugins.add(plugin);
-		plugin = fakePlugin("Obsoleting_.jar");
-		plugin.addDependency("Obsoleted_.jar");
-		plugin.setStatus(FileObject.Status.NOT_INSTALLED);
-		plugin.setAction(plugins, FileObject.Action.INSTALL);
-		plugins.add(plugin);
-		plugin = fakePlugin("Locally_Modified.jar");
-		plugin.setStatus(FileObject.Status.MODIFIED);
-		plugin.setAction(plugins, FileObject.Action.MODIFIED);
-		plugins.add(plugin);
-		plugin = fakePlugin("Obsoleted_.jar");
-		plugin.setStatus(FileObject.Status.OBSOLETE);
-		plugin.setAction(plugins, FileObject.Action.OBSOLETE);
-		plugins.add(plugin);
+		FileObject file = fakeFile("Install_.jar");
+		file.addDependency("Obsoleted_.jar");
+		file.addDependency("Locally_Modified.jar");
+		file.setStatus(FileObject.Status.NOT_INSTALLED);
+		file.setAction(files, FileObject.Action.INSTALL);
+		files.add(file);
+		file = fakeFile("Obsoleting_.jar");
+		file.addDependency("Obsoleted_.jar");
+		file.setStatus(FileObject.Status.NOT_INSTALLED);
+		file.setAction(files, FileObject.Action.INSTALL);
+		files.add(file);
+		file = fakeFile("Locally_Modified.jar");
+		file.setStatus(FileObject.Status.MODIFIED);
+		file.setAction(files, FileObject.Action.MODIFIED);
+		files.add(file);
+		file = fakeFile("Obsoleted_.jar");
+		file.setStatus(FileObject.Status.OBSOLETE);
+		file.setAction(files, FileObject.Action.OBSOLETE);
+		files.add(file);
 
 		System.err.println("resolved: " + frame.resolve());
 	}

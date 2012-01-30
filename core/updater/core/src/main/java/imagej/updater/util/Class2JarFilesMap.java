@@ -86,7 +86,7 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 	/*
 	 * batik.jar contains these, for backwards compatibility, but we
 	 * do not want to have batik.jar as a dependency for every XML
-	 * handling plugin...
+	 * handling file...
 	 */
 	private boolean ignore(final String name, final String jar) {
 		if (jar.endsWith("/batik.jar")) return name.startsWith("org.xml.") ||

@@ -1,5 +1,5 @@
 //
-// PluginUploader.java
+// FileUploader.java
 //
 
 /*
@@ -52,21 +52,21 @@ import net.java.sezpoz.IndexItem;
 
 /*
  * This class is responsible for writing updates to server, upon given the
- * updated plugin records.
+ * updated file records.
  *
- * Note: Plugins are uploaded differently
- * - Local-only plugins & new file versions will have files AND details uploaded
- * - Uninstalled & up-to-date plugins will ONLY have their details uploaded
+ * Note: Files are uploaded differently
+ * - Local-only files & new file versions will have files AND details uploaded
+ * - Uninstalled & up-to-date files will ONLY have their details uploaded
  *   (i.e.: XML file)
  */
 public class FilesUploader {
 
-	protected FilesCollection plugins;
+	protected FilesCollection files;
 	protected AbstractUploader uploader;
 
 	protected String siteName;
 	protected UpdateSite site;
-	protected List<Uploadable> files;
+	protected List<Uploadable> uploadables;
 	protected String compressed;
 
 	public static AbstractUploader getUploader(String protocol)
@@ -81,12 +81,12 @@ public class FilesUploader {
 	}
 
 	// TODO: add a button to check for new db.xml.gz, and merge if necessary
-	public FilesUploader(final FilesCollection plugins, final String updateSite)
+	public FilesUploader(final FilesCollection files, final String updateSite)
 		throws InstantiationException
 	{
-		this.plugins = plugins;
+		this.files = files;
 		siteName = updateSite;
-		site = plugins.getUpdateSite(updateSite);
+		site = files.getUpdateSite(updateSite);
 		compressed = Util.XML_COMPRESSED;
 		uploader = getUploader(getUploadProtocol());
 	}
@@ -156,20 +156,20 @@ public class FilesUploader {
 		uploader.addProgress(new VerifyTimestamp());
 
 		// TODO: rename "UpdateSource" to "Transferable", reuse!
-		files = new ArrayList<Uploadable>();
+		uploadables = new ArrayList<Uploadable>();
 		final List<String> locks = new ArrayList<String>();
-		files.add(new DbXmlFile());
-		for (final FileObject plugin : plugins.toUpload(siteName))
-			files.add(new UploadableFile(plugin));
+		uploadables.add(new DbXmlFile());
+		for (final FileObject file : files.toUpload(siteName))
+			uploadables.add(new UploadableFile(file));
 
 		// must be last lock
 		locks.add(Util.XML_COMPRESSED);
 
 		// verify that the files have not changed in the meantime
-		for (final Uploadable file : files)
-			verifyUnchanged(file, true);
+		for (final Uploadable uploadable : uploadables)
+			verifyUnchanged(uploadable, true);
 
-		uploader.upload(files, locks);
+		uploader.upload(uploadables, locks);
 
 		site.setLastModified(getCurrentLastModified());
 	}
@@ -180,42 +180,42 @@ public class FilesUploader {
 		if (!(file instanceof UploadableFile)) return;
 		final UploadableFile uploadable = (UploadableFile) file;
 		if (uploadable.filesize != Util.getFilesize(uploadable.sourceFilename)) throw new RuntimeException(
-			"File size of " + uploadable.plugin.filename +
+			"File size of " + uploadable.file.filename +
 				" changed since being checksummed (was " + uploadable.filesize +
 				" but is " + Util.getFilesize(uploadable.sourceFilename) + ")!");
 		if (checkTimestamp) {
 			final long stored =
-				uploadable.plugin.getStatus() == FileObject.Status.LOCAL_ONLY
-					? uploadable.plugin.current.timestamp
-					: uploadable.plugin.newTimestamp;
+				uploadable.file.getStatus() == FileObject.Status.LOCAL_ONLY
+					? uploadable.file.current.timestamp : uploadable.file.newTimestamp;
 			if (stored != Util.getTimestamp(uploadable.sourceFilename)) throw new RuntimeException(
-				"Timestamp of " + uploadable.plugin.filename +
+				"Timestamp of " + uploadable.file.filename +
 					" changed since being checksummed (was " + stored + " but is " +
 					Util.getTimestamp(uploadable.sourceFilename) + ")!");
 		}
 	}
 
 	protected void updateUploadTimestamp(final long timestamp) throws Exception {
-		for (final Uploadable f : files) {
+		for (final Uploadable f : uploadables) {
 			if (!(f instanceof UploadableFile)) continue;
-			final UploadableFile file = (UploadableFile) f;
-			final FileObject plugin = file.plugin;
-			if (plugin == null) continue;
-			plugin.filesize = file.filesize = Util.getFilesize(plugin.filename);
-			plugin.newTimestamp = timestamp;
-			file.filename = plugin.filename + "-" + timestamp;
-			if (plugin.getStatus() == FileObject.Status.LOCAL_ONLY) {
-				plugin.setStatus(FileObject.Status.INSTALLED);
-				plugin.current.timestamp = timestamp;
+			final UploadableFile uploadable = (UploadableFile) f;
+			final FileObject file = uploadable.file;
+			if (file == null) continue;
+			file.filesize = uploadable.filesize = Util.getFilesize(file.filename);
+			file.newTimestamp = timestamp;
+			uploadable.filename = file.filename + "-" + timestamp;
+			if (file.getStatus() == FileObject.Status.LOCAL_ONLY) {
+				file.setStatus(FileObject.Status.INSTALLED);
+				file.current.timestamp = timestamp;
 			}
 		}
 
 		final XMLFileWriter writer =
-			new XMLFileWriter(FilesCollection.clone(plugins.forUpdateSite(siteName)));
-		if (plugins.size() > 0) writer.validate(false);
-		((DbXmlFile) files.get(0)).bytes = writer.toCompressedByteArray(false);
+			new XMLFileWriter(FilesCollection.clone(files.forUpdateSite(siteName)));
+		if (files.size() > 0) writer.validate(false);
+		((DbXmlFile) uploadables.get(0)).bytes =
+			writer.toCompressedByteArray(false);
 
-		uploader.calculateTotalSize(files);
+		uploader.calculateTotalSize(uploadables);
 	}
 
 	/*
@@ -285,7 +285,7 @@ public class FilesUploader {
 		}
 		catch (final Exception e) {
 			UserInterface.get().debug(e.getMessage());
-			if (plugins.size() == 0) return -1; // assume initial upload
+			if (files.size() == 0) return -1; // assume initial upload
 			e.printStackTrace();
 			return 0;
 		}

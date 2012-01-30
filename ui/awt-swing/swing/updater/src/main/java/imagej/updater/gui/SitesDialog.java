@@ -82,7 +82,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 {
 
 	protected UpdaterFrame updaterFrame;
-	protected FilesCollection plugins;
+	protected FilesCollection files;
 	protected List<String> names;
 
 	protected DataModel tableModel;
@@ -90,13 +90,13 @@ public class SitesDialog extends JDialog implements ActionListener,
 	protected JButton add, edit, remove, close;
 	protected JCheckBox forUpload;
 
-	public SitesDialog(final UpdaterFrame owner, final FilesCollection plugins,
+	public SitesDialog(final UpdaterFrame owner, final FilesCollection files,
 		final boolean forUpload)
 	{
 		super(owner, "Manage update sites");
 		updaterFrame = owner;
-		this.plugins = plugins;
-		names = new ArrayList<String>(plugins.getUpdateSiteNames());
+		this.files = files;
+		names = new ArrayList<String>(files.getUpdateSiteNames());
 		names.set(0, "Fiji");
 
 		final Container contentPane = getContentPane();
@@ -141,7 +141,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 	}
 
 	protected UpdateSite getUpdateSite(final String name) {
-		return plugins.getUpdateSite(name);
+		return files.getUpdateSite(name);
 	}
 
 	protected void add() {
@@ -162,15 +162,15 @@ public class SitesDialog extends JDialog implements ActionListener,
 		final String name = names.get(row);
 		final List<FileObject> list = new ArrayList<FileObject>();
 		int count = 0;
-		for (final FileObject plugin : plugins.forUpdateSite(name))
-			switch (plugin.getStatus()) {
+		for (final FileObject file : files.forUpdateSite(name))
+			switch (file.getStatus()) {
 				case NEW:
 				case NOT_INSTALLED:
 				case OBSOLETE_UNINSTALLED:
 					count--;
 				default:
 					count++;
-					list.add(plugin);
+					list.add(file);
 			}
 		if (count > 0) info("" +
 			count +
@@ -179,14 +179,14 @@ public class SitesDialog extends JDialog implements ActionListener,
 			"'\n" +
 			"These files will not be deleted automatically.\n" +
 			"Note: even if marked as 'Local-only', they might be available from other sites.");
-		for (final FileObject plugin : list) {
-			plugin.updateSite = null;
-			plugin.setStatus(FileObject.Status.LOCAL_ONLY);
+		for (final FileObject file : list) {
+			file.updateSite = null;
+			file.setStatus(FileObject.Status.LOCAL_ONLY);
 		}
-		plugins.removeUpdateSite(name);
+		files.removeUpdateSite(name);
 		names.remove(row);
 		tableModel.rowChanged(row);
-		updaterFrame.updatePluginsTable();
+		updaterFrame.updateFilesTable();
 	}
 
 	@Override
@@ -347,13 +347,13 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 		protected boolean readFromSite(final String name) {
 			try {
-				new XMLFileReader(plugins).read(name);
-				final List<String> pluginsFromSite = new ArrayList<String>();
-				for (final FileObject plugin : plugins.forUpdateSite(name))
-					pluginsFromSite.add(plugin.filename);
+				new XMLFileReader(files).read(name);
+				final List<String> filesFromSite = new ArrayList<String>();
+				for (final FileObject file : files.forUpdateSite(name))
+					filesFromSite.add(file.filename);
 				final Checksummer checksummer =
-					new Checksummer(plugins, updaterFrame.getProgress("Czechsummer"));
-				checksummer.updateFromLocal(pluginsFromSite);
+					new Checksummer(files, updaterFrame.getProgress("Czechsummer"));
+				checksummer.updateFromLocal(filesFromSite);
 			}
 			catch (final Exception e) {
 				error("Not a valid URL: " + url.getText());
@@ -419,8 +419,8 @@ public class SitesDialog extends JDialog implements ActionListener,
 						return;
 					}
 					row = names.size();
-					plugins.addUpdateSite(name.getText(), url.getText(), sshHost
-						.getText(), uploadDirectory.getText(), 0l);
+					files.addUpdateSite(name.getText(), url.getText(), sshHost.getText(),
+						uploadDirectory.getText(), 0l);
 					names.add(name.getText());
 				}
 				else {
@@ -433,7 +433,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 							error("Site '" + name + "' exists already!");
 							return;
 						}
-						plugins.renameUpdateSite(originalName, name);
+						files.renameUpdateSite(originalName, name);
 						names.set(row, name);
 					}
 					updateSite.url = url.getText();
@@ -452,7 +452,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 	@Override
 	public void dispose() {
 		super.dispose();
-		updaterFrame.updatePluginsTable();
+		updaterFrame.updateFilesTable();
 		updaterFrame.enableUploadOrNot();
 		updaterFrame.addCustomViewOptions();
 	}
@@ -485,14 +485,14 @@ public class SitesDialog extends JDialog implements ActionListener,
 	}
 
 	public static void main(final String[] args) {
-		final FilesCollection plugins = new FilesCollection();
+		final FilesCollection files = new FilesCollection();
 		try {
-			plugins.read();
+			files.read();
 		}
 		catch (final Exception e) {
 			UserInterface.get().handleException(e);
 		}
-		final SitesDialog dialog = new SitesDialog(null, plugins, !false);
+		final SitesDialog dialog = new SitesDialog(null, files, !false);
 		dialog.setVisible(true);
 	}
 }

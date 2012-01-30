@@ -1,5 +1,5 @@
 //
-// PluginTable.java
+// FileTable.java
 //
 
 /*
@@ -75,16 +75,16 @@ import javax.swing.table.TableColumn;
  * This class' role is to be in charge of how the Table should be displayed
  */
 @SuppressWarnings("serial")
-public class PluginTable extends JTable {
+public class FileTable extends JTable {
 
 	protected UpdaterFrame updaterFrame;
-	protected FilesCollection plugins;
-	private PluginTableModel pluginTableModel;
+	protected FilesCollection files;
+	private FileTableModel fileTableModel;
 	protected Font plain, bold;
 
-	public PluginTable(final UpdaterFrame updaterFrame) {
+	public FileTable(final UpdaterFrame updaterFrame) {
 		this.updaterFrame = updaterFrame;
-		plugins = updaterFrame.plugins;
+		files = updaterFrame.files;
 
 		// Set appearance of table
 		setShowGrid(false);
@@ -98,8 +98,8 @@ public class PluginTable extends JTable {
 		setColumnSelectionAllowed(false);
 		setRowSelectionAllowed(true);
 
-		pluginTableModel = new PluginTableModel(plugins);
-		setModel(pluginTableModel);
+		fileTableModel = new FileTableModel(files);
+		setModel(fileTableModel);
 		getModel().addTableModelListener(this);
 		setColumnWidths(250, 100);
 
@@ -129,9 +129,9 @@ public class PluginTable extends JTable {
 
 	/*
 	 * This sets the font to bold when the user selected an action for
-	 * this plugin, or when it is locally modified.
+	 * this file, or when it is locally modified.
 	 *
-	 * It also warns loudly when the plugin is obsolete, but locally
+	 * It also warns loudly when the file is obsolete, but locally
 	 * modified.
 	 */
 	protected void
@@ -141,12 +141,12 @@ public class PluginTable extends JTable {
 			plain = comp.getFont();
 			bold = plain.deriveFont(Font.BOLD);
 		}
-		final FileObject plugin = getPlugin(row);
-		if (plugin == null) return;
-		comp.setFont(plugin.actionSpecified() || plugin.isLocallyModified() ? bold
+		final FileObject file = getFile(row);
+		if (file == null) return;
+		comp.setFont(file.actionSpecified() || file.isLocallyModified() ? bold
 			: plain);
-		comp.setForeground(plugin.getStatus() == Status.OBSOLETE_MODIFIED
-			? Color.red : Color.black);
+		comp.setForeground(file.getStatus() == Status.OBSOLETE_MODIFIED ? Color.red
+			: Color.black);
 	}
 
 	private void setColumnWidths(final int col1Width, final int col2Width) {
@@ -161,21 +161,21 @@ public class PluginTable extends JTable {
 		col2.setResizable(true);
 	}
 
-	public FilesCollection getAllPlugins() {
-		return plugins;
+	public FilesCollection getAllFiles() {
+		return files;
 	}
 
-	public void setPlugins(final Iterable<FileObject> plugins) {
-		pluginTableModel.setPlugins(plugins);
+	public void setFiles(final Iterable<FileObject> files) {
+		fileTableModel.setFiles(files);
 	}
 
 	@Override
 	public TableCellEditor getCellEditor(final int row, final int col) {
-		final FileObject plugin = getPlugin(row);
+		final FileObject file = getFile(row);
 
-		// As we follow PluginTableModel, 1st column is filename
+		// As we follow FileTableModel, 1st column is filename
 		if (col == 0) return super.getCellEditor(row, col);
-		final Action[] actions = plugins.getActions(plugin);
+		final Action[] actions = files.getActions(file);
 		return new DefaultCellEditor(new JComboBox(actions));
 	}
 
@@ -183,18 +183,18 @@ public class PluginTable extends JTable {
 		if (!e.isPopupTrigger() &&
 			(Util.isMacOSX() || (e.getModifiers() & InputEvent.META_MASK) == 0)) return;
 		final Iterable<FileObject> selected =
-			getSelectedPlugins(e.getY() / getRowHeight());
+			getSelectedFiles(e.getY() / getRowHeight());
 		if (!selected.iterator().hasNext()) return;
 		final JPopupMenu menu = new JPopupMenu();
 		int count = 0;
-		for (final FileObject.Action action : plugins.getActions(selected)) {
+		for (final FileObject.Action action : files.getActions(selected)) {
 			final JMenuItem item = new JMenuItem(action.toString());
 			item.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(final ActionEvent e) {
-					for (final FileObject plugin : selected)
-						setPluginAction(plugin, action);
+					for (final FileObject file : selected)
+						setFileAction(file, action);
 				}
 			});
 			menu.add(item);
@@ -208,46 +208,46 @@ public class PluginTable extends JTable {
 		menu.show(e.getComponent(), e.getX(), e.getY());
 	}
 
-	public FileObject getPlugin(final int row) {
-		final FileObject.LabeledPlugin plugin =
-			(FileObject.LabeledPlugin) getValueAt(row, 0);
-		return plugin == null ? null : plugin.getPlugin();
+	public FileObject getFile(final int row) {
+		final FileObject.LabeledFile file =
+			(FileObject.LabeledFile) getValueAt(row, 0);
+		return file == null ? null : file.getFile();
 	}
 
-	public Iterable<FileObject> getSelectedPlugins() {
-		return getSelectedPlugins(-1);
+	public Iterable<FileObject> getSelectedFiles() {
+		return getSelectedFiles(-1);
 	}
 
-	public Iterable<FileObject> getSelectedPlugins(final int fallbackRow) {
+	public Iterable<FileObject> getSelectedFiles(final int fallbackRow) {
 		int[] rows = getSelectedRows();
-		if (rows.length == 0 && fallbackRow >= 0 && getPlugin(fallbackRow) != null) rows =
+		if (rows.length == 0 && fallbackRow >= 0 && getFile(fallbackRow) != null) rows =
 			new int[] { fallbackRow };
 		final FileObject[] result = new FileObject[rows.length];
 		for (int i = 0; i < rows.length; i++)
-			result[i] = getPlugin(rows[i]);
+			result[i] = getFile(rows[i]);
 		return Arrays.asList(result);
 	}
 
-	public String[] getUpdateSitesWithUploads(final FilesCollection plugins) {
+	public String[] getUpdateSitesWithUploads(final FilesCollection files) {
 		final Set<String> sites = new HashSet<String>();
-		for (final FileObject plugin : plugins.toUpload())
-			sites.add(plugin.updateSite);
+		for (final FileObject file : files.toUpload())
+			sites.add(file.updateSite);
 		return sites.toArray(new String[sites.size()]);
 	}
 
-	public boolean areAllSelectedPluginsUploadable() {
+	public boolean areAllSelectedFilesUploadable() {
 		if (getSelectedRows().length == 0) return false;
-		for (final FileObject plugin : getSelectedPlugins())
-			if (!plugin.isUploadable(updaterFrame.plugins)) return false;
+		for (final FileObject file : getSelectedFiles())
+			if (!file.isUploadable(updaterFrame.files)) return false;
 		return true;
 	}
 
-	public boolean chooseUpdateSite(final FilesCollection plugins,
-		final FileObject plugin)
+	public boolean chooseUpdateSite(final FilesCollection files,
+		final FileObject file)
 	{
 		final List<String> list = new ArrayList<String>();
-		for (final String name : plugins.getUpdateSiteNames()) {
-			final UpdateSite site = plugins.getUpdateSite(name);
+		for (final String name : files.getUpdateSiteNames()) {
+			final UpdateSite site = files.getUpdateSite(name);
 			if (site.isUploadable()) list.add(name);
 		}
 		if (list.size() == 0) {
@@ -257,67 +257,67 @@ public class PluginTable extends JTable {
 		if (list.size() == 1 &&
 			list.get(0).equals(FilesCollection.DEFAULT_UPDATE_SITE))
 		{
-			plugin.updateSite = FilesCollection.DEFAULT_UPDATE_SITE;
+			file.updateSite = FilesCollection.DEFAULT_UPDATE_SITE;
 			return true;
 		}
 		final String updateSite =
 			SwingTools.getChoice(updaterFrame.hidden, updaterFrame, list,
-				"To which upload site do you want to upload " + plugin.filename + "?",
+				"To which upload site do you want to upload " + file.filename + "?",
 				"Upload site");
 		if (updateSite == null) return false;
-		plugin.updateSite = updateSite;
+		file.updateSite = updateSite;
 		return true;
 	}
 
-	protected void setPluginAction(final FileObject plugin, final Action action) {
-		if (!plugin.getStatus().isValid(action)) return;
+	protected void setFileAction(final FileObject file, final Action action) {
+		if (!file.getStatus().isValid(action)) return;
 		if (action == Action.UPLOAD) {
 			final String[] sitesWithUploads =
-				getUpdateSitesWithUploads(updaterFrame.plugins);
+				getUpdateSitesWithUploads(updaterFrame.files);
 			if (sitesWithUploads.length > 1) {
 				error("Internal error: multiple upload sites selected");
 				return;
 			}
-			final boolean isNew = plugin.getStatus() == Status.LOCAL_ONLY;
+			final boolean isNew = file.getStatus() == Status.LOCAL_ONLY;
 			if (sitesWithUploads.length == 0) {
-				if (isNew && !chooseUpdateSite(updaterFrame.plugins, plugin)) return;
+				if (isNew && !chooseUpdateSite(updaterFrame.files, file)) return;
 			}
 			else {
 				final String siteName = sitesWithUploads[0];
-				if (isNew) plugin.updateSite = siteName;
-				else if (!plugin.updateSite.equals(siteName)) {
+				if (isNew) file.updateSite = siteName;
+				else if (!file.updateSite.equals(siteName)) {
 					error("Already have uploads for site '" + siteName +
-						"', cannot upload to '" + plugin.updateSite + "', too!");
+						"', cannot upload to '" + file.updateSite + "', too!");
 					return;
 				}
 			}
 		}
-		plugin.setAction(updaterFrame.plugins, action);
-		firePluginChanged(plugin);
+		file.setAction(updaterFrame.files, action);
+		fireFileChanged(file);
 	}
 
-	protected class PluginTableModel extends AbstractTableModel {
+	protected class FileTableModel extends AbstractTableModel {
 
-		private FilesCollection plugins;
-		Map<FileObject, Integer> pluginToRow;
+		private FilesCollection files;
+		Map<FileObject, Integer> fileToRow;
 
-		public PluginTableModel(final FilesCollection plugins) {
-			this.plugins = plugins;
+		public FileTableModel(final FilesCollection files) {
+			this.files = files;
 		}
 
-		public void setPlugins(final Iterable<FileObject> plugins) {
-			setPlugins(FilesCollection.clone(plugins));
+		public void setFiles(final Iterable<FileObject> files) {
+			setFiles(FilesCollection.clone(files));
 		}
 
-		public void setPlugins(final FilesCollection plugins) {
-			this.plugins = plugins;
-			pluginToRow = null;
-			fireTableChanged(new TableModelEvent(pluginTableModel));
+		public void setFiles(final FilesCollection files) {
+			this.files = files;
+			fileToRow = null;
+			fireTableChanged(new TableModelEvent(fileTableModel));
 		}
 
 		@Override
 		public int getColumnCount() {
-			return 2; // Name of plugin, status
+			return 2; // Name of file, status
 		}
 
 		@Override
@@ -345,18 +345,18 @@ public class PluginTable extends JTable {
 		}
 
 		public FileObject getEntry(final int rowIndex) {
-			return plugins.get(rowIndex);
+			return files.get(rowIndex);
 		}
 
 		@Override
 		public int getRowCount() {
-			return plugins.size();
+			return files.size();
 		}
 
 		@Override
 		public Object getValueAt(final int row, final int column) {
-			if (row < 0 || row >= plugins.size()) return null;
-			return plugins.get(row).getLabeledPlugin(column);
+			if (row < 0 || row >= files.size()) return null;
+			return files.get(row).getLabeledFile(column);
 		}
 
 		@Override
@@ -369,8 +369,8 @@ public class PluginTable extends JTable {
 		{
 			if (column == 1) {
 				final Action action = (Action) value;
-				final FileObject plugin = getPlugin(row);
-				setPluginAction(plugin, action);
+				final FileObject file = getFile(row);
+				setFileAction(file, action);
 			}
 		}
 
@@ -378,21 +378,21 @@ public class PluginTable extends JTable {
 			fireTableRowsUpdated(row, row);
 		}
 
-		public void firePluginChanged(final FileObject plugin) {
-			if (pluginToRow == null) {
-				pluginToRow = new HashMap<FileObject, Integer>();
+		public void fireFileChanged(final FileObject file) {
+			if (fileToRow == null) {
+				fileToRow = new HashMap<FileObject, Integer>();
 				// the table may be sorted, and we need the model's row
 				int i = 0;
-				for (final FileObject p : plugins)
-					pluginToRow.put(p, new Integer(i++));
+				for (final FileObject p : files)
+					fileToRow.put(p, new Integer(i++));
 			}
-			final Integer row = pluginToRow.get(plugin);
+			final Integer row = fileToRow.get(file);
 			if (row != null) fireRowChanged(row.intValue());
 		}
 	}
 
-	public void firePluginChanged(final FileObject plugin) {
-		pluginTableModel.firePluginChanged(plugin);
+	public void fireFileChanged(final FileObject file) {
+		fileTableModel.fireFileChanged(file);
 	}
 
 	protected void error(final String message) {

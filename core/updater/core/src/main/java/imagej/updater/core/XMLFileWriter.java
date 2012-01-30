@@ -61,7 +61,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class XMLFileWriter {
 
-	protected FilesCollection plugins;
+	protected FilesCollection files;
 	protected TransformerHandler handler;
 	protected final String XALAN_INDENT_AMOUNT = "{http://xml.apache.org/xslt}"
 		+ "indent-amount";
@@ -91,8 +91,8 @@ public class XMLFileWriter {
 		+ "<!ATTLIST previous-version timestamp CDATA #REQUIRED>\n"
 		+ "<!ATTLIST previous-version checksum CDATA #REQUIRED>]>\n";
 
-	public XMLFileWriter(final FilesCollection plugins) {
-		this.plugins = plugins;
+	public XMLFileWriter(final FilesCollection files) {
+		this.files = files;
 	}
 
 	public byte[] toByteArray(final boolean local) throws SAXException,
@@ -133,9 +133,9 @@ public class XMLFileWriter {
 
 		handler.startElement("", "", "pluginRecords", attr);
 		if (local) {
-			for (final String name : plugins.getUpdateSiteNames()) {
+			for (final String name : files.getUpdateSiteNames()) {
 				attr.clear();
-				final UpdateSite site = plugins.getUpdateSite(name);
+				final UpdateSite site = files.getUpdateSite(name);
 				setAttribute(attr, "name", name);
 				setAttribute(attr, "url", site.url);
 				if (site.sshHost != null) setAttribute(attr, "ssh-host", site.sshHost);
@@ -146,29 +146,28 @@ public class XMLFileWriter {
 			}
 		}
 
-		for (final FileObject plugin : plugins.fijiPlugins()) {
+		for (final FileObject file : files.fijiFiles()) {
 			attr.clear();
-			assert (plugin.updateSite != null && !plugin.updateSite.equals(""));
-			if (local &&
-				!plugin.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE)) setAttribute(
-				attr, "update-site", plugin.updateSite);
-			setAttribute(attr, "filename", plugin.filename);
-			if (plugin.executable) setAttribute(attr, "executable", "true");
+			assert (file.updateSite != null && !file.updateSite.equals(""));
+			if (local && !file.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE)) setAttribute(
+				attr, "update-site", file.updateSite);
+			setAttribute(attr, "filename", file.filename);
+			if (file.executable) setAttribute(attr, "executable", "true");
 			handler.startElement("", "", "plugin", attr);
-			writeSimpleTags("platform", plugin.getPlatforms());
-			writeSimpleTags("category", plugin.getCategories());
+			writeSimpleTags("platform", file.getPlatforms());
+			writeSimpleTags("category", file.getCategories());
 
-			final FileObject.Version current = plugin.current;
-			if (plugin.getChecksum() != null) {
+			final FileObject.Version current = file.current;
+			if (file.getChecksum() != null) {
 				attr.clear();
-				setAttribute(attr, "checksum", plugin.getChecksum());
-				setAttribute(attr, "timestamp", plugin.getTimestamp());
-				setAttribute(attr, "filesize", plugin.filesize);
+				setAttribute(attr, "checksum", file.getChecksum());
+				setAttribute(attr, "timestamp", file.getTimestamp());
+				setAttribute(attr, "filesize", file.filesize);
 				handler.startElement("", "", "version", attr);
-				if (plugin.description != null) writeSimpleTag("description",
-					plugin.description);
+				if (file.description != null) writeSimpleTag("description",
+					file.description);
 
-				for (final Dependency dependency : plugin.getDependencies()) {
+				for (final Dependency dependency : file.getDependencies()) {
 					attr.clear();
 					setAttribute(attr, "filename", dependency.filename);
 					setAttribute(attr, "timestamp", dependency.timestamp);
@@ -176,13 +175,13 @@ public class XMLFileWriter {
 					writeSimpleTag("dependency", null, attr);
 				}
 
-				writeSimpleTags("link", plugin.getLinks());
-				writeSimpleTags("author", plugin.getAuthors());
+				writeSimpleTags("link", file.getLinks());
+				writeSimpleTags("author", file.getAuthors());
 				handler.endElement("", "", "version");
 			}
-			if (current != null && !current.checksum.equals(plugin.getChecksum())) plugin
+			if (current != null && !current.checksum.equals(file.getChecksum())) file
 				.addPreviousVersion(current.checksum, current.timestamp);
-			for (final FileObject.Version version : plugin.getPrevious()) {
+			for (final FileObject.Version version : file.getPrevious()) {
 				attr.clear();
 				setAttribute(attr, "timestamp", version.timestamp);
 				setAttribute(attr, "checksum", version.checksum);
@@ -265,7 +264,7 @@ public class XMLFileWriter {
 	 * transformer, but we really want to.
 	 *
 	 * So this class wraps an output stream, and inserts the DTD when
-	 * it sees the string "<pluginRecords>".
+	 * it sees the string "<fileRecords>".
 	 *
 	 * It fails if that string is not written in one go.
 	 */

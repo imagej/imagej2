@@ -47,29 +47,29 @@ import java.util.List;
 
 public class Installer extends Downloader {
 
-	protected FilesCollection plugins;
+	protected FilesCollection files;
 
-	public Installer(final FilesCollection plugins, final Progress progress) {
-		this.plugins = plugins;
+	public Installer(final FilesCollection files, final Progress progress) {
+		this.files = files;
 		addProgress(progress);
 		addProgress(new VerifyFiles());
 	}
 
 	class Download implements Downloadable {
 
-		FileObject plugin;
+		FileObject file;
 		String url, destination;
 
-		Download(final FileObject plugin, final String url, final String destination)
+		Download(final FileObject file, final String url, final String destination)
 		{
-			this.plugin = plugin;
+			this.file = file;
 			this.url = url;
 			this.destination = destination;
 		}
 
 		@Override
 		public String toString() {
-			return plugin.getFilename();
+			return file.getFilename();
 		}
 
 		@Override
@@ -84,27 +84,26 @@ public class Installer extends Downloader {
 
 		@Override
 		public long getFilesize() {
-			return plugin.filesize;
+			return file.filesize;
 		}
 	}
 
 	public synchronized void start() throws IOException {
 		// mark for removal
-		for (final FileObject plugin : plugins.toUninstall())
+		for (final FileObject file : files.toUninstall())
 			try {
-				plugin.stageForUninstall();
+				file.stageForUninstall();
 			}
 			catch (final IOException e) {
 				e.printStackTrace();
-				throw new RuntimeException("Could not mark '" + plugin +
-					"' for removal");
+				throw new RuntimeException("Could not mark '" + file + "' for removal");
 			}
 
 		final List<Downloadable> list = new ArrayList<Downloadable>();
-		for (final FileObject plugin : plugins.toInstallOrUpdate()) {
-			final String name = plugin.filename;
+		for (final FileObject file : files.toInstallOrUpdate()) {
+			final String name = file.filename;
 			String saveTo = Util.prefixUpdate(name);
-			if (plugin.executable) {
+			if (file.executable) {
 				saveTo = Util.prefix(name);
 				final File orig = new File(saveTo);
 				String oldName = saveTo + ".old";
@@ -121,9 +120,9 @@ public class Installer extends Downloader {
 				}
 			}
 
-			final String url = plugins.getURL(plugin);
-			final Download file = new Download(plugin, url, saveTo);
-			list.add(file);
+			final String url = files.getURL(file);
+			final Download download = new Download(file, url, saveTo);
+			list.add(download);
 		}
 
 		start(list);
@@ -160,11 +159,11 @@ public class Installer extends Downloader {
 			"Incorrect file size for " + fileName + ": " + actualSize +
 				" (expected " + size + ")");
 
-		final FileObject plugin = download.plugin;
-		final String digest = download.plugin.getChecksum();
+		final FileObject file = download.file;
+		final String digest = download.file.getChecksum();
 		String actualDigest;
 		try {
-			actualDigest = Util.getDigest(plugin.getFilename(), fileName);
+			actualDigest = Util.getDigest(file.getFilename(), fileName);
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
@@ -176,10 +175,10 @@ public class Installer extends Downloader {
 			"Incorrect checksum " + "for " + fileName + ":\n" + actualDigest +
 				"\n(expected " + digest + ")");
 
-		plugin.setLocalVersion(digest, plugin.getTimestamp());
-		plugin.setStatus(FileObject.Status.INSTALLED);
+		file.setLocalVersion(digest, file.getTimestamp());
+		file.setStatus(FileObject.Status.INSTALLED);
 
-		if (plugin.executable && !Util.platform.startsWith("win")) try {
+		if (file.executable && !Util.platform.startsWith("win")) try {
 			Runtime.getRuntime().exec(
 				new String[] { "chmod", "0755", download.destination });
 		}
