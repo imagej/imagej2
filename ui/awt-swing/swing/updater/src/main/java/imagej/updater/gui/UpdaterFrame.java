@@ -50,7 +50,6 @@ import imagej.updater.util.Util;
 import imagej.util.Log;
 
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -97,9 +96,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	protected FilesCollection files;
 
 	protected JTextField txtSearch;
+	protected JPanel searchPanel;
 	protected ViewOptions viewOptions;
+	protected JPanel viewOptionsPanel;
+	protected JPanel chooseLabel;
 	protected FileTable table;
 	protected JLabel fileSummary;
+	protected JPanel summaryPanel;
+	protected JPanel rightPanel;
 	protected FileDetails fileDetails;
 	protected JButton apply, cancel, easy, updateSites;
 	protected boolean easyMode;
@@ -158,8 +162,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				updateFilesTable();
 			}
 		});
-		final JPanel searchPanel =
-			SwingTools.labelComponentRigid("Search:", txtSearch);
+		searchPanel = SwingTools.labelComponentRigid("Search:", txtSearch);
 		gb.setConstraints(searchPanel, c);
 		leftPanel.add(searchPanel);
 
@@ -177,7 +180,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			}
 		});
 
-		final JPanel viewOptionsPanel =
+		viewOptionsPanel =
 			SwingTools.labelComponentRigid("View Options:", viewOptions);
 		c.gridy = 2;
 		gb.setConstraints(viewOptionsPanel, c);
@@ -189,7 +192,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		leftPanel.add(box);
 
 		// Create labels to annotate table
-		final JPanel chooseLabel =
+		chooseLabel =
 			SwingTools.label("Please choose what you want to install/uninstall:",
 				null);
 		c.gridy = 4;
@@ -203,7 +206,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		// Label text for file summaries
 		fileSummary = new JLabel();
-		final JPanel summaryPanel = SwingTools.horizontalPanel();
+		summaryPanel = SwingTools.horizontalPanel();
 		summaryPanel.add(fileSummary);
 		summaryPanel.add(Box.createHorizontalGlue());
 
@@ -231,7 +234,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		// ======== End: LEFT PANEL ========
 
 		// ======== Start: RIGHT PANEL ========
-		final JPanel rightPanel = SwingTools.verticalPanel();
+		rightPanel = SwingTools.verticalPanel();
 
 		rightPanel.add(Box.createVerticalGlue());
 
@@ -314,67 +317,63 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		upload.setEnabled(false);
 		upload.setVisible(files.hasUploadableSites());
 
-		if (files.hasUploadableSites()) {
-			final IJ1Plugin fileChanges =
-				IJ1Plugin.discover("fiji.scripting.ShowPluginChanges");
-			if (fileChanges != null &&
-				new File(System.getProperty("ij.dir"), ".git").isDirectory())
-			{
-				bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
-				showChanges =
-					SwingTools.button("Show changes",
-						"Show the changes in Git since the last upload",
-						new ActionListener() {
+		final IJ1Plugin fileChanges =
+			IJ1Plugin.discover("fiji.scripting.ShowPluginChanges");
+		if (fileChanges != null &&
+			new File(System.getProperty("ij.dir"), ".git").isDirectory())
+		{
+			bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
+			showChanges =
+				SwingTools.button("Show changes",
+					"Show the changes in Git since the last upload", new ActionListener()
+					{
 
-							@Override
-							public void actionPerformed(final ActionEvent e) {
-								new Thread() {
+						@Override
+						public void actionPerformed(final ActionEvent e) {
+							new Thread() {
 
-									@Override
-									public void run() {
-										for (final FileObject file : table.getSelectedFiles())
-											fileChanges.run(file.filename);
+								@Override
+								public void run() {
+									for (final FileObject file : table.getSelectedFiles())
+										fileChanges.run(file.filename);
+								}
+							}.start();
+						}
+					}, bottomPanel2);
+		}
+		final IJ1Plugin rebuild = IJ1Plugin.discover("fiji.scripting.RunFijiBuild");
+		if (rebuild != null &&
+			new File(System.getProperty("ij.dir"), ".git").isDirectory())
+		{
+			bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
+			rebuildButton =
+				SwingTools.button("Rebuild", "Rebuild using Fiji Build",
+					new ActionListener() {
+
+						@Override
+						public void actionPerformed(final ActionEvent e) {
+							new Thread() {
+
+								@Override
+								public void run() {
+									String list = "";
+									final List<String> names = new ArrayList<String>();
+									for (final FileObject file : table.getSelectedFiles()) {
+										list +=
+											("".equals(list) ? "" : " ") + file.filename + "-rebuild";
+										names.add(file.filename);
 									}
-								}.start();
-							}
-						}, bottomPanel2);
-			}
-			final IJ1Plugin rebuild =
-				IJ1Plugin.discover("fiji.scripting.RunFijiBuild");
-			if (rebuild != null &&
-				new File(System.getProperty("ij.dir"), ".git").isDirectory())
-			{
-				bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
-				rebuildButton =
-					SwingTools.button("Rebuild", "Rebuild using Fiji Build",
-						new ActionListener() {
-
-							@Override
-							public void actionPerformed(final ActionEvent e) {
-								new Thread() {
-
-									@Override
-									public void run() {
-										String list = "";
-										final List<String> names = new ArrayList<String>();
-										for (final FileObject file : table.getSelectedFiles()) {
-											list +=
-												("".equals(list) ? "" : " ") + file.filename +
-													"-rebuild";
-											names.add(file.filename);
-										}
-										if (!"".equals(list)) rebuild.run(list);
-										final Checksummer checksummer =
-											new Checksummer(files,
-												getProgress("Checksumming rebuilt files"));
-										checksummer.updateFromLocal(names);
-										filesChanged();
-										updateFilesTable();
-									}
-								}.start();
-							}
-						}, bottomPanel2);
-			}
+									if (!"".equals(list)) rebuild.run(list);
+									final Checksummer checksummer =
+										new Checksummer(files,
+											getProgress("Checksumming rebuilt files"));
+									checksummer.updateFromLocal(names);
+									filesChanged();
+									updateFilesTable();
+								}
+							}.start();
+						}
+					}, bottomPanel2);
 		}
 
 		bottomPanel2.add(Box.createHorizontalGlue());
@@ -451,6 +450,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	@Override
 	public void setVisible(final boolean visible) {
+		showOrHide();
 		super.setVisible(visible && !hidden);
 		if (visible) {
 			UserInterface.get().addWindow(this);
@@ -585,25 +585,29 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		dispose();
 	}
 
-	void setEasyMode(final Container container) {
-		for (final Component child : container.getComponents()) {
-			if ((child instanceof Container) &&
-				child != table.getParent().getParent()) setEasyMode((Container) child);
-			if (child == upload && !easyMode && !files.hasUploadableSites()) child
-				.setVisible(false);
-			else child.setVisible(!easyMode);
-		}
-	}
-
 	public void setEasyMode(final boolean easyMode) {
 		this.easyMode = easyMode;
-		setEasyMode(getContentPane());
-		final Component[] exempt = { table, easy, apply, cancel };
-		for (Component child : exempt)
-			for (; child != getContentPane(); child = child.getParent())
-				child.setVisible(true);
-		easy.setText(easyMode ? "Advanced mode" : "Easy mode");
+		showOrHide();
 		if (isVisible()) repaint();
+	}
+
+	protected void showOrHide() {
+		for (final FileAction action : fileActions) {
+			action.setVisible(!easyMode);
+		}
+		searchPanel.setVisible(!easyMode);
+		viewOptionsPanel.setVisible(!easyMode);
+		chooseLabel.setVisible(!easyMode);
+		summaryPanel.setVisible(!easyMode);
+		rightPanel.setVisible(!easyMode);
+		updateSites.setVisible(!easyMode);
+
+		final boolean uploadable = !easyMode && files.hasUploadableSites();
+		upload.setVisible(uploadable);
+		if (showChanges != null) showChanges.setVisible(uploadable);
+		if (rebuildButton != null) rebuildButton.setVisible(uploadable);
+
+		easy.setText(easyMode ? "Advanced mode" : "Easy mode");
 	}
 
 	public void toggleEasyMode() {
