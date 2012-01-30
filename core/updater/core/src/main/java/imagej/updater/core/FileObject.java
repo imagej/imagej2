@@ -366,11 +366,7 @@ public class FileObject {
 		if (!status.isValid(action)) throw new Error(
 			"Invalid action requested for file " + filename + "(" + action + ", " +
 				status + ")");
-		if (action == Action.UPLOAD) {
-			final Iterable<String> dependencies = files.analyzeDependencies(this);
-			if (dependencies != null) for (final String dependency : dependencies)
-				addDependency(dependency, files.prefix(dependency));
-		}
+		if (action == Action.UPLOAD) files.updateDependencies(this);
 		this.action = action;
 	}
 
