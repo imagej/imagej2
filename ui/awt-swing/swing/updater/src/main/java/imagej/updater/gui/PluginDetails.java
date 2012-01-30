@@ -388,7 +388,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 
 		editable.plugin.metadataChanged = true;
 		if (editable.tag.equals("Description")) {
-			editable.plugin.description = text;
+			editable.plugin.description = text.trim();
 			return true;
 		}
 		else if (editable.tag.equals("Executable")) {
