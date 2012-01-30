@@ -45,6 +45,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
@@ -117,6 +119,19 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		SwingTools.addAccelerator(cancel, rootPanel, this, KeyEvent.VK_ESCAPE, 0);
 		SwingTools.addAccelerator(cancel, rootPanel, this, KeyEvent.VK_W, ctrl);
 		SwingTools.addAccelerator(ok, rootPanel, this, KeyEvent.VK_ENTER, 0);
+
+		addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				for (@SuppressWarnings("unused")
+				final Conflict conflict : conflicts.getConflicts(forUpload))
+				{
+					wasCanceled = true;
+					break;
+				}
+			}
+		});
 	}
 
 	@Override
