@@ -155,7 +155,7 @@ public class XMLFileReader extends DefaultHandler {
 			if (this.updateSite != null &&
 				!this.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))
 			{
-				final FileObject already = files.getFile(current.filename);
+				final FileObject already = files.get(current.filename);
 				if (already != null && !this.updateSite.equals(already.updateSite)) warnings
 					.append("Warning: '" + current.filename + "' from update site '" +
 						this.updateSite + "' shadows the one from update site '" +
@@ -204,7 +204,7 @@ public class XMLFileReader extends DefaultHandler {
 				current.setAction(files, current.isUpdateablePlatform()
 					? FileObject.Action.INSTALL : FileObject.Action.NEW);
 			}
-			final FileObject file = files.getFile(current.filename);
+			final FileObject file = files.get(current.filename);
 			if (updateSite == null && current.updateSite != null &&
 				files.getUpdateSite(current.updateSite) == null) ; // ignore file
 																														// with invalid

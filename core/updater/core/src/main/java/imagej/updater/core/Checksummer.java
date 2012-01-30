@@ -152,7 +152,7 @@ public class Checksummer extends Progressable {
 			timestamp = Util.getTimestamp(file);
 			checksum = getDigest(path, file, timestamp);
 
-			FileObject object = files.getFile(path);
+			FileObject object = files.get(path);
 			if (object == null) {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
 					path + ", which is not known to the Updater");
