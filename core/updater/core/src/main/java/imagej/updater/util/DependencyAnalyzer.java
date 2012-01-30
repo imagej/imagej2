@@ -76,7 +76,7 @@ public class DependencyAnalyzer {
 			if (!file.getName().endsWith(".class")) continue;
 
 			final InputStream input = jar.getInputStream(file);
-			final byte[] code = Compressor.readStream(input);
+			final byte[] code = Util.readStreamAsBytes(input);
 			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code);
 
 			final Set<String> allClassNames = new HashSet<String>();
@@ -117,7 +117,7 @@ public class DependencyAnalyzer {
 		allClassNames.add(className);
 		try {
 			final byte[] buffer =
-				Compressor.readStream(getClass().getResourceAsStream(resourceName));
+				Util.readStreamAsBytes(getClass().getResourceAsStream(resourceName));
 			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(buffer);
 			addClassAndInterfaces(allClassNames, handled, analyzer.getSuperclass());
 			for (final String iface : analyzer.getInterfaces())
@@ -136,7 +136,7 @@ public class DependencyAnalyzer {
 			if (!file.getName().endsWith(".class")) continue;
 
 			final InputStream input = jar.getInputStream(file);
-			final byte[] code = Compressor.readStream(input);
+			final byte[] code = Util.readStreamAsBytes(input);
 			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code, true);
 			if (analyzer.containsDebugInfo()) return true;
 		}
