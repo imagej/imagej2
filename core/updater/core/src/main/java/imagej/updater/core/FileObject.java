@@ -461,6 +461,7 @@ public class FileObject {
 	 * not check whether the file is locally modified.
 	 */
 	public boolean isUploadable(final FilesCollection files) {
+		if (getStatus() == Status.INSTALLED) return false;
 		if (updateSite == null) return files.hasUploadableSites();
 		final FilesCollection.UpdateSite updateSite =
 			files.getUpdateSite(this.updateSite);
