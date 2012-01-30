@@ -217,7 +217,7 @@ public class UpdaterTest {
 		assertCount(4, files);
 		assertStatus(Status.MODIFIED, files, "macros/World.txt");
 		assertCount(1, files.upToDate());
-		assertCount(3, files.uploadable());
+		assertCount(2, files.uploadable());
 	}
 
 	@Test
