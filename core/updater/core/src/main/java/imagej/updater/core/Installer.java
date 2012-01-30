@@ -57,11 +57,11 @@ public class Installer extends Downloader {
 
 	class Download implements Downloadable {
 
-		FileObject file;
-		String url, destination;
+		protected FileObject file;
+		protected String url;
+		protected File destination;
 
-		Download(final FileObject file, final String url, final String destination)
-		{
+		Download(final FileObject file, final String url, final File destination) {
 			this.file = file;
 			this.url = url;
 			this.destination = destination;
@@ -73,7 +73,7 @@ public class Installer extends Downloader {
 		}
 
 		@Override
-		public String getDestination() {
+		public File getDestination() {
 			return destination;
 		}
 
@@ -92,7 +92,7 @@ public class Installer extends Downloader {
 		// mark for removal
 		for (final FileObject file : files.toUninstall())
 			try {
-				file.stageForUninstall();
+				file.stageForUninstall(files);
 			}
 			catch (final IOException e) {
 				e.printStackTrace();
@@ -102,16 +102,15 @@ public class Installer extends Downloader {
 		final List<Downloadable> list = new ArrayList<Downloadable>();
 		for (final FileObject file : files.toInstallOrUpdate()) {
 			final String name = file.filename;
-			String saveTo = Util.prefixUpdate(name);
+			File saveTo = files.prefixUpdate(name);
 			if (file.executable) {
-				saveTo = Util.prefix(name);
-				final File orig = new File(saveTo);
-				String oldName = saveTo + ".old";
+				saveTo = files.prefix(name);
+				String oldName = saveTo.getAbsolutePath() + ".old";
 				if (oldName.endsWith(".exe.old")) oldName =
 					oldName.substring(0, oldName.length() - 8) + ".old.exe";
 				final File old = new File(oldName);
 				if (old.exists()) old.delete();
-				orig.renameTo(old);
+				saveTo.renameTo(old);
 				if (name.equals(Util.macPrefix + "ImageJ-tiger")) try {
 					Util.patchInfoPList("ImageJ-tiger");
 				}
@@ -152,39 +151,41 @@ public class Installer extends Downloader {
 	}
 
 	public void verify(final Download download) {
-		final String fileName = download.getDestination();
+		final File destination = download.getDestination();
 		final long size = download.getFilesize();
-		final long actualSize = new File(fileName).length();
+		final long actualSize = destination.length();
 		if (size != actualSize) throw new RuntimeException(
-			"Incorrect file size for " + fileName + ": " + actualSize +
+			"Incorrect file size for " + destination + ": " + actualSize +
 				" (expected " + size + ")");
 
 		final FileObject file = download.file;
 		final String digest = download.file.getChecksum();
 		String actualDigest;
 		try {
-			actualDigest = Util.getDigest(file.getFilename(), fileName);
+			actualDigest = Util.getDigest(file.getFilename(), destination);
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not verify checksum " + "for " +
-				fileName);
+				destination);
 		}
 
 		if (!digest.equals(actualDigest)) throw new RuntimeException(
-			"Incorrect checksum " + "for " + fileName + ":\n" + actualDigest +
+			"Incorrect checksum " + "for " + destination + ":\n" + actualDigest +
 				"\n(expected " + digest + ")");
 
 		file.setLocalVersion(digest, file.getTimestamp());
 		file.setStatus(FileObject.Status.INSTALLED);
 
 		if (file.executable && !Util.platform.startsWith("win")) try {
-			Runtime.getRuntime().exec(
-				new String[] { "chmod", "0755", download.destination });
+			Runtime.getRuntime()
+				.exec(
+					new String[] { "chmod", "0755",
+						download.destination.getAbsolutePath() });
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Could not mark " + fileName +
+			throw new RuntimeException("Could not mark " + destination +
 				" as executable");
 		}
 	}

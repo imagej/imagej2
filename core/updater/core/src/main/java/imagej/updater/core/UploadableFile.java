@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.util.Util;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,36 +50,31 @@ import java.io.InputStream;
 public class UploadableFile implements Uploadable {
 
 	protected FileObject file;
-	protected String permissions, sourceFilename, filename;
+	protected String permissions, filename;
+	protected File source;
 	protected long filesize;
 
-	public UploadableFile(final String target) {
-		this(Util.prefix(target), target);
-	}
-
-	public UploadableFile(final FileObject file) {
-		this(Util.prefix(file.getFilename()), file.getFilename() + "-" +
+	public UploadableFile(final FilesCollection files, final FileObject file) {
+		this(files.prefix(file.getFilename()), file.getFilename() + "-" +
 			file.getTimestamp());
 		this.file = file;
 	}
 
-	public UploadableFile(final String source, final String target) {
+	public UploadableFile(final File source, final String target) {
 		this(source, target, "C0644");
 	}
 
-	public UploadableFile(final String source, final String target,
+	public UploadableFile(final File source, final String target,
 		final String permissions)
 	{
-		// TODO: fix naming
-		this.sourceFilename = source;
+		this.source = source;
 		this.filename = target;
 		this.permissions = permissions;
-		final File file = new File(source);
-		filesize = file.exists() ? file.length() : 0;
+		filesize = source.exists() ? source.length() : 0;
 	}
 
 	protected void updateFilesize() {
-		filesize = new File(sourceFilename).length();
+		filesize = source.length();
 	}
 
 	// ********** Implemented methods for SourceFile **********
@@ -103,7 +96,7 @@ public class UploadableFile implements Uploadable {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		try {
-			return new FileInputStream(sourceFilename);
+			return new FileInputStream(source);
 		}
 		catch (final FileNotFoundException e) {
 			return new ByteArrayInputStream(new byte[0]);

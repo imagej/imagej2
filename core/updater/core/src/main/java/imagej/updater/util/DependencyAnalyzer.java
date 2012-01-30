@@ -64,18 +64,22 @@ public class DependencyAnalyzer {
 		map = new Class2JarFilesMap();
 	}
 
-	public Iterable<String> getDependencies(String filename) throws IOException {
-		if (!filename.endsWith(".jar") || !new File(filename).exists()) return null;
+	public Iterable<String> getDependencies(final File imagejRoot,
+		final String path) throws IOException
+	{
+		if (!path.endsWith(".jar")) return null;
+
+		final File file = new File(imagejRoot, path);
+		if (!file.exists()) return null;
 
 		final Set<String> result = new LinkedHashSet<String>();
 		final Set<String> handled = new HashSet<String>();
 
-		final JarFile jar = new JarFile(filename);
-		filename = Util.stripPrefix(filename, Util.imagejRoot);
-		for (final JarEntry file : Collections.list(jar.entries())) {
-			if (!file.getName().endsWith(".class")) continue;
+		final JarFile jar = new JarFile(file);
+		for (final JarEntry entry : Collections.list(jar.entries())) {
+			if (!entry.getName().endsWith(".class")) continue;
 
-			final InputStream input = jar.getInputStream(file);
+			final InputStream input = jar.getInputStream(entry);
 			final byte[] code = Util.readStreamAsBytes(input);
 			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code);
 
@@ -86,10 +90,10 @@ public class DependencyAnalyzer {
 			for (final String name : allClassNames) {
 				UserInterface.get().debug("Considering name from analyzer: " + name);
 				final List<String> allJars = map.get(name);
-				if (allJars == null || allJars.contains(filename)) continue;
+				if (allJars == null || allJars.contains(path)) continue;
 				if (allJars.size() > 1) {
 					UserInterface.get().log(
-						"Warning: class " + name + ", referenced in " + filename +
+						"Warning: class " + name + ", referenced in " + path +
 							", is in more than one jar:");
 					for (final String j : allJars)
 						UserInterface.get().log("  " + j);
@@ -98,7 +102,7 @@ public class DependencyAnalyzer {
 				for (final String j : allJars) {
 					result.add(j);
 					UserInterface.get().debug(
-						"... adding dep " + j + " for " + filename + " because of class " +
+						"... adding dep " + j + " for " + path + " because of class " +
 							name);
 				}
 			}
@@ -142,4 +146,5 @@ public class DependencyAnalyzer {
 		}
 		return false;
 	}
+
 }

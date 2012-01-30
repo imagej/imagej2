@@ -73,13 +73,14 @@ public class Checksummer extends Progressable {
 		setTitle("Czechsummer");
 	}
 
-	protected static class StringPair {
+	protected static class StringAndFile {
 
-		String path, realPath;
+		protected String path;
+		protected File file;
 
-		StringPair(final String path, final String realPath) {
+		StringAndFile(final String path, final File file) {
 			this.path = path;
-			this.realPath = realPath;
+			this.file = file;
 		}
 	}
 
@@ -87,8 +88,7 @@ public class Checksummer extends Progressable {
 		return cachedChecksums;
 	}
 
-	protected List<StringPair> queue;
-	protected String imagejRoot;
+	protected List<StringAndFile> queue;
 
 	/* follows symlinks */
 	protected boolean exists(final File file) {
@@ -110,11 +110,11 @@ public class Checksummer extends Progressable {
 	}
 
 	public void queueDir(final String dir, final Set<String> extensions) {
-		File file = new File(prefix(dir));
+		File file = files.prefix(dir);
 		if (!exists(file)) return;
 		for (final String item : file.list()) {
 			final String path = dir + "/" + item;
-			file = new File(prefix(path));
+			file = files.prefix(path);
 			if (item.startsWith(".")) continue;
 			if (file.isDirectory()) {
 				queueDir(path, extensions);
@@ -124,83 +124,77 @@ public class Checksummer extends Progressable {
 				final int dot = item.lastIndexOf('.');
 				if (dot < 0 || !extensions.contains(item.substring(dot))) continue;
 			}
-			if (exists(file)) queue(path, file.getAbsolutePath());
+			if (exists(file)) queue(path, file);
 		}
 	}
 
 	protected void queueIfExists(final String path) {
-		final String realPath = prefix(path);
-		if (exists(new File(realPath))) queue(path, realPath);
+		final File file = files.prefix(path);
+		if (file.exists()) queue(path, file);
 	}
 
 	protected void queue(final String path) {
-		queue(path, prefix(path));
+		queue(path, files.prefix(path));
 	}
 
-	protected String prefix(final String path) {
-		if (new File(path).isAbsolute()) return path;
-		return imagejRoot == null ? Util.prefix(path) : imagejRoot + path;
+	protected void queue(final String path, final File file) {
+		queue.add(new StringAndFile(path, file));
 	}
 
-	protected void queue(final String path, final String realPath) {
-		queue.add(new StringPair(path, realPath));
-	}
-
-	protected void handle(final StringPair pair) {
+	protected void handle(final StringAndFile pair) {
 		final String path = pair.path;
-		final String realPath = prefix(pair.realPath);
+		final File file = pair.file;
 		addItem(path);
 
 		String checksum = null;
 		long timestamp = 0;
-		final File realFile = new File(realPath);
-		if (realFile.exists()) try {
-			timestamp = Util.getTimestamp(realPath);
-			checksum = getDigest(path, realPath, timestamp);
+		if (file.exists()) try {
+			timestamp = Util.getTimestamp(file);
+			checksum = getDigest(path, file, timestamp);
 
-			FileObject file = files.getFile(path);
-			if (file == null) {
+			FileObject object = files.getFile(path);
+			if (object == null) {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
 					path + ", which is not known to the Updater");
-				file =
-					new FileObject(null, path, realFile.length(), checksum, timestamp,
+				object =
+					new FileObject(null, path, file.length(), checksum, timestamp,
 						Status.LOCAL_ONLY);
-				tryToGuessPlatform(file);
-				if (realFile.canExecute() || path.endsWith(".exe")) file.executable =
+				tryToGuessPlatform(object);
+				if (file.canExecute() || path.endsWith(".exe")) object.executable =
 					true;
-				files.add(file);
+				files.add(object);
 			}
 			else if (checksum != null) {
-				file.setLocalVersion(checksum, timestamp);
-				if (file.getStatus() == Status.OBSOLETE_UNINSTALLED) file
+				object.setLocalVersion(checksum, timestamp);
+				if (object.getStatus() == Status.OBSOLETE_UNINSTALLED) object
 					.setStatus(Status.OBSOLETE);
 			}
 		}
 		catch (final ZipException e) {
-			System.err.println("Problem digesting " + realPath);
+			System.err.println("Problem digesting " + file);
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
 		}
 
-		counter += (int) realFile.length();
+		counter += (int) file.length();
 		itemDone(path);
 		setCount(counter, total);
 	}
 
 	protected void handleQueue() {
 		total = 0;
-		for (final StringPair pair : queue)
-			total += (int) new File(pair.realPath).length();
+		for (final StringAndFile pair : queue)
+			total += (int) pair.file.length();
 		counter = 0;
-		for (final StringPair pair : queue)
+		for (final StringAndFile pair : queue)
 			handle(pair);
 		done();
 		writeCachedChecksums();
 	}
 
 	public void updateFromLocal(final List<String> files) {
-		queue = new ArrayList<StringPair>();
+		queue = new ArrayList<StringAndFile>();
 		for (final String file : files)
 			queue(file);
 		handleQueue();
@@ -259,7 +253,7 @@ public class Checksummer extends Progressable {
 	}
 
 	protected void initializeQueue() {
-		queue = new ArrayList<StringPair>();
+		queue = new ArrayList<StringAndFile>();
 
 		for (final String launcher : Util.launchers)
 			queueIfExists(launcher);
@@ -268,7 +262,7 @@ public class Checksummer extends Progressable {
 			queueDir(directories[i], directories[i + 1]);
 
 		final Set<String> alreadyQueued = new HashSet<String>();
-		for (final StringPair pair : queue)
+		for (final StringAndFile pair : queue)
 			alreadyQueued.add(pair.path);
 		for (final FileObject file : files)
 			if (!alreadyQueued.contains(file.getFilename())) queueIfExists(file
@@ -282,7 +276,7 @@ public class Checksummer extends Progressable {
 
 	protected void readCachedChecksums() {
 		cachedChecksums = new TreeMap<String, FileObject.Version>();
-		final File file = new File(prefix(".checksums"));
+		final File file = files.prefix(".checksums");
 		if (!file.exists()) return;
 		try {
 			final BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -312,12 +306,12 @@ public class Checksummer extends Progressable {
 
 	protected void writeCachedChecksums() {
 		if (cachedChecksums == null) return;
-		final File file = new File(prefix(".checksums"));
+		final File file = files.prefix(".checksums");
 		// file.canWrite() not applicable, as the file need not exist
 		try {
 			final Writer writer = new FileWriter(file);
 			for (final String filename : cachedChecksums.keySet())
-				if (new File(prefix(filename)).exists()) {
+				if (files.prefix(filename).exists()) {
 					final FileObject.Version version = cachedChecksums.get(filename);
 					writer.write(version.checksum + " " + version.timestamp + " " +
 						filename + "\n");
@@ -329,14 +323,14 @@ public class Checksummer extends Progressable {
 		}
 	}
 
-	protected String getDigest(final String path, final String realPath,
+	protected String getDigest(final String path, final File file,
 		final long timestamp) throws IOException, NoSuchAlgorithmException,
 		ZipException
 	{
 		if (cachedChecksums == null) readCachedChecksums();
 		final FileObject.Version version = cachedChecksums.get(path);
 		if (version != null && timestamp == version.timestamp) return version.checksum;
-		final String checksum = Util.getDigest(path, realPath);
+		final String checksum = Util.getDigest(path, file);
 		cachedChecksums.put(path, new FileObject.Version(checksum, timestamp));
 		return checksum;
 	}

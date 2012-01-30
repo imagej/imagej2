@@ -342,7 +342,8 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 
 			void replaceDependency(final FileObject file) {
 				file.removeDependency(removeDependency);
-				if (addDependency != null) file.addDependency(addDependency);
+				if (addDependency != null) file.addDependency(addDependency, files
+					.prefix(addDependency));
 			}
 
 			@Override
