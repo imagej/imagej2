@@ -68,6 +68,7 @@ public class FilesUploader {
 	protected UpdateSite site;
 	protected List<Uploadable> uploadables;
 	protected String compressed;
+	protected boolean loggedIn;
 
 	public static AbstractUploader getUploader(String protocol)
 		throws InstantiationException
@@ -152,6 +153,7 @@ public class FilesUploader {
 	}
 
 	public void upload(final Progress progress) throws Exception {
+		if (!loggedIn) throw new RuntimeException("Not logged in!");
 		if (new Conflicts(files).hasUploadConflicts()) throw new RuntimeException(
 			"Unresolved upload conflicts!");
 		uploader.addProgress(progress);
@@ -301,6 +303,8 @@ public class FilesUploader {
 	}
 
 	public boolean login() {
-		return uploader.login(this);
+		if (loggedIn) return loggedIn;
+		loggedIn = uploader.login(this);
+		return loggedIn;
 	}
 }
