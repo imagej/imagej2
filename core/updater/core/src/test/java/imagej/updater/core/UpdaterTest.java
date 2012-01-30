@@ -536,8 +536,10 @@ public class UpdaterTest {
 		if (fileNames.length > 0) {
 			// Write files
 
+			List<String> list = new ArrayList<String>();
 			for (final String name : fileNames) {
 				writeFile(name);
+				list.add(name);
 			}
 
 			// Initialize db.xml.gz
@@ -549,7 +551,7 @@ public class UpdaterTest {
 			assertTrue(localDb.exists());
 
 			final Checksummer czechsummer = new Checksummer(files, progress);
-			czechsummer.updateFromLocal();
+			czechsummer.updateFromLocal(list);
 
 			for (final String name : fileNames) {
 				final FileObject file = files.get(name);
