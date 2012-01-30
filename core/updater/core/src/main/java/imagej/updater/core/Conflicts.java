@@ -200,9 +200,7 @@ public class Conflicts {
 	protected void listUploadIssues() {
 		final DependencyMap toUpload = new FilesCollection.DependencyMap();
 		for (final FileObject file : files.toUpload()) {
-			if (file.getTimestamp() != Util.getTimestamp(files.prefix(file
-				.getFilename())))
-			{
+			if (file.getTimestamp() != Util.getTimestamp(files.prefix(file))) {
 				conflicts.add(timestampChanged(file));
 			}
 			for (final Dependency dependency : file.getDependencies()) {
