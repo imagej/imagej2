@@ -44,8 +44,14 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.module.event.ModulesUpdatedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Default service for keeping track of the application's menu structure.
@@ -54,14 +60,13 @@ import imagej.ext.plugin.RunnablePlugin;
  * @see ShadowMenu
  */
 @Service
-public class DefaultMenuService extends AbstractService implements MenuService
-{
+public class DefaultMenuService extends AbstractService implements MenuService {
 
 	private final EventService eventService;
 	private final PluginService pluginService;
 
-	/** Menu tree structure. */
-	private ShadowMenu rootMenu;
+	/** Menu tree structures. There is one structure per menu root. */
+	private HashMap<String, ShadowMenu> rootMenus;
 
 	// -- Constructors --
 
@@ -78,7 +83,11 @@ public class DefaultMenuService extends AbstractService implements MenuService
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 
-		rootMenu = new ShadowMenu(this);
+		rootMenus = new HashMap<String, ShadowMenu>();
+
+		final List<ModuleInfo> allModules =
+			getPluginService().getModuleService().getModules();
+		addModules(allModules);
 
 		subscribeToEvents(eventService);
 	}
@@ -97,12 +106,26 @@ public class DefaultMenuService extends AbstractService implements MenuService
 
 	@Override
 	public ShadowMenu getMenu() {
-		return rootMenu;
+		return getMenu(Plugin.APPLICATION_MENU_ROOT);
 	}
 
 	@Override
-	public <T> T createMenus(final MenuCreator<T> creator, final T menu) {
-		creator.createMenus(rootMenu, menu);
+	public ShadowMenu getMenu(final String menuRoot) {
+		return rootMenus.get(menuRoot);
+	}
+
+	@Override
+	public <T> T createMenus(final MenuCreator<T> creator,
+		final T menu)
+	{
+		return createMenus(Plugin.APPLICATION_MENU_ROOT, creator, menu);
+	}
+
+	@Override
+	public <T> T createMenus(final String menuRoot, final MenuCreator<T> creator,
+		final T menu)
+	{
+		creator.createMenus(getMenu(menuRoot), menu);
 		return menu;
 	}
 
@@ -112,8 +135,7 @@ public class DefaultMenuService extends AbstractService implements MenuService
 	}
 
 	@Override
-	public void setSelected(final RunnablePlugin plugin, final boolean selected)
-	{
+	public void setSelected(final RunnablePlugin plugin, final boolean selected) {
 		setSelected(plugin.getClass(), selected);
 	}
 
@@ -141,17 +163,54 @@ public class DefaultMenuService extends AbstractService implements MenuService
 
 	@EventHandler
 	protected void onEvent(final ModulesAddedEvent event) {
-		getMenu().addAll(event.getItems());
+		addModules(event.getItems());
 	}
 
 	@EventHandler
 	protected void onEvent(final ModulesRemovedEvent event) {
-		getMenu().removeAll(event.getItems());
+		for (final ShadowMenu menu : rootMenus.values()) {
+			menu.removeAll(event.getItems());
+		}
 	}
 
 	@EventHandler
 	protected void onEvent(final ModulesUpdatedEvent event) {
-		getMenu().updateAll(event.getItems());
+		for (final ShadowMenu menu : rootMenus.values()) {
+			menu.updateAll(event.getItems());
+		}
+	}
+
+	// -- Helper methods --
+
+	private void addModules(final Collection<ModuleInfo> items) {
+		// categorize modules by menu root
+		final HashMap<String, ArrayList<ModuleInfo>> modulesByMenuRoot =
+			new HashMap<String, ArrayList<ModuleInfo>>();
+		for (final ModuleInfo info : items) {
+			final String menuRoot = info.getMenuRoot();
+			ArrayList<ModuleInfo> modules = modulesByMenuRoot.get(menuRoot);
+			if (modules == null) {
+				modules = new ArrayList<ModuleInfo>();
+				modulesByMenuRoot.put(menuRoot, modules);
+			}
+			modules.add(info);
+		}
+
+		// process each menu root separately
+		for (final String menuRoot : modulesByMenuRoot.keySet()) {
+			final ArrayList<ModuleInfo> modules = modulesByMenuRoot.get(menuRoot);
+			ShadowMenu menu = rootMenus.get(menuRoot);
+			if (menu == null) {
+				// new menu root: create new menu structure
+				menu = new ShadowMenu(this, modules);
+				rootMenus.put(menuRoot, menu);
+			}
+			else {
+				// existing menu root: add to menu structure
+				menu.addAll(modules);
+			}
+		}
+
 	}
 
 }

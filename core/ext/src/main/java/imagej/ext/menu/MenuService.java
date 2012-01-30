@@ -52,16 +52,35 @@ public interface MenuService extends IService {
 
 	PluginService getPluginService();
 
-	/** Gets the root node of the menu structure. */
+	/** Gets the root node of the application menu structure. */
 	ShadowMenu getMenu();
 
 	/**
-	 * Populates a UI-specific menu structure.
+	 * Gets the root node of a menu structure.
+	 * 
+	 * @param menuRoot the root of the desired menu structure (see
+	 *          {@link ModuleInfo#getMenuRoot()}).
+	 */
+	ShadowMenu getMenu(final String menuRoot);
+
+	/**
+	 * Populates a UI-specific application menu structure.
 	 * 
 	 * @param creator the {@link MenuCreator} to use to populate the menus.
 	 * @param menu the destination menu structure to populate.
 	 */
 	<T> T createMenus(final MenuCreator<T> creator, final T menu);
+
+	/**
+	 * Populates a UI-specific menu structure.
+	 * 
+	 * @param menuRoot the root of the menu structure to generate (see
+	 *          {@link ModuleInfo#getMenuRoot()}).
+	 * @param creator the {@link MenuCreator} to use to populate the menus.
+	 * @param menu the destination menu structure to populate.
+	 */
+	<T> T createMenus(final String menuRoot, final MenuCreator<T> creator,
+		final T menu);
 
 	/** Selects or deselects the given module in the menu structure. */
 	void setSelected(final Module module, final boolean selected);
