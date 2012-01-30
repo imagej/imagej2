@@ -32,6 +32,12 @@
 			<artifactId>ij-updater</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>${miglayout.version}</version>
+			<classifier>swing</classifier>
+		</dependency>
 	</dependencies>
 
 	<build>
