@@ -715,7 +715,8 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public void sort() {
-		// first letters in this order: 'f', 'p', 'j', 's', 'i', 'm'
+		// first letters in this order: 'C', 'I', 'f', 'p', 'j', 's', 'i', 'm', 'l,
+		// 'r'
 		Collections.sort(this, new Comparator<PluginObject>() {
 
 			@Override
@@ -726,7 +727,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 
 			int firstChar(final PluginObject plugin) {
 				final char c = plugin.filename.charAt(0);
-				final int index = "fpjsim".indexOf(c);
+				final int index = "CIfpjsim".indexOf(c);
 				return index < 0 ? 0x200 + c : index;
 			}
 		});
