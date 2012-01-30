@@ -254,7 +254,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 			needUpload(file);
 
 		// Replace dependencies on to-be-removed files
-		for (final FileObject file : files.fijiFiles()) {
+		for (final FileObject file : files.managedFiles()) {
 			if (file.getAction() == Action.REMOVE) continue;
 			for (final Dependency dependency : file.getDependencies())
 				if (files.getFile(dependency.filename) == null) dependencyNotUploaded(

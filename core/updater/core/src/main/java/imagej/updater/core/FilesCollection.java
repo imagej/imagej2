@@ -326,7 +326,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 		return filter(isUpdateSite(name));
 	}
 
-	public Iterable<FileObject> fijiFiles() {
+	public Iterable<FileObject> managedFiles() {
 		return filter(not(is(Status.LOCAL_ONLY)));
 	}
 
