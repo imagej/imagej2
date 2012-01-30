@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.util.Progressable;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -54,11 +53,9 @@ import java.util.List;
  * 3.) Upload db.xml.gz.lock (Lock file, prevent others from writing it ATM)
  * 4.) If all goes well, force rename db.xml.gz.lock to db.xml.gz
  */
-public class FileUploader extends Progressable {
+public class FileUploader extends AbstractUploader {
 
 	protected final String uploadDir;
-	protected int total;
-	protected long timestamp;
 
 	public FileUploader() {
 		this(Util.UPDATE_DIRECTORY);
@@ -68,13 +65,8 @@ public class FileUploader extends Progressable {
 		this.uploadDir = uploadDir;
 	}
 
-	public void calculateTotalSize(final List<Uploadable> sources) {
-		total = 0;
-		for (final Uploadable source : sources)
-			total += (int) source.getFilesize();
-	}
-
 	// Steps to accomplish entire upload task
+	@Override
 	public synchronized void upload(final List<Uploadable> sources,
 		final List<String> locks) throws IOException
 	{

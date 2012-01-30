@@ -59,7 +59,7 @@ import java.util.List;
 public class PluginUploader {
 
 	protected PluginCollection plugins;
-	protected FileUploader uploader;
+	protected AbstractUploader uploader;
 
 	protected String siteName;
 	protected UpdateSite site;
@@ -105,10 +105,6 @@ public class PluginUploader {
 
 	public String getUploadDirectory() {
 		return site.uploadDirectory;
-	}
-
-	public void setUploader(final FileUploader uploader) {
-		this.uploader = uploader;
 	}
 
 	protected class DbXmlFile implements Uploadable {
