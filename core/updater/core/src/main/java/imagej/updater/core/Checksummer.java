@@ -138,6 +138,7 @@ public class Checksummer extends Progressable {
 	}
 
 	protected String prefix(final String path) {
+		if (new File(path).isAbsolute()) return path;
 		return imagejRoot == null ? Util.prefix(path) : imagejRoot + path;
 	}
 
@@ -147,7 +148,7 @@ public class Checksummer extends Progressable {
 
 	protected void handle(final StringPair pair) {
 		final String path = pair.path;
-		final String realPath = Util.prefix(pair.realPath);
+		final String realPath = prefix(pair.realPath);
 		addItem(path);
 
 		String checksum = null;
@@ -280,7 +281,7 @@ public class Checksummer extends Progressable {
 
 	protected void readCachedChecksums() {
 		cachedChecksums = new TreeMap<String, FileObject.Version>();
-		final File file = new File(Util.prefix(".checksums"));
+		final File file = new File(prefix(".checksums"));
 		if (!file.exists()) return;
 		try {
 			final BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -310,12 +311,12 @@ public class Checksummer extends Progressable {
 
 	protected void writeCachedChecksums() {
 		if (cachedChecksums == null) return;
-		final File file = new File(Util.prefix(".checksums"));
+		final File file = new File(prefix(".checksums"));
 		// file.canWrite() not applicable, as the file need not exist
 		try {
 			final Writer writer = new FileWriter(file);
 			for (final String filename : cachedChecksums.keySet())
-				if (new File(Util.prefix(filename)).exists()) {
+				if (new File(prefix(filename)).exists()) {
 					final FileObject.Version version = cachedChecksums.get(filename);
 					writer.write(version.checksum + " " + version.timestamp + " " +
 						filename + "\n");
