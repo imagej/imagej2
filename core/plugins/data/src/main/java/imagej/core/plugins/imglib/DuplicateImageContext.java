@@ -1,5 +1,5 @@
 //
-// ContextMenuHandler.java
+// DuplicateImageContext.java
 //
 
 /*
@@ -32,54 +32,33 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.core.plugins.imglib;
 
-import imagej.ext.display.Display;
-import imagej.ext.display.event.input.MsButtonEvent;
-import imagej.ext.display.event.input.MsClickedEvent;
-import imagej.ext.display.event.input.MsPressedEvent;
-import imagej.ext.display.event.input.MsReleasedEvent;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
-import imagej.ui.UIService;
+import imagej.ext.plugin.PluginService;
 
 /**
- * Handles display of general-purpose context menu (e.g., on right mouse click).
+ * Context menu plugin for Duplicate command.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Context Menus",
-	menuRoot = Plugin.CONTEXT_MENU_ROOT, alwaysActive = true)
-public class ContextMenuHandler extends AbstractTool {
+@Plugin(menu = { @Menu(label = "Duplicate...", mnemonic = 'd',
+	accelerator = "shift control D") }, menuRoot = Plugin.CONTEXT_MENU_ROOT)
+public class DuplicateImageContext implements ImageJPlugin {
+
+	// -- Plugin parameters --
+
+	@Parameter(required = true, persist = false)
+	private PluginService pluginService;
+
+	// -- RunnablePlugin methods --
 
 	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
-		doPopupMenu(evt);
-	}
-
-	@Override
-	public void onMouseUp(final MsReleasedEvent evt) {
-		doPopupMenu(evt);
-	}
-
-	@Override
-	public void onMouseClick(final MsClickedEvent evt) {
-		doPopupMenu(evt);
-	}
-
-	// -- Helper methods --
-
-	private void doPopupMenu(final MsButtonEvent evt) {
-		if (!evt.isPopupTrigger()) return;
-
-		final UIService uiService = getContext().getService(UIService.class);
-		final String menuRoot = getInfo().getMenuRoot();
-		final Display<?> display = evt.getDisplay();
-		uiService.showContextMenu(menuRoot, display, evt.getX(), evt.getY());
-
-		// consume event, so that nothing else tries to handle it
-		evt.consume();
+	public void run() {
+		pluginService.run(DuplicateImage.class);
 	}
 
 }

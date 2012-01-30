@@ -61,6 +61,7 @@ import net.java.sezpoz.Indexable;
 public @interface Plugin {
 
 	String APPLICATION_MENU_ROOT = "app";
+	String CONTEXT_MENU_ROOT = "context";
 
 	/**
 	 * The type of plugin; e.g., {@link ImageJPlugin}, {@link PreprocessorPlugin},
