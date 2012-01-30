@@ -609,12 +609,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final Installer installer =
 			new Installer(files, getProgress("Installing..."));
 		try {
-			final FilesCollection uninstalled = files.clone(files.toUninstall());
 			installer.start();
-			for (final FileObject file : uninstalled)
-				if (file.isLocalOnly()) files.remove(file);
-				else file.setStatus(file.isObsolete() ? Status.OBSOLETE_UNINSTALLED
-					: Status.NOT_INSTALLED);
 			updateFilesTable();
 			filesChanged();
 			files.write();
