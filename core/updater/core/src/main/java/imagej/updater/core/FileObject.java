@@ -391,7 +391,7 @@ public class FileObject {
 	}
 
 	public void markUploaded() {
-		if (!isFiji()) {
+		if (isLocalOnly()) {
 			status = Status.INSTALLED;
 			newChecksum = current.checksum;
 			newTimestamp = current.timestamp;
@@ -512,8 +512,8 @@ public class FileObject {
 		return false;
 	}
 
-	public boolean isFiji() {
-		return status != Status.LOCAL_ONLY;
+	public boolean isLocalOnly() {
+		return status == Status.LOCAL_ONLY;
 	}
 
 	/* This returns true if the user marked the file for uninstall, too */
