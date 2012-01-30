@@ -66,7 +66,7 @@ import org.xml.sax.SAXException;
 public class FilesCollection extends ArrayList<FileObject> {
 
 	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
-	protected File imagejRoot = new File(Util.imagejRoot);
+	protected File imagejRoot;
 
 	public static class UpdateSite implements Cloneable {
 
@@ -112,6 +112,17 @@ public class FilesCollection extends ArrayList<FileObject> {
 	protected Map<String, UpdateSite> updateSites;
 
 	public FilesCollection() {
+		this(new File(Util.imagejRoot));
+	}
+
+	/**
+	 * This constructor is necessary for the test suite (Because it needs to
+	 * override imagejRoot.)
+	 * 
+	 * @param imagejRoot the ImageJ directory
+	 */
+	protected FilesCollection(final File imagejRoot) {
+		this.imagejRoot = imagejRoot;
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, null, null, Util
 			.getTimestamp(prefix(Util.XML_COMPRESSED)));
@@ -245,16 +256,13 @@ public class FilesCollection extends ArrayList<FileObject> {
 		boolean matches(FileObject file);
 	}
 
-	public static FilesCollection clone(final Iterable<FileObject> iterable) {
-		final FilesCollection result = new FilesCollection();
+	public FilesCollection clone(final Iterable<FileObject> iterable) {
+		final FilesCollection result = new FilesCollection(imagejRoot);
 		for (final FileObject file : iterable)
 			result.add(file);
+		for (final String name : updateSites.keySet())
+			result.updateSites.put(name, (UpdateSite) updateSites.get(name).clone());
 		return result;
-	}
-
-	public void cloneUpdateSites(final FilesCollection other) {
-		for (final String name : other.updateSites.keySet())
-			updateSites.put(name, (UpdateSite) other.updateSites.get(name).clone());
 	}
 
 	public Iterable<FileObject> toUploadOrRemove() {

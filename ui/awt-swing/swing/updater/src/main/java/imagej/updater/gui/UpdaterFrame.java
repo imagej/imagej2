@@ -610,8 +610,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final Installer installer =
 			new Installer(files, getProgress("Installing..."));
 		try {
-			final FilesCollection uninstalled =
-				FilesCollection.clone(files.toUninstall());
+			final FilesCollection uninstalled = files.clone(files.toUninstall());
 			installer.start();
 			for (final FileObject file : uninstalled)
 				if (file.isLocalOnly()) files.remove(file);
@@ -648,9 +647,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				return false;
 			}
 		};
-		final FilesCollection justTheUpdater =
-			FilesCollection.clone(files.filter(filter));
-		justTheUpdater.cloneUpdateSites(files);
+		final FilesCollection justTheUpdater = files.clone(files.filter(filter));
 		final Installer installer =
 			new Installer(justTheUpdater, getProgress("Installing the updater..."));
 		try {

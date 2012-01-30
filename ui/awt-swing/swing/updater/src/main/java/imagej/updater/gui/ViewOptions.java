@@ -104,7 +104,7 @@ public class ViewOptions extends JComboBox {
 			.getIterable();
 
 		final FilesCollection files =
-			FilesCollection.clone(table.getAllFiles().notHidden());
+			table.files.clone(table.getAllFiles().notHidden());
 		files.sort();
 		switch ((Option) getSelectedItem()) {
 			case INSTALLED:
