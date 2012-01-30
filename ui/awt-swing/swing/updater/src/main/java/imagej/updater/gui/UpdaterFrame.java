@@ -105,7 +105,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	protected boolean easyMode;
 
 	// For developers
-	protected JButton upload;
+	protected JButton upload, showChanges, rebuildButton;
 	boolean canUpload;
 	protected boolean hidden;
 
@@ -314,15 +314,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		upload.setEnabled(false);
 		upload.setVisible(files.hasUploadableSites());
 
-		if (files.hasUploadableSites()) try {
+		if (files.hasUploadableSites()) {
 			final IJ1Plugin fileChanges =
 				IJ1Plugin.discover("fiji.scripting.ShowPluginChanges");
 			if (fileChanges != null &&
 				new File(System.getProperty("ij.dir"), ".git").isDirectory())
 			{
 				bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
-				@SuppressWarnings("unused")
-				final JButton showChanges =
+				showChanges =
 					SwingTools.button("Show changes",
 						"Show the changes in Git since the last upload",
 						new ActionListener() {
@@ -346,8 +345,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				new File(System.getProperty("ij.dir"), ".git").isDirectory())
 			{
 				bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
-				@SuppressWarnings("unused")
-				final JButton rebuildButton =
+				rebuildButton =
 					SwingTools.button("Rebuild", "Rebuild using Fiji Build",
 						new ActionListener() {
 
@@ -378,7 +376,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 						}, bottomPanel2);
 			}
 		}
-		catch (final Exception e) { /* ignore */}
 
 		bottomPanel2.add(Box.createHorizontalGlue());
 
