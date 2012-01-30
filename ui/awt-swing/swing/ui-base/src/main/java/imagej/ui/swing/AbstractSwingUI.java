@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.ImageJ;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
@@ -108,8 +107,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	public void showContextMenu(final String menuRoot, final Display<?> display,
 		final int x, final int y)
 	{
-		// CTR FIXME - eliminate deprecated method call to ImageJ.get
-		final MenuService menuService = ImageJ.get(MenuService.class);
+		final MenuService menuService = getUIService().getMenuService();
 		final ShadowMenu shadowMenu = menuService.getMenu(menuRoot);
 
 		final JPopupMenu popupMenu = new JPopupMenu();
