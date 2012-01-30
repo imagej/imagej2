@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.updater.gui;
 
 import imagej.updater.core.PluginCollection;
@@ -47,8 +46,9 @@ public class ViewOptions extends JComboBox {
 		ALL("all plugins"), INSTALLED("installed plugins only"), UNINSTALLED(
 			"uninstalled plugins only"), UPTODATE("only up-to-date plugins"),
 			UPDATEABLE("updateable plugins only"), LOCALLY_MODIFIED(
-				"locally modified plugins only"), FIJI("Downloaded plugins only"), OTHERS(
-				"Non-downloaded plugins only"), CHANGES("changes"), SELECTED("selected");
+				"locally modified plugins only"), FIJI("Downloaded plugins only"),
+			OTHERS("Non-downloaded plugins only"), CHANGES("changes"), SELECTED(
+				"selected");
 
 		String label;
 

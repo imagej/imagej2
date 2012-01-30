@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.updater.gui;
 
 import java.net.Authenticator;
@@ -61,8 +60,8 @@ public class SwingAuthenticator extends Authenticator {
 		final JPasswordField password = new JPasswordField();
 		panel.add(password);
 
-		if (JOptionPane.showConfirmDialog(null, panel, "Proxy Authentication", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
-			return null;
+		if (JOptionPane.showConfirmDialog(null, panel, "Proxy Authentication",
+			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
 		return new PasswordAuthentication(user.getText(), password.getPassword());
 	}
 

@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.updater.gui;
 
 import imagej.updater.core.Dependency;
@@ -288,8 +287,9 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		maybeAddSeparator();
 		newText("Warning: ", notFiji || obsolete ? red : normal);
 		addText(plugin.getFilename(), bold);
-		addText((notFiji ? "was not uploaded yet" : "is " + (notInstalled ? "not installed"
-				: (obsolete ? "marked obsolete" : "locally modified"))) +
+		addText((notFiji ? "was not uploaded yet" : "is " +
+			(notInstalled ? "not installed" : (obsolete ? "marked obsolete"
+				: "locally modified"))) +
 			" but a dependency of\n\n");
 		addList(reasons);
 		addText("\n    ");

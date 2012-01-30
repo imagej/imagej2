@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.updater.gui;
 
 import imagej.event.EventService;
@@ -57,12 +56,10 @@ import java.net.UnknownHostException;
 
 /**
  * The Updater. As plugin.
- *
+ * 
  * @author Johannes Schindelin
  */
-@Plugin(menu = {
-	@Menu(label = "Help"),
-	@Menu(label = "Update...") })
+@Plugin(menu = { @Menu(label = "Help"), @Menu(label = "Update...") })
 public class ImageJUpdater implements ImageJPlugin {
 
 	@Parameter(required = true)
@@ -190,8 +187,8 @@ public class ImageJUpdater implements ImageJPlugin {
 	}
 
 	/**
-	 * This returns true if this seems to be the Debian packaged version of ImageJ,
-	 * or false otherwise.
+	 * This returns true if this seems to be the Debian packaged version of
+	 * ImageJ, or false otherwise.
 	 */
 
 	public static boolean isDebian() {

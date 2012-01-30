@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.updater.core;
 
 import imagej.updater.core.PluginObject.Action;
@@ -773,8 +772,8 @@ public class PluginCollection extends ArrayList<PluginObject> {
 			for (final String dependency : deps) {
 				final PluginObject dep = getPlugin(dependency);
 				if (dep == null || dep.current == null) result.append("The plugin " +
-					plugin + " has the obsolete/local-only " + "dependency " + dependency +
-					"!\n");
+					plugin + " has the obsolete/local-only " + "dependency " +
+					dependency + "!\n");
 			}
 		}
 		return result.length() > 0 ? result.toString() : null;
