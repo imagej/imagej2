@@ -95,7 +95,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	protected FilesCollection files;
 
-	protected JTextField txtSearch;
+	protected JTextField searchTerm;
 	protected JPanel searchPanel;
 	protected ViewOptions viewOptions;
 	protected JPanel viewOptionsPanel;
@@ -144,8 +144,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			GridBagConstraints.HORIZONTAL, // fill
 			new Insets(0, 0, 0, 0), 0, 0); // ipadx, ipady
 
-		txtSearch = new JTextField();
-		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+		searchTerm = new JTextField();
+		searchTerm.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
 			public void changedUpdate(final DocumentEvent e) {
@@ -162,7 +162,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				updateFilesTable();
 			}
 		});
-		searchPanel = SwingTools.labelComponentRigid("Search:", txtSearch);
+		searchPanel = SwingTools.labelComponentRigid("Search:", searchTerm);
 		gb.setConstraints(searchPanel, c);
 		leftPanel.add(searchPanel);
 
@@ -549,7 +549,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			selected.add(file);
 		table.clearSelection();
 
-		final String search = txtSearch.getText().trim();
+		final String search = searchTerm.getText().trim();
 		if (!search.equals("")) view = FilesCollection.filter(search, view);
 
 		// Directly update the table for display
