@@ -208,6 +208,16 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		addEditableRegion(offset, "Description", plugin);
 	}
 
+	public void executable(PluginObject plugin) {
+		if (!updaterFrame.plugins.hasUploadableSites() && !plugin.executable)
+			return;
+		blankLine();
+		bold("Executable:\n");
+		int offset = getCaretPosition();
+		normal(plugin.executable ? "true" : "false");
+		addEditableRegion(offset, "Executable", plugin);
+	}
+
 	public void list(String label, final boolean showLinks,
 		final Iterable<?> items, final String delim, final PluginObject plugin)
 	{
@@ -279,6 +289,8 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		list("Category", false, plugin.getCategories(), ", ", plugin);
 		list("Link", true, plugin.getLinks(), "\n", plugin);
 		list("Dependency", false, plugin.getDependencies(), ",\n", plugin);
+		if (plugin.executable)
+			executable(plugin);
 		if (plugin.updateSite != null &&
 			!plugin.updateSite.equals(PluginCollection.DEFAULT_UPDATE_SITE))
 		{
@@ -379,6 +391,10 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		editable.plugin.metadataChanged = true;
 		if (editable.tag.equals("Description")) {
 			editable.plugin.description = text;
+			return true;
+		}
+		else if (editable.tag.equals("Executable")) {
+			editable.plugin.executable = "true".equalsIgnoreCase(text.trim());
 			return true;
 		}
 		final String[] list = text.split(editable.tag.equals("Link") ? "\n" : ",");

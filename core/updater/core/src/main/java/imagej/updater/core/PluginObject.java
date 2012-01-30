@@ -163,6 +163,7 @@ public class PluginObject {
 	private Status status;
 	private Action action;
 	public String updateSite, filename, description, newChecksum;
+	public boolean executable;
 	public Version current;
 	public Set<Version> previous;
 	public long filesize, newTimestamp;
