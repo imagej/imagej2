@@ -89,8 +89,10 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 	 * handling file...
 	 */
 	private boolean ignore(final String name, final String jar) {
-		if (jar.endsWith("/batik.jar")) return name.startsWith("org.xml.") ||
-			name.startsWith("org.w3c.") || name.startsWith("javax.xml.") ||
+		if (jar.endsWith("/batik.jar") || jar.endsWith("/xml-apis.jar")) return name
+			.startsWith("org.xml.") ||
+			name.startsWith("org.w3c.") ||
+			name.startsWith("javax.xml.") ||
 			name.startsWith("org.mozilla.javascript.");
 		if (jar.endsWith("/jython.jar") || jar.endsWith("/jruby.jar")) return name
 			.startsWith("com.sun.jna.") ||
