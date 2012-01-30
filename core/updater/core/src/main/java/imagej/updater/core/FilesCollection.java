@@ -65,7 +65,7 @@ import org.xml.sax.SAXException;
 @SuppressWarnings("serial")
 public class FilesCollection extends ArrayList<FileObject> {
 
-	public final static String DEFAULT_UPDATE_SITE = "Fiji";
+	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
 	protected File imagejRoot = new File(Util.imagejRoot);
 
 	public static class UpdateSite implements Cloneable {
@@ -73,16 +73,9 @@ public class FilesCollection extends ArrayList<FileObject> {
 		public String url, sshHost, uploadDirectory;
 		public long timestamp;
 
-		public UpdateSite(String url, String sshHost, String uploadDirectory,
+		public UpdateSite(String url, final String sshHost, String uploadDirectory,
 			final long timestamp)
 		{
-			if (url.equals("http://pacific.mpi-cbg.de/update/")) {
-				url = Util.MAIN_URL;
-				if (sshHost != null && sshHost.equals("pacific.mpi-cbg.de")) sshHost =
-					Util.SSH_HOST;
-				else if (sshHost != null && sshHost.endsWith("@pacific.mpi-cbg.de")) sshHost =
-					sshHost.substring(0, sshHost.length() - 18) + Util.SSH_HOST;
-			}
 			if (!url.endsWith("/")) url += "/";
 			if (uploadDirectory != null && !uploadDirectory.equals("") &&
 				!uploadDirectory.endsWith("/")) uploadDirectory += "/";
