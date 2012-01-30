@@ -47,24 +47,33 @@ public class Util {
 	public final static boolean useMacPrefix;
 	public final static String macPrefix = "Contents/MacOS/";
 
-	public final static String fijiRoot, platform;
+	public final static String imagejRoot, platform;
 	public final static boolean isDeveloper;
 	public final static String[] platforms, launchers;
 	protected final static Set<String> updateablePlatforms;
 
 	static {
-		final String property = System.getProperty("fiji.dir");
-		fijiRoot =
-			property != null ? property + File.separator : new Util().getClass()
-				.getResource("Util.class").toString().replace("jar:file:", "").replace(
-					"plugins/Fiji_Updater.jar!/" + "fiji/updater/util/Util.class", "");
-		isDeveloper = new File(fijiRoot + "/fiji.c").exists();
+		String imagejDir = System.getProperty("imagej.dir");
+		final String property = imagejDir != null ? imagejDir : System.getProperty("fiji.dir");
+		if (property != null)
+			imagejRoot = property + File.separator;
+		else {
+			String path = new Util().getClass()
+				.getResource("Util.class").toString().replace("jar:file:", "");
+			int offset = path.lastIndexOf("/plugins/");
+			if (offset < 0)
+				offset = path.lastIndexOf("\\plugins\\");
+			if (offset < 0)
+				throw new RuntimeException("Could not determine ImageJ directory!");
+			imagejRoot = path.substring(0, offset + 1);
+		}
+		isDeveloper = new File(imagejRoot + "/imagej.c").exists();
 		platform = getPlatform();
 
 		final String macLauncher = macPrefix + "fiji-macosx";
 		useMacPrefix =
 			platform.equals("macosx") &&
-				new File(fijiRoot + "/" + macLauncher).exists();
+				new File(imagejRoot + "/" + macLauncher).exists();
 
 		final String[] list =
 			{ "linux", "linux64", "macosx", "tiger", "win32", "win64" };
@@ -77,9 +86,9 @@ public class Util {
 
 		updateablePlatforms = new HashSet<String>();
 		updateablePlatforms.add(platform);
-		if (new File(fijiRoot, macLauncher).exists()) updateablePlatforms
+		if (new File(imagejRoot, macLauncher).exists()) updateablePlatforms
 			.add("macosx");
-		final String[] files = new File(fijiRoot).list();
+		final String[] files = new File(imagejRoot).list();
 		for (String name : files == null ? new String[0] : files)
 			if (name.startsWith("fiji-")) {
 				name = name.substring(5);
@@ -249,7 +258,7 @@ public class Util {
 		if (useMacPrefix && path.startsWith(macPrefix)) path =
 			path.substring(macPrefix.length());
 		if (File.separator.equals("\\")) path = path.replace("\\", "/");
-		return fijiRoot +
+		return imagejRoot +
 			(isLauncher(path) ? (isDeveloper ? "precompiled/" : (useMacPrefix
 				? macPrefix : "")) : "") + path;
 	}
@@ -264,7 +273,7 @@ public class Util {
 
 	public static boolean isLauncher(final String filename) {
 		return Arrays.binarySearch(launchers, stripPrefix(stripPrefix(filename,
-			fijiRoot), "precompiled/")) >= 0;
+			imagejRoot), "precompiled/")) >= 0;
 	}
 
 	public static String[] getLaunchers() {

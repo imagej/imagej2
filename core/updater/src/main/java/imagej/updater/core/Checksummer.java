@@ -61,7 +61,7 @@ public class Checksummer extends Progressable {
 	}
 
 	protected List<StringPair> queue;
-	protected String fijiRoot;
+	protected String imagejRoot;
 
 	/* follows symlinks */
 	protected boolean exists(final File file) {
@@ -111,7 +111,7 @@ public class Checksummer extends Progressable {
 	}
 
 	protected String prefix(final String path) {
-		return fijiRoot == null ? Util.prefix(path) : fijiRoot + path;
+		return imagejRoot == null ? Util.prefix(path) : imagejRoot + path;
 	}
 
 	protected void queue(final String path, final String realPath) {
@@ -133,7 +133,7 @@ public class Checksummer extends Progressable {
 			if (plugin == null) {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
 					path + ", which is not known to the Updater");
-				if (fijiRoot == null) {
+				if (imagejRoot == null) {
 					plugin =
 						new PluginObject(null, path, checksum, timestamp, Status.NOT_FIJI);
 					tryToGuessPlatform(plugin);
@@ -183,9 +183,9 @@ public class Checksummer extends Progressable {
 		handleQueue();
 	}
 
-	public void updateFromPreviousInstallation(final String fijiRoot) {
+	public void updateFromPreviousInstallation(final String imagejRoot) {
 		if (!Util.isDeveloper) throw new RuntimeException("Must be developer");
-		this.fijiRoot = new File(fijiRoot).getAbsolutePath() + "/";
+		this.imagejRoot = new File(imagejRoot).getAbsolutePath() + "/";
 		updateFromLocal();
 		for (final PluginObject plugin : plugins)
 			if (plugin.isLocallyModified()) plugin.addPreviousVersion(
