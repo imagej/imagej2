@@ -77,7 +77,6 @@ public class Util {
 	// Prefix for the preference key names
 	public static final String PREFS_USER = "fiji.updater.login";
 
-	public final static boolean useMacPrefix;
 	public final static String macPrefix = "Contents/MacOS/";
 
 	public final static String imagejRoot, platform;
@@ -104,23 +103,21 @@ public class Util {
 		isDeveloper = new File(imagejRoot + "/imagej.c").exists();
 		platform = getPlatform();
 
-		final String macLauncher = macPrefix + "fiji-macosx";
-		useMacPrefix =
-			platform.equals("macosx") &&
-				new File(imagejRoot + "/" + macLauncher).exists();
+		platforms =
+			new String[] { "linux32", "linux64", "macosx", "tiger", "win32", "win64" };
+		final int macIndex = 2;
+		Arrays.sort(platforms);
 
-		final String[] list =
-			{ "linux32", "linux64", "macosx", "tiger", "win32", "win64" };
-
-		Arrays.sort(list);
-		platforms = list.clone();
-		for (int i = 0; i < list.length; i++)
-			list[i] = "fiji-" + list[i] + (list[i].startsWith("win") ? ".exe" : "");
-		launchers = list.clone();
+		launchers = platforms.clone();
+		for (int i = 0; i < launchers.length; i++)
+			launchers[i] =
+				(i == macIndex || i == macIndex + 1 ? macPrefix : "") + "ImageJ-" +
+					platforms[i] + (platforms[i].startsWith("win") ? ".exe" : "");
+		Arrays.sort(launchers);
 
 		updateablePlatforms = new HashSet<String>();
 		updateablePlatforms.add(platform);
-		if (new File(imagejRoot, macLauncher).exists()) updateablePlatforms
+		if (new File(imagejRoot, launchers[macIndex]).exists()) updateablePlatforms
 			.add("macosx");
 		final String[] files = new File(imagejRoot).list();
 		for (String name : files == null ? new String[0] : files)
@@ -140,8 +137,6 @@ public class Util {
 
 	public static String stripPrefix(final String string, final String prefix) {
 		if (!string.startsWith(prefix)) return string;
-		if (useMacPrefix && string.startsWith(prefix + macPrefix)) return string
-			.substring((prefix + macPrefix).length());
 		return string.substring(prefix.length());
 	}
 
@@ -289,12 +284,8 @@ public class Util {
 
 	public static String prefix(String path) {
 		if (new File(path).isAbsolute()) return path;
-		if (useMacPrefix && path.startsWith(macPrefix)) path =
-			path.substring(macPrefix.length());
 		if (File.separator.equals("\\")) path = path.replace("\\", "/");
-		return imagejRoot +
-			(isLauncher(path) ? (isDeveloper ? "precompiled/" : (useMacPrefix
-				? macPrefix : "")) : "") + path;
+		return imagejRoot + path;
 	}
 
 	public static String prefixUpdate(final String path) {
@@ -306,13 +297,12 @@ public class Util {
 	}
 
 	public static boolean isLauncher(final String filename) {
-		return Arrays.binarySearch(launchers, stripPrefix(stripPrefix(filename,
-			imagejRoot), "precompiled/")) >= 0;
+		return Arrays.binarySearch(launchers, stripPrefix(filename, imagejRoot)) >= 0;
 	}
 
 	public static String[] getLaunchers() {
-		if (platform.equals("macosx")) return new String[] { "fiji-macosx",
-			"fiji-tiger" };
+		if (platform.equals("macosx")) return new String[] {
+			macPrefix + "fiji-macosx", macPrefix + "fiji-tiger" };
 
 		int index = Arrays.binarySearch(launchers, "fiji-" + platform);
 		if (index < 0) index = -1 - index;
