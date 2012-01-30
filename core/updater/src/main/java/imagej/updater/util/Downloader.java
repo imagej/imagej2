@@ -66,31 +66,31 @@ public class Downloader extends Progressable {
 		cancelled = true;
 	}
 
-	public synchronized void start(final FileDownload justOne) throws IOException
+	public synchronized void start(final Downloadable justOne) throws IOException
 	{
-		start(new OneItemIterable<FileDownload>(justOne));
+		start(new OneItemIterable<Downloadable>(justOne));
 	}
 
-	public void start(final Iterable<FileDownload> files) throws IOException {
+	public void start(final Iterable<Downloadable> files) throws IOException {
 		Util.useSystemProxies();
 		cancelled = false;
 
 		count = total = itemCount = itemTotal = 0;
-		for (final FileDownload file : files) {
+		for (final Downloadable file : files) {
 			total += file.getFilesize();
 			itemTotal++;
 		}
 
 		setTitle("Downloading...");
 
-		for (final FileDownload current : files) {
+		for (final Downloadable current : files) {
 			if (cancelled) break;
 			download(current);
 		}
 		done();
 	}
 
-	protected synchronized void download(final FileDownload current)
+	protected synchronized void download(final Downloadable current)
 		throws IOException
 	{
 		final URLConnection connection = new URL(current.getURL()).openConnection();

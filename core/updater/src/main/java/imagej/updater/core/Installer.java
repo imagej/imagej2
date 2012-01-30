@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
+import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
-import imagej.updater.util.FileDownload;
 import imagej.updater.util.Progress;
 import imagej.updater.util.Util;
 
@@ -54,7 +54,7 @@ public class Installer extends Downloader {
 		addProgress(new VerifyFiles());
 	}
 
-	class Download implements FileDownload {
+	class Download implements Downloadable {
 
 		PluginObject plugin;
 		String url, destination;
@@ -100,7 +100,7 @@ public class Installer extends Downloader {
 					"' for removal");
 			}
 
-		final List<FileDownload> list = new ArrayList<FileDownload>();
+		final List<Downloadable> list = new ArrayList<Downloadable>();
 		for (final PluginObject plugin : plugins.toInstallOrUpdate()) {
 			final String name = plugin.filename;
 			String saveTo = Util.prefixUpdate(name);
