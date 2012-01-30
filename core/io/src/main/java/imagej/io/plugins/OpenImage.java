@@ -71,7 +71,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin, StatusListener
 {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private EventService eventService;
 
 	@Parameter(label = "File to open")

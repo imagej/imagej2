@@ -62,7 +62,7 @@ import java.net.UnknownHostException;
 @Plugin(menu = { @Menu(label = "Help"), @Menu(label = "Update...") })
 public class ImageJUpdater implements ImageJPlugin {
 
-	@Parameter(required = true)
+	@Parameter(persist = false)
 	private EventService eventService;
 
 	@Override

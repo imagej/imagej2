@@ -65,13 +65,13 @@ public abstract class AbstractAssignPlugin
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	protected ImageDisplayService displayService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	protected OverlayService overlayService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	protected ImageDisplay display;
 
 	@Parameter(label = "Preview")

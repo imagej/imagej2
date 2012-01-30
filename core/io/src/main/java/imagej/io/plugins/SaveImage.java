@@ -53,7 +53,7 @@ import imagej.ui.UIService;
 	@Menu(label = "Save", weight = 20, mnemonic = 's') })
 public class SaveImage implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private UIService uiService;
 
 	@Override

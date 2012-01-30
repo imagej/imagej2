@@ -53,10 +53,10 @@ import java.util.concurrent.Future;
 @Plugin(menuPath = "Plugins>Sandbox>InvokePluginTest")
 public class InvokePluginTest implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ModuleService moduleService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private PluginService pluginService;
 
 	@Override

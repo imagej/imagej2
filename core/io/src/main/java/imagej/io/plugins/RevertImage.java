@@ -58,7 +58,7 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private UIService uiService;
 
 	// @Parameter

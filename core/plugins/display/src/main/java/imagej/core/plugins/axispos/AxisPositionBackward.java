@@ -60,10 +60,10 @@ import net.imglib2.meta.AxisType;
 	@Menu(label = "Axis Position Backward", accelerator = "LESS") })
 public class AxisPositionBackward implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private AnimationService animationService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	@Override

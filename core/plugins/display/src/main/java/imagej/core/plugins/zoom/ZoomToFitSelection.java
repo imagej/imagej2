@@ -56,10 +56,10 @@ import imagej.util.RealRect;
 	@Menu(label = "To Selection", weight = 5) })
 public class ZoomToFitSelection implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private OverlayService overlayService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	@Override

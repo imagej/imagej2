@@ -79,13 +79,13 @@ public class ShadowsDemo implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private EventService eventService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplayService imgDispService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private OverlayService overlayService;
 
 	@Parameter

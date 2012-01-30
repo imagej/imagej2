@@ -53,7 +53,7 @@ public class FloodFillToolConfigPlugin implements ImageJPlugin {
 
 	// -- Parameters --
 
-	@Parameter(required = true)
+	@Parameter
 	private FloodFillTool tool;
 
 	// TODO - it would be nice to persist this. but the associated tool cannot

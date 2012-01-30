@@ -74,7 +74,7 @@ public class ReorderAxes extends DynamicPlugin {
 
 	// -- Parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private Dataset dataset;
 
 	// -- Fields --

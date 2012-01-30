@@ -68,16 +68,16 @@ public class FillDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private OverlayService overlayService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplayService dispService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private OptionsService optionsService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --

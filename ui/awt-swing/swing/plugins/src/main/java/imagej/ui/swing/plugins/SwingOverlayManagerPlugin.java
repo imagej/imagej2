@@ -50,7 +50,7 @@ import imagej.ui.swing.SwingOverlayManager;
 	@Menu(label = "Overlay Manager") })
 public class SwingOverlayManagerPlugin implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private EventService eventService;
 
 	@Override

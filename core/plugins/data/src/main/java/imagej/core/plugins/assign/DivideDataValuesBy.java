@@ -61,7 +61,7 @@ public class DivideDataValuesBy extends AbstractAssignPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private OptionsService optionsService;
 
 	@Parameter

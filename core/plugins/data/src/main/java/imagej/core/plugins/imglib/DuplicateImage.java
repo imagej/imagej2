@@ -55,7 +55,7 @@ public class DuplicateImage implements ImageJPlugin {
 
 	// -- Plugin parameters --
 
-	@Parameter(required = true)
+	@Parameter
 	private Dataset input;
 
 	@Parameter(type = ItemIO.OUTPUT)
