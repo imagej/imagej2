@@ -208,12 +208,11 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		addEditableRegion(offset, "Description", plugin);
 	}
 
-	public void executable(PluginObject plugin) {
-		if (!updaterFrame.plugins.hasUploadableSites() && !plugin.executable)
-			return;
+	public void executable(final PluginObject plugin) {
+		if (!updaterFrame.plugins.hasUploadableSites() && !plugin.executable) return;
 		blankLine();
 		bold("Executable:\n");
-		int offset = getCaretPosition();
+		final int offset = getCaretPosition();
 		normal(plugin.executable ? "true" : "false");
 		addEditableRegion(offset, "Executable", plugin);
 	}
@@ -289,8 +288,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		list("Category", false, plugin.getCategories(), ", ", plugin);
 		list("Link", true, plugin.getLinks(), "\n", plugin);
 		list("Dependency", false, plugin.getDependencies(), ",\n", plugin);
-		if (plugin.executable)
-			executable(plugin);
+		if (plugin.executable) executable(plugin);
 		if (plugin.updateSite != null &&
 			!plugin.updateSite.equals(PluginCollection.DEFAULT_UPDATE_SITE))
 		{

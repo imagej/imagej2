@@ -107,7 +107,10 @@ public class Installer extends Downloader {
 			if (plugin.executable) {
 				saveTo = Util.prefix(name);
 				final File orig = new File(saveTo);
-				final File old = new File(saveTo + ".old");
+				String oldName = saveTo + ".old";
+				if (oldName.endsWith(".exe.old")) oldName =
+					oldName.substring(0, oldName.length() - 8) + ".old.exe";
+				final File old = new File(oldName);
 				if (old.exists()) old.delete();
 				orig.renameTo(old);
 			}

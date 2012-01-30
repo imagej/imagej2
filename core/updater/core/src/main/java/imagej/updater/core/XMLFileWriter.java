@@ -153,8 +153,7 @@ public class XMLFileWriter {
 				!plugin.updateSite.equals(PluginCollection.DEFAULT_UPDATE_SITE)) setAttribute(
 				attr, "update-site", plugin.updateSite);
 			setAttribute(attr, "filename", plugin.filename);
-			if (plugin.executable)
-				setAttribute(attr, "executable", "true");
+			if (plugin.executable) setAttribute(attr, "executable", "true");
 			handler.startElement("", "", "plugin", attr);
 			writeSimpleTags("platform", plugin.getPlatforms());
 			writeSimpleTags("category", plugin.getCategories());
