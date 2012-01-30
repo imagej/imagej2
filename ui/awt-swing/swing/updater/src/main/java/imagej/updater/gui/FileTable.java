@@ -220,12 +220,20 @@ public class FileTable extends JTable {
 
 	public Iterable<FileObject> getSelectedFiles(final int fallbackRow) {
 		int[] rows = getSelectedRows();
-		if (rows.length == 0 && fallbackRow >= 0 && getFile(fallbackRow) != null) rows =
+		if (fallbackRow >= 0 && getFile(fallbackRow) != null &&
+			(rows.length == 0 || indexOf(rows, fallbackRow) < 0)) rows =
 			new int[] { fallbackRow };
 		final FileObject[] result = new FileObject[rows.length];
 		for (int i = 0; i < rows.length; i++)
 			result[i] = getFile(rows[i]);
 		return Arrays.asList(result);
+	}
+
+	protected int indexOf(final int[] array, final int value) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == value) return i;
+		}
+		return -1;
 	}
 
 	public String[] getUpdateSitesWithUploads(final FilesCollection files) {
