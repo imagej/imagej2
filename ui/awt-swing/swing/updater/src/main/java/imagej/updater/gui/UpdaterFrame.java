@@ -45,7 +45,6 @@ import imagej.updater.core.Installer;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UserInterface;
-import imagej.updater.util.Util;
 import imagej.util.Log;
 
 import java.awt.Component;
@@ -842,11 +841,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final String sshHost, final String uploadDirectory)
 		throws InstantiationException
 	{
-		final String updateSiteName = "Dummy";
-		final FilesCollection files = new FilesCollection();
-		files.addUpdateSite(updateSiteName, url, sshHost, uploadDirectory, Long
-			.parseLong(Util.timestamp(-1)));
-		final FilesUploader uploader = new FilesUploader(files, updateSiteName);
+		final FilesUploader uploader =
+			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
 		Progress progress = null;
 		try {
 			if (!uploader.login()) return false;

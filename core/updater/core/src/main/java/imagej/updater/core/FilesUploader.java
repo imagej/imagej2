@@ -309,4 +309,15 @@ public class FilesUploader {
 		loggedIn = uploader.login(this);
 		return loggedIn;
 	}
+
+	public static FilesUploader initialUpload(final String url,
+		final String sshHost, final String uploadDirectory)
+		throws InstantiationException
+	{
+		final String updateSiteName = "Dummy";
+		final FilesCollection files = new FilesCollection();
+		files.addUpdateSite(updateSiteName, url, sshHost, uploadDirectory, Long
+			.parseLong(Util.timestamp(-1)));
+		return new FilesUploader(files, updateSiteName);
+	}
 }
