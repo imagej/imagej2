@@ -111,7 +111,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 			@Override
 			public void valueChanged(final ListSelectionEvent e) {
 				super.valueChanged(e);
-				edit.setEnabled(getSelectedRow() > 0);
+				edit.setEnabled(getSelectedRow() >= 0);
 				remove.setEnabled(getSelectedRow() > 0);
 			}
 		};
