@@ -47,6 +47,7 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
+import imagej.util.Log;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -298,7 +299,13 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 							@Override
 							public void run() {
-								upload();
+								try {
+									upload();
+								}
+								catch (final InstantiationException e) {
+									Log.error(e);
+									error("Could not upload (possibly unknown protocol)");
+								}
 							}
 						}.start();
 					}
@@ -763,7 +770,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		upload.setEnabled(canUpload || plugins.hasUploadOrRemove());
 	}
 
-	protected void upload() {
+	protected void upload() throws InstantiationException {
 		final ResolveDependencies resolver =
 			new ResolveDependencies(this, plugins, true);
 		if (!resolver.resolve()) return;
@@ -825,6 +832,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	protected boolean initializeUpdateSite(final String url,
 		final String sshHost, final String uploadDirectory)
+		throws InstantiationException
 	{
 		final String updateSiteName = "Dummy";
 		final PluginCollection plugins = new PluginCollection();
