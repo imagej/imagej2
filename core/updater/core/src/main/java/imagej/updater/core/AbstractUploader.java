@@ -41,6 +41,7 @@ import java.util.List;
 
 public abstract class AbstractUploader extends Progressable {
 
+	protected String uploadDir;
 	protected int total;
 	protected long timestamp;
 
@@ -54,6 +55,7 @@ public abstract class AbstractUploader extends Progressable {
 	}
 
 	public boolean login(final PluginUploader uploader) {
+		uploadDir = uploader.getUploadDirectory();
 		return true; // no login required; override this if login _is_ required!
 	}
 

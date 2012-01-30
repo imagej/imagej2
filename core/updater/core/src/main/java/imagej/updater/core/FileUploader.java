@@ -56,16 +56,6 @@ import java.util.List;
 @Uploader(protocol = "file")
 public class FileUploader extends AbstractUploader {
 
-	protected final String uploadDir;
-
-	public FileUploader() {
-		this(Util.UPDATE_DIRECTORY);
-	}
-
-	public FileUploader(final String uploadDir) {
-		this.uploadDir = uploadDir;
-	}
-
 	// Steps to accomplish entire upload task
 	@Override
 	public synchronized void upload(final List<Uploadable> sources,
