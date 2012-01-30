@@ -131,13 +131,4 @@ public class Downloader extends Progressable {
 	public long getLastModified() {
 		return lastModified;
 	}
-
-	public interface FileDownload {
-
-		public String getDestination();
-
-		public String getURL();
-
-		public long getFilesize();
-	}
 }

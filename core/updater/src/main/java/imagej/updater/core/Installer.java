@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.updater.core;
 
 import imagej.updater.util.Downloader;
+import imagej.updater.util.FileDownload;
 import imagej.updater.util.Progress;
 import imagej.updater.util.Util;
 
