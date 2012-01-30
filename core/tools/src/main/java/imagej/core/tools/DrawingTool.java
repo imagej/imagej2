@@ -37,6 +37,7 @@ package imagej.core.tools;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
@@ -282,6 +283,10 @@ public class DrawingTool {
 		}
 	}
 
+	// TODO - IJ1 fill() applies to the ROI rectangle bounds. Do we want to mirror
+	// this behavior in IJ2? For now implement two fill methods. But perhaps in
+	// the future the DrawingTool might track a region of interest within a plane.
+	
 	/**
 	 * Fills the current UV plane.
 	 */
@@ -291,4 +296,12 @@ public class DrawingTool {
 				drawPixel(u,v);
 	}
 
+	/**
+	 * Fills a subset of the current UV plane.
+	 */
+	public void fill(RealRect rect) {
+		for (long u = (long)rect.x; u < rect.x+rect.width; u++)
+			for (long v = (long)rect.y; v < rect.y+rect.height; v++)
+				drawPixel(u,v);
+	}
 }
