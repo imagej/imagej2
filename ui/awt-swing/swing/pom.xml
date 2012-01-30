@@ -22,6 +22,7 @@
 		<module>plugins</module>
 		<module>tools</module>
 		<module>ui-base</module>
+		<module>updater</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
