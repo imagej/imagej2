@@ -37,7 +37,7 @@ package imagej.updater.core;
 import java.io.IOException;
 import java.io.InputStream;
 
-public interface SourceFile {
+public interface Uploadable {
 
 	public String getFilename();
 

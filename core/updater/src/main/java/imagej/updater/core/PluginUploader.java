@@ -63,7 +63,7 @@ public class PluginUploader {
 
 	protected String siteName;
 	protected UpdateSite site;
-	protected List<SourceFile> files;
+	protected List<Uploadable> files;
 	protected String compressed;
 
 	// TODO: add a button to check for new db.xml.gz, and merge if necessary
@@ -111,7 +111,7 @@ public class PluginUploader {
 		this.uploader = uploader;
 	}
 
-	protected class DbXmlFile implements SourceFile {
+	protected class DbXmlFile implements Uploadable {
 
 		public byte[] bytes;
 
@@ -146,7 +146,7 @@ public class PluginUploader {
 		uploader.addProgress(new VerifyTimestamp());
 
 		// TODO: rename "UpdateSource" to "Transferable", reuse!
-		files = new ArrayList<SourceFile>();
+		files = new ArrayList<Uploadable>();
 		final List<String> locks = new ArrayList<String>();
 		files.add(new DbXmlFile());
 		for (final PluginObject plugin : plugins.toUpload(siteName))
@@ -156,7 +156,7 @@ public class PluginUploader {
 		locks.add(Util.XML_COMPRESSED);
 
 		// verify that the files have not changed in the meantime
-		for (final SourceFile file : files)
+		for (final Uploadable file : files)
 			verifyUnchanged(file, true);
 
 		uploader.upload(files, locks);
@@ -164,7 +164,7 @@ public class PluginUploader {
 		site.setLastModified(getCurrentLastModified());
 	}
 
-	protected void verifyUnchanged(final SourceFile file,
+	protected void verifyUnchanged(final Uploadable file,
 		final boolean checkTimestamp)
 	{
 		if (!(file instanceof UploadableFile)) return;
@@ -186,7 +186,7 @@ public class PluginUploader {
 	}
 
 	protected void updateUploadTimestamp(final long timestamp) throws Exception {
-		for (final SourceFile f : files) {
+		for (final Uploadable f : files) {
 			if (!(f instanceof UploadableFile)) continue;
 			final UploadableFile file = (UploadableFile) f;
 			final PluginObject plugin = file.plugin;
