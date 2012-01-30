@@ -295,7 +295,8 @@ public class PluginObject {
 		return authors.keySet();
 	}
 
-	public void addPlatform(final String platform) {
+	public void addPlatform(String platform) {
+		if (platform.equals("linux")) platform = "linux32";
 		if (platform != null && !platform.trim().equals("")) platforms.put(platform
 			.trim(), (Object) null);
 	}
