@@ -236,8 +236,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		rightPanel.add(Box.createVerticalGlue());
 
 		fileDetails = new FileDetails(this);
-		SwingTools.tab(fileDetails, "Details", "Individual Plugin information",
-			350, 315, rightPanel);
+		SwingTools.tab(fileDetails, "Details", "Individual file information", 350,
+			315, rightPanel);
 		// TODO: put this into SwingTools, too
 		rightPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 		// ======== End: RIGHT PANEL ========
@@ -265,8 +265,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		// Button to start actions
 		apply =
-			SwingTools.button("Apply changes",
-				"Start installing/uninstalling plugins", new ActionListener() {
+			SwingTools.button("Apply changes", "Start installing/uninstalling files",
+				new ActionListener() {
 
 					@Override
 					public void actionPerformed(final ActionEvent e) {
@@ -291,8 +291,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		// includes button to upload to server if is a Developer using
 		bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
 		upload =
-			SwingTools.button("Upload to server",
-				"Upload selected plugins to server", new ActionListener() {
+			SwingTools.button("Upload to server", "Upload selected files to server",
+				new ActionListener() {
 
 					@Override
 					public void actionPerformed(final ActionEvent e) {
@@ -368,7 +368,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 										if (!"".equals(list)) rebuild.run(list);
 										final Checksummer checksummer =
 											new Checksummer(files,
-												getProgress("Checksumming rebuilt plugins"));
+												getProgress("Checksumming rebuilt files"));
 										checksummer.updateFromLocal(names);
 										filesChanged();
 										updateFilesTable();
@@ -395,7 +395,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		bottomPanel.add(Box.createRigidArea(new Dimension(15, 0)));
 		cancel =
-			SwingTools.button("Close", "Exit Plugin Manager", new ActionListener() {
+			SwingTools.button("Close", "Exit Update Manager", new ActionListener() {
 
 				@Override
 				public void actionPerformed(final ActionEvent e) {
@@ -774,8 +774,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			else list += ", " + object.getFilename();
 		}
 		if (list != null) UserInterface.get().info(
-			"WARNING: The following plugin files " + "are set to read-only: '" +
-				list + "'", "Read-only Plugins");
+			"WARNING: The following files are set to read-only: '" + list + "'",
+			"Read-only files");
 	}
 
 	void markUploadable() {

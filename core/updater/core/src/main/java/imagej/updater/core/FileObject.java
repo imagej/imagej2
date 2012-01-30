@@ -403,7 +403,7 @@ public class FileObject {
 		}
 		else {
 			if (newChecksum == null || newChecksum.equals(current.checksum)) throw new Error(
-				"Plugin " + filename + " is already uploaded");
+				filename + " is already uploaded");
 			setVersion(newChecksum, newTimestamp);
 		}
 	}
