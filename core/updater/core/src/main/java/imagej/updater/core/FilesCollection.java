@@ -40,6 +40,7 @@ import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -221,7 +222,19 @@ public class FilesCollection extends ArrayList<FileObject> {
 	public void read() throws IOException, ParserConfigurationException,
 		SAXException
 	{
-		new XMLFileReader(this).read(new File(Util.prefix(Util.XML_COMPRESSED)));
+		read(new File(Util.prefix(Util.XML_COMPRESSED)));
+	}
+
+	public void read(final File file) throws IOException,
+		ParserConfigurationException, SAXException
+	{
+		read(new FileInputStream(file));
+	}
+
+	public void read(final FileInputStream in) throws IOException,
+		ParserConfigurationException, SAXException
+	{
+		new XMLFileReader(this).read(in);
 	}
 
 	public void write() throws IOException, SAXException,
