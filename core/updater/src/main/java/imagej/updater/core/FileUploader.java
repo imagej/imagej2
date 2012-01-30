@@ -53,6 +53,7 @@ import java.util.List;
  * 3.) Upload db.xml.gz.lock (Lock file, prevent others from writing it ATM)
  * 4.) If all goes well, force rename db.xml.gz.lock to db.xml.gz
  */
+@Uploader(protocol = "file")
 public class FileUploader extends AbstractUploader {
 
 	protected final String uploadDir;
