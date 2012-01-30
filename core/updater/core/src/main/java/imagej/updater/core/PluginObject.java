@@ -571,7 +571,14 @@ public class PluginObject {
 	public void stageForUninstall() throws IOException {
 		if (action != Action.UNINSTALL) throw new RuntimeException(filename +
 			" was not marked " + "for uninstall");
-		touch(Util.prefixUpdate(filename));
+		if (filename.endsWith(".jar")) touch(Util.prefixUpdate(filename));
+		else {
+			String old = filename + ".old";
+			if (old.endsWith(".exe.old")) old =
+				old.substring(0, old.length() - 8) + ".old.exe";
+			new File(Util.prefix(filename)).renameTo(new File(Util.prefix(old)));
+			touch(Util.prefixUpdate(old));
+		}
 		if (status != Status.LOCAL_ONLY) setStatus(isObsolete()
 			? Status.OBSOLETE_UNINSTALLED : Status.NOT_INSTALLED);
 	}
