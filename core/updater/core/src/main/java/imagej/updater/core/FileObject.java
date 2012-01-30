@@ -256,7 +256,6 @@ public class FileObject {
 		return description;
 	}
 
-	// TODO: allow editing those via GUI
 	public void addDependency(final String filename, final File file) {
 		addDependency(filename, Util.getTimestamp(file), false);
 	}
