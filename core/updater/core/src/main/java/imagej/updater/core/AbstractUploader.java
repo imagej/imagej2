@@ -53,7 +53,7 @@ public abstract class AbstractUploader extends Progressable {
 			total += (int) source.getFilesize();
 	}
 
-	public boolean login(PluginUploader uploader) {
+	public boolean login(final PluginUploader uploader) {
 		return true; // no login required; override this if login _is_ required!
 	}
 
