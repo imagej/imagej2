@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.util;
 
-public interface FileDownload {
+public interface Downloadable {
 
 	public String getDestination();
 
