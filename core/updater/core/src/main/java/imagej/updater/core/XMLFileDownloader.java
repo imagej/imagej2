@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.core.PluginCollection.UpdateSite;
+import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progressable;
 import imagej.updater.util.Util;
 
@@ -52,15 +52,15 @@ import java.util.zip.GZIPInputStream;
  */
 public class XMLFileDownloader extends Progressable {
 
-	protected PluginCollection plugins;
+	protected FilesCollection plugins;
 	protected Collection<String> updateSites;
 	protected String warnings;
 
-	public XMLFileDownloader(final PluginCollection plugins) {
+	public XMLFileDownloader(final FilesCollection plugins) {
 		this(plugins, plugins.getUpdateSiteNames());
 	}
 
-	public XMLFileDownloader(final PluginCollection plugins,
+	public XMLFileDownloader(final FilesCollection plugins,
 		final Collection<String> updateSites)
 	{
 		this.plugins = plugins;

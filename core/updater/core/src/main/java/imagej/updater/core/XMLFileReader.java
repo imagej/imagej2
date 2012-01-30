@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.core.PluginCollection.UpdateSite;
-import imagej.updater.core.PluginObject.Status;
+import imagej.updater.core.FileObject.Status;
+import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -61,7 +61,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLFileReader extends DefaultHandler {
 
-	private final PluginCollection plugins;
+	private final FilesCollection plugins;
 
 	// this is the name of the update site (null means we read the local
 	// db.xml.gz)
@@ -74,10 +74,10 @@ public class XMLFileReader extends DefaultHandler {
 	protected StringBuffer warnings = new StringBuffer();
 
 	// currently parsed
-	private PluginObject current;
+	private FileObject current;
 	private String currentTag, body;
 
-	public XMLFileReader(final PluginCollection plugins) {
+	public XMLFileReader(final FilesCollection plugins) {
 		this.plugins = plugins;
 	}
 
@@ -149,15 +149,15 @@ public class XMLFileReader extends DefaultHandler {
 			if (updateSite == null) {
 				updateSite = atts.getValue("update-site");
 				if (updateSite == null) updateSite =
-					PluginCollection.DEFAULT_UPDATE_SITE;
+					FilesCollection.DEFAULT_UPDATE_SITE;
 			}
 			current =
-				new PluginObject(updateSite, atts.getValue("filename"), null, 0,
+				new FileObject(updateSite, atts.getValue("filename"), null, 0,
 					Status.NOT_INSTALLED);
 			if (this.updateSite != null &&
-				!this.updateSite.equals(PluginCollection.DEFAULT_UPDATE_SITE))
+				!this.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))
 			{
-				final PluginObject already = plugins.getPlugin(current.filename);
+				final FileObject already = plugins.getPlugin(current.filename);
 				if (already != null && !this.updateSite.equals(already.updateSite)) warnings
 					.append("Warning: '" + current.filename + "' from update site '" +
 						this.updateSite + "' shadows the one from update site '" +
@@ -204,9 +204,9 @@ public class XMLFileReader extends DefaultHandler {
 			else if (current.isNewerThan(newTimestamp)) {
 				current.setStatus(Status.NEW);
 				current.setAction(plugins, current.isUpdateablePlatform()
-					? PluginObject.Action.INSTALL : PluginObject.Action.NEW);
+					? FileObject.Action.INSTALL : FileObject.Action.NEW);
 			}
-			final PluginObject plugin = plugins.getPlugin(current.filename);
+			final FileObject plugin = plugins.getPlugin(current.filename);
 			if (updateSite == null && current.updateSite != null &&
 				plugins.getUpdateSite(current.updateSite) == null) ; // ignore plugin
 																															// with invalid

@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.updater.ssh;
 
 import imagej.updater.core.AbstractUploader;
-import imagej.updater.core.PluginUploader;
+import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
@@ -73,7 +73,7 @@ public class SSHFileUploader extends AbstractUploader {
 	}
 
 	@Override
-	public boolean login(final PluginUploader uploader) {
+	public boolean login(final FilesUploader uploader) {
 		if (!super.login(uploader)) return false;
 		session = SSHSessionCreator.getSession(uploader);
 		return session != null;

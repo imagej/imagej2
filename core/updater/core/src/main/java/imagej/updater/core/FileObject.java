@@ -44,7 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class PluginObject {
+public class FileObject {
 
 	public static class Version implements Comparable<Version> {
 
@@ -173,7 +173,7 @@ public class PluginObject {
 	protected Map<String, Dependency> dependencies;
 	protected Map<String, Object> links, authors, platforms, categories;
 
-	public PluginObject(final String updateSite, final String filename,
+	public FileObject(final String updateSite, final String filename,
 		final String checksum, final long timestamp, final Status status)
 	{
 		assert (updateSite != null && !updateSite.equals(""));
@@ -191,7 +191,7 @@ public class PluginObject {
 		setNoAction();
 	}
 
-	public void merge(final PluginObject upstream) {
+	public void merge(final FileObject upstream) {
 		for (final Version previous : upstream.previous)
 			addPreviousVersion(previous.checksum, previous.timestamp);
 		if (updateSite == null || updateSite.equals(upstream.updateSite)) {
@@ -362,7 +362,7 @@ public class PluginObject {
 		action = status.getNoAction();
 	}
 
-	public void setAction(final PluginCollection plugins, final Action action) {
+	public void setAction(final FilesCollection plugins, final Action action) {
 		if (!status.isValid(action)) throw new Error(
 			"Invalid action requested for plugin " + filename + "(" + action + ", " +
 				status + ")");
@@ -374,7 +374,7 @@ public class PluginObject {
 		this.action = action;
 	}
 
-	public boolean setFirstValidAction(final PluginCollection plugins,
+	public boolean setFirstValidAction(final FilesCollection plugins,
 		final Action[] actions)
 	{
 		for (final Action action : actions)
@@ -460,9 +460,9 @@ public class PluginObject {
 	 * Tell whether this plugin can be uploaded to its update site Note: this does
 	 * not check whether the plugin is locally modified.
 	 */
-	public boolean isUploadable(final PluginCollection plugins) {
+	public boolean isUploadable(final FilesCollection plugins) {
 		if (updateSite == null) return plugins.hasUploadableSites();
-		final PluginCollection.UpdateSite updateSite =
+		final FilesCollection.UpdateSite updateSite =
 			plugins.getUpdateSite(this.updateSite);
 		return updateSite != null && updateSite.isUploadable();
 	}
@@ -618,8 +618,8 @@ public class PluginObject {
 			this.label = label;
 		}
 
-		public PluginObject getPlugin() {
-			return PluginObject.this;
+		public FileObject getPlugin() {
+			return FileObject.this;
 		}
 
 		@Override

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.core.PluginCollection.UpdateSite;
+import imagej.updater.core.FilesCollection.UpdateSite;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,7 +61,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class XMLFileWriter {
 
-	protected PluginCollection plugins;
+	protected FilesCollection plugins;
 	protected TransformerHandler handler;
 	protected final String XALAN_INDENT_AMOUNT = "{http://xml.apache.org/xslt}"
 		+ "indent-amount";
@@ -91,7 +91,7 @@ public class XMLFileWriter {
 		+ "<!ATTLIST previous-version timestamp CDATA #REQUIRED>\n"
 		+ "<!ATTLIST previous-version checksum CDATA #REQUIRED>]>\n";
 
-	public XMLFileWriter(final PluginCollection plugins) {
+	public XMLFileWriter(final FilesCollection plugins) {
 		this.plugins = plugins;
 	}
 
@@ -146,11 +146,11 @@ public class XMLFileWriter {
 			}
 		}
 
-		for (final PluginObject plugin : plugins.fijiPlugins()) {
+		for (final FileObject plugin : plugins.fijiPlugins()) {
 			attr.clear();
 			assert (plugin.updateSite != null && !plugin.updateSite.equals(""));
 			if (local &&
-				!plugin.updateSite.equals(PluginCollection.DEFAULT_UPDATE_SITE)) setAttribute(
+				!plugin.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE)) setAttribute(
 				attr, "update-site", plugin.updateSite);
 			setAttribute(attr, "filename", plugin.filename);
 			if (plugin.executable) setAttribute(attr, "executable", "true");
@@ -158,7 +158,7 @@ public class XMLFileWriter {
 			writeSimpleTags("platform", plugin.getPlatforms());
 			writeSimpleTags("category", plugin.getCategories());
 
-			final PluginObject.Version current = plugin.current;
+			final FileObject.Version current = plugin.current;
 			if (plugin.getChecksum() != null) {
 				attr.clear();
 				setAttribute(attr, "checksum", plugin.getChecksum());
@@ -182,7 +182,7 @@ public class XMLFileWriter {
 			}
 			if (current != null && !current.checksum.equals(plugin.getChecksum())) plugin
 				.addPreviousVersion(current.checksum, current.timestamp);
-			for (final PluginObject.Version version : plugin.getPrevious()) {
+			for (final FileObject.Version version : plugin.getPrevious()) {
 				attr.clear();
 				setAttribute(attr, "timestamp", version.timestamp);
 				setAttribute(attr, "checksum", version.checksum);

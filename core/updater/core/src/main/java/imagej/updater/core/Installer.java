@@ -47,9 +47,9 @@ import java.util.List;
 
 public class Installer extends Downloader {
 
-	protected PluginCollection plugins;
+	protected FilesCollection plugins;
 
-	public Installer(final PluginCollection plugins, final Progress progress) {
+	public Installer(final FilesCollection plugins, final Progress progress) {
 		this.plugins = plugins;
 		addProgress(progress);
 		addProgress(new VerifyFiles());
@@ -57,11 +57,10 @@ public class Installer extends Downloader {
 
 	class Download implements Downloadable {
 
-		PluginObject plugin;
+		FileObject plugin;
 		String url, destination;
 
-		Download(final PluginObject plugin, final String url,
-			final String destination)
+		Download(final FileObject plugin, final String url, final String destination)
 		{
 			this.plugin = plugin;
 			this.url = url;
@@ -91,7 +90,7 @@ public class Installer extends Downloader {
 
 	public synchronized void start() throws IOException {
 		// mark for removal
-		for (final PluginObject plugin : plugins.toUninstall())
+		for (final FileObject plugin : plugins.toUninstall())
 			try {
 				plugin.stageForUninstall();
 			}
@@ -102,7 +101,7 @@ public class Installer extends Downloader {
 			}
 
 		final List<Downloadable> list = new ArrayList<Downloadable>();
-		for (final PluginObject plugin : plugins.toInstallOrUpdate()) {
+		for (final FileObject plugin : plugins.toInstallOrUpdate()) {
 			final String name = plugin.filename;
 			String saveTo = Util.prefixUpdate(name);
 			if (plugin.executable) {
@@ -161,7 +160,7 @@ public class Installer extends Downloader {
 			"Incorrect file size for " + fileName + ": " + actualSize +
 				" (expected " + size + ")");
 
-		final PluginObject plugin = download.plugin;
+		final FileObject plugin = download.plugin;
 		final String digest = download.plugin.getChecksum();
 		String actualDigest;
 		try {
@@ -178,7 +177,7 @@ public class Installer extends Downloader {
 				"\n(expected " + digest + ")");
 
 		plugin.setLocalVersion(digest, plugin.getTimestamp());
-		plugin.setStatus(PluginObject.Status.INSTALLED);
+		plugin.setStatus(FileObject.Status.INSTALLED);
 
 		if (plugin.executable && !Util.platform.startsWith("win")) try {
 			Runtime.getRuntime().exec(

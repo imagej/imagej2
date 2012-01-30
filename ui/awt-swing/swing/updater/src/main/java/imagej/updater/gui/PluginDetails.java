@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.gui;
 
-import imagej.updater.core.PluginCollection;
-import imagej.updater.core.PluginObject;
+import imagej.updater.core.FileObject;
+import imagej.updater.core.FilesCollection;
 import imagej.updater.util.UserInterface;
 
 import java.awt.Color;
@@ -198,7 +198,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		styled(text, title);
 	}
 
-	public void description(final String description, final PluginObject plugin) {
+	public void description(final String description, final FileObject plugin) {
 		if (!updaterFrame.plugins.hasUploadableSites() &&
 			(description == null || description.trim().equals(""))) return;
 		blankLine();
@@ -208,7 +208,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		addEditableRegion(offset, "Description", plugin);
 	}
 
-	public void executable(final PluginObject plugin) {
+	public void executable(final FileObject plugin) {
 		if (!updaterFrame.plugins.hasUploadableSites() && !plugin.executable) return;
 		blankLine();
 		bold("Executable:\n");
@@ -218,7 +218,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 	}
 
 	public void list(String label, final boolean showLinks,
-		final Iterable<?> items, final String delim, final PluginObject plugin)
+		final Iterable<?> items, final String delim, final FileObject plugin)
 	{
 		final List<Object> list = new ArrayList<Object>();
 		for (final Object object : items)
@@ -265,7 +265,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 			months[Integer.parseInt(t.substring(4, 6))] + " " + t.substring(0, 4);
 	}
 
-	public void showPluginDetails(final PluginObject plugin) {
+	public void showPluginDetails(final FileObject plugin) {
 		if (!getText().equals("")) blankLine();
 		title(plugin.getFilename());
 		if (plugin.isUpdateable()) italic("\n(Update available)");
@@ -290,7 +290,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		list("Dependency", false, plugin.getDependencies(), ",\n", plugin);
 		if (plugin.executable) executable(plugin);
 		if (plugin.updateSite != null &&
-			!plugin.updateSite.equals(PluginCollection.DEFAULT_UPDATE_SITE))
+			!plugin.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))
 		{
 			blankLine();
 			bold("Update site:\n");
@@ -303,11 +303,11 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 
 	class EditableRegion implements Comparable<EditableRegion> {
 
-		PluginObject plugin;
+		FileObject plugin;
 		String tag;
 		Position start, end;
 
-		public EditableRegion(final PluginObject plugin, final String tag,
+		public EditableRegion(final FileObject plugin, final String tag,
 			final Position start, final Position end)
 		{
 			this.plugin = plugin;
@@ -329,7 +329,7 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 	}
 
 	void addEditableRegion(final int startOffset, final String tag,
-		final PluginObject plugin)
+		final FileObject plugin)
 	{
 		final int endOffset = getCaretPosition();
 		try {

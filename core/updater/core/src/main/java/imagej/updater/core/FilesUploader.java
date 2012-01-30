@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
-import imagej.updater.core.PluginCollection.UpdateSite;
+import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
@@ -59,9 +59,9 @@ import net.java.sezpoz.IndexItem;
  * - Uninstalled & up-to-date plugins will ONLY have their details uploaded
  *   (i.e.: XML file)
  */
-public class PluginUploader {
+public class FilesUploader {
 
-	protected PluginCollection plugins;
+	protected FilesCollection plugins;
 	protected AbstractUploader uploader;
 
 	protected String siteName;
@@ -81,7 +81,7 @@ public class PluginUploader {
 	}
 
 	// TODO: add a button to check for new db.xml.gz, and merge if necessary
-	public PluginUploader(final PluginCollection plugins, final String updateSite)
+	public FilesUploader(final FilesCollection plugins, final String updateSite)
 		throws InstantiationException
 	{
 		this.plugins = plugins;
@@ -159,7 +159,7 @@ public class PluginUploader {
 		files = new ArrayList<Uploadable>();
 		final List<String> locks = new ArrayList<String>();
 		files.add(new DbXmlFile());
-		for (final PluginObject plugin : plugins.toUpload(siteName))
+		for (final FileObject plugin : plugins.toUpload(siteName))
 			files.add(new UploadableFile(plugin));
 
 		// must be last lock
@@ -185,7 +185,7 @@ public class PluginUploader {
 				" but is " + Util.getFilesize(uploadable.sourceFilename) + ")!");
 		if (checkTimestamp) {
 			final long stored =
-				uploadable.plugin.getStatus() == PluginObject.Status.LOCAL_ONLY
+				uploadable.plugin.getStatus() == FileObject.Status.LOCAL_ONLY
 					? uploadable.plugin.current.timestamp
 					: uploadable.plugin.newTimestamp;
 			if (stored != Util.getTimestamp(uploadable.sourceFilename)) throw new RuntimeException(
@@ -199,19 +199,19 @@ public class PluginUploader {
 		for (final Uploadable f : files) {
 			if (!(f instanceof UploadableFile)) continue;
 			final UploadableFile file = (UploadableFile) f;
-			final PluginObject plugin = file.plugin;
+			final FileObject plugin = file.plugin;
 			if (plugin == null) continue;
 			plugin.filesize = file.filesize = Util.getFilesize(plugin.filename);
 			plugin.newTimestamp = timestamp;
 			file.filename = plugin.filename + "-" + timestamp;
-			if (plugin.getStatus() == PluginObject.Status.LOCAL_ONLY) {
-				plugin.setStatus(PluginObject.Status.INSTALLED);
+			if (plugin.getStatus() == FileObject.Status.LOCAL_ONLY) {
+				plugin.setStatus(FileObject.Status.INSTALLED);
 				plugin.current.timestamp = timestamp;
 			}
 		}
 
 		final XMLFileWriter writer =
-			new XMLFileWriter(PluginCollection.clone(plugins.forUpdateSite(siteName)));
+			new XMLFileWriter(FilesCollection.clone(plugins.forUpdateSite(siteName)));
 		if (plugins.size() > 0) writer.validate(false);
 		((DbXmlFile) files.get(0)).bytes = writer.toCompressedByteArray(false);
 
@@ -232,7 +232,7 @@ public class PluginUploader {
 
 		@Override
 		public void addItem(final Object item) {
-			if (item != files.get(0)) return;
+			if (item != uploadables.get(0)) return;
 			verifyTimestamp();
 		}
 
