@@ -338,7 +338,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 			"jars/", "retro/", "misc/" }), endsWith(".jar")))));
 	}
 
-	public Iterable<FileObject> nonFiji() {
+	public Iterable<FileObject> localOnly() {
 		return filter(is(Status.LOCAL_ONLY));
 	}
 

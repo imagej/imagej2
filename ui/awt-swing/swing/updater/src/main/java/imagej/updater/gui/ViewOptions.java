@@ -120,7 +120,7 @@ public class ViewOptions extends JComboBox {
 			case MANAGED:
 				return files.managedFiles();
 			case OTHERS:
-				return files.nonFiji();
+				return files.localOnly();
 			case CHANGES:
 				return files.changes();
 			case SELECTED:
