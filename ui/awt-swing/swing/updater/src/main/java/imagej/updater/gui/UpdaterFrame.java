@@ -283,6 +283,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					}
 				}, bottomPanel2);
 
+		// TODO: unify upload & apply changes (probably apply changes first, then
+		// upload)
 		// includes button to upload to server if is a Developer using
 		bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
 		upload =
