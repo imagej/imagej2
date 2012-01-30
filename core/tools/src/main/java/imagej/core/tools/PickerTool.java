@@ -52,8 +52,8 @@ import imagej.util.ColorRGB;
  */
 @Plugin(
 	type = Tool.class,
-	name = "ColorPicker",
-	description = "Color Picker Tool (sets foreground/background colors/values)",
+	name = "Picker",
+	description = "Picker Tool (sets foreground/background colors/values)",
 	iconPath = "/icons/tools/picker.png", priority = PickerTool.PRIORITY)
 public class PickerTool extends AbstractTool {
 
@@ -126,16 +126,16 @@ public class PickerTool extends AbstractTool {
 	public String getDescription() {
 		OptionsColors opts = getOptions();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Color picker FG: ");
+		sb.append("Picker FG: ");
 		ColorRGB fgColor = opts.getFgColor();
 		ColorRGB bgColor = opts.getBgColor();
 		double fgValue = opts.getFgGray();
 		double bgValue = opts.getBgGray();
-		sb.append(String.format("(%d,%d,%d) (%.3f)",
-			fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue(), fgValue));
+		sb.append(String.format("(%.3f) (%d,%d,%d)",
+			fgValue, fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue()));
 		sb.append("  BG: ");
-		sb.append(String.format("(%d,%d,%d) (%.3f)",
-			bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgValue));
+		sb.append(String.format("(%.3f) (%d,%d,%d)",
+			bgValue, bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()));
 		return sb.toString();
 	}
 	
