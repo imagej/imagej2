@@ -143,7 +143,7 @@ public class PluginUploader {
 				" but is " + Util.getFilesize(uploadable.sourceFilename) + ")!");
 		if (checkTimestamp) {
 			final long stored =
-				uploadable.plugin.getStatus() == PluginObject.Status.NOT_FIJI
+				uploadable.plugin.getStatus() == PluginObject.Status.LOCAL_ONLY
 					? uploadable.plugin.current.timestamp
 					: uploadable.plugin.newTimestamp;
 			if (stored != Util.getTimestamp(uploadable.sourceFilename)) throw new RuntimeException(
@@ -162,7 +162,7 @@ public class PluginUploader {
 			plugin.filesize = file.filesize = Util.getFilesize(plugin.filename);
 			plugin.newTimestamp = timestamp;
 			file.filename = plugin.filename + "-" + timestamp;
-			if (plugin.getStatus() == PluginObject.Status.NOT_FIJI) {
+			if (plugin.getStatus() == PluginObject.Status.LOCAL_ONLY) {
 				plugin.setStatus(PluginObject.Status.INSTALLED);
 				plugin.current.timestamp = timestamp;
 			}
