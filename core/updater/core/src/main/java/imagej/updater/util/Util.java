@@ -80,7 +80,7 @@ public class Util {
 	public static final String XML_COMPRESSED = "db.xml.gz";
 
 	// Prefix for the preference key names
-	public static final String PREFS_USER = "fiji.updater.login";
+	public static final String PREFS_USER = "imagej.updater.login";
 
 	public final static String macPrefix = "Contents/MacOS/";
 
@@ -120,12 +120,11 @@ public class Util {
 
 		updateablePlatforms = new HashSet<String>();
 		updateablePlatforms.add(platform);
-		if (new File(imagejRoot, launchers[macIndex]).exists() ||
-			new File(imagejRoot, macPrefix + "fiji-macosx").exists()) updateablePlatforms
+		if (new File(imagejRoot, launchers[macIndex]).exists()) updateablePlatforms
 			.add("macosx");
 		final String[] files = new File(imagejRoot).list();
 		for (final String name : files == null ? new String[0] : files)
-			if (name.startsWith("ImageJ-") || name.startsWith("fiji-")) updateablePlatforms
+			if (name.startsWith("ImageJ-")) updateablePlatforms
 				.add(platformForLauncher(name));
 	}
 
