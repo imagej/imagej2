@@ -46,7 +46,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(label = "Pencil Tool")
 public class PencilToolConfigPlugin implements ImageJPlugin {
 
-	@Parameter(required = true)
+	@Parameter
 	private PencilTool tool;
 
 	// TODO - it would be nice to persist this pencil width. but the associated

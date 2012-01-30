@@ -64,10 +64,10 @@ public class InvertDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	// -- instance variables --

@@ -60,7 +60,7 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	public static final String COLOR = "Color";
 	public static final String COMPOSITE = "Composite";
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private DatasetView view;
 
 	// TODO: Add support for enums to plugin framework?

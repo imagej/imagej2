@@ -67,7 +67,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 	private static final int SLIDER_RANGE = 256;
 	private static final String SLIDER_MAX = "" + (SLIDER_RANGE - 1);
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")

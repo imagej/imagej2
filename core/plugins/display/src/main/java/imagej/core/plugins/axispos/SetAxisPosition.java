@@ -54,10 +54,10 @@ import net.imglib2.meta.AxisType;
 	@Menu(label = "Set Axis Position...") })
 public class SetAxisPosition implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private AnimationService animationService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	@Parameter(label = "Position", min = "1")

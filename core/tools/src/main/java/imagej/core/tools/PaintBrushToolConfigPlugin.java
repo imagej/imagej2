@@ -46,7 +46,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(label = "Paintbrush Tool")
 public class PaintBrushToolConfigPlugin implements ImageJPlugin {
 
-	@Parameter(required = true)
+	@Parameter
 	private PaintBrushTool tool;
 
 	// TODO - it would be nice to persist this brush width. but the associated

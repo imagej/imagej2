@@ -66,13 +66,13 @@ public class FlipHorizontally implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private OverlayService overlayService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --

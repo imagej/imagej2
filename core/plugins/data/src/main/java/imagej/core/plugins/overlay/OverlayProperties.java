@@ -76,7 +76,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	static final protected String arrowLineDecoration = "Arrow";
 	static final protected String noLineDecoration = "None";
 
-	@Parameter(required = true)
+	@Parameter
 	private ImageDisplay display;
 
 	@Parameter(label = "Line color", persist = false)

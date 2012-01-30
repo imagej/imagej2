@@ -58,7 +58,7 @@ import java.math.BigInteger;
 @Plugin(menuPath = "Plugins>Debug>Parameter Tester")
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private EventService eventService;
 
 	@Parameter(label = "boolean")
@@ -128,7 +128,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter
 	private ColorRGB color;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private Dataset dataset;
 
 	@Parameter(label = "spinner", style = WidgetStyle.NUMBER_SPINNER, min = "0",

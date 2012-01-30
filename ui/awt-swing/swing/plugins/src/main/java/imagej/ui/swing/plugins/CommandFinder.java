@@ -57,7 +57,7 @@ import javax.swing.JOptionPane;
 	@Menu(label = "Find Commands...", accelerator = "control L") })
 public class CommandFinder implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private PluginService pluginService;
 
 	@Override

@@ -77,7 +77,7 @@ public class AutoContrast implements ImageJPlugin {
 	private static final int AUTO_THRESHOLD = 5000;
 	private static int autoThreshold;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private DatasetView view;
 
 	@Override
