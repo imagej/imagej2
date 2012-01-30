@@ -791,6 +791,10 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		return result.length() > 0 ? result.toString() : null;
 	}
 
+	public File prefix(final FileObject file) {
+		return prefix(file.getFilename());
+	}
+
 	public File prefix(final String path) {
 		final File file = new File(path);
 		if (file.isAbsolute()) return file;

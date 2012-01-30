@@ -55,8 +55,7 @@ public class UploadableFile implements Uploadable {
 	protected long filesize;
 
 	public UploadableFile(final FilesCollection files, final FileObject file) {
-		this(files.prefix(file.getFilename()), file.getFilename() + "-" +
-			file.getTimestamp());
+		this(files.prefix(file), file.getFilename() + "-" + file.getTimestamp());
 		this.file = file;
 	}
 

@@ -281,9 +281,9 @@ public class UpdaterTest {
 		final FileObject[] list = makeList(files);
 		assertEquals(2, list.length);
 
-		final File obsolete = files.prefix(list[0].getFilename());
+		final File obsolete = files.prefix(list[0]);
 		assertEquals("obsolete.ijm", obsolete.getName());
-		final File dependency = files.prefix(list[0].getFilename());
+		final File dependency = files.prefix(list[0]);
 
 		// Make sure files are checksummed again when their timestamp changed
 
