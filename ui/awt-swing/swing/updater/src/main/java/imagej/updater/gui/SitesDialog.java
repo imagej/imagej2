@@ -97,7 +97,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 		updaterFrame = owner;
 		this.files = files;
 		names = new ArrayList<String>(files.getUpdateSiteNames());
-		names.set(0, "Fiji");
+		names.set(0, FilesCollection.DEFAULT_UPDATE_SITE);
 
 		final Container contentPane = getContentPane();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));

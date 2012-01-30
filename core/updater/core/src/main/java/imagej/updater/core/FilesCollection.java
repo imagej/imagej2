@@ -507,7 +507,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 
 			@Override
 			public boolean matches(final FileObject file) {
-				return file.updateSite != null && // is null for non-Fiji files
+				return file.updateSite != null && // is null for local-only files
 					file.updateSite.equals(updateSite);
 			}
 		};
@@ -699,7 +699,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 	}
 
 	// TODO: for developers, there should be a consistency check:
-	// no dependencies on non-Fiji files, no circular dependencies,
+	// no dependencies on local-only files, no circular dependencies,
 	// and no overring circular dependencies.
 	void addDependencies(final FileObject file, final DependencyMap map,
 		final boolean overriding)
