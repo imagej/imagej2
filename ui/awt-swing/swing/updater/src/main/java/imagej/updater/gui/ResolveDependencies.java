@@ -183,10 +183,11 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 			newText(conflict.isError() ? "Conflict: " : "Warning: ", conflict
 				.isError() ||
 				conflict.isCritical() ? red : normal);
-			addText(conflict.getFilename(), bold);
+			addText(conflict.getFilename() + "\n", bold);
 			addText(conflict.getConflict());
-			addText("\n    ");
+			addText("\n");
 			for (final Resolution resolution : conflict.getResolutions()) {
+				addText("\n    ");
 				addButton(resolution.getDescription(), new ActionListener() {
 
 					@Override
