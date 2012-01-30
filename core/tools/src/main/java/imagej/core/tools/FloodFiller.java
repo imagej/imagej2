@@ -222,7 +222,7 @@ public class FloodFiller {
 	}
 
 	/**
-	 * From IJ1; this method is used by the particle analyzer to remove interior
+	 * In IJ1 this method is used by the particle analyzer to remove interior
 	 *  holes from particle masks.
 	 */
 	public void particleAnalyzerFill(
@@ -238,6 +238,8 @@ public class FloodFiller {
 		long maxU = ds.dimension(uAxis) - 1;
 		long maxV = ds.dimension(vAxis) - 1;
 		maskTool.setGrayValue(0);
+	  // FIXME TODO - fill plane or roi of plane of maskTool?
+		// Decide between fill() or fill(RealRect)
 		maskTool.fill();
 		maskTool.setGrayValue(255);
 		uStack.clear();
@@ -280,7 +282,12 @@ public class FloodFiller {
 		}        
 	}
 	
-	final boolean inParticle(
+	// -- private helpers --
+
+	/**
+	 * Returns true if value of pixel is inside a given range
+	 */
+	private boolean inParticle(
 		RandomAccess<? extends RealType<?>> accessor, long u, long v,
 		double level1, double level2)
 	{
@@ -288,8 +295,6 @@ public class FloodFiller {
 		return val>=level1 && val<=level2;
 	}
 	
-	// -- private helpers --
-
 	/**
 	 * Returns true if the current pixel located at the given (u,v) coordinates is
 	 * the same as the specified color or gray values.
