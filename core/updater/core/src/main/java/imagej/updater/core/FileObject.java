@@ -570,6 +570,17 @@ public class FileObject {
 			(evenForcedUpdates && (status.isValid(Action.UPDATE) || status == Status.OBSOLETE_MODIFIED));
 	}
 
+	public void stageForUpload(final FilesCollection files,
+		final String updateSite)
+	{
+		if (status == Status.LOCAL_ONLY) {
+			newChecksum = current.checksum;
+			newTimestamp = current.timestamp;
+		}
+		setAction(files, Action.UPLOAD);
+		this.updateSite = updateSite;
+	}
+
 	public void stageForUninstall(final FilesCollection files) throws IOException
 	{
 		if (action != Action.UNINSTALL) throw new RuntimeException(filename +
