@@ -176,6 +176,32 @@ public class Checksummer extends Progressable {
 		catch (final Exception e) {
 			e.printStackTrace();
 		}
+		else {
+			final FileObject object = files.get(path);
+			if (object != null) {
+				switch (object.getStatus()) {
+					case OBSOLETE:
+					case OBSOLETE_MODIFIED:
+						object.setStatus(Status.OBSOLETE_UNINSTALLED);
+						break;
+					case INSTALLED:
+					case MODIFIED:
+					case UPDATEABLE:
+						object.setStatus(Status.NOT_INSTALLED);
+						break;
+					case LOCAL_ONLY:
+						files.remove(path);
+						break;
+					case NEW:
+					case NOT_INSTALLED:
+					case OBSOLETE_UNINSTALLED:
+						// leave as-is
+						break;
+					default:
+						throw new RuntimeException("Unhandled status!");
+				}
+			}
+		}
 
 		counter += (int) file.length();
 		itemDone(path);
@@ -272,8 +298,7 @@ public class Checksummer extends Progressable {
 		for (final StringAndFile pair : queue)
 			alreadyQueued.add(pair.path);
 		for (final FileObject file : files)
-			if (!alreadyQueued.contains(file.getFilename())) queueIfExists(file
-				.getFilename());
+			if (!alreadyQueued.contains(file.getFilename())) queue(file.getFilename());
 	}
 
 	public void updateFromLocal() {
