@@ -161,18 +161,9 @@ public class Checksummer extends Progressable {
 			if (file == null) {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
 					path + ", which is not known to the Updater");
-				if (imagejRoot == null) {
-					file =
-						new FileObject(null, path, checksum, timestamp, Status.LOCAL_ONLY);
-					tryToGuessPlatform(file);
-				}
-				else {
-					file = new FileObject(null, path, null, 0, Status.OBSOLETE);
-					file.addPreviousVersion(checksum, timestamp);
-					// for re-upload
-					file.newChecksum = checksum;
-					file.newTimestamp = timestamp;
-				}
+				file =
+					new FileObject(null, path, checksum, timestamp, Status.LOCAL_ONLY);
+				tryToGuessPlatform(file);
 				if (realFile.canExecute() || path.endsWith(".exe")) file.executable =
 					true;
 				files.add(file);
@@ -211,15 +202,6 @@ public class Checksummer extends Progressable {
 		for (final String file : files)
 			queue(file);
 		handleQueue();
-	}
-
-	public void updateFromPreviousInstallation(final String imagejRoot) {
-		if (!Util.isDeveloper) throw new RuntimeException("Must be developer");
-		this.imagejRoot = new File(imagejRoot).getAbsolutePath() + "/";
-		updateFromLocal();
-		for (final FileObject file : files)
-			if (file.isLocallyModified()) file.addPreviousVersion(file.newChecksum,
-				file.newTimestamp);
 	}
 
 	protected static boolean tryToGuessPlatform(final FileObject file) {
