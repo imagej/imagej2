@@ -799,7 +799,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		Progress progress = null;
 		try {
-			if (!uploader.hasUploader() && !interactiveLogin(uploader)) return;
+			if (!uploader.login()) return;
 			progress = getProgress("Uploading...");
 			uploader.upload(progress);
 			for (final PluginObject plugin : plugins.toUploadOrRemove())
@@ -841,7 +841,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final PluginUploader uploader = new PluginUploader(plugins, updateSiteName);
 		Progress progress = null;
 		try {
-			if (!uploader.hasUploader() && !interactiveLogin(uploader)) return false;
+			if (!uploader.login()) return false;
 			progress = getProgress("Initializing Update Site...");
 			uploader.upload(progress);
 			// JSch needs some time to finalize the SSH connection
@@ -859,73 +859,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			if (progress != null) progress.done();
 		}
 		return false;
-	}
-
-	/*
-	protected UserInfo getUserInfo(final String password) {
-		return new UserInfo() {
-			protected String prompt;
-			protected int count = 0;
-
-			public String getPassphrase() {
-				return UserInterface.get().getPassword(prompt);
-			}
-
-			public String getPassword() {
-				if (count == 1)
-					return password;
-				return UserInterface.get().getPassword(prompt);
-			}
-
-			public boolean promptPassphrase(String message) {
-				prompt = message;
-				return count++ < 3;
-			}
-
-			public boolean promptPassword(String message) {
-				prompt = message;
-				return count++ < 4;
-			}
-
-			public boolean promptYesNo(String message) {
-				return SwingTools.showYesNoQuestion(hidden, UpdaterFrame.this, "Password", message);
-			}
-
-			public void showMessage(String message) {
-				info(message);
-			}
-		};
-	}
-	*/
-
-	protected boolean interactiveLogin(final PluginUploader uploader) {
-		return false;
-		/*
-		String username = uploader.getDefaultUsername();
-		for (;;) {
-			//Dialog to enter username and password
-			if (username == null) {
-				username = UserInterface.get().getString("Login for " + uploader.getUploadHost());
-				if (username == null || username.equals(""))
-					return false;
-			}
-			String password = UserInterface.get().getPassword("Password for " + username + "@" + uploader.getUploadHost());
-			if (password == null)
-				return false; //return back to user interface
-
-			UserInfo userInfo = getUserInfo(password);
-			FileUploader sshUploader = SSHFileUploader.getUploader(uploader, username, userInfo);
-			if (sshUploader != null) {
-				uploader.setUploader(sshUploader);
-				break;
-			}
-			UserInterface.get().error("Failed to login");
-			username = null;
-		}
-
-		UserInterface.get().setPref(Util.PREFS_USER, username);
-		return true;
-		*/
 	}
 
 	public void error(final String message) {
