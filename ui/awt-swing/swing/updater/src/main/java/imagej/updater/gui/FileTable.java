@@ -314,7 +314,7 @@ public class FileTable extends JTable {
 		}
 
 		public void setFiles(final Iterable<FileObject> files) {
-			setFiles(FilesCollection.clone(files));
+			setFiles(this.files.clone(files));
 		}
 
 		public void setFiles(final FilesCollection files) {
