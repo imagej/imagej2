@@ -88,7 +88,7 @@ public class Util {
 	static {
 		final String imagejDir = System.getProperty("imagej.dir");
 		final String property =
-			imagejDir != null ? imagejDir : System.getProperty("fiji.dir");
+			imagejDir != null ? imagejDir : System.getProperty("ij.dir");
 		if (property != null) imagejRoot = property + File.separator;
 		else {
 			String path = new Util().getClass().getResource("Util.class").toString();
