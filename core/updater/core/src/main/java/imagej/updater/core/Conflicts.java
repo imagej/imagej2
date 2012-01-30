@@ -345,4 +345,10 @@ public class Conflicts {
 		return conflicts.size() > 0;
 	}
 
+	public boolean hasUploadConflicts() {
+		conflicts = new ArrayList<Conflict>();
+		listUploadIssues();
+		return conflicts.size() > 0;
+	}
+
 }
