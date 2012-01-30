@@ -105,8 +105,8 @@ public class FloodFillTool extends AbstractTool {
 					evt.getDisplay().update();
 				}
 			}
+			evt.consume();
 		}
-		evt.consume();
 	}
 
 	/** Tracks ALT key status. Changes color of fill between FG/BG. */
@@ -114,7 +114,6 @@ public class FloodFillTool extends AbstractTool {
 	public void onKeyDown(final KyPressedEvent evt) {
 		altKeyDown =
 			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-		evt.consume();
 	}
 
 	/** Tracks ALT key status. Changes color of fill between FG/BG. */
@@ -122,7 +121,6 @@ public class FloodFillTool extends AbstractTool {
 	public void onKeyUp(final KyReleasedEvent evt) {
 		altKeyDown =
 			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-		evt.consume();
 	}
 
 	// -- private helpers --

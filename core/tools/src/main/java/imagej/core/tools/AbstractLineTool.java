@@ -83,8 +83,8 @@ public abstract class AbstractLineTool extends AbstractTool {
 			if (drawingTool != null) {
 				drawingTool.moveTo(evt.getX(), evt.getY());
 			}
+			evt.consume();
 		}
-		evt.consume();
 	}
 
 	/** On mouse up all resources are freed. */
@@ -92,8 +92,8 @@ public abstract class AbstractLineTool extends AbstractTool {
 	public void onMouseUp(final MsReleasedEvent evt) {
 		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
 			drawingTool = null;
+			evt.consume();
 		}
-		evt.consume();
 	}
 
 	/** On mouse drag a series of lines are drawn. */
@@ -103,8 +103,8 @@ public abstract class AbstractLineTool extends AbstractTool {
 			drawingTool.lineTo(evt.getX(), evt.getY());
 			evt.getDisplay().getPanel().redraw();
 			evt.getDisplay().update();
+			evt.consume();
 		}
-		evt.consume();
 	}
 
 	/**
@@ -115,7 +115,6 @@ public abstract class AbstractLineTool extends AbstractTool {
 	public void onKeyDown(final KyPressedEvent evt) {
 		altKeyDown =
 			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-		evt.consume();
 	}
 
 	/**
@@ -126,7 +125,6 @@ public abstract class AbstractLineTool extends AbstractTool {
 	public void onKeyUp(final KyReleasedEvent evt) {
 		altKeyDown =
 			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-		evt.consume();
 	}
 
 	// -- private helpers --

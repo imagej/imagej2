@@ -38,6 +38,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
@@ -101,6 +102,7 @@ public class PanTool extends AbstractTool {
 
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		lastX = evt.getX();
 		lastY = evt.getY();
 		evt.consume();
@@ -108,6 +110,7 @@ public class PanTool extends AbstractTool {
 
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		final Display<?> display = evt.getDisplay();
 		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
