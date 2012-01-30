@@ -119,11 +119,10 @@ public class FileObject {
 			Action.MODIFIED, Action.UNINSTALL, Action.UPDATE }, Action.UPLOAD),
 			LOCAL_ONLY(new Action[] { Action.LOCAL_ONLY, Action.UNINSTALL },
 				Action.UPLOAD), NEW(new Action[] { Action.NEW, Action.INSTALL,
-				Action.REMOVE }),
-			OBSOLETE_UNINSTALLED(new Action[] { Action.OBSOLETE }), OBSOLETE(
-				new Action[] { Action.OBSOLETE, Action.UNINSTALL }, Action.UPLOAD),
-			OBSOLETE_MODIFIED(new Action[] { Action.MODIFIED, Action.UNINSTALL },
-				Action.UPLOAD);
+				Action.REMOVE }), OBSOLETE_UNINSTALLED(
+				new Action[] { Action.NOT_INSTALLED }), OBSOLETE(new Action[] {
+				Action.OBSOLETE, Action.UNINSTALL }, Action.UPLOAD), OBSOLETE_MODIFIED(
+				new Action[] { Action.MODIFIED, Action.UNINSTALL }, Action.UPLOAD);
 
 		private Action[] actions, developerActions;
 
@@ -529,7 +528,6 @@ public class FileObject {
 		switch (action) {
 			case NOT_INSTALLED:
 			case NEW:
-			case OBSOLETE:
 			case UNINSTALL:
 			case REMOVE:
 				return true;
@@ -537,6 +535,7 @@ public class FileObject {
 			case INSTALLED:
 			case UPDATEABLE:
 			case MODIFIED:
+			case OBSOLETE:
 			case INSTALL:
 			case UPDATE:
 			case UPLOAD:
