@@ -642,16 +642,9 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public void markForUpdate(final boolean evenForcedUpdates) {
-		for (final PluginObject plugin : updateable(evenForcedUpdates)) {
-			if (Util.isDeveloper && Util.isLauncher(plugin.filename)) continue;
+		for (final PluginObject file : updateable(evenForcedUpdates)) {
 			plugin.setFirstValidAction(this, new Action[] { Action.UPDATE,
 				Action.UNINSTALL, Action.INSTALL });
-		}
-		if (!Util.isDeveloper) for (final String name : Util.launchers) {
-			final PluginObject launcher = getPlugin(name);
-			if (launcher == null) continue; // the regression test triggers this
-			if (launcher.getStatus() == Status.NOT_INSTALLED &&
-				launcher.isForThisPlatform()) launcher.setAction(this, Action.INSTALL);
 		}
 	}
 
