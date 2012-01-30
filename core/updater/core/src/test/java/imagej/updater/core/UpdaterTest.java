@@ -39,6 +39,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import imagej.updater.core.Conflicts.Conflict;
+import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
@@ -53,6 +55,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -265,6 +268,104 @@ public class UpdaterTest {
 		assertCount(0, files.shownByDefault());
 		assertStatus(Status.MODIFIED, files, filename);
 		assertAction(Action.MODIFIED, files, filename);
+
+	}
+
+	@Test
+	public void testUploadConflicts() throws Exception {
+		initializeUpdateSite("macros/obsolete.ijm", "macros/dependency.ijm");
+
+		FilesCollection files = readDb(true, true);
+		files.write();
+
+		final List<FileObject> list = new ArrayList<FileObject>();
+		for (final FileObject object : files)
+			list.add(object);
+		assertCount(2, list);
+
+		final File obsolete = files.prefix(list.get(0).getFilename());
+		assertEquals("obsolete.ijm", obsolete.getName());
+		final File dependency = files.prefix(list.get(0).getFilename());
+
+		// Make sure files are checksummed again when their timestamp changed
+
+		final String name = "macros/dependencee.ijm";
+		final File dependencee = new File(ijRoot, name);
+		writeFile(dependencee, "not yet uploaded");
+		touch(dependencee, 20030115203432l);
+
+		files = readDb(true, true);
+		assertCount(3, files);
+
+		FileObject object = files.get(name);
+		assertNotNull(object);
+		object.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		assertAction(Action.UPLOAD, files, name);
+		object.addDependency(list.get(0).getFilename(), obsolete);
+		object.addDependency(list.get(1).getFilename(), dependency);
+
+		writeFile(dependencee, "still not uploaded");
+
+		Conflicts conflicts = new Conflicts(files);
+		conflicts.conflicts = new ArrayList<Conflict>();
+		conflicts.listUploadIssues();
+		assertCount(1, conflicts.conflicts);
+		Conflict conflict = conflicts.conflicts.get(0);
+		assertEquals(conflict.getConflict(), "The timestamp of " + name +
+			" changed in the meantime");
+
+		final Resolution[] resolutions = conflict.getResolutions();
+		assertEquals(1, resolutions.length);
+		assertEquals(20030115203432l, object.newTimestamp);
+		resolutions[0].resolve();
+		assertNotSame(20030115203432l, object.newTimestamp);
+
+		// Make sure that the resolution allows the upload to succeed
+
+		upload(files);
+
+		// Make sure that obsolete dependencies are detected and repaired
+
+		files = readDb(true, true);
+
+		assertTrue(obsolete.delete());
+		writeFile("macros/independent.ijm");
+		writeFile(dependencee, "a new version");
+
+		files = readDb(true, true);
+		object = files.get(name);
+		assertNotNull(object);
+		assertStatus(Status.MODIFIED, files, name);
+		assertStatus(Status.NOT_INSTALLED, files, list.get(0).getFilename());
+		assertStatus(Status.LOCAL_ONLY, files, "macros/independent.ijm");
+
+		assertCount(2, files.uploadable());
+
+		for (final FileObject object2 : files.uploadable()) {
+			object2.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		}
+		object = files.get("macros/obsolete.ijm");
+		object.setAction(files, Action.REMOVE);
+
+		conflicts = new Conflicts(files);
+		conflicts.conflicts = new ArrayList<Conflict>();
+		conflicts.listUploadIssues();
+		assertCount(2, conflicts.conflicts);
+
+		assertEquals("macros/dependencee.ijm", conflicts.conflicts.get(1)
+			.getFilename());
+		conflict = conflicts.conflicts.get(0);
+		assertEquals("macros/obsolete.ijm", conflict.getFilename());
+
+		// Resolve by breaking the dependency
+
+		final Resolution resolution = conflict.getResolutions()[1];
+		assertEquals("Break the dependency", resolution.getDescription());
+		resolution.resolve();
+
+		conflicts.conflicts = new ArrayList<Conflict>();
+		conflicts.listUploadIssues();
+		assertCount(0, conflicts.conflicts);
 
 	}
 
@@ -490,6 +591,17 @@ public class UpdaterTest {
 			}
 		}
 		return directory.delete();
+	}
+
+	/**
+	 * Change the mtime of a file
+	 * 
+	 * @param file the file to touch
+	 * @param timestamp the mtime as pseudo-long (YYYYMMDDhhmmss)
+	 */
+	protected void touch(final File file, final long timestamp) {
+		final long millis = Util.timestamp2millis(timestamp);
+		file.setLastModified(millis);
 	}
 
 	/**
