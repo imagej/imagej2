@@ -201,7 +201,7 @@ public class Conflicts {
 		final DependencyMap toUpload = new FilesCollection.DependencyMap();
 		for (final FileObject file : files.toUpload())
 			for (final Dependency dependency : file.getDependencies()) {
-				final FileObject dep = files.getFile(dependency.filename);
+				final FileObject dep = files.get(dependency.filename);
 				if (dep == null || ignored.contains(dep)) continue;
 				if (dep.isInstallable() ||
 					(dep.isLocalOnly() && dep.getAction() != Action.UPLOAD) ||
@@ -216,9 +216,9 @@ public class Conflicts {
 		for (final FileObject file : files.managedFiles()) {
 			if (file.getAction() == Action.REMOVE) continue;
 			for (final Dependency dependency : file.getDependencies())
-				if (files.getFile(dependency.filename) == null) conflicts
+				if (files.get(dependency.filename) == null) conflicts
 					.add(dependencyNotUploaded(file, dependency.filename));
-				else if (files.getFile(dependency.filename).getAction() == Action.REMOVE) conflicts
+				else if (files.get(dependency.filename).getAction() == Action.REMOVE) conflicts
 					.add(dependencyRemoved(file, dependency.filename));
 		}
 	}

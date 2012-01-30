@@ -592,7 +592,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 		return filter(filter, this);
 	}
 
-	public FileObject getFile(final String filename) {
+	public FileObject get(final String filename) {
 		for (final FileObject file : this) {
 			if (file.getFilename().equals(filename)) return file;
 		}
@@ -698,7 +698,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 		final boolean overriding)
 	{
 		for (final Dependency dependency : file.getDependencies()) {
-			final FileObject other = getFile(dependency.filename);
+			final FileObject other = get(dependency.filename);
 			if (other == null || overriding != dependency.overrides ||
 				!other.isUpdateablePlatform()) continue;
 			if (dependency.overrides) {
@@ -756,7 +756,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 	{
 		if (seen.contains(file)) return null;
 		for (final String dependency : file.dependencies.keySet()) {
-			final FileObject dep = getFile(dependency);
+			final FileObject dep = get(dependency);
 			if (dep == null) continue;
 			if (chain.contains(dep)) return " " + dependency;
 			chain.add(dep);
@@ -779,7 +779,7 @@ public class FilesCollection extends ArrayList<FileObject> {
 			if (deps.size() > 0 && file.isObsolete()) result.append("Obsolete file " +
 				file + "has dependencies: " + Util.join(", ", deps) + "!\n");
 			for (final String dependency : deps) {
-				final FileObject dep = getFile(dependency);
+				final FileObject dep = get(dependency);
 				if (dep == null || dep.current == null) result.append("The file " +
 					file + " has the obsolete/local-only " + "dependency " + dependency +
 					"!\n");
