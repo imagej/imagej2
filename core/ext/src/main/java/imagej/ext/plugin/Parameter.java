@@ -107,10 +107,8 @@ public @interface Parameter {
 	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
 	ItemVisibility visibility() default imagej.ext.module.ItemVisibility.NORMAL;
 
-	/**
-	 * Defines whether the parameter value must be specified (i.e., no default).
-	 */
-	boolean required() default false;
+	/** Defines whether the parameter value must be non-null. */
+	boolean required() default true;
 
 	/** Defines whether to remember the most recent value of the parameter. */
 	boolean persist() default true;
