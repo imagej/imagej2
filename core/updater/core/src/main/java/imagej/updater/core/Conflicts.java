@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.updater.core;
 
 import imagej.updater.core.FileObject.Action;
+import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.DependencyMap;
 import imagej.updater.util.Util;
 
@@ -216,11 +217,22 @@ public class Conflicts {
 		// Replace dependencies on to-be-removed files
 		for (final FileObject file : files.managedFiles()) {
 			if (file.getAction() == Action.REMOVE) continue;
-			for (final Dependency dependency : file.getDependencies())
-				if (files.get(dependency.filename) == null) conflicts
-					.add(dependencyNotUploaded(file, dependency.filename));
-				else if (files.get(dependency.filename).getAction() == Action.REMOVE) conflicts
-					.add(dependencyRemoved(file, dependency.filename));
+			for (final Dependency dependency : file.getDependencies()) {
+				final FileObject dependencyObject = files.get(dependency.filename);
+				if (dependency.overrides) {
+					if (dependencyObject != null && !dependencyObject.isObsolete() &&
+						!dependencyObject.willNotBeInstalled()) conflicts
+						.add(dependencyObsoleted(file, dependencyObject));
+				}
+				else {
+					if (dependencyObject == null ||
+						dependencyObject.getStatus() == Status.LOCAL_ONLY) conflicts
+						.add(dependencyNotUploaded(file, dependency.filename));
+					else if (dependencyObject.isObsolete() ||
+						dependencyObject.getAction() == Action.REMOVE) conflicts
+						.add(dependencyRemoved(file, dependency.filename));
+				}
+			}
 		}
 	}
 
@@ -267,6 +279,36 @@ public class Conflicts {
 				(notInstalled ? "not installed" : (obsolete ? "marked obsolete"
 					: "locally modified"))) +
 			" but a dependency of\n\n" + uploadReasons, resolutions
+			.toArray(new Resolution[resolutions.size()]));
+	}
+
+	private Conflict dependencyObsoleted(final FileObject obsoleting,
+		final FileObject obsoleted)
+	{
+		final List<Resolution> resolutions = new ArrayList<Resolution>();
+		resolutions
+			.add(new Resolution("Do not obsolete " + obsoleted.getFilename()) {
+
+				@Override
+				public void resolve() {
+					obsoleting.removeDependency(obsoleted.getFilename());
+				}
+			});
+		if (obsoleting.updateSite.equals(obsoleted.updateSite)) {
+			resolutions.add(new Resolution("Remove " + obsoleted.getFilename() +
+				" from the Update Site")
+			{
+
+				@Override
+				public void resolve() {
+					obsoleted.setAction(files, Action.REMOVE);
+					files.prefix(obsoleted).delete();
+				}
+			});
+		}
+		return new Conflict(obsoleted, "The file " + obsoleting.getFilename() +
+			" overrides the file " + obsoleted.getFilename() + ", but " +
+			obsoleted.getFilename() + " was not removed", resolutions
 			.toArray(new Resolution[resolutions.size()]));
 	}
 

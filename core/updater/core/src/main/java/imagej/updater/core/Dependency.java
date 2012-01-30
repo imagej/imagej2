@@ -50,6 +50,6 @@ public class Dependency {
 
 	@Override
 	public String toString() {
-		return filename;
+		return (overrides ? "obsoletes " : "") + filename;
 	}
 }
