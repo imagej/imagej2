@@ -269,6 +269,49 @@ public class UpdaterTest {
 	}
 
 	//
+	// Debug functions
+	//
+
+	/**
+	 * This is a hack, albeit not completely a dumb one. As long as you have
+	 * swing-updater compiled and up-to-date, you can use this method to inspect
+	 * the state at any given moment
+	 * 
+	 * @param files The collection of files, including the current update site and
+	 *          IJ root.
+	 */
+	protected void show(final FilesCollection files) {
+		try {
+			String url = getClass().getResource("UpdaterTest.class").toString();
+			final String suffix =
+				"/core/updater/core/target/test-classes/imagej/updater/core/UpdaterTest.class";
+			assertTrue(url.endsWith(suffix));
+			url =
+				url.substring(0, url.length() - suffix.length()) +
+					"/ui/awt-swing/swing/updater/target/classes/";
+			final ClassLoader loader =
+				new java.net.URLClassLoader(
+					new java.net.URL[] { new java.net.URL(url) });
+			final Class<?> clazz =
+				loader.loadClass("imagej.updater.gui.UpdaterFrame");
+			final java.lang.reflect.Constructor<?> ctor =
+				clazz.getConstructor(FilesCollection.class);
+			final Object updaterFrame = ctor.newInstance(files);
+			final java.lang.reflect.Method setVisible =
+				clazz.getMethod("setVisible", boolean.class);
+			setVisible.invoke(updaterFrame, true);
+			final java.lang.reflect.Method isVisible = clazz.getMethod("isVisible");
+			for (;;) {
+				Thread.sleep(1000);
+				if (isVisible.invoke(updaterFrame).equals(Boolean.FALSE)) break;
+			}
+		}
+		catch (final Throwable t) {
+			t.printStackTrace();
+		}
+	}
+
+	//
 	// Utility functions
 	//
 
