@@ -41,6 +41,7 @@ import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleItem;
 import imagej.util.ClassUtils;
 import imagej.util.ColorRGB;
+import imagej.util.Log;
 import imagej.util.NumberUtils;
 
 import java.io.File;
@@ -152,8 +153,11 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 				addObject(inputPanel, model, initialValue);
 			}
 			catch (final ModuleException e) {
-				throw new ModuleException("A " + type.getSimpleName() +
-					" is required but none exist.", e);
+				if (item.isRequired()) {
+					throw new ModuleException("A " + type.getSimpleName() +
+						" is required but none exist.", e);
+				}
+				Log.debug(e);
 			}
 		}
 
