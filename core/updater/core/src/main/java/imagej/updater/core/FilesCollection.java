@@ -599,13 +599,6 @@ public class FilesCollection extends ArrayList<FileObject> {
 		return null;
 	}
 
-	public FileObject getFile(final String filename, final long timestamp) {
-		for (final FileObject file : this)
-			if (file.getFilename().equals(filename) &&
-				file.getTimestamp() == timestamp) return file;
-		return null;
-	}
-
 	public FileObject
 		getFileFromDigest(final String filename, final String digest)
 	{
