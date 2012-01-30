@@ -227,14 +227,14 @@ public class PluginDetails extends JTextPane implements UndoableEditListener {
 		if (!getText().equals("")) blankLine();
 		title(plugin.getFilename());
 		if (plugin.isUpdateable()) italic("\n(Update available)");
-		else if (!plugin.isFiji()) italic("(Not in Fiji)");
+		else if (!plugin.isFiji()) italic("(Local-only)");
 		if (plugin.isLocallyModified()) {
 			blankLine();
 			bold("Warning: ");
 			italic("This file was locally modified.");
 		}
 		blankLine();
-		if (plugin.current == null) bold("This file is no longer needed by Fiji");
+		if (plugin.current == null) bold("This file is no longer needed");
 		else {
 			bold("Release date:\n");
 			normal(prettyPrintTimestamp(plugin.current.timestamp));

@@ -35,7 +35,7 @@ public class XMLFileDownloader extends Progressable {
 	}
 
 	public void start() throws IOException {
-		setTitle("Updating the Fiji database");
+		setTitle("Updating the index of available files");
 		final XMLFileReader reader = new XMLFileReader(plugins);
 		final int current = 0, total = updateSites.size();
 		warnings = "";

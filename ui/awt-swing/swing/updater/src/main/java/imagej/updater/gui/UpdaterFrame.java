@@ -79,7 +79,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public UpdaterFrame(final PluginCollection plugins, final boolean hidden) {
-		super("Fiji Updater");
+		super("ImageJ Updater");
 		setPreferredSize(new Dimension(780, 560));
 
 		this.plugins = plugins;
@@ -588,7 +588,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			updatePluginsTable();
 			pluginsChanged();
 			plugins.write();
-			info("Updated successfully.  Please restart Fiji!");
+			info("Updated successfully.  Please restart ImageJ!");
 			dispose();
 		}
 		catch (final Canceled e) {

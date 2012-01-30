@@ -140,7 +140,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 			}
 		if (count > 0) info("" + count + " files are installed from the site '" +
 			name + "'\n" + "These files will not be deleted automatically.\n" +
-			"Note: even if marked as 'Not Fiji', they might be available from other sites.");
+			"Note: even if marked as 'Local-only', they might be available from other sites.");
 		for (final PluginObject plugin : list) {
 			plugin.updateSite = null;
 			plugin.setStatus(PluginObject.Status.NOT_FIJI);

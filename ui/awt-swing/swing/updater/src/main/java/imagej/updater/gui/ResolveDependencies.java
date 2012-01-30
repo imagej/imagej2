@@ -209,7 +209,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		maybeAddSeparator();
 		newText("Warning: ");
 		addText(plugin.getFilename(), bold);
-		addText(" is locally modified and Fiji cannot determine its "
+		addText(" is locally modified and the Updater cannot determine its "
 			+ "status. A newer version might be required by\n\n");
 		addList(toInstall.get(plugin));
 		addText("\n    ");
@@ -254,8 +254,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		maybeAddSeparator();
 		newText("Warning: ", notFiji || obsolete ? red : normal);
 		addText(plugin.getFilename(), bold);
-		addText(" is " +
-			(notFiji ? "not a Fiji component yet" : (notInstalled ? "not installed"
+		addText((notFiji ? "was not uploaded yet" : "is " + (notInstalled ? "not installed"
 				: (obsolete ? "marked obsolete" : "locally modified"))) +
 			" but a dependency of\n\n");
 		addList(reasons);
@@ -286,7 +285,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		maybeAddSeparator();
 		newText("Error: ", normal);
 		addText(plugin.getFilename(), bold);
-		addText(" depends on " + dependency + " which is not a Fiji plugin.\n\n");
+		addText(" depends on " + dependency + " which was not uploaded.\n\n");
 		addDependencyButton("Break the dependency", plugin, dependency, null);
 	}
 

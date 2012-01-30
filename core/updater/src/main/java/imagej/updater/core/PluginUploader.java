@@ -20,8 +20,7 @@ import java.util.List;
  * updated plugin records.
  *
  * Note: Plugins are uploaded differently
- * - Non-Fiji plugins & new versions of Fiji Plugins will have files AND
- *   details uploaded
+ * - Local-only plugins & new file versions will have files AND details uploaded
  * - Uninstalled & up-to-date plugins will ONLY have their details uploaded
  *   (i.e.: XML file)
  */
