@@ -36,6 +36,7 @@ package imagej.core.tools;
 
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
@@ -71,6 +72,8 @@ public class PickerTool extends AbstractTool {
 	@Override
 	public void onMouseClick(final MsClickedEvent evt) {
 
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+		
 		if (!helper.recordEvent(evt)) {
 			evt.consume();
 			return;
@@ -112,14 +115,12 @@ public class PickerTool extends AbstractTool {
 	public void onKeyDown(final KyPressedEvent evt) {
 		altKeyDown =
 			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-		evt.consume();
 	}
 
 	@Override
 	public void onKeyUp(final KyReleasedEvent evt) {
 		altKeyDown =
 			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-		evt.consume();
 	}
 
 	@Override
@@ -131,16 +132,19 @@ public class PickerTool extends AbstractTool {
 		ColorRGB bgColor = opts.getBgColor();
 		double fgValue = opts.getFgGray();
 		double bgValue = opts.getBgGray();
-		sb.append(String.format("(%.3f) (%d,%d,%d)",
-			fgValue, fgColor.getRed(), fgColor.getGreen(), fgColor.getBlue()));
+		sb.append(valuesString(fgColor,fgValue));
 		sb.append("  BG: ");
-		sb.append(String.format("(%.3f) (%d,%d,%d)",
-			bgValue, bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()));
+		sb.append(valuesString(bgColor,bgValue));
 		return sb.toString();
 	}
 	
 	// -- private interface --
 
+	private String valuesString(ColorRGB color, double value) {
+		return String.format("(%.3f) (%d,%d,%d)",
+			value, color.getRed(), color.getGreen(), color.getBlue());
+	}
+	
 	private void colorMessage(final String label, final ColorRGB color) {
 		final String message =
 			String.format("%s color = (%d,%d,%d)", label, color.getRed(), color
