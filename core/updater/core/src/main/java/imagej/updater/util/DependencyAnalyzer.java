@@ -37,6 +37,7 @@ package imagej.updater.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -89,17 +90,21 @@ public class DependencyAnalyzer {
 
 			for (final String name : allClassNames) {
 				UserInterface.get().debug("Considering name from analyzer: " + name);
-				final List<String> allJars = map.get(name);
-				if (allJars == null || allJars.contains(path)) continue;
-				if (allJars.size() > 1) {
+				final List<String> jars = map.get(name);
+				if (jars == null) continue;
+				final List<String> dependencies = new ArrayList<String>();
+				for (final String dependency : jars) {
+					if (!exclude(path, dependency)) dependencies.add(dependency);
+				}
+				if (dependencies.size() > 1) {
 					UserInterface.get().log(
 						"Warning: class " + name + ", referenced in " + path +
 							", is in more than one jar:");
-					for (final String j : allJars)
+					for (final String j : dependencies)
 						UserInterface.get().log("  " + j);
 					UserInterface.get().log("... adding all as dependency.");
 				}
-				for (final String j : allJars) {
+				for (final String j : dependencies) {
 					result.add(j);
 					UserInterface.get().debug(
 						"... adding dep " + j + " for " + path + " because of class " +
@@ -145,6 +150,26 @@ public class DependencyAnalyzer {
 			if (analyzer.containsDebugInfo()) return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Exclude some dependencies Sometimes we just know better. for example,
+	 * slf4j-api.jar and slf4j-log4j12.jar contain circular references, so we
+	 * force one direction.
+	 * 
+	 * @param jarPath the path of the .jar file
+	 * @param dependency the path of the dependency to exclude
+	 * @return whether it should be forced to have no dependencies
+	 */
+	protected boolean exclude(final String jarPath, final String dependency) {
+		return jarPath.equals(dependency) ||
+			dependency.equals("jars/javac.jar") ||
+			(jarPath.equals("jars/slf4j-api.jar") && dependency
+				.equals("jars/slf4j-log4j12.jar")) ||
+			(jarPath.equals("jars/logkit.jar") && dependency
+				.equals("jars/avalon-framework.jar")) ||
+			(jarPath.equals("jars/bsh.jar") && dependency.equals("jars/testng.jar")) ||
+			(jarPath.equals("jars/testng.jar") && dependency.equals("jars/guice.jar"));
 	}
 
 }
