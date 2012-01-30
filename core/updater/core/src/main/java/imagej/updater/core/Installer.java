@@ -199,4 +199,65 @@ public class Installer extends Downloader {
 				" as executable");
 		}
 	}
+
+	public void moveUpdatedIntoPlace() throws IOException {
+		moveUpdatedIntoPlace(files.prefix("update"), files.prefix("."));
+	}
+
+	protected void moveUpdatedIntoPlace(final File sourceDirectory,
+		final File targetDirectory) throws IOException
+	{
+		if (!sourceDirectory.isDirectory()) return;
+		final File[] list = sourceDirectory.listFiles();
+		if (list == null) return;
+		if (!targetDirectory.isDirectory() && !targetDirectory.mkdir()) throw new IOException(
+			"Could not create directory '" + targetDirectory + "'");
+		for (final File file : list) {
+			final File targetFile = new File(targetDirectory, file.getName());
+			if (file.isDirectory()) {
+				moveUpdatedIntoPlace(file, targetFile);
+			}
+			else if (file.isFile()) {
+				if (file.length() == 0) {
+					if (targetFile.exists()) deleteOrThrowException(targetFile);
+					deleteOrThrowException(file);
+				}
+				else {
+					if (!file.renameTo(targetFile) &&
+						!((targetFile.delete() || moveOutOfTheWay(targetFile)) && file
+							.renameTo(targetFile)))
+					{
+						throw new IOException("Could not move '" + file + "' to '" +
+							targetFile + "'");
+					}
+				}
+			}
+		}
+		deleteOrThrowException(sourceDirectory);
+	}
+
+	protected static void deleteOrThrowException(final File file)
+		throws IOException
+	{
+		if (!file.delete()) throw new IOException("Could not remove '" + file + "'");
+	}
+
+	protected static boolean moveOutOfTheWay(final File file) {
+		if (!file.exists()) return true;
+		String prefix = file.getName(), suffix = "";
+		if (prefix.endsWith(".exe") || prefix.endsWith(".EXE")) {
+			suffix = prefix.substring(prefix.length() - 4);
+			prefix = prefix.substring(0, prefix.length() - 4);
+		}
+		File backup = new File(file.getParentFile(), prefix + ".old" + suffix);
+		if (backup.exists() && !backup.delete()) {
+			final int i = 2;
+			for (;;) {
+				backup = new File(file.getParentFile(), prefix + ".old" + i + suffix);
+				if (!backup.exists()) break;
+			}
+		}
+		return file.renameTo(backup);
+	}
+
 }
