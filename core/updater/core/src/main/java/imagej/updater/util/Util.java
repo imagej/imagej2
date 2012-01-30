@@ -73,9 +73,9 @@ import java.util.regex.Pattern;
  */
 public class Util {
 
-	public static String MAIN_URL = "http://fiji.sc/update/";
-	public static String UPDATE_DIRECTORY = "/var/www/update/";
-	public static String SSH_HOST = "fiji.sc";
+	public static String MAIN_URL = "http://update.imagej.net/";
+	public static String UPDATE_DIRECTORY = "/home/imagej/update-site";
+	public static String SSH_HOST = "update.imagej.net";
 
 	public static final String XML_COMPRESSED = "db.xml.gz";
 
