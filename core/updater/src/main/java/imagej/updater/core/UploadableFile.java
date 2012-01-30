@@ -43,14 +43,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-// TODO: Replace this comment by something helpful.
-/*
- * Implementation of class containing information for FileUploader to use
+/**
+ * A class used for uploading local files.
+ * 
+ * @author Johannes Schindelin
+ * @author Yap Chin Kiet
  */
-// TODO: unify "FileUploader.SourceFile" and "Downloader.FileDownload" into
-// a single "Transferable", and refactor Downloader and FileUploader into
-// a single "Transfer" class extending Progressable.
-// TODO: this class should be merged into Uploader.
 public class UploadableFile implements Uploadable {
 
 	PluginObject plugin;
