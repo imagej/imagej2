@@ -162,7 +162,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 		final Collection<String> set = new HashSet<String>();
 		for (final PluginObject plugin : toUpload(true))
 			set.add(plugin.updateSite);
-		for (PluginObject plugin : toRemove())
+		for (final PluginObject plugin : toRemove())
 			set.add(plugin.updateSite);
 		// keep the update sites' order
 		final List<String> result = new ArrayList<String>();
