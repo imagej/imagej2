@@ -91,11 +91,12 @@ public class Util {
 			imagejDir != null ? imagejDir : System.getProperty("fiji.dir");
 		if (property != null) imagejRoot = property + File.separator;
 		else {
-			final String path =
-				new Util().getClass().getResource("Util.class").toString().replace(
-					"jar:file:", "");
+			String path = new Util().getClass().getResource("Util.class").toString();
+			if (path.startsWith("jar:")) path = path.substring(4);
+			if (path.startsWith("file:")) path = path.substring(5);
 			int offset = path.lastIndexOf("/plugins/");
 			if (offset < 0) offset = path.lastIndexOf("\\plugins\\");
+			if (offset < 0) offset = path.lastIndexOf("/core/updater/core/");
 			if (offset < 0) throw new RuntimeException(
 				"Could not determine ImageJ directory!");
 			imagejRoot = path.substring(0, offset + 1);
