@@ -84,9 +84,10 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 	}
 
 	/*
-	 * batik.jar contains these, for backwards compatibility, but we
-	 * do not want to have batik.jar as a dependency for every XML
-	 * handling file...
+	 * A couple of .jar files contain classes for backwards compatibility
+	 * (e.g. batik.jar or loci_tools.jar which contain all the XML
+	 * classes introduced with Java 1.4)... We do not want them to be marked
+	 * as dependencies of everything.
 	 */
 	private boolean ignore(final String name, final String jar) {
 		if (jar.endsWith("/batik.jar") || jar.endsWith("/xml-apis.jar") ||
