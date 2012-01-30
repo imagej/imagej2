@@ -149,8 +149,7 @@ public class XMLFileWriter {
 		for (final FileObject file : files.managedFiles()) {
 			attr.clear();
 			assert (file.updateSite != null && !file.updateSite.equals(""));
-			if (local && !file.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE)) setAttribute(
-				attr, "update-site", file.updateSite);
+			if (local) setAttribute(attr, "update-site", file.updateSite);
 			setAttribute(attr, "filename", file.filename);
 			if (file.executable) setAttribute(attr, "executable", "true");
 			handler.startElement("", "", "plugin", attr);

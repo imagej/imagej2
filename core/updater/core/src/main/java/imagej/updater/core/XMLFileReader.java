@@ -146,8 +146,8 @@ public class XMLFileReader extends DefaultHandler {
 			String updateSite = this.updateSite;
 			if (updateSite == null) {
 				updateSite = atts.getValue("update-site");
-				if (updateSite == null) updateSite =
-					FilesCollection.DEFAULT_UPDATE_SITE;
+				// for backwards compatibility
+				if (updateSite == null) updateSite = "Fiji";
 			}
 			current =
 				new FileObject(updateSite, atts.getValue("filename"), -1, null, 0,
