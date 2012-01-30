@@ -201,7 +201,7 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 
 		// Make sure any calls to updateLUTs are ignored. If they happen before
-		// the converters are correctly defined (in createProjector) an exception
+		// the converters are correctly defined (in setupProjector) an exception
 		// can get thrown. Basically if you add a channel to an image the converter
 		// size() can be out of sync.
 		converters.clear();
@@ -216,7 +216,7 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 		screenImage = new ARGBScreenImage(width, height);
 
 		final boolean composite = isComposite();
-		projector = createProjector(composite);
+		setupProjector(composite);
 		projector.map();
 	}
 
@@ -262,8 +262,7 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private CompositeXYProjector<? extends RealType<?>> createProjector(
-		final boolean composite)
+	private void setupProjector(final boolean composite)
 	{
 		converters.clear();
 		final long channelCount = getChannelCount();
@@ -273,12 +272,13 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 				.add(new RealLUTConverter(dataset.getImgPlus().getChannelMinimum(c),
 					dataset.getImgPlus().getChannelMaximum(c), null));
 		}
-		final CompositeXYProjector proj =
+		projector =
 			new CompositeXYProjector(dataset.getImgPlus(), screenImage, converters,
 				channelDimIndex);
-		proj.setComposite(composite);
+		projector.setComposite(composite);
+		// NB - it's imperative that instance variable "projector" is correctly
+		// setup before calling updateLUTs()
 		updateLUTs();
-		return proj;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
