@@ -115,7 +115,9 @@ public class ImageJUpdater implements ImageJPlugin {
 			return;
 		}
 
+		main.setLocationRelativeTo(null);
 		main.setVisible(true);
+		main.requestFocus();
 
 		plugins.markForUpdate(false);
 		main.setViewOption(Option.UPDATEABLE);

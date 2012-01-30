@@ -103,6 +103,7 @@ public class ProgressDialog extends JDialog implements Progress {
 		detailsToggle.addKeyListener(keyAdapter);
 		cancel.addKeyListener(keyAdapter);
 
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 
