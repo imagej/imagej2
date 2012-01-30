@@ -39,6 +39,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
@@ -219,6 +220,54 @@ public class UpdaterTest {
 		assertCount(3, files.uploadable());
 	}
 
+	@Test
+	public void testUpdater() throws Exception {
+		final String filename = "macros/hello.ijm";
+		final File file = new File(ijRoot, filename);
+		final File db = new File(ijRoot, "db.xml.gz");
+		initializeUpdateSite(filename);
+
+		// New files should be staged for install by default
+
+		assertTrue(file.delete());
+		assertFalse(file.exists());
+
+		// Pretend that db.xml.gz is out-of-date
+		FilesCollection files = readDb(true, true);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).timestamp =
+			19991224134121l;
+		files.write();
+
+		files = readDb(true, true);
+
+		assertCount(1, files);
+		assertCount(1, files.shownByDefault());
+		assertStatus(Status.NEW, files, filename);
+		assertAction(Action.INSTALL, files, filename);
+
+		// Start the update
+		update(files);
+		assertTrue(file.exists());
+
+		assertTrue("Recorded remote timestamp", files.getUpdateSite(
+			FilesCollection.DEFAULT_UPDATE_SITE).isLastModified(
+			new File(webRoot, "db.xml.gz").lastModified()));
+		assertStatus(Status.INSTALLED, files, filename);
+		assertAction(Action.INSTALLED, files, filename);
+
+		// Modified files should be left alone in a fresh install
+
+		assertTrue(db.delete());
+		writeFile(file, "modified");
+
+		files = readDb(false, true);
+		assertCount(1, files);
+		assertCount(0, files.shownByDefault());
+		assertStatus(Status.MODIFIED, files, filename);
+		assertAction(Action.MODIFIED, files, filename);
+
+	}
+
 	//
 	// Utility functions
 	//
@@ -256,7 +305,7 @@ public class UpdaterTest {
 
 			// Initialize db.xml.gz
 
-			final FilesCollection files = readDb(false);
+			final FilesCollection files = readDb(false, false);
 			assertEquals(0, files.size());
 
 			files.write();
@@ -331,6 +380,14 @@ public class UpdaterTest {
 		final FileObject file = files.get(filename);
 		assertNotNull("Object " + filename, file);
 		assertEquals("Status of " + filename, status, file.getStatus());
+	}
+
+	protected static void assertAction(final Action action,
+		final FilesCollection files, final String filename)
+	{
+		final FileObject file = files.get(filename);
+		assertNotNull("Object " + filename, file);
+		assertEquals("Status of " + filename, action, file.getAction());
 	}
 
 	protected static void
@@ -511,6 +568,21 @@ public class UpdaterTest {
 	{
 		final File file = new File(dir, name);
 		file.getParentFile().mkdirs();
+		return writeFile(file, content);
+	}
+
+	/**
+	 * Write a text file
+	 * 
+	 * @param file The file into which to write
+	 * @param content The contents to write
+	 * @return the File object for the file that was written to
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	protected File writeFile(final File file, final String content)
+		throws FileNotFoundException, IOException
+	{
 		writeStream(new FileOutputStream(file), content, true);
 		return file;
 	}
