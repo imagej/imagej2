@@ -275,15 +275,6 @@ public class Util {
 		return Arrays.binarySearch(launchers, stripPrefix(filename, imagejRoot)) >= 0;
 	}
 
-	public static String[] getLaunchers() {
-		if (platform.equals("macosx")) return new String[] {
-			macPrefix + "fiji-macosx", macPrefix + "fiji-tiger" };
-
-		int index = Arrays.binarySearch(launchers, "fiji-" + platform);
-		if (index < 0) index = -1 - index;
-		return new String[] { launchers[index] };
-	}
-
 	public static boolean isUpdateablePlatform(final String platform) {
 		return updateablePlatforms.contains(platform);
 	}
