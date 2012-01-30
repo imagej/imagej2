@@ -80,6 +80,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -508,8 +509,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				if (action == null) plugin.setNoAction();
 				else if (!setAction(plugin)) continue;
 				table.firePluginChanged(plugin);
-				pluginsChanged();
 			}
+			pluginsChanged();
 		}
 
 		protected boolean setAction(final PluginObject plugin) {
@@ -675,7 +676,25 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		}
 	}
 
-	public void pluginsChanged() {
+	private Thread pluginsChangedWorker;
+
+	public synchronized void pluginsChanged() {
+		if (pluginsChangedWorker != null) return;
+
+		pluginsChangedWorker = new Thread() {
+
+			@Override
+			public void run() {
+				pluginsChangedWorker();
+				synchronized (UpdaterFrame.this) {
+					pluginsChangedWorker = null;
+				}
+			}
+		};
+		SwingUtilities.invokeLater(pluginsChangedWorker);
+	}
+
+	private void pluginsChangedWorker() {
 		// TODO: once this is editable, make sure changes are committed
 		pluginDetails.reset();
 		for (final PluginObject plugin : table.getSelectedPlugins())
