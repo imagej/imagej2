@@ -152,7 +152,8 @@ public class Checksummer extends Progressable {
 
 		String checksum = null;
 		long timestamp = 0;
-		if (new File(realPath).exists()) try {
+		final File realFile = new File(realPath);
+		if (realFile.exists()) try {
 			timestamp = Util.getTimestamp(realPath);
 			checksum = getDigest(path, realPath, timestamp);
 
@@ -172,6 +173,8 @@ public class Checksummer extends Progressable {
 					plugin.newChecksum = checksum;
 					plugin.newTimestamp = timestamp;
 				}
+				if (realFile.canExecute() || path.endsWith(".exe")) plugin.executable =
+					true;
 				plugins.add(plugin);
 			}
 			else if (checksum != null) {
