@@ -151,6 +151,14 @@ public class FilesCollection extends ArrayList<FileObject> {
 	}
 
 	public void removeUpdateSite(final String name) {
+		// remove NOT_INSTALLED plugins, mark others LOCAL_ONLY
+		for (final FileObject file : forUpdateSite(name))
+			if (file.getStatus() == Status.NOT_INSTALLED) {
+				remove(file);
+			}
+			else {
+				file.setStatus(Status.LOCAL_ONLY);
+			}
 		updateSites.remove(name);
 	}
 
