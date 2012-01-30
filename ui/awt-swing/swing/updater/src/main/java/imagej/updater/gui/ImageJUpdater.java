@@ -55,6 +55,11 @@ import java.io.FileNotFoundException;
 import java.net.Authenticator;
 import java.net.UnknownHostException;
 
+/**
+ * The Updater. As plugin.
+ *
+ * @author Johannes Schindelin
+ */
 @Plugin(menu = {
 	@Menu(label = "Help"),
 	@Menu(label = "Update...") })
