@@ -89,13 +89,13 @@ public class FloodFiller {
 		accessor.setPosition(position);
 		uAxis = tool.getUAxis();
 		vAxis = tool.getVAxis();
+		// avoid degenerate case
+		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
+			return false;
 		final long maxU = ds.dimension(uAxis) - 1;
 		final long maxV = ds.dimension(vAxis) - 1;
 		final ColorRGB origColor = getColor(accessor,u0,v0);
 		final double origValue = getValue(accessor,u0,v0);
-		// avoid degenerate case
-		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
-			return false;
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
@@ -148,13 +148,13 @@ public class FloodFiller {
 		accessor.setPosition(position);
 		uAxis = tool.getUAxis();
 		vAxis = tool.getVAxis();
+		// avoid degenerate case
+		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
+			return false;
 		final long maxU = ds.dimension(uAxis) - 1;
 		final long maxV = ds.dimension(vAxis) - 1;
 		final ColorRGB origColor = getColor(accessor,u0,v0);
 		final double origValue = getValue(accessor,u0,v0);
-		// avoid degenerate case
-		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
-			return false;
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
