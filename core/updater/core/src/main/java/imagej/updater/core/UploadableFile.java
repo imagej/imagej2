@@ -51,9 +51,9 @@ import java.io.InputStream;
  */
 public class UploadableFile implements Uploadable {
 
-	FileObject file;
-	String permissions, sourceFilename, filename;
-	long filesize;
+	protected FileObject file;
+	protected String permissions, sourceFilename, filename;
+	protected long filesize;
 
 	public UploadableFile(final String target) {
 		this(Util.prefix(target), target);
@@ -80,7 +80,7 @@ public class UploadableFile implements Uploadable {
 		filesize = file.exists() ? file.length() : 0;
 	}
 
-	void updateFilesize() {
+	protected void updateFilesize() {
 		filesize = new File(sourceFilename).length();
 	}
 
