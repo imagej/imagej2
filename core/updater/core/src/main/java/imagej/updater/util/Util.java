@@ -279,10 +279,6 @@ public class Util {
 		return calendar.getTimeInMillis();
 	}
 
-	public static long getFilesize(final String filename) {
-		return new File(prefix(filename)).length();
-	}
-
 	public static String getDigest(final String filename) {
 		try {
 			return getDigest(filename, prefix(filename));

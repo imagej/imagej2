@@ -174,7 +174,8 @@ public class FileObject {
 	protected Map<String, Object> links, authors, platforms, categories;
 
 	public FileObject(final String updateSite, final String filename,
-		final String checksum, final long timestamp, final Status status)
+		final long filesize, final String checksum, final long timestamp,
+		final Status status)
 	{
 		assert (updateSite != null && !updateSite.equals(""));
 		this.updateSite = updateSite;
@@ -187,7 +188,7 @@ public class FileObject {
 		platforms = new LinkedHashMap<String, Object>();
 		categories = new LinkedHashMap<String, Object>();
 		links = new LinkedHashMap<String, Object>();
-		if (status == Status.LOCAL_ONLY) filesize = Util.getFilesize(filename);
+		this.filesize = filesize;
 		setNoAction();
 	}
 

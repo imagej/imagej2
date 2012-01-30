@@ -40,6 +40,7 @@ import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
@@ -179,10 +180,11 @@ public class FilesUploader {
 	{
 		if (!(file instanceof UploadableFile)) return;
 		final UploadableFile uploadable = (UploadableFile) file;
-		if (uploadable.filesize != Util.getFilesize(uploadable.sourceFilename)) throw new RuntimeException(
+		final long size = new File(uploadable.sourceFilename).length();
+		if (uploadable.filesize != size) throw new RuntimeException(
 			"File size of " + uploadable.file.filename +
 				" changed since being checksummed (was " + uploadable.filesize +
-				" but is " + Util.getFilesize(uploadable.sourceFilename) + ")!");
+				" but is " + size + ")!");
 		if (checkTimestamp) {
 			final long stored =
 				uploadable.file.getStatus() == FileObject.Status.LOCAL_ONLY
@@ -200,7 +202,8 @@ public class FilesUploader {
 			final UploadableFile uploadable = (UploadableFile) f;
 			final FileObject file = uploadable.file;
 			if (file == null) continue;
-			file.filesize = uploadable.filesize = Util.getFilesize(file.filename);
+			file.filesize =
+				uploadable.filesize = new File(uploadable.sourceFilename).length();
 			file.newTimestamp = timestamp;
 			uploadable.filename = file.filename + "-" + timestamp;
 			if (file.getStatus() == FileObject.Status.LOCAL_ONLY) {
