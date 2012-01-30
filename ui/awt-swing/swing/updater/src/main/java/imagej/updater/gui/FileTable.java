@@ -261,7 +261,7 @@ public class FileTable extends JTable {
 			return true;
 		}
 		final String updateSite =
-			SwingTools.getChoice(updaterFrame.hidden, updaterFrame, list,
+			SwingTools.getChoice(updaterFrame, list,
 				"To which upload site do you want to upload " + file.filename + "?",
 				"Upload site");
 		if (updateSite == null) return false;
@@ -396,7 +396,6 @@ public class FileTable extends JTable {
 	}
 
 	protected void error(final String message) {
-		SwingTools.showMessageBox(updaterFrame.hidden, updaterFrame, message,
-			JOptionPane.ERROR_MESSAGE);
+		SwingTools.showMessageBox(updaterFrame, message, JOptionPane.ERROR_MESSAGE);
 	}
 }

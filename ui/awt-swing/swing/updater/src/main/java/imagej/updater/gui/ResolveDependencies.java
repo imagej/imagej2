@@ -128,19 +128,6 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 	}
 
 	@Override
-	public void setVisible(final boolean visible) {
-		if (updaterFrame == null || !updaterFrame.hidden) super.setVisible(visible);
-	}
-
-	@Override
-	public void dispose() {
-		if (updaterFrame != null && updaterFrame.hidden) synchronized (this) {
-			notifyAll();
-		}
-		super.dispose();
-	}
-
-	@Override
 	public void actionPerformed(final ActionEvent e) {
 		if (e.getSource() == cancel) {
 			wasCanceled = true;

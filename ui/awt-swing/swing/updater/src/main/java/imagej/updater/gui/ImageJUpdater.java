@@ -93,7 +93,7 @@ public class ImageJUpdater implements ImageJPlugin {
 
 		Authenticator.setDefault(new SwingAuthenticator());
 
-		final UpdaterFrame main = new UpdaterFrame(files, false);
+		final UpdaterFrame main = new UpdaterFrame(files);
 		main.setEasyMode(true);
 
 		Progress progress = main.getProgress("Starting up...");
@@ -138,7 +138,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		final FileObject updater = files.getFile("jars/ij-updater-core.jar");
 		if ((updater != null && updater.getStatus() == FileObject.Status.UPDATEABLE))
 		{
-			if (SwingTools.showQuestion(false, main, "Update the updater",
+			if (SwingTools.showQuestion(main, "Update the updater",
 				"There is an update available for the Updater. Install now?"))
 			{
 				// download just the updater

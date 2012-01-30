@@ -458,18 +458,15 @@ public class SitesDialog extends JDialog implements ActionListener,
 	}
 
 	public void info(final String message) {
-		SwingTools.showMessageBox(updaterFrame != null && updaterFrame.hidden,
-			this, message, JOptionPane.INFORMATION_MESSAGE);
+		SwingTools.showMessageBox(this, message, JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public void error(final String message) {
-		SwingTools.showMessageBox(updaterFrame != null && updaterFrame.hidden,
-			this, message, JOptionPane.ERROR_MESSAGE);
+		SwingTools.showMessageBox(this, message, JOptionPane.ERROR_MESSAGE);
 	}
 
 	public boolean showYesNoQuestion(final String title, final String message) {
-		return SwingTools.showYesNoQuestion(updaterFrame != null &&
-			updaterFrame.hidden, this, title, message);
+		return SwingTools.showYesNoQuestion(this, title, message);
 	}
 
 	public static void escapeCancels(final JDialog dialog) {
