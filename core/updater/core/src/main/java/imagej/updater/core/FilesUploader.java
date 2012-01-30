@@ -152,6 +152,8 @@ public class FilesUploader {
 	}
 
 	public void upload(final Progress progress) throws Exception {
+		if (new Conflicts(files).hasUploadConflicts()) throw new RuntimeException(
+			"Unresolved upload conflicts!");
 		uploader.addProgress(progress);
 		uploader.addProgress(new VerifyTimestamp());
 
