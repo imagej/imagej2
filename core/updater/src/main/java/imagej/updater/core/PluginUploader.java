@@ -68,6 +68,7 @@ public class PluginUploader {
 
 	// TODO: add a button to check for new db.xml.gz, and merge if necessary
 	public PluginUploader(final PluginCollection plugins, final String updateSite)
+		throws InstantiationException
 	{
 		this.plugins = plugins;
 		siteName = updateSite;

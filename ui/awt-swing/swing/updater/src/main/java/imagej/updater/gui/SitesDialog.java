@@ -41,6 +41,7 @@ import imagej.updater.core.PluginObject;
 import imagej.updater.core.XMLFileReader;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
+import imagej.util.Log;
 
 import java.awt.Container;
 import java.awt.Dimension;
@@ -366,9 +367,16 @@ public class SitesDialog extends JDialog implements ActionListener,
 		{
 			if (!url.endsWith("/")) url += "/";
 			if (!uploadDirectory.endsWith("/")) uploadDirectory += "/";
-			final boolean result =
-				updaterFrame.initializeUpdateSite(url, host, uploadDirectory) &&
-					validURL(url);
+			boolean result;
+			try {
+				result =
+					updaterFrame.initializeUpdateSite(url, host, uploadDirectory) &&
+						validURL(url);
+			}
+			catch (final InstantiationException e) {
+				Log.error(e);
+				result = false;
+			}
 			if (result) info("Initialized update site '" + siteName + "'");
 			else error("Could not initialize update site '" + siteName + "'");
 			return result;
