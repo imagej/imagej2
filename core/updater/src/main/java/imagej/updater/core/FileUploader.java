@@ -124,15 +124,4 @@ public class FileUploader extends Progressable {
 
 		done();
 	}
-
-	public interface SourceFile {
-
-		public String getFilename();
-
-		public String getPermissions();
-
-		public long getFilesize();
-
-		public InputStream getInputStream() throws IOException;
-	}
 }
