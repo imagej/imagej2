@@ -159,9 +159,9 @@ public class Checksummer extends Progressable {
 				object =
 					new FileObject(null, path, file.length(), checksum, timestamp,
 						Status.LOCAL_ONLY);
-				tryToGuessPlatform(object);
 				if (file.canExecute() || path.endsWith(".exe")) object.executable =
 					true;
+				tryToGuessPlatform(object);
 				files.add(object);
 			}
 			else if (checksum != null) {
@@ -203,14 +203,21 @@ public class Checksummer extends Progressable {
 	protected static boolean tryToGuessPlatform(final FileObject file) {
 		// Look for platform names as subdirectories of lib/ and mm/
 		String platform;
-		if (file.filename.startsWith("lib/")) platform = file.filename.substring(4);
-		else if (file.filename.startsWith("mm/")) platform =
-			file.filename.substring(3);
-		else return false;
+		if (file.executable) {
+			platform = Util.platformForLauncher(file.filename);
+			if (platform == null) return false;
+		}
+		else {
+			if (file.filename.startsWith("lib/")) platform =
+				file.filename.substring(4);
+			else if (file.filename.startsWith("mm/")) platform =
+				file.filename.substring(3);
+			else return false;
 
-		final int slash = platform.indexOf('/');
-		if (slash < 0) return false;
-		platform = platform.substring(0, slash);
+			final int slash = platform.indexOf('/');
+			if (slash < 0) return false;
+			platform = platform.substring(0, slash);
+		}
 
 		if (platform.equals("linux")) platform = "linux32";
 
