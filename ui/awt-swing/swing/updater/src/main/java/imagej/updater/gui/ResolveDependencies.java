@@ -38,18 +38,21 @@ import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FilesCollection;
+import imagej.util.Log;
 
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -125,6 +128,26 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 		else if (e.getSource() == ok) {
 			if (!ok.isEnabled()) return;
 			dispose();
+		}
+	}
+
+	@Override
+	public void setVisible(final boolean visible) {
+		if (SwingUtilities.isEventDispatchThread()) super.setVisible(visible);
+		else try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+
+				@Override
+				public void run() {
+					setVisible(visible);
+				}
+			});
+		}
+		catch (final InterruptedException e) {
+			Log.error(e);
+		}
+		catch (final InvocationTargetException e) {
+			Log.error(e);
 		}
 	}
 
