@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.updater.gui;
 
 import imagej.updater.core.Checksummer;
@@ -172,8 +171,12 @@ public class SitesDialog extends JDialog implements ActionListener,
 					count++;
 					list.add(plugin);
 			}
-		if (count > 0) info("" + count + " files are installed from the site '" +
-			name + "'\n" + "These files will not be deleted automatically.\n" +
+		if (count > 0) info("" +
+			count +
+			" files are installed from the site '" +
+			name +
+			"'\n" +
+			"These files will not be deleted automatically.\n" +
 			"Note: even if marked as 'Local-only', they might be available from other sites.");
 		for (final PluginObject plugin : list) {
 			plugin.updateSite = null;

@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.updater.util;
 
 import java.io.File;
@@ -87,18 +86,18 @@ public class Util {
 	protected final static Set<String> updateablePlatforms;
 
 	static {
-		String imagejDir = System.getProperty("imagej.dir");
-		final String property = imagejDir != null ? imagejDir : System.getProperty("fiji.dir");
-		if (property != null)
-			imagejRoot = property + File.separator;
+		final String imagejDir = System.getProperty("imagej.dir");
+		final String property =
+			imagejDir != null ? imagejDir : System.getProperty("fiji.dir");
+		if (property != null) imagejRoot = property + File.separator;
 		else {
-			String path = new Util().getClass()
-				.getResource("Util.class").toString().replace("jar:file:", "");
+			final String path =
+				new Util().getClass().getResource("Util.class").toString().replace(
+					"jar:file:", "");
 			int offset = path.lastIndexOf("/plugins/");
-			if (offset < 0)
-				offset = path.lastIndexOf("\\plugins\\");
-			if (offset < 0)
-				throw new RuntimeException("Could not determine ImageJ directory!");
+			if (offset < 0) offset = path.lastIndexOf("\\plugins\\");
+			if (offset < 0) throw new RuntimeException(
+				"Could not determine ImageJ directory!");
 			imagejRoot = path.substring(0, offset + 1);
 		}
 		isDeveloper = new File(imagejRoot + "/imagej.c").exists();
