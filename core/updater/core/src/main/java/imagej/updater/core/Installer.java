@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.core;
 
+import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
@@ -91,8 +92,10 @@ public class Installer extends Downloader {
 	public synchronized void start() throws IOException {
 		if (new Conflicts(files).hasDownloadConflicts()) throw new RuntimeException(
 			"Unresolved conflicts!");
+
 		// mark for removal
-		for (final FileObject file : files.toUninstall())
+		final FilesCollection uninstalled = files.clone(files.toUninstall());
+		for (final FileObject file : uninstalled)
 			try {
 				file.stageForUninstall(files);
 			}
@@ -127,6 +130,11 @@ public class Installer extends Downloader {
 		}
 
 		start(list);
+
+		for (final FileObject file : uninstalled)
+			if (file.isLocalOnly()) files.remove(file);
+			else file.setStatus(file.isObsolete() ? Status.OBSOLETE_UNINSTALLED
+				: Status.NOT_INSTALLED);
 	}
 
 	class VerifyFiles implements Progress {
