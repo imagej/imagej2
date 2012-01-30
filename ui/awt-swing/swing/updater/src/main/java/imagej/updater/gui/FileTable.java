@@ -79,12 +79,17 @@ public class FileTable extends JTable {
 
 	protected UpdaterFrame updaterFrame;
 	protected FilesCollection files;
+	protected List<FileObject> row2file;
 	private FileTableModel fileTableModel;
 	protected Font plain, bold;
 
 	public FileTable(final UpdaterFrame updaterFrame) {
 		this.updaterFrame = updaterFrame;
 		files = updaterFrame.files;
+		row2file = new ArrayList<FileObject>();
+		for (final FileObject file : files) {
+			row2file.add(file);
+		}
 
 		// Set appearance of table
 		setShowGrid(false);
@@ -307,7 +312,8 @@ public class FileTable extends JTable {
 	protected class FileTableModel extends AbstractTableModel {
 
 		private FilesCollection files;
-		Map<FileObject, Integer> fileToRow;
+		protected Map<FileObject, Integer> fileToRow;
+		protected List<FileObject> rowToFile;
 
 		public FileTableModel(final FilesCollection files) {
 			this.files = files;
@@ -320,6 +326,7 @@ public class FileTable extends JTable {
 		public void setFiles(final FilesCollection files) {
 			this.files = files;
 			fileToRow = null;
+			rowToFile = null;
 			fireTableChanged(new TableModelEvent(fileTableModel));
 		}
 
@@ -353,7 +360,7 @@ public class FileTable extends JTable {
 		}
 
 		public FileObject getEntry(final int rowIndex) {
-			return files.get(rowIndex);
+			return rowToFile.get(rowIndex);
 		}
 
 		@Override
@@ -363,8 +370,9 @@ public class FileTable extends JTable {
 
 		@Override
 		public Object getValueAt(final int row, final int column) {
+			updateMappings();
 			if (row < 0 || row >= files.size()) return null;
-			return files.get(row).getLabeledFile(column);
+			return rowToFile.get(row).getLabeledFile(column);
 		}
 
 		@Override
@@ -387,15 +395,21 @@ public class FileTable extends JTable {
 		}
 
 		public void fireFileChanged(final FileObject file) {
-			if (fileToRow == null) {
-				fileToRow = new HashMap<FileObject, Integer>();
-				// the table may be sorted, and we need the model's row
-				int i = 0;
-				for (final FileObject p : files)
-					fileToRow.put(p, new Integer(i++));
-			}
+			updateMappings();
 			final Integer row = fileToRow.get(file);
 			if (row != null) fireRowChanged(row.intValue());
+		}
+
+		protected void updateMappings() {
+			if (fileToRow != null) return;
+			fileToRow = new HashMap<FileObject, Integer>();
+			rowToFile = new ArrayList<FileObject>();
+			// the table may be sorted, and we need the model's row
+			int i = 0;
+			for (final FileObject f : files) {
+				fileToRow.put(f, new Integer(i++));
+				rowToFile.add(f);
+			}
 		}
 	}
 
