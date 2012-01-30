@@ -76,7 +76,8 @@ public class PluginUploader {
 		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
 			Uploader.class, AbstractUploader.class))
 			if (item.annotation().protocol().equals(protocol)) return item.instance();
-		return null;
+		throw new InstantiationException("No uploader found for protocol " +
+			protocol);
 	}
 
 	// TODO: add a button to check for new db.xml.gz, and merge if necessary
