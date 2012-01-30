@@ -36,7 +36,7 @@ public class ImageJUpdater implements ImageJPlugin {
 
 		if (errorIfDebian()) return;
 
-		if (new File(Util.fijiRoot, "update").exists()) {
+		if (new File(Util.imagejRoot, "update").exists()) {
 			UserInterface.get().error(
 				"ImageJ restart required to finalize previous update");
 			return;
