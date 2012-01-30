@@ -117,12 +117,13 @@ public class Util {
 
 		updateablePlatforms = new HashSet<String>();
 		updateablePlatforms.add(platform);
-		if (new File(imagejRoot, launchers[macIndex]).exists()) updateablePlatforms
+		if (new File(imagejRoot, launchers[macIndex]).exists() ||
+			new File(imagejRoot, macPrefix + "fiji-macosx").exists()) updateablePlatforms
 			.add("macosx");
 		final String[] files = new File(imagejRoot).list();
 		for (String name : files == null ? new String[0] : files)
-			if (name.startsWith("fiji-")) {
-				name = name.substring(5);
+			if (name.startsWith("ImageJ-") || name.startsWith("fiji-")) {
+				name = name.substring(name.indexOf('-') + 1);
 				if (name.endsWith(".exe")) name = name.substring(0, name.length() - 4);
 				updateablePlatforms.add(name);
 			}
