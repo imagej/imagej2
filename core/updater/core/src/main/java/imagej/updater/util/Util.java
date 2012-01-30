@@ -357,6 +357,28 @@ public class Util {
 		}
 	}
 
+	// Get entire byte data
+	public static byte[] readStreamAsBytes(final InputStream input)
+		throws IOException
+	{
+		byte[] buffer = new byte[1024];
+		int offset = 0, len = 0;
+		for (;;) {
+			if (offset == buffer.length) buffer = realloc(buffer, 2 * buffer.length);
+			len = input.read(buffer, offset, buffer.length - offset);
+			if (len < 0) return realloc(buffer, offset);
+			offset += len;
+		}
+	}
+
+	private static byte[] realloc(final byte[] buffer, final int newLength) {
+		if (newLength == buffer.length) return buffer;
+		final byte[] newBuffer = new byte[newLength];
+		System.arraycopy(buffer, 0, newBuffer, 0, Math
+			.min(newLength, buffer.length));
+		return newBuffer;
+	}
+
 	protected static String readFile(final File file) throws IOException {
 		final StringBuilder builder = new StringBuilder();
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
