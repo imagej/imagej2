@@ -220,6 +220,76 @@ public class FloodFiller {
 		return true;
 	}
 
+	///**
+	// * From IJ1; this method is used by the particle analyzer to remove interior
+	// *  holes from particle masks.
+	// */
+	
+	/* nearly complete port of this method from IJ1. Needs the mask support to be
+	 * implemented in IJ2.
+
+	public void particleAnalyzerFill(
+		long u, long v, long[] position, double level1, double level2,
+		ImageProcessor mask, Rectangle bounds)
+	{
+		final Dataset ds = tool.getDataset();
+		final RandomAccess<? extends RealType<?>> acc =
+			ds.getImgPlus().randomAccess();
+		acc.setPosition(position);
+		uAxis = tool.getUAxis();
+		vAxis = tool.getVAxis();
+		long maxU = ds.dimension(uAxis) - 1;
+		long maxV = ds.dimension(vAxis) - 1;
+		mask.setColor(0);
+		mask.fill();
+		mask.setColor(255);
+		uStack.clear();
+		vStack.clear();
+		push(u, v);
+		while(!uStack.isEmpty()) {   
+			u = popU(); 
+			v = popV();
+			if (!inParticle(acc,u,v,level1,level2)) continue;
+			long u1 = u;
+			long u2 = u;
+			// find start of scan-line
+			while (inParticle(acc,u1,v,level1,level2) && u1>=0) u1--;
+			u1++;
+		  // find end of scan-line
+			while (inParticle(acc,u2,v,level1,level2) && u2<=maxU) u2++;                 
+			u2--;
+			// fill scan-line in mask
+			fillLine(mask, u1-bounds.x, u2-bounds.x, v-bounds.y);
+			// fill scan-line in image
+			tool.drawLine(u1, v, u2, v);
+			boolean inScanLine = false;
+			if (u1>0) u1--;
+			if (u2<maxU) u2++;
+			for (long i=u1; i<=u2; i++) { // find scan-lines above this one
+				if (!inScanLine && v>0 && inParticle(acc,i,v-1,level1,level2))
+					{push(i, v-1); inScanLine = true;}
+				else if (inScanLine && v>0 && !inParticle(acc,i,v-1,level1,level2))
+					inScanLine = false;
+			}
+			inScanLine = false;
+			for (long i=u1; i<=u2; i++) { // find scan-lines below this one
+				if (!inScanLine && v<maxV && inParticle(acc,i,v+1,level1,level2))
+					{push(i, v+1); inScanLine = true;}
+				else if (inScanLine && v<maxV && !inParticle(acc,i,v+1,level1,level2))
+					inScanLine = false;
+			}
+		}        
+	}
+	
+	final boolean inParticle(
+		RandomAccess<? extends RealType<?>> accessor, long u, long v,
+		double level1, double level2)
+	{
+		double val = getValue(accessor, u, v);
+		return val>=level1 && val<=level2;
+	}
+	 */
+	
 	// -- private helpers --
 
 	/**
