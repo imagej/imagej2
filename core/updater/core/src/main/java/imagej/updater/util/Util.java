@@ -110,7 +110,7 @@ public class Util {
 				new File(imagejRoot + "/" + macLauncher).exists();
 
 		final String[] list =
-			{ "linux", "linux64", "macosx", "tiger", "win32", "win64" };
+			{ "linux32", "linux64", "macosx", "tiger", "win32", "win64" };
 
 		Arrays.sort(list);
 		platforms = list.clone();
@@ -149,7 +149,7 @@ public class Util {
 		final boolean is64bit =
 			System.getProperty("os.arch", "").indexOf("64") >= 0;
 		final String osName = System.getProperty("os.name", "<unknown>");
-		if (osName.equals("Linux")) return "linux" + (is64bit ? "64" : "");
+		if (osName.equals("Linux")) return "linux" + (is64bit ? "64" : "32");
 		if (osName.equals("Mac OS X")) return "macosx";
 		if (osName.startsWith("Windows")) return "win" + (is64bit ? "64" : "32");
 		// System.err.println("Unknown platform: " + osName);
