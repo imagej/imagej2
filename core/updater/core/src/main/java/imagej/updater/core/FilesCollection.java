@@ -118,9 +118,8 @@ public class FilesCollection extends ArrayList<FileObject> {
 
 	public FilesCollection() {
 		updateSites = new LinkedHashMap<String, UpdateSite>();
-		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, Util.isDeveloper
-			? Util.SSH_HOST : null, Util.isDeveloper ? Util.UPDATE_DIRECTORY : null,
-			Util.getTimestamp(Util.XML_COMPRESSED));
+		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, null, null, Util
+			.getTimestamp(Util.XML_COMPRESSED));
 	}
 
 	public void addUpdateSite(final String name, final String url,
