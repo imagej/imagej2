@@ -69,7 +69,7 @@ public class Checksummer extends Progressable {
 
 	public Checksummer(final FilesCollection files, final Progress progress) {
 		this.files = files;
-		addProgress(progress);
+		if (progress != null) addProgress(progress);
 		setTitle("Czechsummer");
 	}
 
