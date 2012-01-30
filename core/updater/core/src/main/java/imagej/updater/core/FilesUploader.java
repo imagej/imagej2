@@ -155,7 +155,6 @@ public class FilesUploader {
 		uploader.addProgress(progress);
 		uploader.addProgress(new VerifyTimestamp());
 
-		// TODO: rename "UpdateSource" to "Transferable", reuse!
 		uploadables = new ArrayList<Uploadable>();
 		final List<String> locks = new ArrayList<String>();
 		uploadables.add(new DbXmlFile());
