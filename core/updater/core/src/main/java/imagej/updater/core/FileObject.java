@@ -176,7 +176,6 @@ public class FileObject {
 		final long filesize, final String checksum, final long timestamp,
 		final Status status)
 	{
-		assert (updateSite != null && !updateSite.equals(""));
 		this.updateSite = updateSite;
 		this.filename = filename;
 		if (checksum != null) current = new Version(checksum, timestamp);
