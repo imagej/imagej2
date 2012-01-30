@@ -367,6 +367,92 @@ public class UpdaterTest {
 
 	}
 
+	@Test
+	public void testUpdateConflicts() throws Exception {
+		initializeUpdateSite("macros/obsoleted.ijm", "macros/dependency.ijm",
+			"macros/locally-modified.ijm", "macros/dependencee.ijm");
+
+		// Add the dependency relations
+
+		FilesCollection files = readDb(true, true);
+		FileObject[] list = makeList(files);
+		assertEquals(4, list.length);
+		FileObject obsoleted = list[0];
+		FileObject dependency = list[1];
+		FileObject locallyModified = list[2];
+		FileObject dependencee = list[3];
+		dependencee.addDependency(obsoleted.getFilename(), Util.getTimestamp(files
+			.prefix(obsoleted)), true);
+		dependencee.addDependency(files, dependency);
+		dependencee.addDependency(files, locallyModified);
+
+		assertTrue(files.prefix(obsoleted).delete());
+		new Checksummer(files, progress).updateFromLocal();
+		assertStatus(Status.NOT_INSTALLED, obsoleted);
+		obsoleted.setAction(files, Action.REMOVE);
+		writeFile(files.prefix(locallyModified), "modified");
+		upload(files);
+
+		assertTrue(files.prefix(dependency).delete());
+		assertTrue(files.prefix(dependencee).delete());
+
+		// Now pretend a fresh install
+
+		assertTrue(new File(ijRoot, "db.xml.gz").delete());
+		files = readDb(false, true);
+		list = makeList(files);
+		assertEquals(4, list.length);
+		obsoleted = list[0];
+		dependency = list[1];
+		locallyModified = list[2];
+		dependencee = list[3];
+		assertStatus(Status.OBSOLETE_UNINSTALLED, obsoleted);
+		assertStatus(Status.NEW, dependency);
+		assertStatus(Status.MODIFIED, locallyModified);
+		assertStatus(Status.NEW, dependencee);
+
+		// Now trigger the conflicts
+
+		writeFile(obsoleted.getFilename());
+		new Checksummer(files, progress).updateFromLocal();
+		assertStatus(Status.OBSOLETE, obsoleted);
+
+		dependencee.setAction(files, Action.INSTALL);
+		dependency.setAction(files, Action.NEW);
+
+		final Conflicts conflicts = new Conflicts(files);
+		conflicts.conflicts = new ArrayList<Conflict>();
+		conflicts.listUpdateIssues();
+		assertCount(3, conflicts.conflicts);
+
+		Conflict conflict = conflicts.conflicts.get(0);
+		assertEquals(locallyModified.getFilename(), conflict.getFilename());
+		Resolution[] resolutions = conflict.getResolutions();
+		assertEquals(2, resolutions.length);
+		assertTrue(resolutions[0].getDescription().startsWith("Keep"));
+		assertTrue(resolutions[1].getDescription().startsWith("Update"));
+		conflict.resolutions[0].resolve();
+
+		conflict = conflicts.conflicts.get(1);
+		assertEquals(obsoleted.getFilename(), conflict.getFilename());
+		resolutions = conflict.getResolutions();
+		assertEquals(2, resolutions.length);
+		assertTrue(resolutions[0].getDescription().startsWith("Uninstall"));
+		assertTrue(resolutions[1].getDescription().startsWith("Do not update"));
+		conflict.resolutions[0].resolve();
+
+		conflict = conflicts.conflicts.get(2);
+		assertEquals(null, conflict.getFilename());
+		resolutions = conflict.getResolutions();
+		assertEquals(1, resolutions.length);
+		assertTrue(resolutions[0].getDescription().startsWith("Install"));
+		conflict.resolutions[0].resolve();
+
+		update(files);
+
+		assertFalse(files.prefix(obsoleted).exists());
+	}
+
 	//
 	// Debug functions
 	//
@@ -527,8 +613,14 @@ public class UpdaterTest {
 		final FilesCollection files, final String filename)
 	{
 		final FileObject file = files.get(filename);
-		assertNotNull("Object " + filename, file);
-		assertEquals("Status of " + filename, status, file.getStatus());
+		assertStatus(status, file);
+	}
+
+	protected static void
+		assertStatus(final Status status, final FileObject file)
+	{
+		assertNotNull("Object " + file.getFilename(), file);
+		assertEquals("Status of " + file.getFilename(), status, file.getStatus());
 	}
 
 	protected static void assertAction(final Action action,
