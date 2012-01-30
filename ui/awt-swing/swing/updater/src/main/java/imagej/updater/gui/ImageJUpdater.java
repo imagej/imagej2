@@ -135,7 +135,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		// TODO: find .jar name from this class' resource
 		// TODO: mark all dependencies for update
 		// TODO: we may get away with a custom class loader... but probably not!
-		final FileObject updater = files.getFile("plugins/Fiji_Updater.jar");
+		final FileObject updater = files.getFile("jars/ij-updater-core.jar");
 		if ((updater != null && updater.getStatus() == FileObject.Status.UPDATEABLE))
 		{
 			if (SwingTools.showQuestion(false, main, "Update the updater",

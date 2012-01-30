@@ -648,7 +648,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 			@Override
 			public boolean matches(final FileObject file) {
-				if (file.filename.equals("plugins/Fiji_Updater.jar")) {
+				if (file.filename.equals("jars/ij-updater-core.jar")) {
 					file.setAction(files, Action.UPDATE);
 					return true;
 				}
