@@ -85,7 +85,6 @@ public class Util {
 	public final static String macPrefix = "Contents/MacOS/";
 
 	public final static String imagejRoot, platform;
-	public final static boolean isDeveloper;
 	public final static String[] platforms, launchers;
 	protected final static Set<String> updateablePlatforms;
 
@@ -105,7 +104,6 @@ public class Util {
 				"Could not determine ImageJ directory!");
 			imagejRoot = path.substring(0, offset + 1);
 		}
-		isDeveloper = new File(imagejRoot + "/imagej.c").exists();
 		platform = getPlatform();
 
 		platforms =
