@@ -163,7 +163,8 @@ public class Checksummer extends Progressable {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
 					path + ", which is not known to the Updater");
 				file =
-					new FileObject(null, path, checksum, timestamp, Status.LOCAL_ONLY);
+					new FileObject(null, path, realFile.length(), checksum, timestamp,
+						Status.LOCAL_ONLY);
 				tryToGuessPlatform(file);
 				if (realFile.canExecute() || path.endsWith(".exe")) file.executable =
 					true;
@@ -182,7 +183,7 @@ public class Checksummer extends Progressable {
 			e.printStackTrace();
 		}
 
-		counter += (int) Util.getFilesize(realPath);
+		counter += (int) realFile.length();
 		itemDone(path);
 		setCount(counter, total);
 	}
@@ -190,7 +191,7 @@ public class Checksummer extends Progressable {
 	protected void handleQueue() {
 		total = 0;
 		for (final StringPair pair : queue)
-			total += Util.getFilesize(pair.realPath);
+			total += (int) new File(pair.realPath).length();
 		counter = 0;
 		for (final StringPair pair : queue)
 			handle(pair);

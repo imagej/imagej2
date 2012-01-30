@@ -150,7 +150,7 @@ public class XMLFileReader extends DefaultHandler {
 					FilesCollection.DEFAULT_UPDATE_SITE;
 			}
 			current =
-				new FileObject(updateSite, atts.getValue("filename"), null, 0,
+				new FileObject(updateSite, atts.getValue("filename"), -1, null, 0,
 					Status.NOT_INSTALLED);
 			if (this.updateSite != null &&
 				!this.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))

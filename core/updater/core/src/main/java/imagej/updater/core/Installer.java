@@ -154,7 +154,7 @@ public class Installer extends Downloader {
 	public void verify(final Download download) {
 		final String fileName = download.getDestination();
 		final long size = download.getFilesize();
-		final long actualSize = Util.getFilesize(fileName);
+		final long actualSize = new File(fileName).length();
 		if (size != actualSize) throw new RuntimeException(
 			"Incorrect file size for " + fileName + ": " + actualSize +
 				" (expected " + size + ")");
