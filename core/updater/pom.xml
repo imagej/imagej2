@@ -11,38 +11,15 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-updater</artifactId>
+	<artifactId>pom-ij-updater</artifactId>
+	<packaging>pom</packaging>
 
-	<name>ImageJ Updater Core</name>
-	<description>The UI-agnostic part of the ImageJ Updater (TAFKA Fiji Updater).</description>
+	<name>ImageJ Updater</name>
+	<description>A wrapper for all the parts of the ImageJ Updater (TAFKA Fiji Updater).</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ext</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<packageName>imagej.core.plugins</packageName>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<modules>
+		<module>core</module>
+	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
