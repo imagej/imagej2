@@ -254,7 +254,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public Iterable<PluginObject> installed() {
-		return filter(not(oneOf(new Status[] { Status.NOT_FIJI,
+		return filter(not(oneOf(new Status[] { Status.LOCAL_ONLY,
 			Status.NOT_INSTALLED })));
 	}
 
@@ -268,11 +268,11 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public Iterable<PluginObject> fijiPlugins() {
-		return filter(not(is(Status.NOT_FIJI)));
+		return filter(not(is(Status.LOCAL_ONLY)));
 	}
 
 	public Iterable<PluginObject> forCurrentTXT() {
-		return filter(and(not(oneOf(new Status[] { Status.NOT_FIJI,
+		return filter(and(not(oneOf(new Status[] { Status.LOCAL_ONLY,
 			Status.OBSOLETE, Status.OBSOLETE_MODIFIED, Status.OBSOLETE_UNINSTALLED
 		/* the old updater will only checksum these! */
 		})), or(startsWith("fiji-"), and(startsWith(new String[] { "plugins/",
@@ -280,7 +280,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 	}
 
 	public Iterable<PluginObject> nonFiji() {
-		return filter(is(Status.NOT_FIJI));
+		return filter(is(Status.LOCAL_ONLY));
 	}
 
 	public Iterable<PluginObject> shownByDefault() {

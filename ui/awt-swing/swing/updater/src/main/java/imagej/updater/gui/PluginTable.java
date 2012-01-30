@@ -247,7 +247,7 @@ public class PluginTable extends JTable {
 				error("Internal error: multiple upload sites selected");
 				return;
 			}
-			final boolean isNew = plugin.getStatus() == Status.NOT_FIJI;
+			final boolean isNew = plugin.getStatus() == Status.LOCAL_ONLY;
 			if (sitesWithUploads.length == 0) {
 				if (isNew && !chooseUpdateSite(updaterFrame.plugins, plugin)) return;
 			}

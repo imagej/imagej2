@@ -55,7 +55,7 @@ public class PluginObject {
 
 	public static enum Action {
 		// no changes
-			NOT_FIJI("Local-only"), NOT_INSTALLED("Not installed"), INSTALLED(
+			LOCAL_ONLY("Local-only"), NOT_INSTALLED("Not installed"), INSTALLED(
 				"Up-to-date"), UPDATEABLE("Update available"), MODIFIED(
 				"Locally modified"), NEW("New plugin"), OBSOLETE("Obsolete"),
 
@@ -84,7 +84,7 @@ public class PluginObject {
 			Action.UNINSTALL }), UPDATEABLE(new Action[] { Action.UPDATEABLE,
 			Action.UNINSTALL, Action.UPDATE }, Action.UPLOAD), MODIFIED(new Action[] {
 			Action.MODIFIED, Action.UNINSTALL, Action.UPDATE }, Action.UPLOAD),
-			NOT_FIJI(new Action[] { Action.NOT_FIJI, Action.UNINSTALL },
+			LOCAL_ONLY(new Action[] { Action.LOCAL_ONLY, Action.UNINSTALL },
 				Action.UPLOAD), NEW(new Action[] { Action.NEW, Action.INSTALL,
 				Action.REMOVE }),
 			OBSOLETE_UNINSTALLED(new Action[] { Action.OBSOLETE }), OBSOLETE(
@@ -153,7 +153,7 @@ public class PluginObject {
 		platforms = new LinkedHashMap<String, Object>();
 		categories = new LinkedHashMap<String, Object>();
 		links = new LinkedHashMap<String, Object>();
-		if (status == Status.NOT_FIJI) filesize = Util.getFilesize(filename);
+		if (status == Status.LOCAL_ONLY) filesize = Util.getFilesize(filename);
 		setNoAction();
 	}
 
@@ -477,7 +477,7 @@ public class PluginObject {
 	}
 
 	public boolean isFiji() {
-		return status != Status.NOT_FIJI;
+		return status != Status.LOCAL_ONLY;
 	}
 
 	/* This returns true if the user marked the plugin for uninstall, too */
@@ -489,7 +489,7 @@ public class PluginObject {
 			case UNINSTALL:
 			case REMOVE:
 				return true;
-			case NOT_FIJI:
+			case LOCAL_ONLY:
 			case INSTALLED:
 			case UPDATEABLE:
 			case MODIFIED:
@@ -517,7 +517,7 @@ public class PluginObject {
 			case INSTALL:
 			case UPDATE:
 			case UPLOAD:
-			case NOT_FIJI:
+			case LOCAL_ONLY:
 				return true;
 			default:
 				throw new RuntimeException("Unhandled action: " + action);
@@ -537,7 +537,7 @@ public class PluginObject {
 		if (action != Action.UNINSTALL) throw new RuntimeException(filename +
 			" was not marked " + "for uninstall");
 		touch(Util.prefixUpdate(filename));
-		if (status != Status.NOT_FIJI) setStatus(isObsolete()
+		if (status != Status.LOCAL_ONLY) setStatus(isObsolete()
 			? Status.OBSOLETE_UNINSTALLED : Status.NOT_INSTALLED);
 	}
 

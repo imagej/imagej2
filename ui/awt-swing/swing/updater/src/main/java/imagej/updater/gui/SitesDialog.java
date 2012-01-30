@@ -143,7 +143,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 			"Note: even if marked as 'Local-only', they might be available from other sites.");
 		for (final PluginObject plugin : list) {
 			plugin.updateSite = null;
-			plugin.setStatus(PluginObject.Status.NOT_FIJI);
+			plugin.setStatus(PluginObject.Status.LOCAL_ONLY);
 		}
 		plugins.removeUpdateSite(name);
 		names.remove(row);

@@ -135,7 +135,7 @@ public class Checksummer extends Progressable {
 					path + ", which is not known to the Updater");
 				if (imagejRoot == null) {
 					plugin =
-						new PluginObject(null, path, checksum, timestamp, Status.NOT_FIJI);
+						new PluginObject(null, path, checksum, timestamp, Status.LOCAL_ONLY);
 					tryToGuessPlatform(plugin);
 				}
 				else {
