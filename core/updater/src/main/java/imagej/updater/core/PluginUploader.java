@@ -296,4 +296,8 @@ public class PluginUploader {
 			"db.xml.gz was " + "changed in the meantime (was " + site.timestamp +
 				" but now is " + Util.timestamp(lastModified) + ")");
 	}
+
+	public boolean login() {
+		return uploader.login(this);
+	}
 }
