@@ -198,4 +198,10 @@ public class SwingUserInterface extends UserInterface {
 
 	}
 
+	@Override
+	public boolean promptYesNo(final String message, final String title) {
+		return JOptionPane.showConfirmDialog(null, message, title,
+			JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+	}
+
 }

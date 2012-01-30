@@ -60,6 +60,8 @@ public abstract class UserInterface {
 	public abstract int optionDialog(String message, String title,
 		Object[] options, int def);
 
+	public abstract boolean promptYesNo(String message, String title);
+
 	public abstract String getPref(String key);
 
 	public abstract void setPref(String key, String value);
@@ -179,6 +181,13 @@ public abstract class UserInterface {
 		@Override
 		public void removeWindow(final Frame window) {
 			// do nothing
+		}
+
+		@Override
+		public boolean promptYesNo(final String message, final String title) {
+			System.err.println(title + " " + message);
+			final String answer = new String(System.console().readLine());
+			return answer.toLowerCase().startsWith("y");
 		}
 	}
 }
