@@ -56,15 +56,7 @@ import java.util.TreeMap;
 import java.util.zip.ZipException;
 
 /**
- * A class to checksum all the files shown in the Updater's UI.
- *
- * 1st step: Get information of local plugins (checksums and version)
- * 2nd step: Given XML file, get information of latest updatable files (checksums
- * and version)
- * 3rd step: Build up list of "PluginObject" using both local and updates
- *
- * digests and dates hold checksums and versions of local plugins respectively
- * latestDigests and latestDates hold checksums and versions of latest file versions
+ * A class to checksum and timestamp all the files shown in the Updater's UI.
  * 
  * @author Johannes Schindelin
  * @author Yap Chin Kiet
