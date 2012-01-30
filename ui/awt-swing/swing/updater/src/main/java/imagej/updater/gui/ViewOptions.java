@@ -43,12 +43,12 @@ import javax.swing.JComboBox;
 public class ViewOptions extends JComboBox {
 
 	public static enum Option {
-		ALL("all plugins"), INSTALLED("installed plugins only"), UNINSTALLED(
-			"uninstalled plugins only"), UPTODATE("only up-to-date plugins"),
-			UPDATEABLE("updateable plugins only"), LOCALLY_MODIFIED(
-				"locally modified plugins only"), FIJI("Downloaded plugins only"),
-			OTHERS("Non-downloaded plugins only"), CHANGES("changes"), SELECTED(
-				"selected");
+		ALL("all files"), INSTALLED("installed files only"), UNINSTALLED(
+			"uninstalled files only"), UPTODATE("only up-to-date files"), UPDATEABLE(
+			"updateable files only"),
+			LOCALLY_MODIFIED("locally modified files only"), FIJI(
+				"Downloaded files only"), OTHERS("Non-downloaded files only"), CHANGES(
+				"changes"), SELECTED("selected");
 
 		String label;
 
