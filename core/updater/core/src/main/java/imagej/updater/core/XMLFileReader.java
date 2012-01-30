@@ -38,8 +38,6 @@ import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -100,10 +98,10 @@ public class XMLFileReader extends DefaultHandler {
 		site.timestamp = Long.parseLong(Util.timestamp(lastModified));
 	}
 
-	public void read(final File file) throws ParserConfigurationException,
+	public void read(final InputStream in) throws ParserConfigurationException,
 		IOException, SAXException
 	{
-		read(null, new GZIPInputStream(new FileInputStream(file)), 0);
+		read(null, new GZIPInputStream(in), 0);
 	}
 
 	// timestamp is the timestamp (not the Unix epoch) we last saw updates from
