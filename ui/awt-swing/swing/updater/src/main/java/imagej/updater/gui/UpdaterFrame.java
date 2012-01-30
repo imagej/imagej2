@@ -268,7 +268,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 						applyChanges();
 					}
 				}, bottomPanel);
-		apply.setEnabled(false);
+		apply.setEnabled(files.hasChanges());
 
 		// Manage update sites
 		updateSites =
