@@ -63,6 +63,7 @@ public class SwingUserInterface extends UserInterface {
 	@Override
 	public void error(final String message) {
 
+		Log.error(message);
 		JOptionPane.showMessageDialog(null, message, "ImageJ Updater",
 			JOptionPane.ERROR_MESSAGE);
 
@@ -71,6 +72,7 @@ public class SwingUserInterface extends UserInterface {
 	@Override
 	public void info(final String message, final String title) {
 
+		Log.info(message);
 		JOptionPane.showMessageDialog(null, message, "ImageJ Updater",
 			JOptionPane.INFORMATION_MESSAGE);
 
