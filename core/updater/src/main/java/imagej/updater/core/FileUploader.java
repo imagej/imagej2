@@ -68,14 +68,14 @@ public class FileUploader extends Progressable {
 		this.uploadDir = uploadDir;
 	}
 
-	public void calculateTotalSize(final List<SourceFile> sources) {
+	public void calculateTotalSize(final List<Uploadable> sources) {
 		total = 0;
-		for (final SourceFile source : sources)
+		for (final Uploadable source : sources)
 			total += (int) source.getFilesize();
 	}
 
 	// Steps to accomplish entire upload task
-	public synchronized void upload(final List<SourceFile> sources,
+	public synchronized void upload(final List<Uploadable> sources,
 		final List<String> locks) throws IOException
 	{
 		timestamp = Long.parseLong(Util.timestamp(System.currentTimeMillis()));
@@ -85,7 +85,7 @@ public class FileUploader extends Progressable {
 		int count = 0;
 
 		final byte[] buffer = new byte[65536];
-		for (final SourceFile source : sources) {
+		for (final Uploadable source : sources) {
 			final File file = new File(uploadDir, source.getFilename());
 			final File dir = file.getParentFile();
 			if (!dir.exists()) dir.mkdirs();

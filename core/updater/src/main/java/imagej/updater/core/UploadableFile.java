@@ -51,7 +51,7 @@ import java.io.InputStream;
 // a single "Transferable", and refactor Downloader and FileUploader into
 // a single "Transfer" class extending Progressable.
 // TODO: this class should be merged into Uploader.
-public class UploadableFile implements SourceFile {
+public class UploadableFile implements Uploadable {
 
 	PluginObject plugin;
 	String permissions, sourceFilename, filename;
