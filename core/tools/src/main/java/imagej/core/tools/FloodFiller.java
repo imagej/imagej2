@@ -36,6 +36,7 @@ package imagej.core.tools;
 
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
+import imagej.util.RealRect;
 
 import java.util.Arrays;
 
@@ -220,17 +221,13 @@ public class FloodFiller {
 		return true;
 	}
 
-	///**
-	// * From IJ1; this method is used by the particle analyzer to remove interior
-	// *  holes from particle masks.
-	// */
-	
-	/* nearly complete port of this method from IJ1. Needs the mask support to be
-	 * implemented in IJ2.
-
+	/**
+	 * From IJ1; this method is used by the particle analyzer to remove interior
+	 *  holes from particle masks.
+	 */
 	public void particleAnalyzerFill(
-		long u, long v, long[] position, double level1, double level2,
-		ImageProcessor mask, Rectangle bounds)
+		long u0, long v0, long[] position, double level1, double level2,
+		DrawingTool maskTool, RealRect bounds)
 	{
 		final Dataset ds = tool.getDataset();
 		final RandomAccess<? extends RealType<?>> acc =
@@ -240,15 +237,15 @@ public class FloodFiller {
 		vAxis = tool.getVAxis();
 		long maxU = ds.dimension(uAxis) - 1;
 		long maxV = ds.dimension(vAxis) - 1;
-		mask.setColor(0);
-		mask.fill();
-		mask.setColor(255);
+		maskTool.setGrayValue(0);
+		maskTool.fill();
+		maskTool.setGrayValue(255);
 		uStack.clear();
 		vStack.clear();
-		push(u, v);
+		push(u0, v0);
 		while(!uStack.isEmpty()) {   
-			u = popU(); 
-			v = popV();
+			long u = popU(); 
+			long v = popV();
 			if (!inParticle(acc,u,v,level1,level2)) continue;
 			long u1 = u;
 			long u2 = u;
@@ -259,7 +256,9 @@ public class FloodFiller {
 			while (inParticle(acc,u2,v,level1,level2) && u2<=maxU) u2++;                 
 			u2--;
 			// fill scan-line in mask
-			fillLine(mask, u1-bounds.x, u2-bounds.x, v-bounds.y);
+			maskTool.drawLine(
+				(long) (u1-bounds.x), (long) (v-bounds.y),
+				(long) (u2-bounds.x), (long) (v-bounds.y));
 			// fill scan-line in image
 			tool.drawLine(u1, v, u2, v);
 			boolean inScanLine = false;
@@ -288,7 +287,6 @@ public class FloodFiller {
 		double val = getValue(accessor, u, v);
 		return val>=level1 && val<=level2;
 	}
-	 */
 	
 	// -- private helpers --
 

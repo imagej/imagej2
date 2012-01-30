@@ -282,4 +282,13 @@ public class DrawingTool {
 		}
 	}
 
+	/**
+	 * Fills the current UV plane.
+	 */
+	public void fill() {
+		for (long u = 0; u <= maxU; u++)
+			for (long v = 0; v <= maxV; v++)
+				drawPixel(u,v);
+	}
+
 }
