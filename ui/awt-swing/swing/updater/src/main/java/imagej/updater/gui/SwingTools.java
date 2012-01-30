@@ -213,58 +213,37 @@ public class SwingTools {
 		});
 	}
 
-	public static boolean showQuestion(final boolean hidden,
-		final Component owner, final String title, final String question)
+	public static boolean showQuestion(final Component owner, final String title,
+		final String question)
 	{
-		if (hidden) {
-			final JOptionPane pane =
-				new JOptionPane(question, JOptionPane.QUESTION_MESSAGE,
-					JOptionPane.OK_CANCEL_OPTION);
-			waitForFakeDialog(title, pane);
-			return pane.getValue().equals(new Integer(JOptionPane.OK_OPTION));
-		}
-
 		return JOptionPane.showConfirmDialog(owner, question, title,
 			JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_OPTION;
 	}
 
-	public static boolean showYesNoQuestion(final boolean hidden,
-		final Component owner, final String title, final String question)
+	public static boolean showYesNoQuestion(final Component owner,
+		final String title, final String question)
 	{
-		if (hidden) {
-			final JOptionPane pane =
-				new JOptionPane(question, JOptionPane.QUESTION_MESSAGE,
-					JOptionPane.YES_NO_OPTION);
-			waitForFakeDialog(title, pane);
-			return pane.getValue().equals(new Integer(JOptionPane.YES_OPTION));
-		}
-
 		return JOptionPane.showConfirmDialog(owner, question, title,
 			JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
 	}
 
-	public static void showMessageBox(final boolean hidden,
-		final Component owner, final String message, final int type)
+	public static void showMessageBox(final Component owner,
+		final String message, final int type)
 	{
 		final String title =
 			type == JOptionPane.ERROR_MESSAGE ? "Error"
 				: type == JOptionPane.WARNING_MESSAGE ? "Warning" : "Information";
-		if (hidden) {
-			final JOptionPane pane = new JOptionPane(message, type);
-			waitForFakeDialog(title, pane);
-		}
-		else JOptionPane.showMessageDialog(owner, message, title, type);
+		JOptionPane.showMessageDialog(owner, message, title, type);
 	}
 
-	public static String getChoice(final boolean hidden, final Component owner,
+	public static String getChoice(final Component owner,
 		final List<String> list, final String question, final String title)
 	{
 		final String[] array = list.toArray(new String[list.size()]);
 		final JOptionPane pane =
 			new JOptionPane(question, JOptionPane.QUESTION_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION, null, array);
-		if (hidden) waitForFakeDialog(title, pane);
-		else pane.createDialog(owner, title).setVisible(true);
+		pane.createDialog(owner, title).setVisible(true);
 		return (String) pane.getValue();
 	}
 

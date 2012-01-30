@@ -44,7 +44,6 @@ import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
-import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
 import imagej.util.Log;
@@ -111,18 +110,12 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	// For developers
 	protected JButton upload, showChanges, rebuildButton;
 	boolean canUpload;
-	protected boolean hidden;
 
 	public UpdaterFrame(final FilesCollection files) {
-		this(files, false);
-	}
-
-	public UpdaterFrame(final FilesCollection files, final boolean hidden) {
 		super("ImageJ Updater");
 		setPreferredSize(new Dimension(780, 560));
 
 		this.files = files;
-		this.hidden = hidden;
 
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -451,7 +444,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	@Override
 	public void setVisible(final boolean visible) {
 		showOrHide();
-		super.setVisible(visible && !hidden);
+		super.setVisible(visible);
 		if (visible) {
 			UserInterface.get().addWindow(this);
 			apply.requestFocusInWindow();
@@ -465,7 +458,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public Progress getProgress(final String title) {
-		if (hidden) return new StderrProgress();
 		return new ProgressDialog(this, title);
 	}
 
@@ -573,7 +565,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	private void quit() {
 		if (files.hasChanges()) {
-			if (!SwingTools.showQuestion(hidden, this, "Quit?",
+			if (!SwingTools.showQuestion(this, "Quit?",
 				"You have specified changes. Are you sure you want to quit?")) return;
 		}
 		else try {
@@ -810,7 +802,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		if (possibleSites.size() == 1) updateSiteName = possibleSites.get(0);
 		else {
 			updateSiteName =
-				SwingTools.getChoice(hidden, this, possibleSites,
+				SwingTools.getChoice(this, possibleSites,
 					"Which site do you want to upload to?", "Update site");
 			if (updateSiteName == null) return;
 		}
@@ -881,16 +873,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public void error(final String message) {
-		SwingTools.showMessageBox(hidden, this, message, JOptionPane.ERROR_MESSAGE);
+		SwingTools.showMessageBox(this, message, JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void warn(final String message) {
-		SwingTools.showMessageBox(hidden, this, message,
-			JOptionPane.WARNING_MESSAGE);
+		SwingTools.showMessageBox(this, message, JOptionPane.WARNING_MESSAGE);
 	}
 
 	public void info(final String message) {
-		SwingTools.showMessageBox(hidden, this, message,
-			JOptionPane.INFORMATION_MESSAGE);
+		SwingTools.showMessageBox(this, message, JOptionPane.INFORMATION_MESSAGE);
 	}
 }
