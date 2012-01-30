@@ -63,7 +63,9 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.xml.sax.SAXException;
 
 @SuppressWarnings("serial")
-public class FilesCollection extends ArrayList<FileObject> {
+public class FilesCollection extends LinkedHashMap<String, FileObject>
+	implements Iterable<FileObject>
+{
 
 	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
 	protected File imagejRoot;
@@ -592,13 +594,6 @@ public class FilesCollection extends ArrayList<FileObject> {
 		return filter(filter, this);
 	}
 
-	public FileObject get(final String filename) {
-		for (final FileObject file : this) {
-			if (file.getFilename().equals(filename)) return file;
-		}
-		return null;
-	}
-
 	public FileObject
 		getFileFromDigest(final String filename, final String digest)
 	{
@@ -721,7 +716,11 @@ public class FilesCollection extends ArrayList<FileObject> {
 	public void sort() {
 		// first letters in this order: 'C', 'I', 'f', 'p', 'j', 's', 'i', 'm', 'l,
 		// 'r'
-		Collections.sort(this, new Comparator<FileObject>() {
+		final ArrayList<FileObject> files = new ArrayList<FileObject>();
+		for (final FileObject file : this) {
+			files.add(file);
+		}
+		Collections.sort(files, new Comparator<FileObject>() {
 
 			@Override
 			public int compare(final FileObject a, final FileObject b) {
@@ -735,6 +734,10 @@ public class FilesCollection extends ArrayList<FileObject> {
 				return index < 0 ? 0x200 + c : index;
 			}
 		});
+		this.clear();
+		for (final FileObject file : files) {
+			put(file.filename, file);
+		}
 	}
 
 	String checkForCircularDependency(final FileObject file,
@@ -805,5 +808,36 @@ public class FilesCollection extends ArrayList<FileObject> {
 	@Override
 	public String toString() {
 		return Util.join(", ", this);
+	}
+
+	public FileObject get(final int index) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void add(final FileObject file) {
+		put(file.filename, file);
+	}
+
+	@Override
+	public Iterator<FileObject> iterator() {
+		final Iterator<String> iterator = keySet().iterator();
+		return new Iterator<FileObject>() {
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public FileObject next() {
+				return get(iterator.next());
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+		};
 	}
 }
