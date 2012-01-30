@@ -39,6 +39,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
+import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.plugin.Plugin;
@@ -131,6 +132,7 @@ public class RectangleAdapter extends
 
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		anchor.x = evt.getX();
 		anchor.y = evt.getY();
 		// NB: Prevent PixelProbe from overwriting the status bar.
@@ -139,6 +141,7 @@ public class RectangleAdapter extends
 	
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		final EventService eventService = evt.getContext().getService(EventService.class);
 		String message = String.format("x=%d, y=%d, w=%d, h=%d", 
 					anchor.x, anchor.y, evt.getX()-anchor.x, evt.getY()-anchor.y);
