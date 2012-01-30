@@ -339,4 +339,10 @@ public class Conflicts {
 			.prefix(addDependency));
 	}
 
+	public boolean hasDownloadConflicts() {
+		conflicts = new ArrayList<Conflict>();
+		listUpdateIssues();
+		return conflicts.size() > 0;
+	}
+
 }

@@ -89,6 +89,8 @@ public class Installer extends Downloader {
 	}
 
 	public synchronized void start() throws IOException {
+		if (new Conflicts(files).hasDownloadConflicts()) throw new RuntimeException(
+			"Unresolved conflicts!");
 		// mark for removal
 		for (final FileObject file : files.toUninstall())
 			try {
