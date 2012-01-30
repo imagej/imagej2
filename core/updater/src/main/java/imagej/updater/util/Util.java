@@ -29,9 +29,9 @@ import java.util.jar.JarFile;
  * Extend from it if you need to
  * - Calculate timestamps of files
  * - Calculate the checksums of files
- * - Get the absolute path (prefix()) of Fiji main directory
+ * - Get the absolute path (prefix()) of the ImageJ directory
  * - Copy a file over to a particular location
- * - Get details of the Operating System Fiji application is on
+ * - Get details of the Operating System ImageJ application is on
  */
 public class Util {
 
@@ -41,8 +41,7 @@ public class Util {
 
 	public static final String XML_COMPRESSED = "db.xml.gz";
 
-	// Key names for ij.Prefs for saved values
-	// Note: ij.Prefs is only saved during shutdown of Fiji
+	// Prefix for the preference key names
 	public static final String PREFS_USER = "fiji.updater.login";
 
 	public final static boolean useMacPrefix;

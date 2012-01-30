@@ -13,8 +13,8 @@ public class ViewOptions extends JComboBox {
 		ALL("all plugins"), INSTALLED("installed plugins only"), UNINSTALLED(
 			"uninstalled plugins only"), UPTODATE("only up-to-date plugins"),
 			UPDATEABLE("updateable plugins only"), LOCALLY_MODIFIED(
-				"locally modified plugins only"), FIJI("Fiji plugins only"), OTHERS(
-				"non-Fiji plugins only"), CHANGES("changes"), SELECTED("selected");
+				"locally modified plugins only"), FIJI("Downloaded plugins only"), OTHERS(
+				"Non-downloaded plugins only"), CHANGES("changes"), SELECTED("selected");
 
 		String label;
 

@@ -739,7 +739,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 			for (final String dependency : deps) {
 				final PluginObject dep = getPlugin(dependency);
 				if (dep == null || dep.current == null) result.append("The plugin " +
-					plugin + " has the obsolete/non-Fiji " + "dependency " + dependency +
+					plugin + " has the obsolete/local-only " + "dependency " + dependency +
 					"!\n");
 			}
 		}

@@ -24,12 +24,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /*
- * XML File Reader, as name implies, reads an already downloaded XML file of
- * containing all existing records of Fiji plugins (Upon calling a
- * constructor). It would save the entire information inside pluginRecordsList.
- *
- * Upon specific requests (call methods) for certain information, they will be
- * retrieved from pluginRecordsList, not the XML file itself.
+ * XML File Reader reads an locally-cached index of the available file versions.
  */
 public class XMLFileReader extends DefaultHandler {
 

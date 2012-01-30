@@ -38,7 +38,7 @@ public class ImageJUpdater implements ImageJPlugin {
 
 		if (new File(Util.fijiRoot, "update").exists()) {
 			UserInterface.get().error(
-				"Fiji restart required to finalize previous update");
+				"ImageJ restart required to finalize previous update");
 			return;
 		}
 		Util.useSystemProxies();
@@ -103,7 +103,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		if ((updater != null && updater.getStatus() == PluginObject.Status.UPDATEABLE))
 		{
 			if (SwingTools.showQuestion(false, main, "Update the updater",
-				"There is an update available for the Fiji Updater. Install now?"))
+				"There is an update available for the Updater. Install now?"))
 			{
 				// download just the updater
 				main.updateTheUpdater();
@@ -128,7 +128,7 @@ public class ImageJUpdater implements ImageJPlugin {
 				main.setEasyMode(false);
 			}
 		}
-		else if (!plugins.hasChanges()) main.info("Your Fiji is up to date!");
+		else if (!plugins.hasChanges()) main.info("Your ImageJ is up to date!");
 
 		main.updatePluginsTable();
 	}
@@ -151,7 +151,7 @@ public class ImageJUpdater implements ImageJPlugin {
 	}
 
 	/**
-	 * This returns true if this seems to be the Debian packaged version of Fiji,
+	 * This returns true if this seems to be the Debian packaged version of ImageJ,
 	 * or false otherwise.
 	 */
 
@@ -161,7 +161,7 @@ public class ImageJUpdater implements ImageJPlugin {
 	}
 
 	/**
-	 * If this seems to be the Debian packaged version of Fiji, then produce an
+	 * If this seems to be the Debian packaged version of ImageJ, then produce an
 	 * error and return true. Otherwise return false.
 	 */
 
@@ -169,9 +169,9 @@ public class ImageJUpdater implements ImageJPlugin {
 		// If this is the Debian / Ubuntu packaged version, then
 		// insist that the user uses apt-get / synaptic instead:
 		if (isDebian()) {
-			String message = "You are using the Debian packaged version of Fiji.\n";
+			String message = "You are using the Debian packaged version of ImageJ.\n";
 			message +=
-				"You should update Fiji with your system's usual package manager instead.";
+				"You should update ImageJ with your system's usual package manager instead.";
 			UserInterface.get().error(message);
 			return true;
 		}

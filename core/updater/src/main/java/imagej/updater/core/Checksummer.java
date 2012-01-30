@@ -27,13 +27,12 @@ import java.util.zip.ZipException;
  * list for interface usage.
  *
  * 1st step: Get information of local plugins (checksums and version)
- * 2nd step: Given XML file, get information of latest Fiji plugins (checksums
+ * 2nd step: Given XML file, get information of latest updatable files (checksums
  * and version)
  * 3rd step: Build up list of "PluginObject" using both local and updates
  *
  * digests and dates hold checksums and versions of local plugins respectively
- * latestDigests and latestDates hold checksums and versions of latest Fiji
- * plugins
+ * latestDigests and latestDates hold checksums and versions of latest file versions
  */
 public class Checksummer extends Progressable {
 
@@ -44,7 +43,7 @@ public class Checksummer extends Progressable {
 	public Checksummer(final PluginCollection plugins, final Progress progress) {
 		this.plugins = plugins;
 		addProgress(progress);
-		setTitle("Czech Summer");
+		setTitle("Czechsummer");
 	}
 
 	protected static class StringPair {
@@ -133,7 +132,7 @@ public class Checksummer extends Progressable {
 			PluginObject plugin = plugins.getPlugin(path);
 			if (plugin == null) {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
-					path + ", which is not known to Fiji");
+					path + ", which is not known to the Updater");
 				if (fijiRoot == null) {
 					plugin =
 						new PluginObject(null, path, checksum, timestamp, Status.NOT_FIJI);

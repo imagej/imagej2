@@ -55,7 +55,7 @@ public class PluginObject {
 
 	public static enum Action {
 		// no changes
-			NOT_FIJI("Not in Fiji"), NOT_INSTALLED("Not installed"), INSTALLED(
+			NOT_FIJI("Local-only"), NOT_INSTALLED("Not installed"), INSTALLED(
 				"Up-to-date"), UPDATEABLE("Update available"), MODIFIED(
 				"Locally modified"), NEW("New plugin"), OBSOLETE("Obsolete"),
 
