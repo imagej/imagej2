@@ -47,6 +47,9 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.java.sezpoz.Index;
+import net.java.sezpoz.IndexItem;
+
 /*
  * This class is responsible for writing updates to server, upon given the
  * updated plugin records.
@@ -66,6 +69,16 @@ public class PluginUploader {
 	protected List<Uploadable> files;
 	protected String compressed;
 
+	public static AbstractUploader getUploader(String protocol)
+		throws InstantiationException
+	{
+		if (protocol == null || protocol.equals("")) protocol = "ssh";
+		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
+			Uploader.class, AbstractUploader.class))
+			if (item.annotation().protocol().equals(protocol)) return item.instance();
+		return null;
+	}
+
 	// TODO: add a button to check for new db.xml.gz, and merge if necessary
 	public PluginUploader(final PluginCollection plugins, final String updateSite)
 		throws InstantiationException
@@ -74,8 +87,7 @@ public class PluginUploader {
 		siteName = updateSite;
 		site = plugins.getUpdateSite(updateSite);
 		compressed = Util.XML_COMPRESSED;
-		if (site.sshHost == null || site.sshHost.equals("")) uploader =
-			new FileUploader(site.uploadDirectory);
+		uploader = getUploader(getUploadProtocol());
 	}
 
 	public boolean hasUploader() {
