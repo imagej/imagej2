@@ -614,7 +614,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				FilesCollection.clone(files.toUninstall());
 			installer.start();
 			for (final FileObject file : uninstalled)
-				if (!file.isFiji()) files.remove(file);
+				if (file.isLocalOnly()) files.remove(file);
 				else file.setStatus(file.isObsolete() ? Status.OBSOLETE_UNINSTALLED
 					: Status.NOT_INSTALLED);
 			updateFilesTable();

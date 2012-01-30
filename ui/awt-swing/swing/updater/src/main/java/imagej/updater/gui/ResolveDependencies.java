@@ -245,7 +245,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 				final FileObject dep = files.getFile(dependency.filename);
 				if (dep == null || ignore.contains(dep)) continue;
 				if (dep.isInstallable() ||
-					(!dep.isFiji() && dep.getAction() != Action.UPLOAD) ||
+					(dep.isLocalOnly() && dep.getAction() != Action.UPLOAD) ||
 					dep.isObsolete() ||
 					(dep.getStatus().isValid(Action.UPLOAD) && dep.getAction() != Action.UPLOAD)) toInstall
 					.add(dep, file);
@@ -265,20 +265,20 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 	}
 
 	void needUpload(final FileObject file) {
-		final boolean notFiji = !file.isFiji();
+		final boolean localOnly = file.isLocalOnly();
 		final boolean notInstalled = file.isInstallable();
 		final boolean obsolete = file.isObsolete();
 		final FilesCollection reasons = toInstall.get(file);
 		maybeAddSeparator();
-		newText("Warning: ", notFiji || obsolete ? red : normal);
+		newText("Warning: ", localOnly || obsolete ? red : normal);
 		addText(file.getFilename(), bold);
-		addText((notFiji ? "was not uploaded yet" : "is " +
+		addText((localOnly ? "was not uploaded yet" : "is " +
 			(notInstalled ? "not installed" : (obsolete ? "marked obsolete"
 				: "locally modified"))) +
 			" but a dependency of\n\n");
 		addList(reasons);
 		addText("\n    ");
-		if (!notFiji && !obsolete) {
+		if (!localOnly && !obsolete) {
 			addIgnoreButton("Do not upload " + file, file);
 			addText("    ");
 		}
