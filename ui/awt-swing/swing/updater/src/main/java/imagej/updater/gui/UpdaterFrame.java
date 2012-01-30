@@ -659,6 +659,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		};
 		final PluginCollection justTheUpdater =
 			PluginCollection.clone(plugins.filter(filter));
+		justTheUpdater.cloneUpdateSites(plugins);
 		final Installer installer =
 			new Installer(justTheUpdater, getProgress("Installing the updater..."));
 		try {
