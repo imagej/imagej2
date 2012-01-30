@@ -63,12 +63,12 @@ import java.util.zip.ZipException;
  */
 public class Checksummer extends Progressable {
 
-	protected FilesCollection plugins;
+	protected FilesCollection files;
 	protected int counter, total;
 	protected Map<String, FileObject.Version> cachedChecksums;
 
-	public Checksummer(final FilesCollection plugins, final Progress progress) {
-		this.plugins = plugins;
+	public Checksummer(final FilesCollection files, final Progress progress) {
+		this.files = files;
 		addProgress(progress);
 		setTitle("Czechsummer");
 	}
@@ -157,29 +157,29 @@ public class Checksummer extends Progressable {
 			timestamp = Util.getTimestamp(realPath);
 			checksum = getDigest(path, realPath, timestamp);
 
-			FileObject plugin = plugins.getPlugin(path);
-			if (plugin == null) {
+			FileObject file = files.getFile(path);
+			if (file == null) {
 				if (checksum == null) throw new RuntimeException("Tried to remove " +
 					path + ", which is not known to the Updater");
 				if (imagejRoot == null) {
-					plugin =
+					file =
 						new FileObject(null, path, checksum, timestamp, Status.LOCAL_ONLY);
-					tryToGuessPlatform(plugin);
+					tryToGuessPlatform(file);
 				}
 				else {
-					plugin = new FileObject(null, path, null, 0, Status.OBSOLETE);
-					plugin.addPreviousVersion(checksum, timestamp);
+					file = new FileObject(null, path, null, 0, Status.OBSOLETE);
+					file.addPreviousVersion(checksum, timestamp);
 					// for re-upload
-					plugin.newChecksum = checksum;
-					plugin.newTimestamp = timestamp;
+					file.newChecksum = checksum;
+					file.newTimestamp = timestamp;
 				}
-				if (realFile.canExecute() || path.endsWith(".exe")) plugin.executable =
+				if (realFile.canExecute() || path.endsWith(".exe")) file.executable =
 					true;
-				plugins.add(plugin);
+				files.add(file);
 			}
 			else if (checksum != null) {
-				plugin.setLocalVersion(checksum, timestamp);
-				if (plugin.getStatus() == Status.OBSOLETE_UNINSTALLED) plugin
+				file.setLocalVersion(checksum, timestamp);
+				if (file.getStatus() == Status.OBSOLETE_UNINSTALLED) file
 					.setStatus(Status.OBSOLETE);
 			}
 		}
@@ -217,18 +217,17 @@ public class Checksummer extends Progressable {
 		if (!Util.isDeveloper) throw new RuntimeException("Must be developer");
 		this.imagejRoot = new File(imagejRoot).getAbsolutePath() + "/";
 		updateFromLocal();
-		for (final FileObject plugin : plugins)
-			if (plugin.isLocallyModified()) plugin.addPreviousVersion(
-				plugin.newChecksum, plugin.newTimestamp);
+		for (final FileObject file : files)
+			if (file.isLocallyModified()) file.addPreviousVersion(file.newChecksum,
+				file.newTimestamp);
 	}
 
-	protected static boolean tryToGuessPlatform(final FileObject plugin) {
+	protected static boolean tryToGuessPlatform(final FileObject file) {
 		// Look for platform names as subdirectories of lib/ and mm/
 		String platform;
-		if (plugin.filename.startsWith("lib/")) platform =
-			plugin.filename.substring(4);
-		else if (plugin.filename.startsWith("mm/")) platform =
-			plugin.filename.substring(3);
+		if (file.filename.startsWith("lib/")) platform = file.filename.substring(4);
+		else if (file.filename.startsWith("mm/")) platform =
+			file.filename.substring(3);
 		else return false;
 
 		final int slash = platform.indexOf('/');
@@ -239,7 +238,7 @@ public class Checksummer extends Progressable {
 
 		for (final String valid : Util.platforms)
 			if (platform.equals(valid)) {
-				plugin.addPlatform(platform);
+				file.addPlatform(platform);
 				return true;
 			}
 		return false;
@@ -287,8 +286,8 @@ public class Checksummer extends Progressable {
 		final Set<String> alreadyQueued = new HashSet<String>();
 		for (final StringPair pair : queue)
 			alreadyQueued.add(pair.path);
-		for (final FileObject plugin : plugins)
-			if (!alreadyQueued.contains(plugin.getFilename())) queueIfExists(plugin
+		for (final FileObject file : files)
+			if (!alreadyQueued.contains(file.getFilename())) queueIfExists(file
 				.getFilename());
 	}
 

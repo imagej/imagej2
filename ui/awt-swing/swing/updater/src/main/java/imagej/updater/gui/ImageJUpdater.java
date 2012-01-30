@@ -79,9 +79,9 @@ public class ImageJUpdater implements ImageJPlugin {
 		}
 		Util.useSystemProxies();
 
-		final FilesCollection plugins = new FilesCollection();
+		final FilesCollection files = new FilesCollection();
 		try {
-			plugins.read();
+			files.read();
 		}
 		catch (final FileNotFoundException e) { /* ignore */}
 		catch (final Exception e) {
@@ -93,11 +93,11 @@ public class ImageJUpdater implements ImageJPlugin {
 
 		Authenticator.setDefault(new SwingAuthenticator());
 
-		final UpdaterFrame main = new UpdaterFrame(plugins, false);
+		final UpdaterFrame main = new UpdaterFrame(files, false);
 		main.setEasyMode(true);
 
 		Progress progress = main.getProgress("Starting up...");
-		final XMLFileDownloader downloader = new XMLFileDownloader(plugins);
+		final XMLFileDownloader downloader = new XMLFileDownloader(files);
 		downloader.addProgress(progress);
 		try {
 			downloader.start();
@@ -122,7 +122,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		if (!warnings.equals("")) main.warn(warnings);
 
 		progress = main.getProgress("Matching with local files...");
-		final Checksummer checksummer = new Checksummer(plugins, progress);
+		final Checksummer checksummer = new Checksummer(files, progress);
 		try {
 			checksummer.updateFromLocal();
 		}
@@ -135,7 +135,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		// TODO: find .jar name from this class' resource
 		// TODO: mark all dependencies for update
 		// TODO: we may get away with a custom class loader... but probably not!
-		final FileObject updater = plugins.getPlugin("plugins/Fiji_Updater.jar");
+		final FileObject updater = files.getFile("plugins/Fiji_Updater.jar");
 		if ((updater != null && updater.getStatus() == FileObject.Status.UPDATEABLE))
 		{
 			if (SwingTools.showQuestion(false, main, "Update the updater",
@@ -147,7 +147,7 @@ public class ImageJUpdater implements ImageJPlugin {
 				main
 					.info("Please restart ImageJ and call Help>Update to continue with the update");
 			}
-			// we do not save the plugins to prevent the mtime from changing
+			// we do not save the files to prevent the mtime from changing
 			return;
 		}
 
@@ -155,25 +155,25 @@ public class ImageJUpdater implements ImageJPlugin {
 		main.setVisible(true);
 		main.requestFocus();
 
-		plugins.markForUpdate(false);
+		files.markForUpdate(false);
 		main.setViewOption(Option.UPDATEABLE);
-		if (plugins.hasForcableUpdates()) {
+		if (files.hasForcableUpdates()) {
 			main.warn("There are locally modified files!");
-			if (plugins.hasUploadableSites() && !plugins.hasChanges()) {
+			if (files.hasUploadableSites() && !files.hasChanges()) {
 				main.setViewOption(Option.LOCALLY_MODIFIED);
 				main.setEasyMode(false);
 			}
 		}
-		else if (!plugins.hasChanges()) main.info("Your ImageJ is up to date!");
+		else if (!files.hasChanges()) main.info("Your ImageJ is up to date!");
 
-		main.updatePluginsTable();
+		main.updateFilesTable();
 	}
 
-	protected boolean overwriteWithUpdated(final FileObject plugin) {
-		File downloaded = new File(Util.prefix("update/" + plugin.filename));
+	protected boolean overwriteWithUpdated(final FileObject file) {
+		File downloaded = new File(Util.prefix("update/" + file.filename));
 		if (!downloaded.exists()) return true; // assume all is well if there is no
 																						// updated file
-		final File jar = new File(Util.prefix(plugin.filename));
+		final File jar = new File(Util.prefix(file.filename));
 		if (!jar.delete() && !moveOutOfTheWay(jar)) return false;
 		if (!downloaded.renameTo(jar)) return false;
 		for (;;) {

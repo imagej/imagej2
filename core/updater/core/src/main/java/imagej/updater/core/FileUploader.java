@@ -44,8 +44,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 /*
- * This FileUploader is highly specialized to upload plugins and XML
- * information over to Pacific. There is a series of steps to follow. Any
+ * This FileUploader is highly specialized to upload files and XML
+ * information over to ImageJ2 Update sites. There is a series of steps to follow. Any
  * exception means entire upload process is considered invalid.
  *
  * 1.) Set db.xml.gz to read-only

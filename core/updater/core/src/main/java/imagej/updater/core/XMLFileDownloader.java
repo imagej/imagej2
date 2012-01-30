@@ -52,28 +52,28 @@ import java.util.zip.GZIPInputStream;
  */
 public class XMLFileDownloader extends Progressable {
 
-	protected FilesCollection plugins;
+	protected FilesCollection files;
 	protected Collection<String> updateSites;
 	protected String warnings;
 
-	public XMLFileDownloader(final FilesCollection plugins) {
-		this(plugins, plugins.getUpdateSiteNames());
+	public XMLFileDownloader(final FilesCollection files) {
+		this(files, files.getUpdateSiteNames());
 	}
 
-	public XMLFileDownloader(final FilesCollection plugins,
+	public XMLFileDownloader(final FilesCollection files,
 		final Collection<String> updateSites)
 	{
-		this.plugins = plugins;
+		this.files = files;
 		this.updateSites = updateSites;
 	}
 
 	public void start() throws IOException {
 		setTitle("Updating the index of available files");
-		final XMLFileReader reader = new XMLFileReader(plugins);
+		final XMLFileReader reader = new XMLFileReader(files);
 		final int current = 0, total = updateSites.size();
 		warnings = "";
 		for (final String name : updateSites) {
-			final UpdateSite updateSite = plugins.getUpdateSite(name);
+			final UpdateSite updateSite = files.getUpdateSite(name);
 			final String title =
 				"Updating from " + (name.equals("") ? "main" : name) + " site";
 			addItem(title);

@@ -88,7 +88,7 @@ final public class SFTPFileUploader extends AbstractUploader {
 		// setTitle("Uploading") has a side effect of adding timestamp to file names
 		// of 'sources'
 		// If timestamp is not set file names will end with '*-0'.
-		// See imagej.updater.core.PluginUploader.VerifyTimestamp.setTitle(String)
+		// See imagej.updater.core.FilesUploader.VerifyTimestamp.setTitle(String)
 		setTitle("Uploading");
 
 		try {

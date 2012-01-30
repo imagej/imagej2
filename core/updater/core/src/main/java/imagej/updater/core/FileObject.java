@@ -1,5 +1,5 @@
 //
-// PluginObject.java
+// FileObject.java
 //
 
 /*
@@ -90,7 +90,7 @@ public class FileObject {
 		// no changes
 			LOCAL_ONLY("Local-only"), NOT_INSTALLED("Not installed"), INSTALLED(
 				"Up-to-date"), UPDATEABLE("Update available"), MODIFIED(
-				"Locally modified"), NEW("New plugin"), OBSOLETE("Obsolete"),
+				"Locally modified"), NEW("New file"), OBSOLETE("Obsolete"),
 
 			// changes
 			UNINSTALL("Uninstall it"), INSTALL("Install it"), UPDATE("Update it"),
@@ -362,24 +362,24 @@ public class FileObject {
 		action = status.getNoAction();
 	}
 
-	public void setAction(final FilesCollection plugins, final Action action) {
+	public void setAction(final FilesCollection files, final Action action) {
 		if (!status.isValid(action)) throw new Error(
-			"Invalid action requested for plugin " + filename + "(" + action + ", " +
+			"Invalid action requested for file " + filename + "(" + action + ", " +
 				status + ")");
 		if (action == Action.UPLOAD) {
-			final Iterable<String> dependencies = plugins.analyzeDependencies(this);
+			final Iterable<String> dependencies = files.analyzeDependencies(this);
 			if (dependencies != null) for (final String dependency : dependencies)
 				addDependency(dependency);
 		}
 		this.action = action;
 	}
 
-	public boolean setFirstValidAction(final FilesCollection plugins,
+	public boolean setFirstValidAction(final FilesCollection files,
 		final Action[] actions)
 	{
 		for (final Action action : actions)
 			if (status.isValid(action)) {
-				setAction(plugins, action);
+				setAction(files, action);
 				return true;
 			}
 		return false;
@@ -457,13 +457,13 @@ public class FileObject {
 	}
 
 	/**
-	 * Tell whether this plugin can be uploaded to its update site Note: this does
-	 * not check whether the plugin is locally modified.
+	 * Tell whether this file can be uploaded to its update site Note: this does
+	 * not check whether the file is locally modified.
 	 */
-	public boolean isUploadable(final FilesCollection plugins) {
-		if (updateSite == null) return plugins.hasUploadableSites();
+	public boolean isUploadable(final FilesCollection files) {
+		if (updateSite == null) return files.hasUploadableSites();
 		final FilesCollection.UpdateSite updateSite =
-			plugins.getUpdateSite(this.updateSite);
+			files.getUpdateSite(this.updateSite);
 		return updateSite != null && updateSite.isUploadable();
 	}
 
@@ -516,7 +516,7 @@ public class FileObject {
 		return status != Status.LOCAL_ONLY;
 	}
 
-	/* This returns true if the user marked the plugin for uninstall, too */
+	/* This returns true if the user marked the file for uninstall, too */
 	public boolean willNotBeInstalled() {
 		switch (action) {
 			case NOT_INSTALLED:
@@ -538,7 +538,7 @@ public class FileObject {
 		}
 	}
 
-	/* This returns true if the user marked the plugin for uninstall, too */
+	/* This returns true if the user marked the file for uninstall, too */
 	public boolean willBeUpToDate() {
 		switch (action) {
 			case OBSOLETE:
@@ -607,18 +607,18 @@ public class FileObject {
 	}
 
 	/**
-	 * For displaying purposes, it is nice to have a plugin object whose
-	 * toString() method shows either the filename or the action.
+	 * For displaying purposes, it is nice to have a file object whose toString()
+	 * method shows either the filename or the action.
 	 */
-	public class LabeledPlugin {
+	public class LabeledFile {
 
 		String label;
 
-		LabeledPlugin(final String label) {
+		LabeledFile(final String label) {
 			this.label = label;
 		}
 
-		public FileObject getPlugin() {
+		public FileObject getFile() {
 			return FileObject.this;
 		}
 
@@ -628,12 +628,12 @@ public class FileObject {
 		}
 	}
 
-	public LabeledPlugin getLabeledPlugin(final int column) {
+	public LabeledFile getLabeledFile(final int column) {
 		switch (column) {
 			case 0:
-				return new LabeledPlugin(getFilename());
+				return new LabeledFile(getFilename());
 			case 1:
-				return new LabeledPlugin(getAction().toString());
+				return new LabeledFile(getAction().toString());
 		}
 		return null;
 	}
