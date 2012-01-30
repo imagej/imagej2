@@ -34,9 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -56,6 +59,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * Class functionality:
@@ -354,4 +359,47 @@ public class Util {
 		}
 	}
 
+	protected static String readFile(final File file) throws IOException {
+		final StringBuilder builder = new StringBuilder();
+		final BufferedReader reader = new BufferedReader(new FileReader(file));
+		for (;;) {
+			final String line = reader.readLine();
+			if (line == null) break;
+			builder.append(line).append('\n');
+		}
+		reader.close();
+
+		return builder.toString();
+	}
+
+	// This method writes to a .bup file and then renames; this might not work on
+	// Windows
+	protected static void writeFile(final File file, final String contents)
+		throws IOException
+	{
+		final File result =
+			new File(file.getAbsoluteFile().getParentFile(), file.getName() + ".new");
+		final FileOutputStream out = new FileOutputStream(result);
+		out.write(contents.getBytes());
+		out.close();
+		result.renameTo(file);
+	}
+
+	public static boolean patchInfoPList(final String executable)
+		throws IOException
+	{
+		final File infoPList = new File(imagejRoot, "Contents/Info.plist");
+		if (!infoPList.exists()) return false;
+		String contents = readFile(infoPList);
+		final Pattern pattern =
+			Pattern.compile(".*<key>CFBundleExecutable</key>[^<]*<string>([^<]*).*",
+				Pattern.DOTALL | Pattern.MULTILINE);
+		final Matcher matcher = pattern.matcher(contents);
+		if (!matcher.matches()) return false;
+		contents =
+			contents.substring(0, matcher.start(1)) + executable +
+				contents.substring(matcher.end(1));
+		writeFile(infoPList, contents);
+		return true;
+	}
 }

@@ -37,6 +37,7 @@ package imagej.updater.core;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
+import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -113,6 +114,12 @@ public class Installer extends Downloader {
 				final File old = new File(oldName);
 				if (old.exists()) old.delete();
 				orig.renameTo(old);
+				if (name.equals(Util.macPrefix + "ImageJ-tiger")) try {
+					Util.patchInfoPList("ImageJ-tiger");
+				}
+				catch (final IOException e) {
+					UserInterface.get().error("Could not patch Info.plist");
+				}
 			}
 
 			final String url = plugins.getURL(plugin);
