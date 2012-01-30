@@ -151,7 +151,7 @@ public class Conflicts {
 			}
 
 		for (final FileObject file : obsoleted.keySet())
-			if (toInstall.get(file) != null && // handled above
+			if (toInstall.get(file) != null || // handled above
 				!file.willNotBeInstalled()) conflicts.add(needUninstall(file, obsoleted
 				.get(file)));
 
