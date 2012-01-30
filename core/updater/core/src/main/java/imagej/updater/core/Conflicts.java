@@ -199,7 +199,12 @@ public class Conflicts {
 
 	protected void listUploadIssues() {
 		final DependencyMap toUpload = new FilesCollection.DependencyMap();
-		for (final FileObject file : files.toUpload())
+		for (final FileObject file : files.toUpload()) {
+			if (file.getTimestamp() != Util.getTimestamp(files.prefix(file
+				.getFilename())))
+			{
+				conflicts.add(timestampChanged(file));
+			}
 			for (final Dependency dependency : file.getDependencies()) {
 				final FileObject dep = files.get(dependency.filename);
 				if (dep == null || ignored.contains(dep)) continue;
@@ -209,6 +214,7 @@ public class Conflicts {
 					(dep.getStatus().isValid(Action.UPLOAD) && dep.getAction() != Action.UPLOAD)) toUpload
 					.add(dep, file);
 			}
+		}
 		for (final FileObject file : toUpload.keySet())
 			conflicts.add(needUpload(file, toUpload.get(file)));
 
@@ -221,6 +227,22 @@ public class Conflicts {
 				else if (files.get(dependency.filename).getAction() == Action.REMOVE) conflicts
 					.add(dependencyRemoved(file, dependency.filename));
 		}
+	}
+
+	protected Conflict timestampChanged(final FileObject file) {
+		return new Conflict(file, "The timestamp of " + file +
+			" changed in the meantime", new Resolution(
+			"Recalculate checksum and dependencies of " + file)
+		{
+
+			@Override
+			public void resolve() {
+				final Checksummer checksummer = new Checksummer(files, null);
+				checksummer.updateFromLocal(Collections.singletonList(file
+					.getFilename()));
+				files.updateDependencies(file);
+			}
+		});
 	}
 
 	protected Conflict needUpload(final FileObject file,
