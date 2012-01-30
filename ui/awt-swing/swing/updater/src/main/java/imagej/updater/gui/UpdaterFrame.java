@@ -306,8 +306,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 						}.start();
 					}
 				}, bottomPanel2);
-		upload.setEnabled(false);
 		upload.setVisible(files.hasUploadableSites());
+		enableUploadOrNot();
 
 		final IJ1Plugin fileChanges =
 			IJ1Plugin.discover("fiji.scripting.ShowPluginChanges");
