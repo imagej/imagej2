@@ -178,8 +178,8 @@ public class SwingUserInterface extends UserInterface {
 		final JLabel label = new JLabel("Password:");
 		final JPasswordField password = new JPasswordField();
 
-		if (JOptionPane.showConfirmDialog(null, new Object[] { label, password }, title,
-			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
+		if (JOptionPane.showConfirmDialog(null, new Object[] { label, password },
+			title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
 		return new String(password.getPassword());
 
 	}
