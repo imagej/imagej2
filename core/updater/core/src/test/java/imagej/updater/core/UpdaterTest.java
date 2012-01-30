@@ -278,14 +278,12 @@ public class UpdaterTest {
 		FilesCollection files = readDb(true, true);
 		files.write();
 
-		final List<FileObject> list = new ArrayList<FileObject>();
-		for (final FileObject object : files)
-			list.add(object);
-		assertCount(2, list);
+		final FileObject[] list = makeList(files);
+		assertEquals(2, list.length);
 
-		final File obsolete = files.prefix(list.get(0).getFilename());
+		final File obsolete = files.prefix(list[0].getFilename());
 		assertEquals("obsolete.ijm", obsolete.getName());
-		final File dependency = files.prefix(list.get(0).getFilename());
+		final File dependency = files.prefix(list[0].getFilename());
 
 		// Make sure files are checksummed again when their timestamp changed
 
@@ -301,8 +299,8 @@ public class UpdaterTest {
 		assertNotNull(object);
 		object.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 		assertAction(Action.UPLOAD, files, name);
-		object.addDependency(list.get(0).getFilename(), obsolete);
-		object.addDependency(list.get(1).getFilename(), dependency);
+		object.addDependency(list[0].getFilename(), obsolete);
+		object.addDependency(list[1].getFilename(), dependency);
 
 		writeFile(dependencee, "still not uploaded");
 
@@ -336,7 +334,7 @@ public class UpdaterTest {
 		object = files.get(name);
 		assertNotNull(object);
 		assertStatus(Status.MODIFIED, files, name);
-		assertStatus(Status.NOT_INSTALLED, files, list.get(0).getFilename());
+		assertStatus(Status.NOT_INSTALLED, files, list[0].getFilename());
 		assertStatus(Status.LOCAL_ONLY, files, "macros/independent.ijm");
 
 		assertCount(2, files.uploadable());
@@ -516,6 +514,13 @@ public class UpdaterTest {
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		files.write();
+	}
+
+	protected FileObject[] makeList(final FilesCollection files) {
+		final List<FileObject> list = new ArrayList<FileObject>();
+		for (final FileObject object : files)
+			list.add(object);
+		return list.toArray(new FileObject[list.size()]);
 	}
 
 	protected static void assertStatus(final Status status,
