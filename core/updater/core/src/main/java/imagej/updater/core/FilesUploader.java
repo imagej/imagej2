@@ -100,7 +100,7 @@ public class FilesUploader {
 		final String host = site.sshHost;
 		final int at = host.indexOf('@');
 		final int colon = host.indexOf(':');
-		if (colon > 0 && colon < at) return host.substring(0, colon);
+		if (colon > 0 && (at < 0 || colon < at)) return host.substring(0, colon);
 		return null;
 	}
 
