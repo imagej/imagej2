@@ -241,6 +241,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		getPanel().setLabel(makeLabel());
 	}
 
+	@Override
+	public void close() {
+		super.close();
+		cleanup();
+	}
+
 	// -- CalibratedInterval methods --
 
 	@Override
@@ -582,8 +588,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
 		if (event.getObject() == this) {
-			closeHelper();
-			// NB: If call close() here instead get duplicated WindowClosingEvents.
+			cleanup();
 		}
 	}
 
@@ -611,19 +616,13 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		eventService.unsubscribe(subscribers);
 	}
 
-	protected void closeHelper() {
+	private void cleanup() {
 		// NB: Fixes bug #893.
 		for (final DataView view : this) {
 			view.dispose();
 		}
 		clear();
 		unsubscribeFromEvents();
-	}
-
-	@Override
-	public void close() {
-		closeHelper();
-		getPanel().getWindow().close();
 	}
 
 	protected Dataset getDataset(final DataView view) {
