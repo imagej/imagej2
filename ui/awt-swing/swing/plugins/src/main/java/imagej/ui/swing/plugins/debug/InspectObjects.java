@@ -43,7 +43,7 @@ import imagej.object.ObjectService;
 
 /**
  * Inspect the ObjectService
- *
+ * 
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Objects")
