@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.PluginModule;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
@@ -75,7 +76,7 @@ import imagej.options.event.OptionsEvent;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class OptionsPlugin implements RunnablePlugin {
+public class OptionsPlugin extends DynamicPlugin {
 
 	// -- OptionsPlugin methods --
 
