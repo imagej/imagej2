@@ -47,6 +47,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -98,8 +99,15 @@ public final class SwingUtils {
 		final JOptionPane optionPane = new JOptionPane(c, messageType, optionType);
 
 		if (doScrollPane) {
-			final JPanel mainPane = (JPanel) optionPane.getComponent(0);
-			final JPanel buttonPane = (JPanel) optionPane.getComponent(1);
+			final Component[] optionComponents = optionPane.getComponents();
+			int messageIndex = 0, buttonIndex = optionComponents.length - 1;
+			for (int i = 0 ; i < optionComponents.length; i++) {
+				final String compName = optionComponents[i].getName();
+				if ("OptionPane.messageArea".equals(compName)) messageIndex = i;
+				else if ("OptionPane.buttonArea".equals(compName)) buttonIndex = i;
+			}
+			final Component mainPane = optionComponents[messageIndex];
+			final Component buttonPane = optionComponents[buttonIndex];
 
 			// wrap main pane in a scroll pane
 			final JScrollPane wrappedMainPane = new JScrollPane(mainPane);
@@ -113,14 +121,19 @@ public final class SwingUtils {
 			wrappedButtonPane.add(buttonPane);
 
 			// fix component borders, so that scroll pane is flush with dialog edge
-			final EmptyBorder border = (EmptyBorder) optionPane.getBorder();
-			final Insets insets = border.getBorderInsets();
+			final Border border = optionPane.getBorder();
+			final Insets insets = border.getBorderInsets(optionPane);
 			wrappedButtonPane.setBorder(new EmptyBorder(0, insets.left,
 				insets.bottom, insets.right));
 			optionPane.setBorder(null);
+
+			// rebuild option pane with wrapped components
 			optionPane.removeAll();
-			optionPane.add(wrappedMainPane);
-			optionPane.add(wrappedButtonPane);
+			for (int i=0; i<optionComponents.length; i++) {
+				if (i == messageIndex) optionPane.add(wrappedMainPane);
+				else if (i == buttonIndex) optionPane.add(wrappedButtonPane);
+				else optionPane.add(optionComponents[i]);
+			}
 		}
 
 		// create dialog, set properties, pack and show
