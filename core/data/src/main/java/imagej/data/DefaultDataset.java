@@ -234,9 +234,12 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public Dataset duplicate() {
-		final Dataset d = duplicateBlank();
-		copyInto(d);
-		return d;
+		ImgPlus<? extends RealType<?>> newImgPlus = imgPlus.copy();
+		return new DefaultDataset(newImgPlus);
+		// OLD WAY
+		//final Dataset d = duplicateBlank();
+		//copyInto(d);
+		//return d;
 	}
 
 	@Override
