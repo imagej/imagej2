@@ -128,11 +128,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus) {
-		// TODO- No longer necessary?????
-		// if (this.imgPlus.numDimensions() != imgPlus.numDimensions()) {
-		// throw new IllegalArgumentException("Invalid dimensionality: expected " +
-		// this.imgPlus.numDimensions() + " but was " + imgPlus.numDimensions());
-		// }
 
 		final boolean wasRgbMerged = isRGBMerged();
 
