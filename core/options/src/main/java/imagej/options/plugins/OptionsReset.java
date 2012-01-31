@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options.plugins;
 
-import imagej.ImageJ;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 import imagej.options.OptionsService;
@@ -57,10 +57,12 @@ import java.util.List;
 	@Menu(label = "Reset", weight = 18) })
 public class OptionsReset implements ImageJPlugin {
 
+	@Parameter(persist = false)
+	private OptionsService optionsService;
+
 	@Override
 	public void run() {
-		final OptionsService service = ImageJ.get(OptionsService.class);
-		final List<OptionsPlugin> optionsPlugins = service.getOptions();
+		final List<OptionsPlugin> optionsPlugins = optionsService.getOptions();
 		for (final OptionsPlugin plugin : optionsPlugins) {
 			Prefs.clear(plugin.getClass());
 		}

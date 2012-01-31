@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Dataset;
@@ -593,7 +592,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		if (event.getDisplay() != this) return;
 		// final UserInterface ui = ImageJ.get(UIService.class).getUI();
 		// final ToolService toolMgr = ui.getToolBar().getToolService();
-		final ToolService toolService = ImageJ.get(ToolService.class);
+		final ToolService toolService =
+			event.getContext().getService(ToolService.class);
 		getCanvas().setCursor(toolService.getActiveTool().getCursor());
 	}
 

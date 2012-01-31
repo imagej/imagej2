@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins.debug;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -63,6 +62,9 @@ public class WatchDisplays implements ImageJPlugin {
 	@Parameter(persist = false)
 	private EventService eventService;
 
+	@Parameter(persist = false)
+	private DisplayService displayService;
+
 	private static SwingOutputWindow window;
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
@@ -79,7 +81,6 @@ public class WatchDisplays implements ImageJPlugin {
 
 	public void showDisplays() {
 		window.clear();
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final List<Display<?>> displays = displayService.getDisplays();
 		final Display<?> active = displayService.getActiveDisplay();
 		for (final Display<?> display : displays) {

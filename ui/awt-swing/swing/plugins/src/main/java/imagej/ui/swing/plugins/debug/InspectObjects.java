@@ -36,8 +36,8 @@ package imagej.ui.swing.plugins.debug;
 
 import com.github.sbridges.objectinspector.Inspector;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 
@@ -49,9 +49,11 @@ import imagej.object.ObjectService;
 @Plugin(menuPath = "Plugins>Debug>Inspect Objects")
 public class InspectObjects implements ImageJPlugin {
 
+	@Parameter(persist = false)
+	private ObjectService objectService;
+
 	@Override
 	public void run() {
-		final ObjectService objectService = ImageJ.get(ObjectService.class);
 		Inspector.inspect(objectService);
 	}
 

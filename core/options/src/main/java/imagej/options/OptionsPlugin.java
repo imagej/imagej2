@@ -39,6 +39,7 @@ import imagej.event.EventService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PluginModule;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
@@ -78,6 +79,11 @@ import imagej.options.event.OptionsEvent;
  */
 public class OptionsPlugin extends DynamicPlugin {
 
+	// -- Parameters --
+
+	@Parameter(persist = false)
+	protected EventService eventService;
+
 	// -- OptionsPlugin methods --
 
 	/** Loads option values from persistent storage. */
@@ -101,7 +107,6 @@ public class OptionsPlugin extends DynamicPlugin {
 	@Override
 	public void run() {
 		save();
-		final EventService eventService = ImageJ.get(EventService.class);
 		eventService.publish(new OptionsEvent(this));
 	}
 
