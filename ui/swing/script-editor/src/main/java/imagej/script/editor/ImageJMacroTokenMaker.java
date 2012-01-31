@@ -3,7 +3,7 @@
 /*
  * Generated on 4/20/10 2:34 PM
  */
-package fiji.scripting;
+package imagej.script.editor;
 
 import java.io.*;
 import javax.swing.text.Segment;
