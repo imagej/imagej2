@@ -1,4 +1,4 @@
-package fiji.scripting;
+package imagej.script.editor;
 
 import fiji.CheckClassVersions;
 import fiji.SimpleExecuter;

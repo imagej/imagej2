@@ -1,4 +1,4 @@
-package fiji.scripting;
+package imagej.script.editor;
 
 import java.io.IOException;
 import java.io.OutputStream;

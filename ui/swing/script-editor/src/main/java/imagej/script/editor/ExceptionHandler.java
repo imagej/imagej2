@@ -1,4 +1,4 @@
-package fiji.scripting;
+package imagej.script.editor;
 
 import fiji.scripting.ErrorHandler;
 import fiji.scripting.ErrorHandler.Error;
