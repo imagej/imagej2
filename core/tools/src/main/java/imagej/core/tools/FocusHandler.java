@@ -1,5 +1,5 @@
 //
-// PivotApplicationFrame.java
+// FocusHandler.java
 //
 
 /*
@@ -32,34 +32,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.pivot;
+package imagej.core.tools;
 
+import imagej.ext.KeyCode;
+import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.tool.AbstractTool;
+import imagej.ext.tool.Tool;
 import imagej.ui.ApplicationFrame;
-
-import org.apache.pivot.wtk.Frame;
+import imagej.ui.IUserInterface;
+import imagej.ui.UIService;
 
 /**
- * Pivot implementation of {@link ApplicationFrame}.
+ * Brings the main application window into focus when ENTER is pressed.
  * 
  * @author Curtis Rueden
  */
-public class PivotApplicationFrame extends Frame implements ApplicationFrame {
-	
-	// -- ApplicationFrame methods --
+@Plugin(type = Tool.class, name = "Window Focus", alwaysActive = true)
+public class FocusHandler extends AbstractTool {
 
 	@Override
-	public int getLocationX() {
-		return getLocation().x;
+	public void onKeyDown(final KyPressedEvent evt) {
+		if (evt.getCode() != KeyCode.ENTER) return;
+		final UIService uiService = evt.getContext().getService(UIService.class);
+		if (uiService == null) return;
+		final IUserInterface ui = uiService.getUI();
+		if (ui == null) return;
+		final ApplicationFrame appFrame = ui.getApplicationFrame();
+		if (appFrame == null) return;
+		appFrame.activate();
 	}
 
-	@Override
-	public int getLocationY() {
-		return getLocation().y;
-	}
-
-	@Override
-	public void activate() {
-		requestActive();
-	}
-	
 }
