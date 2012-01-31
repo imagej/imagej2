@@ -143,8 +143,9 @@ public class OptionsAppearance extends OptionsPlugin {
 		this.menuFontSize = menuFontSize;
 	}
 
-	public void setDisplayFractionalScales(final boolean wantFractionalScales) {
-		displayFractionalScales = wantFractionalScales;
+	public void setDisplayFractionalScales(final boolean displayFractionalScales)
+	{
+		this.displayFractionalScales = displayFractionalScales;
 	}
 
 }
