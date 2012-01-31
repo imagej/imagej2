@@ -37,6 +37,7 @@ package imagej.ext.display;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.display.event.DisplayActivatedEvent;
+import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 
 import java.util.ArrayList;
@@ -116,6 +117,11 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public void activate() {
 		eventService.publish(new DisplayActivatedEvent(this));
+	}
+
+	@Override
+	public void close() {
+		eventService.publish(new DisplayDeletedEvent(this));
 	}
 
 	@Override

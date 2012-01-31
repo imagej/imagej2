@@ -42,7 +42,6 @@ import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayCreatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.display.event.window.WinClosedEvent;
 import imagej.ext.plugin.PluginInfo;
@@ -235,8 +234,7 @@ public final class DefaultDisplayService extends AbstractService implements
 			activeDisplay = null;
 		}
 
-		// CTR TODO - is there a better way to publish DisplayDeletedEvents?
-		getEventService().publish(new DisplayDeletedEvent(display));
+		display.close();
 	}
 
 	/** Sets the display to active when its window is activated. */

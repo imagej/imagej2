@@ -241,12 +241,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		getPanel().setLabel(makeLabel());
 	}
 
-	@Override
-	public void close() {
-		super.close();
-		cleanup();
-	}
-
 	// -- CalibratedInterval methods --
 
 	@Override
@@ -587,9 +581,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
-		if (event.getObject() == this) {
-			cleanup();
-		}
+		if (event.getObject() != this) return;
+		cleanup();
 	}
 
 	@EventHandler
