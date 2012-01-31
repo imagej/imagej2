@@ -38,7 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO
+ * Simple logging utility class that uses <a
+ * href="http://www.slf4j.org/">SLF4J</a>.
+ * <p>
+ * The class supports five common logging levels: error, warn, info, trace and
+ * debug. It provides methods for logging messages, exception stack traces
+ * and combinations of the two.
+ * </p>
  * 
  * @author Curtis Rueden
  */
@@ -58,64 +64,64 @@ public final class Log {
 		Log.logger = logger;
 	}
 
-	public static void debug(final String msg) {
-		logger.debug(msg);
+	public static void debug(final Object msg) {
+		logger.debug(s(msg));
 	}
 
 	public static void debug(final Throwable t) {
 		debug("Exception", t);
 	}
 
-	public static void debug(final String msg, final Throwable t) {
-		logger.debug(msg, t);
+	public static void debug(final Object msg, final Throwable t) {
+		logger.debug(s(msg), t);
 	}
 
-	public static void error(final String msg) {
-		logger.error(msg);
+	public static void error(final Object msg) {
+		logger.error(s(msg));
 	}
 
 	public static void error(final Throwable t) {
 		error("Exception", t);
 	}
 
-	public static void error(final String msg, final Throwable t) {
-		logger.error(msg, t);
+	public static void error(final Object msg, final Throwable t) {
+		logger.error(s(msg), t);
 	}
 
-	public static void info(final String msg) {
-		logger.info(msg);
+	public static void info(final Object msg) {
+		logger.info(s(msg));
 	}
 
 	public static void info(final Throwable t) {
 		info("Exception", t);
 	}
 
-	public static void info(final String msg, final Throwable t) {
-		logger.info(msg, t);
+	public static void info(final Object msg, final Throwable t) {
+		logger.info(s(msg), t);
 	}
 
-	public static void trace(final String msg) {
-		logger.trace(msg);
+	public static void trace(final Object msg) {
+		logger.trace(s(msg));
 	}
 
 	public static void trace(final Throwable t) {
 		trace("Exception", t);
 	}
 
-	public static void trace(final String msg, final Throwable t) {
-		logger.trace(msg, t);
+	public static void trace(final Object msg, final Throwable t) {
+		logger.trace(s(msg), t);
 	}
 
-	public static void warn(final String msg) {
-		logger.warn(msg);
+	public static void warn(final Object msg) {
+		logger.warn(s(msg));
 	}
 
 	public static void warn(final Throwable t) {
 		warn("Exception", t);
 	}
 
-	public static void warn(final String msg, final Throwable t) {
-		logger.warn(msg, t);
+	public static void warn(final Object msg, final Throwable t) {
+		logger.warn(s(msg), t);
 	}
 
 	public static boolean isDebug() {
@@ -136,6 +142,12 @@ public final class Log {
 
 	public static boolean isWarn() {
 		return logger.isWarnEnabled();
+	}
+
+	// -- Helper methods --
+
+	private static String s(final Object o) {
+		return o == null ? null : o.toString();
 	}
 
 }
