@@ -1,5 +1,5 @@
 //
-// ExceptionHandler.java
+// Bookmark.java
 //
 
 /*
@@ -34,48 +34,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
+public class Bookmark {
 
-import javax.swing.JTextArea;
+	final protected EditorPane pane;
+	final protected int line;
 
-public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
-
-	protected TextEditor textEditor;
-
-	public ExceptionHandler(final TextEditor textEditor) {
-		this.textEditor = textEditor;
+	public Bookmark(final EditorPane pane, final int line) {
+		this.pane = pane;
+		this.line = line;
 	}
 
-	@Override
-	public void uncaughtException(final Thread thread, final Throwable t) {
-		handle(t, textEditor);
+	public EditorPane getEditorPane() {
+		return pane;
 	}
 
-	public static void handle(Throwable t, final TextEditor editor) {
-		final JTextArea screen = editor.errorScreen;
-		editor.getTab().showErrors();
-
-		if (t instanceof InvocationTargetException) {
-			t = ((InvocationTargetException) t).getTargetException();
-		}
-		final StackTraceElement[] trace = t.getStackTrace();
-
-		screen.insert(t.getClass().getName() + ": " + t.getMessage() + "\n", screen
-			.getDocument().getLength());
-		final ErrorHandler handler = new ErrorHandler(screen);
-		for (int i = 0; i < trace.length; i++) {
-			final String fileName = trace[i].getFileName();
-			final int line = trace[i].getLineNumber();
-			final String text =
-				"\t at " + trace[i].getClassName() + "." + trace[i].getMethodName() +
-					"(" + fileName + ":" + line + ")\n";
-			final File file = editor.getFileForBasename(fileName);
-			handler
-				.addError(file == null ? null : file.getAbsolutePath(), line, text);
-		}
-
-		editor.errorHandler = handler;
+	public int getLine() {
+		return line;
 	}
-
 }

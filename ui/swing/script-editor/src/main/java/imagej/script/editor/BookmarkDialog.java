@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import java.awt.Frame;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -43,7 +41,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -53,22 +50,31 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
+@SuppressWarnings("serial")
 public class BookmarkDialog extends JDialog implements ActionListener {
+
 	JList list;
 	JButton okay, cancel;
+	protected TextEditor textEditor;
 
-	public BookmarkDialog(final Frame owner, final Vector<EditorPane.Bookmark> bookmarks) {
-		super(owner, "Bookmarks", true);
+	public BookmarkDialog(final TextEditor textEditor,
+		final Vector<Bookmark> bookmarks)
+	{
+		super(textEditor, "Bookmarks", true);
+		this.textEditor = textEditor;
 
-		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		getContentPane().setLayout(
+			new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
 		list = new JList(bookmarks);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
+
+			@Override
+			public void mouseClicked(final MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					int index = list.locationToIndex(e.getPoint());
-					bookmarks.get(index).setCaret();
+					final int index = list.locationToIndex(e.getPoint());
+					textEditor.gotoBookmark(bookmarks.get(index));
 					BookmarkDialog.this.dispose();
 				}
 			}
@@ -79,19 +85,20 @@ public class BookmarkDialog extends JDialog implements ActionListener {
 		okay.addActionListener(this);
 		cancel = new JButton("Cancel");
 		cancel.addActionListener(this);
-		JPanel panel = new JPanel();
+		final JPanel panel = new JPanel();
 		panel.add(okay);
 		panel.add(cancel);
 		getContentPane().add(panel);
 
-		KeyListener keyListener = new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == e.VK_ENTER) {
+		final KeyListener keyListener = new KeyAdapter() {
+
+			@Override
+			public void keyPressed(final KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					jumpToSelectedBookmark();
 					dispose();
 				}
-				else if (e.getKeyCode() == e.VK_ESCAPE)
-					dispose();
+				else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) dispose();
 			}
 		};
 		getContentPane().addKeyListener(keyListener);
@@ -99,21 +106,18 @@ public class BookmarkDialog extends JDialog implements ActionListener {
 		okay.addKeyListener(keyListener);
 
 		pack();
-		setLocationRelativeTo(owner);
+		setLocationRelativeTo(textEditor);
 	}
 
 	public boolean jumpToSelectedBookmark() {
-		EditorPane.Bookmark bookmark = (EditorPane.Bookmark)list.getSelectedValue();
-		if (bookmark == null)
-			return false;
-		bookmark.setCaret();
+		textEditor.gotoBookmark((Bookmark) list.getSelectedValue());
 		return true;
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if (source == cancel)
-			dispose();
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final Object source = e.getSource();
+		if (source == cancel) dispose();
 		else if (source == okay) {
 			jumpToSelectedBookmark();
 			dispose();

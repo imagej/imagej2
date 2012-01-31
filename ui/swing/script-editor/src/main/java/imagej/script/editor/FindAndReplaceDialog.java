@@ -34,78 +34,84 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import java.awt.Container;
-import java.awt.Color;
+import imagej.util.Log;
+
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import org.fife.ui.rtextarea.SearchEngine;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-
+@SuppressWarnings("serial")
 public class FindAndReplaceDialog extends JDialog implements ActionListener {
-	TextEditor textEditor;
-	JTextField searchField, replaceField;
-	JLabel replaceLabel;
-	JCheckBox matchCase, wholeWord, markAll, regex, forward;
-	JButton findNext, replace, replaceAll, cancel;
 
-	public FindAndReplaceDialog(TextEditor editor) {
-		super(editor);
-		textEditor = editor;
+	protected JTextComponent textComponent;
+	protected JTextField searchField, replaceField;
+	protected JLabel replaceLabel;
+	protected JCheckBox matchCase, wholeWord, markAll, regex, forward;
+	protected JButton findNext, replace, replaceAll, cancel;
 
-		Container root = getContentPane();
+	public FindAndReplaceDialog(final Frame owner,
+		final JTextComponent textComponent)
+	{
+		super(owner);
+		this.textComponent = textComponent;
+
+		final Container root = getContentPane();
 		root.setLayout(new GridBagLayout());
 
-		JPanel text = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		final JPanel text = new JPanel(new GridBagLayout());
+		final GridBagConstraints c = new GridBagConstraints();
 
 		c.gridx = c.gridy = 0;
 		c.gridwidth = c.gridheight = 1;
 		c.weightx = c.weighty = 1;
 		c.ipadx = c.ipady = 1;
-		c.fill = c.HORIZONTAL;
-		c.anchor = c.LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.LINE_START;
 		searchField = createField("Find Next", text, c, null);
 		replaceField = createField("Replace with", text, c, this);
 
-		c.gridwidth = 4; c.gridheight = c.gridy;
+		c.gridwidth = 4;
+		c.gridheight = c.gridy;
 		c.gridx = c.gridy = 0;
 		c.weightx = c.weighty = 1;
-		c.fill = c.HORIZONTAL;
-		c.anchor = c.LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.LINE_START;
 		root.add(text, c);
 
 		c.gridy = c.gridheight;
-		c.gridwidth = 1; c.gridheight = 1;
+		c.gridwidth = 1;
+		c.gridheight = 1;
 		c.weightx = 0.001;
 		matchCase = createCheckBox("Match Case", root, c);
 		regex = createCheckBox("Regex", root, c);
 		forward = createCheckBox("Search forward", root, c);
 		forward.setSelected(true);
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0;
+		c.gridy++;
 		markAll = createCheckBox("Mark All", root, c);
 		wholeWord = createCheckBox("Whole Word", root, c);
 
-		c.gridx = 4; c.gridy = 0;
+		c.gridx = 4;
+		c.gridy = 0;
 		findNext = createButton("Find Next", root, c);
 		replace = createButton("Replace", root, c);
 		replaceAll = createButton("Replace All", root, c);
@@ -115,136 +121,157 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 
 		getRootPane().setDefaultButton(findNext);
 
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		KeyAdapter listener = new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == e.VK_ESCAPE)
-					dispose();
+		final KeyAdapter listener = new KeyAdapter() {
+
+			@Override
+			public void keyPressed(final KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) dispose();
 			}
 		};
 		// TODO: handle via actionmap
-		for (Component component : getContentPane().getComponents())
+		for (final Component component : getContentPane().getComponents())
 			component.addKeyListener(listener);
 		searchField.addKeyListener(listener);
 		replaceField.addKeyListener(listener);
 	}
 
-	protected RSyntaxTextArea getTextArea() {
-		return textEditor.getTextArea();
-	}
-
-	public void show(boolean replace) {
+	@Override
+	public void show(final boolean replace) {
 		setTitle(replace ? "Replace" : "Find");
 		replaceLabel.setEnabled(replace);
 		replaceField.setEnabled(replace);
-		replaceField.setBackground(replace ?
-			searchField.getBackground() :
-			getRootPane().getBackground());
+		replaceField.setBackground(replace ? searchField.getBackground()
+			: getRootPane().getBackground());
 		this.replace.setEnabled(replace);
 		replaceAll.setEnabled(replace);
 
 		searchField.selectAll();
 		replaceField.selectAll();
 		getRootPane().setDefaultButton(findNext);
-		show();
+		setVisible(true);
 	}
 
-	private JTextField createField(String name, Container container,
-			GridBagConstraints c,
-			FindAndReplaceDialog replaceDialog) {
+	private JTextField createField(final String name, final Container container,
+		final GridBagConstraints c, final FindAndReplaceDialog replaceDialog)
+	{
 		c.weightx = 0.001;
-		JLabel label = new JLabel(name);
-		if (replaceDialog != null)
-			replaceDialog.replaceLabel = label;
+		final JLabel label = new JLabel(name);
+		if (replaceDialog != null) replaceDialog.replaceLabel = label;
 		container.add(label, c);
 		c.gridx++;
 		c.weightx = 1;
-		JTextField field = new JTextField();
+		final JTextField field = new JTextField();
 		container.add(field, c);
-		c.gridx--; c.gridy++;
+		c.gridx--;
+		c.gridy++;
 		return field;
 	}
 
-	private JCheckBox createCheckBox(String name, Container panel,
-			GridBagConstraints c) {
-		JCheckBox checkBox = new JCheckBox(name);
+	private JCheckBox createCheckBox(final String name, final Container panel,
+		final GridBagConstraints c)
+	{
+		final JCheckBox checkBox = new JCheckBox(name);
 		checkBox.addActionListener(this);
 		panel.add(checkBox, c);
 		c.gridx++;
 		return checkBox;
 	}
 
-	private JButton createButton(String name, Container panel,
-			GridBagConstraints c) {
-		JButton button = new JButton(name);
+	private JButton createButton(final String name, final Container panel,
+		final GridBagConstraints c)
+	{
+		final JButton button = new JButton(name);
 		button.addActionListener(this);
 		panel.add(button, c);
 		c.gridy++;
 		return button;
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final Object source = e.getSource();
 		if (source == cancel) {
 			dispose();
 			return;
 		}
-		String text = searchField.getText();
-		if (text.length() == 0)
-			return;
-		if (source == findNext)
-			searchOrReplace(false);
-		else if (source == replace)
-			searchOrReplace(true);
-		else if (source == replaceAll) {
-			int replace = SearchEngine.replaceAll(getTextArea(),
-					text,
-					replaceField.getText(),
-					matchCase.isSelected(),
-					wholeWord.isSelected(),
-					regex.isSelected());
-			JOptionPane.showMessageDialog(this, replace
-					+ " replacements made!");
+
+		final String text = searchField.getText();
+		if (text.length() == 0) return;
+
+		final Pattern pattern =
+			preparePattern(searchField.getText(), matchCase.isSelected(), wholeWord
+				.isSelected(), regex.isSelected());
+		try {
+			if (source == findNext) find(pattern);
+			else if (source == replace) replace(pattern, replaceField.getText());
+			else if (source == replaceAll) {
+				final int replace = replaceAll(pattern, replaceField.getText());
+				JOptionPane.showMessageDialog(this, replace + " replacements made!");
+			}
+		}
+		catch (final BadLocationException exception) {
+			Log.error(exception);
 		}
 	}
 
-	public boolean searchOrReplace(boolean replace) {
-		return searchOrReplace(replace, forward.isSelected());
+	private Pattern preparePattern(final String search, final boolean matchCase,
+		final boolean wholeWord, final boolean regex)
+	{
+		final String boundary = wholeWord ? "\\b" : "";
+		return Pattern.compile(".*?(" + boundary +
+			(regex ? search : Pattern.quote(search)) + boundary + ").*",
+			Pattern.DOTALL | Pattern.MULTILINE |
+				(matchCase ? 0 : Pattern.CASE_INSENSITIVE));
 	}
 
-	public boolean searchOrReplace(boolean replace, boolean forward) {
-		if (searchOrReplaceFromHere(replace, forward))
-			return true;
-		RSyntaxTextArea textArea = getTextArea();
-		int caret = textArea.getCaretPosition();
-		textArea.setCaretPosition(forward ?
-				0 : textArea.getDocument().getLength());
-		if (searchOrReplaceFromHere(replace, forward))
-			return true;
-		JOptionPane.showMessageDialog(this, "No match found!");
-		textArea.setCaretPosition(caret);
-		return false;
+	private int replaceAll(final Pattern pattern, final String replacement) {
+		final int caret = textComponent.getCaretPosition();
+		final StringBuilder builder = new StringBuilder();
+		String text = textComponent.getText();
+		int count = 0;
+		for (;;) {
+			final Matcher matcher = pattern.matcher(text);
+			if (!matcher.matches()) break;
+			builder.append(text.substring(0, matcher.start(1)));
+			builder.append(replacement);
+			text = text.substring(matcher.end(1));
+			count++;
+		}
+		builder.append(text);
+		textComponent.setText(builder.toString());
+		textComponent.setCaretPosition(caret);
+		return count;
 	}
 
-	protected boolean searchOrReplaceFromHere(boolean replace) {
-		return searchOrReplaceFromHere(forward.isSelected());
+	private boolean replace(final Pattern pattern, final String replacement)
+		throws BadLocationException
+	{
+		final int start = textComponent.getCaretPosition();
+		final int length = textComponent.getDocument().getLength();
+		final String text = textComponent.getText(start, length - start);
+		final Matcher matcher = pattern.matcher(text);
+		if (!matcher.matches()) return false;
+
+		final StringBuilder builder = new StringBuilder();
+		builder.append(textComponent.getText(0, start + matcher.start(1)));
+		builder.append(replacement);
+		builder.append(text.substring(matcher.end(1)));
+		textComponent.setText(builder.toString());
+		textComponent.setCaretPosition(start + matcher.start(1) +
+			replacement.length());
+		return true;
 	}
 
-	protected boolean searchOrReplaceFromHere(boolean replace, boolean forward) {
-		RSyntaxTextArea textArea = getTextArea();
-		return replace ?
-			SearchEngine.replace(textArea, searchField.getText(),
-					replaceField.getText(),
-					forward,
-					matchCase.isSelected(),
-					wholeWord.isSelected(),
-					regex.isSelected()) :
-			SearchEngine.find(textArea, searchField.getText(),
-					forward,
-					matchCase.isSelected(),
-					wholeWord.isSelected(),
-					regex.isSelected());
+	private boolean find(final Pattern pattern) throws BadLocationException {
+		final int start = textComponent.getCaretPosition();
+		final int length = textComponent.getDocument().getLength();
+		final String text = textComponent.getText(start, length - start);
+		final Matcher matcher = pattern.matcher(text);
+		if (!matcher.matches()) return false;
+		textComponent.setCaretPosition(start + matcher.start(1));
+		return true;
 	}
 
 	public boolean isReplace() {
@@ -253,11 +280,10 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 
 	/**
 	 * Sets the content of the search field.
-	 *
+	 * 
 	 * @param pattern The new content of the search field.
 	 */
-	public void setSearchPattern(String pattern) {
+	public void setSearchPattern(final String pattern) {
 		searchField.setText(pattern);
 	}
 }
-

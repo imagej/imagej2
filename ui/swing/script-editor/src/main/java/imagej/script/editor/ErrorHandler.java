@@ -34,47 +34,46 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import fiji.scripting.Languages;
-import fiji.scripting.Languages.Language;
-
-import ij.IJ;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptEngineFactory;
 import javax.swing.JTextArea;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Position;
 
-
 public class ErrorHandler {
+
 	protected List<Error> list = new ArrayList<Error>();
 	protected int current = -1;
 	protected JTextArea textArea;
 	protected int currentOffset;
 	protected Parser parser;
 
-	public ErrorHandler(JTextArea textArea) {
+	public ErrorHandler(final JTextArea textArea) {
 		this.textArea = textArea;
 	}
 
-	public ErrorHandler(Language language, JTextArea textArea,
-			int startOffset) {
+	public ErrorHandler(final ScriptEngineFactory language,
+		final JTextArea textArea, final int startOffset)
+	{
 		this(textArea);
-		if (language.menuLabel.equals("Java") || language == Languages.fakefile)
-			parser = new JavacErrorParser();
-		else
-			return;
+		final String name = language.getLanguageName();
+		if (name.equals("Java") || name.equals("Fiji Build")) parser =
+			new JavacErrorParser();
+		else return;
 
 		currentOffset = startOffset;
 
 		try {
 			parseErrors();
-		} catch (BadLocationException e) {
-			IJ.handleException(e);
+		}
+		catch (final BadLocationException e) {
+			Log.error(e);
 		}
 	}
 
@@ -82,22 +81,19 @@ public class ErrorHandler {
 		return list.size();
 	}
 
-	public boolean setCurrent(int index) {
-		if (index < 0 || index >= list.size())
-			return false;
+	public boolean setCurrent(final int index) {
+		if (index < 0 || index >= list.size()) return false;
 		current = index;
 		return true;
 	}
 
-	public boolean nextError(boolean forward) {
+	public boolean nextError(final boolean forward) {
 		if (forward) {
-			if (current + 1 >= list.size())
-				return false;
+			if (current + 1 >= list.size()) return false;
 			current++;
 		}
 		else {
-			if (current - 1 < 0)
-				return false;
+			if (current - 1 < 0) return false;
 			current--;
 		}
 		return true;
@@ -116,90 +112,91 @@ public class ErrorHandler {
 	}
 
 	public void markLine() throws BadLocationException {
-		int offset = getPosition().getOffset();
-		int line = textArea.getLineOfOffset(offset);
-		int start = textArea.getLineStartOffset(line);
-		int end = textArea.getLineEndOffset(line);
+		final int offset = getPosition().getOffset();
+		final int line = textArea.getLineOfOffset(offset);
+		final int start = textArea.getLineStartOffset(line);
+		final int end = textArea.getLineEndOffset(line);
 		textArea.getHighlighter().removeAllHighlights();
 		textArea.getHighlighter().addHighlight(start, end,
 			DefaultHighlighter.DefaultPainter);
 		scrollToVisible(start);
 	}
 
-	public void scrollToVisible(int offset) throws BadLocationException {
-		textArea.scrollRectToVisible(textArea.modelToView(textArea.getDocument().getLength()));
+	public void scrollToVisible(final int offset) throws BadLocationException {
+		textArea.scrollRectToVisible(textArea.modelToView(textArea.getDocument()
+			.getLength()));
 		textArea.scrollRectToVisible(textArea.modelToView(offset));
 	}
 
 	static class Error {
+
 		String path;
 		int line;
 		Position position;
 
-		public Error(String path, int line) {
+		public Error(final String path, final int line) {
 			this.path = path;
 			this.line = line;
 		}
 	}
 
-	public void addError(String path, int line, String text) {
+	public void addError(final String path, final int line, String text) {
 		try {
-			Document document = textArea.getDocument();
-			int offset = document.getLength();
-			if (!text.endsWith("\n"))
-				text += "\n";
+			final Document document = textArea.getDocument();
+			final int offset = document.getLength();
+			if (!text.endsWith("\n")) text += "\n";
 			textArea.insert(text, offset);
-			if (path == null || line < 0)
-				return;
-			Error error = new Error(path, line);
+			if (path == null || line < 0) return;
+			final Error error = new Error(path, line);
 			error.position = document.createPosition(offset + 1);
 			list.add(error);
-		} catch (BadLocationException e) {
-			IJ.handleException(e);
+		}
+		catch (final BadLocationException e) {
+			Log.error(e);
 		}
 	}
 
 	interface Parser {
+
 		Error getError(String line);
 	}
 
 	void parseErrors() throws BadLocationException {
 		int line = textArea.getLineOfOffset(currentOffset);
-		int lineCount = textArea.getLineCount();
+		final int lineCount = textArea.getLineCount();
 		for (;;) {
-			if (++line >= lineCount)
-				return;
-			int start = textArea.getLineStartOffset(line);
-			int end = textArea.getLineEndOffset(line);
-			String text = textArea.getText(start, end - start);
-			Error error = parser.getError(text);
+			if (++line >= lineCount) return;
+			final int start = textArea.getLineStartOffset(line);
+			final int end = textArea.getLineEndOffset(line);
+			final String text = textArea.getText(start, end - start);
+			final Error error = parser.getError(text);
 			if (error != null) try {
-				error.position = textArea.getDocument()
-					.createPosition(start);
+				error.position = textArea.getDocument().createPosition(start);
 				list.add(error);
-			} catch (BadLocationException e) {
-				IJ.handleException(e);
+			}
+			catch (final BadLocationException e) {
+				Log.error(e);
 			}
 		}
 	}
 
 	class JavacErrorParser implements Parser {
-		public Error getError(String line) {
+
+		@Override
+		public Error getError(final String line) {
 			int colon = line.indexOf(".java:");
-			if (colon <= 0)
-				return null;
+			if (colon <= 0) return null;
 			colon += 5;
-			int next = line.indexOf(':', colon + 1);
-			if (next < colon + 2)
-				return null;
+			final int next = line.indexOf(':', colon + 1);
+			if (next < colon + 2) return null;
 			int lineNumber;
 			try {
-				lineNumber = Integer.parseInt(line
-					.substring(colon + 1, next));
-			} catch (NumberFormatException e) {
+				lineNumber = Integer.parseInt(line.substring(colon + 1, next));
+			}
+			catch (final NumberFormatException e) {
 				return null;
 			}
-			String fileName = line.substring(0, colon);
+			final String fileName = line.substring(0, colon);
 			return new Error(fileName, lineNumber);
 		}
 	}

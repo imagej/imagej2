@@ -34,50 +34,55 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.swing.JTextArea;
-
-import javax.swing.text.BadLocationException;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.Vector;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class JTextAreaOutputStream extends OutputStream {
+import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
+
+public class JTextAreaWriter extends Writer {
+
 	JTextArea textArea;
 
 	ScheduledExecutorService updater = Executors.newScheduledThreadPool(1);
 	Vector<String> queue = new Vector<String>();
 
-	/** Creates a new output stream that prints every 400 ms to the textArea.
-	 *  When done, call shutdown() to clean up and finish printing any remaining text. */
-	public JTextAreaOutputStream(final JTextArea textArea) {
+	/**
+	 * Creates a new output stream that prints every 400 ms to the textArea. When
+	 * done, call close() to clean up and finish printing any remaining text.
+	 */
+	public JTextAreaWriter(final JTextArea textArea) {
 		this.textArea = textArea;
 		updater.scheduleWithFixedDelay(new Runnable() {
+
+			@Override
 			public void run() {
 				flushQueue();
 			}
 		}, 10, 400, TimeUnit.MILLISECONDS);
 	}
 
-	public void write(int i) {
-		write(Character.toString((char)i));
+	@Override
+	public void write(final int i) {
+		write(Character.toString((char) i));
 	}
 
-	public void write(byte[] buffer) {
+	@Override
+	public void write(final char[] buffer) {
 		write(new String(buffer));
 	}
 
-	public void write(byte[] buffer, int off, int len) {
+	@Override
+	public void write(final char[] buffer, final int off, final int len) {
 		write(new String(buffer, off, len));
 	}
 
+	@Override
 	public void write(final String string) {
 		queue.add(string);
 	}
@@ -91,38 +96,45 @@ public class JTextAreaOutputStream extends OutputStream {
 			queue.clear();
 		}
 
-		StringBuilder sb = new StringBuilder();
-		for (String s : strings)
+		final StringBuilder sb = new StringBuilder();
+		for (final String s : strings)
 			sb.append(s);
 
 		synchronized (textArea) {
-			int lineCount = textArea.getLineCount();
+			final int lineCount = textArea.getLineCount();
 			// Eliminate the first 100 lines when reaching 1100 lines:
 			if (lineCount > 1100) try {
-				textArea.replaceRange("", 0,
-					textArea.getLineEndOffset(lineCount - 1000));
-			} catch (BadLocationException e) { e.printStackTrace(); }
+				textArea.replaceRange("", 0, textArea
+					.getLineEndOffset(lineCount - 1000));
+			}
+			catch (final BadLocationException e) {
+				e.printStackTrace();
+			}
 			textArea.append(sb.toString());
 			textArea.setCaretPosition(textArea.getDocument().getLength());
 		}
 	}
 
+	@Override
 	public void flush() {
 		flushQueue();
 		textArea.repaint();
 	}
 
+	@Override
 	public void close() {
 		flush();
 		updater.shutdown();
 	}
 
-	/** Stop printing services, finishing to print any remaining tasks in the context of the calling thread. */
+	/**
+	 * Stop printing services, finishing to print any remaining tasks in the
+	 * context of the calling thread.
+	 */
 	public void shutdown() {
-		List<Runnable> tasks = updater.shutdownNow();
-		if (null == tasks)
-			return;
-		for (Runnable t : tasks)
+		final List<Runnable> tasks = updater.shutdownNow();
+		if (null == tasks) return;
+		for (final Runnable t : tasks)
 			t.run();
 	}
 
