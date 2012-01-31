@@ -65,9 +65,10 @@ public class WatchDisplays implements ImageJPlugin {
 	@Parameter(persist = false)
 	private DisplayService displayService;
 
-	private static SwingOutputWindow window;
+	protected static SwingOutputWindow window;
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
+	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
 	@Override
@@ -95,7 +96,6 @@ public class WatchDisplays implements ImageJPlugin {
 		if (!SwingUtilities.isEventDispatchThread()) {
 			SwingUtilities.invokeLater(new Runnable() {
 
-				@SuppressWarnings("synthetic-access")
 				@Override
 				public void run() {
 					window.repaint();
@@ -105,8 +105,12 @@ public class WatchDisplays implements ImageJPlugin {
 		}
 	}
 
+	// -- Event handlers --
+
 	@EventHandler
-	protected void onEvent(final ObjectsListEvent event) {
+	protected void onEvent(@SuppressWarnings("unused")
+	final ObjectsListEvent event)
+	{
 		showDisplays();
 	}
 
@@ -116,7 +120,9 @@ public class WatchDisplays implements ImageJPlugin {
 //	}
 
 	@EventHandler
-	public void onEvent(final DisplayActivatedEvent event) {
+	public void onEvent(@SuppressWarnings("unused")
+	final DisplayActivatedEvent event)
+	{
 		showDisplays();
 	}
 
