@@ -1,5 +1,5 @@
 //
-// AbstractScriptEngine.java
+// AbstractScriptContext.java
 //
 
 /*
@@ -35,103 +35,87 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.script;
 
 import java.io.Reader;
+import java.io.Writer;
+import java.util.List;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptException;
 
 /**
- * This class implements dummy versions for ScriptEngine's methods that are not
- * needed by ImageJ's scripting interface
+ * A minimal implementation of javax.script.ScriptContext for use in the AbstractScriptEngine
  * 
  * @author Johannes Schindelin
  */
-public abstract class AbstractScriptEngine implements ScriptEngine {
+public class AbstractScriptContext implements ScriptContext {
 
-	// Abstract methods
-
-	@Override
-	public abstract Object eval(String script) throws ScriptException;
+	protected Reader reader;
+	protected Writer writer, errorWriter;
 
 	@Override
-	public abstract Object eval(Reader reader) throws ScriptException;
-
-	// Fields
-
-	protected Bindings engineScopeBindings;
-
-	protected ScriptContext scriptContext = new AbstractScriptContext();
-
-	// Bindings
+	public Reader getReader() {
+		return reader;
+	}
 
 	@Override
-	public Object get(final String key) {
-		return engineScopeBindings.get(key);
+	public Writer getWriter() {
+		return writer;
+	}
+
+	@Override
+	public Writer getErrorWriter() {
+		return errorWriter;
+	}
+
+	@Override
+	public void setReader(final Reader reader) {
+		this.reader = reader;
+	}
+
+	@Override
+	public void setWriter(final Writer writer) {
+		this.writer = writer;
+	}
+
+	@Override
+	public void setErrorWriter(final Writer errorWriter) {
+		this.errorWriter = errorWriter;
+	}
+
+	// (Possibly) unsupported operations (IJ2 does not need them)
+
+	@Override
+	public Object getAttribute(final String key) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Object getAttribute(final String key, final int value) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getAttributesScope(final String scope) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Bindings getBindings(final int scope) {
-		if (scope == ScriptContext.ENGINE_SCOPE) return engineScopeBindings;
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void put(final String key, final Object value) {
-		engineScopeBindings.put(key, value);
-	}
-
-	// ScriptContext
-
-	@Override
-	public ScriptContext getContext() {
-		return scriptContext;
-	}
-
-	@Override
-	public void setContext(final ScriptContext context) {
-		scriptContext = context;
-	}
-
-	// (Possibly) unsupported operations
-	// (subclasses may, or may not, override with proper implementations)
-	// ImageJ2's scripting framework does not require them to work properly
-
-	@Override
-	public ScriptEngineFactory getFactory() {
+	public List<Integer> getScopes() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Object eval(final String script, final ScriptContext context)
-		throws ScriptException
-	{
+	public Object removeAttribute(final String key, final int scope) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Object eval(final Reader reader, final ScriptContext context)
-		throws ScriptException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Bindings createBindings() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Object eval(final String script, final Bindings n)
-		throws ScriptException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Object eval(final Reader reader, final Bindings n)
-		throws ScriptException
+	public void
+		setAttribute(final String key, final Object value, final int scope)
 	{
 		throw new UnsupportedOperationException();
 	}
