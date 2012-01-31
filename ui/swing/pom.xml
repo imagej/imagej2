@@ -20,6 +20,7 @@
 	<modules>
 		<module>base</module>
 		<module>plugins</module>
+		<module>script-editor</module>
 		<module>tools</module>
 		<module>updater</module>
 		<module>util</module>
