@@ -119,12 +119,6 @@ public final class DefaultDisplayService extends AbstractService implements
 		return activeDisplay;
 	}
 
-	@Override
-	public void setActiveDisplay(final Display<?> display) {
-		activeDisplay = display;
-		eventService.publish(new DisplayActivatedEvent(display));
-	}
-
 	// -- DisplayService methods - display plugin discovery --
 
 	@Override
@@ -225,6 +219,12 @@ public final class DefaultDisplayService extends AbstractService implements
 
 	// -- Event handlers --
 
+	/** Tracks the active display. */
+	@EventHandler
+	protected void onEvent(final DisplayActivatedEvent event) {
+		activeDisplay = event.getDisplay();
+	}
+
 	/** Deletes the display when display window is closed. */
 	@EventHandler
 	protected void onEvent(final WinClosedEvent event) {
@@ -232,7 +232,7 @@ public final class DefaultDisplayService extends AbstractService implements
 
 		// HACK - Necessary to plug memory leak when closing the last window.
 		if (getDisplays().size() == 1) {
-			setActiveDisplay(null);
+			activeDisplay = null;
 		}
 
 		// CTR TODO - is there a better way to publish DisplayDeletedEvents?
@@ -243,7 +243,7 @@ public final class DefaultDisplayService extends AbstractService implements
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
 		final Display<?> display = event.getDisplay();
-		setActiveDisplay(display);
+		display.activate();
 	}
 
 }
