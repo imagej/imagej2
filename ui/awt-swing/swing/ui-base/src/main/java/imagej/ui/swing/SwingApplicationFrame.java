@@ -39,6 +39,7 @@ import imagej.ui.common.awt.AWTKeyEventDispatcher;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.EventQueue;
 import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
@@ -47,6 +48,7 @@ import javax.swing.JFrame;
  * Swing implementation of {@link ApplicationFrame}.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 
@@ -87,6 +89,19 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 			final Component child = c.getComponent(i);
 			addKeyDispatcher(keyDispatcher, child);
 		}
+	}
+
+	@Override
+	public void activate() {
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// NB: You might think calling requestFocus() would work, but no.
+				// The following solution is from: http://bit.ly/zAXzd5
+				toFront();
+				repaint();
+			}
+		});
 	}
 
 }

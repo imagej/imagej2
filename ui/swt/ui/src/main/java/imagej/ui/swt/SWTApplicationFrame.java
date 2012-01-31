@@ -62,4 +62,9 @@ public class SWTApplicationFrame extends Shell implements ApplicationFrame {
 		return getLocation().y;
 	}
 
+	@Override
+	public void activate() {
+		forceFocus();
+	}
+
 }

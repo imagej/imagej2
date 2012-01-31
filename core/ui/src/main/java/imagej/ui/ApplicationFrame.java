@@ -38,6 +38,7 @@ package imagej.ui;
  * Common interface for top-level application frames.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 public interface ApplicationFrame {
 
@@ -46,5 +47,7 @@ public interface ApplicationFrame {
 	int getLocationX();
 
 	int getLocationY();
+
+	void activate();
 
 }
