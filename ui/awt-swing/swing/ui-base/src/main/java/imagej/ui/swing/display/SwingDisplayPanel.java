@@ -154,11 +154,6 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	}
 
 	@Override
-	public void makeActive() {
-		window.requestFocus();
-	}
-
-	@Override
 	public void redoLayout() {
 		EventQueue.invokeLater(new Runnable() {
 

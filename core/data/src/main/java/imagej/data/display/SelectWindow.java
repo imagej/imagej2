@@ -36,7 +36,6 @@ package imagej.data.display;
 
 import imagej.ImageJ;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
@@ -67,10 +66,7 @@ public class SelectWindow implements ImageJPlugin {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display<?> display = displayService.getDisplay(displayToSelect);
 		if (display == null) return;
-		// TODO - Add display.activate() method and eliminate usage of panel here.
-		final DisplayPanel panel = display.getPanel();
-		if (panel == null) return;
-		panel.makeActive();
+		display.activate();
 	}
 
 }

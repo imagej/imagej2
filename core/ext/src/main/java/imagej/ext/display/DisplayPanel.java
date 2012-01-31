@@ -52,9 +52,6 @@ public interface DisplayPanel {
 	// CTR TEMP - needed for now during refactoring process
 	DisplayWindow getWindow();
 
-	/** TODO */
-	void makeActive();
-
 	/**
 	 * Rebuilds the display window to reflect the display's current views,
 	 * dimensional lengths, etc. The window may change size, and hence may repack
