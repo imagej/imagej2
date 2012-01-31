@@ -217,6 +217,9 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 
 		final boolean composite = isComposite();
 		setupProjector(composite);
+		// NB - it's imperative that instance variable "projector" is correctly
+		// setup before calling updateLUTs()
+		updateLUTs();
 		projector.map();
 	}
 
@@ -227,7 +230,11 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 		if (Axes.isXY(axis)) return 0;
 		final int dim = getData().getAxisIndex(axis);
 		if (dim < 0) return 0;
-		return projector == null ? 0 : projector.getLongPosition(dim);
+		if (projector == null) return 0;
+		// It is possible that projector is out of sync with data or view. Choose a
+		// sensible default value to avoid exceptions.
+		if (dim >= projector.numDimensions()) return 0;
+		return projector.getLongPosition(dim);
 	}
 
 	@Override
@@ -276,9 +283,6 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 			new CompositeXYProjector(dataset.getImgPlus(), screenImage, converters,
 				channelDimIndex);
 		projector.setComposite(composite);
-		// NB - it's imperative that instance variable "projector" is correctly
-		// setup before calling updateLUTs()
-		updateLUTs();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
