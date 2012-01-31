@@ -36,6 +36,8 @@ package imagej.script;
 
 import java.io.Reader;
 
+import java.util.HashMap;
+
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -50,6 +52,8 @@ import javax.script.ScriptException;
  */
 public abstract class AbstractScriptEngine implements ScriptEngine {
 
+	protected Bindings engineScopeBindings = new MinimalBindings();
+
 	// Abstract methods
 
 	@Override
@@ -58,10 +62,32 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
 	@Override
 	public abstract Object eval(Reader reader) throws ScriptException;
 
+	// Bindings
+
+	protected class MinimalBindings extends HashMap<String, Object> implements Bindings {
+	}
+
+	@Override
+	public Object get(final String key) {
+		return engineScopeBindings.get(key);
+	}
+
+	@Override
+	public Bindings getBindings(final int scope) {
+		if (scope == ScriptContext.ENGINE_SCOPE)
+			return engineScopeBindings;
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void put(final String key, final Object value) {
+		engineScopeBindings.put(key, value);
+	}
+
 	// (Possibly) unsupported operations
 
 	@Override
-	public Bindings createBindings() {
+	public ScriptEngineFactory getFactory() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -80,6 +106,11 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
 	}
 
 	@Override
+	public Bindings createBindings() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public Object eval(final String script, final Bindings n)
 		throws ScriptException
 	{
@@ -94,32 +125,12 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
 	}
 
 	@Override
-	public Object get(final String key) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Bindings getBindings(final int scope) {
+	public void setBindings(final Bindings bindings, final int scope) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public ScriptContext getContext() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public ScriptEngineFactory getFactory() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void put(final String key, final Object value) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setBindings(final Bindings bindings, final int scope) {
 		throw new UnsupportedOperationException();
 	}
 
