@@ -86,7 +86,8 @@ public class ColorTableRemapper {
 			if (!remapper.isValidSourcePlane(tNum)) continue;
 			toND(origPlaneDims, tNum, origPlanePos);
 			remapper.remapPlanePosition(origPlaneDims, origPlanePos, newPlanePos);
-			int newIndex = intIndex(newPlaneDims, newPlanePos);
+			long newLongIndex = to1D(newPlaneDims, newPlanePos);
+			int newIndex = intIndex(newLongIndex);
 			ColorTable8 c8 = srcImgPlus.getColorTable8(tNum);
 			ColorTable16 c16 = srcImgPlus.getColorTable16(tNum);
 			dstImgPlus.setColorTable(c8, newIndex);
@@ -118,8 +119,7 @@ public class ColorTableRemapper {
 
 	// -- private helpers --
 	
-	private static int intIndex(long[] dims, long[] pos) {
-		long val = to1D(dims, pos);
+	private static int intIndex(long val) {
 		if (val < 0)
 			throw new IllegalArgumentException(
 					"color table remap problem: bad index calculation");
