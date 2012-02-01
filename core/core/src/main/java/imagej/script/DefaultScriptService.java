@@ -50,9 +50,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -129,7 +132,9 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 			throw new UnsupportedOperationException(
 				"Could not determine language for file extension " + fileExtension);
 		}
-		return language.getScriptEngine().eval(new FileReader(file));
+		final ScriptEngine engine = language.getScriptEngine();
+		initialize(engine, file.getPath(), null, null);
+		return engine.eval(new FileReader(file));
 	}
 
 	@Override
@@ -141,7 +146,9 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 			throw new UnsupportedOperationException(
 				"Could not determine language for file extension " + fileExtension);
 		}
-		return language.getScriptEngine().eval(reader);
+		final ScriptEngine engine = language.getScriptEngine();
+		initialize(engine, filename, null, null);
+		return engine.eval(reader);
 	}
 
 	@Override
@@ -170,6 +177,15 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
 			scriptLanguageIndex.add(factory, true);
 		}
+	}
+
+	public void initialize(final ScriptEngine engine, final String fileName,
+		final Writer writer, final Writer errorWriter)
+	{
+		engine.put(ScriptEngine.FILENAME, fileName);
+		final ScriptContext context = engine.getContext();
+		if (writer != null) context.setWriter(writer);
+		if (writer != null) context.setErrorWriter(errorWriter);
 	}
 
 }
