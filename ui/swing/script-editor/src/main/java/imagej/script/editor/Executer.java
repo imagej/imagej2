@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.script.editor;
 
 import imagej.util.Log;
@@ -171,7 +170,7 @@ public abstract class Executer extends ThreadGroup {
 			if (null != errorWriter) errorWriter.shutdownNow();
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 		}
 		for (final Thread thread : getAllThreads()) {
 			try {
@@ -180,7 +179,7 @@ public abstract class Executer extends ThreadGroup {
 				thread.stop();
 			}
 			catch (final Throwable t) {
-				t.printStackTrace();
+				Log.error(t);
 			}
 		}
 		this.editorFrame.executingTasks.remove(this);

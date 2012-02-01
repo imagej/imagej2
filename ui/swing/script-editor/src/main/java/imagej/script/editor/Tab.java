@@ -32,8 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 package imagej.script.editor;
+
+import imagej.util.Log;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -285,13 +286,13 @@ public class Tab extends JSplitPane {
 						po.close();
 					}
 					catch (final Throwable tt) {
-						tt.printStackTrace();
+						Log.error(tt);
 					}
 				}
 			}.start();
 		}
 		catch (final Throwable t) {
-			t.printStackTrace();
+			Log.error(t);
 		}
 		finally {
 			// Re-enable when all text to send has been sent

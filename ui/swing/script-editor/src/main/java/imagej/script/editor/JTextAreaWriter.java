@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
+import imagej.util.Log;
+
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +110,7 @@ public class JTextAreaWriter extends Writer {
 					.getLineEndOffset(lineCount - 1000));
 			}
 			catch (final BadLocationException e) {
-				e.printStackTrace();
+				Log.error(e);
 			}
 			textArea.append(sb.toString());
 			textArea.setCaretPosition(textArea.getDocument().getLength());

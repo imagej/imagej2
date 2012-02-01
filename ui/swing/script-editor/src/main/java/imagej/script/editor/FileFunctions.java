@@ -166,7 +166,7 @@ public class FileFunctions {
 			return url.substring(offset, dotJar);
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			return null;
 		}
 	}

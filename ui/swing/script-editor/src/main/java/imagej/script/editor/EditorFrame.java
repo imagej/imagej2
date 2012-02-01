@@ -716,7 +716,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			}
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			error("The template '" + url + "' was not found.");
 		}
 	}
@@ -1164,11 +1164,11 @@ public class EditorFrame extends JFrame implements ActionListener,
 			return tab;
 		}
 		catch (final FileNotFoundException e) {
-			e.printStackTrace();
+			Log.error(e);
 			error("The file '" + file + "' was not found.");
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			error("There was an error while opening '" + file + "': " + e);
 		}
 		return null;
@@ -1221,8 +1221,8 @@ public class EditorFrame extends JFrame implements ActionListener,
 			return true;
 		}
 		catch (final IOException e) {
+			Log.error(e);
 			error("Could not save " + file.getName());
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -1253,7 +1253,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			return true;
 		}
 		catch (final IOException e) {
-			e.printStackTrace();
+			Log.error(e);
 			error("Could not write " + path + ": " + e.getMessage());
 			return false;
 		}
@@ -1298,7 +1298,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			}
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			if (e instanceof IOException) throw (IOException) e;
 			throw new IOException(e.getMessage());
 		}
@@ -1519,7 +1519,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			tab.execute(currentLanguage, selectionOnly);
 		}
 		catch (final Throwable t) {
-			t.printStackTrace();
+			Log.error(t);
 		}
 	}
 

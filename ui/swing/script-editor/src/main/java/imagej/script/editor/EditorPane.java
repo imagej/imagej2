@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.script.editor;
 
 import imagej.util.FileUtils;
+import imagej.util.Log;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -330,7 +331,7 @@ public class EditorPane implements DocumentListener {
 				textArea.setText(new String(chars));
 			}
 			catch (final Throwable t) {
-				t.printStackTrace();
+				Log.error(t);
 			}
 			finally {
 				endAtomicEdit();
@@ -355,7 +356,7 @@ public class EditorPane implements DocumentListener {
 			// TODO! convertTabsToSpaces();
 		}
 		catch (final Throwable t) {
-			t.printStackTrace();
+			Log.error(t);
 		}
 		finally {
 			endAtomicEdit();
@@ -368,7 +369,7 @@ public class EditorPane implements DocumentListener {
 			// TODO! convertSpacesToTabs();
 		}
 		catch (final Throwable t) {
-			t.printStackTrace();
+			Log.error(t);
 		}
 		finally {
 			endAtomicEdit();
