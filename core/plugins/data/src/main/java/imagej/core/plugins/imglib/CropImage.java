@@ -58,7 +58,7 @@ import net.imglib2.type.numeric.RealType;
 //TODO - add correct weight to @Plugin annotation.
 
 /**
- * Replaces the pixels of an input Dataset by cropping in X & Y using it's
+ * Replaces the pixels of an input Dataset by cropping in X & Y using its
  * currently selected region. Works on images of any dimensionality.
  * 
  * @author Barry DeZonia
