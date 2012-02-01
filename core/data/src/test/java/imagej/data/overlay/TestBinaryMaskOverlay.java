@@ -38,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import imagej.ImageJ;
 import imagej.util.ColorRGB;
+import imagej.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -103,7 +104,7 @@ public class TestBinaryMaskOverlay {
 			out.writeObject(overlay);
 		}
 		catch (final IOException e) {
-			e.printStackTrace();
+			Log.error(e);
 			throw new AssertionError(e.getMessage());
 		}
 
@@ -150,11 +151,11 @@ public class TestBinaryMaskOverlay {
 				}
 			}
 			catch (final IOException e) {
-				e.printStackTrace();
+				Log.error(e);
 				throw new AssertionError(e.getMessage());
 			}
 			catch (final ClassNotFoundException e) {
-				e.printStackTrace();
+				Log.error(e);
 				throw new AssertionError(e.getMessage());
 			}
 		}

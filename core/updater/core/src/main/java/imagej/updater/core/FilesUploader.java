@@ -38,6 +38,7 @@ import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
+import imagej.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -269,7 +270,7 @@ public class FilesUploader {
 				updateUploadTimestamp(uploader.timestamp);
 			}
 			catch (final Exception e) {
-				e.printStackTrace();
+				Log.error(e);
 				throw new RuntimeException("Could not update "
 					+ "the timestamps in db.xml.gz");
 			}
@@ -298,7 +299,7 @@ public class FilesUploader {
 				connection = new URL(site.url + Util.XML_COMPRESSED).openConnection();
 			}
 			catch (final FileNotFoundException e) {
-				e.printStackTrace();
+				Log.error(e);
 				Thread.sleep(500);
 				connection = new URL(site.url + Util.XML_COMPRESSED).openConnection();
 			}
@@ -313,7 +314,7 @@ public class FilesUploader {
 		catch (final Exception e) {
 			UserInterface.get().debug(e.getMessage());
 			if (files.size() == 0) return -1; // assume initial upload
-			e.printStackTrace();
+			Log.error(e);
 			return 0;
 		}
 	}

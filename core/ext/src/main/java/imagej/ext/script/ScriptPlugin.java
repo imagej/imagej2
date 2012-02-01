@@ -38,6 +38,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.FileUtils;
+import imagej.util.Log;
 
 import java.io.File;
 import java.io.FileReader;
@@ -81,10 +82,10 @@ public class ScriptPlugin implements ImageJPlugin {
 			}
 		}
 		catch (final ScriptException e) {
-			e.printStackTrace(System.err);
+			Log.error(e);
 		}
 		catch (final IOException e) {
-			e.printStackTrace(System.err);
+			Log.error(e);
 		}
 	}
 
