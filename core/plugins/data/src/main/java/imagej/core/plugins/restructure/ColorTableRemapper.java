@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.restructure;
 
-import java.util.Arrays;
-
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.ImgPlus;
