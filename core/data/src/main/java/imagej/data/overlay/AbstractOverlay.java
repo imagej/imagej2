@@ -111,23 +111,6 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 		return null;
 	}
 
-	// CTR FIXME - Eliminate getPosition and setPosition from Overlay API.
-	//
-	// These methods are redundant with DataView, and actually misplaced.
-	// An Overlay should not contain any dimensions other than its actual ones
-	// (so all normal 2D overlays have only XY for now; in future we could have
-	// overlays of 3D+, but not now).
-	//
-	// The JHotDraw figures need to be linked to an OverlayView, not an Overlay
-	// directly.
-	//
-	// We still need the concept of a composite data object, and/or composite data
-	// view -- further thought is needed. But for beta1, we may not need it.
-	// On the other hand, the axis compositing logic done in AbstractImageDisplay
-	// would fit very well in a CompositeData or CompositeDataView object. If we
-	// go that route sooner, the Display can be simplified to allow only one
-	// object at a time, rather than a list. What would the consequences be?
-
 	@Override
 	public int getAlpha() {
 		return alpha;
