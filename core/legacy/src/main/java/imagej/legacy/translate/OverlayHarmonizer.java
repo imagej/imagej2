@@ -52,6 +52,7 @@ import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.data.overlay.PointOverlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.util.ColorRGB;
@@ -86,6 +87,7 @@ import net.imglib2.type.logic.BitType;
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public class OverlayHarmonizer implements DisplayHarmonizer {
 
@@ -204,6 +206,9 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		if (overlay instanceof LineOverlay) {
 			return createLineRoi((LineOverlay) overlay);
 		}
+		if (overlay instanceof PointOverlay) {
+			return createPointRoi((PointOverlay) overlay);
+		}
 		// TODO: arrows, freehand, text
 //		throw new UnsupportedOperationException("Translation of " +
 //			overlay.getClass().getName() + " is unimplemented");
@@ -252,7 +257,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	private Roi createPolygonROI(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final int vertexCount = region.getVertexCount();
-		if (vertexCount == 1) return createPointROI(overlay);
+		if (vertexCount == 1) return createPointRoi(overlay);
 		if (vertexCount == 2) return createLineROI(overlay);
 		final float[] x = new float[vertexCount];
 		final float[] y = new float[vertexCount];
@@ -266,7 +271,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return roi;
 	}
 
-	private Roi createPointROI(final PolygonOverlay overlay) {
+	// FIXME - there are two createPointRoi/ROI versions. Might need to eliminate
+	// one of them.
+	
+	// OLDER ONE - by Curtis?
+	private Roi createPointRoi(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final RealLocalizable point = region.getVertex(0);
 		final int x = (int) point.getFloatPosition(0);
@@ -274,6 +283,15 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final Roi roi = new PointRoi(x, y);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
+	}
+
+	// NEWER ONE - by BDZ after PointOverlay came to exist
+	private Roi createPointRoi(final PointOverlay overlay) {
+		final RealLocalizable pt = overlay.getPoint();
+		final PointRoi point =
+			new PointRoi(pt.getDoublePosition(0), pt.getDoublePosition(1));
+		assignPropertiesToRoi(point, overlay);
+		return point;
 	}
 
 	private Roi createLineROI(final PolygonOverlay overlay) {
@@ -406,6 +424,9 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 				Log.warn("====> ANGLE: " + roi);
 				// throw new UnsupportedOperationException("ANGLE unimplemented");
 				break;
+			case Roi.POINT:
+				overlays.add(createPointOverlay(roi, xOff, yOff));
+				break;
 			case Roi.COMPOSITE:
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
@@ -441,10 +462,6 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 				coverlay.setAlpha(80);
 				overlays.add(coverlay);
 				break;
-			case Roi.POINT:
-				Log.warn("====> POINT: " + roi);
-				throw new UnsupportedOperationException("POINT unimplemented");
-//				break;
 			default:
 				Log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
 				throw new UnsupportedOperationException("OTHER unimplemented");
@@ -511,6 +528,22 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		}
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
+	}
+
+	@SuppressWarnings("unused")
+	private PointOverlay createPointOverlay(final Roi roi, final int xOff,
+		final int yOff)
+	{
+		assert roi instanceof PointRoi;
+		final PointRoi point = (PointRoi) roi;
+		final Rectangle region = point.getBounds();
+		final double x = region.x;
+		final double y = region.y;
+		final RealPoint pt = new RealPoint(x,y);
+		final PointOverlay pointOverlay =
+			new PointOverlay(context, pt);
+		assignPropertiesToOverlay(pointOverlay, roi);
+		return pointOverlay;
 	}
 
 	@SuppressWarnings("unused")
