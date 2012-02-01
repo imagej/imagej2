@@ -60,6 +60,8 @@ public class Harmonizer {
 
 	// -- instance variables --
 
+	private final ImageJ context;
+
 	private final ImageTranslator imageTranslator;
 	private final Map<ImagePlus, Integer> bitDepthMap =
 		new HashMap<ImagePlus, Integer>();
@@ -75,12 +77,14 @@ public class Harmonizer {
 	private final CompositeHarmonizer compositeHarmonizer =
 		new CompositeHarmonizer();
 	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
-	private final OverlayHarmonizer overlayHarmonizer = new OverlayHarmonizer();
+	private final OverlayHarmonizer overlayHarmonizer;
 
 	// -- constructor --
 
-	public Harmonizer(final ImageTranslator trans) {
+	public Harmonizer(final ImageJ context, final ImageTranslator trans) {
+		this.context = context;
 		imageTranslator = trans;
+		overlayHarmonizer = new OverlayHarmonizer(context);
 	}
 
 	// -- public interface --
@@ -94,7 +98,7 @@ public class Harmonizer {
 		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
 		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
+			context.getService(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		if (!imagePlusIsNearestType(ds, imp)) {
 			rebuildImagePlusData(display, imp);
@@ -133,7 +137,7 @@ public class Harmonizer {
 			"cannot update a display with an ImagePlus that has an empty stack");
 
 		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
+			context.getService(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?

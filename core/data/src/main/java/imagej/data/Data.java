@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.ImageJ;
 import imagej.data.overlay.Overlay;
 
 /**
@@ -44,6 +45,12 @@ import imagej.data.overlay.Overlay;
  * @author Curtis Rueden
  */
 public interface Data extends CalibratedInterval {
+
+	/** Gets the application context to which this data object belongs. */
+	ImageJ getContext();
+
+	/** Sets the application context to which this data object belongs. */
+	void setContext(final ImageJ context);
 
 	/**
 	 * Informs interested parties that the data object has undergone a

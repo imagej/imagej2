@@ -88,7 +88,7 @@ public class RectangleAdapter extends
 
 	@Override
 	public Overlay createNewOverlay() {
-		return new RectangleOverlay();
+		return new RectangleOverlay(getContext());
 	}
 
 	@Override

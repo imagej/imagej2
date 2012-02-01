@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -51,8 +53,8 @@ public class EllipseOverlay extends
 	AbstractROIOverlay<EllipseRegionOfInterest>
 {
 
-	public EllipseOverlay() {
-		super(new EllipseRegionOfInterest(2));
+	public EllipseOverlay(final ImageJ context) {
+		super(context, new EllipseRegionOfInterest(2));
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());
 	}

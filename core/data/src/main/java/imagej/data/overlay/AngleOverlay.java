@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -55,7 +57,8 @@ public class AngleOverlay extends AbstractOverlay {
 	private RealPoint endPoint1;
 	private RealPoint endPoint2;
 
-	public AngleOverlay() {
+	public AngleOverlay(final ImageJ context) {
+		super(context);
 		ctrPoint = new RealPoint(2);
 		endPoint1 = new RealPoint(2);
 		endPoint2 = new RealPoint(2);
@@ -63,8 +66,10 @@ public class AngleOverlay extends AbstractOverlay {
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public AngleOverlay(final RealLocalizable ctr, final RealLocalizable end1, final RealLocalizable end2)
+	public AngleOverlay(final ImageJ context, final RealLocalizable ctr,
+		final RealLocalizable end1, final RealLocalizable end2)
 	{
+		super(context);
 		assert ctr.numDimensions() == end1.numDimensions();
 		assert ctr.numDimensions() == end2.numDimensions();
 		this.ctrPoint = new RealPoint(ctr);

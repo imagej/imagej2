@@ -188,7 +188,7 @@ public final class DatasetService extends AbstractService {
 	}
 
 	/**
-	 * Creates a new dataset using provided {@link ImgFactory}.
+	 * Creates a new dataset using the provided {@link ImgFactory}.
 	 * 
 	 * @param <T> The type of the dataset.
 	 * @param factory The ImgFactory to use to create the data.
@@ -204,7 +204,19 @@ public final class DatasetService extends AbstractService {
 	{
 		final Img<T> img = factory.create(dims, type);
 		final ImgPlus<T> imgPlus = new ImgPlus<T>(img, name, axes, null);
-		return new DefaultDataset(imgPlus);
+		return create(imgPlus);
+	}
+
+	/**
+	 * Creates a new dataset using the provided {@link ImgPlus}.
+	 * 
+	 * @param imgPlus The {@link ImgPlus} backing the dataset.
+	 * @return The newly created dataset.
+	 */
+	public <T extends RealType<T> & NativeType<T>> Dataset create(
+		final ImgPlus<T> imgPlus)
+	{
+		return new DefaultDataset(getContext(), imgPlus);
 	}
 
 	// -- Helper methods --

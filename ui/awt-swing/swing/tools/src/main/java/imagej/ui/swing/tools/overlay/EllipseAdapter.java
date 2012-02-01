@@ -86,7 +86,7 @@ public class EllipseAdapter extends
 
 	@Override
 	public Overlay createNewOverlay() {
-		return new EllipseOverlay();
+		return new EllipseOverlay(getContext());
 	}
 
 	@Override

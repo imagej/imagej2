@@ -119,7 +119,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// sync legacy images to match existing modern displays
 		final ImageTranslator imageTranslator = new DefaultImageTranslator(context);
-		final Harmonizer harmonizer = new Harmonizer(imageTranslator);
+		final Harmonizer harmonizer = new Harmonizer(context, imageTranslator);
 
 		final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
 		final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();

@@ -72,7 +72,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 
 	@Override
 	public LineOverlay createNewOverlay() {
-		return new LineOverlay();
+		return new LineOverlay(getContext());
 	}
 
 	@Override

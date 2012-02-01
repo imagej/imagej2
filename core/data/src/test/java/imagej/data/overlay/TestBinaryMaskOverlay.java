@@ -36,6 +36,7 @@ package imagej.data.overlay;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import imagej.ImageJ;
 import imagej.util.ColorRGB;
 
 import java.io.ByteArrayInputStream;
@@ -87,14 +88,15 @@ public class TestBinaryMaskOverlay {
 			makeImg(imgArray));
 	}
 
-	private BinaryMaskOverlay makeOverlay(final boolean[][] imgArray) {
-		return new BinaryMaskOverlay(makeRoi(imgArray));
+	private BinaryMaskOverlay makeOverlay(final ImageJ context, final boolean[][] imgArray) {
+		return new BinaryMaskOverlay(context, makeRoi(imgArray));
 	}
 
 	@Test
 	public void testWriteExternal() {
+		final ImageJ context = ImageJ.createContext();
 		final BinaryMaskOverlay overlay =
-			makeOverlay(new boolean[][] { { true } });
+			makeOverlay(context, new boolean[][] { { true } });
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			final ObjectOutputStream out = new ObjectOutputStream(os);
@@ -109,6 +111,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testReadExternal() {
+		final ImageJ context = ImageJ.createContext();
 		final Random r = new Random(54321);
 		for (int iter = 0; iter < 100; iter++) {
 			final boolean[][] imgArray = new boolean[5][5];
@@ -117,7 +120,7 @@ public class TestBinaryMaskOverlay {
 					imgArray[i][j] = r.nextBoolean();
 				}
 			}
-			final BinaryMaskOverlay overlay = makeOverlay(imgArray);
+			final BinaryMaskOverlay overlay = makeOverlay(context, imgArray);
 			final ColorRGB colorIn =
 				new ColorRGB(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 			overlay.setFillColor(colorIn);
@@ -159,7 +162,8 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testBinaryMaskOverlay() {
-		makeOverlay(new boolean[][] { { true } });
+		final ImageJ context = ImageJ.createContext();
+		makeOverlay(context, new boolean[][] { { true } });
 	}
 
 }
