@@ -233,13 +233,11 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 		fileLastModified = file.lastModified();
 	}
 
-	public void setFile(String path) throws IOException {
-		File oldFile = file;
-		file = null;
-		if (path == null)
-			setText("");
+	public void open(final File file) throws IOException {
+		final File oldFile = this.file;
+		this.file = null;
+		if (file == null) setText("");
 		else {
-			File file = new File(path);
 			int line = 0;
 			try {
 				if (file.getCanonicalPath().equals(oldFile.getCanonicalPath()))

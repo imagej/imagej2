@@ -319,7 +319,7 @@ public class FileFunctions {
 		addPluginJarToFakefile(jar);
 
 		File pluginsConfig = new File(dir, "plugins.config");
-		parent.open(pluginsConfig.getAbsolutePath());
+		parent.open(pluginsConfig);
 		if (parent.getEditorPane().getDocument().getLength() == 0)
 			parent.getEditorPane().insert(
 				"# " + originalName + "\n"
@@ -327,7 +327,7 @@ public class FileFunctions {
 				+ "# Author: \n"
 				+ "\n"
 				+ "Plugins, \"" + originalName + "\", " + name + "\n", 0);
-		parent.open(file.getAbsolutePath());
+		parent.open(file);
 		if (parent.getEditorPane().getDocument().getLength() == 0)
 			parent.getEditorPane().insert(
 				"import ij.ImagePlus;\n"

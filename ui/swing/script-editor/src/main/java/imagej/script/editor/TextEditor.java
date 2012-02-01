@@ -47,7 +47,6 @@ import imagej.util.FileUtils;
 import imagej.util.AppUtils;
 
 import java.awt.Dimension;
-import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -66,7 +65,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -119,6 +117,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
@@ -693,11 +692,11 @@ public class TextEditor extends JFrame implements ActionListener,
 	 * Open a new editor to edit the given file, with a templateFile if the file does not exist yet
 	 */
 	public void createNewFromTemplate(File file, File templateFile) {
-		open(file.exists() ? file.getPath() : templateFile.getPath());
+		open(file.exists() ? file : templateFile);
 		if (!file.exists()) {
 			final EditorPane editorPane = getEditorPane();
 			try {
-				editorPane.setFile(file.getAbsolutePath());
+				editorPane.open(file);
 			} catch (IOException e) {
 				handleException(e);
 			}
@@ -758,16 +757,15 @@ public class TextEditor extends JFrame implements ActionListener,
 			createNewDocument();
 		else if (source == open) {
 			final EditorPane editorPane = getEditorPane();
-			final String defaultDir =
-			editorPane != null && editorPane.file != null ? editorPane.file
-				.getParent() : AppUtils.getBaseDirectory().getAbsolutePath();
-			final String path = openWithDialog("Open...", defaultDir, new String[] {
+			final File defaultDir = editorPane != null && editorPane.file != null ?
+				editorPane.file.getParentFile() : AppUtils.getBaseDirectory();
+			final File file = openWithDialog("Open...", defaultDir, new String[] {
 				".class", ".jar"
 			}, false);
-			if (path != null)
+			if (file != null)
 				new Thread() {
 					public void run() {
-						open(path);
+						open(file);
 					}
 				}.start();
 			return;
@@ -879,7 +877,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			if (className != null) try {
 				String path = new FileFunctions(this).getSourcePath(className);
 				if (path != null)
-					open(path);
+					open(new File(path));
 				else {
 					String url = new FileFunctions(this).getSourceURL(className);
 					try {
@@ -1035,7 +1033,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			null, options, options[0])) {
 		case 0:
 			try {
-				getEditorPane().setFile(file.getPath());
+				getEditorPane().open(file);
 				return true;
 			} catch (IOException e) {
 				error("Could not reload " + file.getPath());
@@ -1290,12 +1288,12 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 	}
 
-	public static boolean isBinary(String path) {
-		if (path == null)
+	public static boolean isBinary(File file) {
+		if (file == null)
 			return false;
 		// heuristic: read the first up to 8000 bytes, and say that it is binary if it contains a NUL
 		try {
-			FileInputStream in = new FileInputStream(path);
+			FileInputStream in = new FileInputStream(file);
 			int left = 8000;
 			byte[] buffer = new byte[left];
 			while (left > 0) {
@@ -1318,7 +1316,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	/** Open a new tab with some content; the languageExtension is like ".java", ".py", etc. */
 	public Tab newTab(String content, String language) {
-		Tab tab = open("");
+		Tab tab = open(null);
 		if (null != language && language.length() > 0) {
 			language = language.trim().toLowerCase();
 			if ('.' != language.charAt(0)) language = "." + language;
@@ -1328,22 +1326,11 @@ public class TextEditor extends JFrame implements ActionListener,
 		return tab;
 	}
 
-	public Tab open(String path) {
-		if (path != null && path.startsWith("class:")) try {
-			path = new FileFunctions(this).getSourcePath(path.substring(6));
-			if (path == null)
-				return null;
-		} catch (ClassNotFoundException e) {
-			error("Could not find " + path);
-		}
-
-		if (isBinary(path)) {
-			try {
-				ioService.loadDataset(path);
-			} catch (Throwable e) {
-				handleException(e);
-			}
-			return null;
+	public Tab open(File file) {
+		if (isBinary(file)) {
+			// TODO!
+			throw new RuntimeException("TODO: open image using IJ2");
+			// return null;
 		}
 
 		/*
@@ -1367,8 +1354,8 @@ public class TextEditor extends JFrame implements ActionListener,
 				tab = new Tab();
 				addDefaultAccelerators(tab.editorPane);
 			}
-			synchronized(tab.editorPane) {
-				tab.editorPane.setFile("".equals(path) ? null : path);
+			synchronized (tab.editorPane) {
+				tab.editorPane.open(file);
 				if (wasNew) {
 					int index = tabbed.getSelectedIndex()
 						+ tabsMenuTabsStart;
@@ -1388,16 +1375,16 @@ public class TextEditor extends JFrame implements ActionListener,
 					/* ignore */
 				}
 			}
-			if (path != null && !"".equals(path))
-				openRecent.add(path);
+			if (file != null) openRecent.add(file.getAbsolutePath());
 
 			return tab;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			error("The file '" + path + "' was not found.");
-		} catch (Exception e) {
+			error("The file '" + file + "' was not found.");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
-			error("There was an error while opening '" + path + "': " + e);
+			error("There was an error while opening '" + file + "': " + e);
 		}
 		return null;
 	}
@@ -2106,7 +2093,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				switchTo(i);
 				return;
 			}
-		open(file.getPath());
+		open(file);
 	}
 
 	public void switchTo(int index) {
@@ -2175,52 +2162,62 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	public void extractSourceJar() {
-		String path = openWithDialog("Open...", null, new String[] {
+		File file = openWithDialog("Open...", null, new String[] {
 			".jar"
 		}, true);
-		if (path != null)
-			extractSourceJar(path);
+		if (file != null)
+			extractSourceJar(file);
 	}
 
-	public void extractSourceJar(String path) {
+	public void extractSourceJar(File file) {
 		try {
 			FileFunctions functions = new FileFunctions(this);
-			List<String> paths = functions.extractSourceJar(path);
-			for (String file : paths)
-				if (!functions.isBinaryFile(file)) {
-					open(file);
+			List<String> paths = functions.extractSourceJar(file.getAbsolutePath());
+			for (String path : paths)
+				if (!functions.isBinaryFile(path)) {
+					open(new File(path));
 					EditorPane pane = getEditorPane();
 					new TokenFunctions(pane).removeTrailingWhitespace();
 					if (pane.fileChanged())
 						save();
 				}
 		} catch (IOException e) {
-			error("There was a problem opening " + path
+			error("There was a problem opening " + file
 				+ ": " + e.getMessage());
 		}
 	}
 
 	/* extensionMustMatch == false means extension must not match */
-	protected String openWithDialog(final String title, final String directory,
-			final String[] extensions, final boolean extensionMustMatch) {
-		FileDialog dialog = new FileDialog(this, title);
-		if (directory != null)
-			dialog.setDirectory(directory);
-		if (extensions != null)
-			dialog.setFilenameFilter(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					for (String extension : extensions)
-						if (name.endsWith(extension))
-							return extensionMustMatch;
-					return !extensionMustMatch;
+	protected File openWithDialog(final String title, final File defaultDir,
+		final String[] extensions, final boolean extensionMustMatch)
+	{
+		JFileChooser dialog = new JFileChooser();
+		dialog.setDialogTitle(title);
+		if (defaultDir != null) dialog.setCurrentDirectory(defaultDir);
+		if (extensions != null) dialog.addChoosableFileFilter(new FileFilter() {
+
+			@Override
+			public boolean accept(File file) {
+				String name = file.getName();
+				for (String extension : extensions)
+					if (name.endsWith(extension)) return extensionMustMatch;
+				return !extensionMustMatch;
+			}
+
+			@Override
+			public String getDescription() {
+				StringBuilder builder = new StringBuilder();
+				String separator = "Only ";
+				for (String extension : extensions) {
+					builder.append(separator).append(extension);
+					separator = ", ";
 				}
-			});
-		dialog.setVisible(true);
-		String dir = dialog.getDirectory();
-		String name = dialog.getFile();
-		if (dir == null || name == null)
-			return null;
-		return new File(dir, name).getAbsolutePath();
+				builder.append(" files");
+				return builder.toString();
+			}
+		});
+		if (dialog.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return null;
+		return dialog.getSelectedFile();
 	}
 
 	/**
