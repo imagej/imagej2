@@ -34,6 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.ssh;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UserInfo;
+
 import imagej.updater.core.FilesUploader;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
@@ -42,11 +47,6 @@ import imagej.util.Log;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.UserInfo;
 
 /**
  * @author Jarek Sacha

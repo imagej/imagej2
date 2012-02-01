@@ -243,7 +243,7 @@ public final class LegacyService extends AbstractService {
 		}
 	}
 
-	private class IJ1EventListener implements IJEventListener {
+	protected class IJ1EventListener implements IJEventListener {
 
 		@Override
 		public void eventOccurred(final int eventID) {
