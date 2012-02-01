@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -53,15 +55,18 @@ public class LineOverlay extends AbstractOverlay {
 	private RealPoint ptStart;
 	private RealPoint ptEnd;
 
-	public LineOverlay() {
+	public LineOverlay(final ImageJ context) {
+		super(context);
 		ptStart = new RealPoint(2);
 		ptEnd = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public LineOverlay(final RealLocalizable ptStart, final RealLocalizable ptEnd)
+	public LineOverlay(final ImageJ context, final RealLocalizable ptStart,
+		final RealLocalizable ptEnd)
 	{
+		super(context);
 		assert ptStart.numDimensions() == ptEnd.numDimensions();
 		this.ptStart = new RealPoint(ptStart);
 		this.ptEnd = new RealPoint(ptEnd);

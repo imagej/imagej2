@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.overlay;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
@@ -94,6 +95,9 @@ public class ImageToBinaryMask implements ImageJPlugin {
 		max = "255")
 	private int alpha = 128;
 
+	@Parameter(persist = false)
+	private ImageJ context;
+
 	@Override
 	public void run() {
 		final ImgPlus<? extends RealType<?>> imgplus = input.getImgPlus();
@@ -141,7 +145,7 @@ public class ImageToBinaryMask implements ImageJPlugin {
 			}
 		}
 		output =
-			new BinaryMaskOverlay(
+			new BinaryMaskOverlay(context,
 				new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(mask));
 		output.setAlpha(alpha);
 		output.setFillColor(color);

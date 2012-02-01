@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -52,9 +54,9 @@ public class RectangleOverlay extends
 
 	private static final long serialVersionUID = 1L;
 
-	public RectangleOverlay() {
-		super(new RectangleRegionOfInterest(new double[] { 0, 0 }, new double[] {
-			0, 0 }));
+	public RectangleOverlay(final ImageJ context) {
+		super(context, new RectangleRegionOfInterest(new double[] { 0, 0 },
+			new double[] { 0, 0 }));
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());
 	}

@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -52,8 +54,8 @@ public class PolygonOverlay extends
 	AbstractROIOverlay<PolygonRegionOfInterest>
 {
 
-	public PolygonOverlay() {
-		super(new PolygonRegionOfInterest());
+	public PolygonOverlay(final ImageJ context) {
+		super(context, new PolygonRegionOfInterest());
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());
 	}

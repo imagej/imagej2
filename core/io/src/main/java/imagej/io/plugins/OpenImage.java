@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.data.DefaultDataset;
+import imagej.data.DatasetService;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.menu.MenuConstants;
@@ -72,6 +72,9 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 {
 
 	@Parameter(persist = false)
+	private DatasetService datasetService;
+
+	@Parameter(persist = false)
 	private EventService eventService;
 
 	@Parameter(label = "File to open")
@@ -89,7 +92,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 		try {
 			imageOpener.addStatusListener(this);
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			dataset = new DefaultDataset(imgPlus);
+			dataset = datasetService.create(imgPlus);
 			eventService.publish(new FileOpenedEvent(id));
 		}
 		catch (final ImgIOException e) {

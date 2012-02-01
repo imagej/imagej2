@@ -39,6 +39,7 @@ import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
 import imagej.data.overlay.Overlay;
 import imagej.event.EventService;
+import imagej.event.ImageJEvent;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -59,14 +60,27 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 	Externalizable
 {
 
-	protected final EventService eventService;
+	/** Application context to which the data object belongs. */
+	private ImageJ context;
 
 	private String name;
 
 	private int refs = 0;
 
-	public AbstractData() {
-		eventService = ImageJ.get(EventService.class);
+	public AbstractData(final ImageJ context) {
+		this.context = context;
+	}
+
+	// -- Data methods --
+
+	@Override
+	public ImageJ getContext() {
+		return context;
+	}
+
+	@Override
+	public void setContext(final ImageJ context) {
+		this.context = context;
 	}
 
 	// -- AbstractData methods --
@@ -78,7 +92,7 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 	 * method to publish more specific events.
 	 */
 	protected void register() {
-		eventService.publish(new DataCreatedEvent(this));
+		publish(new DataCreatedEvent(this));
 	}
 
 	/**
@@ -88,7 +102,7 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 	 * publish more specific events.
 	 */
 	protected void delete() {
-		eventService.publish(new DataDeletedEvent(this));
+		publish(new DataDeletedEvent(this));
 	}
 
 	// -- Object methods --
@@ -183,6 +197,15 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 			setAxis(axes[d], d);
 			setCalibration(cal[d], d);
 		}
+	}
+
+	// -- Internal methods --
+
+	protected void publish(final ImageJEvent event) {
+		if (context == null) return;
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService == null) return;
+		eventService.publish(event);
 	}
 
 }

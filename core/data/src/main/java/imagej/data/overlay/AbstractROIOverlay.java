@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
@@ -49,7 +50,8 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 
 	private final R roi;
 
-	protected AbstractROIOverlay(final R roi) {
+	protected AbstractROIOverlay(final ImageJ context, final R roi) {
+		super(context);
 		this.roi = roi;
 	}
 

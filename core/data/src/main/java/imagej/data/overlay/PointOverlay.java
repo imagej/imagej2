@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -53,14 +55,15 @@ public class PointOverlay extends AbstractOverlay {
 
 	private RealPoint point;
 
-	public PointOverlay() {
+	public PointOverlay(final ImageJ context) {
+		super(context);
 		point = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public PointOverlay(final RealLocalizable pt)
-	{
+	public PointOverlay(final ImageJ context, final RealLocalizable pt) {
+		super(context);
 		this.point = new RealPoint(pt);
 	}
 

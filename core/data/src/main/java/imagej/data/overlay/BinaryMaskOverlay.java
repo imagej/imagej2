@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -71,11 +73,24 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 
 	private BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi;
 
-	public BinaryMaskOverlay() {}
+	// TODO: Decide whether to keep this noargs constructor.
+	// It is currently present only so that TestBinaryMaskOverlay code passes
+	// when deserializing. It points to a larger issue, though, which is that
+	// Externalizable objects may need a noargs constructor to work properly.
+
+	public BinaryMaskOverlay() {
+		super(null);
+	}
+
+	public BinaryMaskOverlay(final ImageJ context) {
+		super(context);
+	}
 
 	public BinaryMaskOverlay(
+		final ImageJ context,
 		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi)
 	{
+		super(context);
 		this.roi = roi;
 	}
 

@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.ImageJ;
 import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.event.ImageJEvent;
 import imagej.util.Log;
 import net.imglib2.Cursor;
 import net.imglib2.Positionable;
@@ -80,7 +80,10 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	private boolean rgbMerged;
 	private boolean isDirty;
 
-	public DefaultDataset(final ImgPlus<? extends RealType<?>> imgPlus) {
+	public DefaultDataset(final ImageJ context,
+		final ImgPlus<? extends RealType<?>> imgPlus)
+	{
+		super(context);
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;
@@ -235,7 +238,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public Dataset duplicate() {
 		ImgPlus<? extends RealType<?>> newImgPlus = imgPlus.copy();
-		return new DefaultDataset(newImgPlus);
+		return new DefaultDataset(getContext(), newImgPlus);
 		// OLD WAY
 		//final Dataset d = duplicateBlank();
 		//copyInto(d);
@@ -247,7 +250,8 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		@SuppressWarnings("rawtypes")
 		final ImgPlus untypedImg = imgPlus;
 		@SuppressWarnings("unchecked")
-		final Dataset d = new DefaultDataset(createBlankCopy(untypedImg));
+		final Dataset d =
+			new DefaultDataset(getContext(), createBlankCopy(untypedImg));
 		d.setRGBMerged(isRGBMerged());
 		return d;
 	}
@@ -679,11 +683,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final Img<T> newImg, final AxisType[] axes, final double[] calib)
 	{
 		return new ImgPlus<T>(newImg, getName(), axes, calib);
-	}
-
-	private void publish(final ImageJEvent event) {
-		if (eventService == null) return;
-		eventService.publish(event);
 	}
 
 }

@@ -146,7 +146,7 @@ public class PolygonAdapter extends
 
 	@Override
 	public Overlay createNewOverlay() {
-		final PolygonOverlay o = new PolygonOverlay();
+		final PolygonOverlay o = new PolygonOverlay(getContext());
 		return o;
 	}
 

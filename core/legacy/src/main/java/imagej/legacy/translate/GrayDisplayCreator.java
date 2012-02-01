@@ -68,7 +68,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private final CompositeHarmonizer compositeHarmonizer =
 		new CompositeHarmonizer();
 	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
-	private final OverlayHarmonizer overlayHarmonizer = new OverlayHarmonizer();
+	private final OverlayHarmonizer overlayHarmonizer;
 
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
 	// while
@@ -80,6 +80,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	public GrayDisplayCreator(final ImageJ context) {
 		this.context = context;
+		overlayHarmonizer = new OverlayHarmonizer(context);
 	}
 
 	// -- public interface --

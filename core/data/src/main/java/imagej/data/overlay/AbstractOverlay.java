@@ -34,7 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
 import imagej.data.AbstractData;
+import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
@@ -74,14 +76,12 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 	private ArrowStyle startArrowStyle;
 	private ArrowStyle endArrowStyle;
 
-	public AbstractOverlay() {
-		// TODO: Apply OverlayService's settings to each new overlay.
-		// As it stands, each new overlay receives the default settings only.
-		this(new OverlaySettings());
-	}
-
-	public AbstractOverlay(final OverlaySettings settings) {
-		applySettings(settings);
+	public AbstractOverlay(final ImageJ context) {
+		super(context);
+		final OverlayService overlayService =
+			context == null ? null : context.getService(OverlayService.class);
+		if (overlayService == null) applySettings(new OverlaySettings());
+		else applySettings(overlayService.getDefaultSettings());
 		axes.add(Axes.X);
 		axes.add(Axes.Y);
 		cal.add(1d);
@@ -92,7 +92,7 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	protected void register() {
-		eventService.publish(new OverlayCreatedEvent(this));
+		publish(new OverlayCreatedEvent(this));
 	}
 
 	// TODO - Decide whether this should really be public. If not, don't call it
@@ -100,7 +100,7 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void delete() {
-		eventService.publish(new OverlayDeletedEvent(this));
+		publish(new OverlayDeletedEvent(this));
 	}
 
 	// -- Overlay methods --
@@ -185,12 +185,12 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void update() {
-		eventService.publish(new OverlayUpdatedEvent(this));
+		publish(new OverlayUpdatedEvent(this));
 	}
 
 	@Override
 	public void rebuild() {
-		eventService.publish(new OverlayRestructuredEvent(this));
+		publish(new OverlayRestructuredEvent(this));
 	}
 
 	// -- CalibratedInterval methods --

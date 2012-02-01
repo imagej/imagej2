@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
 import net.imglib2.roi.CompositeRegionOfInterest;
 
 /**
@@ -45,16 +46,18 @@ public class CompositeOverlay extends
 	AbstractROIOverlay<CompositeRegionOfInterest>
 {
 
-	public CompositeOverlay() {
-		this(2);
+	public CompositeOverlay(final ImageJ context) {
+		this(context, 2);
 	}
 
-	public CompositeOverlay(final int numDimensions) {
-		super(new CompositeRegionOfInterest(numDimensions));
+	public CompositeOverlay(final ImageJ context, final int numDimensions) {
+		super(context, new CompositeRegionOfInterest(numDimensions));
 	}
 
-	public CompositeOverlay(final CompositeRegionOfInterest roi) {
-		super(roi);
+	public CompositeOverlay(final ImageJ context,
+		final CompositeRegionOfInterest roi)
+	{
+		super(context, roi);
 	}
 
 }
