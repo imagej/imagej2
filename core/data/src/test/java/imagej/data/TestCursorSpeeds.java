@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data;
 
 import static org.junit.Assert.assertTrue;
+import imagej.ImageJ;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -58,15 +59,20 @@ public class TestCursorSpeeds {
 
 	@Test
 	public void testCursorSpeeds() {
+		@SuppressWarnings("unchecked")
+		final ImageJ context = ImageJ.createContext(DatasetService.class);
+		final DatasetService datasetService =
+			context.getService(DatasetService.class);
+
 		final long[] dims = new long[] { X, Y, Z };
 		final Dataset ds1 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk1",
+			datasetService.create(new UnsignedByteType(), dims, "junk1",
 				new AxisType[] { Axes.X, Axes.Y, Axes.Z });
 		final Dataset ds2 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk2",
+			datasetService.create(new UnsignedByteType(), dims, "junk2",
 				new AxisType[] { Axes.X, Axes.Y, Axes.Z });
 		final Dataset ds3 =
-			DatasetFactory.create(new UnsignedByteType(), dims, "junk3",
+			datasetService.create(new UnsignedByteType(), dims, "junk3",
 				new AxisType[] { Axes.X, Axes.Y, Axes.Z });
 
 		fill(ds1);

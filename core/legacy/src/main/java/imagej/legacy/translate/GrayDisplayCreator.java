@@ -39,7 +39,7 @@ import ij.ImageStack;
 import ij.process.ImageProcessor;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.DatasetFactory;
+import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.DisplayService;
 import net.imglib2.RandomAccess;
@@ -57,6 +57,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
+	private final ImageJ context;
+
 	private final GrayPixelHarmonizer pixelHarmonizer =
 		new GrayPixelHarmonizer();
 	private final ColorTableHarmonizer colorTableHarmonizer =
@@ -73,6 +75,12 @@ public class GrayDisplayCreator implements DisplayCreator {
 	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction
 	// as
 	// Harmonizer always catches that case.
+
+	// -- constructor --
+
+	public GrayDisplayCreator(final ImageJ context) {
+		this.context = context;
+	}
 
 	// -- public interface --
 
@@ -100,7 +108,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
 
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final DisplayService displayService =
+			context.getService(DisplayService.class);
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
@@ -125,7 +134,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
 
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final DisplayService displayService =
+			context.getService(DisplayService.class);
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
@@ -166,8 +176,10 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
+		final DatasetService datasetService =
+			context.getService(DatasetService.class);
 		final Dataset ds =
-			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		DatasetUtils.initColorTables(ds);
 
@@ -246,8 +258,10 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
+		final DatasetService datasetService =
+			context.getService(DatasetService.class);
 		final Dataset ds =
-			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		planeHarmonizer.updateDataset(ds, imp);
 
@@ -292,8 +306,10 @@ public class GrayDisplayCreator implements DisplayCreator {
 			floating = isFloating(imp);
 		}
 
+		final DatasetService datasetService =
+			context.getService(DatasetService.class);
 		final Dataset ds =
-			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		DatasetUtils.initColorTables(ds);
 

@@ -38,6 +38,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.Roi;
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -79,6 +80,9 @@ public class LegacyPlugin implements ImageJPlugin {
 	private List<ImageDisplay> outputs;
 
 	@Parameter(persist = false)
+	private ImageJ context;
+
+	@Parameter(persist = false)
 	private ImageDisplayService imageDisplayService;
 
 	@Parameter(persist = false)
@@ -114,7 +118,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		final LegacyImageMap map = legacyService.getImageMap();
 
 		// sync legacy images to match existing modern displays
-		final ImageTranslator imageTranslator = new DefaultImageTranslator();
+		final ImageTranslator imageTranslator = new DefaultImageTranslator(context);
 		final Harmonizer harmonizer = new Harmonizer(imageTranslator);
 
 		final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();

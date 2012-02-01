@@ -51,14 +51,17 @@ import net.imglib2.meta.AxisType;
  */
 public class DefaultImageTranslator implements ImageTranslator {
 
+	private final ImageJ context;
+
 	private final DisplayCreator colorDisplayCreator;
 	private final DisplayCreator grayDisplayCreator;
 	private final ImagePlusCreator colorImagePlusCreator;
 	private final ImagePlusCreator grayImagePlusCreator;
 
-	public DefaultImageTranslator() {
-		colorDisplayCreator = new ColorDisplayCreator();
-		grayDisplayCreator = new GrayDisplayCreator();
+	public DefaultImageTranslator(final ImageJ context) {
+		this.context = context;
+		colorDisplayCreator = new ColorDisplayCreator(context);
+		grayDisplayCreator = new GrayDisplayCreator(context);
 		colorImagePlusCreator = new ColorImagePlusCreator();
 		grayImagePlusCreator = new GrayImagePlusCreator();
 	}
@@ -101,7 +104,7 @@ public class DefaultImageTranslator implements ImageTranslator {
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
 
 		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
+			context.getService(ImageDisplayService.class);
 
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 

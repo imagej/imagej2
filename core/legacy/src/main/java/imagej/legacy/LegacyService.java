@@ -117,7 +117,7 @@ public final class LegacyService extends AbstractService {
 		this.optionsService = optionsService;
 		this.imageDisplayService = imageDisplayService;
 
-		imageMap = new LegacyImageMap(eventService);
+		imageMap = new LegacyImageMap(context);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
 
 		// initialize legacy ImageJ application

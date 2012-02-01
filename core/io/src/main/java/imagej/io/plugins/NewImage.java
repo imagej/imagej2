@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.data.DatasetFactory;
+import imagej.data.DatasetService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -73,6 +73,9 @@ public class NewImage implements ImageJPlugin {
 	public static final String BLACK = "Black";
 	public static final String RAMP = "Ramp";
 	public static final String ZERO = "Zero";
+
+	@Parameter(persist = false)
+	private DatasetService datasetService;
 
 	@Parameter
 	private String name = "Untitled";
@@ -169,7 +172,7 @@ public class NewImage implements ImageJPlugin {
 		final long[] dims = { width, height };
 		final AxisType[] axes = { Axes.X, Axes.Y };
 		dataset =
-			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		final boolean isWhite = fillType.equals(WHITE);
 		final boolean isBlack = fillType.equals(BLACK);
