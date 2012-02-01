@@ -219,7 +219,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 		fontSizeMenu = new JMenu("Font sizes");
 		fontSizeMenu.setMnemonic(KeyEvent.VK_Z);
 		final boolean[] fontSizeShortcutUsed = new boolean[10];
-		final ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup buttonGroup = new ButtonGroup();
 		for (final int size : new int[] { 8, 10, 12, 16, 20, 28, 42 }) {
 			final JRadioButtonMenuItem item =
 				new JRadioButtonMenuItem("" + size + " pt");
@@ -252,7 +252,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 		// Add tab size adjusting menu
 		/* TODO! tabSizeMenu = new JMenu("Tab sizes");
 		tabSizeMenu.setMnemonic(KeyEvent.VK_T);
-		final ButtonGroup bg = new ButtonGroup();
+		buttonGroup = new ButtonGroup();
 		for (final int size : new int[] { 2, 4, 8 }) {
 			final JRadioButtonMenuItem item =
 				new JRadioButtonMenuItem("" + size, size == 8);
@@ -265,13 +265,13 @@ public class EditorFrame extends JFrame implements ActionListener,
 				}
 			});
 			item.setMnemonic(KeyEvent.VK_0 + (size % 10));
-			bg.add(item);
+			buttonGroup.add(item);
 			tabSizeMenu.add(item);
 		}
 		chooseTabSize = new JRadioButtonMenuItem("Other...", false);
 		chooseTabSize.setMnemonic(KeyEvent.VK_O);
 		chooseTabSize.addActionListener(this);
-		bg.add(chooseTabSize);
+		buttonGroup.add(chooseTabSize);
 		tabSizeMenu.add(chooseTabSize);
 		edit.add(tabSizeMenu);
 		*/
@@ -329,7 +329,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 		final Set<Integer> usedShortcuts = new HashSet<Integer>();
 		final JMenu languages = new JMenu("Language");
 		languages.setMnemonic(KeyEvent.VK_L);
-		final ButtonGroup group = new ButtonGroup();
+		buttonGroup = new ButtonGroup();
 		for (final ScriptEngineFactory language : scriptService.getLanguages()) {
 			final String name = language.getLanguageName();
 
@@ -354,13 +354,14 @@ public class EditorFrame extends JFrame implements ActionListener,
 				}
 			});
 
-			group.add(item);
+			buttonGroup.add(item);
 			languages.add(item);
 		}
 
 		final JRadioButtonMenuItem item = new JRadioButtonMenuItem("None");
 		languageMenuItems.put(null, item);
 		item.setSelected(true);
+		buttonGroup.add(item);
 		languages.add(item);
 
 		mbar.add(languages);
