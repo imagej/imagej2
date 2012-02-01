@@ -44,6 +44,7 @@ import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
 import imagej.script.editor.command.KillScript;
 import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -757,10 +758,9 @@ public class TextEditor extends JFrame implements ActionListener,
 			createNewDocument();
 		else if (source == open) {
 			final EditorPane editorPane = getEditorPane();
-			String defaultDir =
-				editorPane != null && editorPane.file != null ?
-				editorPane.file.getParent() :
-				System.getProperty("ij.dir");
+			final String defaultDir =
+			editorPane != null && editorPane.file != null ? editorPane.file
+				.getParent() : AppUtils.getBaseDirectory().getAbsolutePath();
 			final String path = openWithDialog("Open...", defaultDir, new String[] {
 				".class", ".jar"
 			}, false);
@@ -1405,7 +1405,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	public boolean saveAs() {
 		EditorPane editorPane = getEditorPane();
 		File dir = editorPane.file == null ?
-				new File(System.getProperty("ij.dir")) :
+				AppUtils.getBaseDirectory() :
 				editorPane.file.getParentFile();
 		JFileChooser chooser = new JFileChooser(dir);
 		chooser.setDialogTitle("Save as");

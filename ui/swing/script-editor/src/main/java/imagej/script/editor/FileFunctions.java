@@ -38,6 +38,8 @@ import imagej.command.CommandModule;
 import imagej.script.editor.command.NewPlugin;
 import imagej.util.LineOutputStream;
 import imagej.util.ProcessUtils;
+import imagej.util.AppUtils;
+import imagej.util.Log;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -99,14 +101,8 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 public class FileFunctions {
-	protected static String ijDir;
 
-	static {
-		String dir = System.getProperty("ij.dir");
-		if (!dir.endsWith("/"))
-			dir += "/";
-		ijDir = dir;
-	}
+	protected static File imagejRoot = AppUtils.getBaseDirectory();
 
 	protected TextEditor parent;
 
@@ -116,17 +112,15 @@ public class FileFunctions {
 
 	public List<String> extractSourceJar(String path) throws IOException {
 		String baseName = new File(path).getName();
-		if (baseName.endsWith(".jar") || baseName.endsWith(".zip"))
-			baseName = baseName.substring(0, baseName.length() - 4);
-		String baseDirectory = System.getProperty("ij.dir")
-			+ "/src-plugins/" + baseName + "/";
+		if (baseName.endsWith(".jar") || baseName.endsWith(".zip")) baseName =
+			baseName.substring(0, baseName.length() - 4);
+		File baseDirectory = new File(imagejRoot, "src-plugins/" + baseName);
 
 		List<String> result = new ArrayList<String>();
 		JarFile jar = new JarFile(path);
 		for (JarEntry entry : Collections.list(jar.entries())) {
 			String name = entry.getName();
-			if (name.endsWith(".class") || name.endsWith("/"))
-				continue;
+			if (name.endsWith(".class") || name.endsWith("/")) continue;
 			String destination = baseDirectory + name;
 			copyTo(jar.getInputStream(entry), destination);
 			result.add(destination);
@@ -230,7 +224,7 @@ public class FileFunctions {
 					!= JOptionPane.YES_OPTION)
 				return null;
 			class2source = new HashMap<String, List<String>>();
-			findJavaPaths(new File(ijDir), "");
+			findJavaPaths(imagejRoot, "");
 		}
 		int dot = className.lastIndexOf('.');
 		String baseName = className.substring(dot + 1);
@@ -254,9 +248,9 @@ public class FileFunctions {
 			}
 		}
 		if (paths.size() == 1)
-			return ijDir + "/" + paths.get(0);
+			return new File(imagejRoot, paths.get(0)).getAbsolutePath();
 		String[] names = paths.toArray(new String[paths.size()]);
-		JFileChooser chooser = new JFileChooser(ijDir);
+		JFileChooser chooser = new JFileChooser(imagejRoot);
 		chooser.setDialogTitle("Choose path");
 		if (chooser.showOpenDialog(parent) !=  JFileChooser.APPROVE_OPTION) return null;
 		return chooser.getSelectedFile().getPath();
@@ -313,12 +307,12 @@ public class FileFunctions {
 		if (name.indexOf('_') < 0)
 			name += "_";
 
-		File file = new File(System.getProperty("ij.dir")
-			+ "/src-plugins/" + name + "/" + name + ".java");
-		File dir = file.getParentFile();
-		if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory())
-			return error("Could not make directory '"
-				+ dir.getAbsolutePath() + "'");
+		final File file =
+			new File(imagejRoot, "src-plugins/" + name + "/" +
+				name + ".java");
+		final File dir = file.getParentFile();
+		if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory()) return error("Could not make directory '" +
+			dir.getAbsolutePath() + "'");
 
 		String jar = "plugins/" + name + ".jar";
 		addToGitignore(jar);
@@ -363,9 +357,8 @@ public class FileFunctions {
 		if (!name.endsWith("\n"))
 			name += "\n";
 
-		File file = new File(System.getProperty("ij.dir"), ".gitignore");
-		if (!file.exists())
-			return false;
+		final File file = new File(imagejRoot, ".gitignore");
+		if (!file.exists()) return false;
 
 		try {
 			String content = readStream(new FileInputStream(file));
@@ -385,10 +378,9 @@ public class FileFunctions {
 		}
 	}
 
-	public boolean addPluginJarToFakefile(String name) {
-		File file = new File(System.getProperty("ij.dir"), "Fakefile");
-		if (!file.exists())
-			return false;
+	public boolean addPluginJarToFakefile(final String name) {
+		final File file = new File(imagejRoot, "Fakefile");
+		if (!file.exists()) return false;
 
 		try {
 			String content = readStream(new FileInputStream(file));
