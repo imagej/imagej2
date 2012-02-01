@@ -37,6 +37,7 @@ package imagej.legacy;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.gui.Roi;
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
@@ -100,10 +101,11 @@ public class LegacyImageMap {
 
 	// -- Constructor --
 
-	public LegacyImageMap(final EventService eventService) {
+	public LegacyImageMap(final ImageJ context) {
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
-		imageTranslator = new DefaultImageTranslator();
+		imageTranslator = new DefaultImageTranslator(context);
+		final EventService eventService = context.getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 	}
 

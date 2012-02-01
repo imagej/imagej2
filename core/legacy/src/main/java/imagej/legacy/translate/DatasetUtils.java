@@ -49,7 +49,7 @@ public class DatasetUtils {
 
 	// -- public interface --
 
-	// TODO - move this code into DatasetFactory as default behavior????
+	// TODO - move this code into DatasetService as default behavior????
 
 	/**
 	 * Allocates the color table array within a new planar Dataset (one table per

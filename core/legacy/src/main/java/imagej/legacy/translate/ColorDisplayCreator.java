@@ -37,7 +37,7 @@ package imagej.legacy.translate;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.DatasetFactory;
+import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.DisplayService;
 import net.imglib2.meta.AxisType;
@@ -50,6 +50,8 @@ import net.imglib2.meta.AxisType;
 public class ColorDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
+
+	private final ImageJ context;
 
 	private final ColorPixelHarmonizer pixelHarmonizer =
 		new ColorPixelHarmonizer();
@@ -67,6 +69,12 @@ public class ColorDisplayCreator implements DisplayCreator {
 	// as
 	// Harmonizer always catches that case.
 
+	// -- constructor --
+
+	public ColorDisplayCreator(final ImageJ context) {
+		this.context = context;
+	}
+
 	// -- public interface --
 
 	@Override
@@ -83,7 +91,8 @@ public class ColorDisplayCreator implements DisplayCreator {
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
 
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final DisplayService displayService =
+			context.getService(DisplayService.class);
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
@@ -129,8 +138,10 @@ public class ColorDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
+		final DatasetService datasetService =
+			context.getService(DatasetService.class);
 		final Dataset ds =
-			DatasetFactory.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		ds.setRGBMerged(true);
 

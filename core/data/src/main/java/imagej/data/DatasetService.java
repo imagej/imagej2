@@ -1,5 +1,5 @@
 //
-// DatasetFactory.java
+// DatasetService.java
 //
 
 /*
@@ -34,6 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.AbstractService;
+import imagej.ImageJ;
+import imagej.Service;
+import imagej.data.display.DataView;
+import imagej.data.display.ImageDisplay;
+import imagej.object.ObjectService;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -54,17 +64,57 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
 /**
- * A utility class with {@link Dataset}-related methods.
+ * Service for working with {@link Dataset}s.
  * 
  * @author Curtis Rueden
  */
-public final class DatasetFactory {
+@Service
+public final class DatasetService extends AbstractService {
 
-	// TODO - Decide whether to convert this from a utility class into a truly
-	// extensible factory implementation.
+	private final ObjectService objectService;
 
-	private DatasetFactory() {
-		// prevent instantiation of utility class
+	// -- Constructors --
+
+	public DatasetService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public DatasetService(final ImageJ context, final ObjectService objectService)
+	{
+		super(context);
+		this.objectService = objectService;
+	}
+
+	// -- DatasetService methods --
+
+	public ObjectService getObjectService() {
+		return objectService;
+	}
+
+	/**
+	 * Gets a list of all {@link Dataset}s. This method is a shortcut that
+	 * delegates to {@link ObjectService}.
+	 */
+	public List<Dataset> getDatasets() {
+		return objectService.getObjects(Dataset.class);
+	}
+
+	/**
+	 * Gets a list of {@link Dataset}s linked to the given {@link ImageDisplay}.
+	 */
+	public List<Dataset> getDatasets(final ImageDisplay display) {
+		final ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+		if (display != null) {
+			for (final DataView view : display) {
+				final Data data = view.getData();
+				if (!(data instanceof Dataset)) continue;
+				final Dataset dataset = (Dataset) data;
+				datasets.add(dataset);
+			}
+		}
+		return datasets;
 	}
 
 	/**
@@ -81,7 +131,7 @@ public final class DatasetFactory {
 	 * @throws IllegalArgumentException If the combination of bitsPerPixel, signed
 	 *           and floating parameters do not form a valid data type.
 	 */
-	public static Dataset create(final long[] dims, final String name,
+	public Dataset create(final long[] dims, final String name,
 		final AxisType[] axes, final int bitsPerPixel, final boolean signed,
 		final boolean floating)
 	{
@@ -130,7 +180,7 @@ public final class DatasetFactory {
 	 * @param axes The dataset's dimensional axis labels.
 	 * @return The newly created dataset.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> Dataset create(
+	public <T extends RealType<T> & NativeType<T>> Dataset create(
 		final T type, final long[] dims, final String name, final AxisType[] axes)
 	{
 		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
@@ -138,7 +188,7 @@ public final class DatasetFactory {
 	}
 
 	/**
-	 * Creates a new dataset using provided ImgFactory
+	 * Creates a new dataset using provided {@link ImgFactory}.
 	 * 
 	 * @param <T> The type of the dataset.
 	 * @param factory The ImgFactory to use to create the data.
@@ -148,7 +198,7 @@ public final class DatasetFactory {
 	 * @param axes The dataset's dimensional axis labels.
 	 * @return The newly created dataset.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> Dataset create(
+	public <T extends RealType<T> & NativeType<T>> Dataset create(
 		final ImgFactory<T> factory, final T type, final long[] dims,
 		final String name, final AxisType[] axes)
 	{
@@ -159,7 +209,7 @@ public final class DatasetFactory {
 
 	// -- Helper methods --
 
-	private static void invalidParams(final int bitsPerPixel,
+	private void invalidParams(final int bitsPerPixel,
 		final boolean signed, final boolean floating)
 	{
 		throw new IllegalArgumentException("Invalid parameters: bitsPerPixel=" +

@@ -36,7 +36,7 @@ package imagej.core.plugins.assign;
 
 import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
-import imagej.data.DatasetFactory;
+import imagej.data.DatasetService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -84,6 +84,9 @@ import net.imglib2.type.numeric.real.DoubleType;
 public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
+
+	@Parameter(persist = false)
+	private DatasetService datasetService;
 
 	@Parameter(persist = false)
 	private UIService uiService;
@@ -160,10 +163,10 @@ public class ImageMath implements ImageJPlugin {
 		}
 		// TODO : HACK - this next line works but always creates a PlanarImg
 		output =
-			DatasetFactory.create(span, "Result of operation", input1.getAxes(),
+			datasetService.create(span, "Result of operation", input1.getAxes(),
 				bits, signed, floating);
 		// This is what I'd like to do
-		// output = DatasetFactory.create(input1.getType(), span,
+		// output = datasetService.create(input1.getType(), span,
 		// "Result of operation", input1.getAxes());
 
 		assignPixelValues(span);
