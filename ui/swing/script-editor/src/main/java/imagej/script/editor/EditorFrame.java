@@ -1266,7 +1266,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			final PipedOutputStream po = new PipedOutputStream(pi);
 			// The Executer creates a Thread that
 			// does the reading from PipedInputStream
-			this.executer = new EditorFrame.Executer(output, errors) {
+			this.executer = new Executer(EditorFrame.this, output, errors) {
 
 				@Override
 				public void execute() {
@@ -1716,148 +1716,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 	}
 
 	/** Using a Vector to benefit from all its methods being synchronzed. */
-	private final ArrayList<Executer> executingTasks = new ArrayList<Executer>();
-
-	/**
-	 * Generic Thread that keeps a starting time stamp, sets the priority to
-	 * normal and starts itself.
-	 */
-	private abstract class Executer extends ThreadGroup {
-
-		protected JTextAreaWriter writer, errorWriter;
-
-		@Override
-		public void
-			uncaughtException(final Thread thread, final Throwable throwable)
-		{
-			// TODO!
-			throw new RuntimeException("TODO");
-		}
-
-		public Executer(final JTextAreaWriter writer,
-			final JTextAreaWriter errorWriter)
-		{
-			super("Script Editor Run :: " + new Date().toString());
-			this.writer = writer;
-			this.errorWriter = errorWriter;
-			// Store itself for later
-			executingTasks.add(this);
-			setTitle();
-			// Enable kill menu
-			kill.setEnabled(true);
-			// Fork a task, as a part of this ThreadGroup
-			new Thread(this, getName()) {
-
-				{
-					setPriority(Thread.NORM_PRIORITY);
-					start();
-				}
-
-				@Override
-				public void run() {
-					try {
-						execute();
-						// Wait until any children threads die:
-						int activeCount = getThreadGroup().activeCount();
-						while (activeCount > 1) {
-							if (isInterrupted()) break;
-							try {
-								Thread.sleep(500);
-								final List<Thread> ts = getAllThreads();
-								activeCount = ts.size();
-								if (activeCount <= 1) break;
-								Log.debug("Waiting for " + ts.size() + " threads to die");
-								int count_zSelector = 0;
-								for (final Thread t : ts) {
-									if (t.getName().equals("zSelector")) {
-										count_zSelector++;
-									}
-									Log.debug("THREAD: " + t.getName());
-								}
-								if (activeCount == count_zSelector + 1) {
-									// Do not wait on the stack slice selector thread.
-									break;
-								}
-							}
-							catch (final InterruptedException ie) {}
-						}
-					}
-					catch (final Throwable t) {
-						handleException(t);
-					}
-					finally {
-						executingTasks.remove(Executer.this);
-						try {
-							if (null != writer) writer.close();
-							if (null != errorWriter) errorWriter.close();
-						}
-						catch (final Exception e) {
-							handleException(e);
-						}
-						// Leave kill menu item enabled if other tasks are running
-						kill.setEnabled(executingTasks.size() > 0);
-						setTitle();
-					}
-				}
-			};
-		}
-
-		/** The method to extend, that will do the actual work. */
-		abstract void execute();
-
-		/** Fetch a list of all threads from all thread subgroups, recursively. */
-		List<Thread> getAllThreads() {
-			final ArrayList<Thread> threads = new ArrayList<Thread>();
-			// From all subgroups:
-			final ThreadGroup[] tgs = new ThreadGroup[activeGroupCount() * 2 + 100];
-			this.enumerate(tgs, true);
-			for (final ThreadGroup tg : tgs) {
-				if (null == tg) continue;
-				final Thread[] ts = new Thread[tg.activeCount() * 2 + 100];
-				tg.enumerate(ts);
-				for (final Thread t : ts) {
-					if (null == t) continue;
-					threads.add(t);
-				}
-			}
-			// And from this group:
-			final Thread[] ts = new Thread[activeCount() * 2 + 100];
-			this.enumerate(ts);
-			for (final Thread t : ts) {
-				if (null == t) continue;
-				threads.add(t);
-			}
-			return threads;
-		}
-
-		/**
-		 * Totally destroy/stop all threads in this and all recursive thread
-		 * subgroups. Will remove itself from the executingTasks list.
-		 */
-		@SuppressWarnings("deprecation")
-		void obliterate() {
-			try {
-				// Stop printing to the screen
-				if (null != writer) writer.shutdownNow();
-				if (null != errorWriter) errorWriter.shutdownNow();
-			}
-			catch (final Exception e) {
-				e.printStackTrace();
-			}
-			for (final Thread thread : getAllThreads()) {
-				try {
-					thread.interrupt();
-					Thread.yield(); // give it a chance
-					thread.stop();
-				}
-				catch (final Throwable t) {
-					t.printStackTrace();
-				}
-			}
-			executingTasks.remove(this);
-			setTitle();
-		}
-	}
+	final ArrayList<Executer> executingTasks = new ArrayList<Executer>();
 
 	/**
 	 * Query the list of running scripts and provide a dialog to choose one and
@@ -1953,7 +1812,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 		final File file = getEditorPane().file;
 		scriptService.initialize(engine, file.getPath(), writer, errorWriter);
 
-		new EditorFrame.Executer(writer, errorWriter) {
+		new Executer(this, writer, errorWriter) {
 
 			@Override
 			public void execute() {
