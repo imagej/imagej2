@@ -39,10 +39,7 @@ import imagej.script.ScriptService;
 import imagej.util.AppUtils;
 import imagej.util.Log;
 
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,9 +54,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +71,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -85,10 +78,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
@@ -1094,267 +1084,6 @@ public class EditorFrame extends JFrame implements ActionListener,
 		return (Tab) tabbed.getComponentAt(index);
 	}
 
-	public class Tab extends JSplitPane {
-
-		protected final EditorPane editorPane = new EditorPane(EditorFrame.this);
-		protected final JTextArea screen = new JTextArea();
-		protected final JScrollPane scroll;
-		protected boolean showingErrors;
-		private Executer executer;
-		private final JButton runit, killit, toggleErrors;
-
-		public Tab() {
-			super(JSplitPane.VERTICAL_SPLIT);
-			super.setResizeWeight(350.0 / 430.0);
-
-			screen.setEditable(false);
-			screen.setLineWrap(true);
-			screen.setFont(new Font("Courier", Font.PLAIN, 12));
-
-			final JPanel bottom = new JPanel();
-			bottom.setLayout(new GridBagLayout());
-			final GridBagConstraints bc = new GridBagConstraints();
-
-			bc.gridx = 0;
-			bc.gridy = 0;
-			bc.weightx = 0;
-			bc.weighty = 0;
-			bc.anchor = GridBagConstraints.NORTHWEST;
-			bc.fill = GridBagConstraints.NONE;
-			runit = new JButton("Run");
-			runit.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(final ActionEvent ae) {
-					runText();
-				}
-			});
-			bottom.add(runit, bc);
-
-			bc.gridx = 1;
-			killit = new JButton("Kill");
-			killit.setEnabled(false);
-			killit.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(final ActionEvent ae) {
-					kill();
-				}
-			});
-			bottom.add(killit, bc);
-
-			bc.gridx = 2;
-			bc.fill = GridBagConstraints.HORIZONTAL;
-			bc.weightx = 1;
-			bottom.add(new JPanel(), bc);
-
-			bc.gridx = 3;
-			bc.fill = GridBagConstraints.NONE;
-			bc.weightx = 0;
-			bc.anchor = GridBagConstraints.NORTHEAST;
-			toggleErrors = new JButton("Show Errors");
-			toggleErrors.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(final ActionEvent e) {
-					toggleErrors();
-				}
-			});
-			bottom.add(toggleErrors, bc);
-
-			bc.gridx = 4;
-			bc.fill = GridBagConstraints.NONE;
-			bc.weightx = 0;
-			bc.anchor = GridBagConstraints.NORTHEAST;
-			final JButton clear = new JButton("Clear");
-			clear.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(final ActionEvent ae) {
-					if (showingErrors) errorScreen.setText("");
-					else screen.setText("");
-				}
-			});
-			bottom.add(clear, bc);
-
-			bc.gridx = 0;
-			bc.gridy = 1;
-			bc.anchor = GridBagConstraints.NORTHWEST;
-			bc.fill = GridBagConstraints.BOTH;
-			bc.weightx = 1;
-			bc.weighty = 1;
-			bc.gridwidth = 5;
-			screen.setEditable(false);
-			screen.setLineWrap(true);
-			final Font font = new Font("Courier", Font.PLAIN, 12);
-			screen.setFont(font);
-			scroll = new JScrollPane(screen);
-			scroll.setPreferredSize(new Dimension(600, 80));
-			bottom.add(scroll, bc);
-
-			super.setTopComponent(editorPane.embedWithScrollbars());
-			super.setBottomComponent(bottom);
-		}
-
-		/** Invoke in the context of the event dispatch thread. */
-		private void prepare() {
-			// TODO! editorPane.setEditable(false);
-			runit.setEnabled(false);
-			killit.setEnabled(true);
-		}
-
-		private void restore() {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO! editorPane.setEditable(true);
-					runit.setEnabled(true);
-					killit.setEnabled(false);
-					executer = null;
-				}
-			});
-		}
-
-		public void toggleErrors() {
-			showingErrors = !showingErrors;
-			if (showingErrors) {
-				toggleErrors.setText("Show Output");
-				scroll.setViewportView(errorScreen);
-			}
-			else {
-				toggleErrors.setText("Show Errors");
-				scroll.setViewportView(screen);
-			}
-		}
-
-		public void showErrors() {
-			if (!showingErrors) toggleErrors();
-			else if (scroll.getViewport().getView() == null) scroll
-				.setViewportView(errorScreen);
-		}
-
-		public void showOutput() {
-			if (showingErrors) toggleErrors();
-		}
-
-		public JTextArea getScreen() {
-			return showingErrors ? errorScreen : screen;
-		}
-
-		boolean isExecuting() {
-			return null != executer;
-		}
-
-		String getTitle() {
-			return (editorPane.fileChanged() ? "*" : "") + editorPane.getFileName() +
-				(isExecuting() ? " (Running)" : "");
-		}
-
-		/** Invoke in the context of the event dispatch thread. */
-		private void execute(final ScriptEngineFactory language,
-			final boolean selectionOnly) throws IOException
-		{
-			prepare();
-			final JTextAreaWriter output = new JTextAreaWriter(this.screen);
-			final JTextAreaWriter errors = new JTextAreaWriter(errorScreen);
-			final ScriptEngine engine = language.getScriptEngine();
-			scriptService
-				.initialize(engine, editorPane.getFileName(), output, errors);
-			// Pipe current text into the runScript:
-			final PipedInputStream pi = new PipedInputStream();
-			final PipedOutputStream po = new PipedOutputStream(pi);
-			// The Executer creates a Thread that
-			// does the reading from PipedInputStream
-			this.executer = new Executer(EditorFrame.this, output, errors) {
-
-				@Override
-				public void execute() {
-					try {
-						engine.eval(new InputStreamReader(pi));
-						output.flush();
-						errors.flush();
-						markCompileEnd();
-					}
-					catch (final ScriptException e) {
-						handleException(e);
-					}
-					finally {
-						restore();
-					}
-				}
-			};
-			// Write into PipedOutputStream
-			// from another Thread
-			try {
-				final String text;
-				if (selectionOnly) {
-					final String selected = getTextComponent().getSelectedText();
-					if (selected == null) {
-						error("Selection required!");
-						text = null;
-					}
-					else text = selected + "\n"; // Ensure code blocks are terminated
-				}
-				else {
-					text = getTextComponent().getText();
-				}
-				new Thread() {
-
-					{
-						setPriority(Thread.NORM_PRIORITY);
-					}
-
-					@Override
-					public void run() {
-						final PrintWriter pw = new PrintWriter(po);
-						pw.write(text);
-						pw.flush(); // will lock and wait in some cases
-						try {
-							po.close();
-						}
-						catch (final Throwable tt) {
-							tt.printStackTrace();
-						}
-					}
-				}.start();
-			}
-			catch (final Throwable t) {
-				t.printStackTrace();
-			}
-			finally {
-				// Re-enable when all text to send has been sent
-				getTextComponent().setEditable(true);
-			}
-		}
-
-		protected void kill() {
-			if (null == executer) return;
-			// Graceful attempt:
-			executer.interrupt();
-			// Give it 3 seconds. Then, stop it.
-			final long now = System.currentTimeMillis();
-			new Thread() {
-
-				{
-					setPriority(Thread.NORM_PRIORITY);
-				}
-
-				@Override
-				public void run() {
-					while (System.currentTimeMillis() - now < 3000)
-						try {
-							Thread.sleep(100);
-						}
-						catch (final InterruptedException e) {}
-					if (null != executer) executer.obliterate();
-					restore();
-
-				}
-			}.start();
-		}
-	}
-
 	public static boolean isBinary(final File file) {
 		if (file == null) return false;
 		// heuristic: read the first up to 8000 bytes, and say that it is binary if
@@ -1407,7 +1136,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			Tab tab = getTab();
 			final boolean wasNew = tab != null && tab.editorPane.isNew();
 			if (!wasNew) {
-				tab = new Tab();
+				tab = new Tab(this);
 				addDefaultAccelerators(tab.editorPane.textArea);
 			}
 			synchronized (tab.editorPane) {
