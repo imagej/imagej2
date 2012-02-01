@@ -42,7 +42,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
- * A rectangular region of interest.
+ * An axis-aligned rectangle, backed by a {@link RectangleRegionOfInterest}.
  * 
  * @author Lee Kamentsky
  */
@@ -50,9 +50,6 @@ public class RectangleOverlay extends
 	AbstractROIOverlay<RectangleRegionOfInterest>
 {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public RectangleOverlay() {
