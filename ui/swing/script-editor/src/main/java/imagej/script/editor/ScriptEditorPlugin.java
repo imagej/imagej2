@@ -54,7 +54,7 @@ public class ScriptEditorPlugin implements Command {
 
 	@Override
 	public void run() {
-		new TextEditor(scriptService, null).setVisible(true);
+		new EditorFrame(scriptService, null).setVisible(true);
 	}
 
 }

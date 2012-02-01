@@ -63,9 +63,9 @@ public class FileFunctions {
 
 	protected static File imagejRoot = AppUtils.getBaseDirectory();
 
-	protected TextEditor parent;
+	protected EditorFrame parent;
 
-	public FileFunctions(final TextEditor parent) {
+	public FileFunctions(final EditorFrame parent) {
 		this.parent = parent;
 	}
 
@@ -643,7 +643,7 @@ public class FileFunctions {
 	public class ScreenLineHandler implements SimpleExecuter.LineHandler {
 
 		public void handleLine(final String line) {
-			final TextEditor.Tab tab = parent.getTab();
+			final EditorFrame.Tab tab = parent.getTab();
 			tab.screen.insert(line + "\n", tab.screen.getDocument().getLength());
 		}
 	}

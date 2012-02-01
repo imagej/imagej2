@@ -1,5 +1,5 @@
 //
-// TextEditor.java
+// EditorFrame.java
 //
 
 /*
@@ -101,7 +101,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
 @SuppressWarnings("serial")
-public class TextEditor extends JFrame implements ActionListener,
+public class EditorFrame extends JFrame implements ActionListener,
 	ChangeListener
 {
 
@@ -156,7 +156,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected Position compileStartPosition;
 	protected ErrorHandler errorHandler;
 
-	public TextEditor(final ScriptService scriptService, final File file) {
+	public EditorFrame(final ScriptService scriptService, final File file) {
 		super("Script Editor");
 		this.scriptService = scriptService;
 
@@ -502,7 +502,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 			@Override
 			public void windowClosed(final WindowEvent e) {
-				// TODO: WindowManager.removeWindow(TextEditor.this);
+				// TODO: WindowManager.removeWindow(EditorFrame.this);
 			}
 		});
 
@@ -546,7 +546,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	/* TODO! still needed?
-	public TextEditor(String title, String text) {
+	public EditorFrame(String title, String text) {
 		this(ImageJ.get(ScriptService.class), null);
 		final EditorPane editorPane = getEditorPane();
 		editorPane.textComponent.setText(text);
@@ -558,7 +558,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	/**
 	 * Open a new editor to edit the given file, with a templateFile if the file does not exist yet
 	 * /
-	public TextEditor(File file, File templateFile) {
+	public EditorFrame(File file, File templateFile) {
 		this(ImageJ.get(ScriptService.class), file.exists() ? file.getPath() : templateFile.getPath());
 		if (!file.exists()) {
 			final EditorPane editorPane = getEditorPane();
@@ -639,7 +639,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			public void actionPerformed(final ActionEvent e) {
 				if (!component.isEnabled()) return;
 				final ActionEvent event = new ActionEvent(component, 0, "Accelerator");
-				TextEditor.this.actionPerformed(event);
+				EditorFrame.this.actionPerformed(event);
 			}
 		});
 	}
@@ -673,7 +673,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	 * Initializes the template menu.
 	 */
 	protected void addTemplates(final JMenu templatesMenu) {
-		String url = TextEditor.class.getResource("TextEditor.class").toString();
+		String url = EditorFrame.class.getResource("EditorFrame.class").toString();
 		final String classFilePath =
 			"/" + getClass().getName().replace('.', '/') + ".class";
 		if (!url.endsWith(classFilePath)) return;
@@ -923,7 +923,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			new Thread() {
 				public void run() {
 					EditorPane pane = getEditorPane();
-					new FileFunctions(TextEditor.this).showDiff(pane.file, pane.getGitDirectory());
+					new FileFunctions(EditorFrame.this).showDiff(pane.file, pane.getGitDirectory());
 				}
 			}.start();
 		}
@@ -931,7 +931,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			new Thread() {
 				public void run() {
 					EditorPane pane = getEditorPane();
-					new FileFunctions(TextEditor.this).commit(pane.file, pane.getGitDirectory());
+					new FileFunctions(EditorFrame.this).commit(pane.file, pane.getGitDirectory());
 				}
 			}.start();
 		}
@@ -1096,7 +1096,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public class Tab extends JSplitPane {
 
-		protected final EditorPane editorPane = new EditorPane(TextEditor.this);
+		protected final EditorPane editorPane = new EditorPane(EditorFrame.this);
 		protected final JTextArea screen = new JTextArea();
 		protected final JScrollPane scroll;
 		protected boolean showingErrors;
@@ -1266,7 +1266,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			final PipedOutputStream po = new PipedOutputStream(pi);
 			// The Executer creates a Thread that
 			// does the reading from PipedInputStream
-			this.executer = new TextEditor.Executer(output, errors) {
+			this.executer = new EditorFrame.Executer(output, errors) {
 
 				@Override
 				public void execute() {
@@ -1953,7 +1953,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		final File file = getEditorPane().file;
 		scriptService.initialize(engine, file.getPath(), writer, errorWriter);
 
-		new TextEditor.Executer(writer, errorWriter) {
+		new EditorFrame.Executer(writer, errorWriter) {
 
 			@Override
 			public void execute() {
@@ -2197,28 +2197,32 @@ public class TextEditor extends JFrame implements ActionListener,
 		final JFileChooser dialog = new JFileChooser();
 		dialog.setDialogTitle(title);
 		if (defaultDir != null) dialog.setCurrentDirectory(defaultDir);
-		if (extensions != null) dialog.addChoosableFileFilter(new FileFilter() {
+		if (extensions != null) {
+			final FileFilter fileFilter = new FileFilter() {
 
-			@Override
-			public boolean accept(final File file) {
-				final String name = file.getName();
-				for (final String extension : extensions)
-					if (name.endsWith(extension)) return extensionMustMatch;
-				return !extensionMustMatch;
-			}
-
-			@Override
-			public String getDescription() {
-				final StringBuilder builder = new StringBuilder();
-				String separator = "Only ";
-				for (final String extension : extensions) {
-					builder.append(separator).append(extension);
-					separator = ", ";
+				@Override
+				public boolean accept(final File file) {
+					final String name = file.getName();
+					for (final String extension : extensions)
+						if (name.endsWith(extension)) return extensionMustMatch;
+					return !extensionMustMatch;
 				}
-				builder.append(" files");
-				return builder.toString();
-			}
-		});
+
+				@Override
+				public String getDescription() {
+					final StringBuilder builder = new StringBuilder();
+					String separator = extensionMustMatch ? "Only " : "No ";
+					for (final String extension : extensions) {
+						builder.append(separator).append(extension);
+						separator = ", ";
+					}
+					builder.append(" files");
+					return builder.toString();
+				}
+			};
+			dialog.addChoosableFileFilter(fileFilter);
+			dialog.setFileFilter(fileFilter);
+		}
 		if (dialog.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return null;
 		return dialog.getSelectedFile();
 	}
@@ -2268,4 +2272,5 @@ public class TextEditor extends JFrame implements ActionListener,
 		// TODO Auto-generated method stub
 		throw new RuntimeException("TODO");
 	}
+
 }

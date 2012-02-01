@@ -41,9 +41,9 @@ import javax.swing.JTextArea;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-	protected TextEditor textEditor;
+	protected EditorFrame textEditor;
 
-	public ExceptionHandler(final TextEditor textEditor) {
+	public ExceptionHandler(final EditorFrame textEditor) {
 		this.textEditor = textEditor;
 	}
 
@@ -52,7 +52,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		handle(t, textEditor);
 	}
 
-	public static void handle(Throwable t, final TextEditor editor) {
+	public static void handle(Throwable t, final EditorFrame editor) {
 		final JTextArea screen = editor.errorScreen;
 		editor.getTab().showErrors();
 

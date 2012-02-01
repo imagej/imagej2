@@ -49,12 +49,12 @@ import javax.swing.JMenuItem;
 @SuppressWarnings("serial")
 public class RecentFilesMenuItem extends JMenu {
 
-	protected TextEditor editor;
+	protected EditorFrame editor;
 	protected int maxCount = 10, maxLength = 35;
 	protected LinkedList<String> list = new LinkedList<String>();
 	protected final static String prefsPrefix = "script.editor.recent";
 
-	public RecentFilesMenuItem(final TextEditor editor) {
+	public RecentFilesMenuItem(final EditorFrame editor) {
 		super("Open Recent");
 		this.editor = editor;
 

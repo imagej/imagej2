@@ -55,9 +55,9 @@ public class BookmarkDialog extends JDialog implements ActionListener {
 
 	JList list;
 	JButton okay, cancel;
-	protected TextEditor textEditor;
+	protected EditorFrame textEditor;
 
-	public BookmarkDialog(final TextEditor textEditor,
+	public BookmarkDialog(final EditorFrame textEditor,
 		final Vector<Bookmark> bookmarks)
 	{
 		super(textEditor, "Bookmarks", true);

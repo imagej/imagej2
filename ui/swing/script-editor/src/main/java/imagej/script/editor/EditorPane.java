@@ -61,7 +61,7 @@ import javax.swing.text.BadLocationException;
 public class EditorPane implements DocumentListener {
 
 	protected JTextArea textArea;
-	protected TextEditor frame;
+	protected EditorFrame frame;
 	protected String fallBackBaseName;
 	protected File file, gitDirectory;
 	protected long fileLastModified;
@@ -69,7 +69,7 @@ public class EditorPane implements DocumentListener {
 	protected int modifyCount;
 	protected boolean undoInProgress, redoInProgress;
 
-	public EditorPane(final TextEditor frame) {
+	public EditorPane(final EditorFrame frame) {
 		this.frame = frame;
 		textArea = new JTextArea();
 		setTabSize(8);
@@ -192,7 +192,7 @@ public class EditorPane implements DocumentListener {
 	}
 
 	public void setFileName(final String baseName) {
-		/* TODO! move part of this to TextEditor
+		/* TODO! move part of this to EditorFrame
 		String name = baseName;
 		if (baseName.endsWith(currentLanguage.extension)) name =
 			name.substring(0, name.length() - currentLanguage.extension.length());
@@ -266,7 +266,7 @@ public class EditorPane implements DocumentListener {
 		return dot < 0 ? "" : fileName.substring(dot);
 	}
 
-	/* TODO! move to TextEditor
+	/* TODO! move to EditorFrame
 	protected void setLanguageByFileName(final String name) {
 		setLanguage(Languages.get(getExtension(name)));
 	}
