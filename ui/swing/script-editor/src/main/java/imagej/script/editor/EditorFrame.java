@@ -1341,15 +1341,17 @@ public class EditorFrame extends JFrame implements ActionListener,
 		// TODO! showDeprecation.setVisible(isCompileable);
 		// TODO! makeJarWithSource.setVisible(isCompileable);
 
+		final String languageName =
+			language == null ? "" : language.getLanguageName();
 		/* TODO!
-		final boolean isJava = language.getLanguageName().equals("Java");
+		final boolean isJava = languageName.equals("Java");
 		addImport.setVisible(isJava);
 		removeUnusedImports.setVisible(isJava);
 		sortImports.setVisible(isJava);
 		openSourceForMenuItem.setVisible(isJava);
 		*/
 
-		final boolean isMacro = language.getLanguageName().equals("ImageJ Macro");
+		final boolean isMacro = languageName.equals("ImageJ Macro");
 		/* TODO!
 		installMacro.setVisible(isMacro);
 		openMacroFunctions.setVisible(isMacro);

@@ -213,6 +213,10 @@ public class EditorPane implements DocumentListener {
 	}
 
 	protected void updateLanguage() {
+		if (file == null) {
+			setLanguage(null);
+			return;
+		}
 		final String fileExtension = FileUtils.getExtension(file);
 		final ScriptEngineFactory language =
 			frame.scriptService.getByFileExtension(fileExtension);
@@ -251,11 +255,18 @@ public class EditorPane implements DocumentListener {
 		return gitDirectory;
 	}
 
+	protected String getDefaultExtension() {
+		if (currentLanguage == null) return "";
+		final List<String> extensions = currentLanguage.getExtensions();
+		if (extensions.size() == 0) return "";
+		return extensions.get(0);
+	}
+
 	protected String getFileName() {
 		if (file != null) return file.getName();
-		final List<String> extensions = currentLanguage.getExtensions();
+
 		return (fallBackBaseName == null ? "New_" : fallBackBaseName) +
-			(extensions.size() > 0 ? extensions.get(0) : "");
+			getDefaultExtension();
 	}
 
 	private synchronized void setTitle() {
