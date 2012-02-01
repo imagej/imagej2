@@ -131,9 +131,11 @@ public final class UIService extends AbstractService {
 	/** Processes the given command line arguments. */
 	public void processArgs(final String[] args) {
 		Log.info("Received command line arguments:");
-		for (final String arg : args)
+		for (final String arg : args) {
 			Log.info("\t" + arg);
-		getUI().processArgs(args);
+		}
+		if (userInterface == null) return;
+		userInterface.processArgs(args);
 	}
 
 	/** Gets the active user interface. */
@@ -148,6 +150,7 @@ public final class UIService extends AbstractService {
 
 	/** Creates a new output window. */
 	public OutputWindow createOutputWindow(final String title) {
+		if (userInterface == null) return null;
 		return userInterface.newOutputWindow(title);
 	}
 
@@ -210,8 +213,9 @@ public final class UIService extends AbstractService {
 		final String title, final DialogPrompt.MessageType messageType,
 		final DialogPrompt.OptionType optionType)
 	{
+		if (userInterface == null) return null;
 		final DialogPrompt dialogPrompt =
-			getUI().dialogPrompt(message, title, messageType, optionType);
+			userInterface.dialogPrompt(message, title, messageType, optionType);
 		return dialogPrompt.prompt();
 	}
 
@@ -222,6 +226,7 @@ public final class UIService extends AbstractService {
 	public void showContextMenu(final String menuRoot, final Display<?> display,
 		final int x, final int y)
 	{
+		if (userInterface == null) return;
 		userInterface.showContextMenu(menuRoot, display, x, y);
 	}
 
@@ -236,7 +241,8 @@ public final class UIService extends AbstractService {
 		// MenusRemovedEvent and MenusUpdatedEvent separately and surgically
 		// adjust the menus accordingly. But this would require updates to
 		// the MenuCreator API to be more powerful.
-		getUI().createMenus();
+		if (userInterface == null) return;
+		userInterface.createMenus();
 	}
 
 	// -- Helper methods --
