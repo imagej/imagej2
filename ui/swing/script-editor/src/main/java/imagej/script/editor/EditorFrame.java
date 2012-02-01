@@ -992,7 +992,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 		currentEditorPane.requestFocus();
 		setTitle(tab.getTitle());
 		currentEditorPane.checkForOutsideChanges();
-		currentEditorPane.updateLanguage();
+		updateLanguageMenu(currentEditorPane.currentLanguage);
 		// TODO!
 		// toggleWhiteSpaceLabeling.setSelected(((JTextComponent)editorPane).isWhitespaceVisible());
 	}
