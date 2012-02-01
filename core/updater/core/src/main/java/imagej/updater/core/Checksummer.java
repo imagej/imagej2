@@ -38,6 +38,7 @@ import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Progress;
 import imagej.updater.util.Progressable;
 import imagej.updater.util.Util;
+import imagej.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -96,7 +97,7 @@ public class Checksummer extends Progressable {
 			return file.getCanonicalFile().exists();
 		}
 		catch (final IOException e) {
-			e.printStackTrace();
+			Log.error(e);
 		}
 		return false;
 	}
@@ -171,10 +172,10 @@ public class Checksummer extends Progressable {
 			}
 		}
 		catch (final ZipException e) {
-			System.err.println("Problem digesting " + file);
+			Log.error("Problem digesting " + file);
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 		}
 		else {
 			final FileObject object = files.get(path);

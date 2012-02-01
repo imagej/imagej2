@@ -56,6 +56,7 @@ import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
+import imagej.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -501,7 +502,7 @@ public class UpdaterTest {
 			}
 		}
 		catch (final Throwable t) {
-			t.printStackTrace();
+			Log.error(t);
 		}
 	}
 

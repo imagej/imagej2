@@ -38,6 +38,7 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Util;
+import imagej.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -611,7 +612,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			return dependencyAnalyzer.getDependencies(imagejRoot, file.getFilename());
 		}
 		catch (final IOException e) {
-			e.printStackTrace();
+			Log.error(e);
 			return null;
 		}
 	}

@@ -46,6 +46,7 @@ import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.InputStream2OutputStream;
 import imagej.updater.util.UserInterface;
+import imagej.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -216,7 +217,7 @@ public class SSHFileUploader extends AbstractUploader {
 			channel.connect();
 		}
 		catch (final JSchException e) {
-			e.printStackTrace();
+			Log.error(e);
 			throw new IOException(e.getMessage());
 		}
 	}

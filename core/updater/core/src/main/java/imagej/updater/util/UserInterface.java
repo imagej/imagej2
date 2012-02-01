@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.util;
 
+import imagej.util.Log;
+
 import java.awt.Frame;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -126,7 +128,7 @@ public abstract class UserInterface {
 
 		@Override
 		public void handleException(final Throwable exception) {
-			exception.printStackTrace();
+			Log.error(exception);
 		}
 
 		@Override

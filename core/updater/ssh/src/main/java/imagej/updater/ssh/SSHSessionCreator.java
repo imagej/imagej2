@@ -147,7 +147,7 @@ final class SSHSessionCreator {
 			return result;
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			return null;
 		}
 	}
