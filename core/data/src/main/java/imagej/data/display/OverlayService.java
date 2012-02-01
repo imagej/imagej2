@@ -59,6 +59,7 @@ import net.imglib2.roi.RegionOfInterest;
 public final class OverlayService extends AbstractService {
 
 	private final ObjectService objectService;
+
 	private OverlaySettings defaultSettings;
 
 	// -- Constructors --
@@ -77,6 +78,10 @@ public final class OverlayService extends AbstractService {
 
 	// -- OverlayService methods --
 
+	public ObjectService getObjectService() {
+		return objectService;
+	}
+
 	/**
 	 * Gets a list of all {@link Overlay}s. This method is a shortcut that
 	 * delegates to {@link ObjectService}.
@@ -85,7 +90,9 @@ public final class OverlayService extends AbstractService {
 		return objectService.getObjects(Overlay.class);
 	}
 
-	/** Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}. */
+	/**
+	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
+	 */
 	public List<Overlay> getOverlays(final ImageDisplay display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {

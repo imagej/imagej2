@@ -90,10 +90,10 @@ public class XMLFileDownloader extends Progressable {
 				updateSite.setLastModified(lastModified);
 			}
 			catch (final Exception e) {
-				if (e instanceof FileNotFoundException) updateSite.setLastModified(0); // it
-																																								// was
-																																								// deleted
-				e.printStackTrace();
+				if (e instanceof FileNotFoundException) {
+					// it was deleted
+					updateSite.setLastModified(0);
+				}
 				warnings += "Could not update from site '" + name + "': " + e;
 			}
 			itemDone(title);

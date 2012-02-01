@@ -603,19 +603,16 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	// -- Helper methods --
 
-	// NB - this method necessary to make sure resources get returned via GC.
-	// Else there is a memory leak.
-	private void unsubscribeFromEvents() {
-		eventService.unsubscribe(subscribers);
-	}
-
+	/** Frees resources associated with the display. */
 	private void cleanup() {
 		// NB: Fixes bug #893.
 		for (final DataView view : this) {
 			view.dispose();
 		}
 		clear();
-		unsubscribeFromEvents();
+		// NB - this is necessary to make sure resources get returned via GC.
+		// Else there is a memory leak.
+		eventService.unsubscribe(subscribers);
 	}
 
 	protected Dataset getDataset(final DataView view) {
