@@ -34,88 +34,37 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-import imagej.data.display.DataView;
+import imagej.IService;
 import imagej.data.display.ImageDisplay;
 import imagej.object.ObjectService;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
-import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.ByteType;
-import net.imglib2.type.numeric.integer.IntType;
-import net.imglib2.type.numeric.integer.LongType;
-import net.imglib2.type.numeric.integer.ShortType;
-import net.imglib2.type.numeric.integer.Unsigned12BitType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.type.numeric.integer.UnsignedIntType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
-import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.type.numeric.real.FloatType;
 
 /**
- * Service for working with {@link Dataset}s.
+ * Interface for service that works with {@link Dataset}s.
  * 
  * @author Curtis Rueden
  */
-@Service
-public final class DatasetService extends AbstractService {
+public interface DatasetService extends IService {
 
-	private final ObjectService objectService;
-
-	// -- Constructors --
-
-	public DatasetService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DatasetService(final ImageJ context, final ObjectService objectService)
-	{
-		super(context);
-		this.objectService = objectService;
-	}
-
-	// -- DatasetService methods --
-
-	public ObjectService getObjectService() {
-		return objectService;
-	}
+	ObjectService getObjectService();
 
 	/**
 	 * Gets a list of all {@link Dataset}s. This method is a shortcut that
 	 * delegates to {@link ObjectService}.
 	 */
-	public List<Dataset> getDatasets() {
-		return objectService.getObjects(Dataset.class);
-	}
+	List<Dataset> getDatasets();
 
 	/**
 	 * Gets a list of {@link Dataset}s linked to the given {@link ImageDisplay}.
 	 */
-	public List<Dataset> getDatasets(final ImageDisplay display) {
-		final ArrayList<Dataset> datasets = new ArrayList<Dataset>();
-		if (display != null) {
-			for (final DataView view : display) {
-				final Data data = view.getData();
-				if (!(data instanceof Dataset)) continue;
-				final Dataset dataset = (Dataset) data;
-				datasets.add(dataset);
-			}
-		}
-		return datasets;
-	}
+	List<Dataset> getDatasets(final ImageDisplay display);
 
 	/**
 	 * Creates a new dataset.
@@ -131,44 +80,8 @@ public final class DatasetService extends AbstractService {
 	 * @throws IllegalArgumentException If the combination of bitsPerPixel, signed
 	 *           and floating parameters do not form a valid data type.
 	 */
-	public Dataset create(final long[] dims, final String name,
-		final AxisType[] axes, final int bitsPerPixel, final boolean signed,
-		final boolean floating)
-	{
-		if (bitsPerPixel == 1) {
-			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
-			return create(new BitType(), dims, name, axes);
-		}
-		if (bitsPerPixel == 8) {
-			if (floating) invalidParams(bitsPerPixel, signed, floating);
-			if (signed) return create(new ByteType(), dims, name, axes);
-			return create(new UnsignedByteType(), dims, name, axes);
-		}
-		if (bitsPerPixel == 12) {
-			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
-			return create(new Unsigned12BitType(), dims, name, axes);
-		}
-		if (bitsPerPixel == 16) {
-			if (floating) invalidParams(bitsPerPixel, signed, floating);
-			if (signed) return create(new ShortType(), dims, name, axes);
-			return create(new UnsignedShortType(), dims, name, axes);
-		}
-		if (bitsPerPixel == 32) {
-			if (floating) {
-				if (!signed) invalidParams(bitsPerPixel, signed, floating);
-				return create(new FloatType(), dims, name, axes);
-			}
-			if (signed) return create(new IntType(), dims, name, axes);
-			return create(new UnsignedIntType(), dims, name, axes);
-		}
-		if (bitsPerPixel == 64) {
-			if (!signed) invalidParams(bitsPerPixel, signed, floating);
-			if (floating) return create(new DoubleType(), dims, name, axes);
-			return create(new LongType(), dims, name, axes);
-		}
-		invalidParams(bitsPerPixel, signed, floating);
-		return null;
-	}
+	Dataset create(final long[] dims, final String name, final AxisType[] axes,
+		final int bitsPerPixel, final boolean signed, final boolean floating);
 
 	/**
 	 * Creates a new dataset.
@@ -180,12 +93,8 @@ public final class DatasetService extends AbstractService {
 	 * @param axes The dataset's dimensional axis labels.
 	 * @return The newly created dataset.
 	 */
-	public <T extends RealType<T> & NativeType<T>> Dataset create(
-		final T type, final long[] dims, final String name, final AxisType[] axes)
-	{
-		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
-		return create(imgFactory, type, dims, name, axes);
-	}
+	<T extends RealType<T> & NativeType<T>> Dataset create(final T type,
+		final long[] dims, final String name, final AxisType[] axes);
 
 	/**
 	 * Creates a new dataset using the provided {@link ImgFactory}.
@@ -198,14 +107,9 @@ public final class DatasetService extends AbstractService {
 	 * @param axes The dataset's dimensional axis labels.
 	 * @return The newly created dataset.
 	 */
-	public <T extends RealType<T> & NativeType<T>> Dataset create(
+	<T extends RealType<T> & NativeType<T>> Dataset create(
 		final ImgFactory<T> factory, final T type, final long[] dims,
-		final String name, final AxisType[] axes)
-	{
-		final Img<T> img = factory.create(dims, type);
-		final ImgPlus<T> imgPlus = new ImgPlus<T>(img, name, axes, null);
-		return create(imgPlus);
-	}
+		final String name, final AxisType[] axes);
 
 	/**
 	 * Creates a new dataset using the provided {@link ImgPlus}.
@@ -213,19 +117,7 @@ public final class DatasetService extends AbstractService {
 	 * @param imgPlus The {@link ImgPlus} backing the dataset.
 	 * @return The newly created dataset.
 	 */
-	public <T extends RealType<T> & NativeType<T>> Dataset create(
-		final ImgPlus<T> imgPlus)
-	{
-		return new DefaultDataset(getContext(), imgPlus);
-	}
-
-	// -- Helper methods --
-
-	private void invalidParams(final int bitsPerPixel,
-		final boolean signed, final boolean floating)
-	{
-		throw new IllegalArgumentException("Invalid parameters: bitsPerPixel=" +
-			bitsPerPixel + ", signed=" + signed + ", floating=" + floating);
-	}
+	<T extends RealType<T> & NativeType<T>> Dataset create(
+		final ImgPlus<T> imgPlus);
 
 }
