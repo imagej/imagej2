@@ -96,6 +96,8 @@ public class EditorFrame extends JFrame implements ActionListener,
 {
 
 	protected JTabbedPane tabbed;
+	protected EditorPane currentEditorPane;
+
 	protected JMenuItem newFile,
 			open,
 			save,
@@ -979,16 +981,17 @@ public class EditorFrame extends JFrame implements ActionListener,
 
 	@Override
 	public void stateChanged(final ChangeEvent e) {
-		final int index = tabbed.getSelectedIndex();
-		if (index < 0) {
+		final Tab tab = getTab();
+		if (tab == null) {
 			setTitle("");
 			return;
 		}
-		final EditorPane editorPane = getEditorPane(index);
-		editorPane.requestFocus();
-		setTitle();
-		editorPane.checkForOutsideChanges();
-		editorPane.updateLanguage();
+		if (currentEditorPane == tab.editorPane) return;
+		currentEditorPane = tab.editorPane;
+		currentEditorPane.requestFocus();
+		setTitle(tab.getTitle());
+		currentEditorPane.checkForOutsideChanges();
+		currentEditorPane.updateLanguage();
 		// TODO!
 		// toggleWhiteSpaceLabeling.setSelected(((JTextComponent)editorPane).isWhitespaceVisible());
 	}
