@@ -182,14 +182,8 @@ public class EditorPane implements DocumentListener {
 			}
 			catch (final BadLocationException e) { /* ignore */}
 		}
-		discardAllEdits();
 		modifyCount = 0;
 		fileLastModified = file == null || !file.exists() ? 0 : file.lastModified();
-	}
-
-	private void discardAllEdits() {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("TODO");
 	}
 
 	private int getCaretLineNumber() {
