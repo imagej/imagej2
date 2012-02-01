@@ -1652,13 +1652,13 @@ public class TextEditor extends JFrame implements ActionListener,
 		showDeprecation.setVisible(isCompileable);
 		makeJarWithSource.setVisible(isCompileable);
 
-		boolean isJava = language.getLanguageName().equals("Java");
+		boolean isJava = language != null && language.getLanguageName().equals("Java");
 		addImport.setVisible(isJava);
 		removeUnusedImports.setVisible(isJava);
 		sortImports.setVisible(isJava);
 		openSourceForMenuItem.setVisible(isJava);
 
-		boolean isMacro = language.getLanguageName().equals("ImageJ Macro");
+		boolean isMacro = language != null && language.getLanguageName().equals("ImageJ Macro");
 		openMacroFunctions.setVisible(isMacro);
 		openSourceForClass.setVisible(!isMacro);
 

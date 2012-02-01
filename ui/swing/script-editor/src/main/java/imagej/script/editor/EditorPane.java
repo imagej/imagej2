@@ -314,13 +314,18 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	protected String getFileName() {
 		if (file != null)
 			return file.getName();
-		List<String> extensions = currentLanguage.getExtensions();
-		String extension = extensions.size() == 0 ? "" : ("." + extensions.get(0));
-		if (currentLanguage.getLanguageName().equals("Java")) {
-			String name =
-				new TokenFunctions(this).getClassName();
-			if (name != null) {
-				return name + extension;
+		String extension = "";
+		if (currentLanguage != null) {
+			List<String> extensions = currentLanguage.getExtensions();
+			if (extensions.size() > 0) {
+				extension = "." + extensions.get(0);
+			}
+			if (currentLanguage.getLanguageName().equals("Java")) {
+				String name =
+					new TokenFunctions(this).getClassName();
+				if (name != null) {
+					return name + extension;
+				}
 			}
 		}
 		return (fallBackBaseName == null ? "New_" : fallBackBaseName)
