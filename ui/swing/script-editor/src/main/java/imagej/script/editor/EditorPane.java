@@ -147,12 +147,11 @@ public class EditorPane implements DocumentListener {
 		fileLastModified = file.lastModified();
 	}
 
-	public void setFile(final String path) throws IOException {
-		final File oldFile = file;
-		file = null;
-		if (path == null) textArea.setText("");
+	public void open(final File file) throws IOException {
+		final File oldFile = this.file;
+		this.file = null;
+		if (file == null) textArea.setText("");
 		else {
-			final File file = new File(path);
 			int line = 0;
 			try {
 				if (file.getCanonicalPath().equals(oldFile.getCanonicalPath())) line =
@@ -390,4 +389,5 @@ public class EditorPane implements DocumentListener {
 	public void requestFocus() {
 		textArea.requestFocus();
 	}
+
 }

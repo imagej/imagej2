@@ -40,7 +40,6 @@ import imagej.util.AppUtils;
 import imagej.util.Log;
 
 import java.awt.Dimension;
-import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -55,7 +54,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -81,6 +79,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -96,6 +95,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
@@ -156,7 +156,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected Position compileStartPosition;
 	protected ErrorHandler errorHandler;
 
-	public TextEditor(final ScriptService scriptService, final String path) {
+	public TextEditor(final ScriptService scriptService, final File file) {
 		super("Script Editor");
 		this.scriptService = scriptService;
 
@@ -166,29 +166,29 @@ public class TextEditor extends JFrame implements ActionListener,
 		final JMenuBar mbar = new JMenuBar();
 		setJMenuBar(mbar);
 
-		final JMenu file = new JMenu("File");
-		file.setMnemonic(KeyEvent.VK_F);
-		newFile = addToMenu(file, "New", KeyEvent.VK_N, ctrl);
+		final JMenu fileMenu = new JMenu("File");
+		fileMenu.setMnemonic(KeyEvent.VK_F);
+		newFile = addToMenu(fileMenu, "New", KeyEvent.VK_N, ctrl);
 		newFile.setMnemonic(KeyEvent.VK_N);
-		open = addToMenu(file, "Open...", KeyEvent.VK_O, ctrl);
+		open = addToMenu(fileMenu, "Open...", KeyEvent.VK_O, ctrl);
 		open.setMnemonic(KeyEvent.VK_O);
 		openRecent = new RecentFilesMenuItem(this);
 		openRecent.setMnemonic(KeyEvent.VK_R);
-		file.add(openRecent);
-		save = addToMenu(file, "Save", KeyEvent.VK_S, ctrl);
+		fileMenu.add(openRecent);
+		save = addToMenu(fileMenu, "Save", KeyEvent.VK_S, ctrl);
 		save.setMnemonic(KeyEvent.VK_S);
-		saveas = addToMenu(file, "Save as...", 0, 0);
+		saveas = addToMenu(fileMenu, "Save as...", 0, 0);
 		saveas.setMnemonic(KeyEvent.VK_A);
-		file.addSeparator();
+		fileMenu.addSeparator();
 		// TODO! makeJar = addToMenu(file, "Export as .jar", 0, 0);
 		// TODO! makeJar.setMnemonic(KeyEvent.VK_E);
 		// TODO! makeJarWithSource = addToMenu(file, "Export as .jar (with source)",
 		// 0, 0);
 		// TODO! makeJarWithSource.setMnemonic(KeyEvent.VK_X);
-		file.addSeparator();
-		close = addToMenu(file, "Close", KeyEvent.VK_W, ctrl);
+		fileMenu.addSeparator();
+		close = addToMenu(fileMenu, "Close", KeyEvent.VK_W, ctrl);
 
-		mbar.add(file);
+		mbar.add(fileMenu);
 
 		final JMenu edit = new JMenu("Edit");
 		edit.setMnemonic(KeyEvent.VK_E);
@@ -539,7 +539,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 		setLocationRelativeTo(null); // center on screen
 
-		open(path);
+		open(file);
 
 		final JTextComponent textComponent = getTextComponent();
 		if (textComponent != null) textComponent.requestFocus();
@@ -786,17 +786,17 @@ public class TextEditor extends JFrame implements ActionListener,
 		if (source == newFile) createNewDocument();
 		else if (source == open) {
 			final EditorPane editorPane = getEditorPane();
-			final String defaultDir =
+			final File defaultDir =
 				editorPane != null && editorPane.file != null ? editorPane.file
-					.getParent() : AppUtils.getBaseDirectory().getAbsolutePath();
-			final String path =
+					.getParentFile() : AppUtils.getBaseDirectory();
+			final File file =
 				openWithDialog("Open...", defaultDir,
 					new String[] { ".class", ".jar" }, false);
-			if (path != null) new Thread() {
+			if (file != null) new Thread() {
 
 				@Override
 				public void run() {
-					open(path);
+					open(file);
 				}
 			}.start();
 			return;
@@ -1073,7 +1073,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			options[0])) {
 			case 0:
 				try {
-					getEditorPane().setFile(file.getPath());
+					getEditorPane().open(file);
 					return true;
 				}
 				catch (final IOException e) {
@@ -1355,12 +1355,12 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 	}
 
-	public static boolean isBinary(final String path) {
-		if (path == null) return false;
+	public static boolean isBinary(final File file) {
+		if (file == null) return false;
 		// heuristic: read the first up to 8000 bytes, and say that it is binary if
 		// it contains a NUL
 		try {
-			final FileInputStream in = new FileInputStream(path);
+			final FileInputStream in = new FileInputStream(file);
 			int left = 8000;
 			final byte[] buffer = new byte[left];
 			while (left > 0) {
@@ -1386,7 +1386,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	 * ".py", etc.
 	 */
 	public Tab newTab(final String content, String language) {
-		final Tab tab = open("");
+		final Tab tab = open(null);
 		if (null != language && language.length() > 0) {
 			language = language.trim().toLowerCase();
 			if ('.' != language.charAt(0)) language = "." + language;
@@ -1396,16 +1396,8 @@ public class TextEditor extends JFrame implements ActionListener,
 		return tab;
 	}
 
-	public Tab open(String path) {
-		if (path != null && path.startsWith("class:")) try {
-			path = new FileFunctions(this).getSourcePath(path.substring(6));
-			if (path == null) return null;
-		}
-		catch (final ClassNotFoundException e) {
-			error("Could not find " + path);
-		}
-
-		if (isBinary(path)) {
+	public Tab open(final File file) {
+		if (isBinary(file)) {
 			// TODO!
 			throw new RuntimeException("TODO: open image using IJ2");
 			// return null;
@@ -1419,7 +1411,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				addDefaultAccelerators(tab.editorPane.textArea);
 			}
 			synchronized (tab.editorPane) {
-				tab.editorPane.setFile("".equals(path) ? null : path);
+				tab.editorPane.open(file);
 				if (wasNew) {
 					final int index = tabbed.getSelectedIndex() + tabsMenuTabsStart;
 					tabsMenu.getItem(index).setText(tab.editorPane.getFileName());
@@ -1438,17 +1430,17 @@ public class TextEditor extends JFrame implements ActionListener,
 					/* ignore */
 				}
 			}
-			if (path != null && !"".equals(path)) openRecent.add(path);
+			if (file != null) openRecent.add(file.getAbsolutePath());
 
 			return tab;
 		}
 		catch (final FileNotFoundException e) {
 			e.printStackTrace();
-			error("The file '" + path + "' was not found.");
+			error("The file '" + file + "' was not found.");
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
-			error("There was an error while opening '" + path + "': " + e);
+			error("There was an error while opening '" + file + "': " + e);
 		}
 		return null;
 	}
@@ -2110,7 +2102,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				switchTo(i);
 				return;
 			}
-		open(file.getPath());
+		open(file);
 	}
 
 	public void switchTo(final int index) {
@@ -2199,25 +2191,36 @@ public class TextEditor extends JFrame implements ActionListener,
 	*/
 
 	/* extensionMustMatch == false means extension must not match */
-	protected String openWithDialog(final String title, final String directory,
+	protected File openWithDialog(final String title, final File defaultDir,
 		final String[] extensions, final boolean extensionMustMatch)
 	{
-		final FileDialog dialog = new FileDialog(this, title);
-		if (directory != null) dialog.setDirectory(directory);
-		if (extensions != null) dialog.setFilenameFilter(new FilenameFilter() {
+		final JFileChooser dialog = new JFileChooser();
+		dialog.setDialogTitle(title);
+		if (defaultDir != null) dialog.setCurrentDirectory(defaultDir);
+		if (extensions != null) dialog.addChoosableFileFilter(new FileFilter() {
 
 			@Override
-			public boolean accept(final File dir, final String name) {
+			public boolean accept(final File file) {
+				final String name = file.getName();
 				for (final String extension : extensions)
 					if (name.endsWith(extension)) return extensionMustMatch;
 				return !extensionMustMatch;
 			}
+
+			@Override
+			public String getDescription() {
+				final StringBuilder builder = new StringBuilder();
+				String separator = "Only ";
+				for (final String extension : extensions) {
+					builder.append(separator).append(extension);
+					separator = ", ";
+				}
+				builder.append(" files");
+				return builder.toString();
+			}
 		});
-		dialog.setVisible(true);
-		final String dir = dialog.getDirectory();
-		final String name = dialog.getFile();
-		if (dir == null || name == null) return null;
-		return new File(dir, name).getAbsolutePath();
+		if (dialog.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return null;
+		return dialog.getSelectedFile();
 	}
 
 	/**

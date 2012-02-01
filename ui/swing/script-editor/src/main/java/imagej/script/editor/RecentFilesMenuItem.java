@@ -38,6 +38,7 @@ import imagej.util.Prefs;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -112,7 +113,7 @@ public class RecentFilesMenuItem extends JMenu {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				editor.open(path);
+				editor.open(new File(path));
 			}
 		});
 		return result;
