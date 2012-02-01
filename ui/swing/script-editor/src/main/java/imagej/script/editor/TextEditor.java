@@ -36,6 +36,7 @@ package imagej.script.editor;
 
 import imagej.script.CompiledLanguage;
 import imagej.script.ScriptService;
+import imagej.util.AppUtils;
 import imagej.util.Log;
 
 import java.awt.Dimension;
@@ -787,7 +788,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			final EditorPane editorPane = getEditorPane();
 			final String defaultDir =
 				editorPane != null && editorPane.file != null ? editorPane.file
-					.getParent() : System.getProperty("ij.dir");
+					.getParent() : AppUtils.getBaseDirectory().getAbsolutePath();
 			final String path =
 				openWithDialog("Open...", defaultDir,
 					new String[] { ".class", ".jar" }, false);
@@ -1457,8 +1458,8 @@ public class TextEditor extends JFrame implements ActionListener,
 		/* TODO:
 		final EditorPane editorPane = getEditorPane();
 		final SaveDialog sd =
-			new SaveDialog("Save as ", editorPane.file == null ? System
-				.getProperty("ij.dir") : editorPane.file.getParentFile()
+			new SaveDialog("Save as ", editorPane.file == null ? AppUtils.getBaseDirectory().getAbsolutePath()
+				 : editorPane.file.getParentFile()
 				.getAbsolutePath(), editorPane.getFileName(), "");
 		grabFocus(2);
 		final String name = sd.getFileName();

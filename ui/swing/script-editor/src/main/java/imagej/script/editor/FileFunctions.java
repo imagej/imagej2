@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
+import imagej.util.AppUtils;
 import imagej.util.Log;
 
 import java.awt.Color;
@@ -60,13 +61,7 @@ import javax.swing.text.JTextComponent;
 
 public class FileFunctions {
 
-	protected static String ijDir;
-
-	static {
-		String dir = System.getProperty("ij.dir");
-		if (!dir.endsWith("/")) dir += "/";
-		ijDir = dir;
-	}
+	protected static File imagejRoot = AppUtils.getBaseDirectory();
 
 	protected TextEditor parent;
 
@@ -78,8 +73,7 @@ public class FileFunctions {
 		String baseName = new File(path).getName();
 		if (baseName.endsWith(".jar") || baseName.endsWith(".zip")) baseName =
 			baseName.substring(0, baseName.length() - 4);
-		final String baseDirectory =
-			System.getProperty("ij.dir") + "/src-plugins/" + baseName + "/";
+		final File baseDirectory = new File(imagejRoot, "src-plugins/" + baseName);
 
 		final List<String> result = new ArrayList<String>();
 		final JarFile jar = new JarFile(path);
@@ -199,7 +193,7 @@ public class FileFunctions {
 		if (name.indexOf('_') < 0) name += "_";
 
 		final File file =
-			new File(System.getProperty("ij.dir") + "/src-plugins/" + name + "/" +
+			new File(imagejRoot, "src-plugins/" + name + "/" +
 				name + ".java");
 		final File dir = file.getParentFile();
 		if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory()) return error("Could not make directory '" +
@@ -234,7 +228,7 @@ public class FileFunctions {
 		if (!name.startsWith("/")) name = "/" + name;
 		if (!name.endsWith("\n")) name += "\n";
 
-		final File file = new File(System.getProperty("ij.dir"), ".gitignore");
+		final File file = new File(imagejRoot, ".gitignore");
 		if (!file.exists()) return false;
 
 		try {
@@ -256,7 +250,7 @@ public class FileFunctions {
 	}
 
 	public boolean addPluginJarToFakefile(final String name) {
-		final File file = new File(System.getProperty("ij.dir"), "Fakefile");
+		final File file = new File(imagejRoot, "Fakefile");
 		if (!file.exists()) return false;
 
 		try {
@@ -424,7 +418,7 @@ public class FileFunctions {
 	{
 		if (file == null || gitDirectory == null) return;
 		final boolean isInFijiGit =
-			gitDirectory.equals(new File(System.getProperty("ij.dir"), ".git"));
+			gitDirectory.equals(new File(imagejRoot, ".git"));
 		final File root =
 			isInFijiGit ? getPluginRootDirectory(file) : gitDirectory.getParentFile();
 
@@ -455,12 +449,11 @@ public class FileFunctions {
 		}
 
 		final DiffView diff = new DiffView();
-		final String configPath =
-			System.getProperty("ij.dir") + "/staged-plugins/" + root.getName() +
-				".config";
-		// only include .config file if gitDirectory is ij.dir/.git
+		final File configFile = new File(imagejRoot,
+			"staged-plugins/" + root.getName() + ".config");
+		// only include .config file if gitDirectory is imagejRoot/.git
 		final String config =
-			isInFijiGit && new File(configPath).exists() ? configPath : null;
+			isInFijiGit && configFile.exists() ? configPath : null;
 		try {
 			String[] cmdarray = { "git", "diff", "--", "." };
 			if (config != null) cmdarray = append(cmdarray, config);
