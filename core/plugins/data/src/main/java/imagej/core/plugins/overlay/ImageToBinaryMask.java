@@ -74,7 +74,7 @@ public class ImageToBinaryMask implements ImageJPlugin {
 
 	@Parameter(label = "Threshold", description = "The threshold that "
 		+ "separates background (mask) from foreground (region of interest).")
-	double threshold;
+	private double threshold;
 
 	@Parameter(label = "Input image",
 		description = "The image to be converted to a binary mask.")
@@ -87,12 +87,12 @@ public class ImageToBinaryMask implements ImageJPlugin {
 
 	@Parameter(label = "Overlay color",
 		description = "The color used to display the overlay")
-	private final ColorRGB color = new ColorRGB(255, 0, 0);
+	private ColorRGB color = new ColorRGB(255, 0, 0);
 
 	@Parameter(label = "Overlay alpha", description = "The transparency "
 		+ "(transparent = 0) or opacity (opaque=255) of the overlay", min = "0",
 		max = "255")
-	private final int alpha = 128;
+	private int alpha = 128;
 
 	@Override
 	public void run() {
