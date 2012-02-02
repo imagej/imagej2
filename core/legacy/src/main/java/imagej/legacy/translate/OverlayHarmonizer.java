@@ -201,13 +201,13 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 			return createPolygonROI((PolygonOverlay) overlay);
 		}
 		if (overlay instanceof BinaryMaskOverlay) {
-			return createBinaryMaskRoi((BinaryMaskOverlay) overlay);
+			return createBinaryMaskROI((BinaryMaskOverlay) overlay);
 		}
 		if (overlay instanceof LineOverlay) {
-			return createLineRoi((LineOverlay) overlay);
+			return createLineROI((LineOverlay) overlay);
 		}
 		if (overlay instanceof PointOverlay) {
-			return createPointRoi((PointOverlay) overlay);
+			return createPointROI((PointOverlay) overlay);
 		}
 		// TODO: arrows, freehand, text
 //		throw new UnsupportedOperationException("Translation of " +
@@ -215,13 +215,31 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return null;
 	}
 
-	private Roi createLineRoi(final LineOverlay overlay) {
+	// NB - there are two versions of createLineROI. We could make one method
+	// that takes two points. But overloading here is fine.
+	
+	// From a LineOverlay
+	private Roi createLineROI(final LineOverlay overlay) {
 		final RealLocalizable pt0 = overlay.getLineStart();
 		final RealLocalizable pt1 = overlay.getLineEnd();
 		final Line line =
 			new Line(pt0.getDoublePosition(0), pt0.getDoublePosition(1), pt1
 				.getDoublePosition(0), pt1.getDoublePosition(1));
-		assignPropertiesToRoi(line, overlay);
+		assignPropertiesToROI(line, overlay);
+		return line;
+	}
+
+	// From a PolygonOverlay that has two points
+	private Roi createLineROI(final PolygonOverlay overlay) {
+		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+		final RealLocalizable p1 = region.getVertex(0);
+		final RealLocalizable p2 = region.getVertex(1);
+		final double x1 = p1.getDoublePosition(0);
+		final double y1 = p1.getDoublePosition(1);
+		final double x2 = p2.getDoublePosition(0);
+		final double y2 = p2.getDoublePosition(1);
+		final Line line = new Line(x1, y1, x2, y2);
+		assignPropertiesToROI(line, overlay);
 		return line;
 	}
 
@@ -235,7 +253,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final int x = (int) origin[0], y = (int) origin[1];
 		final int w = (int) extent[0], h = (int) extent[1];
 		final Roi roi = new Roi(x, y, w, h);
-		assignPropertiesToRoi(roi, overlay);
+		assignPropertiesToROI(roi, overlay);
 		return roi;
 	}
 
@@ -250,14 +268,14 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final int y = (int) (origin[1] - radii[1]);
 		final int w = (int) radii[0] * 2, h = (int) radii[1] * 2;
 		final Roi roi = new OvalRoi(x, y, w, h);
-		assignPropertiesToRoi(roi, overlay);
+		assignPropertiesToROI(roi, overlay);
 		return roi;
 	}
 
 	private Roi createPolygonROI(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final int vertexCount = region.getVertexCount();
-		if (vertexCount == 1) return createPointRoi(overlay);
+		if (vertexCount == 1) return createPointROI(overlay);
 		if (vertexCount == 2) return createLineROI(overlay);
 		final float[] x = new float[vertexCount];
 		final float[] y = new float[vertexCount];
@@ -267,47 +285,35 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 			y[v] = vertex.getFloatPosition(1);
 		}
 		final Roi roi = new PolygonRoi(x, y, vertexCount, Roi.POLYGON);
-		assignPropertiesToRoi(roi, overlay);
+		assignPropertiesToROI(roi, overlay);
 		return roi;
 	}
 
-	// FIXME - there are two createPointRoi/ROI versions. Might need to eliminate
-	// one of them.
+	// NB - there are two createPointROI versions. We could make one method
+	// that takes a point. But overloading here is fine.
 	
-	// OLDER ONE - by Curtis?
-	private Roi createPointRoi(final PolygonOverlay overlay) {
+	// From a PolygonOverlay that has one point
+	private Roi createPointROI(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final RealLocalizable point = region.getVertex(0);
-		final int x = (int) point.getFloatPosition(0);
-		final int y = (int) point.getFloatPosition(1);
+		final int x = (int) point.getDoublePosition(0);
+		final int y = (int) point.getDoublePosition(1);
 		final Roi roi = new PointRoi(x, y);
-		assignPropertiesToRoi(roi, overlay);
+		assignPropertiesToROI(roi, overlay);
 		return roi;
 	}
 
-	// NEWER ONE - by BDZ after PointOverlay came to exist
-	private Roi createPointRoi(final PointOverlay overlay) {
+	// From a PointOverlay
+	private Roi createPointROI(final PointOverlay overlay) {
 		final RealLocalizable pt = overlay.getPoint();
-		final PointRoi point =
-			new PointRoi(pt.getDoublePosition(0), pt.getDoublePosition(1));
-		assignPropertiesToRoi(point, overlay);
+		final int x = (int) pt.getDoublePosition(0);
+		final int y = (int) pt.getDoublePosition(1);
+		final PointRoi point = new PointRoi(x,y);
+		assignPropertiesToROI(point, overlay);
 		return point;
 	}
 
-	private Roi createLineROI(final PolygonOverlay overlay) {
-		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
-		final RealLocalizable p1 = region.getVertex(0);
-		final RealLocalizable p2 = region.getVertex(1);
-		final double x1 = p1.getDoublePosition(0);
-		final double y1 = p1.getDoublePosition(1);
-		final double x2 = p2.getDoublePosition(0);
-		final double y2 = p2.getDoublePosition(1);
-		final Line line = new Line(x1, y1, x2, y2);
-		assignPropertiesToRoi(line, overlay);
-		return line;
-	}
-
-	private ShapeRoi createBinaryMaskRoi(final BinaryMaskOverlay overlay) {
+	private ShapeRoi createBinaryMaskROI(final BinaryMaskOverlay overlay) {
 		final RegionOfInterest roi = overlay.getRegionOfInterest();
 		final double[] min = new double[roi.numDimensions()];
 		roi.realMin(min);
@@ -348,7 +354,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return new ShapeRoi(imagejroi);
 	}
 
-	private void assignPropertiesToRoi(final Roi roi, final Overlay overlay) {
+	private void assignPropertiesToROI(final Roi roi, final Overlay overlay) {
 		roi.setStrokeWidth((float) overlay.getLineWidth());
 		roi.setStrokeColor(AWTColors.getColor(overlay.getLineColor()));
 		final Color fillColor = AWTColors.getColor(overlay.getFillColor());
