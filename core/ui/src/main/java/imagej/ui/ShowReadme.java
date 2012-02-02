@@ -38,15 +38,13 @@ import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Log;
+import imagej.util.FileUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 /**
  * Displays the ImageJ readme file.
@@ -77,7 +75,7 @@ public class ShowReadme implements ImageJPlugin {
 	// -- Helper methods --
 
 	private String loadReadmeFile() {
-		final File baseDir = getBaseDirectory();
+		final File baseDir = FileUtils.getImageJDirectory();
 		final File readmeFile = new File(baseDir, README_FILE);
 
 		try {
@@ -96,63 +94,6 @@ public class ShowReadme implements ImageJPlugin {
 		catch (final IOException e) {
 			throw new IllegalStateException(e.getMessage());
 		}
-	}
-
-	private File getBaseDirectory() {
-		final File pathToClass = getPathToClass();
-		final String path = pathToClass.getPath();
-
-		final File baseDir;
-		if (path.endsWith(".class")) {
-			// assume class is in a subfolder of Maven target
-			File dir = pathToClass;
-			while (dir != null && !dir.getName().equals("target")) {
-				dir = up(dir);
-			}
-			// NB: Base directory is 3 levels up from core/ui/target.
-			baseDir = up(up(up(dir)));
-		}
-		else if (path.endsWith(".jar")) {
-			// assume class is in a library folder of the distribution
-			final File dir = pathToClass.getParentFile();
-			baseDir = up(dir);
-		}
-		else baseDir = null;
-
-		// return current working directory if not found
-		return baseDir == null ? new File(".") : baseDir;
-	}
-
-	/**
-	 * Gets the file on disk containing this class.
-	 * <p>
-	 * This could be a jar archive, or a standalone class file.
-	 * </p>
-	 */
-	private File getPathToClass() {
-		final Class<?> c = getClass();
-		final String className = c.getSimpleName();
-		String path = getClass().getResource(className + ".class").toString();
-		path = path.replaceAll("^jar:", "");
-		path = path.replaceAll("^file:", "");
-		path = path.replaceAll("^/*/", "/");
-		path = path.replaceAll("^/([A-Z]:)", "$1");
-		path = path.replaceAll("!.*", "");
-		try {
-			path = URLDecoder.decode(path, "UTF-8");
-		}
-		catch (final UnsupportedEncodingException e) {
-			Log.warn("Cannot parse class: " + className, e);
-		}
-		String slash = File.separator;
-		if (slash.equals("\\")) slash = "\\\\";
-		path = path.replaceAll("/", slash);
-		return new File(path);
-	}
-
-	private File up(final File file) {
-		if (file == null) return null;
-		return file.getParentFile();
 	}
 
 }
