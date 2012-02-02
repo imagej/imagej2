@@ -40,44 +40,21 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import ij.process.ByteProcessor;
 import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.BinaryMaskOverlay;
-import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
-import imagej.data.overlay.RectangleOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
 
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
 import net.imglib2.RealRandomAccess;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.img.NativeImg;
-import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.basictypeaccess.BitAccess;
-import net.imglib2.img.basictypeaccess.ByteAccess;
-import net.imglib2.img.transform.ImgTranslationAdapter;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.integer.ByteType;
 
 import org.junit.Test;
 
@@ -88,167 +65,6 @@ import org.junit.Test;
  */
 public class OverlayHarmonizerTest {
 
-	private PolygonOverlay
-		makePolygonOverlay(final ImageJ context, final double[] x, final double[] y)
-	{
-		assertEquals(x.length, y.length);
-		final PolygonOverlay overlay = new PolygonOverlay(context);
-		final PolygonRegionOfInterest roi = overlay.getRegionOfInterest();
-		for (int i = 0; i < x.length; i++) {
-			roi.addVertex(i, new RealPoint(x[i], y[i]));
-		}
-		return overlay;
-	}
-
-	private RectangleOverlay makeRectangleOverlay(final ImageJ context,
-		final double x, final double y, final double w, final double h)
-	{
-		final RectangleOverlay overlay = new RectangleOverlay(context);
-		overlay.getRegionOfInterest().setOrigin(new double[] { x, y });
-		overlay.getRegionOfInterest().setExtent(new double[] { w, h });
-		return overlay;
-	}
-
-	private EllipseOverlay makeEllipseOverlay(final ImageJ context,
-		final double x, final double y, final double w, final double h)
-	{
-		final EllipseOverlay overlay = new EllipseOverlay(context);
-		overlay.getRegionOfInterest().setOrigin(new double[] { x, y });
-		overlay.getRegionOfInterest().setRadius(w / 2, 0);
-		overlay.getRegionOfInterest().setRadius(h / 2, 1);
-		return overlay;
-	}
-
-	/**
-	 * Make a binary mask overlay by making the pixels indicated by the
-	 * coordinates part of the ROI
-	 * 
-	 * @param x - x coordinates of the pixels
-	 * @param y - y coordinates of the pixels
-	 * @return a binary mask overlay with the ROI inside
-	 */
-	private BinaryMaskOverlay makeBinaryMaskOverlay(final ImageJ context,
-		final int x, final int y, final boolean[][] mask)
-	{
-		final long w = mask.length;
-		final long h = mask[0].length;
-		final NativeImg<BitType, BitAccess> img =
-			new ArrayImgFactory<BitType>().createBitInstance(new long[] { w, h }, 1);
-		final BitType t = new BitType(img);
-		img.setLinkedType(t);
-		final RandomAccess<BitType> ra = img.randomAccess();
-		for (int i = 0; i < mask.length; i++) {
-			ra.setPosition(i, 0);
-			for (int j = 0; j < mask[i].length; j++) {
-				ra.setPosition(j, 1);
-				ra.get().set(mask[i][j]);
-			}
-		}
-		final Img<BitType> offsetImg =
-			new ImgTranslationAdapter<BitType, Img<BitType>>(img,
-				new long[] { x, y });
-		final BinaryMaskOverlay overlay =
-			new BinaryMaskOverlay(context,
-				new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(offsetImg));
-		return overlay;
-	}
-
-	/**
-	 * Make an ImagePlus initialized with the given values.
-	 * 
-	 * @param name - name for the ImagePlus
-	 * @param image - matrix containing image data
-	 * @return the newly created ImagePlus
-	 */
-	private ImagePlus makeImagePlus(final String name, final byte[][] image) {
-		final int w = image.length;
-		final int h = image[0].length;
-		final byte[] data = new byte[w * h];
-		for (int i = 0; i < data.length; i++) {
-			data[i] = image[i / h][i % h];
-		}
-		final ColorModel cm =
-			new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
-				new int[] { 8 }, false, false, Transparency.OPAQUE,
-				DataBuffer.TYPE_BYTE);
-		final ByteProcessor ip = new ByteProcessor(w, h, data, cm);
-		final ImagePlus imp = new ImagePlus(name, ip);
-
-		return imp;
-	}
-
-	private Dataset makeDataset(final ImageJ context, final byte[][] data,
-		final String name)
-	{
-		final int w = data.length;
-		final int h = data[0].length;
-		final NativeImg<ByteType, ByteAccess> img =
-			new ArrayImgFactory<ByteType>().createByteInstance(new long[] { w, h },
-				1);
-		final ByteType t = new ByteType(img);
-		img.setLinkedType(t);
-		final RandomAccess<ByteType> ra = img.randomAccess();
-		for (int i = 0; i < w; i++) {
-			ra.setPosition(i, 0);
-			for (int j = 0; j < h; j++) {
-				ra.setPosition(j, 1);
-				ra.get().set(data[i][j]);
-			}
-		}
-		final DatasetService datasetService =
-			context.getService(DatasetService.class);
-		return datasetService.create(new ImgPlus<ByteType>(img, name,
-			new AxisType[] { Axes.X, Axes.Y }));
-	}
-
-	private PolygonRoi makePolygonROI(final int[] x, final int[] y) {
-		return makePolygonROI(x, y, Roi.POLYGON);
-	}
-
-	private PolygonRoi makeFreeROI(final int[] x, final int[] y) {
-		return makePolygonROI(x, y, Roi.FREEROI);
-	}
-
-	private PolygonRoi makePolygonROI(final int[] x, final int[] y,
-		final int type)
-	{
-		return new PolygonRoi(x, y, x.length, type);
-	}
-
-	private byte[][]
-		makeRandomByteArray(final Random r, final int w, final int h)
-	{
-		final byte[][] data = new byte[w][];
-		for (int i = 0; i < w; i++) {
-			data[i] = new byte[h];
-			r.nextBytes(data[i]);
-		}
-		return data;
-	}
-
-	private byte[][]
-		makeRandomMaskArray(final Random r, final int w, final int h)
-	{
-		final byte[][] data = makeRandomByteArray(r, w, h);
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++)
-				data[i][j] = (data[i][j] >= 0) ? 0 : (byte) 0xFF;
-		}
-		return data;
-	}
-
-	private boolean[][] makeRandomBooleanArray(final Random r, final int w,
-		final int h)
-	{
-		final boolean[][] data = new boolean[w][];
-		for (int i = 0; i < w; i++) {
-			data[i] = new boolean[h];
-			for (int j = 0; j < h; j++)
-				data[i][j] = r.nextBoolean();
-		}
-		return data;
-	}
-
 	/**
 	 * Test method for
 	 * {@link OverlayHarmonizer#updateDisplay(ImageDisplay, ImagePlus)}.
@@ -258,9 +74,9 @@ public class OverlayHarmonizerTest {
 		// TODO: this just runs the code, but does not check the results.
 //		OverlayTranslator ot = new OverlayTranslator();
 //		Random r = new Random(1234);
-//		Dataset ds = makeDataset(makeRandomByteArray(r, 11, 15), "Foo");
-//		ImagePlus imagePlus = makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
-//		imagePlus.setRoi(makePolygonROI(new int[] { 0, 5, 5, 0, 0}, new int[] { 0, 0, 5, 5, 0}));
+//		Dataset ds = Helper.makeDataset(Helper.makeRandomByteArray(r, 11, 15), "Foo");
+//		ImagePlus imagePlus = Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
+//		imagePlus.setRoi(Helper.makePolygonROI(new int[] { 0, 5, 5, 0, 0}, new int[] { 0, 0, 5, 5, 0}));
 //		ot.setDatasetOverlays(ds, imagePlus);
 	}
 
@@ -276,8 +92,8 @@ public class OverlayHarmonizerTest {
 		// become available
 //		OverlayTranslator ot = new OverlayTranslator();
 //		Random r = new Random(1234);
-//		Dataset ds = makeDataset(makeRandomByteArray(r, 11, 15), "Foo");
-//		ImagePlus imagePlus = makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+//		Dataset ds = Helper.makeDataset(Helper.makeRandomByteArray(r, 11, 15), "Foo");
+//		ImagePlus imagePlus = Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
 //		ot.setImagePlusOverlays(ds, imagePlus);
 	}
 
@@ -293,9 +109,9 @@ public class OverlayHarmonizerTest {
 		final Random r = new Random(1234);
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final ImagePlus imagePlus =
-			makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
-		imagePlus.setRoi(makePolygonROI(new int[] { 0, 5, 5, 0, 0 }, new int[] {
-			0, 0, 5, 5, 0 }));
+			Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
+		imagePlus.setRoi(Helper.makePolygonROI(new int[] { 0, 5, 5, 0, 0 },
+			new int[] { 0, 0, 5, 5, 0 }));
 		final List<Overlay> list = ot.getOverlays(imagePlus);
 		assertEquals(1, list.size());
 		assertTrue(list.get(0) instanceof PolygonOverlay);
@@ -311,9 +127,9 @@ public class OverlayHarmonizerTest {
 		final Random r = new Random(1234);
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final ImagePlus imagePlus =
-			makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+			Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
 		final ArrayList<Overlay> l = new ArrayList<Overlay>();
-		l.add(makePolygonOverlay(context, new double[] { 0, 5, 5, 0, 0 },
+		l.add(Helper.makePolygonOverlay(context, new double[] { 0, 5, 5, 0, 0 },
 			new double[] { 0, 0, 5, 5, 0 }));
 		ot.setOverlays(l, imagePlus);
 		final Roi roi = imagePlus.getRoi();
@@ -336,8 +152,8 @@ public class OverlayHarmonizerTest {
 		for (final int[][] testCase : vertices) {
 			final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 			final ImagePlus imagePlus =
-				makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
-			imagePlus.setRoi(makePolygonROI(testCase[0], testCase[1]));
+				Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
+			imagePlus.setRoi(Helper.makePolygonROI(testCase[0], testCase[1]));
 			final List<Overlay> list = ot.getOverlays(imagePlus);
 			assertEquals(1, list.size());
 			assertTrue(list.get(0) instanceof PolygonOverlay);
@@ -375,9 +191,9 @@ public class OverlayHarmonizerTest {
 		for (final double[][] testCase : vertices) {
 			final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 			final PolygonOverlay overlay =
-				makePolygonOverlay(context, testCase[0], testCase[1]);
+				Helper.makePolygonOverlay(context, testCase[0], testCase[1]);
 			final ImagePlus imagePlus =
-				makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+				Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
 			final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 			overlays.add(overlay);
 			ot.setOverlays(overlays, imagePlus);
@@ -414,14 +230,16 @@ public class OverlayHarmonizerTest {
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final Random r = new Random(1234);
 		final ImagePlus imagePlus =
-			makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+			Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
 		/*
 		 * Put a rectangular hole inside a rectangle - hopefully this is too much and falls into the default code.
 		 */
 		final Roi r1 =
-			makePolygonROI(new int[] { 3, 5, 5, 3 }, new int[] { 8, 8, 10, 10 });
+			Helper.makePolygonROI(new int[] { 3, 5, 5, 3 },
+				new int[] { 8, 8, 10, 10 });
 		final Roi r2 =
-			makePolygonROI(new int[] { 8, 8, 10, 10 }, new int[] { 3, 5, 5, 3 });
+			Helper.makePolygonROI(new int[] { 8, 8, 10, 10 },
+				new int[] { 3, 5, 5, 3 });
 		final Roi roi = new ShapeRoi(r1).xor(new ShapeRoi(r2));
 
 		// Is the trailing edge in or out? I suppose a sane person would say that
@@ -465,7 +283,7 @@ public class OverlayHarmonizerTest {
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final Random r = new Random(1234);
 		final ImagePlus imagePlus =
-			makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+			Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
 		/*
 		 * Put a rectangular hole inside a rectangle. This should translate to
 		 * a composite ROI that can deal with it.
@@ -476,8 +294,8 @@ public class OverlayHarmonizerTest {
 		final int[] r2y = new int[] { 11, 11, 13, 13, 11 };
 		final int[][] all_x = new int[][] { r1x, r2x };
 		final int[][] all_y = new int[][] { r1y, r2y };
-		final Roi r1 = makePolygonROI(r1x, r1y);
-		final Roi r2 = makePolygonROI(r2x, r2y);
+		final Roi r1 = Helper.makePolygonROI(r1x, r1y);
+		final Roi r2 = Helper.makePolygonROI(r2x, r2y);
 		final Roi roi = new ShapeRoi(r1).not(new ShapeRoi(r2));
 
 		imagePlus.setRoi(roi);
@@ -524,12 +342,13 @@ public class OverlayHarmonizerTest {
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final Random r = new Random(1234);
 		final ImagePlus imagePlus =
-			makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+			Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
 		/*
 		 * Put a rectangular hole inside a rectangle - hopefully this is too much and falls into the default code.
 		 */
 		final Roi roi =
-			makeFreeROI(new int[] { 6, 11, 11, 6, 6 }, new int[] { 9, 9, 15, 15, 9 });
+			Helper.makeFreeROI(new int[] { 6, 11, 11, 6, 6 }, new int[] { 9, 9, 15,
+				15, 9 });
 
 		imagePlus.setRoi(roi);
 		final List<Overlay> list = ot.getOverlays(imagePlus);
@@ -552,14 +371,14 @@ public class OverlayHarmonizerTest {
 		final ImageJ context = ImageJ.createContext();
 
 		final Random r = new Random(54321);
-		final boolean[][] data = makeRandomBooleanArray(r, 7, 8);
+		final boolean[][] data = Helper.makeRandomBooleanArray(r, 7, 8);
 		final BinaryMaskOverlay overlay =
-			makeBinaryMaskOverlay(context, 5, 6, data);
+			Helper.makeBinaryMaskOverlay(context, 5, 6, data);
 		final RealRandomAccess<BitType> ra =
 			overlay.getRegionOfInterest().realRandomAccess();
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final ImagePlus imagePlus =
-			makeImagePlus("Bar", makeRandomByteArray(r, 15, 20));
+			Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 15, 20));
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		overlays.add(overlay);
 		ot.setOverlays(overlays, imagePlus);
