@@ -52,20 +52,27 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final GrayPixelHarmonizer pixelHarmonizer =
-		new GrayPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer =
-		new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer =
-		new MetadataHarmonizer();
-	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
+	private final ImageJ context;
+	
+	private final GrayPixelHarmonizer pixelHarmonizer;
+	private final ColorTableHarmonizer colorTableHarmonizer;
+	private final MetadataHarmonizer metadataHarmonizer;
+	private final PlaneHarmonizer planeHarmonizer;
 
 	// -- public interface --
 
+	public GrayImagePlusCreator(ImageJ context) {
+		this.context = context;
+		pixelHarmonizer = new GrayPixelHarmonizer();
+		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		metadataHarmonizer = new MetadataHarmonizer();
+		planeHarmonizer = new PlaneHarmonizer();
+	}
+	
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
+			context.getService(ImageDisplayService.class);
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		ImagePlus imp;
 		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {

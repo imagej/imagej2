@@ -53,14 +53,10 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 	private final ImageJ context;
 
-	private final ColorPixelHarmonizer pixelHarmonizer =
-		new ColorPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer =
-		new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer =
-		new MetadataHarmonizer();
-	private final CompositeHarmonizer compositeHarmonizer =
-		new CompositeHarmonizer();
+	private final ColorPixelHarmonizer pixelHarmonizer;
+	private final ColorTableHarmonizer colorTableHarmonizer;
+	private final MetadataHarmonizer metadataHarmonizer;
+	private final CompositeHarmonizer compositeHarmonizer;
 	private final OverlayHarmonizer overlayHarmonizer;
 
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
@@ -73,6 +69,10 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 	public ColorDisplayCreator(final ImageJ context) {
 		this.context = context;
+		pixelHarmonizer = new ColorPixelHarmonizer();
+		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		metadataHarmonizer = new MetadataHarmonizer();
+		compositeHarmonizer = new CompositeHarmonizer();
 		overlayHarmonizer = new OverlayHarmonizer(context);
 	}
 
