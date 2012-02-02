@@ -314,7 +314,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final IJ1Plugin fileChanges =
 			IJ1Plugin.discover("fiji.scripting.ShowPluginChanges");
 		if (fileChanges != null &&
-			new File(System.getProperty("ij.dir"), ".git").isDirectory())
+			files.prefix(".git").isDirectory())
 		{
 			bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
 			showChanges =
@@ -337,7 +337,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		}
 		final IJ1Plugin rebuild = IJ1Plugin.discover("fiji.scripting.RunFijiBuild");
 		if (rebuild != null &&
-			new File(System.getProperty("ij.dir"), ".git").isDirectory())
+			files.prefix(".git").isDirectory())
 		{
 			bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
 			rebuildButton =
