@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.util;
 
+import imagej.util.FileUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -84,26 +86,13 @@ public class Util {
 
 	public final static String macPrefix = "Contents/MacOS/";
 
-	public final static String imagejRoot, platform;
+	public final static String platform;
 	public final static String[] platforms, launchers;
 	protected final static Set<String> updateablePlatforms;
 
 	static {
-		final String imagejDir = System.getProperty("imagej.dir");
-		final String property =
-			imagejDir != null ? imagejDir : System.getProperty("ij.dir");
-		if (property != null) imagejRoot = property + File.separator;
-		else {
-			String path = new Util().getClass().getResource("Util.class").toString();
-			if (path.startsWith("jar:")) path = path.substring(4);
-			if (path.startsWith("file:")) path = path.substring(5);
-			int offset = path.lastIndexOf("/plugins/");
-			if (offset < 0) offset = path.lastIndexOf("\\plugins\\");
-			if (offset < 0) offset = path.lastIndexOf("/core/updater/core/");
-			if (offset < 0) throw new RuntimeException(
-				"Could not determine ImageJ directory!");
-			imagejRoot = path.substring(0, offset + 1);
-		}
+		// TODO: since this is all dependent on the ijRoot, don't make it static.
+		final File imagejRoot = FileUtils.getImageJDirectory();
 		platform = getPlatform();
 
 		platforms =
@@ -122,7 +111,7 @@ public class Util {
 		updateablePlatforms.add(platform);
 		if (new File(imagejRoot, launchers[macIndex]).exists()) updateablePlatforms
 			.add("macosx");
-		final String[] files = new File(imagejRoot).list();
+		final String[] files = imagejRoot.list();
 		for (final String name : files == null ? new String[0] : files)
 			if (name.startsWith("ImageJ-")) updateablePlatforms
 				.add(platformForLauncher(name));
@@ -271,7 +260,7 @@ public class Util {
 	}
 
 	public static boolean isLauncher(final String filename) {
-		return Arrays.binarySearch(launchers, stripPrefix(filename, imagejRoot)) >= 0;
+		return Arrays.binarySearch(launchers, filename) >= 0;
 	}
 
 	public static boolean isUpdateablePlatform(final String platform) {
@@ -359,10 +348,9 @@ public class Util {
 		result.renameTo(file);
 	}
 
-	public static boolean patchInfoPList(final String executable)
+	public static boolean patchInfoPList(final File infoPList, final String executable)
 		throws IOException
 	{
-		final File infoPList = new File(imagejRoot, "Contents/Info.plist");
 		if (!infoPList.exists()) return false;
 		String contents = readFile(infoPList);
 		final Pattern pattern =

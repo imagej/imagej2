@@ -39,7 +39,6 @@ import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.XMLFileReader;
-import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
 import imagej.util.Log;
 
@@ -479,17 +478,5 @@ public class SitesDialog extends JDialog implements ActionListener,
 				dialog.dispose();
 			}
 		});
-	}
-
-	public static void main(final String[] args) {
-		final FilesCollection files = new FilesCollection();
-		try {
-			files.read();
-		}
-		catch (final Exception e) {
-			UserInterface.get().handleException(e);
-		}
-		final SitesDialog dialog = new SitesDialog(null, files, !false);
-		dialog.setVisible(true);
 	}
 }

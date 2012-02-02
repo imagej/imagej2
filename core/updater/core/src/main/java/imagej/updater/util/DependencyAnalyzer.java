@@ -61,8 +61,8 @@ public class DependencyAnalyzer {
 
 	private final Class2JarFilesMap map;
 
-	public DependencyAnalyzer() {
-		map = new Class2JarFilesMap();
+	public DependencyAnalyzer(final File imagejRoot) {
+		map = new Class2JarFilesMap(imagejRoot);
 	}
 
 	public Iterable<String> getDependencies(final File imagejRoot,
