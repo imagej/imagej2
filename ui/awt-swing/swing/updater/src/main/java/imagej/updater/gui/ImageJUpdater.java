@@ -49,6 +49,7 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
 import imagej.util.FileUtils;
+import imagej.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -87,7 +88,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		}
 		catch (final FileNotFoundException e) { /* ignore */}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			UserInterface.get().error(
 				"There was an error reading the cached metadata: " + e);
 			return;
@@ -110,7 +111,7 @@ public class ImageJUpdater implements ImageJPlugin {
 			return;
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			downloader.done();
 			String message;
 			if (e instanceof UnknownHostException) message =
