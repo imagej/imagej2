@@ -1,5 +1,5 @@
 //
-// ScriptEditorPlugin.java
+// ScriptEditor.java
 //
 
 /*
@@ -47,7 +47,7 @@ import imagej.script.ScriptService;
  */
 @Plugin(menu = { @Menu(label = "File"), @Menu(label = "New"),
 	@Menu(label = "Script...", accelerator = "open_bracket") })
-public class ScriptEditorPlugin implements Command {
+public class ScriptEditor implements Command {
 
 	@Parameter
 	private ScriptService scriptService;
