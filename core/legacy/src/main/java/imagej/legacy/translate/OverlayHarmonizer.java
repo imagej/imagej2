@@ -119,17 +119,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 							break;
 						}
 					}
-					if (same && oldROI.getStrokeWidth() == newROI.getStrokeWidth() &&
-						oldROI.getFillColor().equals(newROI.getFillColor()))
-					{
-						// must test further but colors might be uninitialized by IJ1
-						final Color oldColor = oldROI.getStrokeColor();
-						final Color newColor = newROI.getStrokeColor();
-						if (oldColor == null) {
-							if (newColor == null) return;
-						}
-						else if (oldColor.equals(newColor)) return;
-					}
+					if (same)
+						if (oldROI.getStrokeWidth() == newROI.getStrokeWidth())
+							if (sameColor(oldROI.getFillColor(), newROI.getFillColor()))
+								if (sameColor(oldROI.getStrokeColor(), newROI.getStrokeColor()))
+									return;
 				}
 			}
 		}
@@ -594,4 +588,10 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		}
 	}
 
+	private boolean sameColor(Color c1, Color c2) {
+		if (c1 == null) {
+			return c2 == null;
+		}
+		return c1.equals(c2);
+	}
 }
