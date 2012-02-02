@@ -215,18 +215,13 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return null;
 	}
 
-	// NB - there are two versions of createLineROI. We could make one method
-	// that takes two points. But overloading here is fine.
+	// NB - there is some overloading here with createLineROI.
 	
 	// From a LineOverlay
 	private Roi createLineROI(final LineOverlay overlay) {
-		final RealLocalizable pt0 = overlay.getLineStart();
-		final RealLocalizable pt1 = overlay.getLineEnd();
-		final Line line =
-			new Line(pt0.getDoublePosition(0), pt0.getDoublePosition(1), pt1
-				.getDoublePosition(0), pt1.getDoublePosition(1));
-		assignPropertiesToROI(line, overlay);
-		return line;
+		final RealLocalizable p1 = overlay.getLineStart();
+		final RealLocalizable p2 = overlay.getLineEnd();
+		return createLineROI(overlay, p1, p2);
 	}
 
 	// From a PolygonOverlay that has two points
@@ -234,6 +229,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final RealLocalizable p1 = region.getVertex(0);
 		final RealLocalizable p2 = region.getVertex(1);
+		return createLineROI(overlay, p1, p2);
+	}
+
+	// helper to support other createLineROI methods
+	private Roi createLineROI(Overlay overlay, RealLocalizable p1, RealLocalizable p2) {
 		final double x1 = p1.getDoublePosition(0);
 		final double y1 = p1.getDoublePosition(1);
 		final double x2 = p2.getDoublePosition(0);
@@ -242,7 +242,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		assignPropertiesToROI(line, overlay);
 		return line;
 	}
-
+	
 	private Roi createRectangleROI(final RectangleOverlay overlay) {
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
 		final int dims = region.numDimensions();
@@ -289,30 +289,29 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return roi;
 	}
 
-	// NB - there are two createPointROI versions. We could make one method
-	// that takes a point. But overloading here is fine.
+	// NB - there is some overloading here with createPointROI.
 	
 	// From a PolygonOverlay that has one point
 	private Roi createPointROI(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final RealLocalizable point = region.getVertex(0);
-		final int x = (int) point.getDoublePosition(0);
-		final int y = (int) point.getDoublePosition(1);
-		final Roi roi = new PointRoi(x, y);
-		assignPropertiesToROI(roi, overlay);
-		return roi;
+		return createPointROI(overlay, point);
 	}
 
 	// From a PointOverlay
 	private Roi createPointROI(final PointOverlay overlay) {
-		final RealLocalizable pt = overlay.getPoint();
+		return createPointROI(overlay, overlay.getPoint());
+	}
+
+	// helper to support other createPointROI methods
+	private Roi createPointROI(final Overlay overlay, final RealLocalizable pt) {
 		final int x = (int) pt.getDoublePosition(0);
 		final int y = (int) pt.getDoublePosition(1);
 		final PointRoi point = new PointRoi(x,y);
 		assignPropertiesToROI(point, overlay);
 		return point;
 	}
-
+	
 	private ShapeRoi createBinaryMaskROI(final BinaryMaskOverlay overlay) {
 		final RegionOfInterest roi = overlay.getRegionOfInterest();
 		final double[] min = new double[roi.numDimensions()];
