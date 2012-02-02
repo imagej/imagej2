@@ -214,4 +214,42 @@ public final class FileUtils {
 		return new String(shortPathArray);
 	}
 
+	/**
+	 * Get the ImageJ root directory
+	 * 
+	 * @return the directory
+	 */
+	public static File getImageJDirectory() {
+		final String property = System.getProperty("ij.dir");
+		if (property != null) {
+			final File dir = new File(property);
+			if (dir.isDirectory()) return dir;
+		}
+		final Class<?> clazz = FileUtils.class;
+		String path = clazz.getResource("FileUtils.class").getPath();
+		if (path.startsWith("file:")) path = path.substring(5);
+
+		final String suffix = clazz.getCanonicalName().replace('.', '/') + ".class";
+		if (path.endsWith(suffix)) path =
+			path.substring(0, path.length() - suffix.length());
+		if (path.endsWith(".jar!/")) {
+			int slash = path.lastIndexOf('/', path.length() - 6);
+			// assume that the .jar lives in a subdirectory of <IMAGEJDIR>
+			if (slash > 0) slash = path.lastIndexOf('/', slash - 1);
+			if (slash > 0) path = path.substring(0, slash + 1);
+		}
+		else if (path.endsWith("/target/classes/")) {
+			// Assume that there are pom.xml files in all parent directories up to the
+			// root
+			File up = new File(path).getParentFile().getParentFile();
+			for (;;) {
+				final File parent = up.getParentFile();
+				if (parent == null || !new File(parent, "pom.xml").exists()) break;
+				up = parent;
+			}
+			return up;
+		}
+		return new File(path);
+	}
+
 }
