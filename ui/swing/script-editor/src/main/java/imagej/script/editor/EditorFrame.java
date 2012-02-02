@@ -34,8 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
+import imagej.ImageJ;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
+import imagej.menu.MenuService;
+import imagej.menu.ShadowMenu;
 import imagej.script.CompiledLanguage;
 import imagej.script.ScriptService;
+import imagej.ui.swing.menu.SwingJMenuBarCreator;
 import imagej.util.AppUtils;
 import imagej.util.Log;
 
@@ -141,21 +147,40 @@ public class EditorFrame extends JFrame implements ActionListener,
 	protected JTextArea errorScreen = new JTextArea();
 
 	protected final String templateFolder = "templates/";
-	protected final ScriptService scriptService;
 	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
 
 	protected int compileStartOffset;
 	protected Position compileStartPosition;
 	protected ErrorHandler errorHandler;
 
-	public EditorFrame(final ScriptService scriptService, final File file) {
+	protected final ImageJ context;
+	protected final ScriptService scriptService;
+	protected final MenuService menuService;
+	protected final CommandService commandService;
+
+	public EditorFrame(final ImageJ context, final ScriptService scriptService,
+		final CommandService commandService, final MenuService menuService,
+		final File file)
+	{
 		super("Script Editor");
+		this.context = context;
 		this.scriptService = scriptService;
+		this.commandService = commandService;
+		this.menuService = menuService;
 
 		// Initialize menu
 		final int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 		final int shift = ActionEvent.SHIFT_MASK;
 		final JMenuBar mbar = new JMenuBar();
+
+		final List<CommandInfo<ScriptEditorPlugin>> plugins =
+			commandService.getCommandsOfType(ScriptEditorPlugin.class);
+		for (final CommandInfo<ScriptEditorPlugin> info : plugins) {
+			info.getPresets().put("editorFrame", this);
+		}
+		final ShadowMenu rootMenu = new ShadowMenu(context, plugins);
+		new SwingJMenuBarCreator().createMenus(rootMenu, mbar);
+
 		setJMenuBar(mbar);
 
 		final JMenu fileMenu = new JMenu("File");

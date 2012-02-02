@@ -1,5 +1,5 @@
 //
-// ScriptEditor.java
+// ScriptEditorPlugin.java
 //
 
 /*
@@ -34,37 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import imagej.AbstractContextual;
 import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.menu.MenuService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.script.ScriptService;
 
 /**
- * The Script Editor. As plugin.
+ * The base interface for Script Editor plugins
  * 
  * @author Johannes Schindelin
  */
-@Plugin(menu = { @Menu(label = "File"), @Menu(label = "New"),
-	@Menu(label = "Script...", accelerator = "open_bracket") })
-public class ScriptEditor extends AbstractContextual implements Command {
-
-	@Parameter
-	private ScriptService scriptService;
-
-	@Parameter
-	private CommandService commandService;
-
-	@Parameter
-	private MenuService menuService;
-
-	@Override
-	public void run() {
-		new EditorFrame(getContext(), scriptService, commandService, menuService, null)
-			.setVisible(true);
-	}
-
+public interface ScriptEditorPlugin extends Command {
+	// this is just a place-holder
 }
