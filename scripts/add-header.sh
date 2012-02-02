@@ -5,6 +5,12 @@
 # Intended to be used with other *nix commands; e.g.:
 #   find . -name '*.java' -exec bash scripts/add-header.sh {} \;
 
+test $# = 0 && {
+	find . -name '*.java' -print0 |
+	xargs -0r sh "$0"
+	return
+}
+
 basedir="$(dirname "$0")/.."
 
 for file
