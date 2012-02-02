@@ -48,6 +48,7 @@ import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UserInterface;
 import imagej.updater.util.Util;
+import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,14 +73,15 @@ public class ImageJUpdater implements ImageJPlugin {
 
 		if (errorIfDebian()) return;
 
-		if (new File(Util.imagejRoot, "update").exists()) {
+		final File imagejRoot = FileUtils.getImageJDirectory();
+		if (new File(imagejRoot, "update").exists()) {
 			UserInterface.get().error(
 				"ImageJ restart required to finalize previous update");
 			return;
 		}
 		Util.useSystemProxies();
 
-		final FilesCollection files = new FilesCollection();
+		final FilesCollection files = new FilesCollection(imagejRoot);
 		try {
 			files.read();
 		}

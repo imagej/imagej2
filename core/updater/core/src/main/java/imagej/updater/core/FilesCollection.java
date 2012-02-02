@@ -115,21 +115,16 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	protected Map<String, UpdateSite> updateSites;
 
-	public FilesCollection() {
-		this(new File(Util.imagejRoot));
-	}
-
 	/**
-	 * This constructor is necessary for the test suite (Because it needs to
-	 * override imagejRoot.)
+	 * This constructor takes the imagejRoot primarily for testing purposes.
 	 * 
 	 * @param imagejRoot the ImageJ directory
 	 */
-	protected FilesCollection(final File imagejRoot) {
+	public FilesCollection(final File imagejRoot) {
 		this.imagejRoot = imagejRoot;
 		updateSites = new LinkedHashMap<String, UpdateSite>();
-		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, null, null, Util
-			.getTimestamp(prefix(Util.XML_COMPRESSED)));
+		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, null, null,
+			imagejRoot == null ? 0 : Util.getTimestamp(prefix(Util.XML_COMPRESSED)));
 	}
 
 	public void addUpdateSite(final String name, final String url,
@@ -608,7 +603,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public Iterable<String> analyzeDependencies(final FileObject file) {
 		try {
 			if (dependencyAnalyzer == null) dependencyAnalyzer =
-				new DependencyAnalyzer();
+				new DependencyAnalyzer(imagejRoot);
 			return dependencyAnalyzer.getDependencies(imagejRoot, file.getFilename());
 		}
 		catch (final IOException e) {
@@ -681,7 +676,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 				get(dependency).add(dependencee);
 				return false;
 			}
-			final FilesCollection list = new FilesCollection();
+			final FilesCollection list = new FilesCollection(null);
 			list.add(dependencee);
 			put(dependency, list);
 			return true;
@@ -800,6 +795,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public File prefix(final String path) {
 		final File file = new File(path);
 		if (file.isAbsolute()) return file;
+		assert (imagejRoot != null);
 		return new File(imagejRoot, path);
 	}
 

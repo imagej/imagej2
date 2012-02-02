@@ -337,7 +337,7 @@ public class FilesUploader {
 		throws InstantiationException
 	{
 		final String updateSiteName = "Dummy";
-		final FilesCollection files = new FilesCollection();
+		final FilesCollection files = new FilesCollection(null);
 		files.addUpdateSite(updateSiteName, url, sshHost, uploadDirectory, Long
 			.parseLong(Util.timestamp(-1)));
 		return new FilesUploader(files, updateSiteName);

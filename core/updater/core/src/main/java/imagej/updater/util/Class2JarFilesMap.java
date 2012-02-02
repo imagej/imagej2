@@ -47,13 +47,16 @@ import java.util.zip.ZipException;
 @SuppressWarnings("serial")
 public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 
-	public Class2JarFilesMap() {
+	protected final File imagejRoot;
+
+	public Class2JarFilesMap(final File imagejRoot) {
+		this.imagejRoot = imagejRoot;
 		addDirectory("plugins");
 		addDirectory("jars");
 	}
 
 	private void addDirectory(final String directory) {
-		final File dir = new File(Util.imagejRoot + "/" + directory);
+		final File dir = new File(imagejRoot, directory);
 		if (!dir.isDirectory()) return;
 		final String[] list = dir.list();
 		for (int i = 0; i < list.length; i++) {
@@ -70,7 +73,7 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 
 	private void addJar(final String jar) throws IOException {
 		try {
-			final JarFile file = new JarFile(Util.imagejRoot + "/" + jar);
+			final JarFile file = new JarFile(new File(imagejRoot, jar));
 			final Enumeration<JarEntry> entries = file.entries();
 			while (entries.hasMoreElements()) {
 				final String name = (entries.nextElement()).getName();
@@ -132,18 +135,4 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 		System.out.println();
 	}
 
-	public static void main(final String[] args) {
-		final Class2JarFilesMap map = new Class2JarFilesMap();
-
-		if (args.length == 0) for (final String className : map.keySet()) {
-			System.out.print("class " + className +
-				" is in the following jar files: ");
-			printJarsForClass(map, className, true);
-		}
-		else for (int i = 0; i < args.length; i++) {
-			System.out.println("class " + args[i] +
-				" is in the following jar files: ");
-			printJarsForClass(map, args[i], false);
-		}
-	}
 }
