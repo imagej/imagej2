@@ -62,6 +62,12 @@ import net.imglib2.type.numeric.RealType;
  */
 public class ColorTableHarmonizer implements DisplayHarmonizer {
 
+	private final ImageJ context;
+
+	public ColorTableHarmonizer(ImageJ context) {
+		this.context = context;
+	}
+	
 	/**
 	 * Sets the ColorTables of the active view of an IJ2 ImageDisplay from the
 	 * LUTs of a given ImagePlus or CompositeImage.
@@ -111,7 +117,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			// a significant behavior change.
 			if (activeView == null) {
 				final ImageDisplayService imageDisplayService =
-					ImageJ.get(ImageDisplayService.class);
+					context.getService(ImageDisplayService.class);
 				final Dataset ds = imageDisplayService.getActiveDataset(disp);
 				setImagePlusLutToFirstInDataset(ds, imp);
 			}

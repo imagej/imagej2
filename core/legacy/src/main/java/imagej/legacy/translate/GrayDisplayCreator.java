@@ -59,15 +59,11 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	private final ImageJ context;
 
-	private final GrayPixelHarmonizer pixelHarmonizer =
-		new GrayPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer =
-		new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer =
-		new MetadataHarmonizer();
-	private final CompositeHarmonizer compositeHarmonizer =
-		new CompositeHarmonizer();
-	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
+	private final GrayPixelHarmonizer pixelHarmonizer;
+	private final ColorTableHarmonizer colorTableHarmonizer;
+	private final MetadataHarmonizer metadataHarmonizer;
+	private final CompositeHarmonizer compositeHarmonizer;
+	private final PlaneHarmonizer planeHarmonizer;
 	private final OverlayHarmonizer overlayHarmonizer;
 
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
@@ -80,6 +76,11 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	public GrayDisplayCreator(final ImageJ context) {
 		this.context = context;
+		pixelHarmonizer = new GrayPixelHarmonizer();
+		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		metadataHarmonizer = new MetadataHarmonizer();
+		compositeHarmonizer = new CompositeHarmonizer();
+		planeHarmonizer = new PlaneHarmonizer();
 		overlayHarmonizer = new OverlayHarmonizer(context);
 	}
 

@@ -51,13 +51,19 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final ColorPixelHarmonizer pixelHarmonizer =
-		new ColorPixelHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer =
-		new MetadataHarmonizer();
+	private final ImageJ context;
+	
+	private final ColorPixelHarmonizer pixelHarmonizer;
+	private final MetadataHarmonizer metadataHarmonizer;
 
 	// -- public interface --
 
+	public ColorImagePlusCreator(ImageJ context) {
+		this.context = context;
+		pixelHarmonizer = new ColorPixelHarmonizer();
+		metadataHarmonizer = new MetadataHarmonizer();
+	}
+	
 	/**
 	 * Creates a color {@link ImagePlus} from a color {@link ImageDisplay}.
 	 * Expects input expects input ImageDisplay to have isRgbMerged() set with 3
@@ -66,7 +72,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
+			context.getService(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		final ImagePlus imp = makeColorImagePlus(ds);
 		pixelHarmonizer.updateLegacyImage(ds, imp);

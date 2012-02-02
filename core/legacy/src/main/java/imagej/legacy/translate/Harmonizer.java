@@ -63,20 +63,14 @@ public class Harmonizer {
 	private final ImageJ context;
 
 	private final ImageTranslator imageTranslator;
-	private final Map<ImagePlus, Integer> bitDepthMap =
-		new HashMap<ImagePlus, Integer>();
+	private final Map<ImagePlus, Integer> bitDepthMap;
 
-	private final GrayPixelHarmonizer grayPixelHarmonizer =
-		new GrayPixelHarmonizer();
-	private final ColorPixelHarmonizer colorPixelHarmonizer =
-		new ColorPixelHarmonizer();
-	private final ColorTableHarmonizer colorTableHarmonizer =
-		new ColorTableHarmonizer();
-	private final MetadataHarmonizer metadataHarmonizer =
-		new MetadataHarmonizer();
-	private final CompositeHarmonizer compositeHarmonizer =
-		new CompositeHarmonizer();
-	private final PlaneHarmonizer planeHarmonizer = new PlaneHarmonizer();
+	private final GrayPixelHarmonizer grayPixelHarmonizer;
+	private final ColorPixelHarmonizer colorPixelHarmonizer;
+	private final ColorTableHarmonizer colorTableHarmonizer;
+	private final MetadataHarmonizer metadataHarmonizer;
+	private final CompositeHarmonizer compositeHarmonizer;
+	private final PlaneHarmonizer planeHarmonizer;
 	private final OverlayHarmonizer overlayHarmonizer;
 
 	// -- constructor --
@@ -84,6 +78,13 @@ public class Harmonizer {
 	public Harmonizer(final ImageJ context, final ImageTranslator trans) {
 		this.context = context;
 		imageTranslator = trans;
+		bitDepthMap = new HashMap<ImagePlus, Integer>();
+		grayPixelHarmonizer = new GrayPixelHarmonizer();
+		colorPixelHarmonizer = new ColorPixelHarmonizer();
+		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		metadataHarmonizer = new MetadataHarmonizer();
+		compositeHarmonizer = new CompositeHarmonizer();
+		planeHarmonizer = new PlaneHarmonizer();
 		overlayHarmonizer = new OverlayHarmonizer(context);
 	}
 

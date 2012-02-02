@@ -62,8 +62,8 @@ public class DefaultImageTranslator implements ImageTranslator {
 		this.context = context;
 		colorDisplayCreator = new ColorDisplayCreator(context);
 		grayDisplayCreator = new GrayDisplayCreator(context);
-		colorImagePlusCreator = new ColorImagePlusCreator();
-		grayImagePlusCreator = new GrayImagePlusCreator();
+		colorImagePlusCreator = new ColorImagePlusCreator(context);
+		grayImagePlusCreator = new GrayImagePlusCreator(context);
 	}
 
 	/**
