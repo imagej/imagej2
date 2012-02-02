@@ -37,6 +37,7 @@ package imagej.updater.gui;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.util.UserInterface;
+import imagej.util.Log;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -95,7 +96,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 					if (url != null) UserInterface.get().openURL(url);
 				}
 				catch (final Exception exception) {
-					exception.printStackTrace();
+					Log.error(exception);
 					UserInterface.get().error(
 						"Could not open " + url + ": " + exception.getMessage());
 				}
@@ -173,7 +174,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 			document.insertString(document.getLength(), text, set);
 		}
 		catch (final BadLocationException e) {
-			e.printStackTrace();
+			Log.error(e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -251,7 +252,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 			}
 		}
 		catch (final BadLocationException e) {
-			e.printStackTrace();
+			Log.error(e);
 		}
 		normal("\n\n");
 	}
@@ -344,7 +345,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 			dummySpace = end;
 		}
 		catch (final BadLocationException e) {
-			e.printStackTrace();
+			Log.error(e);
 		}
 	}
 
@@ -354,7 +355,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 			dummySpace = null;
 		}
 		catch (final BadLocationException e) {
-			e.printStackTrace();
+			Log.error(e);
 		}
 	}
 

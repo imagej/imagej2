@@ -241,7 +241,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 			panel.getStyledDocument().insertString(end, message, style);
 		}
 		catch (final BadLocationException e) {
-			e.printStackTrace();
+			Log.error(e);
 		}
 	}
 

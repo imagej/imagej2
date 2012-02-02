@@ -313,9 +313,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		final IJ1Plugin fileChanges =
 			IJ1Plugin.discover("fiji.scripting.ShowPluginChanges");
-		if (fileChanges != null &&
-			files.prefix(".git").isDirectory())
-		{
+		if (fileChanges != null && files.prefix(".git").isDirectory()) {
 			bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
 			showChanges =
 				SwingTools.button("Show changes",
@@ -336,9 +334,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					}, bottomPanel2);
 		}
 		final IJ1Plugin rebuild = IJ1Plugin.discover("fiji.scripting.RunFijiBuild");
-		if (rebuild != null &&
-			files.prefix(".git").isDirectory())
-		{
+		if (rebuild != null && files.prefix(".git").isDirectory()) {
 			bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
 			rebuildButton =
 				SwingTools.button("Rebuild", "Rebuild using Fiji Build",
@@ -624,7 +620,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			installer.done();
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
+			Log.error(e);
 			// TODO: remove "update/" directory
 			error("Installer failed: " + e);
 			installer.done();
