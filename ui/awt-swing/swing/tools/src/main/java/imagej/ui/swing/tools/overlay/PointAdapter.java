@@ -43,16 +43,23 @@ import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.AngleTool;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
+import java.util.List;
 
 import net.imglib2.RealPoint;
 
 import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
+import org.jhotdraw.draw.handle.AbstractHandle;
+import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.Geom;
 
 /**
@@ -216,6 +223,76 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			that.bounds = (Rectangle2D.Double) this.bounds.clone();
 			return that;
 		}
+		
 		// EVENT HANDLING
+		
+		@SuppressWarnings("synthetic-access")
+		@Override
+		public List<Handle> createHandles(int detailLevel) {
+			Handle handle = new PointHandle(this);
+			return Arrays.asList(handle);
+		}
+		
+		@Override
+		public void draw(Graphics2D g) {
+			Color origC = g.getColor();
+			int ctrX = (int) getX();
+			int ctrY = (int) getY();
+			g.setColor(Color.yellow);
+			g.drawLine(ctrX-1, ctrY-1, ctrX-1, ctrY+1);
+			g.drawLine(ctrX,   ctrY-1, ctrX,   ctrY+1);
+			g.drawLine(ctrX+1, ctrY-1, ctrX+1, ctrY+1);
+			g.setColor(Color.black);
+			g.drawLine(ctrX-2, ctrY-2, ctrX+2, ctrY-2);
+			g.drawLine(ctrX-2, ctrY-2, ctrX-2, ctrY+2);
+			g.drawLine(ctrX+2, ctrY+2, ctrX+2, ctrY-2);
+			g.drawLine(ctrX+2, ctrY+2, ctrX-2, ctrY+2);
+			g.setColor(Color.white);
+			g.drawLine(ctrX+3, ctrY,   ctrX+6, ctrY);
+			g.drawLine(ctrX-3, ctrY,   ctrX-6, ctrY);
+			g.drawLine(ctrX,   ctrY+3, ctrX,   ctrY+6);
+			g.drawLine(ctrX,   ctrY-3, ctrX,   ctrY-6);
+			g.setColor(origC);
+		}
+	}
+	
+	private class PointHandle extends AbstractHandle {
+
+		private PointFigure figure;
+		
+		private PointHandle(PointFigure fig) {
+			super(fig);
+			figure = fig;
+		}
+
+		@Override
+		public void trackEnd(Point anchor, Point lead, int modifiers) {
+			double currX = figure.getX();
+			double currY = figure.getY();
+			double dx = lead.x - anchor.x;
+			double dy = lead.y - anchor.y;
+			figure.set(currX + dx, currY + dy);
+		}
+
+		@Override
+		public void trackStart(Point anchor, int modifiers) {
+			// do nothing
+		}
+
+		@Override
+		public void trackStep(Point anchor, Point lead, int modifiers) {
+			// do nothing
+		}
+
+		@Override
+		protected Rectangle basicGetBounds() {
+			Rectangle rect = new Rectangle();
+			Rectangle2D.Double bounds = figure.getBounds();
+			rect.x = (int) bounds.x;
+			rect.y = (int) bounds.y;
+			rect.width = (int) bounds.width;
+			rect.height = (int) bounds.height;
+			return rect;
+		}
 	}
 }
