@@ -38,7 +38,6 @@ my $sourcePrefix = "$tracURL/browser/trunk";
     'ui/awt-swing/common ui/awt-swing/util');
   section('UI: Swing', 'ui/awt-swing/swing');
   section('UI: AWT', 'ui/awt-swing/awt');
-  section('UI: Headless', 'ui/headless');
   section('UI: Pivot', 'ui/pivot');
   section('UI: SWT', 'ui/swt');
   section('Extra', 'extra');
