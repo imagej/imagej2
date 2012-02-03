@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -57,13 +56,15 @@ public class SelectWindow implements ImageJPlugin {
 	// Active*Preprocessor classes to respect the flag.
 
 	@Parameter
-	String displayToSelect;
+	private String displayToSelect;
+
+	@Parameter(persist = false)
+	private DisplayService displayService;
 
 	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display<?> display = displayService.getDisplay(displayToSelect);
 		if (display == null) return;
 		display.activate();
