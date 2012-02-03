@@ -124,9 +124,24 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	public MouseCursor getCursor() {
 		return MouseCursor.CROSSHAIR;
 	}
+	
+	/*
+	@Override
+	public void onMouseDown(final MsPressedEvent evt) {
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+		evt.consume();
+	}
+
+	@Override
+	public void onMouseDrag(final MsDraggedEvent evt) {
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+		evt.consume();
+	}
+	*/
 
 	private class PointFigure extends AbstractAttributedFigure {
 		protected Rectangle2D.Double bounds;
+		private Rectangle2D.Double rect;
 		
 		/** Creates a new instance. */
 		public PointFigure() {
@@ -134,7 +149,8 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		}
 		
 		public PointFigure(double x, double y) {
-			bounds = new Rectangle2D.Double(x, y, 1, 1); 
+			bounds = new Rectangle2D.Double(x, y, 1, 1);
+			rect = new Rectangle2D.Double();
 		}
 
 		public void set(double x, double y) {
@@ -224,8 +240,6 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			return that;
 		}
 		
-		// EVENT HANDLING
-		
 		@SuppressWarnings("synthetic-access")
 		@Override
 		public List<Handle> createHandles(int detailLevel) {
@@ -236,22 +250,56 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		@Override
 		public void draw(Graphics2D g) {
 			Color origC = g.getColor();
-			int ctrX = (int) getX();
-			int ctrY = (int) getY();
-			g.setColor(Color.yellow);
-			g.drawLine(ctrX-1, ctrY-1, ctrX-1, ctrY+1);
-			g.drawLine(ctrX,   ctrY-1, ctrX,   ctrY+1);
-			g.drawLine(ctrX+1, ctrY-1, ctrX+1, ctrY+1);
+			double sx = g.getTransform().getScaleX();
+			double sy = g.getTransform().getScaleY();
+			double ctrX = getX();
+			double ctrY = getY();
+			
+			// black outline
 			g.setColor(Color.black);
-			g.drawLine(ctrX-2, ctrY-2, ctrX+2, ctrY-2);
-			g.drawLine(ctrX-2, ctrY-2, ctrX-2, ctrY+2);
-			g.drawLine(ctrX+2, ctrY+2, ctrX+2, ctrY-2);
-			g.drawLine(ctrX+2, ctrY+2, ctrX-2, ctrY+2);
+			rect.x = ctrX-2/sx;
+			rect.y = ctrY-2/sy;
+			rect.width = 5/sx;
+			rect.height= 5/sy;
+			g.fill(rect);
+			
+			// yellow center
+			g.setColor(Color.yellow);
+			rect.x = ctrX-1/sx;
+			rect.y = ctrY-1/sy;
+			rect.width = 3/sx;
+			rect.height= 3/sy;
+			g.fill(rect);
+			
+			// white line # 1
 			g.setColor(Color.white);
-			g.drawLine(ctrX+3, ctrY,   ctrX+6, ctrY);
-			g.drawLine(ctrX-3, ctrY,   ctrX-6, ctrY);
-			g.drawLine(ctrX,   ctrY+3, ctrX,   ctrY+6);
-			g.drawLine(ctrX,   ctrY-3, ctrX,   ctrY-6);
+			rect.x = ctrX+3/sx;
+			rect.y = ctrY;
+			rect.width = 4/sx;
+			rect.height= 1/sy;
+			g.fill(rect);
+			
+			// white line # 2
+			rect.x = ctrX-6/sx;
+			rect.y = ctrY;
+			rect.width = 4/sx;
+			rect.height= 1/sy;
+			g.fill(rect);
+			
+			// white line # 3
+			rect.x = ctrX;
+			rect.y = ctrY-6/sy;
+			rect.width = 1/sx;
+			rect.height= 4/sy;
+			g.fill(rect);
+			
+			// white line # 4
+			rect.x = ctrX;
+			rect.y = ctrY+3/sy;
+			rect.width = 1/sx;
+			rect.height= 4/sy;
+			g.fill(rect);
+			
 			g.setColor(origC);
 		}
 	}
