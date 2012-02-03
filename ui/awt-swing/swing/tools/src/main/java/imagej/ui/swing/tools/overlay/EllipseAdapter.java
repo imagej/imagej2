@@ -41,6 +41,10 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -91,8 +95,12 @@ public class EllipseAdapter extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		final EllipseFigure figure = new EllipseFigure();
+		final EllipseFigure figure = new LocalEllipseFigure();
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
+		// FIXME
+		// this should make ellipse draw as one pixel wide at all times but instead
+		// the figure disappears
+		//figure.set(AttributeKeys.STROKE_WIDTH, new Double(0));
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
@@ -124,6 +132,24 @@ public class EllipseAdapter extends
 		eRoi.setOrigin(ptCenter);
 		eRoi.setRadius(r.width / 2, 0);
 		eRoi.setRadius(r.height / 2, 1);
+	}
+
+	/* temp workaround of HotDraw bug
+	 * stroke width of 0 with stock EllipseFigure draws nothing
+	 */
+	private class LocalEllipseFigure extends EllipseFigure {
+		@Override
+		public void draw(Graphics2D g) {
+			Stroke origS = g.getStroke(); 
+			Color origC = g.getColor();
+			// 1 pixel wide outline
+			Stroke stroke = new BasicStroke((float)(1/g.getTransform().getScaleX()));
+			g.setStroke(stroke);
+			g.setColor(get(AttributeKeys.STROKE_COLOR));
+			g.draw(this.ellipse);
+			g.setStroke(origS);
+			g.setColor(origC);
+		}
 	}
 
 }

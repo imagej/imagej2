@@ -42,7 +42,11 @@ import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.util.Log;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.awt.event.InputEvent;
 import java.util.Arrays;
 import java.util.Collection;
@@ -152,8 +156,11 @@ public class PolygonAdapter extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		final BezierFigure figure = new PolygonFigure();
+		final BezierFigure figure = new LocalPolygonFigure();
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
+		// Unlike some other figures this one will draw one pixel wide when width is
+		// 0. This is correct behavior.
+		figure.set(AttributeKeys.STROKE_WIDTH, new Double(0));
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
@@ -210,6 +217,24 @@ public class PolygonAdapter extends
 				Arrays.fill(node.x, vertex.getDoublePosition(0));
 				Arrays.fill(node.y, vertex.getDoublePosition(1));
 			}
+		}
+	}
+
+	/* temp workaround of HotDraw bug
+	 * stroke width of 0 with stock EllipseFigure draws nothing
+	 */
+	private class LocalPolygonFigure extends PolygonFigure {
+		@Override
+		public void draw(Graphics2D g) {
+			Stroke origS = g.getStroke(); 
+			Color origC = g.getColor();
+			// 1 pixel wide outline
+			Stroke stroke = new BasicStroke((float)(1/g.getTransform().getScaleX()));
+			g.setStroke(stroke);
+			g.setColor(get(AttributeKeys.STROKE_COLOR));
+			g.draw(this.path);
+			g.setStroke(origS);
+			g.setColor(origC);
 		}
 	}
 }
