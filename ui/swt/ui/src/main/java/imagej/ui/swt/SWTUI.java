@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swt;
 
-import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.swt.SWTMenuCreator;
@@ -98,7 +97,7 @@ public class SWTUI implements IUserInterface, Runnable {
 
 	@Override
 	public void createMenus() {
-		final MenuService menuService = ImageJ.get(MenuService.class);
+		final MenuService menuService = uiService.getMenuService();
 		final Menu menuBar =
 			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
 		shell.setMenuBar(menuBar); // TODO - is this necessary?
