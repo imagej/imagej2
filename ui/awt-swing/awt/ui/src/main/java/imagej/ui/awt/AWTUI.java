@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt;
 
-import imagej.ImageJ;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
@@ -101,7 +100,7 @@ public class AWTUI implements IUserInterface {
 
 	@Override
 	public void createMenus() {
-		final MenuService menuService = ImageJ.get(MenuService.class);
+		final MenuService menuService = uiService.getMenuService();
 		final MenuBar menuBar =
 			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
 		frame.setMenuBar(menuBar);
