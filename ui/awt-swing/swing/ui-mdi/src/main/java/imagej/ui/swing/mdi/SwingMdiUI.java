@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.mdi;
 
+import imagej.ext.plugin.Plugin;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -53,7 +54,7 @@ import javax.swing.JScrollPane;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@UserInterface
+@Plugin(type = UserInterface.class)
 public class SwingMdiUI extends AbstractSwingUI {
 
 	private JMDIDesktopPane desktopPane;

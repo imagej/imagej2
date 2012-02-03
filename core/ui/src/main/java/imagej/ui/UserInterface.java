@@ -34,23 +34,60 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
+import imagej.ext.display.Display;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 
 /**
- * Annotation indicating a discoverable user interface.
+ * An end-user ImageJ application user interface. UIs discoverable at runtime
+ * must implement this interface and be annotated with
+ * <code>@{@link Plugin}(type = UserInterface.class)</code>.
  * 
  * @author Curtis Rueden
- * @see IUserInterface
+ * @see Plugin
  * @see UIService
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = IUserInterface.class)
-public @interface UserInterface {
-	// marker interface for discovery via SezPoz
+public interface UserInterface extends IPlugin {
+
+	void initialize(UIService uiService);
+
+	UIService getUIService();
+
+	void processArgs(final String[] args);
+
+	/** Desktop for use with multi-document interfaces (MDI). */
+	Desktop getDesktop();
+
+	ApplicationFrame getApplicationFrame();
+
+	ToolBar getToolBar();
+
+	StatusBar getStatusBar();
+
+	void createMenus();
+
+	OutputWindow newOutputWindow(String title);
+
+	/**
+	 * Creates a dialog prompter.
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @param title The title of the dialog.
+	 * @param messageType The type of message. This typically is rendered as an
+	 *          icon next to the message. For example,
+	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
+	 *          as an exclamation point.
+	 * @param optionType The choices available when dismissing the dialog. These
+	 *          choices are typically rendered as buttons for the user to click.
+	 * @return The newly created DialogPrompt object.
+	 */
+	DialogPrompt dialogPrompt(String message, String title,
+		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
+
+	/**
+	 * Displays a popup context menu for the given display at the specified
+	 * position.
+	 */
+	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
+
 }

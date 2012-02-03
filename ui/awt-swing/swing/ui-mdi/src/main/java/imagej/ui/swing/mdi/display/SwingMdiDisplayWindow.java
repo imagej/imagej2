@@ -37,7 +37,7 @@ package imagej.ui.swing.mdi.display;
 import imagej.ImageJ;
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayWindow;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.ui.UIService;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.display.SwingDisplayPanel;
@@ -90,7 +90,7 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 
 	@Override
 	public void showDisplay(final boolean visible) {
-		final IUserInterface userInterface = ImageJ.get(UIService.class).getUI();
+		final UserInterface userInterface = ImageJ.get(UIService.class).getUI();
 		final JMDIDesktopPane desktop =
 			(JMDIDesktopPane) userInterface.getDesktop();
 		setVisible(true);

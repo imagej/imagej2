@@ -40,7 +40,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.ui.ApplicationFrame;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.ui.UIService;
 
 /**
@@ -56,7 +56,7 @@ public class FocusHandler extends AbstractTool {
 		if (evt.getCode() != KeyCode.ENTER) return;
 		final UIService uiService = evt.getContext().getService(UIService.class);
 		if (uiService == null) return;
-		final IUserInterface ui = uiService.getUI();
+		final UserInterface ui = uiService.getUI();
 		if (ui == null) return;
 		final ApplicationFrame appFrame = ui.getApplicationFrame();
 		if (appFrame == null) return;

@@ -35,14 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.pivot;
 
 import imagej.ext.display.Display;
+import imagej.ext.plugin.Plugin;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
-import imagej.ui.UserInterface;
 
 import java.util.concurrent.Callable;
 
@@ -53,8 +53,8 @@ import org.apache.pivot.wtk.DesktopApplicationContext;
  * 
  * @author Curtis Rueden
  */
-@UserInterface
-public class PivotUI implements IUserInterface, Callable<Object> {
+@Plugin(type = UserInterface.class)
+public class PivotUI implements UserInterface, Callable<Object> {
 
 	private UIService uiService;
 

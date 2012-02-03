@@ -40,7 +40,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.ui.UIService;
 import imagej.ui.swing.SwingApplicationFrame;
 import imagej.util.Log;
@@ -117,7 +117,7 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 						@Override
 						public void run() {
 							// FIXME: Get all windows from UIService rather than just app.
-							final IUserInterface ui = getUIService().getUI();
+							final UserInterface ui = getUIService().getUI();
 							final SwingApplicationFrame swingAppFrame =
 								(SwingApplicationFrame) ui.getApplicationFrame();
 							SwingUtilities.updateComponentTreeUI(swingAppFrame);
