@@ -88,6 +88,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 		final ColorRGB lineColor = overlay.getData().getLineColor();
 		if (overlay.getData().getLineStyle() != Overlay.LineStyle.NONE) {
 			figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
+			
+			// FIXME - is this next line dangerous for drawing attributes? width could
+			// conceivably need to always stay 0.
 			figure.set(AttributeKeys.STROKE_WIDTH, overlay.getData().getLineWidth());
 			double[] dash_pattern;
 			switch (overlay.getData().getLineStyle()) {
@@ -137,9 +140,12 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	public void updateOverlay(final Figure figure, final OverlayView overlay) {
 		final Color strokeColor = figure.get(AttributeKeys.STROKE_COLOR);
 		overlay.getData().setLineColor(AWTColors.getColorRGB(strokeColor));
-		overlay.getData().setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
 		// The line style is intentionally omitted here because it is ambiguous and
 		// because there is no UI for setting it by the JHotDraw UI.
+		
+		// FIXME - is this next line dangerous for drawing attributes? width could
+		// conceivably be 0.
+		overlay.getData().setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
 		final Color fillColor = figure.get(AttributeKeys.FILL_COLOR);
 		final ColorRGBA imageJColor = AWTColors.getColorRGBA(fillColor);
 		overlay.getData().setFillColor(imageJColor);

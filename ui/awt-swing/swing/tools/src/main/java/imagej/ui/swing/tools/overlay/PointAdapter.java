@@ -75,6 +75,8 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
 	public static final int PRIORITY = AngleTool.PRIORITY - 1;
 
+	//private static final BasicStroke MIN_STROKE = new BasicStroke(0);
+	
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if (!(overlay instanceof PointOverlay)) return false;
@@ -89,6 +91,8 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	@Override
 	public Figure createDefaultFigure() {
 		final PointFigure figure = new PointFigure();
+		// FIXME why doesn't this work to allow draw() to not need to know scale?
+		//figure.set(AttributeKeys.STROKE_WIDTH, new Double(0));
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
@@ -141,7 +145,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
 	private class PointFigure extends AbstractAttributedFigure {
 		protected Rectangle2D.Double bounds;
-		private Rectangle2D.Double rect;
+		private final Rectangle2D.Double rect;
 		
 		/** Creates a new instance. */
 		public PointFigure() {
@@ -246,33 +250,97 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			Handle handle = new PointHandle(this);
 			return Arrays.asList(handle);
 		}
-		
+
+		/*
+		 * version that wants to work in a pixel space but stroke_width 0 code
+		 * above does not work. 
 		@Override
 		public void draw(Graphics2D g) {
+			g.setStroke(MIN_STROKE);
 			Color origC = g.getColor();
-			double sx = g.getTransform().getScaleX();
-			double sy = g.getTransform().getScaleY();
 			double ctrX = getX();
 			double ctrY = getY();
 			
 			// black outline
 			g.setColor(Color.black);
+			rect.x = ctrX-2;
+			rect.y = ctrY-2;
+			rect.width = 5;
+			rect.height= 5;
+			g.fill(rect);
+			
+			// yellow center
+			g.setColor(Color.yellow);
+			rect.x = ctrX-1;
+			rect.y = ctrY-1;
+			rect.width = 3;
+			rect.height= 3;
+			g.fill(rect);
+			
+			// white line # 1
+			g.setColor(Color.white);
+			rect.x = ctrX+3;
+			rect.y = ctrY;
+			rect.width = 4;
+			rect.height= 1;
+			g.fill(rect);
+			
+			// white line # 2
+			rect.x = ctrX-6;
+			rect.y = ctrY;
+			rect.width = 4;
+			rect.height= 1;
+			g.fill(rect);
+			
+			// white line # 3
+			rect.x = ctrX;
+			rect.y = ctrY-6;
+			rect.width = 1;
+			rect.height= 4;
+			g.fill(rect);
+			
+			// white line # 4
+			rect.x = ctrX;
+			rect.y = ctrY+3;
+			rect.width = 1;
+			rect.height= 4;
+			g.fill(rect);
+			
+			g.setColor(origC);
+		}
+		 */
+		
+		/* scale invariant version but would be nice if we could avoid scale code
+		 * and work in pixels. */
+		@Override
+		public void draw(Graphics2D g) {
+			final Color origC = g.getColor();
+			final double sx = g.getTransform().getScaleX();
+			final double sy = g.getTransform().getScaleY();
+			final double ctrX = getX();
+			final double ctrY = getY();
+			
+			g.setColor(Color.black);
+
+			// black outline
 			rect.x = ctrX-2/sx;
 			rect.y = ctrY-2/sy;
 			rect.width = 5/sx;
 			rect.height= 5/sy;
 			g.fill(rect);
 			
-			// yellow center
 			g.setColor(Color.yellow);
+
+			// yellow center
 			rect.x = ctrX-1/sx;
 			rect.y = ctrY-1/sy;
 			rect.width = 3/sx;
 			rect.height= 3/sy;
 			g.fill(rect);
 			
-			// white line # 1
 			g.setColor(Color.white);
+
+			// white line # 1
 			rect.x = ctrX+3/sx;
 			rect.y = ctrY;
 			rect.width = 4/sx;
@@ -302,6 +370,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			
 			g.setColor(origC);
 		}
+
 	}
 	
 	private class PointHandle extends AbstractHandle {
