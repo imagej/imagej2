@@ -141,8 +141,14 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		evt.consume();
 	}
-	*/
 
+	@Override
+	public void onMouseClick(imagej.ext.display.event.input.MsClickedEvent evt) {
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+		evt.consume();
+	}
+	*/
+	
 	private class PointFigure extends AbstractAttributedFigure {
 		protected Rectangle2D.Double bounds;
 		private final Rectangle2D.Double rect;
