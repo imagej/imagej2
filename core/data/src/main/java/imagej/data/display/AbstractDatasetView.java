@@ -40,6 +40,7 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 
 import java.util.ArrayList;
@@ -90,7 +91,8 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 	public AbstractDatasetView(final Dataset dataset) {
 		super(dataset);
 		this.dataset = dataset;
-		subscribers = eventService.subscribe(this);
+		final EventService eventService = getEventService();
+		subscribers = eventService == null ? null : eventService.subscribe(this);
 	}
 
 	// -- DatasetView methods --

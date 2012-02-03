@@ -42,6 +42,7 @@ import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.event.EventService;
+import imagej.event.ImageJEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,8 +58,6 @@ import net.imglib2.meta.AxisType;
 public abstract class AbstractDataView implements DataView {
 
 	private final Data data;
-
-	protected final EventService eventService;
 
 	/**
 	 * View's position along each applicable dimensional axis.
@@ -79,7 +78,6 @@ public abstract class AbstractDataView implements DataView {
 	private boolean selected;
 
 	public AbstractDataView(final Data data) {
-		eventService = ImageJ.get(EventService.class);
 		this.data = data;
 		data.incrementReferences();
 	}
@@ -113,7 +111,7 @@ public abstract class AbstractDataView implements DataView {
 			final DataViewSelectionEvent event =
 				isSelected ? new DataViewSelectedEvent(this)
 					: new DataViewDeselectedEvent(this);
-			eventService.publish(event);
+			publish(event);
 		}
 	}
 
@@ -268,6 +266,20 @@ public abstract class AbstractDataView implements DataView {
 	@Override
 	public void setPosition(final long position, final int d) {
 		setPosition(position, getData().axis(d));
+	}
+
+	// -- Helper methods --
+
+	protected EventService getEventService() {
+		final ImageJ context = data.getContext();
+		if (context == null) return null;
+		return context.getService(EventService.class);
+	}
+
+	protected void publish(final ImageJEvent event) {
+		final EventService eventService = getEventService();
+		if (eventService == null) return;
+		eventService.publish(event);
 	}
 
 }
