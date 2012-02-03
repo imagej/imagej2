@@ -39,15 +39,16 @@ import imagej.ext.display.Display;
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
-
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.sdi.display.SwingDisplayWindow;
+
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
@@ -60,7 +61,7 @@ import javax.swing.SwingUtilities;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@UserInterface
+@Plugin(type = UserInterface.class)
 public class SwingUI extends AbstractSwingUI {
 
 	// -- UserInterface methods --

@@ -39,7 +39,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.ui.UIService;
 
 /**

@@ -36,6 +36,7 @@ package imagej.ui.awt;
 
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.ApplicationFrame;
@@ -43,10 +44,9 @@ import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
-import imagej.ui.UserInterface;
 
 import java.awt.BorderLayout;
 import java.awt.MenuBar;
@@ -58,8 +58,8 @@ import java.awt.event.WindowEvent;
  * 
  * @author Curtis Rueden
  */
-@UserInterface
-public class AWTUI implements IUserInterface {
+@Plugin(type = UserInterface.class)
+public class AWTUI implements UserInterface {
 
 	private UIService uiService;
 	private AWTApplicationFrame frame;

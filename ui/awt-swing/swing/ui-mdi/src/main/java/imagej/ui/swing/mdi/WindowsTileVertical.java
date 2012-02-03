@@ -39,7 +39,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.Arrangeable.Arrangement;
 import imagej.ui.Desktop;
-import imagej.ui.IUserInterface;
+import imagej.ui.UserInterface;
 import imagej.ui.UIService;
 
 /**
@@ -52,7 +52,7 @@ public class WindowsTileVertical implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final IUserInterface ui = ImageJ.get(UIService.class).getUI();
+		final UserInterface ui = ImageJ.get(UIService.class).getUI();
 		Desktop desk = ui.getDesktop();
 		desk.setArrangement(Arrangement.VERTICAL);
 	}

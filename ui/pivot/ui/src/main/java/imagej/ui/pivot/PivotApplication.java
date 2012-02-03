@@ -39,7 +39,6 @@ import imagej.event.EventService;
 import imagej.ext.menu.MenuService;
 import imagej.ext.ui.pivot.PivotMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.ui.UserInterface;
 
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Application;

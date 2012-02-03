@@ -44,11 +44,11 @@ import imagej.util.Prefs;
 import java.util.List;
 
 /**
- * Abstract superclass for {@link IUserInterface} implementations.
+ * Abstract superclass for {@link UserInterface} implementations.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractUserInterface implements IUserInterface {
+public abstract class AbstractUserInterface implements UserInterface {
 
 	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
 	private static final String LAST_X = "lastXLocation";

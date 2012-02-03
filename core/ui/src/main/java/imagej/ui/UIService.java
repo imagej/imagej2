@@ -39,9 +39,11 @@ import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.event.MenuEvent;
+import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
 import imagej.platform.PlatformService;
@@ -51,9 +53,6 @@ import imagej.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
 /**
  * Service for the ImageJ user interface.
@@ -71,10 +70,10 @@ public final class UIService extends AbstractService {
 	private final ToolService toolService;
 
 	/** The active user interface. */
-	private IUserInterface userInterface;
+	private UserInterface userInterface;
 
 	/** Available user interfaces. */
-	private List<IUserInterface> availableUIs;
+	private List<UserInterface> availableUIs;
 
 	// -- Constructors --
 
@@ -139,12 +138,12 @@ public final class UIService extends AbstractService {
 	}
 
 	/** Gets the active user interface. */
-	public IUserInterface getUI() {
+	public UserInterface getUI() {
 		return userInterface;
 	}
 
 	/** Gets the user interfaces available on the classpath. */
-	public List<IUserInterface> getAvailableUIs() {
+	public List<UserInterface> getAvailableUIs() {
 		return availableUIs;
 	}
 
@@ -249,10 +248,10 @@ public final class UIService extends AbstractService {
 
 	/** Discovers and launches the user interface. */
 	private void launchUI() {
-		final List<IUserInterface> uis = discoverUIs();
+		final List<UserInterface> uis = discoverUIs();
 		availableUIs = Collections.unmodifiableList(uis);
 		if (uis.size() > 0) {
-			final IUserInterface ui = uis.get(0);
+			final UserInterface ui = uis.get(0);
 			Log.info("Launching user interface: " + ui.getClass().getName());
 			ui.initialize(this);
 			userInterface = ui;
@@ -264,18 +263,18 @@ public final class UIService extends AbstractService {
 	}
 
 	/** Discovers user interfaces using SezPoz. */
-	private List<IUserInterface> discoverUIs() {
-		final List<IUserInterface> uis = new ArrayList<IUserInterface>();
-		for (final IndexItem<UserInterface, IUserInterface> item : Index.load(
-			UserInterface.class, IUserInterface.class))
+	private List<UserInterface> discoverUIs() {
+		final List<UserInterface> uis = new ArrayList<UserInterface>();
+		for (final PluginInfo<UserInterface> info :
+			pluginService.getPluginsOfType(UserInterface.class))
 		{
 			try {
-				final IUserInterface ui = item.instance();
+				final UserInterface ui = info.createInstance();
 				Log.info("Discovered user interface: " + ui.getClass().getName());
 				uis.add(ui);
 			}
-			catch (final InstantiationException e) {
-				Log.warn("Invalid user interface: " + item, e);
+			catch (final InstantiableException e) {
+				Log.warn("Invalid user interface: " + info.getClassName(), e);
 			}
 		}
 		return uis;
