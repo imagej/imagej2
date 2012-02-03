@@ -125,9 +125,7 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 			return model;
 		}
 
-		final boolean required = item.isRequired();
-
-		final T defaultValue = required ? null : item.getValue(module);
+		final T defaultValue = item.getValue(module);
 		final T prefValue = item.loadValue();
 		final T initialValue = getInitialValue(prefValue, defaultValue, type);
 
