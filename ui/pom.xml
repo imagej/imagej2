@@ -43,7 +43,6 @@
 			<id>all</id>
 			<modules>
 				<module>awt-swing</module>
-				<module>headless</module>
 				<module>pivot</module>
 				<module>swt</module>
 			</modules>
@@ -52,12 +51,6 @@
 			<id>awt</id>
 			<modules>
 				<module>awt-swing</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>headless</id>
-			<modules>
-				<module>headless</module>
 			</modules>
 		</profile>
 		<profile>
