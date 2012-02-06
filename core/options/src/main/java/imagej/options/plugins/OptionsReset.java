@@ -46,7 +46,7 @@ import imagej.util.Prefs;
 import java.util.List;
 
 /**
- * Runs the Edit::Options::Misc dialog.
+ * Runs the Edit::Options::Reset dialog.
  * 
  * @author Barry DeZonia
  */
