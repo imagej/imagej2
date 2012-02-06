@@ -450,11 +450,14 @@ public class OptionsSynchronizer {
 
 		final OptionsCompiler optionsCompiler =
 			optionsService.getOptions(OptionsCompiler.class);
+		final Field field = getCompilerField("target");
 		final boolean debug = getIJ1CompilerDebugFlag();
 		final String target = getIJ1CompilerTarget();
-		optionsCompiler.setTargetJavaVersion(target);
-		optionsCompiler.setGenerateDebugInfo(debug);
-		optionsCompiler.save();
+		if (field != null) {
+			optionsCompiler.setTargetJavaVersion(target);
+			optionsCompiler.setGenerateDebugInfo(debug);
+			optionsCompiler.save();
+		}
 
 		final OptionsConversions optionsConversions =
 			optionsService.getOptions(OptionsConversions.class);
@@ -591,14 +594,14 @@ public class OptionsSynchronizer {
 
 	private void setIJ1CompilerDebugFlag(final boolean b) {
 		final Field field = getCompilerField("generateDebuggingInfo");
-		if (field != null)
-			ClassUtils.setValue(field, null, b);
+		if (field == null) return;
+		ClassUtils.setValue(field, null, b);
 	}
 
 	private boolean getIJ1CompilerDebugFlag() {
 		final Field field = getCompilerField("generateDebuggingInfo");
-		if (field != null) return (Boolean) ClassUtils.getValue(field, null);
-		return false;
+		if (field == null) return false;
+		return (Boolean) ClassUtils.getValue(field, null);
 	}
 
 	private void setIJ1CompilerTarget(final String target) {
