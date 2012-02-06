@@ -590,19 +590,20 @@ public class OptionsSynchronizer {
 	}
 
 	private void setIJ1CompilerDebugFlag(final boolean b) {
-		final Field field =
-			ClassUtils.getField("ij.plugin.Compiler", "generateDebuggingInfo");
-		ClassUtils.setValue(field, null, b);
+		final Field field = getCompilerField("generateDebuggingInfo");
+		if (field != null)
+			ClassUtils.setValue(field, null, b);
 	}
 
 	private boolean getIJ1CompilerDebugFlag() {
-		final Field field =
-			ClassUtils.getField("ij.plugin.Compiler", "generateDebuggingInfo");
-		return (Boolean) ClassUtils.getValue(field, null);
+		final Field field = getCompilerField("generateDebuggingInfo");
+		if (field != null) return (Boolean) ClassUtils.getValue(field, null);
+		return false;
 	}
 
 	private void setIJ1CompilerTarget(final String target) {
-		final Field field = ClassUtils.getField("ij.plugin.Compiler", "target");
+		final Field field = getCompilerField("target");
+		if (field == null) return;
 		int t = 1;
 		if (target.equals("1.4")) t = 0;
 		else if (target.equals("1.5")) t = 1;
@@ -612,7 +613,8 @@ public class OptionsSynchronizer {
 	}
 
 	private String getIJ1CompilerTarget() {
-		final Field field = ClassUtils.getField("ij.plugin.Compiler", "target");
+		final Field field = getCompilerField("target");
+		if (field == null) return "1.5";
 		final int t = (Integer) ClassUtils.getValue(field, null);
 		if (t == 0) return "1.4";
 		if (t == 1) return "1.5";
@@ -655,5 +657,18 @@ public class OptionsSynchronizer {
 		final Field field =
 			ClassUtils.getField("ij.plugin.WandToolOptions", "tolerance");
 		return (Double) ClassUtils.getValue(field, null);
+	}
+
+	/** IJ1 directly refers to compiler that may not be loaded (since it may not
+	 * be on class path). Thus have a safe accessor that does not cause runtime
+	 * exceptions when user misconfigures their java tools. Instead we should
+	 * avoid issues here and we should safely report the issue to the user if they
+	 * try to run the Compile/Run plugin. */
+	private Field getCompilerField(String fieldName) {
+		try {
+			return ClassUtils.getField("ij.plugin.Compiler", fieldName);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
