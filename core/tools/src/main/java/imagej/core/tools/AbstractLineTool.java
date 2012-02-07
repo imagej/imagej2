@@ -36,6 +36,7 @@ package imagej.core.tools;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.display.event.input.KyPressedEvent;
@@ -47,6 +48,8 @@ import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsColors;
+import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 
 /**
  * Abstract class that is used by PencilTool, PaintBrushTool, and their erase
@@ -78,33 +81,45 @@ public abstract class AbstractLineTool extends AbstractTool {
 	/** On mouse down the start point of a series of lines is established. */
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
-		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
-			initDrawingTool(evt);
-			if (drawingTool != null) {
-				drawingTool.moveTo(evt.getX(), evt.getY());
-			}
-			evt.consume();
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
+		initDrawingTool(evt);
+		if (drawingTool != null) {
+			// safe cast due to earlier test
+			ImageDisplay disp = (ImageDisplay) evt.getDisplay();
+			ImageCanvas canv = disp.getCanvas();
+			IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
+			RealCoords realCoords = canv.panelToImageCoords(panelCoords);
+			long modelX = realCoords.getLongX();
+			long modelY = realCoords.getLongY();
+			drawingTool.moveTo(modelX, modelY);
 		}
+		evt.consume();
 	}
 
 	/** On mouse up all resources are freed. */
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
-		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
-			drawingTool = null;
-			evt.consume();
-		}
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+		drawingTool = null;
+		evt.consume();
 	}
 
 	/** On mouse drag a series of lines are drawn. */
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
-		if (drawingTool != null) {
-			drawingTool.lineTo(evt.getX(), evt.getY());
-			evt.getDisplay().getPanel().redraw();
-			evt.getDisplay().update();
-			evt.consume();
-		}
+		if (drawingTool == null) return;
+		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
+		ImageDisplay disp = (ImageDisplay) evt.getDisplay();
+		ImageCanvas canv = disp.getCanvas();
+		IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
+		RealCoords realCoords = canv.panelToImageCoords(panelCoords);
+		long modelX = realCoords.getLongX();
+		long modelY = realCoords.getLongY();
+		drawingTool.lineTo(modelX, modelY);
+		evt.getDisplay().getPanel().redraw();
+		evt.getDisplay().update();
+		evt.consume();
 	}
 
 	/**
