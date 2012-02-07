@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.thread;
 
-import imagej.IService;
+import imagej.service.IService;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;

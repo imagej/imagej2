@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.display;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.object.ObjectService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;

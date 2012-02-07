@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import imagej.IService;
 import imagej.data.display.ImageDisplay;
 import imagej.object.ObjectService;
+import imagej.service.IService;
 
 import java.util.List;
 

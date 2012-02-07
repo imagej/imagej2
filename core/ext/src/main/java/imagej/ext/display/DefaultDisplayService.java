@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
@@ -47,6 +45,8 @@ import imagej.ext.display.event.window.WinClosedEvent;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.object.ObjectService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 import imagej.util.Log;
 
 import java.util.ArrayList;

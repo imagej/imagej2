@@ -32,8 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej;
+package imagej.service;
 
+import imagej.ImageJ;
 import imagej.util.Log;
 
 import java.lang.reflect.Constructor;

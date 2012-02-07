@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.plugin.PluginService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 /**
  * Service for executing plugins in response to application events.

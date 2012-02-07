@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.object.ObjectService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.List;

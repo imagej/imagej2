@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.restructure;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.event.DataRestructuredEvent;
@@ -45,6 +43,8 @@ import imagej.event.EventService;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 import net.imglib2.meta.Axes;
 
 /**

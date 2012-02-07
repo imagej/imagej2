@@ -1,5 +1,5 @@
 //
-// Service.java
+// IService.java
 //
 
 /*
@@ -32,25 +32,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej;
+package imagej.service;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
+import imagej.ImageJ;
 
 /**
- * Annotation indicating a discoverable service. ImageJ discovers available
- * services at runtime by looking for classes that implement the
- * {@link IService} interface and are annotated with this annotation.
+ * An ImageJ service, for a particular area of functionality. ImageJ discovers
+ * available services at runtime by looking for classes that implement this
+ * interface and are annotated with the @{@link Service} annotation.
  * 
  * @author Curtis Rueden
+ * @see Service
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = IService.class)
-public @interface Service {
-	// marker interface for discovery via SezPoz
+public interface IService {
+
+	ImageJ getContext();
+
 }

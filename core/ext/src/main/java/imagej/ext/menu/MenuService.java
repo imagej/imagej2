@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.menu;
 
-import imagej.IService;
 import imagej.event.EventService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.service.IService;
 
 /**
  * Interface for service that tracks the application's menu structure.
