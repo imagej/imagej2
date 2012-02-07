@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.event.EventService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 import imagej.util.Log;
 
 import java.util.ArrayList;

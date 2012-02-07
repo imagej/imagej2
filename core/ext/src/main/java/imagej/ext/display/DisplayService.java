@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.display;
 
-import imagej.IService;
 import imagej.event.EventService;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.object.ObjectService;
+import imagej.service.IService;
 
 import java.util.List;
 

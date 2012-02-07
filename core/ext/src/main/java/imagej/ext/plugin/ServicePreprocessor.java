@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import imagej.IService;
 import imagej.ImageJ;
 import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.process.PreprocessorPlugin;
+import imagej.service.IService;
 
 /**
  * The service preprocessor automatically populates module inputs that implement

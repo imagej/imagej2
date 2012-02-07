@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -47,6 +45,8 @@ import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 import java.util.List;
 

@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
@@ -45,6 +43,8 @@ import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 

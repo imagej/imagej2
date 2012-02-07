@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.event;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 import imagej.util.Log;
 
 import java.lang.reflect.InvocationTargetException;

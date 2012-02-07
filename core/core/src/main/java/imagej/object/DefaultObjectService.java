@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsAddedEvent;
 import imagej.object.event.ObjectsRemovedEvent;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 import java.util.List;
 

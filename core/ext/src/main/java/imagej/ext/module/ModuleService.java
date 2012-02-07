@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module;
 
-import imagej.IService;
 import imagej.ext.Accelerator;
 import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
+import imagej.service.IService;
 
 import java.util.Collection;
 import java.util.List;

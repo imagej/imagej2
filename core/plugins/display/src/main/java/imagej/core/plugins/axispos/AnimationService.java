@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.axispos;
 
-import imagej.AbstractService;
 import imagej.ImageJ;
-import imagej.Service;
 import imagej.data.Data;
 import imagej.data.display.ImageDisplay;
 import imagej.data.event.DataRestructuredEvent;
@@ -47,6 +45,8 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
