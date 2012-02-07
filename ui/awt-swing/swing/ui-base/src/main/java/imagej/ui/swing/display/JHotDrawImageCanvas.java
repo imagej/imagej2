@@ -62,6 +62,7 @@ import imagej.util.RealCoords;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
@@ -438,10 +439,13 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	}
 
 	private void syncZoom() {
+		final double startScale = drawingView.getScaleFactor();
+		final double endScale = canvasHelper.getZoomFactor();
 		final IntCoords origin = canvasHelper.getPanOrigin();
-		drawingView.setScaleFactor(canvasHelper.getZoomFactor());
+		drawingView.setScaleFactor(endScale);
 		scrollPane.validate();
 		canvasHelper.setPan(origin);
+		maybeResizeWindow(startScale,endScale);
 	}
 
 	private void constrainOrigin(final IntCoords origin) {
@@ -455,4 +459,12 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		if (origin.y > yMax) origin.y = yMax;
 	}
 
+	private void maybeResizeWindow(double startScale, double endScale) {
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		final double nextWidth = drawingView.getWidth() * endScale / startScale;
+		final double nextHeight = drawingView.getHeight() * endScale / startScale;
+		if (nextWidth > screenSize.width-64) return;
+		if (nextHeight > screenSize.height-64) return;
+		display.getPanel().getWindow().pack();
+	}
 }
