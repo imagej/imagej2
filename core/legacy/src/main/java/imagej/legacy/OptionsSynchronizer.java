@@ -670,7 +670,7 @@ public class OptionsSynchronizer {
 	private Field getCompilerField(String fieldName) {
 		try {
 			return ClassUtils.getField("ij.plugin.Compiler", fieldName);
-		} catch (Exception e) {
+		} catch (Throwable t) {
 			return null;
 		}
 	}
