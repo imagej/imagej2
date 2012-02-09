@@ -103,6 +103,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Override
 	public void run() {
 
+		//System.out.println("Start a legacy plugin");
+		
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
 
@@ -145,7 +147,10 @@ public class LegacyPlugin implements ImageJPlugin {
 			// we always sleep at least once to make sure plugin has time to hatch
 			// it's first thread if its going to create any.
 			try {
-				Thread.sleep(50);
+				// FIXME - there is no good amount to wait here. The Compile and Run
+				// plugin can take a LONG time before it creates a new Thread. Try a
+				// better strategy.
+				Thread.sleep(100);
 			}
 			catch (final InterruptedException e) {/**/}
 
@@ -183,6 +188,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// reflect any changes to globals in IJ2 options/prefs
 		legacyService.updateIJ2Settings();
+		//System.out.println("end a legacy plugin");
 	}
 
 	// -- Helper methods --
@@ -205,6 +211,7 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	private void waitForPluginThreads(final Set<Thread> threadsToIgnore) {
+		//System.out.println("  begin waitForPluginThreads()");
 		final Set<Thread> currentThreads = getCurrentThreads();
 		for (final Thread thread : currentThreads) {
 			if ((thread != Thread.currentThread()) &&
@@ -213,6 +220,8 @@ public class LegacyPlugin implements ImageJPlugin {
 				// Ignore some threads that IJ1 hatches that never terminate
 				if (whitelisted(thread)) continue;
 
+				//System.out.println("    waiting for a thread to terminate");
+				
 				// make other threads join
 				try {
 					thread.join();
@@ -222,6 +231,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				}
 			}
 		}
+		//System.out.println("  end waitForPluginThreads()");
 	}
 
 	private void updateImagePlusesFromDisplays(final LegacyImageMap map,
@@ -240,6 +250,9 @@ public class LegacyPlugin implements ImageJPlugin {
 				}
 			}
 			else { // imp already exists : update it
+				// NB - it is possible a runtime exception in an IJ1 plugin left the
+				// ImagePlus in a locked state. Make sure its unlocked going forward.
+				imp.unlock();
 				harmonizer.updateLegacyImage(display, imp);
 				harmonizer.registerType(imp);
 			}
@@ -364,4 +377,5 @@ public class LegacyPlugin implements ImageJPlugin {
 		if (roi.getPasteMode() == Roi.NOT_PASTING) return;
 		roi.endPaste();
 	}
+
 }
