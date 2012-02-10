@@ -173,21 +173,21 @@ public abstract class AbstractLineTool extends AbstractTool {
 		drawingTool.setUAxis(0);
 		drawingTool.setVAxis(1);
 
-		final OptionsService optionsService =
-			context.getService(OptionsService.class);
-		initDrawToolAttributes(dataset.isRGBMerged(), optionsService);
+		initDrawToolAttributes(dataset.isRGBMerged());
 	}
 
 	/** Sets the DrawingTool's attributes (line width, drawing colors, etc.) */
-	private void initDrawToolAttributes(final boolean isColorData,
-		final OptionsService optionsService)
+	private void initDrawToolAttributes(final boolean isColorData)
 	{
 		// set line width of drawingTool
 
 		drawingTool.setLineWidth(getLineWidth());
 
 		// set color of drawingTool
+
+		final OptionsService optionsService = getContext().getService(OptionsService.class);
 		final OptionsColors opts = optionsService.getOptions(OptionsColors.class);
+		
 		if (isColorData) {
 			if (altKeyDown) drawingTool.setColorValue(opts.getBgColor());
 			else drawingTool.setColorValue(opts.getFgColor());
