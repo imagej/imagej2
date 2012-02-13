@@ -317,6 +317,11 @@ public class Harmonizer {
 		LegacyUtils.deleteImagePlus(newImp);
 	}
 
+	/**
+	 * Modifies a given {@link Dataset} to incorporate all new data from a legacy
+	 * {@link ImagePlus}. Internally the Dataset refers to an all new {@link
+	 * ImgPlus}. 
+	 */
 	private void rebuildDatasetData(final Dataset ds, final ImagePlus imp)
 	{
 		// NB - create display from copy of original ImagePlus? Not right now. But
