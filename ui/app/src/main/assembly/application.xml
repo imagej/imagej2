@@ -25,6 +25,7 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>/jar</outputDirectory>
+      <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
       <scope>runtime</scope>
     </dependencySet>
