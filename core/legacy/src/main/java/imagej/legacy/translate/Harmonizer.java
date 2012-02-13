@@ -155,12 +155,7 @@ public class Harmonizer {
 			bitDepthMap.put(imp, imp.getBitDepth());
 		}
 		if (imp.getBitDepth() != oldBitDepth) {
-			final ImageDisplay tmp =
-				imageTranslator.createDisplay(imp, ds.getAxes());
-			final Dataset dsTmp = imageDisplayService.getActiveDataset(tmp);
-			ds.setImgPlus(dsTmp.getImgPlus());
-			ds.setRGBMerged(dsTmp.isRGBMerged());
-			tmp.close();
+			rebuildDatasetData(ds, imp);
 		}
 		else { // ImagePlus type unchanged
 			if (!dimensionsCompatible(ds, imp)) {
@@ -322,4 +317,24 @@ public class Harmonizer {
 		LegacyUtils.deleteImagePlus(newImp);
 	}
 
+	private void rebuildDatasetData(final Dataset ds, final ImagePlus imp)
+	{
+		// NB - create display from copy of original ImagePlus? Not right now. But
+		// will need to in future if createDisplay() registers "imp" with legacy
+		// image map. If that were the case we'd have two displays referring to a
+		// single ImagePlus which could be problematic. But since we're not
+		// registering right now avoid the runtime penalty and memory overhead.
+		//final ImagePlus impCopy = imp.duplicate();
+		//final ImageDisplay tmpDisplay =
+		//		imageTranslator.createDisplay(impCopy, ds.getAxes());
+		final ImageDisplay tmpDisplay =
+			imageTranslator.createDisplay(imp, ds.getAxes());
+		ImageDisplayService idSrv = context.getService(ImageDisplayService.class);
+		final Dataset tmpDs = idSrv.getActiveDataset(tmpDisplay);
+		ds.setImgPlus(tmpDs.getImgPlus());
+		ds.setRGBMerged(tmpDs.isRGBMerged());
+		// tmpDisplay.close()
+		// FIXME HACK - previous line ineffective. Temp method on next line.
+		tmpDisplay.getPanel().getWindow().close();
+	}
 }
