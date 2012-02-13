@@ -305,6 +305,16 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 				dsView.setColorTable(newTable, i);
 		}
 		else { // or we're given one per channel
+			/* debugging hacks
+			// FIXME - temp debugging hack - this should be removed if it somehow gets
+			// into master code. It avoids a race condition between two threads
+			// manipulating the color tables
+			//try { Thread.sleep(3000); } catch (Exception e) {}
+			// FIXME - more debugging hacks - resize color tables to fit
+			//int numColorTablesInView = dsView.getColorTables().size();
+			//if (colorTables.size() > numColorTablesInView)
+			//	dsView.resetColorTables(false); // TODO - when to use "true"?
+			*/
 			for (int i = 0; i < colorTables.size(); i++)
 				dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 		}
