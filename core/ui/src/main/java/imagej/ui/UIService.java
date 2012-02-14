@@ -262,7 +262,7 @@ public final class UIService extends AbstractService {
 		}
 	}
 
-	/** Discovers user interfaces using SezPoz. */
+	/** Discovers available user interfaces. */
 	private List<UserInterface> discoverUIs() {
 		final List<UserInterface> uis = new ArrayList<UserInterface>();
 		for (final PluginInfo<UserInterface> info :
