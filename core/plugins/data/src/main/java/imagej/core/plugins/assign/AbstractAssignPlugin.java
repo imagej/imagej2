@@ -44,22 +44,22 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.RegionIndexIterator;
 import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
-import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.image.ImageAssignment;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Base class for previewable math plugins.
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractAssignPlugin
+public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends ComplexType<O>>
 	implements ImageJPlugin, PreviewPlugin
 {
 
@@ -96,9 +96,15 @@ public abstract class AbstractAssignPlugin
 	private RegionIndexIterator iter;
 
 	private RandomAccess<? extends RealType<?>> accessor;
+	
+	private O outType;
 
 	// -- public interface --
 
+	public AbstractAssignPlugin(O outType) {
+		this.outType = outType;
+	}
+	
 	@Override
 	public void run() {
 		if (dataset == null) {
@@ -141,7 +147,7 @@ public abstract class AbstractAssignPlugin
 		this.dataset = dataset;
 	}
 
-	public abstract UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation();
+	public abstract UnaryOperation<O,O> getOperation();
 
 	// -- private helpers --
 
@@ -248,16 +254,14 @@ public abstract class AbstractAssignPlugin
 	}
 
 	private void transformData(final long[] origin, final long[] span) {
-		final RealImageFunction<DoubleType> imageFunc =
-			new RealImageFunction<DoubleType>(dataset.getImgPlus(), new DoubleType());
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> op = getOperation();
-		// TODO COMPLEX
-		final GeneralUnaryFunction<long[], DoubleType, DoubleType> function =
-			new GeneralUnaryFunction<long[], DoubleType, DoubleType>(imageFunc, op, new DoubleType());
-		// FIXME - ugly hack to avoid compiler issues
-		//final Function<long[],RealType<?>> castFunc = (Function<long[],RealType<?>>) ((Function)function);
-		final ImageAssignment assigner =
-			new ImageAssignment(dataset.getImgPlus(), origin, span,
+		final Img<I> image = (Img<I>) dataset.getImgPlus();
+		final ComplexImageFunction<I,O> imageFunc =
+			new ComplexImageFunction<I,O>(image, outType.createVariable());
+		final UnaryOperation<O,O> op = getOperation();
+		final GeneralUnaryFunction<long[],O,O> function = new
+				GeneralUnaryFunction<long[],O,O>(imageFunc, op, outType.createVariable());
+		final ImageAssignment<I,O> assigner =
+			new ImageAssignment<I,O>(image, origin, span,
 				function, null, new long[span.length], new long[span.length]);
 		assigner.assign();
 		dataset.update();

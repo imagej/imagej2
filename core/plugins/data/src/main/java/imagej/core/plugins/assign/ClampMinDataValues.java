@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealMinConstant;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by clamping an input Dataset such that no values are
@@ -53,7 +54,7 @@ import net.imglib2.type.numeric.ComplexType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Min...", weight = 9) })
-public class ClampMinDataValues extends AbstractAssignPlugin {
+public class ClampMinDataValues<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -62,9 +63,13 @@ public class ClampMinDataValues extends AbstractAssignPlugin {
 
 	// -- public interface --
 
+	public ClampMinDataValues() {
+		super(new ComplexDoubleType());
+	}
+	
 	@Override
-	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
-		return new RealMinConstant(value);
+	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+		return new RealMinConstant<ComplexDoubleType,ComplexDoubleType>(value);
 	}
 
 	public double getValue() {

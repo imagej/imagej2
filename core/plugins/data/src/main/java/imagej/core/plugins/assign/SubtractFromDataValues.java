@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealSubtractConstant;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by subtracting a user defined constant value from an
@@ -54,7 +55,7 @@ import net.imglib2.type.numeric.ComplexType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Subtract...", weight = 2) })
-public class SubtractFromDataValues extends AbstractAssignPlugin {
+public class SubtractFromDataValues<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -62,10 +63,14 @@ public class SubtractFromDataValues extends AbstractAssignPlugin {
 	private double value;
 
 	// -- public interface --
+	
+	public SubtractFromDataValues() {
+		super(new ComplexDoubleType());
+	}
 
 	@Override
-	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
-		return new RealSubtractConstant(value);
+	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+		return new RealSubtractConstant<ComplexDoubleType,ComplexDoubleType>(value);
 	}
 
 	public double getValue() {

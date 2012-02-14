@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAddConstant;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by adding a user defined constant value to an input
@@ -53,7 +54,7 @@ import net.imglib2.type.numeric.ComplexType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) })
-public class AddToDataValues extends AbstractAssignPlugin {
+public class AddToDataValues<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -61,10 +62,14 @@ public class AddToDataValues extends AbstractAssignPlugin {
 	private double value;
 
 	// -- public interface --
+	
+	public AddToDataValues() {
+		super(new ComplexDoubleType());
+	}
 
 	@Override
-	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
-		return new RealAddConstant(value);
+	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+		return new RealAddConstant<ComplexDoubleType,ComplexDoubleType>(value);
 	}
 
 	public double getValue() {

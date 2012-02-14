@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealMaxConstant;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by clamping an input Dataset such that no values are
@@ -53,7 +54,7 @@ import net.imglib2.type.numeric.ComplexType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) })
-public class ClampMaxDataValues extends AbstractAssignPlugin {
+public class ClampMaxDataValues<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -61,10 +62,14 @@ public class ClampMaxDataValues extends AbstractAssignPlugin {
 	private double value;
 
 	// -- public interface --
+	
+	public ClampMaxDataValues() {
+		super(new ComplexDoubleType());
+	}
 
 	@Override
-	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
-		return new RealMaxConstant(value);
+	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+		return new RealMaxConstant<ComplexDoubleType,ComplexDoubleType>(value);
 	}
 
 	public double getValue() {

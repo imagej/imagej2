@@ -43,6 +43,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealSqrt;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by taking the square root of the data values of an
@@ -56,7 +57,7 @@ import net.imglib2.type.numeric.ComplexType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Square Root", weight = 16) })
-public class SquareRootDataValues implements ImageJPlugin {
+public class SquareRootDataValues<T extends ComplexType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -67,9 +68,11 @@ public class SquareRootDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> op = new RealSqrt();
-		final InplaceUnaryTransform transform =
-			new InplaceUnaryTransform(display, op);
+		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
+				new RealSqrt<ComplexDoubleType,ComplexDoubleType>();
+		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
+			new InplaceUnaryTransform<T,ComplexDoubleType>(
+				display, op, new ComplexDoubleType());
 		transform.run();
 	}
 

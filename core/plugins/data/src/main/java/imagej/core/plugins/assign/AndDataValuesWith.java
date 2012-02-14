@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAndConstant;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by ANDing an input Dataset with a user defined
@@ -53,7 +54,7 @@ import net.imglib2.type.numeric.ComplexType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "AND...", weight = 6) })
-public class AndDataValuesWith extends AbstractAssignPlugin {
+public class AndDataValuesWith<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -61,10 +62,14 @@ public class AndDataValuesWith extends AbstractAssignPlugin {
 	private long value;
 
 	// -- public interface --
+	
+	public AndDataValuesWith() {
+		super(new ComplexDoubleType());
+	}
 
 	@Override
-	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
-		return new RealAndConstant(value);
+	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+		return new RealAndConstant<ComplexDoubleType,ComplexDoubleType>(value);
 	}
 
 	public long getValue() {
