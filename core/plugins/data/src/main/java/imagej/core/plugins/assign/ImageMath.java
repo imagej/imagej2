@@ -47,11 +47,12 @@ import imagej.ui.UIService;
 
 import java.util.HashMap;
 
+import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.BinaryOperation;
 import net.imglib2.ops.Function;
+import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralBinaryFunction;
-import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.image.ImageAssignment;
 import net.imglib2.ops.operation.binary.real.RealAdd;
 import net.imglib2.ops.operation.binary.real.RealAnd;
@@ -68,7 +69,7 @@ import net.imglib2.ops.operation.binary.real.RealSubtract;
 import net.imglib2.ops.operation.binary.real.RealXor;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
@@ -81,7 +82,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Image Calculator...", weight = 22) })
-public class ImageMath implements ImageJPlugin {
+public class ImageMath<T extends ComplexType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -113,7 +114,7 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- other instance variables --
 
-	private final HashMap<String, BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>>> operators;
+	private final HashMap<String, BinaryOperation<ComplexDoubleType, ComplexDoubleType, ComplexDoubleType>> operators;
 
 	// -- constructor --
 
@@ -123,21 +124,21 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	public ImageMath() {
 		operators =
-			new HashMap<String, BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>>>();
+			new HashMap<String, BinaryOperation<ComplexDoubleType, ComplexDoubleType, ComplexDoubleType>>();
 
-		operators.put("Add", new RealAdd());
-		operators.put("Subtract", new RealSubtract());
-		operators.put("Multiply", new RealMultiply());
-		operators.put("Divide", new RealDivide());
-		operators.put("AND", new RealAnd());
-		operators.put("OR", new RealOr());
-		operators.put("XOR", new RealXor());
-		operators.put("Min", new RealMin());
-		operators.put("Max", new RealMax());
-		operators.put("Average", new RealAvg());
-		operators.put("Difference", new RealDifference());
-		operators.put("Copy", new RealCopyRight());
-		operators.put("Transparent-zero", new RealCopyZeroTransparent());
+		operators.put("Add", new RealAdd<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Subtract", new RealSubtract<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Multiply", new RealMultiply<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Divide", new RealDivide<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("AND", new RealAnd<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("OR", new RealOr<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("XOR", new RealXor<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Min", new RealMin<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Max", new RealMax<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Average", new RealAvg<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Difference", new RealDifference<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Copy", new RealCopyRight<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
+		operators.put("Transparent-zero", new RealCopyZeroTransparent<ComplexDoubleType,ComplexDoubleType,ComplexDoubleType>());
 	}
 
 	// -- public interface --
@@ -242,17 +243,18 @@ public class ImageMath implements ImageJPlugin {
 
 	private void assignPixelValues(final long[] span) {
 		final long[] origin = new long[span.length];
-		final BinaryOperation<ComplexType<?>, ComplexType<?>, ComplexType<?>> binOp =
-			operators.get(opName);
-		final Function<long[], DoubleType> f1 =
-			new RealImageFunction<DoubleType>(input1.getImgPlus(), new DoubleType());
-		final Function<long[], DoubleType> f2 =
-			new RealImageFunction<DoubleType>(input2.getImgPlus(), new DoubleType());
-		final GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType> binFunc =
-			new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(f1,
-				f2, binOp, new DoubleType());
-		final ImageAssignment assigner =
-			new ImageAssignment(output.getImgPlus(), origin, span, binFunc, null);
+		final BinaryOperation<ComplexDoubleType, ComplexDoubleType, ComplexDoubleType>
+			binOp = operators.get(opName);
+		final Function<long[],ComplexDoubleType> f1 =
+			new ComplexImageFunction<T,ComplexDoubleType>((Img<T>)input1.getImgPlus(), new ComplexDoubleType());
+		final Function<long[],ComplexDoubleType> f2 =
+			new ComplexImageFunction<T,ComplexDoubleType>((Img<T>)input2.getImgPlus(), new ComplexDoubleType());
+		final GeneralBinaryFunction<long[], ComplexDoubleType, ComplexDoubleType, ComplexDoubleType>
+			binFunc =
+				new GeneralBinaryFunction<long[], ComplexDoubleType, ComplexDoubleType, ComplexDoubleType>(
+						f1, f2, binOp, new ComplexDoubleType());
+		final ImageAssignment<T,ComplexDoubleType> assigner =
+			new ImageAssignment<T,ComplexDoubleType>((Img<T>)output.getImgPlus(), origin, span, binFunc, null);
 		assigner.assign();
 	}
 

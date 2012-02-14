@@ -47,12 +47,13 @@ import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealInvert;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by applying an inversion to an input Dataset's data
  * values. The inversion is relative to the minimum and maximum data values
- * present in the input Dataset. Note that in IJ1 inversion for 8-bit data is
- * relative to 0 & 255 which is not mirrored here.
+ * present in the input Dataset. However in IJ1 inversion for 8-bit data is
+ * relative to 0 & 255 and that behavior is mirrored here as well.
  * 
  * @author Barry DeZonia
  */
@@ -60,7 +61,9 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Invert", weight = 30, accelerator = "shift control I") })
-public class InvertDataValues implements ImageJPlugin {
+public class InvertDataValues<T extends ComplexType<T>>
+	implements ImageJPlugin
+{
 
 	// -- instance variables that are Parameters --
 
@@ -91,10 +94,10 @@ public class InvertDataValues implements ImageJPlugin {
 			max = 255;
 		}
 		else calcValueRange();
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> op =
-			new RealInvert(min, max);
-		final InplaceUnaryTransform transform =
-			new InplaceUnaryTransform(display, op);
+		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
+				new RealInvert<ComplexDoubleType,ComplexDoubleType>(min, max);
+		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
+			new InplaceUnaryTransform<T,ComplexDoubleType>(display, op, new ComplexDoubleType());
 		transform.run();
 	}
 

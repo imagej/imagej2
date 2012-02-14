@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealOrConstant;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by ORing an input Dataset with a user defined
@@ -53,7 +54,7 @@ import net.imglib2.type.numeric.ComplexType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "OR...", weight = 7) })
-public class OrDataValuesWith extends AbstractAssignPlugin {
+public class OrDataValuesWith<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -61,10 +62,14 @@ public class OrDataValuesWith extends AbstractAssignPlugin {
 	private long value;
 
 	// -- public interface --
+	
+	public OrDataValuesWith() {
+		super(new ComplexDoubleType());
+	}
 
 	@Override
-	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
-		return new RealOrConstant(value);
+	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+		return new RealOrConstant<ComplexDoubleType,ComplexDoubleType>(value);
 	}
 
 	public long getValue() {

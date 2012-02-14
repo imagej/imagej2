@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealPowerConstant;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by raising input Dataset values to a user defined
@@ -55,7 +56,7 @@ import net.imglib2.type.numeric.ComplexType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Power...", weight = 5) })
-public class RaiseToPowerDataValues extends AbstractAssignPlugin {
+public class RaiseToPowerDataValues<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -64,9 +65,13 @@ public class RaiseToPowerDataValues extends AbstractAssignPlugin {
 
 	// -- public interface --
 
+	public RaiseToPowerDataValues() {
+		super(new ComplexDoubleType());
+	}
+	
 	@Override
-	public UnaryOperation<ComplexType<?>, ComplexType<?>> getOperation() {
-		return new RealPowerConstant(value);
+	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+		return new RealPowerConstant<ComplexDoubleType,ComplexDoubleType>(value);
 	}
 
 	public double getValue() {

@@ -43,12 +43,10 @@ import imagej.util.RealRect;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
-import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.image.ImageAssignment;
 import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Helper class for use by many plugins that apply an {@link UnaryOperation} to
@@ -58,32 +56,52 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-public class InplaceUnaryTransform {
+public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexType<O>> {
 
 	// -- instance variables --
 
 	private final Dataset dataset;
 	private long[] origin;
 	private long[] span;
-	private final ImageAssignment assigner;
+	private final ImageAssignment<I,O> assigner;
 
 	// -- constructor --
 
 	public InplaceUnaryTransform(final ImageDisplay display,
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> operation)
+		final UnaryOperation<O,O> operation, O outType)
+	{
+		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		final Img<I> img = (Img<I>)dataset.getImgPlus();
+		final ComplexImageFunction<I,O> f1 =
+				new ComplexImageFunction<I,O>(img, outType.createVariable());
+		final GeneralUnaryFunction<long[],O,O> function = new
+				GeneralUnaryFunction<long[],O,O>(f1, operation, outType.createVariable());
+		setOriginAndSpan(display);
+		assigner =
+			new ImageAssignment<I,O>(img, origin, span, function, null,
+				new long[span.length], new long[span.length]);
+	}
+
+	/*
+	public InplaceUnaryTransform(final ImageDisplay display,
+		final UnaryOperation<ComplexDoubleType,ComplexDoubleType> operation)
 	{
 		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
 		//RealDataset realSet = null;
 		//final Img<? extends RealType<?>> img = realSet.getData();
-		final Img<? extends RealType<?>> img = dataset.getImgPlus();
-		final RealImageFunction<DoubleType> f1 = new RealImageFunction<DoubleType>(img, new DoubleType());
-		final GeneralUnaryFunction<long[], DoubleType, DoubleType> function =
-			new GeneralUnaryFunction<long[], DoubleType, DoubleType>(f1, operation, new DoubleType());
+		final Img<T> img = (Img<T>)dataset.getImgPlus();
+		final ComplexImageFunction<T,ComplexDoubleType> f1 =
+			new ComplexImageFunction<T,ComplexDoubleType>(img, new ComplexDoubleType());
+		final GeneralUnaryFunction<long[], ComplexDoubleType, ComplexDoubleType>
+			function =
+				new GeneralUnaryFunction<long[],ComplexDoubleType,ComplexDoubleType>(
+					f1, operation, new ComplexDoubleType());
 		setOriginAndSpan(display);
 		assigner =
-			new ImageAssignment(img, origin, span, function, null,
+			new ImageAssignment<T,ComplexDoubleType>(img, origin, span, function, null,
 				new long[span.length], new long[span.length]);
 	}
+	 */
 	
 	// -- public interface --
 

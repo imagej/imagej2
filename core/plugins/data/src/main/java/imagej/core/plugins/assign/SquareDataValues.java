@@ -43,6 +43,7 @@ import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealSqr;
 import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 /**
  * Fills an output Dataset by taking the square of the data values of an input
@@ -55,7 +56,7 @@ import net.imglib2.type.numeric.ComplexType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Square", weight = 15) })
-public class SquareDataValues implements ImageJPlugin {
+public class SquareDataValues<T extends ComplexType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -66,9 +67,11 @@ public class SquareDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<ComplexType<?>, ComplexType<?>> op = new RealSqr();
-		final InplaceUnaryTransform transform =
-			new InplaceUnaryTransform(display, op);
+		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
+				new RealSqr<ComplexDoubleType,ComplexDoubleType>();
+		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
+			new InplaceUnaryTransform<T,ComplexDoubleType>(
+					display, op, new ComplexDoubleType());
 		transform.run();
 	}
 
