@@ -147,10 +147,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			// we always sleep at least once to make sure plugin has time to hatch
 			// it's first thread if its going to create any.
 			try {
-				// FIXME - there is no good amount to wait here. The Compile and Run
-				// plugin can take a LONG time before it creates a new Thread. Try a
-				// better strategy.
-				Thread.sleep(100);
+				Thread.sleep(50);
 			}
 			catch (final InterruptedException e) {/**/}
 
