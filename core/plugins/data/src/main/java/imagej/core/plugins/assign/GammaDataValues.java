@@ -38,10 +38,9 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealGammaConstant;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset with the result of applying the gamma function to an
@@ -57,7 +56,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Gamma...", weight = 11) })
-public class GammaDataValues<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
+public class GammaDataValues<T extends RealType<T>> extends AbstractAssignPlugin<T,DoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -67,12 +66,12 @@ public class GammaDataValues<T extends ComplexType<T>> extends AbstractAssignPlu
 	// -- public interface --
 
 	public GammaDataValues() {
-		super(new ComplexDoubleType());
+		super(new DoubleType());
 	}
 	
 	@Override
-	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
-		return new RealGammaConstant<ComplexDoubleType,ComplexDoubleType>(value);
+	public RealGammaConstant<DoubleType, DoubleType> getOperation() {
+		return new RealGammaConstant<DoubleType,DoubleType>(value);
 	}
 
 	public double getValue() {

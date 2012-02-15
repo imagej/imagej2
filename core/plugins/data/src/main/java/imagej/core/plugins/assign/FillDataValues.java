@@ -50,11 +50,9 @@ import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealConstant;
-import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills the selected region of an input Dataset with the foreground value.
@@ -65,7 +63,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Fill", weight = 28, accelerator = "control F") })
-public class FillDataValues<T extends ComplexType<T>> implements ImageJPlugin {
+public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -111,11 +109,11 @@ public class FillDataValues<T extends ComplexType<T>> implements ImageJPlugin {
 	private void fillSelectedRegionWithValue(final ImageDisplay disp,
 		final double value)
 	{
-		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
-				new RealConstant<ComplexDoubleType,ComplexDoubleType>(value);
-		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
-			new InplaceUnaryTransform<T,ComplexDoubleType>(
-					disp, op, new ComplexDoubleType());
+		final RealConstant<DoubleType, DoubleType> op =
+				new RealConstant<DoubleType,DoubleType>(value);
+		final InplaceUnaryTransform<T,DoubleType> transform =
+			new InplaceUnaryTransform<T,DoubleType>(
+					disp, op, new DoubleType());
 		transform.run();
 	}
 

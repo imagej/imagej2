@@ -42,17 +42,18 @@ import imagej.data.display.OverlayService;
 import imagej.util.RealRect;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
 import net.imglib2.type.numeric.ComplexType;
 
 /**
- * Helper class for use by many plugins that apply an {@link UnaryOperation} to
- * some input image. The run() method modifies the current selection of the
- * active {@link Dataset} of the given {@link ImageDisplay}. The given
- * {@link UnaryOperation} is applied on a pixel by pixel basis.
+ * Helper class for use by many plugins that apply a {@link
+ * ComplexUnaryOperation} to some input image. The run() method modifies the
+ * current selection of the active {@link Dataset} of the given {@link
+ * ImageDisplay}. The given {@link ComplexUnaryOperation} is applied on a pixel
+ * by pixel basis.
  * 
  * @author Barry DeZonia
  */
@@ -68,7 +69,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	// -- constructor --
 
 	public InplaceUnaryTransform(final ImageDisplay display,
-		final UnaryOperation<O,O> operation, O outType)
+		final ComplexUnaryOperation<O,O> operation, O outType)
 	{
 		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
 		final Img<I> img = (Img<I>)dataset.getImgPlus();

@@ -38,10 +38,9 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAddNoise;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by applying random noise to an input Dataset. This
@@ -52,7 +51,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
  * 
  * @author Barry DeZonia
  */
-public class AddNoiseToDataValues<T extends ComplexType<T>> {
+public class AddNoiseToDataValues<T extends RealType<T>> {
 
 	// -- instance variables --
 
@@ -97,11 +96,11 @@ public class AddNoiseToDataValues<T extends ComplexType<T>> {
 	public void run() {
 		calcTypeMinAndMax();
 
-		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
-			new RealAddNoise<ComplexDoubleType,ComplexDoubleType>(rangeMin, rangeMax, rangeStdDev);
+		final RealAddNoise<DoubleType, DoubleType> op =
+			new RealAddNoise<DoubleType,DoubleType>(rangeMin, rangeMax, rangeStdDev);
 
-		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
-			new InplaceUnaryTransform<T,ComplexDoubleType>(display, op, new ComplexDoubleType());
+		final InplaceUnaryTransform<T,DoubleType> transform =
+			new InplaceUnaryTransform<T,DoubleType>(display, op, new DoubleType());
 
 		transform.run();
 	}

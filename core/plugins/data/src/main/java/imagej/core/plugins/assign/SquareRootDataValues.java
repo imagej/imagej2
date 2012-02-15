@@ -40,10 +40,9 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealSqrt;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by taking the square root of the data values of an
@@ -57,7 +56,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Square Root", weight = 16) })
-public class SquareRootDataValues<T extends ComplexType<T>> implements ImageJPlugin {
+public class SquareRootDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -68,11 +67,11 @@ public class SquareRootDataValues<T extends ComplexType<T>> implements ImageJPlu
 
 	@Override
 	public void run() {
-		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
-				new RealSqrt<ComplexDoubleType,ComplexDoubleType>();
-		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
-			new InplaceUnaryTransform<T,ComplexDoubleType>(
-				display, op, new ComplexDoubleType());
+		final RealSqrt<DoubleType, DoubleType> op =
+				new RealSqrt<DoubleType,DoubleType>();
+		final InplaceUnaryTransform<T,DoubleType> transform =
+			new InplaceUnaryTransform<T,DoubleType>(
+				display, op, new DoubleType());
 		transform.run();
 	}
 
