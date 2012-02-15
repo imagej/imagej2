@@ -47,10 +47,10 @@ import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.RegionIndexIterator;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
 
@@ -147,7 +147,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		this.dataset = dataset;
 	}
 
-	public abstract UnaryOperation<O,O> getOperation();
+	public abstract ComplexUnaryOperation<O,O> getOperation();
 
 	// -- private helpers --
 
@@ -257,7 +257,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		final Img<I> image = (Img<I>) dataset.getImgPlus();
 		final ComplexImageFunction<I,O> imageFunc =
 			new ComplexImageFunction<I,O>(image, outType.createVariable());
-		final UnaryOperation<O,O> op = getOperation();
+		final ComplexUnaryOperation<O,O> op = getOperation();
 		final GeneralUnaryFunction<long[],O,O> function = new
 				GeneralUnaryFunction<long[],O,O>(imageFunc, op, outType.createVariable());
 		final ImageAssignment<I,O> assigner =

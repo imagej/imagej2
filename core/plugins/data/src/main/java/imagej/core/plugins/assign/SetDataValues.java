@@ -38,10 +38,9 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealConstant;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output image with a user specified constant value. The dimensions of
@@ -54,7 +53,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Set...", weight = 12) })
-public class SetDataValues<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
+public class SetDataValues<T extends RealType<T>> extends AbstractAssignPlugin<T,DoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -64,12 +63,12 @@ public class SetDataValues<T extends ComplexType<T>> extends AbstractAssignPlugi
 	// -- public interface --
 
 	public SetDataValues() {
-		super(new ComplexDoubleType());
+		super(new DoubleType());
 	}
 	
 	@Override
-	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
-		return new RealConstant<ComplexDoubleType,ComplexDoubleType>(value);
+	public RealConstant<DoubleType,DoubleType> getOperation() {
+		return new RealConstant<DoubleType,DoubleType>(value);
 	}
 
 	public double getValue() {

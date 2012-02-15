@@ -43,11 +43,9 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.Cursor;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealInvert;
-import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by applying an inversion to an input Dataset's data
@@ -61,7 +59,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Invert", weight = 30, accelerator = "shift control I") })
-public class InvertDataValues<T extends ComplexType<T>>
+public class InvertDataValues<T extends RealType<T>>
 	implements ImageJPlugin
 {
 
@@ -94,10 +92,10 @@ public class InvertDataValues<T extends ComplexType<T>>
 			max = 255;
 		}
 		else calcValueRange();
-		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
-				new RealInvert<ComplexDoubleType,ComplexDoubleType>(min, max);
-		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
-			new InplaceUnaryTransform<T,ComplexDoubleType>(display, op, new ComplexDoubleType());
+		final RealInvert<DoubleType, DoubleType> op =
+				new RealInvert<DoubleType,DoubleType>(min, max);
+		final InplaceUnaryTransform<T,DoubleType> transform =
+			new InplaceUnaryTransform<T,DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 

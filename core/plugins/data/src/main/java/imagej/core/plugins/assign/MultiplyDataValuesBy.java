@@ -38,10 +38,9 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealMultiplyConstant;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by multiplying an input Dataset by a user defined
@@ -55,7 +54,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Multiply...", weight = 3) })
-public class MultiplyDataValuesBy<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
+public class MultiplyDataValuesBy<T extends RealType<T>> extends AbstractAssignPlugin<T,DoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -65,12 +64,12 @@ public class MultiplyDataValuesBy<T extends ComplexType<T>> extends AbstractAssi
 	// -- public interface --
 
 	public MultiplyDataValuesBy() {
-		super(new ComplexDoubleType());
+		super(new DoubleType());
 	}
 	
 	@Override
-	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
-		return new RealMultiplyConstant<ComplexDoubleType,ComplexDoubleType>(value);
+	public RealMultiplyConstant<DoubleType, DoubleType> getOperation() {
+		return new RealMultiplyConstant<DoubleType,DoubleType>(value);
 	}
 
 	public double getValue() {

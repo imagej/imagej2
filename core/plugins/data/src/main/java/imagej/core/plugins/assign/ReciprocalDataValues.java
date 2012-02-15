@@ -42,10 +42,9 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsMisc;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealReciprocal;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by taking reciprocal values of an input Dataset. IJ1
@@ -59,7 +58,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Reciprocal", weight = 17) })
-public class ReciprocalDataValues<T extends ComplexType<T>> implements ImageJPlugin {
+public class ReciprocalDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -83,11 +82,11 @@ public class ReciprocalDataValues<T extends ComplexType<T>> implements ImageJPlu
 		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
-		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
-			new RealReciprocal<ComplexDoubleType,ComplexDoubleType>(dbzVal);
-		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
-			new InplaceUnaryTransform<T,ComplexDoubleType>(
-					display, op, new ComplexDoubleType());
+		final RealReciprocal<DoubleType, DoubleType> op =
+			new RealReciprocal<DoubleType,DoubleType>(dbzVal);
+		final InplaceUnaryTransform<T,DoubleType> transform =
+			new InplaceUnaryTransform<T,DoubleType>(
+					display, op, new DoubleType());
 		transform.run();
 	}
 

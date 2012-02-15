@@ -40,10 +40,9 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsMisc;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealDivideConstant;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by dividing an input Dataset by a user defined
@@ -58,7 +57,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Divide...", weight = 4) })
-public class DivideDataValuesBy<T extends ComplexType<T>> extends AbstractAssignPlugin<T,ComplexDoubleType> {
+public class DivideDataValuesBy<T extends RealType<T>> extends AbstractAssignPlugin<T,DoubleType> {
 
 	// -- instance variables that are Parameters --
 
@@ -71,11 +70,11 @@ public class DivideDataValuesBy<T extends ComplexType<T>> extends AbstractAssign
 	// -- public interface --
 
 	public DivideDataValuesBy() {
-		super(new ComplexDoubleType());
+		super(new DoubleType());
 	}
 	
 	@Override
-	public UnaryOperation<ComplexDoubleType, ComplexDoubleType> getOperation() {
+	public RealDivideConstant<DoubleType, DoubleType> getOperation() {
 		final OptionsMisc optionsMisc =
 			optionsService.getOptions(OptionsMisc.class);
 		final String dbzString = optionsMisc.getDivByZeroVal();
@@ -86,7 +85,7 @@ public class DivideDataValuesBy<T extends ComplexType<T>> extends AbstractAssign
 		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
-		return new RealDivideConstant<ComplexDoubleType,ComplexDoubleType>(value, dbzVal);
+		return new RealDivideConstant<DoubleType,DoubleType>(value, dbzVal);
 	}
 
 	public double getValue() {

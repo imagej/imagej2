@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import net.imglib2.type.numeric.RealType;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
@@ -53,7 +54,7 @@ import imagej.ext.plugin.Plugin;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Add Noise", weight = 1) })
-public class AddDefaultNoiseToDataValues implements ImageJPlugin {
+public class AddDefaultNoiseToDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -64,7 +65,7 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final AddNoiseToDataValues noiseAdder = new AddNoiseToDataValues(display);
+		final AddNoiseToDataValues<T> noiseAdder = new AddNoiseToDataValues<T>(display);
 		noiseAdder.setStdDev(25.0);
 		noiseAdder.run();
 	}

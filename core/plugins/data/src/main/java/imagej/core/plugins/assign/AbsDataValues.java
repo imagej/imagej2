@@ -40,10 +40,9 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAbs;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.complex.ComplexDoubleType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by applying the absolute value function to an input
@@ -56,7 +55,7 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Abs", weight = 19) })
-public class AbsDataValues<T extends ComplexType<T>> implements ImageJPlugin {
+public class AbsDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -67,10 +66,10 @@ public class AbsDataValues<T extends ComplexType<T>> implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final UnaryOperation<ComplexDoubleType, ComplexDoubleType> op =
-				new RealAbs<ComplexDoubleType,ComplexDoubleType>();
-		final InplaceUnaryTransform<T,ComplexDoubleType> transform =
-			new InplaceUnaryTransform<T,ComplexDoubleType>(display, op, new ComplexDoubleType());
+		final RealAbs<DoubleType, DoubleType> op =
+				new RealAbs<DoubleType,DoubleType>();
+		final InplaceUnaryTransform<T,DoubleType> transform =
+			new InplaceUnaryTransform<T,DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 
