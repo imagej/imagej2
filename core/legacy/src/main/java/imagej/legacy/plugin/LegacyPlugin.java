@@ -59,6 +59,7 @@ import imagej.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -139,7 +140,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		try {
 
-			final Set<Thread> originalThreads = getCurrentThreads();
+			final List<Thread> originalThreads = getCurrentThreads();
 
 			// execute the legacy plugin
 			IJ.runPlugIn(className, arg);
@@ -190,7 +191,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	// -- Helper methods --
 
-	private Set<Thread> getCurrentThreads() {
+	private List<Thread> getCurrentThreads() {
 		final ThreadGroup group = Thread.currentThread().getThreadGroup();
 		Thread[] threads;
 		int numThreads;
@@ -201,32 +202,29 @@ public class LegacyPlugin implements ImageJPlugin {
 			size *= 2;
 		}
 		while (numThreads > threads.length);
-		final Set<Thread> threadSet = new HashSet<Thread>();
+		final List<Thread> threadList = new LinkedList<Thread>();
 		for (int i = 0; i < numThreads; i++)
-			threadSet.add(threads[i]);
-		return threadSet;
+			threadList.add(threads[i]);
+		return threadList;
 	}
 
-	private void waitForPluginThreads(final Set<Thread> threadsToIgnore) {
+	private void waitForPluginThreads(final List<Thread> threadsToIgnore) {
 		//System.out.println("  begin waitForPluginThreads()");
-		final Set<Thread> currentThreads = getCurrentThreads();
-		for (final Thread thread : currentThreads) {
-			if ((thread != Thread.currentThread()) &&
-				(!threadsToIgnore.contains(thread)))
-			{
+		while (true) {
+			boolean allDead = true;
+			final List<Thread> currentThreads = getCurrentThreads();
+			for (final Thread thread : currentThreads) {
+				if (thread == Thread.currentThread()) continue;
+				if (threadsToIgnore.contains(thread)) continue;
 				// Ignore some threads that IJ1 hatches that never terminate
 				if (whitelisted(thread)) continue;
-
-				//System.out.println("    waiting for a thread to terminate");
-				
-				// make other threads join
-				try {
-					thread.join();
-				}
-				catch (final InterruptedException e) {
-					// do nothing
+				if (thread.isAlive()) {
+					allDead = false;
+					break;
 				}
 			}
+			if (allDead) break;
+			try { Thread.sleep(200); } catch (Exception e) {/**/}
 		}
 		//System.out.println("  end waitForPluginThreads()");
 	}
