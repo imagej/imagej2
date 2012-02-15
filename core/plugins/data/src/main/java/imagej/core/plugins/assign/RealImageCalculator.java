@@ -82,7 +82,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Image Calculator...", weight = 22) })
-public class ImageMath<T extends RealType<T>> implements ImageJPlugin {
+public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -124,7 +124,7 @@ public class ImageMath<T extends RealType<T>> implements ImageJPlugin {
 	 * Constructs the ImageMath object by initializing which binary operations are
 	 * available.
 	 */
-	public ImageMath() {
+	public RealImageCalculator() {
 		operators =
 			new HashMap<String, RealBinaryOperation<DoubleType, DoubleType, DoubleType>>();
 
