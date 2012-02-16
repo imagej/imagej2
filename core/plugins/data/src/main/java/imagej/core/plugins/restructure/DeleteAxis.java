@@ -139,14 +139,19 @@ public class DeleteAxis extends DynamicPlugin {
 			compositeStatus(dataset.getCompositeChannelCount(), dstImgPlus);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		dstImgPlus.setCompositeChannelCount(compositeCount);
-		final long[] origDims = dataset.getDims();
-		final long[] origPlaneDims = new long[origDims.length - 2];
-		for (int i = 0; i < origPlaneDims.length; i++)
-			origPlaneDims[i] = origDims[i + 2];
 		RestructureUtils.allocateColorTables(dstImgPlus);
-		final ColorTableRemapper remapper =
-			new ColorTableRemapper(new RemapAlgorithm(origPlaneDims));
-		remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
+		if (axis.isXY()) {
+			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
+		}
+		else {
+			final long[] origDims = dataset.getDims();
+			final long[] origPlaneDims = new long[origDims.length - 2];
+			for (int i = 0; i < origPlaneDims.length; i++)
+				origPlaneDims[i] = origDims[i + 2];
+			final ColorTableRemapper remapper =
+					new ColorTableRemapper(new RemapAlgorithm(origPlaneDims));
+			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
+		}
 		// TODO - metadata, etc.?
 		dataset.setImgPlus(dstImgPlus);
 	}
@@ -203,6 +208,7 @@ public class DeleteAxis extends DynamicPlugin {
 	 */
 	private AxisType[] getNewAxes(final Dataset ds, final AxisType axis) {
 		final AxisType[] origAxes = ds.getAxes();
+		if (axis.isXY()) return origAxes;
 		final AxisType[] newAxes = new AxisType[origAxes.length - 1];
 		int index = 0;
 		for (final AxisType a : origAxes)
@@ -216,6 +222,11 @@ public class DeleteAxis extends DynamicPlugin {
 	 */
 	private long[] getNewDimensions(final Dataset ds, final AxisType axis) {
 		final long[] origDims = ds.getDims();
+		if (axis.isXY()) {
+			final long[] newDims = origDims;
+			newDims[ds.getAxisIndex(axis)] = 1;
+			return newDims;
+		}
 		final AxisType[] origAxes = ds.getAxes();
 		final long[] newDims = new long[origAxes.length - 1];
 		int index = 0;
@@ -292,16 +303,15 @@ public class DeleteAxis extends DynamicPlugin {
 		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
-			if (Axes.isXY(a)) continue;
+			//if (Axes.isXY(a)) continue;
 			choices.add(a.getLabel());
 		}
 		axisNameItem.setChoices(choices);
 	}
 
 	private void initPosition() {
-		final int activeAxis = 2;
-		final long max = getDataset().getImgPlus().dimension(activeAxis);
-		final AxisType axis = getDataset().axis(2);
+		final long max = getDataset().dimension(0);
+		final AxisType axis = getDataset().axis(0);
 		final long value = display.getLongPosition(axis) + 1;
 		initPositionRange(1, max);
 		setPosition(value);
