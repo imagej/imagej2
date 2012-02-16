@@ -153,6 +153,11 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	}
 
 	public Color getDefaultStrokeColor() {
+		// TODO - eliminate deprecated use. Note that simply using getContext() is
+		// not sufficient. The figure adapters do not initialize their ImageJ
+		// context. So its possible getContext() would return null here and a NPE
+		// can get thrown. Happens when you run a legacy plugin if getContext() used
+		// here.
 		OverlaySettings settings =
 				ImageJ.get(OverlayService.class).getDefaultSettings();
 		ColorRGB color = settings.getLineColor();
@@ -163,6 +168,11 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	}
 	
 	public Color getDefaultFillColor() {
+		// TODO - eliminate deprecated use. Note that simply using getContext() is
+		// not sufficient. The figure adapters do not initialize their ImageJ
+		// context. So its possible getContext() would return null here and a NPE
+		// can get thrown. Happens when you run a legacy plugin if getContext() used
+		// here.
 		OverlaySettings settings =
 				ImageJ.get(OverlayService.class).getDefaultSettings();
 		ColorRGB color = settings.getFillColor();
