@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.ImageJ;
 import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -154,7 +153,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 
 	public Color getDefaultStrokeColor() {
 		OverlaySettings settings =
-				ImageJ.get(OverlayService.class).getDefaultSettings();
+				getContext().getService(OverlayService.class).getDefaultSettings();
 		ColorRGB color = settings.getLineColor();
 		int r = color.getRed();
 		int g = color.getGreen();
@@ -164,7 +163,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	
 	public Color getDefaultFillColor() {
 		OverlaySettings settings =
-				ImageJ.get(OverlayService.class).getDefaultSettings();
+				getContext().getService(OverlayService.class).getDefaultSettings();
 		ColorRGB color = settings.getFillColor();
 		int r = color.getRed();
 		int g = color.getGreen();
