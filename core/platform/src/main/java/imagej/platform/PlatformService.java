@@ -126,7 +126,24 @@ public final class PlatformService extends AbstractService {
 				if (exception == null) exception = e;
 			}
 		if (exception != null) throw exception;
-		throw new IOException("No target platform found to open URL " + url);
+
+		/*
+		 * Fall back to calling known browsers.
+		 *
+		 * Based on BareBonesBrowserLaunch (http://www.centerkey.com/java/browser/).
+		 *
+		 * The utility 'xdg-open' launches the URL in the user's preferred
+		 * browser, therefore we try to use it first, before trying to discover
+		 * other browsers.
+		 */
+		final String[] browsers =
+			{ "xdg-open", "netscape", "firefox", "konqueror", "mozilla", "opera",
+				"epiphany", "lynx" };
+		for (final String browser : browsers) {
+			if (exec(browser, url.toString())) return;
+		}
+		Log.error("Could not find a browser; URL=" + url);
+		throw new IOException("No browser found");
 	}
 
 	/**
