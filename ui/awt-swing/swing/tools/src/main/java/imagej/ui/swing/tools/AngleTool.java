@@ -34,23 +34,66 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.imglib2.RealPoint;
+
+import imagej.ImageJ;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.data.overlay.AngleOverlay;
+import imagej.data.overlay.Overlay;
+import imagej.ext.display.event.input.MsButtonEvent;
+import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.tools.overlay.LineAdapter;
+import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 
 /**
  * TODO
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Angle", description = "Angle tool",
-	iconPath = "/icons/tools/angle.png", priority = AngleTool.PRIORITY,
-	enabled = false)
+	iconPath = "/icons/tools/angle.png", priority = AngleTool.PRIORITY)
 public class AngleTool extends AbstractTool {
 
 	public static final int PRIORITY = LineAdapter.PRIORITY - 1;
+	
+	private List<RealPoint> coords = new LinkedList<RealPoint>();
 
-	// TODO
+	@Override
+	public void onMouseDown(MsPressedEvent evt) {
+		if (evt.getDisplay() == null) return;
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+		final ImageDisplayService imgService = evt.getContext().getService(ImageDisplayService.class);
+		ImageDisplay imgDisp = imgService.getActiveImageDisplay();
+		IntCoords panelPoint = new IntCoords(evt.getX(), evt.getY());
+		RealCoords modelPoint = imgDisp.getCanvas().panelToImageCoords(panelPoint);
+		RealPoint realPoint = new RealPoint(modelPoint.x, modelPoint.y);
+		handlePoint(evt.getContext(), imgDisp, realPoint);
+		evt.consume();
+	}
 
+	private void handlePoint(ImageJ context, ImageDisplay display, RealPoint point) {
+		OverlayService os = context.getService(OverlayService.class);
+		coords.add(point);
+		while (coords.size()/3 >= 1) {
+			AngleOverlay angleOverlay = new AngleOverlay(context);
+			angleOverlay.setEndPoint1(coords.remove(0)); 
+			angleOverlay.setCenterPoint(coords.remove(0)); 
+			angleOverlay.setEndPoint2(coords.remove(0));
+			// TMP HACK
+			Overlay overlay = angleOverlay;
+			os.addOverlays(display, Arrays.asList(overlay));
+			System.out.println("Angle overlay added");
+			// END TMP HACK
+		}
+	}
 }
