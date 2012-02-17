@@ -40,6 +40,8 @@ import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.Log;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,6 +110,38 @@ public final class PlatformService extends AbstractService {
 	/** Sets whether the menu bar should be duplicated for every window frame. */
 	public void setMenuBarDuplicated(final boolean menuBarDuplicated) {
 		this.menuBarDuplicated = menuBarDuplicated;
+	}
+
+	/**
+	 * Open a URL in platform-dependent way
+	 */
+	public void open(final URL url) throws IOException {
+		IOException exception = null;
+		for (final IPlatform platform : getTargetPlatforms())
+			try {
+				platform.open(url);
+				return;
+			}
+			catch (final IOException e) {
+				if (exception == null) exception = e;
+			}
+		if (exception != null) throw exception;
+		throw new IOException("No target platform found to open URL " + url);
+	}
+
+	/**
+	 * Execute a native program and wait for it to return
+	 */
+	public static boolean exec(final String... args) throws IOException {
+		final Process process = Runtime.getRuntime().exec(args);
+		try {
+			process.waitFor();
+			return process.exitValue() == 0;
+		}
+		catch (final InterruptedException ie) {
+			throw new IOException("InterruptedException while launching browser: " +
+				ie.getMessage());
+		}
 	}
 
 	// -- Helper methods --
