@@ -34,12 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform.macosx;
 
-import com.apple.eawt.Application;
-
 import imagej.event.EventService;
-import imagej.platform.Platform;
 import imagej.platform.IPlatform;
+import imagej.platform.Platform;
 import imagej.platform.PlatformService;
+
+import java.io.IOException;
+import java.net.URL;
+
+import com.apple.eawt.Application;
 
 /**
  * A platform implementation for handling Mac OS X platform issues:
@@ -71,6 +74,12 @@ public class MacOSXPlatform implements IPlatform {
 
 		// duplicate menu bar across all window frames
 		platformService.setMenuBarDuplicated(true);
+	}
+
+	@Override
+	public void open(final URL url) throws IOException {
+		if (!PlatformService.exec("open", url.toString())) throw new IOException(
+			"Could not open " + url);
 	}
 
 }

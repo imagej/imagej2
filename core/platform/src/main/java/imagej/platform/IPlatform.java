@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
+import java.io.IOException;
+import java.net.URL;
+
 /**
  * An interface for configuring a specific deployment platform, defined by
  * criteria such as operation system, machine architecture or Java version.
@@ -48,4 +51,5 @@ public interface IPlatform {
 
 	void configure(PlatformService platformService);
 
+	void open(URL url) throws IOException;
 }
