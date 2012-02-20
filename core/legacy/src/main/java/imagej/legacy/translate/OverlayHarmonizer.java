@@ -491,9 +491,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private Overlay createAngleOverlay(final Roi roi, final int xOff,
 		final int yOff)
 	{
+		assert roi instanceof PolygonRoi;
 		PolygonRoi pRoi = (PolygonRoi) roi;
 		FloatPolygon poly = pRoi.getFloatPolygon();
 		RealPoint pt;
@@ -553,8 +555,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	private PolygonOverlay createPolygonOverlay(final Roi roi, final int xOff,
 		final int yOff)
 	{
+		assert roi instanceof PolygonRoi;
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
-
 		final PolygonOverlay overlay = new PolygonOverlay(context);
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final int[] xCoords = polygonRoi.getXCoordinates();
