@@ -89,6 +89,9 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	/** How deep into the menu structure this node is. */
 	private final int menuDepth;
 
+	/** Reference to parent node. */
+	private final ShadowMenu parent;
+
 	/** Table of child nodes, keyed by name. */
 	private final Map<String, ShadowMenu> children;
 
@@ -96,12 +99,12 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	public ShadowMenu(final MenuService menuService,
 		final Collection<? extends ModuleInfo> modules)
 	{
-		this(menuService, null, -1);
+		this(menuService, null, -1, null);
 		addAll(modules);
 	}
 
 	private ShadowMenu(final MenuService menuService,
-		final ModuleInfo moduleInfo, final int menuDepth)
+		final ModuleInfo moduleInfo, final int menuDepth, final ShadowMenu parent)
 	{
 		this.menuService = menuService;
 		if (moduleInfo == null) {
@@ -116,6 +119,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 			menuEntry = menuPath.get(menuDepth);
 		}
 		this.menuDepth = menuDepth;
+		this.parent = parent;
 		children = new HashMap<String, ShadowMenu>();
 	}
 
@@ -150,6 +154,11 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	/** Gets the name of the menu. */
 	public String getName() {
 		return menuEntry == null ? null : menuEntry.getName();
+	}
+
+	/** Gets this node's parent, or null if it is a root node. */
+	public ShadowMenu getParent() {
+		return parent;
 	}
 
 	/** Gets this node's children, sorted by weight. */
@@ -462,7 +471,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		if (existingChild == null) {
 			// create new child and add to table
 			final String menuName = entry.getName();
-			final ShadowMenu newChild = new ShadowMenu(menuService, info, depth);
+			final ShadowMenu newChild = new ShadowMenu(menuService, info, depth, this);
 			children.put(menuName, newChild);
 			child = newChild;
 		}

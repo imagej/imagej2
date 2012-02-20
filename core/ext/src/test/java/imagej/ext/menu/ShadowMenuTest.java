@@ -136,6 +136,8 @@ public class ShadowMenuTest {
 	}
 
 	private void checkStructure(final ShadowMenu root) {
+		assertNull(root.getParent());
+
 		final List<ShadowMenu> rootChildren = checkNode(root, null, 8, -1, 2);
 
 		final ShadowMenu edit = rootChildren.get(0);
@@ -201,6 +203,10 @@ public class ShadowMenuTest {
 		else {
 			// non-leaf nodes have no associated module info
 			assertNull(node.getModuleInfo());
+		}
+
+		for (ShadowMenu child : children) {
+			assertEquals(node, child.getParent());
 		}
 
 		return children;
