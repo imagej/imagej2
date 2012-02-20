@@ -61,7 +61,8 @@ import imagej.util.RealCoords;
  * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Angle", description = "Angle tool",
-	iconPath = "/icons/tools/angle.png", priority = AngleTool.PRIORITY)
+	iconPath = "/icons/tools/angle.png", priority = AngleTool.PRIORITY,
+	enabled=false)
 public class AngleTool extends AbstractTool {
 
 	public static final int PRIORITY = LineAdapter.PRIORITY - 1;
