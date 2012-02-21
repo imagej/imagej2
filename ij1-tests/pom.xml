@@ -57,11 +57,11 @@
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
-			<url>http://code.imagej.net/maven2/releases</url>
+			<url>http://maven.imagej.net/content/repositories/releases</url>
 		</repository>
 		<repository>
 			<id>imagej.snapshots</id>
-			<url>http://code.imagej.net/maven2/snapshots</url>
+			<url>http://maven.imagej.net/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
 

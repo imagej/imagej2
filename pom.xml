@@ -255,8 +255,8 @@
 	</issueManagement>
 
 	<ciManagement>
-		<system>Hudson</system>
-		<url>http://code.imagej.net:8080/</url>
+		<system>Jenkins</system>
+		<url>http://jenkins.imagej.net/</url>
 	</ciManagement>
 
 	<mailingLists>
@@ -317,7 +317,7 @@
 		<!-- NB: for various dependencies -->
 		<repository>
 			<id>imagej.thirdparty</id>
-			<url>http://code.imagej.net/maven2/thirdparty</url>
+			<url>http://maven.imagej.net/content/repositories/thirdparty</url>
 		</repository>
 		<!-- NB: for sezpoz -->
 		<repository>
@@ -341,12 +341,12 @@
 		<repository>
 			<id>imagej.releases</id>
 			<name>ImageJ Releases Repository</name>
-			<url>dav:http://code.imagej.net:8081/content/repositories/releases</url>
+			<url>dav:http://maven.imagej.net/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>imagej.snapshots</id>
 			<name>ImageJ Snapshots Repository</name>
-			<url>dav:http://code.imagej.net:8081/content/repositories/snapshots</url>
+			<url>dav:http://maven.imagej.net/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
