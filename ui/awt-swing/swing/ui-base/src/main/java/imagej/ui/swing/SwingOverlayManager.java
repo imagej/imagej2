@@ -47,10 +47,9 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.KeyCode;
 import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ui.UIService;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -71,6 +70,7 @@ import java.awt.event.WindowListener;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Stack;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -92,10 +92,7 @@ import javax.swing.event.ListSelectionListener;
 // TODO
 //
 // - implement methods that actually do stuff
-// - get command accelerators working without needing ALT/OPTION
-//     KEY EVENTS SEEM TO ONLY TAKE PLACE IN THE CONTEXT OF DISPLAYS
 // - draw overlay labels in left pane
-// - FIXME: application menu bar disappears when Overlay Mgr running
 
 /**
  * Overlay Manager Swing UI
@@ -153,8 +150,6 @@ public class SwingOverlayManager
 	private JCheckBox editModeCheckBox = null;
 	private boolean shiftDown = false;
 	private boolean altDown = false;
-	//private FakeDisplay fakeDisplay = new FakeDisplay(Double.class);
-	//private AWTKeyEventDispatcher keyEventDispatcher;
 	
 	// -- constructor --
 	
@@ -214,18 +209,22 @@ public class SwingOverlayManager
 		setTitle("Overlay Manager");
 		setupListSelectionListener();
 		setupCloseListener();
-		// TODO - kill? isn't working
 		setupKeyListener();
 		restoreLocation();
 		
 		EventService eventService = context.getService(EventService.class);
-		
 		subscribers = eventService.subscribe(this);
 
-		pack();
+		// FIXME - temp hack - made this class (which is not a display) make sure
+		// menu bar available when it is running. Ugly cast in place to create the
+		// menu bar. A better approach would be to make a new event tied to a menu
+		// bar listener of some sort. This code could emit that "need a menu bar"
+		// event here. Filing as ticket.
 		
-		//keyEventDispatcher = new AWTKeyEventDispatcher(fakeDisplay, eventService);
-		//addKeyListener(keyEventDispatcher);
+		UIService uiService = context.getService(UIService.class);
+		((AbstractSwingUI)uiService.getUI()).createMenuBar(this);
+		
+		pack();
 	}
 
 	// -- public interface --
@@ -394,6 +393,7 @@ public class SwingOverlayManager
 		selecting = false;
 	}
 
+	/*
 	// TODO - this may not be best way to do this
 	//   Its here to allow acceleration without ALT/OPTION key
 	//   Maybe make buttons listen for actions
@@ -406,6 +406,7 @@ public class SwingOverlayManager
 		if (key == KeyCode.T) add();
 		if (key == KeyCode.F) flatten();
 	}
+	*/
 	
 	// No need to update unless thumbnail will be redrawn.
 //	@EventHandler
@@ -417,7 +418,7 @@ public class SwingOverlayManager
 	// -- private helpers that implement overlay interaction commands --
 	
 	private void add() {
-		System.out.println("add");
+		System.out.println("add: shift="+shiftDown+" alt="+altDown);
 	}
 	
 	private void addParticles() {
@@ -520,14 +521,14 @@ public class SwingOverlayManager
 	
 	// -- private helpers for hotkey handling --
 
-	// TODO
-	// THIS IS NOT WORKING! NO KEY EVENT EVER DETECTED
 	private void setupKeyListener() {
-		addKeyListener(new KeyListener() {
+		//KeyListener listener = new AWTKeyEventDispatcher(fakeDisplay, eventService);
+		KeyListener listener = new KeyListener() {
 			@Override
 			@SuppressWarnings("synthetic-access")
 			public void keyPressed(KeyEvent e) {
-				System.out.println("key pressed");
+				altDown = e.isAltDown() || e.isAltGraphDown();
+				shiftDown = e.isShiftDown();
 				if (e.getKeyCode() == KeyEvent.VK_T) add();
 				if (e.getKeyCode() == KeyEvent.VK_F) flatten();
 				if (e.getKeyCode() == KeyEvent.VK_DELETE) delete();
@@ -536,9 +537,21 @@ public class SwingOverlayManager
 			public void keyReleased(KeyEvent e) { /* do nothing */ }
 			@Override
 			public void keyTyped(KeyEvent e) { /* do nothing */ }
-		});
+		};
+		
+		Stack<Component> stack = new Stack<Component>();
+		stack.push(this);
+		while (!stack.empty()) {
+			Component component = stack.pop();
+			component.addKeyListener(listener);
+			if (component instanceof Container) {
+				Container container = (Container) component;
+				for (Component c : container.getComponents())
+					stack.push(c);
+			}
+		}
 	}
-	
+
 	// -- private helpers for frame location --
 	
 	/** Persists the application frame's current location. */
@@ -765,10 +778,9 @@ public class SwingOverlayManager
 	}
 	
 	// -- private helpers to implement main pane button controls --
-	
+
 	private JButton getAddButton() {
 		final JButton button = new JButton("Add [t]");
-		button.setMnemonic(KeyEvent.VK_T);
 		button.setActionCommand(ACTION_ADD);
 		button.addActionListener(this);
 		return button;
@@ -776,7 +788,6 @@ public class SwingOverlayManager
 	
 	private JButton getDeleteButton() {
 		final JButton button = new JButton("Delete");
-		button.setMnemonic(KeyEvent.VK_DELETE);
 		button.setActionCommand(ACTION_DELETE);
 		button.addActionListener(this);
 		return button;
@@ -791,7 +802,6 @@ public class SwingOverlayManager
 	
 	private JButton getFlattenButton() {
 		final JButton button = new JButton("Flatten [f]");
-		button.setMnemonic(KeyEvent.VK_F);
 		button.setActionCommand(ACTION_FLATTEN);
 		button.addActionListener(this);
 		return button;
