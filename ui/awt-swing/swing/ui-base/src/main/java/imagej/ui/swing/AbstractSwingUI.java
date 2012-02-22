@@ -176,11 +176,18 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 */
 	protected abstract void setupAppFrame();
 
+	// FIXME - temp hack - made this method public so that the SwingOverlayManager
+	// (which is not a display) could make sure menu bar available when it is
+	// running. A better approach would be to keep this method protected and make
+	// a new event tied to a menu bar listener of some sort. Creating any window
+	// (not just displays) could keep the menu bar in place as needed. Filinf as
+	// ticket.
+	
 	/**
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
 	 * and adds it to the given {@link JFrame}.
 	 */
-	protected JMenuBar createMenuBar(final JFrame f) {
+	public JMenuBar createMenuBar(final JFrame f) {
 		final MenuService menuService = getUIService().getMenuService();
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
