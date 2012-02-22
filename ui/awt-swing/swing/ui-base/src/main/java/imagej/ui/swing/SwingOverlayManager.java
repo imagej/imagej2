@@ -107,32 +107,32 @@ public class SwingOverlayManager
 
 	// -- constants --
 	
-	private static final long serialVersionUID = -6498169032123522303L;
+	//private static final long serialVersionUID = -6498169032123522303L;
 
 	private static final String ACTION_ADD = "add";
-	private static final String ACTION_UPDATE = "update";
-	private static final String ACTION_DELETE = "delete";
-	private static final String ACTION_RENAME = "rename";
-	private static final String ACTION_MEASURE = "measure";
-	private static final String ACTION_DESELECT = "deselect";
-	private static final String ACTION_PROPERTIES = "properties";
-	private static final String ACTION_FLATTEN = "flatten";
-	private static final String ACTION_OPEN = "open";
-	private static final String ACTION_SAVE = "save";
-	private static final String ACTION_FILL = "fill";
-	private static final String ACTION_DRAW = "draw";
-	private static final String ACTION_AND = "and";
-	private static final String ACTION_OR = "or";
-	private static final String ACTION_XOR = "xor";
-	private static final String ACTION_SPLIT = "split";
 	private static final String ACTION_ADD_PARTICLES = "add particles";
+	private static final String ACTION_AND = "and";
+	private static final String ACTION_DELETE = "delete";
+	private static final String ACTION_DESELECT = "deselect";
+	private static final String ACTION_DRAW = "draw";
+	private static final String ACTION_FILL = "fill";
+	private static final String ACTION_FLATTEN = "flatten";
+	private static final String ACTION_HELP = "help";
+	private static final String ACTION_MEASURE = "measure";
 	private static final String ACTION_MULTI_MEASURE = "multi measure";
 	private static final String ACTION_MULTI_PLOT = "multi plot";
+	private static final String ACTION_OPEN = "open";
+	private static final String ACTION_OPTIONS = "options";
+	private static final String ACTION_OR = "or";
+	private static final String ACTION_PROPERTIES = "properties";
+	private static final String ACTION_REMOVE_SLICE_INFO = "remove slice info";
+	private static final String ACTION_RENAME = "rename";
+	private static final String ACTION_SAVE = "save";
 	private static final String ACTION_SORT = "sort";
 	private static final String ACTION_SPECIFY = "specify";
-	private static final String ACTION_REMOVE_SLICE_INFO = "remove slice info";
-	private static final String ACTION_HELP = "help";
-	private static final String ACTION_OPTIONS = "options";
+	private static final String ACTION_SPLIT = "split";
+	private static final String ACTION_UPDATE = "update";
+	private static final String ACTION_XOR = "xor";
 	
 	private static final String LAST_X = "lastXLocation";
 	private static final String LAST_Y = "lastYLocation";
@@ -289,7 +289,7 @@ public class SwingOverlayManager
 	@SuppressWarnings("synthetic-access")
 	public class OverlayListModel extends AbstractListModel {
 
-		private static final long serialVersionUID = 7941252533859436640L;
+		//private static final long serialVersionUID = 7941252533859436640L;
 		private final OverlayService om = context.getService(OverlayService.class);
 		private final DisplayService dm = context.getService(DisplayService.class);
 
@@ -312,7 +312,7 @@ public class SwingOverlayManager
 	 */
 	public class OverlayRenderer extends DefaultListCellRenderer {
 
-		private static final long serialVersionUID = 2468086636364454253L;
+		//private static final long serialVersionUID = 2468086636364454253L;
 		private final Hashtable<Overlay, ImageIcon> iconTable =
 			new Hashtable<Overlay, ImageIcon>();
 
