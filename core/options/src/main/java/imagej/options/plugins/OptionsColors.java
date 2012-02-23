@@ -45,7 +45,7 @@ import imagej.util.Colors;
 /**
  * Runs the Edit::Options::Colors dialog.
  * 
- * @author Barry DeZonia
+ * @author Barry DeZonia 
  */
 @Plugin(type = OptionsPlugin.class, menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
