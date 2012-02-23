@@ -40,6 +40,8 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewSelectionEvent;
+import imagej.data.event.OverlayRestructuredEvent;
+import imagej.data.event.OverlayUpdatedEvent;
 import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
@@ -88,12 +90,17 @@ import javax.swing.event.ListSelectionListener;
 // TODO
 //
 // - implement methods that actually do stuff
-// - draw overlay labels in left pane
-// - since it knows its a Swing UI it uses Swing UI features. Idealy we should
+// - since it knows its a Swing UI it uses Swing UI features. Ideally we should
 //   make OverlayManager a Display<Overlay> and work as much as possible in
 //   an agnostic fashion. Thus no swing style listeners but instead IJ2
 //   listeners. And rather than swing input dialogs we should make IJ2 input
 //   dialogs.
+// - manager incs references to overlays. thus if a window is closed the overlay
+//   can still exist and be saved to disk if desired. however we have a handle
+//   to an undisplayed overlay and exceptions can be thrown by other places in
+//   IJ2. Either root out those bugs or do not increment references but just
+//   keep ahold of object refs.
+
 /**
  * Overlay Manager Swing UI
  * 
@@ -289,8 +296,8 @@ public class SwingOverlayManager
 		public String toString() {
 			if (overlay.getName() != null)
 				return overlay.getName();
-			String xVal = String.format("%.2f", overlay.realMin(0));
-			String yVal = String.format("%.2f", overlay.realMin(1));
+			String xVal = String.format("%08.2f", overlay.realMin(0));
+			String yVal = String.format("%08.2f", overlay.realMin(1));
 			StringBuilder builder = new StringBuilder();
 			builder.append(xVal);
 			builder.append("-");
@@ -315,7 +322,7 @@ public class SwingOverlayManager
 		}
 		
 		public boolean addOverlayInfo(int i, OverlayInfo info) {
-			if (findIndex(info) != -1) return false;
+			if (findIndex(info) >= 0) return false;
 			list.add(i, info);
 			info.overlay.incrementReferences();
 			return true;
@@ -327,6 +334,7 @@ public class SwingOverlayManager
 		}
 		
 		public boolean addOverlay(int i, Overlay overlay) {
+			if (findIndex(overlay) >= 0) return false;
 			OverlayInfo info = new OverlayInfo();
 			info.overlay = overlay;
 			return addOverlayInfo(i,info);
@@ -364,8 +372,7 @@ public class SwingOverlayManager
 
 		public boolean deleteOverlay(Overlay overlay) {
 			int index = findIndex(overlay);
-			if (index < 0)
-				return false;
+			if (index < 0) return false;
 			return deleteOverlayInfo(index);
 		}
 
@@ -387,6 +394,27 @@ public class SwingOverlayManager
 				if (overlay == list.get(i).overlay)
 					return i;
 			return -1;
+		}
+
+		public void sort() {
+			int numEntries = getOverlayInfoCount();
+			for (int i = 0; i < numEntries; i++) {
+				String minLabel = getOverlayInfo(i).toString();
+				int minPos = i;
+				for (int j = i+1; j < numEntries; j++) {
+					String label =  getOverlayInfo(j).toString();
+					if (label.compareTo(minLabel) < 0) {
+						minLabel = label;
+						minPos = j;
+					}
+				}
+				// if necessary swap elements of the list
+				if (i != minPos) {
+					OverlayInfo tmpInfo = list.get(i);
+					list.set(i, list.get(minPos));
+					list.set(minPos, tmpInfo);
+				}
+			}
 		}
 	}
 	
@@ -509,8 +537,7 @@ public class SwingOverlayManager
 			final int[] new_sel = jlist.getSelectedIndices();
 			final int[] sel =
 				Arrays.copyOf(current_sel, current_sel.length + new_sel.length);
-			System.arraycopy(new_sel, 0, sel, current_sel.length,
-				new_sel.length);
+			System.arraycopy(new_sel, 0, sel, current_sel.length, new_sel.length);
 			jlist.setSelectedIndices(sel);
 		}
 		else {
@@ -535,15 +562,19 @@ public class SwingOverlayManager
 		KeyCode key = ev.getCode();
 		if (key == KeyCode.T) add();
 		if (key == KeyCode.F) flatten();
+		if (key == KeyCode.DELETE) delete();
 	}
 	*/
 	
-	// No need to update unless thumbnail will be redrawn.
-//	@EventHandler
-//	protected void onEvent(OverlayRestructuredEvent event) {
-//		System.out.println("\tRESTRUCTURED: " + event.toString());
-//		olist.updateUI();
-//	}
+	@EventHandler
+	protected void onEvent(OverlayRestructuredEvent event) {
+		jlist.updateUI();
+	}
+
+	@EventHandler
+	protected void onEvent(OverlayUpdatedEvent event) {
+		jlist.updateUI();
+	}
 
 	// -- private helpers that implement overlay interaction commands --
 	
@@ -590,7 +621,7 @@ public class SwingOverlayManager
 	}
 	
 	private void deselect() {
-		jlist.setSelectedIndex(-1);
+		jlist.clearSelection();
 	}
 	
 	private void draw() {
@@ -650,11 +681,15 @@ public class SwingOverlayManager
 	}
 	
 	private void rename() {
-		System.out.println("rename");
+		int[] selectedIndices = jlist.getSelectedIndices();
+		if (selectedIndices.length != 1) {
+			JOptionPane.showMessageDialog(this, "Cannot rename multiple overlays simultaneously");
+			return;
+		}
 		OverlayInfo info = (OverlayInfo) jlist.getSelectedValue();
 		if (info == null) return;
 		// TODO - UI agnostic way here
-		String name = JOptionPane.showInputDialog("Input name for overlay");
+		String name = JOptionPane.showInputDialog(this, "Enter new name for overlay");
 		if ((name == null) || (name.length() == 0))
 			info.overlay.setName(null);
 		else
@@ -667,7 +702,8 @@ public class SwingOverlayManager
 	}
 	
 	private void sort() {
-		System.out.println("sort");
+		infoList.sort();
+		jlist.updateUI();
 	}
 	
 	private void specify() {
