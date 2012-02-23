@@ -62,6 +62,7 @@ import javax.swing.border.BevelBorder;
 public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	private final EventService eventService;
+	private final OptionsService optionsService;
 	
 	private final JLabel statusText;
 	private final JProgressBar progressBar;
@@ -71,6 +72,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	public SwingStatusBar(final EventService eventService) {
 		this.eventService = eventService;
+		optionsService = eventService.getContext().getService(OptionsService.class);
 		
 		statusText = new JLabel(getInfoString(false));
 		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -129,9 +131,8 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	@Override
 	public void mousePressed(final MouseEvent e) {
-		OptionsService service = ImageJ.get(OptionsService.class);
 		OptionsMemoryAndThreads options =
-				service.getOptions(OptionsMemoryAndThreads.class);
+				optionsService.getOptions(OptionsMemoryAndThreads.class);
 		if (options.isRunGcOnClick())
 			System.gc();
 		eventService.publish(new StatusEvent(getInfoString(true)));
