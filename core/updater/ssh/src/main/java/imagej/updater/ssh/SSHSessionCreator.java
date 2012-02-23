@@ -37,6 +37,7 @@ package imagej.updater.ssh;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
@@ -100,6 +101,10 @@ final class SSHSessionCreator {
 		}
 
 		final Session session = jsch.getSession(username, sshHost, port);
+		String proxyHost = System.getProperty("http.proxyHost");
+		String proxyPort = System.getProperty("http.proxyPort");
+		if (proxyHost != null && proxyPort != null)
+			session.setProxy(new ProxyHTTP(proxyHost, Integer.parseInt(proxyPort)));
 		session.setUserInfo(userInfo);
 		session.connect();
 
