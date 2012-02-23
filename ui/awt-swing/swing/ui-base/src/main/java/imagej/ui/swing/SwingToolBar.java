@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -91,7 +90,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	public SwingToolBar(final EventService eventService) {
 		this.eventService = eventService;
-		toolService = ImageJ.get(ToolService.class);
+		toolService = eventService.getContext().getService(ToolService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 		subscribers = eventService.subscribe(this);
