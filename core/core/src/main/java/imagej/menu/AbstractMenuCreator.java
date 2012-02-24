@@ -35,6 +35,8 @@
 
 package imagej.menu;
 
+import imagej.event.EventHandler;
+
 /**
  * Abstract helper class for generating a menu structure.
  * <p>
