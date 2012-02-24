@@ -71,6 +71,26 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 		</plugins>
 	</build>
 
+	<reporting>
+		<plugins>
+			<!-- NB: Generate javadocs as part of site generation. -->
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<maxmemory>1024m</maxmemory>
+					<!-- NB: Workaround for javadoc bug when classes in the default
+						package access classes from non-default packages. See:
+						http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
+					<use>false</use>
+					<links>
+						<link>https://pivot.apache.org/2.0.1/docs/</link>
+					</links>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
 	<licenses>
 		<license>
 			<name>Simplified BSD License</name>
