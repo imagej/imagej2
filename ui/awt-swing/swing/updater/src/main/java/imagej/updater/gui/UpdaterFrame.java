@@ -44,7 +44,7 @@ import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Log;
 
 import java.awt.Component;
@@ -419,7 +419,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				run.invoke(file, arg);
 			}
 			catch (final Exception e) {
-				UserInterface.get().handleException(e);
+				UpdaterUserInterface.get().handleException(e);
 			}
 		}
 
@@ -443,14 +443,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		showOrHide();
 		super.setVisible(visible);
 		if (visible) {
-			UserInterface.get().addWindow(this);
+			UpdaterUserInterface.get().addWindow(this);
 			apply.requestFocusInWindow();
 		}
 	}
 
 	@Override
 	public void dispose() {
-		UserInterface.get().removeWindow(this);
+		UpdaterUserInterface.get().removeWindow(this);
 		super.dispose();
 	}
 
@@ -755,7 +755,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			if (list == null) list = object.getFilename();
 			else list += ", " + object.getFilename();
 		}
-		if (list != null) UserInterface.get().info(
+		if (list != null) UpdaterUserInterface.get().info(
 			"WARNING: The following files are set to read-only: '" + list + "'",
 			"Read-only files");
 	}
@@ -824,7 +824,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			if (progress != null) progress.done();
 		}
 		catch (final Throwable e) {
-			UserInterface.get().handleException(e);
+			UpdaterUserInterface.get().handleException(e);
 			error("Upload failed: " + e);
 			if (progress != null) progress.done();
 		}
@@ -852,7 +852,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			if (progress != null) progress.done();
 		}
 		catch (final Throwable e) {
-			UserInterface.get().handleException(e);
+			UpdaterUserInterface.get().handleException(e);
 			if (progress != null) progress.done();
 		}
 		return false;

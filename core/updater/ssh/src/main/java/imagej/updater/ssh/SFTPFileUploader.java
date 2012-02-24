@@ -39,7 +39,7 @@ import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Log;
 
 import java.io.ByteArrayInputStream;
@@ -139,7 +139,7 @@ final public class SFTPFileUploader extends AbstractUploader {
 			final int currentFileSize = (int) uploadable.getFilesize();
 			final String dest = this.uploadDir + target;
 			try {
-				UserInterface.get().log(
+				UpdaterUserInterface.get().log(
 					"Upload '" + uploadable.getFilename() + "', size " +
 						uploadable.getFilesize());
 

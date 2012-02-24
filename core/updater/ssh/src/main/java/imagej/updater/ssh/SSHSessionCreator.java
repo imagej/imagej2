@@ -40,7 +40,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
 import imagej.updater.core.FilesUploader;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 import imagej.util.Log;
 
@@ -167,13 +167,13 @@ final class SSHSessionCreator {
 
 			@Override
 			public String getPassphrase() {
-				return UserInterface.get().getPassword(prompt);
+				return UpdaterUserInterface.get().getPassword(prompt);
 			}
 
 			@Override
 			public String getPassword() {
 				if (count == 1) return password;
-				return UserInterface.get().getPassword(prompt);
+				return UpdaterUserInterface.get().getPassword(prompt);
 			}
 
 			@Override
@@ -190,12 +190,12 @@ final class SSHSessionCreator {
 
 			@Override
 			public boolean promptYesNo(final String message) {
-				return UserInterface.get().promptYesNo(message, "Password");
+				return UpdaterUserInterface.get().promptYesNo(message, "Password");
 			}
 
 			@Override
 			public void showMessage(final String message) {
-				UserInterface.get().info(message, "Password");
+				UpdaterUserInterface.get().info(message, "Password");
 			}
 		};
 	}
@@ -207,12 +207,12 @@ final class SSHSessionCreator {
 			// Dialog to enter user name and password
 			if (username == null) {
 				username =
-					UserInterface.get()
+					UpdaterUserInterface.get()
 						.getString("Login for " + uploader.getUploadHost());
 				if (username == null || username.equals("")) return null;
 			}
 			final String password =
-				UserInterface.get().getPassword(
+				UpdaterUserInterface.get().getPassword(
 					"Password for " + username + "@" + uploader.getUploadHost());
 			if (password == null) return null; // return back to user interface
 
@@ -220,7 +220,7 @@ final class SSHSessionCreator {
 			try {
 				final Session session = connect(username, sshHost, userInfo);
 				if (session != null) {
-					UserInterface.get().setPref(Util.PREFS_USER, username);
+					UpdaterUserInterface.get().setPref(Util.PREFS_USER, username);
 					return session;
 				}
 			}

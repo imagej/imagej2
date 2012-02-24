@@ -62,7 +62,7 @@ public class InputStream2OutputStream extends Thread {
 			in.close();
 		}
 		catch (final IOException e) {
-			UserInterface.get().handleException(e);
+			UpdaterUserInterface.get().handleException(e);
 		}
 	}
 }

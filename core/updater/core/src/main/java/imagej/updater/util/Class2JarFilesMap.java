@@ -65,7 +65,7 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 				addJar(path);
 			}
 			catch (final IOException e) {
-				UserInterface.get().log("Warning: could not open " + path);
+				UpdaterUserInterface.get().log("Warning: could not open " + path);
 			}
 			else addDirectory(path);
 		}
@@ -82,7 +82,7 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 			}
 		}
 		catch (final ZipException e) {
-			UserInterface.get().log("Warning: could not open " + jar);
+			UpdaterUserInterface.get().log("Warning: could not open " + jar);
 		}
 	}
 

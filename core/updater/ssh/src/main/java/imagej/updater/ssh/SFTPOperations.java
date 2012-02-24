@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.updater.ssh;
 
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,7 +111,7 @@ final class SFTPOperations {
 	public void put(final InputStream in, final String dest,
 		final ProgressListener listener) throws IOException
 	{
-		UserInterface.get().debug("SFTPOperations.put(...,...," + dest + ")");
+		UpdaterUserInterface.get().debug("SFTPOperations.put(...,...," + dest + ")");
 		mkParentDirs(dest);
 
 		final ProgressMonitor monitor = new ProgressMonitor(listener);
@@ -171,7 +171,7 @@ final class SFTPOperations {
 	 * @return {@code true} if the path exists
 	 */
 	public boolean fileExists(final String path) {
-		UserInterface.get().debug("SFTPOperations.fileExists2(" + path + ")");
+		UpdaterUserInterface.get().debug("SFTPOperations.fileExists2(" + path + ")");
 
 		// Traversing the path may hit directories without read access.
 		// Rather than listing content to see if directory exists just test the path
@@ -193,7 +193,7 @@ final class SFTPOperations {
 	 * @throws IOException in case of sftp error.
 	 */
 	public void mkParentDirs(final String path) throws IOException {
-		UserInterface.get().debug("SFTPOperations.mkParentDirs(" + path + ")");
+		UpdaterUserInterface.get().debug("SFTPOperations.mkParentDirs(" + path + ")");
 		mkParentDirs("", path);
 	}
 
@@ -245,7 +245,7 @@ final class SFTPOperations {
 	{
 		final String m =
 			message + " SFTP error id=" + ex.id + ": " + ex.getMessage();
-		UserInterface.get().log(m);
+		UpdaterUserInterface.get().log(m);
 		return new IOException(m);
 	}
 

@@ -46,7 +46,7 @@ import imagej.updater.core.XMLFileDownloader;
 import imagej.updater.gui.ViewOptions.Option;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 import imagej.util.FileUtils;
 import imagej.util.Log;
@@ -70,13 +70,13 @@ public class ImageJUpdater implements ImageJPlugin {
 	@Override
 	public void run() {
 
-		UserInterface.set(new SwingUserInterface(eventService));
+		UpdaterUserInterface.set(new SwingUserInterface(eventService));
 
 		if (errorIfDebian()) return;
 
 		final File imagejRoot = FileUtils.getImageJDirectory();
 		if (new File(imagejRoot, "update").exists()) {
-			UserInterface.get().error(
+			UpdaterUserInterface.get().error(
 				"ImageJ restart required to finalize previous update");
 			return;
 		}
@@ -89,7 +89,7 @@ public class ImageJUpdater implements ImageJPlugin {
 		catch (final FileNotFoundException e) { /* ignore */}
 		catch (final Exception e) {
 			Log.error(e);
-			UserInterface.get().error(
+			UpdaterUserInterface.get().error(
 				"There was an error reading the cached metadata: " + e);
 			return;
 		}
@@ -213,7 +213,7 @@ public class ImageJUpdater implements ImageJPlugin {
 			String message = "You are using the Debian packaged version of ImageJ.\n";
 			message +=
 				"You should update ImageJ with your system's usual package manager instead.";
-			UserInterface.get().error(message);
+			UpdaterUserInterface.get().error(message);
 			return true;
 		}
 		else return false;
