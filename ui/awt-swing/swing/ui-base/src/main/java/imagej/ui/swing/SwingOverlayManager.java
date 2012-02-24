@@ -99,7 +99,7 @@ import javax.swing.event.ListSelectionListener;
 //   can still exist and be saved to disk if desired. however we have a handle
 //   to an undisplayed overlay and exceptions can be thrown by other places in
 //   IJ2. Either root out those bugs or do not increment references but just
-//   keep ahold of object refs.
+//   keep a hold of object refs.
 
 /**
  * Overlay Manager Swing UI
@@ -714,8 +714,34 @@ public class SwingOverlayManager
 		System.out.println("split");
 	}
 	
+	// replace OverlayInfoList's currently selected info with the currently
+	// selected roi
 	private void update() {
-		System.out.println("update");
+		int[] selectedIndices = jlist.getSelectedIndices();
+		if (selectedIndices.length != 1) {
+			JOptionPane.showMessageDialog(this,
+				"Exactly one item must be selected");
+			return;
+		}
+		
+		Overlay overlay = getActiveOverlay();
+		if (overlay == null) {
+			JOptionPane.showMessageDialog(this,
+				"An overlay must be selected in the current view");
+			return;
+		}
+		
+		int index = infoList.findIndex(overlay);
+		if (index != -1) {
+			// already in list
+			if (index != selectedIndices[0])
+				JOptionPane.showMessageDialog(this,
+					"Selected overlay is already tracked by the overlay manager");
+			return;
+		}
+
+		infoList.replaceOverlay(selectedIndices[0], overlay);
+		jlist.updateUI();
 	}
 	
 	private void xor() {
@@ -1082,6 +1108,21 @@ public class SwingOverlayManager
 		}
 	}
 
+	// -- private helpers for TODO XXXX --
+	
+	// TODO - assumes first selected overlay view is the only one. bad?
+	private Overlay getActiveOverlay() {
+		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
+		ImageDisplay activeDisplay = ids.getActiveImageDisplay();
+		if (activeDisplay == null) return null;
+		List<DataView> views = activeDisplay;
+		for (DataView view : views) {
+			if (view.isSelected() && (view instanceof OverlayView))
+				return ((OverlayView) view).getData();
+		}
+		return null;
+	}
+	
 	// -- private class to utilize a fake display capability for key events
 	/*
 	private class FakeDisplay extends AbstractDisplay<Double> {
