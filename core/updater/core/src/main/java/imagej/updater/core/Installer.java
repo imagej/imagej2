@@ -38,7 +38,7 @@ import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 import imagej.util.Log;
 
@@ -121,7 +121,7 @@ public class Installer extends Downloader {
 					Util.patchInfoPList(files.prefix("Contents/Info.plist"), "ImageJ-tiger");
 				}
 				catch (final IOException e) {
-					UserInterface.get().error("Could not patch Info.plist");
+					UpdaterUserInterface.get().error("Could not patch Info.plist");
 				}
 			}
 

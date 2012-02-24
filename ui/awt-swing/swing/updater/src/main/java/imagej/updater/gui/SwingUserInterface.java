@@ -36,7 +36,7 @@ package imagej.updater.gui;
 
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -52,7 +52,7 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
-public class SwingUserInterface extends UserInterface {
+public class SwingUserInterface extends UpdaterUserInterface {
 
 	final protected EventService eventService;
 

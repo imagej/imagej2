@@ -36,7 +36,7 @@ package imagej.updater.core;
 
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 import imagej.util.Log;
 
@@ -110,7 +110,7 @@ public class FilesUploader {
 		if (host.startsWith("sftp:")) host = host.substring(5);
 		final int at = host.indexOf('@');
 		if (at > 0) return host.substring(0, at);
-		final String name = UserInterface.get().getPref(Util.PREFS_USER);
+		final String name = UpdaterUserInterface.get().getPref(Util.PREFS_USER);
 		if (name == null) return "";
 		return name;
 	}
@@ -306,13 +306,13 @@ public class FilesUploader {
 			connection.setUseCaches(false);
 			final long lastModified = connection.getLastModified();
 			connection.getInputStream().close();
-			UserInterface.get().debug(
+			UpdaterUserInterface.get().debug(
 				"got last modified " + lastModified + " = timestamp " +
 					Util.timestamp(lastModified));
 			return lastModified;
 		}
 		catch (final Exception e) {
-			UserInterface.get().debug(e.getMessage());
+			UpdaterUserInterface.get().debug(e.getMessage());
 			if (files.size() == 0) return -1; // assume initial upload
 			Log.error(e);
 			return 0;

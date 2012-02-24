@@ -36,7 +36,7 @@ package imagej.updater.gui;
 
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Log;
 
 import java.awt.Color;
@@ -93,11 +93,11 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 			public void mouseClicked(final MouseEvent e) {
 				final String url = getLinkAt(e.getPoint());
 				try {
-					if (url != null) UserInterface.get().openURL(url);
+					if (url != null) UpdaterUserInterface.get().openURL(url);
 				}
 				catch (final Exception exception) {
 					Log.error(exception);
-					UserInterface.get().error(
+					UpdaterUserInterface.get().error(
 						"Could not open " + url + ": " + exception.getMessage());
 				}
 			}

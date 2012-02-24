@@ -45,7 +45,7 @@ import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.InputStream2OutputStream;
-import imagej.updater.util.UserInterface;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Log;
 
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class SSHFileUploader extends AbstractUploader {
 	private InputStream in;
 
 	public SSHFileUploader() throws JSchException {
-		err = UserInterface.get().getOutputStream();
+		err = UpdaterUserInterface.get().getOutputStream();
 	}
 
 	@Override
@@ -205,7 +205,7 @@ public class SSHFileUploader extends AbstractUploader {
 			channel.disconnect();
 		}
 		try {
-			UserInterface.get().debug("launching command " + command);
+			UpdaterUserInterface.get().debug("launching command " + command);
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
 			channel.setInputStream(null);
@@ -227,7 +227,7 @@ public class SSHFileUploader extends AbstractUploader {
 	}
 
 	public void disconnectSession() throws IOException {
-		new InputStream2OutputStream(in, UserInterface.get().getOutputStream());
+		new InputStream2OutputStream(in, UpdaterUserInterface.get().getOutputStream());
 		try {
 			Thread.sleep(100);
 		}
@@ -242,7 +242,7 @@ public class SSHFileUploader extends AbstractUploader {
 			/* ignore */
 		}
 		final int exitStatus = channel.getExitStatus();
-		UserInterface.get().debug(
+		UpdaterUserInterface.get().debug(
 			"disconnect session; exit status is " + exitStatus);
 		channel.disconnect();
 		session.disconnect();
@@ -267,7 +267,7 @@ public class SSHFileUploader extends AbstractUploader {
 		// 2 for fatal error,
 		// -1
 		if (b == 0) return b;
-		UserInterface.get().handleException(new Exception("checkAck returns " + b));
+		UpdaterUserInterface.get().handleException(new Exception("checkAck returns " + b));
 		if (b == -1) return b;
 
 		if (b == 1 || b == 2) {
@@ -278,8 +278,8 @@ public class SSHFileUploader extends AbstractUploader {
 				sb.append((char) c);
 			}
 			while (c != '\n');
-			UserInterface.get().log("checkAck returned '" + sb.toString() + "'");
-			UserInterface.get().error(sb.toString());
+			UpdaterUserInterface.get().log("checkAck returned '" + sb.toString() + "'");
+			UpdaterUserInterface.get().error(sb.toString());
 		}
 		return b;
 	}

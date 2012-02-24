@@ -89,7 +89,7 @@ public class DependencyAnalyzer {
 				addClassAndInterfaces(allClassNames, handled, name);
 
 			for (final String name : allClassNames) {
-				UserInterface.get().debug("Considering name from analyzer: " + name);
+				UpdaterUserInterface.get().debug("Considering name from analyzer: " + name);
 				final List<String> jars = map.get(name);
 				if (jars == null) continue;
 				final List<String> dependencies = new ArrayList<String>();
@@ -97,16 +97,16 @@ public class DependencyAnalyzer {
 					if (!exclude(path, dependency)) dependencies.add(dependency);
 				}
 				if (dependencies.size() > 1) {
-					UserInterface.get().log(
+					UpdaterUserInterface.get().log(
 						"Warning: class " + name + ", referenced in " + path +
 							", is in more than one jar:");
 					for (final String j : dependencies)
-						UserInterface.get().log("  " + j);
-					UserInterface.get().log("... adding all as dependency.");
+						UpdaterUserInterface.get().log("  " + j);
+					UpdaterUserInterface.get().log("... adding all as dependency.");
 				}
 				for (final String j : dependencies) {
 					result.add(j);
-					UserInterface.get().debug(
+					UpdaterUserInterface.get().debug(
 						"... adding dep " + j + " for " + path + " because of class " +
 							name);
 				}

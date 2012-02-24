@@ -40,7 +40,7 @@ import java.awt.Frame;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class UserInterface {
+public abstract class UpdaterUserInterface {
 
 	// The methods
 	public abstract void error(String message);
@@ -81,18 +81,18 @@ public abstract class UserInterface {
 	public abstract void removeWindow(Frame window);
 
 	// The singleton
-	protected static UserInterface ui = new StderrInterface();
+	protected static UpdaterUserInterface ui = new StderrInterface();
 
-	public static void set(final UserInterface ui) {
-		UserInterface.ui = ui;
+	public static void set(final UpdaterUserInterface ui) {
+		UpdaterUserInterface.ui = ui;
 	}
 
-	public final static UserInterface get() {
+	public final static UpdaterUserInterface get() {
 		return ui;
 	}
 
 	// The default implementation
-	protected static class StderrInterface extends UserInterface {
+	protected static class StderrInterface extends UpdaterUserInterface {
 
 		private final boolean debug = false;
 
