@@ -50,10 +50,9 @@ import imagej.ext.plugin.PreviewPlugin;
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Color"),
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Edit Colors", weight = -5) },
-	iconPath = "/icons/plugins/color_wheel.png")
+	iconPath = "/icons/plugins/color_wheel.png", headless = true)
 public class EditColors implements ImageJPlugin, PreviewPlugin {
 
 	public static final String GRAYSCALE = "Grayscale";

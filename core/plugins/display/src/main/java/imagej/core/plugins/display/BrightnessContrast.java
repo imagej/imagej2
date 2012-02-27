@@ -61,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Brightness/Contrast", accelerator = "control shift C",
-		weight = 0) }, iconPath = "/icons/plugins/contrast.png")
+		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true)
 public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
 	private static final int SLIDER_RANGE = 256;

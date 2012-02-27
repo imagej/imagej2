@@ -51,7 +51,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Unsigned 16-bit", weight = 204) })
+		@Menu(label = "Unsigned 16-bit", weight = 204) }, headless = true)
 public class ChangeToUINT16 extends TypeChanger {
 
 	@Override

@@ -53,7 +53,7 @@ import java.net.URL;
 @Plugin(iconPath = "/icons/plugins/world_link.png", menu = {
 	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
 		mnemonic = MenuConstants.HELP_MNEMONIC),
-	@Menu(label = "ImageJ Website...", weight = 42) })
+	@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)
 public class ImageJWebsite implements ImageJPlugin {
 
 	@Parameter

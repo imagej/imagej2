@@ -53,7 +53,7 @@ import imagej.util.RealRect;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "To Selection", weight = 5) })
+	@Menu(label = "To Selection", weight = 5) }, headless = true)
 public class ZoomToFitSelection implements ImageJPlugin {
 
 	@Parameter(persist = false)

@@ -55,7 +55,7 @@ import java.math.BigInteger;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Parameter Tester")
+@Plugin(menuPath = "Plugins>Debug>Parameter Tester", headless = true)
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(persist = false)

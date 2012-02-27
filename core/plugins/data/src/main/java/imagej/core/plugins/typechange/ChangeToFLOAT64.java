@@ -50,7 +50,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Float 64-bit", weight = 207) })
+		@Menu(label = "Float 64-bit", weight = 207) }, headless = true)
 public class ChangeToFLOAT64 extends TypeChanger {
 
 	@Override

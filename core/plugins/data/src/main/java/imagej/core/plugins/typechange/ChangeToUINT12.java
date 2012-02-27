@@ -51,7 +51,7 @@ import net.imglib2.type.numeric.integer.Unsigned12BitType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Unsigned 12-bit", weight = 203) })
+		@Menu(label = "Unsigned 12-bit", weight = 203) }, headless = true)
 public class ChangeToUINT12 extends TypeChanger {
 
 	@Override

@@ -55,8 +55,10 @@ import net.imglib2.type.numeric.real.DoubleType;
 			weight = MenuConstants.PROCESS_WEIGHT,
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Gamma...", weight = 11) })
-public class GammaDataValues<T extends RealType<T>> extends AbstractAssignPlugin<T,DoubleType> {
+		@Menu(label = "Gamma...", weight = 11) }, headless = true)
+public class GammaDataValues<T extends RealType<T>> extends
+	AbstractAssignPlugin<T, DoubleType>
+{
 
 	// -- instance variables that are Parameters --
 

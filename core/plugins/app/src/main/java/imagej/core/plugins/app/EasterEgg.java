@@ -48,7 +48,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-@Plugin(label = "| It's a secret to everyone |")
+@Plugin(label = "| It's a secret to everyone |", headless = true)
 public class EasterEgg implements ImageJPlugin {
 
 	private static final String CHARS = "#O*o+-,. ";

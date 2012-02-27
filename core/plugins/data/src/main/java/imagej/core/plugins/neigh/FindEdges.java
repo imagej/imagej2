@@ -54,7 +54,7 @@ import imagej.util.RealRect;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Find Edges", weight = 3) })
+	@Menu(label = "Find Edges", weight = 3) }, headless = true)
 public class FindEdges implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -69,7 +69,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Axes...") },
-	initializer = "initAxes")
+	headless = true, initializer = "initAxes")
 public class ReorderAxes extends DynamicPlugin {
 
 	// -- Parameters --

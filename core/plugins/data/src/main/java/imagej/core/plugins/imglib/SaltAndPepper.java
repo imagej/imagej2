@@ -66,7 +66,7 @@ import net.imglib2.type.numeric.RealType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
-	@Menu(label = "Salt and Pepper", weight = 3) })
+	@Menu(label = "Salt and Pepper", weight = 3) }, headless = true)
 public class SaltAndPepper implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

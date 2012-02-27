@@ -50,7 +50,7 @@ import net.imglib2.type.numeric.real.FloatType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Float 32-bit", weight = 206) })
+		@Menu(label = "Float 32-bit", weight = 206) }, headless = true)
 public class ChangeToFLOAT32 extends TypeChanger {
 
 	@Override

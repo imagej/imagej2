@@ -51,7 +51,7 @@ import net.imglib2.meta.AxisType;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks", mnemonic = 's'),
-	@Menu(label = "Set Axis Position...") })
+	@Menu(label = "Set Axis Position...") }, headless = true)
 public class SetAxisPosition implements ImageJPlugin {
 
 	@Parameter(persist = false)

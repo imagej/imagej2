@@ -81,8 +81,9 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Image Calculator...", weight = 22) })
-public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin {
+	@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
+public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
+{
 
 	// -- instance variables that are Parameters --
 

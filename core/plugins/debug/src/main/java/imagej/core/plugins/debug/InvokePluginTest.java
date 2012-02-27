@@ -50,7 +50,7 @@ import java.util.concurrent.Future;
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Sandbox>InvokePluginTest")
+@Plugin(menuPath = "Plugins>Sandbox>InvokePluginTest", headless = true)
 public class InvokePluginTest implements ImageJPlugin {
 
 	@Parameter(persist = false)

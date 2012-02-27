@@ -49,7 +49,7 @@ import imagej.ext.plugin.Plugin;
 			weight = MenuConstants.PROCESS_WEIGHT,
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Shadows", mnemonic = 's'),
-		@Menu(label = "South", weight = 5) })
+		@Menu(label = "South", weight = 5) }, headless = true)
 public class ShadowsSouth extends AbstractShadows {
 
 	static final double[] KERNEL = { -1, -2, -1, 0, 1, 0, 1, 2, 1 };

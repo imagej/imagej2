@@ -57,8 +57,10 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Reciprocal", weight = 17) })
-public class ReciprocalDataValues<T extends RealType<T>> implements ImageJPlugin {
+	@Menu(label = "Reciprocal", weight = 17) }, headless = true)
+public class ReciprocalDataValues<T extends RealType<T>> implements
+	ImageJPlugin
+{
 
 	// -- instance variables that are Parameters --
 

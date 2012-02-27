@@ -52,8 +52,11 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "XOR...", weight = 8) })
-public class XorDataValuesWith<T extends RealType<T>> extends AbstractAssignPlugin<T,DoubleType> {
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "XOR...", weight = 8) },
+	headless = true)
+public class XorDataValuesWith<T extends RealType<T>> extends
+	AbstractAssignPlugin<T, DoubleType>
+{
 
 	// -- instance variables that are Parameters --
 

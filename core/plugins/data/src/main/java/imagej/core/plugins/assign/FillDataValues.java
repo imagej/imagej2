@@ -62,7 +62,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Fill", weight = 28, accelerator = "control F") })
+	@Menu(label = "Fill", weight = 28, accelerator = "control F") },
+	headless = true)
 public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

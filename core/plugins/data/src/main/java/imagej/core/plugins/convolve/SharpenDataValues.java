@@ -54,7 +54,7 @@ import imagej.util.RealRect;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Sharpen", weight = 2) })
+	@Menu(label = "Sharpen", weight = 2) }, headless = true)
 public class SharpenDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

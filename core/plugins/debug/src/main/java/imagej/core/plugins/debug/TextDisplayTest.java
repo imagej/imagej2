@@ -44,7 +44,7 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest")
+@Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest", headless = true)
 public class TextDisplayTest implements ImageJPlugin {
 
 	@Parameter(type = ItemIO.OUTPUT)

@@ -65,7 +65,7 @@ import java.util.List;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Properties...", mnemonic = 'p') })
+	@Menu(label = "Properties...", mnemonic = 'p') }, headless = true)
 public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	static final protected String solidLineStyle = "Solid";

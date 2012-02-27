@@ -50,7 +50,7 @@ import net.imglib2.type.numeric.integer.ByteType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Signed 8-bit", weight = 208) })
+		@Menu(label = "Signed 8-bit", weight = 208) }, headless = true)
 public class ChangeToINT8 extends TypeChanger {
 
 	@Override
