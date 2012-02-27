@@ -207,6 +207,11 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	}
 
 	@Override
+	public boolean canRunHeadless() {
+		return plugin == null ? false : plugin.headless();
+	}
+
+	@Override
 	public String getInitializer() {
 		return plugin == null ? null : plugin.initializer();
 	}

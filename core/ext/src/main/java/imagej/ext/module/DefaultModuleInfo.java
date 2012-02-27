@@ -164,6 +164,11 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 	}
 
 	@Override
+	public boolean canRunHeadless() {
+		return false;
+	}
+
+	@Override
 	public String getInitializer() {
 		return null;
 	}
