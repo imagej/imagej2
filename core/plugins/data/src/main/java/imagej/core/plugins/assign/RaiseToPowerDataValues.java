@@ -69,10 +69,10 @@ public class RaiseToPowerDataValues<T extends RealType<T>> extends
 	public RaiseToPowerDataValues() {
 		super(new DoubleType());
 	}
-	
+
 	@Override
 	public RealPowerConstant<DoubleType, DoubleType> getOperation() {
-		return new RealPowerConstant<DoubleType,DoubleType>(value);
+		return new RealPowerConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

@@ -74,7 +74,7 @@ public class DivideDataValuesBy<T extends RealType<T>> extends
 	public DivideDataValuesBy() {
 		super(new DoubleType());
 	}
-	
+
 	@Override
 	public RealDivideConstant<DoubleType, DoubleType> getOperation() {
 		final OptionsMisc optionsMisc =
@@ -87,7 +87,7 @@ public class DivideDataValuesBy<T extends RealType<T>> extends
 		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
-		return new RealDivideConstant<DoubleType,DoubleType>(value, dbzVal);
+		return new RealDivideConstant<DoubleType, DoubleType>(value, dbzVal);
 	}
 
 	public double getValue() {

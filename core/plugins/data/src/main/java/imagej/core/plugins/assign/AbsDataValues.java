@@ -68,9 +68,9 @@ public class AbsDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Override
 	public void run() {
 		final RealAbs<DoubleType, DoubleType> op =
-				new RealAbs<DoubleType,DoubleType>();
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(display, op, new DoubleType());
+			new RealAbs<DoubleType, DoubleType>();
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 

@@ -67,10 +67,9 @@ public class LogDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Override
 	public void run() {
 		final RealLog<DoubleType, DoubleType> op =
-				new RealLog<DoubleType,DoubleType>();
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(
-					display, op, new DoubleType());
+			new RealLog<DoubleType, DoubleType>();
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 

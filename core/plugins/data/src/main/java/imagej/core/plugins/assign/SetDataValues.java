@@ -69,10 +69,10 @@ public class SetDataValues<T extends RealType<T>> extends
 	public SetDataValues() {
 		super(new DoubleType());
 	}
-	
+
 	@Override
-	public RealConstant<DoubleType,DoubleType> getOperation() {
-		return new RealConstant<DoubleType,DoubleType>(value);
+	public RealConstant<DoubleType, DoubleType> getOperation() {
+		return new RealConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

@@ -64,14 +64,14 @@ public class AddToDataValues<T extends RealType<T>> extends
 	private double value;
 
 	// -- public interface --
-	
+
 	public AddToDataValues() {
 		super(new DoubleType());
 	}
 
 	@Override
 	public RealAddConstant<DoubleType, DoubleType> getOperation() {
-		return new RealAddConstant<DoubleType,DoubleType>(value);
+		return new RealAddConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

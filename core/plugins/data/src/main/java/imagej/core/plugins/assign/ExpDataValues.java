@@ -67,10 +67,9 @@ public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Override
 	public void run() {
 		final RealExp<DoubleType, DoubleType> op =
-			new RealExp<DoubleType,DoubleType>();
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(
-					display, op, new DoubleType());
+			new RealExp<DoubleType, DoubleType>();
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 

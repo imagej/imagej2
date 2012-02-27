@@ -88,8 +88,7 @@ public class ShowSubscribers implements ImageJPlugin {
 	private <E extends ImageJEvent> void listSubs(final StringBuilder sb,
 		final Class<E> c)
 	{
-		final List<EventSubscriber<E>> subscribers =
-			eventService.getSubscribers(c);
+		final List<EventSubscriber<E>> subscribers = eventService.getSubscribers(c);
 		sb.append(c.getSimpleName() + ":\n");
 		for (final EventSubscriber<E> subscriber : subscribers) {
 			sb.append("    " + subscriber.toString() + "\n");

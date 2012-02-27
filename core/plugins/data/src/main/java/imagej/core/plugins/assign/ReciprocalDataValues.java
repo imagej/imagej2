@@ -85,10 +85,9 @@ public class ReciprocalDataValues<T extends RealType<T>> implements
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
 		final RealReciprocal<DoubleType, DoubleType> op =
-			new RealReciprocal<DoubleType,DoubleType>(dbzVal);
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(
-					display, op, new DoubleType());
+			new RealReciprocal<DoubleType, DoubleType>(dbzVal);
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 

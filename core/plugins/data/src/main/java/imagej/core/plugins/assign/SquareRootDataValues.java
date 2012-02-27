@@ -70,10 +70,9 @@ public class SquareRootDataValues<T extends RealType<T>> implements
 	@Override
 	public void run() {
 		final RealSqrt<DoubleType, DoubleType> op =
-				new RealSqrt<DoubleType,DoubleType>();
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(
-				display, op, new DoubleType());
+			new RealSqrt<DoubleType, DoubleType>();
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 

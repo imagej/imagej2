@@ -68,10 +68,10 @@ public class MultiplyDataValuesBy<T extends RealType<T>> extends
 	public MultiplyDataValuesBy() {
 		super(new DoubleType());
 	}
-	
+
 	@Override
 	public RealMultiplyConstant<DoubleType, DoubleType> getOperation() {
-		return new RealMultiplyConstant<DoubleType,DoubleType>(value);
+		return new RealMultiplyConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

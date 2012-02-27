@@ -68,10 +68,10 @@ public class ClampMinDataValues<T extends RealType<T>> extends
 	public ClampMinDataValues() {
 		super(new DoubleType());
 	}
-	
+
 	@Override
 	public RealMinConstant<DoubleType, DoubleType> getOperation() {
-		return new RealMinConstant<DoubleType,DoubleType>(value);
+		return new RealMinConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

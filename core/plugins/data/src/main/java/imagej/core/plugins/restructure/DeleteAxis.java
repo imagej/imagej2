@@ -149,7 +149,7 @@ public class DeleteAxis extends DynamicPlugin {
 			for (int i = 0; i < origPlaneDims.length; i++)
 				origPlaneDims[i] = origDims[i + 2];
 			final ColorTableRemapper remapper =
-					new ColorTableRemapper(new RemapAlgorithm(origPlaneDims));
+				new ColorTableRemapper(new RemapAlgorithm(origPlaneDims));
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		// TODO - metadata, etc.?
@@ -303,7 +303,7 @@ public class DeleteAxis extends DynamicPlugin {
 		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
-			//if (Axes.isXY(a)) continue;
+			// if (Axes.isXY(a)) continue;
 			choices.add(a.getLabel());
 		}
 		axisNameItem.setChoices(choices);
