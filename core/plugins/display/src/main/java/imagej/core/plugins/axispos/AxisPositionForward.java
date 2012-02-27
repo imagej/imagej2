@@ -42,11 +42,10 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.meta.AxisType;
 
-// TODO - Accelerator of "shift PERIOD" will not work on some keyboard layouts.
-// Making it "GREATER" does not work; it appears correctly in the menu
-// but can never be fired. I believe this is a Java bug.
-// Using "shift PERIOD" is a hacky workaround that may be unintuitive
-// for users without US keyboards. See bug #625 for more information.
+// NB: The accelerator of "GREATER" does not actually trigger this plugin.
+// However, the AxisPositionHandler does listen for '<' key events and updates
+// the position accordingly. So from an end user perspective, pressing the key
+// will have the expected result.
 
 /**
  * Updates the current display to show the next plane along an axis
