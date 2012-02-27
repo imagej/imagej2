@@ -53,7 +53,8 @@ import java.util.ArrayList;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Remove Overlay", weight = 6, mnemonic = 'r') })
+	@Menu(label = "Remove Overlay", weight = 6, mnemonic = 'r') },
+	headless = true)
 public class DeleteSelected implements ImageJPlugin {
 
 	@Parameter

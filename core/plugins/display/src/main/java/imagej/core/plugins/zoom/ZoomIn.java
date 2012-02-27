@@ -51,7 +51,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "In", weight = 1, accelerator = "PLUS") })
+	@Menu(label = "In", weight = 1, accelerator = "PLUS") }, headless = true)
 public class ZoomIn implements ImageJPlugin {
 
 	@Parameter

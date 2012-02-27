@@ -70,7 +70,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Auto-Contrast", accelerator = "control shift alt L",
-		weight = 0) })
+		weight = 0) }, headless = true)
 public class AutoContrast implements ImageJPlugin {
 
 	private static final int BINS = 256;

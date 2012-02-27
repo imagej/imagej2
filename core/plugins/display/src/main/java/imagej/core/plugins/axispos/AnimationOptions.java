@@ -58,7 +58,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
-	@Menu(label = "Animation Options...", weight = 4) })
+	@Menu(label = "Animation Options...", weight = 4) }, headless = true)
 public class AnimationOptions extends DynamicPlugin {
 
 	// -- Parameters --

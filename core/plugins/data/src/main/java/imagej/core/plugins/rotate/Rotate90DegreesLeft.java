@@ -59,7 +59,7 @@ import imagej.util.RealRect;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
-	@Menu(label = "Rotate 90 Degrees Left", weight = 5) })
+	@Menu(label = "Rotate 90 Degrees Left", weight = 5) }, headless = true)
 public class Rotate90DegreesLeft implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -46,7 +46,8 @@ import imagej.ext.plugin.PluginService;
  * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Duplicate...", mnemonic = 'd',
-	accelerator = "shift control D") }, menuRoot = Plugin.CONTEXT_MENU_ROOT)
+	accelerator = "shift control D") }, menuRoot = Plugin.CONTEXT_MENU_ROOT,
+	headless = true)
 public class DuplicateImageContext implements ImageJPlugin {
 
 	// -- Plugin parameters --

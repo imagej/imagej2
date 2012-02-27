@@ -53,8 +53,10 @@ import imagej.ext.plugin.Plugin;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
-	@Menu(label = "Add Specified Noise...", weight = 2) })
-public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements ImageJPlugin {
+	@Menu(label = "Add Specified Noise...", weight = 2) }, headless = true)
+public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
+	ImageJPlugin
+{
 
 	// -- instance variables that are Parameters --
 

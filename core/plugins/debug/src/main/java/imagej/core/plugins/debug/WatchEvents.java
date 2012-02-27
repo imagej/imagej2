@@ -71,7 +71,7 @@ import java.util.Locale;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Watch Events")
+@Plugin(menuPath = "Plugins>Debug>Watch Events", headless = true)
 public class WatchEvents implements ImageJPlugin {
 
 	// -- Parameters --

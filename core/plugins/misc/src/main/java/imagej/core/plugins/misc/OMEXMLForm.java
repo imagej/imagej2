@@ -44,7 +44,7 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Examples>OME-XML Form")
+@Plugin(menuPath = "Plugins>Examples>OME-XML Form", headless = true)
 public class OMEXMLForm extends DynamicPlugin {
 
 	// -- Constants --

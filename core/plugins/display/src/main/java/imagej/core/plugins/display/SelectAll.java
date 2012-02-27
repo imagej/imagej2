@@ -52,7 +52,7 @@ import imagej.ext.plugin.Plugin;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Select All", mnemonic = 'a', accelerator = "control a",
-		weight = 4) })
+		weight = 4) }, headless = true)
 public class SelectAll implements ImageJPlugin {
 
 	@Parameter

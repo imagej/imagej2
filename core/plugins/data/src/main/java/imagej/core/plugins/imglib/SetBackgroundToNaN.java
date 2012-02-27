@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.RealType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "NaN Background", weight = 17) })
+	@Menu(label = "NaN Background", weight = 17) }, headless = true)
 public class SetBackgroundToNaN implements ImageJPlugin {
 
 	// -- instance variables --

@@ -50,7 +50,8 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Duplicate...", accelerator = "shift control D") })
+	@Menu(label = "Duplicate...", accelerator = "shift control D") },
+	headless = true)
 public class DuplicateImage implements ImageJPlugin {
 
 	// -- Plugin parameters --

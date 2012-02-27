@@ -46,7 +46,7 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Debug>Inspect Image")
+@Plugin(menuPath = "Plugins>Debug>Inspect Image", headless = true)
 public class InspectImg implements ImageJPlugin {
 
 	@Parameter

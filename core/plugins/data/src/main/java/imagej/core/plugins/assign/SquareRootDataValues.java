@@ -55,8 +55,10 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Square Root", weight = 16) })
-public class SquareRootDataValues<T extends RealType<T>> implements ImageJPlugin {
+	@Menu(label = "Square Root", weight = 16) }, headless = true)
+public class SquareRootDataValues<T extends RealType<T>> implements
+	ImageJPlugin
+{
 
 	// -- instance variables that are Parameters --
 

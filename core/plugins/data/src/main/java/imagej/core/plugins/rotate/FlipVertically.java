@@ -61,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
-	@Menu(label = "Flip Vertically", weight = 2) })
+	@Menu(label = "Flip Vertically", weight = 2) }, headless = true)
 public class FlipVertically implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

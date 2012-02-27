@@ -48,12 +48,16 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PROCESS_LABEL,
-		weight = MenuConstants.PROCESS_WEIGHT,
-		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) })
-public class ClampMaxDataValues<T extends RealType<T>> extends AbstractAssignPlugin<T,DoubleType> {
+@Plugin(
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) },
+	headless = true)
+public class ClampMaxDataValues<T extends RealType<T>> extends
+	AbstractAssignPlugin<T, DoubleType>
+{
 
 	// -- instance variables that are Parameters --
 

@@ -48,7 +48,7 @@ import java.util.HashMap;
  * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Split Channels", mnemonic = 's') },
-menuRoot = Plugin.CONTEXT_MENU_ROOT)
+	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
 public class SplitChannelsContext implements ImageJPlugin {
 
 	// -- Plugin parameters --

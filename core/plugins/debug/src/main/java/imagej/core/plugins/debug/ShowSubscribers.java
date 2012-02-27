@@ -55,7 +55,7 @@ import java.util.List;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Subscribers")
+@Plugin(menuPath = "Plugins>Debug>Subscribers", headless = true)
 public class ShowSubscribers implements ImageJPlugin {
 
 	@Parameter(persist = false)

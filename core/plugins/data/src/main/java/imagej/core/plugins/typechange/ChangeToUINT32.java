@@ -51,7 +51,7 @@ import net.imglib2.type.numeric.integer.UnsignedIntType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Unsigned 32-bit", weight = 205) })
+		@Menu(label = "Unsigned 32-bit", weight = 205) }, headless = true)
 public class ChangeToUINT32 extends TypeChanger {
 
 	@Override

@@ -54,7 +54,8 @@ import imagej.util.RealRect;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Smooth", weight = 1, accelerator = "shift control S") })
+	@Menu(label = "Smooth", weight = 1, accelerator = "shift control S") },
+	headless = true)
 public class SmoothDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -70,7 +70,7 @@ import net.imglib2.type.numeric.RealType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'),
-	@Menu(label = "Convert to Mask", weight = 1) })
+	@Menu(label = "Convert to Mask", weight = 1) }, headless = true)
 public class ImageToBinaryMask implements ImageJPlugin {
 
 	@Parameter(label = "Threshold", description = "The threshold that "

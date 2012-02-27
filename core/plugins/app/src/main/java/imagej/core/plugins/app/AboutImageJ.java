@@ -50,7 +50,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(iconPath = "/icons/plugins/information.png", menu = {
 	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
 		mnemonic = MenuConstants.HELP_MNEMONIC),
-	@Menu(label = "About ImageJ...", weight = 43) })
+	@Menu(label = "About ImageJ...", weight = 43) }, headless = true)
 public class AboutImageJ implements ImageJPlugin {
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)

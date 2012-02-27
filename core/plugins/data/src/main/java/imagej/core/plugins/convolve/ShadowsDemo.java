@@ -69,7 +69,7 @@ import net.imglib2.meta.AxisType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Shadows", mnemonic = 's'),
-	@Menu(label = "Shadows Demo", weight = 200) })
+	@Menu(label = "Shadows Demo", weight = 200) }, headless = true)
 public class ShadowsDemo implements ImageJPlugin {
 
 	private static final double[][] KERNELS = new double[][] {

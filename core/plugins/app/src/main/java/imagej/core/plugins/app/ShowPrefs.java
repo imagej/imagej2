@@ -44,7 +44,7 @@ import imagej.util.Prefs;
  * 
  * @author Curtis Rueden
  */
-@Plugin
+@Plugin(headless = true)
 public class ShowPrefs implements ImageJPlugin {
 
 	@Parameter(label = "Clear all preferences")

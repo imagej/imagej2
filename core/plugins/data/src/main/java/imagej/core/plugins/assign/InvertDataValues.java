@@ -58,10 +58,9 @@ import net.imglib2.type.numeric.real.DoubleType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Invert", weight = 30, accelerator = "shift control I") })
-public class InvertDataValues<T extends RealType<T>>
-	implements ImageJPlugin
-{
+	@Menu(label = "Invert", weight = 30, accelerator = "shift control I") },
+	headless = true)
+public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
