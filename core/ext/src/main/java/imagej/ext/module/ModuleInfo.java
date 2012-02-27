@@ -100,6 +100,14 @@ public interface ModuleInfo extends UIDetails {
 	 */
 	boolean canCancel();
 
+	/**
+	 * Gets whether the module condones headless execution. Strictly speaking,
+	 * there is no guarantee that any module will work headless just because it
+	 * declares itself so, but this flag hints that headless execution is likely
+	 * to succeed (if flag is true), or fail (if flag is false).
+	 */
+	boolean canRunHeadless();
+
 	/** Gets the function that is called to initialize the module's values. */
 	String getInitializer();
 
