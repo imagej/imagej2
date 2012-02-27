@@ -107,6 +107,9 @@
 						package access classes from non-default packages. See:
 						http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
 					<use>false</use>
+					<links>
+						<link>https://pivot.apache.org/2.0.1/docs/api/</link>
+					</links>
 				</configuration>
 			</plugin>
 		</plugins>
