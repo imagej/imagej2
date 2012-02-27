@@ -111,10 +111,9 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 		final double value)
 	{
 		final RealConstant<DoubleType, DoubleType> op =
-				new RealConstant<DoubleType,DoubleType>(value);
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(
-					disp, op, new DoubleType());
+			new RealConstant<DoubleType, DoubleType>(value);
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(disp, op, new DoubleType());
 		transform.run();
 	}
 

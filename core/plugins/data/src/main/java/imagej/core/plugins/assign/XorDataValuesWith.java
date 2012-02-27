@@ -68,10 +68,10 @@ public class XorDataValuesWith<T extends RealType<T>> extends
 	public XorDataValuesWith() {
 		super(new DoubleType());
 	}
-	
+
 	@Override
 	public RealXorConstant<DoubleType, DoubleType> getOperation() {
-		return new RealXorConstant<DoubleType,DoubleType>(value);
+		return new RealXorConstant<DoubleType, DoubleType>(value);
 	}
 
 	public long getValue() {

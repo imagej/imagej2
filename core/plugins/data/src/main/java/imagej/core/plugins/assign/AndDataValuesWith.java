@@ -64,14 +64,14 @@ public class AndDataValuesWith<T extends RealType<T>> extends
 	private long value;
 
 	// -- public interface --
-	
+
 	public AndDataValuesWith() {
 		super(new DoubleType());
 	}
 
 	@Override
 	public RealAndConstant<DoubleType, DoubleType> getOperation() {
-		return new RealAndConstant<DoubleType,DoubleType>(value);
+		return new RealAndConstant<DoubleType, DoubleType>(value);
 	}
 
 	public long getValue() {

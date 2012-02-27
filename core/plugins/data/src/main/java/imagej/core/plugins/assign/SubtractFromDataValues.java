@@ -64,14 +64,14 @@ public class SubtractFromDataValues<T extends RealType<T>> extends
 	private double value;
 
 	// -- public interface --
-	
+
 	public SubtractFromDataValues() {
 		super(new DoubleType());
 	}
 
 	@Override
 	public RealSubtractConstant<DoubleType, DoubleType> getOperation() {
-		return new RealSubtractConstant<DoubleType,DoubleType>(value);
+		return new RealSubtractConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

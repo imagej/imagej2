@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import net.imglib2.type.numeric.RealType;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Fills an output Dataset by applying a user calibrated amount of random noise
@@ -70,7 +70,8 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 
 	@Override
 	public void run() {
-		final AddNoiseToDataValues<T> noiseAdder = new AddNoiseToDataValues<T>(display);
+		final AddNoiseToDataValues<T> noiseAdder =
+			new AddNoiseToDataValues<T>(display);
 		noiseAdder.setStdDev(stdDev);
 		noiseAdder.run();
 	}

@@ -70,10 +70,10 @@ public class GammaDataValues<T extends RealType<T>> extends
 	public GammaDataValues() {
 		super(new DoubleType());
 	}
-	
+
 	@Override
 	public RealGammaConstant<DoubleType, DoubleType> getOperation() {
-		return new RealGammaConstant<DoubleType,DoubleType>(value);
+		return new RealGammaConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

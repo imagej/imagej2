@@ -65,14 +65,14 @@ public class ClampMaxDataValues<T extends RealType<T>> extends
 	private double value;
 
 	// -- public interface --
-	
+
 	public ClampMaxDataValues() {
 		super(new DoubleType());
 	}
 
 	@Override
 	public RealMaxConstant<DoubleType, DoubleType> getOperation() {
-		return new RealMaxConstant<DoubleType,DoubleType>(value);
+		return new RealMaxConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

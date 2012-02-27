@@ -64,14 +64,14 @@ public class OrDataValuesWith<T extends RealType<T>> extends
 	private long value;
 
 	// -- public interface --
-	
+
 	public OrDataValuesWith() {
 		super(new DoubleType());
 	}
 
 	@Override
 	public RealOrConstant<DoubleType, DoubleType> getOperation() {
-		return new RealOrConstant<DoubleType,DoubleType>(value);
+		return new RealOrConstant<DoubleType, DoubleType>(value);
 	}
 
 	public long getValue() {

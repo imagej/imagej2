@@ -115,9 +115,7 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 
 	// -- other instance variables --
 
-	private final
-		HashMap<String,	RealBinaryOperation<DoubleType, DoubleType, DoubleType>>
-			operators;
+	private final HashMap<String, RealBinaryOperation<DoubleType, DoubleType, DoubleType>> operators;
 
 	// -- constructor --
 
@@ -129,19 +127,25 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 		operators =
 			new HashMap<String, RealBinaryOperation<DoubleType, DoubleType, DoubleType>>();
 
-		operators.put("Add", new RealAdd<DoubleType,DoubleType,DoubleType>());
-		operators.put("Subtract", new RealSubtract<DoubleType,DoubleType,DoubleType>());
-		operators.put("Multiply", new RealMultiply<DoubleType,DoubleType,DoubleType>());
-		operators.put("Divide", new RealDivide<DoubleType,DoubleType,DoubleType>());
-		operators.put("AND", new RealAnd<DoubleType,DoubleType,DoubleType>());
-		operators.put("OR", new RealOr<DoubleType,DoubleType,DoubleType>());
-		operators.put("XOR", new RealXor<DoubleType,DoubleType,DoubleType>());
-		operators.put("Min", new RealMin<DoubleType,DoubleType,DoubleType>());
-		operators.put("Max", new RealMax<DoubleType,DoubleType,DoubleType>());
-		operators.put("Average", new RealAvg<DoubleType,DoubleType,DoubleType>());
-		operators.put("Difference", new RealDifference<DoubleType,DoubleType,DoubleType>());
-		operators.put("Copy", new RealCopyRight<DoubleType,DoubleType,DoubleType>());
-		operators.put("Transparent-zero", new RealCopyZeroTransparent<DoubleType,DoubleType,DoubleType>());
+		operators.put("Add", new RealAdd<DoubleType, DoubleType, DoubleType>());
+		operators.put("Subtract",
+			new RealSubtract<DoubleType, DoubleType, DoubleType>());
+		operators.put("Multiply",
+			new RealMultiply<DoubleType, DoubleType, DoubleType>());
+		operators.put("Divide",
+			new RealDivide<DoubleType, DoubleType, DoubleType>());
+		operators.put("AND", new RealAnd<DoubleType, DoubleType, DoubleType>());
+		operators.put("OR", new RealOr<DoubleType, DoubleType, DoubleType>());
+		operators.put("XOR", new RealXor<DoubleType, DoubleType, DoubleType>());
+		operators.put("Min", new RealMin<DoubleType, DoubleType, DoubleType>());
+		operators.put("Max", new RealMax<DoubleType, DoubleType, DoubleType>());
+		operators.put("Average", new RealAvg<DoubleType, DoubleType, DoubleType>());
+		operators.put("Difference",
+			new RealDifference<DoubleType, DoubleType, DoubleType>());
+		operators.put("Copy",
+			new RealCopyRight<DoubleType, DoubleType, DoubleType>());
+		operators.put("Transparent-zero",
+			new RealCopyZeroTransparent<DoubleType, DoubleType, DoubleType>());
 	}
 
 	// -- public interface --
@@ -246,18 +250,20 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 
 	private void assignPixelValues(final long[] span) {
 		final long[] origin = new long[span.length];
-		final BinaryOperation<DoubleType, DoubleType, DoubleType>
-			binOp = operators.get(opName);
-		final Function<long[],DoubleType> f1 =
-			new RealImageFunction<T,DoubleType>((Img<T>)input1.getImgPlus(), new DoubleType());
-		final Function<long[],DoubleType> f2 =
-			new RealImageFunction<T,DoubleType>((Img<T>)input2.getImgPlus(), new DoubleType());
-		final GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>
-			binFunc =
-				new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(
-						f1, f2, binOp, new DoubleType());
-		final ImageAssignment<T,DoubleType> assigner =
-			new ImageAssignment<T,DoubleType>((Img<T>)output.getImgPlus(), origin, span, binFunc, null);
+		final BinaryOperation<DoubleType, DoubleType, DoubleType> binOp =
+			operators.get(opName);
+		final Function<long[], DoubleType> f1 =
+			new RealImageFunction<T, DoubleType>((Img<T>) input1.getImgPlus(),
+				new DoubleType());
+		final Function<long[], DoubleType> f2 =
+			new RealImageFunction<T, DoubleType>((Img<T>) input2.getImgPlus(),
+				new DoubleType());
+		final GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType> binFunc =
+			new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(f1,
+				f2, binOp, new DoubleType());
+		final ImageAssignment<T, DoubleType> assigner =
+			new ImageAssignment<T, DoubleType>((Img<T>) output.getImgPlus(), origin,
+				span, binFunc, null);
 		assigner.assign();
 	}
 

@@ -69,10 +69,9 @@ public class SquareDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Override
 	public void run() {
 		final RealSqr<DoubleType, DoubleType> op =
-				new RealSqr<DoubleType,DoubleType>();
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(
-					display, op, new DoubleType());
+			new RealSqr<DoubleType, DoubleType>();
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 

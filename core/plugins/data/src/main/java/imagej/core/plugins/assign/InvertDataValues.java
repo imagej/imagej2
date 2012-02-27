@@ -92,9 +92,9 @@ public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 		}
 		else calcValueRange();
 		final RealInvert<DoubleType, DoubleType> op =
-				new RealInvert<DoubleType,DoubleType>(min, max);
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(display, op, new DoubleType());
+			new RealInvert<DoubleType, DoubleType>(min, max);
+		final InplaceUnaryTransform<T, DoubleType> transform =
+			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
 		transform.run();
 	}
 
