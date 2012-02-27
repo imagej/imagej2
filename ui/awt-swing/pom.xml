@@ -14,7 +14,7 @@
 	<artifactId>pom-ij-ui-awt-swing</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ POM: AWT &amp; Swing UIs</name>
+	<name>ImageJ POM: AWT and Swing UIs</name>
 	<description>ImageJ user interface projects for Swing and AWT.</description>
 
 	<!-- NB: for project parent, in case of partial checkout -->
