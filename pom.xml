@@ -109,6 +109,7 @@
 					<use>false</use>
 					<links>
 						<link>https://pivot.apache.org/2.0.1/docs/api/</link>
+						<link>http://help.eclipse.org/indigo/topic/org.eclipse.platform.doc.isv/reference/api/</link>
 					</links>
 				</configuration>
 			</plugin>
