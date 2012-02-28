@@ -37,8 +37,8 @@ package imagej.nativelibrary;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-
-import ij.IJ;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import loci.wapmx.nativeutils.jniloader.DefaultJniExtractor;
 import loci.wapmx.nativeutils.jniloader.JniExtractor;
@@ -70,6 +70,8 @@ public class NativeLibraryUtil {
     private static final String CURRENT_DIRECTORY = ".";
     private static boolean s_skipHack = false;
     private static String s_writableDirectory = null;
+
+    private static final Logger LOGGER = Logger.getLogger("imagej.nativelibrary.NativeLibraryUtil");
 
     /**
      * Determines the underlying hardware platform and architecture.
@@ -110,7 +112,7 @@ public class NativeLibraryUtil {
                 }
             }   
         }
-        IJ.log("architecture is " + s_architecture + " os.name is " + System.getProperty("os.name").toLowerCase());
+        LOGGER.log(Level.INFO, "architecture is " + s_architecture + " os.name is " + System.getProperty("os.name").toLowerCase());
         return s_architecture;
     }
 
@@ -136,7 +138,7 @@ public class NativeLibraryUtil {
             }
             processor = (32 == bits) ? Processor.INTEL_32 : Processor.INTEL_64;
         }
-        IJ.log("processor is " + processor + " os.arch is " + System.getProperty("os.arch").toLowerCase());
+        LOGGER.log(Level.INFO, "processor is " + processor + " os.arch is " + System.getProperty("os.arch").toLowerCase());
         return processor;
     }
 
@@ -148,7 +150,7 @@ public class NativeLibraryUtil {
     public static String getPlatformLibraryPath() {
         String path = "META-INF" + DELIM + "lib" + DELIM;
         path += getArchitecture().name().toLowerCase() + DELIM;
-        IJ.log("platform specific path is " + path);
+        LOGGER.log(Level.INFO, "platform specific path is " + path);
         return path;
     }
 
@@ -175,7 +177,7 @@ public class NativeLibraryUtil {
                 name = "lib" + libName + ".dylib";
                 break;
         }
-        IJ.log("native library name " + name);
+        LOGGER.log(Level.INFO, "native library name " + name);
         return name;
     }
 
@@ -207,7 +209,7 @@ public class NativeLibraryUtil {
         boolean success = false;
 
         if (Architecture.UNKNOWN == getArchitecture()) {
-            IJ.log("No native library available for this platform.");
+            LOGGER.log(Level.INFO, "No native library available for this platform.");
         }
         else {
             try
@@ -228,15 +230,15 @@ public class NativeLibraryUtil {
             }
             catch (IOException e)
             {
-                IJ.log("IOException creating DefaultJniExtractor " + e.getMessage());
+                LOGGER.log(Level.INFO, "IOException creating DefaultJniExtractor", e);
             }
             catch (SecurityException e)
             {
-                IJ.log("Can't load dynamic library " + e.getMessage());
+                LOGGER.log(Level.INFO, "Can't load dynamic library", e);
             }
             catch (UnsatisfiedLinkError e)
             {
-                IJ.log("Problem with library " + e.getMessage());
+                LOGGER.log(Level.INFO, "Problem with library", e);
             }
 
         }
