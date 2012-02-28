@@ -34,7 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
+import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Prefs;
@@ -44,11 +46,15 @@ import imagej.util.Prefs;
  * 
  * @author Curtis Rueden
  */
-@Plugin(headless = true)
+@Plugin(menu = {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Preferences", weight = 30) },
+	headless = true)
 public class ShowPrefs implements ImageJPlugin {
 
 	@Parameter(label = "Clear all preferences")
-	private final boolean clearAll = false;
+	private boolean clearAll = false;
 
 	@Override
 	public void run() {
