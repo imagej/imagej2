@@ -36,6 +36,7 @@ package imagej.core.tools;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.DrawingTool;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;

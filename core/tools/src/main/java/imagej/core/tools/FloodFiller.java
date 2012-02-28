@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.data.Dataset;
+import imagej.data.DrawingTool;
 import imagej.util.ColorRGB;
 import imagej.util.RealRect;
 
