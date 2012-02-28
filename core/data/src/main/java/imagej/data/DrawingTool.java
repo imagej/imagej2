@@ -32,9 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.data;
 
-import imagej.data.Dataset;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.RealRect;
