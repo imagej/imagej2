@@ -49,8 +49,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import ij.IJ;
 import java.io.FilenameFilter;
 
 import loci.wapmx.nativeutils.MxSysInfo;
@@ -59,6 +60,7 @@ import loci.wapmx.nativeutils.MxSysInfo;
  * @author Richard van der Hoff <richardv@mxtelecom.com>
  */
 public abstract class BaseJniExtractor implements JniExtractor {
+    private static final Logger LOGGER = Logger.getLogger("loci.wapmx.nativeutils.jniloader.BaseJniExtractor");
     private static final String JAVA_TMPDIR = "java.io.tmpdir";
     private static boolean debug = false;
     static {
@@ -145,7 +147,7 @@ public abstract class BaseJniExtractor implements JniExtractor {
             return extractResource(getJniDir(), lib, mappedlibName);
         }
         else {
-            IJ.log("Couldn't find resource " + libPath + " " + mappedlibName);
+            LOGGER.log(Level.INFO, "Couldn't find resource " + libPath + " " + mappedlibName);
             throw new IOException("Couldn't find resource " + libPath + " " + mappedlibName);
         }
     }
