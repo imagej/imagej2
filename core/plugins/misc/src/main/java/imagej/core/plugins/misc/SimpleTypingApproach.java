@@ -168,23 +168,23 @@ public class SimpleTypingApproach {
 
 		// strongly typed version
 		Cursor<UnsignedByteType> cursor = rImage.cursor();
-		double min = cursor.get().getMinValue();
-		double max = cursor.get().getMaxValue();
+		int imin = (int) cursor.get().getMinValue();
+		int imax = (int) cursor.get().getMaxValue();
 		UnsignedByteType b;
 		while (cursor.hasNext()) {
-			b = cursor.get();
-			int invertedVal = (int) (max - (b.getRealDouble() - min));
+			b = cursor.next();
+			int invertedVal = imax - (b.get() - imin);
 			b.set(invertedVal);
 		}
 		
 		// weakly typed version
 		Cursor<RealType<?>> rCursor = rImage.realCursor();
-		min = rCursor.get().getMinValue();
-		max = rCursor.get().getMaxValue();
+		double rmin = rCursor.get().getMinValue();
+		double rmax = rCursor.get().getMaxValue();
 		RealType<?> r;
 		while (rCursor.hasNext()) {
-			r = rCursor.get();
-			double invertedVal = max - (r.getRealDouble() - min);
+			r = rCursor.next();
+			double invertedVal = rmax - (r.getRealDouble() - rmin);
 			r.setReal(invertedVal);
 		}
 	}
