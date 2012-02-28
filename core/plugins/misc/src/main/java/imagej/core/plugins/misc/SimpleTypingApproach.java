@@ -11,7 +11,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
  * This class shows a possible refactoring that could be made to handle
  * stronger typing as needed. It also shows support for complex and real images.
  * Finally it implements an inversion method that shows how a user might access
- * the API in a simple fashion. 
+ * the API in a simple fashion.
  * 
  * @author Barry DeZonia
  *
@@ -73,7 +73,7 @@ public class SimpleTypingApproach {
 	// algorithm that works on ComplexImages while vice versa is not the case.
 	
 	/**
-	 * API examples 
+	 * API examples
 	 */
 	@SuppressWarnings("unused")
 	private static void apiExample() {
@@ -82,7 +82,7 @@ public class SimpleTypingApproach {
 		
 		RealImage<UnsignedByteType> rImage = new RealImage<UnsignedByteType>(bytes);
 
-		Cursor<UnsignedByteType> c1 = rImage.cursor(); 
+		Cursor<UnsignedByteType> c1 = rImage.cursor();
 		while (c1.hasNext()) {
 			UnsignedByteType b = c1.next();
 			UnsignedByteType x = new UnsignedByteType();
@@ -99,7 +99,7 @@ public class SimpleTypingApproach {
 		
 		Cursor<RealType<?>> c2 = rImage.realCursor();
 		while (c2.hasNext()) {
-			RealType<?> r = c2.next(); 
+			RealType<?> r = c2.next();
 			r.setOne();
 			r.setReal(10);
 			r.setZero();
@@ -108,7 +108,7 @@ public class SimpleTypingApproach {
 		
 		Cursor<ComplexType<?>> c3 = rImage.complexCursor();
 		while (c3.hasNext()) {
-			ComplexType<?> c = c3.next(); 
+			ComplexType<?> c = c3.next();
 			c.setComplexNumber(5.3, 17.8);
 			c.setImaginary(4.3);
 			c.setOne();
@@ -125,7 +125,7 @@ public class SimpleTypingApproach {
 		ComplexImage<ComplexDoubleType> cImage =
 				new ComplexImage<ComplexDoubleType>(complexes);
 
-		Cursor<ComplexDoubleType> c4 = cImage.cursor(); 
+		Cursor<ComplexDoubleType> c4 = cImage.cursor();
 		while (c4.hasNext()) {
 			ComplexDoubleType c = c4.next();
 			ComplexDoubleType x = new ComplexDoubleType();
@@ -144,7 +144,7 @@ public class SimpleTypingApproach {
 		
 		Cursor<ComplexType<?>> c5 = cImage.complexCursor();
 		while (c5.hasNext()) {
-			ComplexType<?> c = c5.next(); 
+			ComplexType<?> c = c5.next();
 			c.setComplexNumber(5.3, 17.8);
 			c.setImaginary(4.3);
 			c.setOne();
@@ -159,7 +159,7 @@ public class SimpleTypingApproach {
 	}
 
 	/**
-	 * A realistic example on how to invert an image 
+	 * A realistic example on how to invert an image
 	 */
 	@SuppressWarnings("unused")
 	private static void inversionExample() {
