@@ -192,7 +192,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		f.setJMenuBar(menuBar);
-		f.validate();
+		f.pack();
 		return menuBar;
 	}
 
