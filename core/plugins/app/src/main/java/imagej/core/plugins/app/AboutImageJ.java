@@ -47,19 +47,19 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
+import imagej.data.DrawingTool.TextJustification;
 import imagej.ext.display.DisplayService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.ColorRGB;
 import imagej.util.Colors;
 
 /**
  * Display information and credits about the ImageJ software.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(iconPath = "/icons/plugins/information.png", menu = {
 	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
@@ -68,37 +68,49 @@ import imagej.util.Colors;
 public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	implements ImageJPlugin
 {
+	// -- parameters --
+	
 	@Parameter
 	DatasetService dataSrv;
 
 	@Parameter
 	DisplayService dispSrv;
 	
-	//@Parameter(visibility = ItemVisibility.MESSAGE)
-	//public final String message = "ImageJ v" + ImageJ.VERSION;
+	// -- public interface --
 	
 	@Override
 	public void run() {
 		final Dataset image = getData();
-		drawText(image);
+		drawTextOverImage(image);
 		dispSrv.createDisplay("About ImageJ", image);
 	}
 
+	// -- private helpers --
+	
 	private Dataset getData() {
+		final String title = "About ImageJ " + ImageJ.VERSION;
+
 		final ImgPlus<T> img = getImage();
+		
+		// did we successfully load a background image?
 		if (img != null) {
+			// yes we did - return it
 			final Dataset ds = dataSrv.create(img);
-			ds.setName("About ImageJ " + ImageJ.VERSION);
+			ds.setName(title);
 			return ds;
 		}
+		
+		// We could not load a dataset. So make a blank 8 bit background image.
 		final Dataset ds = dataSrv.create(
-			new long[]{400,400} , "About ImageJ " + ImageJ.VERSION,
+			new long[]{400,400} , title,
 			new AxisType[]{Axes.X,Axes.Y}, 8, false, false);
-		//DrawingTool tool = null;
+		
+		// And make it all white.
 		final Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
 		while (cursor.hasNext()) {
 			cursor.next().setReal(255);
 		}
+		
 		return ds;
 	}
 	
@@ -119,17 +131,34 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	
 	private URL getImageURL() {
 		// TODO - cycle through one of many
-		final String fname = "/images/image1.png";  // NB - THIS PATH IS CORRECT 
+		final String fname = "/images/image1.tif";  // NB - THIS PATH IS CORRECT 
 		return getClass().getResource(fname);
 	}
 	
-	private void drawText(Dataset ds) {
+	private void drawTextOverImage(Dataset ds) {
 		final DrawingTool tool = new DrawingTool(ds);
 		tool.setUAxis(0);
 		tool.setVAxis(1);
-		tool.setLineWidth(100);
-		tool.setColorValue(Colors.BLACK);
+		final long width = ds.dimension(0);
+		tool.setColorValue(Colors.YELLOW);
 		tool.setGrayValue(0);
-		tool.drawCircle(300, 300);
+		final long x = width / 2;
+		long y = 50;
+		tool.setFontSize(18);
+		tool.drawText(x,y,"ImageJ2 "+ImageJ.VERSION, TextJustification.CENTER);
+		y += 5*tool.getFontSize()/4;
+		tool.setFontSize(12);
+		for (final String line : getTextBlock()) {
+			tool.drawText(x,y,line, TextJustification.CENTER);
+			y += 5*tool.getFontSize()/4;
+		}
+	}
+	
+	private String[] getTextBlock() {
+		return new String[] {
+			"Open source image processing software",
+			"Copyright 2010, 2011, 2012",
+			"developer.imagej.net"
+		};
 	}
 }

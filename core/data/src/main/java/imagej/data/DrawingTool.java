@@ -34,12 +34,28 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
+
+// TODO
+// - move awt code out of here to avoid a dependency
+// - black color draws in weird blue
+//     Ok, the problem is the image is 3 channel composite and not RGBMerged.
+//     So the draw gray code is called. Which draws on a single channel (the
+//     first?). Need code like elsewhere that draws to all channels if its a
+//     composite image. And maybe track channel fill values in draw tool rather
+//     than color/gray split.
 
 /**
  * Draws data in an orthoplane of a {@link Dataset}. Many methods adapted from
@@ -63,6 +79,12 @@ public class DrawingTool {
 	private double grayValue;
 	private long u0, v0;
 	private long maxU, maxV;
+	
+	private TextRenderer textRenderer;
+	
+	public enum FontFamily {MONOSPACED, SERIF, SANS_SERIF}
+	public enum FontStyle {PLAIN, BOLD, ITALIC, BOLD_ITALIC}
+	public enum TextJustification {LEFT, CENTER, RIGHT}
 
 	// -- constructor --
 
@@ -83,6 +105,7 @@ public class DrawingTool {
 		this.maxV = ds.dimension(1) - 1;
 		this.u0 = 0;
 		this.v0 = 0;
+		this.textRenderer = new AWTTextRenderer();  // FIXME - do elsewhere
 	}
 
 	// -- public interface --
@@ -170,6 +193,52 @@ public class DrawingTool {
 		return colorValue;
 	}
 
+	public void setTextRenderer(TextRenderer renderer) {
+		this.textRenderer = renderer;
+	}
+	
+	/**
+	 * Sets the family name of the drawing font.
+	 */
+	public void setFontFamily(FontFamily family) {
+		textRenderer.setFontFamily(family);
+	}
+	
+	/**
+	 * Gets the family name of the drawing font.
+	 */
+	public FontFamily getFontFamily() {
+		return textRenderer.getFontFamily();
+	}
+	
+	/**
+	 * Sets the style of the drawing font.
+	 */
+	public void setFontStyle(FontStyle style) {
+		textRenderer.setFontStyle(style);
+	}
+	
+	/**
+	 * Gets the style of the drawing font.
+	 */
+	public FontStyle getFontStyle() {
+		return textRenderer.getFontStyle();
+	}
+	
+	/**
+	 * Sets the size of the drawing font.
+	 */
+	public void setFontSize(int size) {
+		textRenderer.setFontSize(size);
+	}
+	
+	/**
+	 * Gets the size of the drawing font.
+	 */
+	public int getFontSize() {
+		return textRenderer.getFontSize();
+	}
+	
 	/** Draws a pixel in the current UV plane at specified UV coordinates. */
 	public void drawPixel(final long u, final long v) {
 		if (u < 0) return;
@@ -302,5 +371,241 @@ public class DrawingTool {
 		for (long u = (long)rect.x; u < rect.x+rect.width; u++)
 			for (long v = (long)rect.y; v < rect.y+rect.height; v++)
 				drawPixel(u,v);
+	}
+	
+	/**
+	 * Draws a line of text along the U axis
+	 */
+	public void drawText(long anchorU, long anchorV, String text,
+												TextJustification just)
+	{
+		// render into buffer
+		textRenderer.renderText(text);
+		
+		// get extents of drawn text in buffer
+		int bufferSizeU = textRenderer.getPixelsWidth();
+		int bufferSizeV = textRenderer.getPixelsHeight();
+		int[] buffer = textRenderer.getPixels();
+		int minu = Integer.MAX_VALUE;
+		int minv = Integer.MAX_VALUE;
+		int maxu = Integer.MIN_VALUE;
+		int maxv = Integer.MIN_VALUE;
+		for (int u = 0; u < bufferSizeU; u++) {
+			for (int v = 0; v < bufferSizeV; v++) {
+				int index = v*bufferSizeU + u;
+				if (buffer[index] != 0) {
+					if (u < minu) minu = u;
+					if (u > maxu) maxu = u;
+					if (v < minv) minv = v;
+					if (v > maxv) maxv = v;
+				}
+			}
+		}
+		
+		// determine drawing origin based on justification
+		long originU, originV;
+		switch (just) {
+			case CENTER:
+				originU = anchorU - (maxu - minu + 1) / 2;
+				originV = anchorV - (maxv - minv + 1) / 2;
+				break;
+			case RIGHT:
+				originU = anchorU - (maxu - minu + 1);
+				originV = anchorV - (maxv - minv + 1);
+				break;
+			default: // LEFT
+				originU = anchorU;
+				originV = anchorV;
+				break;
+		}
+		
+		// draw pixels in dataset as needed
+		for (int u = minu; u <= maxu; u++) {
+			for (int v = minv; v <= maxv; v++) {
+				int index = v*bufferSizeU + u;
+				if (buffer[index] != 0) {
+					drawPixel(originU+u-minu, originV+v-minv);
+				}
+			}
+		}
+	}
+
+	// -- private helpers --
+
+	private interface TextRenderer {
+		void renderText(String text);
+		int getPixelsWidth();
+		int getPixelsHeight();
+		int[] getPixels();
+		void setFontFamily(FontFamily family);
+		FontFamily getFontFamily();
+		void setFontStyle(FontStyle style);
+		FontStyle getFontStyle();
+		void setFontSize(int size);
+		int getFontSize();
+	}
+	
+	private class AWTTextRenderer implements TextRenderer {
+		private int bufferSizeU;
+		private int bufferSizeV;
+		private BufferedImage textBuffer;
+		private WritableRaster textRaster;
+		private String fontFamily;
+		private int fontStyle;
+		private int fontSize;
+		private Font font;
+		private int[] pixels;
+
+		public AWTTextRenderer() {
+			fontFamily = Font.SANS_SERIF;
+			fontStyle = Font.PLAIN;
+			fontSize = 12;
+			buildFont();
+			initTextBuffer("42 is my favorite number");
+		}
+		
+		@Override
+		public void renderText(String text) {
+			initTextBuffer(text);
+			Graphics g = textBuffer.getGraphics();
+			g.setFont(font);
+			g.drawString(text, 0, bufferSizeV/2);
+		}
+		
+		@Override
+		public void setFontFamily(FontFamily family) {
+			final String familyString;
+			switch (family) {
+				case MONOSPACED: familyString = Font.MONOSPACED; break;
+				case SERIF: familyString = Font.SERIF; break;
+				case SANS_SERIF: familyString = Font.SANS_SERIF; break;
+				default:
+					throw new IllegalArgumentException("unknown font family: "+family);
+			}
+			if (font.getFamily().equalsIgnoreCase(familyString)) return;
+			this.fontFamily = familyString;
+			buildFont();
+		}
+		
+		@Override
+		public FontFamily getFontFamily() {
+			if (fontFamily.equals(Font.MONOSPACED)) return FontFamily.MONOSPACED;
+			if (fontFamily.equals(Font.SERIF)) return FontFamily.SERIF;
+			if (fontFamily.equals(Font.SANS_SERIF)) return FontFamily.SANS_SERIF;
+			throw new IllegalArgumentException("unknown font family: "+fontFamily);
+		}
+		
+		@Override
+		public void setFontStyle(FontStyle style) {
+			final int styleInt;
+			switch (style) {
+				case PLAIN: styleInt = Font.PLAIN; break;
+				case BOLD: styleInt = Font.BOLD; break;
+				case ITALIC: styleInt = Font.ITALIC; break;
+				case BOLD_ITALIC: styleInt = Font.BOLD | Font.ITALIC; break;
+				default:
+					throw new IllegalArgumentException("unknown font style: "+style);
+			}
+			if (font.getStyle() == styleInt) return;
+			this.fontStyle = styleInt;
+			buildFont();
+		}
+
+		@Override
+		public FontStyle getFontStyle() {
+			switch (fontStyle) {
+				case Font.PLAIN: return FontStyle.PLAIN;
+				case Font.BOLD: return FontStyle.BOLD;
+				case Font.ITALIC: return FontStyle.ITALIC;
+				case (Font.BOLD | Font.ITALIC): return FontStyle.BOLD_ITALIC;
+				default:
+					throw new IllegalArgumentException("unknown font style: "+fontStyle);
+			}
+		}
+		
+		@Override
+		public void setFontSize(int size) {
+			if (size <= 0) return;
+			if (font.getSize() == size) return;
+			this.fontSize = size;
+			buildFont();
+		}
+
+		@Override
+		public int getFontSize() {
+			return fontSize;
+		}
+		
+
+		@Override
+		public int getPixelsWidth() {
+			return bufferSizeU;
+		}
+
+		@Override
+		public int getPixelsHeight() {
+			return bufferSizeV;
+		}
+
+		@Override
+		public int[] getPixels() {
+			if (pixels != null)
+				if (pixels.length != (bufferSizeU*bufferSizeV))
+					pixels = null;
+			pixels = textRaster.getPixels(0, 0, bufferSizeU, bufferSizeV, pixels);
+			return pixels;
+		}
+		
+		
+		// -- private helpers --
+		
+		private void buildFont() {
+			font = new Font(fontFamily, fontStyle, fontSize);
+		}
+		
+		private void initTextBuffer(String text) {
+			// the first time we call this method the buffer could be null.
+			// need to allocate an arbitrary one because calcTextSize() uses it
+			if (textBuffer == null) {
+				this.textBuffer =
+						new BufferedImage(200, 20, BufferedImage.TYPE_BYTE_GRAY);
+				this.textRaster = textBuffer.getRaster();
+			}
+			
+			// determine extents of text to be drawn
+			final Rectangle extents = calcTextSize(text);
+			
+			// if extents are bigger than existing buffer then allocate a new buffer
+			if ((extents.width > textBuffer.getWidth()) ||
+					(extents.height > textBuffer.getHeight()))
+			{
+				this.bufferSizeU = extents.width;
+				this.bufferSizeV = extents.height;
+				this.textBuffer =	new BufferedImage(
+																extents.width,
+																extents.height,
+																BufferedImage.TYPE_BYTE_GRAY);
+				this.textRaster = textBuffer.getRaster();
+			}
+			else  // use existing buffer but prepare for drawing into it
+				clearTextBuffer();
+		}
+
+		private void clearTextBuffer() {
+			for (int u = 0; u < bufferSizeU; u++)
+				for (int v = 0; v < bufferSizeV; v++)
+					textRaster.setSample(u, v, 0, 0);
+		}
+
+		private Rectangle calcTextSize(String txt) {
+			final FontMetrics metrics = textBuffer.getGraphics().getFontMetrics(font);
+			final int width = metrics.charsWidth(txt.toCharArray(), 0, txt.length());
+			final Rectangle extents = new Rectangle();
+			extents.x = 0;
+			extents.y = 0;
+			extents.width = width;
+			extents.height = metrics.getHeight() + 10;
+			return extents;
+		}
 	}
 }
