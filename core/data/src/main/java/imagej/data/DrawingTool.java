@@ -567,8 +567,10 @@ public class DrawingTool {
 			// the first time we call this method the buffer could be null.
 			// need to allocate an arbitrary one because calcTextSize() uses it
 			if (textBuffer == null) {
-				this.textBuffer =
-						new BufferedImage(200, 20, BufferedImage.TYPE_BYTE_GRAY);
+				this.bufferSizeU = 200;
+				this.bufferSizeV = 20;
+				this.textBuffer =	new BufferedImage(bufferSizeU, bufferSizeV,
+																						BufferedImage.TYPE_BYTE_GRAY);
 				this.textRaster = textBuffer.getRaster();
 			}
 			
@@ -581,10 +583,8 @@ public class DrawingTool {
 			{
 				this.bufferSizeU = extents.width;
 				this.bufferSizeV = extents.height;
-				this.textBuffer =	new BufferedImage(
-																extents.width,
-																extents.height,
-																BufferedImage.TYPE_BYTE_GRAY);
+				this.textBuffer =	new BufferedImage(bufferSizeU, bufferSizeV,
+																						BufferedImage.TYPE_BYTE_GRAY);
 				this.textRaster = textBuffer.getRaster();
 			}
 			else  // use existing buffer but prepare for drawing into it

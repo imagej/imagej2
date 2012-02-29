@@ -100,10 +100,11 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 			return ds;
 		}
 		
-		// We could not load a dataset. So make a blank 8 bit background image.
+		// We could not load a dataset. So make a rgb background image.
 		final Dataset ds = dataSrv.create(
-			new long[]{400,400} , title,
-			new AxisType[]{Axes.X,Axes.Y}, 8, false, false);
+			new long[]{400,400,3} , title,
+			new AxisType[]{Axes.X,Axes.Y,Axes.CHANNEL}, 8, false, false);
+		ds.setRGBMerged(true);
 		
 		// And make it all white.
 		final Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
