@@ -57,6 +57,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	private static final int MIN_ALLOWED_VIEW_SIZE = 25;
 
+	private static double maxZoom;
+	
 	private static double[] defaultZooms;
 
 	static {
@@ -111,6 +113,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 		defaultZooms = new double[combinedZoomLevels.size()];
 		for (int i = 0; i < defaultZooms.length; i++)
 			defaultZooms[i] = combinedZoomLevels.get(i);
+		
+		maxZoom = hiZooms.get(hiZooms.size()-1);
 	}
 
 	/** The {@link ImageCanvas} on which this helper operates. */
@@ -302,6 +306,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 			return true;
 		}
 
+		// BDZ removed 3-1-12 and replaced with test versus maxZoom. This should
+		// be less confusing to end users
+		/*
 		// check if trying to zoom in too close
 		if (desiredScale > scale) {
 			final int maxDimension =
@@ -310,7 +317,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 			// if zooming the image would show less than one pixel of image data
 			if (maxDimension / desiredScale < 1) return true;
 		}
-
+		*/
+		if (desiredScale > maxZoom) return true;
+	
 		// check if trying to zoom out too far
 		if (desiredScale < scale) {
 			// get boundaries of image in panel coords
