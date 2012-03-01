@@ -58,6 +58,8 @@ import net.imglib2.type.numeric.RealType;
 //     first?). Need code like elsewhere that draws to all channels if its a
 //     composite image. And maybe track channel fill values in draw tool rather
 //     than color/gray split.
+// - text drawing uses shades of the current color. what is to be done when
+//     you're drawing into a gray dataset?
 
 /**
  * Draws data in an orthoplane of a {@link Dataset}. Many methods adapted from
