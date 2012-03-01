@@ -53,11 +53,14 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsService;
+import imagej.options.plugins.OptionsMemoryAndThreads;
 import imagej.util.Colors;
 import imagej.util.Log;
 
 /**
- * Display information and credits about the ImageJ software.
+ * Display information and credits about the ImageJ2 software. Note that some
+ * of this code was adapted from code written by Wayne Rasband for ImageJ.
  * 
  * @author Barry DeZonia
  */
@@ -69,12 +72,15 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	implements ImageJPlugin
 {
 	// -- parameters --
-	
-	@Parameter
-	DatasetService dataSrv;
 
 	@Parameter
-	DisplayService dispSrv;
+	private ImageJ context;
+	
+	@Parameter
+	private DatasetService dataSrv;
+
+	@Parameter
+	private DisplayService dispSrv;
 	
 	// -- public interface --
 	
@@ -148,10 +154,10 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		tool.setColorValue(Colors.YELLOW);
 		final long x = width / 2;
 		long y = 50;
-		tool.setFontSize(18);
+		tool.setFontSize(20);
 		tool.drawText(x,y,"ImageJ2 "+ImageJ.VERSION, TextJustification.CENTER);
 		y += 5*tool.getFontSize()/4;
-		tool.setFontSize(12);
+		tool.setFontSize(13);
 		for (final String line : getTextBlock()) {
 			tool.drawText(x,y,line, TextJustification.CENTER);
 			y += 5*tool.getFontSize()/4;
@@ -162,7 +168,47 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		return new String[] {
 			"Open source image processing software",
 			"Copyright 2010, 2011, 2012",
-			"developer.imagej.net"
+			"http://developer.imagej.net/",
+			javaInfo(),
+			memoryInfo()
 		};
+	}
+	
+	private String javaInfo() {
+		return "Java "+System.getProperty("java.version") +
+				(is64Bit() ? " (64-bit)" : " (32-bit)");
+	}
+	
+	private String memoryInfo() {
+		long inUse = currentMemory();
+		String inUseStr = inUse<10000*1024?inUse/1024L+"K":inUse/1048576L+"MB";
+		String maxStr="";
+		long max = maxMemory();
+		if (max>0L) {
+			long percent = inUse * 100 / max;
+			maxStr = " of "+max/1048576L+"MB ("+(percent<1 ? "<1" : percent) + "%)";
+		}
+		return inUseStr + maxStr;
+	}
+	
+	/** Returns the amount of memory currently being used by ImageJ2. */
+	private long currentMemory() {
+		long freeMem = Runtime.getRuntime().freeMemory();
+		long totMem = Runtime.getRuntime().totalMemory();
+		return totMem-freeMem;
+	}
+
+	/** Returns the maximum amount of memory available to ImageJ2 or
+		zero if ImageJ2 is unable to determine this limit. */
+	private long maxMemory() {
+		OptionsService srv = context.getService(OptionsService.class);
+		OptionsMemoryAndThreads opts = srv.getOptions(OptionsMemoryAndThreads.class);
+		return opts.getMaxMemory() * 1024L * 1024L;
+	}
+
+	/** Returns true if ImageJ2 is running a 64-bit version of Java. */
+	private boolean is64Bit() {
+		String osarch = System.getProperty("os.arch");
+		return osarch!=null && osarch.indexOf("64")!=-1;
 	}
 }
