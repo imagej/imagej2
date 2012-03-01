@@ -37,7 +37,9 @@ package imagej.data;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
@@ -79,6 +81,7 @@ public class DrawingTool {
 	private double grayValue;
 	private long u0, v0;
 	private long maxU, maxV;
+	private ColorRGB[] textColorShades;
 	
 	private TextRenderer textRenderer;
 	
@@ -106,6 +109,8 @@ public class DrawingTool {
 		this.u0 = 0;
 		this.v0 = 0;
 		this.textRenderer = new AWTTextRenderer();  // FIXME - do elsewhere
+		textRenderer.setAntialiasing(true);
+		initTextColorShades();
 	}
 
 	// -- public interface --
@@ -186,6 +191,7 @@ public class DrawingTool {
 	 */
 	public void setColorValue(final ColorRGB color) {
 		this.colorValue = color;
+		initTextColorShades();
 	}
 
 	/** Gets the current drawing color value. */
@@ -419,19 +425,39 @@ public class DrawingTool {
 				break;
 		}
 		
+		ColorRGB saveColor = colorValue;
+		
 		// draw pixels in dataset as needed
 		for (int u = minu; u <= maxu; u++) {
 			for (int v = minv; v <= maxv; v++) {
 				int index = v*bufferSizeU + u;
 				if (buffer[index] != 0) {
+					int intensity = buffer[index] & 0xff;
+					colorValue = textColorShades[intensity];
 					drawPixel(originU+u-minu, originV+v-minv);
 				}
 			}
 		}
+		
+		colorValue = saveColor;
 	}
 
 	// -- private helpers --
 
+	private void initTextColorShades() {
+		int baseR = colorValue.getRed();
+		int baseG = colorValue.getGreen();
+		int baseB = colorValue.getBlue();
+		ColorRGB[] shades = new ColorRGB[256];
+		for (int i = 0; i < 256; i++) {
+			int r = (int) Math.round(baseR * i / 255.0);
+			int g = (int) Math.round(baseG * i / 255.0);
+			int b = (int) Math.round(baseB * i / 255.0);
+			shades[i] = new ColorRGB(r, g, b);
+		}
+		textColorShades = shades;
+	}
+	
 	private interface TextRenderer {
 		void renderText(String text);
 		int getPixelsWidth();
@@ -443,6 +469,8 @@ public class DrawingTool {
 		FontStyle getFontStyle();
 		void setFontSize(int size);
 		int getFontSize();
+		void setAntialiasing(boolean val);
+		boolean getAntialiasing();
 	}
 	
 	private class AWTTextRenderer implements TextRenderer {
@@ -455,11 +483,13 @@ public class DrawingTool {
 		private int fontSize;
 		private Font font;
 		private int[] pixels;
+		private boolean antialiasing;
 
 		public AWTTextRenderer() {
 			fontFamily = Font.SANS_SERIF;
 			fontStyle = Font.PLAIN;
 			fontSize = 12;
+			antialiasing = false;
 			buildFont();
 			initTextBuffer("42 is my favorite number");
 		}
@@ -468,9 +498,30 @@ public class DrawingTool {
 		public void renderText(String text) {
 			initTextBuffer(text);
 			Graphics g = textBuffer.getGraphics();
+			setAntialiasedText(g, antialiasing);
 			g.setFont(font);
 			g.drawString(text, 0, bufferSizeV/2);
 		}
+		
+		@Override
+		public int getPixelsWidth() {
+			return bufferSizeU;
+		}
+
+		@Override
+		public int getPixelsHeight() {
+			return bufferSizeV;
+		}
+
+		@Override
+		public int[] getPixels() {
+			if (pixels != null)
+				if (pixels.length != (bufferSizeU*bufferSizeV))
+					pixels = null;
+			pixels = textRaster.getPixels(0, 0, bufferSizeU, bufferSizeV, pixels);
+			return pixels;
+		}
+		
 		
 		@Override
 		public void setFontFamily(FontFamily family) {
@@ -538,24 +589,14 @@ public class DrawingTool {
 		
 
 		@Override
-		public int getPixelsWidth() {
-			return bufferSizeU;
-		}
-
-		@Override
-		public int getPixelsHeight() {
-			return bufferSizeV;
-		}
-
-		@Override
-		public int[] getPixels() {
-			if (pixels != null)
-				if (pixels.length != (bufferSizeU*bufferSizeV))
-					pixels = null;
-			pixels = textRaster.getPixels(0, 0, bufferSizeU, bufferSizeV, pixels);
-			return pixels;
+		public void setAntialiasing(boolean val) {
+			antialiasing = val;
 		}
 		
+		@Override
+		public boolean getAntialiasing() {
+			return antialiasing;
+		}
 		
 		// -- private helpers --
 		
@@ -606,6 +647,18 @@ public class DrawingTool {
 			extents.width = width;
 			extents.height = metrics.getHeight() + 10;
 			return extents;
+		}
+		
+		private void setAntialiasedText(Graphics g, boolean antialiasedText) {
+			Graphics2D g2d = (Graphics2D)g;
+			if (antialiasedText)
+				g2d.setRenderingHint(
+					RenderingHints.KEY_TEXT_ANTIALIASING,
+					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			else
+				g2d.setRenderingHint(
+					RenderingHints.KEY_TEXT_ANTIALIASING,
+					RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		}
 	}
 }

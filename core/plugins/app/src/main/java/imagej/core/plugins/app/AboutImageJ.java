@@ -36,7 +36,6 @@ package imagej.core.plugins.app;
 
 import java.net.URL;
 
-import net.imglib2.Cursor;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgOpener;
 import net.imglib2.meta.Axes;
@@ -55,6 +54,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Colors;
+import imagej.util.Log;
 
 /**
  * Display information and credits about the ImageJ software.
@@ -94,23 +94,27 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		
 		// did we successfully load a background image?
 		if (img != null) {
-			// yes we did - return it
+			// yes we did - inspect it
 			final Dataset ds = dataSrv.create(img);
 			ds.setName(title);
-			return ds;
+			boolean validImage = true;
+			validImage &= (ds.numDimensions() == 3);
+			validImage &= (ds.getAxisIndex(Axes.CHANNEL) == 2);
+			validImage &= (ds.getImgPlus().firstElement().getBitsPerPixel() == 8);
+			validImage &= (ds.isInteger());
+			if (validImage) {
+				ds.setRGBMerged(true);
+				return ds;
+			}
 		}
+
+		Log.warn("Could not load a 3 channel 8 bit byte image as backdrop");
 		
-		// We could not load a dataset. So make a rgb background image.
+		// We could not load a dataset. So make a black rgb background image.
 		final Dataset ds = dataSrv.create(
 			new long[]{400,400,3} , title,
 			new AxisType[]{Axes.X,Axes.Y,Axes.CHANNEL}, 8, false, false);
 		ds.setRGBMerged(true);
-		
-		// And make it all white.
-		final Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
-		while (cursor.hasNext()) {
-			cursor.next().setReal(255);
-		}
 		
 		return ds;
 	}
@@ -142,7 +146,6 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		tool.setVAxis(1);
 		final long width = ds.dimension(0);
 		tool.setColorValue(Colors.YELLOW);
-		tool.setGrayValue(0);
 		final long x = width / 2;
 		long y = 50;
 		tool.setFontSize(18);
