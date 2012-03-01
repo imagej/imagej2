@@ -294,12 +294,12 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 	@Override
 	public Dimension getPreferredSize() {
-		// HACK: Size the canvas a few pixels larger. This is a workaround to an
+		// HACK: Size the canvas one pixel larger. This is a workaround to an
 		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
 		// large X until it is finished being rendered. Unfortunately, the X is
 		// slightly smaller than the image after being rendered.
-		final int w = drawingView.getPreferredSize().width + 5;
-		final int h = drawingView.getPreferredSize().height + 5;
+		final int w = scrollPane.getPreferredSize().width + 1;
+		final int h = scrollPane.getPreferredSize().height + 1;
 		return new Dimension(w, h);
 	}
 
