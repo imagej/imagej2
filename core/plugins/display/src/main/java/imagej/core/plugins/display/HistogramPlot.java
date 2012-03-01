@@ -35,12 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
-import imagej.data.Extents;
-import imagej.data.Position;
 import imagej.data.display.DatasetView;
-
 import imagej.data.display.ImageDisplay;
-
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -50,23 +46,23 @@ import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
-
 import imagej.util.RealRect;
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-
-import java.awt.Dimension;
 import java.awt.Font;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
 import net.imglib2.algorithm.stats.Histogram;
 import net.imglib2.algorithm.stats.HistogramBinMapper;
 import net.imglib2.algorithm.stats.RealBinMapper;
 import net.imglib2.img.Img;
-
 import net.imglib2.type.numeric.RealType;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -98,40 +94,49 @@ import org.jfree.data.xy.XYSeriesCollection;
 @Plugin(menu = {
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
-	weight = 0)})
+		weight = 0) })
 public class HistogramPlot implements ImageJPlugin {
 
 //	@Parameter(label = "Value (binary)")
 //	private long value;
-	@Parameter(required = true, persist = false)
+
+	@Parameter(persist = false)
 	private DatasetView view;
+
 	// -- instance variables that are Parameters --
-	@Parameter(required = true, persist = false)
+
+	@Parameter(persist = false)
 	private ImageDisplayService displayService;
-	@Parameter(required = true, persist = false)
+
+	@Parameter(persist = false)
 	private OverlayService overlayService;
-	@Parameter(required = true, persist = false)
+
+	@Parameter(persist = false)
 	private UIService uiService;
-	@Parameter(required = true, persist = false)
+
+	@Parameter(persist = false)
 	private ImageDisplay display;
+
 	private Dataset dataset;
 	private RealRect bounds;
-	//
+
 	// -- other instance variables --
+
 	private Dataset input;
-	//
+
 	int[] histogram;
 	double histMin;
 	double histMax;
 	double binWidth;
 	int pixels;
-	//
+
 	double min;
 	double max;
 	private final int BINS = 256;
-	private boolean showBins = true;
+	private final boolean showBins = true;
 
 	// -- public interface --
+
 	@Override
 	public void run() {
 		if (!inputOkay()) {
@@ -140,10 +145,12 @@ public class HistogramPlot implements ImageJPlugin {
 		}
 		dataset = displayService.getActiveDataset(display);
 		bounds = overlayService.getSelectionBounds(display);
-		//HistogramComputer histoComputer = new HistogramComputer(display, dataset, bounds);
+		// HistogramComputer histoComputer = new HistogramComputer(display, dataset,
+		// bounds);
 //		HistogramComputer histoComputer = new HistogramComputer(display, dataset, bounds, 0, 4095);
 //		int[] histogram = histoComputer.get();
-		StatisticsComputer statComputer = new StatisticsComputer(dataset.getImgPlus());
+		final StatisticsComputer statComputer =
+			new StatisticsComputer(dataset.getImgPlus());
 		histMin = dataset.getType().getMinValue();
 		histMax = dataset.getType().getMaxValue();
 		statComputer.setHistogramBinsMinMax(BINS, histMin, histMax);
@@ -159,6 +166,59 @@ public class HistogramPlot implements ImageJPlugin {
 		asChart(histogram, true);
 	}
 
+	public static <T extends RealType<T>> int[] computeHistogram(final Img<T> im,
+		final T min, final T max, final int bins)
+	{
+		final HistogramBinMapper<T> mapper = new RealBinMapper<T>(min, max, bins);
+		final Histogram<T> histogram = new Histogram<T>(mapper, im);
+		histogram.process();
+		final int[] d = new int[histogram.getNumBins()];
+		for (int j = 0; j < histogram.getNumBins(); j++) {
+			d[j] = histogram.getBin(j);
+			System.out.println(d[j]);
+		}
+		return d;
+	}
+
+	/**
+	 * Returns the JFreeChart with this histogram, and as a side effect, show it
+	 * in a JFrame that provides the means to edit the dimensions and also the
+	 * plot properties via a popup menu.
+	 */
+	public JFreeChart asChart(final int[] d, final boolean show) {
+		final XYSeries series = new XYSeries("histo");
+		for (int i = 0; i < d.length; i++) {
+			series.add(i, d[i]);
+		}
+		final String title = "Histogram: " + display.getName();
+		final XYSeriesCollection data = new XYSeriesCollection(series);
+		// data.addSeries(series2);
+		final JFreeChart chart =
+			ChartFactory.createXYBarChart(title, null, false, null, data,
+				PlotOrientation.VERTICAL, false, true, false);
+
+		// ++ chart.getTitle().setFont(null);
+		setTheme(chart);
+		chart.getXYPlot().setForegroundAlpha(0.50f);
+		final ChartPanel chartPanel = new ChartPanel(chart);
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+		if (show) {
+			final JFrame frame = new JFrame(title);
+			frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
+			final JPanel valuesPanel = makeValuePanel();
+			frame.add(valuesPanel, BorderLayout.SOUTH);
+			frame.pack();
+			frame.setVisible(true);
+		}
+		return chart;
+	}
+
+	public JFreeChart asChart(final int[] d) {
+		return asChart(d, false);
+	}
+
+	// -- private interface --
+
 	private int countPixels(final int[] histogram) {
 		int sum = 0;
 		for (final int v : histogram) {
@@ -166,7 +226,6 @@ public class HistogramPlot implements ImageJPlugin {
 		}
 		return sum;
 	}
-	// -- private interface --
 
 	private boolean inputOkay() {
 		input = displayService.getActiveDataset(display);
@@ -182,70 +241,18 @@ public class HistogramPlot implements ImageJPlugin {
 	private void informUser() {
 		final UserInterface ui = uiService.getUI();
 		final DialogPrompt dialog =
-				ui.dialogPrompt(
-				"This plugin requires an integral dataset",
-				"Unsupported image type",
-				DialogPrompt.MessageType.INFORMATION_MESSAGE,
+			ui.dialogPrompt("This plugin requires an integral dataset",
+				"Unsupported image type", DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 		dialog.prompt();
 	}
 
-	public static <T extends RealType<T>> int[] computeHistogram(final Img<T> im, T min, T max, int bins) {
-		HistogramBinMapper<T> mapper = new RealBinMapper<T>(min, max, bins);
-		Histogram<T> histogram = new Histogram<T>(mapper, im);
-		histogram.process();
-		int[] d = new int[histogram.getNumBins()];
-		for (int j = 0; j < histogram.getNumBins(); j++) {
-			d[j] = histogram.getBin(j);
-			System.out.println(d[j]);
-		}
-		return d;
-	}
-
-	/** Return the JFreeChart with this histogram, and as a side effect, show it in a JFrame
-	 * that provides the means to edit the dimensions and also the plot properties via a popup menu. */
-	public JFreeChart asChart(final int[] d, final boolean show) {
-		XYSeries series = new XYSeries("histo");
-		for (int i = 0; i < d.length; i++) {
-			series.add(i, d[i]);
-		}
-		String title = "Histogram: " + display.getName();
-		XYSeriesCollection data = new XYSeriesCollection(series);
-		//data.addSeries(series2);
-		JFreeChart chart = ChartFactory.createXYBarChart(
-				title,
-				null,
-				false,
-				null,
-				data,
-				PlotOrientation.VERTICAL,
-				false,
-				true,
-				false);
-
-		// ++ chart.getTitle().setFont(null);
-		setTheme(chart);
-		chart.getXYPlot().setForegroundAlpha(0.50f);
-		ChartPanel chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-		if (show) {
-			JFrame frame = new JFrame(title);
-			frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
-			JPanel valuesPanel = makeValuePanel();
-			frame.add(valuesPanel, BorderLayout.SOUTH);
-			frame.pack();
-			frame.setVisible(true);
-		}
-		return chart;
-
-	}
-
 	private JPanel makeValuePanel() {
-		JPanel valuesPanel = new JPanel();
-		JTextArea text = new JTextArea();
+		final JPanel valuesPanel = new JPanel();
+		final JTextArea text = new JTextArea();
 
 		valuesPanel.add(text, BorderLayout.CENTER);
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		addStr(sb, "Pixels", pixels);
 		sb.append("\n");
 		addStr(sb, "Min", min);
@@ -271,46 +278,50 @@ public class HistogramPlot implements ImageJPlugin {
 //			ip.drawString("Bins: " + d2s(stats.nBins), col1, row4);
 //			ip.drawString("Bin Width: " + d2s(binWidth), col2, row4);
 //		}
-		//valuesPanel.setPreferredSize(new Dimension(200,32));
-		text.setFont(new Font("Monospaced",Font.PLAIN,12));
+		// valuesPanel.setPreferredSize(new Dimension(200,32));
+		text.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		text.setText(sb.toString());
 		return valuesPanel;
 	}
 
-	void addStr(StringBuilder sb, String label, int num) {
+	private void
+		addStr(final StringBuilder sb, final String label, final int num)
+	{
 		sb.append(String.format("%10s:", label));
 		sb.append(String.format("%8d", num));
 	}
 
-	void addStr(StringBuilder sb, String label, double num) {
+	private void addStr(final StringBuilder sb, final String label,
+		final double num)
+	{
 		sb.append(String.format("%10s:", label));
 		sb.append(String.format("%8.2f", num));
 	}
 
-	static private final void setTheme(final JFreeChart chart) {
-		XYPlot plot = (XYPlot) chart.getPlot();
-		XYBarRenderer r = (XYBarRenderer) plot.getRenderer();
-		StandardXYBarPainter bp = new StandardXYBarPainter();
+	private static final void setTheme(final JFreeChart chart) {
+		final XYPlot plot = (XYPlot) chart.getPlot();
+		final XYBarRenderer r = (XYBarRenderer) plot.getRenderer();
+		final StandardXYBarPainter bp = new StandardXYBarPainter();
 		r.setBarPainter(bp);
 		r.setSeriesOutlinePaint(0, Color.lightGray);
 		r.setShadowVisible(false);
 		r.setDrawBarOutline(false);
 		setBackgroundDefault(chart);
-		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 
-		//rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		// rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		rangeAxis.setTickLabelsVisible(false);
 		rangeAxis.setTickMarksVisible(false);
-		NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+		final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
 		domainAxis.setTickLabelsVisible(false);
 		domainAxis.setTickMarksVisible(false);
 	}
 
-	static private final void setBackgroundDefault(final JFreeChart chart) {
-		BasicStroke gridStroke = new BasicStroke(1.0f,
-				BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND, 1.0f, new float[]{2.0f, 1.0f}, 0.0f);
-		XYPlot plot = (XYPlot) chart.getPlot();
+	private static final void setBackgroundDefault(final JFreeChart chart) {
+		final BasicStroke gridStroke =
+			new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+				1.0f, new float[] { 2.0f, 1.0f }, 0.0f);
+		final XYPlot plot = (XYPlot) chart.getPlot();
 		plot.setRangeGridlineStroke(gridStroke);
 		plot.setDomainGridlineStroke(gridStroke);
 		plot.setBackgroundPaint(new Color(235, 235, 235));
@@ -324,10 +335,6 @@ public class HistogramPlot implements ImageJPlugin {
 		plot.getDomainAxis().setTickLabelPaint(Color.gray);
 		plot.getRangeAxis().setTickLabelPaint(Color.gray);
 		chart.getTitle().setPaint(Color.gray);
-	}
-
-	public JFreeChart asChart(final int[] d) {
-		return asChart(d, false);
 	}
 
 }
