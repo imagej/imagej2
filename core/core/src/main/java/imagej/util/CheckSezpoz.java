@@ -220,6 +220,15 @@ public class CheckSezpoz {
 			Log.error("Sources are not in the expected place: " + sources);
 			return false;
 		}
+
+		// before running, remove possibly outdated annotations
+		final File[] obsoleteAnnotations =
+			new File(classes, "META-INF/annotations").listFiles();
+		if (obsoleteAnnotations != null) {
+			for (final File annotation : obsoleteAnnotations)
+				annotation.delete();
+		}
+
 		final List<String> aptArgs = new ArrayList<String>();
 		aptArgs.add("-nocompile");
 		if (verbose) aptArgs.add("-verbose");
