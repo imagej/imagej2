@@ -582,6 +582,10 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
 		if (event.getObject() != this) return;
+		
+		// TODO - misplaced? CMD-W will not close window unless this in place
+		getPanel().getWindow().close();
+		
 		cleanup();
 	}
 
