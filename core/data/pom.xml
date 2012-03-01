@@ -33,6 +33,11 @@
 			<artifactId>imglib2</artifactId>
 			<version>${imglib2.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-algorithms</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>

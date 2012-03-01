@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.CompositeXYProjector;
@@ -54,7 +55,6 @@ import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.stats.ComputeMinMax;
 import net.imglib2.type.numeric.RealType;
 
 /**
