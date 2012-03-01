@@ -230,7 +230,7 @@ public final class DefaultDisplayService extends AbstractService implements
 		final Display<?> display = event.getDisplay();
 
 		// HACK - Necessary to plug memory leak when closing the last window.
-		if (getDisplays().size() == 1) {
+		if (getDisplays().size() <= 1) {
 			activeDisplay = null;
 		}
 
