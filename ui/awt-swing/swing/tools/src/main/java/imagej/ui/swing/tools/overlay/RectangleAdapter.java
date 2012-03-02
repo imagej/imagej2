@@ -114,9 +114,6 @@ public class RectangleAdapter extends
 			}
 		};
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
-		// Unlike some other figures this one will draw one pixel wide when width is
-		// 0. This is correct behavior.
-		figure.set(AttributeKeys.STROKE_WIDTH, new Double(0));
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
