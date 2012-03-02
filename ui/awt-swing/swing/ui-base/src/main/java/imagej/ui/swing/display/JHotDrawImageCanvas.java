@@ -55,7 +55,7 @@ import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.IJCreationTool.FigureCreatedEvent;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
-import imagej.ui.swing.overlay.SelectionTool;
+import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -65,7 +65,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.Set;
@@ -84,10 +83,6 @@ import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureSelectionEvent;
 import org.jhotdraw.draw.event.FigureSelectionListener;
-import org.jhotdraw.draw.event.ToolAdapter;
-import org.jhotdraw.draw.event.ToolEvent;
-import org.jhotdraw.draw.tool.AbstractTool;
-import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 /**
  * A Swing implementation of {@link ImageCanvas}, which uses JHotDraw's
@@ -109,6 +104,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	private final Drawing drawing;
 	private final DefaultDrawingView drawingView;
 	private final DrawingEditor drawingEditor;
+	private final ToolDelegator toolDelegator;
 
 	private final JScrollPane scrollPane;
 
@@ -126,7 +122,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 		drawingEditor = new DefaultDrawingEditor();
 		drawingEditor.add(drawingView);
-		drawingEditor.setTool(new DelegationSelectionTool());
+		toolDelegator = new ToolDelegator();
+		drawingEditor.setTool(toolDelegator);
 
 		scrollPane = new JScrollPane(drawingView);
 		setLayout(new BorderLayout());
@@ -210,17 +207,6 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter) iTool;
 			final IJCreationTool creationTool = new IJCreationTool(display, adapter);
 
-			// Listen for toolDone from the creation tool. This means that
-			// we finished using the JHotDraw tool and we deactivate it.
-			creationTool.addToolListener(new ToolAdapter() {
-
-				@Override
-				public void toolDone(final ToolEvent e) {
-					final ToolService toolService = ImageJ.get(ToolService.class);
-					toolService.setActiveTool(toolService.getTool(SelectionTool.class));
-				}
-			});
-
 			// When the tool creates an overlay, add the
 			// overlay/figure combo to a SwingOverlayView.
 			creationTool
@@ -244,20 +230,10 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 						}
 					}
 				});
-			drawingEditor.setTool(creationTool);
-		}
-		else if (iTool instanceof SelectionTool) {
-			drawingEditor.setTool(new DelegationSelectionTool());
+			toolDelegator.setCreationTool(creationTool);
 		}
 		else {
-			// use a dummy tool so that JHotDraw ignores input events
-			drawingEditor.setTool(new AbstractTool() {
-
-				@Override
-				public void mouseDragged(final MouseEvent e) {
-					// do nothing
-				}
-			});
+			toolDelegator.setCreationTool(null);
 		}
 	}
 
