@@ -100,6 +100,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	AdjustmentListener
 {
 
+	private static final long serialVersionUID = 1L;
+
 	private final ImageDisplay display;
 
 	private final CanvasHelper canvasHelper;
