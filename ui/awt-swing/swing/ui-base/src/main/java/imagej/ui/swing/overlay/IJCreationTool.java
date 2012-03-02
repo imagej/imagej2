@@ -39,7 +39,6 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ui.swing.display.SwingOverlayView;
 
-import java.util.EventListener;
 
 import javax.swing.event.EventListenerList;
 
@@ -52,11 +51,6 @@ import org.jhotdraw.draw.tool.CreationTool;
  * @author Lee Kamentsky
  */
 public class IJCreationTool extends CreationTool {
-
-	public interface OverlayCreatedListener extends EventListener {
-
-		public void overlayCreated(FigureCreatedEvent e);
-	}
 
 	/**
 	 * 

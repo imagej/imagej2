@@ -55,6 +55,7 @@ import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.overlay.FigureCreatedEvent;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -210,7 +211,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			// When the tool creates an overlay, add the
 			// overlay/figure combo to a SwingOverlayView.
 			creationTool
-				.addOverlayCreatedListener(new IJCreationTool.OverlayCreatedListener() {
+				.addOverlayCreatedListener(new OverlayCreatedListener() {
 
 					@SuppressWarnings("synthetic-access")
 					@Override
