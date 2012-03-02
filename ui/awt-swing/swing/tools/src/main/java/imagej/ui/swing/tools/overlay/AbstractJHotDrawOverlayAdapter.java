@@ -52,7 +52,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
 
 /**
- * An abstract class that gives default behavior for the IJHotDrawROIAdapter
+ * An abstract class that gives default behavior for the IJHotDrawOverlayAdapter
  * interface.
  * 
  * @author Lee Kamentsky
