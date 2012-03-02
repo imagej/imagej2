@@ -47,7 +47,6 @@ import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
-import imagej.ui.swing.overlay.SelectionTool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -78,7 +77,7 @@ public class RectangleAdapter extends
 	AbstractJHotDrawOverlayAdapter<RectangleOverlay>
 {
 
-	public static final int PRIORITY = SelectionTool.PRIORITY - 1;
+	public static final int PRIORITY = 100;
 
 	// initial mouse down point is recorded for status bar updates
 	private final Point anchor = new Point();
