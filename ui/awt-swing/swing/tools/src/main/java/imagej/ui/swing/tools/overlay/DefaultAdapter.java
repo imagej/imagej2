@@ -88,6 +88,8 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 		final ImageFigure figure = new ImageFigure();
 		figure.setTransformable(false);
 		figure.set(AttributeKeys.FILL_COLOR, new Color(0, 0, 0, 0));
+		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
+		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
 		return figure;
 	}
 

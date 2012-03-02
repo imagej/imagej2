@@ -117,6 +117,8 @@ public class RectangleAdapter extends
 		};
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
+		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
+		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
 		return figure;
 	}
 
