@@ -68,6 +68,7 @@ import org.jhotdraw.geom.BezierPath.Node;
  * TODO
  * 
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Polygon", description = "Polygon overlays",
 	iconPath = "/icons/tools/polygon.png", priority = PolygonAdapter.PRIORITY,

@@ -59,6 +59,7 @@ import org.jhotdraw.geom.BezierPath.Node;
  * TODO
  * 
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Line",
 	description = "Straight line overlays", iconPath = "/icons/tools/line.png",
