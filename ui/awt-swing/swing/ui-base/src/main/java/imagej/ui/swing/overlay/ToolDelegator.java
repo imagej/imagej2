@@ -223,6 +223,7 @@ public class ToolDelegator extends AbstractTool {
 	}
 
 	protected boolean maybeSwitchTool(final MouseEvent event) {
+		if (activeTool != null && activeTool.isConstructing()) return false;
 		anchor = new Point(event.getX(), event.getY());
 		JHotDrawTool tool = creationTool;
 		final DrawingView view = getView();

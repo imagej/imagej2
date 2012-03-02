@@ -111,4 +111,9 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 		fireOverlayCreatedEvent(view, figure);
 	}
 
+	@Override
+	public boolean isConstructing() {
+		return createdFigure != null;
+	}
+
 }

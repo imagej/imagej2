@@ -107,4 +107,9 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		fireOverlayCreatedEvent(view, figure);
 	}
 
+	@Override
+	public boolean isConstructing() {
+		return createdFigure != null;
+	}
+
 }

@@ -49,4 +49,6 @@ public interface JHotDrawTool extends Tool {
 	void setInputMap(InputMap map);
 
 	void setActionMap(ActionMap map);
+
+	boolean isConstructing();
 }
