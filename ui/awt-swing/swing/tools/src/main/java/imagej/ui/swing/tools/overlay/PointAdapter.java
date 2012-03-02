@@ -91,8 +91,6 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	@Override
 	public Figure createDefaultFigure() {
 		final PointFigure figure = new PointFigure();
-		// FIXME why doesn't this work to allow draw() to not need to know scale?
-		//figure.set(AttributeKeys.STROKE_WIDTH, new Double(0));
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		return figure;
 	}
@@ -149,6 +147,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	}
 	*/
 	
+	@SuppressWarnings("serial")
 	private class PointFigure extends AbstractAttributedFigure {
 		protected Rectangle2D.Double bounds;
 		private final Rectangle2D.Double rect;

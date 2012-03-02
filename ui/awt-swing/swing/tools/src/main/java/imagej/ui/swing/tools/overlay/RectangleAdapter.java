@@ -51,11 +51,8 @@ import imagej.ui.swing.overlay.SelectionTool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -105,7 +102,17 @@ public class RectangleAdapter extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		final RectangleFigure figure = new LocalRectangleFigure();
+		@SuppressWarnings("serial")
+		final RectangleFigure figure = new RectangleFigure() {
+
+			// Make sure that the lines are always drawn 1 pixel wide
+			@Override
+			public void draw(final Graphics2D g) {
+				set(AttributeKeys.STROKE_WIDTH, new Double(1 / g.getTransform()
+					.getScaleX()));
+				super.draw(g);
+			}
+		};
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
 		// Unlike some other figures this one will draw one pixel wide when width is
 		// 0. This is correct behavior.
@@ -178,25 +185,5 @@ public class RectangleAdapter extends
 		eventService.publish(new StatusEvent(message));
 		// NB: Prevent PixelProbe from overwriting the status bar.
 		evt.consume();
-	}
-
-	/* temp workaround of HotDraw bug
-	 * stroke width of 0 with stock RectangleFigure draws nothing when unselected
-	 */
-	private class LocalRectangleFigure extends RectangleFigure {
-
-		@Override
-		public void draw(final Graphics2D g) {
-			final Stroke origS = g.getStroke();
-			final Color origC = g.getColor();
-			// 1 pixel wide outline
-			final Stroke stroke =
-				new BasicStroke((float) (1 / g.getTransform().getScaleX()));
-			g.setStroke(stroke);
-			g.setColor(get(AttributeKeys.STROKE_COLOR));
-			g.draw(this.rectangle);
-			g.setStroke(origS);
-			g.setColor(origC);
-		}
 	}
 }
