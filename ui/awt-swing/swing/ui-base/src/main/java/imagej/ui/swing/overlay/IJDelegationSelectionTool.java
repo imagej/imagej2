@@ -41,4 +41,9 @@ public class IJDelegationSelectionTool extends DelegationSelectionTool
 	implements JHotDrawTool
 {
 
+	@Override
+	public boolean isConstructing() {
+		return false;
+	}
+
 }
