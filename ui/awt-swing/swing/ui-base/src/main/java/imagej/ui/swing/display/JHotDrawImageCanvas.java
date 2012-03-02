@@ -55,6 +55,7 @@ import imagej.ui.common.awt.AWTMouseEventDispatcher;
 import imagej.ui.swing.overlay.FigureCreatedEvent;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawToolAdapter;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
@@ -230,7 +231,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 				}
 			};
 
-			final IJCreationTool creationTool = new IJCreationTool(display, adapter, listener);
+			final JHotDrawToolAdapter creationTool = new IJCreationTool(display, adapter, listener);
 
 			toolDelegator.setCreationTool(creationTool);
 		}
