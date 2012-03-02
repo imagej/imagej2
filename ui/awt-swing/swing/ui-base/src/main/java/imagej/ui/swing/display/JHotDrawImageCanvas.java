@@ -206,31 +206,32 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	protected void activateTool(final Tool iTool) {
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter) iTool;
-			final IJCreationTool creationTool = new IJCreationTool(display, adapter);
 
 			// When the tool creates an overlay, add the
 			// overlay/figure combo to a SwingOverlayView.
-			creationTool
-				.addOverlayCreatedListener(new OverlayCreatedListener() {
+			final OverlayCreatedListener listener = new OverlayCreatedListener() {
 
-					@SuppressWarnings("synthetic-access")
-					@Override
-					public void overlayCreated(final FigureCreatedEvent e) {
-						final OverlayView overlay = e.getOverlay();
-						for (int i = 0; i < display.numDimensions(); i++) {
-							final AxisType axis = display.axis(i);
-							if (Axes.isXY(axis)) continue;
-							if (overlay.getData().getAxisIndex(axis) < 0) {
-								overlay.setPosition(display.getLongPosition(axis), axis);
-							}
-						}
-						display.add(overlay);
-						display.update();
-						if (drawingView.getSelectedFigures().contains(e.getFigure())) {
-							overlay.setSelected(true);
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void overlayCreated(final FigureCreatedEvent e) {
+					final OverlayView overlay = e.getOverlay();
+					for (int i = 0; i < display.numDimensions(); i++) {
+						final AxisType axis = display.axis(i);
+						if (Axes.isXY(axis)) continue;
+						if (overlay.getData().getAxisIndex(axis) < 0) {
+							overlay.setPosition(display.getLongPosition(axis), axis);
 						}
 					}
-				});
+					display.add(overlay);
+					display.update();
+					if (drawingView.getSelectedFigures().contains(e.getFigure())) {
+						overlay.setSelected(true);
+					}
+				}
+			};
+
+			final IJCreationTool creationTool = new IJCreationTool(display, adapter, listener);
+
 			toolDelegator.setCreationTool(creationTool);
 		}
 		else {
