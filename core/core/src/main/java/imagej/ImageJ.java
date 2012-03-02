@@ -38,6 +38,7 @@ import imagej.event.ImageJEvent;
 import imagej.service.IService;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
+import imagej.util.DefaultUncaughtExceptionHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,6 +58,7 @@ public class ImageJ {
 
 	/** Creates a new ImageJ application context with all available services. */
 	public static ImageJ createContext() {
+		DefaultUncaughtExceptionHandler.install();
 		return createContext((List<Class<? extends IService>>) null);
 	}
 
