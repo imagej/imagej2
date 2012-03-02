@@ -113,7 +113,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	private final JScrollPane scrollPane;
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	public JHotDrawImageCanvas(final ImageDisplay display) {
 		this.display = display;
@@ -137,8 +137,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 		final Tool activeTool = ImageJ.get(ToolService.class).getActiveTool();
 		activateTool(activeTool);
-		final EventService eventService =
-				ImageJ.get(EventService.class);
+		final EventService eventService = ImageJ.get(EventService.class);
 		subscribers = eventService.subscribe(this);
 
 		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
@@ -164,11 +163,11 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 				final Figure figure = ((FigureView) view).getFigure();
 				if (newSelection.contains(figure)) {
 					// BDZ removed next line 10-12-11
-					//   Fixes drawing of multiple overlays (#817). Lee had this code
-					//   here in anticipation of avoiding infinite event loops.
-					//   Inspection seems to bear out that this possibility doesn't
-					//   happen.
-					//if (!oldSelection.contains(figure))
+					// Fixes drawing of multiple overlays (#817). Lee had this code
+					// here in anticipation of avoiding infinite event loops.
+					// Inspection seems to bear out that this possibility doesn't
+					// happen.
+					// if (!oldSelection.contains(figure))
 					view.setSelected(true);
 				}
 				else if (oldSelection.contains(figure)) {
@@ -225,8 +224,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			// When the tool creates an overlay, add the
 			// overlay/figure combo to a SwingOverlayView.
 			creationTool
-				.addOverlayCreatedListener(new IJCreationTool.OverlayCreatedListener()
-				{
+				.addOverlayCreatedListener(new IJCreationTool.OverlayCreatedListener() {
 
 					@SuppressWarnings("synthetic-access")
 					@Override
@@ -280,7 +278,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
 		drawingView.addKeyListener(dispatcher);
 	}
-	
+
 	public void addEventDispatcher(final AWTMouseEventDispatcher dispatcher) {
 		drawingView.addMouseListener(dispatcher);
 		drawingView.addMouseMotionListener(dispatcher);
@@ -447,7 +445,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		drawingView.setScaleFactor(endScale);
 		scrollPane.validate();
 		canvasHelper.setPan(origin);
-		maybeResizeWindow(startScale,endScale);
+		maybeResizeWindow(startScale, endScale);
 	}
 
 	private void constrainOrigin(final IntCoords origin) {
@@ -461,12 +459,14 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		if (origin.y > yMax) origin.y = yMax;
 	}
 
-	private void maybeResizeWindow(double startScale, double endScale) {
+	private void
+		maybeResizeWindow(final double startScale, final double endScale)
+	{
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		final double nextWidth = drawingView.getWidth() * endScale / startScale;
 		final double nextHeight = drawingView.getHeight() * endScale / startScale;
-		if (nextWidth > screenSize.width-64) return;
-		if (nextHeight > screenSize.height-64) return;
+		if (nextWidth > screenSize.width - 64) return;
+		if (nextHeight > screenSize.height - 64) return;
 		display.getPanel().getWindow().pack();
 	}
 }
