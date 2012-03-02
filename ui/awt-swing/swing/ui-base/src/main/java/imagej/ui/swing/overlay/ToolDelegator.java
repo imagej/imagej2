@@ -46,17 +46,15 @@ import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.DrawingView;
 import org.jhotdraw.draw.event.ToolListener;
 import org.jhotdraw.draw.tool.AbstractTool;
-import org.jhotdraw.draw.tool.CreationTool;
-import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 public class ToolDelegator extends AbstractTool {
 
 	private static final long serialVersionUID = 1L;
 
-	protected AbstractTool selectionTool, creationTool, activeTool;
+	protected JHotDrawTool selectionTool, creationTool, activeTool;
 
 	public ToolDelegator() {
-		selectionTool = new DelegationSelectionTool();
+		selectionTool = new IJDelegationSelectionTool();
 		for (final Object listener : listenerList.getListenerList()) {
 			if (listener instanceof ToolListener) {
 				selectionTool.addToolListener((ToolListener) listener);
@@ -69,7 +67,7 @@ public class ToolDelegator extends AbstractTool {
 		selectionTool.setActionMap(getActionMap());
 	}
 
-	public void setCreationTool(final CreationTool creationTool) {
+	public void setCreationTool(final JHotDrawTool creationTool) {
 		this.creationTool = creationTool;
 		if (creationTool == null) return;
 
@@ -226,7 +224,7 @@ public class ToolDelegator extends AbstractTool {
 
 	protected boolean maybeSwitchTool(final MouseEvent event) {
 		anchor = new Point(event.getX(), event.getY());
-		AbstractTool tool = creationTool;
+		JHotDrawTool tool = creationTool;
 		final DrawingView view = getView();
 		if (view != null && view.isEnabled()) {
 			if (view.findHandle(anchor) != null ||
