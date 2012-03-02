@@ -49,7 +49,7 @@ import org.jhotdraw.draw.tool.CreationTool;
  * 
  * @author Lee Kamentsky
  */
-public class IJCreationTool extends CreationTool {
+public class IJCreationTool extends CreationTool implements JHotDrawTool {
 
 	/**
 	 * 
