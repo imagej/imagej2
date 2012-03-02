@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * Add this annotation to any ImageJHotDrawROIAdapter and SezPoz will make it
+ * Add this annotation to any ImageJHotDrawOverlayAdapter and SezPoz will make it
  * available to ImageJ and let people use JHotDraw to edit it.
  * 
  * @author Lee Kamentsky

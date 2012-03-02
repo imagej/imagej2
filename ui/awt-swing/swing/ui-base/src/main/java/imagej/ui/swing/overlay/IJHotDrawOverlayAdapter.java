@@ -40,7 +40,7 @@ import imagej.data.overlay.Overlay;
 import org.jhotdraw.draw.Figure;
 
 /**
- * Implement the IJHotDrawROIAdapter to create an adapter that lets JHotDraw
+ * Implement the IJHotDrawOverlayAdapter to create an adapter that lets JHotDraw
  * edit ImageJ ROIs.
  * 
  * @author Lee Kamentsky
@@ -75,7 +75,7 @@ public interface IJHotDrawOverlayAdapter {
 	/**
 	 * Creates a new overlay.
 	 * 
-	 * @return a ROI of the associated type in the default initial state
+	 * @return an Overlay of the associated type in the default initial state
 	 */
 	Overlay createNewOverlay();
 
