@@ -84,7 +84,7 @@ public class RectangleAdapter extends
 	public static final int PRIORITY = SelectionTool.PRIORITY - 1;
 
 	// initial mouse down point is recorded for status bar updates
-	private Point anchor = new Point();
+	private final Point anchor = new Point();
 
 	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
 		assert (roi instanceof RectangleOverlay);
@@ -141,7 +141,7 @@ public class RectangleAdapter extends
 		roi.setExtent(bounds.getWidth(), 0);
 		roi.setExtent(bounds.getHeight(), 1);
 	}
-	
+
 	// NB - show x,y,w,h of rectangle in StatusBar on click-drag
 
 	// click - record start point
@@ -153,23 +153,28 @@ public class RectangleAdapter extends
 		// NB: Prevent PixelProbe from overwriting the status bar.
 		evt.consume();
 	}
-	
+
 	// drag - publish rectangle dimensions in status bar
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		final EventService eventService = evt.getContext().getService(EventService.class);
-		final ImageDisplayService imgService = evt.getContext().getService(ImageDisplayService.class);
-		ImageDisplay imgDisp = imgService.getActiveImageDisplay();
-		IntCoords startPt = new IntCoords(anchor.x, anchor.y);
-		IntCoords endPt = new IntCoords(evt.getX() - anchor.x, evt.getY() - anchor.y);
-		RealCoords startPtModelSpace = imgDisp.getCanvas().panelToImageCoords(startPt);
-		RealCoords endPtModelSpace = imgDisp.getCanvas().panelToImageCoords(endPt);
-		int x = (int) startPtModelSpace.x;
-		int y = (int) startPtModelSpace.y;
-		int w = (int) endPtModelSpace.x;
-		int h = (int) endPtModelSpace.y;
-		String message = String.format("x=%d, y=%d, w=%d, h=%d", x, y, w, h);
+		final EventService eventService =
+			evt.getContext().getService(EventService.class);
+		final ImageDisplayService imgService =
+			evt.getContext().getService(ImageDisplayService.class);
+		final ImageDisplay imgDisp = imgService.getActiveImageDisplay();
+		final IntCoords startPt = new IntCoords(anchor.x, anchor.y);
+		final IntCoords endPt =
+			new IntCoords(evt.getX() - anchor.x, evt.getY() - anchor.y);
+		final RealCoords startPtModelSpace =
+			imgDisp.getCanvas().panelToImageCoords(startPt);
+		final RealCoords endPtModelSpace =
+			imgDisp.getCanvas().panelToImageCoords(endPt);
+		final int x = (int) startPtModelSpace.x;
+		final int y = (int) startPtModelSpace.y;
+		final int w = (int) endPtModelSpace.x;
+		final int h = (int) endPtModelSpace.y;
+		final String message = String.format("x=%d, y=%d, w=%d, h=%d", x, y, w, h);
 		eventService.publish(new StatusEvent(message));
 		// NB: Prevent PixelProbe from overwriting the status bar.
 		evt.consume();
@@ -179,12 +184,14 @@ public class RectangleAdapter extends
 	 * stroke width of 0 with stock RectangleFigure draws nothing when unselected
 	 */
 	private class LocalRectangleFigure extends RectangleFigure {
+
 		@Override
-		public void draw(Graphics2D g) {
-			Stroke origS = g.getStroke(); 
-			Color origC = g.getColor();
+		public void draw(final Graphics2D g) {
+			final Stroke origS = g.getStroke();
+			final Color origC = g.getColor();
 			// 1 pixel wide outline
-			Stroke stroke = new BasicStroke((float)(1/g.getTransform().getScaleX()));
+			final Stroke stroke =
+				new BasicStroke((float) (1 / g.getTransform().getScaleX()));
 			g.setStroke(stroke);
 			g.setColor(get(AttributeKeys.STROKE_COLOR));
 			g.draw(this.rectangle);
