@@ -136,7 +136,7 @@
 			<email>wsr@nih.gov</email>
 			<url>http://www.linkedin.com/pub/wayne-rasband/11/140/477</url>
 			<organization>NIH</organization>
-			<organizationUrl>http://rsb.info.nih.gov/</organizationUrl>
+			<organizationUrl>http://nih.gov/</organizationUrl>
 			<roles>
 				<role>architect</role>
 				<role>developer</role>
@@ -255,7 +255,7 @@
 
 	<issueManagement>
 		<system>Trac</system>
-		<url>http://code.imagej.net/trac/imagej/</url>
+		<url>http://trac.imagej.net/</url>
 	</issueManagement>
 
 	<ciManagement>
@@ -266,8 +266,8 @@
 	<mailingLists>
 		<mailingList>
 			<name>ImageJ</name>
-			<subscribe>http://rsb.info.nih.gov/ij/list.html</subscribe>
-			<unsubscribe>http://rsb.info.nih.gov/ij/list.html</unsubscribe>
+			<subscribe>http://imagej.nih.gov/ij/list.html</subscribe>
+			<unsubscribe>http://imagej.nih.gov/ij/list.html</unsubscribe>
 			<post>imagej@list.nih.gov</post>
 			<archive>http://list.nih.gov/archives/imagej.html</archive>
 		</mailingList>
@@ -280,10 +280,10 @@
 		</mailingList>
 		<mailingList>
 			<name>ImageJ-devel</name>
-			<subscribe>http://developer.imagej.net/mailman/listinfo/imagej-devel</subscribe>
-			<unsubscribe>http://developer.imagej.net/mailman/listinfo/imagej-devel</unsubscribe>
-			<post>imagej-devel@developer.imagej.net</post>
-			<archive>http://developer.imagej.net/pipermail/imagej-devel/</archive>
+			<subscribe>http://imagej.net/mailman/listinfo/imagej-devel</subscribe>
+			<unsubscribe>http://imagej.net/mailman/listinfo/imagej-devel</unsubscribe>
+			<post>imagej-devel@imagej.net</post>
+			<archive>http://imagej.net/pipermail/imagej-devel/</archive>
 		</mailingList>
 		<mailingList>
 			<name>Fiji-users</name>
