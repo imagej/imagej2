@@ -94,7 +94,7 @@ public class JHotDrawAdapterFinder {
 			new ArrayList<IJHotDrawOverlayAdapter>(getAdaptersForOverlay(overlay));
 		if (c.isEmpty()) throw new UnsupportedOperationException(
 			"Could not find adapter for " + overlay.getClass().getName());
-		Collections.sort(c, new Comparator<IJHotDrawOverlayAdapter>() {
+		return Collections.min(c, new Comparator<IJHotDrawOverlayAdapter>() {
 
 			@Override
 			public int compare(final IJHotDrawOverlayAdapter o1,
@@ -104,7 +104,6 @@ public class JHotDrawAdapterFinder {
 				return new Integer(o2.getPriority()).compareTo(o1.getPriority());
 			}
 		});
-		return c.get(0);
 	}
 
 	/**
@@ -124,7 +123,7 @@ public class JHotDrawAdapterFinder {
 				figure));
 		if (c.isEmpty()) throw new UnsupportedOperationException(
 			"Could not find adapter for " + overlay.getClass().getName());
-		Collections.sort(c, new Comparator<IJHotDrawOverlayAdapter>() {
+		return Collections.min(c, new Comparator<IJHotDrawOverlayAdapter>() {
 
 			@Override
 			public int compare(final IJHotDrawOverlayAdapter o1,
@@ -133,7 +132,6 @@ public class JHotDrawAdapterFinder {
 				return new Integer(o2.getPriority()).compareTo(o1.getPriority());
 			}
 		});
-		return c.get(0);
 	}
 
 	/**
