@@ -39,7 +39,6 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ui.swing.display.SwingOverlayView;
 
-
 import javax.swing.event.EventListenerList;
 
 import org.jhotdraw.draw.Figure;
@@ -61,20 +60,23 @@ public class IJCreationTool extends CreationTool {
 	private final EventListenerList listeners = new EventListenerList();
 
 	public IJCreationTool(final ImageDisplay display,
-		final IJHotDrawOverlayAdapter adapter)
+		final IJHotDrawOverlayAdapter adapter,
+		final OverlayCreatedListener... listeners)
 	{
 		super(adapter.createDefaultFigure());
 		this.display = display;
 		this.adapter = adapter;
+		for (final OverlayCreatedListener listener : listeners) {
+			addOverlayCreatedListener(listener);
+		}
 	}
 
-	public void addOverlayCreatedListener(final OverlayCreatedListener listener)
-	{
+	public void addOverlayCreatedListener(final OverlayCreatedListener listener) {
 		listeners.add(OverlayCreatedListener.class, listener);
 	}
 
-	public void removeOverlayCreatedListener(
-		final OverlayCreatedListener listener)
+	public void
+		removeOverlayCreatedListener(final OverlayCreatedListener listener)
 	{
 		listeners.remove(OverlayCreatedListener.class, listener);
 	}
