@@ -59,6 +59,7 @@ import org.jhotdraw.draw.Figure;
  * TODO
  * 
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Oval", description = "Oval selections",
 	iconPath = "/icons/tools/oval.png", priority = EllipseAdapter.PRIORITY,

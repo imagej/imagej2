@@ -70,6 +70,7 @@ import org.jhotdraw.draw.RectangleFigure;
  * 
  * @author Lee Kamentsky
  * @author Grant Harris
+ * @author Barry DeZonia
  */
 @Plugin(type = Tool.class, name = "Rectangle",
 	description = "Rectangular overlays",
