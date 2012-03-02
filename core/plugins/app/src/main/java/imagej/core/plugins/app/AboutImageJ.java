@@ -94,32 +94,36 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	// -- private helpers --
 	
 	private Dataset getData() {
+		
 		final String title = "About ImageJ " + ImageJ.VERSION;
 
-		final ImgPlus<T> img = getImage();
+		Dataset ds = null;
 		
+		final ImgPlus<T> img = getImage();
+
 		// did we successfully load a background image?
 		if (img != null) {
 			// yes we did - inspect it
-			final Dataset ds = dataSrv.create(img);
-			ds.setName(title);
+			ds = dataSrv.create(img);
 			boolean validImage = true;
 			validImage &= (ds.numDimensions() == 3);
 			validImage &= (ds.getAxisIndex(Axes.CHANNEL) == 2);
 			validImage &= (ds.getImgPlus().firstElement().getBitsPerPixel() == 8);
 			validImage &= (ds.isInteger());
-			if (validImage) {
-				ds.setRGBMerged(true);
-				return ds;
-			}
+			validImage &= (!ds.isSigned());
+			if (!validImage) ds = null;
 		}
 
-		Log.warn("Could not load a 3 channel 8 bit byte image as backdrop");
+		// Did we fail to load a valid dataset?
+		if (ds == null) {
+			Log.warn("Could not load a 3 channel unsigned 8 bit image as backdrop");
+			// make a black 3 channel 8-bit unsigned background image.
+			ds = dataSrv.create(
+				new long[]{400,400,3} , title,
+				new AxisType[]{Axes.X,Axes.Y,Axes.CHANNEL}, 8, false, false);
+		}
 		
-		// We could not load a dataset. So make a black rgb background image.
-		final Dataset ds = dataSrv.create(
-			new long[]{400,400,3} , title,
-			new AxisType[]{Axes.X,Axes.Y,Axes.CHANNEL}, 8, false, false);
+		ds.setName(title);
 		ds.setRGBMerged(true);
 		
 		return ds;
