@@ -53,35 +53,6 @@ import org.jhotdraw.draw.tool.CreationTool;
  */
 public class IJCreationTool extends CreationTool {
 
-	/**
-	 * An event that tells the listener that an overlay has been created,
-	 * associated with a figure.
-	 */
-	public class FigureCreatedEvent {
-
-		final protected OverlayView overlay;
-		final protected Figure figure;
-
-		FigureCreatedEvent(final OverlayView overlay, final Figure figure) {
-			this.overlay = overlay;
-			this.figure = figure;
-		}
-
-		/**
-		 * @return the overlay
-		 */
-		public OverlayView getOverlay() {
-			return overlay;
-		}
-
-		/**
-		 * @return the figure
-		 */
-		public Figure getFigure() {
-			return figure;
-		}
-	}
-
 	public interface OverlayCreatedListener extends EventListener {
 
 		public void overlayCreated(FigureCreatedEvent e);
