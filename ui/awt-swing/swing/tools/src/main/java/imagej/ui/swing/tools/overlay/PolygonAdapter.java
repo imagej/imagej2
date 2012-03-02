@@ -34,12 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
+import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.Log;
 
 import java.awt.Graphics2D;
@@ -224,4 +228,12 @@ public class PolygonAdapter extends
 			}
 		}
 	}
+
+	@Override
+	public JHotDrawTool getCreationTool(final ImageDisplay display,
+		final OverlayCreatedListener listener)
+	{
+		return new IJBezierTool(display, this, listener);
+	}
+
 }

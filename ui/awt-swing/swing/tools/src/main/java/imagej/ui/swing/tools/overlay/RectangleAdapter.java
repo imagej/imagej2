@@ -46,7 +46,10 @@ import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
+import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -182,4 +185,12 @@ public class RectangleAdapter extends
 		// NB: Prevent PixelProbe from overwriting the status bar.
 		evt.consume();
 	}
+
+	@Override
+	public JHotDrawTool getCreationTool(final ImageDisplay display,
+		final OverlayCreatedListener listener)
+	{
+		return new IJCreationTool(display, this, listener);
+	}
+
 }

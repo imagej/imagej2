@@ -34,13 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PointOverlay;
 import imagej.ext.MouseCursor;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
+import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.tools.AngleTool;
 
 import java.awt.Color;
@@ -146,7 +150,14 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		evt.consume();
 	}
 	*/
-	
+
+	@Override
+	public JHotDrawTool getCreationTool(final ImageDisplay display,
+		final OverlayCreatedListener listener)
+	{
+		return new IJCreationTool(display, this, listener);
+	}
+
 	@SuppressWarnings("serial")
 	private class PointFigure extends AbstractAttributedFigure {
 		protected Rectangle2D.Double bounds;
