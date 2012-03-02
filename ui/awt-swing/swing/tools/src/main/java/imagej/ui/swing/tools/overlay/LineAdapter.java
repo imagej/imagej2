@@ -34,12 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
+import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.tools.FreehandTool;
 
 import java.awt.Graphics2D;
@@ -123,6 +127,13 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 		final Node endNode = line.getNode(1);
 		lineOverlay.setLineEnd(new RealPoint(new double[] {
 			endNode.getControlPoint(0).x, endNode.getControlPoint(0).y }));
+	}
+
+	@Override
+	public JHotDrawTool getCreationTool(final ImageDisplay display,
+		final OverlayCreatedListener listener)
+	{
+		return new IJCreationTool(display, this, listener);
 	}
 
 }

@@ -34,9 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.overlay;
 
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.ColorRGB;
 
 import java.awt.Color;
@@ -138,6 +142,13 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 			imgf.setBounds(new Rectangle2D.Double(minX, minY, w, h));
 			imgf.setBufferedImage(img);
 		}
+	}
+
+	@Override
+	public JHotDrawTool getCreationTool(final ImageDisplay display,
+		final OverlayCreatedListener listener)
+	{
+		return new IJCreationTool(display, this, listener);
 	}
 
 }

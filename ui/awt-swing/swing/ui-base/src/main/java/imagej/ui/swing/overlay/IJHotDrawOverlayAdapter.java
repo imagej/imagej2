@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 
@@ -98,5 +99,8 @@ public interface IJHotDrawOverlayAdapter {
 	 * @param figure the figure that is to be made to look like the overlay
 	 */
 	void updateFigure(OverlayView overlay, Figure figure);
+
+	JHotDrawTool getCreationTool(ImageDisplay display,
+		OverlayCreatedListener listener);
 
 }
