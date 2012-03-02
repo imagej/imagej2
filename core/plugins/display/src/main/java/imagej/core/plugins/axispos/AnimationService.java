@@ -107,8 +107,10 @@ public class AnimationService extends AbstractService {
 	/** Stops animation for the given {@link ImageDisplay}. */
 	public void stop(final ImageDisplay display) {
 		final Animation animation = animations.get(display);
-		if (animation != null) animation.stop();
-		eventService.publish(new StatusEvent(STOPPED_STATUS));
+		if (animation != null) {
+			animation.stop();
+			eventService.publish(new StatusEvent(STOPPED_STATUS));
+		}
 	}
 
 	/** Stops all animations. */
