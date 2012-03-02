@@ -203,7 +203,11 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	private long maxMemory() {
 		OptionsService srv = context.getService(OptionsService.class);
 		OptionsMemoryAndThreads opts = srv.getOptions(OptionsMemoryAndThreads.class);
-		return opts.getMaxMemory() * 1024L * 1024L;
+		long totMem = Runtime.getRuntime().totalMemory();
+		long userMem = opts.getMaxMemory() * 1024L * 1024L;
+		if (userMem > totMem)
+			return totMem;
+		return userMem;
 	}
 
 	/** Returns true if ImageJ2 is running a 64-bit version of Java. */
