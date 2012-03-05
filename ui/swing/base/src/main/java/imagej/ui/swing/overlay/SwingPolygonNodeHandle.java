@@ -1,4 +1,4 @@
-package imagej.ui.swing.tools.overlay;
+package imagej.ui.swing.overlay;
 
 import java.awt.Point;
 import java.awt.event.InputEvent;
@@ -9,7 +9,7 @@ import org.jhotdraw.draw.handle.BezierNodeHandle;
 
 /*
  * The BezierFigure uses a BezierNodeHandle which can change the curve
- * connecting vertices from a line to a Bezier curve. We subclass both 
+ * connecting vertices from a line to a Bezier curve. We subclass both
  * the figure and the node handle to defeat this.
  */
 public class SwingPolygonNodeHandle extends BezierNodeHandle {

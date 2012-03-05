@@ -1,4 +1,4 @@
-package imagej.ui.swing.tools.overlay;
+package imagej.ui.swing.overlay;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,8 +34,6 @@ package imagej.ui.swing.tools.overlay;
  * #L%
  */
 
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.OverlaySettings;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
@@ -55,7 +53,6 @@ import org.jhotdraw.geom.Geom;
 @SuppressWarnings("serial")
 public class SwingPointFigure extends AbstractAttributedFigure {
 
-	private final SwingPointTool swingPointTool;
 	protected Rectangle2D.Double bounds;
 	private final Rectangle2D.Double rect;
 	private Color fillColor = Color.yellow;
@@ -63,12 +60,11 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 
 	/** Creates a new instance.
 	 * @param swingPointTool TODO*/
-	public SwingPointFigure(SwingPointTool swingPointTool) {
-		this(swingPointTool, 0, 0);
+	public SwingPointFigure() {
+		this(0, 0);
 	}
 
-	public SwingPointFigure(SwingPointTool swingPointTool, final double x, final double y) {
-		this.swingPointTool = swingPointTool;
+	public SwingPointFigure(final double x, final double y) {
 		bounds = new Rectangle2D.Double(x, y, 1, 1);
 		rect = new Rectangle2D.Double();
 	}
@@ -79,23 +75,11 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 	}
 
 	public void setFillColor(final ColorRGB c) {
-		if (c == null) {
-			OverlayService srv = swingPointTool.getContext().getService(OverlayService.class);
-			OverlaySettings settings = srv.getDefaultSettings();
-			fillColor = AWTColors.getColor(settings.getFillColor());
-		}
-		else
-			fillColor = AWTColors.getColor(c);
+		fillColor = AWTColors.getColor(c);
 	}
 
 	public void setLineColor(final ColorRGB c) {
-		if (c == null) {
-			OverlayService srv = this.swingPointTool.getContext().getService(OverlayService.class);
-			OverlaySettings settings = srv.getDefaultSettings();
-			lineColor = AWTColors.getColor(settings.getLineColor());
-		}
-		else
-			lineColor = AWTColors.getColor(c);
+		lineColor = AWTColors.getColor(c);
 	}
 
 	public double getX() {

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.tools.overlay;
+package imagej.ui.swing.tools;
 
 import java.awt.Shape;
 
@@ -47,6 +47,8 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.SwingPointFigure;
+import imagej.ui.swing.tools.overlay.SwingAngleTool;
 import imagej.util.ColorRGB;
 
 import org.jhotdraw.draw.Figure;
@@ -78,7 +80,7 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 
 	@Override
 	public Figure createDefaultFigure() {
-		final SwingPointFigure figure = new SwingPointFigure(this);
+		final SwingPointFigure figure = new SwingPointFigure();
 		initDefaultSettings(figure);
 		return figure;
 	}

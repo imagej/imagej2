@@ -1,4 +1,4 @@
-package imagej.ui.swing.tools.overlay;
+package imagej.ui.swing.overlay;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.

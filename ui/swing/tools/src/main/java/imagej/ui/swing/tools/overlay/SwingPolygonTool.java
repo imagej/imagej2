@@ -45,6 +45,7 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.SwingPolygonFigure;
 
 import java.awt.Shape;
 import java.util.Arrays;
