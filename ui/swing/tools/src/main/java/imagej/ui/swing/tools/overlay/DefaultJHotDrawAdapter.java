@@ -149,7 +149,7 @@ public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay, Ima
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<ImageFigure>(display, this);
 	}
 
 	@Override

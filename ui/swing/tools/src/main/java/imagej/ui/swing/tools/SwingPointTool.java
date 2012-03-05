@@ -130,7 +130,7 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<SwingPointFigure>(display, this);
 	}
 
 	@Override
