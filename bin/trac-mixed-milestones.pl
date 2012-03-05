@@ -74,7 +74,7 @@ foreach my $id (sort {$a<=>$b} keys %$tickets) {
 my $total_ticket_count = keys %$tickets;
 if ($good_ticket_count < $total_ticket_count) {
   print "\nGood tickets: $good_ticket_count of $total_ticket_count\n";
-  exit $good_ticket_count;
+  exit $total_ticket_count - $good_ticket_count;
 }
 exit 0;
 
