@@ -46,6 +46,7 @@ import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.util.RealCoords;
 
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 
 import org.jhotdraw.draw.Figure;
@@ -131,6 +132,11 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigu
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
 		reportLine(p1, p2);
+	}
+
+    @Override
+	public Shape toShape(final LineFigure figure) {
+		return figure.getBezierPath().toGeneralPath();
 	}
 
 }

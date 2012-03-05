@@ -46,6 +46,7 @@ import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 
+import java.awt.Shape;
 import java.util.Arrays;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -157,6 +158,11 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, Be
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
 		return new IJBezierTool(display, this);
+	}
+
+	@Override
+	public Shape toShape(final BezierFigure figure) {
+		return figure.getBezierPath().toGeneralPath();
 	}
 
 }

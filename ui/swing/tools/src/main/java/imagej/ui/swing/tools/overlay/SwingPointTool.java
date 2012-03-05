@@ -35,6 +35,8 @@
 
 package imagej.ui.swing.tools.overlay;
 
+import java.awt.Shape;
+
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -127,6 +129,11 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
 		return new IJCreationTool(display, this);
+	}
+
+	@Override
+	public Shape toShape(final SwingPointFigure figure) {
+		throw new UnsupportedOperationException();
 	}
 
 }

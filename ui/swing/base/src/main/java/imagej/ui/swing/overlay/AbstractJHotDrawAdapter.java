@@ -49,6 +49,7 @@ import imagej.util.RealCoords;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
+import java.awt.Shape;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
@@ -245,5 +246,10 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 		final ImageCanvas canvas = imageDisplay.getCanvas();
 		return canvas.panelToDataCoords(new IntCoords(x, y));
 	}
+
+	/**
+	 * Convert a figure into an AWT Shape.
+	 */
+	public abstract Shape toShape(final F figure);
 
 }

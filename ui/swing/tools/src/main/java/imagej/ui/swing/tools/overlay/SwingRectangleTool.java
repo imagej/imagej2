@@ -46,6 +46,7 @@ import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.util.RealCoords;
 
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -133,6 +134,11 @@ public class SwingRectangleTool extends
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
 		reportRectangle(p1, p2);
+	}
+
+	@Override
+	public Shape toShape(final RectangleFigure figure) {
+		return figure.getBounds();
 	}
 
 }

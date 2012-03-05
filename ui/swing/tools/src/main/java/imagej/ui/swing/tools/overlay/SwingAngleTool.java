@@ -45,6 +45,7 @@ import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 
 import org.jhotdraw.draw.BezierFigure;
@@ -192,4 +193,10 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingA
 		}
 
 	}
+
+	@Override
+	public Shape toShape(final AngleFigure figure) {
+		throw new UnsupportedOperationException();
+	}
+
 }

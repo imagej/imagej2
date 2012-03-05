@@ -47,6 +47,7 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.util.ColorRGB;
 
 import java.awt.Color;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -151,4 +152,8 @@ public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay, Ima
 		return new IJCreationTool(display, this);
 	}
 
+	@Override
+	public Shape toShape(final ImageFigure figure) {
+		throw new UnsupportedOperationException();
+	}
 }
