@@ -60,7 +60,7 @@ import org.jhotdraw.geom.BezierPath;
 @Plugin(type = JHotDrawAdapter.class, name = "Angle",
 	description = "Angle overlays", iconPath = "/icons/tools/angle.png",
 	priority = SwingAngleTool.PRIORITY, enabled = true)
-public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay> {
+public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingAngleTool.AngleFigure> {
 
 	public static final double PRIORITY = SwingLineTool.PRIORITY - 1;
 
@@ -94,7 +94,7 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlayView, final Figure figure) {
+	public void updateFigure(final OverlayView overlayView, final AngleFigure figure) {
 		super.updateFigure(overlayView, figure);
 		assert figure instanceof AngleFigure;
 		final AngleFigure angleFig = (AngleFigure) figure;
@@ -114,7 +114,7 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlayView)
+	public void updateOverlay(final AngleFigure figure, final OverlayView overlayView)
 	{
 		super.updateOverlay(figure, overlayView);
 		assert figure instanceof AngleFigure;
@@ -144,7 +144,7 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay> {
 		return new IJCreationTool(display, this);
 	}
 
-	private class AngleFigure extends BezierFigure {
+	protected class AngleFigure extends BezierFigure {
 		
 		public AngleFigure() {
 			// coords have no effect on initial placement in window

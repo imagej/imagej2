@@ -57,7 +57,7 @@ import org.jhotdraw.draw.Figure;
 @Plugin(type = JHotDrawAdapter.class, name = "Point",
 	description = "Point overlays", iconPath = "/icons/tools/point.png",
 	priority = SwingPointTool.PRIORITY, enabled = true)
-public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
+public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingPointFigure> {
 
 	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
 
@@ -82,7 +82,7 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final SwingPointFigure figure) {
 		super.updateFigure(view, figure);
 		assert figure instanceof SwingPointFigure;
 		final SwingPointFigure pointFigure = (SwingPointFigure) figure;
@@ -95,7 +95,7 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final SwingPointFigure figure, final OverlayView view) {
 		assert figure instanceof SwingPointFigure;
 		final SwingPointFigure point = (SwingPointFigure) figure;
 		final Overlay overlay = view.getData();

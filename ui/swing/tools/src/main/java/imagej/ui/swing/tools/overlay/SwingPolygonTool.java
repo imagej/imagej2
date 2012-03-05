@@ -51,6 +51,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
+import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.geom.BezierPath.Node;
@@ -64,14 +65,9 @@ import org.jhotdraw.geom.BezierPath.Node;
 @Plugin(type = JHotDrawAdapter.class, name = "Polygon",
 	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
 	priority = SwingPolygonTool.PRIORITY, enabled = true)
-public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
+public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, BezierFigure> {
 
 	public static final double PRIORITY = SwingEllipseTool.PRIORITY - 1;
-
-	private static BezierFigure downcastFigure(final Figure figure) {
-		assert figure instanceof BezierFigure;
-		return (BezierFigure) figure;
-	}
 
 	private static PolygonOverlay downcastOverlay(final Overlay overlay) {
 		assert overlay instanceof PolygonOverlay;
@@ -82,7 +78,7 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof SwingPolygonFigure)) return false;
+		if (figure != null && !(figure instanceof BezierFigure)) return false;
 		return overlay instanceof PolygonOverlay;
 	}
 
@@ -96,23 +92,23 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 	public Figure createDefaultFigure() {
 		final BezierFigure figure = new SwingPolygonFigure();
 		initDefaultSettings(figure);
+		figure.set(AttributeKeys.WINDING_RULE, AttributeKeys.WindingRule.EVEN_ODD);
 		return figure;
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final BezierFigure figure, final OverlayView view) {
 		super.updateOverlay(figure, view);
-		final BezierFigure b = downcastFigure(figure);
 		final PolygonOverlay poverlay = downcastOverlay(view.getData());
 		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
-		final int nodeCount = b.getNodeCount();
+		final int nodeCount = figure.getNodeCount();
 		final LogService log = getContext().getService(LogService.class);
 		while (roi.getVertexCount() > nodeCount) {
 			roi.removeVertex(nodeCount);
 			if (log != null) log.debug("Removed node from overlay.");
 		}
 		for (int i = 0; i < nodeCount; i++) {
-			final Node node = b.getNode(i);
+			final Node node = figure.getNode(i);
 			final double[] position = new double[] { node.x[0], node.y[0] };
 			if (roi.getVertexCount() == i) {
 				roi.addVertex(i, new RealPoint(position));
@@ -134,24 +130,23 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final BezierFigure figure) {
 		super.updateFigure(view, figure);
-		final BezierFigure bezierFigure = downcastFigure(figure);
 		final PolygonOverlay polygonOverlay = downcastOverlay(view.getData());
 		final PolygonRegionOfInterest roi = polygonOverlay.getRegionOfInterest();
 		final int vertexCount = roi.getVertexCount();
-		while (bezierFigure.getNodeCount() > vertexCount) {
-			bezierFigure.removeNode(vertexCount);
+		while (figure.getNodeCount() > vertexCount) {
+			figure.removeNode(vertexCount);
 		}
 		for (int i = 0; i < vertexCount; i++) {
 			final RealLocalizable vertex = roi.getVertex(i);
 			final double x = vertex.getDoublePosition(0);
 			final double y = vertex.getDoublePosition(1);
-			if (bezierFigure.getNodeCount() == i) {
-				bezierFigure.addNode(new Node(x, y));
+			if (figure.getNodeCount() == i) {
+				figure.addNode(new Node(x, y));
 			}
 			else {
-				final Node node = bezierFigure.getNode(i);
+				final Node node = figure.getNode(i);
 				node.mask = 0;
 				Arrays.fill(node.x, x);
 				Arrays.fill(node.y, y);

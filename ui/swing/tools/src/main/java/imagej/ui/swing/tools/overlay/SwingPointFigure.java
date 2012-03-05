@@ -80,7 +80,7 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 
 	public void setFillColor(final ColorRGB c) {
 		if (c == null) {
-			OverlayService srv = this.swingPointTool.getContext().getService(OverlayService.class);
+			OverlayService srv = swingPointTool.getContext().getService(OverlayService.class);
 			OverlaySettings settings = srv.getDefaultSettings();
 			fillColor = AWTColors.getColor(settings.getFillColor());
 		}

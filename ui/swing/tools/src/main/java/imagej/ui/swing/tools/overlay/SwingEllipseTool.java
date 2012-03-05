@@ -61,7 +61,7 @@ import org.jhotdraw.draw.Figure;
 @Plugin(type = JHotDrawAdapter.class, name = "Oval",
 	description = "Oval selections", iconPath = "/icons/tools/oval.png",
 	priority = SwingEllipseTool.PRIORITY, enabled = true)
-public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
+public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, EllipseFigure> {
 
 	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;
 
@@ -96,7 +96,7 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final EllipseFigure figure) {
 		super.updateFigure(view, figure);
 		final EllipseOverlay overlay = downcastOverlay(view.getData());
 		final double centerX = overlay.getOrigin(0);
@@ -109,7 +109,7 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final EllipseFigure figure, final OverlayView view) {
 		super.updateOverlay(figure, view);
 		final EllipseOverlay overlay = downcastOverlay(view.getData());
 		final Rectangle2D.Double bounds = figure.getBounds();

@@ -64,7 +64,7 @@ import org.jhotdraw.draw.RectangleFigure;
 	iconPath = "/icons/tools/rectangle.png",
 	priority = SwingRectangleTool.PRIORITY, enabled = true)
 public class SwingRectangleTool extends
-	AbstractJHotDrawAdapter<RectangleOverlay>
+	AbstractJHotDrawAdapter<RectangleOverlay, RectangleFigure>
 {
 
 	public static final double PRIORITY = 100;
@@ -96,7 +96,7 @@ public class SwingRectangleTool extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final RectangleFigure figure) {
 		super.updateFigure(view, figure);
 		final RectangleOverlay overlay = downcastOverlay(view.getData());
 		final double x0 = overlay.getOrigin(0);
@@ -109,7 +109,7 @@ public class SwingRectangleTool extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final RectangleFigure figure, final OverlayView view) {
 		super.updateOverlay(figure, view);
 		final RectangleOverlay overlay = downcastOverlay(view.getData());
 		final Rectangle2D.Double bounds = figure.getBounds();
