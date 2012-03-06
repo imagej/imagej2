@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+#
+# gen-component-tables.pl
+#
+
 # Script to generate an HTML table describing ImageJ software components.
 # Information is recursively scraped from Maven POM files.
 # Requires XML::Simple to be installed.

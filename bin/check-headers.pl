@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+#
+# check-headers.pl
+#
+
 # Script to verify existence and correctness of source code headers.
 
 # Usage: bin/check-headers.pl [subdirectory ...]

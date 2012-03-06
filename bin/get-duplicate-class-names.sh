@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# get-duplicate-class-names.sh
+#
+
 names=$(git ls-files \*.java |
 	grep -ve '^extra/' -e '^opencl/' -e '^zoomviewer/' |
 	sed -e 's|.*/||' -e 's|\.java$||' |

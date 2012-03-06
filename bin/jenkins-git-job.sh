@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# jenkins-git-job.sh
+#
+
 # This script is meant to be run by Jenkins whenever ImageJ2's Subversion
 # repository changed. It will update the Git mirror accordingly.
 

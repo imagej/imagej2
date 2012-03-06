@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# event-hierarchy.sh
+#
+
 # Script to generate hierarchy of ImageJ event classes.
 
 # Usage: bin/event-hierarchy.sh

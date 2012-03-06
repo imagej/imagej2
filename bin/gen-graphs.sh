@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# gen-graphs.sh
+#
+
 # Script to generate ImageJ dependency graphs using maven-graph-plugin.
 # Called automatically by Jenkins during the ImageJ-daily job.
 # Requires graphviz to be installed.
