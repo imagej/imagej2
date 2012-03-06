@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -44,18 +45,15 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsColors;
-import imagej.util.ColorRGB;
+import imagej.options.plugins.OptionsChannels;
 import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.operation.unary.real.RealConstant;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Fills the selected region of an input Dataset with the foreground value.
+ * Fills the selected region of an input Dataset with the foreground values.
  * 
  * @author Barry DeZonia
  */
@@ -84,17 +82,10 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final OptionsColors opts = optionsService.getOptions(OptionsColors.class);
+		final OptionsChannels opts = optionsService.getOptions(OptionsChannels.class);
 		if (opts == null) return;
 		final Dataset dataset = dispService.getActiveDataset(display);
-		if (dataset.isRGBMerged()) {
-			final ColorRGB color = opts.getFgColor();
-			fillSelectedRegionWithColor(dataset, color);
-		}
-		else { // gray data
-			final double value = opts.getFgGray();
-			fillSelectedRegionWithValue(display, value);
-		}
+		fillSelectedRegion(dataset, opts.getFgValues());
 	}
 
 	public ImageDisplay getDisplay() {
@@ -107,29 +98,16 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- private helpers --
 
-	private void fillSelectedRegionWithValue(final ImageDisplay disp,
-		final double value)
-	{
-		final RealConstant<DoubleType, DoubleType> op =
-			new RealConstant<DoubleType, DoubleType>(value);
-		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(disp, op, new DoubleType());
-		transform.run();
-	}
+	// TODO - make this part of Dataset API maybe. or somewhere else.
 
-	// TODO - make something like this Dataset API maybe. or somewhere else.
-
-	private void fillSelectedRegionWithColor(final Dataset dataset,
-		final ColorRGB color)
+	private void fillSelectedRegion(final Dataset dataset,
+		final ChannelCollection channels)
 	{
 		final RealRect bounds = overlayService.getSelectionBounds(display);
 		final long minX = (long) bounds.x;
 		final long minY = (long) bounds.y;
 		final long maxX = (long) (bounds.x + bounds.width - 1);
 		final long maxY = (long) (bounds.y + bounds.height - 1);
-		final int r = color.getRed();
-		final int g = color.getGreen();
-		final int b = color.getBlue();
 		final long[] pos = new long[dataset.numDimensions()];
 		final int xIndex = dataset.getAxisIndex(Axes.X);
 		final int yIndex = dataset.getAxisIndex(Axes.Y);
@@ -141,9 +119,10 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 			cursor.localize(pos);
 			if ((pos[xIndex] < minX) || (pos[xIndex] > maxX)) continue;
 			if ((pos[yIndex] < minY) || (pos[yIndex] > maxY)) continue;
-			if (pos[chIndex] == 0) pixRef.setReal(r);
-			else if (pos[chIndex] == 1) pixRef.setReal(g);
-			else pixRef.setReal(b);
+			long position = 0;
+			if (chIndex >= 0) position = pos[chIndex];
+			double value = channels.getChannelValue(position);
+			pixRef.setReal(value);
 		}
 		dataset.update();
 	}

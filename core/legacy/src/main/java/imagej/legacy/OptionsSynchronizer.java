@@ -50,7 +50,7 @@ import ij.process.ImageConverter;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsAppearance;
 import imagej.options.plugins.OptionsArrowTool;
-import imagej.options.plugins.OptionsColors;
+import imagej.options.plugins.OptionsChannels;
 import imagej.options.plugins.OptionsCompiler;
 import imagej.options.plugins.OptionsConversions;
 import imagej.options.plugins.OptionsDicom;
@@ -83,7 +83,8 @@ public class OptionsSynchronizer {
 
 	private final OptionsService optionsService;
 
-	public OptionsSynchronizer(final OptionsService optionsService) {
+	public OptionsSynchronizer(final OptionsService optionsService)
+	{
 		this.optionsService = optionsService;
 	}
 
@@ -130,7 +131,8 @@ public class OptionsSynchronizer {
 		Prefs.interpolateScaledImages = optionsAppearance.isInterpZoomedImages();
 		Prefs.noBorder = optionsAppearance.isNoImageBorder();
 		Prefs.useInvertingLut = optionsAppearance.isUseInvertingLUT();
-
+		Roi.setColor(AWTColors.getColor(optionsAppearance.getSelectionColor()));
+		
 		// TODO
 		// this one needs to have code applied to IJ2. Nothing to set for IJ1.
 		// Prefs.get(SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE);
@@ -173,12 +175,13 @@ public class OptionsSynchronizer {
 	}
 
 	private void colorOptions() {
-		final OptionsColors optionsColors =
-			optionsService.getOptions(OptionsColors.class);
-
-		Toolbar.setForegroundColor(AWTColors.getColor(optionsColors.getFgColor()));
-		Toolbar.setBackgroundColor(AWTColors.getColor(optionsColors.getBgColor()));
-		Roi.setColor(AWTColors.getColor(optionsColors.getSelColor()));
+		OptionsChannels options = optionsService.getOptions(OptionsChannels.class);
+		
+		final ColorRGB lastFgColor = options.getLastFgColor();
+		final ColorRGB lastBgColor = options.getLastBgColor();
+		
+		Toolbar.setForegroundColor(AWTColors.getColor(lastFgColor));
+		Toolbar.setBackgroundColor(AWTColors.getColor(lastBgColor));
 	}
 
 	private void compilerOptions() {
@@ -418,6 +421,7 @@ public class OptionsSynchronizer {
 		optionsAppearance.setInterpZoomedImages(Prefs.interpolateScaledImages);
 		optionsAppearance.setNoImageBorder(Prefs.noBorder);
 		optionsAppearance.setUseInvertingLUT(Prefs.useInvertingLut);
+		optionsAppearance.setSelectionColor(AWTColors.getColorRGB(Roi.getColor()));
 		optionsAppearance.save();
 
 		final OptionsArrowTool optionsArrowTool =
@@ -439,15 +443,16 @@ public class OptionsSynchronizer {
 		optionsArrowTool.setArrowWidth(arrowWidth);
 		optionsArrowTool.save();
 
-		final OptionsColors optionsColors =
-			optionsService.getOptions(OptionsColors.class);
+		/* retired
+		final OptionsChannels optionsColors =
+			optionsService.getOptions(OptionsChannels.class);
 		optionsColors.setFgColor(AWTColors.getColorRGB(Toolbar
 			.getForegroundColor()));
 		optionsColors.setBgColor(AWTColors.getColorRGB(Toolbar
 			.getBackgroundColor()));
-		optionsColors.setSelColor(AWTColors.getColorRGB(Roi.getColor()));
 		optionsColors.save();
-
+		*/
+		
 		final OptionsCompiler optionsCompiler =
 			optionsService.getOptions(OptionsCompiler.class);
 		final Field field = getCompilerField("target");

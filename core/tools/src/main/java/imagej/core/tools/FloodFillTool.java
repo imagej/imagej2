@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
 import imagej.data.display.ImageDisplay;
@@ -46,8 +47,7 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsColors;
-import imagej.util.ColorRGB;
+import imagej.options.plugins.OptionsChannels;
 
 /**
  * Tool implementation for flood fill.
@@ -97,7 +97,7 @@ public class FloodFillTool extends AbstractTool {
 		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
 			final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
 			if (imageDisplay != null) {
-				final PixelHelper helper = new PixelHelper();
+				final PixelHelper helper = new PixelHelper(false);
 				if (helper.recordEvent(evt)) {
 					final DrawingTool drawingTool = initDrawingTool(helper.getDataset());
 					final long[] currPos = getCurrPosition(imageDisplay);
@@ -128,13 +128,17 @@ public class FloodFillTool extends AbstractTool {
 
 	/** Returns an initialized DrawingTool. */
 	private DrawingTool initDrawingTool(final Dataset ds) {
-		final DrawingTool tool = new DrawingTool(ds);
+		final OptionsChannels opts = getChannelOptions();
+		ChannelCollection fillValues;
+		if (altKeyDown)
+			fillValues = opts.getBgValues();
+		else
+			fillValues = opts.getFgValues();
+		final DrawingTool tool = new DrawingTool(ds, fillValues);
 		// TODO - change here to support arbitrary UV axes
 		tool.setUAxis(0);
 		tool.setVAxis(1);
 		tool.setLineWidth(1);
-		if (ds.isRGBMerged()) tool.setColorValue(getFillColor());
-		else tool.setGrayValue(getFillValue());
 		return tool;
 	}
 
@@ -150,32 +154,10 @@ public class FloodFillTool extends AbstractTool {
 		return currPos;
 	}
 
-	/**
-	 * Returns the fill value to use for gray datasets. It will be either the
-	 * foreground or background gray value depending upon whether the ALT key is
-	 * currently down.
-	 */
-	private double getFillValue() {
-		final OptionsColors opts = getColorOptions();
-		if (altKeyDown) return opts.getBgGray();
-		return opts.getFgGray();
-	}
-
-	/**
-	 * Returns the fill color to use for color datasets. It will be either the
-	 * foreground or background color depending upon whether the ALT key is
-	 * currently down.
-	 */
-	private ColorRGB getFillColor() {
-		final OptionsColors opts = getColorOptions();
-		if (altKeyDown) return opts.getBgColor();
-		return opts.getFgColor();
-	}
-
 	/** Returns an OptionsColor instance */
-	private OptionsColors getColorOptions() {
+	private OptionsChannels getChannelOptions() {
 		final OptionsService oSrv = getContext().getService(OptionsService.class);
-		return oSrv.getOptions(OptionsColors.class);
+		return oSrv.getOptions(OptionsChannels.class);
 	}
 
 	/** Actually does the flood fill. */
