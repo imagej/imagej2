@@ -3,7 +3,7 @@
 # A simple script to add header & copyright to a Java source file.
 
 # Intended to be used with other *nix commands; e.g.:
-#   find . -name '*.java' -exec bash scripts/add-header.sh {} \;
+#   find . -name '*.java' -exec bin/add-header.sh {} \;
 
 test $# = 0 && {
 	find . -name '*.java' -print0 |

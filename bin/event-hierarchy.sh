@@ -2,7 +2,7 @@
 
 # Script to generate hierarchy of ImageJ event classes.
 
-# Usage: bash scripts/event-hierarchy.sh
+# Usage: bin/event-hierarchy.sh
 
 set -e
 

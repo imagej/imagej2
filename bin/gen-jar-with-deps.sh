@@ -3,7 +3,7 @@
 # Script to generate a single ImageJ JAR including all dependencies.
 # Called automatically by Jenkins during the ImageJ-daily job.
 
-# Usage: bash scripts/gen-jar-with-deps.sh
+# Usage: bin/gen-jar-with-deps.sh
 
 set -e
 
