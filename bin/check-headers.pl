@@ -2,7 +2,7 @@
 
 # Script to verify existence and correctness of source code headers.
 
-# Usage: perl scripts/check-headers.pl [subdirectory ...]
+# Usage: bin/check-headers.pl [subdirectory ...]
 
 use strict;
 

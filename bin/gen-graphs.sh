@@ -4,7 +4,7 @@
 # Called automatically by Jenkins during the ImageJ-daily job.
 # Requires graphviz to be installed.
 
-# Usage: bash scripts/gen-graphs.sh
+# Usage: bin/gen-graphs.sh
 
 set -e
 

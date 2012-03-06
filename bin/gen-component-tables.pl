@@ -4,7 +4,7 @@
 # Information is recursively scraped from Maven POM files.
 # Requires XML::Simple to be installed.
 
-# Usage: perl scripts/gen-component-tables.pl > out.html
+# Usage: bin/gen-component-tables.pl > out.html
 
 use strict;
 use XML::Simple;
