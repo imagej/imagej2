@@ -63,7 +63,9 @@ import net.imglib2.type.numeric.RealType;
  * Draws data across all channels in an orthoplane of a {@link Dataset}. Many
  * methods adapted from ImageJ1's ImageProcessor methods. Internally the drawing
  * routines work in a UV plane. U and V can be specified from existing coord
- * axes (i.e UV can equal XY or ZT or any other combination of Dataset axes).
+ * axes (i.e UV can equal XY or ZT or any other combination of Dataset axes
+ * that do not involve the channel axis). It is the user's responsibility to
+ * avoid using a single axis to specify both the U and V axes.
  * 
  * @author Barry DeZonia
  */
@@ -74,7 +76,7 @@ public class DrawingTool {
 	private final Dataset dataset;
 	private int uAxis;
 	private int vAxis;
-	private final int channelAxis;
+	private int channelAxis;
 	private final RandomAccess<? extends RealType<?>> accessor;
 	private long lineWidth;
 	private long u0, v0;
@@ -91,23 +93,22 @@ public class DrawingTool {
 	// -- constructor --
 
 	/**
-	 * Creates a DrawingTool to modify a specified Dataset.
+	 * Creates a DrawingTool to modify a specified Dataset. Will draw pixel values
+	 * using the given fill values. After construction the default U axis will be
+	 * the first non-channel axis. The default V axis will be the second
+	 * non-channel axis.
 	 */
 	public DrawingTool(final Dataset ds, ChannelCollection fillValues) {
 		this.dataset = ds;
-		this.channelAxis = ds.getAxisIndex(Axes.CHANNEL);
 		this.accessor = ds.getImgPlus().randomAccess();
-		this.lineWidth = 1;
 		this.channels = new ChannelCollection(fillValues);
-		this.uAxis = 0;
-		this.vAxis = 1;
-		this.maxU = ds.dimension(0) - 1;
-		this.maxV = ds.dimension(1) - 1;
-		this.u0 = 0;
-		this.v0 = 0;
+		this.lineWidth = 1;
 		this.intensity = 1;
 		this.textRenderer = new AWTTextRenderer();  // FIXME - do elsewhere
 		textRenderer.setAntialiasing(true);
+		this.u0 = 0;
+		this.v0 = 0;
+		initAxisVariables();
 	}
 
 	// -- public interface --
@@ -119,6 +120,7 @@ public class DrawingTool {
 
 	/** Sets the U axis index this DrawingTool will work in. */
 	public void setUAxis(final int axisNum) {
+		checkAxisValid(axisNum);
 		uAxis = axisNum;
 		maxU = dataset.dimension(uAxis) - 1;
 	}
@@ -130,6 +132,7 @@ public class DrawingTool {
 
 	/** Sets the V axis index this DrawingTool will work in. */
 	public void setVAxis(final int axisNum) {
+		checkAxisValid(axisNum);
 		vAxis = axisNum;
 		maxV = dataset.dimension(vAxis) - 1;
 	}
@@ -414,6 +417,38 @@ public class DrawingTool {
 
 	// -- private helpers --
 
+	private void initAxisVariables() {
+		channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
+		uAxis = -1;
+		vAxis = -1;
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			if (i == channelAxis) continue;
+			if (uAxis == -1)
+				uAxis = i;
+			else if (vAxis == -1)
+				vAxis = i;
+		}
+		if (uAxis == -1 || vAxis == -1)
+			throw new IllegalArgumentException(
+				"DrawingTool cannot find appropriate default UV axes");
+		maxU = dataset.dimension(uAxis) - 1;
+		maxV = dataset.dimension(vAxis) - 1;
+	}
+
+	private void checkAxisValid(int axisNum) {
+		if (axisNum == channelAxis)
+			throw new IllegalArgumentException(
+				"DrawingTool misconfiguration. " +
+						"The tool fills multiple channels at once. " +
+						"Cannot use a channel plane as working plane.");
+	}
+
+	/**
+	 * Basic text renderer interface. Implementers render text into an int[]
+	 * buffer. Values range from 0 to 255 (for now) and represent grayscale
+	 * intensities. The buffer is then available afterwards including its
+	 * dimensions. Users can set font attributes before rendering.
+	 */
 	private interface TextRenderer {
 		void renderText(String text);
 		int getPixelsWidth();
@@ -428,7 +463,12 @@ public class DrawingTool {
 		void setAntialiasing(boolean val);
 		boolean getAntialiasing();
 	}
-	
+
+	/**
+	 * The AWT implementation of the TextRendered interface.
+	 * TODO - relocate to some other subproject to remove AWT dependencies from
+	 * this subproject.
+	 */
 	private class AWTTextRenderer implements TextRenderer {
 		private int bufferSizeU;
 		private int bufferSizeV;
