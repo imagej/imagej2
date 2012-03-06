@@ -166,7 +166,8 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		addMessage(final InputPanel inputPanel, final WidgetModel model, String label)
 	{
 		String message = model.getValue().toString();
-		if (label != null) message = label + ": " + message;
+		if ((label != null) && (label.length() > 0))
+			message = label + ": " + message;
 		inputPanel.addMessage(message);
 	}
 
