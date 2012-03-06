@@ -91,7 +91,7 @@ public class ChannelCollection {
 	public double getChannelValue(long chan) {
 		if (chan > Integer.MAX_VALUE)
 			throw new IllegalArgumentException("too many channels: "+chan);
-		if (chan > channelInfos.size()) return 0;
+		if (chan >= channelInfos.size()) return 0;
 		return channelInfos.get((int)chan);
 	}
 
