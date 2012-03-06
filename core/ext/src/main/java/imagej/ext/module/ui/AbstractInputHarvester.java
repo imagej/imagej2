@@ -121,7 +121,7 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 
 		final boolean message = item.getVisibility() == ItemVisibility.MESSAGE;
 		if (message) {
-			addMessage(inputPanel, model);
+			addMessage(inputPanel, model, item.getLabel());
 			return model;
 		}
 
@@ -163,9 +163,11 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	}
 
 	private void
-		addMessage(final InputPanel inputPanel, final WidgetModel model)
+		addMessage(final InputPanel inputPanel, final WidgetModel model, String label)
 	{
-		inputPanel.addMessage(model.getValue().toString());
+		String message = model.getValue().toString();
+		if (label != null) message = label + ": " + message;
+		inputPanel.addMessage(message);
 	}
 
 	private void addNumber(final InputPanel inputPanel, final WidgetModel model,
