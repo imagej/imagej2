@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
+import imagej.event.EventService;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
@@ -82,6 +83,11 @@ public class PickerTool extends AbstractTool {
 
 		final OptionsChannels options = getOptions();
 
+		// FIXME Hack that allows options to publish events about the changing
+		// values. This is how IJ1 is informed about current FG/BG colors.
+		final EventService es = getContext().getService(EventService.class);
+		options.setEventService(es);
+
 		final ChannelCollection values = helper.getValues();
 
 		String name;
@@ -98,12 +104,15 @@ public class PickerTool extends AbstractTool {
 			target = options.getFgValues();
 			options.setLastFgColor(helper.getColor());
 		}
-
+		
+		// set the values of the FG or BG
 		target.resetChannels(values);
-
-		statusMessage(name, values);
-
+		
+		// make sure future options reflect those new values
 		options.save();
+
+		// let user know the FG or BG values changed
+		statusMessage(name, values);
 
 		evt.consume();
 	}
@@ -152,7 +161,7 @@ public class PickerTool extends AbstractTool {
 			if (chans.areInteger())
 				valString = String.format("%d", (long)chans.getChannelValue(i));
 			else
-				valString = String.format("%.3f", chans.getChannelValue(i));
+				valString = String.format("%f", chans.getChannelValue(i));
 			builder.append(valString);
 		}
 		builder.append(")");

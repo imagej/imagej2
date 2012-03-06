@@ -35,12 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.options.plugins;
 
 import imagej.data.ChannelCollection;
+import imagej.event.EventService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
+import imagej.options.event.OptionsEvent;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 
@@ -56,9 +58,11 @@ import imagej.util.Colors;
 	@Menu(label = "Channels...", weight = 9) })
 public class OptionsChannels extends OptionsPlugin {
 
+	// TODO - this should become a List<Double> when that widget is supported
 	@Parameter(label = "Foreground values")
 	private String fgValuesString = "255,255,255";
 	
+	// TODO - this should become a List<Double> when that widget is supported
 	@Parameter(label = "Background values")
 	private String bgValuesString = "0,0,0";
 
@@ -68,8 +72,10 @@ public class OptionsChannels extends OptionsPlugin {
 	@Parameter(label="Last background color",visibility=ItemVisibility.MESSAGE)
 	private ColorRGB lastBgColor = Colors.BLACK;
 	
-	private ChannelCollection fgValues;
-	private ChannelCollection bgValues;
+	// -- instance variables that are not Parameters --
+
+	private ChannelCollection fgValues;  // used by IJ2 consumers
+	private ChannelCollection bgValues;  // used by IJ2 consumers
 	
 	// -- OptionsChannels methods --
 
@@ -90,6 +96,14 @@ public class OptionsChannels extends OptionsPlugin {
 		bgValuesString = encode(bgValues);
 		super.save();
 	}
+
+	// NB - TEMP - FIXME This is a way to generate events when we have not been
+	// run by the plugin service. When not run by plugin service our eventService
+	// instance variable is NULL.
+	
+	public void setEventService(EventService s) {
+		eventService = s;
+	}
 	
 	public ChannelCollection getFgValues() {
 		return fgValues;
@@ -109,10 +123,22 @@ public class OptionsChannels extends OptionsPlugin {
 	
 	public void setLastFgColor(ColorRGB c) {
 		lastFgColor = c;
+		save(); // must do in case interested parties need persisted info
+		// make sure IJ1 knows about this change if possible
+		if (eventService != null)
+			eventService.publish(new OptionsEvent(this));
+		// TODO FIXME - find a way to get a handle on the current EventService so
+		// we can always publish those events.
 	}
 	
 	public void setLastBgColor(ColorRGB c) {
 		lastBgColor = c;
+		save(); // must do in case interested parties need persisted info
+		// make sure IJ1 knows about this change if possible
+		if (eventService != null)
+			eventService.publish(new OptionsEvent(this));
+		// TODO FIXME - find a way to get a handle on the current EventService so
+		// we can always publish those events.
 	}
 	
 	// -- private helpers --
@@ -142,7 +168,7 @@ public class OptionsChannels extends OptionsPlugin {
 			if (value == Math.floor(value))
 				valString = String.format("%d",(long)value);
 			else
-				valString = String.format("%.3f",value);
+				valString = String.format("%f",value);
 			if (i != 0) builder.append(",");
 			builder.append(valString);
 		}
