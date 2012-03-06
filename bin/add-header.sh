@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# add-header.sh
+#
+
 # A simple script to add header & copyright to a Java source file.
 
 # Intended to be used with other *nix commands; e.g.:

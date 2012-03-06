@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# eclipse-clue-bat.sh
+#
+
 # Use this script to add the files necessary to force Eclipse to use the sezpoz
 # annotator (it would not be necessary if Eclipse's compiler would follow the
 # rules set out by the Java specification).
