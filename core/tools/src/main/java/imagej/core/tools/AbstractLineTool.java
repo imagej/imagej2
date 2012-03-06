@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ImageJ;
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
 import imagej.data.display.ImageCanvas;
@@ -48,7 +49,7 @@ import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsColors;
+import imagej.options.plugins.OptionsChannels;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -155,11 +156,20 @@ public abstract class AbstractLineTool extends AbstractTool {
 		final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
 		if (imageDisplay == null) return;
 
+		final OptionsService oSrv = context.getService(OptionsService.class);
+		OptionsChannels options = oSrv.getOptions(OptionsChannels.class);
+
+		ChannelCollection channels;
+		if (altKeyDown)
+			channels = options.getBgValues();
+		else
+			channels = options.getFgValues();
+		
 		// get dataset associated with mouse down event
 		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
 		// allocate drawing tool
-		drawingTool = new DrawingTool(dataset);
+		drawingTool = new DrawingTool(dataset, channels);
 
 		// set the position of tool to current display's position
 		// FIXME - this will break when the view axes are different than the
@@ -174,29 +184,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 		drawingTool.setUAxis(0);
 		drawingTool.setVAxis(1);
 
-		initDrawToolAttributes(dataset.isRGBMerged());
-	}
-
-	/** Sets the DrawingTool's attributes (line width, drawing colors, etc.) */
-	private void initDrawToolAttributes(final boolean isColorData)
-	{
-		// set line width of drawingTool
-
 		drawingTool.setLineWidth(getLineWidth());
-
-		// set color of drawingTool
-
-		final OptionsService optionsService = getContext().getService(OptionsService.class);
-		final OptionsColors opts = optionsService.getOptions(OptionsColors.class);
-		
-		if (isColorData) {
-			if (altKeyDown) drawingTool.setColorValue(opts.getBgColor());
-			else drawingTool.setColorValue(opts.getFgColor());
-		}
-		else { // gray data
-			if (altKeyDown) drawingTool.setGrayValue(opts.getBgGray());
-			else drawingTool.setGrayValue(opts.getFgGray());
-		}
 	}
 
 }

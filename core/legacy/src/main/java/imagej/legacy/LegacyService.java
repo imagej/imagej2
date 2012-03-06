@@ -35,10 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.IJ;
-import ij.IJEventListener;
 import ij.ImagePlus;
 import ij.WindowManager;
-import ij.gui.Toolbar;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -54,12 +52,9 @@ import imagej.ext.plugin.PluginService;
 import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
-import imagej.options.plugins.OptionsColors;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.util.ColorRGB;
 import imagej.util.Log;
-import imagej.util.awt.AWTColors;
 
 import java.util.ArrayList;
 
@@ -133,7 +128,7 @@ public final class LegacyService extends AbstractService {
 		new LegacyPluginFinder().findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 
-		IJ.addEventListener(new IJ1EventListener());
+		//IJ.addEventListener(new IJ1EventListener());
 
 		updateIJ1Settings();
 
@@ -243,13 +238,17 @@ public final class LegacyService extends AbstractService {
 		}
 	}
 
+	/* 3-1-12
+
+	 We are no longer going to synchronize colors from IJ1 to IJ2
+
 	protected class IJ1EventListener implements IJEventListener {
 
 		@Override
 		public void eventOccurred(final int eventID) {
 			@SuppressWarnings("synthetic-access")
-			final OptionsColors colorOpts =
-				optionsService.getOptions(OptionsColors.class);
+			final OptionsChannels colorOpts =
+				optionsService.getOptions(OptionsChannels.class);
 			ColorRGB color;
 			switch (eventID) {
 				case ij.IJEventListener.COLOR_PICKER_CLOSED:
@@ -276,10 +275,10 @@ public final class LegacyService extends AbstractService {
 					// TODO - do something???
 					break;
 				default: // unknown event
-					/* do nothing */
+					// do nothing
 					break;
 			}
 		}
 	}
-
+	*/
 }

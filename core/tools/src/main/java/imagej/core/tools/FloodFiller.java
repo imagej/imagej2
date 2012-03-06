@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
-import imagej.util.ColorRGB;
 import imagej.util.RealRect;
 
 import java.util.Arrays;
@@ -58,8 +58,7 @@ import net.imglib2.type.numeric.RealType;
 public class FloodFiller {
 
 	private final DrawingTool tool;
-	private final boolean isColor;
-	private int colorAxis;
+	private int channelAxis;
 	private int uAxis;
 	private int vAxis;
 	private final StackOfLongs uStack;
@@ -71,9 +70,7 @@ public class FloodFiller {
 	 */
 	public FloodFiller(final DrawingTool tool) {
 		this.tool = tool;
-		this.isColor = tool.getDataset().isRGBMerged();
-		if (isColor) this.colorAxis = tool.getDataset().getAxisIndex(Axes.CHANNEL);
-		else this.colorAxis = -1;
+		this.channelAxis = tool.getDataset().getAxisIndex(Axes.CHANNEL);
 		this.uAxis = -1;
 		this.vAxis = -1;
 		this.uStack = new StackOfLongs();
@@ -91,47 +88,46 @@ public class FloodFiller {
 		accessor.setPosition(position);
 		uAxis = tool.getUAxis();
 		vAxis = tool.getVAxis();
+		final ChannelCollection fillValues = tool.getChannels();
 		// avoid degenerate case
-		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
-			return false;
+		if (matches(accessor,u0,v0,fillValues)) return false;
+		final ChannelCollection origValues = getValues(accessor, u0, v0);
 		final long maxU = ds.dimension(uAxis) - 1;
 		final long maxV = ds.dimension(vAxis) - 1;
-		final ColorRGB origColor = getColor(accessor,u0,v0);
-		final double origValue = getValue(accessor,u0,v0);
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
 		while (!uStack.isEmpty()) {
 			final long u = popU();
 			final long v = popV();
-			if (!matches(accessor,u,v,origColor,origValue)) continue;
+			if (!matches(accessor,u,v,origValues)) continue;
 			long u1 = u;
 			long u2 = u;
 			// find start of scan-line
-			while (u1>=0 && matches(accessor,u1,v,origColor,origValue)) u1--;
+			while (u1>=0 && matches(accessor,u1,v,origValues)) u1--;
 			u1++;
 		  // find end of scan-line
-			while (u2<=maxU && matches(accessor,u2,v,origColor,origValue)) u2++;                 
+			while (u2<=maxU && matches(accessor,u2,v,origValues)) u2++;                 
 			u2--;
 			// fill scan-line
 			tool.drawLine(u1, v, u2, v);
 			// find scan-lines above this one
 			boolean inScanLine = false;
 			for (long i=u1; i<=u2; i++) {
-				if (!inScanLine && v>0 && matches(accessor,i,v-1,origColor,origValue))
+				if (!inScanLine && v>0 && matches(accessor,i,v-1,origValues))
 					{push(i, v-1); inScanLine = true;}
 				else if (inScanLine && v>0 &&
-									!matches(accessor,i,v-1,origColor,origValue))
+									!matches(accessor,i,v-1,origValues))
 					inScanLine = false;
 			}
 			// find scan-lines below this one
 			inScanLine = false;
 			for (long i=u1; i<=u2; i++) {
 				if (!inScanLine && v<maxV &&
-							matches(accessor,i,v+1,origColor,origValue))
+							matches(accessor,i,v+1,origValues))
 					{push(i, v+1); inScanLine = true;}
 				else if (inScanLine && v<maxV &&
-									!matches(accessor,i,v+1,origColor,origValue))
+									!matches(accessor,i,v+1,origValues))
 					inScanLine = false;
 			}
 		}
@@ -150,13 +146,12 @@ public class FloodFiller {
 		accessor.setPosition(position);
 		uAxis = tool.getUAxis();
 		vAxis = tool.getVAxis();
+		final ChannelCollection fillValues = tool.getChannels();
 		// avoid degenerate case
-		if (matches(accessor,u0,v0,tool.getColorValue(),tool.getGrayValue()))
-			return false;
+		if (matches(accessor,u0,v0,fillValues)) return false;
+		final ChannelCollection origValues = getValues(accessor, u0, v0);
 		final long maxU = ds.dimension(uAxis) - 1;
 		final long maxV = ds.dimension(vAxis) - 1;
-		final ColorRGB origColor = getColor(accessor,u0,v0);
-		final double origValue = getValue(accessor,u0,v0);
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
@@ -165,35 +160,35 @@ public class FloodFiller {
 			final long v = popV();
 			long u1 = u;
 			long u2 = u;
-			if (matches(accessor,u,v,origColor,origValue)) {
+			if (matches(accessor,u,v,origValues)) {
 				// find start of scan-line
-				while (u1>=0 && matches(accessor,u1,v,origColor,origValue)) u1--;
+				while (u1>=0 && matches(accessor,u1,v,origValues)) u1--;
 				u1++;
 			  // find end of scan-line
-				while (u2<=maxU && matches(accessor,u2,v,origColor,origValue)) u2++;
+				while (u2<=maxU && matches(accessor,u2,v,origValues)) u2++;
 				u2--;
 				tool.drawLine(u1, v, u2, v); // fill scan-line
 			}
 			if (v > 0) {
 				if (u1 > 0) {
-					if (matches(accessor,u1-1,v-1,origColor,origValue)) {
+					if (matches(accessor,u1-1,v-1,origValues)) {
 						push(u1-1, v-1);
 					}
 				}
 				if (u2 < maxU) {
-					if (matches(accessor,u2+1,v-1,origColor,origValue)) {
+					if (matches(accessor,u2+1,v-1,origValues)) {
 						push(u2+1, v-1);
 					}
 				}
 			}
 			if (v < maxV) {
 				if (u1 > 0) {
-					if (matches(accessor,u1-1,v+1,origColor,origValue)) {
+					if (matches(accessor,u1-1,v+1,origValues)) {
 						push(u1-1, v+1);
 					}
 				}
 				if (u2 < maxU) {
-					if (matches(accessor,u2+1,v+1,origColor,origValue)) {
+					if (matches(accessor,u2+1,v+1,origValues)) {
 						push(u2+1, v+1);
 					}
 				}
@@ -201,20 +196,20 @@ public class FloodFiller {
 			// find scan-lines above this one
 			boolean inScanLine = false;
 			for (long i=u1; i<=u2; i++) {
-				if (!inScanLine && v>0 && matches(accessor,i,v-1,origColor,origValue))
+				if (!inScanLine && v>0 && matches(accessor,i,v-1,origValues))
 					{push(i, v-1); inScanLine = true;}
 				else if (inScanLine && v>0 &&
-									!matches(accessor,i,v-1,origColor,origValue))
+									!matches(accessor,i,v-1,origValues))
 					inScanLine = false;
 			}
 			// find scan-lines below this one
 			inScanLine = false;
 			for (long i=u1; i<=u2; i++) {
 				if (!inScanLine && v<maxV &&
-							matches(accessor,i,v+1,origColor,origValue))
+							matches(accessor,i,v+1,origValues))
 					{push(i, v+1); inScanLine = true;}
 				else if (inScanLine && v<maxV &&
-									!matches(accessor,i,v+1,origColor,origValue))
+									!matches(accessor,i,v+1,origValues))
 					inScanLine = false;
 			}
 		}
@@ -231,6 +226,11 @@ public class FloodFiller {
 		DrawingTool maskTool, RealRect bounds)
 	{
 		final Dataset ds = tool.getDataset();
+		// TODO - is this a bogus limitation
+		if ((channelAxis != -1) || (ds.dimension(channelAxis) != 1)) {
+			throw new IllegalArgumentException(
+				"particle analyzer cannot support multiple channels");
+		}
 		final RandomAccess<? extends RealType<?>> acc =
 			ds.getImgPlus().randomAccess();
 		acc.setPosition(position);
@@ -238,11 +238,14 @@ public class FloodFiller {
 		vAxis = tool.getVAxis();
 		long maxU = ds.dimension(uAxis) - 1;
 		long maxV = ds.dimension(vAxis) - 1;
-		maskTool.setGrayValue(0);
+		long numChan = ds.dimension(channelAxis);
+		for (long i = 0; i < numChan; i++)
+			maskTool.getChannels().setChannelValue(i, 0);
 	  // FIXME TODO - fill plane or roi of plane of maskTool?
 		// Decide between fill() or fill(RealRect)
 		maskTool.fill();
-		maskTool.setGrayValue(255);
+		for (long i = 0; i < numChan; i++)
+			maskTool.getChannels().setChannelValue(i, 255);
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
@@ -292,7 +295,9 @@ public class FloodFiller {
 		RandomAccess<? extends RealType<?>> accessor, long u, long v,
 		double level1, double level2)
 	{
-		double val = getValue(accessor, u, v);
+		accessor.setPosition(u,uAxis);
+		accessor.setPosition(v,vAxis);
+		double val = accessor.get().getRealDouble();
 		return val>=level1 && val<=level2;
 	}
 	
@@ -302,66 +307,53 @@ public class FloodFiller {
 	 */
 	private boolean	matches(
 		final RandomAccess<? extends RealType<?>> accessor, final long u,
-		final long v, final ColorRGB origColor, final double origValue)
+		final long v, final ChannelCollection channels)
 	{
 		accessor.setPosition(u, uAxis);
 		accessor.setPosition(v, vAxis);
 
-		// are we interested in values?
-		if (!isColor) {
+		// 0 channel image?
+		if (channelAxis == -1) {
 			final double val = accessor.get().getRealDouble();
-			return val == origValue;
+			return val == channels.getChannelValue(0);
 		}
 
-		// else interested in colors
-		double component;
-
-		accessor.setPosition(0, colorAxis);
-		component = accessor.get().getRealDouble();
-		if (component != origColor.getRed()) return false;
-
-		accessor.setPosition(1, colorAxis);
-		component = accessor.get().getRealDouble();
-		if (component != origColor.getGreen()) return false;
-
-		accessor.setPosition(2, colorAxis);
-		component = accessor.get().getRealDouble();
-		if (component != origColor.getBlue()) return false;
-
+		// else image has 1 or more channels
+		long numChan = tool.getDataset().dimension(channelAxis);
+		for (long c = 0; c < numChan; c++) {
+			accessor.setPosition(c, channelAxis);
+			double value = accessor.get().getRealDouble();
+			// TODO - do we need a "near" rather than "equal" here?
+			if (value != channels.getChannelValue(c)) return false;
+		}
+		
 		return true;
 	}
 
 	/**
-	 * Gets the color of the pixel at the (u,v) coordinates of the UV plane of the
-	 * current DrawingTool. If the underlying Dataset is not color returns null.
+	 * Records the values of all the channels at a given (u,v) coord in a Dataset.
+	 * The non-UV coords must be set on the accessor before calling this method.
 	 */
-	private ColorRGB getColor(final RandomAccess<? extends RealType<?>> accessor,
+	private ChannelCollection getValues(
+		final RandomAccess<? extends RealType<?>> accessor,
 		final long u, final long v)
 	{
-		if (!isColor) return null;
+		ChannelCollection channels = new ChannelCollection();
 		accessor.setPosition(u, uAxis);
 		accessor.setPosition(v, vAxis);
-		accessor.setPosition(0, colorAxis);
-		final int r = (int) accessor.get().getRealDouble();
-		accessor.setPosition(1, colorAxis);
-		final int g = (int) accessor.get().getRealDouble();
-		accessor.setPosition(2, colorAxis);
-		final int b = (int) accessor.get().getRealDouble();
-		return new ColorRGB(r, g, b);
-	}
-
-	/**
-	 * Gets the gray value of the pixel at the (u,v) coordinates of the UV plane
-	 * of the current DrawingTool. If the underlying Dataset is not gray returns
-	 * Double.NaN.
-	 */
-	private double getValue(final RandomAccess<? extends RealType<?>> accessor,
-		final long u, final long v)
-	{
-		if (isColor) return Double.NaN;
-		accessor.setPosition(u, uAxis);
-		accessor.setPosition(v, vAxis);
-		return accessor.get().getRealDouble();
+		if (channelAxis == -1) {
+			double val = accessor.get().getRealDouble();
+			channels.setChannelValue(0, val);
+		}
+		else {
+			long numChannels = tool.getDataset().dimension(channelAxis);
+			for (long i = 0; i < numChannels; i++) {
+				accessor.setPosition(i, channelAxis);
+				double val = accessor.get().getRealDouble();
+				channels.setChannelValue(i, val);
+			}
+		}
+		return channels;
 	}
 
 	/**

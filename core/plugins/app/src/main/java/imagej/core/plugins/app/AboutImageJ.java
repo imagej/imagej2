@@ -43,6 +43,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import imagej.ImageJ;
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
@@ -55,7 +56,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsMemoryAndThreads;
-import imagej.util.Colors;
 import imagej.util.Log;
 
 /**
@@ -92,7 +92,10 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	}
 
 	// -- private helpers --
-	
+
+	/**
+	 * Returns a merged color Dataset as a backdrop.
+	 */
 	private Dataset getData() {
 		
 		final String title = "About ImageJ " + ImageJ.VERSION;
@@ -128,7 +131,10 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		
 		return ds;
 	}
-	
+
+	/**
+	 * Loads an ImgPlus from a URL
+	 */
 	private ImgPlus<T> getImage() {
 		final URL imageURL = getImageURL();
 		if (imageURL == null) return null;
@@ -143,19 +149,29 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 			return null;
 		}
 	}
-	
+
+	/**
+	 * Returns the URL of a backdrop image
+	 */
 	private URL getImageURL() {
 		// TODO - cycle through one of many
 		final String fname = "/images/image1.tif";  // NB - THIS PATH IS CORRECT 
 		return getClass().getResource(fname);
 	}
-	
+
+	/**
+	 * Draws the textual information over a given merged color Dataset
+	 */
 	private void drawTextOverImage(Dataset ds) {
-		final DrawingTool tool = new DrawingTool(ds);
+		// make a yellow like set of channels
+		final ChannelCollection chans = new ChannelCollection();
+		chans.setChannelValue(0, 255);
+		chans.setChannelValue(1, 255);
+		chans.setChannelValue(2, 0);
+		final DrawingTool tool = new DrawingTool(ds, chans);
 		tool.setUAxis(0);
 		tool.setVAxis(1);
 		final long width = ds.dimension(0);
-		tool.setColorValue(Colors.YELLOW);
 		final long x = width / 2;
 		long y = 50;
 		tool.setFontSize(20);
@@ -168,6 +184,10 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		}
 	}
 	
+	/**
+	 * Returns the paragraph of textual information to display over the
+	 * backdrop image
+	 */
 	private String[] getTextBlock() {
 		return new String[] {
 			"Open source image processing software",
@@ -178,11 +198,17 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		};
 	}
 	
+	/**
+	 * Returns a string showing java platform and version information
+	 */
 	private String javaInfo() {
 		return "Java "+System.getProperty("java.version") +
 				(is64Bit() ? " (64-bit)" : " (32-bit)");
 	}
 	
+	/**
+	 * Returns a string showing used and available memory information
+	 */
 	private String memoryInfo() {
 		long inUse = currentMemory();
 		String inUseStr = inUse<10000*1024?inUse/1024L+"K":inUse/1048576L+"MB";

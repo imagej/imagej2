@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.data.ChannelCollection;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
-import imagej.util.ColorRGB;
 
 /**
  * Displays pixel values under the cursor.
@@ -48,7 +48,7 @@ import imagej.util.ColorRGB;
 @Plugin(type = Tool.class, name = "Probe", alwaysActive = true)
 public class PixelProbe extends AbstractTool {
 
-	private final PixelHelper helper = new PixelHelper();
+	private final PixelHelper helper = new PixelHelper(false);
 
 	// -- Tool methods --
 
@@ -61,23 +61,21 @@ public class PixelProbe extends AbstractTool {
 
 		final long cx = helper.getCX();
 		final long cy = helper.getCY();
-		String message;
-		if (helper.isPureRGBCase()) {
-			final ColorRGB color = helper.getColor();
-			message =
-				String.format("x=%d, y=%d, value=%d,%d,%d", cx, cy, color.getRed(),
-					color.getGreen(), color.getBlue());
+		ChannelCollection values = helper.getValues();
+		StringBuilder builder = new StringBuilder();
+		builder.append("x=");
+		builder.append(cx);
+		builder.append(", y=");
+		builder.append(cy);
+		builder.append(", value=");
+		for (int i = 0; i < values.getChannelCount(); i++) {
+			if (i > 0) builder.append(",");
+			if (helper.getDataset().isInteger())
+				builder.append((long)values.getChannelValue(i));
+			else
+				builder.append(String.format("%f", values.getChannelValue(i)));
 		}
-		else { // gray dataset
-			final double value = helper.getValue();
-			if (helper.isIntegerCase()) {
-				message = String.format("x=%d, y=%d, value=%d", cx, cy, (long) value);
-			}
-			else { // is float case
-				message = String.format("x=%d, y=%d, value=%f", cx, cy, value);
-			}
-		}
-		helper.updateStatus(message);
+		helper.updateStatus(builder.toString());
 	}
 
 }

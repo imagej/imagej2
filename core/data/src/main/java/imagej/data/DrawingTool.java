@@ -43,8 +43,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
@@ -62,10 +60,10 @@ import net.imglib2.type.numeric.RealType;
 //     you're drawing into a gray dataset?
 
 /**
- * Draws data in an orthoplane of a {@link Dataset}. Many methods adapted from
- * ImageJ1's ImageProcessor methods. Internally the drawing routines work in a
- * UV plane. U and V can be specified from existing coord axes (i.e UV can equal
- * XY or ZT or any other combination of Dataset axes).
+ * Draws data across all channels in an orthoplane of a {@link Dataset}. Many
+ * methods adapted from ImageJ1's ImageProcessor methods. Internally the drawing
+ * routines work in a UV plane. U and V can be specified from existing coord
+ * axes (i.e UV can equal XY or ZT or any other combination of Dataset axes).
  * 
  * @author Barry DeZonia
  */
@@ -76,14 +74,13 @@ public class DrawingTool {
 	private final Dataset dataset;
 	private int uAxis;
 	private int vAxis;
-	private final int colorAxis;
+	private final int channelAxis;
 	private final RandomAccess<? extends RealType<?>> accessor;
 	private long lineWidth;
-	private ColorRGB colorValue;
-	private double grayValue;
 	private long u0, v0;
 	private long maxU, maxV;
-	private ColorRGB[] textColorShades;
+	private ChannelCollection channels;
+	private double intensity;
 	
 	private TextRenderer textRenderer;
 	
@@ -96,23 +93,21 @@ public class DrawingTool {
 	/**
 	 * Creates a DrawingTool to modify a specified Dataset.
 	 */
-	public DrawingTool(final Dataset ds) {
+	public DrawingTool(final Dataset ds, ChannelCollection fillValues) {
 		this.dataset = ds;
-		if (ds.isRGBMerged()) this.colorAxis = ds.getAxisIndex(Axes.CHANNEL);
-		else this.colorAxis = -1;
+		this.channelAxis = ds.getAxisIndex(Axes.CHANNEL);
 		this.accessor = ds.getImgPlus().randomAccess();
 		this.lineWidth = 1;
-		this.grayValue = ds.getType().getMinValue();
-		this.colorValue = Colors.BLACK;
+		this.channels = new ChannelCollection(fillValues);
 		this.uAxis = 0;
 		this.vAxis = 1;
 		this.maxU = ds.dimension(0) - 1;
 		this.maxV = ds.dimension(1) - 1;
 		this.u0 = 0;
 		this.v0 = 0;
+		this.intensity = 1;
 		this.textRenderer = new AWTTextRenderer();  // FIXME - do elsewhere
 		textRenderer.setAntialiasing(true);
-		initTextColorShades();
 	}
 
 	// -- public interface --
@@ -159,6 +154,10 @@ public class DrawingTool {
 			position[i] = accessor.getLongPosition(i);
 	}
 
+	public ChannelCollection getChannels() {
+		return channels;
+	}
+	
 	/**
 	 * Sets the current drawing line width. This affects how other methods draw
 	 * such as lines, circles, dots, etc.
@@ -170,35 +169,6 @@ public class DrawingTool {
 	/** Gets the current drawing line width. */
 	public long getLineWidth() {
 		return lineWidth;
-	}
-
-	// note: we cannot represent 64-bit integer data exactly in all cases
-
-	/**
-	 * Sets the current drawing gray value. Any subsequent drawing operations use
-	 * this gray value for gray level Datasets.
-	 */
-	public void setGrayValue(final double value) {
-		this.grayValue = value;
-	}
-
-	/** Gets the current drawing gray value. */
-	public double getGrayValue() {
-		return grayValue;
-	}
-
-	/**
-	 * Sets the current drawing color value. Any subsequent drawing operations use
-	 * this color value for color Datasets.
-	 */
-	public void setColorValue(final ColorRGB color) {
-		this.colorValue = color;
-		initTextColorShades();
-	}
-
-	/** Gets the current drawing color value. */
-	public ColorRGB getColorValue() {
-		return colorValue;
 	}
 
 	public void setTextRenderer(TextRenderer renderer) {
@@ -255,17 +225,17 @@ public class DrawingTool {
 		if (v > maxV) return;
 		accessor.setPosition(u, uAxis);
 		accessor.setPosition(v, vAxis);
-		// gray data?
-		if (!dataset.isRGBMerged()) {
-			accessor.get().setReal(grayValue);
+		if (channelAxis == -1) { // no channel axis - already in position
+			double value = intensity * channels.getChannelValue(0);
+			accessor.get().setReal(value);
 		}
-		else { // color data
-			accessor.setPosition(0, colorAxis);
-			accessor.get().setReal(colorValue.getRed());
-			accessor.setPosition(1, colorAxis);
-			accessor.get().setReal(colorValue.getGreen());
-			accessor.setPosition(2, colorAxis);
-			accessor.get().setReal(colorValue.getBlue());
+		else { // channelAxis >= 0
+			long numChan = dataset.dimension(channelAxis);
+			for (long i = 0; i < numChan; i++) {
+				accessor.setPosition(i, channelAxis);
+				double value = intensity * channels.getChannelValue(i);
+				accessor.get().setReal(value);
+			}
 		}
 	}
 
@@ -427,39 +397,23 @@ public class DrawingTool {
 				break;
 		}
 		
-		ColorRGB saveColor = colorValue;
-		
 		// draw pixels in dataset as needed
 		for (int u = minu; u <= maxu; u++) {
 			for (int v = minv; v <= maxv; v++) {
 				int index = v*bufferSizeU + u;
 				if (buffer[index] != 0) {
-					int intensity = buffer[index] & 0xff;
-					colorValue = textColorShades[intensity];
+					double pixVal = buffer[index] & 0xff;
+					intensity = pixVal / 255.0;
 					drawPixel(originU+u-minu, originV+v-minv);
 				}
 			}
 		}
 		
-		colorValue = saveColor;
+		intensity = 1;
 	}
 
 	// -- private helpers --
 
-	private void initTextColorShades() {
-		int baseR = colorValue.getRed();
-		int baseG = colorValue.getGreen();
-		int baseB = colorValue.getBlue();
-		ColorRGB[] shades = new ColorRGB[256];
-		for (int i = 0; i < 256; i++) {
-			int r = (int) Math.round(baseR * i / 255.0);
-			int g = (int) Math.round(baseG * i / 255.0);
-			int b = (int) Math.round(baseB * i / 255.0);
-			shades[i] = new ColorRGB(r, g, b);
-		}
-		textColorShades = shades;
-	}
-	
 	private interface TextRenderer {
 		void renderText(String text);
 		int getPixelsWidth();

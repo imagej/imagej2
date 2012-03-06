@@ -39,6 +39,8 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
+import imagej.util.ColorRGB;
+import imagej.util.Colors;
 
 /**
  * Runs the Edit::Options::Appearance dialog.
@@ -52,6 +54,9 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = "Appearance...", weight = 10) })
 public class OptionsAppearance extends OptionsPlugin {
 
+	@Parameter(label = "Selection color")
+	private ColorRGB selectionColor = Colors.YELLOW;
+	
 	@Parameter(label = "Interpolate zoomed images")
 	private boolean interpZoomedImages = false;
 
@@ -83,6 +88,10 @@ public class OptionsAppearance extends OptionsPlugin {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
+	public ColorRGB getSelectionColor() {
+		return selectionColor;
+	}
+	
 	public boolean isInterpZoomedImages() {
 		return interpZoomedImages;
 	}
@@ -115,6 +124,10 @@ public class OptionsAppearance extends OptionsPlugin {
 		return displayFractionalScales;
 	}
 
+	public void setSelectionColor(ColorRGB c) {
+		this.selectionColor = c;
+	}
+	
 	public void setInterpZoomedImages(final boolean interpZoomedImages) {
 		this.interpZoomedImages = interpZoomedImages;
 	}

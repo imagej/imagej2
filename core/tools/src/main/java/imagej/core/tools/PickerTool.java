@@ -34,16 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.data.ChannelCollection;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsColors;
-import imagej.util.ColorRGB;
+import imagej.options.plugins.OptionsChannels;
 
 /**
  * Sets foreground and background values when tool is active and mouse clicked
@@ -54,7 +55,7 @@ import imagej.util.ColorRGB;
 @Plugin(
 	type = Tool.class,
 	name = "Picker",
-	description = "Picker Tool (sets foreground/background colors/values)",
+	description = "Picker Tool (sets foreground/background values)",
 	iconPath = "/icons/tools/picker.png", priority = PickerTool.PRIORITY)
 public class PickerTool extends AbstractTool {
 
@@ -64,7 +65,7 @@ public class PickerTool extends AbstractTool {
 
 	// -- instance variables --
 
-	private final PixelHelper helper = new PixelHelper();
+	private final PixelHelper helper = new PixelHelper(true);
 	private boolean altKeyDown = false;
 
 	// -- Tool methods --
@@ -79,32 +80,28 @@ public class PickerTool extends AbstractTool {
 			return;
 		}
 
-		final OptionsColors options = getOptions();
+		final OptionsChannels options = getOptions();
 
-		final double value = helper.getValue();
-		final ColorRGB color = helper.getColor();
+		final ChannelCollection values = helper.getValues();
 
+		String name;
+		ChannelCollection target;
+		
 		// background case?
 		if (altKeyDown) {
-			if (helper.isPureRGBCase()) {
-				options.setBgColor(color);
-				colorMessage("BG", color);
-			}
-			else {
-				options.setBgGray(value);
-				grayMessage("BG", value);
-			}
+			name = "BG";
+			target = options.getBgValues();
+			options.setLastBgColor(helper.getColor());
 		}
 		else { // foreground case
-			if (helper.isPureRGBCase()) {
-				options.setFgColor(color);
-				colorMessage("FG", color);
-			}
-			else {
-				options.setFgGray(value);
-				grayMessage("FG", value);
-			}
+			name = "FG";
+			target = options.getFgValues();
+			options.setLastFgColor(helper.getColor());
 		}
+
+		target.resetChannels(values);
+
+		statusMessage(name, values);
 
 		options.save();
 
@@ -125,45 +122,55 @@ public class PickerTool extends AbstractTool {
 
 	@Override
 	public String getDescription() {
-		OptionsColors opts = getOptions();
+		OptionsChannels opts = getOptions();
 		StringBuilder sb = new StringBuilder();
 		sb.append("Picker FG: ");
-		ColorRGB fgColor = opts.getFgColor();
-		ColorRGB bgColor = opts.getBgColor();
-		double fgValue = opts.getFgGray();
-		double bgValue = opts.getBgGray();
-		sb.append(valuesString(fgColor,fgValue));
+		ChannelCollection fgVals = opts.getFgValues();
+		ChannelCollection bgVals = opts.getBgValues();
+		sb.append(valuesString(fgVals));
 		sb.append("  BG: ");
-		sb.append(valuesString(bgColor,bgValue));
+		sb.append(valuesString(bgVals));
 		return sb.toString();
+	}
+	
+	@Override
+	public void configure() {
+		final PluginService pluginService =
+				getContext().getService(PluginService.class);
+		
+		pluginService.run(OptionsChannels.class, new Object[0]);
 	}
 	
 	// -- private interface --
 
-	private String valuesString(ColorRGB color, double value) {
-		return String.format("(%.3f) (%d,%d,%d)",
-			value, color.getRed(), color.getGreen(), color.getBlue());
+	private String valuesString(ChannelCollection chans) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(");
+		for (int i = 0; i < chans.getChannelCount(); i++) {
+			if (i != 0) builder.append(",");
+			String valString;
+			if (chans.areInteger())
+				valString = String.format("%d", (long)chans.getChannelValue(i));
+			else
+				valString = String.format("%.3f", chans.getChannelValue(i));
+			builder.append(valString);
+		}
+		builder.append(")");
+		return builder.toString();
 	}
 	
-	private void colorMessage(final String label, final ColorRGB color) {
-		final String message =
-			String.format("%s color = (%d,%d,%d)", label, color.getRed(), color
-				.getGreen(), color.getBlue());
-		helper.updateStatus(message);
+	private void statusMessage(final String label, ChannelCollection values) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(label);
+		builder.append(" = ");
+		builder.append(valuesString(values));
+		helper.updateStatus(builder.toString());
 	}
 
-	private void grayMessage(final String label, final double value) {
-		String message;
-		if (helper.isIntegerCase()) message =
-			String.format("%s gray value = %d", label, (long) value);
-		else message = String.format("%s gray value = %f", label, value);
-		helper.updateStatus(message);
-	}
-
-	private OptionsColors getOptions() {
+	private OptionsChannels getOptions() {
 		final OptionsService service =
 			getContext().getService(OptionsService.class);
 
-		return service.getOptions(OptionsColors.class);
+		return service.getOptions(OptionsChannels.class);
 	}
 }

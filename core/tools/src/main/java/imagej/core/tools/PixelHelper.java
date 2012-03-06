@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ImageJ;
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DataView;
@@ -47,17 +48,18 @@ import imagej.event.StatusEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.MsEvent;
 import imagej.util.ColorRGB;
+import imagej.util.Colors;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 import net.imglib2.RandomAccess;
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Gathers pixel information (location, color, value) of pixel associated with a
- * given mouse event.
+ * Gathers pixel information (location, channel values) of pixel associated
+ * with a given mouse event.
  * 
  * @author Barry DeZonia
  * @author Rick Lentz
@@ -68,20 +70,20 @@ public class PixelHelper {
 
 	// -- instance variables --
 
-	private ColorRGB color = new ColorRGB(0, 0, 0);
-	private double value = 0;
 	private long cx = 0;
 	private long cy = 0;
-	private boolean isPureRGBCase = false;
-	private boolean isIntegerCase = false;
 	private EventService eventService = null;
-	private Dataset dataset;
-
+	private Dataset dataset = null;
+	private ChannelCollection channels = null;
+	private ColorRGB color = Colors.BLACK;
+	private boolean recordColor = false;
+	
 	// -- public interface --
 
 	/** Constructor */
-	public PixelHelper() {
-		// nothing to do
+	public PixelHelper(boolean recordColor) {
+		this.recordColor = recordColor;
+		channels = new ChannelCollection();
 	}
 
 	/**
@@ -113,43 +115,65 @@ public class PixelHelper {
 		final DataView activeView = imageDisplay.getActiveView();
 		dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
-		final RealCoords coords = canvas.panelToImageCoords(mousePos);
-		cx = coords.getLongX();
-		cy = coords.getLongY();
-
-		final Position planePos = activeView.getPlanePosition();
-
 		final Img<? extends RealType<?>> image = dataset.getImgPlus();
 		final RandomAccess<? extends RealType<?>> randomAccess =
 			image.randomAccess();
 		final int xAxis = dataset.getAxisIndex(Axes.X);
 		final int yAxis = dataset.getAxisIndex(Axes.Y);
+		final int chanAxis = dataset.getAxisIndex(Axes.CHANNEL);
 
-		setPosition(randomAccess, cx, cy, planePos, xAxis, yAxis);
+		final RealCoords coords = canvas.panelToImageCoords(mousePos);
+		cx = coords.getLongX();
+		cy = coords.getLongY();
 
-		// color dataset?
-		if (dataset.isRGBMerged()) {
-			isPureRGBCase = true;
-			isIntegerCase = false;
-			color = getColor(dataset, randomAccess);
-			value = Double.NaN;
+		Position planePos = activeView.getPlanePosition();
+		long[] otherPositions;
+		// channel axis not present?
+		if (chanAxis == -1) {
+			// record all positions
+			otherPositions = new long[planePos.numDimensions()];
+			for (int i = 0; i < planePos.numDimensions(); i++) {
+				otherPositions[i] = planePos.dimension(i);
+			}
 		}
-		else { // gray dataset
-			isPureRGBCase = false;
-			isIntegerCase = dataset.isInteger();
-			value = randomAccess.get().getRealDouble();
+		else { // channel axis is present
+			// record all positions that are not a channel position
+			otherPositions = new long[planePos.numDimensions()-1];
+			int d = 0;
+			for (int i = 0; i < planePos.numDimensions(); i++) {
+				// TODO - this test of ch-2 will break when X & Y can exist outside
+				//   first two axes.
+				if (i != chanAxis-2) otherPositions[d++] = planePos.dimension(i);
+			}
+		}
+		
+		// record color of displayed pixel
+		if (recordColor) {
 			final DatasetView view =
-				imageDisplayService.getActiveDatasetView(imageDisplay);
-			final ColorTable8 ctab = view.getColorTables().get(0);
-			final double min = randomAccess.get().getMinValue();
-			final double max = randomAccess.get().getMaxValue();
-			final double percent = (value - min) / (max - min);
-			final int byteVal = (int) Math.round(255 * percent);
-			final int r = ctab.get(0, byteVal);
-			final int g = ctab.get(1, byteVal);
-			final int b = ctab.get(2, byteVal);
-			color = new ColorRGB(r, g, b);
+					imageDisplayService.getActiveDatasetView(imageDisplay);
+			ARGBScreenImage screenImage = view.getScreenImage();
+			int[] argbPixels = view.getScreenImage().getData();
+			int pixelIndex = (int) (cy*screenImage.dimension(0) + cx);
+			int argb = argbPixels[pixelIndex];
+			int r = (argb >> 16) & 0xff;
+			int g = (argb >>  8) & 0xff;
+			int b = (argb >>  0) & 0xff;
+			color = new ColorRGB(r,g,b);
 		}
+
+		// record channel values associated with the XY coord
+		long numChannels;
+		if (chanAxis == -1)
+			numChannels = 1;
+		else
+			numChannels = dataset.dimension(chanAxis); 
+		channels.resetChannels();
+		for (long chan = 0; chan < numChannels; chan++) {
+			setPosition(randomAccess, cx, cy, chan, otherPositions, xAxis, yAxis, chanAxis);
+			double value = randomAccess.get().getRealDouble();
+			channels.setChannelValue(chan, value);
+		}
+		
 		return true;
 	}
 
@@ -162,22 +186,18 @@ public class PixelHelper {
 	public Dataset getDataset() {
 		return dataset;
 	}
-
-	/**
-	 * Returns the color of the pixel associated with the processed mouse event.
-	 * Note that the color is exact for RGB images and an interpolated lookup in
-	 * the color table for gray images.
-	 */
-	public ColorRGB getColor() {
-		return color;
+	
+	/** Returns the values of all the channels associated with the processed
+	 * mouse event. */
+	public ChannelCollection getValues() {
+		return channels;
 	}
 
 	/**
-	 * Returns the value of the pixel associated with the processed mouse event.
-	 * Note that for color images this will be Double.NaN.
+	 * Returns the color of the pixel associated with the processed mouse event.
 	 */
-	public double getValue() {
-		return value;
+	public ColorRGB getColor() {
+		return color;
 	}
 
 	/** Returns the X value of the mouse event in image coordinate space. */
@@ -190,52 +210,21 @@ public class PixelHelper {
 		return cy;
 	}
 
-	/**
-	 * Returns true if the Dataset associated with the mouse event is merged
-	 * color.
-	 */
-	public boolean isPureRGBCase() {
-		return isPureRGBCase;
-	}
-
-	/**
-	 * Returns true if the Dataset associated with the mouse event is a gray
-	 * integral type.
-	 */
-	public boolean isIntegerCase() {
-		return isIntegerCase;
-	}
-
 	// -- private helpers --
 
 	/** Sets the position of a randomAccess to (u,v,planePos). */
 	private void setPosition(
-		final RandomAccess<? extends RealType<?>> randomAccess, final long cx,
-		final long cy, final Position planePos, final int xAxis, final int yAxis)
+		final RandomAccess<? extends RealType<?>> randomAccess, final long x,
+		final long y, final long c, final long[] otherCoordValues, final int xAxis,
+		final int yAxis, final int cAxis)
 	{
 		int i = 0;
 		for (int d = 0; d < randomAccess.numDimensions(); d++) {
-			if (d == xAxis) randomAccess.setPosition(cx, xAxis);
-			else if (d == yAxis) randomAccess.setPosition(cy, yAxis);
-			else randomAccess.setPosition(planePos.getLongPosition(i++), d);
+			if (d == xAxis) randomAccess.setPosition(x, xAxis);
+			else if (d == yAxis) randomAccess.setPosition(y, yAxis);
+			else if (d == cAxis) randomAccess.setPosition(c, cAxis);
+			else randomAccess.setPosition(otherCoordValues[i++], d);
 		}
-	}
-
-	/**
-	 * Gets the color of the pixel located at the given RandomAccess' current
-	 * position. Do not call this method if you do not have color data.
-	 */
-	private ColorRGB getColor(final Dataset ds,
-		final RandomAccess<? extends RealType<?>> access)
-	{
-		final int channelAxis = ds.getAxisIndex(Axes.CHANNEL);
-		access.setPosition(0, channelAxis);
-		final int r = (int) access.get().getRealDouble();
-		access.setPosition(1, channelAxis);
-		final int g = (int) access.get().getRealDouble();
-		access.setPosition(2, channelAxis);
-		final int b = (int) access.get().getRealDouble();
-		return new ColorRGB(r, g, b);
 	}
 
 }
