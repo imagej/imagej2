@@ -12,7 +12,8 @@ ij.plugin.ArrowToolOptions                # Edit>Options>Arrow Tool
 ij.plugin.Colors("point")                 # Edit>Options>Point Tool
 ij.plugin.WandToolOptions                 # Edit>Options>Wand Tools
 ij.plugin.Colors                          # Edit>Options>Colors
-ij.plugin.Options("display")              # Edit>Options>Appearance
+ij.plugin.Options("display")              # Edit>Options>Appearance (old)
+ij.plugin.AppearanceOptions               # Edit>Options>Appearance (newer)
 ij.plugin.Options("conv")                 # Edit>Options>Conversions
 ij.plugin.Memory                          # Edit>Options>Memory & Threads
 ij.plugin.ProxySettings                   # Edit>Options>Proxy Settings
