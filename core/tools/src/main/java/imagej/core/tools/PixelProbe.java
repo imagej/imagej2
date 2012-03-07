@@ -81,12 +81,14 @@ public class PixelProbe extends AbstractTool {
 		builder.append(", y=");
 		builder.append(cy);
 		builder.append(", value=");
-		// single channel image (no channel axis)
-		if (channelIndex == -1) {
+		// single channel image
+		if ((channelIndex == -1) ||
+				(recorder.getDataset().dimension(channelIndex) == 1))
+		{
 			String valueStr = valueString(values.getChannelValue(0));
 			builder.append(valueStr);
 		}
-		else { // has a channel axis
+		else { // has multiple channels
 			int currChannel = disp.getIntPosition(channelIndex);
 			String valueStr = valueString(values.getChannelValue(currChannel));
 			builder.append(valueStr);
