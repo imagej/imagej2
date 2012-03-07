@@ -14,7 +14,7 @@
  * 
  * @author Stephan Preibisch
  */
-package imagej.core.plugins.display;
+package imagej.ui.swing.plugins;
 
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
