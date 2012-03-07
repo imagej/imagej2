@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.display;
+package imagej.ui.swing.plugins;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
