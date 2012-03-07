@@ -49,6 +49,10 @@ import java.net.URL;
  */
 public interface IPlatform {
 
+	// TODO: Convert this interface to a subinterface of IPlugin.
+	// The Platform annotation interface methods will need to migrate here.
+	// See ticket #993: http://trac.imagej.net/ticket/993
+
 	void configure(PlatformService service);
 
 	void open(URL url) throws IOException;

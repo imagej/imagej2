@@ -41,6 +41,10 @@ import java.util.List;
 
 public abstract class AbstractUploader extends Progressable {
 
+	// TODO: Convert this class to use a subinterface of IPlugin.
+	// The Uploader annotation interface methods will need to migrate here.
+	// See ticket #993: http://trac.imagej.net/ticket/993
+
 	protected String uploadDir;
 	protected int total;
 	protected long timestamp;
