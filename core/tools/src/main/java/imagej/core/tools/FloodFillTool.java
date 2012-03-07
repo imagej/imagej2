@@ -97,11 +97,11 @@ public class FloodFillTool extends AbstractTool {
 		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
 			final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
 			if (imageDisplay != null) {
-				final PixelHelper helper = new PixelHelper(false);
-				if (helper.recordEvent(evt)) {
-					final DrawingTool drawingTool = initDrawingTool(helper.getDataset());
+				final PixelRecorder recorder = new PixelRecorder(false);
+				if (recorder.record(evt)) {
+					final DrawingTool drawingTool = initDrawingTool(recorder.getDataset());
 					final long[] currPos = getCurrPosition(imageDisplay);
-					floodFill(helper.getCX(), helper.getCY(), currPos, connectivity, drawingTool);
+					floodFill(recorder.getCX(), recorder.getCY(), currPos, connectivity, drawingTool);
 					evt.getDisplay().getPanel().redraw();
 					evt.getDisplay().update();
 				}
