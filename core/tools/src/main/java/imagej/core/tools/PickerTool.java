@@ -36,6 +36,7 @@ package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
 import imagej.event.EventService;
+import imagej.event.StatusEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
@@ -66,8 +67,9 @@ public class PickerTool extends AbstractTool {
 
 	// -- instance variables --
 
-	private final PixelHelper helper = new PixelHelper(true);
+	private final PixelRecorder recorder = new PixelRecorder(true);
 	private boolean altKeyDown = false;
+	private EventService eventService = null;
 
 	// -- Tool methods --
 
@@ -76,19 +78,20 @@ public class PickerTool extends AbstractTool {
 
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		
-		if (!helper.recordEvent(evt)) {
+		if (!recorder.record(evt)) {
 			evt.consume();
 			return;
 		}
+
+		eventService = getContext().getService(EventService.class);
 
 		final OptionsChannels options = getOptions();
 
 		// FIXME Hack that allows options to publish events about the changing
 		// values. This is how IJ1 is informed about current FG/BG colors.
-		final EventService es = getContext().getService(EventService.class);
-		options.setEventService(es);
+		options.setEventService(eventService);
 
-		final ChannelCollection values = helper.getValues();
+		final ChannelCollection values = recorder.getValues();
 
 		String name;
 		ChannelCollection target;
@@ -97,12 +100,12 @@ public class PickerTool extends AbstractTool {
 		if (altKeyDown) {
 			name = "BG";
 			target = options.getBgValues();
-			options.setLastBgColor(helper.getColor());
+			options.setLastBgColor(recorder.getColor());
 		}
 		else { // foreground case
 			name = "FG";
 			target = options.getFgValues();
-			options.setLastFgColor(helper.getColor());
+			options.setLastFgColor(recorder.getColor());
 		}
 		
 		// set the values of the FG or BG
@@ -173,7 +176,7 @@ public class PickerTool extends AbstractTool {
 		builder.append(label);
 		builder.append(" = ");
 		builder.append(valuesString(values));
-		helper.updateStatus(builder.toString());
+		eventService.publish(new StatusEvent(builder.toString()));
 	}
 
 	private OptionsChannels getOptions() {

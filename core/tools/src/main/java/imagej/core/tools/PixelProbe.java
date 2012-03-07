@@ -35,10 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import net.imglib2.meta.Axes;
-import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.event.EventService;
+import imagej.event.StatusEvent;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
@@ -52,7 +53,7 @@ import imagej.ext.tool.Tool;
 @Plugin(type = Tool.class, name = "Probe", alwaysActive = true)
 public class PixelProbe extends AbstractTool {
 
-	private final PixelHelper helper = new PixelHelper(false);
+	private final PixelRecorder recorder = new PixelRecorder(false);
 
 	// -- Tool methods --
 
@@ -61,16 +62,17 @@ public class PixelProbe extends AbstractTool {
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
 		
-		final ImageDisplayService service = ImageJ.get(ImageDisplayService.class);
+		final ImageDisplayService service =
+				evt.getContext().getService(ImageDisplayService.class);
 		final ImageDisplay disp = service.getActiveImageDisplay();
 		if (disp == null) return;
 		final int channelIndex = disp.getAxisIndex(Axes.CHANNEL);
 
-		if (!helper.recordEvent(evt)) return;
+		if (!recorder.record(evt)) return;
 
-		final long cx = helper.getCX();
-		final long cy = helper.getCY();
-		ChannelCollection values = helper.getValues();
+		final long cx = recorder.getCX();
+		final long cy = recorder.getCY();
+		ChannelCollection values = recorder.getValues();
 		StringBuilder builder = new StringBuilder();
 		builder.append("x=");
 		builder.append(cx);
@@ -79,7 +81,7 @@ public class PixelProbe extends AbstractTool {
 		builder.append(", value=");
 		// single channel image (no channel axis)
 		if (channelIndex == -1) {
-			if (helper.getDataset().isInteger())
+			if (recorder.getDataset().isInteger())
 				builder.append((long)values.getChannelValue(0));
 			else
 				builder.append(String.format("%f", values.getChannelValue(0)));
@@ -96,13 +98,14 @@ public class PixelProbe extends AbstractTool {
 			}
 			builder.append(")");
 		}
-		helper.updateStatus(builder.toString());
+		EventService eventService = evt.getContext().getService(EventService.class);
+		eventService.publish(new StatusEvent(builder.toString()));
 	}
 	
 	// -- helpers --
 	
 	private String valueString(double value) {
-		if (helper.getDataset().isInteger())
+		if (recorder.getDataset().isInteger())
 			return String.format("%d",(long)value);
 		return String.format("%f", value);
 	}

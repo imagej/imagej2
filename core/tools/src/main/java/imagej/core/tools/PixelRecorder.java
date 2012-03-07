@@ -43,8 +43,6 @@ import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.MsEvent;
 import imagej.util.ColorRGB;
@@ -66,13 +64,12 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public class PixelHelper {
+public class PixelRecorder {
 
 	// -- instance variables --
 
 	private long cx = 0;
 	private long cy = 0;
-	private EventService eventService = null;
 	private Dataset dataset = null;
 	private ChannelCollection channels = null;
 	private ColorRGB color = Colors.BLACK;
@@ -81,7 +78,7 @@ public class PixelHelper {
 	// -- public interface --
 
 	/** Constructor */
-	public PixelHelper(boolean recordColor) {
+	public PixelRecorder(boolean recordColor) {
 		this.recordColor = recordColor;
 		channels = new ChannelCollection();
 	}
@@ -92,11 +89,10 @@ public class PixelHelper {
 	 * position. After event is recorded users should utilize member query
 	 * methods to get info about the event.
 	 */
-	public boolean recordEvent(final MsEvent evt) {
+	public boolean record(final MsEvent evt) {
 		final ImageJ context = evt.getContext();
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
-		eventService = context.getService(EventService.class);
 
 		final Display<?> display = evt.getDisplay();
 		if (!(display instanceof ImageDisplay)) return false;
@@ -104,10 +100,7 @@ public class PixelHelper {
 
 		final ImageCanvas canvas = imageDisplay.getCanvas();
 		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
-		if (!canvas.isInImage(mousePos)) {
-			eventService.publish(new StatusEvent(null));
-			return false;
-		}
+		if (!canvas.isInImage(mousePos)) return false;
 
 		// mouse is over image
 
@@ -175,11 +168,6 @@ public class PixelHelper {
 		}
 		
 		return true;
-	}
-
-	/** Updates the status line with a given message. */
-	public void updateStatus(final String message) {
-		eventService.publish(new StatusEvent(message));
 	}
 
 	/** Returns the Dataset associated with the processed mouse event. */
