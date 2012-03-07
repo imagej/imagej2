@@ -36,6 +36,7 @@ package imagej.platform;
 
 import imagej.ImageJ;
 import imagej.event.EventService;
+import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.Log;
@@ -58,6 +59,7 @@ import net.java.sezpoz.IndexItem;
 public final class PlatformService extends AbstractService {
 
 	private final EventService eventService;
+	private final PluginService pluginService;
 
 	/** Platform handlers applicable to this platform. */
 	private List<IPlatform> targetPlatforms;
@@ -73,10 +75,12 @@ public final class PlatformService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public PlatformService(final ImageJ context, final EventService eventService)
+	public PlatformService(final ImageJ context, final EventService eventService,
+		final PluginService pluginService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.pluginService = pluginService;
 
 		final List<IPlatform> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
@@ -91,6 +95,10 @@ public final class PlatformService extends AbstractService {
 
 	public EventService getEventService() {
 		return eventService;
+	}
+
+	public PluginService getPluginService() {
+		return pluginService;
 	}
 
 	/** Gets the platform handlers applicable to this platform. */
