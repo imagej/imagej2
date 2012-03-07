@@ -465,6 +465,18 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		update();
 	}
 
+	// -- Sourced methods --
+	
+	@Override
+	public String getSource() {
+		return imgPlus.getSource();
+	}
+	
+	@Override
+	public void setSource(String source) {
+		imgPlus.setSource(source);
+	}
+	
 	// -- ImageMetadata methods --
 
 	@Override
