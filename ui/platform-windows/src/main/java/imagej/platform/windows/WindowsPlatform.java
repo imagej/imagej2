@@ -49,19 +49,25 @@ import java.net.URL;
 @Platform(osName = "Windows")
 public class WindowsPlatform implements IPlatform {
 
-	// -- PlatformHandler methods --
+	private PlatformService platformService;
+
+	// -- IPlatform methods --
 
 	@Override
-	public void configure(final PlatformService platformService) {}
+	public void configure(final PlatformService service) {
+		platformService = service;
+	}
 
 	@Override
 	public void open(final URL url) throws IOException {
 		final String cmd;
-		if (System.getProperty("os.name").startsWith("Windows 2000")) cmd =
-			"rundll32 shell32.dll,ShellExec_RunDLL";
+		if (System.getProperty("os.name").startsWith("Windows 2000")) {
+			cmd = "rundll32 shell32.dll,ShellExec_RunDLL";
+		}
 		else cmd = "rundll32 url.dll,FileProtocolHandler";
-		if (!PlatformService.exec(cmd, url.toString())) throw new IOException(
-			"Could not open " + url);
+		if (!platformService.exec(cmd, url.toString())) {
+			throw new IOException("Could not open " + url);
+		}
 	}
 
 }

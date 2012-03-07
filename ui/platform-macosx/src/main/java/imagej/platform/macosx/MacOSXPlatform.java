@@ -61,18 +61,22 @@ import java.util.List;
 @Platform(osName = "Mac OS X")
 public class MacOSXPlatform implements IPlatform {
 
+	private PlatformService platformService;
+
 	@SuppressWarnings("unused")
 	private MacOSXAppEventDispatcher appEventDispatcher;
 
-	// -- PlatformHandler methods --
+	// -- IPlatform methods --
 
 	@Override
-	public void configure(final PlatformService platformService) {
+	public void configure(final PlatformService service) {
+		platformService = service;
+
 		// use Mac OS X screen menu bar
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		// remove app plugins from menu structure
-		removeAppPluginsFromMenu(platformService);
+		removeAppPluginsFromMenu();
 
 		// translate Mac OS X application events into ImageJ events
 		final Application app = Application.getApplication();
@@ -85,16 +89,19 @@ public class MacOSXPlatform implements IPlatform {
 
 	@Override
 	public void open(final URL url) throws IOException {
-		if (!PlatformService.exec("open", url.toString())) throw new IOException(
-			"Could not open " + url);
+		if (!platformService.exec("open", url.toString())) {
+			throw new IOException("Could not open " + url);
+		}
 	}
 
 	// -- Helper methods --
 
-	private void removeAppPluginsFromMenu(final PlatformService platformService) {
+	private void removeAppPluginsFromMenu() {
 		final EventService eventService = platformService.getEventService();
-		final AppEventService appEventService = platformService.getAppEventService();
-		List<PluginModuleInfo<?>> plugins = appEventService.getHandledPlugins();
+		final AppEventService appEventService =
+			platformService.getAppEventService();
+		final List<PluginModuleInfo<?>> plugins =
+			appEventService.getHandledPlugins();
 		for (final PluginModuleInfo<?> info : plugins) {
 			info.setMenuPath(null);
 		}
