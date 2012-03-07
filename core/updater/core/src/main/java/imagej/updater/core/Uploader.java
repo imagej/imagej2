@@ -42,11 +42,9 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * Annotation identifying an uploader for ImageJ's Updater
+ * Annotation identifying an uploader for ImageJ's Updater.
  * 
  * @author Johannes Schindelin
- * @see IUpdater
- * @see ImageJUpdater
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
