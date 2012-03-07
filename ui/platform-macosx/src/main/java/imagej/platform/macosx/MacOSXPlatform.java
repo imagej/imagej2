@@ -34,15 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform.macosx;
 
+import com.apple.eawt.Application;
+
 import imagej.event.EventService;
+import imagej.ext.module.event.ModulesUpdatedEvent;
+import imagej.ext.plugin.PluginModuleInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.platform.IPlatform;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
 
 import java.io.IOException;
 import java.net.URL;
-
-import com.apple.eawt.Application;
+import java.util.ArrayList;
 
 /**
  * A platform implementation for handling Mac OS X platform issues:
@@ -57,6 +61,9 @@ import com.apple.eawt.Application;
 @Platform(osName = "Mac OS X")
 public class MacOSXPlatform implements IPlatform {
 
+	private static final String[] APP_PLUGINS = { "AboutImageJ", "QuitProgram",
+		"ShowPrefs" };
+
 	@SuppressWarnings("unused")
 	private MacOSXAppEventDispatcher appEventDispatcher;
 
@@ -66,6 +73,9 @@ public class MacOSXPlatform implements IPlatform {
 	public void configure(final PlatformService platformService) {
 		// use Mac OS X screen menu bar
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+		// remove app plugins from menu structure
+		removeAppPluginsFromMenu(platformService);
 
 		// translate Mac OS X application events into ImageJ events
 		final Application app = Application.getApplication();
@@ -80,6 +90,22 @@ public class MacOSXPlatform implements IPlatform {
 	public void open(final URL url) throws IOException {
 		if (!PlatformService.exec("open", url.toString())) throw new IOException(
 			"Could not open " + url);
+	}
+
+	// -- Helper methods --
+
+	private void removeAppPluginsFromMenu(final PlatformService platformService) {
+		final EventService eventService = platformService.getEventService();
+		final PluginService pluginService = platformService.getPluginService();
+		final ArrayList<PluginModuleInfo<?>> modules =
+			new ArrayList<PluginModuleInfo<?>>();
+		for (final String appPlugin : APP_PLUGINS) {
+			final PluginModuleInfo<?> info =
+				pluginService.getRunnablePlugin("imagej.core.plugins.app." + appPlugin);
+			info.setMenuPath(null);
+			modules.add(info);
+		}
+		eventService.publish(new ModulesUpdatedEvent(modules));
 	}
 
 }
