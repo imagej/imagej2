@@ -78,7 +78,7 @@ public class DefaultEventService extends AbstractService
 		// Unfortunately, without further care elsewhere in the code (subject to
 		// further investigation), using it results in a race condition where
 		// JHotDraw partially repaints images before they are done being processed.
-		// See ticket #719: http://code.imagej.net/trac/imagej/ticket/719
+		// See ticket #719: http://trac.imagej.net/ticket/719
 		eventBus = new SwingEventService();
 	}
 
