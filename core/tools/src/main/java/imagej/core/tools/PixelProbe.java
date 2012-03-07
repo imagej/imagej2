@@ -57,19 +57,21 @@ public class PixelProbe extends AbstractTool {
 
 	// -- Tool methods --
 
-	// TODO - this tool does not consume the events. Not sure this is correct.
+	// NB - this tool does not consume the events by design
 	
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
 		
-		final ImageDisplayService service =
+		final EventService eventService =
+				evt.getContext().getService(EventService.class);
+		final ImageDisplayService dispService =
 				evt.getContext().getService(ImageDisplayService.class);
-		final ImageDisplay disp = service.getActiveImageDisplay();
-		if (disp == null) return;
+		final ImageDisplay disp = dispService.getActiveImageDisplay();
+		if ((disp == null) || !recorder.record(evt)) {
+			eventService.publish(new StatusEvent(null));
+			return;
+		}
 		final int channelIndex = disp.getAxisIndex(Axes.CHANNEL);
-
-		if (!recorder.record(evt)) return;
-
 		final long cx = recorder.getCX();
 		final long cy = recorder.getCY();
 		ChannelCollection values = recorder.getValues();
@@ -81,24 +83,21 @@ public class PixelProbe extends AbstractTool {
 		builder.append(", value=");
 		// single channel image (no channel axis)
 		if (channelIndex == -1) {
-			if (recorder.getDataset().isInteger())
-				builder.append((long)values.getChannelValue(0));
-			else
-				builder.append(String.format("%f", values.getChannelValue(0)));
+			String valueStr = valueString(values.getChannelValue(0));
+			builder.append(valueStr);
 		}
 		else { // has a channel axis
 			int currChannel = disp.getIntPosition(channelIndex);
-			String value = valueString(values.getChannelValue(currChannel));
-			builder.append(value);
+			String valueStr = valueString(values.getChannelValue(currChannel));
+			builder.append(valueStr);
 			builder.append(" from (");
 			for (int i = 0; i < values.getChannelCount(); i++) {
-				value = valueString(values.getChannelValue(i));
+				valueStr = valueString(values.getChannelValue(i));
 				if (i > 0) builder.append(",");
-				builder.append(value);
+				builder.append(valueStr);
 			}
 			builder.append(")");
 		}
-		EventService eventService = evt.getContext().getService(EventService.class);
 		eventService.publish(new StatusEvent(builder.toString()));
 	}
 	
