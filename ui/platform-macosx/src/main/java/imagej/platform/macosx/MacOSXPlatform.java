@@ -39,14 +39,14 @@ import com.apple.eawt.Application;
 import imagej.event.EventService;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
+import imagej.platform.AppEventService;
 import imagej.platform.IPlatform;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A platform implementation for handling Mac OS X platform issues:
@@ -60,9 +60,6 @@ import java.util.ArrayList;
  */
 @Platform(osName = "Mac OS X")
 public class MacOSXPlatform implements IPlatform {
-
-	private static final String[] APP_PLUGINS = { "AboutImageJ", "QuitProgram",
-		"ShowPrefs" };
 
 	@SuppressWarnings("unused")
 	private MacOSXAppEventDispatcher appEventDispatcher;
@@ -96,16 +93,12 @@ public class MacOSXPlatform implements IPlatform {
 
 	private void removeAppPluginsFromMenu(final PlatformService platformService) {
 		final EventService eventService = platformService.getEventService();
-		final PluginService pluginService = platformService.getPluginService();
-		final ArrayList<PluginModuleInfo<?>> modules =
-			new ArrayList<PluginModuleInfo<?>>();
-		for (final String appPlugin : APP_PLUGINS) {
-			final PluginModuleInfo<?> info =
-				pluginService.getRunnablePlugin("imagej.core.plugins.app." + appPlugin);
+		final AppEventService appEventService = platformService.getAppEventService();
+		List<PluginModuleInfo<?>> plugins = appEventService.getHandledPlugins();
+		for (final PluginModuleInfo<?> info : plugins) {
 			info.setMenuPath(null);
-			modules.add(info);
 		}
-		eventService.publish(new ModulesUpdatedEvent(modules));
+		eventService.publish(new ModulesUpdatedEvent(plugins));
 	}
 
 }

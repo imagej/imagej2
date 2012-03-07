@@ -1,5 +1,5 @@
 //
-// AppEventService.java
+// DefaultAppEventService.java
 //
 
 /*
@@ -37,33 +37,40 @@ package imagej.core.plugins.app;
 import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.platform.AppEventService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Service for executing plugins in response to application events.
+ * Default service for executing plugins in response to application events.
  * 
  * @author Curtis Rueden
  */
 @Service
-public final class AppEventService extends AbstractService {
+public final class DefaultAppEventService extends AbstractService implements
+	AppEventService
+{
 
 	private final EventService eventService;
 	private final PluginService pluginService;
 
 	// -- Constructors --
 
-	public AppEventService() {
+	public DefaultAppEventService() {
 		// NB: Required by SezPoz.
 		super(null);
 		throw new UnsupportedOperationException();
 	}
 
-	public AppEventService(final ImageJ context,
+	public DefaultAppEventService(final ImageJ context,
 		final EventService eventService, final PluginService pluginService)
 	{
 		super(context);
@@ -75,12 +82,24 @@ public final class AppEventService extends AbstractService {
 
 	// -- AppEventService methods --
 
+	@Override
 	public EventService getEventService() {
 		return eventService;
 	}
 
+	@Override
 	public PluginService getPluginService() {
 		return pluginService;
+	}
+
+	@Override
+	public List<PluginModuleInfo<?>> getHandledPlugins() {
+		final ArrayList<PluginModuleInfo<?>> handledPlugins =
+			new ArrayList<PluginModuleInfo<?>>();
+		handledPlugins.add(pluginService.getRunnablePlugin(AboutImageJ.class));
+		handledPlugins.add(pluginService.getRunnablePlugin(ShowPrefs.class));
+		handledPlugins.add(pluginService.getRunnablePlugin(QuitProgram.class));
+		return handledPlugins;
 	}
 
 	// -- Event handlers --
