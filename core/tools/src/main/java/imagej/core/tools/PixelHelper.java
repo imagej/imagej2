@@ -143,7 +143,7 @@ public class PixelHelper {
 			for (int i = 0; i < planePos.numDimensions(); i++) {
 				// TODO - this test of ch-2 will break when X & Y can exist outside
 				//   first two axes.
-				if (i != chanAxis-2) otherPositions[d++] = planePos.dimension(i);
+				if (i != chanAxis-2) otherPositions[d++] = planePos.getLongPosition(i);
 			}
 		}
 		

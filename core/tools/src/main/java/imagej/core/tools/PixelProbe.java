@@ -34,7 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import net.imglib2.meta.Axes;
+import imagej.ImageJ;
 import imagej.data.ChannelCollection;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
@@ -56,6 +60,11 @@ public class PixelProbe extends AbstractTool {
 	
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
+		
+		final ImageDisplayService service = ImageJ.get(ImageDisplayService.class);
+		final ImageDisplay disp = service.getActiveImageDisplay();
+		if (disp == null) return;
+		final int channelIndex = disp.getAxisIndex(Axes.CHANNEL);
 
 		if (!helper.recordEvent(evt)) return;
 
@@ -68,14 +77,34 @@ public class PixelProbe extends AbstractTool {
 		builder.append(", y=");
 		builder.append(cy);
 		builder.append(", value=");
-		for (int i = 0; i < values.getChannelCount(); i++) {
-			if (i > 0) builder.append(",");
+		// single channel image (no channel axis)
+		if (channelIndex == -1) {
 			if (helper.getDataset().isInteger())
-				builder.append((long)values.getChannelValue(i));
+				builder.append((long)values.getChannelValue(0));
 			else
-				builder.append(String.format("%f", values.getChannelValue(i)));
+				builder.append(String.format("%f", values.getChannelValue(0)));
+		}
+		else { // has a channel axis
+			int currChannel = disp.getIntPosition(channelIndex);
+			String value = valueString(values.getChannelValue(currChannel));
+			builder.append(value);
+			builder.append(" from (");
+			for (int i = 0; i < values.getChannelCount(); i++) {
+				value = valueString(values.getChannelValue(i));
+				if (i > 0) builder.append(",");
+				builder.append(value);
+			}
+			builder.append(")");
 		}
 		helper.updateStatus(builder.toString());
+	}
+	
+	// -- helpers --
+	
+	private String valueString(double value) {
+		if (helper.getDataset().isInteger())
+			return String.format("%d",(long)value);
+		return String.format("%f", value);
 	}
 
 }
