@@ -49,7 +49,7 @@ import java.net.URL;
  */
 public interface IPlatform {
 
-	void configure(PlatformService platformService);
+	void configure(PlatformService service);
 
 	void open(URL url) throws IOException;
 }
