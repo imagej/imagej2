@@ -60,6 +60,7 @@ public final class PlatformService extends AbstractService {
 
 	private final EventService eventService;
 	private final PluginService pluginService;
+	private final AppEventService appEventService;
 
 	/** Platform handlers applicable to this platform. */
 	private List<IPlatform> targetPlatforms;
@@ -76,11 +77,12 @@ public final class PlatformService extends AbstractService {
 	}
 
 	public PlatformService(final ImageJ context, final EventService eventService,
-		final PluginService pluginService)
+		final PluginService pluginService, final AppEventService appEventService)
 	{
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
+		this.appEventService = appEventService;
 
 		final List<IPlatform> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
@@ -99,6 +101,10 @@ public final class PlatformService extends AbstractService {
 
 	public PluginService getPluginService() {
 		return pluginService;
+	}
+
+	public AppEventService getAppEventService() {
+		return appEventService;
 	}
 
 	/** Gets the platform handlers applicable to this platform. */
