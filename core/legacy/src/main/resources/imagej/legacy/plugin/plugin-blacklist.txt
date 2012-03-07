@@ -79,6 +79,8 @@ ij.plugin.filter.ImageMath("nan")         # Process>Math>Set Background To NaN
 ij.plugin.filter.ImageMath("abs")         # Process>Math>Abs
 ij.plugin.filter.Shadows("demo")          # Process>Shadows>Shadows Demo
 ij.plugin.CommandFinder                   # Plugins>Utilities>Find Commands
+ij.plugin.HyperStackConverter("stacktohs") # Image>HyperStack>Stack To HyperStack
+ij.plugin.HyperStackConverter("hstostack") # Image>HyperStack>HyperStack To Stack 
 ###### PHASE THESE OUT SOON
 #ij.plugin.Converter("8-bit Color")        # Image>Type>8-bit Color
 #ij.plugin.Converter("RGB Color")          # Image>Type>RGB Color
