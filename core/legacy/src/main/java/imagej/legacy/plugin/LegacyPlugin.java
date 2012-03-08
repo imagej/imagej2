@@ -63,7 +63,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 
 /**
  * Executes an IJ1 plugin.
@@ -249,8 +248,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				if (isLegacyCompatible(display)) {
 					imp = map.registerDisplay(display);
 					harmonizer.registerType(imp);
-					int sliceNum = getIJ1SliceNumber(display);
-					imp.setSlice(sliceNum);
+					updatePosition(display,imp);
 				}
 			}
 			else { // imp already exists : update it
@@ -259,8 +257,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				imp.unlock();
 				harmonizer.updateLegacyImage(display, imp);
 				harmonizer.registerType(imp);
-				int sliceNum = getIJ1SliceNumber(display);
-				imp.setSlice(sliceNum);
+				updatePosition(display,imp);
 			}
 		}
 	}
@@ -385,16 +382,11 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	// When this is called we know that we have a IJ1 compatible display. So we
-	// can make lots of assumptions about dimensional sizes
-	private int getIJ1SliceNumber(ImageDisplay display) {
-		long[] dims = display.getDims();
-		int zIndex = display.getAxisIndex(Axes.Z);
-		int tIndex = display.getAxisIndex(Axes.TIME);
+	// can assumptions about dimensional sizes
+	private void updatePosition(ImageDisplay display, ImagePlus imp) {
 		int cPos = (int) display.getLongPosition(Axes.CHANNEL);
 		int zPos = (int) display.getLongPosition(Axes.Z);
 		int tPos = (int) display.getLongPosition(Axes.TIME);
-		int zDim = (zIndex == -1) ? 1 : (int) dims[zIndex];
-		int tDim = (tIndex == -1) ? 1 : (int) dims[tIndex];
-		return cPos*zDim*tDim + zPos*tDim + tPos + 1; 
+		imp.setPosition(cPos+1, zPos+1, tPos+1); 
 	}
 }
