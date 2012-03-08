@@ -62,6 +62,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+
 /**
  * Executes an IJ1 plugin.
  * 
@@ -228,6 +231,11 @@ public class LegacyPlugin implements ImageJPlugin {
 		//System.out.println("  end waitForPluginThreads()");
 	}
 
+	// TODO - IJ2 could modify an image to go outside IJ1's legal bounds. If it
+	// has a existing ImagePlus mapping then we are likely assuming its legal
+	// when its not. Put in tests to address this situation rather than having
+	// harmonization or something else fail.
+	
 	private void updateImagePlusesFromDisplays(final LegacyImageMap map,
 		final Harmonizer harmonizer)
 	{
@@ -241,6 +249,8 @@ public class LegacyPlugin implements ImageJPlugin {
 				if (isLegacyCompatible(display)) {
 					imp = map.registerDisplay(display);
 					harmonizer.registerType(imp);
+					int sliceNum = getIJ1SliceNumber(display);
+					imp.setSlice(sliceNum);
 				}
 			}
 			else { // imp already exists : update it
@@ -249,6 +259,8 @@ public class LegacyPlugin implements ImageJPlugin {
 				imp.unlock();
 				harmonizer.updateLegacyImage(display, imp);
 				harmonizer.registerType(imp);
+				int sliceNum = getIJ1SliceNumber(display);
+				imp.setSlice(sliceNum);
 			}
 		}
 	}
@@ -372,4 +384,17 @@ public class LegacyPlugin implements ImageJPlugin {
 		roi.endPaste();
 	}
 
+	// When this is called we know that we have a IJ1 compatible display. So we
+	// can make lots of assumptions about dimensional sizes
+	private int getIJ1SliceNumber(ImageDisplay display) {
+		long[] dims = display.getDims();
+		int zIndex = display.getAxisIndex(Axes.Z);
+		int tIndex = display.getAxisIndex(Axes.TIME);
+		int cPos = (int) display.getLongPosition(Axes.CHANNEL);
+		int zPos = (int) display.getLongPosition(Axes.Z);
+		int tPos = (int) display.getLongPosition(Axes.TIME);
+		int zDim = (zIndex == -1) ? 1 : (int) dims[zIndex];
+		int tDim = (tIndex == -1) ? 1 : (int) dims[tIndex];
+		return cPos*zDim*tDim + zPos*tDim + tPos + 1; 
+	}
 }
