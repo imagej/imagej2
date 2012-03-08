@@ -48,6 +48,7 @@ import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.platform.PlatformService;
 import imagej.ui.UIService;
+import imagej.util.Log;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -593,11 +594,11 @@ public class SwingOverlayManager
 	}
 	
 	private void addParticles() {
-		System.out.println("add particles");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void and() {
-		System.out.println("and");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void delete() {
@@ -625,19 +626,19 @@ public class SwingOverlayManager
 	}
 	
 	private void draw() {
-		System.out.println("draw");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void fill() {
-		System.out.println("fill");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void flatten() {
-		System.out.println("flatten");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void help() {
-		System.out.println("TODO - use an imagej.net URL for this command");
+		Log.warn("TODO in SwingOverlayManager::help() - using old IJ1 URL for this command");
 		PlatformService ps = context.getService(PlatformService.class);
 		try {
 			URL url =
@@ -649,35 +650,35 @@ public class SwingOverlayManager
 	}
 	
 	private void measure() {
-		System.out.println("measure");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void multiMeasure() {
-		System.out.println("multi measure");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void multiPlot() {
-		System.out.println("multi plot");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void open() {
-		System.out.println("open");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void options() {
-		System.out.println("options");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void or() {
-		System.out.println("or");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void properties() {
-		System.out.println("properties");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void removeSliceInfo() {
-		System.out.println("remove slice info");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void rename() {
@@ -698,7 +699,7 @@ public class SwingOverlayManager
 	}
 	
 	private void save() {
-		System.out.println("save");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void sort() {
@@ -707,11 +708,11 @@ public class SwingOverlayManager
 	}
 	
 	private void specify() {
-		System.out.println("specify");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	private void split() {
-		System.out.println("split");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	// replace OverlayInfoList's currently selected info with the currently
@@ -745,7 +746,7 @@ public class SwingOverlayManager
 	}
 	
 	private void xor() {
-		System.out.println("xor");
+		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
 	// -- private helpers for hotkey handling --
@@ -1098,10 +1099,10 @@ public class SwingOverlayManager
 	public void itemStateChanged(ItemEvent evt) {
 		boolean selected = (evt.getStateChange() == ItemEvent.SELECTED);
 		if (evt.getSource() == showAllCheckBox) {
-			System.out.println("show all is now "+selected);
+			//System.out.println("show all is now "+selected);
 		}
 		if (evt.getSource() == editModeCheckBox) {
-			System.out.println("edit mode is now "+selected);
+			//System.out.println("edit mode is now "+selected);
 			// link both checkboxes in selected case
 			if (selected)
 				showAllCheckBox.setSelected(true);
