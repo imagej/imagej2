@@ -126,7 +126,7 @@ public class PixelRecorder {
 			// record all positions
 			otherPositions = new long[planePos.numDimensions()];
 			for (int i = 0; i < planePos.numDimensions(); i++) {
-				otherPositions[i] = planePos.dimension(i);
+				otherPositions[i] = planePos.getLongPosition(i);
 			}
 		}
 		else { // channel axis is present
