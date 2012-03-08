@@ -619,7 +619,7 @@ public class DrawingTool {
 					(extents.height > textBuffer.getHeight()))
 			{
 				this.bufferSizeU = extents.width;
-				this.bufferSizeV = extents.height;
+				this.bufferSizeV = extents.height + 10; // + to avoid top clipping
 				this.textBuffer =	new BufferedImage(bufferSizeU, bufferSizeV,
 																						BufferedImage.TYPE_BYTE_GRAY);
 				this.textRaster = textBuffer.getRaster();

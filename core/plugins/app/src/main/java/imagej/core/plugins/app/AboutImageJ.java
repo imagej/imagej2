@@ -34,7 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgOpener;
@@ -56,7 +65,18 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsMemoryAndThreads;
+import imagej.util.ColorRGB;
+import imagej.util.Colors;
 import imagej.util.Log;
+
+// TODO
+//   Have imageX.tif files and ImageX.metadata.txt files
+//     Metadata file lists some useful info
+//     - image attribution
+//     - best color to render text in
+//     - recommended font size???
+//   This plugin should load a random image and display info including
+//     attribution text
 
 /**
  * Display information and credits about the ImageJ2 software. Note that some
@@ -82,6 +102,11 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	@Parameter
 	private DisplayService dispSrv;
 	
+	// -- instance variables that are not parameters --
+	List<String> attributionStrings = new ArrayList<String>();
+	ColorRGB fontColor = Colors.YELLOW;
+	int largestFontSize = 30;
+	
 	// -- public interface --
 	
 	@Override
@@ -98,23 +123,37 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 */
 	private Dataset getData() {
 		
+		final URL imageURL = getImageURL();
+		
+		final String filename;
+		if (imageURL == null)
+			filename = "";
+		else
+			filename = imageURL.toString().substring(5); // strip off "file:"
+		
+		final ImgPlus<T> img = getImage(filename);
+		
 		final String title = "About ImageJ " + ImageJ.VERSION;
 
 		Dataset ds = null;
 		
-		final ImgPlus<T> img = getImage();
-
 		// did we successfully load a background image?
 		if (img != null) {
 			// yes we did - inspect it
 			ds = dataSrv.create(img);
 			boolean validImage = true;
 			validImage &= (ds.numDimensions() == 3);
-			validImage &= (ds.getAxisIndex(Axes.CHANNEL) == 2);
+			// Too restrictive? Ran into images where 3rd axis is mislabeled
+			//validImage &= (ds.getAxisIndex(Axes.CHANNEL) == 2);
 			validImage &= (ds.getImgPlus().firstElement().getBitsPerPixel() == 8);
 			validImage &= (ds.isInteger());
 			validImage &= (!ds.isSigned());
-			if (!validImage) ds = null;
+			if (validImage) {
+				loadAttributes(filename);
+			}
+			else {
+				ds = null;
+			}
 		}
 
 		// Did we fail to load a valid dataset?
@@ -133,17 +172,14 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	}
 
 	/**
-	 * Loads an ImgPlus from a URL
+	 * Loads an ImgPlus from a filename
 	 */
-	private ImgPlus<T> getImage() {
-		final URL imageURL = getImageURL();
-		if (imageURL == null) return null;
+	private ImgPlus<T> getImage(String filename) {
+		if (filename == null) return null;
 		try {
 			final ImgOpener opener = new ImgOpener();
 			// TODO - ImgOpener should be extended to handle URLs
 			// Hack for now to get local file name
-			final String urlName = imageURL.toString();
-			final String filename = urlName.substring(5); // strip off "file:"
 			return opener.openImg(filename);
 		} catch (Exception e) {
 			return null;
@@ -155,7 +191,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 */
 	private URL getImageURL() {
 		// TODO - cycle through one of many
-		final String fname = "/images/image1.tif";  // NB - THIS PATH IS CORRECT 
+		final String fname = "/images/image2.tif";  // NB - THIS PATH IS CORRECT 
 		return getClass().getResource(fname);
 	}
 
@@ -163,21 +199,20 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Draws the textual information over a given merged color Dataset
 	 */
 	private void drawTextOverImage(Dataset ds) {
-		// make a yellow like set of channels
 		final ChannelCollection chans = new ChannelCollection();
-		chans.setChannelValue(0, 255);
-		chans.setChannelValue(1, 255);
-		chans.setChannelValue(2, 0);
+		chans.setChannelValue(0, fontColor.getRed());
+		chans.setChannelValue(1, fontColor.getGreen());
+		chans.setChannelValue(2, fontColor.getBlue());
 		final DrawingTool tool = new DrawingTool(ds, chans);
 		tool.setUAxis(0);
 		tool.setVAxis(1);
 		final long width = ds.dimension(0);
 		final long x = width / 2;
 		long y = 50;
-		tool.setFontSize(20);
+		tool.setFontSize(largestFontSize);
 		tool.drawText(x,y,"ImageJ2 "+ImageJ.VERSION, TextJustification.CENTER);
 		y += 5*tool.getFontSize()/4;
-		tool.setFontSize(13);
+		tool.setFontSize((int)Math.round(0.6 * largestFontSize));
 		for (final String line : getTextBlock()) {
 			tool.drawText(x,y,line, TextJustification.CENTER);
 			y += 5*tool.getFontSize()/4;
@@ -188,14 +223,18 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Returns the paragraph of textual information to display over the
 	 * backdrop image
 	 */
-	private String[] getTextBlock() {
-		return new String[] {
-			"Open source image processing software",
-			"Copyright 2010, 2011, 2012",
-			"http://developer.imagej.net/",
-			javaInfo(),
-			memoryInfo()
-		};
+	private List<String> getTextBlock() {
+		
+		ArrayList<String> stringList = new ArrayList<String>();
+		
+		stringList.add("Open source image processing software");
+		stringList.add("Copyright 2010, 2011, 2012");
+		stringList.add("http://developer.imagej.net/");
+		stringList.add(javaInfo());
+		stringList.add(memoryInfo());
+		stringList.addAll(attributionStrings);
+
+		return stringList;
 	}
 	
 	/**
@@ -244,5 +283,53 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	private boolean is64Bit() {
 		String osarch = System.getProperty("os.arch");
 		return osarch!=null && osarch.indexOf("64")!=-1;
+	}
+	
+	private void loadAttributes(String baseFileName) {
+		String fileName = baseFileName + ".txt";
+		File file = new File(fileName);
+		if (file.exists()) {
+			Pattern attributionPattern = Pattern.compile("attribution \"(.*)\"");
+			Pattern colorPattern = Pattern.compile("color ([0-9]+) +([0-9]+) +([0-9]+)");
+			Pattern fontsizePattern = Pattern.compile("fontsize ([0-9]+)");
+			try {
+				FileInputStream fstream = new FileInputStream(file);
+				DataInputStream in = new DataInputStream(fstream);
+				BufferedReader br = new BufferedReader(new InputStreamReader(in));
+				String strLine;
+				//Read File Line By Line
+				while ((strLine = br.readLine()) != null) {
+					Matcher attributionMatcher = attributionPattern.matcher(strLine);
+					if (attributionMatcher.matches()) {
+						attributionStrings.add(attributionMatcher.group(1));
+					}
+					Matcher colorMatcher = colorPattern.matcher(strLine);
+					if (colorMatcher.matches()) {
+						try {
+							int r = Integer.parseInt(colorMatcher.group(1));
+							int g = Integer.parseInt(colorMatcher.group(2));
+							int b = Integer.parseInt(colorMatcher.group(3));
+							fontColor = new ColorRGB(r,g,b);
+						} catch (Exception e) {
+							// do nothing
+						}
+					}
+					Matcher fontsizeMatcher = fontsizePattern.matcher(strLine);
+					if (fontsizeMatcher.matches()) {
+						try {
+							largestFontSize = Integer.parseInt(fontsizeMatcher.group(1));
+						} catch (Exception e) {
+							// do nothing
+						}
+					}
+				}
+				//Close the input stream
+				in.close();
+			   
+			}
+			catch (Exception e) {
+				// do nothing
+			}
+		}
 	}
 }
