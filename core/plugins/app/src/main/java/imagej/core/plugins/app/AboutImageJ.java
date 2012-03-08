@@ -284,7 +284,10 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		String osarch = System.getProperty("os.arch");
 		return osarch!=null && osarch.indexOf("64")!=-1;
 	}
-	
+
+	/**
+	 * Loads attributes from an associated filename.ext.txt file if possible  
+	 */
 	private void loadAttributes(String baseFileName) {
 		String fileName = baseFileName + ".txt";
 		File file = new File(fileName);
