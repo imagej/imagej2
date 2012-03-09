@@ -105,6 +105,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
+	// -- constructors --
+	
 	public SwingDisplayPanel(final AbstractSwingImageDisplay display,
 		final DisplayWindow window)
 	{
@@ -163,47 +165,11 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 				createSliders();
 				updateBorder(0);
 				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
-				sizeAppropriately();
+				doInitialSizing();
 				window.setTitle(getDisplay().getName());
 				window.showDisplay(true);
 			}
 		});
-	}
-
-	void sizeAppropriately() {
-		final JHotDrawImageCanvas canvas = getDisplay().getCanvas();
-		final Dimension canvasSize = canvas.getPreferredSize();
-		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
-		// width determined by scaled image canvas width
-		final int labelPlusSliderHeight =
-			imageLabel.getPreferredSize().height +
-				sliderPanel.getPreferredSize().height;
-		final int extraSpace = 32;
-		final int maxViewHeight =
-			deskBounds.height - labelPlusSliderHeight - extraSpace;
-		final int maxViewWidth = deskBounds.width - extraSpace;
-		double scale = 1.0;
-		if ((canvasSize.width > maxViewWidth) ||
-			(canvasSize.height > maxViewHeight))
-		{
-			final double canvasAspect = 1.0 * canvasSize.width / canvasSize.height;
-			final double viewAspect = 1.0 * maxViewWidth / maxViewHeight;
-			if (canvasAspect < viewAspect) {
-				// image height the issue
-				scale = 1.0 * maxViewHeight / canvasSize.height;
-			}
-			else {
-				// image width the issue
-				scale = 1.0 * maxViewWidth / canvasSize.width;
-			}
-		}
-		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
-		canvas.setZoom(zoomLevel);
-		// canvasSize = canvas.getPreferredSize();
-		if (!initialScaleCalculated) {
-			canvas.setInitialScale(canvas.getZoomFactor());
-			initialScaleCalculated = true;
-		}
 	}
 
 	@Override
@@ -224,15 +190,6 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		imagePane.setBorder(border);
 	}
 
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(AxisPositionEvent event) {
-		if (event.getDisplay() != getDisplay()) return;
-		final AxisType axis = event.getAxis();
-		updateAxis(axis);
-	}
-
 	@Override
 	public void redraw() {
 		final ImageDisplayService imageDisplayService =
@@ -242,6 +199,15 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			view.getProjector().map();
 	}
 	
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(AxisPositionEvent event) {
+		if (event.getDisplay() != getDisplay()) return;
+		final AxisType axis = event.getAxis();
+		updateAxis(axis);
+	}
+
 	// -- Helper methods --
 
 	private void createSliders() {
@@ -299,15 +265,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		}
 	}
 
-	private void updateAxis(final AxisType axis) {
-		final int value = (int) getDisplay().getLongPosition(axis);
-		final JScrollBar scrollBar = axisSliders.get(axis);
-		if (scrollBar != null) scrollBar.setValue(value);
-		if (axis == Axes.CHANNEL) updateBorder(value);
-		getDisplay().update();
-	}
-
-	protected void updateBorder(final int c) {
+	private void updateBorder(final int c) {
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
@@ -323,4 +281,57 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		setBorderColor(color);
 	}
 
+	private void doInitialSizing() {
+		final JHotDrawImageCanvas canvas = getDisplay().getCanvas();
+		final double scale = findFullyVisibleScale(canvas);
+		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
+		canvas.setZoom(zoomLevel);
+		if (!initialScaleCalculated) {
+			canvas.setInitialScale(canvas.getZoomFactor());
+			initialScaleCalculated = true;
+		}
+	}
+
+	private void updateAxis(final AxisType axis) {
+		final int value = (int) getDisplay().getLongPosition(axis);
+		final JScrollBar scrollBar = axisSliders.get(axis);
+		if (scrollBar != null) scrollBar.setValue(value);
+		if (axis == Axes.CHANNEL) updateBorder(value);
+		getDisplay().update();
+	}
+
+	private double findFullyVisibleScale(JHotDrawImageCanvas canvas) {
+		final Dimension canvasSize = canvas.getPreferredSize();
+		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
+		
+		// calc height variables
+		final int labelHeight = imageLabel.getPreferredSize().height;
+		final int sliderHeight = sliderPanel.getPreferredSize().height;
+		final int extraSpace = 32;
+		
+		// determine largest viewable panel sizes
+		final int maxViewHeight =
+			deskBounds.height - labelHeight - sliderHeight - extraSpace;
+		final int maxViewWidth = deskBounds.width - extraSpace;
+		
+		// is canvas bigger than largest viewable panel?
+		if ((canvasSize.width > maxViewWidth) ||
+			(canvasSize.height > maxViewHeight))
+		{
+			// yes it is
+			// so calc best scale that brings whole image into max viewable panel size
+			
+			final double canvasAspect = 1.0 * canvasSize.width / canvasSize.height;
+			final double viewAspect = 1.0 * maxViewWidth / maxViewHeight;
+			if (canvasAspect < viewAspect) {
+				// image height the issue
+				return 1.0 * maxViewHeight / canvasSize.height;
+			}
+			// else image width the issue
+			return 1.0 * maxViewWidth / canvasSize.width;
+		}
+		
+		// else canvas fits on screen as is
+		return 1;
+	}
 }
