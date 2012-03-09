@@ -199,7 +199,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		computeMinMax.process();
 		dataMin = computeMinMax.getMin().getRealDouble();
 		dataMax = computeMinMax.getMax().getRealDouble();
-		Log.info("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
+		Log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
 	}
 
 	private void computeInitialMinMax() {
@@ -210,7 +210,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 			initialMax = conv.getMax();
 			break; // use only first channel, for now
 		}
-		Log.info("computeInitialMinMax: initialMin=" + initialMin +
+		Log.debug("computeInitialMinMax: initialMin=" + initialMin +
 			", initialMax=" + initialMax);
 	}
 
@@ -238,7 +238,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		min = (dataMax - dataMin) * minUnit + dataMin;
 		max = (dataMax - dataMin) * maxUnit + dataMin;
 
-		Log.info("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" + b +
+		Log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" + b +
 			", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit + ", min=" +
 			min + ", max=" + max);
 	}
@@ -268,7 +268,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		brightness = (int) ((SLIDER_MAX - SLIDER_MIN) * bUnit + SLIDER_MIN + 0.5);
 		contrast = (int) ((SLIDER_MAX - SLIDER_MIN) * cUnit + SLIDER_MIN + 0.5);
 
-		Log.info("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
+		Log.debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
 			maxUnit + ", m=" + m + ", b=" + b + ", bUnit=" + bUnit + ", cUnit=" +
 			cUnit + ", brightness=" + brightness + ", contrast=" + contrast);
 	}
