@@ -36,6 +36,7 @@ package imagej.core.plugins.display;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayView;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -43,7 +44,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 /**
- * Selects all of the views of the given display.
+ * Selects all of the overlays linked to the given display.
  * 
  * @author Lee Kamentsky
  */
@@ -61,7 +62,9 @@ public class SelectAll implements ImageJPlugin {
 	@Override
 	public void run() {
 		for (final DataView view : display) {
-			view.setSelected(true);
+			if (view instanceof OverlayView) {
+				view.setSelected(true);
+			}
 		}
 	}
 
