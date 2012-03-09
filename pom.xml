@@ -5,6 +5,12 @@
 		http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.github.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>1.3</version>
+	</parent>
+
 	<groupId>net.imagej</groupId>
 	<artifactId>pom-ij-base</artifactId>
 	<version>2.0-SNAPSHOT</version>
@@ -19,102 +25,6 @@
 		<module>core</module>
 		<module>ui</module>
 	</modules>
-
-	<properties>
-		<bio-formats.version>4.4-SNAPSHOT</bio-formats.version>
-		<imagej.groupId>${project.groupId}</imagej.groupId>
-		<imagej.version>${project.version}</imagej.version>
-		<imagej1.version>[1.45p,)</imagej1.version>
-		<imglib1.groupId>mpicbg</imglib1.groupId>
-		<imglib1.version>2.0-SNAPSHOT</imglib1.version>
-		<imglib2.groupId>net.imglib2</imglib2.groupId>
-		<imglib2.version>2.0-SNAPSHOT</imglib2.version>
-		<jetty.version>8.0.0.M1</jetty.version>
-		<junit.version>4.8.1</junit.version>
-		<sezpoz.version>1.9</sezpoz.version>
-
-		<!-- NB: Avoid platform encoding warning when copying resources. -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
-
-	<build>
-		<defaultGoal>install</defaultGoal>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-webdav-jackrabbit</artifactId>
-				<version>1.0</version>
-			</extension>
-		</extensions>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.3</version>
-			</plugin>
-			<plugin>
-				<groupId>org.fusesource.mvnplugins</groupId>
-				<artifactId>maven-graph-plugin</artifactId>
-				<version>1.0</version>
-				<configuration>
-					<hideScopes>runtime,test</hideScopes>
-					<label>Dependency Graph for ${project.name}</label>
-					<target>${project.build.directory}/dependency-graph.dot</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<reporting>
-		<plugins>
-			<!-- NB: Generate javadocs as part of site generation. -->
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<maxmemory>1024m</maxmemory>
-					<!-- NB: Workaround for javadoc bug when classes in the default
-						package access classes from non-default packages. See:
-						http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
-					<use>false</use>
-					<links>
-						<link>https://pivot.apache.org/2.0.1/docs/api/</link>
-						<link>http://help.eclipse.org/indigo/topic/org.eclipse.platform.doc.isv/reference/api/</link>
-					</links>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
 
 	<licenses>
 		<license>
@@ -308,51 +218,17 @@
 		<url>http://code.imagej.net/svn/imagej</url>
 	</scm>
 
+	<!-- NB: for project parent -->
 	<repositories>
-		<!-- NB: for loci projects -->
-		<repository>
-			<id>loci.releases</id>
-			<url>http://dev.loci.wisc.edu/maven2/releases</url>
-		</repository>
-		<repository>
-			<id>loci.snapshots</id>
-			<url>http://dev.loci.wisc.edu/maven2/snapshots</url>
-		</repository>
-		<!-- NB: for various dependencies -->
-		<repository>
-			<id>imagej.thirdparty</id>
-			<url>http://maven.imagej.net/content/repositories/thirdparty</url>
-		</repository>
-		<!-- NB: for sezpoz -->
-		<repository>
-			<id>java.net</id>
-			<url>http://download.java.net/maven/2</url>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<!-- NB: for maven-graph-plugin -->
-		<pluginRepository>
-			<id>mvnplugins.fusesource.org</id>
-			<url>http://mvnplugins.fusesource.org/repo/release</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
-
-	<distributionManagement>
 		<repository>
 			<id>imagej.releases</id>
-			<name>ImageJ Releases Repository</name>
-			<url>dav:http://maven.imagej.net/content/repositories/releases</url>
+			<url>http://maven.imagej.net/content/repositories/releases</url>
 		</repository>
-		<snapshotRepository>
+		<repository>
 			<id>imagej.snapshots</id>
-			<name>ImageJ Snapshots Repository</name>
-			<url>dav:http://maven.imagej.net/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+			<url>http://maven.imagej.net/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
 
 	<profiles>
 		<profile>
