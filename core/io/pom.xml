@@ -49,9 +49,9 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>loci</groupId>
+			<groupId>${scifio.groupId}</groupId>
 			<artifactId>loci-common</artifactId>
-			<version>${bio-formats.version}</version>
+			<version>${scifio.version}</version>
 		</dependency>
 	</dependencies>
 

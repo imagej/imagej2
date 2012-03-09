@@ -24,9 +24,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>loci</groupId>
+			<groupId>${scifio.groupId}</groupId>
 			<artifactId>bio-formats</artifactId>
-			<version>${bio-formats.version}</version>
+			<version>${scifio.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
