@@ -44,7 +44,6 @@ import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
-import imagej.ui.swing.tools.FreehandTool;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -68,7 +67,7 @@ import org.jhotdraw.geom.BezierPath.Node;
 @JHotDrawOverlayAdapter(priority = LineAdapter.PRIORITY)
 public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 
-	public static final int PRIORITY = FreehandTool.PRIORITY - 1;
+	public static final int PRIORITY = PolygonAdapter.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
