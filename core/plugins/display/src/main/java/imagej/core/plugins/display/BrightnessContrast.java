@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.display;
 
+import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
@@ -46,57 +47,71 @@ import imagej.util.Log;
 
 import java.util.List;
 
+import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.RealLUTConverter;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
 /**
  * Plugin that sets the minimum and maximum for scaling of display values. Sets
  * the same min/max for each channel.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
+ * @author Grant Harris
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Brightness/Contrast", accelerator = "control shift C",
-		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true)
+		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true,
+	initializer = "initValues")
 public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
-	private static final int SLIDER_RANGE = 256;
-	private static final String SLIDER_MAX = "" + (SLIDER_RANGE - 1);
+	private static final int SLIDER_MIN = 0;
+	private static final int SLIDER_MAX = 100;
+
+	private static final String S_MIN = "" + SLIDER_MIN;
+	private static final String S_MAX = "" + SLIDER_MAX;
+
+	/**
+	 * The exponential power used for computing contrast. The greater this number,
+	 * the steeper the slope will be at maximum contrast, and flatter it will be
+	 * at minimum contrast.
+	 */
+	private static final int MAX_POWER = 4;
 
 	@Parameter(persist = false)
 	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
-	private double min = 0;
+	private double min = Double.NaN;
 
 	@Parameter(label = "Maximum", persist = false, callback = "minMaxChanged")
-	private double max = 255;
+	private double max = Double.NaN;
 
-	@Parameter(callback = "brightnessChanged", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = SLIDER_MAX)
-	private int brightness = SLIDER_RANGE / 2;
+	@Parameter(callback = "brightnessContrastChanged", persist = false,
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = S_MIN, max = S_MAX)
+	private int brightness;
 
-	@Parameter(callback = "contrastChanged", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = SLIDER_MAX)
-	private int contrast = SLIDER_RANGE / 2;
+	@Parameter(callback = "brightnessContrastChanged", persist = false,
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = S_MIN, max = S_MAX)
+	private int contrast;
 
-	private final double defaultMin, defaultMax;
+	/** The minimum and maximum values of the data itself. */
+	private double dataMin, dataMax;
 
-	public BrightnessContrast() {
-		if (view != null) initializeMinMax();
-		this.defaultMin = min;
-		this.defaultMax = max;
-		Log.debug("default min/max= " + defaultMin + "/" + defaultMax);
-	}
+	/** The initial minimum and maximum values of the data view. */
+	private double initialMin, initialMax;
+
+	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		updateMinMax(min, max);
+		updateDisplay();
 	}
+
+	// -- PreviewPlugin methods --
 
 	@Override
 	public void preview() {
@@ -105,8 +120,12 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
 	@Override
 	public void cancel() {
-		updateMinMax(defaultMin, defaultMax);
+		min = initialMin;
+		max = initialMax;
+		updateDisplay();
 	}
+
+	// -- BrightnessContrast methods --
 
 	public DatasetView getView() {
 		return view;
@@ -148,86 +167,119 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		this.contrast = contrast;
 	}
 
+	// -- Initializers --
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void initValues() {
+		final Dataset dataset = view.getData();
+		final Img img = dataset.getImgPlus();
+		computeDataMinMax(img);
+		computeInitialMinMax();
+		if (min != min) min = initialMin;
+		if (max != max) max = initialMax;
+		computeBrightnessContrast();
+	}
+
 	// -- Callback methods --
 
+	/** Called when min or max changes. Updates brightness and contrast. */
 	protected void minMaxChanged() {
-//		min = defaultMin + min * (defaultMax - defaultMin) / (SLIDER_RANGE - 1.0);
-//		if (max > defaultMax) {
-//			max = defaultMax;
-//		}
-//		if (min > max) {
-//			max = min;
-//		}
-		updateBrightness();
-		updateContrast();
+		computeBrightnessContrast();
 	}
 
-	protected void contrastChanged() {
-		double slope;
-		final double center = min + (max - min) / 2.0;
-		final double range = defaultMax - defaultMin;
-		final double mid = SLIDER_RANGE / 2;
-		final int cvalue = contrast;
-		if (cvalue <= mid) {
-			slope = cvalue / mid;
-		}
-		else {
-			slope = mid / (SLIDER_RANGE - cvalue);
-		}
-		if (slope > 0.0) {
-			min = (center - (0.5 * range) / slope);
-			max = (center + (0.5 * range) / slope);
-		}
-	}
-
-	protected void brightnessChanged() {
-		final double brightCenter =
-			defaultMin + (defaultMax - defaultMin) *
-				((float) (SLIDER_RANGE - brightness) / (float) SLIDER_RANGE);
-		final double width = max - min;
-		min = (brightCenter - width / 2.0);
-		max = (brightCenter + width / 2.0);
-		Log.debug("brightness, brightCenter, width, min, max = " + brightness +
-			", " + brightCenter + ", " + width + ", " + min + ", " + max);
+	/** Called when brightness or contrast changes. Updates min and max. */
+	protected void brightnessContrastChanged() {
+		computeMinMax();
 	}
 
 	// -- Helper methods --
 
-	private void initializeMinMax() {
+	private <T extends RealType<T>> void computeDataMinMax(final Img<T> img) {
+		final ComputeMinMax<T> computeMinMax = new ComputeMinMax<T>(img);
+		computeMinMax.process();
+		dataMin = computeMinMax.getMin().getRealDouble();
+		dataMax = computeMinMax.getMax().getRealDouble();
+		Log.info("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
+	}
+
+	private void computeInitialMinMax() {
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
-			min = conv.getMin();
-			max = conv.getMax();
+			initialMin = conv.getMin();
+			initialMax = conv.getMax();
 			break; // use only first channel, for now
 		}
-		Log.debug("BrightnessContrast: valid bits = " +
-			view.getData().getValidBits());
+		Log.info("computeInitialMinMax: initialMin=" + initialMin +
+			", initialMax=" + initialMax);
 	}
 
-	private void updateBrightness() {
-		final double level = min + (max - min) / 2.0;
-		final double normalizedLevel =
-			1.0 - (level - defaultMin) / (defaultMax - defaultMin);
-		brightness = ((int) (normalizedLevel * SLIDER_RANGE));
+	/** Computes min and max from brightness and contrast. */
+	private void computeMinMax() {
+		// normalize brightness and contrast to [0, 1]
+		final double bUnit =
+			(double) (brightness - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN);
+		final double cUnit =
+			(double) (contrast - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN);
+
+		// convert brightness to offset [-1, 1]
+		final double b = 2 * bUnit - 1;
+
+		// convert contrast to slope [e^-n, e^n]
+		final double m = Math.exp(2 * MAX_POWER * cUnit - MAX_POWER);
+
+		// y = m*x + b
+		// minUnit is x at y=0
+		// maxUnit is x at y=1
+		final double minUnit = -b / m;
+		final double maxUnit = (1 - b) / m;
+
+		// convert unit min/max to actual min/max
+		min = (dataMax - dataMin) * minUnit + dataMin;
+		max = (dataMax - dataMin) * maxUnit + dataMin;
+
+		Log.info("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" + b +
+			", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit + ", min=" +
+			min + ", max=" + max);
 	}
 
-	private void updateContrast() {
-		final double mid = SLIDER_RANGE / 2;
-		double c = ((defaultMax - defaultMin) / (max - min)) * mid;
-		if (c > mid) {
-			c = SLIDER_RANGE - ((max - min) / (defaultMax - defaultMin)) * mid;
-		}
-		contrast = ((int) c);
+	/** Computes brightness and contrast from min and max. */
+	private void computeBrightnessContrast() {
+		// normalize min and max to [0, 1]
+		final double minUnit = (min - dataMin) / (dataMax - dataMin);
+		final double maxUnit = (max - dataMin) / (dataMax - dataMin);
+
+		// y = m*x + b
+		// minUnit is x at y=0
+		// maxUnit is x at y=1
+		// b = y - m*x = -m * minUnit = 1 - m * maxUnit
+		// m * maxUnit - m * minUnit = 1
+		// m = 1 / (maxUnit - minUnit)
+		final double m = 1 / (maxUnit - minUnit);
+		final double b = -m * minUnit;
+
+		// convert offset to normalized brightness
+		final double bUnit = (b + 1) / 2;
+
+		// convert slope to normalized contrast
+		final double cUnit = (Math.log(m) + MAX_POWER) / (2 * MAX_POWER);
+
+		// convert unit brightness/contrast to actual brightness/contrast
+		brightness = (int) ((SLIDER_MAX - SLIDER_MIN) * bUnit + SLIDER_MIN + 0.5);
+		contrast = (int) ((SLIDER_MAX - SLIDER_MIN) * cUnit + SLIDER_MIN + 0.5);
+
+		Log.info("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
+			maxUnit + ", m=" + m + ", b=" + b + ", bUnit=" + bUnit + ", cUnit=" +
+			cUnit + ", brightness=" + brightness + ", contrast=" + contrast);
 	}
 
-	private void updateMinMax(final double minValue, final double maxValue) {
-		if (view == null) return;
+	/** Updates the displayed min/max range to match min and max values. */
+	private void updateDisplay() {
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
-			conv.setMin(minValue);
-			conv.setMax(maxValue);
+			conv.setMin(min);
+			conv.setMax(max);
 		}
 		view.getProjector().map();
 		view.update();
