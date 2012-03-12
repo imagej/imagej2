@@ -272,6 +272,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		return display;
 	}
 
+	// Johannes
+	// BDZ
 	@Override
 	public Dimension getPreferredSize() {
 		// HACK: Size the canvas one pixel larger. This is a workaround to an
@@ -452,15 +454,16 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		if (origin.y > yMax) origin.y = yMax;
 	}
 
+	// BDZ
 	private void
 		maybeResizeWindow(final int currW, final int currH,
 			final double startScale, final double endScale)
 	{
-		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
 		final double nextWidth = currW * endScale / startScale;
 		final double nextHeight = currH * endScale / startScale;
-		if (nextWidth > screenSize.width - 64) return;
-		if (nextHeight > screenSize.height - 64) return;
+		if (nextWidth > bounds.width) return;
+		if (nextHeight > bounds.height) return;
 
 		// NB - there is an issue where zoom out does not always pack() correctly.
 		// There seems like there is a race condition. I have tried a number of
