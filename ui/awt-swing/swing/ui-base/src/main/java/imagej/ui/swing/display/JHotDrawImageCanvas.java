@@ -279,8 +279,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
 		// large X until it is finished being rendered. Unfortunately, the X is
 		// slightly smaller than the image after being rendered.
-		int w = scrollPane.getPreferredSize().width + 1;
-		int h = scrollPane.getPreferredSize().height + 1;
+		final int w = scrollPane.getPreferredSize().width + 1;
+		final int h = scrollPane.getPreferredSize().height + 1;
 		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
 		// NB - do not count scrollbar sizes if they will not be present.
 		// This usually works correctly.
@@ -288,10 +288,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		// placed around it (label, sliders, etc.)
 		final int scrollW = scrollPane.getVerticalScrollBar().getWidth();
 		final int scrollH = scrollPane.getHorizontalScrollBar().getHeight();
-		if ((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height)) {
-			w -= scrollW;
-			h -= scrollH;
-		}
+		if ((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height))
+			return new Dimension(w-scrollW, h-scrollH);
 		return new Dimension(w, h);
 	}
 
