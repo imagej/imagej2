@@ -276,8 +276,14 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
 		// large X until it is finished being rendered. Unfortunately, the X is
 		// slightly smaller than the image after being rendered.
-		final int w = scrollPane.getPreferredSize().width + 1;
-		final int h = scrollPane.getPreferredSize().height + 1;
+		int w = scrollPane.getPreferredSize().width + 1;
+		int h = scrollPane.getPreferredSize().height + 1;
+		// NB - do not count scrollbar sizes if they are going away.
+		// This usually works correctly. Usually.
+		if (drawingView.getScaleFactor() <= canvasHelper.getInitialScale()) {
+			w -= scrollPane.getVerticalScrollBar().getWidth();
+			h -= scrollPane.getHorizontalScrollBar().getHeight();
+		}
 		return new Dimension(w, h);
 	}
 
@@ -417,13 +423,15 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	}
 
 	private void syncZoom() {
+		final int currViewWidth = drawingView.getWidth();
+		final int currViewHeight = drawingView.getHeight();
 		final double startScale = drawingView.getScaleFactor();
 		final double endScale = canvasHelper.getZoomFactor();
 		final IntCoords origin = canvasHelper.getPanOrigin();
 		drawingView.setScaleFactor(endScale);
 		scrollPane.validate();
 		canvasHelper.setPan(origin);
-		maybeResizeWindow(startScale, endScale);
+		maybeResizeWindow(currViewWidth, currViewHeight, startScale, endScale);
 	}
 
 	private void constrainOrigin(final IntCoords origin) {
@@ -438,13 +446,36 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	}
 
 	private void
-		maybeResizeWindow(final double startScale, final double endScale)
+		maybeResizeWindow(final int currW, final int currH,
+			final double startScale, final double endScale)
 	{
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		final double nextWidth = drawingView.getWidth() * endScale / startScale;
-		final double nextHeight = drawingView.getHeight() * endScale / startScale;
+		final double nextWidth = currW * endScale / startScale;
+		final double nextHeight = currH * endScale / startScale;
 		if (nextWidth > screenSize.width - 64) return;
 		if (nextHeight > screenSize.height - 64) return;
-		display.getPanel().getWindow().pack();
+
+		// NB - there is an issue where zoom out does not always pack() correctly.
+		// There seems like there is a race condition. I have tried a number of
+		// approaches to a fix but nothing as fallen out yet. Approaches included:
+		// - generating a "INeedARepackEvent" and trying to handle elsewhere
+		// - calling redoLayout() on the panel (infinite loop)
+		// - pack() after a slight delay
+		
+		// FIXME TEMP
+		// Current approach:
+		//   Update on a different thread after a slight delay.
+		//   Note this always resizes correctly (except for off by a fixed
+		//   scrollbar size which I have handled in getPreferredSize())
+		
+		new Thread() {
+			@Override
+			public void run() {
+				// its not enough to be in separate thread - it must sleep a little
+				try { Thread.sleep(30); } catch (Exception e) {}
+				display.getPanel().getWindow().pack();
+			}
+		}.start();
 	}
+	
 }
