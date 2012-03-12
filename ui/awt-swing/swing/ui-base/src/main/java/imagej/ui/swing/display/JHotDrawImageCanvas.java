@@ -282,14 +282,19 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		// slightly smaller than the image after being rendered.
 		int w = scrollPane.getPreferredSize().width + 1;
 		int h = scrollPane.getPreferredSize().height + 1;
-		final double scaledWidth = getViewportWidth() / drawingView.getScaleFactor();
-		final double scaledHeight = getViewportHeight() / drawingView.getScaleFactor();
+		final double scaledWidth = w / drawingView.getScaleFactor();
+		final double scaledHeight = h / drawingView.getScaleFactor();
 		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
 		// NB - do not count scrollbar sizes if they will not be present.
 		// This usually works correctly.
 		// TODO - versus desktop bounds is off a little since viewport has items
 		// placed around it (label, sliders, etc.)
+		//System.out.println("getPreferredSize()");
+		//System.out.println("  orig preferred "+w+","+h);
+		//System.out.println("  scaled "+scaledWidth+","+scaledHeight);
+		//System.out.println("  desk "+deskBounds.width+","+deskBounds.height);
 		if ((scaledWidth < deskBounds.width) && (scaledHeight < deskBounds.height)) {
+			//System.out.println("  DELETING scroll bars!");
 			w -= scrollPane.getVerticalScrollBar().getWidth();
 			h -= scrollPane.getHorizontalScrollBar().getHeight();
 		}
