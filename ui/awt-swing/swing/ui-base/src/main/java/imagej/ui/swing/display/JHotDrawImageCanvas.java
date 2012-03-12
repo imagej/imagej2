@@ -52,6 +52,7 @@ import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
+import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.overlay.FigureCreatedEvent;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
@@ -63,6 +64,7 @@ import imagej.util.RealCoords;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -278,9 +280,14 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		// slightly smaller than the image after being rendered.
 		int w = scrollPane.getPreferredSize().width + 1;
 		int h = scrollPane.getPreferredSize().height + 1;
-		// NB - do not count scrollbar sizes if they are going away.
-		// This usually works correctly. Usually.
-		if (drawingView.getScaleFactor() <= canvasHelper.getInitialScale()) {
+		final double scaledWidth = getViewportWidth() / drawingView.getScaleFactor();
+		final double scaledHeight = getViewportHeight() / drawingView.getScaleFactor();
+		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
+		// NB - do not count scrollbar sizes if they will not be present.
+		// This usually works correctly.
+		// TODO - versus desktop bounds is off a little since viewport has items
+		// placed around it (label, sliders, etc.)
+		if ((scaledWidth < deskBounds.width) && (scaledHeight < deskBounds.height)) {
 			w -= scrollPane.getVerticalScrollBar().getWidth();
 			h -= scrollPane.getHorizontalScrollBar().getHeight();
 		}
@@ -472,7 +479,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			@Override
 			public void run() {
 				// its not enough to be in separate thread - it must sleep a little
-				try { Thread.sleep(30); } catch (Exception e) {}
+				try { Thread.sleep(30); } catch (Exception e) {/*do nothing*/}
 				display.getPanel().getWindow().pack();
 			}
 		}.start();
