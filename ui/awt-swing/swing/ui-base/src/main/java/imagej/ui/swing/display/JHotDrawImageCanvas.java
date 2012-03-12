@@ -108,6 +108,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	private final DrawingEditor drawingEditor;
 	private final ToolDelegator toolDelegator;
 
+	private double startScale = 1;
+	private double endScale = 1;
+	
 	private final JScrollPane scrollPane;
 
 	@SuppressWarnings("unused")
@@ -288,8 +291,10 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		// placed around it (label, sliders, etc.)
 		final int scrollW = scrollPane.getVerticalScrollBar().getWidth();
 		final int scrollH = scrollPane.getHorizontalScrollBar().getHeight();
-		if ((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height))
-			return new Dimension(w-scrollW, h-scrollH);
+		final boolean zoomingOut = endScale < startScale;
+		if (zoomingOut)
+			if ((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height))
+				return new Dimension(w-scrollW, h-scrollH);
 		return new Dimension(w, h);
 	}
 
@@ -431,8 +436,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	private void syncZoom() {
 		final int currViewWidth = drawingView.getWidth();
 		final int currViewHeight = drawingView.getHeight();
-		final double startScale = drawingView.getScaleFactor();
-		final double endScale = canvasHelper.getZoomFactor();
+		startScale = drawingView.getScaleFactor();
+		endScale = canvasHelper.getZoomFactor();
 		final IntCoords origin = canvasHelper.getPanOrigin();
 		drawingView.setScaleFactor(endScale);
 		scrollPane.validate();
@@ -454,11 +459,11 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	// BDZ
 	private void
 		maybeResizeWindow(final int currW, final int currH,
-			final double startScale, final double endScale)
+			final double currScale, final double nextScale)
 	{
 		final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
-		final double nextWidth = currW * endScale / startScale;
-		final double nextHeight = currH * endScale / startScale;
+		final double nextWidth = currW * nextScale / currScale;
+		final double nextHeight = currH * nextScale / currScale;
 		if (nextWidth > bounds.width) return;
 		if (nextHeight > bounds.height) return;
 
