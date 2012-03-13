@@ -271,7 +271,6 @@ public class LegacyPlugin implements ImageJPlugin {
 				if (isLegacyCompatible(display)) {
 					imp = map.registerDisplay(display);
 					harmonizer.registerType(imp);
-					updatePosition(display,imp);
 				}
 			}
 			else { // imp already exists : update it
@@ -280,7 +279,6 @@ public class LegacyPlugin implements ImageJPlugin {
 				imp.unlock();
 				harmonizer.updateLegacyImage(display, imp);
 				harmonizer.registerType(imp);
-				updatePosition(display,imp);
 			}
 		}
 	}
@@ -409,14 +407,5 @@ public class LegacyPlugin implements ImageJPlugin {
 		if (roi == null) return;
 		if (roi.getPasteMode() == Roi.NOT_PASTING) return;
 		roi.endPaste();
-	}
-
-	// When this is called we know that we have a IJ1 compatible display. So we
-	// can assumptions about dimensional sizes
-	private void updatePosition(ImageDisplay display, ImagePlus imp) {
-		int cPos = (int) display.getLongPosition(Axes.CHANNEL);
-		int zPos = (int) display.getLongPosition(Axes.Z);
-		int tPos = (int) display.getLongPosition(Axes.TIME);
-		imp.setPosition(cPos+1, zPos+1, tPos+1); 
 	}
 }

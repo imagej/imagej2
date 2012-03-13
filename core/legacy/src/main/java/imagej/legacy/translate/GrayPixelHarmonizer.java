@@ -88,7 +88,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 			for (int z = 0; z < zSize; z++) {
 				if (zIndex >= 0) pos[zIndex] = z;
 				for (int c = 0; c < cSize; c++) {
-					fillChannelIndices(dims, axes, c, pos);
+					LegacyUtils.fillChannelIndices(dims, axes, c, pos);
 					final ImageProcessor proc = stack.getProcessor(planeNum++);
 					for (int x = 0; x < xSize; x++) {
 						if (xIndex >= 0) pos[xIndex] = x;
@@ -139,7 +139,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 			for (int z = 0; z < zSize; z++) {
 				if (zIndex >= 0) pos[zIndex] = z;
 				for (int c = 0; c < cSize; c++) {
-					fillChannelIndices(dims, axes, c, pos);
+					LegacyUtils.fillChannelIndices(dims, axes, c, pos);
 					final ImageProcessor proc = stack.getProcessor(planeNum++);
 					for (int x = 0; x < xSize; x++) {
 						if (xIndex >= 0) pos[xIndex] = x;
@@ -157,35 +157,5 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	}
 
 	// -- private interface --
-
-	/**
-	 * Fills IJ1 incompatible indices of a position array. The channel from IJ1 is
-	 * rasterized into potentially multiple indices in IJ2's position array. For
-	 * instance an IJ2 image with CHANNELs and SPECTRA get encoded as multiple
-	 * channels in IJ!. When coming back from IJ1 need to rasterize the its single
-	 * channel index back into (CHANNEL,SPECTRA) pairs.
-	 * 
-	 * @param dims - the dimensions of the IJ2 Dataset
-	 * @param axes - the axes labels that match the Dataset dimensions
-	 * @param channelIndex - the index of the IJ1 encoded channel position
-	 * @param pos - the position array to fill with rasterized values
-	 */
-	private void fillChannelIndices(final long[] dims, final AxisType[] axes,
-		final long channelIndex, final long[] pos)
-	{
-		long workingIndex = channelIndex;
-		for (int i = 0; i < dims.length; i++) {
-			final AxisType axis = axes[i];
-			// skip axes we don't encode as channels
-			if (axis == Axes.X) continue;
-			if (axis == Axes.Y) continue;
-			if (axis == Axes.Z) continue;
-			if (axis == Axes.TIME) continue;
-			// calc index of encoded channels
-			final long subIndex = workingIndex % dims[i];
-			pos[i] = subIndex;
-			workingIndex = workingIndex / dims[i];
-		}
-	}
 
 }
