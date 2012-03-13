@@ -36,12 +36,18 @@ package imagej.data;
 
 import imagej.util.RealRect;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
@@ -432,17 +438,20 @@ public class DrawingTool {
 			if (uAxis == -1) uAxis = i;
 			else if (vAxis == -1) vAxis = i;
 		}
-		if (uAxis == -1 || vAxis == -1) throw new IllegalArgumentException(
-			"DrawingTool cannot find appropriate default UV axes");
+		if (uAxis == -1 || vAxis == -1) {
+			throw new IllegalArgumentException(
+				"DrawingTool cannot find appropriate default UV axes");
+		}
 		maxU = dataset.dimension(uAxis) - 1;
 		maxV = dataset.dimension(vAxis) - 1;
 	}
 
 	private void checkAxisValid(final int axisNum) {
-		if (axisNum == channelAxis) throw new IllegalArgumentException(
-			"DrawingTool misconfiguration. "
+		if (axisNum == channelAxis) {
+			throw new IllegalArgumentException("DrawingTool misconfiguration. "
 				+ "The tool fills multiple channels at once. "
 				+ "Cannot use a channel plane as working plane.");
+		}
 	}
 
 	/**
@@ -507,10 +516,14 @@ public class DrawingTool {
 		@Override
 		public void renderText(final String text) {
 			initTextBuffer(text);
-			final Graphics g = textBuffer.getGraphics();
+			final Graphics2D g = textBuffer.createGraphics();
 			setAntialiasedText(g, antialiasing);
 			g.setFont(font);
-			g.drawString(text, 0, bufferSizeV / 2);
+			final int x = 0, y = bufferSizeV / 2;
+			// TODO: Why does Color.red look wrong (and Color.black paints nothing)?
+			drawTextOutline(g, text, Color.red, x, y, 5);
+			g.drawString(text, x, y);
+			g.dispose();
 		}
 
 		@Override
@@ -525,8 +538,9 @@ public class DrawingTool {
 
 		@Override
 		public int[] getPixels() {
-			if (pixels != null) if (pixels.length != (bufferSizeU * bufferSizeV)) pixels =
-				null;
+			if (pixels != null && pixels.length != bufferSizeU * bufferSizeV) {
+				pixels = null;
+			}
 			pixels = textRaster.getPixels(0, 0, bufferSizeU, bufferSizeV, pixels);
 			return pixels;
 		}
@@ -666,7 +680,9 @@ public class DrawingTool {
 		}
 
 		private Rectangle calcTextSize(final String txt) {
-			final FontMetrics metrics = textBuffer.getGraphics().getFontMetrics(font);
+			final Graphics g = textBuffer.getGraphics();
+			final FontMetrics metrics = g.getFontMetrics(font);
+			g.dispose();
 			final int width = metrics.charsWidth(txt.toCharArray(), 0, txt.length());
 			final Rectangle extents = new Rectangle();
 			extents.x = 0;
@@ -676,15 +692,30 @@ public class DrawingTool {
 			return extents;
 		}
 
-		private void setAntialiasedText(final Graphics g,
+		private void setAntialiasedText(final Graphics2D g,
 			final boolean antialiasedText)
 		{
-			final Graphics2D g2d = (Graphics2D) g;
-			if (antialiasedText) g2d.setRenderingHint(
-				RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			else g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+			final Object antialias =
+				antialiasedText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+					: RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, antialias);
 		}
+
+		private void drawTextOutline(final Graphics2D g, final String text,
+			final Color c, final int x, final int y, final float outlineWidth)
+		{
+			final FontRenderContext frc = g.getFontRenderContext();
+			final TextLayout textLayout = new TextLayout(text, font, frc);
+			final AffineTransform transform = new AffineTransform();
+			transform.setToTranslation(x, y);
+			final Shape shape = textLayout.getOutline(transform);
+			final Color oldColor = g.getColor();
+			g.setStroke(new BasicStroke(outlineWidth));
+			g.setColor(c);
+			g.draw(shape);
+			g.setColor(oldColor);
+		}
+
 	}
+
 }
