@@ -521,7 +521,7 @@ public class DrawingTool {
 			g.setFont(font);
 			final int x = 0, y = bufferSizeV / 2;
 			// TODO: Why does Color.red look wrong (and Color.black paints nothing)?
-			drawTextOutline(g, text, Color.red, x, y, 5);
+			drawTextOutline(g, text, Color.DARK_GRAY, x, y, 5);
 			g.drawString(text, x, y);
 			g.dispose();
 		}
