@@ -96,26 +96,26 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 
 	@Override
 	public void addModule(final ModuleInfo module) {
-		moduleIndex.add(module);
-		eventService.publish(new ModulesAddedEvent(module));
+		if (moduleIndex.add(module))
+			eventService.publish(new ModulesAddedEvent(module));
 	}
 
 	@Override
 	public void removeModule(final ModuleInfo module) {
-		moduleIndex.remove(module);
-		eventService.publish(new ModulesRemovedEvent(module));
+		if (moduleIndex.remove(module))
+			eventService.publish(new ModulesRemovedEvent(module));
 	}
 
 	@Override
 	public void addModules(final Collection<? extends ModuleInfo> modules) {
-		moduleIndex.addAll(modules);
-		eventService.publish(new ModulesAddedEvent(modules));
+		if (moduleIndex.addAll(modules))
+			eventService.publish(new ModulesAddedEvent(modules));
 	}
 
 	@Override
 	public void removeModules(final Collection<? extends ModuleInfo> modules) {
-		moduleIndex.removeAll(modules);
-		eventService.publish(new ModulesRemovedEvent(modules));
+		if (moduleIndex.removeAll(modules))
+			eventService.publish(new ModulesRemovedEvent(modules));
 	}
 
 	@Override
