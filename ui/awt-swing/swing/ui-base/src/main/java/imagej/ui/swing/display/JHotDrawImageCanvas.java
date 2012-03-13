@@ -292,6 +292,16 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		final int scrollW = scrollPane.getVerticalScrollBar().getWidth();
 		final int scrollH = scrollPane.getHorizontalScrollBar().getHeight();
 		final boolean zoomingOut = endScale < startScale;
+		/*
+		System.out.println("getPreferredSize()");
+		System.out.println("  pane size = "+w+","+h);
+		System.out.println("  scroll bar size = "+scrollW+","+scrollH);
+		System.out.println("  start scale = "+startScale);
+		System.out.println("  end scale = "+endScale);
+		System.out.println("  zooming out = "+zoomingOut);
+		System.out.println("  deleting scroll bars = " +
+				((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height)));
+		*/
 		if (zoomingOut)
 			if ((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height))
 				return new Dimension(w-scrollW, h-scrollH);
