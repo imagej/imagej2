@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.util.RealRect;
+
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -43,7 +45,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
@@ -63,9 +64,9 @@ import net.imglib2.type.numeric.RealType;
  * Draws data across all channels in an orthoplane of a {@link Dataset}. Many
  * methods adapted from ImageJ1's ImageProcessor methods. Internally the drawing
  * routines work in a UV plane. U and V can be specified from existing coord
- * axes (i.e UV can equal XY or ZT or any other combination of Dataset axes
- * that do not involve the channel axis). It is the user's responsibility to
- * avoid using a single axis to specify both the U and V axes.
+ * axes (i.e UV can equal XY or ZT or any other combination of Dataset axes that
+ * do not involve the channel axis). It is the user's responsibility to avoid
+ * using a single axis to specify both the U and V axes.
  * 
  * @author Barry DeZonia
  */
@@ -81,14 +82,22 @@ public class DrawingTool {
 	private long lineWidth;
 	private long u0, v0;
 	private long maxU, maxV;
-	private ChannelCollection channels;
+	private final ChannelCollection channels;
 	private double intensity;
-	
+
 	private TextRenderer textRenderer;
-	
-	public enum FontFamily {MONOSPACED, SERIF, SANS_SERIF}
-	public enum FontStyle {PLAIN, BOLD, ITALIC, BOLD_ITALIC}
-	public enum TextJustification {LEFT, CENTER, RIGHT}
+
+	public enum FontFamily {
+		MONOSPACED, SERIF, SANS_SERIF
+	}
+
+	public enum FontStyle {
+		PLAIN, BOLD, ITALIC, BOLD_ITALIC
+	}
+
+	public enum TextJustification {
+		LEFT, CENTER, RIGHT
+	}
 
 	// -- constructor --
 
@@ -98,13 +107,13 @@ public class DrawingTool {
 	 * the first non-channel axis. The default V axis will be the second
 	 * non-channel axis.
 	 */
-	public DrawingTool(final Dataset ds, ChannelCollection fillValues) {
+	public DrawingTool(final Dataset ds, final ChannelCollection fillValues) {
 		this.dataset = ds;
 		this.accessor = ds.getImgPlus().randomAccess();
 		this.channels = new ChannelCollection(fillValues);
 		this.lineWidth = 1;
 		this.intensity = 1;
-		this.textRenderer = new AWTTextRenderer();  // FIXME - do elsewhere
+		this.textRenderer = new AWTTextRenderer(); // FIXME - do elsewhere
 		textRenderer.setAntialiasing(true);
 		this.u0 = 0;
 		this.v0 = 0;
@@ -160,7 +169,7 @@ public class DrawingTool {
 	public ChannelCollection getChannels() {
 		return channels;
 	}
-	
+
 	/**
 	 * Sets the current drawing line width. This affects how other methods draw
 	 * such as lines, circles, dots, etc.
@@ -174,52 +183,52 @@ public class DrawingTool {
 		return lineWidth;
 	}
 
-	public void setTextRenderer(TextRenderer renderer) {
+	public void setTextRenderer(final TextRenderer renderer) {
 		this.textRenderer = renderer;
 	}
-	
+
 	/**
 	 * Sets the family name of the drawing font.
 	 */
-	public void setFontFamily(FontFamily family) {
+	public void setFontFamily(final FontFamily family) {
 		textRenderer.setFontFamily(family);
 	}
-	
+
 	/**
 	 * Gets the family name of the drawing font.
 	 */
 	public FontFamily getFontFamily() {
 		return textRenderer.getFontFamily();
 	}
-	
+
 	/**
 	 * Sets the style of the drawing font.
 	 */
-	public void setFontStyle(FontStyle style) {
+	public void setFontStyle(final FontStyle style) {
 		textRenderer.setFontStyle(style);
 	}
-	
+
 	/**
 	 * Gets the style of the drawing font.
 	 */
 	public FontStyle getFontStyle() {
 		return textRenderer.getFontStyle();
 	}
-	
+
 	/**
 	 * Sets the size of the drawing font.
 	 */
-	public void setFontSize(int size) {
+	public void setFontSize(final int size) {
 		textRenderer.setFontSize(size);
 	}
-	
+
 	/**
 	 * Gets the size of the drawing font.
 	 */
 	public int getFontSize() {
 		return textRenderer.getFontSize();
 	}
-	
+
 	/** Draws a pixel in the current UV plane at specified UV coordinates. */
 	public void drawPixel(final long u, final long v) {
 		if (u < 0) return;
@@ -231,7 +240,7 @@ public class DrawingTool {
 		long numChan = 1;
 		if (channelAxis != -1) numChan = dataset.dimension(channelAxis);
 		for (long c = 0; c < numChan; c++) {
-			double value = intensity * channels.getChannelValue(c);
+			final double value = intensity * channels.getChannelValue(c);
 			if (channelAxis != -1) accessor.setPosition(c, channelAxis);
 			accessor.get().setReal(value);
 		}
@@ -330,45 +339,45 @@ public class DrawingTool {
 	// TODO - IJ1 fill() applies to the ROI rectangle bounds. Do we want to mirror
 	// this behavior in IJ2? For now implement two fill methods. But perhaps in
 	// the future the DrawingTool might track a region of interest within a plane.
-	
+
 	/**
 	 * Fills the current UV plane.
 	 */
 	public void fill() {
 		for (long u = 0; u <= maxU; u++)
 			for (long v = 0; v <= maxV; v++)
-				drawPixel(u,v);
+				drawPixel(u, v);
 	}
 
 	/**
 	 * Fills a subset of the current UV plane.
 	 */
-	public void fill(RealRect rect) {
-		for (long u = (long)rect.x; u < rect.x+rect.width; u++)
-			for (long v = (long)rect.y; v < rect.y+rect.height; v++)
-				drawPixel(u,v);
+	public void fill(final RealRect rect) {
+		for (long u = (long) rect.x; u < rect.x + rect.width; u++)
+			for (long v = (long) rect.y; v < rect.y + rect.height; v++)
+				drawPixel(u, v);
 	}
-	
+
 	/**
 	 * Draws a line of text along the U axis
 	 */
-	public void drawText(long anchorU, long anchorV, String text,
-												TextJustification just)
+	public void drawText(final long anchorU, final long anchorV,
+		final String text, final TextJustification just)
 	{
 		// render into buffer
 		textRenderer.renderText(text);
-		
+
 		// get extents of drawn text in buffer
-		int bufferSizeU = textRenderer.getPixelsWidth();
-		int bufferSizeV = textRenderer.getPixelsHeight();
-		int[] buffer = textRenderer.getPixels();
+		final int bufferSizeU = textRenderer.getPixelsWidth();
+		final int bufferSizeV = textRenderer.getPixelsHeight();
+		final int[] buffer = textRenderer.getPixels();
 		int minu = Integer.MAX_VALUE;
 		int minv = Integer.MAX_VALUE;
 		int maxu = Integer.MIN_VALUE;
 		int maxv = Integer.MIN_VALUE;
 		for (int u = 0; u < bufferSizeU; u++) {
 			for (int v = 0; v < bufferSizeV; v++) {
-				int index = v*bufferSizeU + u;
+				final int index = v * bufferSizeU + u;
 				// only worry about nonzero pixels
 				if (buffer[index] != 0) {
 					if (u < minu) minu = u;
@@ -378,7 +387,7 @@ public class DrawingTool {
 				}
 			}
 		}
-		
+
 		// determine drawing origin based on justification
 		long originU, originV;
 		switch (just) {
@@ -395,20 +404,20 @@ public class DrawingTool {
 				originV = anchorV;
 				break;
 		}
-		
+
 		// draw pixels in dataset as needed
 		for (int u = minu; u <= maxu; u++) {
 			for (int v = minv; v <= maxv; v++) {
-				int index = v*bufferSizeU + u;
+				final int index = v * bufferSizeU + u;
 				// only render nonzero pixels
 				if (buffer[index] != 0) {
-					double pixVal = buffer[index] & 0xff;
+					final double pixVal = buffer[index] & 0xff;
 					intensity = pixVal / 255.0;
-					drawPixel(originU+u-minu, originV+v-minv);
+					drawPixel(originU + u - minu, originV + v - minv);
 				}
 			}
 		}
-		
+
 		intensity = 1;
 	}
 
@@ -420,24 +429,20 @@ public class DrawingTool {
 		vAxis = -1;
 		for (int i = 0; i < dataset.numDimensions(); i++) {
 			if (i == channelAxis) continue;
-			if (uAxis == -1)
-				uAxis = i;
-			else if (vAxis == -1)
-				vAxis = i;
+			if (uAxis == -1) uAxis = i;
+			else if (vAxis == -1) vAxis = i;
 		}
-		if (uAxis == -1 || vAxis == -1)
-			throw new IllegalArgumentException(
-				"DrawingTool cannot find appropriate default UV axes");
+		if (uAxis == -1 || vAxis == -1) throw new IllegalArgumentException(
+			"DrawingTool cannot find appropriate default UV axes");
 		maxU = dataset.dimension(uAxis) - 1;
 		maxV = dataset.dimension(vAxis) - 1;
 	}
 
-	private void checkAxisValid(int axisNum) {
-		if (axisNum == channelAxis)
-			throw new IllegalArgumentException(
-				"DrawingTool misconfiguration. " +
-						"The tool fills multiple channels at once. " +
-						"Cannot use a channel plane as working plane.");
+	private void checkAxisValid(final int axisNum) {
+		if (axisNum == channelAxis) throw new IllegalArgumentException(
+			"DrawingTool misconfiguration. "
+				+ "The tool fills multiple channels at once. "
+				+ "Cannot use a channel plane as working plane.");
 	}
 
 	/**
@@ -447,26 +452,38 @@ public class DrawingTool {
 	 * dimensions. Users can set font attributes before rendering.
 	 */
 	private interface TextRenderer {
+
 		void renderText(String text);
+
 		int getPixelsWidth();
+
 		int getPixelsHeight();
+
 		int[] getPixels();
+
 		void setFontFamily(FontFamily family);
+
 		FontFamily getFontFamily();
+
 		void setFontStyle(FontStyle style);
+
 		FontStyle getFontStyle();
+
 		void setFontSize(int size);
+
 		int getFontSize();
+
 		void setAntialiasing(boolean val);
+
 		boolean getAntialiasing();
 	}
 
 	/**
-	 * The AWT implementation of the TextRendered interface.
-	 * TODO - relocate to some other subproject to remove AWT dependencies from
-	 * this subproject.
+	 * The AWT implementation of the TextRendered interface. TODO - relocate to
+	 * some other subproject to remove AWT dependencies from this subproject.
 	 */
 	private class AWTTextRenderer implements TextRenderer {
+
 		private int bufferSizeU;
 		private int bufferSizeV;
 		private BufferedImage textBuffer;
@@ -486,16 +503,16 @@ public class DrawingTool {
 			buildFont();
 			initTextBuffer("42 is my favorite number");
 		}
-		
+
 		@Override
-		public void renderText(String text) {
+		public void renderText(final String text) {
 			initTextBuffer(text);
-			Graphics g = textBuffer.getGraphics();
+			final Graphics g = textBuffer.getGraphics();
 			setAntialiasedText(g, antialiasing);
 			g.setFont(font);
-			g.drawString(text, 0, bufferSizeV/2);
+			g.drawString(text, 0, bufferSizeV / 2);
 		}
-		
+
 		@Override
 		public int getPixelsWidth() {
 			return bufferSizeU;
@@ -508,47 +525,59 @@ public class DrawingTool {
 
 		@Override
 		public int[] getPixels() {
-			if (pixels != null)
-				if (pixels.length != (bufferSizeU*bufferSizeV))
-					pixels = null;
+			if (pixels != null) if (pixels.length != (bufferSizeU * bufferSizeV)) pixels =
+				null;
 			pixels = textRaster.getPixels(0, 0, bufferSizeU, bufferSizeV, pixels);
 			return pixels;
 		}
-		
-		
+
 		@Override
-		public void setFontFamily(FontFamily family) {
+		public void setFontFamily(final FontFamily family) {
 			final String familyString;
 			switch (family) {
-				case MONOSPACED: familyString = Font.MONOSPACED; break;
-				case SERIF: familyString = Font.SERIF; break;
-				case SANS_SERIF: familyString = Font.SANS_SERIF; break;
+				case MONOSPACED:
+					familyString = Font.MONOSPACED;
+					break;
+				case SERIF:
+					familyString = Font.SERIF;
+					break;
+				case SANS_SERIF:
+					familyString = Font.SANS_SERIF;
+					break;
 				default:
-					throw new IllegalArgumentException("unknown font family: "+family);
+					throw new IllegalArgumentException("unknown font family: " + family);
 			}
 			if (font.getFamily().equalsIgnoreCase(familyString)) return;
 			this.fontFamily = familyString;
 			buildFont();
 		}
-		
+
 		@Override
 		public FontFamily getFontFamily() {
 			if (fontFamily.equals(Font.MONOSPACED)) return FontFamily.MONOSPACED;
 			if (fontFamily.equals(Font.SERIF)) return FontFamily.SERIF;
 			if (fontFamily.equals(Font.SANS_SERIF)) return FontFamily.SANS_SERIF;
-			throw new IllegalArgumentException("unknown font family: "+fontFamily);
+			throw new IllegalArgumentException("unknown font family: " + fontFamily);
 		}
-		
+
 		@Override
-		public void setFontStyle(FontStyle style) {
+		public void setFontStyle(final FontStyle style) {
 			final int styleInt;
 			switch (style) {
-				case PLAIN: styleInt = Font.PLAIN; break;
-				case BOLD: styleInt = Font.BOLD; break;
-				case ITALIC: styleInt = Font.ITALIC; break;
-				case BOLD_ITALIC: styleInt = Font.BOLD | Font.ITALIC; break;
+				case PLAIN:
+					styleInt = Font.PLAIN;
+					break;
+				case BOLD:
+					styleInt = Font.BOLD;
+					break;
+				case ITALIC:
+					styleInt = Font.ITALIC;
+					break;
+				case BOLD_ITALIC:
+					styleInt = Font.BOLD | Font.ITALIC;
+					break;
 				default:
-					throw new IllegalArgumentException("unknown font style: "+style);
+					throw new IllegalArgumentException("unknown font style: " + style);
 			}
 			if (font.getStyle() == styleInt) return;
 			this.fontStyle = styleInt;
@@ -558,17 +587,21 @@ public class DrawingTool {
 		@Override
 		public FontStyle getFontStyle() {
 			switch (fontStyle) {
-				case Font.PLAIN: return FontStyle.PLAIN;
-				case Font.BOLD: return FontStyle.BOLD;
-				case Font.ITALIC: return FontStyle.ITALIC;
-				case (Font.BOLD | Font.ITALIC): return FontStyle.BOLD_ITALIC;
+				case Font.PLAIN:
+					return FontStyle.PLAIN;
+				case Font.BOLD:
+					return FontStyle.BOLD;
+				case Font.ITALIC:
+					return FontStyle.ITALIC;
+				case (Font.BOLD | Font.ITALIC):
+					return FontStyle.BOLD_ITALIC;
 				default:
-					throw new IllegalArgumentException("unknown font style: "+fontStyle);
+					throw new IllegalArgumentException("unknown font style: " + fontStyle);
 			}
 		}
-		
+
 		@Override
-		public void setFontSize(int size) {
+		public void setFontSize(final int size) {
 			if (size <= 0) return;
 			if (font.getSize() == size) return;
 			this.fontSize = size;
@@ -579,50 +612,51 @@ public class DrawingTool {
 		public int getFontSize() {
 			return fontSize;
 		}
-		
 
 		@Override
-		public void setAntialiasing(boolean val) {
+		public void setAntialiasing(final boolean val) {
 			antialiasing = val;
 		}
-		
+
 		@Override
 		public boolean getAntialiasing() {
 			return antialiasing;
 		}
-		
+
 		// -- private helpers --
-		
+
 		private void buildFont() {
 			font = new Font(fontFamily, fontStyle, fontSize);
 		}
-		
-		private void initTextBuffer(String text) {
+
+		private void initTextBuffer(final String text) {
 			// the first time we call this method the buffer could be null.
 			// need to allocate an arbitrary one because calcTextSize() uses it
 			if (textBuffer == null) {
 				this.bufferSizeU = 200;
 				this.bufferSizeV = 20;
-				this.textBuffer =	new BufferedImage(bufferSizeU, bufferSizeV,
-																						BufferedImage.TYPE_BYTE_GRAY);
+				this.textBuffer =
+					new BufferedImage(bufferSizeU, bufferSizeV,
+						BufferedImage.TYPE_BYTE_GRAY);
 				this.textRaster = textBuffer.getRaster();
 			}
-			
+
 			// determine extents of text to be drawn
 			final Rectangle extents = calcTextSize(text);
-			
+
 			// if extents are bigger than existing buffer then allocate a new buffer
 			if ((extents.width > textBuffer.getWidth()) ||
-					(extents.height > textBuffer.getHeight()))
+				(extents.height > textBuffer.getHeight()))
 			{
 				this.bufferSizeU = extents.width;
 				this.bufferSizeV = extents.height + 10; // + to avoid top clipping
-				this.textBuffer =	new BufferedImage(bufferSizeU, bufferSizeV,
-																						BufferedImage.TYPE_BYTE_GRAY);
+				this.textBuffer =
+					new BufferedImage(bufferSizeU, bufferSizeV,
+						BufferedImage.TYPE_BYTE_GRAY);
 				this.textRaster = textBuffer.getRaster();
 			}
-			else  // use existing buffer but prepare for drawing into it
-				clearTextBuffer();
+			else // use existing buffer but prepare for drawing into it
+			clearTextBuffer();
 		}
 
 		private void clearTextBuffer() {
@@ -631,7 +665,7 @@ public class DrawingTool {
 					textRaster.setSample(u, v, 0, 0);
 		}
 
-		private Rectangle calcTextSize(String txt) {
+		private Rectangle calcTextSize(final String txt) {
 			final FontMetrics metrics = textBuffer.getGraphics().getFontMetrics(font);
 			final int width = metrics.charsWidth(txt.toCharArray(), 0, txt.length());
 			final Rectangle extents = new Rectangle();
@@ -641,17 +675,16 @@ public class DrawingTool {
 			extents.height = metrics.getHeight() + 10;
 			return extents;
 		}
-		
-		private void setAntialiasedText(Graphics g, boolean antialiasedText) {
-			Graphics2D g2d = (Graphics2D)g;
-			if (antialiasedText)
-				g2d.setRenderingHint(
-					RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			else
-				g2d.setRenderingHint(
-					RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+
+		private void setAntialiasedText(final Graphics g,
+			final boolean antialiasedText)
+		{
+			final Graphics2D g2d = (Graphics2D) g;
+			if (antialiasedText) g2d.setRenderingHint(
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			else g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		}
 	}
 }
