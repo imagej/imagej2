@@ -119,8 +119,10 @@ public class DrawingTool {
 		this.channels = new ChannelCollection(fillValues);
 		this.lineWidth = 1;
 		this.intensity = 1;
-		this.textRenderer = new AWTTextRenderer(); // FIXME - do elsewhere
+		// FIXME - initialize renderer externally later. For now this works.
+		this.textRenderer = new AWTTextRenderer();
 		textRenderer.setAntialiasing(true);
+		textRenderer.setTextOutlineWidth(5);
 		this.u0 = 0;
 		this.v0 = 0;
 		initAxisVariables();
@@ -485,11 +487,18 @@ public class DrawingTool {
 		void setAntialiasing(boolean val);
 
 		boolean getAntialiasing();
+		
+		void setTextOutlineWidth(float width);
+
+		float getTextOutlineWidth();
 	}
 
 	/**
-	 * The AWT implementation of the TextRendered interface. TODO - relocate to
+	 * The AWT implementation of the TextRenderer interface. TODO - relocate to
 	 * some other subproject to remove AWT dependencies from this subproject.
+	 * 
+	 * @author Barry DeZonia
+	 * @author Curtis Rueden
 	 */
 	private class AWTTextRenderer implements TextRenderer {
 
@@ -503,12 +512,14 @@ public class DrawingTool {
 		private Font font;
 		private int[] pixels;
 		private boolean antialiasing;
+		private float outlineWidth;
 
 		public AWTTextRenderer() {
 			fontFamily = Font.SANS_SERIF;
 			fontStyle = Font.PLAIN;
 			fontSize = 12;
 			antialiasing = false;
+			outlineWidth = 0;
 			buildFont();
 			initTextBuffer("42 is my favorite number");
 		}
@@ -521,7 +532,8 @@ public class DrawingTool {
 			g.setFont(font);
 			final int x = 0, y = bufferSizeV / 2;
 			// TODO: Why does Color.red look wrong (and Color.black paints nothing)?
-			drawTextOutline(g, text, Color.DARK_GRAY, x, y, 5);
+			if (outlineWidth > 0)
+				drawTextOutline(g, text, Color.DARK_GRAY, x, y, outlineWidth);
 			g.drawString(text, x, y);
 			g.dispose();
 		}
@@ -637,6 +649,16 @@ public class DrawingTool {
 			return antialiasing;
 		}
 
+		@Override
+		public void setTextOutlineWidth(float width) {
+			outlineWidth = width;
+		}
+
+		@Override
+		public float getTextOutlineWidth() {
+			return outlineWidth;
+		}
+
 		// -- private helpers --
 
 		private void buildFont() {
@@ -702,7 +724,7 @@ public class DrawingTool {
 		}
 
 		private void drawTextOutline(final Graphics2D g, final String text,
-			final Color c, final int x, final int y, final float outlineWidth)
+			final Color c, final int x, final int y, final float width)
 		{
 			final FontRenderContext frc = g.getFontRenderContext();
 			final TextLayout textLayout = new TextLayout(text, font, frc);
@@ -710,12 +732,11 @@ public class DrawingTool {
 			transform.setToTranslation(x, y);
 			final Shape shape = textLayout.getOutline(transform);
 			final Color oldColor = g.getColor();
-			g.setStroke(new BasicStroke(outlineWidth));
+			g.setStroke(new BasicStroke(width));
 			g.setColor(c);
 			g.draw(shape);
 			g.setColor(oldColor);
 		}
-
 	}
 
 }
