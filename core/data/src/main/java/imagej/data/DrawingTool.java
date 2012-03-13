@@ -228,17 +228,12 @@ public class DrawingTool {
 		if (v > maxV) return;
 		accessor.setPosition(u, uAxis);
 		accessor.setPosition(v, vAxis);
-		if (channelAxis == -1) { // no channel axis - already in position
-			double value = intensity * channels.getChannelValue(0);
+		long numChan = 1;
+		if (channelAxis != -1) numChan = dataset.dimension(channelAxis);
+		for (long c = 0; c < numChan; c++) {
+			double value = intensity * channels.getChannelValue(c);
+			if (channelAxis != -1) accessor.setPosition(c, channelAxis);
 			accessor.get().setReal(value);
-		}
-		else { // channelAxis >= 0
-			long numChan = dataset.dimension(channelAxis);
-			for (long i = 0; i < numChan; i++) {
-				accessor.setPosition(i, channelAxis);
-				double value = intensity * channels.getChannelValue(i);
-				accessor.get().setReal(value);
-			}
 		}
 	}
 
@@ -374,6 +369,7 @@ public class DrawingTool {
 		for (int u = 0; u < bufferSizeU; u++) {
 			for (int v = 0; v < bufferSizeV; v++) {
 				int index = v*bufferSizeU + u;
+				// only worry about nonzero pixels
 				if (buffer[index] != 0) {
 					if (u < minu) minu = u;
 					if (u > maxu) maxu = u;
@@ -404,6 +400,7 @@ public class DrawingTool {
 		for (int u = minu; u <= maxu; u++) {
 			for (int v = minv; v <= maxv; v++) {
 				int index = v*bufferSizeU + u;
+				// only render nonzero pixels
 				if (buffer[index] != 0) {
 					double pixVal = buffer[index] & 0xff;
 					intensity = pixVal / 255.0;
