@@ -220,6 +220,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				// Ignore some threads that IJ1 hatches that never terminate
 				if (whitelisted(thread)) continue;
 				if (thread.isAlive()) {
+					//reportThreadInfo(thread, currentThreads, threadsToIgnore);
 					allDead = false;
 					break;
 				}
@@ -230,6 +231,28 @@ public class LegacyPlugin implements ImageJPlugin {
 		//System.out.println("  end waitForPluginThreads()");
 	}
 
+	// SAVE - useful
+	/*
+	private void reportThreadInfo(Thread thread, List<Thread> allThreads, List<Thread> threadsToIgnore) {
+		System.out.println("Thread "+thread.getId()+" is alive");
+		System.out.println("  priority "+thread.getPriority()+" of "+thread.getThreadGroup().getMaxPriority());
+		System.out.println("  interrupted "+thread.isInterrupted());
+		System.out.println("  Other threads");
+		for (final Thread t : allThreads) {
+			if (threadsToIgnore.contains(t)) continue;
+			if (whitelisted(t)) continue;
+			if (t.isAlive()) {
+				System.out.println("    id = "+t.getId()+ " name = "+thread.getName());
+				System.out.println("      priority = "+t.getPriority());
+				System.out.println("      interrupted = "+t.isInterrupted());
+				System.out.println("      state = "+t.getState());
+				if (t == Thread.currentThread()) System.out.println("      its the current thread");
+				// Ignore some threads that IJ1 hatches that never terminate
+			}
+		}
+	}
+	*/
+	
 	// TODO - IJ2 could modify an image to go outside IJ1's legal bounds. If it
 	// has a existing ImagePlus mapping then we are likely assuming its legal
 	// when its not. Put in tests to address this situation rather than having
@@ -336,10 +359,17 @@ public class LegacyPlugin implements ImageJPlugin {
 	 */
 	private boolean whitelisted(final Thread thread) {
 
+		String threadName = thread.getName();
+		
 		// StackWindow slider selector thread: thread does not go away until the
 		// window closes.
-		if (thread.getName().equals("zSelector")) return true;
+		if (threadName.equals("zSelector")) return true;
 
+		// threads that load images from web can sleep a long time waiting after
+		// their data has already been loaded
+		if (threadName.contains("Image Fetcher"))
+			if (thread.getState() == Thread.State.TIMED_WAITING)
+				return true;
 		/*
 			// select by class name
 			System.out.println("---"+thread.getClass().getDeclaringClass());
