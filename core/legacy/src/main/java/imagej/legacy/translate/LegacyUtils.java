@@ -309,6 +309,37 @@ public class LegacyUtils {
 		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
 	}
 
+	/**
+	 * Fills IJ1 incompatible indices of a position array. The channel from IJ1 is
+	 * rasterized into potentially multiple indices in IJ2's position array. For
+	 * instance an IJ2 image with CHANNELs and SPECTRA gets encoded with multiple
+	 * channels in IJ1. When coming back from IJ1 need to rasterize the single
+	 * IJ1 channel position back into (CHANNEL,SPECTRA) pairs.
+	 * 
+	 * @param dims - the dimensions of the IJ2 Dataset
+	 * @param axes - the axes labels that match the Dataset dimensions
+	 * @param ij1Channel - the channel value in IJ1 (to be decoded for IJ2)
+	 * @param pos - the position array to fill with rasterized values
+	 */
+	static void fillChannelIndices(final long[] dims, final AxisType[] axes,
+		final long ij1Channel, final long[] pos)
+	{
+		long workingIndex = ij1Channel;
+		for (int i = 0; i < dims.length; i++) {
+			final AxisType axis = axes[i];
+			// skip axes we don't encode as channels
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if (axis == Axes.Z) continue;
+			if (axis == Axes.TIME) continue;
+			// calc index of encoded channels
+			final long subIndex = workingIndex % dims[i];
+			pos[i] = subIndex;
+			workingIndex = workingIndex / dims[i];
+		}
+	}
+
+
 	// -- private helper methods --
 
 	/**
