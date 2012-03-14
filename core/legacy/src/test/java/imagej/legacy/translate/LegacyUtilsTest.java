@@ -32,14 +32,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.legacy;
+package imagej.legacy.translate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ByteProcessor;
+import imagej.data.Extents;
+import imagej.data.Position;
 import imagej.legacy.translate.LegacyUtils;
+
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 import org.junit.Test;
 
@@ -73,6 +78,43 @@ public class LegacyUtilsTest {
 		assertNotSame(stack, secondStack);
 		assertEquals(slice, stack.getPixels(1));
 		assertEquals(slice2, secondStack.getPixels(1));
+	}
+	
+	/*
+	 * Makes sure calculation of IJ1 channels is correctly invertible
+	 */
+	@Test
+	public void testRasterization() {
+		final long[][] dimsList = {{1,1,1}, {1,2,3}, {2,3,4}, {5,4,3}, {4,2,7}}; 
+		final AxisType[] axes = {Axes.CHANNEL, Axes.SPECTRA, Axes.FREQUENCY};
+		for (long[] dims : dimsList) {
+			// setup
+			long numChannels = 1;
+			for (long dim : dims)
+				numChannels *= dim;
+			
+			// test from long index back to long index
+			for (long channel = 0; channel < numChannels; channel++) {
+				long[] channelPositions = new long[dims.length];
+				LegacyUtils.fillChannelIndices(dims, axes, channel, channelPositions);
+				long ij1Pos = LegacyUtils.calcIJ1ChannelPos(dims, axes, channelPositions);
+				assertEquals(channel, ij1Pos);
+			}
+			
+			// test from long[] index back to long[] index
+			long[] channelPositions1 = new long[dims.length];
+			long[] channelPositions2 = new long[dims.length];
+			Extents extents = new Extents(dims);
+			Position pos = extents.createPosition();
+			while (pos.hasNext()) {
+				pos.fwd();
+				pos.localize(channelPositions1);
+				long ij1Channel = LegacyUtils.calcIJ1ChannelPos(dims, axes, channelPositions1);
+				LegacyUtils.fillChannelIndices(dims, axes, ij1Channel, channelPositions2);
+				for (int i = 0; i < channelPositions1.length; i++)
+					assertEquals(channelPositions1[i], channelPositions2[i]);
+			}
+		}
 	}
 
 }

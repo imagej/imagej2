@@ -80,39 +80,38 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 
 	// -- helpers --
 	
-	private long getIJ2AxisPosition(ImagePlus imp, long[] dims, AxisType[] axes, int axisNum) {
+	private long getIJ2AxisPosition(
+		ImagePlus imp, long[] dims, AxisType[] axes, int axisNum)
+	{
 		AxisType axis = axes[axisNum];
 		if (axis == Axes.X) return -1;
 		if (axis == Axes.Y) return -1;
 		if (axis == Axes.Z) return imp.getSlice()-1;
 		if (axis == Axes.TIME) return imp.getFrame()-1;
-		if (!LegacyUtils.hasNonIJ1Axes(axes)) return imp.getChannel()-1;
-		// else we have a set of axes that are not directly compatible with IJ1.
-		// So the nonIJ1 axes are encoded in order as channels.
+		// No need to do this but could
+		//if (!LegacyUtils.hasNonIJ1Axes(axes)) return imp.getChannel()-1;
+		
+		// if here we have an IJ2 axis that was encoded as part of the total number
+		// of channels in IJ1. Figure out position value of this specific axis.
 		return calcIJ2AxisPosition(dims, axes, axisNum, imp.getChannel()-1);
 	}
 	
-	private long calcIJ2AxisPosition(long[] dims, AxisType[] axes, int axisNum, int ij1Channel) {
+	private long calcIJ2AxisPosition(
+		long[] dims, AxisType[] axes, int axisNum, int ij1Channel)
+	{
+		// TODO - this is slow and does too much object allocation. Refactor
+		// underlying code to expose a submethod that is more efficient.
 		long pos[] = new long[dims.length];
 		LegacyUtils.fillChannelIndices(dims, axes, ij1Channel, pos);
 		return pos[axisNum];
 	}
 	
-	private long calcIJ1ChannelPos(ImageDisplay display) {
-		final AxisType[] axes = display.getAxes();
-		long lastDim = 1;
-		long pos = 0;
-		for (int i = 0; i < axes.length; i++) {
-			pos *= lastDim;
-			AxisType axis = axes[i];
-			if (axis == Axes.X) continue;
-			if (axis == Axes.Y) continue;
-			if (axis == Axes.Z) continue;
-			if (axis == Axes.TIME) continue;
-		  // TODO - getLongPosition(i) excludes X and Y axes or not ????
-			pos += display.getLongPosition(i);
-			lastDim = display.dimension(i);
-		}
-		return pos;
+	private long calcIJ1ChannelPos(ImageDisplay disp) {
+		long[] dims = disp.getDims();
+		AxisType[] axes = disp.getAxes();
+		long[] pos = new long[axes.length];
+		for (int i = 0; i < axes.length; i++)
+			pos[i] = disp.getLongPosition(axes[i]);
+		return LegacyUtils.calcIJ1ChannelPos(dims, axes, pos);
 	}
 }
