@@ -175,7 +175,7 @@ public class HistogramPlot implements ImageJPlugin {
 		final int[] d = new int[histogram.getNumBins()];
 		for (int j = 0; j < histogram.getNumBins(); j++) {
 			d[j] = histogram.getBin(j);
-			System.out.println(d[j]);
+			//System.out.println(d[j]);
 		}
 		return d;
 	}
