@@ -58,6 +58,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 	private final ColorTableHarmonizer colorTableHarmonizer;
 	private final MetadataHarmonizer metadataHarmonizer;
 	private final PlaneHarmonizer planeHarmonizer;
+	private final PositionHarmonizer positionHarmonizer;
 
 	// -- public interface --
 
@@ -67,6 +68,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		colorTableHarmonizer = new ColorTableHarmonizer(context);
 		metadataHarmonizer = new MetadataHarmonizer();
 		planeHarmonizer = new PlaneHarmonizer();
+		positionHarmonizer = new PositionHarmonizer();
 	}
 	
 	@Override
@@ -87,6 +89,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 			imp = makeCompositeImage(imp);
 		}
 		colorTableHarmonizer.updateLegacyImage(display, imp);
+		positionHarmonizer.updateLegacyImage(display, imp);
 		return imp;
 	}
 
