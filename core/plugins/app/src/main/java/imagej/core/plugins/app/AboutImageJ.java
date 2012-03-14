@@ -40,7 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,7 +103,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	private DisplayService dispSrv;
 	
 	// -- instance variables that are not parameters --
-	List<String> attributionStrings = new ArrayList<String>();
+	List<String> attributionStrings = new LinkedList<String>();
 	ColorRGB fontColor = Colors.YELLOW;
 	int largestFontSize = 30;
 	
@@ -199,10 +199,11 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Draws the textual information over a given merged color Dataset
 	 */
 	private void drawTextOverImage(Dataset ds) {
-		final ChannelCollection chans = new ChannelCollection();
-		chans.setChannelValue(0, fontColor.getRed());
-		chans.setChannelValue(1, fontColor.getGreen());
-		chans.setChannelValue(2, fontColor.getBlue());
+		final List<Double> channels = new LinkedList<Double>();
+		channels.add((double) fontColor.getRed());
+		channels.add((double) fontColor.getGreen());
+		channels.add((double) fontColor.getBlue());
+		final ChannelCollection chans = new ChannelCollection(channels);
 		final DrawingTool tool = new DrawingTool(ds, chans);
 		tool.setUAxis(0);
 		tool.setVAxis(1);
@@ -225,7 +226,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 */
 	private List<String> getTextBlock() {
 		
-		ArrayList<String> stringList = new ArrayList<String>();
+		LinkedList<String> stringList = new LinkedList<String>();
 		
 		stringList.add("Open source image processing software");
 		stringList.add("Copyright 2010, 2011, 2012");

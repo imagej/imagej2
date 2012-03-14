@@ -40,6 +40,8 @@ import imagej.data.DrawingTool;
 import imagej.util.RealRect;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
@@ -239,13 +241,11 @@ public class FloodFiller {
 		long maxU = ds.dimension(uAxis) - 1;
 		long maxV = ds.dimension(vAxis) - 1;
 		long numChan = ds.dimension(channelAxis);
-		for (long i = 0; i < numChan; i++)
-			maskTool.getChannels().setChannelValue(i, 0);
+		setValues(maskTool, numChan, 0);
 	  // FIXME TODO - fill plane or roi of plane of maskTool?
 		// Decide between fill() or fill(RealRect)
 		maskTool.fill();
-		for (long i = 0; i < numChan; i++)
-			maskTool.getChannels().setChannelValue(i, 255);
+		setValues(maskTool, numChan, 255);
 		uStack.clear();
 		vStack.clear();
 		push(u0, v0);
@@ -301,6 +301,14 @@ public class FloodFiller {
 		return val>=level1 && val<=level2;
 	}
 	
+	private void setValues(DrawingTool tool, long numChan, double value) {
+		final List<Double> values = new LinkedList<Double>();
+		for (long i = 0; i < numChan; i++)
+			values.add(value);
+		final ChannelCollection channels = new ChannelCollection(values);
+		tool.setChannels(channels);
+	}
+	
 	/**
 	 * Returns true if the current pixel located at the given (u,v) coordinates is
 	 * the same as the specified color or gray values.
@@ -338,22 +346,18 @@ public class FloodFiller {
 		final RandomAccess<? extends RealType<?>> accessor,
 		final long u, final long v)
 	{
-		ChannelCollection channels = new ChannelCollection();
+		final List<Double> channels = new LinkedList<Double>();
 		accessor.setPosition(u, uAxis);
 		accessor.setPosition(v, vAxis);
-		if (channelAxis == -1) {
-			double val = accessor.get().getRealDouble();
-			channels.setChannelValue(0, val);
+		long numChannels = 1;
+		if (channelAxis != -1)
+			numChannels = tool.getDataset().dimension(channelAxis);
+		for (long c = 0; c < numChannels; c++) {
+			if (channelAxis != -1) accessor.setPosition(c, channelAxis);
+			final double val = accessor.get().getRealDouble();
+			channels.add(val);
 		}
-		else {
-			long numChannels = tool.getDataset().dimension(channelAxis);
-			for (long i = 0; i < numChannels; i++) {
-				accessor.setPosition(i, channelAxis);
-				double val = accessor.get().getRealDouble();
-				channels.setChannelValue(i, val);
-			}
-		}
-		return channels;
+		return new ChannelCollection(channels);
 	}
 
 	/**

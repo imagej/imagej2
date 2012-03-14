@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -160,12 +163,14 @@ public class PixelRecorder {
 			numChannels = 1;
 		else
 			numChannels = dataset.dimension(chanAxis); 
-		channels.resetChannels();
+		List<Double> values = new LinkedList<Double>();
 		for (long chan = 0; chan < numChannels; chan++) {
 			setPosition(randomAccess, cx, cy, chan, otherPositions, xAxis, yAxis, chanAxis);
 			double value = randomAccess.get().getRealDouble();
-			channels.setChannelValue(chan, value);
+			values.add(value);
 		}
+		
+		channels = new ChannelCollection(values);
 		
 		return true;
 	}

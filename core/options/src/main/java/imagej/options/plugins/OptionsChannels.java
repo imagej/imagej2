@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options.plugins;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import imagej.data.ChannelCollection;
 import imagej.event.EventService;
 import imagej.ext.menu.MenuConstants;
@@ -66,9 +69,15 @@ public class OptionsChannels extends OptionsPlugin {
 	@Parameter(label = "Background values")
 	private String bgValuesString = "0,0,0";
 
+	// TODO
+	// Ideally this would be truly invisible and persisted. We use it to
+	// set IJ1 colors to IJ2 values.
 	@Parameter(label="Last foreground color",visibility=ItemVisibility.MESSAGE)
 	private ColorRGB lastFgColor = Colors.WHITE;
 	
+	// TODO
+	// Ideally this would be truly invisible and persisted. We use it to
+	// set IJ1 colors to IJ2 values.
 	@Parameter(label="Last background color",visibility=ItemVisibility.MESSAGE)
 	private ColorRGB lastBgColor = Colors.BLACK;
 	
@@ -92,8 +101,7 @@ public class OptionsChannels extends OptionsPlugin {
 
 	@Override
 	public void save() {
-		fgValuesString = encode(fgValues);
-		bgValuesString = encode(bgValues);
+		cleanStrings();
 		super.save();
 	}
 
@@ -111,6 +119,16 @@ public class OptionsChannels extends OptionsPlugin {
 	
 	public ChannelCollection getBgValues() {
 		return bgValues;
+	}
+
+	public void setFgValues(ChannelCollection vals) {
+		fgValues = vals;
+		fgValuesString = encode(fgValues);
+	}
+	
+	public void setBgValues(ChannelCollection vals) {
+		bgValues = vals;
+		bgValuesString = encode(bgValues);
 	}
 
 	public ColorRGB getLastFgColor() {
@@ -144,33 +162,65 @@ public class OptionsChannels extends OptionsPlugin {
 	// -- private helpers --
 	
 	private ChannelCollection decode(String channelString) {
-		ChannelCollection collection = new ChannelCollection();
-		String[] values = channelString.split(",");
-		long i = 0;
-		for (String value : values) {
+		final List<Double> collection = new LinkedList<Double>();
+		final String[] values = channelString.split(",");
+		for (final String value : values) {
 			double val;
 			try {
 				val = Double.parseDouble(value);
 			} catch (NumberFormatException e) {
 				val = 0;
 			}
-			collection.setChannelValue(i++,val);
+			collection.add(val);
 		}
-		return collection;
+		return new ChannelCollection(collection);
 	}
 
 	private String encode(ChannelCollection chans) {
-		StringBuilder builder = new StringBuilder();
-		long count = chans.getChannelCount();
+		final StringBuilder builder = new StringBuilder();
+		final long count = chans.getChannelCount();
 		for (long i = 0; i < count; i++) {
-			String valString;
-			double value = chans.getChannelValue(i);
+			final String valString;
+			final double value = chans.getChannelValue(i);
 			if (value == Math.floor(value))
 				valString = String.format("%d",(long)value);
 			else
 				valString = String.format("%f",value);
 			if (i != 0) builder.append(",");
 			builder.append(valString);
+		}
+		return builder.toString();
+	}
+
+	private void cleanStrings() {
+		if (goodFormat(fgValuesString))
+			fgValuesString = noWhitespace(fgValuesString);
+		else
+			fgValuesString = encode(fgValues);
+		if (goodFormat(bgValuesString))
+			bgValuesString = noWhitespace(bgValuesString);
+		else
+			bgValuesString = encode(bgValues);
+	}
+	
+	private boolean goodFormat(String valuesString) {
+		final String[] values = valuesString.split(",");
+		for (final String value : values) {
+			try {
+				Double.parseDouble(value);
+			} catch (NumberFormatException e) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private String noWhitespace(String str) {
+		StringBuilder builder = new StringBuilder();
+		int len = str.length();
+		for (int i = 0; i < len; i++) {
+			char ch = str.charAt(i);
+			if (!Character.isWhitespace(ch)) builder.append(ch);
 		}
 		return builder.toString();
 	}
