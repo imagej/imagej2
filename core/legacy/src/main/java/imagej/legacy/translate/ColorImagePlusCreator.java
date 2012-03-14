@@ -55,6 +55,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 	
 	private final ColorPixelHarmonizer pixelHarmonizer;
 	private final MetadataHarmonizer metadataHarmonizer;
+	private final PositionHarmonizer positionHarmonizer;
 
 	// -- public interface --
 
@@ -62,6 +63,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 		this.context = context;
 		pixelHarmonizer = new ColorPixelHarmonizer();
 		metadataHarmonizer = new MetadataHarmonizer();
+		positionHarmonizer = new PositionHarmonizer();
 	}
 	
 	/**
@@ -77,6 +79,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 		final ImagePlus imp = makeColorImagePlus(ds);
 		pixelHarmonizer.updateLegacyImage(ds, imp);
 		metadataHarmonizer.updateLegacyImage(ds, imp);
+		positionHarmonizer.updateLegacyImage(display, imp);
 		return imp;
 	}
 

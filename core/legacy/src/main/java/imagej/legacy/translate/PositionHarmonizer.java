@@ -55,12 +55,13 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 	 */
 	@Override
 	public void updateDisplay(ImageDisplay disp, ImagePlus imp) {
-		final AxisType[] axes = disp.getAxes();
 		final long[] dimensions = disp.getDims();
+		final AxisType[] axes = disp.getAxes();
+		final long[] workspace = new long[dimensions.length];
+		fillIJ2Position(disp, imp, dimensions, axes, workspace);
 		for (int i = 0; i < axes.length; i++) {
-			final long pos = getIJ2AxisPosition(imp, dimensions, axes, i);
-			if (pos >= 0)
-				disp.setPosition(pos, axes[i]);
+			final long pos = workspace[i];
+			disp.setPosition(pos, i);
 		}
 	}
 
@@ -72,46 +73,36 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 	public void updateLegacyImage(ImageDisplay disp, ImagePlus imp) {
 		// When this is called we know that we have a IJ1 compatible display. So we
 		// can make assumptions about dimensional sizes re: safe casting.
-		int cPos = (int) calcIJ1ChannelPos(disp);
-		int zPos = (int) disp.getLongPosition(Axes.Z);
-		int tPos = (int) disp.getLongPosition(Axes.TIME);
+		final int cPos = (int) calcIJ1ChannelPos(disp);
+		final int zPos = (int) disp.getLongPosition(Axes.Z);
+		final int tPos = (int) disp.getLongPosition(Axes.TIME);
 		imp.setPosition(cPos+1, zPos+1, tPos+1); 
 	}
 
 	// -- helpers --
 	
-	private long getIJ2AxisPosition(
-		ImagePlus imp, long[] dims, AxisType[] axes, int axisNum)
-	{
-		AxisType axis = axes[axisNum];
-		if (axis == Axes.X) return -1;
-		if (axis == Axes.Y) return -1;
-		if (axis == Axes.Z) return imp.getSlice()-1;
-		if (axis == Axes.TIME) return imp.getFrame()-1;
-		// No need to do this but could
-		//if (!LegacyUtils.hasNonIJ1Axes(axes)) return imp.getChannel()-1;
-		
-		// if here we have an IJ2 axis that was encoded as part of the total number
-		// of channels in IJ1. Figure out position value of this specific axis.
-		return calcIJ2AxisPosition(dims, axes, axisNum, imp.getChannel()-1);
-	}
-	
-	private long calcIJ2AxisPosition(
-		long[] dims, AxisType[] axes, int axisNum, int ij1Channel)
-	{
-		// TODO - this is slow and does too much object allocation. Refactor
-		// underlying code to expose a submethod that is more efficient.
-		long pos[] = new long[dims.length];
-		LegacyUtils.fillChannelIndices(dims, axes, ij1Channel, pos);
-		return pos[axisNum];
-	}
-	
 	private long calcIJ1ChannelPos(ImageDisplay disp) {
-		long[] dims = disp.getDims();
-		AxisType[] axes = disp.getAxes();
-		long[] pos = new long[axes.length];
+		final long[] dims = disp.getDims();
+		final AxisType[] axes = disp.getAxes();
+		final long[] pos = new long[axes.length];
 		for (int i = 0; i < axes.length; i++)
-			pos[i] = disp.getLongPosition(axes[i]);
+			pos[i] = disp.getLongPosition(i);
 		return LegacyUtils.calcIJ1ChannelPos(dims, axes, pos);
+	}
+	
+	private void fillIJ2Position(ImageDisplay disp, ImagePlus imp,
+		long[] dimensions, AxisType[] axes, long[] workspace)
+	{
+		fillIndex(disp, Axes.X, workspace);
+		fillIndex(disp, Axes.Y, workspace);
+		fillIndex(disp, Axes.Z, workspace);
+		fillIndex(disp, Axes.TIME, workspace);
+		LegacyUtils.fillChannelIndices(
+			dimensions, axes, imp.getChannel()-1, workspace);
+	}
+	
+	private void fillIndex(ImageDisplay disp, AxisType axis, long[] workspace) {
+		final int index = disp.getAxisIndex(axis);
+		if (index != -1) workspace[index] = disp.getLongPosition(index); 
 	}
 }

@@ -65,6 +65,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private final CompositeHarmonizer compositeHarmonizer;
 	private final PlaneHarmonizer planeHarmonizer;
 	private final OverlayHarmonizer overlayHarmonizer;
+	private final PositionHarmonizer positionHarmonizer;
 
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
 	// while
@@ -82,6 +83,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 		compositeHarmonizer = new CompositeHarmonizer();
 		planeHarmonizer = new PlaneHarmonizer();
 		overlayHarmonizer = new OverlayHarmonizer(context);
+		positionHarmonizer = new PositionHarmonizer();
 	}
 
 	// -- public interface --
@@ -118,6 +120,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 		colorTableHarmonizer.updateDisplay(display, imp);
 		overlayHarmonizer.updateDisplay(display, imp);
+		positionHarmonizer.updateDisplay(display, imp);
 
 		return display;
 	}
@@ -144,6 +147,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 		colorTableHarmonizer.updateDisplay(display, imp);
 		overlayHarmonizer.updateDisplay(display, imp);
+		positionHarmonizer.updateDisplay(display, imp);
 
 		return display;
 	}
