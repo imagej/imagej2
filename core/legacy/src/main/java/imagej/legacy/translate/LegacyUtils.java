@@ -338,8 +338,23 @@ public class LegacyUtils {
 			workingIndex = workingIndex / dims[i];
 		}
 	}
-
-
+	
+	static long calcIJ1ChannelPos(long[] dims, AxisType[] axes, long[] pos) {
+		long multiplier = 1;
+		long ij1Pos = 0;
+		for (int i = 0; i < axes.length; i++) {
+			AxisType axis = axes[i];
+			// skip axes we don't encode as channels
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if (axis == Axes.Z) continue;
+			if (axis == Axes.TIME) continue;
+			ij1Pos += multiplier * pos[i];
+			multiplier *= dims[i];
+		}
+		return ij1Pos;
+	}
+	
 	// -- private helper methods --
 
 	/**
