@@ -88,7 +88,7 @@ public class DrawingTool {
 	private long lineWidth;
 	private long u0, v0;
 	private long maxU, maxV;
-	private final ChannelCollection channels;
+	private ChannelCollection channels;
 	private double intensity;
 
 	private TextRenderer textRenderer;
@@ -116,7 +116,7 @@ public class DrawingTool {
 	public DrawingTool(final Dataset ds, final ChannelCollection fillValues) {
 		this.dataset = ds;
 		this.accessor = ds.getImgPlus().randomAccess();
-		this.channels = new ChannelCollection(fillValues);
+		this.channels = fillValues;
 		this.lineWidth = 1;
 		this.intensity = 1;
 		// FIXME - initialize renderer externally later. For now this works.
@@ -176,6 +176,10 @@ public class DrawingTool {
 
 	public ChannelCollection getChannels() {
 		return channels;
+	}
+
+	public void setChannels(ChannelCollection chans) {
+		channels = chans;
 	}
 
 	/**

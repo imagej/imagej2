@@ -94,23 +94,19 @@ public class PickerTool extends AbstractTool {
 		final ChannelCollection values = recorder.getValues();
 
 		String name;
-		ChannelCollection target;
 		
 		// background case?
 		if (altKeyDown) {
 			name = "BG";
-			target = options.getBgValues();
+			options.setBgValues(values);
 			options.setLastBgColor(recorder.getColor());
 		}
 		else { // foreground case
 			name = "FG";
-			target = options.getFgValues();
+			options.setFgValues(values);
 			options.setLastFgColor(recorder.getColor());
 		}
-		
-		// set the values of the FG or BG
-		target.resetChannels(values);
-		
+
 		// make sure future options reflect those new values
 		options.save();
 
