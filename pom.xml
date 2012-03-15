@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>com.github.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.3</version>
+		<version>1.4</version>
 	</parent>
 
 	<groupId>net.imagej</groupId>
