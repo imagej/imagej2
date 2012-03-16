@@ -131,7 +131,24 @@
 			</properties>
 		</developer>
 		<developer>
-			<id>gharris</id>
+			<id>leek</id>
+			<name>Lee Kamentsky</name>
+			<email>leek@broadinstitute.org</email>
+			<url>http://www.broadinstitute.org/~leek/</url>
+			<organization>Broad Institute of MIT and Harvard</organization>
+			<organizationUrl>http://www.broadinstitute.org/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
+			<properties>
+				<picUrl>http://www.broadinstitute.org/~leek/lee_small.jpg</picUrl>
+			</properties>
+		</developer>
+	</developers>
+
+	<contributors>
+		<contributor>
 			<name>Grant Harris</name>
 			<email>gharris@mbl.edu</email>
 			<url>http://loci.wisc.edu/people/grant-harris</url>
@@ -145,11 +162,9 @@
 			<properties>
 				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/GBH-2010.jpg</picUrl>
 			</properties>
-		</developer>
-		<developer>
-			<id>rlentz</id>
+		</contributor>
+		<contributor>
 			<name>Rick Lentz</name>
-			<email>rwlentz@wisc.edu</email>
 			<url>http://loci.wisc.edu/people/rick-lentz</url>
 			<organization>UW-Madison LOCI</organization>
 			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
@@ -160,8 +175,18 @@
 			<properties>
 				<picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
 			</properties>
-		</developer>
-	</developers>
+		</contributor>
+		<contributor>
+			<name>Adam Fraser</name>
+			<url>http://about.me/adamfraser</url>
+			<organization>Broad Institute of MIT and Harvard</organization>
+			<organizationUrl>http://www.broadinstitute.org/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
+		</contributor>
+	</contributors>
 
 	<issueManagement>
 		<system>Trac</system>
