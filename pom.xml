@@ -26,6 +26,15 @@
 		<module>ui</module>
 	</modules>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.fusesource.mvnplugins</groupId>
+				<artifactId>maven-graph-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
 	<licenses>
 		<license>
 			<name>BSD</name>
