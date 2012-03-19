@@ -269,7 +269,6 @@
 			<id>all</id>
 			<modules>
 				<module>extra</module>
-				<!-- <module>ij1-tests</module> -->
 			</modules>
 		</profile>
 	</profiles>
