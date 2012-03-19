@@ -121,8 +121,6 @@ public class DrawingTool {
 		this.intensity = 1;
 		// FIXME - initialize renderer externally later. For now this works.
 		this.textRenderer = new AWTTextRenderer();
-		textRenderer.setAntialiasing(true);
-		textRenderer.setTextOutlineWidth(5);
 		this.u0 = 0;
 		this.v0 = 0;
 		initAxisVariables();
@@ -241,6 +239,38 @@ public class DrawingTool {
 		return textRenderer.getFontSize();
 	}
 
+	/**
+	 * Turns antialiasing of drawn text on (true) or off (false)
+	 */
+	public void setTextAntialiasing(boolean value) {
+		textRenderer.setAntialiasing(value);
+	}
+
+	/**
+	 * Get the drawn text antialiasing value: on (true) or off (false)
+	 */
+	public boolean getTextAntialiasing() {
+		return textRenderer.getAntialiasing();
+	}
+
+	/**
+	 * One can draw text in outlined form. Specify the width in pixels of the 
+	 * outline. Specifying a width of 0 means no outline desired.
+	 */
+	public void setTextOutlineWidth(float width) {
+		if (width < 0)
+			throw new IllegalArgumentException("text outline width must be >= 0");
+		textRenderer.setTextOutlineWidth(width);
+	}
+	
+	/**
+	 * One can draw text in outlined form. Get the width in pixels of the 
+	 * outline. A return value of 0 means no outline.
+	 */
+	public float getTextOutlineWidth() {
+		return textRenderer.getTextOutlineWidth();
+	}
+	
 	/** Draws a pixel in the current UV plane at specified UV coordinates. */
 	public void drawPixel(final long u, final long v) {
 		if (u < 0) return;
@@ -466,7 +496,7 @@ public class DrawingTool {
 	 * intensities. The buffer is then available afterwards including its
 	 * dimensions. Users can set font attributes before rendering.
 	 */
-	private interface TextRenderer {
+	public interface TextRenderer {
 
 		void renderText(String text);
 

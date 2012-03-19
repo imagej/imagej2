@@ -210,6 +210,8 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		final long width = ds.dimension(0);
 		final long x = width / 2;
 		long y = 50;
+		tool.setTextAntialiasing(true);
+		tool.setTextOutlineWidth(5);
 		tool.setFontSize(largestFontSize);
 		tool.drawText(x,y,"ImageJ2 "+ImageJ.VERSION, TextJustification.CENTER);
 		y += 5*tool.getFontSize()/4;
