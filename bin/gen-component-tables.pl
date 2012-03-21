@@ -23,9 +23,8 @@ my $nameColor = '#d8ecf8';
 my $descColor = '#eeeeee';
 my $columns = 4;
 
-my $baseURL = 'http://code.imagej.net';
-my $jenkinsURL = "$baseURL:8080";
-my $tracURL = "$baseURL/trac/imagej";
+my $jenkinsURL = 'http://jenkins.imagej.net';
+my $tracURL = 'http://trac.imagej.net';
 
 my $artifactPath = 'lastSuccessfulBuild/artifact/imagej';
 my $sourcePath = 'src/main/java';
@@ -38,7 +37,7 @@ my $sourcePrefix = "$tracURL/browser/trunk";
 
 {
   section('Core', 'core');
-  section('UI', 'ui/app ui/platform-macosx ' .
+  section('UI', 'ui/app ui/platform-macosx ui/platform-windows ' .
     'ui/awt-swing/common ui/awt-swing/util');
   section('UI: Swing', 'ui/awt-swing/swing');
   section('UI: AWT', 'ui/awt-swing/awt');
