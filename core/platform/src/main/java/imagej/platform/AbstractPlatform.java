@@ -39,11 +39,36 @@ package imagej.platform;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractPlatform implements IPlatform {
+public abstract class AbstractPlatform implements Platform {
 
 	protected PlatformService platformService;
 
-	// -- IPlatform methods --
+	// -- Platform methods --
+
+	@Override
+	public String javaVendor() {
+		return null;
+	}
+
+	@Override
+	public String javaVersion() {
+		return null;
+	}
+
+	@Override
+	public String osArch() {
+		return null;
+	}
+
+	@Override
+	public String osName() {
+		return null;
+	}
+
+	@Override
+	public String osVersion() {
+		return null;
+	}
 
 	@Override
 	public void configure(final PlatformService service) {

@@ -56,7 +56,7 @@ public interface PlatformService extends IService {
 	AppEventService getAppEventService();
 
 	/** Gets the platform handlers applicable to this platform. */
-	List<IPlatform> getTargetPlatforms();
+	List<Platform> getTargetPlatforms();
 
 	/**
 	 * Returns true if the menu bar should be duplicated for every window frame.
@@ -68,7 +68,11 @@ public interface PlatformService extends IService {
 	/** Sets whether the menu bar should be duplicated for every window frame. */
 	void setMenuBarDuplicated(final boolean menuBarDuplicated);
 
-	/** Opens a URL in platform-dependent way. */
+	/**
+	 * Opens a URL in a platform-dependent way. Typically the URL is opened
+	 * external web browser instance, but the behavior is ultimately defined the
+	 * available platform handler implementations.
+	 */
 	void open(final URL url) throws IOException;
 
 	/** Executes a native program and waits for it to return. */

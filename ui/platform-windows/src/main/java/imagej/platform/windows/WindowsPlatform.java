@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform.windows;
 
+import imagej.ext.plugin.Plugin;
 import imagej.platform.AbstractPlatform;
 import imagej.platform.Platform;
 
@@ -45,10 +46,15 @@ import java.net.URL;
  * 
  * @author Johannes Schindelin
  */
-@Platform(osName = "Windows")
+@Plugin(type = Platform.class)
 public class WindowsPlatform extends AbstractPlatform {
 
-	// -- IPlatform methods --
+	// -- Platform methods --
+
+	@Override
+	public String osName() {
+		return "Windows";
+	}
 
 	@Override
 	public void open(final URL url) throws IOException {
