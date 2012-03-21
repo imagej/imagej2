@@ -36,6 +36,8 @@ package imagej.platform;
 
 import imagej.ImageJ;
 import imagej.event.EventService;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -46,9 +48,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
 /**
  * Default service for handling platform-specific deployment issues.
@@ -65,7 +64,7 @@ public final class DefaultPlatformService extends AbstractService implements
 	private final AppEventService appEventService;
 
 	/** Platform handlers applicable to this platform. */
-	private List<IPlatform> targetPlatforms;
+	private List<Platform> targetPlatforms;
 
 	/** Whether the menu bar should be duplicated for every window frame. */
 	private boolean menuBarDuplicated;
@@ -78,17 +77,18 @@ public final class DefaultPlatformService extends AbstractService implements
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultPlatformService(final ImageJ context, final EventService eventService,
-		final PluginService pluginService, final AppEventService appEventService)
+	public DefaultPlatformService(final ImageJ context,
+		final EventService eventService, final PluginService pluginService,
+		final AppEventService appEventService)
 	{
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 		this.appEventService = appEventService;
 
-		final List<IPlatform> platforms = discoverTargetPlatforms();
+		final List<Platform> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
-		for (final IPlatform platform : platforms) {
+		for (final Platform platform : platforms) {
 			Log.info("Configuring platform: " + platform.getClass().getName());
 			platform.configure(this);
 		}
@@ -113,7 +113,7 @@ public final class DefaultPlatformService extends AbstractService implements
 	}
 
 	@Override
-	public List<IPlatform> getTargetPlatforms() {
+	public List<Platform> getTargetPlatforms() {
 		return targetPlatforms;
 	}
 
@@ -130,7 +130,7 @@ public final class DefaultPlatformService extends AbstractService implements
 	@Override
 	public void open(final URL url) throws IOException {
 		IOException exception = null;
-		for (final IPlatform platform : getTargetPlatforms())
+		for (final Platform platform : getTargetPlatforms()) {
 			try {
 				platform.open(url);
 				return;
@@ -138,23 +138,9 @@ public final class DefaultPlatformService extends AbstractService implements
 			catch (final IOException e) {
 				if (exception == null) exception = e;
 			}
+		}
 		if (exception != null) throw exception;
 
-		/*
-		 * Fall back to calling known browsers.
-		 *
-		 * Based on BareBonesBrowserLaunch (http://www.centerkey.com/java/browser/).
-		 *
-		 * The utility 'xdg-open' launches the URL in the user's preferred
-		 * browser, therefore we try to use it first, before trying to discover
-		 * other browsers.
-		 */
-		final String[] browsers =
-			{ "xdg-open", "netscape", "firefox", "konqueror", "mozilla", "opera",
-				"epiphany", "lynx" };
-		for (final String browser : browsers) {
-			if (exec(browser, url.toString())) return;
-		}
 		Log.error("Could not find a browser; URL=" + url);
 		throw new IOException("No browser found");
 	}
@@ -174,18 +160,19 @@ public final class DefaultPlatformService extends AbstractService implements
 
 	// -- Helper methods --
 
-	/** Discovers target platform handlers using SezPoz. */
-	private List<IPlatform> discoverTargetPlatforms() {
-		final List<IPlatform> platforms = new ArrayList<IPlatform>();
-		for (final IndexItem<Platform, IPlatform> item : Index.load(
-			Platform.class, IPlatform.class))
+	/** Discovers target platform handlers. */
+	private List<Platform> discoverTargetPlatforms() {
+		final List<Platform> platforms = new ArrayList<Platform>();
+		for (final PluginInfo<Platform> info :
+			pluginService.getPluginsOfType(Platform.class))
 		{
-			if (!isTargetPlatform(item.annotation())) continue;
 			try {
-				platforms.add(item.instance());
+				final Platform platform = info.createInstance();
+				if (!isTargetPlatform(platform)) continue;
+				platforms.add(platform);
 			}
-			catch (final InstantiationException e) {
-				Log.warn("Invalid platform: " + item, e);
+			catch (final InstantiableException e) {
+				Log.warn("Invalid platform: " + info.getClassName(), e);
 			}
 		}
 		return platforms;
@@ -196,20 +183,30 @@ public final class DefaultPlatformService extends AbstractService implements
 	 * platform.
 	 */
 	private boolean isTargetPlatform(final Platform p) {
-		final String javaVendor = System.getProperty("java.vendor");
-		if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;
+		if (p.javaVendor() != null) {
+			final String javaVendor = System.getProperty("java.vendor");
+			if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;
+		}
 
-		final String javaVersion = System.getProperty("java.version");
-		if (javaVersion.compareTo(p.javaVersion()) < 0) return false;
+		if (p.javaVersion() != null) {
+			final String javaVersion = System.getProperty("java.version");
+			if (javaVersion.compareTo(p.javaVersion()) < 0) return false;
+		}
 
-		final String osName = System.getProperty("os.name");
-		if (!osName.matches(".*" + p.osName() + ".*")) return false;
+		if (p.osName() != null) {
+			final String osName = System.getProperty("os.name");
+			if (!osName.matches(".*" + p.osName() + ".*")) return false;
+		}
 
-		final String osArch = System.getProperty("os.arch");
-		if (!osArch.matches(".*" + p.osArch() + ".*")) return false;
+		if (p.osArch() != null) {
+			final String osArch = System.getProperty("os.arch");
+			if (!osArch.matches(".*" + p.osArch() + ".*")) return false;
+		}
 
-		final String osVersion = System.getProperty("os.version");
-		if (osVersion.compareTo(p.osVersion()) < 0) return false;
+		if (p.osVersion() != null) {
+			final String osVersion = System.getProperty("os.version");
+			if (osVersion.compareTo(p.osVersion()) < 0) return false;
+		}
 
 		return true;
 	}

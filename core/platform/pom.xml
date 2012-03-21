@@ -27,12 +27,6 @@
 			<artifactId>ij-ext</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>${sezpoz.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>

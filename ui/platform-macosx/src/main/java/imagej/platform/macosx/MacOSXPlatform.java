@@ -38,6 +38,7 @@ import com.apple.eawt.Application;
 
 import imagej.event.EventService;
 import imagej.ext.module.event.ModulesUpdatedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.platform.AbstractPlatform;
 import imagej.platform.AppEventService;
@@ -58,13 +59,18 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Platform(osName = "Mac OS X")
+@Plugin(type = Platform.class)
 public class MacOSXPlatform extends AbstractPlatform {
 
 	@SuppressWarnings("unused")
 	private MacOSXAppEventDispatcher appEventDispatcher;
 
-	// -- IPlatform methods --
+	// -- Platform methods --
+
+	@Override
+	public String osName() {
+		return "Mac OS X";
+	}
 
 	@Override
 	public void configure(final PlatformService service) {

@@ -1,5 +1,5 @@
 //
-// IPlatform.java
+// DefaultPlatform.java
 //
 
 /*
@@ -34,26 +34,45 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
+import imagej.ext.Priority;
+import imagej.ext.plugin.Plugin;
+
 import java.io.IOException;
 import java.net.URL;
 
 /**
- * An interface for configuring a specific deployment platform, defined by
- * criteria such as operation system, machine architecture or Java version.
- * Platforms discoverable at runtime must implement this interface and be
- * annotated with @{@link Platform}.
+ * A platform implementation for default handling of platform issues.
  * 
  * @author Curtis Rueden
- * @see Platform
- * @see PlatformService
+ * @author Johannes Schindelin
  */
-public interface IPlatform {
+@Plugin(type = Platform.class, priority = Priority.VERY_LOW_PRIORITY)
+public class DefaultPlatform extends AbstractPlatform {
 
-	// TODO: Convert this interface to a subinterface of IPlugin.
-	// The Platform annotation interface methods will need to migrate here.
-	// See ticket #993: http://trac.imagej.net/ticket/993
+	// -- PlatformHandler methods --
 
-	void configure(PlatformService service);
+	/**
+	 * Falls back to calling known browsers.
+	 * <p>
+	 * Based on <a
+	 * href="http://www.centerkey.com/java/browser/">BareBonesBrowserLaunch</a>.
+	 * </p>
+	 * <p>
+	 * The utility 'xdg-open' launches the URL in the user's preferred browser,
+	 * therefore we try to use it first, before trying to discover other browsers.
+	 * </p>
+	 */
+	@Override
+	public void open(final URL url) throws IOException {
+		if (!platformService.exec("open", url.toString())) {
+			throw new IOException("Could not open " + url);
+		}
+		final String[] browsers =
+			{ "xdg-open", "netscape", "firefox", "konqueror", "mozilla", "opera",
+				"epiphany", "lynx" };
+		for (final String browser : browsers) {
+			if (platformService.exec(browser, url.toString())) return;
+		}
+	}
 
-	void open(URL url) throws IOException;
 }

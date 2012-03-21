@@ -34,39 +34,41 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 
-import net.java.sezpoz.Indexable;
+import java.io.IOException;
+import java.net.URL;
 
 /**
- * An annotation to indicate that a class provides configuration logic for a
- * particular deployment platform.
+ * An interface for configuring a specific deployment platform, defined by
+ * criteria such as operating system, machine architecture or Java version.
+ * Platforms discoverable at runtime must implement this interface and be
+ * annotated with <code>@{@link Plugin}(type = Platform.class)</code>.
  * 
  * @author Curtis Rueden
- * @see IPlatform
+ * @see Plugin
  * @see PlatformService
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = IPlatform.class)
-public @interface Platform {
+public interface Platform extends IPlugin {
 
 	/** Java Runtime Environment vendor to match. */
-	String javaVendor() default "";
+	String javaVendor();
 
 	/** Minimum required Java Runtime Environment version. */
-	String javaVersion() default "";
+	String javaVersion();
 
 	/** Operating system architecture to match. */
-	String osArch() default "";
+	String osArch();
 
 	/** Operating system name to match. */
-	String osName() default "";
+	String osName();
 
 	/** Minimum required operating system version. */
-	String osVersion() default "";
+	String osVersion();
+
+	void configure(PlatformService service);
+
+	void open(URL url) throws IOException;
 
 }
