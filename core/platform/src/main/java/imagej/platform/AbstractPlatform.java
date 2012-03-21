@@ -1,5 +1,5 @@
 //
-// WindowsPlatform.java
+// AbstractPlatform.java
 //
 
 /*
@@ -32,34 +32,22 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.platform.windows;
-
-import imagej.platform.AbstractPlatform;
-import imagej.platform.Platform;
-
-import java.io.IOException;
-import java.net.URL;
+package imagej.platform;
 
 /**
- * A platform implementation for handling Windows platform issues.
+ * Abstract superclass of platform implementations.
  * 
- * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-@Platform(osName = "Windows")
-public class WindowsPlatform extends AbstractPlatform {
+public abstract class AbstractPlatform implements IPlatform {
+
+	protected PlatformService platformService;
 
 	// -- IPlatform methods --
 
 	@Override
-	public void open(final URL url) throws IOException {
-		final String cmd;
-		if (System.getProperty("os.name").startsWith("Windows 2000")) {
-			cmd = "rundll32 shell32.dll,ShellExec_RunDLL";
-		}
-		else cmd = "rundll32 url.dll,FileProtocolHandler";
-		if (!platformService.exec(cmd, url.toString())) {
-			throw new IOException("Could not open " + url);
-		}
+	public void configure(final PlatformService service) {
+		platformService = service;
 	}
 
 }
