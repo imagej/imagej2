@@ -252,8 +252,8 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 		// -- private instance variables --
 		
-		private Properties props;
-		private String filename;
+		private final Properties props;
+		private final String filename;
 		
 		// -- constructor --
 
@@ -273,7 +273,7 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 		 * minimum number (currently 256).
 		 */
 		public int getMemoryInMB() {
-			String memVal = props.getProperty(MEMORY_KEY);
+			final String memVal = props.getProperty(MEMORY_KEY);
 			Integer val = 0;
 			try {
 				val = Integer.parseInt(memVal);
@@ -360,15 +360,14 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 				// everything we want is on third line
 				final String argString = br.readLine();
 				in.close();
-				Integer memSize = memorySize(argString);
-				String jvmArgs = jvmArgs(argString);
+				final Integer memSize = memorySize(argString);
+				final String jvmArgs = jvmArgs(argString);
 				properties.setProperty(MEMORY_KEY, memSize.toString());
 				properties.setProperty(JVMARGS_KEY, jvmArgs);
 				return true;
 			}
 			catch (Exception e) {
-				properties.setProperty(MEMORY_KEY, MINIMUM_MEMORY.toString());
-				properties.setProperty(JVMARGS_KEY, jvmArgs(""));
+				Log.warn("Could not load legacy startup properties from "+fname);
 				return false;
 			}
 		}
@@ -376,14 +375,12 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 		/** loads properties from a IJ2 compatible launcher config file */
 		private boolean loadProps(Properties properties, String fname) {
 			try {
-				FileInputStream fos = new FileInputStream(fname);
+				final FileInputStream fos = new FileInputStream(fname);
 				properties.load(fos);
 				return true;
 			}
 			catch (IOException e) {
 				Log.warn("Could not load startup properties from "+fname);
-				properties.setProperty(MEMORY_KEY, MINIMUM_MEMORY.toString());
-				properties.setProperty(JVMARGS_KEY, jvmArgs(""));
 				return false;
 			}
 		}
@@ -391,8 +388,8 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 		/** saves properties to a IJ2 compatible launcher config file */
 		private void saveProps(Properties properties, String fname) {
 			try {
-				FileOutputStream fos = new FileOutputStream(fname);
-				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				final FileOutputStream fos = new FileOutputStream(fname);
+				final BufferedOutputStream bos = new BufferedOutputStream(fos);
 				properties.store(bos, SENTINEL + " ("+ImageJ.VERSION+")");
 				bos.close();
 			} catch (IOException e) {
