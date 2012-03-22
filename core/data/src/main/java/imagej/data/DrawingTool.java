@@ -36,11 +36,11 @@ package imagej.data;
 
 import imagej.util.RealRect;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -530,6 +530,8 @@ public class DrawingTool {
 	 */
 	private class AWTTextRenderer implements TextRenderer {
 
+		private static final int EXTRA_SPACE = 10;
+		
 		private int bufferSizeU;
 		private int bufferSizeV;
 		private BufferedImage textBuffer;
@@ -558,7 +560,7 @@ public class DrawingTool {
 			final Graphics2D g = textBuffer.createGraphics();
 			setAntialiasedText(g, antialiasing);
 			g.setFont(font);
-			final int x = 0, y = bufferSizeV / 2;
+			final int x = EXTRA_SPACE, y = bufferSizeV / 2;
 			//if (outlineWidth > 0)
 			//	drawTextOutline(g, text, Color.DARK_GRAY, x, y, outlineWidth);
 			g.drawString(text, x, y);
@@ -705,14 +707,14 @@ public class DrawingTool {
 			}
 
 			// determine extents of text to be drawn
-			final Rectangle extents = calcTextSize(text);
+			final Dimension extents = calcTextSize(text);
 
 			// if extents are bigger than existing buffer then allocate a new buffer
 			if ((extents.width > textBuffer.getWidth()) ||
 				(extents.height > textBuffer.getHeight()))
 			{
 				this.bufferSizeU = extents.width;
-				this.bufferSizeV = extents.height + 10; // + to avoid top clipping
+				this.bufferSizeV = extents.height;
 				this.textBuffer =
 					new BufferedImage(bufferSizeU, bufferSizeV,
 						BufferedImage.TYPE_BYTE_GRAY);
@@ -728,16 +730,14 @@ public class DrawingTool {
 					textRaster.setSample(u, v, 0, 0);
 		}
 
-		private Rectangle calcTextSize(final String txt) {
+		private Dimension calcTextSize(final String txt) {
 			final Graphics g = textBuffer.getGraphics();
 			final FontMetrics metrics = g.getFontMetrics(font);
 			g.dispose();
 			final int width = metrics.charsWidth(txt.toCharArray(), 0, txt.length());
-			final Rectangle extents = new Rectangle();
-			extents.x = 0;
-			extents.y = 0;
-			extents.width = width;
-			extents.height = metrics.getHeight() + 10;
+			final Dimension extents = new Dimension();
+			extents.width = width + EXTRA_SPACE;  // avoid front clipping
+			extents.height = metrics.getHeight() + 2*EXTRA_SPACE; // avoid top clipping
 			return extents;
 		}
 
