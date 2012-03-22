@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>com.github.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.5</version>
+		<version>1.6</version>
 	</parent>
 
 	<groupId>net.imagej</groupId>
@@ -28,6 +28,14 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<licenseName>bsd2</licenseName>
+					<licenseResolver>http://code.imagej.net/curtis/licenses/</licenseResolver>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.fusesource.mvnplugins</groupId>
 				<artifactId>maven-graph-plugin</artifactId>
