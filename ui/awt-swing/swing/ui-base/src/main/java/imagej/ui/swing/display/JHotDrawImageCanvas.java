@@ -108,9 +108,6 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	private final DrawingEditor drawingEditor;
 	private final ToolDelegator toolDelegator;
 
-	private double startScale = 1;
-	private double endScale = 1;
-	
 	private final JScrollPane scrollPane;
 
 	@SuppressWarnings("unused")
@@ -274,37 +271,31 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		return display;
 	}
 
-	// Johannes
-	// BDZ
 	@Override
 	public Dimension getPreferredSize() {
+		// NB Johannes
 		// HACK: Size the canvas one pixel larger. This is a workaround to an
 		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
 		// large X until it is finished being rendered. Unfortunately, the X is
 		// slightly smaller than the image after being rendered.
 		final int w = scrollPane.getPreferredSize().width + 1;
 		final int h = scrollPane.getPreferredSize().height + 1;
-		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
-		// NB - do not count scrollbar sizes if they will not be present.
-		// This usually works correctly.
-		// TODO - versus desktop bounds is off a little since viewport has items
-		// placed around it (label, sliders, etc.)
-		final int scrollW = scrollPane.getVerticalScrollBar().getWidth();
-		final int scrollH = scrollPane.getHorizontalScrollBar().getHeight();
-		final boolean zoomingOut = endScale < startScale;
-		/*
-		System.out.println("getPreferredSize()");
-		System.out.println("  pane size = "+w+","+h);
-		System.out.println("  scroll bar size = "+scrollW+","+scrollH);
-		System.out.println("  start scale = "+startScale);
-		System.out.println("  end scale = "+endScale);
-		System.out.println("  zooming out = "+zoomingOut);
-		System.out.println("  deleting scroll bars = " +
-				((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height)));
-		*/
-		if (zoomingOut)
-			if ((w-scrollW < deskBounds.width) && (h-scrollH < deskBounds.height))
-				return new Dimension(w-scrollW, h-scrollH);
+		
+		// NB BDZ - Avoid space left around for nonexistent scroll bars
+		// This code works (except rare cases). Not sure why 4 is key. 3 and lower
+		// and sizing failures happen. We used to have a fudge factor of 5 in place
+		// elsewhere. Can no longer find it. But it is apparent from debugging
+		// statements that there is an off by 5(?). Notice we test versus 4 but add
+		// 5. If both 4 then initial zoom has scrollbars when not needed. If both 5
+		// then some zoom ins can leave empty scroll bar space. (I may have these
+		// conditions reversed). Anyhow printing in here can show getPreferredSize()
+		// starts out at w,h and before/during 1st redraw goes to w+1,h+1. Its this
+		// off by one that makes initial view have scroll bars unnecessarily. Look
+		// into this further.
+		Dimension drawViewSize = drawingView.getPreferredSize();
+		if (drawViewSize.width+4 <= scrollPane.getPreferredSize().width)
+			if (drawViewSize.height+4 <= scrollPane.getPreferredSize().height)
+				return new Dimension(drawViewSize.width+5, drawViewSize.height+5);
 		return new Dimension(w, h);
 	}
 
@@ -446,8 +437,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	private void syncZoom() {
 		final int currViewWidth = drawingView.getWidth();
 		final int currViewHeight = drawingView.getHeight();
-		startScale = drawingView.getScaleFactor();
-		endScale = canvasHelper.getZoomFactor();
+		double startScale = drawingView.getScaleFactor();
+		double endScale = canvasHelper.getZoomFactor();
 		final IntCoords origin = canvasHelper.getPanOrigin();
 		drawingView.setScaleFactor(endScale);
 		scrollPane.validate();
@@ -466,7 +457,6 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		if (origin.y > yMax) origin.y = yMax;
 	}
 
-	// BDZ
 	private void
 		maybeResizeWindow(final int currW, final int currH,
 			final double currScale, final double nextScale)
@@ -477,14 +467,14 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		if (nextWidth > bounds.width) return;
 		if (nextHeight > bounds.height) return;
 
-		// NB - there is an issue where zoom out does not always pack() correctly.
-		// There seems like there is a race condition. I have tried a number of
-		// approaches to a fix but nothing as fallen out yet. Approaches included:
+		// FIXME TEMP
+		// NB BDZ - there is an issue where zoom out does not always pack()
+		// correctly. There seems like there is a race condition. I have tried a
+		// number of approaches to a fix but nothing has fallen out yet. Approaches
+		// included:
 		// - generating a "INeedARepackEvent" and trying to handle elsewhere
 		// - calling redoLayout() on the panel (infinite loop)
-		// - pack() after a slight delay
-		
-		// FIXME TEMP
+		// - call pack() after a slight delay
 		// Current approach:
 		//   Update on a different thread after a slight delay.
 		//   Note this always resizes correctly (except for off by a fixed
@@ -492,8 +482,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		
 		new Thread() {
 			@Override
+			@SuppressWarnings("synthetic-access")
 			public void run() {
-				// its not enough to be in separate thread - it must sleep a little
+				// NB - its not enough to be in separate thread - it must sleep a little
 				try { Thread.sleep(30); } catch (Exception e) {/*do nothing*/}
 				display.getPanel().getWindow().pack();
 			}
