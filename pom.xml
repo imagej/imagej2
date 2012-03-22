@@ -45,7 +45,7 @@
 
 	<licenses>
 		<license>
-			<name>BSD</name>
+			<name>Simplified BSD License</name>
 			<url>http://code.imagej.net/svn/imagej/trunk/LICENSE.txt</url>
 			<distribution>repo</distribution>
 		</license>
