@@ -2,8 +2,13 @@ ImageJ depends on several other software packages, each with its own license.
 
 You can generate an up-to-date list of dependencies from the source code:
 
-  cd ui/imagej
+  cd ui/app
   mvn dependency:resolve
+
+Or to display them as a tree:
+
+  cd ui/app
+  mvn dependency:tree
 
 As of this writing, the full list is as follows:
 
@@ -12,74 +17,109 @@ Apache log4j - http://logging.apache.org/log4j/
 
 License: Apache 2.0
 
-Artifact: log4j:log4j:jar:1.2.14
+Artifact: log4j:log4j:1.2.14
+
+===============================================================================
+Apache Velocity - http://velocity.apache.org/
+
+License: Apache 2.0
+
+Artifact: org.apache.velocity:velocity:1.7
+
+Dependencies:
+commons-collections:commons-collections:3.2.1
+commons-lang:commons-lang:2.4
 
 ===============================================================================
 EventBus - http://eventbus.org/
 
 License: Apache 2.0
 
-Artifact: org.jbushe:eventbus:1.4
+Artifact: org.bushe:eventbus:1.4
 
 ===============================================================================
 ImgLib2 - http://imglib2.net/
 
-License: 3-clause BSD
+License: 2-clause BSD
 
 Artifacts:
-net.imglib2:imglib2:jar:2.0-SNAPSHOT
-net.imglib2:imglib2-io:jar:2.0-SNAPSHOT
-net.imglib2:imglib2-ops:jar:2.0-SNAPSHOT
+net.imglib2:imglib2:2.0-SNAPSHOT
+net.imglib2:imglib2-algorithms:2.0-SNAPSHOT
+net.imglib2:imglib2-io:2.0-SNAPSHOT
+net.imglib2:imglib2-ops:2.0-SNAPSHOT
 
 ===============================================================================
 Javassist - http://www.javassist.org/
 
 License: MPL 1.1 or LGPL 2.1
 
-Artifact: javassist:javassist:jar:3.9.0.GA
+Artifact: javassist:javassist:3.9.0.GA
+
+===============================================================================
+JFreeChart - http://www.jfree.org/jfreechart/
+
+License: LGPL
+
+Artifact: org.jfree:jfreechart:1.0.14
+
+Dependencies:
+bouncycastle:bcmail-jdk14:138
+bouncycastle:bcprov-jdk14:138
+com.lowagie:itext:2.1.5
+org.jfree:jcommon:1.0.17
+xml-apis:xml-apis:1.3.04
+
 
 ===============================================================================
 JHotDraw7 - http://www.randelshofer.ch/oop/jhotdraw/index.html
 
 License: LGPL or CC BY 1.5
 
-Artifact: org.jhotdraw:jhotdraw:jar:7.6.0
+Artifact: org.jhotdraw:jhotdraw:7.6.0
+
+===============================================================================
+JSch - http://www.jcraft.com/jsch/
+
+License: 3-clause BSD
+
+Artifact: com.jcraft:jsch:0.1.42
 
 ===============================================================================
 LOCI Common - http://loci.wisc.edu/software/bio-formats/
 
 License: GPL 2+ (slated to be BSD)
 
-Artifact: loci:loci-common:jar:4.3.3-SNAPSHOT
+Artifact: loci:loci-common:4.4-SNAPSHOT
 
 ===============================================================================
 MigLayout - http://www.miglayout.com/
 
 License: 3-clause BSD or GPL
 
-Artifact: com.miglayout:miglayout:jar:swing:3.7.3.1
+Artifact: com.miglayout:miglayout:swing:3.7.3.1
 
 ===============================================================================
 Object Inspector - https://github.com/sbridges/object-inspector
 
 License: 2-clause BSD
 
-Artifact: com.github.sbridges.object-inspector:object-inspector:jar:0.1
+Artifact: com.github.sbridges.object-inspector:object-inspector:0.1
 
 ===============================================================================
-SCIFIO - http://loci.wisc.edu/software/bio-formats/
+SCIFIO - http://loci.wisc.edu/software/scifio
 
 License: GPL 2+ (slated to be BSD)
 
-Artifact: loci:scifio:jar:4.3.3-SNAPSHOT
+Artifact: loci:scifio:4.4-SNAPSHOT
 
-SCIFIO dependencies:
-com.jgoodies:forms:jar:1.2.1
-loci:jai_imageio:jar:4.3.3-SNAPSHOT
-loci:lwf-stubs:jar:4.3.3-SNAPSHOT
-loci:ome-xml:jar:4.3.3-SNAPSHOT
-xalan:serializer:jar:2.7.1
-xalan:xalan:jar:2.7.1
+Dependencies:
+com.jgoodies:forms:1.2.1
+com.sun:clibwrapper_jiio:1.1
+loci:jai_imageio:4.4-SNAPSHOT
+loci:lwf-stubs:4.4-SNAPSHOT
+loci:ome-xml:4.4-SNAPSHOT
+xalan:serializer:2.7.1
+xalan:xalan:2.7.1
 
 ===============================================================================
 SezPoz - http://sezpoz.java.net/
@@ -94,5 +134,5 @@ SLF4J - http://www.slf4j.org/
 License: MIT
 
 Artifacts:
-org.slf4j:slf4j-api:jar:1.5.10
-org.slf4j:slf4j-log4j12:jar:1.5.10
+org.slf4j:slf4j-api:1.5.10
+org.slf4j:slf4j-log4j12:1.5.10
