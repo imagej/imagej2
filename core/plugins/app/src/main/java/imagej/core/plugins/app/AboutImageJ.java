@@ -213,26 +213,42 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		tool.setTextAntialiasing(true);
 		//tool.setTextOutlineWidth(5);
 		tool.setFontSize(largestFontSize);
-		drawOutlinedText(tool, x, y, "ImageJ2 "+ImageJ.VERSION, TextJustification.CENTER);
+		drawOutlinedText(tool, x, y, "ImageJ2 "+ImageJ.VERSION,
+			TextJustification.CENTER, textChannels, outlineChannels);
 		y += 5*tool.getFontSize()/4;
 		tool.setFontSize((int)Math.round(0.6 * largestFontSize));
 		for (final String line : getTextBlock()) {
-			drawOutlinedText(tool, x, y, line, TextJustification.CENTER);
+			drawOutlinedText(tool, x, y, line, TextJustification.CENTER,
+				textChannels, outlineChannels);
 			y += 5*tool.getFontSize()/4;
 		}
 	}
 
+	/**
+	 * Returns a ChannelCollection containing the three RGB values of a given
+	 * color.
+	 */
+	private ChannelCollection getChannels(ColorRGB color) {
+		final List<Double> channels = new LinkedList<Double>();
+		channels.add((double) color.getRed());
+		channels.add((double) color.getGreen());
+		channels.add((double) color.getBlue());
+		return new ChannelCollection(channels);
+	}
+
+	/** Draws a text string and outline in two different set of fill values */
 	private void drawOutlinedText(DrawingTool tool, long x, long y, String text,
-		TextJustification just)
+		TextJustification just, ChannelCollection textValues,
+		ChannelCollection outlineValues)
 	{
-		tool.setChannels(outlineChannels);
+		tool.setChannels(outlineValues);
 		for (int dx = -1; dx <= 1; dx++) {
 			for (int dy = -1; dy <= 1; dy++) {
 				if (dx == 0 && dy == 0) continue;
 				tool.drawText(x+dx, y+dy, text, just);
 			}
 		}
-		tool.setChannels(textChannels);
+		tool.setChannels(textValues);
 		tool.drawText(x, y, text, just);
 	}
 	
@@ -351,13 +367,5 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 				// do nothing
 			}
 		}
-	}
-	
-	private ChannelCollection getChannels(ColorRGB color) {
-		final List<Double> channels = new LinkedList<Double>();
-		channels.add((double) color.getRed());
-		channels.add((double) color.getGreen());
-		channels.add((double) color.getBlue());
-		return new ChannelCollection(channels);
 	}
 }
