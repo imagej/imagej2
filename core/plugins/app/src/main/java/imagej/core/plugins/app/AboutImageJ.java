@@ -103,9 +103,12 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	private DisplayService dispSrv;
 	
 	// -- instance variables that are not parameters --
-	List<String> attributionStrings = new LinkedList<String>();
-	ColorRGB fontColor = Colors.YELLOW;
-	int largestFontSize = 30;
+	private List<String> attributionStrings = new LinkedList<String>();
+	private ColorRGB textColor = Colors.YELLOW;
+	private ColorRGB outlineColor = Colors.BLACK;
+	private int largestFontSize = 30;
+	private ChannelCollection textChannels = null;
+	private ChannelCollection outlineChannels = null;
 	
 	// -- public interface --
 	
@@ -199,27 +202,38 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Draws the textual information over a given merged color Dataset
 	 */
 	private void drawTextOverImage(Dataset ds) {
-		final List<Double> channels = new LinkedList<Double>();
-		channels.add((double) fontColor.getRed());
-		channels.add((double) fontColor.getGreen());
-		channels.add((double) fontColor.getBlue());
-		final ChannelCollection chans = new ChannelCollection(channels);
-		final DrawingTool tool = new DrawingTool(ds, chans);
+		textChannels = getChannels(textColor);
+		outlineChannels = getChannels(outlineColor);
+		final DrawingTool tool = new DrawingTool(ds);
 		tool.setUAxis(0);
 		tool.setVAxis(1);
 		final long width = ds.dimension(0);
 		final long x = width / 2;
 		long y = 50;
 		tool.setTextAntialiasing(true);
-		tool.setTextOutlineWidth(5);
+		//tool.setTextOutlineWidth(5);
 		tool.setFontSize(largestFontSize);
-		tool.drawText(x,y,"ImageJ2 "+ImageJ.VERSION, TextJustification.CENTER);
+		drawOutlinedText(tool, x, y, "ImageJ2 "+ImageJ.VERSION, TextJustification.CENTER);
 		y += 5*tool.getFontSize()/4;
 		tool.setFontSize((int)Math.round(0.6 * largestFontSize));
 		for (final String line : getTextBlock()) {
-			tool.drawText(x,y,line, TextJustification.CENTER);
+			drawOutlinedText(tool, x, y, line, TextJustification.CENTER);
 			y += 5*tool.getFontSize()/4;
 		}
+	}
+
+	private void drawOutlinedText(DrawingTool tool, long x, long y, String text,
+		TextJustification just)
+	{
+		tool.setChannels(outlineChannels);
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dy = -1; dy <= 1; dy++) {
+				if (dx == 0 && dy == 0) continue;
+				tool.drawText(x+dx, y+dy, text, just);
+			}
+		}
+		tool.setChannels(textChannels);
+		tool.drawText(x, y, text, just);
 	}
 	
 	/**
@@ -295,9 +309,9 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		String fileName = baseFileName + ".txt";
 		File file = new File(fileName);
 		if (file.exists()) {
-			Pattern attributionPattern = Pattern.compile("attribution \"(.*)\"");
-			Pattern colorPattern = Pattern.compile("color ([0-9]+) +([0-9]+) +([0-9]+)");
-			Pattern fontsizePattern = Pattern.compile("fontsize ([0-9]+)");
+			Pattern attributionPattern = Pattern.compile("attribution\\s+\"(.*)\"");
+			Pattern colorPattern = Pattern.compile("color\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
+			Pattern fontsizePattern = Pattern.compile("fontsize\\s+([1-9][0-9]*)");
 			try {
 				FileInputStream fstream = new FileInputStream(file);
 				DataInputStream in = new DataInputStream(fstream);
@@ -315,7 +329,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 							int r = Integer.parseInt(colorMatcher.group(1));
 							int g = Integer.parseInt(colorMatcher.group(2));
 							int b = Integer.parseInt(colorMatcher.group(3));
-							fontColor = new ColorRGB(r,g,b);
+							textColor = new ColorRGB(r,g,b);
 						} catch (Exception e) {
 							// do nothing
 						}
@@ -337,5 +351,13 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 				// do nothing
 			}
 		}
+	}
+	
+	private ChannelCollection getChannels(ColorRGB color) {
+		final List<Double> channels = new LinkedList<Double>();
+		channels.add((double) color.getRed());
+		channels.add((double) color.getGreen());
+		channels.add((double) color.getBlue());
+		return new ChannelCollection(channels);
 	}
 }

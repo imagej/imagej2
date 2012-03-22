@@ -169,7 +169,8 @@ public abstract class AbstractLineTool extends AbstractTool {
 		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
 		// allocate drawing tool
-		drawingTool = new DrawingTool(dataset, channels);
+		drawingTool = new DrawingTool(dataset);
+		drawingTool.setChannels(channels);
 
 		// set the position of tool to current display's position
 		// FIXME - this will break when the view axes are different than the
