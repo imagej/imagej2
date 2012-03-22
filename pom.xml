@@ -32,8 +32,13 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
-					<licenseName>bsd2</licenseName>
-					<licenseResolver>http://code.imagej.net/curtis/licenses/</licenseResolver>
+					<licenseName>imagej</licenseName>
+					<licenseResolver>http://code.imagej.net/licenses</licenseResolver>
+					<inceptionYear>2009</inceptionYear>
+					<organizationName>Board of Regents of the University of
+Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
+Institute of Molecular Cell Biology and Genetics.</organizationName>
+					<projectName>ImageJ software for multidimensional image processing and analysis.</projectName>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -46,7 +51,7 @@
 	<licenses>
 		<license>
 			<name>Simplified BSD License</name>
-			<url>http://code.imagej.net/svn/imagej/trunk/LICENSE.txt</url>
+			<url>http://code.imagej.net/licenses/imagej/license.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
