@@ -36,18 +36,12 @@ package imagej.data;
 
 import imagej.util.RealRect;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
@@ -109,14 +103,14 @@ public class DrawingTool {
 
 	/**
 	 * Creates a DrawingTool to modify a specified Dataset. Will draw pixel values
-	 * using the given fill values. After construction the default U axis will be
-	 * the first non-channel axis. The default V axis will be the second
-	 * non-channel axis.
+	 * using current channel values (default all zero). After construction the
+	 * default U axis will be the first non-channel axis. The default V axis will
+	 * be the second non-channel axis.
 	 */
-	public DrawingTool(final Dataset ds, final ChannelCollection fillValues) {
+	public DrawingTool(final Dataset ds) {
 		this.dataset = ds;
 		this.accessor = ds.getImgPlus().randomAccess();
-		this.channels = fillValues;
+		this.channels = new ChannelCollection();
 		this.lineWidth = 1;
 		this.intensity = 1;
 		// FIXME - initialize renderer externally later. For now this works.
@@ -253,23 +247,23 @@ public class DrawingTool {
 		return textRenderer.getAntialiasing();
 	}
 
-	/**
-	 * One can draw text in outlined form. Specify the width in pixels of the 
-	 * outline. Specifying a width of 0 means no outline desired.
-	 */
-	public void setTextOutlineWidth(float width) {
-		if (width < 0)
-			throw new IllegalArgumentException("text outline width must be >= 0");
-		textRenderer.setTextOutlineWidth(width);
-	}
+	///**
+	// * One can draw text in outlined form. Specify the width in pixels of the 
+	// * outline. Specifying a width of 0 means no outline desired.
+	// */
+	//public void setTextOutlineWidth(float width) {
+	//	if (width < 0)
+	//		throw new IllegalArgumentException("text outline width must be >= 0");
+	//	textRenderer.setTextOutlineWidth(width);
+	//}
 	
-	/**
-	 * One can draw text in outlined form. Get the width in pixels of the 
-	 * outline. A return value of 0 means no outline.
-	 */
-	public float getTextOutlineWidth() {
-		return textRenderer.getTextOutlineWidth();
-	}
+	///**
+	// * One can draw text in outlined form. Get the width in pixels of the 
+	// * outline. A return value of 0 means no outline.
+	// */
+	//public float getTextOutlineWidth() {
+	//	return textRenderer.getTextOutlineWidth();
+	//}
 	
 	/** Draws a pixel in the current UV plane at specified UV coordinates. */
 	public void drawPixel(final long u, final long v) {
@@ -522,9 +516,9 @@ public class DrawingTool {
 
 		boolean getAntialiasing();
 		
-		void setTextOutlineWidth(float width);
+		//void setTextOutlineWidth(float width);
 
-		float getTextOutlineWidth();
+		//float getTextOutlineWidth();
 	}
 
 	/**
@@ -546,14 +540,14 @@ public class DrawingTool {
 		private Font font;
 		private int[] pixels;
 		private boolean antialiasing;
-		private float outlineWidth;
+		//private float outlineWidth;
 
 		public AWTTextRenderer() {
 			fontFamily = Font.SANS_SERIF;
 			fontStyle = Font.PLAIN;
 			fontSize = 12;
 			antialiasing = false;
-			outlineWidth = 0;
+			//outlineWidth = 0;
 			buildFont();
 			initTextBuffer("42 is my favorite number");
 		}
@@ -565,9 +559,8 @@ public class DrawingTool {
 			setAntialiasedText(g, antialiasing);
 			g.setFont(font);
 			final int x = 0, y = bufferSizeV / 2;
-			// TODO: Why does Color.red look wrong (and Color.black paints nothing)?
-			if (outlineWidth > 0)
-				drawTextOutline(g, text, Color.DARK_GRAY, x, y, outlineWidth);
+			//if (outlineWidth > 0)
+			//	drawTextOutline(g, text, Color.DARK_GRAY, x, y, outlineWidth);
 			g.drawString(text, x, y);
 			g.dispose();
 		}
@@ -683,15 +676,15 @@ public class DrawingTool {
 			return antialiasing;
 		}
 
-		@Override
-		public void setTextOutlineWidth(float width) {
-			outlineWidth = width;
-		}
+		//@Override
+		//public void setTextOutlineWidth(float width) {
+		//	outlineWidth = width;
+		//}
 
-		@Override
-		public float getTextOutlineWidth() {
-			return outlineWidth;
-		}
+		//@Override
+		//public float getTextOutlineWidth() {
+		//	return outlineWidth;
+		//}
 
 		// -- private helpers --
 
@@ -757,6 +750,7 @@ public class DrawingTool {
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, antialias);
 		}
 
+		/*
 		private void drawTextOutline(final Graphics2D g, final String text,
 			final Color c, final int x, final int y, final float width)
 		{
@@ -771,6 +765,7 @@ public class DrawingTool {
 			g.draw(shape);
 			g.setColor(oldColor);
 		}
+		*/
 	}
 
 }

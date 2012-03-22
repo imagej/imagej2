@@ -134,7 +134,8 @@ public class FloodFillTool extends AbstractTool {
 			fillValues = opts.getBgValues();
 		else
 			fillValues = opts.getFgValues();
-		final DrawingTool tool = new DrawingTool(ds, fillValues);
+		final DrawingTool tool = new DrawingTool(ds);
+		tool.setChannels(fillValues);
 		// TODO - change here to support arbitrary UV axes
 		tool.setUAxis(0);
 		tool.setVAxis(1);
