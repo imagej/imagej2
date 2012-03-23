@@ -34,6 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.options.plugins;
 
+import imagej.ImageJ;
+import imagej.ext.menu.MenuConstants;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.options.OptionsPlugin;
+import imagej.util.FileUtils;
+import imagej.util.Log;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -43,14 +52,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
-
-import imagej.ImageJ;
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.options.OptionsPlugin;
-import imagej.util.Log;
 
 /**
  * Runs the Edit::Options::Memory &amp; Threads dialog.
@@ -185,52 +186,10 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 			params.setMemoryInMB(maxMemory);
 	}
 	
-	// TODO FIXME
-	// 
-	// Ideally look up a pref like ij.dir or ij.executable that should have been
-	// set by the launcher. But that won't work if launched in some other fashion.
-	// One example problem launch is from within Eclipse.
-
 	/** Finds the name/location of the launcher config file */
 	private String getCfgFileName() {
-		/*
-		 * This method gives /Users/bdezonia/Documents/workspace/gitIJ2/core/core/target/classes/
-		String path = ImageJ.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		String decodedPath = "";
-		try {	decodedPath = URLDecoder.decode(path, "UTF-8"); }
-		catch (Exception e) {}
-		*/
-		
-		/*
-		 * This method gives file:/Users/bdezonia/Documents/workspace/gitIJ2/core/plugins/app/target/classes/images
-		ClassLoader loader = ImageJ.class.getClassLoader();
-		String url = loader.getResource("images").toString();
-		String decodedPath = "";
-		try {	decodedPath = URLDecoder.decode(url, "UTF-8"); }
-		catch (Exception e) {}
-		*/
-
-		/*
-		 * This method gives /Users/bdezonia/Desktop/ImageJ/plugins/
-		String decodedPath = ClassLoader.getSystemClassLoader().getResource(".").getPath();
-		*/
-		
-		/*
-		 * This method gives /Users/bdezonia/Documents/workspace/gitIJ2/core/options/target/classes/imagej
-		String decodedPath = new File(getClass().getResource("").getPath()).getParentFile().getParent();
-		*/
-		//String directory = decodedPath; 
-
-		// FIXME TEMP HACK FOR NOW : user user.dir or user.home
-		
-		String directory = System.getProperty("user.dir");
-		if (directory == null) directory = System.getProperty("user.home");
-		
-		System.out.println("LOOKING FOR IMAGEJ.CFG FILE IN "+directory);
-		
-		if (!directory.endsWith(File.separator)) directory += File.separator;
-		
-		return directory + CONFIG_FILE;
+		final File directory = FileUtils.getImageJDirectory();
+		return new File(directory, CONFIG_FILE).getAbsolutePath();
 	}
 
 	// TODO - break out private class into a publicly accessible one somewhere
