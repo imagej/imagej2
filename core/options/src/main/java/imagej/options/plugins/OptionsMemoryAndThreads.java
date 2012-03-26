@@ -348,6 +348,7 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 			  br.readLine();
 			  while (br.ready()) {
 			  	final String s = br.readLine();
+			  	if (s.trim().startsWith("#")) continue;
 					final Matcher matcher = keyValuePairPattern.matcher(s);
 					if (matcher.matches()) {
 						final String key = matcher.group(1).trim();
