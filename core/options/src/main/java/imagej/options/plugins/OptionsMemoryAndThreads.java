@@ -43,15 +43,19 @@ import imagej.options.OptionsPlugin;
 import imagej.util.FileUtils;
 import imagej.util.Log;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Properties;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Runs the Edit::Options::Memory &amp; Threads dialog.
@@ -211,16 +215,16 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 		// -- private instance variables --
 		
-		private final Properties props;
+		private final Map<String,String> dataMap;
 		private final String filename;
 		
 		// -- constructor --
 
 		/** Constructs a LauncherParams object. Uses filename for loading/saving
-		 * it's properties.
+		 * it's values.
 		 */
 		public LauncherParams(String filename) {
-			this.props = new Properties();
+			this.dataMap = new HashMap<String,String>();
 			this.filename = filename;
 			initialize();
 		}
@@ -232,13 +236,13 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 		 * minimum number (currently 256).
 		 */
 		public int getMemoryInMB() {
-			final String memVal = props.getProperty(MEMORY_KEY);
+			final String memVal = dataMap.get(MEMORY_KEY);
 			Integer val = 0;
 			try {
 				val = Integer.parseInt(memVal);
 			} catch (NumberFormatException e) {
-				Log.warn("Properties file " + filename + " key " + MEMORY_KEY +
-									" is not in an integer format ");
+				Log.warn("Launcher configuration file " + filename + " has key " + MEMORY_KEY +
+									" that is not in an integer format");
 			}
 			if (val < MINIMUM_MEMORY) val = MINIMUM_MEMORY;
 			return val;
@@ -255,7 +259,7 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 				Log.warn("Max Java heap size can be no smaller than "+MINIMUM_MEMORY+
 									" megabytes.");
 			}
-			props.setProperty(MEMORY_KEY, memory.toString());
+			dataMap.put(MEMORY_KEY, memory.toString());
 			save();
 		}
 
@@ -265,33 +269,34 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 		 * the launcher config file.
 		 */
 		public void initialize() {
-			setDefaultValues(props);
+			setDefaultValues(dataMap);
 			final boolean needSave;
-			if (isLegacyProps(filename)) {
-				loadLegacyProps(props, filename);
+			if (isLegacyConfigFile(filename)) {
+				loadLegacyConfigValues(dataMap, filename);
 				needSave = true;
 			}
 			else
-				needSave = loadProps(props, filename);
+				needSave = !loadModernConfigValues(dataMap, filename);
 			if (needSave) save();
 		}
 
 		/** Saves current values to the launcher config file */
 		public void save() {
-			saveProps(props, filename);
+			saveConfigValues(dataMap, filename);
 		}
 
 		// -- private helpers --
 
-		/** initializes properties to valid default values */
-		private void setDefaultValues(Properties properties) {
-			properties.setProperty(MEMORY_KEY, MINIMUM_MEMORY.toString());
-			properties.setProperty(JVMARGS_KEY, "\"\"");
+		/** initializes launcher config file values to valid defaults */
+		private void setDefaultValues(Map<String,String> map) {
+			map.clear();
+			map.put(MEMORY_KEY, MINIMUM_MEMORY.toString());
+			map.put(JVMARGS_KEY, "");
 		}
 		
 		/** returns true if specified config file is an old legacy style launcher
 		 * config file */
-		private boolean isLegacyProps(String fname) {
+		private boolean isLegacyConfigFile(String fname) {
 			try {
 				final FileInputStream fstream = new FileInputStream(fname);
 			  final DataInputStream din = new DataInputStream(fstream);
@@ -305,8 +310,8 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 			}
 		}
 
-		/** loads properties from an old legacy style launcher config file */
-		private boolean loadLegacyProps(Properties properties, String fname) {
+		/** loads launcher config file values from an old legacy style file */
+		private boolean loadLegacyConfigValues(Map<String,String> map, String fname) {
 			try {
 				final FileInputStream fstream = new FileInputStream(fname);
 			  final DataInputStream din = new DataInputStream(fstream);
@@ -321,38 +326,63 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 				in.close();
 				final Integer memSize = memorySize(argString);
 				final String jvmArgs = jvmArgs(argString);
-				properties.setProperty(MEMORY_KEY, memSize.toString());
-				properties.setProperty(JVMARGS_KEY, jvmArgs);
+				map.put(MEMORY_KEY, memSize.toString());
+				map.put(JVMARGS_KEY, jvmArgs);
 				return true;
 			}
 			catch (Exception e) {
-				Log.warn("Could not load legacy startup properties from "+fname);
+				Log.warn("Could not load legacy launcher config file "+fname);
 				return false;
 			}
 		}
 		
-		/** loads properties from a IJ2 compatible launcher config file */
-		private boolean loadProps(Properties properties, String fname) {
+		/** loads launcher config file values from a modern IJ2 style file */
+		private boolean loadModernConfigValues(Map<String,String> map, String fname) {
 			try {
-				final FileInputStream fos = new FileInputStream(fname);
-				properties.load(fos);
+				final FileInputStream fstream = new FileInputStream(fname);
+			  final DataInputStream din = new DataInputStream(fstream);
+			  final InputStreamReader in = new InputStreamReader(din);
+			  final BufferedReader br = new BufferedReader(in);
+				final Pattern keyValuePairPattern = Pattern.compile("\\s*(.*)\\s*=\\s*(.*)");
+			  // skip first line : sentinel
+			  br.readLine();
+			  while (br.ready()) {
+			  	final String s = br.readLine();
+					final Matcher matcher = keyValuePairPattern.matcher(s);
+					if (matcher.matches()) {
+						final String key = matcher.group(1).trim();
+						final String value = matcher.group(2).trim();
+						map.put(key, value);
+					}
+					
+			  }
 				return true;
 			}
 			catch (IOException e) {
-				Log.warn("Could not load startup properties from "+fname);
+				Log.warn("Could not load launcher config file "+fname);
 				return false;
 			}
 		}
 		
-		/** saves properties to a IJ2 compatible launcher config file */
-		private void saveProps(Properties properties, String fname) {
+		/** writes launcher config values to an IJ2 style launcher config file */
+		private void saveConfigValues(Map<String,String> map, String fname) {
 			try {
-				final FileOutputStream fos = new FileOutputStream(fname);
-				final BufferedOutputStream bos = new BufferedOutputStream(fos);
-				properties.store(bos, SENTINEL + " ("+ImageJ.VERSION+")");
-				bos.close();
+			  final FileOutputStream fos = new FileOutputStream(fname);
+			  final OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF8");
+			  final BufferedWriter out = new BufferedWriter(osw);
+			  out.write("#"+SENTINEL + " ("+ImageJ.VERSION+")");
+		  	out.newLine();
+			  for (String key : map.keySet()) {
+			  	String value = map.get(key);
+			  	// make sure we don't write out something that breaks file structure
+			  	value = value.replaceAll("\n", "");
+			  	value = value.replaceAll("\r", "");
+			  	out.write(key + " = " + map.get(key));
+			  	out.newLine();
+			  }
+				out.close();
 			} catch (IOException e) {
-				Log.warn("Could not save startup properties to "+fname);
+				Log.warn("Could not save launcher config file values to "+fname);
 			}
 		}
 
@@ -378,7 +408,7 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 			return MINIMUM_MEMORY;
 		}
 
-		/** returns a quoted string containing all the command line arguments from
+		/** returns a string containing all the command line arguments from
 		 * a legacy launcher config file (3rd line). Ignores memory specification
 		 * as that is handled by memorySize().
 		 */
@@ -400,7 +430,7 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 				// TODO This last addition could include class path info. Is that a
 				// problem? We may not want the legacy file's class path info.
 			}
-			return "\"" + value + "\"";
+			return value;
 		}
 	}
 }
