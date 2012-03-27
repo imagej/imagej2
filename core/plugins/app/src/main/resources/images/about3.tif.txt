@@ -1,0 +1,4 @@
+attribution This image from ESO/J. Emerson/VISTA
+attribution Cambridge Astronomical Survey Unit
+fontsize 40
+color 255 255 0

@@ -1,0 +1,3 @@
+attribution This image courtesy of Hank L. Oppenheimer
+attribution via a Creative Commons license
+color 255 255 0

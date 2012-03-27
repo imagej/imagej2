@@ -1,4 +1,4 @@
-attribution "This image courtesy of Spike Walker"
-attribution "via a Creative Commons license"
+attribution This image courtesy of Spike Walker
+attribution via a Creative Commons license
 fontsize 50
 color 255 140 0

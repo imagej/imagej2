@@ -323,7 +323,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		final String fileName = baseFileName + ".txt";
 		final File file = new File(fileName);
 		if (file.exists()) {
-			final Pattern attributionPattern = Pattern.compile("attribution\\s+\"(.*)\"");
+			final Pattern attributionPattern = Pattern.compile("attribution\\s+(.*)");
 			final Pattern colorPattern = Pattern.compile("color\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
 			final Pattern fontsizePattern = Pattern.compile("fontsize\\s+([1-9][0-9]*)");
 			try {
