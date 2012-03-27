@@ -36,6 +36,7 @@ package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.FileWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetStyle;
 
 import java.io.File;
 
@@ -96,13 +97,24 @@ public class PivotFileWidget extends PivotInputWidget
 		if (!file.isDirectory()) {
 			file = file.getParentFile();
 		}
-		final FileBrowserSheet browser = new FileBrowserSheet(Mode.OPEN);
+
+		// display file chooser in appropriate mode
+		final WidgetStyle style = getModel().getItem().getWidgetStyle();
+		final FileBrowserSheet browser;
+		if (style == WidgetStyle.FILE_SAVE) {
+			browser = new FileBrowserSheet(Mode.SAVE_AS);
+		}
+		else { // default behavior
+			browser = new FileBrowserSheet(Mode.OPEN);
+		}
 		browser.setSelectedFile(file);
 		browser.open(path.getWindow());
 		final boolean success = browser.getResult();
 		if (!success) return;
 		file = browser.getSelectedFile();
-		if (file != null) path.setText(file.getAbsolutePath());
+		if (file == null) return;
+
+		path.setText(file.getAbsolutePath());
 	}
 
 }
