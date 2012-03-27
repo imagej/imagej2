@@ -37,6 +37,7 @@ package imagej.io.plugins;
 import imagej.data.Dataset;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -67,7 +68,7 @@ public class SaveAsImage implements ImageJPlugin {
 	@Parameter(persist = false)
 	private UIService uiService;
 
-	@Parameter
+	@Parameter(style = WidgetStyle.FILE_SAVE)
 	private File outputFile;
 
 	@Parameter
