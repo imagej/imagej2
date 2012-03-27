@@ -202,8 +202,8 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Draws the textual information over a given merged color Dataset
 	 */
 	private void drawTextOverImage(Dataset ds) {
-		textChannels = getChannels(textColor);
-		outlineChannels = getChannels(outlineColor);
+		textChannels = new ChannelCollection(textColor);
+		outlineChannels = new ChannelCollection(outlineColor);
 		final DrawingTool tool = new DrawingTool(ds);
 		tool.setUAxis(0);
 		tool.setVAxis(1);
@@ -222,18 +222,6 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 				textChannels, outlineChannels);
 			y += 5*tool.getFontSize()/4;
 		}
-	}
-
-	/**
-	 * Returns a ChannelCollection containing the three RGB values of a given
-	 * color.
-	 */
-	private ChannelCollection getChannels(ColorRGB color) {
-		final List<Double> channels = new LinkedList<Double>();
-		channels.add((double) color.getRed());
-		channels.add((double) color.getGreen());
-		channels.add((double) color.getBlue());
-		return new ChannelCollection(channels);
 	}
 
 	/** Draws a text string and outline in two different set of fill values */
@@ -258,7 +246,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 */
 	private List<String> getTextBlock() {
 		
-		LinkedList<String> stringList = new LinkedList<String>();
+		final LinkedList<String> stringList = new LinkedList<String>();
 		
 		stringList.add("Open source image processing software");
 		stringList.add("Copyright 2010, 2011, 2012");
@@ -282,12 +270,12 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Returns a string showing used and available memory information
 	 */
 	private String memoryInfo() {
-		long inUse = currentMemory();
-		String inUseStr = inUse<10000*1024?inUse/1024L+"K":inUse/1048576L+"MB";
+		final long inUse = currentMemory();
+		final String inUseStr = inUse<10000*1024?inUse/1024L+"K":inUse/1048576L+"MB";
 		String maxStr="";
-		long max = maxMemory();
+		final long max = maxMemory();
 		if (max>0L) {
-			long percent = inUse * 100 / max;
+			final long percent = inUse * 100 / max;
 			maxStr = " of "+max/1048576L+"MB ("+(percent<1 ? "<1" : percent) + "%)";
 		}
 		return inUseStr + maxStr;
@@ -295,18 +283,18 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	
 	/** Returns the amount of memory currently being used by ImageJ2. */
 	private long currentMemory() {
-		long freeMem = Runtime.getRuntime().freeMemory();
-		long totMem = Runtime.getRuntime().totalMemory();
+		final long freeMem = Runtime.getRuntime().freeMemory();
+		final long totMem = Runtime.getRuntime().totalMemory();
 		return totMem-freeMem;
 	}
 
 	/** Returns the maximum amount of memory available to ImageJ2 or
 		zero if ImageJ2 is unable to determine this limit. */
 	private long maxMemory() {
-		OptionsService srv = context.getService(OptionsService.class);
-		OptionsMemoryAndThreads opts = srv.getOptions(OptionsMemoryAndThreads.class);
-		long totMem = Runtime.getRuntime().totalMemory();
-		long userMem = opts.getMaxMemory() * 1024L * 1024L;
+		final OptionsService srv = context.getService(OptionsService.class);
+		final OptionsMemoryAndThreads opts = srv.getOptions(OptionsMemoryAndThreads.class);
+		final long totMem = Runtime.getRuntime().totalMemory();
+		final long userMem = opts.getMaxMemory() * 1024L * 1024L;
 		if (userMem > totMem)
 			return totMem;
 		return userMem;
@@ -314,7 +302,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 
 	/** Returns true if ImageJ2 is running a 64-bit version of Java. */
 	private boolean is64Bit() {
-		String osarch = System.getProperty("os.arch");
+		final String osarch = System.getProperty("os.arch");
 		return osarch!=null && osarch.indexOf("64")!=-1;
 	}
 
@@ -322,35 +310,35 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Loads attributes from an associated filename.ext.txt file if possible  
 	 */
 	private void loadAttributes(String baseFileName) {
-		String fileName = baseFileName + ".txt";
-		File file = new File(fileName);
+		final String fileName = baseFileName + ".txt";
+		final File file = new File(fileName);
 		if (file.exists()) {
-			Pattern attributionPattern = Pattern.compile("attribution\\s+\"(.*)\"");
-			Pattern colorPattern = Pattern.compile("color\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
-			Pattern fontsizePattern = Pattern.compile("fontsize\\s+([1-9][0-9]*)");
+			final Pattern attributionPattern = Pattern.compile("attribution\\s+\"(.*)\"");
+			final Pattern colorPattern = Pattern.compile("color\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
+			final Pattern fontsizePattern = Pattern.compile("fontsize\\s+([1-9][0-9]*)");
 			try {
-				FileInputStream fstream = new FileInputStream(file);
-				DataInputStream in = new DataInputStream(fstream);
-				BufferedReader br = new BufferedReader(new InputStreamReader(in));
+				final FileInputStream fstream = new FileInputStream(file);
+				final DataInputStream in = new DataInputStream(fstream);
+				final BufferedReader br = new BufferedReader(new InputStreamReader(in));
 				String strLine;
 				//Read File Line By Line
 				while ((strLine = br.readLine()) != null) {
-					Matcher attributionMatcher = attributionPattern.matcher(strLine);
+					final Matcher attributionMatcher = attributionPattern.matcher(strLine);
 					if (attributionMatcher.matches()) {
 						attributionStrings.add(attributionMatcher.group(1));
 					}
-					Matcher colorMatcher = colorPattern.matcher(strLine);
+					final Matcher colorMatcher = colorPattern.matcher(strLine);
 					if (colorMatcher.matches()) {
 						try {
-							int r = Integer.parseInt(colorMatcher.group(1));
-							int g = Integer.parseInt(colorMatcher.group(2));
-							int b = Integer.parseInt(colorMatcher.group(3));
+							final int r = Integer.parseInt(colorMatcher.group(1));
+							final int g = Integer.parseInt(colorMatcher.group(2));
+							final int b = Integer.parseInt(colorMatcher.group(3));
 							textColor = new ColorRGB(r,g,b);
 						} catch (Exception e) {
 							// do nothing
 						}
 					}
-					Matcher fontsizeMatcher = fontsizePattern.matcher(strLine);
+					final Matcher fontsizeMatcher = fontsizePattern.matcher(strLine);
 					if (fontsizeMatcher.matches()) {
 						try {
 							largestFontSize = Integer.parseInt(fontsizeMatcher.group(1));

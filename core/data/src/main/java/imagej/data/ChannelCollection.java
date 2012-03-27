@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.util.ColorRGB;
+
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,6 +75,19 @@ public class ChannelCollection {
 		for (Double value : channelInfos) {
 			areInteger &= (value == Math.floor(value));
 		}
+	}
+
+	/**
+	 * Constructs a ChannelCollection containing the three RGB values of a given
+	 * color.
+	 */
+	public ChannelCollection(ColorRGB color) {
+		this(
+			Arrays.asList(
+				new Double[]{
+					(double) color.getRed(),
+					(double) color.getGreen(),
+					(double) color.getBlue()}));
 	}
 
 	// -- public interface --
