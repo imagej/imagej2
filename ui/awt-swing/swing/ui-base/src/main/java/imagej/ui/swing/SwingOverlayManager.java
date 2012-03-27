@@ -806,7 +806,11 @@ public class SwingOverlayManager
 				if (e.getKeyCode() == KeyEvent.VK_DELETE) delete();
 			}
 			@Override
-			public void keyReleased(KeyEvent e) { /* do nothing */ }
+			@SuppressWarnings("synthetic-access")
+			public void keyReleased(KeyEvent e) {
+				altDown = e.isAltDown() || e.isAltGraphDown();
+				shiftDown = e.isShiftDown();
+			}
 			@Override
 			public void keyTyped(KeyEvent e) { /* do nothing */ }
 		};
