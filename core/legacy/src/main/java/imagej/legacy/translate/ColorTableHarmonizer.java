@@ -231,16 +231,24 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		}
 
 		if (imp instanceof CompositeImage) {
+			// set each channel's display range
 			final CompositeImage ci = (CompositeImage) imp;
-			final LUT[] luts = ci.getLuts();
-			if (channelCount != luts.length) {
+			if (channelCount != ci.getNChannels()) {
 				throw new IllegalArgumentException("Channel mismatch: " +
-					converters.size() + " vs. " + luts.length);
+					converters.size() + " vs. " + ci.getNChannels());
 			}
-			for (int i = 0; i < luts.length; i++) {
-				luts[i].min = min[i];
-				luts[i].max = max[i];
+			// NB
+			//   Originally I used ci.getLUTs() and modified each LUT's min and max.
+			//   This cannot work as getLUTs() returns copies rather than originals.
+			//   Unfortunately setLUTs() does not use min/max of passed in LUTs. So
+			//   can't tweak and set back. So we'll cycle through the channels setting
+			//   min/max and make sure channel set where it started when we're done.
+			int origC = ci.getC();
+			for (int i = 0; i < channelCount; i++) {
+				ci.setC(i+1);
+				ci.setDisplayRange(min[i], max[i]);
 			}
+			ci.setC(origC);
 		}
 		else { // regular ImagePlus
 			imp.setDisplayRange(overallMin, overallMax);
