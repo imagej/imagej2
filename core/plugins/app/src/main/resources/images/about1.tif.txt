@@ -1,3 +1,4 @@
-attribution "This image courtesy of Tom Deerinck (CC)"
+attribution "This image courtesy of Tom Deerinck"
+attribution "via a Creative Commons license"
 fontsize 45
 color 255 255 0
