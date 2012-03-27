@@ -47,7 +47,7 @@ import java.util.List;
  */
 public interface ModuleItem<T> extends BasicDetails {
 
-	/** Type of the item. */
+	/** Gets the type of the item. */
 	Class<T> getType();
 
 	/** Gets the input/output type of the item. */
@@ -59,7 +59,7 @@ public interface ModuleItem<T> extends BasicDetails {
 	/** Gets whether the item is a module output. */
 	boolean isOutput();
 
-	/** The visibility of the item. */
+	/** Gets the visibility of the item. */
 	ItemVisibility getVisibility();
 
 	/** Gets whether the item value must be specified (i.e., no default). */
