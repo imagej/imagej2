@@ -34,14 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.io.plugins;
 
-import java.io.File;
-
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
-
-import ome.scifio.img.ImgIOException;
-import ome.scifio.img.ImgSaver;
-
 import imagej.data.Dataset;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
@@ -50,8 +42,16 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
+import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
 import imagej.util.Log;
+
+import java.io.File;
+
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.img.ImgPlus;
+import ome.scifio.img.ImgIOException;
+import ome.scifio.img.ImgSaver;
 
 /**
  * Saves the current {@link Dataset} to disk using a user-specified file name.
@@ -59,58 +59,64 @@ import imagej.util.Log;
  * @author Mark Hiner
  */
 @Plugin(menu = {
-    @Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT, mnemonic = MenuConstants.FILE_MNEMONIC),
-    @Menu(label = "Save As...", weight = 21)})
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Save As...", weight = 21) })
 public class SaveAsImage implements ImageJPlugin {
 
-  @Parameter(persist = false)
-  private UIService uiService;
+	@Parameter(persist = false)
+	private UIService uiService;
 
-  @Parameter
-  private File outputFile;
+	@Parameter
+	private File outputFile;
 
-  @Parameter
-  private Dataset dataset;
+	@Parameter
+	private Dataset dataset;
 
-  @Parameter
-  private Display<?> display;
+	@Parameter
+	private Display<?> display;
 
-  @Override
-  public void run() {
-    final ImgPlus img = dataset.getImgPlus();
-    boolean overwrite = true;
+	@Override
+	public void run() {
+		@SuppressWarnings("rawtypes")
+		final ImgPlus img = dataset.getImgPlus();
+		boolean overwrite = true;
 
-    // TODO prompts the user if the file is dirty or being saved to a new location. Could remove the isDirty check to always overwrite the current file
-    if (outputFile.exists() &&
-      (dataset.isDirty() || !outputFile.getAbsolutePath().equals(
-        img.getSource())))
-      overwrite =
-        uiService.showDialog(
-          "\"" + outputFile.getName() +
-            "\" already exists. Do you want to replace it?", "Save [IJ2]",
-          DialogPrompt.MessageType.QUESTION_MESSAGE,
-          DialogPrompt.OptionType.YES_NO_OPTION) == DialogPrompt.Result.YES_OPTION;
+		// TODO prompts the user if the file is dirty or being saved to a new
+		// location. Could remove the isDirty check to always overwrite the current
+		// file
+		if (outputFile.exists() &&
+			(dataset.isDirty() || !outputFile.getAbsolutePath().equals(
+				img.getSource())))
+		{
+			final Result result =
+				uiService.showDialog("\"" + outputFile.getName() +
+					"\" already exists. Do you want to replace it?", "Save [IJ2]",
+					DialogPrompt.MessageType.QUESTION_MESSAGE,
+					DialogPrompt.OptionType.YES_NO_OPTION);
+			overwrite = result == DialogPrompt.Result.YES_OPTION;
+		}
 
-    if (overwrite) {
+		if (overwrite) {
+			final ImgSaver imageSaver = new ImgSaver();
+			try {
+				imageSaver.saveImg(outputFile.getAbsolutePath(), img);
+			}
+			catch (final ImgIOException e) {
+				Log.error(e);
+			}
+			catch (final IncompatibleTypeException e) {
+				Log.error(e);
+			}
+			dataset.setName(outputFile.getName());
+			dataset.setDirty(false);
 
-      final ImgSaver imageSaver = new ImgSaver();
-      try {
-        imageSaver.saveImg(outputFile.getAbsolutePath(), img);
-      }
-      catch (ImgIOException e) {
-        Log.error(e);
-      }
-      catch (IncompatibleTypeException e) {
-        Log.error(e);
-      }
-      dataset.setName(outputFile.getName());
-      dataset.setDirty(false);
-
-      //TODO -- HACK -- setName() + update() currently doesn't work. Pending #995
-      display.getPanel().getWindow().setTitle(outputFile.getName());
-      display.setName(outputFile.getName());
-      display.update();
-    }
-  }
+			// TODO -- HACK -- setName() + update() currently doesn't work.
+			// Pending #995
+			display.getPanel().getWindow().setTitle(outputFile.getName());
+			display.setName(outputFile.getName());
+			display.update();
+		}
+	}
 
 }
