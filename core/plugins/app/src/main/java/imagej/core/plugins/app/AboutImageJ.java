@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -191,12 +192,20 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	}
 
 	/**
-	 * Returns the URL of a backdrop image
+	 * Returns the URL of a backdrop image. Chooses a random image from the list
+	 * of images present.
 	 */
 	private URL getImageURL() {
-		// TODO - cycle through one of many
-		final String fname = "/images/image2.tif";  // NB - THIS PATH IS CORRECT 
-		return getClass().getResource(fname);
+		final List<URL> fileURLs = new LinkedList<URL>();
+		for (int i = 0; i < 40; i++) {
+			final URL url = getClass().getResource("/images/about"+i+".tif");
+			if (url != null) fileURLs.add(url);
+		}
+		if (fileURLs.size() == 0) return null;
+		final Random rng = new Random();
+		rng.setSeed(System.currentTimeMillis());
+		final int index = rng.nextInt(fileURLs.size());
+		return fileURLs.get(index);
 	}
 
 	/**

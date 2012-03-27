@@ -1,0 +1,3 @@
+attribution "This image courtesy of Tom Deerinck (CC)"
+fontsize 45
+color 255 255 0
