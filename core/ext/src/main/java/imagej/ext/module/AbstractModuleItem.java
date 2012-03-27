@@ -104,6 +104,11 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	}
 
 	@Override
+	public boolean isAutoFill() {
+		return true;
+	}
+
+	@Override
 	public boolean isRequired() {
 		return false;
 	}

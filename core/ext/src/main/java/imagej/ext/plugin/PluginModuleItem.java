@@ -105,6 +105,11 @@ public class PluginModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	@Override
+	public boolean isAutoFill() {
+		return getParameter().autoFill();
+	}
+
+	@Override
 	public boolean isRequired() {
 		return getParameter().required();
 	}

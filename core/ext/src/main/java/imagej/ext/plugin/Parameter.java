@@ -107,6 +107,16 @@ public @interface Parameter {
 	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
 	ItemVisibility visibility() default imagej.ext.module.ItemVisibility.NORMAL;
 
+	/**
+	 * Defines whether the parameter value should be auto-filled, if possible,
+	 * during the preprocessing chain. Some preprocessors can populate a parameter
+	 * value based on certain criteria. For example, an
+	 * {@link imagej.ext.display.ActiveDisplayPreprocessor} will populate a single
+	 * {@link imagej.ext.display.Display} parameter to match the currently active
+	 * display, if any. Setting this flag to false suppresses this behavior.
+	 */
+	boolean autoFill() default true;
+
 	/** Defines whether the parameter value must be non-null. */
 	boolean required() default true;
 

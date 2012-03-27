@@ -83,7 +83,7 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 		// assign active display to single Display input
 		final ModuleItem<?> displayInput =
 			moduleService.getSingleInput(module, Display.class);
-		if (displayInput != null) {
+		if (displayInput != null && displayInput.isAutoFill()) {
 			final String name = displayInput.getName();
 			module.setInput(name, activeDisplay);
 			module.setResolved(name, true);

@@ -62,6 +62,9 @@ public interface ModuleItem<T> extends BasicDetails {
 	/** Gets the visibility of the item. */
 	ItemVisibility getVisibility();
 
+	/** Gets whether the item value is allowed to be auto-filled. */
+	boolean isAutoFill();
+
 	/** Gets whether the item value must be specified (i.e., no default). */
 	boolean isRequired();
 

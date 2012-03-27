@@ -124,7 +124,8 @@ public class ActiveImagePreprocessor implements PreprocessorPlugin {
 	private String getSingleInput(final Module module, final Class<?> type) {
 		final ModuleService moduleService = ImageJ.get(ModuleService.class);
 		final ModuleItem<?> item = moduleService.getSingleInput(module, type);
-		return item == null ? null : item.getName();
+		if (item == null || !item.isAutoFill()) return null;
+		return item.getName();
 	}
 
 }
