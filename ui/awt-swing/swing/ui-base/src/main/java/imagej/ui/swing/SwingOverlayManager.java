@@ -66,6 +66,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -78,6 +79,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -87,6 +89,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 // TODO
 //
@@ -149,16 +153,16 @@ public class SwingOverlayManager
 	
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers = null;
-	private ImageJ context = null;
-	private JList jlist = null;
+	private final List<EventSubscriber<?>> subscribers;
+	private final ImageJ context;
+	private final JList jlist;
 	private boolean selecting = false; // flag to prevent event feedback loops
 	private JPopupMenu popupMenu = null;
-	private JCheckBox showAllCheckBox = null;
-	private JCheckBox editModeCheckBox = null;
+	private final JCheckBox showAllCheckBox;
+	private final JCheckBox editModeCheckBox;
 	private boolean shiftDown = false;
 	private boolean altDown = false;
-	private OverlayInfoList infoList;
+	private final OverlayInfoList infoList;
 	
 	// -- constructor --
 	
@@ -217,7 +221,7 @@ public class SwingOverlayManager
 		
 		pack();
 		
-		EventService eventService = context.getService(EventService.class);
+		final EventService eventService = context.getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 
 		// FIXME - temp hack - made this class (which is not a display) make sure
@@ -226,7 +230,7 @@ public class SwingOverlayManager
 		// bar listener of some sort. This code could emit that "need a menu bar"
 		// event here. Filing as ticket.
 		
-		UIService uiService = context.getService(UIService.class);
+		final UIService uiService = context.getService(UIService.class);
 		((AbstractSwingUI)uiService.getUI()).createMenuBar(this);
 		
 		//populateOverlayList();
@@ -236,7 +240,7 @@ public class SwingOverlayManager
 	
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		String command = e.getActionCommand();
+		final String command = e.getActionCommand();
 		if (command == null) return;
 		if (command.equals(ACTION_ADD))
 			add();
@@ -336,7 +340,7 @@ public class SwingOverlayManager
 		
 		public boolean addOverlay(int i, Overlay overlay) {
 			if (findIndex(overlay) >= 0) return false;
-			OverlayInfo info = new OverlayInfo();
+			final OverlayInfo info = new OverlayInfo();
 			info.overlay = overlay;
 			return addOverlayInfo(i,info);
 		}
@@ -353,32 +357,32 @@ public class SwingOverlayManager
 		}
 		
 		public boolean replaceOverlay(int i, Overlay overlay) {
-			OverlayInfo info = new OverlayInfo();
+			final OverlayInfo info = new OverlayInfo();
 			info.overlay = overlay;
 			return replaceOverlayInfo(i, info);
 		}
 		
 		public boolean deleteOverlayInfo(int i) {
-			OverlayInfo info = list.remove(i);
+			final OverlayInfo info = list.remove(i);
 			if (info == null) return false;
 			info.overlay.decrementReferences();
 			return true;
 		}
 		
 		public boolean deleteOverlayInfo(OverlayInfo info) {
-			int index = findIndex(info);
+			final int index = findIndex(info);
 			if (index < 0) return false;
 			return deleteOverlayInfo(index);
 		}
 
 		public boolean deleteOverlay(Overlay overlay) {
-			int index = findIndex(overlay);
+			final int index = findIndex(overlay);
 			if (index < 0) return false;
 			return deleteOverlayInfo(index);
 		}
 
 		public void deleteAll() {
-			int num = list.size();
+			final int num = list.size();
 			for (int i = 0; i < num; i++)
 				deleteOverlayInfo(0);
 		}
@@ -398,7 +402,7 @@ public class SwingOverlayManager
 		}
 
 		public void sort() {
-			int numEntries = getOverlayInfoCount();
+			final int numEntries = getOverlayInfoCount();
 			for (int i = 0; i < numEntries; i++) {
 				String minLabel = getOverlayInfo(i).toString();
 				int minPos = i;
@@ -581,9 +585,9 @@ public class SwingOverlayManager
 	
 	private void add() {
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		ImageDisplay activeDisplay = ids.getActiveImageDisplay();
+		final ImageDisplay activeDisplay = ids.getActiveImageDisplay();
 		if (activeDisplay == null) return;
-		List<DataView> views = activeDisplay;
+		final List<DataView> views = activeDisplay;
 		boolean additions = false;
 		for (DataView view : views) {
 			if (view.isSelected() && (view instanceof OverlayView))
@@ -603,9 +607,9 @@ public class SwingOverlayManager
 	
 	private void delete() {
 		if (infoList.getOverlayInfoCount() == 0) return;
-		int[] selectedIndices = jlist.getSelectedIndices();
+		final int[] selectedIndices = jlist.getSelectedIndices();
 		if (selectedIndices.length == 0) {
-			int result =
+			final int result =
 				JOptionPane.showConfirmDialog(
 					this, "Remove all overlays from manager?", "Remove All",
 					JOptionPane.YES_NO_OPTION);
@@ -614,7 +618,7 @@ public class SwingOverlayManager
 		else {
 			// traverse in reverse order to keep infoList valid
 			for (int i = selectedIndices.length-1; i >= 0; i--) {
-				int selected = selectedIndices[i];
+				final int selected = selectedIndices[i];
 				infoList.deleteOverlayInfo(selected);
 			}
 		}
@@ -639,9 +643,9 @@ public class SwingOverlayManager
 	
 	private void help() {
 		Log.warn("TODO in SwingOverlayManager::help() - using old IJ1 URL for this command");
-		PlatformService ps = context.getService(PlatformService.class);
+		final PlatformService ps = context.getService(PlatformService.class);
 		try {
-			URL url =
+			final URL url =
 					new URL("http://imagej.nih.gov/ij/docs/menus/analyze.html#manager");
 			ps.open(url);
 		} catch (IOException e) {
@@ -682,15 +686,15 @@ public class SwingOverlayManager
 	}
 	
 	private void rename() {
-		int[] selectedIndices = jlist.getSelectedIndices();
+		final int[] selectedIndices = jlist.getSelectedIndices();
 		if (selectedIndices.length != 1) {
 			JOptionPane.showMessageDialog(this, "Cannot rename multiple overlays simultaneously");
 			return;
 		}
-		OverlayInfo info = (OverlayInfo) jlist.getSelectedValue();
+		final OverlayInfo info = (OverlayInfo) jlist.getSelectedValue();
 		if (info == null) return;
 		// TODO - UI agnostic way here
-		String name = JOptionPane.showInputDialog(this, "Enter new name for overlay");
+		final String name = JOptionPane.showInputDialog(this, "Enter new name for overlay");
 		if ((name == null) || (name.length() == 0))
 			info.overlay.setName(null);
 		else
@@ -700,6 +704,44 @@ public class SwingOverlayManager
 	
 	private void save() {
 		JOptionPane.showMessageDialog(this, "unimplemented");
+		/*
+		final int[] selectedIndices = jlist.getSelectedIndices();
+		// nothing selected
+		if (selectedIndices.length == 0) {
+			JOptionPane.showMessageDialog(this, "Cannot save - one or more overlays must be selected first");
+			return;
+		}
+		
+		final JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle("Save Overlay to file ...");
+		chooser.setAcceptAllFileFilterUsed(false);
+		FileNameExtensionFilter filter1, filter2;
+		filter1 = new FileNameExtensionFilter("ImageJ overlay containers (*.zip)", "zip");
+		chooser.addChoosableFileFilter(filter1);
+		filter2 = new FileNameExtensionFilter("ImageJ overlay files (*.ovl)", "ovl");
+		chooser.addChoosableFileFilter(filter2);
+		chooser.setFileFilter(filter2);
+		int result = chooser.showSaveDialog(this);
+		if (result != JFileChooser.APPROVE_OPTION) return;
+		String basename = chooser.getSelectedFile().getAbsolutePath();
+		if (basename.toLowerCase().endsWith(".ovl") ||
+				basename.toLowerCase().endsWith(".zip")) {
+			basename = basename.substring(0,basename.length()-4);
+		}
+		
+		// one roi selected
+		if (selectedIndices.length == 1) {
+			// save overlay in its own user named .ovl file
+			String filename = basename + ".ovl";
+			final OverlayInfo info = (OverlayInfo) jlist.getSelectedValue();
+			//info.overlay.save(filename);
+		}
+		else { // more than one roi selected
+			// save each overlay in its own .ovl file in a user named .zip container
+			String filename = basename + ".zip";
+			JOptionPane.showMessageDialog(this, "save multiple overlays to zip is unimplemented");
+		}
+		*/
 	}
 	
 	private void sort() {
@@ -718,21 +760,21 @@ public class SwingOverlayManager
 	// replace OverlayInfoList's currently selected info with the currently
 	// selected roi
 	private void update() {
-		int[] selectedIndices = jlist.getSelectedIndices();
+		final int[] selectedIndices = jlist.getSelectedIndices();
 		if (selectedIndices.length != 1) {
 			JOptionPane.showMessageDialog(this,
 				"Exactly one item must be selected");
 			return;
 		}
 		
-		Overlay overlay = getActiveOverlay();
+		final Overlay overlay = getActiveOverlay();
 		if (overlay == null) {
 			JOptionPane.showMessageDialog(this,
 				"An overlay must be selected in the current view");
 			return;
 		}
 		
-		int index = infoList.findIndex(overlay);
+		final int index = infoList.findIndex(overlay);
 		if (index != -1) {
 			// already in list
 			if (index != selectedIndices[0])
@@ -753,7 +795,7 @@ public class SwingOverlayManager
 
 	private void setupKeyListener() {
 		//KeyListener listener = new AWTKeyEventDispatcher(fakeDisplay, eventService);
-		KeyListener listener = new KeyListener() {
+		final KeyListener listener = new KeyListener() {
 			@Override
 			@SuppressWarnings("synthetic-access")
 			public void keyPressed(KeyEvent e) {
@@ -769,13 +811,13 @@ public class SwingOverlayManager
 			public void keyTyped(KeyEvent e) { /* do nothing */ }
 		};
 		
-		Stack<Component> stack = new Stack<Component>();
+		final Stack<Component> stack = new Stack<Component>();
 		stack.push(this);
 		while (!stack.empty()) {
-			Component component = stack.pop();
+			final Component component = stack.pop();
 			component.addKeyListener(listener);
 			if (component instanceof Container) {
-				Container container = (Container) component;
+				final Container container = (Container) component;
 				for (Component c : container.getComponents())
 					stack.push(c);
 			}
@@ -864,7 +906,7 @@ public class SwingOverlayManager
 	}
 
 	private JPopupMenu createPopupMenu() {
-		JPopupMenu menu = new JPopupMenu();
+		final JPopupMenu menu = new JPopupMenu();
 		menu.add(getOpenMenuItem());
 		menu.add(getSaveMenuItem());
 		menu.add(getFillMenuItem());
@@ -885,7 +927,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getAddParticlesMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Add Particles");
 		item.setActionCommand(ACTION_ADD_PARTICLES);
 		item.addActionListener(this);
@@ -893,7 +935,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getAndMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("AND");
 		item.setActionCommand(ACTION_AND);
 		item.addActionListener(this);
@@ -901,7 +943,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getDrawMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Draw");
 		item.setActionCommand(ACTION_DRAW);
 		item.addActionListener(this);
@@ -909,7 +951,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getFillMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Fill");
 		item.setActionCommand(ACTION_FILL);
 		item.addActionListener(this);
@@ -917,7 +959,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getHelpMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Help");
 		item.setActionCommand(ACTION_HELP);
 		item.addActionListener(this);
@@ -925,7 +967,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getMultiMeasureMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Multi Measure");
 		item.setActionCommand(ACTION_MULTI_MEASURE);
 		item.addActionListener(this);
@@ -933,7 +975,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getMultiPlotMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Multi Plot");
 		item.setActionCommand(ACTION_MULTI_PLOT);
 		item.addActionListener(this);
@@ -941,7 +983,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getOpenMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Open...");
 		item.setActionCommand(ACTION_OPEN);
 		item.addActionListener(this);
@@ -949,7 +991,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getOptionsMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Options...");
 		item.setActionCommand(ACTION_OPTIONS);
 		item.addActionListener(this);
@@ -957,7 +999,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getOrMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("OR (Combine)");
 		item.setActionCommand(ACTION_OR);
 		item.addActionListener(this);
@@ -965,7 +1007,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getRemoveSliceInfoMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Remove Slice Info");
 		item.setActionCommand(ACTION_REMOVE_SLICE_INFO);
 		item.addActionListener(this);
@@ -973,7 +1015,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getSaveMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Save...");
 		item.setActionCommand(ACTION_SAVE);
 		item.addActionListener(this);
@@ -981,7 +1023,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getSortMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Sort");
 		item.setActionCommand(ACTION_SORT);
 		item.addActionListener(this);
@@ -989,7 +1031,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getSpecifyMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Specify...");
 		item.setActionCommand(ACTION_SPECIFY);
 		item.addActionListener(this);
@@ -997,7 +1039,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getSplitMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("Split");
 		item.setActionCommand(ACTION_SPLIT);
 		item.addActionListener(this);
@@ -1005,7 +1047,7 @@ public class SwingOverlayManager
 	}
 	
 	private JMenuItem getXorMenuItem() {
-		JMenuItem item;
+		final JMenuItem item;
 		item = new JMenuItem("XOR");
 		item.setActionCommand(ACTION_XOR);
 		item.addActionListener(this);
@@ -1097,7 +1139,7 @@ public class SwingOverlayManager
 	
 	@Override
 	public void itemStateChanged(ItemEvent evt) {
-		boolean selected = (evt.getStateChange() == ItemEvent.SELECTED);
+		final boolean selected = (evt.getStateChange() == ItemEvent.SELECTED);
 		if (evt.getSource() == showAllCheckBox) {
 			//System.out.println("show all is now "+selected);
 		}
@@ -1114,28 +1156,13 @@ public class SwingOverlayManager
 	// TODO - assumes first selected overlay view is the only one. bad?
 	private Overlay getActiveOverlay() {
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		ImageDisplay activeDisplay = ids.getActiveImageDisplay();
+		final ImageDisplay activeDisplay = ids.getActiveImageDisplay();
 		if (activeDisplay == null) return null;
-		List<DataView> views = activeDisplay;
+		final List<DataView> views = activeDisplay;
 		for (DataView view : views) {
 			if (view.isSelected() && (view instanceof OverlayView))
 				return ((OverlayView) view).getData();
 		}
 		return null;
 	}
-	
-	// -- private class to utilize a fake display capability for key events
-	/*
-	private class FakeDisplay extends AbstractDisplay<Double> {
-
-		public FakeDisplay(Class<Double> type) {
-			super(type);
-		}
-
-		@Override
-		protected void rebuild() {
-			// do nothing
-		}
-	}
-	*/
 }
