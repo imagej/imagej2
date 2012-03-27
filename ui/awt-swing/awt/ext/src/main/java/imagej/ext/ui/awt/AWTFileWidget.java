@@ -36,6 +36,7 @@ package imagej.ext.ui.awt;
 
 import imagej.ext.module.ui.FileWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetStyle;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -101,12 +102,22 @@ public class AWTFileWidget extends AWTInputWidget
 		if (!file.isDirectory()) {
 			file = file.getParentFile();
 		}
+
+		// display file chooser in appropriate mode
+		final WidgetStyle style = getModel().getItem().getWidgetStyle();
 		final FileDialog fileDialog = new FileDialog((Frame) null);
+		if (style == WidgetStyle.FILE_SAVE) {
+			fileDialog.setMode(FileDialog.SAVE);
+		}
+		else { // default behavior
+			fileDialog.setMode(FileDialog.LOAD);
+		}
 		fileDialog.setDirectory(file.getAbsolutePath());
 		fileDialog.setVisible(true);
 		final String filename = fileDialog.getFile();
 		fileDialog.dispose();
 		if (filename == null) return;
+
 		path.setText(filename);
 	}
 

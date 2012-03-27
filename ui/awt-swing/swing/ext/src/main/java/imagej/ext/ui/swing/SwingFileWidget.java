@@ -36,6 +36,7 @@ package imagej.ext.ui.swing;
 
 import imagej.ext.module.ui.FileWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetStyle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -105,11 +106,25 @@ public class SwingFileWidget extends SwingInputWidget
 		if (!file.isDirectory()) {
 			file = file.getParentFile();
 		}
+
+		// display file chooser in appropriate mode
+		final WidgetStyle style = getModel().getItem().getWidgetStyle();
 		final JFileChooser chooser = new JFileChooser(file);
-		final int rval = chooser.showOpenDialog(this);
+		if (style == WidgetStyle.FILE_DIRECTORY) {
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		}
+		final int rval;
+		if (style == WidgetStyle.FILE_SAVE) {
+			rval = chooser.showSaveDialog(this);
+		}
+		else { // default behavior
+			rval = chooser.showOpenDialog(this);
+		}
 		if (rval != JFileChooser.APPROVE_OPTION) return;
 		file = chooser.getSelectedFile();
-		if (file != null) path.setText(file.getAbsolutePath());
+		if (file == null) return;
+
+		path.setText(file.getAbsolutePath());
 	}
 
 	// -- DocumentListener methods --

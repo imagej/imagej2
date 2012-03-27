@@ -40,5 +40,6 @@ package imagej.ext.module.ui;
  * @author Curtis Rueden
  */
 public enum WidgetStyle {
-	DEFAULT, NUMBER_SPINNER, NUMBER_SLIDER, NUMBER_SCROLL_BAR
+	DEFAULT, NUMBER_SPINNER, NUMBER_SLIDER, NUMBER_SCROLL_BAR, FILE_OPEN,
+		FILE_SAVE, FILE_DIRECTORY
 }
