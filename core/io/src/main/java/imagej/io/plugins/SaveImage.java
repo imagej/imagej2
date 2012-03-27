@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.io.plugins;
 
-import java.io.File;
-import java.util.HashMap;
-
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
@@ -44,6 +41,10 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
+
+import java.io.File;
+import java.util.HashMap;
+
 import net.imglib2.img.ImgPlus;
 
 /**
@@ -53,30 +54,31 @@ import net.imglib2.img.ImgPlus;
  * @author Mark Hiner
  */
 @Plugin(menu = {
-    @Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT, mnemonic = MenuConstants.FILE_MNEMONIC),
-    @Menu(label = "Save", weight = 20, mnemonic = 's')})
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Save", weight = 20, mnemonic = 's') })
 public class SaveImage implements ImageJPlugin {
 
-  @Parameter
-  private PluginService pluginService;
+	@Parameter
+	private PluginService pluginService;
 
-  @Parameter
-  Dataset dataset;
+	@Parameter
+	Dataset dataset;
 
-  @Override
-  public void run() {
-    final HashMap<String, Object> inputMap = new HashMap<String, Object>();
-    inputMap.put("dataset", dataset);
+	@Override
+	public void run() {
+		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		inputMap.put("dataset", dataset);
 
-    final ImgPlus<?> img = dataset.getImgPlus();
-    final String source = img.getSource();
+		final ImgPlus<?> img = dataset.getImgPlus();
+		final String source = img.getSource();
 
-    final File sourceFile = source.isEmpty() ? null : new File(source);
+		final File sourceFile = source.isEmpty() ? null : new File(source);
 
-    if (sourceFile != null && sourceFile.isFile()) {
-      inputMap.put("outputFile", new File(source));
-    }
-    pluginService.run(SaveAsImage.class, inputMap);
-  }
+		if (sourceFile != null && sourceFile.isFile()) {
+			inputMap.put("outputFile", new File(source));
+		}
+		pluginService.run(SaveAsImage.class, inputMap);
+	}
 
 }
