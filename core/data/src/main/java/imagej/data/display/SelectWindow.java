@@ -35,38 +35,26 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.display;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 /**
- * TODO
+ * Activates the chosen display. This operation sets the display as the active
+ * one, and brings it to the front of the UI, if any.
  * 
  * @author Grant Harris
  */
-@Plugin
+@Plugin(label = "Select Window...")
 public class SelectWindow implements ImageJPlugin {
 
-	// TODO - Use Display, not String for the display parameter. This currently
-	// won't work because it gets auto-populated with the current display. So add
-	// an "autoPopulate" or similar boolean toggle to the Parameter annotation,
-	// defaulting to true, but that can be set to false for plugins that need to
-	// prompt the user for a single parameter of that type. Then update the
-	// Active*Preprocessor classes to respect the flag.
-
-	@Parameter
-	private String displayToSelect;
-
-	@Parameter(persist = false)
-	private DisplayService displayService;
+	@Parameter(autoFill = false, persist = false)
+	private Display<?> display;
 
 	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		final Display<?> display = displayService.getDisplay(displayToSelect);
-		if (display == null) return;
 		display.activate();
 	}
 
