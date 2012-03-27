@@ -1,5 +1,5 @@
 //
-// SaveImage.java
+// SaveAsImage.java
 //
 
 /*
@@ -35,48 +35,82 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.io.plugins;
 
 import java.io.File;
-import java.util.HashMap;
+
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.img.ImgPlus;
+
+import ome.scifio.img.ImgIOException;
+import ome.scifio.img.ImgSaver;
 
 import imagej.data.Dataset;
+import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import net.imglib2.img.ImgPlus;
+import imagej.ui.DialogPrompt;
+import imagej.ui.UIService;
+import imagej.util.Log;
 
 /**
- * Saves the current {@link Dataset} to disk.
+ * Saves the current {@link Dataset} to disk using a user-specified file name.
  * 
- * @author Barry DeZonia
  * @author Mark Hiner
  */
 @Plugin(menu = {
     @Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT, mnemonic = MenuConstants.FILE_MNEMONIC),
-    @Menu(label = "Save", weight = 20, mnemonic = 's')})
-public class SaveImage implements ImageJPlugin {
+    @Menu(label = "Save As...", weight = 21)})
+public class SaveAsImage implements ImageJPlugin {
+
+  @Parameter(persist = false)
+  private UIService uiService;
 
   @Parameter
-  private PluginService pluginService;
+  private File outputFile;
 
   @Parameter
-  Dataset dataset;
+  private Dataset dataset;
+
+  @Parameter
+  private Display<?> display;
 
   @Override
   public void run() {
-    final HashMap<String, Object> inputMap = new HashMap<String, Object>();
-    inputMap.put("dataset", dataset);
+    final ImgPlus img = dataset.getImgPlus();
+    boolean overwrite = true;
 
-    final ImgPlus<?> img = dataset.getImgPlus();
-    final String source = img.getSource();
+    // TODO prompts the user if the file is dirty or being saved to a new location. Could remove the isDirty check to always overwrite the current file
+    if (outputFile.exists() &&
+      (dataset.isDirty() || !outputFile.getAbsolutePath().equals(
+        img.getSource())))
+      overwrite =
+        uiService.showDialog(
+          "\"" + outputFile.getName() +
+            "\" already exists. Do you want to replace it?", "Save [IJ2]",
+          DialogPrompt.MessageType.QUESTION_MESSAGE,
+          DialogPrompt.OptionType.YES_NO_OPTION) == DialogPrompt.Result.YES_OPTION;
 
-    final File sourceFile = source.isEmpty() ? null : new File(source);
+    if (overwrite) {
 
-    if (sourceFile != null && sourceFile.isFile()) {
-      inputMap.put("outputFile", new File(source));
+      final ImgSaver imageSaver = new ImgSaver();
+      try {
+        imageSaver.saveImg(outputFile.getAbsolutePath(), img);
+      }
+      catch (ImgIOException e) {
+        Log.error(e);
+      }
+      catch (IncompatibleTypeException e) {
+        Log.error(e);
+      }
+      dataset.setName(outputFile.getName());
+      dataset.setDirty(false);
+
+      //TODO -- HACK -- setName() + update() currently doesn't work. Pending #995
+      display.getPanel().getWindow().setTitle(outputFile.getName());
+      display.setName(outputFile.getName());
+      display.update();
     }
-    pluginService.run(SaveAsImage.class, inputMap);
   }
 
 }
