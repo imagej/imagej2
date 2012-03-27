@@ -104,9 +104,11 @@ public class SaveAsImage implements ImageJPlugin {
 			}
 			catch (final ImgIOException e) {
 				Log.error(e);
+				return;
 			}
 			catch (final IncompatibleTypeException e) {
 				Log.error(e);
+				return;
 			}
 			dataset.setName(outputFile.getName());
 			dataset.setDirty(false);
