@@ -161,14 +161,11 @@ public class ConfigFileParameters {
 	 */
 	private void initialize() {
 		setDefaultValues(dataMap);
-		final boolean needSave;
 		if (isLegacyConfigFile(filename)) {
 			loadLegacyConfigValues(dataMap, filename);
-			needSave = true;
 		}
 		else
-			needSave = !loadModernConfigValues(dataMap, filename);
-		if (needSave) save();
+			loadModernConfigValues(dataMap, filename);
 	}
 
 	/** Saves current values to the launcher config file */
