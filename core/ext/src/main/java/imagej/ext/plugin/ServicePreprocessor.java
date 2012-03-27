@@ -83,6 +83,7 @@ public class ServicePreprocessor implements PreprocessorPlugin {
 			theContext == null ? ImageJ.getContext() : theContext;
 
 		for (final ModuleItem<?> input : module.getInfo().inputs()) {
+			if (!input.isAutoFill()) continue; // cannot auto-fill this input
 			final Class<?> type = input.getType();
 			if (IService.class.isAssignableFrom(type)) {
 				// input is a service
