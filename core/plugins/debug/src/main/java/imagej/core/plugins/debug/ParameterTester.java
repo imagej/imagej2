@@ -253,7 +253,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	}
 
 	private void append(final StringBuilder sb, final String s) {
-		append(sb, s + "\n");
+		sb.append(s + "\n");
 	}
 
 }
