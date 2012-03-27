@@ -106,7 +106,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	private List<String> attributionStrings = new LinkedList<String>();
 	private ColorRGB textColor = Colors.YELLOW;
 	private ColorRGB outlineColor = Colors.BLACK;
-	private int largestFontSize = 30;
+	private int largestFontSize = 35;
 	private ChannelCollection textChannels = null;
 	private ChannelCollection outlineChannels = null;
 	
@@ -164,7 +164,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 			Log.warn("Could not load a 3 channel unsigned 8 bit image as backdrop");
 			// make a black 3 channel 8-bit unsigned background image.
 			ds = dataSrv.create(
-				new long[]{400,400,3} , title,
+				new long[]{500,500,3} , title,
 				new AxisType[]{Axes.X,Axes.Y,Axes.CHANNEL}, 8, false, false);
 		}
 		
