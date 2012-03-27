@@ -39,6 +39,8 @@
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</organizationName>
 					<projectName>ImageJ software for multidimensional image processing and analysis.</projectName>
+					<canUpdateDescription>true</canUpdateDescription>
+					<canUpdateCopyright>true</canUpdateCopyright>
 				</configuration>
 			</plugin>
 			<plugin>
