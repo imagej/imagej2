@@ -197,7 +197,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 */
 	private URL getImageURL() {
 		final List<URL> fileURLs = new LinkedList<URL>();
-		for (int i = 0; i < 40; i++) {
+		for (int i = 0; i < 100; i++) {
 			final URL url = getClass().getResource("/images/about"+i+".tif");
 			if (url != null) {
 				fileURLs.add(url);
@@ -334,7 +334,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 				while ((strLine = br.readLine()) != null) {
 					final Matcher attributionMatcher = attributionPattern.matcher(strLine);
 					if (attributionMatcher.matches()) {
-						attributionStrings.add(attributionMatcher.group(1));
+						attributionStrings.add(attributionMatcher.group(1).trim());
 					}
 					final Matcher colorMatcher = colorPattern.matcher(strLine);
 					if (colorMatcher.matches()) {
