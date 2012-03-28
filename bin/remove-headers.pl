@@ -53,12 +53,12 @@ sub process($) {
     $i++;
   }
 
-  my @authors = ();
+  my @authors;
   if ($data[$i] =~ /^\/\*/) {
     # found copyright header
     while ($data[$i] !~ /\*\//) {
       # look for terminating string
-      if ($data[$i] =~ /\@author/ || $data[$i] =~ /Copyright/) {
+      if ($data[$i] =~ /\@author/) { # || $data[$i] =~ /Copyright/) {
         # preserve author tag
         push(@authors, $data[$i]);
       }
@@ -69,7 +69,9 @@ sub process($) {
 
   # write out changed file
   open FILE, ">$file";
-  print FILE "\n";
+  if ($data[$i] ne '' || @authors > 0) {
+    print FILE "\n";
+  }
   foreach (@authors) {
     print FILE "$_\n";
   }
