@@ -21,6 +21,7 @@
 		<module>visad-plugin</module>
 		<module>workflow</module>
 		<module>workflowpipes</module>
+		<module>zoomviewer</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
