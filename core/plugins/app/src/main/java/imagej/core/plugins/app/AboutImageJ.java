@@ -279,6 +279,16 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		return "Java "+System.getProperty("java.version") +
 				(is64Bit() ? " (64-bit)" : " (32-bit)");
 	}
+
+	// NB - this code used to mirror IJ1 more closely. It figured max memory from
+	// the setting in OptionsMemoryAndThreads. But then it was possible to have
+	// different reports when double clicking the status area vs. running the
+	// about dialog. This code now matches SwingStatusBar's method.
+
+	// TODO We should make a centralized memory reporter that depends upon
+	// ij-options that this class and SwingStatusBar use. Then we can decide
+	// whether to emulate IJ1's memory option constraint. Or if we'll instead
+	// rely on launcher to constrain memory. Either way the two will be consistent
 	
 	/**
 	 * Returns a string showing used and available memory information
@@ -289,15 +299,14 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		final long freeMem = Runtime.getRuntime().freeMemory();
 		final long usedMem = totalMem - freeMem;
 		final long maxMB = maxMem / ONE_M_BYTES;
-		final String inUseStr =
+		String inUseStr =
 				(usedMem < 10000*ONE_K_BYTES) ?
 					(usedMem/ONE_K_BYTES + "K") : (usedMem/ONE_M_BYTES + "MB");
-		String maxStr="";
 		if (maxMem>0L) {
 			final long percent = usedMem * 100 / maxMem;
-			maxStr = " of "+maxMB+"MB ("+(percent<1 ? "<1" : percent) + "%)";
+			inUseStr += " of "+maxMB+"MB ("+(percent<1 ? "<1" : percent) + "%)";
 		}
-		return inUseStr + maxStr;
+		return inUseStr;
 	}
 	
 	/** Returns true if ImageJ2 is running a 64-bit version of Java. */
