@@ -67,4 +67,4 @@ public class FigureCreatedEvent {
 		return figure;
 	}
 
-
+}

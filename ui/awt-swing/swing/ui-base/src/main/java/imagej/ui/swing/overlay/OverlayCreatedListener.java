@@ -41,4 +41,4 @@ public interface OverlayCreatedListener extends EventListener {
 
 	public void overlayCreated(FigureCreatedEvent e);
 
-
+}
