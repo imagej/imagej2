@@ -65,8 +65,6 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsMemoryAndThreads;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.Log;
@@ -93,17 +91,19 @@ import imagej.util.Log;
 public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	implements ImageJPlugin
 {
+	// -- constants --
+	
+	private static final long ONE_K_BYTES = 1024;
+	private static final long ONE_M_BYTES = ONE_K_BYTES * ONE_K_BYTES;
+	
 	// -- parameters --
 
-	@Parameter
-	private ImageJ context;
-	
 	@Parameter
 	private DatasetService dataSrv;
 
 	@Parameter
 	private DisplayService dispSrv;
-	
+
 	// -- instance variables that are not parameters --
 	private List<String> attributionStrings = new LinkedList<String>();
 	private ColorRGB textColor = Colors.YELLOW;
@@ -199,9 +199,13 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		final List<URL> fileURLs = new LinkedList<URL>();
 		for (int i = 0; i < 40; i++) {
 			final URL url = getClass().getResource("/images/about"+i+".tif");
-			if (url != null) fileURLs.add(url);
+			if (url != null) {
+				fileURLs.add(url);
+			}
 		}
 		if (fileURLs.size() == 0) return null;
+		// NB - this default RNG is pretty bad. With 4 images some of them show up
+		// repeatedly and some rarely. Think of a better implementation.
 		final Random rng = new Random();
 		rng.setSeed(System.currentTimeMillis());
 		final int index = rng.nextInt(fileURLs.size());
@@ -280,36 +284,22 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	 * Returns a string showing used and available memory information
 	 */
 	private String memoryInfo() {
-		final long inUse = currentMemory();
-		final String inUseStr = inUse<10000*1024?inUse/1024L+"K":inUse/1048576L+"MB";
+		final long maxMem = Runtime.getRuntime().maxMemory();
+		final long totalMem = Runtime.getRuntime().totalMemory();
+		final long freeMem = Runtime.getRuntime().freeMemory();
+		final long usedMem = totalMem - freeMem;
+		final long maxMB = maxMem / ONE_M_BYTES;
+		final String inUseStr =
+				(usedMem < 10000*ONE_K_BYTES) ?
+					(usedMem/ONE_K_BYTES + "K") : (usedMem/ONE_M_BYTES + "MB");
 		String maxStr="";
-		final long max = maxMemory();
-		if (max>0L) {
-			final long percent = inUse * 100 / max;
-			maxStr = " of "+max/1048576L+"MB ("+(percent<1 ? "<1" : percent) + "%)";
+		if (maxMem>0L) {
+			final long percent = usedMem * 100 / maxMem;
+			maxStr = " of "+maxMB+"MB ("+(percent<1 ? "<1" : percent) + "%)";
 		}
 		return inUseStr + maxStr;
 	}
 	
-	/** Returns the amount of memory currently being used by ImageJ2. */
-	private long currentMemory() {
-		final long freeMem = Runtime.getRuntime().freeMemory();
-		final long totMem = Runtime.getRuntime().totalMemory();
-		return totMem-freeMem;
-	}
-
-	/** Returns the maximum amount of memory available to ImageJ2 or
-		zero if ImageJ2 is unable to determine this limit. */
-	private long maxMemory() {
-		final OptionsService srv = context.getService(OptionsService.class);
-		final OptionsMemoryAndThreads opts = srv.getOptions(OptionsMemoryAndThreads.class);
-		final long totMem = Runtime.getRuntime().totalMemory();
-		final long userMem = opts.getMaxMemory() * 1024L * 1024L;
-		if (userMem > totMem)
-			return totMem;
-		return userMem;
-	}
-
 	/** Returns true if ImageJ2 is running a 64-bit version of Java. */
 	private boolean is64Bit() {
 		final String osarch = System.getProperty("os.arch");
