@@ -37,7 +37,6 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.event.EventService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.Menu;
@@ -61,18 +60,20 @@ import ome.scifio.img.ImgOpener;
  * Opens the selected file as a {@link Dataset}.
  * 
  * @author Curtis Rueden
+ * @author Mark Hiner
  */
 @Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
-public class OpenImage<T extends RealType<T> & NativeType<T>> extends AbstractImageHandler
+public class OpenImage<T extends RealType<T> & NativeType<T>> extends
+	AbstractImageHandler
 {
 
 	@Parameter(persist = false)
 	private DatasetService datasetService;
-	
+
 	@Parameter(persist = false)
 	private UIService uiService;
 
@@ -95,11 +96,13 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> extends AbstractIm
 			eventService.publish(new FileOpenedEvent(id));
 		}
 		catch (final ImgIOException e) {
-		  uiService.showDialog(e.getMessage(), "IJ2: Open Error", DialogPrompt.MessageType.ERROR_MESSAGE);
+			uiService.showDialog(e.getMessage(), "IJ2: Open Error",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 			Log.error(e);
 		}
 		catch (final IncompatibleTypeException e) {
-		  uiService.showDialog(e.getMessage(), "IJ2: Open Error", DialogPrompt.MessageType.ERROR_MESSAGE);
+			uiService.showDialog(e.getMessage(), "IJ2: Open Error",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 			Log.error(e);
 		}
 	}
@@ -119,4 +122,5 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> extends AbstractIm
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 	}
+
 }

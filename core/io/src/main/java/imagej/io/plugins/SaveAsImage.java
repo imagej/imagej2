@@ -61,88 +61,92 @@ import ome.scifio.img.ImgSaver;
  * @author Mark Hiner
  */
 @Plugin(menu = {
-  @Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-    mnemonic = MenuConstants.FILE_MNEMONIC),
-    @Menu(label = "Save As...", weight = 21) })
-    public class SaveAsImage extends AbstractImageHandler {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Save As...", weight = 21) })
+public class SaveAsImage extends AbstractImageHandler {
 
-  @Parameter(persist = false)
-  private UIService uiService;
+	@Parameter(persist = false)
+	private UIService uiService;
 
-  @Parameter(label = "File to save", style = WidgetStyle.FILE_SAVE, initializer = "initOutputFile", persist = false)
-  private File outputFile;
+	@Parameter(label = "File to save", style = WidgetStyle.FILE_SAVE,
+		initializer = "initOutputFile", persist = false)
+	private File outputFile;
 
-  @Parameter
-  private Dataset dataset;
+	@Parameter
+	private Dataset dataset;
 
-  @Parameter
-  private Display<?> display;
-  
-  public void initOutputFile() {
-    outputFile = new File(dataset.getImgPlus().getSource());
-  }
+	@Parameter
+	private Display<?> display;
 
-  @Override
-  public void run() {
-    @SuppressWarnings("rawtypes")
-    final ImgPlus img = dataset.getImgPlus();
-    boolean overwrite = true;
-    Result result = null;
+	public void initOutputFile() {
+		outputFile = new File(dataset.getImgPlus().getSource());
+	}
 
-    // TODO prompts the user if the file is dirty or being saved to a new
-    // location. Could remove the isDirty check to always overwrite the current
-    // file
-    if (outputFile.exists() &&
-      (dataset.isDirty() || !outputFile.getAbsolutePath().equals(
-        img.getSource())))
-    {
-      result =
-        uiService.showDialog("\"" + outputFile.getName() +
-          "\" already exists. Do you want to replace it?", "Save [IJ2]",
-          DialogPrompt.MessageType.WARNING_MESSAGE,
-          DialogPrompt.OptionType.YES_NO_OPTION);
-      overwrite = result == DialogPrompt.Result.YES_OPTION;
-    }
+	@Override
+	public void run() {
+		@SuppressWarnings("rawtypes")
+		final ImgPlus img = dataset.getImgPlus();
+		boolean overwrite = true;
+		Result result = null;
 
-    if (overwrite) {
-      final ImgSaver imageSaver = new ImgSaver();
-      boolean saveImage = true;
-      try {
-        imageSaver.addStatusListener(this);
-        
-        if(imageSaver.isCompressible(img))
-          result = uiService.showDialog("Your image contains axes other than XYZCT.\n" +
-          		                 "When saving, these may be compressed to the Channel axis (or the save process" +
-          		                 "may simply fail).\n" +
-          		                 "Would you like to continue?",
-          		                 "Save [IJ2]", DialogPrompt.MessageType.WARNING_MESSAGE,
-          		                 DialogPrompt.OptionType.YES_NO_OPTION);
-        
-        saveImage = result == DialogPrompt.Result.YES_OPTION;
-        imageSaver.saveImg(outputFile.getAbsolutePath(), img);
-        eventService.publish(new FileSavedEvent(img.getSource()));
-      }
-      catch (final ImgIOException e) {
-        Log.error(e);
-        uiService.showDialog(e.getMessage(), "IJ2: Save Error", DialogPrompt.MessageType.ERROR_MESSAGE);
-        return;
-      }
-      catch (final IncompatibleTypeException e) {
-        Log.error(e);
-        uiService.showDialog(e.getMessage(), "IJ2: Save Error", DialogPrompt.MessageType.ERROR_MESSAGE);
-        return;
-      }
-      
-      if(saveImage) {
-        dataset.setName(outputFile.getName());
-        dataset.setDirty(false);
+		// TODO prompts the user if the file is dirty or being saved to a new
+		// location. Could remove the isDirty check to always overwrite the current
+		// file
+		if (outputFile.exists() &&
+			(dataset.isDirty() || !outputFile.getAbsolutePath().equals(
+				img.getSource())))
+		{
+			result =
+				uiService.showDialog("\"" + outputFile.getName() +
+					"\" already exists. Do you want to replace it?", "Save [IJ2]",
+					DialogPrompt.MessageType.WARNING_MESSAGE,
+					DialogPrompt.OptionType.YES_NO_OPTION);
+			overwrite = result == DialogPrompt.Result.YES_OPTION;
+		}
 
-        // TODO -- HACK -- setName() + update() currently doesn't work.
-        // Pending #995
-        display.getPanel().getWindow().setTitle(outputFile.getName());
-        display.setName(outputFile.getName());
-        display.update();
-      }
-    }
-  }
+		if (overwrite) {
+			final ImgSaver imageSaver = new ImgSaver();
+			boolean saveImage = true;
+			try {
+				imageSaver.addStatusListener(this);
+
+				if (imageSaver.isCompressible(img)) result =
+					uiService.showDialog("Your image contains axes other than XYZCT.\n"
+						+ "When saving, these may be compressed to the "
+						+ "Channel axis (or the save process may simply fail).\n"
+						+ "Would you like to continue?", "Save [IJ2]",
+						DialogPrompt.MessageType.WARNING_MESSAGE,
+						DialogPrompt.OptionType.YES_NO_OPTION);
+
+				saveImage = result == DialogPrompt.Result.YES_OPTION;
+				imageSaver.saveImg(outputFile.getAbsolutePath(), img);
+				eventService.publish(new FileSavedEvent(img.getSource()));
+			}
+			catch (final ImgIOException e) {
+				Log.error(e);
+				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
+					DialogPrompt.MessageType.ERROR_MESSAGE);
+				return;
+			}
+			catch (final IncompatibleTypeException e) {
+				Log.error(e);
+				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
+					DialogPrompt.MessageType.ERROR_MESSAGE);
+				return;
+			}
+
+			if (saveImage) {
+				dataset.setName(outputFile.getName());
+				dataset.setDirty(false);
+
+				// TODO -- HACK -- setName() + update() currently doesn't work.
+				// Pending #995
+				display.getPanel().getWindow().setTitle(outputFile.getName());
+				display.setName(outputFile.getName());
+				display.update();
+			}
+		}
+	}
+
 }
