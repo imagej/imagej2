@@ -36,12 +36,9 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -53,7 +50,6 @@ import imagej.util.Log;
 
 import java.io.File;
 
-import loci.common.StatusListener;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import ome.scifio.img.ImgIOException;
@@ -68,13 +64,10 @@ import ome.scifio.img.ImgSaver;
   @Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
     mnemonic = MenuConstants.FILE_MNEMONIC),
     @Menu(label = "Save As...", weight = 21) })
-    public class SaveAsImage implements ImageJPlugin, StatusListener {
+    public class SaveAsImage extends AbstractImageHandler {
 
   @Parameter(persist = false)
   private UIService uiService;
-
-  @Parameter(persist = false)
-  private EventService eventService;
 
   @Parameter(style = WidgetStyle.FILE_SAVE)
   private File outputFile;
@@ -131,24 +124,4 @@ import ome.scifio.img.ImgSaver;
       display.update();
     }
   }
-
-  private long lastTime;
-
-  @Override
-  public void statusUpdated(final loci.common.StatusEvent e) {
-    final long time = System.currentTimeMillis();
-    final int progress = e.getProgressValue();
-    final int maximum = e.getProgressMaximum();
-    final String message = e.getStatusMessage();
-    final boolean warn = e.isWarning();
-
-    // don't update more than 20 times/sec
-    if (time - lastTime < 50 && progress > 0 && progress < maximum && !warn) {
-      return;
-    }
-    lastTime = time;
-
-    eventService.publish(new StatusEvent(progress, maximum, message, warn));
-  }
-
 }
