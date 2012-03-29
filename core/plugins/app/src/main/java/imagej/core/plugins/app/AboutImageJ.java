@@ -116,9 +116,9 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	
 	@Override
 	public void run() {
-		final Dataset image = getData();
-		drawTextOverImage(image);
-		dispSrv.createDisplay("About ImageJ", image);
+		final Dataset dataset = getDataset();
+		drawTextOverImage(dataset);
+		dispSrv.createDisplay("About ImageJ", dataset);
 	}
 
 	// -- private helpers --
@@ -126,9 +126,9 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	/**
 	 * Returns a merged color Dataset as a backdrop.
 	 */
-	private Dataset getData() {
+	private Dataset getDataset() {
 		
-		final URL imageURL = getImageURL();
+		final URL imageURL = getImgPlusURL();
 		
 		final String filename;
 		if (imageURL == null)
@@ -136,7 +136,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		else
 			filename = imageURL.toString().substring(5); // strip off "file:"
 		
-		final ImgPlus<T> img = getImage(filename);
+		final ImgPlus<T> img = getImgPlus(filename);
 		
 		final String title = "About ImageJ " + ImageJ.VERSION;
 
@@ -177,25 +177,10 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	}
 
 	/**
-	 * Loads an ImgPlus from a filename
-	 */
-	private ImgPlus<T> getImage(String filename) {
-		if (filename == null) return null;
-		try {
-			final ImgOpener opener = new ImgOpener();
-			// TODO - ImgOpener should be extended to handle URLs
-			// Hack for now to get local file name
-			return opener.openImg(filename);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	/**
 	 * Returns the URL of a backdrop image. Chooses a random image from the list
 	 * of images present.
 	 */
-	private URL getImageURL() {
+	private URL getImgPlusURL() {
 		final List<URL> fileURLs = new LinkedList<URL>();
 		for (int i = 0; i < 100; i++) {
 			final URL url = getClass().getResource("/images/about"+i+".tif");
@@ -213,7 +198,22 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	}
 
 	/**
-	 * Draws the textual information over a given merged color Dataset
+	 * Loads an ImgPlus from a filename.
+	 */
+	private ImgPlus<T> getImgPlus(String filename) {
+		if (filename == null) return null;
+		try {
+			final ImgOpener opener = new ImgOpener();
+			// TODO - ImgOpener should be extended to handle URLs
+			// Hack for now to get local file name
+			return opener.openImg(filename);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Draws the textual information over a given merged color Dataset.
 	 */
 	private void drawTextOverImage(Dataset ds) {
 		textChannels = new ChannelCollection(textColor);
@@ -238,7 +238,9 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		}
 	}
 
-	/** Draws a text string and outline in two different set of fill values */
+	/**
+	 * Draws a text string and outline in two different sets of fill values.
+	 */
 	private void drawOutlinedText(DrawingTool tool, long x, long y, String text,
 		TextJustification just, ChannelCollection textValues,
 		ChannelCollection outlineValues)
@@ -256,7 +258,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	
 	/**
 	 * Returns the paragraph of textual information to display over the
-	 * backdrop image
+	 * backdrop image.
 	 */
 	private List<String> getTextBlock() {
 		
@@ -273,7 +275,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	}
 	
 	/**
-	 * Returns a string showing java platform and version information
+	 * Returns a string showing java platform and version information.
 	 */
 	private String javaInfo() {
 		return "Java "+System.getProperty("java.version") +
@@ -291,7 +293,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 	// rely on launcher to constrain memory. Either way the two will be consistent
 	
 	/**
-	 * Returns a string showing used and available memory information
+	 * Returns a string showing used and available memory information.
 	 */
 	private String memoryInfo() {
 		final long maxMem = Runtime.getRuntime().maxMemory();
@@ -309,14 +311,17 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>>
 		return inUseStr;
 	}
 	
-	/** Returns true if ImageJ2 is running a 64-bit version of Java. */
+	/**
+	 * Returns true if ImageJ2 is running a 64-bit version of Java.
+	 */
 	private boolean is64Bit() {
 		final String osarch = System.getProperty("os.arch");
 		return osarch!=null && osarch.indexOf("64")!=-1;
 	}
 
 	/**
-	 * Loads attributes from an associated filename.ext.txt file if possible  
+	 * Given an image file name (i.e. filename.ext) loads associated attributes
+	 * from a text file (filename.ext.txt) if possible.  
 	 */
 	private void loadAttributes(String baseFileName) {
 		final String fileName = baseFileName + ".txt";
