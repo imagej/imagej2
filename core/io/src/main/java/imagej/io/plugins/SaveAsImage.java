@@ -107,10 +107,12 @@ import ome.scifio.img.ImgSaver;
         eventService.publish(new FileSavedEvent(img.getSource()));
       }
       catch (final ImgIOException e) {
+        uiService.showDialog(e.getMessage());
         Log.error(e);
         return;
       }
       catch (final IncompatibleTypeException e) {
+        uiService.showDialog(e.getMessage());
         Log.error(e);
         return;
       }

@@ -73,6 +73,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> extends AbstractIm
 	private DatasetService datasetService;
 	
 	@Parameter(persist = false)
+	private UIService uiService;
 
 	@Parameter(label = "File to open")
 	private File inputFile;
@@ -93,9 +94,11 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> extends AbstractIm
 			eventService.publish(new FileOpenedEvent(id));
 		}
 		catch (final ImgIOException e) {
+		  uiService.showDialog(e.getMessage());
 			Log.error(e);
 		}
 		catch (final IncompatibleTypeException e) {
+		  uiService.showDialog(e.getMessage());
 			Log.error(e);
 		}
 	}
