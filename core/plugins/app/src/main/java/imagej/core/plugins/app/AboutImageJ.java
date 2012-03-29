@@ -49,6 +49,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+import imagej.util.FileUtils;
 import imagej.util.Log;
 
 import java.io.BufferedReader;
@@ -56,7 +57,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -80,8 +80,8 @@ import net.imglib2.type.numeric.RealType;
 //     attribution text
 
 /**
- * Display information and credits about the ImageJ2 software. Note that some of
- * this code was adapted from code written by Wayne Rasband for ImageJ.
+ * Displays information and credits about the ImageJ2 software. Note that some
+ * of this code was adapted from code written by Wayne Rasband for ImageJ1.
  * 
  * @author Barry DeZonia
  */
@@ -130,14 +130,9 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	 * Returns a merged color Dataset as a backdrop.
 	 */
 	private Dataset getDataset() {
+		final File imageFile = getRandomAboutImagePath();
 
-		final URL imageURL = getImgPlusURL();
-
-		final String filename;
-		if (imageURL == null) filename = "";
-		else filename = imageURL.toString().substring(5); // strip off "file:"
-
-		final ImgPlus<T> img = getImgPlus(filename);
+		final ImgPlus<T> img = loadImgPlus(imageFile);
 
 		final String title = "About ImageJ " + ImageJ.VERSION;
 
@@ -155,7 +150,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 			validImage &= (ds.isInteger());
 			validImage &= (!ds.isSigned());
 			if (validImage) {
-				loadAttributes(filename);
+				loadAttributes(imageFile);
 			}
 			else {
 				ds = null;
@@ -178,38 +173,48 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	}
 
 	/**
-	 * Returns the URL of a backdrop image. Chooses a random image from the list
-	 * of images present.
+	 * Returns the path to a backdrop image file. Chooses randomly from those
+	 * present in the "about" folder off the ImageJ base directory.
+	 * 
+	 * @return file path of the chosen image
 	 */
-	private URL getImgPlusURL() {
-		final List<URL> fileURLs = new LinkedList<URL>();
-		for (int i = 0; i < 100; i++) {
-			final URL url = getClass().getResource("/images/about" + i + ".tif");
-			if (url != null) {
-				fileURLs.add(url);
-			}
+	private File getRandomAboutImagePath() {
+		final File aboutDir = new File(FileUtils.getImageJDirectory(), "about");
+		if (!aboutDir.exists()) {
+			// no "about" folder found
+			Log.warn("About folder '" + aboutDir.getPath() + "' does not exist.");
+			return null;
 		}
-		if (fileURLs.size() == 0) return null;
-		// NB - this default RNG is pretty bad. With 4 images some of them show up
+
+		// get list of available image files
+		final File[] aboutFiles = aboutDir.listFiles(new java.io.FileFilter() {
+
+			@Override
+			public boolean accept(final File pathname) {
+				// ignore .txt metadata files
+				return !pathname.getName().toLowerCase().endsWith(".txt");
+			}
+		});
+
+		// choose a random image file
+		// TODO - this default RNG is pretty bad. With 4 images some of them show up
 		// repeatedly and some rarely. Think of a better implementation.
 		final Random rng = new Random();
-		rng.setSeed(System.currentTimeMillis());
-		final int index = rng.nextInt(fileURLs.size());
-		return fileURLs.get(index);
+		final int index = rng.nextInt(aboutFiles.length);
+		return aboutFiles[index];
 	}
 
 	/**
-	 * Loads an ImgPlus from a filename.
+	 * Loads an ImgPlus from a file.
 	 */
-	private ImgPlus<T> getImgPlus(final String filename) {
-		if (filename == null) return null;
+	private ImgPlus<T> loadImgPlus(final File file) {
+		if (file == null) return null;
 		try {
 			final ImgOpener opener = new ImgOpener();
-			// TODO - ImgOpener should be extended to handle URLs
-			// Hack for now to get local file name
-			return opener.openImg(filename);
+			return opener.openImg(file.getAbsolutePath());
 		}
 		catch (final Exception e) {
+			Log.error(e);
 			return null;
 		}
 	}
@@ -263,7 +268,6 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	 * image.
 	 */
 	private List<String> getTextBlock() {
-
 		final LinkedList<String> stringList = new LinkedList<String>();
 
 		stringList.add("Open source image processing software");
@@ -326,8 +330,8 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	 * Given an image file name (i.e. filename.ext) loads associated attributes
 	 * from a text file (filename.ext.txt) if possible.
 	 */
-	private void loadAttributes(final String baseFileName) {
-		final String fileName = baseFileName + ".txt";
+	private void loadAttributes(final File baseFile) {
+		final String fileName = baseFile.getAbsolutePath() + ".txt";
 		final File file = new File(fileName);
 		if (file.exists()) {
 			final Pattern attributionPattern = Pattern.compile("attribution\\s+(.*)");
