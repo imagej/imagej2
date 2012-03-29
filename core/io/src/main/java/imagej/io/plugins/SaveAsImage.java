@@ -112,12 +112,12 @@ import ome.scifio.img.ImgSaver;
       }
       catch (final ImgIOException e) {
         Log.error(e);
-        uiService.showDialog(e.getMessage());
+        uiService.showDialog(e.getMessage(), "IJ2: Save Error", DialogPrompt.MessageType.ERROR_MESSAGE);
         return;
       }
       catch (final IncompatibleTypeException e) {
         Log.error(e);
-        uiService.showDialog(e.getMessage());
+        uiService.showDialog(e.getMessage(), "IJ2: Save Error", DialogPrompt.MessageType.ERROR_MESSAGE);
         return;
       }
       dataset.setName(outputFile.getName());

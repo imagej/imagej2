@@ -44,6 +44,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.io.event.FileOpenedEvent;
+import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.util.Log;
 
@@ -94,11 +95,11 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> extends AbstractIm
 			eventService.publish(new FileOpenedEvent(id));
 		}
 		catch (final ImgIOException e) {
-		  uiService.showDialog(e.getMessage());
+		  uiService.showDialog(e.getMessage(), "IJ2: Open Error", DialogPrompt.MessageType.ERROR_MESSAGE);
 			Log.error(e);
 		}
 		catch (final IncompatibleTypeException e) {
-		  uiService.showDialog(e.getMessage());
+		  uiService.showDialog(e.getMessage(), "IJ2: Open Error", DialogPrompt.MessageType.ERROR_MESSAGE);
 			Log.error(e);
 		}
 	}
