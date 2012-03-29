@@ -98,7 +98,7 @@ import ome.scifio.img.ImgSaver;
       final Result result =
         uiService.showDialog("\"" + outputFile.getName() +
           "\" already exists. Do you want to replace it?", "Save [IJ2]",
-          DialogPrompt.MessageType.QUESTION_MESSAGE,
+          DialogPrompt.MessageType.WARNING_MESSAGE,
           DialogPrompt.OptionType.YES_NO_OPTION);
       overwrite = result == DialogPrompt.Result.YES_OPTION;
     }
