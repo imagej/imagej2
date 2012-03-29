@@ -53,10 +53,10 @@ import java.io.File;
 import loci.common.StatusListener;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import ome.scifio.img.ImgIOException;
+import ome.scifio.img.ImgOpener;
 
 /**
  * Opens the selected file as a {@link Dataset}.
