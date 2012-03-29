@@ -69,7 +69,7 @@ import ome.scifio.img.ImgSaver;
   @Parameter(persist = false)
   private UIService uiService;
 
-  @Parameter(style = WidgetStyle.FILE_SAVE, initializer = "initOutputFile", persist = false)
+  @Parameter(label = "File to save", style = WidgetStyle.FILE_SAVE, initializer = "initOutputFile", persist = false)
   private File outputFile;
 
   @Parameter
