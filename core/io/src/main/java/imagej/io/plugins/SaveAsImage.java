@@ -87,6 +87,7 @@ import ome.scifio.img.ImgSaver;
     @SuppressWarnings("rawtypes")
     final ImgPlus img = dataset.getImgPlus();
     boolean overwrite = true;
+    Result result = null;
 
     // TODO prompts the user if the file is dirty or being saved to a new
     // location. Could remove the isDirty check to always overwrite the current
@@ -95,7 +96,7 @@ import ome.scifio.img.ImgSaver;
       (dataset.isDirty() || !outputFile.getAbsolutePath().equals(
         img.getSource())))
     {
-      final Result result =
+      result =
         uiService.showDialog("\"" + outputFile.getName() +
           "\" already exists. Do you want to replace it?", "Save [IJ2]",
           DialogPrompt.MessageType.WARNING_MESSAGE,
@@ -105,8 +106,19 @@ import ome.scifio.img.ImgSaver;
 
     if (overwrite) {
       final ImgSaver imageSaver = new ImgSaver();
+      boolean saveImage = true;
       try {
         imageSaver.addStatusListener(this);
+        
+        if(imageSaver.isCompressible(img))
+          result = uiService.showDialog("Your image contains axes other than XYZCT.\n" +
+          		                 "When saving, these may be compressed to the Channel axis (or the save process" +
+          		                 "may simply fail).\n" +
+          		                 "Would you like to continue?",
+          		                 "Save [IJ2]", DialogPrompt.MessageType.WARNING_MESSAGE,
+          		                 DialogPrompt.OptionType.YES_NO_OPTION);
+        
+        saveImage = result == DialogPrompt.Result.YES_OPTION;
         imageSaver.saveImg(outputFile.getAbsolutePath(), img);
         eventService.publish(new FileSavedEvent(img.getSource()));
       }
@@ -120,14 +132,17 @@ import ome.scifio.img.ImgSaver;
         uiService.showDialog(e.getMessage(), "IJ2: Save Error", DialogPrompt.MessageType.ERROR_MESSAGE);
         return;
       }
-      dataset.setName(outputFile.getName());
-      dataset.setDirty(false);
+      
+      if(saveImage) {
+        dataset.setName(outputFile.getName());
+        dataset.setDirty(false);
 
-      // TODO -- HACK -- setName() + update() currently doesn't work.
-      // Pending #995
-      display.getPanel().getWindow().setTitle(outputFile.getName());
-      display.setName(outputFile.getName());
-      display.update();
+        // TODO -- HACK -- setName() + update() currently doesn't work.
+        // Pending #995
+        display.getPanel().getWindow().setTitle(outputFile.getName());
+        display.setName(outputFile.getName());
+        display.update();
+      }
     }
   }
 }
