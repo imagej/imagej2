@@ -216,9 +216,9 @@ public final class FileUtils {
 	}
 
 	/**
-	 * Get the ImageJ root directory
-	 * 
-	 * @return the directory
+	 * Gets the ImageJ root directory. If the <code>ij.dir</code> property is set,
+	 * it is used. Otherwise, we scan up the tree from this class for a suitable
+	 * directory.
 	 */
 	public static File getImageJDirectory() {
 		final String property = System.getProperty("ij.dir");
@@ -231,8 +231,9 @@ public final class FileUtils {
 		if (path.startsWith("file:")) path = path.substring(5);
 
 		final String suffix = clazz.getCanonicalName().replace('.', '/') + ".class";
-		if (path.endsWith(suffix)) path =
-			path.substring(0, path.length() - suffix.length());
+		if (path.endsWith(suffix)) {
+			path = path.substring(0, path.length() - suffix.length());
+		}
 		if (path.endsWith(".jar!/")) {
 			int slash = path.lastIndexOf('/', path.length() - 6);
 			// assume that the .jar lives in a subdirectory of <IMAGEJDIR>
