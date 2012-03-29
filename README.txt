@@ -45,6 +45,16 @@ license, see the LICENSE.txt file. For further reading, see:
 
 For the list of developers and contributors, see the pom.xml file.
 
+IMPORTANT NOTE: ImageJ2 currently depends on the SCIFIO library
+(http://loci.wisc.edu/software/scifio) for image format I/O. While the
+copyright holders of SCIFIO (Board of Regents of the University of
+Wisconsin-Madison, Glencoe Software, Inc., and the University of Dundee) are
+committed to releasing SCIFIO under a BSD-style license soon, the current
+version of SCIFIO is still licensed under the GNU General Public License
+version 2 or later. So technically, this distribution of ImageJ2 is a combined
+work licensed under the GPLv2+ as well. We are committed to resolving this
+licensing issue prior to the ImageJ2 2.0.0 final release.
+
 
 BUGS
 ----
