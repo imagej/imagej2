@@ -69,7 +69,7 @@ import ome.scifio.img.ImgSaver;
   @Parameter(persist = false)
   private UIService uiService;
 
-  @Parameter(style = WidgetStyle.FILE_SAVE)
+  @Parameter(style = WidgetStyle.FILE_SAVE, initializer = "initOutputFile", persist = false)
   private File outputFile;
 
   @Parameter
@@ -77,6 +77,10 @@ import ome.scifio.img.ImgSaver;
 
   @Parameter
   private Display<?> display;
+  
+  public void initOutputFile() {
+    outputFile = new File(dataset.getImgPlus().getSource());
+  }
 
   @Override
   public void run() {
