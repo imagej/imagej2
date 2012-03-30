@@ -52,8 +52,8 @@ import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
-import ome.scifio.img.ImgIOException;
-import ome.scifio.img.ImgSaver;
+import net.imglib2.io.ImgIOException;
+import net.imglib2.io.ImgSaver;
 
 /**
  * Saves the current {@link Dataset} to disk using a user-specified file name.
