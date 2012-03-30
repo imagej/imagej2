@@ -1,0 +1,4 @@
+attribution This image courtesy of Annie Cavanagh
+attribution via a Creative Commons license
+fonstsize 30
+color 0 255 0
