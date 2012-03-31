@@ -3924,33 +3924,39 @@ static void set_default_library_path(void)
 
 static void adjust_java_home_if_necessary(void)
 {
-	struct string *result, *buffer, *jre_path;
+	struct string *result, *buffer, *path;
+	const char *prefix = "jre/";
+	int depth = 2;
 
-	set_default_library_path();
 #ifdef __APPLE__
-	/* On MacOSX, we use the system Java anyway. */
-	return;
-#endif
-
+	/* On MacOSX, we look for j3dcore.jar instead. */
+	library_path = "Home/lib/ext/j3dcore.jar";
+	prefix = "";
+	depth = 1;
+#else
+	set_default_library_path();
 	library_path = default_library_path;
+#endif
 
 	buffer = string_copy("java");
 	result = string_init(32);
-	jre_path = string_initf("jre/%s", library_path);
+	path = string_initf("%s%s", prefix, library_path);
 
-	find_newest(buffer, 2, jre_path->buffer, result);
+	find_newest(buffer, depth, path->buffer, result);
 	if (result->length) {
-		string_append(result, "/jre");
+		if (result->buffer[result->length - 1] != '/')
+			string_add_char(result, '/');
+		string_append(result, prefix);
 		relative_java_home = xstrdup(result->buffer);
 	}
-	else {
-		find_newest(buffer, 3, library_path, buffer);
+	else if (*prefix) {
+		find_newest(buffer, depth + 1, library_path, buffer);
 		if (result->length)
 			relative_java_home = xstrdup(result->buffer);
 	}
 	string_release(buffer);
 	string_release(result);
-	string_release(jre_path);
+	string_release(path);
 }
 
 int main(int argc, char **argv, char **e)
