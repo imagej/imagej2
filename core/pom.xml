@@ -29,6 +29,7 @@
 		<module>tools</module>
 		<module>ui</module>
 		<module>updater</module>
+		<module>launcher</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
@@ -42,5 +43,14 @@
 			<url>http://maven.imagej.net/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>launcher</id>
+			<modules>
+				<module>launcher</module>
+			</modules>
+		</profile>
+	</profiles>
 
 </project>
