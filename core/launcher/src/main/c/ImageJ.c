@@ -1252,8 +1252,15 @@ static const char *get_ij_dir(const char *argv0)
 		run_precompiled = 1;
 	}
 #ifdef __APPLE__
-	else if (!suffixcmp(argv0, len, "/Fiji.app/Contents/MacOS"))
-		slash -= strlen("/Contents/MacOS");
+	else if (!suffixcmp(argv0, len, "/Contents/MacOS")) {
+		struct string *scratch;
+		len -= strlen("/Contents/MacOS");
+		scratch = string_initf("%.*s/jars/ij-launcher.jar", len, argv0);
+		if (len && !file_exists(scratch->buffer))
+			while (--len && argv0[len] != '/')
+				; /* ignore */
+		slash = argv0 + len;
+	}
 #endif
 #ifdef WIN32
 	else if (!suffixcmp(argv0, len, "/PRECOM~1") ||
@@ -3562,29 +3569,17 @@ static int force_32_bit_mode(const char *argv0)
 	if (!app)
 		goto release_dict;
 
-	struct string *ij_dir = string_copy(!strrchr(argv0, '/') ?
-		find_in_path(argv0) : make_absolute_path(argv0));
-	char *slash = strrchr(ij_dir->buffer, '/');
-	if (!slash)
-		goto release_ij_dir;
-	string_set_length(ij_dir, slash - ij_dir->buffer);
-	const char *suffix = "/Contents/MacOS";
-	if (!suffixcmp(ij_dir->buffer, ij_dir->length, suffix))
-		string_set_length(ij_dir, ij_dir->length - strlen(suffix));
-
 	int i, count = (int)CFArrayGetCount(app);
 	for (i = 0; i < count; i += 2) {
 		convert_cfstring((CFStringRef)CFArrayGetValueAtIndex(app, i + 1), buffer);
 		if (strcmp(buffer->buffer, "i386"))
 			continue;
 		resolve_alias((CFDataRef)CFArrayGetValueAtIndex(app, i), buffer);
-		if (!strcmp(buffer->buffer, ij_dir->buffer)) {
+		if (!strcmp(buffer->buffer, ij_dir)) {
 			result = 1;
 			break;
 		}
 	}
-release_ij_dir:
-	string_release(ij_dir);
 release_dict:
 	CFRelease(dict);
 release_data:
