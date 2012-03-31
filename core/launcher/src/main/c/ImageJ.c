@@ -1594,6 +1594,9 @@ static struct string *set_property(JNIEnv *env,
 	static jmethodID set_property_method = NULL;
 	jstring result;
 
+	if (!value)
+		return NULL;
+
 	if (!system_class) {
 		system_class = (*env)->FindClass(env, "java/lang/System");
 		if (!system_class)
