@@ -3863,6 +3863,10 @@ static int launch_32bit_on_tiger(int argc, char **argv)
 		argv[0] = buffer;
 	}
 	strcpy(argv[0] + offset, replace);
+	if (!file_exists(argv[0])) {
+		strcpy(argv[0] + offset, match);
+		return 0;
+	}
 	hide_splash();
 	execv(argv[0], argv);
 	fprintf(stderr, "Could not execute %s: %d(%s)\n",
