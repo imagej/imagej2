@@ -3165,6 +3165,8 @@ static void parse_command_line(void)
 
 	if (options.debug) {
 		for (i = 0; properties[i]; i += 2) {
+			if (!properties[i] || !properties[i + 1])
+				continue;
 			string_setf(&buffer, "-D%s=%s", properties[i], properties[i + 1]);
 			add_option_string(&options, &buffer, 0);
 		}
