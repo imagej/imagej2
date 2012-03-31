@@ -3929,8 +3929,8 @@ static void adjust_java_home_if_necessary(void)
 	int depth = 2;
 
 #ifdef __APPLE__
-	/* On MacOSX, we look for j3dcore.jar instead. */
-	library_path = "Home/lib/ext/j3dcore.jar";
+	/* On MacOSX, we look for libjogl.jnilib instead. */
+	library_path = "Home/lib/ext/libjogl.jnilib";
 	prefix = "";
 	depth = 1;
 #else
