@@ -20,6 +20,8 @@
 
   <properties>
     <skipTests>true</skipTests>
+    <stack.protector.option/>
+    <architecture.option/>
   </properties>
 
   <build>
@@ -35,11 +37,17 @@
               <include>**/*.c</include>
             </includes>
             <options>
-              <option>-fno-stack-protector</option>
+              <option>-I${JAVA_HOME}/include</option>
+              <option>${java.os.include}</option>
+              <option>${stack.protector.option}</option>
+              <option>${architecture.option}</option>
             </options>
           </c>
           <linker>
             <name>gcc</name>
+            <options>
+              <option>${architecture.option}</option>
+            </options>
             <sysLibs>
               <sysLib>
                 <name>dl</name>
@@ -56,4 +64,37 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>amd64-Linux</id>
+      <activation>
+        <os>
+          <name>Linux</name>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <java.os.include>-I${JAVA_HOME}/include/linux</java.os.include>
+        <stack.protector.option>-fno-stack-protector</stack.protector.option>
+        <architecture.option>-m64</architecture.option>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>i386-Linux</id>
+      <activation>
+        <os>
+          <name>Linux</name>
+          <arch>i386</arch>
+        </os>
+      </activation>
+      <properties>
+        <java.os.include>-I${JAVA_HOME}/include/linux</java.os.include>
+        <stack.protector.option>-fno-stack-protector</stack.protector.option>
+        <architecture.option>-m32</architecture.option>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
