@@ -130,14 +130,17 @@
     </profile>
 
     <profile>
-      <id>MacOSX</id>
+      <id>MacOSX Leopard</id>
       <activation>
         <os>
           <name>Mac OS X</name>
         </os>
+        <property>
+          <name>os.arch</name>
+          <value>x86_64</value>
+        </property>
       </activation>
       <build>
-        <!-- <defaultGoal>integration-test</defaultGoal> -->
         <plugins>
           <plugin>
             <artifactId>maven-nar-plugin</artifactId>
@@ -155,6 +158,51 @@
               </c>
               <linker>
                 <options>
+                  <option>-framework</option>
+                  <option>CoreFoundation</option>
+                  <option>-framework</option>
+                  <option>ApplicationServices</option>
+                  <option>-framework</option>
+                  <option>JavaVM</option>
+                </options>
+              </linker>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>MacOSX Tiger</id>
+      <activation>
+        <os>
+          <name>Mac OS X</name>
+          <arch>i386</arch>
+        </os>
+      </activation>
+      <build>
+        <!-- <defaultGoal>integration-test</defaultGoal> -->
+        <plugins>
+          <plugin>
+            <artifactId>maven-nar-plugin</artifactId>
+            <configuration>
+              <c>
+                <name>gcc</name>
+                <options>
+                  <option>-I/System/Library/Frameworks/JavaVM.Framework/Headers</option>
+                  <option>-mmacosx-version-min=10.3</option>
+                  <option>-arch</option>
+                  <option>i386</option>
+                  <option>-arch</option>
+                  <option>ppc</option>
+                </options>
+              </c>
+              <linker>
+                <options>
+                  <option>-arch</option>
+                  <option>i386</option>
+                  <option>-arch</option>
+                  <option>ppc</option>
                   <option>-framework</option>
                   <option>CoreFoundation</option>
                   <option>-framework</option>
