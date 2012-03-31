@@ -24,7 +24,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>JavaApplicationStub</string>
+	<string>ImageJ-tiger</string>
 	<key>CFBundleGetInfoString</key>
 	<string>http://imagej.net</string>
 	<key>CFBundleIconFile</key>

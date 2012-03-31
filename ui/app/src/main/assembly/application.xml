@@ -64,4 +64,50 @@
       <scope>runtime</scope>
     </dependencySet>
   </dependencySets>
+  <files>
+    <file>
+      <source>target/ij-launcher.jar</source>
+      <outputDirectory>jars/</outputDirectory>
+      <destName>ij-launcher.jar</destName>
+      <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>target/bin/i386-Linux-gcc/ij-launcher</source>
+      <destName>ImageJ-linux32</destName>
+      <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>target/bin/amd64-Linux-gcc/ij-launcher</source>
+      <destName>ImageJ-linux64</destName>
+      <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>target/bin/x86_64-MacOSX-gcc/ij-launcher</source>
+      <outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
+      <destName>ImageJ-macosx</destName>
+      <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
+      <outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
+      <destName>ImageJ-tiger</destName>
+      <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
+      <outputDirectory>ImageJ32.app/Contents/MacOS/</outputDirectory>
+      <destName>ImageJ-tiger</destName>
+      <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>target/bin/x86-Windows-gcc/ij-launcher.exe</source>
+      <destName>ImageJ-win32.exe</destName>
+      <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>target/bin/amd64-Windows-gcc/ij-launcher.exe</source>
+      <destName>ImageJ-win64.exe</destName>
+      <fileMode>0755</fileMode>
+    </file>
+  </files>
 </assembly>
