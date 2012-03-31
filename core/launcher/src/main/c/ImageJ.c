@@ -3033,7 +3033,7 @@ static void parse_command_line(void)
 			string_release(dotted);
 		}
 		else
-			main_class = default_fiji1_class;
+			main_class = default_main_class;
 	}
 
 	maybe_reexec_with_correct_lib_path();
