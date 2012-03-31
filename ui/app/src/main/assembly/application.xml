@@ -58,7 +58,7 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/jar</outputDirectory>
+      <outputDirectory>/jars</outputDirectory>
       <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
       <scope>runtime</scope>

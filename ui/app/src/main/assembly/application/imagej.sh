@@ -34,4 +34,4 @@
 # policies, either expressed or implied, of any organization.
 # #L%
 ###
-java -Xmx512m -cp 'plugins:plugins/*:jar/*' imagej.Main $@
+java -Xmx512m -cp 'plugins:plugins/*:jars/*' imagej.Main $@

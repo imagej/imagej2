@@ -50,7 +50,7 @@
 		<key>ClassPath</key>
 		<array>
 			<string>$APP_PACKAGE/../plugins</string>
-			<string>$APP_PACKAGE/../jar/ij-app-2.0-SNAPSHOT.jar</string>
+			<string>$APP_PACKAGE/../jars/*.jar</string>
 			<string>/System/Library/Java/Extensions/QTJava.zip</string>
 		</array>
 		<key>JVMVersion</key>
