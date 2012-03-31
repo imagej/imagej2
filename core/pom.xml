@@ -29,7 +29,6 @@
 		<module>tools</module>
 		<module>ui</module>
 		<module>updater</module>
-		<module>launcher</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
