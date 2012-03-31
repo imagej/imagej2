@@ -281,6 +281,23 @@ static void string_append_at_most(struct string *string, const char *append, int
 	string->buffer[string->length] = '\0';
 }
 
+static void string_replace_range(struct string *string, int start, int end, const char *replacement)
+{
+	int length = strlen(replacement);
+	int total_length = string->length + length - (end - start);
+
+	if (end != start + length) {
+		string_ensure_alloc(string, total_length);
+		if (string->length > end)
+			memmove(string->buffer + start + length, string->buffer + end, string->length - end);
+	}
+
+	if (length)
+		memcpy(string->buffer + start, replacement, length);
+	string->buffer[total_length] = '\0';
+	string->length = total_length;
+}
+
 static int number_length(unsigned long number, long base)
 {
         int length = 1;
@@ -2305,16 +2322,12 @@ static int check_subcommand_classpath(struct subcommand *subcommand)
 	return 1;
 }
 
-static void read_config(struct string *jvm_options)
+static void parse_legacy_config(struct string *jvm_options)
 {
-	const char *path = ij_path("ImageJ.cfg");
-
-	if (file_exists(path)) {
-		const char *p;
-		read_file_as_string(path, jvm_options);
-		p = strchr(jvm_options->buffer, '\n');
-		if (p)
-			p = strchr(p + 1, '\n');
+	const char *p;
+	p = strchr(jvm_options->buffer, '\n');
+	if (p) {
+		p = strchr(p + 1, '\n');
 		if (p) {
 			int new_length;
 			p++;
@@ -2326,7 +2339,102 @@ static void read_config(struct string *jvm_options)
 			if (new_length > 10 && !strncmp(jvm_options->buffer + new_length - 10, " ij.ImageJ", 10))
 				new_length -= 10;
 			string_set_length(jvm_options, new_length);
+			return;
 		}
+	}
+	string_set_length(jvm_options, 0);
+}
+
+const char *imagej_cfg_sentinel = "ImageJ startup properties";
+
+static int is_modern_config(const char *text)
+{
+	return *text == '#' &&
+		(!prefixcmp(text + 1, imagej_cfg_sentinel) ||
+		 (text[1] == ' ' && !prefixcmp(text + 2, imagej_cfg_sentinel)));
+}
+
+/* Returns the number of leading whitespace characters */
+static int count_leading_whitespace(const char *line)
+{
+	int offset = 0;
+
+	while (line[offset] && (line[offset] == ' ' || line[offset] == '\t'))
+		offset++;
+
+	return offset;
+}
+
+static int is_end_of_line(char ch)
+{
+	return ch == '\r' || ch == '\n';
+}
+
+/* Returns the number of characters to skip to get to the value, or -1 if the key does not match */
+static int property_line_key_matches(const char *line, const char *key)
+{
+	int offset = count_leading_whitespace(line);
+
+	if (prefixcmp(line + offset, key))
+		return -1;
+	offset += strlen(key);
+
+	offset += count_leading_whitespace(line + offset);
+
+	if (line[offset++] != '=')
+		return -1;
+
+	return offset + count_leading_whitespace(line + offset);
+}
+
+static void parse_modern_config(struct string *jvm_options)
+{
+	int offset = 0, skip, eol;
+
+	while (jvm_options->buffer[offset]) {
+		const char *p = jvm_options->buffer + offset;
+
+		for (eol = offset; !is_end_of_line(jvm_options->buffer[eol]); eol++)
+			; /* do nothing */
+
+		/* memory option? */
+		if ((skip = property_line_key_matches(p, "maxheap.mb")) > 0) {
+			const char *replacement = offset ? " -Xmx" : "-Xmx";
+			string_replace_range(jvm_options, offset, offset + skip, replacement);
+			eol += strlen(replacement) - skip;
+			string_replace_range(jvm_options, eol, eol, "m");
+			eol++;
+		}
+		/* jvmargs? */
+		else if ((skip = property_line_key_matches(p, "jvmargs")) > 0) {
+			const char *replacement = offset ? " " : "";
+			string_replace_range(jvm_options, offset, offset + skip, replacement);
+			eol += strlen(replacement) - skip;
+		}
+		/* strip it */
+		else {
+			string_replace_range(jvm_options, offset, eol, "");
+			eol = offset;
+		}
+
+		for (offset = eol; is_end_of_line(jvm_options->buffer[eol]); eol++)
+			; /* do nothing */
+
+		if (offset != eol)
+			string_replace_range(jvm_options, offset, eol, "");
+	}
+}
+
+static void read_config(struct string *jvm_options)
+{
+	const char *path = ij_path("ImageJ.cfg");
+
+	if (file_exists(path)) {
+		read_file_as_string(path, jvm_options);
+		if (is_modern_config(jvm_options->buffer))
+			parse_modern_config(jvm_options);
+		else
+			parse_legacy_config(jvm_options);
 	}
 	else {
 		path = ij_path("jvm.cfg");
