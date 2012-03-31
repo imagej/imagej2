@@ -23,7 +23,7 @@
     <java.os.include/>
     <stack.protector.option/>
     <architecture.option/>
-    <libdl.name/>
+    <libdl.name>dl</libdl.name>
   </properties>
 
   <build>
@@ -81,7 +81,6 @@
         <java.os.include>-I${JAVA_HOME}/include/linux</java.os.include>
         <stack.protector.option>-fno-stack-protector</stack.protector.option>
         <architecture.option>-m64</architecture.option>
-	<libdl.name>dl</libdl.name>
       </properties>
     </profile>
 
@@ -97,7 +96,6 @@
         <java.os.include>-I${JAVA_HOME}/include/linux</java.os.include>
         <stack.protector.option>-fno-stack-protector</stack.protector.option>
         <architecture.option>-m32</architecture.option>
-	<libdl.name>dl</libdl.name>
       </properties>
     </profile>
 
@@ -129,6 +127,46 @@
         <architecture.option>-m64</architecture.option>
         <libdl.name>kernel32</libdl.name>
       </properties>
+    </profile>
+
+    <profile>
+      <id>MacOSX</id>
+      <activation>
+        <os>
+          <name>Mac OS X</name>
+        </os>
+      </activation>
+      <build>
+        <!-- <defaultGoal>integration-test</defaultGoal> -->
+        <plugins>
+          <plugin>
+            <artifactId>maven-nar-plugin</artifactId>
+            <configuration>
+              <c>
+                <name>gcc</name>
+                <options>
+                  <option>-I/System/Library/Frameworks/JavaVM.Framework/Headers</option>
+                  <option>-mmacosx-version-min=10.4</option>
+                  <option>-arch</option>
+                  <option>i386</option>
+                  <option>-arch</option>
+                  <option>x86_64</option>
+                </options>
+              </c>
+              <linker>
+                <options>
+                  <option>-framework</option>
+                  <option>CoreFoundation</option>
+                  <option>-framework</option>
+                  <option>ApplicationServices</option>
+                  <option>-framework</option>
+                  <option>JavaVM</option>
+                </options>
+              </linker>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
