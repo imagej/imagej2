@@ -24,6 +24,7 @@
     <stack.protector.option/>
     <architecture.option/>
     <libdl.name>dl</libdl.name>
+    <debug.option/>
   </properties>
 
   <build>
@@ -43,6 +44,7 @@
               <option>${java.os.include}</option>
               <option>${stack.protector.option}</option>
               <option>${architecture.option}</option>
+              <option>${debug.option}</option>
             </options>
           </c>
           <linker>
@@ -154,6 +156,7 @@
                   <option>i386</option>
                   <option>-arch</option>
                   <option>x86_64</option>
+                  <option>${debug.option}</option>
                 </options>
               </c>
               <linker>
@@ -195,6 +198,7 @@
                   <option>i386</option>
                   <option>-arch</option>
                   <option>ppc</option>
+                  <option>${debug.option}</option>
                 </options>
               </c>
               <linker>
