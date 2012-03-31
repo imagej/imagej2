@@ -68,11 +68,13 @@ public class Checksummer extends Progressable {
 	protected FilesCollection files;
 	protected int counter, total;
 	protected Map<String, FileObject.Version> cachedChecksums;
+	protected boolean isWindows; // time tax for Redmont
 
 	public Checksummer(final FilesCollection files, final Progress progress) {
 		this.files = files;
 		if (progress != null) addProgress(progress);
 		setTitle("Czechsummer");
+		isWindows = Util.getPlatform().startsWith("win");
 	}
 
 	protected static class StringAndFile {
@@ -161,7 +163,7 @@ public class Checksummer extends Progressable {
 				object =
 					new FileObject(null, path, file.length(), checksum, timestamp,
 						Status.LOCAL_ONLY);
-				if (file.canExecute() || path.endsWith(".exe")) object.executable =
+				if ((!isWindows && file.canExecute()) || path.endsWith(".exe")) object.executable =
 					true;
 				tryToGuessPlatform(object);
 				files.add(object);

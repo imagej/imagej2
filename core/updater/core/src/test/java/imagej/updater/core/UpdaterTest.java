@@ -123,7 +123,11 @@ public class UpdaterTest {
 
 		// Write some files
 
-		final File ijLauncher = writeFile(ijRoot, "ImageJ-linux32", "false");
+		// bend over for Microsoft
+		final boolean isWindows = Util.getPlatform().startsWith("win");
+		final String launcherName = isWindows ? "ImageJ-win32.exe" : "ImageJ-linux32";
+
+		final File ijLauncher = writeFile(ijRoot, launcherName, "false");
 		ijLauncher.setExecutable(true);
 
 		writeJar(ijRoot, "jars/narf.jar", "README.txt", "Hello");
@@ -146,7 +150,7 @@ public class UpdaterTest {
 
 		assertEquals(3, files.size());
 
-		final FileObject ij = files.get("ImageJ-linux32");
+		final FileObject ij = files.get(launcherName);
 		final FileObject narf = files.get("jars/narf.jar");
 		final FileObject egads = files.get("jars/egads.jar");
 
