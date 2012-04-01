@@ -37,11 +37,14 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.event.EventService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
+import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.io.StatusDispatcher;
 import imagej.io.event.FileOpenedEvent;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
@@ -67,9 +70,12 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
-public class OpenImage<T extends RealType<T> & NativeType<T>> extends
-	AbstractImageHandler
+public class OpenImage<T extends RealType<T> & NativeType<T>> implements
+	ImageJPlugin
 {
+
+	@Parameter(persist = false)
+	private EventService eventService;
 
 	@Parameter(persist = false)
 	private DatasetService datasetService;
@@ -90,7 +96,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> extends
 		// open image
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
-			imageOpener.addStatusListener(this);
+				imageOpener.addStatusListener(new StatusDispatcher(eventService));
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
 			dataset = datasetService.create(imgPlus);
 			eventService.publish(new FileOpenedEvent(id));

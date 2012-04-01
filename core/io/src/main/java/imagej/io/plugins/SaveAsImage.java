@@ -36,12 +36,15 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
+import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.io.StatusDispatcher;
 import imagej.io.event.FileSavedEvent;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
@@ -64,7 +67,10 @@ import net.imglib2.io.ImgSaver;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save As...", weight = 21) })
-public class SaveAsImage extends AbstractImageHandler {
+public class SaveAsImage implements ImageJPlugin {
+
+	@Parameter(persist = false)
+	private EventService eventService;
 
 	@Parameter(persist = false)
 	private UIService uiService;
@@ -109,7 +115,7 @@ public class SaveAsImage extends AbstractImageHandler {
 			final ImgSaver imageSaver = new ImgSaver();
 			boolean saveImage = true;
 			try {
-				imageSaver.addStatusListener(this);
+				imageSaver.addStatusListener(new StatusDispatcher(eventService));
 
 				if (imageSaver.isCompressible(img)) result =
 					uiService.showDialog("Your image contains axes other than XYZCT.\n"

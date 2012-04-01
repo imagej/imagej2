@@ -33,27 +33,28 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.io;
 
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
-import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Parameter;
 import loci.common.StatusListener;
 
 /**
- * TODO
+ * Rebroadcasts {@link loci.common.StatusEvent}s as ImageJ {@link StatusEvent}s.
  * 
- * @author Mark Hiner
+ * @author Curtis Rueden
  */
-public abstract class AbstractImageHandler implements ImageJPlugin,
-	StatusListener
-{
+public class StatusDispatcher implements StatusListener {
 
-	@Parameter(persist = false)
-	protected EventService eventService;
+	private final EventService eventService;
 
 	private long lastTime;
+
+	public StatusDispatcher(final EventService eventService) {
+		this.eventService = eventService;
+	}
+
+	// -- StatusListener methods --
 
 	@Override
 	public void statusUpdated(final loci.common.StatusEvent e) {
