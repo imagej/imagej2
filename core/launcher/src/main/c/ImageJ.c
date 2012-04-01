@@ -633,7 +633,7 @@ static void win_verror(const char *fmt, va_list ap)
 	struct string *string = string_init(32);
 
 	string_vaddf(string, fmt, ap);
-	MessageBox(NULL, string->buffer, "Fiji Error", MB_OK);
+	MessageBox(NULL, string->buffer, "ImageJ Error", MB_OK);
 	string_release(string);
 }
 
@@ -2234,7 +2234,7 @@ static void add_subcommand(const char *line)
 
 const char *default_subcommands[] = {
 	"--update --ij-jar=plugins/Fiji_Updater.jar --ij-jar=jars/jsch.jar --main-class=fiji.updater.Main",
-	" start the command-line version of the Fiji updater",
+	" start the command-line version of the ImageJ updater",
 	"--jython --ij-jar=jars/jython.jar --full-classpath --main-class=org.python.util.jython",
 	".py",
 	" start Jython instead of ImageJ (this is the",
@@ -2576,7 +2576,7 @@ static void __attribute__((__noreturn__)) usage(void)
 		"Options to run programs other than ImageJ:\n",
 		subcommands.buffer,
 		"--build\n"
-		"\tstart Fiji's build instead of ImageJ\n"
+		"\tstart a build instead of ImageJ\n"
 		"\n"
 		"--main-class <class name> (this is the\n"
 		"\tdefault when called with a file ending in .class)\n"
@@ -2711,7 +2711,7 @@ static void try_with_less_memory(long megabytes)
 		string_addf(buffer, "%s ", new_argv[i]);
 	string_add_char(buffer, '\n');
 #ifdef WIN32
-	MessageBox(NULL, buffer->buffer, "Error executing Fiji", MB_OK);
+	MessageBox(NULL, buffer->buffer, "Error executing ImageJ", MB_OK);
 #endif
 	die("%s", buffer->buffer);
 }
@@ -3215,7 +3215,7 @@ static void parse_command_line(void)
 			add_option(&options, "-port0", 1);
 		else
 			add_option(&options, "-port7", 1);
-		add_option(&options, "-Dsun.java.command=Fiji", 0);
+		add_option(&options, "-Dsun.java.command=ImageJ", 0);
 	}
 
 	/* If there is no -- but some options unknown to IJ1, DWIM it. */
@@ -3424,7 +3424,7 @@ static int start_ij(void)
 		if (fork())
 			exit(0);
 
-		add_option(&options, "-Xdock:name=Fiji", 0);
+		add_option(&options, "-Xdock:name=ImageJ", 0);
 		icon_option = string_copy("-Xdock:icon=");
 		append_icon_path(icon_option);
 		add_option_string(&options, icon_option, 0);
@@ -3641,7 +3641,7 @@ static void set_path_to_JVM(void)
 	 * launch multiple times, etc).
 	 *
 	 * Search for system wide java >= 1.5
-	 * and if found, launch Fiji with the system wide java.
+	 * and if found, launch ImageJ with the system wide java.
 	 * This is an adaptation from simple.c from Apple's
 	 * simpleJavaLauncher code.
 	 */
@@ -3803,7 +3803,7 @@ static int start_ij_macosx(void)
 
 	/* set the Application's name */
 	env_key = string_initf("APP_NAME_%d", (int)getpid());
-	setenv(env_key->buffer, "Fiji", 1);
+	setenv(env_key->buffer, "ImageJ", 1);
 
 	/* set the Dock icon */
 	string_setf(env_key, "APP_ICON_%d", (int)getpid());
