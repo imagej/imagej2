@@ -36,16 +36,13 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.event.EventService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.io.StatusDispatcher;
-import imagej.io.event.FileOpenedEvent;
+import imagej.io.IOService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.util.Log;
@@ -53,9 +50,7 @@ import imagej.util.Log;
 import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -75,10 +70,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 {
 
 	@Parameter(persist = false)
-	private EventService eventService;
-
-	@Parameter(persist = false)
-	private DatasetService datasetService;
+	private IOService ioService;
 
 	@Parameter(persist = false)
 	private UIService uiService;
@@ -91,25 +83,19 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 
 	@Override
 	public void run() {
-		final String id = inputFile.getAbsolutePath();
-
-		// open image
-		final ImgOpener imageOpener = new ImgOpener();
+		final String source = inputFile.getAbsolutePath();
 		try {
-				imageOpener.addStatusListener(new StatusDispatcher(eventService));
-			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			dataset = datasetService.create(imgPlus);
-			eventService.publish(new FileOpenedEvent(id));
+			dataset = ioService.loadDataset(source);
 		}
 		catch (final ImgIOException e) {
-			uiService.showDialog(e.getMessage(), "IJ2: Open Error",
-				DialogPrompt.MessageType.ERROR_MESSAGE);
 			Log.error(e);
+			uiService.showDialog(e.getMessage(), "ImageJ",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 		catch (final IncompatibleTypeException e) {
-			uiService.showDialog(e.getMessage(), "IJ2: Open Error",
-				DialogPrompt.MessageType.ERROR_MESSAGE);
 			Log.error(e);
+			uiService.showDialog(e.getMessage(), "ImageJ",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 	}
 

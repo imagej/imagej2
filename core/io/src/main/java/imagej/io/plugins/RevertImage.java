@@ -37,11 +37,17 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.io.IOService;
+import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
+import imagej.util.Log;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.io.ImgIOException;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -49,6 +55,7 @@ import net.imglib2.type.numeric.RealType;
  * Resets the current {@link Dataset} to its original state.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
@@ -60,37 +67,43 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 {
 
 	@Parameter(persist = false)
+	private IOService ioService;
+
+	@Parameter(persist = false)
 	private UIService uiService;
 
-	// @Parameter
-	// private Dataset dataset;
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset dataset;
 
 	@Override
 	public void run() {
-		uiService.showDialog("This feature has not been implemented");
+		final String source = dataset.getSource();
+		if (source == null) {
+			uiService.showDialog("Cannot revert an image with no source");
+			return;
+		}
 
-		/*
-		// TODO - enable this in ImgLib
-		//		final String id = currDataset.getImgPlus().getSource();
-		//		if (id == null) {
-		//			throw new IllegalArgumentException("Dataset " + currDataset.getName() +
-		//				" does not have an external source");
-		//		}
-		final String id = null; // do nothing right now
-
-		// open image
-		final ImgOpener imageOpener = new ImgOpener();
 		try {
-			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			dataset.setImgPlus(imgPlus);
+			ioService.revertDataset(dataset);
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);
+			uiService.showDialog(e.getMessage(), "ImageJ",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 		catch (final IncompatibleTypeException e) {
 			Log.error(e);
+			uiService.showDialog(e.getMessage(), "ImageJ",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
-		 */
+	}
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
 	}
 
 }
