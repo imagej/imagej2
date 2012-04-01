@@ -96,8 +96,8 @@ public final class IOService extends AbstractService {
 		if (source == null) return null;
 		final ImgOpener imageOpener = new ImgOpener();
 		imageOpener.addStatusListener(new StatusDispatcher(eventService));
-		@SuppressWarnings("rawtypes")
-		final ImgPlus imgPlus = imageOpener.openImg(source);
+		@SuppressWarnings({ "cast", "rawtypes" })
+		final ImgPlus imgPlus = (ImgPlus) imageOpener.openImg(source);
 		@SuppressWarnings("unchecked")
 		final Dataset dataset = datasetService.create(imgPlus);
 		eventService.publish(new FileOpenedEvent(source));
