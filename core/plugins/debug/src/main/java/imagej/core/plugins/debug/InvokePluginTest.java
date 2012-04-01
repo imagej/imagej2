@@ -36,6 +36,7 @@
 package imagej.core.plugins.debug;
 
 import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -44,14 +45,21 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.util.Log;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
- * A test of {@link PluginService#run}.
+ * A test of {@link PluginService#run}. The source code demonstrates two
+ * different ways of invoking a plugin programmatically: with a list of
+ * arguments, or by declaring them in a {@link Map}. The latter mechanism is
+ * more flexible in that you can provide any subset of input values of your
+ * choice, leaving the rest to be harvested in other ways.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>InvokePluginTest", headless = true)
+@Plugin(menuPath = "Plugins>Sandbox>Invoke Plugin Test", headless = true)
 public class InvokePluginTest implements ImageJPlugin {
 
 	@Parameter(persist = false)
@@ -62,6 +70,14 @@ public class InvokePluginTest implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		final Future<Module> future = invokeWithArgs(); // or invokeWithMap()
+		final Module module = moduleService.waitFor(future);
+		final Dataset dataset = (Dataset) module.getOutput("dataset");
+		Log.info("InvokePluginTest: dataset = " + dataset);
+	}
+
+	public Future<Module> invokeWithArgs() {
+		final DatasetService datasetService = null; // will be autofilled
 		final String name = "Untitled";
 		final String bitDepth = "8-bit";
 		final boolean signed = false;
@@ -69,12 +85,20 @@ public class InvokePluginTest implements ImageJPlugin {
 		final String fillType = "Ramp";
 		final long width = 512;
 		final long height = 512;
-		final Future<Module> future =
-			pluginService.run("imagej.io.plugins.NewImage", name, bitDepth, signed,
-				floating, fillType, width, height);
-		final Module module = moduleService.waitFor(future);
-		final Dataset dataset = (Dataset) module.getOutput("dataset");
-		Log.info("InvokePluginTest: dataset = " + dataset);
+		return pluginService.run("imagej.io.plugins.NewImage", datasetService,
+			name, bitDepth, signed, floating, fillType, width, height);
+	}
+
+	public Future<Module> invokeWithMap() {
+		final Map<String, Object> inputMap = new HashMap<String, Object>();
+		inputMap.put("name", "Untitled");
+		inputMap.put("bitDepth", "8-bit");
+		inputMap.put("signed", false);
+		inputMap.put("floating", false);
+		inputMap.put("fillType", "Ramp");
+		inputMap.put("width", 512L);
+		inputMap.put("height", 512L);
+		return pluginService.run("imagej.io.plugins.NewImage", inputMap);
 	}
 
 }
