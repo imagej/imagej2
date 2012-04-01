@@ -179,13 +179,13 @@ public interface ModuleService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final Module module,
+	<M extends Module> Future<M> run(final M module,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
 		final Map<String, Object> inputMap);
 
 	/** Blocks until the given module is finished executing. */
-	Module waitFor(final Future<Module> future);
+	<M extends Module> M waitFor(final Future<M> future);
 
 	/**
 	 * Checks the given module for a solitary unresolved input of the given type,

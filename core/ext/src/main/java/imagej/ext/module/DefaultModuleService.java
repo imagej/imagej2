@@ -181,18 +181,20 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 	}
 
 	@Override
-	public Future<Module> run(final Module module,
+	public <M extends Module> Future<M> run(final M module,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
 		final Map<String, Object> inputMap)
 	{
 		assignInputs(module, inputMap);
 		final ModuleRunner runner = new ModuleRunner(module, pre, post);
-		return threadService.run(runner);
+		@SuppressWarnings("unchecked")
+		final Future<M> future = (Future<M>) threadService.run(runner);
+		return future;
 	}
 
 	@Override
-	public Module waitFor(final Future<Module> future) {
+	public <M extends Module> M waitFor(final Future<M> future) {
 		try {
 			return future.get();
 		}

@@ -295,21 +295,25 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <R extends RunnablePlugin> Future<Module> run(
+	public <R extends RunnablePlugin> Future<PluginModule<R>> run(
 		final Class<R> pluginClass, final Object... inputValues)
 	{
 		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
 		if (!checkPlugin(plugin, pluginClass.getName())) return null;
-		return run(plugin, inputValues);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final Future<PluginModule<R>> future = (Future) run(plugin, inputValues);
+		return future;
 	}
 
 	@Override
-	public <R extends RunnablePlugin> Future<Module> run(
+	public <R extends RunnablePlugin> Future<PluginModule<R>> run(
 		final Class<R> pluginClass, final Map<String, Object> inputMap)
 	{
 		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
 		if (!checkPlugin(plugin, pluginClass.getName())) return null;
-		return run(plugin, inputMap);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final Future<PluginModule<R>> future = (Future) run(plugin, inputMap);
+		return future;
 	}
 
 	@Override
@@ -332,7 +336,7 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public Future<Module> run(final Module module,
+	public <M extends Module> Future<M> run(final M module,
 		final Map<String, Object> inputMap)
 	{
 		return moduleService.run(module, pre(), post(), inputMap);

@@ -91,8 +91,7 @@ public interface PluginService extends IService {
 	/**
 	 * Gets the list of plugins of the given type (e.g., {@link ImageJPlugin}).
 	 */
-	<P extends IPlugin> List<PluginInfo<P>>
-		getPluginsOfType(final Class<P> type);
+	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(final Class<P> type);
 
 	/**
 	 * Gets the list of plugins of the given class.
@@ -202,8 +201,8 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<R extends RunnablePlugin> Future<Module> run(final Class<R> pluginClass,
-		final Object... inputValues);
+	<R extends RunnablePlugin> Future<PluginModule<R>> run(
+		final Class<R> pluginClass, final Object... inputValues);
 
 	/**
 	 * Executes the first runnable plugin of the given class.
@@ -217,8 +216,8 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<R extends RunnablePlugin> Future<Module> run(final Class<R> pluginClass,
-		final Map<String, Object> inputMap);
+	<R extends RunnablePlugin> Future<PluginModule<R>> run(
+		final Class<R> pluginClass, final Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -250,8 +249,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module>
-		run(final ModuleInfo info, final Map<String, Object> inputMap);
+	Future<Module> run(final ModuleInfo info, final Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -268,7 +266,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final Module module, final Object... inputValues);
+	<M extends Module> Future<M> run(final M module, final Object... inputValues);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -283,6 +281,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final Module module, final Map<String, Object> inputMap);
+	<M extends Module> Future<M> run(final M module,
+		final Map<String, Object> inputMap);
 
 }
