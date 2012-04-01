@@ -47,6 +47,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.io.IOService;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.FileUtils;
@@ -63,8 +64,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.imglib2.img.ImgPlus;
-import net.imglib2.io.ImgOpener;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.io.ImgIOException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
@@ -80,8 +81,8 @@ import net.imglib2.type.numeric.RealType;
 //     attribution text
 
 /**
- * Displays information and credits about the ImageJ software. Note that some
- * of this code was adapted from code written by Wayne Rasband for ImageJ1.
+ * Displays information and credits about the ImageJ software. Note that some of
+ * this code was adapted from code written by Wayne Rasband for ImageJ1.
  * 
  * @author Barry DeZonia
  */
@@ -100,11 +101,14 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 
 	// -- parameters --
 
-	@Parameter
+	@Parameter(persist = false)
 	private DatasetService dataSrv;
 
-	@Parameter
+	@Parameter(persist = false)
 	private DisplayService dispSrv;
+
+	@Parameter(persist = false)
+	private IOService ioService;
 
 	// -- instance variables that are not parameters --
 
@@ -119,7 +123,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 
 	@Override
 	public void run() {
-		final Dataset dataset = getDataset();
+		final Dataset dataset = createDataset();
 		drawTextOverImage(dataset);
 		dispSrv.createDisplay("About ImageJ", dataset);
 	}
@@ -129,19 +133,25 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	/**
 	 * Returns a merged color Dataset as a backdrop.
 	 */
-	private Dataset getDataset() {
+	private Dataset createDataset() {
 		final File imageFile = getRandomAboutImagePath();
-
-		final ImgPlus<T> img = loadImgPlus(imageFile);
 
 		final String title = "About ImageJ " + ImageJ.VERSION;
 
 		Dataset ds = null;
+		try {
+			ds = ioService.loadDataset(imageFile.getAbsolutePath());
+		}
+		catch (final ImgIOException e) {
+			Log.error(e);
+		}
+		catch (final IncompatibleTypeException e) {
+			Log.error(e);
+		}
 
 		// did we successfully load a background image?
-		if (img != null) {
+		if (ds != null) {
 			// yes we did - inspect it
-			ds = dataSrv.create(img);
 			boolean validImage = true;
 			validImage &= (ds.numDimensions() == 3);
 			// Too restrictive? Ran into images where 3rd axis is mislabeled
@@ -202,21 +212,6 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 		final Random rng = new Random();
 		final int index = rng.nextInt(aboutFiles.length);
 		return aboutFiles[index];
-	}
-
-	/**
-	 * Loads an ImgPlus from a file.
-	 */
-	private ImgPlus<T> loadImgPlus(final File file) {
-		if (file == null) return null;
-		try {
-			final ImgOpener opener = new ImgOpener();
-			return opener.openImg(file.getAbsolutePath());
-		}
-		catch (final Exception e) {
-			Log.error(e);
-			return null;
-		}
 	}
 
 	/**
@@ -334,7 +329,8 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 		final String fileName = baseFile.getAbsolutePath() + ".txt";
 		final File file = new File(fileName);
 		if (file.exists()) {
-			final Pattern attributionPattern = Pattern.compile("attribution\\s+(.*)");
+			final Pattern attributionPattern =
+				Pattern.compile("attribution\\s+(.*)");
 			final Pattern colorPattern =
 				Pattern.compile("color\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
 			final Pattern fontsizePattern =
@@ -342,7 +338,8 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 			try {
 				final FileInputStream fstream = new FileInputStream(file);
 				final DataInputStream in = new DataInputStream(fstream);
-				final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+				final BufferedReader br =
+					new BufferedReader(new InputStreamReader(in));
 				String strLine;
 				// Read File Line By Line
 				while ((strLine = br.readLine()) != null) {
