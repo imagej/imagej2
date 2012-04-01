@@ -50,9 +50,10 @@
       <directory>${project.basedir}/../..</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>README*</include>
         <include>LICENSE*</include>
         <include>NOTICE*</include>
+        <include>README*</include>
+        <include>about/*</include>
       </includes>
     </fileSet>
   </fileSets>
