@@ -80,7 +80,7 @@ import net.imglib2.type.numeric.RealType;
 //     attribution text
 
 /**
- * Displays information and credits about the ImageJ2 software. Note that some
+ * Displays information and credits about the ImageJ software. Note that some
  * of this code was adapted from code written by Wayne Rasband for ImageJ1.
  * 
  * @author Barry DeZonia
@@ -234,7 +234,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 		tool.setTextAntialiasing(true);
 		// tool.setTextOutlineWidth(5);
 		tool.setFontSize(largestFontSize);
-		drawOutlinedText(tool, x, y, "ImageJ2 " + ImageJ.VERSION,
+		drawOutlinedText(tool, x, y, "ImageJ " + ImageJ.VERSION,
 			TextJustification.CENTER, textChannels, outlineChannels);
 		y += 5 * tool.getFontSize() / 4;
 		tool.setFontSize((int) Math.round(0.6 * largestFontSize));
@@ -319,7 +319,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	}
 
 	/**
-	 * Returns true if ImageJ2 is running a 64-bit version of Java.
+	 * Returns true if ImageJ is running a 64-bit version of Java.
 	 */
 	private boolean is64Bit() {
 		final String osarch = System.getProperty("os.arch");
