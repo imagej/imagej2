@@ -3427,7 +3427,8 @@ static int start_ij(void)
 		add_option(&options, "-Xdock:name=ImageJ", 0);
 		icon_option = string_copy("-Xdock:icon=");
 		append_icon_path(icon_option);
-		add_option_string(&options, icon_option, 0);
+		if (icon_option->length > 12)
+			add_option_string(&options, icon_option, 0);
 		string_release(icon_option);
 #endif
 
@@ -3503,10 +3504,32 @@ static void append_icon_path(struct string *str)
 {
 	/*
 	 * Check if we're launched from within an Application bundle or
-	 * command line.  If from a bundle, Fiji.app should be in the path.
+	 * command line.  If from a bundle, ImageJ.app should be the IJ dir.
 	 */
-	string_append(str, ij_path(!suffixcmp(ij_dir, strlen(ij_dir), "Fiji.app") ?
-		"Contents/Resources/Fiji.icns" : "images/Fiji.icns"));
+	int length = str->length, i;
+	const char *paths[] = {
+		"Contents/Resources/Fiji.icns",
+		"images/Fiji.icns",
+		"Contents/Resources/ImageJ.icns",
+		"images/ImageJ.icns"
+	};
+	const char *slash;
+
+	for (i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
+		string_append(str, ij_path(paths[i]));
+		if (file_exists(str->buffer + length))
+			break;
+		string_set_length(str, length);
+	}
+
+	slash = strrchr(main_argv0, '/');
+	if (slash && !suffixcmp(main_argv0, slash - main_argv0, ".app/Contents/MacOS"))
+		for (i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
+			string_addf(str, "%.*s%s", (slash - main_argv0) - 14, main_argv0, paths[i]);
+			if (file_exists(str->buffer + length))
+				break;
+			string_set_length(str, length);
+		}
 }
 
 #include <sys/types.h>
@@ -3809,7 +3832,8 @@ static int start_ij_macosx(void)
 	string_setf(env_key, "APP_ICON_%d", (int)getpid());
 	icon_path = string_init(32);
 	append_icon_path(icon_path);
-	setenv(env_key->buffer, icon_path->buffer, 1);
+	if (icon_path->length)
+		setenv(env_key->buffer, icon_path->buffer, 1);
 
 	string_release(env_key);
 	string_release(icon_path);
