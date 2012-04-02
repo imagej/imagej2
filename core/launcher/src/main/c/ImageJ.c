@@ -41,13 +41,20 @@
  * (http://fiji.sc/), but has been adapted and improved for use with ImageJ
  * core.
  *
- * The Fiji launcher is copyright 2007 - 2011 Johannes Schindelin, Mark
- * Longair, Albert Cardona, Benjamin Schmid, Erwin Frise and Gregory Jefferis.
+ * The ImageJ launcher is copyright 2007 - 2012 Johannes Schindelin, Mark
+ * Longair, Albert Cardona, Benjamin Schmid, Erwin Frise, Gregory Jefferis
+ * and Curtis Rueden.
  *
  * Clarification: the license of the ImageJ launcher has no effect on
  * the Java Runtime, ImageJ or any plugins, since they are not derivatives.
  *
  * @author Johannes Schindelin
+ * @author Erwin Frise
+ * @author Mark Longair
+ * @author Albert Cardona
+ * @author Benjamin Schmid
+ * @author Gregory Jefferis
+ * @author Curtis Rueden
  */
 
 #define _BSD_SOURCE
@@ -2510,7 +2517,7 @@ static void __attribute__((__noreturn__)) usage(void)
 		"Java options are passed to the Java Runtime, ImageJ\n"
 		"options to ImageJ (or Jython, JRuby, ...).\n"
 		"\n"
-		"In addition, the following options are supported by Fiji:\n"
+		"In addition, the following options are supported by ImageJ:\n"
 		"General options:\n"
 		"--help, -h\n"
 		"\tshow this help\n",
@@ -2521,9 +2528,9 @@ static void __attribute__((__noreturn__)) usage(void)
 		"--java-home <path>\n"
 		"\tspecify JAVA_HOME explicitly\n"
 		"--print-java-home\n"
-		"\tprint Fiji's idea of JAVA_HOME\n"
+		"\tprint ImageJ's idea of JAVA_HOME\n"
 		"--print-ij-dir\n"
-		"\tprint where Fiji thinks it is located\n",
+		"\tprint where ImageJ thinks it is located\n",
 #ifdef WIN32
 		"--console\n"
 		"\talways open an error console\n"

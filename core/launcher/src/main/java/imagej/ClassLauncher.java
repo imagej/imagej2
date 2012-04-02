@@ -73,15 +73,15 @@ public class ClassLauncher {
 			if (option.equals("-cp") || option.equals("-classpath"))
 				classLoader = ClassLoaderPlus.get(new File(arguments[++i]));
 			else if (option.equals("-ijcp") || option.equals("-ijclasspath"))
-				classLoader = ClassLoaderPlus.getInFijiDirectory(arguments[++i]);
+				classLoader = ClassLoaderPlus.getInImageJDirectory(arguments[++i]);
 			else if (option.equals("-jarpath"))
 				classLoader = ClassLoaderPlus.getRecursively(true, new File(arguments[++i]));
 			else if (option.equals("-ijjarpath"))
-				classLoader = ClassLoaderPlus.getRecursivelyInFijiDirectory(true, arguments[++i]);
+				classLoader = ClassLoaderPlus.getRecursivelyInImageJDirectory(true, arguments[++i]);
 			else if (option.equals("-jdb"))
 				jdb = true;
 			else if (option.equals("-retrotranslator")) {
-				classLoader = ClassLoaderPlus.getRecursivelyInFijiDirectory(true, "retro");
+				classLoader = ClassLoaderPlus.getRecursivelyInImageJDirectory(true, "retro");
 				retrotranslator = true;
 			}
 			else if (option.equals("-pass-classpath"))
@@ -103,7 +103,7 @@ public class ClassLauncher {
 		arguments = slice(arguments, i + 1);
 
 		if (!"false".equals(System.getProperty("patch.ij1")) && !mainClass.equals("imagej.Main") && !mainClass.equals("fiji.build.MiniMaven")) {
-			classLoader = ClassLoaderPlus.getInFijiDirectory("jars/fiji-compat.jar", "jars/ij.jar", "jars/javassist.jar");
+			classLoader = ClassLoaderPlus.getInImageJDirectory("jars/fiji-compat.jar", "jars/ij.jar", "jars/javassist.jar");
 			try {
 				patchIJ1(classLoader);
 			} catch (Exception e) {

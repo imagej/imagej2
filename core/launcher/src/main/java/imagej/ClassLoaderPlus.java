@@ -54,9 +54,9 @@ public class ClassLoaderPlus extends URLClassLoader {
 	protected boolean frozen;
 	protected List<URL> urls = new ArrayList<URL>();
 
-	public static ClassLoaderPlus getInFijiDirectory(String... relativePaths) {
+	public static ClassLoaderPlus getInImageJDirectory(String... relativePaths) {
 		try {
-			File directory = new File(getFijiDir());
+			File directory = new File(getImageJDir());
 			URL[] urls = new URL[relativePaths.length];
 			for (int i = 0; i < urls.length; i++)
 				urls[i] = new File(directory, relativePaths[i]).toURI().toURL();
@@ -90,13 +90,13 @@ public class ClassLoaderPlus extends URLClassLoader {
 		return new ClassLoaderPlus(urls);
 	}
 
-	public static ClassLoaderPlus getRecursivelyInFijiDirectory(String... relativePaths) {
-		return getRecursivelyInFijiDirectory(false, relativePaths);
+	public static ClassLoaderPlus getRecursivelyInImageJDirectory(String... relativePaths) {
+		return getRecursivelyInImageJDirectory(false, relativePaths);
 	}
 
-	public static ClassLoaderPlus getRecursivelyInFijiDirectory(boolean onlyJars, String... relativePaths) {
+	public static ClassLoaderPlus getRecursivelyInImageJDirectory(boolean onlyJars, String... relativePaths) {
 		try {
-			File directory = new File(getFijiDir());
+			File directory = new File(getImageJDir());
 			ClassLoaderPlus classLoader = null;
 			File[] files = new File[relativePaths.length];
 			for (int i = 0; i < files.length; i++)
@@ -139,9 +139,9 @@ public class ClassLoaderPlus extends URLClassLoader {
 		Thread.currentThread().setContextClassLoader(this);
 	}
 
-	public void addInFijiDirectory(String relativePath) {
+	public void addInImageJDirectory(String relativePath) {
 		try {
-			add(new File(getFijiDir(), relativePath));
+			add(new File(getImageJDir(), relativePath));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Uh oh: " + e.getMessage());
@@ -186,7 +186,7 @@ public class ClassLoaderPlus extends URLClassLoader {
 		return builder.toString();
 	}
 
-	public static String getFijiDir() throws ClassNotFoundException {
+	public static String getImageJDir() throws ClassNotFoundException {
 		String path = System.getProperty("ij.dir");
 		if (path != null)
 			return path;
