@@ -47,6 +47,8 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgOpener;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Service that provides convenience methods for I/O.
@@ -54,7 +56,9 @@ import net.imglib2.io.ImgOpener;
  * @author Curtis Rueden
  */
 @Service
-public final class IOService extends AbstractService {
+public final class IOService<T extends RealType<T> & NativeType<T>>
+	extends AbstractService
+{
 
 	private EventService eventService;
 	private ModuleService moduleService;
@@ -96,9 +100,7 @@ public final class IOService extends AbstractService {
 		if (source == null) return null;
 		final ImgOpener imageOpener = new ImgOpener();
 		imageOpener.addStatusListener(new StatusDispatcher(eventService));
-		@SuppressWarnings({ "cast", "rawtypes" })
-		final ImgPlus imgPlus = (ImgPlus) imageOpener.openImg(source);
-		@SuppressWarnings("unchecked")
+		final ImgPlus<T> imgPlus = imageOpener.openImg(source);
 		final Dataset dataset = datasetService.create(imgPlus);
 		eventService.publish(new FileOpenedEvent(source));
 		return dataset;
