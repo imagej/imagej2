@@ -61,15 +61,6 @@
 			</includes>
 		</fileSet>
 
-		<!-- Include the ImageJ2 icon in the Mac OS X application bundle. -->
-		<fileSet>
-			<directory>${project.basedir}/../../logo</directory>
-			<outputDirectory>/Contents/Resources/</outputDirectory>
-			<includes>
-				<include>ImageJ.icns</include>
-			</includes>
-		</fileSet>
-
 	</fileSets>
 
 	<!-- Include all dependent libraries in jars subdirectory. -->
@@ -82,8 +73,15 @@
 		</dependencySet>
 	</dependencySets>
 
-	<!-- Include the ImageJ launcher executables in appropriate locations. -->
 	<files>
+
+		<!-- Include the ImageJ2 icon in the Mac OS X application bundle. -->
+		<file>
+			<source>${project.basedir}/../../logo/ImageJ.icns</source>
+			<outputDirectory>/Contents/Resources/</outputDirectory>
+		</file>
+
+		<!-- Include the ImageJ launcher executables in appropriate locations. -->
 		<file>
 			<source>target/ij-launcher.jar</source>
 			<outputDirectory>jars/</outputDirectory>
@@ -121,6 +119,7 @@
 			<destName>ImageJ-win64.exe</destName>
 			<fileMode>0755</fileMode>
 		</file>
+
 	</files>
 
 </assembly>
