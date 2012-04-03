@@ -95,7 +95,6 @@
 			<source>target/ij-launcher.jar</source>
 			<outputDirectory>jars/</outputDirectory>
 			<destName>ij-launcher.jar</destName>
-			<fileMode>0755</fileMode>
 		</file>
 		<file>
 			<source>target/bin/i386-Linux-gcc/ij-launcher</source>
