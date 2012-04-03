@@ -56,6 +56,20 @@
         <include>about/*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../../logo</directory>
+      <outputDirectory>/ImageJ32.app/Contents/Resources/</outputDirectory>
+      <includes>
+        <include>ImageJ.icns</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../../logo</directory>
+      <outputDirectory>/ImageJ64.app/Contents/Resources/</outputDirectory>
+      <includes>
+        <include>ImageJ.icns</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
