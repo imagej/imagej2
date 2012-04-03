@@ -36,13 +36,13 @@
 package imagej.updater.gui;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.updater.core.Checksummer;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
+import imagej.updater.core.UpdaterUIPlugin;
 import imagej.updater.core.XMLFileDownloader;
 import imagej.updater.gui.ViewOptions.Option;
 import imagej.updater.util.Canceled;
@@ -62,8 +62,9 @@ import java.net.UnknownHostException;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(menu = { @Menu(label = "Help"), @Menu(label = "Update...") })
-public class ImageJUpdater implements ImageJPlugin {
+@Plugin(type = UpdaterUIPlugin.class, menu = { @Menu(label = "Help"),
+	@Menu(label = "Update...") })
+public class ImageJUpdater implements UpdaterUIPlugin {
 
 	@Parameter(persist = false)
 	private EventService eventService;

@@ -40,8 +40,10 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
+import imagej.ext.plugin.PluginModuleInfo;
 import imagej.platform.event.AppQuitEvent;
 import imagej.updater.core.UpToDate;
+import imagej.updater.core.UpdaterUIPlugin;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -169,8 +171,15 @@ public abstract class AbstractUserInterface implements UserInterface {
 				case UPDATES_MANAGED_DIFFERENTLY:
 					return;
 				case UPDATEABLE:
-					throw new RuntimeException(
-						"TODO: make marker interface UpdaterPlugin, mark ImageJUpdater with type = UpdaterPlugin, ask PluginService to discover the highest-priority of that type and run that.");
+					final List<PluginModuleInfo<UpdaterUIPlugin>> updaters =
+						uiService.getPluginService().getRunnablePluginsOfType(UpdaterUIPlugin.class);
+					if (updaters.size() > 0) {
+						uiService.getPluginService().run(updaters.get(0));
+					}
+					else {
+						Log.error("No updater plugins found!");
+					}
+					break;
 				case PROXY_NEEDS_AUTHENTICATION:
 					throw new RuntimeException(
 						"TODO: authenticate proxy with the configured user/pass pair");
