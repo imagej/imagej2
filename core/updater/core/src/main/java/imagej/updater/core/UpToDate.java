@@ -209,6 +209,13 @@ public class UpToDate {
 	}
 
 	/**
+	 * Remember that we just nagged the user about an update.
+	 */
+	public static void setLatestNag() {
+		setLatestNag(now());
+	}
+
+	/**
 	 * Remember when we last nagged the user about an update.
 	 * 
 	 * @param ticks

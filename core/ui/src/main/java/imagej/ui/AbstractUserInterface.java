@@ -43,7 +43,7 @@ import imagej.event.StatusEvent;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.platform.event.AppQuitEvent;
 import imagej.updater.core.UpToDate;
-import imagej.updater.core.UpdaterUIPlugin;
+import imagej.updater.ui.UpdatesAvailable;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -172,14 +172,7 @@ public abstract class AbstractUserInterface implements UserInterface {
 				case DEVELOPER:
 					return;
 				case UPDATEABLE:
-					final List<PluginModuleInfo<UpdaterUIPlugin>> updaters =
-						uiService.getPluginService().getRunnablePluginsOfType(UpdaterUIPlugin.class);
-					if (updaters.size() > 0) {
-						uiService.getPluginService().run(updaters.get(0));
-					}
-					else {
-						Log.error("No updater plugins found!");
-					}
+					uiService.getPluginService().run(UpdatesAvailable.class);
 					break;
 				case PROXY_NEEDS_AUTHENTICATION:
 					throw new RuntimeException(
