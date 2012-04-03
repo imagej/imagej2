@@ -24,7 +24,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>ImageJ-macosx</string>
+	<string>ImageJ-tiger</string>
 	<key>CFBundleGetInfoString</key>
 	<string>http://developer.imagej.net</string>
 	<key>CFBundleIconFile</key>
@@ -39,6 +39,5 @@
 	<string>imgJ</string>
 	<key>CFBundleVersion</key>
 	<string>10.2</string>
-	<key>Java</key>
 </dict>
 </plist>

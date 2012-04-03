@@ -40,7 +40,7 @@
 	<formats>
 		<format>zip</format>
 	</formats>
-	<baseDirectory>imagej2</baseDirectory>
+	<baseDirectory>ImageJ.app</baseDirectory>
 	<fileSets>
 
 		<!-- Include main application skeleton. -->
@@ -61,17 +61,10 @@
 			</includes>
 		</fileSet>
 
-		<!-- Include the ImageJ2 icon in the Mac OS X application bundles. -->
+		<!-- Include the ImageJ2 icon in the Mac OS X application bundle. -->
 		<fileSet>
 			<directory>${project.basedir}/../../logo</directory>
-			<outputDirectory>/ImageJ32.app/Contents/Resources/</outputDirectory>
-			<includes>
-				<include>ImageJ.icns</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>${project.basedir}/../../logo</directory>
-			<outputDirectory>/ImageJ64.app/Contents/Resources/</outputDirectory>
+			<outputDirectory>/Contents/Resources/</outputDirectory>
 			<includes>
 				<include>ImageJ.icns</include>
 			</includes>
@@ -108,19 +101,13 @@
 		</file>
 		<file>
 			<source>target/bin/x86_64-MacOSX-gcc/ij-launcher</source>
-			<outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
+			<outputDirectory>/Contents/MacOS/</outputDirectory>
 			<destName>ImageJ-macosx</destName>
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
 			<source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
-			<outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
-			<destName>ImageJ-tiger</destName>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
-			<outputDirectory>ImageJ32.app/Contents/MacOS/</outputDirectory>
+			<outputDirectory>/Contents/MacOS/</outputDirectory>
 			<destName>ImageJ-tiger</destName>
 			<fileMode>0755</fileMode>
 		</file>
