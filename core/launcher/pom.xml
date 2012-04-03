@@ -132,7 +132,7 @@
     </profile>
 
     <profile>
-      <id>MacOSX Leopard</id>
+      <id>MacOSX-Leopard</id>
       <activation>
         <os>
           <name>Mac OS X</name>
@@ -176,7 +176,7 @@
     </profile>
 
     <profile>
-      <id>MacOSX Tiger</id>
+      <id>MacOSX-Tiger</id>
       <activation>
         <os>
           <name>Mac OS X</name>
