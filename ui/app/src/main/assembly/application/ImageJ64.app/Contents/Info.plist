@@ -26,7 +26,7 @@
 	<key>CFBundleExecutable</key>
 	<string>ImageJ-macosx</string>
 	<key>CFBundleGetInfoString</key>
-	<string>http://imagej.net</string>
+	<string>http://developer.imagej.net</string>
 	<key>CFBundleIconFile</key>
 	<string>ImageJ.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -40,42 +40,5 @@
 	<key>CFBundleVersion</key>
 	<string>10.2</string>
 	<key>Java</key>
-	<dict>
-		<key>JVMArchs</key>
-		<array>
-			<string>x86_64</string>
-			<string>i386</string>
-			<string>ppc</string>
-		</array>
-		<key>ClassPath</key>
-		<array>
-			<string>$APP_PACKAGE/../plugins</string>
-			<string>$APP_PACKAGE/../jars/*.jar</string>
-			<string>/System/Library/Java/Extensions/QTJava.zip</string>
-		</array>
-		<key>JVMVersion</key>
-		<string>1.6+</string>
-		<key>MainClass</key>
-		<string>imagej.Main</string>
-		<key>Properties</key>
-		<dict>
-			<key>apple.awt.Antialiasing</key>
-			<string>false</string>
-			<key>apple.awt.brushMetalLook</key>
-			<string>false</string>
-			<key>com.apple.hwaccel</key>
-			<string>false</string>
-			<key>com.apple.macos.useScreenMenuBar</key>
-			<string>false</string>
-			<key>com.apple.mrj.application.growbox.intrudes</key>
-			<string>false</string>
-			<key>com.apple.mrj.application.live-resize</key>
-			<string>true</string>
-			<key>com.apple.smallTabs</key>
-			<string>true</string>
-		</dict>
-		<key>VMOptions</key>
-		<string>-Xms128m -Xmx512m</string>
-	</dict>
 </dict>
 </plist>
