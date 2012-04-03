@@ -1,1 +1,1 @@
-Java libraries are in the jar folder of the ImageJ distribution.
+Java libraries are in the jars folder of the ImageJ distribution.
