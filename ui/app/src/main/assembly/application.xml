@@ -81,6 +81,18 @@
 			<outputDirectory>/Contents/Resources/</outputDirectory>
 		</file>
 
+		<!-- Use the ImageJ2 logo for the splash screen. -->
+		<file>
+			<source>${project.basedir}/../../logo/imagej.png</source>
+			<outputDirectory>/images/</outputDirectory>
+			<destName>icon.png</destName>
+		</file>
+		<file>
+			<source>${project.basedir}/../../logo/imagej.png</source>
+			<outputDirectory>/images/</outputDirectory>
+			<destName>icon-flat.png</destName>
+		</file>
+
 		<!-- Include the ImageJ launcher executables in appropriate locations. -->
 		<file>
 			<source>target/ij-launcher.jar</source>
