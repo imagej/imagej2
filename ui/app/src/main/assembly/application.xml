@@ -33,108 +33,108 @@
   #L%
   -->
 <assembly
-  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1 http://maven.apache.org/xsd/assembly-1.1.1.xsd">
-  <id>application</id>
-  <formats>
-    <format>zip</format>
-  </formats>
-  <baseDirectory>imagej2</baseDirectory>
-  <fileSets>
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1 http://maven.apache.org/xsd/assembly-1.1.1.xsd">
+	<id>application</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<baseDirectory>imagej2</baseDirectory>
+	<fileSets>
 
-    <!-- Include main application skeleton. -->
-    <fileSet>
-      <directory>${project.basedir}/src/main/assembly/application</directory>
-      <outputDirectory>/</outputDirectory>
-    </fileSet>
+		<!-- Include main application skeleton. -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/assembly/application</directory>
+			<outputDirectory>/</outputDirectory>
+		</fileSet>
 
-    <!-- Include documents and about images in toplevel directory. -->
-    <fileSet>
-      <directory>${project.basedir}/../..</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>LICENSE*</include>
-        <include>NOTICE*</include>
-        <include>README*</include>
-        <include>about/*</include>
-      </includes>
-    </fileSet>
+		<!-- Include documents and about images in toplevel directory. -->
+		<fileSet>
+			<directory>${project.basedir}/../..</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+				<include>README*</include>
+				<include>about/*</include>
+			</includes>
+		</fileSet>
 
-    <!-- Include the ImageJ2 icon in the Mac OS X application bundles. -->
-    <fileSet>
-      <directory>${project.basedir}/../../logo</directory>
-      <outputDirectory>/ImageJ32.app/Contents/Resources/</outputDirectory>
-      <includes>
-        <include>ImageJ.icns</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../../logo</directory>
-      <outputDirectory>/ImageJ64.app/Contents/Resources/</outputDirectory>
-      <includes>
-        <include>ImageJ.icns</include>
-      </includes>
-    </fileSet>
+		<!-- Include the ImageJ2 icon in the Mac OS X application bundles. -->
+		<fileSet>
+			<directory>${project.basedir}/../../logo</directory>
+			<outputDirectory>/ImageJ32.app/Contents/Resources/</outputDirectory>
+			<includes>
+				<include>ImageJ.icns</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/../../logo</directory>
+			<outputDirectory>/ImageJ64.app/Contents/Resources/</outputDirectory>
+			<includes>
+				<include>ImageJ.icns</include>
+			</includes>
+		</fileSet>
 
-  </fileSets>
+	</fileSets>
 
-  <!-- Include all dependent libraries in jars subdirectory. -->
-  <dependencySets>
-    <dependencySet>
-      <outputDirectory>/jars</outputDirectory>
-      <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
-      <unpack>false</unpack>
-      <scope>runtime</scope>
-    </dependencySet>
-  </dependencySets>
+	<!-- Include all dependent libraries in jars subdirectory. -->
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/jars</outputDirectory>
+			<outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+			<unpack>false</unpack>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
 
-  <!-- Include the ImageJ launcher executables in appropriate locations. -->
-  <files>
-    <file>
-      <source>target/ij-launcher.jar</source>
-      <outputDirectory>jars/</outputDirectory>
-      <destName>ij-launcher.jar</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/bin/i386-Linux-gcc/ij-launcher</source>
-      <destName>ImageJ-linux32</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/bin/amd64-Linux-gcc/ij-launcher</source>
-      <destName>ImageJ-linux64</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/bin/x86_64-MacOSX-gcc/ij-launcher</source>
-      <outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
-      <destName>ImageJ-macosx</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
-      <outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
-      <destName>ImageJ-tiger</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
-      <outputDirectory>ImageJ32.app/Contents/MacOS/</outputDirectory>
-      <destName>ImageJ-tiger</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/bin/x86-Windows-gcc/ij-launcher.exe</source>
-      <destName>ImageJ-win32.exe</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/bin/amd64-Windows-gcc/ij-launcher.exe</source>
-      <destName>ImageJ-win64.exe</destName>
-      <fileMode>0755</fileMode>
-    </file>
-  </files>
+	<!-- Include the ImageJ launcher executables in appropriate locations. -->
+	<files>
+		<file>
+			<source>target/ij-launcher.jar</source>
+			<outputDirectory>jars/</outputDirectory>
+			<destName>ij-launcher.jar</destName>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>target/bin/i386-Linux-gcc/ij-launcher</source>
+			<destName>ImageJ-linux32</destName>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>target/bin/amd64-Linux-gcc/ij-launcher</source>
+			<destName>ImageJ-linux64</destName>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>target/bin/x86_64-MacOSX-gcc/ij-launcher</source>
+			<outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
+			<destName>ImageJ-macosx</destName>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
+			<outputDirectory>ImageJ64.app/Contents/MacOS/</outputDirectory>
+			<destName>ImageJ-tiger</destName>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>target/bin/i386-MacOSX-gcc/ij-launcher</source>
+			<outputDirectory>ImageJ32.app/Contents/MacOS/</outputDirectory>
+			<destName>ImageJ-tiger</destName>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>target/bin/x86-Windows-gcc/ij-launcher.exe</source>
+			<destName>ImageJ-win32.exe</destName>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>target/bin/amd64-Windows-gcc/ij-launcher.exe</source>
+			<destName>ImageJ-win64.exe</destName>
+			<fileMode>0755</fileMode>
+		</file>
+	</files>
 
 </assembly>
