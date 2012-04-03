@@ -68,7 +68,9 @@ public class QuitProgram implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		if (windowMenuService.getOpenWindows().size() > 0) {
+		if (windowMenuService != null &&
+			windowMenuService.getOpenWindows().size() > 0)
+		{
 			if (!promptForQuit()) {
 				return;
 			}
