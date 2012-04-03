@@ -3360,7 +3360,11 @@ static int start_ij(void)
 	args.nOptions = options.java_options.nr;
 	args.ignoreUnrecognized = JNI_FALSE;
 
-	if (!get_jre_home() || options.use_system_jvm) {
+	if (
+#ifndef __APPLE__
+			!get_jre_home() ||
+#endif
+			options.use_system_jvm) {
 		fprintf(stderr, "Warning: falling back to system Java\n");
 		env = NULL;
 	}
