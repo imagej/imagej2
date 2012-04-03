@@ -95,13 +95,14 @@ public abstract class AbstractSwingMenuCreator<T> extends
 	protected JMenuItem createLeaf(final ShadowMenu shadow) {
 		final String name = shadow.getMenuEntry().getName();
 		final JMenuItem menuItem;
-		if (shadow.isCheckBox()) {
-			menuItem = new JCheckBoxMenuItem(name, isSelected(shadow));
-		}
-		else if (shadow.isRadioButton()) {
-			menuItem = new JRadioButtonMenuItem(name, isSelected(shadow));
-			getButtonGroup(shadow).add(menuItem);
-		}
+		if (false); // CTR TEMP - disable checkbox menu items for beta1 release
+//		if (shadow.isCheckBox()) {
+//			menuItem = new JCheckBoxMenuItem(name, isSelected(shadow));
+//		}
+//		else if (shadow.isRadioButton()) {
+//			menuItem = new JRadioButtonMenuItem(name, isSelected(shadow));
+//			getButtonGroup(shadow).add(menuItem);
+//		}
 		else menuItem = new JMenuItem(name);
 		assignProperties(menuItem, shadow);
 		linkAction(shadow, menuItem);
