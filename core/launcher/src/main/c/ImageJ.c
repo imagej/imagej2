@@ -3360,8 +3360,10 @@ static int start_ij(void)
 	args.nOptions = options.java_options.nr;
 	args.ignoreUnrecognized = JNI_FALSE;
 
-	if (!get_jre_home() || options.use_system_jvm)
+	if (!get_jre_home() || options.use_system_jvm) {
+		fprintf(stderr, "Warning: falling back to system Java\n");
 		env = NULL;
+	}
 	else {
 		int result = create_java_vm(&vm, (void **)&env, &args);
 		if (result == JNI_ENOMEM) {
@@ -3680,22 +3682,28 @@ static void set_path_to_JVM(void)
 	CFBundleRef JavaVMBundle =
 		CFBundleGetBundleWithIdentifier(CFSTR("com.apple.JavaVM"));
 
-	if (!JavaVMBundle)
+	if (!JavaVMBundle) {
+		fprintf(stderr, "Warning: could not find Java bundle\n");
 		return;
+	}
 
 	/* Get a path for the JavaVM bundle. */
 	CFURLRef JavaVMBundleURL = CFBundleCopyBundleURL(JavaVMBundle);
 	CFRelease(JavaVMBundle);
-	if (!JavaVMBundleURL)
+	if (!JavaVMBundleURL) {
+		fprintf(stderr, "Warning: could not get path for Java\n");
 		return;
+	}
 
 	/* Append to the path the Versions Component. */
 	CFURLRef JavaVMBundlerVersionsDirURL =
 		CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault,
 				JavaVMBundleURL, CFSTR("Versions"), 1);
 	CFRelease(JavaVMBundleURL);
-	if (!JavaVMBundlerVersionsDirURL)
+	if (!JavaVMBundlerVersionsDirURL) {
+		fprintf(stderr, "Warning: could not detect Java versions\n");
 		return;
+	}
 
 	/* Append to the path the target JVM's Version. */
 	CFURLRef TargetJavaVM = NULL;
@@ -3719,23 +3727,29 @@ static void set_path_to_JVM(void)
 	}
 
 	CFRelease(JavaVMBundlerVersionsDirURL);
-	if (!TargetJavaVM)
+	if (!TargetJavaVM) {
+		fprintf(stderr, "Warning: Could not instantiate Java\n");
 		return;
+	}
 
 	UInt8 pathToTargetJVM[PATH_MAX] = "";
 	Boolean result = CFURLGetFileSystemRepresentation(TargetJavaVM, 1,
 				pathToTargetJVM, PATH_MAX);
 	CFRelease(TargetJavaVM);
-	if (!result)
+	if (!result) {
+		fprintf(stderr, "Warning: could not get path for Java VM\n");
 		return;
+	}
 
 	/*
 	 * Check to see if the directory, or a symlink for the target
 	 * JVM directory exists, and if so set the environment
 	 * variable JAVA_JVM_VERSION to the target JVM.
 	 */
-	if (access((const char *)pathToTargetJVM, R_OK))
+	if (access((const char *)pathToTargetJVM, R_OK)) {
+		fprintf(stderr, "Warning: Could not access Java VM\n");
 		return;
+	}
 
 	/*
 	 * Ok, the directory exists, so now we need to set the
