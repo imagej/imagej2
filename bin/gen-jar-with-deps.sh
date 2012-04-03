@@ -39,8 +39,12 @@ do
 done
 
 # generate combined JAR file
-mvn -P deps,swing package
+mvn -P deps package
 
 # clean up
 rm $EXTRA/META-INF/annotations/imagej.*
 rm -rf "$EXTRA/imagej"
+
+# show results
+pwd
+ls -l target/*-all.jar

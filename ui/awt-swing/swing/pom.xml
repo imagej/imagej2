@@ -48,7 +48,9 @@
 		<profile>
 			<id>swing</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>!ij.ui</name>
+				</property>
 			</activation>
 			<modules>
 				<module>ui-sdi</module>
@@ -56,6 +58,12 @@
 		</profile>
 		<profile>
 			<id>swing-mdi</id>
+			<activation>
+				<property>
+					<name>ij.ui</name>
+					<value>swing-mdi</value>
+				</property>
+			</activation>
 			<modules>
 				<module>ui-mdi</module>
 			</modules>
