@@ -169,6 +169,7 @@ public abstract class AbstractUserInterface implements UserInterface {
 				case REMIND_LATER:
 				case CHECK_TURNED_OFF:
 				case UPDATES_MANAGED_DIFFERENTLY:
+				case DEVELOPER:
 					return;
 				case UPDATEABLE:
 					final List<PluginModuleInfo<UpdaterUIPlugin>> updaters =

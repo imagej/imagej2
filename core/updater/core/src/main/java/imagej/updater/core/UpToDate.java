@@ -67,7 +67,7 @@ public class UpToDate {
 
 	public enum Result {
 		UP_TO_DATE, UPDATEABLE, PROXY_NEEDS_AUTHENTICATION, OFFLINE, REMIND_LATER,
-			CHECK_TURNED_OFF, READ_ONLY, UPDATES_MANAGED_DIFFERENTLY /* e.g. Debian packaging */
+			CHECK_TURNED_OFF, READ_ONLY, UPDATES_MANAGED_DIFFERENTLY /* e.g. Debian packaging */, DEVELOPER
 	};
 
 	protected final static String KEY = "latestNag";
@@ -103,6 +103,7 @@ public class UpToDate {
 		if (neverRemind()) return Result.CHECK_TURNED_OFF;
 		if (shouldRemindLater()) return Result.REMIND_LATER;
 		if (!canWrite(ijRoot)) return Result.READ_ONLY;
+		if (isDeveloper()) return Result.DEVELOPER;
 		if (!haveNetworkConnection()) return Result.OFFLINE;
 		final FilesCollection plugins = new FilesCollection(ijRoot);
 		try {
@@ -150,6 +151,13 @@ public class UpToDate {
 		final String latestNag = Prefs.get(UpToDate.class, KEY);
 		if (latestNag == null || latestNag.equals("")) return false;
 		return now() - Long.parseLong(latestNag) < REMINDER_INTERVAL;
+	}
+
+	/**
+	 * @return whether we started in a developer setting (classes are not in .jar files)
+	 */
+	public static boolean isDeveloper() {
+		return !UpToDate.class.getResource("UpToDate.class").toString().startsWith("file:jar:");
 	}
 
 	/**
