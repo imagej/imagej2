@@ -157,7 +157,7 @@ public class UpToDate {
 	 * @return whether we can write to the ImageJ directory
 	 */
 	public static boolean canWrite(final File ijRoot) {
-		return new File(ijRoot, "jars/ij-updater-core.jar").canWrite();
+		return ijRoot.canWrite();
 	}
 
 	/**
