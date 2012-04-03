@@ -39,7 +39,10 @@ import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.event.StatusEvent;
 import imagej.platform.event.AppQuitEvent;
+import imagej.updater.core.UpToDate;
+import imagej.util.Log;
 import imagej.util.Prefs;
 
 import java.util.List;
@@ -67,6 +70,7 @@ public abstract class AbstractUserInterface implements UserInterface {
 		uiService = service;
 		createUI();
 		displayReadme();
+		updaterCheck();
 	}
 
 	@Override
@@ -151,6 +155,40 @@ public abstract class AbstractUserInterface implements UserInterface {
 		if (firstRun != null) return;
 		Prefs.put(getClass(), PREF_FIRST_RUN, false);
 		uiService.getPluginService().run(ShowReadme.class);
+	}
+
+	/** Tests whether updates are available */
+	private void updaterCheck() {
+		try {
+			final UpToDate.Result result = UpToDate.check();
+			switch (result) {
+				case UP_TO_DATE:
+				case OFFLINE:
+				case REMIND_LATER:
+				case CHECK_TURNED_OFF:
+				case UPDATES_MANAGED_DIFFERENTLY:
+					return;
+				case UPDATEABLE:
+					throw new RuntimeException(
+						"TODO: make marker interface UpdaterPlugin, mark ImageJUpdater with type = UpdaterPlugin, ask PluginService to discover the highest-priority of that type and run that.");
+				case PROXY_NEEDS_AUTHENTICATION:
+					throw new RuntimeException(
+						"TODO: authenticate proxy with the configured user/pass pair");
+				case READ_ONLY:
+					final String message =
+						"Your ImageJ installation cannot be updated because it is read-only";
+					Log.warn(message);
+					// TODO: add uiService.setStatus(message)
+					uiService.getEventService().publish(new StatusEvent(message, false));
+					break;
+				default:
+					Log.error("Unhandled UpToDate case: " + result);
+			}
+		}
+		catch (final Exception e) {
+			Log.error(e);
+			return;
+		}
 	}
 
 }
