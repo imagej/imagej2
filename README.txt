@@ -43,7 +43,8 @@ ImageJ2 is distributed under a Simplified BSD License; for the full text of the
 license, see the LICENSE.txt file. For further reading, see:
   http://en.wikipedia.org/wiki/BSD_licenses
 
-For the list of developers and contributors, see the pom.xml file.
+For the list of developers and contributors, see pom.xml in the source code:
+  https://github.com/imagej/imagej/blob/master/pom.xml
 
 IMPORTANT NOTE: ImageJ2 currently depends on the SCIFIO library
 (http://loci.wisc.edu/software/scifio) for image format I/O. While the
