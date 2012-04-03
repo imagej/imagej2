@@ -59,7 +59,7 @@ import net.imglib2.type.numeric.RealType;
 public abstract class TypeChanger implements ImageJPlugin {
 
 	@Parameter(persist = false)
-	private MenuService menuService;
+	protected MenuService menuService;
 
 	@Parameter(persist = false)
 	protected Dataset input;
