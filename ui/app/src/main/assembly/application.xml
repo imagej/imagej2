@@ -42,10 +42,14 @@
   </formats>
   <baseDirectory>imagej2</baseDirectory>
   <fileSets>
+
+    <!-- Include main application skeleton. -->
     <fileSet>
       <directory>${project.basedir}/src/main/assembly/application</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
+
+    <!-- Include documents and about images in toplevel directory. -->
     <fileSet>
       <directory>${project.basedir}/../..</directory>
       <outputDirectory>/</outputDirectory>
@@ -56,6 +60,8 @@
         <include>about/*</include>
       </includes>
     </fileSet>
+
+    <!-- Include the ImageJ2 icon in the Mac OS X application bundles. -->
     <fileSet>
       <directory>${project.basedir}/../../logo</directory>
       <outputDirectory>/ImageJ32.app/Contents/Resources/</outputDirectory>
@@ -70,7 +76,10 @@
         <include>ImageJ.icns</include>
       </includes>
     </fileSet>
+
   </fileSets>
+
+  <!-- Include all dependent libraries in jars subdirectory. -->
   <dependencySets>
     <dependencySet>
       <outputDirectory>/jars</outputDirectory>
@@ -79,6 +88,8 @@
       <scope>runtime</scope>
     </dependencySet>
   </dependencySets>
+
+  <!-- Include the ImageJ launcher executables in appropriate locations. -->
   <files>
     <file>
       <source>target/ij-launcher.jar</source>
@@ -125,4 +136,5 @@
       <fileMode>0755</fileMode>
     </file>
   </files>
+
 </assembly>
