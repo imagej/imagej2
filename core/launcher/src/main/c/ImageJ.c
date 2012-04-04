@@ -3200,7 +3200,7 @@ static void parse_command_line(void)
 
 	maybe_reexec_with_correct_lib_path();
 
-	if (!options.debug && !options.use_system_jvm && !headless && is_default_ij1_class(main_class))
+	if (!options.debug && !options.use_system_jvm && !headless && (is_default_ij1_class(main_class) || !strcmp(default_main_class, main_class)))
 		show_splash();
 
 	/* set up class path */
