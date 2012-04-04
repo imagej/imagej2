@@ -161,6 +161,10 @@
               </c>
               <linker>
                 <options>
+                  <option>-arch</option>
+                  <option>i386</option>
+                  <option>-arch</option>
+                  <option>x86_64</option>
                   <option>-framework</option>
                   <option>CoreFoundation</option>
                   <option>-framework</option>
