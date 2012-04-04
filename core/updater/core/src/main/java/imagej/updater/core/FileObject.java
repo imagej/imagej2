@@ -426,8 +426,9 @@ public class FileObject {
 	}
 
 	public long getTimestamp() {
-		return action == Action.UPLOAD ? newTimestamp : action == Action.REMOVE ||
-			current == null ? 0 : current.timestamp;
+		return action == Action.UPLOAD ? (status == Status.LOCAL_ONLY &&
+			current != null ? current.timestamp : newTimestamp)
+			: (action == Action.REMOVE || current == null ? 0 : current.timestamp);
 	}
 
 	public Iterable<Dependency> getDependencies() {
@@ -465,7 +466,6 @@ public class FileObject {
 	public boolean isUploadable(final FilesCollection files) {
 		switch (status) {
 			case INSTALLED:
-			case NOT_INSTALLED:
 				return false;
 		}
 		if (updateSite == null) return files.hasUploadableSites();
