@@ -66,7 +66,8 @@ import java.util.List;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Properties...", mnemonic = 'p') }, headless = true)
+	@Menu(label = "Properties...", mnemonic = 'p') }, headless = true,
+	initializer = "initialize")
 public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	static final protected String solidLineStyle = "Solid";
@@ -77,7 +78,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	static final protected String arrowLineDecoration = "Arrow";
 	static final protected String noLineDecoration = "None";
 
-	@Parameter
+	@Parameter(callback = "displayChanged")
 	private ImageDisplay display;
 
 	@Parameter(label = "Line color", persist = false)
@@ -114,51 +115,6 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(persist = false)
 	private OptionsService os;
-
-	public OverlayProperties() {
-		// set default values to match the first selected overlay
-		final List<Overlay> selected = getSelectedOverlays();
-		if (selected.size() > 0) {
-			final Overlay overlay = selected.get(0);
-			lineColor = overlay.getLineColor();
-			lineWidth = overlay.getLineWidth();
-			fillColor = overlay.getFillColor();
-			alpha = overlay.getAlpha();
-			switch (overlay.getLineStyle()) {
-				case SOLID:
-					lineStyle = solidLineStyle;
-					break;
-				case DASH:
-					lineStyle = dashLineStyle;
-					break;
-				case DOT:
-					lineStyle = dotLineStyle;
-					break;
-				case DOT_DASH:
-					lineStyle = dotDashLineStyle;
-					break;
-				case NONE:
-					lineStyle = noLineStyle;
-					break;
-			}
-			switch (overlay.getLineStartArrowStyle()) {
-				case NONE:
-					startLineArrowStyle = noLineDecoration;
-					break;
-				case ARROW:
-					startLineArrowStyle = arrowLineDecoration;
-					break;
-			}
-			switch (overlay.getLineEndArrowStyle()) {
-				case NONE:
-					endLineArrowStyle = noLineDecoration;
-					break;
-				case ARROW:
-					endLineArrowStyle = arrowLineDecoration;
-					break;
-			}
-		}
-	}
 
 	@Override
 	public void run() {
@@ -223,6 +179,20 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		this.updateDefaults = updateDefaults;
 	}
 
+	// -- initializers --
+
+	@SuppressWarnings("unused")
+	private void initialize() {
+		updateValues();
+	}
+
+	// -- callback methods --
+
+	@SuppressWarnings("unused")
+	private void displayChanged() {
+		updateValues();
+	}
+
 	// -- private helpers --
 
 	private List<Overlay> getSelectedOverlays() {
@@ -236,6 +206,52 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			result.add(overlay);
 		}
 		return result;
+	}
+
+	/** Updates all elements from the current display's selected overlays. */
+	private void updateValues() {
+		// set default values to match the first selected overlay
+		final List<Overlay> selected = getSelectedOverlays();
+		if (selected.size() > 0) {
+			final Overlay overlay = selected.get(0);
+			lineColor = overlay.getLineColor();
+			lineWidth = overlay.getLineWidth();
+			fillColor = overlay.getFillColor();
+			alpha = overlay.getAlpha();
+			switch (overlay.getLineStyle()) {
+				case SOLID:
+					lineStyle = solidLineStyle;
+					break;
+				case DASH:
+					lineStyle = dashLineStyle;
+					break;
+				case DOT:
+					lineStyle = dotLineStyle;
+					break;
+				case DOT_DASH:
+					lineStyle = dotDashLineStyle;
+					break;
+				case NONE:
+					lineStyle = noLineStyle;
+					break;
+			}
+			switch (overlay.getLineStartArrowStyle()) {
+				case NONE:
+					startLineArrowStyle = noLineDecoration;
+					break;
+				case ARROW:
+					startLineArrowStyle = arrowLineDecoration;
+					break;
+			}
+			switch (overlay.getLineEndArrowStyle()) {
+				case NONE:
+					endLineArrowStyle = noLineDecoration;
+					break;
+				case ARROW:
+					endLineArrowStyle = arrowLineDecoration;
+					break;
+			}
+		}
 	}
 
 	private void updateDefaults() {
