@@ -157,7 +157,7 @@ public class UpToDate {
 	 * @return whether we started in a developer setting (classes are not in .jar files)
 	 */
 	public static boolean isDeveloper() {
-		return !UpToDate.class.getResource("UpToDate.class").toString().startsWith("file:jar:");
+		return !UpToDate.class.getResource("UpToDate.class").toString().startsWith("jar:file:");
 	}
 
 	/**
