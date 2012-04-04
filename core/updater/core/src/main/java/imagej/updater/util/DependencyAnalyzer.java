@@ -166,12 +166,12 @@ public class DependencyAnalyzer {
 	protected boolean exclude(final String jarPath, final String dependency) {
 		return jarPath.equals(dependency) ||
 			dependency.equals("jars/javac.jar") ||
-			(jarPath.equals("jars/slf4j-api.jar") && dependency
-				.equals("jars/slf4j-log4j12.jar")) ||
-			(jarPath.equals("jars/logkit.jar") && dependency
-				.equals("jars/avalon-framework.jar")) ||
-			(jarPath.equals("jars/bsh.jar") && dependency.equals("jars/testng.jar")) ||
-			(jarPath.equals("jars/testng.jar") && dependency.equals("jars/guice.jar"));
+			(jarPath.startsWith("jars/slf4j-api") && dependency
+				.startsWith("jars/slf4j-log4j")) ||
+			(jarPath.startsWith("jars/logkit") && dependency
+				.startsWith("jars/avalon-framework")) ||
+			(jarPath.startsWith("jars/bsh") && dependency.startsWith("jars/testng")) ||
+			(jarPath.startsWith("jars/testng") && dependency.startsWith("jars/guice"));
 	}
 
 }

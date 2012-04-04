@@ -94,15 +94,16 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 	 * as dependencies of everything.
 	 */
 	private boolean ignore(final String name, final String jar) {
-		if (jar.endsWith("/batik.jar") || jar.endsWith("/xml-apis.jar") ||
-			jar.endsWith("/loci_tools.jar")) return name.startsWith("org.xml.") ||
+		final String base = jar.substring(jar.lastIndexOf('/') + 1);
+		if (base.startsWith("batik") || base.startsWith("xml-apis") ||
+			base.startsWith("loci_tools")) return name.startsWith("org.xml.") ||
 			name.startsWith("org.w3c.") || name.startsWith("javax.xml.") ||
 			name.startsWith("org.mozilla.javascript.") ||
 			name.startsWith("org.apache.xml.serializer.");
-		if (jar.endsWith("/jython.jar") || jar.endsWith("/jruby.jar")) return name
+		if (base.startsWith("jython") || base.startsWith("jruby.jar")) return name
 			.startsWith("com.sun.jna.") ||
 			name.startsWith("jline.");
-		if (jar.endsWith("/ij.jar")) return name.startsWith("javax.script.");
+		if (base.startsWith("ij.jar")) return name.startsWith("javax.script.");
 		return false;
 	}
 
