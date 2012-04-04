@@ -90,7 +90,8 @@ public class DependencyAnalyzer {
 				addClassAndInterfaces(allClassNames, handled, name);
 
 			for (final String name : allClassNames) {
-				UpdaterUserInterface.get().debug("Considering name from analyzer: " + name);
+				UpdaterUserInterface.get().debug(
+					"Considering name from analyzer: " + name);
 				final List<String> jars = map.get(name);
 				if (jars == null) continue;
 				final List<String> dependencies = new ArrayList<String>();
