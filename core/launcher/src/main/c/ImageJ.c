@@ -3538,7 +3538,7 @@ static void append_icon_path(struct string *str)
 	slash = strrchr(main_argv0, '/');
 	if (slash && !suffixcmp(main_argv0, slash - main_argv0, ".app/Contents/MacOS"))
 		for (i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
-			string_addf(str, "%.*s%s", (slash - main_argv0) - 14, main_argv0, paths[i]);
+			string_addf(str, "%.*s%s", (int)(slash - main_argv0) - 14, main_argv0, paths[i]);
 			if (file_exists(str->buffer + length))
 				break;
 			string_set_length(str, length);
