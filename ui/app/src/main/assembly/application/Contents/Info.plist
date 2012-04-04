@@ -39,5 +39,12 @@
 	<string>imgJ</string>
 	<key>CFBundleVersion</key>
 	<string>10.2</string>
+	<key>LSArchitecturePriority</key>
+	<array>
+		<string>x86_64</string>
+		<string>i386</string>
+		<string>ppc64</string>
+		<string>ppc</string>
+	</array>
 </dict>
 </plist>
