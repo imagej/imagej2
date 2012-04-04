@@ -3642,8 +3642,11 @@ static int force_32_bit_mode(const char *argv0)
 		goto release_dict;
 
 	CFArrayRef app = (CFArrayRef)CFDictionaryGetValue(arch64, CFSTR("org.fiji"));
-	if (!app)
-		goto release_dict;
+	if (!app) {
+		app = (CFArrayRef)CFDictionaryGetValue(arch64, CFSTR("net.imagej.ImageJ"));
+		if (!app)
+			goto release_dict;
+	}
 
 	int i, count = (int)CFArrayGetCount(app);
 	for (i = 0; i < count; i += 2) {
@@ -3652,6 +3655,7 @@ static int force_32_bit_mode(const char *argv0)
 			continue;
 		resolve_alias((CFDataRef)CFArrayGetValueAtIndex(app, i), buffer);
 		if (!strcmp(buffer->buffer, ij_dir)) {
+			fprintf(stderr, "Forcing 32-bit, as requested\n");
 			result = 1;
 			break;
 		}
@@ -4164,6 +4168,7 @@ int main(int argc, char **argv, char **e)
 {
 	int size;
 
+	ij_dir = get_ij_dir(argv[0]);
 #if defined(__APPLE__)
 	launch_32bit_on_tiger(argc, argv);
 #elif defined(WIN32)
@@ -4179,7 +4184,6 @@ int main(int argc, char **argv, char **e)
 			!suffixcmp(argv[0], len, "ImageJ"))
 		open_win_console();
 #endif
-	ij_dir = get_ij_dir(argv[0]);
 	adjust_java_home_if_necessary();
 	main_argv0 = argv[0];
 	main_argv = argv;
