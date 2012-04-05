@@ -125,7 +125,8 @@ public class UpdaterTest {
 
 		// bend over for Microsoft
 		final boolean isWindows = Util.getPlatform().startsWith("win");
-		final String launcherName = isWindows ? "ImageJ-win32.exe" : "ImageJ-linux32";
+		final String launcherName =
+			isWindows ? "ImageJ-win32.exe" : "ImageJ-linux32";
 
 		final File ijLauncher = writeFile(ijRoot, launcherName, "false");
 		ijLauncher.setExecutable(true);
@@ -545,7 +546,7 @@ public class UpdaterTest {
 		if (fileNames.length > 0) {
 			// Write files
 
-			List<String> list = new ArrayList<String>();
+			final List<String> list = new ArrayList<String>();
 			for (final String name : fileNames) {
 				writeFile(name);
 				list.add(name);
