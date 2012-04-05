@@ -4127,6 +4127,7 @@ static void set_default_library_path(void)
 #endif
 }
 
+/* TODO: try to find Java even if there is JRE local to ImageJ */
 static void adjust_java_home_if_necessary(void)
 {
 	struct string *result, *buffer, *path;
