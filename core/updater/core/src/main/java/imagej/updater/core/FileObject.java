@@ -583,7 +583,12 @@ public class FileObject {
 			newChecksum = current.checksum;
 			newTimestamp = current.timestamp;
 		}
-		setAction(files, Action.UPLOAD);
+		if (status == Status.NOT_INSTALLED) {
+			setAction(files, Action.REMOVE);
+		}
+		else {
+			setAction(files, Action.UPLOAD);
+		}
 		this.updateSite = updateSite;
 	}
 
