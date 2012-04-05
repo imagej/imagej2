@@ -667,6 +667,21 @@ public class UpdaterTest {
 		return count;
 	}
 
+	protected static void print(final Iterable<?> iterable) {
+		System.err.println("{");
+		int count = 0;
+		for (final Object object : iterable) {
+			System.err.println("\t" +
+				++count +
+				": " +
+				object +
+				(object instanceof FileObject ? " = " +
+					((FileObject) object).getStatus() + "/" +
+					((FileObject) object).getAction() : ""));
+		}
+		System.err.println("}");
+	}
+
 	/**
 	 * Create a temporary directory
 	 * 
