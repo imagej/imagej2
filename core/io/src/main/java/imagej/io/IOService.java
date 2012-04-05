@@ -59,6 +59,9 @@ import net.imglib2.type.numeric.RealType;
 public final class IOService<T extends RealType<T> & NativeType<T>>
 	extends AbstractService
 {
+	
+	// TODO: eliminate bogus T parameter above. Rather, find a different way of
+	// handling ImgOpener's need to pass forward a T parameter.
 
 	private EventService eventService;
 	private ModuleService moduleService;
