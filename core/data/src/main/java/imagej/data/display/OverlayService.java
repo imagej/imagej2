@@ -76,6 +76,13 @@ public interface OverlayService extends IService {
 	void removeOverlay(final ImageDisplay display, final Overlay overlay);
 
 	/**
+	 * Removes an {@link Overlay} from all {@link ImageDisplay}s.
+	 * 
+	 * @param overlay the {@link Overlay} to remove
+	 */
+	void removeOverlay(final Overlay overlay);
+
+	/**
 	 * Gets the bounding box for the selected overlays in the given
 	 * {@link ImageDisplay}.
 	 * 

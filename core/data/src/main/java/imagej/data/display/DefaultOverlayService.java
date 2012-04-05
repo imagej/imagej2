@@ -146,6 +146,13 @@ public final class DefaultOverlayService extends AbstractService implements
 		display.update();
 	}
 
+	@Override
+	public void removeOverlay(final Overlay overlay) {
+		List<ImageDisplay> imgDisps = objectService.getObjects(ImageDisplay.class);
+		for (ImageDisplay disp : imgDisps)
+			removeOverlay(disp, overlay);
+	}
+	
 	/**
 	 * Gets the bounding box for the selected overlays in the given
 	 * {@link ImageDisplay}.
