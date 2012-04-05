@@ -235,7 +235,9 @@ public class UpdaterTest {
 		assertCount(4, files);
 		assertStatus(Status.MODIFIED, files, "macros/World.txt");
 		assertCount(1, files.upToDate());
-		assertCount(2, files.uploadable());
+
+		// Comma(NOT_INSTALLED), World(MODIFIED), hello(LOCAL_ONLY)
+		assertCount(3, files.uploadable());
 	}
 
 	@Test
@@ -352,7 +354,8 @@ public class UpdaterTest {
 		assertStatus(Status.NOT_INSTALLED, files, list[0].getFilename());
 		assertStatus(Status.LOCAL_ONLY, files, "macros/independent.ijm");
 
-		assertCount(2, files.uploadable());
+		// obsolete(NOT_INSTALLED), dependencee(MODIFIED), independent(LOCAL_ONLY)
+		assertCount(3, files.uploadable());
 
 		for (final FileObject object2 : files.uploadable()) {
 			object2.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
