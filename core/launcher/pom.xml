@@ -159,6 +159,7 @@
 							</c>
 							<linker>
 								<options>
+									<option>-mmacosx-version-min=10.4</option>
 									<option>-arch</option>
 									<option>i386</option>
 									<option>-arch</option>
@@ -205,6 +206,7 @@
 							</c>
 							<linker>
 								<options>
+									<option>-mmacosx-version-min=10.3</option>
 									<option>-arch</option>
 									<option>i386</option>
 									<option>-arch</option>
