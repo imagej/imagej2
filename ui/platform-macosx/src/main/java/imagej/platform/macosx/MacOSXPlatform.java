@@ -35,8 +35,6 @@
 
 package imagej.platform.macosx;
 
-import com.apple.eawt.Application;
-
 import imagej.event.EventService;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.Plugin;
@@ -84,9 +82,16 @@ public class MacOSXPlatform extends AbstractPlatform {
 		removeAppPluginsFromMenu();
 
 		// translate Mac OS X application events into ImageJ events
-		final Application app = Application.getApplication();
 		final EventService eventService = platformService.getEventService();
-		appEventDispatcher = new MacOSXAppEventDispatcher(app, eventService);
+		try {
+			appEventDispatcher = new MacOSXAppEventDispatcher(eventService);
+		}
+		catch (final NoClassDefFoundError e) {
+			// the interfaces implemented by MacOSXAppEventDispatcher might not be
+			// available
+			// - on MacOSX Tiger without recent Java Updates
+			// - on earlier MacOSX versions
+		}
 
 		// duplicate menu bar across all window frames
 		platformService.setMenuBarDuplicated(true);

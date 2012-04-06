@@ -83,6 +83,10 @@ public class MacOSXAppEventDispatcher implements AboutHandler,
 
 	private final EventService eventService;
 
+	public MacOSXAppEventDispatcher(final EventService eventService) {
+		this(Application.getApplication(), eventService);
+	}
+
 	public MacOSXAppEventDispatcher(final Application app, final EventService eventService) {
 		this.eventService = eventService;
 		app.setAboutHandler(this);
