@@ -24,14 +24,14 @@ my $descColor = '#eeeeee';
 my $columns = 4;
 
 my $jenkinsURL = 'http://jenkins.imagej.net';
-my $tracURL = 'http://trac.imagej.net';
+my $githubURL = 'https://github.com/imagej/imagej';
 
-my $artifactPath = 'lastSuccessfulBuild/artifact/imagej';
+my $artifactPath = 'lastSuccessfulBuild/artifact';
 my $sourcePath = 'src/main/java';
 
 my $trunkBuildPrefix = "$jenkinsURL/job/ImageJ/$artifactPath";
 my $dailyBuildPrefix = "$jenkinsURL/job/ImageJ-daily/$artifactPath";
-my $sourcePrefix = "$tracURL/browser/trunk";
+my $sourcePrefix = "$githubURL/tree/master";
 
 # -- Main --
 
