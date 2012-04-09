@@ -52,9 +52,11 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.BinaryOperation;
 import net.imglib2.ops.Function;
+import net.imglib2.ops.InputIteratorFactory;
 import net.imglib2.ops.function.general.GeneralBinaryFunction;
 import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.operation.binary.real.RealAdd;
 import net.imglib2.ops.operation.binary.real.RealAnd;
 import net.imglib2.ops.operation.binary.real.RealAvg;
@@ -262,9 +264,10 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 		final GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType> binFunc =
 			new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(f1,
 				f2, binOp, new DoubleType());
-		final ImageAssignment<T, DoubleType> assigner =
-			new ImageAssignment<T, DoubleType>((Img<T>) output.getImgPlus(), origin,
-				span, binFunc, null);
+		final InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
+		final ImageAssignment<T, DoubleType, long[]> assigner =
+			new ImageAssignment<T, DoubleType, long[]>((Img<T>) output.getImgPlus(), origin,
+				span, binFunc, null, factory);
 		assigner.assign();
 	}
 

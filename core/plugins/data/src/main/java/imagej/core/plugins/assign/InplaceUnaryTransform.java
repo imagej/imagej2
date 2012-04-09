@@ -43,9 +43,11 @@ import imagej.data.display.OverlayService;
 import imagej.util.RealRect;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
+import net.imglib2.ops.InputIteratorFactory;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
 import net.imglib2.type.numeric.ComplexType;
 
@@ -65,7 +67,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	private final Dataset dataset;
 	private long[] origin;
 	private long[] span;
-	private final ImageAssignment<I,O> assigner;
+	private final ImageAssignment<I,O,long[]> assigner;
 
 	// -- constructor --
 
@@ -79,9 +81,10 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		final GeneralUnaryFunction<long[],O,O> function = new
 				GeneralUnaryFunction<long[],O,O>(f1, operation, outType.createVariable());
 		setOriginAndSpan(display);
+		final InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
 		assigner =
-			new ImageAssignment<I,O>(img, origin, span, function, null,
-				new long[span.length], new long[span.length]);
+			new ImageAssignment<I,O, long[]>(img, origin, span, function, null,
+				factory);
 	}
 
 	/*

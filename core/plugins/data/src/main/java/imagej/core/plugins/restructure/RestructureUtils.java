@@ -44,7 +44,8 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
-import net.imglib2.ops.RegionIndexIterator;
+import net.imglib2.ops.PointSetIterator;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -133,15 +134,19 @@ public class RestructureUtils {
 		final long[] dstOffsets = new long[dstOrigin.length];
 		for (int i = 0; i < dstOffsets.length; i++)
 			dstOffsets[i] = dstSpan[i] - 1;
-		final RegionIndexIterator iterS =
-			new RegionIndexIterator(srcOrigin, new long[srcOrigin.length], srcOffsets);
-		final RegionIndexIterator iterD =
-			new RegionIndexIterator(dstOrigin, new long[dstOrigin.length], dstOffsets);
+		final HyperVolumePointSet srcPointSet =
+				new HyperVolumePointSet(srcOrigin, new long[srcOrigin.length], srcOffsets);
+		final HyperVolumePointSet dstPointSet =
+				new HyperVolumePointSet(dstOrigin, new long[dstOrigin.length], dstOffsets);
+		final PointSetIterator iterS = srcPointSet.createIterator();
+		final PointSetIterator iterD = dstPointSet.createIterator();
+		long[] srcPos = null;
+		long[] dstPos = null;
 		while (iterS.hasNext() && iterD.hasNext()) {
-			iterS.fwd();
-			iterD.fwd();
-			srcAccessor.setPosition(iterS.getPosition());
-			dstAccessor.setPosition(iterD.getPosition());
+			srcPos = iterS.next();
+			dstPos = iterD.next();
+			srcAccessor.setPosition(srcPos);
+			dstAccessor.setPosition(dstPos);
 			final double value = srcAccessor.get().getRealDouble();
 			dstAccessor.get().setReal(value);
 		}

@@ -47,11 +47,15 @@ import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.RegionIndexIterator;
+import net.imglib2.ops.InputIteratorFactory;
+import net.imglib2.ops.PointSetIterator;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.input.PointInputIterator;
+import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
 
@@ -94,7 +98,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 
 	private long[] imageSpan;
 
-	private RegionIndexIterator iter;
+	private PointSetIterator iter;
 
 	private RandomAccess<? extends RealType<?>> accessor;
 	
@@ -215,9 +219,8 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 
 		// setup region iterator
 		accessor = dataset.getImgPlus().randomAccess();
-		iter =
-			new RegionIndexIterator(planeOrigin, new long[planeOrigin.length],
-				planeOffsets);
+		iter = new HyperVolumePointSet(planeOrigin, new long[planeOrigin.length],
+				planeOffsets).createIterator();
 		dataBackup = new double[(int) (w * h)];
 	}
 
@@ -227,8 +230,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		int index = 0;
 		iter.reset();
 		while (iter.hasNext()) {
-			iter.fwd();
-			accessor.setPosition(iter.getPosition());
+			accessor.setPosition(iter.next());
 			dataBackup[index++] = accessor.get().getRealDouble();
 		}
 	}
@@ -239,8 +241,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		int index = 0;
 		iter.reset();
 		while (iter.hasNext()) {
-			iter.fwd();
-			accessor.setPosition(iter.getPosition());
+			accessor.setPosition(iter.next());
 			accessor.get().setReal(dataBackup[index++]);
 		}
 		dataset.update();
@@ -261,10 +262,13 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		final ComplexUnaryOperation<O,O> op = getOperation();
 		final GeneralUnaryFunction<long[],O,O> function = new
 				GeneralUnaryFunction<long[],O,O>(imageFunc, op, outType.createVariable());
-		final ImageAssignment<I,O> assigner =
-			new ImageAssignment<I,O>(image, origin, span,
-				function, null, new long[span.length], new long[span.length]);
+		final InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
+		final ImageAssignment<I,O,long[]> assigner =
+			new ImageAssignment<I,O,long[]>(image, origin, span, function, null, factory);
+		//long start = System.currentTimeMillis();
 		assigner.assign();
+		//long stop = System.currentTimeMillis();
+		//System.out.println("time spent in seconds = "+(stop-start)/1000.0);
 		dataset.update();
 	}
 

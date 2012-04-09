@@ -51,7 +51,8 @@ import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.ops.RegionIndexIterator;
+import net.imglib2.ops.PointSetIterator;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.type.numeric.RealType;
 
 // TODO
@@ -218,9 +219,10 @@ public class ReorderAxes extends DynamicPlugin {
 		dataset.getImgPlus().dimensions(inputOffsets);
 		for (int i = 0; i < inputOffsets.length; i++)
 			inputOffsets[i]--;
-		final RegionIndexIterator iter =
-			new RegionIndexIterator(inputOrigin, new long[inputOrigin.length],
-				inputOffsets);
+		final HyperVolumePointSet volume =
+				new HyperVolumePointSet(
+					inputOrigin,  new long[inputOrigin.length], inputOffsets);
+		final PointSetIterator iter = volume.createIterator();
 		final long[] origDims = dataset.getDims();
 		final AxisType[] origAxes = dataset.getAxes();
 		final long[] newDims = getNewDims(origDims);
@@ -233,8 +235,7 @@ public class ReorderAxes extends DynamicPlugin {
 		final long[] permutedPos = new long[inputOrigin.length];
 		long[] currPos;
 		while (iter.hasNext()) {
-			iter.fwd();
-			currPos = iter.getPosition();
+			currPos = iter.next();
 			inputAccessor.setPosition(currPos);
 			final double value = inputAccessor.get().getRealDouble();
 			permute(currPos, permutedPos);
