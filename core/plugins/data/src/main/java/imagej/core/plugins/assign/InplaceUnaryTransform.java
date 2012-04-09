@@ -144,7 +144,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		// calc span of image for actual data changes
 		span = new long[dims.length];
 		for (int i = 0; i < span.length; i++)
-			span[i] = dims[i] - 1;
+			span[i] = dims[i];
 		span[xIndex] = w;
 		span[yIndex] = h;
 	}
