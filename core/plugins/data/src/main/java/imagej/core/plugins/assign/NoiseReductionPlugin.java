@@ -1,3 +1,38 @@
+/*
+ * #%L
+ * ImageJ software for multidimensional image processing and analysis.
+ * %%
+ * Copyright (C) 2009 - 2012 Board of Regents of the University of
+ * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
+ * Institute of Molecular Cell Biology and Genetics.
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are
+ * those of the authors and should not be interpreted as representing official
+ * policies, either expressed or implied, of any organization.
+ * #L%
+ */
+
 package imagej.core.plugins.assign;
 
 import java.util.ArrayList;
@@ -14,7 +49,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Log;
+import imagej.ui.UIService;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.Function;
@@ -37,7 +72,11 @@ import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;
 
-
+/**
+ * 
+ * @author Barry DeZonia
+ *
+ */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 			weight = MenuConstants.PROCESS_WEIGHT,
@@ -64,35 +103,38 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	@Parameter(persist = false)
 	ImageJ context;
 	
-	@Parameter
+	@Parameter(persist = false)
+	UIService uiService;
+	
+	@Parameter(persist = false)
 	EventService eventService;
 	
 	@Parameter(required = true, persist = false)
 	Dataset dataset;
 	
-	@Parameter(label = "Method: ", choices={MEDIAN, MEAN, MIN, MAX, MIDPOINT,
-		ADAPTIVE, CONTRAHARMONIC, GEOMETRIC, HARMONIC, TRIMMED})
+	@Parameter(label = "Method: ", choices = { MEDIAN, MEAN, MIN, MAX, MIDPOINT,
+		ADAPTIVE, CONTRAHARMONIC, GEOMETRIC, HARMONIC, TRIMMED } )
 	String functionName = MEDIAN;
 
-	@Parameter(label="Neighborhood: negative width span", min="0")
+	@Parameter(label="Neighborhood: negative width", min="0")
 	int windowNegWidthSpan = 1;
 	
-	@Parameter(label="Neighborhood: negative height span", min="0")
+	@Parameter(label="Neighborhood: negative height", min="0")
 	int windowNegHeightSpan = 1;
 	
-	@Parameter(label="Neighborhood: positive width span", min="0")
+	@Parameter(label="Neighborhood: positive width", min="0")
 	int windowPosWidthSpan = 1;
 	
-	@Parameter(label="Neighborhood: positive height span", min="0")
+	@Parameter(label="Neighborhood: positive height", min="0")
 	int windowPosHeightSpan = 1;
 	
-	@Parameter(label="Adaptive median: number of expansions",min="1")
+	@Parameter(label="Adaptive median: expansion count",min="1")
 	int windowExpansions = 1;
 	
 	@Parameter(label="Contraharmonic mean: order", min="1")
 	int order = 1;
 	
-	@Parameter(label="Trimmed mean: count of samples to trim (single end)", min="0")
+	@Parameter(label="Trimmed mean: trim count (single end)", min="1")
 	int halfTrimCount = 1;
 
 	@Parameter(type=ItemIO.OUTPUT)
@@ -102,13 +144,22 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	
 	@Override
 	public void run() {
-		if (dataset.numDimensions() != 2) {
-			// TODO - generic warning dialog
-			Log.error("This plugin only works with 2d images");
+		/* THIS?
+		if (dataset.isRGBMerged()) {
+			uiService.showDialog("This plugin does not work with merged color data");
 			return;
 		}
+		*/
+		/* OR THIS? BUT IS THIS TOO STRINGENT?
+		int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
+		if ((channelAxis >= 0) && (dataset.dimension(channelAxis) != 1)) {
+			uiService.showDialog("This plugin does not work with multichannel data");
+			return;
+		}
+		*/
 		updateUser();
-		long[] inputDims = dataset.getDims();
+		long[] dims = dataset.getDims();
+		int numDims = dims.length;
 		@SuppressWarnings("unchecked")
 		ImgPlus<T> origImg = (ImgPlus<T>) dataset.getImgPlus();
 		ImgPlus<T> newImg = origImg.copy();
@@ -119,13 +170,13 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 		Function<PointSet,T> inputFunction = getFunction(imageFunc);
 		HyperVolumePointSet neighborhood =
 				new HyperVolumePointSet(
-					new long[]{0,0},
-					new long[]{windowNegWidthSpan, windowNegHeightSpan},
-					new long[]{windowPosWidthSpan, windowPosHeightSpan});
+					new long[numDims],
+					offsets(numDims, windowNegWidthSpan, windowNegHeightSpan),
+					offsets(numDims, windowPosWidthSpan, windowPosHeightSpan));
 		PointSetInputIteratorFactory inputFactory =
 				new PointSetInputIteratorFactory(neighborhood);
-		long[] outputOrigin = new long[]{0,0};
-		long[] outputSpan = new long[]{inputDims[0], inputDims[1]};
+		long[] outputOrigin = new long[dims.length];
+		long[] outputSpan = dims;
 		ImageAssignment<T,T,PointSet> assigner =
 				new ImageAssignment<T,T,PointSet>(
 					newImg,
@@ -187,11 +238,18 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 		}
 		return pointSets;
 	}
-	
+
 	private void updateUser() {
 		int w = 1 + windowNegWidthSpan + windowPosWidthSpan;
 		int h = 1 + windowNegHeightSpan + windowPosHeightSpan;
 		String message = functionName + " of "+ w + " X " + h + " neighborhood";
 		eventService.publish(new StatusEvent(message));
+	}
+	
+	private long[] offsets(int numDims, int xOffset, int yOffset) {
+		long[] offsets = new long[numDims];
+		offsets[0] = xOffset;
+		offsets[1] = yOffset;
+		return offsets;
 	}
 }

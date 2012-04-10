@@ -196,7 +196,8 @@ public class SaltAndPepper implements ImageJPlugin {
 	}
 
 	private void informUser() {
-		uiService.showDialog("This plugin requires an integral dataset",
+		uiService.showDialog(
+			"This plugin does not work with merged color nor floating point datasets",
 			"Unsupported image type");
 	}
 
