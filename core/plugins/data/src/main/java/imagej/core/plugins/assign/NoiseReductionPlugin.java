@@ -131,8 +131,8 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	@Parameter(label="Adaptive median: expansion count",min="1")
 	int windowExpansions = 1;
 	
-	@Parameter(label="Contraharmonic mean: order", min="1")
-	int order = 1;
+	@Parameter(label="Contraharmonic mean: order")
+	double order = 1;
 	
 	@Parameter(label="Trimmed mean: trim count (single end)", min="1")
 	int halfTrimCount = 1;
@@ -157,7 +157,7 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 			return;
 		}
 		*/
-		updateUser();
+		notifyUserAtStart();
 		long[] dims = dataset.getDims();
 		int numDims = dims.length;
 		@SuppressWarnings("unchecked")
@@ -187,6 +187,7 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 					inputFactory);
 		assigner.assign();
 		output = new DefaultDataset(context, newImg);
+		notifyUserAtEnd();
 	}
 
 	// -- private interface --
@@ -239,10 +240,17 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 		return pointSets;
 	}
 
-	private void updateUser() {
+	private void notifyUserAtStart() {
 		int w = 1 + windowNegWidthSpan + windowPosWidthSpan;
 		int h = 1 + windowNegHeightSpan + windowPosHeightSpan;
-		String message = functionName + " of "+ w + " X " + h + " neighborhood";
+		String message = functionName + " of "+ w + " X " + h + " neighborhood ... beginning processing";
+		eventService.publish(new StatusEvent(message));
+	}
+	
+	private void notifyUserAtEnd() {
+		int w = 1 + windowNegWidthSpan + windowPosWidthSpan;
+		int h = 1 + windowNegHeightSpan + windowPosHeightSpan;
+		String message = functionName + " of "+ w + " X " + h + " neighborhood ... complete";
 		eventService.publish(new StatusEvent(message));
 	}
 	
