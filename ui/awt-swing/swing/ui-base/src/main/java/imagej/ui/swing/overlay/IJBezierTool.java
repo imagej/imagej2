@@ -50,13 +50,11 @@ import org.jhotdraw.draw.tool.BezierTool;
 /**
  * TODO
  * 
- * @author Lee Kamentsky, Johannes Schindelin
+ * @author Lee Kamentsky
+ * @author Johannes Schindelin
  */
 public class IJBezierTool extends BezierTool implements JHotDrawTool {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private final ImageDisplay display;
 	private final IJHotDrawOverlayAdapter adapter;

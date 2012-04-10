@@ -40,6 +40,11 @@ import imagej.updater.util.Progressable;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public abstract class AbstractUploader extends Progressable {
 
 	// TODO: Convert this class to use a subinterface of IPlugin.

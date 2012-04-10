@@ -44,15 +44,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-/*
- * This FileUploader is highly specialized to upload files and XML
- * information over to ImageJ2 Update sites. There is a series of steps to follow. Any
+/**
+ * This FileUploader is highly specialized to upload files and XML information
+ * over to ImageJ2 Update sites. There is a series of steps to follow. Any
  * exception means entire upload process is considered invalid.
- *
- * 1.) Set db.xml.gz to read-only
- * 2.) Verify db.xml.gz has not been modified, if not, upload process cancelled
- * 3.) Upload db.xml.gz.lock (Lock file, prevent others from writing it ATM)
- * 4.) If all goes well, force rename db.xml.gz.lock to db.xml.gz
+ * <ol>
+ * <li>Set db.xml.gz to read-only</li>
+ * <li>Verify db.xml.gz has not been modified, if not, upload process cancelled</li>
+ * <li>Upload db.xml.gz.lock (Lock file, prevent others from writing it ATM)</li>
+ * <li>If all goes well, force rename db.xml.gz.lock to db.xml.gz</li>
+ * </ol>
+ * 
+ * @author Johannes Schindelin
  */
 @Uploader(protocol = "file")
 public class FileUploader extends AbstractUploader {

@@ -44,8 +44,7 @@ import imagej.ui.UserInterface;
 import imagej.ui.UIService;
 
 /**
- * 
- * 1/22/12, GBH: Updated to use UIService.showDialog
+ * TODO
  *
  * @author Grant Harris
  */

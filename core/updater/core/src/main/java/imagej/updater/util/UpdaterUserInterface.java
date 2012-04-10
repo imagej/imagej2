@@ -41,6 +41,11 @@ import java.awt.Frame;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public abstract class UpdaterUserInterface {
 
 	// The methods

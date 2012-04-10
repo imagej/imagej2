@@ -35,7 +35,6 @@
 
 package imagej.legacy.translate;
 
-
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ij.ImagePlus;
@@ -46,7 +45,6 @@ import imagej.data.display.ImageDisplay;
  * plane position) between IJ1 and IJ2.
  * 
  * @author Barry DeZonia
- *
  */
 public class PositionHarmonizer implements DisplayHarmonizer {
 

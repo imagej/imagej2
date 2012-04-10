@@ -35,6 +35,11 @@
 
 package imagej.updater.util;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class StderrProgress implements Progress {
 
 	protected final static boolean redirected = System.console() == null;

@@ -78,6 +78,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+/**
+ * Tests various classes of the {@link imagej.updater} package and subpackages.
+ * 
+ * @author Johannes Schindelin
+ */
 public class UpdaterTest {
 
 	final Progress progress = new StderrProgress();

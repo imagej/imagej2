@@ -55,6 +55,11 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class ProgressDialog extends JDialog implements Progress {
 

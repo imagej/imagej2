@@ -66,6 +66,11 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class FileDetails extends JTextPane implements UndoableEditListener {
 

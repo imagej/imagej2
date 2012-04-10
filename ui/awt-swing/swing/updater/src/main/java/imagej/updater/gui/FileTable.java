@@ -72,8 +72,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
-/*
- * This class' role is to be in charge of how the Table should be displayed
+/**
+ * This class's role is to be in charge of how the Table should be displayed.
+ * 
+ * @author Johannes Schindelin
  */
 @SuppressWarnings("serial")
 public class FileTable extends JTable {

@@ -87,6 +87,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class UpdaterFrame extends JFrame implements TableModelListener,
 	ListSelectionListener

@@ -45,6 +45,8 @@ import java.util.List;
  * A ChannelCollection maintains a list of data values. The data is read only.
  * One can request any channel number from a ChannelCollection. If there is no
  * data associated with a channel number the value returned is zero.
+ * 
+ * @author Barry DeZonia
  */
 public class ChannelCollection {
 	

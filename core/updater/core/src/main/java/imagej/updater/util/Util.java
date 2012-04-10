@@ -65,14 +65,20 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/*
+/**
+ * Utility methods for use with the {@link imagej.updater} package and
+ * subpackages.
+ * <p>
  * Class functionality:
- * Extend from it if you need to
- * - Calculate timestamps of files
- * - Calculate the checksums of files
- * - Get the absolute path (prefix()) of the ImageJ directory
- * - Copy a file over to a particular location
- * - Get details of the Operating System ImageJ application is on
+ * <ul>
+ * <li>Calculate timestamps of files</li>
+ * <li>Calculate the checksums of files</li>
+ * <li>Get the absolute path (prefix()) of the ImageJ directory</li>
+ * <li>Copy a file over to a particular location</li>
+ * <li>Get details of the Operating System ImageJ application is on</li>
+ * </ul>
+ * 
+ * @author Johannes Schindelin
  */
 public class Util {
 

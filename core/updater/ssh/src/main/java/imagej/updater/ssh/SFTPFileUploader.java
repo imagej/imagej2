@@ -60,7 +60,7 @@ import com.jcraft.jsch.Session;
  * @author Jarek Sacha
  */
 @Uploader(protocol = "sftp")
-final public class SFTPFileUploader extends AbstractUploader {
+public final class SFTPFileUploader extends AbstractUploader {
 
 	private SFTPOperations sftp;
 

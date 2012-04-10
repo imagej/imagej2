@@ -46,7 +46,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
  *
  * @author Johannes Schindelin
  */
-
 public class DefaultUncaughtExceptionHandler implements
 	UncaughtExceptionHandler
 {

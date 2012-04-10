@@ -43,10 +43,12 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-/*
+/**
  * Direct responsibility: Download a list of files given their respective URLs
  * to their respective destinations. Updates its download status to its
  * Observer as well.
+ * 
+ * @author Johannes Schindelin
  */
 public class Downloader extends Progressable {
 

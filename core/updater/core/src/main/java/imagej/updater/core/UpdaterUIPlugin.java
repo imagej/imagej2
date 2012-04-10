@@ -32,14 +32,16 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-/**
- * A placeholder interface for graphical user interfaces for the updater
- * 
- * @author Johannes Schindelin
- */
 
 package imagej.updater.core;
 
 import imagej.ext.plugin.ImageJPlugin;
 
-public interface UpdaterUIPlugin extends ImageJPlugin {}
+/**
+ * A placeholder interface for graphical user interfaces for the updater.
+ * 
+ * @author Johannes Schindelin
+ */
+public interface UpdaterUIPlugin extends ImageJPlugin {
+	// marker interface
+}

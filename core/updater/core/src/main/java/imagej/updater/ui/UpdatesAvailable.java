@@ -46,6 +46,11 @@ import imagej.util.Log;
 
 import java.util.List;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @Plugin(label = "There are updates available")
 public class UpdatesAvailable implements ImageJPlugin {
 

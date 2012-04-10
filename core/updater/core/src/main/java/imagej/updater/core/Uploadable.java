@@ -38,6 +38,11 @@ package imagej.updater.core;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public interface Uploadable {
 
 	public String getFilename();

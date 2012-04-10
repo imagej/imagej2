@@ -47,11 +47,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A class describing conflicts in what is selected for updating/uploading
+ * A class describing conflicts in what is selected for updating/uploading.
  * 
  * @author Johannes Schindelin
  */
-
 public class Conflicts {
 
 	protected final FilesCollection files;

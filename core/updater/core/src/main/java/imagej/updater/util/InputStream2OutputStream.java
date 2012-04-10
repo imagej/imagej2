@@ -39,6 +39,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class InputStream2OutputStream extends Thread {
 
 	protected InputStream in;

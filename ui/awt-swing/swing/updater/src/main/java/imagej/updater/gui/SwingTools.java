@@ -63,7 +63,11 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentListener;
 
-// Helper functions to instantiated Swing components
+/**
+ * Helper functions to instantiated Swing components.
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class SwingTools {
 

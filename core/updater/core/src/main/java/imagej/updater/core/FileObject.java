@@ -45,6 +45,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class FileObject {
 
 	public static class Version implements Comparable<Version> {

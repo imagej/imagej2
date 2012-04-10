@@ -38,9 +38,11 @@ package imagej.updater.util;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
+/**
  * This class is the base class for serving Progress instances.  For this
  * reason, it implements the same interface.
+ * 
+ * @author Johannes Schindelin
  */
 public class Progressable implements Progress {
 

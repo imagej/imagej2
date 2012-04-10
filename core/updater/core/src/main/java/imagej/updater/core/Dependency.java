@@ -35,6 +35,11 @@
 
 package imagej.updater.core;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class Dependency {
 
 	public String filename;

@@ -41,6 +41,11 @@ import javax.swing.event.UndoableEditListener;
 
 import org.jhotdraw.draw.tool.Tool;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public interface JHotDrawTool extends Tool {
 
 	void addUndoableEditListener(UndoableEditListener l);

@@ -33,7 +33,7 @@
  * #L%
  */
 
-// TODO - reconcile copyright
+// FIXME - reconcile copyright
 
 /**
  * This program is free software; you can redistribute it and/or
@@ -67,10 +67,12 @@ import net.imglib2.multithreading.SimpleMultiThreading;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
 
-/*
- * A multithreaded statistics computer
- * Min/max, histogram, std, etc.
- * Based on ComputerMinMax
+/**
+ * A multithreaded statistics computer.
+ * <p>
+ * Min/max, histogram, std, etc. Based on ComputeMinMax.
+ * </p>
+ * 
  * @author Grant Harris
  */
 public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implements Algorithm, MultiThreaded, Benchmark {

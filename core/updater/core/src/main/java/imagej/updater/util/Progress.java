@@ -35,6 +35,11 @@
 
 package imagej.updater.util;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public interface Progress {
 
 	public void setTitle(String title);

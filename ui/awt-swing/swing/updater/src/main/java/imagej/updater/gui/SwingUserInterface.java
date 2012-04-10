@@ -53,6 +53,11 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class SwingUserInterface extends UpdaterUserInterface {
 
 	final protected EventService eventService;

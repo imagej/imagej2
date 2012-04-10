@@ -52,14 +52,20 @@ import java.util.List;
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
-/*
+/**
  * This class is responsible for writing updates to server, upon given the
  * updated file records.
- *
- * Note: Files are uploaded differently
- * - Local-only files & new file versions will have files AND details uploaded
- * - Uninstalled & up-to-date files will ONLY have their details uploaded
- *   (i.e.: XML file)
+ * <p>
+ * Note: Files are uploaded differently:
+ * </p>
+ * <ul>
+ * <li>Local-only files & new file versions will have files AND details uploaded
+ * </li>
+ * <li>Uninstalled & up-to-date files will ONLY have their details uploaded
+ * (i.e.: XML file)</li>
+ * </ul>
+ * 
+ * @author Johannes Schindelin
  */
 public class FilesUploader {
 

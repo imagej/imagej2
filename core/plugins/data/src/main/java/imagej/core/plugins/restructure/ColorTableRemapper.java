@@ -39,12 +39,11 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.ImgPlus;
 
-
-/** Class responsible for simple remapping of color tables from one indexing
+/**
+ * Class responsible for simple remapping of color tables from one indexing
  * scheme to another.
  * 
  * @author Barry DeZonia
- *
  */
 public class ColorTableRemapper {
 

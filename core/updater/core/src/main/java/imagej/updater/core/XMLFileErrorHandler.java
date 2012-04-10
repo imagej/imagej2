@@ -39,6 +39,11 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class XMLFileErrorHandler implements ErrorHandler {
 
 	@Override

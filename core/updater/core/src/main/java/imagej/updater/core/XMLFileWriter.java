@@ -60,6 +60,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class XMLFileWriter {
 
 	protected FilesCollection files;

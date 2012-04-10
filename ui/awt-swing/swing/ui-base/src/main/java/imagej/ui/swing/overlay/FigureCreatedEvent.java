@@ -42,6 +42,8 @@ import org.jhotdraw.draw.Figure;
 /**
  * An event that tells the listener that an overlay has been created,
  * associated with a figure.
+ * 
+ * @author Lee Kamentsky
  */
 public class FigureCreatedEvent {
 

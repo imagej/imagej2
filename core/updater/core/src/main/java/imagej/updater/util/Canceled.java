@@ -35,5 +35,10 @@
 
 package imagej.updater.util;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class Canceled extends RuntimeException {}

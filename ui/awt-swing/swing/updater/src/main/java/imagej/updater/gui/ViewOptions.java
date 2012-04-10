@@ -40,6 +40,11 @@ import imagej.updater.core.FilesCollection;
 
 import javax.swing.JComboBox;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class ViewOptions extends JComboBox {
 

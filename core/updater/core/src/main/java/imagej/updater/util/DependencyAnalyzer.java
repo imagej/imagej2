@@ -57,6 +57,8 @@ import java.util.jar.JarFile;
  * you load a ton of classes into a classloader). The magic numbers and offsets
  * are taken from
  * http://java.sun.com/docs/books/jvms/second_edition/html/ClassFile.doc.html
+ * 
+ * @author Johannes Schindelin
  */
 public class DependencyAnalyzer {
 

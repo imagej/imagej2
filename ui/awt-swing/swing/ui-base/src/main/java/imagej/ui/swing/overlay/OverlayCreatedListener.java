@@ -37,6 +37,11 @@ package imagej.ui.swing.overlay;
 
 import java.util.EventListener;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public interface OverlayCreatedListener extends EventListener {
 
 	public void overlayCreated(FigureCreatedEvent e);

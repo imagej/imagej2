@@ -48,9 +48,11 @@ import java.net.URLConnection;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
-/*
+/**
  * Directly in charge of downloading and saving start-up files (i.e.: XML file
  * and related).
+ * 
+ * @author Johannes Schindelin
  */
 public class XMLFileDownloader extends Progressable {
 

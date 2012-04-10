@@ -64,6 +64,11 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import org.xml.sax.SAXException;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class FilesCollection extends LinkedHashMap<String, FileObject>
 	implements Iterable<FileObject>

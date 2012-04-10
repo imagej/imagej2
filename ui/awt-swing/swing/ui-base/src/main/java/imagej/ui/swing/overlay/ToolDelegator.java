@@ -48,6 +48,11 @@ import org.jhotdraw.draw.DrawingView;
 import org.jhotdraw.draw.event.ToolListener;
 import org.jhotdraw.draw.tool.AbstractTool;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class ToolDelegator extends AbstractTool {
 
 	private static final long serialVersionUID = 1L;

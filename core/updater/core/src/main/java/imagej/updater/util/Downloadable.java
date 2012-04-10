@@ -37,6 +37,11 @@ package imagej.updater.util;
 
 import java.io.File;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public interface Downloadable {
 
 	public File getDestination();

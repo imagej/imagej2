@@ -37,6 +37,11 @@ package imagej.updater.util;
 
 import java.util.Iterator;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class OneItemIterable<T> implements Iterable<T> {
 
 	T justOne;

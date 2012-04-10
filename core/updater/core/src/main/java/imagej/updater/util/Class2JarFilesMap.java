@@ -45,6 +45,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("serial")
 public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 

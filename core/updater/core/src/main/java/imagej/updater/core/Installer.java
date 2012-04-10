@@ -48,6 +48,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class Installer extends Downloader {
 
 	protected FilesCollection files;
