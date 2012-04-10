@@ -342,6 +342,7 @@
 			</build>
 		</profile>
 
+		<!-- HACK: The m2e plugin does not support copy or unpack. -->
 		<profile>
 			<id>not-eclipse</id>
 			<activation>
