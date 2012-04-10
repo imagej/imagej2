@@ -36,130 +36,142 @@
 package imagej;
 
 import java.io.File;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A classloader whose classpath can be augmented after instantiation.
- *
+ * 
  * @author Johannes Schindelin
  */
 public class ClassLoaderPlus extends URLClassLoader {
+
 	// A frozen ClassLoaderPlus will add only to the urls array
 	protected boolean frozen;
 	protected List<URL> urls = new ArrayList<URL>();
 
-	public static ClassLoaderPlus getInImageJDirectory(String... relativePaths) {
+	public static ClassLoaderPlus getInImageJDirectory(
+		final String... relativePaths)
+	{
 		try {
-			File directory = new File(getImageJDir());
-			URL[] urls = new URL[relativePaths.length];
-			for (int i = 0; i < urls.length; i++)
+			final File directory = new File(getImageJDir());
+			final URL[] urls = new URL[relativePaths.length];
+			for (int i = 0; i < urls.length; i++) {
 				urls[i] = new File(directory, relativePaths[i]).toURI().toURL();
+			}
 			return get(urls);
-		} catch (Exception e) {
+		}
+		catch (final Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Uh oh: " + e.getMessage());
 		}
 	}
 
-	public static ClassLoaderPlus get(File... files) {
+	public static ClassLoaderPlus get(final File... files) {
 		try {
-			URL[] urls = new URL[files.length];
-			for (int i = 0; i < urls.length; i++)
+			final URL[] urls = new URL[files.length];
+			for (int i = 0; i < urls.length; i++) {
 				urls[i] = files[i].toURI().toURL();
+			}
 			return get(urls);
-		} catch (Exception e) {
+		}
+		catch (final Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Uh oh: " + e.getMessage());
 		}
 	}
 
-	public static ClassLoaderPlus get(URL... urls) {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	public static ClassLoaderPlus get(final URL... urls) {
+		final ClassLoader classLoader =
+			Thread.currentThread().getContextClassLoader();
 		if (classLoader instanceof ClassLoaderPlus) {
-			ClassLoaderPlus classLoaderPlus = (ClassLoaderPlus)classLoader;
-			for (URL url : urls)
+			final ClassLoaderPlus classLoaderPlus = (ClassLoaderPlus) classLoader;
+			for (final URL url : urls) {
 				classLoaderPlus.add(url);
+			}
 			return classLoaderPlus;
 		}
 		return new ClassLoaderPlus(urls);
 	}
 
-	public static ClassLoaderPlus getRecursivelyInImageJDirectory(String... relativePaths) {
+	public static ClassLoaderPlus getRecursivelyInImageJDirectory(
+		final String... relativePaths)
+	{
 		return getRecursivelyInImageJDirectory(false, relativePaths);
 	}
 
-	public static ClassLoaderPlus getRecursivelyInImageJDirectory(boolean onlyJars, String... relativePaths) {
+	public static ClassLoaderPlus getRecursivelyInImageJDirectory(
+		final boolean onlyJars, final String... relativePaths)
+	{
 		try {
-			File directory = new File(getImageJDir());
+			final File directory = new File(getImageJDir());
 			ClassLoaderPlus classLoader = null;
-			File[] files = new File[relativePaths.length];
+			final File[] files = new File[relativePaths.length];
 			for (int i = 0; i < files.length; i++)
-				classLoader = getRecursively(onlyJars, new File(directory, relativePaths[i]));
+				classLoader =
+					getRecursively(onlyJars, new File(directory, relativePaths[i]));
 			return classLoader;
-		} catch (Exception e) {
+		}
+		catch (final Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Uh oh: " + e.getMessage());
 		}
 	}
 
-	public static ClassLoaderPlus getRecursively(File directory) {
+	public static ClassLoaderPlus getRecursively(final File directory) {
 		return getRecursively(false, directory);
 	}
 
-	public static ClassLoaderPlus getRecursively(boolean onlyJars, File directory) {
+	public static ClassLoaderPlus getRecursively(final boolean onlyJars,
+		final File directory)
+	{
 		try {
 			ClassLoaderPlus classLoader = onlyJars ? null : get(directory);
-			File[] list = directory.listFiles();
-			if (list != null)
-				for (File file : list)
-					if (file.isDirectory())
-						classLoader = getRecursively(onlyJars, file);
-					else if (file.getName().endsWith(".jar"))
-						classLoader = get(file);
+			final File[] list = directory.listFiles();
+			if (list != null) for (final File file : list)
+				if (file.isDirectory()) classLoader = getRecursively(onlyJars, file);
+				else if (file.getName().endsWith(".jar")) classLoader = get(file);
 			return classLoader;
-		} catch (Exception e) {
+		}
+		catch (final Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Uh oh: " + e.getMessage());
 		}
 	}
-
 
 	public ClassLoaderPlus() {
 		this(new URL[0]);
 	}
 
-	public ClassLoaderPlus(URL... urls) {
+	public ClassLoaderPlus(final URL... urls) {
 		super(urls, Thread.currentThread().getContextClassLoader());
 		Thread.currentThread().setContextClassLoader(this);
 	}
 
-	public void addInImageJDirectory(String relativePath) {
+	public void addInImageJDirectory(final String relativePath) {
 		try {
 			add(new File(getImageJDir(), relativePath));
-		} catch (Exception e) {
+		}
+		catch (final Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Uh oh: " + e.getMessage());
 		}
 	}
 
-	public void add(String path) throws MalformedURLException {
+	public void add(final String path) throws MalformedURLException {
 		add(new File(path));
 	}
 
-	public void add(File file) throws MalformedURLException {
+	public void add(final File file) throws MalformedURLException {
 		add(file.toURI().toURL());
 	}
 
-	public void add(URL url) {
+	public void add(final URL url) {
 		urls.add(url);
-		if (!frozen)
-			addURL(url);
+		if (!frozen) addURL(url);
 	}
 
 	public void freeze() {
@@ -167,9 +179,9 @@ public class ClassLoaderPlus extends URLClassLoader {
 	}
 
 	public String getClassPath() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		String sep = "";
-		for (URL url : urls)
+		for (final URL url : urls)
 			if (url.getProtocol().equals("file")) {
 				builder.append(sep).append(url.getPath());
 				sep = File.pathSeparator;
@@ -177,44 +189,47 @@ public class ClassLoaderPlus extends URLClassLoader {
 		return builder.toString();
 	}
 
+	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append(getClass().getName()).append("(");
-		for (URL url : getURLs())
+		for (final URL url : getURLs()) {
 			builder.append(" ").append(url.toString());
+		}
 		builder.append(" )");
 		return builder.toString();
 	}
 
 	public static String getImageJDir() throws ClassNotFoundException {
 		String path = System.getProperty("ij.dir");
-		if (path != null)
-			return path;
+		if (path != null) return path;
 		final String prefix = "file:";
 		final String suffix = "/jars/ij-launcher.jar!/fiji/ClassLoaderPlus.class";
-		path = Class.forName("fiji.ClassLoaderPlus")
-			.getResource("ClassLoaderPlus.class").getPath();
-		if (path.startsWith(prefix))
-			path = path.substring(prefix.length());
-		if (path.endsWith(suffix))
-			path = path.substring(0,
-				path.length() - suffix.length());
+		path =
+			Class.forName("fiji.ClassLoaderPlus")
+				.getResource("ClassLoaderPlus.class").getPath();
+		if (path.startsWith(prefix)) path = path.substring(prefix.length());
+		if (path.endsWith(suffix)) {
+			path = path.substring(0, path.length() - suffix.length());
+		}
 		return path;
 	}
 
-	public String getJarPath(String className) {
+	public String getJarPath(final String className) {
 		try {
-			Class clazz = loadClass(className);
-			String path = clazz.getResource("/" + className.replace('.', '/') + ".class").getPath();
-			if (path.startsWith("file:"))
-				path = path.substring(5);
-			int bang = path.indexOf("!/");
-			if (bang > 0)
-				path = path.substring(0, bang);
+			final Class clazz = loadClass(className);
+			String path =
+				clazz.getResource("/" + className.replace('.', '/') + ".class")
+					.getPath();
+			if (path.startsWith("file:")) path = path.substring(5);
+			final int bang = path.indexOf("!/");
+			if (bang > 0) path = path.substring(0, bang);
 			return path;
-		} catch (Throwable t) {
+		}
+		catch (final Throwable t) {
 			t.printStackTrace();
 			return null;
 		}
 	}
+
 }
