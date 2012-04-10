@@ -23,13 +23,16 @@ my %knownAuthors = (
   "Grant Harris" => 1,
   "Johannes Schindelin" => 1,
   "Lee Kamentsky" => 1,
+  "Mark Hiner" => 1,
   "Rick Lentz" => 1,
   "Stephan Preibisch" => 1,
   "Stephan Saalfeld" => 1,
   "Wayne Rasband" => 1,
 
+  "Jarek Sacha" => 1,
   "Melinda Green" => 1,
   "Werner Randelshofer" => 1,
+  "Yap Chin Kiet" => 1,
 );
 
 # parse command line arguments
@@ -43,7 +46,18 @@ else {
 
 # read copyright file
 my @copyright = readFile("LICENSE.txt");
-push(@copyright, '*/');
+my $spacers = 0;
+for (my $i = 0; $i < @copyright; $i++) {
+  if ($copyright[$i] eq '') {
+    if ($spacers < 2) {
+      $copyright[$i] = '%%';
+      $spacers++;
+    }
+  }
+  $copyright[$i] = ' * ' . $copyright[$i];
+}
+push(@copyright, ' * #L%');
+push(@copyright, ' */');
 push(@copyright, '');
 
 # find source files
@@ -70,7 +84,7 @@ sub process($) {
 
   # check header comment
   my $i = 0;
-  my @header = ('//', "// $base", '//', '', '/*');
+  my @header = ('/*', ' * #%L');
   if (!match(\@header, \@data, $i)) {
     print "$file: invalid header\n";
     return;
@@ -177,7 +191,7 @@ sub process($) {
 
   # check type declaration
   if ($data[$i++] !~
-    /^public (abstract )?(final )?(class)|(enum)|(interface) $class[ <]/)
+    /^(public )?(abstract )?(final )?(class)|(enum)|(interface) $class[ <]/)
   {
     print "$file: invalid type declaration at line #$i\n";
     return;
