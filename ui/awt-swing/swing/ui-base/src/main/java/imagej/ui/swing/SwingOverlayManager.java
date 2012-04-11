@@ -438,6 +438,16 @@ public class SwingOverlayManager
 				getOverlayInfo(i).selected = false;
 			}
 		}
+		
+		public List<Overlay> selectedOverlays() {
+			ArrayList<Overlay> overlays = new ArrayList<Overlay>();
+			for (int i = 0; i < getOverlayInfoCount(); i++) {
+				OverlayInfo info = infoList.getOverlayInfo(i);
+				if (info.selected)
+					overlays.add(info.overlay);
+			}
+			return overlays;
+		}
 	}
 	
 	private class OverlayListModel extends AbstractListModel {
@@ -718,16 +728,11 @@ public class SwingOverlayManager
 	private void properties() {
 		int[] selected = infoList.selectedIndices();
 		if (selected.length == 0) {
-			JOptionPane.showMessageDialog(this, "This command requires one or more single selections");
+			JOptionPane.showMessageDialog(this, "This command requires one or more selections");
+			return;
 		}
-		else { // exactly one item selected
-			ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-			for (int i = 0; i < selected.length; i++) {
-				Overlay overlay = infoList.getOverlayInfo(selected[i]).overlay;
-				overlays.add(overlay);
-			}
-			runProperties(overlays);
-		}
+		// else one or more selections exist
+		runPropertiesPlugin();
 	}
 	
 	private void removeSliceInfo() {
@@ -1240,9 +1245,9 @@ public class SwingOverlayManager
 		return null;
 	}
 	
-	private void runProperties(List<Overlay> selectedOverlays) {
+	private void runPropertiesPlugin() {
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
-		inputMap.put("overlays", selectedOverlays);
+		inputMap.put("overlays", infoList.selectedOverlays());
 		PluginService pluginService = context.getService(PluginService.class);
 		pluginService.run(SelectedManagerOverlayProperties.class, inputMap);
 		/*
