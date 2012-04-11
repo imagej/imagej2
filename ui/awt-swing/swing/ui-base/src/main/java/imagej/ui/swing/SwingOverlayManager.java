@@ -36,6 +36,7 @@
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -50,6 +51,7 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.ext.plugin.PluginService;
 import imagej.platform.PlatformService;
 import imagej.ui.UIService;
 import imagej.util.Log;
@@ -72,10 +74,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.swing.AbstractListModel;
@@ -711,7 +716,18 @@ public class SwingOverlayManager
 	}
 	
 	private void properties() {
-		JOptionPane.showMessageDialog(this, "unimplemented");
+		int[] selected = infoList.selectedIndices();
+		if (selected.length == 0) {
+			JOptionPane.showMessageDialog(this, "This command requires one or more single selections");
+		}
+		else { // exactly one item selected
+			ArrayList<Overlay> overlays = new ArrayList<Overlay>();
+			for (int i = 0; i < selected.length; i++) {
+				Overlay overlay = infoList.getOverlayInfo(selected[i]).overlay;
+				overlays.add(overlay);
+			}
+			runProperties(overlays);
+		}
 	}
 	
 	private void removeSliceInfo() {
@@ -1222,5 +1238,23 @@ public class SwingOverlayManager
 				return ((OverlayView) view).getData();
 		}
 		return null;
+	}
+	
+	private void runProperties(List<Overlay> selectedOverlays) {
+		final Map<String, Object> inputMap = new HashMap<String, Object>();
+		inputMap.put("overlays", selectedOverlays);
+		PluginService pluginService = context.getService(PluginService.class);
+		pluginService.run(SelectedManagerOverlayProperties.class, inputMap);
+		/*
+		String name = info.toString();
+		ColorRGB lineColor = info.overlay.getLineColor();
+		ColorRGB fillColor = info.overlay.getFillColor();
+		double width = info.overlay.getLineWidth();
+		JOptionPane.showMessageDialog(this,
+			"(" + name +
+			") (" + lineColor +
+			") (" + fillColor +
+			") (" + width + ")");
+		*/
 	}
 }
