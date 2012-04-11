@@ -49,7 +49,6 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.UIService;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.Function;
@@ -82,7 +81,7 @@ import net.imglib2.type.numeric.RealType;
 			weight = MenuConstants.PROCESS_WEIGHT,
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Noise", mnemonic = 'n'),
-		@Menu(label = "Noise Reducer", weight = 4) })
+		@Menu(label = "Noise Reduction", weight = 4) })
 public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 {
 	// -- constants --
@@ -102,9 +101,6 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	
 	@Parameter(persist = false)
 	ImageJ context;
-	
-	@Parameter(persist = false)
-	UIService uiService;
 	
 	@Parameter(persist = false)
 	EventService eventService;
@@ -140,26 +136,15 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	@Parameter(type=ItemIO.OUTPUT)
 	Dataset output = null;
 
+	private int numDims;
+	
 	// -- public interface --
 	
 	@Override
 	public void run() {
-		/* THIS?
-		if (dataset.isRGBMerged()) {
-			uiService.showDialog("This plugin does not work with merged color data");
-			return;
-		}
-		*/
-		/* OR THIS? BUT IS THIS TOO STRINGENT?
-		int channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
-		if ((channelAxis >= 0) && (dataset.dimension(channelAxis) != 1)) {
-			uiService.showDialog("This plugin does not work with multichannel data");
-			return;
-		}
-		*/
 		notifyUserAtStart();
 		long[] dims = dataset.getDims();
-		int numDims = dims.length;
+		numDims = dims.length;
 		@SuppressWarnings("unchecked")
 		ImgPlus<T> origImg = (ImgPlus<T>) dataset.getImgPlus();
 		ImgPlus<T> newImg = origImg.copy();
@@ -171,8 +156,8 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 		HyperVolumePointSet neighborhood =
 				new HyperVolumePointSet(
 					new long[numDims],
-					offsets(numDims, windowNegWidthSpan, windowNegHeightSpan),
-					offsets(numDims, windowPosWidthSpan, windowPosHeightSpan));
+					offsets(windowNegWidthSpan, windowNegHeightSpan),
+					offsets(windowPosWidthSpan, windowPosHeightSpan));
 		PointSetInputIteratorFactory inputFactory =
 				new PointSetInputIteratorFactory(neighborhood);
 		long[] outputOrigin = new long[dims.length];
@@ -232,9 +217,9 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 		for (int i = 0; i < windowExpansions; i++) {
 			PointSet rect =
 					new HyperVolumePointSet(
-						new long[]{0,0},
-						new long[]{windowNegWidthSpan+i, windowNegHeightSpan+i},
-						new long[]{windowPosWidthSpan+i, windowPosHeightSpan+i});
+						new long[numDims],
+						offsets(windowNegWidthSpan+i, windowNegHeightSpan+i),
+						offsets(windowPosWidthSpan+i, windowPosHeightSpan+i));
 			pointSets.add(rect);
 		}
 		return pointSets;
@@ -254,7 +239,7 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 		eventService.publish(new StatusEvent(message));
 	}
 	
-	private long[] offsets(int numDims, int xOffset, int yOffset) {
+	private long[] offsets(int xOffset, int yOffset) {
 		long[] offsets = new long[numDims];
 		offsets[0] = xOffset;
 		offsets[1] = yOffset;
