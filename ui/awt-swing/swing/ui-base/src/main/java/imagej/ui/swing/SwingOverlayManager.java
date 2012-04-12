@@ -197,6 +197,8 @@ public class SwingOverlayManager
 		buttonPane.add(getDeselectButton());
 		buttonPane.add(getPropertiesButton());
 		buttonPane.add(getFlattenButton());
+		buttonPane.add(getFillButton());
+		buttonPane.add(getDrawButton());
 		buttonPane.add(getMoreButton());
 
 		final JPanel boolPane = new JPanel();
@@ -984,8 +986,6 @@ public class SwingOverlayManager
 		final JPopupMenu menu = new JPopupMenu();
 		menu.add(getOpenMenuItem());
 		menu.add(getSaveMenuItem());
-		menu.add(getFillMenuItem());
-		menu.add(getDrawMenuItem());
 		menu.add(getAndMenuItem());
 		menu.add(getOrMenuItem());
 		menu.add(getXorMenuItem());
@@ -1013,22 +1013,6 @@ public class SwingOverlayManager
 		final JMenuItem item;
 		item = new JMenuItem("AND");
 		item.setActionCommand(ACTION_AND);
-		item.addActionListener(this);
-		return item;
-	}
-	
-	private JMenuItem getDrawMenuItem() {
-		final JMenuItem item;
-		item = new JMenuItem("Draw");
-		item.setActionCommand(ACTION_DRAW);
-		item.addActionListener(this);
-		return item;
-	}
-	
-	private JMenuItem getFillMenuItem() {
-		final JMenuItem item;
-		item = new JMenuItem("Fill");
-		item.setActionCommand(ACTION_FILL);
 		item.addActionListener(this);
 		return item;
 	}
@@ -1150,6 +1134,20 @@ public class SwingOverlayManager
 	private JButton getDeselectButton() {
 		final JButton button = new JButton("Deselect");
 		button.setActionCommand(ACTION_DESELECT);
+		button.addActionListener(this);
+		return button;
+	}
+	
+	private JButton getDrawButton() {
+		final JButton button = new JButton("Draw");
+		button.setActionCommand(ACTION_DRAW);
+		button.addActionListener(this);
+		return button;
+	}
+	
+	private JButton getFillButton() {
+		final JButton button = new JButton("Fill");
+		button.setActionCommand(ACTION_FILL);
 		button.addActionListener(this);
 		return button;
 	}
