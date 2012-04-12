@@ -49,7 +49,7 @@ public class DefaultModule extends AbstractModule {
 	}
 
 	public DefaultModule(final DefaultModuleInfo info) {
-		super(info);
+		super();
 		this.info = info;
 		info.setModuleClass(getClass());
 	}

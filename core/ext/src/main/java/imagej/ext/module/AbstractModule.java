@@ -49,9 +49,6 @@ import java.util.Map;
  */
 public abstract class AbstractModule implements Module {
 
-	/** The {@link ModuleInfo} describing the module. */
-	private final ModuleInfo info;
-
 	private final HashMap<String, Object> inputs;
 	private final HashMap<String, Object> outputs;
 
@@ -60,8 +57,7 @@ public abstract class AbstractModule implements Module {
 
 	private MethodRef initializerRef;
 
-	public AbstractModule(final ModuleInfo info) {
-		this.info = info;
+	public AbstractModule() {
 		inputs = new HashMap<String, Object>();
 		outputs = new HashMap<String, Object>();
 		resolvedInputs = new HashSet<String>();
@@ -83,14 +79,9 @@ public abstract class AbstractModule implements Module {
 	public void initialize() {
 		if (initializerRef == null) {
 			initializerRef =
-				new MethodRef(info.getDelegateClassName(), info.getInitializer());
+				new MethodRef(getInfo().getDelegateClassName(), getInfo().getInitializer());
 		}
 		initializerRef.execute(getDelegateObject());
-	}
-
-	@Override
-	public ModuleInfo getInfo() {
-		return info;
 	}
 
 	@Override
@@ -110,12 +101,12 @@ public abstract class AbstractModule implements Module {
 
 	@Override
 	public Map<String, Object> getInputs() {
-		return createMap(info.inputs(), false);
+		return createMap(getInfo().inputs(), false);
 	}
 
 	@Override
 	public Map<String, Object> getOutputs() {
-		return createMap(info.outputs(), true);
+		return createMap(getInfo().outputs(), true);
 	}
 
 	@Override

@@ -60,7 +60,7 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 
 	/** Creates a plugin module for the given {@link PluginInfo}. */
 	public PluginModule(final PluginModuleInfo<R> info) throws ModuleException {
-		super(info);
+		super();
 		this.info = info;
 		plugin = instantiatePlugin();
 		assignPresets();
@@ -71,7 +71,7 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 	 * specified {@link RunnablePlugin} instance.
 	 */
 	public PluginModule(final PluginModuleInfo<R> info, final R plugin) {
-		super(info);
+		super();
 		this.info = info;
 		this.plugin = plugin;
 		assignPresets();
