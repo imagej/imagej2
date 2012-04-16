@@ -265,9 +265,9 @@ public final class DefaultOverlayService extends AbstractService implements
 		final Dataset ds = getDataset(display);
 		if (ds == null) return;
 		final Position position = display.getActiveView().getPlanePosition();
-		long[] pp = new long[position.numDimensions()];
+		final long[] pp = new long[position.numDimensions()];
 		position.localize(pp);
-		long[] fullPos = new long[pp.length + 2];
+		final long[] fullPos = new long[pp.length + 2];
 		for (int i = 2; i < fullPos.length; i++)
 			fullPos[i] = pp[i-2];
 		final DrawingTool tool = new DrawingTool(ds);
@@ -283,21 +283,21 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 	
 	private void fillOverlay(Overlay o, DrawingTool tool) {
-		RegionOfInterest reg = o.getRegionOfInterest();
-		int numDims = reg.numDimensions();
-		double[] minD = new double[numDims];
-		double[] maxD = new double[numDims];
+		final RegionOfInterest reg = o.getRegionOfInterest();
+		final int numDims = reg.numDimensions();
+		final double[] minD = new double[numDims];
+		final double[] maxD = new double[numDims];
 		reg.realMin(minD);
 		reg.realMax(maxD);
-		long[] minL = new long[numDims];
-		long[] maxL = new long[numDims];
+		final long[] minL = new long[numDims];
+		final long[] maxL = new long[numDims];
 		for (int i = 0; i < numDims; i++) {
 			minL[i] = (long) Math.floor(minD[i]);
 			maxL[i] = (long) Math.ceil(maxD[i]);
 		}
-		HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-		RealRandomAccess<BitType> accessor = reg.realRandomAccess();
-		PointSetIterator iter = pointSet.createIterator();
+		final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
+		final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+		final PointSetIterator iter = pointSet.createIterator();
 		long[] pos;
 		while (iter.hasNext()) {
 			pos = iter.next();
@@ -309,21 +309,21 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	private void outlineOverlay(Overlay o, DrawingTool tool) {
-		RegionOfInterest reg = o.getRegionOfInterest();
-		int numDims = reg.numDimensions();
-		double[] minD = new double[numDims];
-		double[] maxD = new double[numDims];
+		final RegionOfInterest reg = o.getRegionOfInterest();
+		final int numDims = reg.numDimensions();
+		final double[] minD = new double[numDims];
+		final double[] maxD = new double[numDims];
 		reg.realMin(minD);
 		reg.realMax(maxD);
-		long[] minL = new long[numDims];
-		long[] maxL = new long[numDims];
+		final long[] minL = new long[numDims];
+		final long[] maxL = new long[numDims];
 		for (int i = 0; i < numDims; i++) {
 			minL[i] = (long) Math.floor(minD[i]);
 			maxL[i] = (long) Math.ceil(maxD[i]);
 		}
-		HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-		RealRandomAccess<BitType> accessor = reg.realRandomAccess();
-		PointSetIterator iter = pointSet.createIterator();
+		final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
+		final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+		final PointSetIterator iter = pointSet.createIterator();
 		long[] pos;
 		while (iter.hasNext()) {
 			pos = iter.next();
@@ -355,10 +355,10 @@ public final class DefaultOverlayService extends AbstractService implements
 	
 
 	private ImageDisplay getFirstDisplay(Overlay o) {
-		List<Display<?>> displays = displayService.getDisplays();
+		final List<Display<?>> displays = displayService.getDisplays();
 		for (Display<?> display : displays) {
 			if (display instanceof ImageDisplay) {
-				List<Overlay> displayOverlays = getOverlays((ImageDisplay)display);
+				final List<Overlay> displayOverlays = getOverlays((ImageDisplay)display);
 				if (displayOverlays.contains(o))
 					return (ImageDisplay) display;
 			}
