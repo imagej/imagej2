@@ -36,11 +36,16 @@
 package imagej.data.display;
 
 import imagej.ImageJ;
+import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.DrawingTool;
 import imagej.data.Extents;
+import imagej.data.Position;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayService;
 import imagej.object.ObjectService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -49,7 +54,11 @@ import imagej.util.RealRect;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imglib2.RealRandomAccess;
+import net.imglib2.ops.PointSetIterator;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.roi.RegionOfInterest;
+import net.imglib2.type.logic.BitType;
 
 /**
  * Default service for working with {@link Overlay}s.
@@ -62,6 +71,8 @@ public final class DefaultOverlayService extends AbstractService implements
 {
 
 	private final ObjectService objectService;
+	private final DisplayService displayService;
+	private final ImageDisplayService imageDisplayService;
 
 	private OverlaySettings defaultSettings;
 
@@ -74,10 +85,13 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	public DefaultOverlayService(final ImageJ context,
-		final ObjectService objectService)
+		final ObjectService objectService, final DisplayService displayService,
+		final ImageDisplayService imageDisplayService)
 	{
 		super(context);
 		this.objectService = objectService;
+		this.displayService = displayService;
+		this.imageDisplayService = imageDisplayService;
 	}
 
 	// -- OverlayService methods --
@@ -229,4 +243,130 @@ public final class DefaultOverlayService extends AbstractService implements
 		return defaultSettings;
 	}
 
+	@Override
+	public void drawOverlay(Overlay o, ChannelCollection channelData) {
+		outlineOrFill(o, DrawMode.OUTLINE, channelData);
+	}
+
+	@Override
+	public void fillOverlay(Overlay o, ChannelCollection channelData) {
+		outlineOrFill(o, DrawMode.FILL, channelData);
+	}
+
+	// -- helpers --
+
+	private enum DrawMode {OUTLINE, FILL}
+	
+
+	private void outlineOrFill(Overlay o, DrawMode mode, ChannelCollection chans)
+	{
+		final ImageDisplay display = getFirstDisplay(o);
+		if (display == null) return;
+		final Dataset ds = getDataset(display);
+		if (ds == null) return;
+		final Position position = display.getActiveView().getPlanePosition();
+		long[] pp = new long[position.numDimensions()];
+		position.localize(pp);
+		long[] fullPos = new long[pp.length + 2];
+		for (int i = 2; i < fullPos.length; i++)
+			fullPos[i] = pp[i-2];
+		final DrawingTool tool = new DrawingTool(ds);
+		tool.setPosition(fullPos);
+		tool.setChannels(chans);
+		if (mode == DrawMode.FILL)
+			fillOverlay(o, tool);
+		else if (mode == DrawMode.OUTLINE)
+			outlineOverlay(o, tool);
+		else
+			throw new IllegalArgumentException("unknown draw mode "+mode);
+		ds.update();
+	}
+	
+	private void fillOverlay(Overlay o, DrawingTool tool) {
+		RegionOfInterest reg = o.getRegionOfInterest();
+		int numDims = reg.numDimensions();
+		double[] minD = new double[numDims];
+		double[] maxD = new double[numDims];
+		reg.realMin(minD);
+		reg.realMax(maxD);
+		long[] minL = new long[numDims];
+		long[] maxL = new long[numDims];
+		for (int i = 0; i < numDims; i++) {
+			minL[i] = (long) Math.floor(minD[i]);
+			maxL[i] = (long) Math.ceil(maxD[i]);
+		}
+		HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
+		RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+		PointSetIterator iter = pointSet.createIterator();
+		long[] pos;
+		while (iter.hasNext()) {
+			pos = iter.next();
+			accessor.setPosition(pos);
+			if (accessor.get().get())
+				tool.drawPixel(pos[0], pos[1]);
+		}
+		
+	}
+
+	private void outlineOverlay(Overlay o, DrawingTool tool) {
+		RegionOfInterest reg = o.getRegionOfInterest();
+		int numDims = reg.numDimensions();
+		double[] minD = new double[numDims];
+		double[] maxD = new double[numDims];
+		reg.realMin(minD);
+		reg.realMax(maxD);
+		long[] minL = new long[numDims];
+		long[] maxL = new long[numDims];
+		for (int i = 0; i < numDims; i++) {
+			minL[i] = (long) Math.floor(minD[i]);
+			maxL[i] = (long) Math.ceil(maxD[i]);
+		}
+		HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
+		RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+		PointSetIterator iter = pointSet.createIterator();
+		long[] pos;
+		while (iter.hasNext()) {
+			pos = iter.next();
+			accessor.setPosition(pos);
+			if (accessor.get().get())
+				if (isBorderPixel(accessor, pos, maxL[0], maxL[1]))
+					tool.drawPixel(pos[0], pos[1]);
+		}
+	}
+	
+	private boolean isBorderPixel(RealRandomAccess<BitType> accessor, long[] pos,
+		long maxX, long maxY)
+	{
+		if (pos[0] == 0) return true;
+		if (pos[0] == maxX) return true;
+		if (pos[1] == 0) return true;
+		if (pos[1] == maxY) return true;
+		accessor.setPosition(pos[0]-1,0);
+		if (!accessor.get().get()) return true;
+		accessor.setPosition(pos[0]+1,0);
+		if (!accessor.get().get()) return true;
+		accessor.setPosition(pos[0],0);
+		accessor.setPosition(pos[1]-1,1);
+		if (!accessor.get().get()) return true;
+		accessor.setPosition(pos[1]+1,1);
+		if (!accessor.get().get()) return true;
+		return false;
+	}
+	
+
+	private ImageDisplay getFirstDisplay(Overlay o) {
+		List<Display<?>> displays = displayService.getDisplays();
+		for (Display<?> display : displays) {
+			if (display instanceof ImageDisplay) {
+				List<Overlay> displayOverlays = getOverlays((ImageDisplay)display);
+				if (displayOverlays.contains(o))
+					return (ImageDisplay) display;
+			}
+		}
+		return null;
+	}
+	
+	private Dataset getDataset(ImageDisplay display) {
+		return imageDisplayService.getActiveDataset(display);
+	}
 }

@@ -40,9 +40,6 @@ import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.data.DrawingTool;
-import imagej.data.Position;
-import imagej.data.display.ColorTables;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
@@ -58,14 +55,12 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.PluginService;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsChannels;
 import imagej.platform.PlatformService;
 import imagej.ui.UIService;
-import imagej.util.Colors;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -111,14 +106,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.RealRandomAccess;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.PointSetIterator;
-import net.imglib2.ops.pointset.HyperVolumePointSet;
-import net.imglib2.roi.RegionOfInterest;
-import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
@@ -191,8 +181,6 @@ public class SwingOverlayManager
 	private boolean altDown = false;
 	private final OverlayInfoList infoList;
 
-	private enum DrawMode {OUTLINE, FILL};
-	
 	// -- constructor --
 	
 	/**
@@ -706,16 +694,20 @@ public class SwingOverlayManager
 	}
 	
 	private void draw() {
+		OverlayService os = context.getService(OverlayService.class);
+		ChannelCollection channels = getChannels();
 		List<Overlay> selected = infoList.selectedOverlays();
 		for (Overlay o : selected) {
-			outlineOrFill(DrawMode.OUTLINE, o);
+			os.drawOverlay(o, channels);
 		}
 	}
 	
 	private void fill() {
+		OverlayService os = context.getService(OverlayService.class);
+		ChannelCollection channels = getChannels();
 		List<Overlay> selected = infoList.selectedOverlays();
 		for (Overlay o : selected) {
-			outlineOrFill(DrawMode.FILL, o);
+			os.fillOverlay(o, channels);
 		}
 	}
 	
@@ -736,7 +728,7 @@ public class SwingOverlayManager
 	 * using fg/bg sometimes and using default drawing capabilities sometimes
 	 * (like JHotDraw's rendering). Ideally capture window exactly as is but
 	 * without mouse cursor. Right?
-	 */ //left off here
+	 */
 	private void flatten() {
 		/*
 		List<Overlay> selOverlays = infoList.selectedOverlays();
@@ -1353,128 +1345,10 @@ public class SwingOverlayManager
 		*/
 	}
 
-	// TODO - this code outlines or fills an overlay. It only writes selected
-	private void outlineOrFill(DrawMode mode, Overlay o) {
-		final ImageDisplay display = getFirstDisplay(o);
-		if (display == null) return;
-		final Dataset ds = getDataset(display);
-		if (ds == null) return;
-		final Position position = display.getActiveView().getPlanePosition();
-		long[] pp = new long[position.numDimensions()];
-		position.localize(pp);
-		long[] fullPos = new long[pp.length + 2];
-		for (int i = 2; i < fullPos.length; i++)
-			fullPos[i] = pp[i-2];
-		final DrawingTool tool = new DrawingTool(ds);
-		tool.setPosition(fullPos);
-		final OptionsChannels opts = getChannelOptions();
-		final ChannelCollection fillValues;
-		if (altDown)
-			fillValues = opts.getBgValues();
-		else
-			fillValues = opts.getFgValues();
-		tool.setChannels(fillValues);
-		if (mode == DrawMode.FILL)
-			fillOverlay(o, tool);
-		else if (mode == DrawMode.OUTLINE)
-			outlineOverlay(o, tool);
-		else
-			throw new IllegalArgumentException("unknown draw mode "+mode);
-		ds.update();
-	}
-	
-	private void fillOverlay(Overlay o, DrawingTool tool) {
-		RegionOfInterest reg = o.getRegionOfInterest();
-		int numDims = reg.numDimensions();
-		double[] minD = new double[numDims];
-		double[] maxD = new double[numDims];
-		reg.realMin(minD);
-		reg.realMax(maxD);
-		long[] minL = new long[numDims];
-		long[] maxL = new long[numDims];
-		for (int i = 0; i < numDims; i++) {
-			minL[i] = (long) Math.floor(minD[i]);
-			maxL[i] = (long) Math.ceil(maxD[i]);
-		}
-		HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-		RealRandomAccess<BitType> accessor = reg.realRandomAccess();
-		PointSetIterator iter = pointSet.createIterator();
-		long[] pos;
-		while (iter.hasNext()) {
-			pos = iter.next();
-			accessor.setPosition(pos);
-			if (accessor.get().get())
-				tool.drawPixel(pos[0], pos[1]);
-		}
-		
-	}
-
-	private void outlineOverlay(Overlay o, DrawingTool tool) {
-		RegionOfInterest reg = o.getRegionOfInterest();
-		int numDims = reg.numDimensions();
-		double[] minD = new double[numDims];
-		double[] maxD = new double[numDims];
-		reg.realMin(minD);
-		reg.realMax(maxD);
-		long[] minL = new long[numDims];
-		long[] maxL = new long[numDims];
-		for (int i = 0; i < numDims; i++) {
-			minL[i] = (long) Math.floor(minD[i]);
-			maxL[i] = (long) Math.ceil(maxD[i]);
-		}
-		HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-		RealRandomAccess<BitType> accessor = reg.realRandomAccess();
-		PointSetIterator iter = pointSet.createIterator();
-		long[] pos;
-		while (iter.hasNext()) {
-			pos = iter.next();
-			accessor.setPosition(pos);
-			if (accessor.get().get())
-				if (isBorderPixel(accessor, pos, maxL[0], maxL[1]))
-					tool.drawPixel(pos[0], pos[1]);
-		}
-	}
-	
-	private boolean isBorderPixel(RealRandomAccess<BitType> accessor, long[] pos,
-		long maxX, long maxY)
-	{
-		if (pos[0] == 0) return true;
-		if (pos[0] == maxX) return true;
-		if (pos[1] == 0) return true;
-		if (pos[1] == maxY) return true;
-		accessor.setPosition(pos[0]-1,0);
-		if (!accessor.get().get()) return true;
-		accessor.setPosition(pos[0]+1,0);
-		if (!accessor.get().get()) return true;
-		accessor.setPosition(pos[0],0);
-		accessor.setPosition(pos[1]-1,1);
-		if (!accessor.get().get()) return true;
-		accessor.setPosition(pos[1]+1,1);
-		if (!accessor.get().get()) return true;
-		return false;
-	}
-	
-	private OptionsChannels getChannelOptions() {
+	private ChannelCollection getChannels() {
 		final OptionsService oSrv = context.getService(OptionsService.class);
-		return oSrv.getOptions(OptionsChannels.class);
-	}
-
-	private ImageDisplay getFirstDisplay(Overlay o) {
-		final DisplayService ds = context.getService(DisplayService.class);
-		final OverlayService os = context.getService(OverlayService.class);
-		List<Display<?>> displays = ds.getDisplays();
-		for (Display<?> display : displays) {
-			if (display instanceof ImageDisplay) {
-				List<Overlay> displayOverlays = os.getOverlays((ImageDisplay)display);
-				if (displayOverlays.contains(o))
-					return (ImageDisplay) display;
-			}
-		}
-		return null;
-	}
-	
-	private Dataset getDataset(ImageDisplay display) {
-		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		return ids.getActiveDataset(display);
+		OptionsChannels opts = oSrv.getOptions(OptionsChannels.class);
+		if (altDown) return opts.getBgValues();
+		return opts.getFgValues();
 	}
 }

@@ -35,6 +35,7 @@
 
 package imagej.data.display;
 
+import imagej.data.ChannelCollection;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.object.ObjectService;
@@ -94,4 +95,15 @@ public interface OverlayService extends IService {
 
 	OverlaySettings getDefaultSettings();
 
+	/**
+	 * Draws the outline of a given overlay in the first display containing it
+	 * using the set of channel information provided.
+	 */
+	void drawOverlay(Overlay o, ChannelCollection channelData);
+	
+	/**
+	 * Draws and fills the outline of a given overlay in the first display
+	 * containing it using the set of channel information provided.
+	 */
+	void fillOverlay(Overlay o, ChannelCollection channelData);
 }
