@@ -38,6 +38,7 @@ package imagej.core.tools;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
+import imagej.data.FloodFiller;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
