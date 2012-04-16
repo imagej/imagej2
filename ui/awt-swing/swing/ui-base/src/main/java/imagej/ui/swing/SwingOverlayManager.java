@@ -39,9 +39,12 @@ import imagej.ImageJ;
 import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
 import imagej.data.Position;
+import imagej.data.display.ColorTables;
 import imagej.data.display.DataView;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
@@ -62,6 +65,7 @@ import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsChannels;
 import imagej.platform.PlatformService;
 import imagej.ui.UIService;
+import imagej.util.Colors;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -106,11 +110,17 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.imglib2.RandomAccess;
 import net.imglib2.RealRandomAccess;
+import net.imglib2.display.ARGBScreenImage;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
 import net.imglib2.ops.PointSetIterator;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 // TODO
 //
@@ -709,8 +719,68 @@ public class SwingOverlayManager
 		}
 	}
 	
+	/* FIXME TODO notes
+	 * I'm pretty sure this just snapshots the current view and returns a new
+	 * Dataset/Img that is one dimensional, usually rgb, and shows drawn rois.
+	 * If show all is true it draws all rois, else it draws curr roi. Note that
+	 * we can get rid of show all I think because we always show all. Is that a
+	 * problem? Edit mode renders differently. This might affect OverlayService
+	 * for drawOverlay() and fillOverlay(). Do we need a way to show single
+	 * overlays now? Probably. More hints for OverlayService I suppose. Anyhow
+	 * we should be able to grab the current view's (or the active overlay's
+	 * view's) ARGBScreenImage and create a new Dataset from it. We could make a
+	 * capture() method to ImageDisplay. Right now this implementation does not
+	 * show the ROI outline. Thats all the special case code the ROI Mgr flatten
+	 * does compared to the menu command flatten. We need a way to tell the
+	 * OverlayService to draw an Overlay in a given Dataset. But we want to draw
+	 * using fg/bg sometimes and using default drawing capabilities sometimes
+	 * (like JHotDraw's rendering). Ideally capture window exactly as is but
+	 * without mouse cursor. Right?
+	 */ //left off here
 	private void flatten() {
-		JOptionPane.showMessageDialog(this, "unimplemented");
+		/*
+		List<Overlay> selOverlays = infoList.selectedOverlays();
+		if (selOverlays.size() == 0) {
+			JOptionPane.showMessageDialog(this, "At least one overlay must be selected");
+			return;
+		}
+		*/
+		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
+		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
+		if (imageDisplay == null) return;
+		final DatasetView view = ids.getActiveDatasetView(imageDisplay);
+		ARGBScreenImage screenImage = view.getScreenImage();
+		long[] dims = new long[3];
+		screenImage.dimensions(dims);  // fill X & Y
+		dims[2] = 3;  // fill Z
+		if (dims[0] * dims[1] > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("image is too big to fit into memory");
+		int xSize = (int) dims[0];
+		int ySize = (int) dims[1];
+		int[] argbPixels = view.getScreenImage().getData();
+		DatasetService dss = context.getService(DatasetService.class);
+		String newName = "Flattened - "+imageDisplay.getName();
+		Dataset dataset = dss.create(new UnsignedByteType(), dims, newName, new Axes[]{Axes.X, Axes.Y, Axes.CHANNEL});
+		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
+		RandomAccess<? extends RealType<?>> accessor = imgPlus.randomAccess();
+		for (int x = 0; x < xSize; x++) {
+			accessor.setPosition(x, 0);
+			for (int y = 0; y < ySize; y++) {
+				accessor.setPosition(y, 1);
+				int index = y*xSize + x; 
+				int pixel = argbPixels[index];
+				accessor.setPosition(0, 2);
+				accessor.get().setReal((pixel >> 16) & 0xff);
+				accessor.setPosition(1, 2);
+				accessor.get().setReal((pixel >>  8) & 0xff);
+				accessor.setPosition(2, 2);
+				accessor.get().setReal((pixel >>  0) & 0xff);
+			}
+		}
+		dataset.setRGBMerged(true);
+		DisplayService ds = context.getService(DisplayService.class);
+		ds.createDisplay(newName, dataset);
+		// TODO - This currently does not show the ROI outline
 	}
 	
 	private void help() {
