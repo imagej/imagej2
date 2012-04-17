@@ -96,14 +96,19 @@ public interface OverlayService extends IService {
 	OverlaySettings getDefaultSettings();
 
 	/**
-	 * Draws the outline of a given overlay in the first display containing it
-	 * using the set of channel information provided.
+	 * Draws the outline of a given overlay in a display using the set of channel
+	 * information provided.
 	 */
-	void drawOverlay(Overlay o, ChannelCollection channelData);
+	void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channelData);
 	
 	/**
-	 * Draws and fills the outline of a given overlay in the first display
-	 * containing it using the set of channel information provided.
+	 * Draws and fills the outline of a given overlay in a display using the set
+	 * of channel information provided.
 	 */
-	void fillOverlay(Overlay o, ChannelCollection channelData);
+	void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channelData);
+
+	/**
+	 * Returns the first display associated with an overlay
+	 */
+	ImageDisplay getFirstDisplay(Overlay o);
 }

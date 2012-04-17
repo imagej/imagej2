@@ -244,35 +244,46 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	@Override
-	public void drawOverlay(Overlay o, ChannelCollection channelData) {
-		outlineOrFill(o, DrawMode.OUTLINE, channelData);
+	public void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
+		outlineOrFill(o, display, channels, DrawMode.OUTLINE);
 	}
 
 	@Override
-	public void fillOverlay(Overlay o, ChannelCollection channelData) {
-		outlineOrFill(o, DrawMode.FILL, channelData);
+	public void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
+		outlineOrFill(o, display, channels, DrawMode.FILL);
 	}
 
+	@Override
+	public ImageDisplay getFirstDisplay(Overlay o) {
+		final List<Display<?>> displays = displayService.getDisplays();
+		for (Display<?> display : displays) {
+			if (display instanceof ImageDisplay) {
+				final List<Overlay> displayOverlays = getOverlays((ImageDisplay)display);
+				if (displayOverlays.contains(o))
+					return (ImageDisplay) display;
+			}
+		}
+		return null;
+	}
+	
 	// -- helpers --
 
 	private enum DrawMode {OUTLINE, FILL}
 	
 
-	private void outlineOrFill(Overlay o, DrawMode mode, ChannelCollection chans)
+	private void outlineOrFill(Overlay o, ImageDisplay display, ChannelCollection channels, DrawMode mode)
 	{
-		final ImageDisplay display = getFirstDisplay(o);
-		if (display == null) return;
 		final Dataset ds = getDataset(display);
 		if (ds == null) return;
+		DrawingTool tool = new DrawingTool(ds);
 		final Position position = display.getActiveView().getPlanePosition();
 		final long[] pp = new long[position.numDimensions()];
 		position.localize(pp);
 		final long[] fullPos = new long[pp.length + 2];
 		for (int i = 2; i < fullPos.length; i++)
 			fullPos[i] = pp[i-2];
-		final DrawingTool tool = new DrawingTool(ds);
 		tool.setPosition(fullPos);
-		tool.setChannels(chans);
+		tool.setChannels(channels);
 		if (mode == DrawMode.FILL)
 			fillOverlay(o, tool);
 		else if (mode == DrawMode.OUTLINE)
@@ -354,18 +365,6 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 	
 
-	private ImageDisplay getFirstDisplay(Overlay o) {
-		final List<Display<?>> displays = displayService.getDisplays();
-		for (Display<?> display : displays) {
-			if (display instanceof ImageDisplay) {
-				final List<Overlay> displayOverlays = getOverlays((ImageDisplay)display);
-				if (displayOverlays.contains(o))
-					return (ImageDisplay) display;
-			}
-		}
-		return null;
-	}
-	
 	private Dataset getDataset(ImageDisplay display) {
 		return imageDisplayService.getActiveDataset(display);
 	}

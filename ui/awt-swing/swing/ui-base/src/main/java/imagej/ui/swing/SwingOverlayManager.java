@@ -698,7 +698,8 @@ public class SwingOverlayManager
 		ChannelCollection channels = getChannels();
 		List<Overlay> selected = infoList.selectedOverlays();
 		for (Overlay o : selected) {
-			os.drawOverlay(o, channels);
+			ImageDisplay disp = os.getFirstDisplay(o);
+			os.drawOverlay(o, disp, channels);
 		}
 	}
 	
@@ -707,7 +708,8 @@ public class SwingOverlayManager
 		ChannelCollection channels = getChannels();
 		List<Overlay> selected = infoList.selectedOverlays();
 		for (Overlay o : selected) {
-			os.fillOverlay(o, channels);
+			ImageDisplay disp = os.getFirstDisplay(o);
+			os.fillOverlay(o, disp, channels);
 		}
 	}
 	
