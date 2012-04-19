@@ -22,15 +22,27 @@
 			<artifactId>ij-ext</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
 			<artifactId>imglib2</artifactId>
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${scifio.groupId}</groupId>
+			<artifactId>scifio</artifactId>
+			<version>${scifio.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>visad</groupId>
+			<artifactId>visad-lite</artifactId>
+			<version>2.0.20070828</version>
 		</dependency>
 	</dependencies>
 
