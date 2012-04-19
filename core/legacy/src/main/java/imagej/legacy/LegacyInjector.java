@@ -81,6 +81,10 @@ public class LegacyInjector {
 		hacker.insertBeforeMethod("ij.gui.ImageWindow", "public void close()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
+		// override behavior of PluginClassLoader
+		hacker.insertBeforeMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)");
+		hacker.loadClass("ij.io.PluginClassLoader");
+
 		// override behavior of ij.macro.Functions
 		hacker
 			.insertBeforeMethod("ij.macro.Functions",
