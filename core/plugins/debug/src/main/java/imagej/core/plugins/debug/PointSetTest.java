@@ -47,6 +47,7 @@ import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.UIService;
 
 /**
  * A test of TextSpecifiedPointSets
@@ -68,16 +69,24 @@ public class PointSetTest implements ImageJPlugin {
 	@Parameter(required = true, persist = false)
 	DatasetService ds;
 	
+	@Parameter(required = true, persist = false)
+	UIService uiService;
+
 	@Override
 	public void run() {
 		TextSpecifiedPointSet pointSet = new TextSpecifiedPointSet(specification);
+		if (pointSet.getErrorString() != null) {
+			uiService.showDialog(pointSet.getErrorString());
+			return;
+		}
 		long[] minBound = pointSet.findBoundMin();
 		long[] maxBound = pointSet.findBoundMax();
 		
 		for (int i = 0; i < minBound.length; i++) {
-			if ((minBound[i] < 0) || (maxBound[i] < 0))
-				throw new IllegalArgumentException(
-					"For now won't handle negative space with this test plugin");
+			if ((minBound[i] < 0) || (maxBound[i] < 0)) {
+				uiService.showDialog("For now won't handle negative space with this test plugin");
+				return;
+			}
 			// make a border around the maximum bound
 			maxBound[i] += 10;
 		}
