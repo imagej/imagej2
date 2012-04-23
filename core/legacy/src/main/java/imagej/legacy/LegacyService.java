@@ -215,8 +215,11 @@ public final class LegacyService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final OptionsEvent event)
 	{
-		if (event.getOptions().getClass() == OptionsMisc.class)
-			updateMenus((OptionsMisc)event.getOptions());
+		if (event.getOptions().getClass() == OptionsMisc.class) {
+			OptionsMisc opts = (OptionsMisc)event.getOptions();
+			if (opts.isDebugMode() != lastDebugMode)
+				updateMenus(opts);
+		}
 		updateIJ1Settings();
 	}
 
@@ -245,9 +248,9 @@ public final class LegacyService extends AbstractService {
 	}
 
 	private void updateMenus(OptionsMisc optsMisc) {
-		if (lastDebugMode == optsMisc.isDebugMode()) return;
 		pluginService.reloadPlugins();
-		addLegacyPlugins(!optsMisc.isDebugMode());
+		boolean enableBlacklist = !optsMisc.isDebugMode();
+		addLegacyPlugins(enableBlacklist);
 		lastDebugMode = optsMisc.isDebugMode();
 	}
 	
