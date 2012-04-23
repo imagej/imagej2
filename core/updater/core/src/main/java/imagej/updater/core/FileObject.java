@@ -243,7 +243,7 @@ public class FileObject {
 
 	public void setLocalVersion(final String checksum, final long timestamp) {
 		if (current != null && checksum.equals(current.checksum)) {
-			status = Status.INSTALLED;
+			if (status != Status.LOCAL_ONLY) status = Status.INSTALLED;
 			setNoAction();
 			return;
 		}

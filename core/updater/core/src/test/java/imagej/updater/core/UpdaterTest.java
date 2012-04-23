@@ -477,6 +477,17 @@ public class UpdaterTest {
 		assertFalse(files.prefix(obsoleted).exists());
 	}
 
+	@Test
+	public void testReChecksumming() throws Exception {
+		writeFile("jars/new.jar");
+		FilesCollection files = new FilesCollection(ijRoot);
+		new Checksummer(files, progress).updateFromLocal();
+		assertStatus(Status.LOCAL_ONLY, files.get("jars/new.jar"));
+		writeFile("jars/new.jar", "modified");
+		new Checksummer(files, progress).updateFromLocal();
+		assertStatus(Status.LOCAL_ONLY, files.get("jars/new.jar"));
+	}
+
 	//
 	// Debug functions
 	//
