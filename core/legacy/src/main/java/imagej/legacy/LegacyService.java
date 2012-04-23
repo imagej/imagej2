@@ -89,7 +89,8 @@ public final class LegacyService extends AbstractService {
 	private final PluginService pluginService;
 	private final OptionsService optionsService;
 	private final ImageDisplayService imageDisplayService;
-
+	private boolean lastDebugMode;
+	
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
@@ -126,12 +127,10 @@ public final class LegacyService extends AbstractService {
 		}
 
 		// discover legacy plugins
-
 		OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
+		lastDebugMode = optsMisc.isDebugMode();
 		boolean enableBlacklist = !optsMisc.isDebugMode();
-		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		new LegacyPluginFinder(enableBlacklist).findPlugins(plugins);
-		pluginService.addPlugins(plugins);
+		addLegacyPlugins(enableBlacklist);
 
 		//IJ.addEventListener(new IJ1EventListener());
 
@@ -214,8 +213,10 @@ public final class LegacyService extends AbstractService {
 	}
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent event)
+	protected void onEvent(final OptionsEvent event)
 	{
+		if (event.getOptions().getClass() == OptionsMisc.class)
+			updateMenus((OptionsMisc)event.getOptions());
 		updateIJ1Settings();
 	}
 
@@ -243,6 +244,19 @@ public final class LegacyService extends AbstractService {
 		}
 	}
 
+	private void updateMenus(OptionsMisc optsMisc) {
+		if (lastDebugMode == optsMisc.isDebugMode()) return;
+		pluginService.reloadPlugins();
+		addLegacyPlugins(!optsMisc.isDebugMode());
+		lastDebugMode = optsMisc.isDebugMode();
+	}
+	
+	private void addLegacyPlugins(boolean enableBlacklist) {
+		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
+		new LegacyPluginFinder(enableBlacklist).findPlugins(plugins);
+		pluginService.addPlugins(plugins);
+	}
+	
 	/* 3-1-12
 
 	 We are no longer going to synchronize colors from IJ1 to IJ2
