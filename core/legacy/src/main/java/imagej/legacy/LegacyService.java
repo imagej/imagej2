@@ -53,6 +53,7 @@ import imagej.ext.plugin.PluginService;
 import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
+import imagej.options.plugins.OptionsMisc;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.Log;
@@ -125,8 +126,11 @@ public final class LegacyService extends AbstractService {
 		}
 
 		// discover legacy plugins
+
+		OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
+		boolean enableBlacklist = !optsMisc.isDebugMode();
 		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		new LegacyPluginFinder().findPlugins(plugins);
+		new LegacyPluginFinder(enableBlacklist).findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 
 		//IJ.addEventListener(new IJ1EventListener());

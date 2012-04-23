@@ -84,15 +84,17 @@ public class LegacyPluginFinder {
 	/** A list of plugins to exclude from legacy plugin discovery. */
 	private final Set<String> blacklist;
 
-	public LegacyPluginFinder() {
+	public LegacyPluginFinder(boolean enableBlacklist) {
 		blacklist = new HashSet<String>();
 
-		// load blacklist items from data file
-		try {
-			readBlacklistFile(blacklist, PLUGIN_BLACKLIST);
-		}
-		catch (final IOException e) {
-			Log.error("Error reading blacklist", e);
+		if (enableBlacklist) {
+			// load blacklist items from data file
+			try {
+				readBlacklistFile(blacklist, PLUGIN_BLACKLIST);
+			}
+			catch (final IOException e) {
+				Log.error("Error reading blacklist", e);
+			}
 		}
 	}
 
@@ -165,7 +167,7 @@ public class LegacyPluginFinder {
 
 		return pe;
 	}
-
+	
 	/** Creates a table mapping IJ1 command labels to menu paths. */
 	private Map<String, MenuPath> parseMenus(final ij.ImageJ ij) {
 		final Map<String, MenuPath> menuTable = new HashMap<String, MenuPath>();

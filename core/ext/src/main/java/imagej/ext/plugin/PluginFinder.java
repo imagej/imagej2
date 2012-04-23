@@ -87,7 +87,7 @@ public class PluginFinder {
 			final MenuPath menuPath = info.getMenuPath();
 			if (menuPath != null && menuPath.size() > 0) {
 				final MenuEntry menuLeaf = menuPath.getLeaf();
-				menuLeaf.setName(menuLeaf.getName() + " [IJ2]");
+				menuLeaf.setName(menuLeaf.getName());
 			}
 
 			plugins.add(info);
