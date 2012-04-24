@@ -35,6 +35,11 @@
 
 package imagej.ext.display;
 
+/**
+ * TODO
+ * 
+ * @author Lee Kamentsky
+ */
 public abstract class AbstractTextDisplayViewer extends AbstractDisplayViewer<String> {
 
 	@Override

@@ -47,11 +47,11 @@ import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 
 
 /**
- * @author Lee Kamentsky
- *
  * The AbstractDisplayViewer provides some basic generic implementations
  * for a DisplayViewer such as storing and providing the display, window
  * and panel for a DisplayViewer.
+ * 
+ * @author Lee Kamentsky
  */
 public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 	protected Display<T> display;

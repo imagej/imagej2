@@ -54,12 +54,12 @@ import imagej.ext.tool.ToolService;
 import imagej.util.UnitUtils;
 
 /**
- * @author Lee Kamentsky
- *
  * The AbstractImageDisplayViewer implements the gui-independent
  * elements of an image display viewer. It subscribes to the
  * events of its controlled display and distills these into
  * abstract lifecycle actions.
+ * 
+ * @author Lee Kamentsky
  */
 public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<DataView> implements ImageDisplayViewer {
 	protected enum ZoomScaleOption {

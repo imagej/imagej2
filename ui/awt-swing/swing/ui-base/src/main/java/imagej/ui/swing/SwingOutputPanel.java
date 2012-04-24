@@ -49,10 +49,9 @@ import imagej.ext.display.OutputPanel;
 import imagej.util.ColorRGB;
 
 /**
- * @author Lee Kamentsky
- * 
- * This is the DisplayPanel for Display<String>
+ * This is the DisplayPanel for <code>Display&lt;String&gt;</code>.
  *
+ * @author Lee Kamentsky
  */
 public class SwingOutputPanel extends JScrollPane implements OutputPanel {
 	final DisplayWindow window;

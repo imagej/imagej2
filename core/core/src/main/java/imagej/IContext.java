@@ -35,10 +35,10 @@
 package imagej;
 
 /**
- * @author Lee Kamentsky
- *
  * This interface lets an object communicate the ImageJ instance
  * that was used to create it.
+ * 
+ * @author Lee Kamentsky
  */
 public interface IContext {
 	/**

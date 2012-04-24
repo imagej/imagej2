@@ -42,8 +42,9 @@ import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.SwingOutputPanel;
 
 /**
+ * TODO
+ * 
  * @author Lee Kamentsky
- *
  */
 @Plugin(type = TextDisplayViewer.class)
 public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {

@@ -38,11 +38,10 @@ import imagej.data.display.ImageCanvas;
 import imagej.ext.MouseCursor;
 
 /**
- * @author Lee Kamentsky
- * 
  * The MouseCursorEvent notifies subscribers of a change in
  * the mouse cursor.
  *
+ * @author Lee Kamentsky
  */
 public class MouseCursorEvent extends CanvasEvent {
 

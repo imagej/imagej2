@@ -35,11 +35,11 @@
 package imagej.ext.display;
 
 /**
- * @author Lee Kamentsky
- *
  * This is a panel that can go inside a display window.
  * It displays text.
  * Also, it can be used inside OutputWindow.
+ * 
+ * @author Lee Kamentsky
  */
 public interface OutputPanel extends DisplayPanel {
 	public void append(final String text);

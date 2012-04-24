@@ -37,10 +37,9 @@ package imagej.data.display;
 import imagej.ext.display.DisplayViewer;
 
 /**
- * @author Lee Kamentsky
- * 
- * A display viewer for DataViews
+ * A display viewer for DataViews.
  *
+ * @author Lee Kamentsky
  */
 public interface ImageDisplayViewer extends DisplayViewer<DataView>{
 	/**

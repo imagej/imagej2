@@ -49,8 +49,6 @@ import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
 /**
- * @author Lee Kamentsky
- * 
  * The DefaultImageCanvas maintains a viewport, a zoom scale
  * and a center coordinate that it uses to map viewport pixels
  * to display coordinates. It also maintains an abstract mouse
@@ -59,6 +57,7 @@ import imagej.util.RealRect;
  * The canvas sends a zoom event whenever it is panned or
  * zoomed. It sends a mouse event whenever the mouse changes. 
  *
+ * @author Lee Kamentsky
  */
 public class DefaultImageCanvas implements ImageCanvas {
 	private final ImageDisplay display;
