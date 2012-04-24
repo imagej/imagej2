@@ -61,7 +61,7 @@ import javax.swing.JInternalFrame;
 public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer {
 
 	@Override
-	public void view(DisplayWindow window, Display<DataView> display) {
+	public void view(DisplayWindow window, Display<?> display) {
 		super.view(window, display);
 		assert window instanceof SwingMdiDisplayWindow;
 		DisplayPanel panel = getPanel();

@@ -35,13 +35,24 @@
 
 package imagej.ui.swing.mdi;
 
+import imagej.ImageJ;
+import imagej.event.EventHandler;
+import imagej.ext.InstantiableException;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayViewer;
+import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.ui.Desktop;
+import imagej.ui.UIService;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
+import imagej.ui.swing.mdi.display.SwingMdiDisplayWindow;
+import imagej.util.Log;
 
 import java.awt.Color;
 import java.awt.GraphicsEnvironment;
@@ -97,4 +108,34 @@ public class SwingMdiUI extends AbstractSwingUI {
 			.getMaximumWindowBounds();
 	}
 
+	// -- Event handlers --
+
+	/**
+	 * This is the magical place where the display model
+	 * is connected with the real UI.
+	 * 
+	 * @param event
+	 */
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent event) {
+		final Display<?> display = event.getObject();
+		final ImageJ imageJ = display.getContext();
+		final PluginService pluginService = imageJ.getService(PluginService.class);
+		for (@SuppressWarnings("rawtypes") PluginInfo<DisplayViewer> info:pluginService.getPluginsOfType(DisplayViewer.class)) {
+			try {
+				final DisplayViewer<?> displayViewer = info.createInstance();
+				if (displayViewer.canView(display)){
+					final SwingMdiDisplayWindow displayWindow = new SwingMdiDisplayWindow(); 
+					displayViewer.view(displayWindow, display);
+					displayWindow.showDisplay(true);
+					desktopPane.add(displayWindow);
+					
+					return;
+				}
+			} catch (InstantiableException e) {
+				Log.warn("Failed to create instance of " + info.getClassName(), e);
+			}
+		}
+		Log.warn("No suitable DisplayViewer found for display");
+	}
 }
