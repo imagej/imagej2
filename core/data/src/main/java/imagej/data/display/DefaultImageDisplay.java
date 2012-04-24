@@ -227,6 +227,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 			add(new DefaultOverlayView(overlay));
 		}
 		else super.display(o);
+		rebuild();
 	}
 
 	@Override
@@ -609,12 +610,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	protected Dataset getDataset(final DataView view) {
 		final Data data = view.getData();
 		return data instanceof Dataset ? (Dataset) data : null;
-	}
-
-	@Override
-	public ImageJ getContext() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

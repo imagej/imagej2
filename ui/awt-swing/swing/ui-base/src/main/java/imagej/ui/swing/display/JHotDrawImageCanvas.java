@@ -175,8 +175,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		final Set<Figure> newSelection = event.getNewSelection();
 		final Set<Figure> oldSelection = event.getOldSelection();
 		for (final DataView view : displayViewer.getDisplay()) {
-			if (view instanceof FigureView) {
-				final Figure figure = ((FigureView) view).getFigure();
+			FigureView figureView = getFigureView(view);
+			if (figureView != null) {
+				final Figure figure = figureView.getFigure();
 				if (newSelection.contains(figure)) {
 					// BDZ removed next line 10-12-11
 					// Fixes drawing of multiple overlays (#817). Lee had this code
@@ -227,32 +228,38 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	protected void onEvent(DisplayUpdatedEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
 		
-		if (event.getLevel() == DisplayUpdateLevel.REBUILD) {
-			for (DataView dataView:getDisplay()) {
-				FigureView figureView = getFigureView(dataView);
-				if (figureView == null) {
-					if (dataView instanceof DatasetView) {
-						figureView = new SwingDatasetView(this.displayViewer, (DatasetView)dataView);
-					} else if (dataView instanceof OverlayView) {
-						figureView = new SwingOverlayView(this.displayViewer, (OverlayView)dataView);
-					} else {
-						Log.error("Don't know how to make a figure view for " + dataView.getClass().getName());
-						continue;
-					}
-					figureViews.add(figureView);
-				}
-			}
-			int idx = 0;
-			while (idx < figureViews.size()) {
-				FigureView figureView = figureViews.get(idx);
-				if (! getDisplay().contains(figureView.getDataView())) {
-					figureViews.remove(idx);
-					figureView.dispose();
+		rebuild();
+		update();
+	}
+	
+	protected void rebuild() {
+		for (DataView dataView:getDisplay()) {
+			FigureView figureView = getFigureView(dataView);
+			if (figureView == null) {
+				if (dataView instanceof DatasetView) {
+					figureView = new SwingDatasetView(this.displayViewer, (DatasetView)dataView);
+				} else if (dataView instanceof OverlayView) {
+					figureView = new SwingOverlayView(this.displayViewer, (OverlayView)dataView);
 				} else {
-					idx++;
+					Log.error("Don't know how to make a figure view for " + dataView.getClass().getName());
+					continue;
 				}
+				figureViews.add(figureView);
 			}
 		}
+		int idx = 0;
+		while (idx < figureViews.size()) {
+			FigureView figureView = figureViews.get(idx);
+			if (! getDisplay().contains(figureView.getDataView())) {
+				figureViews.remove(idx);
+				figureView.dispose();
+			} else {
+				idx++;
+			}
+		}
+	}
+	
+	protected void update() {
 		for (FigureView figureView:figureViews) {
 			figureView.update();
 		}

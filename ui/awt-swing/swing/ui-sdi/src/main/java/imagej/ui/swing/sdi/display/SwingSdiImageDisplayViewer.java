@@ -59,7 +59,6 @@ public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer 
 
 	@Override
 	public void view(DisplayWindow window, Display<?> display) {
-		// TODO Auto-generated method stub
 		super.view(window, display);
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
 

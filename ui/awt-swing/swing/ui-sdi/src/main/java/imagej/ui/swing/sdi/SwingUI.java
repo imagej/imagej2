@@ -114,7 +114,7 @@ public class SwingUI extends AbstractSwingUI {
 		final Display<?> display = event.getObject();
 		final ImageJ imageJ = display.getContext();
 		final PluginService pluginService = imageJ.getService(PluginService.class);
-		for (@SuppressWarnings("rawtypes") PluginInfo<DisplayViewer> info:pluginService.getPluginsOfClass(DisplayViewer.class)) {
+		for (@SuppressWarnings("rawtypes") PluginInfo<DisplayViewer> info:pluginService.getPluginsOfType(DisplayViewer.class)) {
 			try {
 				final DisplayViewer<?> displayViewer = info.createInstance();
 				if (displayViewer.canView(display)){
@@ -125,6 +125,7 @@ public class SwingUI extends AbstractSwingUI {
 					if (displayWindow.getJMenuBar() == null) {
 						createMenuBar(displayWindow);
 					}
+					displayWindow.showDisplay(true);
 					return;
 				}
 			} catch (InstantiableException e) {
