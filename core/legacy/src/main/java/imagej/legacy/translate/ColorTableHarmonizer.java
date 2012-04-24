@@ -37,6 +37,7 @@ package imagej.legacy.translate;
 
 import ij.CompositeImage;
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import ij.process.LUT;
 import imagej.ImageJ;
 import imagej.data.Dataset;
@@ -113,7 +114,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 					.getCompositeChannelCount();
 			setCompositeImageMode(ci, composChannCount, colorTables);
 		}
-		else { // regular ImagePlus
+		else if ( ! (imp.getProcessor() instanceof ColorProcessor) ) {
+			// regular noncolor ImagePlus
 			// NOTE to fix bug #849 the nonnull case was added below. This reflects
 			// a significant behavior change.
 			if (activeView == null) {
