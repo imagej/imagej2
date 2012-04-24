@@ -270,7 +270,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	@SuppressWarnings("unused")
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
-		if (event.getDisplay() != this) return;
+		if (event.getDisplay() != this.getDisplay()) return;
 		// final UserInterface ui = ImageJ.get(UIService.class).getUI();
 		// final ToolService toolMgr = ui.getToolBar().getToolService();
 		final ToolService toolService =
