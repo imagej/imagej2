@@ -553,6 +553,7 @@ static const char *default_library_path;
 static const char *library_path;
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
+static int legacy_mode;
 
 static int is_default_ij1_class(const char *name)
 {
@@ -2465,6 +2466,12 @@ static void parse_modern_config(struct string *jvm_options)
 			string_replace_range(jvm_options, offset, offset + skip, replacement);
 			eol += strlen(replacement) - skip;
 		}
+		/* legacy.mode? */
+		else if ((skip = property_line_key_matches(p, "legacy.mode")) > 0) {
+			legacy_mode = !strncmp(p + skip, "true", 4);
+			string_replace_range(jvm_options, offset, eol, "");
+			eol = offset;
+		}
 		/* strip it */
 		else {
 			string_replace_range(jvm_options, offset, eol, "");
@@ -3195,7 +3202,7 @@ static void parse_command_line(void)
 			string_release(dotted);
 		}
 		else
-			main_class = default_main_class;
+			main_class = legacy_mode ? default_fiji1_class : default_main_class;
 	}
 
 	maybe_reexec_with_correct_lib_path();
@@ -4195,6 +4202,10 @@ int main(int argc, char **argv, char **e)
 	main_argv_backup = (char **)xmalloc(size);
 	memcpy(main_argv_backup, main_argv, size);
 	main_argc_backup = argc;
+
+	/* For now, launch Fiji1 when fiji-compat.jar was found */
+	if (file_exists(ij_path("jars/fiji-compat.jar")))
+		legacy_mode = 1;
 
 	parse_command_line();
 
