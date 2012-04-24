@@ -63,7 +63,7 @@ import org.jhotdraw.draw.ImageFigure;
  * 
  * @author Curtis Rueden
  */
-public class SwingDatasetView implements FigureView
+public class DatasetFigureView implements FigureView
 {
 
 	private final DatasetView datasetView;
@@ -73,7 +73,7 @@ public class SwingDatasetView implements FigureView
 	private boolean disposeScheduled;
 	private final List<EventSubscriber<?>> subscribers;
 
-	public SwingDatasetView(final AbstractSwingImageDisplayViewer displayViewer,
+	public DatasetFigureView(final AbstractSwingImageDisplayViewer displayViewer,
 		final DatasetView datasetView)
 	{
 		this.datasetView = datasetView;
@@ -111,7 +111,7 @@ public class SwingDatasetView implements FigureView
 
 				@Override
 				public void run() {
-					SwingDatasetView.this.doUpdate();
+					DatasetFigureView.this.doUpdate();
 				}
 			});
 		}
@@ -146,7 +146,7 @@ public class SwingDatasetView implements FigureView
 
 					@Override
 					public void run() {
-						synchronized(SwingDatasetView.this) {
+						synchronized(DatasetFigureView.this) {
 							figure.requestRemove();
 						}
 					}});

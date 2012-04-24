@@ -57,7 +57,7 @@ import org.jhotdraw.draw.event.FigureEvent;
  * @author Lee Kamentsky
  */
 @SuppressWarnings("synthetic-access")
-public class SwingOverlayView implements FigureView {
+public class OverlayFigureView implements FigureView {
 
 	private final AbstractSwingImageDisplayViewer displayViewer;
 	private final OverlayView overlayView;
@@ -84,7 +84,7 @@ public class SwingOverlayView implements FigureView {
 	 * @param display - hook to this display
 	 * @param overlay - represent this overlay
 	 */
-	public SwingOverlayView(final AbstractSwingImageDisplayViewer display, final OverlayView overlayView) {
+	public OverlayFigureView(final AbstractSwingImageDisplayViewer display, final OverlayView overlayView) {
 		this(display, overlayView, null);
 	}
 	
@@ -96,7 +96,7 @@ public class SwingOverlayView implements FigureView {
 	 * @param overlay - represent this overlay
 	 * @param figure - draw using this figure
 	 */
-	public SwingOverlayView(final AbstractSwingImageDisplayViewer display,
+	public OverlayFigureView(final AbstractSwingImageDisplayViewer display,
 		final OverlayView overlayView, Figure figure)
 	{
 		this.displayViewer = display;
@@ -109,11 +109,11 @@ public class SwingOverlayView implements FigureView {
 				
 				@Override
 				public void run() {
-					synchronized(SwingOverlayView.this) {
+					synchronized(OverlayFigureView.this) {
 						if (! disposeScheduled) {
 							final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getCanvas();
 							final Drawing drawing = canvas.getDrawing();
-							drawing.add(SwingOverlayView.this.figure);
+							drawing.add(OverlayFigureView.this.figure);
 							figureAdded = true;
 						}
 					}
@@ -126,11 +126,11 @@ public class SwingOverlayView implements FigureView {
 		this.figure.addFigureListener(new FigureAdapter() {
 			@Override
 			public void attributeChanged(FigureEvent e) {
-				synchronized(SwingOverlayView.this) {
+				synchronized(OverlayFigureView.this) {
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
-							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this.overlayView);
+							adapter.updateOverlay(OverlayFigureView.this.figure, OverlayFigureView.this.overlayView);
 							overlayView.update();
 						} finally {
 							updatingOverlay = false;
@@ -141,11 +141,11 @@ public class SwingOverlayView implements FigureView {
 
 			@Override
 			public void figureChanged(FigureEvent e) {
-				synchronized(SwingOverlayView.this) {
+				synchronized(OverlayFigureView.this) {
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
-							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this.overlayView);
+							adapter.updateOverlay(OverlayFigureView.this.figure, OverlayFigureView.this.overlayView);
 							overlayView.update();
 						} finally {
 							updatingOverlay = false;
@@ -156,12 +156,12 @@ public class SwingOverlayView implements FigureView {
 
 			@Override
 			public void figureRemoved(FigureEvent e) {
-				synchronized(SwingOverlayView.this) {
+				synchronized(OverlayFigureView.this) {
 					if (disposed || disposeScheduled) return;
 				}
 				ImageDisplay display = getDisplay();
-				if (display.isVisible(SwingOverlayView.this.overlayView)) {
-					display.remove(SwingOverlayView.this);
+				if (display.isVisible(OverlayFigureView.this.overlayView)) {
+					display.remove(OverlayFigureView.this);
 					dispose();
 					display.update();
 				}
@@ -210,7 +210,7 @@ public class SwingOverlayView implements FigureView {
 
 					@Override
 					public void run() {
-						synchronized(SwingOverlayView.this) {
+						synchronized(OverlayFigureView.this) {
 							if (figureAdded) {
 								figure.requestRemove();
 							}

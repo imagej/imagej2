@@ -276,9 +276,9 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 			FigureView figureView = getFigureView(dataView);
 			if (figureView == null) {
 				if (dataView instanceof DatasetView) {
-					figureView = new SwingDatasetView(this.displayViewer, (DatasetView)dataView);
+					figureView = new DatasetFigureView(this.displayViewer, (DatasetView)dataView);
 				} else if (dataView instanceof OverlayView) {
-					figureView = new SwingOverlayView(this.displayViewer, (OverlayView)dataView);
+					figureView = new OverlayFigureView(this.displayViewer, (OverlayView)dataView);
 				} else {
 					Log.error("Don't know how to make a figure view for " + dataView.getClass().getName());
 					continue;
@@ -327,7 +327,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 					if (drawingView.getSelectedFigures().contains(e.getFigure())) {
 						overlay.setSelected(true);
 					}
-					SwingOverlayView figureView = new SwingOverlayView(displayViewer, overlay, e.getFigure());
+					OverlayFigureView figureView = new OverlayFigureView(displayViewer, overlay, e.getFigure());
 					figureViews.add(figureView);
 					display.add(overlay);
 					display.update();

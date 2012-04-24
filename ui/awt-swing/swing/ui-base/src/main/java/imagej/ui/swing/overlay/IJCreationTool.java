@@ -39,7 +39,7 @@ import imagej.data.display.DefaultOverlayView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
-import imagej.ui.swing.display.SwingOverlayView;
+import imagej.ui.swing.display.OverlayFigureView;
 
 import javax.swing.event.EventListenerList;
 
