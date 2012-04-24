@@ -70,6 +70,8 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	protected EventService eventService;
 
 	protected ImageJ context;
+	
+	protected boolean isClosed = false;
 
 	public AbstractDisplay(final Class<E> type) {
 		this.type = type;
@@ -117,19 +119,24 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 
 	@Override
 	public void update() {
-		eventService.publish(new DisplayUpdatedEvent(this,
-				structureChanged? DisplayUpdateLevel.REBUILD : DisplayUpdateLevel.UPDATE));
+		if (eventService != null && ! isClosed) {
+			eventService.publish(new DisplayUpdatedEvent(this,
+					structureChanged? DisplayUpdateLevel.REBUILD : DisplayUpdateLevel.UPDATE));
+		}
 		structureChanged = false;
 	}
 
 	@Override
 	public void activate() {
-		eventService.publish(new DisplayActivatedEvent(this));
+		if (eventService != null && ! isClosed)
+			eventService.publish(new DisplayActivatedEvent(this));
 	}
 
 	@Override
 	public void close() {
-		eventService.publish(new DisplayDeletedEvent(this));
+		if (eventService != null && ! isClosed)
+			eventService.publish(new DisplayDeletedEvent(this));
+		isClosed = true;
 	}
 
 	@Override

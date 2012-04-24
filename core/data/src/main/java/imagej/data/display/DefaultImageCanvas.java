@@ -35,6 +35,7 @@
 package imagej.data.display;
 
 import imagej.IContext;
+import imagej.ImageJ;
 import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.event.EventService;
@@ -58,7 +59,6 @@ import imagej.util.RealRect;
  */
 public class DefaultImageCanvas implements ImageCanvas {
 	private final ImageDisplay display;
-	private final EventService eventService;
 	private MouseCursor mouseCursor;
 	private CanvasHelper canvasHelper;
 	private final RealCoords center;
@@ -67,7 +67,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	public DefaultImageCanvas(ImageDisplay display) {
 		this.display = display;
-		eventService = display.getContext().getService(EventService.class);
 		mouseCursor = MouseCursor.DEFAULT;
 		canvasHelper = new CanvasHelper(this);
 		// The center is set by panReset. The viewport size
@@ -153,6 +152,11 @@ public class DefaultImageCanvas implements ImageCanvas {
 		return viewportSize.y;
 	}
 	@Override
+	public void setViewportSize(int width, int height) {
+		viewportSize.x = width;
+		viewportSize.y = height;
+	}
+	@Override
 	public boolean isInImage(IntCoords point) {
 		return canvasHelper.isInImage(point);
 	}
@@ -171,9 +175,17 @@ public class DefaultImageCanvas implements ImageCanvas {
 	@Override
 	public void setCursor(MouseCursor cursor) {
 		mouseCursor = cursor;
-		eventService.publish(new MouseCursorEvent(this));
+		final ImageJ context = display.getContext();
+		if (context == null) return;
+		EventService eventService = context.getService(EventService.class);
+		if (eventService != null)
+			eventService.publish(new MouseCursorEvent(this));
 	}
 	
+	@Override
+	public void setInitialScale(double zoomFactor) {
+		canvasHelper.setInitialScale(zoomFactor);
+	}
 	/**
 	 * Set the canvas's center X and Y and
 	 * publish an event that tells the world that
@@ -219,6 +231,10 @@ public class DefaultImageCanvas implements ImageCanvas {
 	//-- helper methods --//
 	
 	private void publishZoomEvent() {
+		ImageJ context = getDisplay().getContext();
+		if (context == null) return;
+		
+		EventService eventService = context.getService(EventService.class);
 		if (eventService != null)
 			eventService.publish(new ZoomEvent(this));
 	}

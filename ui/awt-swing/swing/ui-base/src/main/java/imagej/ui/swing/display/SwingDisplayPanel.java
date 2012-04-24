@@ -124,7 +124,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		imagePane = new JPanel();
 		imagePane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-		imagePane.add(getCanvas());
+		imagePane.add(displayViewer.getCanvas());
 
 		sliderPanel = new JPanel();
 		sliderPanel.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
@@ -287,17 +287,11 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		setBorderColor(color);
 	}
 
-	private JHotDrawImageCanvas getCanvas() {
-		ImageCanvas canvas = displayViewer.getCanvas();
-		assert canvas instanceof JHotDrawImageCanvas;
-		return (JHotDrawImageCanvas) canvas;
-	}
-	
 	private void doInitialSizing() {
-		final JHotDrawImageCanvas canvas = getCanvas();
-		final double scale = findFullyVisibleScale(canvas);
+		final double scale = findFullyVisibleScale();
 		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
-		canvas.setZoom(zoomLevel);
+		ImageCanvas canvas = displayViewer.getImageDisplay().getCanvas();
+		canvas.setZoomAndCenter(zoomLevel);
 		if (!initialScaleCalculated) {
 			canvas.setInitialScale(canvas.getZoomFactor());
 			initialScaleCalculated = true;
@@ -312,7 +306,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		getDisplay().update();
 	}
 
-	private double findFullyVisibleScale(JHotDrawImageCanvas canvas) {
+	private double findFullyVisibleScale() {
+		final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 		final Dimension canvasSize = canvas.getPreferredSize();
 		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
 		

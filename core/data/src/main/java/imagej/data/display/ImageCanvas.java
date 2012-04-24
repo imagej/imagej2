@@ -57,6 +57,14 @@ public interface ImageCanvas extends Pannable, Zoomable {
 
 	/** Gets the current height of the canvas viewport in pixels. */
 	int getViewportHeight();
+	
+	/**
+	 * Set the height and width of the viewport.
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	void setViewportSize(int width, int height);
 
 	/**
 	 * Tests whether a given point in the panel falls within the image boundaries.
@@ -78,5 +86,12 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	
 	/** Sets the mouse to the given {@link MouseCursor} type. */
 	void setCursor(MouseCursor cursor);
+
+	/**
+	 * Set the scale to use when reverting after zooming
+	 * 
+	 * @param zoomFactor
+	 */
+	void setInitialScale(double zoomFactor);
 
 }

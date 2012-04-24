@@ -421,7 +421,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		// update position and notify interested parties of the change
 		pos.put(axis, value);
 		// NB: DataView.setPosition is called only in update method.
-		eventService.publish(new AxisPositionEvent(this, axis));
+		if (eventService != null)
+			eventService.publish(new AxisPositionEvent(this, axis));
 	}
 
 	// -- Localizable methods --

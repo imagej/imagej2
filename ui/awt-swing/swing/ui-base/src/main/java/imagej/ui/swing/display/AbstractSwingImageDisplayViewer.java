@@ -74,7 +74,6 @@ public abstract class AbstractSwingImageDisplayViewer extends AbstractImageDispl
 				new AWTKeyEventDispatcher(this.display, eventService));
 		imgCanvas.addEventDispatcher(
 				new AWTMouseEventDispatcher(this, eventService, false));
-		setCanvas(imgCanvas);
 
 		imgPanel = new SwingDisplayPanel(this, window);
 		setPanel(imgPanel);
@@ -93,6 +92,7 @@ public abstract class AbstractSwingImageDisplayViewer extends AbstractImageDispl
 				ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE : ZoomScaleOption.OPTIONS_PERCENT_SCALE;
 	}
 	// -- Display methods --
+	
 
 	@SuppressWarnings("unused")
 	@EventHandler
@@ -100,4 +100,7 @@ public abstract class AbstractSwingImageDisplayViewer extends AbstractImageDispl
 		updateLabel();
 	}
 
+	public JHotDrawImageCanvas getCanvas() {
+		return imgCanvas;
+	}
 }

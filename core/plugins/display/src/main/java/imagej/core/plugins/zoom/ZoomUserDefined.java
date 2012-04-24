@@ -45,6 +45,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 
 /**
  * Zooms in on the center of the image at the user-specified magnification
@@ -134,12 +135,8 @@ public class ZoomUserDefined extends DynamicPlugin {
 
 	@Override
 	public void run() {
-		final double percentX = 1.0 * centerU / maxU;
-		final double percentY = 1.0 * centerV / maxV;
-		final int cx = (int) (percentX * display.getCanvas().getCanvasWidth());
-		final int cy = (int) (percentY * display.getCanvas().getCanvasHeight());
-		final IntCoords center = new IntCoords(cx, cy);
-		display.getCanvas().setZoom(zoomPercent / 100.0, center);
+		display.getCanvas().setZoom(zoomPercent / 100.0,
+				new RealCoords(getCenterU(), getCenterV()));
 	}
 
 	public double getUserDefinedScale() {

@@ -135,8 +135,6 @@ public class CanvasHelper implements Pannable, Zoomable {
 	/** Initial scale factor, for resetting zoom. */
 	private double initialScale = 1;
 
-	private final EventService eventService;
-
 	// -- constructors --
 
 	public CanvasHelper(final DefaultImageCanvas canvas) {
@@ -144,10 +142,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 	}
 
 	public CanvasHelper(final DefaultImageCanvas canvas, final double[] zoomLevels) {
-		eventService = canvas.getDisplay().getContext().getService(EventService.class);
 		this.canvas = canvas;
 		this.zoomLevels = validatedZoomLevels(zoomLevels);
-		panReset();
 	}
 
 	// -- CanvasHelper methods --
@@ -316,13 +312,13 @@ public class CanvasHelper implements Pannable, Zoomable {
 	 * @return the coordinate of the left edge of the viewport in image space.
 	 */
 	private double getLeftImageX() {
-		return (double)(canvas.getViewportWidth()) / canvas.getZoomFactor() / 2;
+		return getPanCenter().x - (double)(canvas.getViewportWidth()) / canvas.getZoomFactor() / 2;
 	}
 	/**
 	 * @return the coordinate of the top edge of the viewport in image space.
 	 */
 	private double getTopImageY() {
-		return (double)(canvas.getViewportHeight()) / canvas.getZoomFactor() / 2;
+		return getPanCenter().y - (double)(canvas.getViewportHeight()) / canvas.getZoomFactor() / 2;
 	}
 
 	private boolean scaleOutOfBounds(final double desiredScale) {

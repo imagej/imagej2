@@ -36,6 +36,8 @@
 package imagej.core.plugins.debug;
 
 import imagej.data.display.event.CanvasEvent;
+import imagej.data.display.event.MouseCursorEvent;
+import imagej.data.display.event.ZoomEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -96,6 +98,9 @@ public class WatchEvents implements ImageJPlugin {
 
 	@Parameter(label = "DisplayEvent")
 	private boolean showDisplay = true;
+	
+	@Parameter(label = "MouseCursorEvent")
+	private boolean showMouseCursor = true;
 
 	@Parameter(label = "MsButtonEvent")
 	private boolean showMsButton = false;
@@ -126,6 +131,9 @@ public class WatchEvents implements ImageJPlugin {
 
 	@Parameter(label = "ToolEvent")
 	private boolean showTool = true;
+	
+	@Parameter(label = "ZoomEvent")
+	private boolean showZoom = true;
 
 	// -- Fields --
 
@@ -142,6 +150,10 @@ public class WatchEvents implements ImageJPlugin {
 
 	public void setShowDisplayEvents(final boolean show) {
 		showDisplay = show;
+	}
+	
+	public void setMouseCursorEvents(final boolean show) {
+		showMouseCursor = show;
 	}
 
 	public void setShowMsMovedEvents(final boolean show) {
@@ -183,6 +195,10 @@ public class WatchEvents implements ImageJPlugin {
 	public void setShowToolEvents(final boolean show) {
 		showTool = show;
 	}
+	
+	public void setZoomEvents(final boolean show) {
+		showZoom = show;
+	}
 
 	// -- Runnable methods --
 
@@ -211,7 +227,8 @@ public class WatchEvents implements ImageJPlugin {
 					ZoomEvent
 		TODO add DataViewEvent
 		*/
-
+		
+		final boolean okMouseCursor = showMouseCursor && evt instanceof MouseCursorEvent;
 		final boolean okMsMoved = showMsMoved && evt instanceof MsMovedEvent;
 		final boolean okMsButton = showMsButton && evt instanceof MsButtonEvent;
 		final boolean okKy = showKy && evt instanceof KyEvent;
@@ -223,10 +240,11 @@ public class WatchEvents implements ImageJPlugin {
 		final boolean okOptions = showOptions && evt instanceof OptionsEvent;
 		final boolean okStatus = showStatus && evt instanceof StatusEvent;
 		final boolean okTool = showTool && evt instanceof ToolEvent;
+		final boolean okZoom = showZoom && evt instanceof ZoomEvent;
 
-		if (okApplication || okDisplay || okMsButton || okMsMoved || okKy ||
+		if (okApplication || okDisplay || okMouseCursor || okMsButton || okMsMoved || okKy ||
 			okFile || okList || okModule || okObject || okOptions || okStatus ||
-			okTool)
+			okTool || okZoom)
 		{
 			showEvent(evt);
 		}

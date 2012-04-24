@@ -104,7 +104,6 @@ public class FloodFillTool extends AbstractTool {
 					final DrawingTool drawingTool = initDrawingTool(recorder.getDataset());
 					final long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(recorder.getCX(), recorder.getCY(), currPos, connectivity, drawingTool);
-					evt.getDisplay().getPanel().redraw();
 					evt.getDisplay().update();
 				}
 			}

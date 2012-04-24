@@ -120,7 +120,6 @@ public abstract class AbstractLineTool extends AbstractTool {
 		long modelX = realCoords.getLongX();
 		long modelY = realCoords.getLongY();
 		drawingTool.lineTo(modelX, modelY);
-		evt.getDisplay().getPanel().redraw();
 		evt.getDisplay().update();
 		evt.consume();
 	}

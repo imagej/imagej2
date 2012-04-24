@@ -49,6 +49,8 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.util.IntCoords;
+import imagej.util.Log;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -211,13 +213,15 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	private int getX(final MouseEvent e) {
 		final int x = e.getX();
 		if (relative) return x;
-		return x - displayViewer.getCanvas().getPanOrigin().x;
+		// TODO: figure out how & why we need to adjust and do it.
+		return x;
 	}
 
 	private int getY(final MouseEvent e) {
 		final int y = e.getY();
 		if (relative) return y;
-		return y - displayViewer.getCanvas().getPanOrigin().y;
+		// TODO: figure out how & why we need to adjust and do it.
+		return y;
 	}
-
+	
 }
