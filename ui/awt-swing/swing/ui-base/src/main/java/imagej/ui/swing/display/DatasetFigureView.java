@@ -119,7 +119,7 @@ public class DatasetFigureView implements FigureView
 
 	private synchronized void doUpdate() {
 		try {
-			Log.info("Updating image figure");
+			Log.debug("Updating image figure: " + this);
 			final Image image = datasetView.getScreenImage().image();
 			final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
 			figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
