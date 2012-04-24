@@ -66,20 +66,7 @@ public class ZoomToFitSelection implements ImageJPlugin {
 	@Override
 	public void run() {
 		final RealRect selection = overlayService.getSelectionBounds(display);
-
-		final double scale = display.getCanvas().getZoomFactor();
-
-		final int panelOX = (int) (selection.x / scale);
-		final int panelOY = (int) (selection.y / scale);
-		final int width = (int) (selection.width / scale);
-		final int height = (int) (selection.height / scale);
-
-		if (width > 0 && height > 0) {
-			final IntCoords topLeft = new IntCoords(panelOX, panelOY);
-			final IntCoords bottomRight =
-				new IntCoords(panelOX + width, panelOY + height);
-			display.getCanvas().zoomToFit(topLeft, bottomRight);
-		}
+		display.getCanvas().zoomToFit(selection);
 	}
 
 }

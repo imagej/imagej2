@@ -185,8 +185,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void panReset() {
-		canvas.doSetCenter(canvas.getViewportWidth() / getZoomFactor() / 2.0,
-						   canvas.getViewportHeight() / getZoomFactor() / 2.0);
+		RealRect extents = canvas.getDisplay().getImageExtents();
+		canvas.doSetCenter(
+				extents.x + extents.height / 2,
+				extents.y + extents.width / 2);
 	}
 
 	@Override
@@ -200,7 +202,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 	public void setZoom(final double factor) {
 		double desiredScale = (factor == 0)? initialScale: factor;
 		if (scaleOutOfBounds(desiredScale) || (desiredScale == getZoomFactor())) return;
-		canvas.doSetZoom(factor);
+		canvas.doSetZoom(desiredScale);
 	}
 
 	@Override
@@ -244,8 +246,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 	public void zoomToFit(final IntCoords topLeft, final IntCoords bottomRight) {
 		RealCoords imageTopLeft = panelToImageCoords(topLeft);
 		RealCoords imageBottomRight = panelToImageCoords(bottomRight);
-		double newCenterX = Math.abs(imageBottomRight.x - imageTopLeft.x) / 2;
-		double newCenterY = Math.abs(imageBottomRight.y - imageTopLeft.y) / 2;
+		double newCenterX = Math.abs(imageBottomRight.x + imageTopLeft.x) / 2;
+		double newCenterY = Math.abs(imageBottomRight.y + imageTopLeft.y) / 2;
 		final double imageSizeX = Math.abs(imageBottomRight.x - imageTopLeft.x);
 		final double imageSizeY = Math.abs(imageBottomRight.y - imageTopLeft.y);
 		final double xZoom = canvas.getViewportWidth() / imageSizeX;
@@ -254,6 +256,17 @@ public class CanvasHelper implements Pannable, Zoomable {
 		if (scaleOutOfBounds(factor)) return;
 
 		canvas.doSetZoomAndCenter(factor, newCenterX, newCenterY);
+	}
+	
+	@Override
+	public void zoomToFit(final RealRect viewportRect) {
+		double newCenterX = (viewportRect.x + viewportRect.width/2);
+		double newCenterY = (viewportRect.y + viewportRect.height/2);
+		double scale = Math.min(
+				canvas.getViewportWidth() / viewportRect.width, 
+				canvas.getViewportHeight() / viewportRect.height);
+		if (scaleOutOfBounds(scale)) return;
+		canvas.doSetZoomAndCenter(scale, newCenterX, newCenterY);
 	}
 
 	@Override

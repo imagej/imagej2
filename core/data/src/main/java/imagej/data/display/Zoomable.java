@@ -115,6 +115,13 @@ public interface Zoomable {
 	 * @param bottomRight bottom right of the new viewport in panel space
 	 */
 	void zoomToFit(IntCoords topLeft, IntCoords bottomRight);
+	
+	/**
+	 * Zoom the viewport to fit the given rectangle in image space
+	 * 
+	 * @param viewportRect - the rectangle that the user wants to see.
+	 */
+	void zoomToFit(RealRect viewportRect);
 
 	/** Gets the current zoom level. */
 	double getZoomFactor();

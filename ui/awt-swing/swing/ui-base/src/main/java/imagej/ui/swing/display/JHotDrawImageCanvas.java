@@ -121,6 +121,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 
 	private final JScrollPane scrollPane;
 	private boolean insideSynch = false;
+	private boolean initialized = false;
 	
 	private final List<FigureView> figureViews = new ArrayList<FigureView>();
 
@@ -411,6 +412,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 		final RealCoords center = new RealCoords(
 				(viewPos.x + viewRect.width / 2) / drawingView.getScaleFactor(),
 				(viewPos.y + viewRect.height / 2) / drawingView.getScaleFactor());
+		if (! initialized) return;
 		final RealCoords oldCenter = canvas.getPanCenter(); 
 		if (oldCenter.x == center.x && oldCenter.y == center.y) return;
 		canvas.setPan(center);
@@ -422,7 +424,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 		insideSynch = true;
 		try {
 			final ImageCanvas canvas = getDisplay().getCanvas();
-			boolean considerResize = false;
+			boolean considerResize = ! initialized;
 			double zoomFactor = canvas.getZoomFactor();
 			if (drawingView.getScaleFactor() != zoomFactor ) {
 				drawingView.setScaleFactor(zoomFactor);
@@ -447,6 +449,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 				maybeResizeWindow();
 		} finally {
 			insideSynch = false;
+			initialized = true;
 		}
 	}
 

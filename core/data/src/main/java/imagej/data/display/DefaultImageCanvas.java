@@ -34,11 +34,14 @@
  */
 package imagej.data.display;
 
+import java.util.List;
+
 import imagej.IContext;
 import imagej.ImageJ;
 import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.event.EventService;
+import imagej.event.EventSubscriber;
 import imagej.ext.MouseCursor;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;
@@ -61,7 +64,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 	private final ImageDisplay display;
 	private MouseCursor mouseCursor;
 	private CanvasHelper canvasHelper;
-	private final RealCoords center;
+	private RealCoords center;
 	private final IntCoords viewportSize;
 	private double scale = 1.0;
 
@@ -69,11 +72,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 		this.display = display;
 		mouseCursor = MouseCursor.DEFAULT;
 		canvasHelper = new CanvasHelper(this);
-		// The center is set by panReset. The viewport size
-		// will be initialized once a panel is attached to the UI.
-		center = new RealCoords(0, 0);
 		viewportSize = new IntCoords(100, 100);
-		panReset();
 	}
 	//-- Pannable methods --//
 	@Override
@@ -90,6 +89,10 @@ public class DefaultImageCanvas implements ImageCanvas {
 	}
 	@Override
 	public RealCoords getPanCenter() {
+		if (center == null) {
+			panReset();
+		}
+		assert center != null;
 		return new RealCoords(center.x, center.y);
 	}
 	//-- Zoomable methods --//
@@ -130,6 +133,11 @@ public class DefaultImageCanvas implements ImageCanvas {
 	public void zoomToFit(IntCoords topLeft, IntCoords bottomRight) {
 		canvasHelper.zoomToFit(topLeft, bottomRight);
 	}
+	@Override
+	public void zoomToFit(RealRect viewportRect) {
+		canvasHelper.zoomToFit(viewportRect);
+	}
+	
 	@Override
 	public double getZoomFactor() {
 		return this.scale;
@@ -195,8 +203,12 @@ public class DefaultImageCanvas implements ImageCanvas {
 	 * @param y
 	 */
 	void doSetCenter(double x, double y) {
-		center.x = x;
-		center.y = y;
+		if (center == null) {
+			center = new RealCoords(x, y);
+		} else {
+			center.x = x;
+			center.y = y;
+		}
 		publishZoomEvent();
 	}
 	
@@ -222,8 +234,12 @@ public class DefaultImageCanvas implements ImageCanvas {
 	 * @param y
 	 */
 	void doSetZoomAndCenter(double scale, double x, double y) {
-		center.x = x;
-		center.y = y;
+		if (center == null) {
+			center = new RealCoords(x, y);
+		} else {
+			center.x = x;
+			center.y = y;
+		}
 		this.scale = scale;
 		publishZoomEvent();
 	}
