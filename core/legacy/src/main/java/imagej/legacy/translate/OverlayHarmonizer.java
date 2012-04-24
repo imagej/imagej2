@@ -449,7 +449,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 				break;
 			case Roi.POINT:
 				Log.warn("====> POINT: " + roi);
-				overlays.add(createPointOverlay(roi, xOff, yOff));
+				overlays.addAll(createPointOverlays(roi, xOff, yOff));
 				break;
 			case Roi.COMPOSITE:
 				Log.warn("====> COMPOSITE: " + roi);
@@ -573,19 +573,21 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 
 	@SuppressWarnings("unused")
-	private PointOverlay createPointOverlay(final Roi roi, final int xOff,
-		final int yOff)
+	private List<PointOverlay> createPointOverlays(
+			final Roi roi, final int xOff, final int yOff)
 	{
 		assert roi instanceof PointRoi;
-		final PointRoi point = (PointRoi) roi;
-		final Rectangle region = point.getBounds();
-		final double x = region.x;
-		final double y = region.y;
-		final RealPoint pt = new RealPoint(x,y);
-		final PointOverlay pointOverlay =
-			new PointOverlay(context, pt);
-		assignPropertiesToOverlay(pointOverlay, roi);
-		return pointOverlay;
+		final PointRoi ptRoi = (PointRoi) roi;
+		final List<PointOverlay> overlays = new ArrayList<PointOverlay>();
+		for (int i = 0; i < ptRoi.getNCoordinates(); i++) {
+			final double x = ptRoi.getXCoordinates()[i] + roi.getBounds().x;
+			final double y = ptRoi.getYCoordinates()[i] + roi.getBounds().y;
+			final RealPoint pt = new RealPoint(x,y);
+			final PointOverlay pointOverlay = new PointOverlay(context, pt);
+			assignPropertiesToOverlay(pointOverlay, roi);
+			overlays.add(pointOverlay);
+		}
+		return overlays;
 	}
 
 	@SuppressWarnings("unused")
