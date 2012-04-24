@@ -35,9 +35,13 @@
 
 package imagej.ui.swing;
 
+import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayViewer;
+import imagej.ext.display.event.DisplayCreatedEvent;
+import imagej.ext.display.event.DisplayDeletedEvent;
+import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
@@ -184,7 +188,64 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * or MDI).
 	 */
 	protected abstract void setupAppFrame();
+	
+	/**
+	 * Called any time a display is created.
+	 * 
+	 * @param e
+	 */
+	protected abstract void onDisplayCreated(DisplayCreatedEvent e);
+	
+	/**
+	 * Called any time a display is deleted. The display viewer
+	 * is not removed from the list of viewers until after this returns.
+	 * 
+	 * @param e
+	 */
+	protected abstract void onDisplayDeleted(DisplayDeletedEvent e);
+	
+	/**
+	 * Called any time a display is updated.
+	 * @param e
+	 */
+	protected void onDisplayUpdated(DisplayUpdatedEvent e) {
+		DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
+		if (displayViewer != null) {
+			displayViewer.onDisplayUpdateEvent(e);
+		}
+		
+	}
 
+	/**
+	 * Handle a DisplayCreatedEvent.
+	 * 
+	 * Note that the handling of all display events is synchronized
+	 * on the GUI singleton in order to serialize processing.
+	 * 
+	 * @param e
+	 */
+	@EventHandler
+	protected synchronized void onEvent(DisplayCreatedEvent e) {
+		onDisplayCreated(e);
+	}
+	
+	@EventHandler
+	protected synchronized void onEvent(DisplayDeletedEvent e) {
+		DisplayViewer<?> displayViewer = getDisplayViewer(e.getObject());
+		if (displayViewer != null) {
+			onDisplayDeleted(e);
+			displayViewer.onDisplayDeletedEvent(e);
+			displayViewers.remove(displayViewer);
+		}
+	}
+	
+	@EventHandler
+	protected synchronized void onEvent(DisplayUpdatedEvent e) {
+		DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
+		if (displayViewer != null) {
+			onDisplayUpdated(e);
+		}
+	}
 	// FIXME - temp hack - made this method public so that the SwingOverlayManager
 	// (which is not a display) could make sure menu bar available when it is
 	// running. A better approach would be to keep this method protected and make

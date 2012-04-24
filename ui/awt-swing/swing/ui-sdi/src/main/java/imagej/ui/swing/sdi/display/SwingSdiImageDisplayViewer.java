@@ -63,8 +63,6 @@ public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer 
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
 
 		sdiWindow.addEventDispatcher(new AWTKeyEventDispatcher(display, eventService));
-		sdiWindow.addEventDispatcher(new AWTWindowEventDispatcher(display,
-			eventService));
 	}
 
 }

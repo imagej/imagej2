@@ -63,13 +63,10 @@ public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer 
 	@Override
 	public void view(DisplayWindow window, Display<?> display) {
 		super.view(window, display);
-		assert window instanceof SwingMdiDisplayWindow;
 		DisplayPanel panel = getPanel();
 		assert panel instanceof SwingDisplayPanel;
-		SwingMdiDisplayWindow mdiWindow = (SwingMdiDisplayWindow)window; 
 		SwingDisplayPanel sPanel = (SwingDisplayPanel)panel;
 		sPanel.addEventDispatcher(new AWTKeyEventDispatcher(display, eventService));
-		mdiWindow.addEventDispatcher(new InternalFrameEventDispatcher(display, eventService));
 	}
 
 }

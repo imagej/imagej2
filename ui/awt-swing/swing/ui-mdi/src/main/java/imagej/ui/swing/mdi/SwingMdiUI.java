@@ -37,10 +37,12 @@ package imagej.ui.swing.mdi;
 
 import imagej.ImageJ;
 import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayViewer;
 import imagej.ext.display.event.DisplayCreatedEvent;
+import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -116,11 +118,12 @@ public class SwingMdiUI extends AbstractSwingUI {
 	 * 
 	 * @param event
 	 */
-	@EventHandler
-	protected void onEvent(final DisplayCreatedEvent event) {
+	@Override
+	protected void onDisplayCreated(final DisplayCreatedEvent event) {
 		final Display<?> display = event.getObject();
 		final ImageJ imageJ = display.getContext();
 		final PluginService pluginService = imageJ.getService(PluginService.class);
+		final EventService eventService = imageJ.getService(EventService.class);
 		for (@SuppressWarnings("rawtypes") PluginInfo<DisplayViewer> info:pluginService.getPluginsOfType(DisplayViewer.class)) {
 			try {
 				final DisplayViewer<?> displayViewer = info.createInstance();
@@ -129,7 +132,8 @@ public class SwingMdiUI extends AbstractSwingUI {
 					displayViewer.view(displayWindow, display);
 					displayWindow.showDisplay(true);
 					desktopPane.add(displayWindow);
-					
+					displayWindow.addEventDispatcher(
+							new InternalFrameEventDispatcher(display, eventService));
 					return;
 				}
 			} catch (InstantiableException e) {
@@ -137,5 +141,11 @@ public class SwingMdiUI extends AbstractSwingUI {
 			}
 		}
 		Log.warn("No suitable DisplayViewer found for display");
+	}
+
+	@Override
+	protected void onDisplayDeleted(DisplayDeletedEvent e) {
+		// No action.
+		
 	}
 }

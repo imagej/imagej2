@@ -92,6 +92,28 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 		return panel;
 	}
 	
+	/**
+	 * Implement the user interface for deleting a display
+	 * @param e
+	 */
+	@Override
+	public void onDisplayDeletedEvent(DisplayDeletedEvent e) {
+		getPanel().getWindow().close();
+	}
+
+	/**
+	 * Synchronize the user interface appearance with that
+	 * of the display model.
+	 *  
+	 * @param e
+	 */
+	@Override
+	public void onDisplayUpdateEvent(DisplayUpdatedEvent e) {
+		if (e.getLevel() == DisplayUpdateLevel.REBUILD)
+			getPanel().redoLayout();
+		getPanel().redraw();
+	}
+	
 	//-- Display lifecycle events --//
 	@EventHandler
 	protected void onEvent(DisplayActivatedEvent e) {
@@ -107,37 +129,5 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 		getPanel().getWindow().requestFocus();
 	}
 
-	@EventHandler
-	protected void onEvent(DisplayDeletedEvent e) {
-		if (e.getObject() == getDisplay())
-			onDisplayDeleted(e);
-	}
-
-	/**
-	 * Implement the user interface for deleting a display
-	 * @param e
-	 */
-	protected void onDisplayDeleted(DisplayDeletedEvent e) {
-		getPanel().getWindow().close();
-	}
-
-	
-	@EventHandler
-	protected void onEvent(DisplayUpdatedEvent e) {
-		if (e.getDisplay() == getDisplay()) {
-			onDisplayUpdated(e);
-		}
-	}
-	/**
-	 * Synchronize the user interface appearance with that
-	 * of the display model.
-	 *  
-	 * @param e
-	 */
-	protected void onDisplayUpdated(DisplayUpdatedEvent e) {
-		if (e.getLevel() == DisplayUpdateLevel.REBUILD)
-			getPanel().redoLayout();
-		getPanel().redraw();
-	}
 	
 }

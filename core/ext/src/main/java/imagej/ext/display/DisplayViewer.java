@@ -34,6 +34,8 @@
  */
 package imagej.ext.display;
 
+import imagej.ext.display.event.DisplayDeletedEvent;
+import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.plugin.IPlugin;
 
 
@@ -81,4 +83,17 @@ public interface DisplayViewer<T> extends IPlugin {
 	 * @return the display panel that hosts the gui elements 
 	 */
 	DisplayPanel getPanel();
+	
+	/**
+	 * Handle a display update event directed at this viewer's display.
+	 * 
+	 * @param e
+	 */
+	void onDisplayUpdateEvent(DisplayUpdatedEvent e);
+	
+	/**
+	 * Handle a display deleted event directed at this viewer's display.
+	 * @param e
+	 */
+	void onDisplayDeletedEvent(DisplayDeletedEvent e);
 }
