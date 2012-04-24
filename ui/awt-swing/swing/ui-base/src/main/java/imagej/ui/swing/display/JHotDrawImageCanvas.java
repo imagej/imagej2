@@ -36,6 +36,7 @@
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
+import imagej.data.Extents;
 import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
@@ -51,6 +52,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.MouseCursor;
+import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import imagej.ext.tool.Tool;
@@ -72,6 +74,7 @@ import imagej.util.RealRect;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
@@ -248,13 +251,12 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 	}
 	
 	@EventHandler
-	protected void onEvent(DisplayUpdatedEvent event) {
-		if (event.getDisplay() != getDisplay()) return;
-		
-		rebuild();
-		update();
+	protected void onEvent(DisplayDeletedEvent event) {
+		if (event.getObject() == getDisplay()) {
+			EventService eventService = event.getContext().getService(EventService.class);
+			eventService.unsubscribe(subscribers);
+		}
 	}
-	
 	@EventHandler
 	protected void onEvent(ZoomEvent event) {
 		if (event.getCanvas() != getDisplay().getCanvas()) return;
@@ -267,7 +269,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 	}
 	
 	
-	protected void rebuild() {
+	void rebuild() {
 		for (DataView dataView:getDisplay()) {
 			FigureView figureView = getFigureView(dataView);
 			if (figureView == null) {
@@ -294,7 +296,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 		}
 	}
 	
-	protected void update() {
+	void update() {
 		for (FigureView figureView:figureViews) {
 			figureView.update();
 		}
@@ -386,6 +388,15 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 		// off by one that makes initial view have scroll bars unnecessarily. Look
 		// into this further.
 		Dimension drawViewSize = drawingView.getPreferredSize();
+		if (drawViewSize.height == 0 || drawViewSize.width == 0) {
+			// The image figure hasn't been placed yet. Calculate the projected size.
+			final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
+			final RealRect imageBounds = getDisplay().getImageExtents();
+			final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
+			return new Dimension(
+				Math.min((int)(imageBounds.width * zoomFactor) + 5, bounds.width),
+				Math.min((int)(imageBounds.height * zoomFactor) + 5, bounds.height));
+		}
 		if (drawViewSize.width+4 <= scrollPane.getPreferredSize().width)
 			if (drawViewSize.height+4 <= scrollPane.getPreferredSize().height)
 				return new Dimension(drawViewSize.width+5, drawViewSize.height+5);
@@ -497,16 +508,20 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 		//   Update on a different thread after a slight delay.
 		//   Note this always resizes correctly (except for off by a fixed
 		//   scrollbar size which I have handled in getPreferredSize())
-		
-		new Thread() {
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
-				// NB - its not enough to be in separate thread - it must sleep a little
-				try { Thread.sleep(30); } catch (Exception e) {/*do nothing*/}
-				displayViewer.getPanel().getWindow().pack();
-			}
-		}.start();
+		if (false) {
+			new Thread() {
+				@Override
+				@SuppressWarnings("synthetic-access")
+				public void run() {
+					// NB - its not enough to be in separate thread - it must sleep a little
+					try { Thread.sleep(30); } catch (Exception e) {/*do nothing*/}
+					displayViewer.getPanel().getWindow().pack();
+				}
+			}.start();
+		} else {
+			EventQueue.invokeLater(new Runnable() { 
+				public void run() { displayViewer.getPanel().getWindow().pack(); }});
+		}
 	}
 
 }

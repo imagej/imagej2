@@ -171,6 +171,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 				createSliders();
 				updateBorder(0);
 				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
+				displayViewer.getCanvas().rebuild();
 				window.setTitle(getDisplay().getName());
 				window.showDisplay(true);
 			}
@@ -202,6 +203,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 			if (view == null) return; // no active dataset
 			view.getProjector().map();
+		EventQueue.invokeLater(new Runnable() {
+			public void run() { displayViewer.getCanvas().update(); }});
 	}
 	
 	// -- Event handlers --

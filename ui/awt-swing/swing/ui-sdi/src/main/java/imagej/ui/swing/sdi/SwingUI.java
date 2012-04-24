@@ -128,7 +128,6 @@ public class SwingUI extends AbstractSwingUI {
 					if (displayWindow.getJMenuBar() == null) {
 						createMenuBar(displayWindow);
 					}
-					displayWindow.showDisplay(true);
 					displayWindow.addEventDispatcher(new AWTWindowEventDispatcher(display,
 													 eventService));
 					return;

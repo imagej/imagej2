@@ -44,6 +44,7 @@ import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.util.Log;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.EventQueue;
@@ -118,6 +119,7 @@ public class SwingDatasetView implements FigureView
 
 	private synchronized void doUpdate() {
 		try {
+			Log.info("Updating image figure");
 			final Image image = datasetView.getScreenImage().image();
 			final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
 			figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
