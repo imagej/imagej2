@@ -40,6 +40,7 @@ import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayViewer;
 import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
@@ -100,7 +101,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 	private static final long serialVersionUID = 1L;
 
-	private final ImageDisplay display;
+	private final AbstractSwingImageDisplayViewer displayViewer;
 
 	private final CanvasHelper canvasHelper;
 
@@ -114,8 +115,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
 
-	public JHotDrawImageCanvas(final ImageDisplay display) {
-		this.display = display;
+	public JHotDrawImageCanvas(final AbstractSwingImageDisplayViewer displayViewer) {
+		this.displayViewer = displayViewer;
 		canvasHelper = new CanvasHelper(this);
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
@@ -135,9 +136,11 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-		final Tool activeTool = ImageJ.get(ToolService.class).getActiveTool();
+		final ImageJ context = displayViewer.getImageDisplay().getContext();
+		final ToolService toolService = context.getService(ToolService.class);
+		final Tool activeTool = toolService.getActiveTool();
 		activateTool(activeTool);
-		final EventService eventService = ImageJ.get(EventService.class);
+		final EventService eventService = context.getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 
 		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
@@ -158,7 +161,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	protected void onFigureSelectionChanged(final FigureSelectionEvent event) {
 		final Set<Figure> newSelection = event.getNewSelection();
 		final Set<Figure> oldSelection = event.getOldSelection();
-		for (final DataView view : display) {
+		for (final DataView view : displayViewer.getDisplay()) {
 			if (view instanceof FigureView) {
 				final Figure figure = ((FigureView) view).getFigure();
 				if (newSelection.contains(figure)) {
@@ -180,7 +183,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@EventHandler
 	protected void onViewSelected(final DataViewSelectedEvent event) {
 		final DataView view = event.getView();
-		if (display.contains(view) && view instanceof FigureView) {
+		if (displayViewer.getDisplay().contains(view) && view instanceof FigureView) {
 			final Figure figure = ((FigureView) view).getFigure();
 			if (!drawingView.getSelectedFigures().contains(figure)) {
 				drawingView.addToSelection(figure);
@@ -191,7 +194,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@EventHandler
 	protected void onViewDeselected(final DataViewDeselectedEvent event) {
 		final DataView view = event.getView();
-		if (display.contains(view) && view instanceof FigureView) {
+		if (displayViewer.getDisplay().contains(view) && view instanceof FigureView) {
 			final Figure figure = ((FigureView) view).getFigure();
 			if (drawingView.getSelectedFigures().contains(figure)) {
 				drawingView.removeFromSelection(figure);
@@ -217,6 +220,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 				@Override
 				public void overlayCreated(final FigureCreatedEvent e) {
 					final OverlayView overlay = e.getOverlay();
+					ImageDisplay display = displayViewer.getImageDisplay();
 					for (int i = 0; i < display.numDimensions(); i++) {
 						final AxisType axis = display.axis(i);
 						if (Axes.isXY(axis)) continue;
@@ -232,7 +236,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 				}
 			};
 
-			final JHotDrawTool creationTool = adapter.getCreationTool(display, listener);
+			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay(), listener);
 
 			toolDelegator.setCreationTool(creationTool);
 		}
@@ -269,9 +273,14 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 
 	@Override
 	public ImageDisplay getDisplay() {
-		return display;
+		return displayViewer.getImageDisplay();
 	}
 
+	@Override
+	public ImageDisplayViewer getDisplayViewer() {
+		return displayViewer;
+	}
+	
 	@Override
 	public Dimension getPreferredSize() {
 		// NB Johannes
@@ -303,13 +312,13 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@Override
 	public int getCanvasWidth() {
 		// NB: Return *unscaled* canvas width.
-		return display.getActiveView().getPreferredWidth();
+		return getDisplay().getActiveView().getPreferredWidth();
 	}
 
 	@Override
 	public int getCanvasHeight() {
 		// NB: Return *unscaled* canvas height.
-		return display.getActiveView().getPreferredHeight();
+		return getDisplay().getActiveView().getPreferredHeight();
 	}
 
 	@Override
@@ -487,9 +496,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			public void run() {
 				// NB - its not enough to be in separate thread - it must sleep a little
 				try { Thread.sleep(30); } catch (Exception e) {/*do nothing*/}
-				display.getPanel().getWindow().pack();
+				displayViewer.getPanel().getWindow().pack();
 			}
 		}.start();
 	}
-	
+
 }

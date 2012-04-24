@@ -35,8 +35,14 @@
 
 package imagej.ui.swing.display;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.AbstractDatasetView;
+import imagej.data.display.DatasetView;
+import imagej.data.display.DefaultDatasetView;
+import imagej.data.display.event.DataViewUpdatedEvent;
+import imagej.event.EventHandler;
+import imagej.event.EventService;
+import imagej.event.EventSubscriber;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.EventQueue;
@@ -44,6 +50,7 @@ import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
@@ -54,22 +61,25 @@ import org.jhotdraw.draw.ImageFigure;
  * 
  * @author Curtis Rueden
  */
-public class SwingDatasetView extends AbstractDatasetView implements FigureView
+public class SwingDatasetView implements FigureView
 {
 
+	private final DatasetView datasetView;
 	private final ImageFigure figure;
 	private boolean needsUpdate;
+	private final List<EventSubscriber<?>> subscribers;
 
-	public SwingDatasetView(final AbstractSwingImageDisplay display,
-		final Dataset dataset)
+	public SwingDatasetView(final AbstractSwingImageDisplayViewer display,
+		final DatasetView datasetView)
 	{
-		super(dataset);
+		this.datasetView = datasetView;
 		needsUpdate = false;
 		final JHotDrawImageCanvas canvas = display.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		figure = new ImageFigure();
 		figure.setSelectable(false);
 		figure.setTransformable(false);
+		Dataset dataset = datasetView.getData();
 		final double minX = dataset.getImgPlus().realMin(0);
 		final double minY = dataset.getImgPlus().realMin(1);
 		final double maxX = dataset.getImgPlus().realMax(0);
@@ -77,13 +87,18 @@ public class SwingDatasetView extends AbstractDatasetView implements FigureView
 		figure.setBounds(new Point2D.Double(minX, minY), new Point2D.Double(maxX,
 			maxY));
 		drawing.add(figure);
-		rebuild();
+		final ImageJ context = dataset.getContext();
+		EventService eventService = context.getService(EventService.class);
+		subscribers = eventService.subscribe(this);
 	}
 
-	// -- DataView methods --
+	@EventHandler
+	protected void onDataViewUpdatedEvent(final DataViewUpdatedEvent event) {
+		if (event.getView() == datasetView)
+			update();
+	}
 
 	@SuppressWarnings("synthetic-access")
-	@Override
 	public synchronized void update() {
 		if (!needsUpdate) {
 			needsUpdate = true;
@@ -99,7 +114,7 @@ public class SwingDatasetView extends AbstractDatasetView implements FigureView
 
 	private synchronized void doUpdate() {
 		try {
-			final Image image = getScreenImage().image();
+			final Image image = datasetView.getScreenImage().image();
 			final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
 			figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
 				bufImage.getHeight()));

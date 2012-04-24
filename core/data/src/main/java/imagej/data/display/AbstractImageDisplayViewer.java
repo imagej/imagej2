@@ -32,90 +32,82 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package imagej.data.display;
 
-package imagej.ui.swing.display;
+import java.util.List;
 
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.AbstractImageDisplay;
-import imagej.data.display.DataView;
-import imagej.data.overlay.Overlay;
-import imagej.event.EventHandler;
-import imagej.ext.display.DisplayService;
-import imagej.ext.display.DisplayWindow;
-import imagej.options.OptionsService;
-import imagej.options.event.OptionsEvent;
-import imagej.options.plugins.OptionsAppearance;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.ui.common.awt.AWTMouseEventDispatcher;
-import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
+import imagej.data.Data;
+import imagej.data.Dataset;
+import imagej.data.Position;
+import imagej.data.display.event.ZoomEvent;
+import imagej.event.EventHandler;
+import imagej.event.EventService;
+import imagej.event.EventSubscriber;
+import imagej.ext.display.AbstractDisplayViewer;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayWindow;
+import imagej.ext.display.event.window.WinActivatedEvent;
+import imagej.ext.tool.ToolService;
+import imagej.util.UnitUtils;
+
 /**
- * A Swing image display plugin, which displays 2D planes in grayscale or
- * composite color. Intended to be subclassed by a concrete implementation that
- * provides a {@link DisplayWindow} in which the display should be housed.
- * 
- * @author Curtis Rueden
- * @author Grant Harris
- * @author Barry DeZonia
+ * @author Lee Kamentsky
+ *
+ * The AbstractImageDisplayViewer implements the gui-independent
+ * elements of an image display viewer. It subscribes to the
+ * events of its controlled display and distills these into
+ * abstract lifecycle actions.
  */
-public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
-
-	protected final DisplayWindow window;
-	private final JHotDrawImageCanvas imgCanvas;
-	private final SwingDisplayPanel imgPanel;
-	private ScaleConverter scaleConverter;
-
-	public AbstractSwingImageDisplay(final DisplayWindow window) {
-		super();
+public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<DataView> implements ImageDisplayViewer {
+	protected enum ZoomScaleOption {
+		OPTIONS_PERCENT_SCALE,
+		OPTIONS_FRACTIONAL_SCALE
+	};
+	
+	protected ImageCanvas canvas;
+	protected EventService eventService;
+	protected List<EventSubscriber<?>> subscribers;
+	
+	public AbstractImageDisplayViewer() {
+	}
+	@Override
+	public boolean canView(Display<?> display) {
+		return display instanceof ImageDisplay;
+	}
+	
+	@Override
+	public void view(DisplayWindow window, Display<DataView> display) {
 		this.window = window;
-
-		imgCanvas = new JHotDrawImageCanvas(this);
-		imgCanvas.addEventDispatcher(
-				new AWTKeyEventDispatcher(this, eventService));
-		imgCanvas.addEventDispatcher(
-				new AWTMouseEventDispatcher(this, eventService, false));
-		setCanvas(imgCanvas);
-
-		imgPanel = new SwingDisplayPanel(this, window);
-		setPanel(imgPanel);
-
-		scaleConverter = getScaleConverter();
+		assert display instanceof ImageDisplay;
+		eventService = display.getContext().getService(EventService.class);
+		subscribers = eventService.subscribe(this);
 	}
-
-	// -- ImageDisplay methods --
-
+	
 	@Override
-	public void display(final Dataset dataset) {
-		// GBH: Regarding naming/id of the display...
-		// For now, we will use the original (first) dataset name
-		final String datasetName = dataset.getName();
-		createName(datasetName);
-		window.setTitle(this.getName());
-		add(new SwingDatasetView(this, dataset));
-		update();
-		initActiveAxis();
+	public ImageDisplay getImageDisplay() {
+		assert getDisplay() instanceof ImageDisplay;
+		return (ImageDisplay)getDisplay();
 	}
-
 	@Override
-	public void display(final Overlay overlay) {
-		add(new SwingOverlayView(this, overlay));
-		update();
-		initActiveAxis();
+	public void setCanvas(ImageCanvas canvas) {
+		this.canvas = canvas;
 	}
-
 	@Override
-	public JHotDrawImageCanvas getCanvas() {
-		return imgCanvas;
+	public ImageCanvas getCanvas() {
+		return canvas;
 	}
-
-	@Override
+	
+	//-- Helper methods --//
+	/**
+	 * Make some informative label text by inspecting the views.
+	 * @return
+	 */
 	public String makeLabel() {
 		// CTR TODO - Fix window label to show beyond just the active view.
-		final DataView view = getActiveView();
+		final DataView view = getImageDisplay().getActiveView();
 		final Dataset dataset = getDataset(view);
 
 		final int xIndex = dataset.getAxisIndex(Axes.X);
@@ -151,52 +143,35 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		final double zoomFactor = getCanvas().getZoomFactor();
 		if (zoomFactor != 1) {
 			sb.append("(");
-			sb.append(scaleConverter.getString(zoomFactor));
+			sb.append(getScaleConverter().getString(zoomFactor));
 			sb.append(")");
 		}
 
 		return sb.toString();
 	}
-
-	// -- Display methods --
-
-	@Override
-	public SwingDisplayPanel getPanel() {
-		return imgPanel;
+	
+	protected Dataset getDataset(final DataView view) {
+		final Data data = view.getData();
+		return data instanceof Dataset ? (Dataset) data : null;
 	}
-
-	@SuppressWarnings("unused")
-	@EventHandler
-	public void onEvent(final OptionsEvent e) {
-		scaleConverter = getScaleConverter();
-	}
-
 	// -- Helper methods --
-
-	/** Name this display with unique id. */
-	private void createName(final String baseName) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		String theName = baseName;
-		int n = 0;
-		while (!displayService.isUniqueName(theName)) {
-			n++;
-			theName = baseName + "-" + n;
-		}
-		this.setName(theName);
-	}
 
 	private String byteInfoString(Dataset ds) {
 		final double byteCount = ds.getBytesOfInfo();
 		return UnitUtils.getAbbreviatedByteLabel(byteCount);
 	}
 
-	@SuppressWarnings("synthetic-access")
+	/**
+	 * Implement this in the derived class to get the user's
+	 * preference for displaying zoom scale (as a fraction or percent)
+	 * 
+	 * @return ZoomScaleOption.OPTION_PERCENT_SCALE or ZoomScaleOption.OPTION_FRACTIONAL_SCALE
+	 */
+	protected abstract ZoomScaleOption getZoomScaleOption();
+	
 	private ScaleConverter getScaleConverter() {
-		final OptionsService service = ImageJ.get(OptionsService.class);
-		final OptionsAppearance options =
-			service.getOptions(OptionsAppearance.class);
 
-		if (options.isDisplayFractionalScales())
+		if (getZoomScaleOption().equals(ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE))
 			return new FractionalScaleConverter();
 
 		return new PercentScaleConverter();
@@ -290,5 +265,32 @@ public abstract class AbstractSwingImageDisplay extends AbstractImageDisplay {
 		}
 
 	}
+
+	/**
+	 * Recalculate the label text and update it on the panel.
+	 */
+	protected void updateLabel() {
+		getPanel().setLabel(makeLabel());
+	}
+	
+	//-- Event handlers --//
+	@SuppressWarnings("unused")
+	@EventHandler
+	protected void onEvent(final WinActivatedEvent event) {
+		if (event.getDisplay() != this) return;
+		// final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		// final ToolService toolMgr = ui.getToolBar().getToolService();
+		final ToolService toolService =
+			event.getContext().getService(ToolService.class);
+		getCanvas().setCursor(toolService.getActiveTool().getCursor());
+	}
+
+	@SuppressWarnings("unused")
+	@EventHandler
+	protected void onEvent(final ZoomEvent event) {
+		if (event.getCanvas() != getCanvas()) return;
+		updateLabel();
+	}
+
 
 }

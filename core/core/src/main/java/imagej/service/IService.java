@@ -35,6 +35,7 @@
 
 package imagej.service;
 
+import imagej.IContext;
 import imagej.ImageJ;
 
 /**
@@ -45,8 +46,6 @@ import imagej.ImageJ;
  * @author Curtis Rueden
  * @see Service
  */
-public interface IService {
-
-	ImageJ getContext();
+public interface IService extends IContext {
 
 }

@@ -32,29 +32,30 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package imagej.data.display;
 
-package imagej.ui;
-
-import imagej.ImageJ;
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
-import imagej.ext.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import imagej.ext.display.DisplayViewer;
 
 /**
- * Display for showing text onscreen.
+ * @author Lee Kamentsky
  * 
- * @author Curtis Rueden
+ * A display viewer for DataViews
+ *
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
-
-	@Override
-	public void append(String text) {
-		add(text);
-	}
-
+public interface ImageDisplayViewer extends DisplayViewer<DataView>{
+	/**
+	 * Set the image canvas used to paint the image
+	 * @param canvas
+	 */
+	void setCanvas(ImageCanvas canvas);
+	/**
+	 * @return the ImageCanvas to use for display
+	 */
+	ImageCanvas getCanvas();
+	/**
+	 * Return the display cast as an ImageDisplay
+	 * @return
+	 */
+	ImageDisplay getImageDisplay();
+	
 }

@@ -32,35 +32,16 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
-package imagej.ui.swing.sdi.display;
-
-import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.Plugin;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.ui.common.awt.AWTWindowEventDispatcher;
-import imagej.ui.swing.display.AbstractSwingImageDisplay;
-
-import javax.swing.JFrame;
+package imagej.ext.display;
 
 /**
- * Single Document Interface implementation of Swing image display plugin. The
- * SDI display is housed in a {@link JFrame}.
- * 
- * @author Curtis Rueden
- * @see AbstractSwingImageDisplay
+ * @author Lee Kamentsky
+ *
+ * This is a panel that can go inside a display window.
+ * It displays text.
+ * Also, it can be used inside OutputWindow.
  */
-@Plugin(type = ImageDisplay.class)
-public class SwingSdiImageDisplay extends AbstractSwingImageDisplay {
-
-	public SwingSdiImageDisplay() {
-		super(new SwingDisplayWindow());
-		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
-
-		sdiWindow
-			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
-		sdiWindow.addEventDispatcher(new AWTWindowEventDispatcher(this,
-			eventService));
-	}
-
+public interface OutputPanel extends DisplayPanel {
+	public void append(final String text);
+	public void clear();
 }

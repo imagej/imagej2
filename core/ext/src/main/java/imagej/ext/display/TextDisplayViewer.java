@@ -32,29 +32,13 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
-package imagej.ui;
-
-import imagej.ImageJ;
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
-import imagej.ext.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+package imagej.ext.display;
 
 /**
- * Display for showing text onscreen.
- * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
+ *
+ * A display viewer for a display of strings.
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
-
-	@Override
-	public void append(String text) {
-		add(text);
-	}
+public interface TextDisplayViewer extends DisplayViewer<String> {
 
 }

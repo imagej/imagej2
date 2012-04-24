@@ -35,6 +35,8 @@
 
 package imagej.ext.display;
 
+import imagej.ImageJ;
+
 /**
  * Abstract superclass of {@link TextDisplay} implementations.
  * 

@@ -33,28 +33,35 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.ui.swing.sdi.display;
 
-import imagej.ImageJ;
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayViewer;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTWindowEventDispatcher;
+import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import javax.swing.JFrame;
 
 /**
- * Display for showing text onscreen.
+ * Single Document Interface implementation of Swing image display plugin. The
+ * SDI display is housed in a {@link JFrame}.
  * 
  * @author Curtis Rueden
+ * @see AbstractSwingImageDisplayViewer
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
+@Plugin(type = ImageDisplayViewer.class)
+public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer {
 
-	@Override
-	public void append(String text) {
-		add(text);
+	public SwingSdiImageDisplayViewer() {
+		super(new SwingDisplayWindow());
+		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
+
+		sdiWindow
+			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
+		sdiWindow.addEventDispatcher(new AWTWindowEventDispatcher(this,
+			eventService));
 	}
 
 }

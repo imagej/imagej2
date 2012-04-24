@@ -32,29 +32,19 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package imagej.data.display.event;
 
-package imagej.ui;
-
-import imagej.ImageJ;
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
-import imagej.ext.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import imagej.data.display.DataView;
 
 /**
- * Display for showing text onscreen.
- * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
+ *
+ * This event signals that the data view's appearance has changed.
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
+public class DataViewUpdatedEvent extends DataViewEvent {
 
-	@Override
-	public void append(String text) {
-		add(text);
+	public DataViewUpdatedEvent(DataView view) {
+		super(view);
 	}
 
 }

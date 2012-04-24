@@ -33,28 +33,35 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.ui.swing.mdi.display;
 
-import imagej.ImageJ;
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
+import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import javax.swing.JInternalFrame;
 
 /**
- * Display for showing text onscreen.
+ * Multiple Document Interface implementation of Swing image display plugin. The
+ * MDI display is housed in a {@link JInternalFrame}.
  * 
+ * @author Grant Harris
  * @author Curtis Rueden
+ * @see AbstractSwingImageDisplayViewer
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
+@Plugin(type = ImageDisplay.class)
+public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer {
 
-	@Override
-	public void append(String text) {
-		add(text);
+	public SwingMdiImageDisplayViewer() {
+		super(new SwingMdiDisplayWindow());
+		final SwingMdiDisplayWindow mdiWindow = (SwingMdiDisplayWindow) window;
+
+		getPanel()
+			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
+		mdiWindow.addEventDispatcher(new InternalFrameEventDispatcher(this,
+			eventService));
 	}
 
 }

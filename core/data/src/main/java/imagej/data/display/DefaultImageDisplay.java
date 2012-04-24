@@ -35,6 +35,7 @@
 
 package imagej.data.display;
 
+import imagej.ImageJ;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Dataset;
@@ -48,7 +49,9 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.AbstractDisplay;
+import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.DisplayDeletedEvent;
+import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.tool.ToolService;
 
@@ -70,13 +73,10 @@ import net.imglib2.meta.AxisType;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
+public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {
-
-	private ImageCanvas canvas;
-
-	private final List<EventSubscriber<?>> subscribers;
+	private List<EventSubscriber<?>> subscribers;
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
 	private final CombinedInterval combinedInterval = new CombinedInterval();
@@ -95,15 +95,8 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	// private final HashMap<AxisType, Long> pos =
 	// new HashMap<AxisType, Long>();
 
-	public AbstractImageDisplay() {
+	public DefaultImageDisplay() {
 		super(DataView.class);
-		subscribers = eventService.subscribe(this);
-	}
-
-	// -- AbstractImageDisplay methods --
-
-	protected void setCanvas(final ImageCanvas canvas) {
-		this.canvas = canvas;
 	}
 
 	protected void initActiveAxis() {
@@ -118,6 +111,13 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 	}
 
+	// -- Display method overrides --
+	@Override
+	public void setContext(ImageJ context) {
+		super.setContext(context);
+		assert subscribers == null;
+		subscribers = eventService.subscribe(this);
+	}
 	// -- AbstractDisplay methods --
 
 	@Override
@@ -152,8 +152,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			}
 		}
 
-		// rebuild panel
-		getPanel().redoLayout();
 	}
 
 	// -- ImageDisplay methods --
@@ -174,11 +172,6 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		activeAxis = axis;
-	}
-
-	@Override
-	public ImageCanvas getCanvas() {
-		return canvas;
 	}
 
 	@Override
@@ -222,15 +215,20 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void display(final Object o) {
-		// CTR FIXME
-		if (o instanceof Dataset) display((Dataset) o);
-		else if (o instanceof Overlay) display((Overlay) o);
+		if (o instanceof Dataset) {
+			Dataset dataset = (Dataset) o;
+			setName(createName(dataset.getName()));
+			add(new DefaultDatasetView(dataset));
+		}
+		else if (o instanceof Overlay) {
+			Overlay overlay = (Overlay) o;
+			add(new DefaultOverlayView(overlay));
+		}
 		else super.display(o);
 	}
 
 	@Override
 	public void update() {
-		super.update();
 		for (final DataView view : this) {
 			for (final AxisType axis : getAxes()) {
 				if (Axes.isXY(axis)) continue;
@@ -239,7 +237,7 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 			}
 			view.update();
 		}
-		getPanel().setLabel(makeLabel());
+		super.update();
 	}
 
 	// -- CalibratedInterval methods --
@@ -567,46 +565,32 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 		}
 	}
 
-	// TODO - displays should not listen for Data events. Views should listen for
-	// data events, adjust themseleves, and generate view events. The display
-	// classes should listen for view events and refresh themselves as necessary.
-
-	@EventHandler
-	protected void onEvent(final DatasetUpdatedEvent event) {
-		final DataView view = getActiveView();
-		if (view == null) return;
-		final Dataset ds = getDataset(view);
-		if (event.getObject() != ds) return;
-		getPanel().setLabel(makeLabel());
-	}
-
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
 		if (event.getObject() != this) return;
 		
-		// TODO - misplaced? CMD-W will not close window unless this in place
-		getPanel().getWindow().close();
-		
 		cleanup();
 	}
 
-	@EventHandler
-	protected void onEvent(final WinActivatedEvent event) {
-		if (event.getDisplay() != this) return;
-		// final UserInterface ui = ImageJ.get(UIService.class).getUI();
-		// final ToolService toolMgr = ui.getToolBar().getToolService();
-		final ToolService toolService =
-			event.getContext().getService(ToolService.class);
-		getCanvas().setCursor(toolService.getActiveTool().getCursor());
-	}
-
-	@EventHandler
-	protected void onEvent(final ZoomEvent event) {
-		if (event.getCanvas() != getCanvas()) return;
-		getPanel().setLabel(makeLabel());
-	}
-
 	// -- Helper methods --
+	
+	/**
+	 * Create a name for the display based on the given name
+	 * accounting for collisions with other image displays
+	 * 
+	 * @param proposedName
+	 * @return the name with stuff added to make it unique
+	 */
+	private String createName(String proposedName) {
+		final DisplayService displayService = getContext().getService(DisplayService.class);
+		String theName = proposedName;
+		int n = 0;
+		while (!displayService.isUniqueName(theName)) {
+			n++;
+			theName = proposedName + "-" + n;
+		}
+		return theName;		
+	}
 
 	/** Frees resources associated with the display. */
 	private void cleanup() {
@@ -623,6 +607,12 @@ public abstract class AbstractImageDisplay extends AbstractDisplay<DataView>
 	protected Dataset getDataset(final DataView view) {
 		final Data data = view.getData();
 		return data instanceof Dataset ? (Dataset) data : null;
+	}
+
+	@Override
+	public ImageJ getContext() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

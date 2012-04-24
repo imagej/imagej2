@@ -40,11 +40,13 @@ import imagej.data.Extents;
 import imagej.data.display.CanvasHelper;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.ext.display.Display;
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
@@ -91,7 +93,8 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
-	private final AbstractSwingImageDisplay display;
+	private final AbstractSwingImageDisplayViewer displayViewer;
+	private final ImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel imagePane;
 	private final JPanel sliderPanel;
@@ -108,10 +111,11 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	// -- constructors --
 	
-	public SwingDisplayPanel(final AbstractSwingImageDisplay display,
+	public SwingDisplayPanel(final AbstractSwingImageDisplayViewer displayViewer,
 		final DisplayWindow window)
 	{
-		this.display = display;
+		this.displayViewer = displayViewer;
+		this.display = displayViewer.getImageDisplay();
 		this.window = window;
 
 		imageLabel = new JLabel(" ");
@@ -120,7 +124,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		imagePane = new JPanel();
 		imagePane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-		imagePane.add(display.getCanvas());
+		imagePane.add(getCanvas());
 
 		sliderPanel = new JPanel();
 		sliderPanel.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
@@ -135,7 +139,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		window.setContent(this);
 
-		subscribers = ImageJ.get(EventService.class).subscribe(this);
+		EventService eventService = display.getContext().getService(EventService.class);
+		subscribers = eventService.subscribe(this);
 	}
 
 	// -- SwingDisplayPanel methods --
@@ -147,7 +152,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	// -- DisplayPanel methods --
 
 	@Override
-	public AbstractSwingImageDisplay getDisplay() {
+	public Display<?> getDisplay() {
 		return display;
 	}
 
@@ -194,7 +199,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	@Override
 	public void redraw() {
 		final ImageDisplayService imageDisplayService =
-				ImageJ.get(ImageDisplayService.class);
+				display.getContext().getService(ImageDisplayService.class);
 			final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 			if (view == null) return; // no active dataset
 			view.getProjector().map();
@@ -230,7 +235,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			if (Axes.isXY(axis)) continue; // skip spatial axes
 			final int min = (int) extents.min(i);
 			final int max = (int) extents.max(i) + 1;
-			final int value = (int) getDisplay().getLongPosition(axis);
+			final int value = (int) display.getLongPosition(axis);
 
 			final JScrollBar axisSlider = axisSliders.get(axis);
 			if (axisSlider == null) {
@@ -246,7 +251,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	
 					@Override
 					public void adjustmentValueChanged(final AdjustmentEvent e) {
-						getDisplay().setPosition(slider.getValue(), axis);
+						display.setPosition(slider.getValue(), axis);
 					}
 				});
 				axisSliders.put(axis, slider);
@@ -268,7 +273,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	private void updateBorder(final int c) {
 		final ImageDisplayService imageDisplayService =
-			ImageJ.get(ImageDisplayService.class);
+			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
 		final RealLUTConverter<? extends RealType<?>> converter =
@@ -282,8 +287,14 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		setBorderColor(color);
 	}
 
+	private JHotDrawImageCanvas getCanvas() {
+		ImageCanvas canvas = displayViewer.getCanvas();
+		assert canvas instanceof JHotDrawImageCanvas;
+		return (JHotDrawImageCanvas) canvas;
+	}
+	
 	private void doInitialSizing() {
-		final JHotDrawImageCanvas canvas = getDisplay().getCanvas();
+		final JHotDrawImageCanvas canvas = getCanvas();
 		final double scale = findFullyVisibleScale(canvas);
 		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
 		canvas.setZoom(zoomLevel);
@@ -294,7 +305,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	}
 
 	private void updateAxis(final AxisType axis) {
-		final int value = (int) getDisplay().getLongPosition(axis);
+		final int value = (int) display.getLongPosition(axis);
 		final JScrollBar scrollBar = axisSliders.get(axis);
 		if (scrollBar != null) scrollBar.setValue(value);
 		if (axis == Axes.CHANNEL) updateBorder(value);

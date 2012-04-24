@@ -33,31 +33,13 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.ext.display;
 
-import imagej.data.overlay.Overlay;
-
-/**
- * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.
- * 
- * @author Curtis Rueden
- */
-public abstract class AbstractOverlayView extends AbstractDataView implements
-	OverlayView
-{
-
-	private final Overlay overlay;
-
-	public AbstractOverlayView(final Overlay overlay) {
-		super(overlay);
-		this.overlay = overlay;
-	}
-
-	// -- OverlayView methods --
+public abstract class AbstractTextDisplayViewer extends AbstractDisplayViewer<String> {
 
 	@Override
-	public Overlay getData() {
-		return overlay;
+	public boolean canView(Display<?> display) {
+		return display instanceof TextDisplay;
 	}
 
 }

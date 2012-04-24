@@ -204,6 +204,7 @@ public final class DefaultDisplayService extends AbstractService implements
 				// display object using the first compatible Display
 				// TODO: how to handle multiple matches? prompt user with dialog box?
 				if (display.canDisplay(o)) {
+					display.setContext(getContext());
 					display.setName(name);
 					display.display(o);
 					eventService.publish(new DisplayCreatedEvent(display));

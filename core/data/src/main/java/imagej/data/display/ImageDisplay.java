@@ -64,9 +64,6 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	/** Sets the axis currently designated as active. */
 	void setActiveAxis(AxisType axis);
 
-	/** Gets the image canvas upon which this display's output is painted. */
-	ImageCanvas getCanvas();
-
 	/** Tests whether this display contains the given data object (via a view). */
 	boolean containsData(Data data);
 
@@ -77,15 +74,5 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	 * data's space.
 	 */
 	boolean isVisible(DataView view);
-
-	// CTR TODO - eliminate the methods below.
-
-	@Deprecated
-	void display(Dataset dataset);
-
-	@Deprecated
-	void display(Overlay overlay);
-
-	String makeLabel();
 
 }

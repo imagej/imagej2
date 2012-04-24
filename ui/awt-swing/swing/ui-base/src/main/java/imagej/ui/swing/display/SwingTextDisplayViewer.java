@@ -32,29 +32,25 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package imagej.ui.swing.display;
 
-package imagej.ui;
-
-import imagej.ImageJ;
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
+import imagej.ext.display.AbstractTextDisplayViewer;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayWindow;
+import imagej.ext.display.TextDisplayViewer;
 import imagej.ext.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import imagej.ui.swing.SwingOutputPanel;
 
 /**
- * Display for showing text onscreen.
- * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
+ *
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
-
+@Plugin(type = TextDisplayViewer.class)
+public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
+	
 	@Override
-	public void append(String text) {
-		add(text);
+	public void view(DisplayWindow window, Display<String> display) {
+		setPanel(new SwingOutputPanel(display, window));
 	}
 
 }

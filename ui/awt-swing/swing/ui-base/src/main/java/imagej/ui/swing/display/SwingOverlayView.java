@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.display;
 
-import imagej.data.display.AbstractOverlayView;
+import imagej.data.display.DefaultOverlayView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
@@ -55,7 +55,7 @@ import org.jhotdraw.draw.event.FigureEvent;
  * @author Lee Kamentsky
  */
 @SuppressWarnings("synthetic-access")
-public class SwingOverlayView extends AbstractOverlayView implements FigureView {
+public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 
 	private final ImageDisplay display;
 

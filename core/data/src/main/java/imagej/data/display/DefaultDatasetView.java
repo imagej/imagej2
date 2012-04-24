@@ -37,6 +37,7 @@ package imagej.data.display;
 
 import imagej.data.Dataset;
 import imagej.data.Position;
+import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
@@ -64,7 +65,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public abstract class AbstractDatasetView extends AbstractDataView implements
+public class DefaultDatasetView extends AbstractDataView implements
 	DatasetView
 {
 
@@ -89,7 +90,7 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
 
-	public AbstractDatasetView(final Dataset dataset) {
+	public DefaultDatasetView(final Dataset dataset) {
 		super(dataset);
 		this.dataset = dataset;
 		final EventService eventService = getEventService();
@@ -371,6 +372,11 @@ public abstract class AbstractDatasetView extends AbstractDataView implements
 		if (dataset == event.getObject()) {
 			projector.map();
 		}
+	}
+
+	@Override
+	public void update() {
+		publish(new DataViewUpdatedEvent(this));
 	}
 
 }

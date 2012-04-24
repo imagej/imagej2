@@ -33,28 +33,55 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.data.display;
 
-import imagej.ImageJ;
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
-import imagej.ext.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import imagej.data.overlay.Overlay;
 
 /**
- * Display for showing text onscreen.
+ * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
+public class DefaultOverlayView extends AbstractDataView implements
+	OverlayView
+{
+
+	private final Overlay overlay;
+
+	public DefaultOverlayView(final Overlay overlay) {
+		super(overlay);
+		this.overlay = overlay;
+	}
+
+	// -- OverlayView methods --
 
 	@Override
-	public void append(String text) {
-		add(text);
+	public Overlay getData() {
+		return overlay;
+	}
+
+	@Override
+	public int getPreferredWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getPreferredHeight() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void rebuild() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

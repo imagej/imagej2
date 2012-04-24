@@ -49,6 +49,13 @@ public interface ImageCanvas extends Pannable, Zoomable {
 
 	/** Gets the display to which this canvas belongs. */
 	ImageDisplay getDisplay();
+	
+	/**
+	 * Get the display viewer that controls the canvas
+	 * 
+	 * @return the image display viewer that owns the canvas.
+	 */
+	ImageDisplayViewer getDisplayViewer();
 
 	/** Gets the unscaled width of the canvas. */
 	int getCanvasWidth();

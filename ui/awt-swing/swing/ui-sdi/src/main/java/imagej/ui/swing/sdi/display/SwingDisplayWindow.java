@@ -44,7 +44,9 @@ import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import java.awt.HeadlessException;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 /**
@@ -54,7 +56,7 @@ import javax.swing.WindowConstants;
  */
 public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 
-	private SwingDisplayPanel panel;
+	private JComponent panel;
 
 	public SwingDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -76,7 +78,7 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 	@Override
 	public void setContent(final DisplayPanel panel) {
 		// TODO - eliminate hacky cast
-		this.panel = (SwingDisplayPanel) panel;
+		this.panel = (JComponent) panel;
 		setContentPane(this.panel);
 	}
 

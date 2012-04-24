@@ -35,6 +35,7 @@
 
 package imagej.data;
 
+import imagej.IContext;
 import imagej.ImageJ;
 import imagej.data.overlay.Overlay;
 
@@ -45,10 +46,7 @@ import imagej.data.overlay.Overlay;
  * 
  * @author Curtis Rueden
  */
-public interface Data extends CalibratedInterval {
-
-	/** Gets the application context to which this data object belongs. */
-	ImageJ getContext();
+public interface Data extends CalibratedInterval, IContext {
 
 	/** Sets the application context to which this data object belongs. */
 	void setContext(final ImageJ context);

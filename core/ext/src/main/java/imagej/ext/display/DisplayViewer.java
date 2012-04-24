@@ -32,36 +32,51 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package imagej.ext.display;
 
-package imagej.ui.swing.mdi.display;
-
-import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.Plugin;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.ui.swing.display.AbstractSwingImageDisplay;
-import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
-
-import javax.swing.JInternalFrame;
 
 /**
- * Multiple Document Interface implementation of Swing image display plugin. The
- * MDI display is housed in a {@link JInternalFrame}.
+ * @author Lee Kamentsky
  * 
- * @author Grant Harris
- * @author Curtis Rueden
- * @see AbstractSwingImageDisplay
+ * A display viewer is a UI widget that shows a display to a user
+ *
  */
-@Plugin(type = ImageDisplay.class)
-public class SwingMdiImageDisplay extends AbstractSwingImageDisplay {
-
-	public SwingMdiImageDisplay() {
-		super(new SwingMdiDisplayWindow());
-		final SwingMdiDisplayWindow mdiWindow = (SwingMdiDisplayWindow) window;
-
-		getPanel()
-			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
-		mdiWindow.addEventDispatcher(new InternalFrameEventDispatcher(this,
-			eventService));
-	}
-
+public interface DisplayViewer<T> {
+	/**
+	 * Return true if an instance of this display viewer
+	 * can view the given display.
+	 * 
+	 * @param display
+	 * @return
+	 */
+	boolean canView(Display<?> display);
+	/**
+	 * Begin viewing the given display.
+	 * 
+	 * @param window The frame / window that will contain the GUI elements
+	 * @param display the model for the display to show.
+	 */
+	void view(DisplayWindow window, Display<T> display);
+	
+	/**
+	 * @return the display being viewed
+	 */
+	Display<T> getDisplay();
+	
+	/**
+	 * @return the window in which the view is displayed
+	 */
+	DisplayWindow getDisplayWindow();
+	
+	/**
+	 * Install the display panel
+	 * 
+	 * @param panel the panel used to host the gui
+	 */
+	void setPanel(DisplayPanel panel);
+	
+	/**
+	 * @return the display panel that hosts the gui elements 
+	 */
+	DisplayPanel getPanel();
 }

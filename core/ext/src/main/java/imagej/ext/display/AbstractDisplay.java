@@ -40,6 +40,7 @@ import imagej.event.EventService;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
+import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,28 +64,35 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	/** Flag set when display needs to be fully rebuilt. */
 	private boolean structureChanged;
 
-	// TODO - potentially eliminate this?
-	private DisplayPanel panel;
-
 	/** The name of the display. */
 	private String name;
 
-	protected final EventService eventService;
+	protected EventService eventService;
+
+	protected ImageJ context;
 
 	public AbstractDisplay(final Class<E> type) {
-		eventService = ImageJ.get(EventService.class);
 		this.type = type;
 		objects = new ArrayList<E>();
+	}
+	
+	@Override
+	public void setContext(final ImageJ context) {
+		assert this.context == null;
+		this.context = context;
+		eventService = context.getService(EventService.class);
+	}
+
+	@Override
+	public ImageJ getContext() {
+		return context;
 	}
 
 	// -- AbstractDisplay methods --
 
-	// TODO - potentially eliminate this?
-	protected void setPanel(final DisplayPanel panel) {
-		this.panel = panel;
+	protected void rebuild() {
+		structureChanged = true;
 	}
-
-	protected abstract void rebuild();
 
 	// -- Display methods --
 
@@ -109,10 +117,9 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 
 	@Override
 	public void update() {
-		if (structureChanged) {
-			rebuild();
-			structureChanged = false;
-		}
+		eventService.publish(new DisplayUpdatedEvent(this,
+				structureChanged? DisplayUpdateLevel.REBUILD : DisplayUpdateLevel.UPDATE));
+		structureChanged = false;
 	}
 
 	@Override
@@ -123,11 +130,6 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	@Override
 	public void close() {
 		eventService.publish(new DisplayDeletedEvent(this));
-	}
-
-	@Override
-	public DisplayPanel getPanel() {
-		return panel;
 	}
 
 	@Override
@@ -296,7 +298,6 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 
 	protected void announceStructureChange() {
 		structureChanged = true;
-		eventService.publish(new DisplayUpdatedEvent(this));
 	}
 
 }
