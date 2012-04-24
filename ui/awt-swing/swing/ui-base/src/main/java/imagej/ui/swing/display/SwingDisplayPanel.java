@@ -278,8 +278,11 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+				view.getConverters();
+		if (c >= converters.size()) return;
 		final RealLUTConverter<? extends RealType<?>> converter =
-			view.getConverters().get(c);
+			converters.get(c);
 		final ColorTable8 lut = converter.getLUT();
 		final int last = lut.getLength() - 1;
 		final int r = lut.get(0, last);
