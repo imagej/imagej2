@@ -105,7 +105,12 @@ public class RealRect {
 
 		return new RealRect(newX, newY, newW, newH);
 	}
-
+	
+	public boolean contains(final RealCoords coords) {
+		return (coords.x >= this.x) && (coords.x < this.x + this.width) &&
+			   (coords.y >= this.y) && (coords.y < this.y + this.height);
+	}
+	
 	@Override
 	public String toString() {
 		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;

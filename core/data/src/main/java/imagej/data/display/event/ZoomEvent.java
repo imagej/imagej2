@@ -44,36 +44,17 @@ import imagej.data.display.ImageCanvas;
  */
 public class ZoomEvent extends CanvasEvent {
 
-	private final double scale;
-	private final int centerX, centerY;
-
-	public ZoomEvent(final ImageCanvas canvas, final double scale,
-		final int centerX, final int centerY)
+	public ZoomEvent(final ImageCanvas canvas)
 	{
 		super(canvas);
-		this.scale = scale;
-		this.centerX = centerX;
-		this.centerY = centerY;
-	}
-
-	public int getCenterX() {
-		return centerX;
-	}
-
-	public int getCenterY() {
-		return centerY;
-	}
-
-	public double getScale() {
-		return scale;
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tscale = " + scale + "\n\tcenterX = " +
-			centerX + "\n\tcenterY = " + centerY;
+		return super.toString() + "\n\tscale = " + getCanvas().getZoomFactor() + "\n\tcenterX = " +
+			getCanvas().getPanCenter().x + "\n\tcenterY = " + getCanvas().getPanCenter().y;
 	}
 
 }

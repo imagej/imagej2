@@ -44,15 +44,6 @@ import imagej.ext.display.DisplayViewer;
  */
 public interface ImageDisplayViewer extends DisplayViewer<DataView>{
 	/**
-	 * Set the image canvas used to paint the image
-	 * @param canvas
-	 */
-	void setCanvas(ImageCanvas canvas);
-	/**
-	 * @return the ImageCanvas to use for display
-	 */
-	ImageCanvas getCanvas();
-	/**
 	 * Return the display cast as an ImageDisplay
 	 * @return
 	 */

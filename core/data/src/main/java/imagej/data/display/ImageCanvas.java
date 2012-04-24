@@ -46,22 +46,11 @@ import imagej.util.RealCoords;
  * @author Curtis Rueden
  */
 public interface ImageCanvas extends Pannable, Zoomable {
-
-	/** Gets the display to which this canvas belongs. */
-	ImageDisplay getDisplay();
 	
 	/**
-	 * Get the display viewer that controls the canvas
-	 * 
-	 * @return the image display viewer that owns the canvas.
+	 * @return the canvas's display.
 	 */
-	ImageDisplayViewer getDisplayViewer();
-
-	/** Gets the unscaled width of the canvas. */
-	int getCanvasWidth();
-
-	/** Gets the unscaled height of the canvas. */
-	int getCanvasHeight();
+	ImageDisplay getDisplay();
 
 	/** Gets the current width of the canvas viewport in pixels. */
 	int getViewportWidth();
@@ -82,6 +71,11 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Converts the given original image coordinates into panel coordinates. */
 	IntCoords imageToPanelCoords(RealCoords imageCoords);
 
+	/**
+	 * @return the current mouse cursor.
+	 */
+	MouseCursor getCursor();
+	
 	/** Sets the mouse to the given {@link MouseCursor} type. */
 	void setCursor(MouseCursor cursor);
 

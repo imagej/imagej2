@@ -41,6 +41,7 @@ import imagej.data.Dataset;
 import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
 import imagej.ext.display.Display;
+import imagej.util.RealRect;
 import net.imglib2.meta.AxisType;
 
 /**
@@ -74,5 +75,12 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	 * data's space.
 	 */
 	boolean isVisible(DataView view);
+	
+	ImageCanvas getCanvas();
+	
+	/**
+	 * @return a rectangle defining the extents of the image in the current X/Y plane
+	 */
+	RealRect getImageExtents();
 
 }

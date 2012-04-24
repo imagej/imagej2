@@ -92,14 +92,6 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		assert getDisplay() instanceof ImageDisplay;
 		return (ImageDisplay)getDisplay();
 	}
-	@Override
-	public void setCanvas(ImageCanvas canvas) {
-		this.canvas = canvas;
-	}
-	@Override
-	public ImageCanvas getCanvas() {
-		return canvas;
-	}
 	
 	//-- Helper methods --//
 	/**
@@ -141,7 +133,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		sb.append(byteInfoString(dataset));
 		sb.append("; ");
 
-		final double zoomFactor = getCanvas().getZoomFactor();
+		final double zoomFactor = getImageDisplay().getCanvas().getZoomFactor();
 		if (zoomFactor != 1) {
 			sb.append("(");
 			sb.append(getScaleConverter().getString(zoomFactor));
@@ -283,13 +275,13 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		// final ToolService toolMgr = ui.getToolBar().getToolService();
 		final ToolService toolService =
 			event.getContext().getService(ToolService.class);
-		getCanvas().setCursor(toolService.getActiveTool().getCursor());
+		getImageDisplay().getCanvas().setCursor(toolService.getActiveTool().getCursor());
 	}
 
 	@SuppressWarnings("unused")
 	@EventHandler
 	protected void onEvent(final ZoomEvent event) {
-		if (event.getCanvas() != getCanvas()) return;
+		if (event.getCanvas() != getImageDisplay().getCanvas()) return;
 		updateLabel();
 	}
 

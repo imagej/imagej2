@@ -55,6 +55,7 @@ import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.ToolService;
+import imagej.util.RealRect;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -84,6 +85,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	private final CombinedInterval combinedInterval = new CombinedInterval();
 
 	private AxisType activeAxis = null;
+	
+	final private ImageCanvas canvas;
 
 	// NB - older comment - see 12-7-11 note
 	// If pos is a HashMap rather than a ConcurrentHashMap,
@@ -99,6 +102,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 
 	public DefaultImageDisplay() {
 		super(DataView.class);
+		canvas = new DefaultImageCanvas(this);
 	}
 
 	protected void initActiveAxis() {
@@ -612,4 +616,19 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		return data instanceof Dataset ? (Dataset) data : null;
 	}
 
+	@Override
+	public ImageCanvas getCanvas() {
+		return canvas;
+	}
+
+	@Override
+	public RealRect getImageExtents() {
+		final Extents extents = this.getExtents();
+		final int xAxis = this.getAxisIndex(Axes.X);
+		final int yAxis = this.getAxisIndex(Axes.Y);
+		return new RealRect(extents.realMin(xAxis), 
+				extents.realMin(yAxis),
+				extents.realMax(xAxis) - extents.realMin(xAxis),
+				extents.realMax(yAxis) - extents.realMin(yAxis));
+	}
 }

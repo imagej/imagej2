@@ -36,6 +36,8 @@
 package imagej.data.display;
 
 import imagej.util.IntCoords;
+import imagej.util.RealCoords;
+import imagej.util.RealRect;
 
 /**
  * Defines methods needed to adjust the zoom of an {@link ImageCanvas}.
@@ -57,6 +59,13 @@ public interface Zoomable {
 	 * @param factor the zoom level used to display this panel's image.
 	 */
 	void setZoom(double factor);
+	
+	/**
+	 * Set the zoom and center the viewport within the image.
+	 * 
+	 * @param factor
+	 */
+	void setZoomAndCenter(double factor);
 
 	/**
 	 * Sets the zoom level used to display the image, and the zooming center,
@@ -67,7 +76,16 @@ public interface Zoomable {
 	 * </p>
 	 * 
 	 * @param factor the zoom level used to display this panel's image.
-	 * @param center the zoom center, in panel coordinates (pixels).
+	 * @param center the zoom center, in image coordinates.
+	 */
+	void setZoom(double factor, RealCoords center);
+	
+	/**
+	 * Sets the zoom level used to display the image and recenters
+	 * the image around the given coordinate in the current panel space.
+	 * 
+	 * @param factor new zoom level
+	 * @param center the center in panel space
 	 */
 	void setZoom(double factor, IntCoords center);
 
@@ -91,8 +109,19 @@ public interface Zoomable {
 	 */
 	void zoomOut(IntCoords center);
 
+	/**
+	 * Zoom the viewport to the given coordinates in panel space
+	 * @param topLeft top left of the new viewport in panel space
+	 * @param bottomRight bottom right of the new viewport in panel space
+	 */
 	void zoomToFit(IntCoords topLeft, IntCoords bottomRight);
 
 	/** Gets the current zoom level. */
 	double getZoomFactor();
+	
+	/**
+	 * @return the coordinates of the viewport into the image
+	 * in image coordinates.
+	 */
+	RealRect getViewportImageRect();
 }
