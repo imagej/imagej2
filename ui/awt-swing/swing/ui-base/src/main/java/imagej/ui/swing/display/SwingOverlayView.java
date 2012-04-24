@@ -35,9 +35,11 @@
 
 package imagej.ui.swing.display;
 
-import imagej.data.display.DefaultOverlayView;
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.ext.display.Display;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawAdapterFinder;
 
@@ -55,9 +57,10 @@ import org.jhotdraw.draw.event.FigureEvent;
  * @author Lee Kamentsky
  */
 @SuppressWarnings("synthetic-access")
-public class SwingOverlayView extends DefaultOverlayView implements FigureView {
+public class SwingOverlayView implements FigureView {
 
-	private final ImageDisplay display;
+	private final AbstractSwingImageDisplayViewer displayViewer;
+	private final OverlayView overlayView;
 
 	/** JHotDraw {@link Figure} linked to the associated {@link Overlay}. */
 	private final Figure figure;
@@ -81,8 +84,8 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 	 * @param display - hook to this display
 	 * @param overlay - represent this overlay
 	 */
-	public SwingOverlayView(final ImageDisplay display, final Overlay overlay) {
-		this(display, overlay, null);
+	public SwingOverlayView(final AbstractSwingImageDisplayViewer display, final OverlayView overlayView) {
+		this(display, overlayView, null);
 	}
 	
 	/**
@@ -93,15 +96,15 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 	 * @param overlay - represent this overlay
 	 * @param figure - draw using this figure
 	 */
-	public SwingOverlayView(final ImageDisplay display,
-		final Overlay overlay, Figure figure)
+	public SwingOverlayView(final AbstractSwingImageDisplayViewer display,
+		final OverlayView overlayView, Figure figure)
 	{
-		super(overlay);
-		this.display = display;
-		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
+		this.displayViewer = display;
+		this.overlayView = overlayView;
+		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlayView.getData(), figure);
 		if (figure == null) {
 			this.figure = adapter.createDefaultFigure();
-			adapter.updateFigure(this, this.figure);
+			adapter.updateFigure(this.overlayView, this.figure);
 			EventQueue.invokeLater(new Runnable() {
 				
 				@Override
@@ -127,8 +130,8 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
-							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this);
-							overlay.update();
+							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this.overlayView);
+							overlayView.update();
 						} finally {
 							updatingOverlay = false;
 						}
@@ -142,8 +145,8 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
-							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this);
-							overlay.update();
+							adapter.updateOverlay(SwingOverlayView.this.figure, SwingOverlayView.this.overlayView);
+							overlayView.update();
 						} finally {
 							updatingOverlay = false;
 						}
@@ -156,7 +159,8 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 				synchronized(SwingOverlayView.this) {
 					if (disposed || disposeScheduled) return;
 				}
-				if (display.isVisible(SwingOverlayView.this)) {
+				ImageDisplay display = getDisplay();
+				if (display.isVisible(SwingOverlayView.this.overlayView)) {
 					display.remove(SwingOverlayView.this);
 					dispose();
 					display.update();
@@ -166,9 +170,15 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 	}
 
 	// -- DataView methods --
+	
+	private ImageDisplay getDisplay() {
+		Display<DataView> display = displayViewer.getDisplay();
+		assert display instanceof ImageDisplay;
+		return (ImageDisplay)display;
+	}
 
 	private void show(final boolean doShow) {
-		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getCanvas();
+		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) displayViewer.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		final Figure fig = getFigure();
 		if (doShow) {
@@ -181,25 +191,9 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 			}
 		}
 	}
-	@Override
-	public int getPreferredWidth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getPreferredHeight() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public void update() {
-		updateFigure();
-	}
-
-	@Override
-	public void rebuild() {
 		updateFigure();
 	}
 
@@ -226,7 +220,6 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 				disposeScheduled = true;
 			}
 		}
-		super.dispose();
 	}
 	
 	private synchronized void updateFigure() {
@@ -249,11 +242,15 @@ public class SwingOverlayView extends DefaultOverlayView implements FigureView {
 		if (disposeScheduled) return;
 		updatingFigure = true;
 		try {
-			adapter.updateFigure(this, figure);
+			adapter.updateFigure(this.overlayView, figure);
 		} finally {
 			updatingFigure = false;
 		}
-		show(display.isVisible(this));
+		show(getDisplay().isVisible(this.overlayView));
 	}
 
+	@Override
+	public DataView getDataView() {
+		return overlayView;
+	}
 }

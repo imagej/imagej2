@@ -37,6 +37,7 @@ package imagej.ui.swing;
 
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
+import imagej.ext.display.DisplayViewer;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
@@ -47,12 +48,14 @@ import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.common.awt.AWTDropListener;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.util.Log;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -68,6 +71,11 @@ import javax.swing.WindowConstants;
  * @author Grant Harris
  */
 public abstract class AbstractSwingUI extends AbstractUserInterface {
+
+	// NB: I'm a little queasy about including this.
+	// It's a list of extant display viewers and it's needed
+	// in order to find the viewer associated with a display
+	protected final List<DisplayViewer<?>> displayViewers = new ArrayList<DisplayViewer<?>>();
 
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
@@ -114,11 +122,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final JPopupMenu popupMenu = new JPopupMenu();
 		new SwingJPopupMenuCreator().createMenus(shadowMenu, popupMenu);
 
-		// CTR TODO - get associated Swing component for the display externally,
-		// once DisplayPanel has been fully decoupled from Display
-		final Component invoker = (Component) display.getPanel();
-
-		popupMenu.show(invoker, x, y);
+		DisplayViewer<?> displayViewer = getDisplayViewer(display);
+		if (displayViewer != null) {
+			final Component invoker = (Component) displayViewer.getPanel();
+			popupMenu.show(invoker, x, y);
+		}
 	}
 
 	// -- Internal methods --
@@ -195,6 +203,15 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		f.setJMenuBar(menuBar);
 		f.pack();
 		return menuBar;
+	}
+
+	protected DisplayViewer<?> getDisplayViewer(final Display<?> display) {
+		for (DisplayViewer<?> displayViewer:displayViewers) {
+			if (displayViewer.getDisplay() == display)
+				return displayViewer;
+		}
+		Log.warn("No DisplayViewer found for display, \"" + display.getName() + "\"");
+		return null;
 	}
 
 }

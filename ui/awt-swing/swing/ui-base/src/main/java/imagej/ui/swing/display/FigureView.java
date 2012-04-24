@@ -35,12 +35,16 @@
 
 package imagej.ui.swing.display;
 
+import imagej.data.display.DataView;
+
 import org.jhotdraw.draw.Figure;
 
 /**
  * A figure view has an associated figure.
  * 
  * @author Lee Kamentsky
+ * 
+ * @param T The type of data view, e.g. OverlayView or DatasetView
  */
 public interface FigureView {
 
@@ -48,5 +52,16 @@ public interface FigureView {
 	 * @return the figure associated with this view
 	 */
 	public Figure getFigure();
+
+	public DataView getDataView(); 
+	/**
+	 * Update the appearance to match that of the Data object
+	 */
+	public void update();
+	
+	/**
+	 * Remove the figure from the scene.
+	 */
+	public void dispose();
 
 }

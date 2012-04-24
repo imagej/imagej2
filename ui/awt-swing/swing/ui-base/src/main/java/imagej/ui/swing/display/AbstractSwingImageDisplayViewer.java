@@ -35,33 +35,18 @@
 
 package imagej.ui.swing.display;
 
+import java.util.List;
+
 import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.data.Position;
 import imagej.data.display.AbstractImageDisplayViewer;
-import imagej.data.display.DefaultImageDisplay;
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayViewer;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayService;
-import imagej.ext.display.DisplayViewer;
 import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsAppearance;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTMouseEventDispatcher;
-import imagej.util.UnitUtils;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
@@ -81,7 +66,7 @@ public abstract class AbstractSwingImageDisplayViewer extends AbstractImageDispl
 	}
 	
 	@Override
-	public void view(DisplayWindow window, Display<DataView> display) {
+	public void view(DisplayWindow window, Display<?> display) {
 		super.view(window, display);
 
 		imgCanvas = new JHotDrawImageCanvas(this);
@@ -114,6 +99,5 @@ public abstract class AbstractSwingImageDisplayViewer extends AbstractImageDispl
 	public void onEvent(final OptionsEvent e) {
 		updateLabel();
 	}
-
 
 }

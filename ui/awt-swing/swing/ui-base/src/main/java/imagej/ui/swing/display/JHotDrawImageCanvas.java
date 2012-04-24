@@ -38,6 +38,7 @@ package imagej.ui.swing.display;
 import imagej.ImageJ;
 import imagej.data.display.CanvasHelper;
 import imagej.data.display.DataView;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayViewer;
@@ -48,6 +49,8 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.MouseCursor;
+import imagej.ext.display.event.DisplayUpdatedEvent;
+import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;
@@ -61,6 +64,7 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
+import imagej.util.Log;
 import imagej.util.RealCoords;
 
 import java.awt.BorderLayout;
@@ -70,6 +74,7 @@ import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -111,6 +116,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	private final ToolDelegator toolDelegator;
 
 	private final JScrollPane scrollPane;
+	
+	private final List<FigureView> figureViews = new ArrayList<FigureView>();
 
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
@@ -152,6 +159,12 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 		});
 	}
 
+	protected FigureView getFigureView(DataView dataView) {
+		for(FigureView figureView:figureViews) {
+			if (figureView.getDataView() == dataView) return figureView;
+		}
+		return null;
+	}
 	/**
 	 * Respond to the JHotDraw figure selection event by selecting and deselecting
 	 * views whose state has changed
@@ -183,8 +196,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@EventHandler
 	protected void onViewSelected(final DataViewSelectedEvent event) {
 		final DataView view = event.getView();
-		if (displayViewer.getDisplay().contains(view) && view instanceof FigureView) {
-			final Figure figure = ((FigureView) view).getFigure();
+		FigureView figureView = getFigureView(view); 
+		if (figureView != null) {
+			final Figure figure = figureView.getFigure();
 			if (!drawingView.getSelectedFigures().contains(figure)) {
 				drawingView.addToSelection(figure);
 			}
@@ -194,8 +208,9 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	@EventHandler
 	protected void onViewDeselected(final DataViewDeselectedEvent event) {
 		final DataView view = event.getView();
-		if (displayViewer.getDisplay().contains(view) && view instanceof FigureView) {
-			final Figure figure = ((FigureView) view).getFigure();
+		FigureView figureView = getFigureView(view); 
+		if (figureView != null) {
+			final Figure figure = figureView.getFigure();
 			if (drawingView.getSelectedFigures().contains(figure)) {
 				drawingView.removeFromSelection(figure);
 			}
@@ -206,6 +221,41 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	protected void onToolActivatedEvent(final ToolActivatedEvent event) {
 		final Tool iTool = event.getTool();
 		activateTool(iTool);
+	}
+	
+	@EventHandler
+	protected void onEvent(DisplayUpdatedEvent event) {
+		if (event.getDisplay() != getDisplay()) return;
+		
+		if (event.getLevel() == DisplayUpdateLevel.REBUILD) {
+			for (DataView dataView:getDisplay()) {
+				FigureView figureView = getFigureView(dataView);
+				if (figureView == null) {
+					if (dataView instanceof DatasetView) {
+						figureView = new SwingDatasetView(this.displayViewer, (DatasetView)dataView);
+					} else if (dataView instanceof OverlayView) {
+						figureView = new SwingOverlayView(this.displayViewer, (OverlayView)dataView);
+					} else {
+						Log.error("Don't know how to make a figure view for " + dataView.getClass().getName());
+						continue;
+					}
+					figureViews.add(figureView);
+				}
+			}
+			int idx = 0;
+			while (idx < figureViews.size()) {
+				FigureView figureView = figureViews.get(idx);
+				if (! getDisplay().contains(figureView.getDataView())) {
+					figureViews.remove(idx);
+					figureView.dispose();
+				} else {
+					idx++;
+				}
+			}
+		}
+		for (FigureView figureView:figureViews) {
+			figureView.update();
+		}
 	}
 
 	protected void activateTool(final Tool iTool) {
@@ -233,6 +283,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 					if (drawingView.getSelectedFigures().contains(e.getFigure())) {
 						overlay.setSelected(true);
 					}
+					SwingOverlayView figureView = new SwingOverlayView(displayViewer, overlay);
+					figureViews.add(figureView);
 				}
 			};
 

@@ -35,8 +35,11 @@
 
 package imagej.ui.swing.sdi.display;
 
+import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayViewer;
+import imagej.ext.display.Display;
+import imagej.ext.display.DisplayWindow;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
@@ -54,13 +57,14 @@ import javax.swing.JFrame;
 @Plugin(type = ImageDisplayViewer.class)
 public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer {
 
-	public SwingSdiImageDisplayViewer() {
-		super(new SwingDisplayWindow());
+	@Override
+	public void view(DisplayWindow window, Display<?> display) {
+		// TODO Auto-generated method stub
+		super.view(window, display);
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
 
-		sdiWindow
-			.addEventDispatcher(new AWTKeyEventDispatcher(this, eventService));
-		sdiWindow.addEventDispatcher(new AWTWindowEventDispatcher(this,
+		sdiWindow.addEventDispatcher(new AWTKeyEventDispatcher(display, eventService));
+		sdiWindow.addEventDispatcher(new AWTWindowEventDispatcher(display,
 			eventService));
 	}
 

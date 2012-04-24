@@ -34,6 +34,8 @@
  */
 package imagej.ext.display;
 
+import imagej.ext.plugin.IPlugin;
+
 
 /**
  * @author Lee Kamentsky
@@ -41,7 +43,7 @@ package imagej.ext.display;
  * A display viewer is a UI widget that shows a display to a user
  *
  */
-public interface DisplayViewer<T> {
+public interface DisplayViewer<T> extends IPlugin {
 	/**
 	 * Return true if an instance of this display viewer
 	 * can view the given display.
@@ -56,7 +58,7 @@ public interface DisplayViewer<T> {
 	 * @param window The frame / window that will contain the GUI elements
 	 * @param display the model for the display to show.
 	 */
-	void view(DisplayWindow window, Display<T> display);
+	void view(DisplayWindow window, Display<?> display);
 	
 	/**
 	 * @return the display being viewed

@@ -35,26 +35,30 @@
 
 package imagej.ui.swing.sdi;
 
+import imagej.ImageJ;
 import imagej.event.EventHandler;
+import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayPanel;
+import imagej.ext.display.DisplayViewer;
+import imagej.ext.display.DisplayWindow;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
-import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.sdi.display.SwingDisplayWindow;
+import imagej.util.Log;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 /**
  * Swing-based SDI user interface for ImageJ.
@@ -99,34 +103,44 @@ public class SwingUI extends AbstractSwingUI {
 
 	// -- Event handlers --
 
+	/**
+	 * This is the magical place where the display model
+	 * is connected with the real UI.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	protected void onEvent(final DisplayCreatedEvent event) {
-		final SwingDisplayWindow displayWindow =
-			getDisplayWindow(event.getObject());
-		// add a copy of the JMenuBar to the new display
-		if (displayWindow != null && displayWindow.getJMenuBar() == null) {
-			createMenuBar(displayWindow);
+		final Display<?> display = event.getObject();
+		final ImageJ imageJ = display.getContext();
+		final PluginService pluginService = imageJ.getService(PluginService.class);
+		for (@SuppressWarnings("rawtypes") PluginInfo<DisplayViewer> info:pluginService.getPluginsOfClass(DisplayViewer.class)) {
+			try {
+				final DisplayViewer<?> displayViewer = info.createInstance();
+				if (displayViewer.canView(display)){
+					final SwingDisplayWindow displayWindow = new SwingDisplayWindow(); 
+					displayViewer.view(displayWindow, display);
+					displayViewers.add(displayViewer);
+					// add a copy of the JMenuBar to the new display
+					if (displayWindow.getJMenuBar() == null) {
+						createMenuBar(displayWindow);
+					}
+					return;
+				}
+			} catch (InstantiableException e) {
+				Log.warn("Failed to create instance of " + info.getClassName(), e);
+			}
 		}
+		Log.warn("No suitable DisplayViewer found for display");
 	}
 
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
-		final SwingDisplayWindow displayWindow =
-			getDisplayWindow(event.getObject());
-		if (displayWindow != null) deleteMenuBar(displayWindow);
-	}
-
-	// -- Helper methods --
-
-	protected SwingDisplayWindow getDisplayWindow(final Display<?> display) {
-		final DisplayPanel panel = display.getPanel();
-		if (!(panel instanceof SwingDisplayPanel)) return null;
-		final SwingDisplayPanel swingPanel = (SwingDisplayPanel) panel;
-		// CTR FIXME - Clear up confusion surrounding SwingDisplayPanel and
-		// SwingDisplayWindow in SDI vs. MDI contexts. Avoid casting!
-		final SwingDisplayWindow displayWindow =
-			(SwingDisplayWindow) SwingUtilities.getWindowAncestor(swingPanel);
-		return displayWindow;
+		final DisplayViewer<?> displayViewer = getDisplayViewer(event.getObject());
+		final DisplayWindow displayWindow = displayViewer.getDisplayWindow();
+		if ((displayWindow != null) && (displayWindow instanceof JFrame)) {
+			deleteMenuBar((JFrame)displayWindow);
+		}
 	}
 
 }

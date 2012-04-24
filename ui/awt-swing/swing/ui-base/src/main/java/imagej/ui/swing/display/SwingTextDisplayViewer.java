@@ -49,8 +49,9 @@ import imagej.ui.swing.SwingOutputPanel;
 public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
 	
 	@Override
-	public void view(DisplayWindow window, Display<String> display) {
-		setPanel(new SwingOutputPanel(display, window));
+	public void view(DisplayWindow window, Display<?> display) {
+		super.view(window, display);
+		setPanel(new SwingOutputPanel(getDisplay(), window));
 	}
 
 }

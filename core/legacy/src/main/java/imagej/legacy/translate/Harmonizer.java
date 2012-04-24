@@ -41,6 +41,8 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.event.EventService;
+import imagej.ext.display.event.DisplayDeletedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -337,14 +339,12 @@ public class Harmonizer {
 		//final ImagePlus impCopy = imp.duplicate();
 		//final ImageDisplay tmpDisplay =
 		//		imageTranslator.createDisplay(impCopy, ds.getAxes());
-		final ImageDisplay tmpDisplay =
+		final ImageDisplay tmpDisplay = 
 			imageTranslator.createDisplay(imp, ds.getAxes());
 		ImageDisplayService idSrv = context.getService(ImageDisplayService.class);
 		final Dataset tmpDs = idSrv.getActiveDataset(tmpDisplay);
 		ds.setImgPlus(tmpDs.getImgPlus());
 		ds.setRGBMerged(tmpDs.isRGBMerged());
-		// tmpDisplay.close()
-		// FIXME HACK - previous line ineffective. Temp method on next line.
-		tmpDisplay.getPanel().getWindow().close();
+		tmpDisplay.close();
 	}
 }

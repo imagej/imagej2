@@ -79,7 +79,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	}
 	
 	@Override
-	public void view(DisplayWindow window, Display<DataView> display) {
+	public void view(DisplayWindow window, Display<?> display) {
 		this.window = window;
 		assert display instanceof ImageDisplay;
 		eventService = display.getContext().getService(EventService.class);

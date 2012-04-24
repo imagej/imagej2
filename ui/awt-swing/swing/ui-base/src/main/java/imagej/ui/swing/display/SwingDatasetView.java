@@ -37,6 +37,7 @@ package imagej.ui.swing.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.DefaultDatasetView;
 import imagej.data.display.event.DataViewUpdatedEvent;
@@ -66,15 +67,18 @@ public class SwingDatasetView implements FigureView
 
 	private final DatasetView datasetView;
 	private final ImageFigure figure;
+	private final AbstractSwingImageDisplayViewer displayViewer;
 	private boolean needsUpdate;
+	private boolean disposeScheduled;
 	private final List<EventSubscriber<?>> subscribers;
 
-	public SwingDatasetView(final AbstractSwingImageDisplayViewer display,
+	public SwingDatasetView(final AbstractSwingImageDisplayViewer displayViewer,
 		final DatasetView datasetView)
 	{
 		this.datasetView = datasetView;
+		this.displayViewer = displayViewer;
 		needsUpdate = false;
-		final JHotDrawImageCanvas canvas = display.getCanvas();
+		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas)displayViewer.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		figure = new ImageFigure();
 		figure.setSelectable(false);
@@ -100,7 +104,7 @@ public class SwingDatasetView implements FigureView
 
 	@SuppressWarnings("synthetic-access")
 	public synchronized void update() {
-		if (!needsUpdate) {
+		if ((!needsUpdate) && (! disposeScheduled)) {
 			needsUpdate = true;
 			EventQueue.invokeLater(new Runnable() {
 
@@ -132,4 +136,24 @@ public class SwingDatasetView implements FigureView
 		return figure;
 	}
 
+	@Override
+	public void dispose() {
+		synchronized(this) {
+			if (! disposeScheduled) {
+				EventQueue.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						synchronized(SwingDatasetView.this) {
+							figure.requestRemove();
+						}
+					}});
+				disposeScheduled = true;
+			}
+		}
+	}
+	@Override
+	public DataView getDataView() {
+		return datasetView;
+	}
 }

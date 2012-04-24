@@ -53,6 +53,7 @@ import imagej.ext.display.DisplayService;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.window.WinActivatedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.ToolService;
 
 import java.util.List;
@@ -73,6 +74,7 @@ import net.imglib2.meta.AxisType;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
+@Plugin(type=ImageDisplay.class)
 public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {

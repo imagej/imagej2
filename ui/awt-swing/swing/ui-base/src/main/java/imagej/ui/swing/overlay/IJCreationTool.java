@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.display.DefaultOverlayView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -102,8 +103,7 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 	protected void creationFinished(final Figure figure) {
 		super.creationFinished(figure);
 		final Overlay overlay = adapter.createNewOverlay();
-		final SwingOverlayView view =
-			new SwingOverlayView(display, overlay, figure);
+		final DefaultOverlayView view = new DefaultOverlayView(overlay);
 		adapter.updateOverlay(figure, view);
 		fireOverlayCreatedEvent(view, figure);
 	}

@@ -62,11 +62,12 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 	public AbstractDisplayViewer() {
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void view(DisplayWindow window, Display<T> display) {
+	public void view(DisplayWindow window, Display<?> display) {
 		this.window = window;
 		assert this.canView(display);
-		this.display = display;
+		this.display = (Display<T>)display;
 		EventService eventService = display.getContext().getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 	}

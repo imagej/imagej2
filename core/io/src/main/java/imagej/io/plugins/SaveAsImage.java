@@ -146,9 +146,6 @@ public class SaveAsImage implements ImageJPlugin {
 				dataset.setName(outputFile.getName());
 				dataset.setDirty(false);
 
-				// TODO -- HACK -- setName() + update() currently doesn't work.
-				// Pending #995
-				display.getPanel().getWindow().setTitle(outputFile.getName());
 				display.setName(outputFile.getName());
 				display.update();
 			}
