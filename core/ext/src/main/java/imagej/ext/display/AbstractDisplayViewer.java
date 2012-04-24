@@ -32,19 +32,17 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.ext.display;
 
-import java.util.List;
-
-import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.DisplayViewer;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 
+import java.util.List;
 
 /**
  * The AbstractDisplayViewer provides some basic generic implementations

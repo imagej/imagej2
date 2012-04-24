@@ -32,21 +32,18 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-/**
- * 
- */
+
 package imagej.ui.swing;
-
-import java.awt.BorderLayout;
-import java.awt.Font;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayWindow;
 import imagej.ext.display.OutputPanel;
 import imagej.util.ColorRGB;
+
+import java.awt.Font;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  * This is the DisplayPanel for <code>Display&lt;String&gt;</code>.

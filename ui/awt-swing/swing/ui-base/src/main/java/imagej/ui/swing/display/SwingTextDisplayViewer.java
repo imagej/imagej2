@@ -32,6 +32,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.ui.swing.display;
 
 import imagej.ext.display.AbstractTextDisplayViewer;

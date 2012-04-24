@@ -32,12 +32,8 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.data.display;
-
-import java.util.List;
-
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
@@ -52,6 +48,11 @@ import imagej.ext.display.DisplayWindow;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.tool.ToolService;
 import imagej.util.UnitUtils;
+
+import java.util.List;
+
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * The AbstractImageDisplayViewer implements the gui-independent

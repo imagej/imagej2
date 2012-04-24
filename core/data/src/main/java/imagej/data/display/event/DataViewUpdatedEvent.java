@@ -32,6 +32,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.data.display.event;
 
 import imagej.data.display.DataView;

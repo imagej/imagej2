@@ -32,6 +32,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.ext.display;
 
 /**

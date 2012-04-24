@@ -32,10 +32,10 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.data.display.event;
 
 import imagej.data.display.ImageCanvas;
-import imagej.ext.MouseCursor;
 
 /**
  * The MouseCursorEvent notifies subscribers of a change in

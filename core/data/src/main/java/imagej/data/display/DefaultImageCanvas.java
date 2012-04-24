@@ -32,19 +32,15 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.data.display;
 
-import java.util.List;
-
-import imagej.IContext;
 import imagej.ImageJ;
 import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ext.MouseCursor;
 import imagej.util.IntCoords;
-import imagej.util.IntRect;
 import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
