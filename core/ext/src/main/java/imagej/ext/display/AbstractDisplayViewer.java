@@ -114,18 +114,12 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 		getPanel().redraw();
 	}
 	
-	//-- Display lifecycle events --//
-	@EventHandler
-	protected void onEvent(DisplayActivatedEvent e) {
-		if (e.getDisplay() == getDisplay())
-			onDisplayActivated(e);
-	}
-	
 	/**
 	 * Activate a display
 	 * @param e
 	 */
-	protected void onDisplayActivated(DisplayActivatedEvent e) {
+	@Override
+	public void onDisplayActivatedEvent(DisplayActivatedEvent e) {
 		getPanel().getWindow().requestFocus();
 	}
 

@@ -36,6 +36,7 @@
 package imagej.data.display;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -56,7 +57,9 @@ public class SelectWindow implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		display.activate();
+		final DisplayService displayService = 
+			display.getContext().getService(DisplayService.class);
+		displayService.setActiveDisplay(display);
 	}
 
 }

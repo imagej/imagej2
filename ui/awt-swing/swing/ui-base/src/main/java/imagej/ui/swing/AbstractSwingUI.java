@@ -38,7 +38,9 @@ package imagej.ui.swing;
 import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
+import imagej.ext.display.DisplayService;
 import imagej.ext.display.DisplayViewer;
+import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
@@ -65,6 +67,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
@@ -84,6 +87,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
+	private boolean activationInvocationPending = false;
 
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
@@ -215,6 +219,30 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		}
 		
 	}
+	
+	/**
+	 * Called any time a display is activated.
+	 *
+	 * The goal here is to eventually synchronize the window
+	 * activation state with the display activation state
+	 * if the display activation state changed programatically.
+	 * We queue a call on the UI thread to activate the
+	 * display viewer of the currently active window.
+	 * 
+	 * @param e
+	 */
+	protected synchronized void onDisplayActivated(DisplayActivatedEvent e) {
+		final DisplayService displayService = 
+			e.getContext().getService(DisplayService.class);
+		Display<?> activeDisplay = displayService.getActiveDisplay();
+		if (activeDisplay != null) {
+			DisplayViewer<?> displayViewer = getDisplayViewer(activeDisplay);
+			if (displayViewer != null) {
+				displayViewer.onDisplayActivatedEvent(e);
+			}
+		}
+		activationInvocationPending = false;
+	}
 
 	/**
 	 * Handle a DisplayCreatedEvent.
@@ -245,6 +273,17 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		if (displayViewer != null) {
 			onDisplayUpdated(e);
 		}
+	}
+	
+	@EventHandler
+	protected synchronized void onEvent(final DisplayActivatedEvent e) {
+		if (activationInvocationPending) return;
+		activationInvocationPending = true;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				onDisplayActivated(e);
+			}});
 	}
 	// FIXME - temp hack - made this method public so that the SwingOverlayManager
 	// (which is not a display) could make sure menu bar available when it is

@@ -34,6 +34,7 @@
  */
 package imagej.ext.display;
 
+import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.plugin.IPlugin;
@@ -96,4 +97,14 @@ public interface DisplayViewer<T> extends IPlugin {
 	 * @param e
 	 */
 	void onDisplayDeletedEvent(DisplayDeletedEvent e);
+	
+	/**
+	 * Handle a display activated event directed at this viewer's display.
+	 * 
+	 * Note that the event's display may not be the viewer's display,
+	 * but the active display will always be the viewer's display.
+	 * 
+	 * @param e
+	 */
+	void onDisplayActivatedEvent(DisplayActivatedEvent e);
 }

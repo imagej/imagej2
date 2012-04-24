@@ -88,9 +88,6 @@ public interface Display<E> extends List<E>, IPlugin, IContext {
 	/** Updates and redraws the display onscreen. */
 	void update();
 
-	/** Makes this display the active one. */
-	void activate();
-
 	/** Closes the display and disposes its resources. */
 	void close();
 

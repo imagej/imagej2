@@ -60,6 +60,13 @@ public interface DisplayService extends IService {
 
 	/** Gets the currently active display. */
 	Display<?> getActiveDisplay();
+	
+	/**
+	 * Set the active display.
+	 * 
+	 * @param display
+	 */
+	void setActiveDisplay(Display<?> display);
 
 	/** Gets the list of known display plugins. */
 	List<PluginInfo<Display<?>>> getDisplayPlugins();

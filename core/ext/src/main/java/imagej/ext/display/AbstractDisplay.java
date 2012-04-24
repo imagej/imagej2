@@ -127,14 +127,14 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public void activate() {
-		if (eventService != null && ! isClosed)
-			eventService.publish(new DisplayActivatedEvent(this));
-	}
-
-	@Override
 	public void close() {
-		if (eventService != null && ! isClosed)
+		if (isClosed) return;
+		DisplayService displayService = getContext().getService(DisplayService.class);
+		if (displayService != null && displayService.getActiveDisplay() == this) {
+			displayService.setActiveDisplay(null);
+		}
+
+		if (eventService != null)
 			eventService.publish(new DisplayDeletedEvent(this));
 		isClosed = true;
 	}

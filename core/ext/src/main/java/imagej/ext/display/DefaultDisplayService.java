@@ -76,7 +76,7 @@ public final class DefaultDisplayService extends AbstractService implements
 	// iterate through the list of known displays for the first match.
 
 	private Display<?> activeDisplay;
-
+	
 	public DefaultDisplayService() {
 		// NB: Required by SezPoz.
 		super(null);
@@ -117,6 +117,13 @@ public final class DefaultDisplayService extends AbstractService implements
 	@Override
 	public Display<?> getActiveDisplay() {
 		return activeDisplay;
+	}
+	
+	@Override
+	public void setActiveDisplay(Display<?> display) {
+		activeDisplay = display;
+		if (display != null)
+			eventService.publish(new DisplayActivatedEvent(display));
 	}
 
 	// -- DisplayService methods - display plugin discovery --
@@ -220,21 +227,10 @@ public final class DefaultDisplayService extends AbstractService implements
 
 	// -- Event handlers --
 
-	/** Tracks the active display. */
-	@EventHandler
-	protected void onEvent(final DisplayActivatedEvent event) {
-		activeDisplay = event.getDisplay();
-	}
-
 	/** Deletes the display when display window is closed. */
 	@EventHandler
 	protected void onEvent(final WinClosedEvent event) {
 		final Display<?> display = event.getDisplay();
-
-		// HACK - Necessary to plug memory leak when closing the last window.
-		if (getDisplays().size() <= 1) {
-			activeDisplay = null;
-		}
 
 		display.close();
 	}
@@ -243,7 +239,7 @@ public final class DefaultDisplayService extends AbstractService implements
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
 		final Display<?> display = event.getDisplay();
-		display.activate();
+		setActiveDisplay(display);
 	}
 
 }
