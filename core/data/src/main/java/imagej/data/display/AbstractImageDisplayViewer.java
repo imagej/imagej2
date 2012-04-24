@@ -264,7 +264,8 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	 * Recalculate the label text and update it on the panel.
 	 */
 	protected void updateLabel() {
-		getPanel().setLabel(makeLabel());
+		if (getImageDisplay().getActiveView() != null)
+			getPanel().setLabel(makeLabel());
 	}
 	
 	//-- Event handlers --//
