@@ -38,8 +38,8 @@ package imagej.core.plugins.assign;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -71,9 +71,6 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 	private OverlayService overlayService;
 
 	@Parameter(persist = false)
-	private ImageDisplayService dispService;
-
-	@Parameter(persist = false)
 	private OptionsService optionsService;
 
 	@Parameter(persist = false)
@@ -83,10 +80,12 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final OptionsChannels opts = optionsService.getOptions(OptionsChannels.class);
+		final OptionsChannels opts =
+			optionsService.getOptions(OptionsChannels.class);
 		if (opts == null) return;
-		final Dataset dataset = dispService.getActiveDataset(display);
-		fillSelectedRegion(dataset, opts.getFgValues());
+		final Overlay overlay = overlayService.getActiveOverlay(display);
+		if (overlay == null) return;
+		overlayService.fillOverlay(overlay, display, opts.getFgValues());
 	}
 
 	public ImageDisplay getDisplay() {

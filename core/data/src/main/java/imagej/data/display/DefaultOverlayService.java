@@ -266,6 +266,16 @@ public final class DefaultOverlayService extends AbstractService implements
 		return null;
 	}
 	
+	// TODO - assumes first selected overlay view is the only one. bad?
+	@Override
+	public Overlay getActiveOverlay(ImageDisplay disp) {
+		for (DataView view : disp) {
+			if (view.isSelected() && (view instanceof OverlayView))
+				return ((OverlayView) view).getData();
+		}
+		return null;
+	}
+	
 	// -- helpers --
 
 	private enum DrawMode {OUTLINE, FILL}
