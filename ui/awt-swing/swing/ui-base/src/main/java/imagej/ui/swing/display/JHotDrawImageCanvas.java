@@ -75,6 +75,7 @@ import imagej.util.RealRect;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
@@ -88,6 +89,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -388,18 +390,32 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 		// off by one that makes initial view have scroll bars unnecessarily. Look
 		// into this further.
 		Dimension drawViewSize = drawingView.getPreferredSize();
+		
+		Border border = scrollPane.getBorder();
+		Dimension slop = new Dimension(0,0);
+		if (border != null) {
+			Insets insets = border.getBorderInsets( scrollPane );
+			slop = new Dimension(
+					insets.left + insets.right,
+					insets.top + insets.bottom);
+		}
+		
+		Dimension bigDrawViewSize = new Dimension(
+				drawViewSize.width + slop.width + 1,
+				drawViewSize.height + slop.height + 1);
+		
 		if (drawViewSize.height == 0 || drawViewSize.width == 0) {
 			// The image figure hasn't been placed yet. Calculate the projected size.
 			final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
 			final RealRect imageBounds = getDisplay().getImageExtents();
 			final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
 			return new Dimension(
-				Math.min((int)(imageBounds.width * zoomFactor) + 5, bounds.width),
-				Math.min((int)(imageBounds.height * zoomFactor) + 5, bounds.height));
+				Math.min((int)(imageBounds.width * zoomFactor) + slop.width + 1, bounds.width),
+				Math.min((int)(imageBounds.height * zoomFactor) + slop.width + 1, bounds.height));
 		}
-		if (drawViewSize.width+4 <= scrollPane.getPreferredSize().width)
-			if (drawViewSize.height+4 <= scrollPane.getPreferredSize().height)
-				return new Dimension(drawViewSize.width+5, drawViewSize.height+5);
+		if (bigDrawViewSize.width <= scrollPane.getPreferredSize().width)
+			if (bigDrawViewSize.height <= scrollPane.getPreferredSize().height)
+				return bigDrawViewSize;
 		return new Dimension(w, h);
 	}
 
