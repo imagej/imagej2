@@ -47,16 +47,20 @@ import javax.swing.JTextArea;
 
 /**
  * This is the DisplayPanel for <code>Display&lt;String&gt;</code>.
- *
+ * 
  * @author Lee Kamentsky
  */
-public class SwingTextDisplayPanel extends JScrollPane implements TextDisplayPanel {
+public class SwingTextDisplayPanel extends JScrollPane implements
+	TextDisplayPanel
+{
 
 	private final DisplayWindow window;
 	private final Display<String> display;
 	private final JTextArea textArea;
 
-	public SwingTextDisplayPanel(Display<String> display, DisplayWindow window) {
+	public SwingTextDisplayPanel(final Display<String> display,
+		final DisplayWindow window)
+	{
 		this.display = display;
 		this.window = window;
 		textArea = new JTextArea();
@@ -69,88 +73,64 @@ public class SwingTextDisplayPanel extends JScrollPane implements TextDisplayPan
 		window.setContent(this);
 	}
 
+	// -- TextDisplayPanel methods --
+
+	@Override
+	public void append(final String text) {
+		display.add(text);
+	}
+
+	@Override
+	public void clear() {
+		display.clear();
+	}
+
 	// -- DisplayPanel methods --
 
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.DisplayPanel#getDisplay()
-	 */
 	@Override
 	public Display<?> getDisplay() {
 		return display;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.DisplayPanel#getWindow()
-	 */
 	@Override
 	public DisplayWindow getWindow() {
 		return window;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.DisplayPanel#redoLayout()
-	 */
 	@Override
 	public void redoLayout() {
 		// Nothing to layout
-
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.DisplayPanel#setLabel(java.lang.String)
-	 */
 	@Override
-	public void setLabel(String s) {
+	public void setLabel(final String s) {
 		// The label is not shown.
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.DisplayPanel#setBorderColor(imagej.util.ColorRGB)
-	 */
 	@Override
-	public void setBorderColor(ColorRGB color) {
+	public void setBorderColor(final ColorRGB color) {
 		// The border color is not shown.
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.DisplayPanel#redraw()
-	 */
 	@Override
 	public void redraw() {
-		//
 		// The strategy is to compare the lines in the text area against
 		// those in the display. We clear the control if we find a mismatch.
-		//
-		String currentText = textArea.getText();
-		StringBuffer targetText = new StringBuffer();
-		for (String line:display) {
+
+		final String currentText = textArea.getText();
+		final StringBuffer targetText = new StringBuffer();
+		for (final String line : display) {
 			targetText.append(line + "\n");
 		}
 		if (targetText.toString().startsWith(currentText)) {
 			if (targetText.length() > currentText.length()) {
 				textArea.append(targetText.substring(currentText.length()));
 			}
-		} else {
+		}
+		else {
 			textArea.setText(targetText.toString());
 		}
 		textArea.setCaretPosition(targetText.length());
-	}
-
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.OutputPanel#append(java.lang.String)
-	 */
-	@Override
-	public void append(String text) {
-		display.add(text);
-	}
-
-	/* (non-Javadoc)
-	 * @see imagej.ext.display.OutputPanel#clear()
-	 */
-	@Override
-	public void clear() {
-		display.clear();
-
 	}
 
 }

@@ -55,50 +55,56 @@ import imagej.ui.common.awt.AWTMouseEventDispatcher;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public abstract class AbstractSwingImageDisplayViewer extends AbstractImageDisplayViewer {
+public abstract class AbstractSwingImageDisplayViewer extends
+	AbstractImageDisplayViewer
+{
 
 	private JHotDrawImageCanvas imgCanvas;
 	private SwingDisplayPanel imgPanel;
 
-	public AbstractSwingImageDisplayViewer() {
-	}
-	
+	public AbstractSwingImageDisplayViewer() {}
+
 	@Override
-	public void view(DisplayWindow window, Display<?> display) {
-		super.view(window, display);
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
 
 		imgCanvas = new JHotDrawImageCanvas(this);
-		imgCanvas.addEventDispatcher(
-				new AWTKeyEventDispatcher(this.display, eventService));
-		imgCanvas.addEventDispatcher(
-				new AWTMouseEventDispatcher(this, eventService, false));
+		imgCanvas.addEventDispatcher(new AWTKeyEventDispatcher(display,
+			eventService));
+		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
+			eventService, false));
 
 		imgPanel = new SwingDisplayPanel(this, window);
 		setPanel(imgPanel);
 
 		window.setTitle(display.getName());
 	}
-	
 
-	//-- AbstractImageDisplayViewer methods --//
-	
-	@Override
-	protected ZoomScaleOption getZoomScaleOption() {
-		ImageJ context = getDisplay().getContext();
-		OptionsService optionsService = context.getService(OptionsService.class);
-		return optionsService.getOptions(OptionsAppearance.class).isDisplayFractionalScales() ?
-				ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE : ZoomScaleOption.OPTIONS_PERCENT_SCALE;
-	}
-	// -- Display methods --
-	
-
-	@SuppressWarnings("unused")
-	@EventHandler
-	public void onEvent(final OptionsEvent e) {
-		updateLabel();
-	}
+	// -- AbstractSwingImageDisplayViewer methods --
 
 	public JHotDrawImageCanvas getCanvas() {
 		return imgCanvas;
 	}
+
+	// -- AbstractImageDisplayViewer methods --
+
+	@Override
+	protected ZoomScaleOption getZoomScaleOption() {
+		final ImageJ context = getDisplay().getContext();
+		final OptionsService optionsService =
+			context.getService(OptionsService.class);
+		return optionsService.getOptions(OptionsAppearance.class)
+			.isDisplayFractionalScales() ? ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE
+			: ZoomScaleOption.OPTIONS_PERCENT_SCALE;
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused")
+	final OptionsEvent e)
+	{
+		updateLabel();
+	}
+
 }
