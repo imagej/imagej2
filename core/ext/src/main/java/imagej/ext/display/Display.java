@@ -51,7 +51,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface Display<E> extends List<E>, IPlugin, IContext {
+public interface Display<T> extends List<T>, IPlugin, IContext {
 
 	/**
 	 * Set the ImageJ service context for the display. This should

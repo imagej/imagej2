@@ -53,13 +53,13 @@ import java.util.ListIterator;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDisplay<E> implements Display<E> {
+public abstract class AbstractDisplay<T> implements Display<T> {
 
 	/** The type of object the display can visualize. */
-	private final Class<E> type;
+	private final Class<T> type;
 
 	/** List of objects being displayed. */
-	private final ArrayList<E> objects;
+	private final ArrayList<T> objects;
 
 	/** Flag set when display needs to be fully rebuilt. */
 	private boolean structureChanged;
@@ -73,9 +73,9 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	
 	protected boolean isClosed = false;
 
-	public AbstractDisplay(final Class<E> type) {
+	public AbstractDisplay(final Class<T> type) {
 		this.type = type;
-		objects = new ArrayList<E>();
+		objects = new ArrayList<T>();
 	}
 	
 	@Override
@@ -113,7 +113,7 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	public void display(final Object o) {
 		checkObject(o);
 		@SuppressWarnings("unchecked")
-		final E typedObj = (E) o;
+		final T typedObj = (T) o;
 		add(typedObj);
 	}
 
@@ -152,20 +152,20 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	// -- List methods --
 
 	@Override
-	public void add(final int index, final E element) {
+	public void add(final int index, final T element) {
 		objects.add(index, element);
 		announceStructureChange();
 	}
 
 	@Override
-	public boolean addAll(final int index, final Collection<? extends E> c) {
+	public boolean addAll(final int index, final Collection<? extends T> c) {
 		final boolean changed = objects.addAll(index, c);
 		if (changed) announceStructureChange();
 		return changed;
 	}
 
 	@Override
-	public E get(final int index) {
+	public T get(final int index) {
 		return objects.get(index);
 	}
 
@@ -180,38 +180,38 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public ListIterator<E> listIterator() {
+	public ListIterator<T> listIterator() {
 		return objects.listIterator();
 	}
 
 	@Override
-	public ListIterator<E> listIterator(final int index) {
+	public ListIterator<T> listIterator(final int index) {
 		return objects.listIterator(index);
 	}
 
 	@Override
-	public E remove(final int index) {
-		final E result = objects.remove(index);
+	public T remove(final int index) {
+		final T result = objects.remove(index);
 		if (result != null) announceStructureChange();
 		return result;
 	}
 
 	@Override
-	public E set(final int index, final E element) {
-		final E result = objects.set(index, element);
+	public T set(final int index, final T element) {
+		final T result = objects.set(index, element);
 		if (result != null) announceStructureChange();
 		return result;
 	}
 
 	@Override
-	public List<E> subList(final int fromIndex, final int toIndex) {
+	public List<T> subList(final int fromIndex, final int toIndex) {
 		return objects.subList(fromIndex, toIndex);
 	}
 
 	// -- Collection methods --
 
 	@Override
-	public boolean add(final E o) {
+	public boolean add(final T o) {
 		checkObject(o);
 		final boolean changed = objects.add(o);
 		if (changed) announceStructureChange();
@@ -219,8 +219,8 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public boolean addAll(final Collection<? extends E> c) {
-		for (final E o : c) {
+	public boolean addAll(final Collection<? extends T> c) {
+		for (final T o : c) {
 			checkObject(o);
 		}
 		final boolean changed = objects.addAll(c);
@@ -251,7 +251,7 @@ public abstract class AbstractDisplay<E> implements Display<E> {
 	}
 
 	@Override
-	public Iterator<E> iterator() {
+	public Iterator<T> iterator() {
 		return objects.iterator();
 	}
 
