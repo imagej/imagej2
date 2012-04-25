@@ -35,10 +35,11 @@
 
 package imagej.workflowpipes.pipesentity;
 
-import org.json.JSONObject;
-
 import imagej.workflowpipes.pipesapi.Module;
+
 import java.io.Serializable;
+
+import org.json.JSONObject;
 
 public class Info implements Serializable {
 	

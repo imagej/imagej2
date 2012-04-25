@@ -36,7 +36,6 @@
 package imagej.ui.swing.sdi;
 
 import imagej.ImageJ;
-import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;

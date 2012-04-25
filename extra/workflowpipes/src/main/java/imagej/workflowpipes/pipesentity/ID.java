@@ -36,8 +36,6 @@
 package imagej.workflowpipes.pipesentity;
 
 import java.io.Serializable;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class ID implements Serializable {
 	

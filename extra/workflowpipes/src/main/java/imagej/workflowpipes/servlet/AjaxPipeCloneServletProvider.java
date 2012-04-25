@@ -35,8 +35,9 @@
 
 package imagej.workflowpipes.servlet;
 
+import imagej.workflowpipes.controller.PipesController;
+
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,8 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-
-import imagej.workflowpipes.controller.PipesController;
 
 /**
  * ajax.pipe.clone passes four fields; _out:json, id:(optional if saved, 32

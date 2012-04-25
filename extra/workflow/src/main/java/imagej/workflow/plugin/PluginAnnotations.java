@@ -35,13 +35,13 @@
 
 package imagej.workflow.plugin;
 
+import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Item;
+import imagej.workflow.plugin.annotations.Output;
+
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
-
-import imagej.workflow.plugin.annotations.Item;
-import imagej.workflow.plugin.annotations.Input;
-import imagej.workflow.plugin.annotations.Output;
 
 /**
  * The PluginAnnotations class keeps sets of input and output names based

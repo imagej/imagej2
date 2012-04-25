@@ -41,12 +41,10 @@ import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 
-import imagej.ui.swing.display.SwingDisplayPanel;
 import java.awt.HeadlessException;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 /**

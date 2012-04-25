@@ -35,26 +35,23 @@
 
 package imagej.workflow;
 
-import java.lang.StringBuilder;
+import imagej.workflow.debug.PreviewInfo;
+import imagej.workflow.debug.WorkflowDebugger;
+import imagej.workflow.plugin.IPluginLauncher;
+import imagej.workflow.plugin.ItemWrapper;
+import imagej.workflow.plugin.PluginScheduler;
+import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Output;
+import imagej.workflow.util.xmllight.XMLException;
+import imagej.workflow.util.xmllight.XMLParser;
+import imagej.workflow.util.xmllight.XMLTag;
+import imagej.workflow.util.xmllight.XMLWriter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import imagej.workflow.debug.PreviewInfo;
-import imagej.workflow.debug.WorkflowDebugger;
-
-import imagej.workflow.util.xmllight.XMLParser;
-import imagej.workflow.util.xmllight.XMLWriter;
-import imagej.workflow.util.xmllight.XMLException;
-import imagej.workflow.util.xmllight.XMLTag;
-
-import imagej.workflow.plugin.annotations.Input;
-import imagej.workflow.plugin.annotations.Output;
-import imagej.workflow.plugin.ItemWrapper;
-import imagej.workflow.plugin.IPluginLauncher;
-import imagej.workflow.plugin.PluginScheduler;
 
 /**
  * Builds a workflow consisting of chained components.  A component could also

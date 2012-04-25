@@ -35,14 +35,11 @@
 
 package imagej.workflow;
 
-import imagej.workflow.ModuleFactory;
-import imagej.workflow.Workflow;
+import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Output;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import imagej.workflow.plugin.annotations.Input;
-import imagej.workflow.plugin.annotations.Output;
 
 /**
  * Unit test for save/restore to/from XML.

@@ -35,15 +35,14 @@
 
 package imagej.workflow.plugin;
 
+import imagej.workflow.debug.DebugInfo;
+import imagej.workflow.debug.WorkflowDebugger;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import imagej.workflow.debug.DebugInfo;
-import imagej.workflow.debug.WorkflowDebugger;
-import imagej.workflow.plugin.ItemWrapper;
 
 /**
  * Schedules named image passing among plugins.

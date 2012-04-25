@@ -35,9 +35,6 @@
 
 package imagej.workflow;
 
-import imagej.workflow.ModuleFactory;
-import imagej.workflow.PluginModule;
-import imagej.workflow.IModule;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

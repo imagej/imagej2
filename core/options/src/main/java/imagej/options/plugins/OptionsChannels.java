@@ -35,9 +35,6 @@
 
 package imagej.options.plugins;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import imagej.data.ChannelCollection;
 import imagej.event.EventService;
 import imagej.ext.menu.MenuConstants;
@@ -49,6 +46,9 @@ import imagej.options.OptionsPlugin;
 import imagej.options.event.OptionsEvent;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Runs the Edit::Options::Channels dialog.

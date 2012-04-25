@@ -35,12 +35,12 @@
 
 package imagej.workflow;
 
+import imagej.workflow.util.xmllight.XMLException;
+import imagej.workflow.util.xmllight.XMLParser;
+import imagej.workflow.util.xmllight.XMLTag;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import imagej.workflow.util.xmllight.XMLParser;
-import imagej.workflow.util.xmllight.XMLException;
-import imagej.workflow.util.xmllight.XMLTag;
 
 /**
  *

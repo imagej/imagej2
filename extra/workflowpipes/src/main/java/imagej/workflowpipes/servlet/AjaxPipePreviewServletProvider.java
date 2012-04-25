@@ -35,6 +35,8 @@
 
 package imagej.workflowpipes.servlet;
 
+import imagej.workflowpipes.controller.PipesController;
+
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -44,8 +46,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-
-import imagej.workflowpipes.controller.PipesController;
 
 public class AjaxPipePreviewServletProvider extends HttpServlet {
 

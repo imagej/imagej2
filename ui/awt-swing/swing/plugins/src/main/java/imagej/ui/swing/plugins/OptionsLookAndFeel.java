@@ -41,8 +41,8 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
-import imagej.ui.UserInterface;
 import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
 import imagej.util.Log;
 

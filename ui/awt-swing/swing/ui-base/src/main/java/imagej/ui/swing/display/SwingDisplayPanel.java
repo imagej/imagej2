@@ -35,9 +35,7 @@
 
 package imagej.ui.swing.display;
 
-import imagej.ImageJ;
 import imagej.data.Extents;
-import imagej.data.display.CanvasHelper;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
@@ -50,7 +48,6 @@ import imagej.ext.display.Display;
 import imagej.ext.display.DisplayPanel;
 import imagej.ext.display.DisplayWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.ui.swing.StaticSwingUtils;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
@@ -58,7 +55,6 @@ import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.HashMap;

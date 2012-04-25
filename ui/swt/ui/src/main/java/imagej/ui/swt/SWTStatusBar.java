@@ -35,13 +35,14 @@
 
 package imagej.ui.swt;
 
-import java.util.List;
-
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
+
+import java.util.List;
+
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;

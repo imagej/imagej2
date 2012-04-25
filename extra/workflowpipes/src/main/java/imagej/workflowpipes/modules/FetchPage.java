@@ -35,15 +35,6 @@
 
 package imagej.workflowpipes.modules;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.workflow.debug.PreviewInfo;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Attr;
@@ -62,6 +53,14 @@ import imagej.workflowpipes.pipesentity.Tag;
 import imagej.workflowpipes.pipesentity.Terminal;
 import imagej.workflowpipes.pipesentity.Type;
 import imagej.workflowpipes.pipesentity.UI;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Represents simple, incomplete module type "fetchpage".  Does not translate relative domains for src resources such as images.

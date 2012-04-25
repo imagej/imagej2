@@ -35,14 +35,9 @@
 
 package imagej.display.zoomview;
 
-import imagej.display.zoomview.ITileSet;
-import imagej.display.zoomview.Tile;
-
 import java.awt.Dimension;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.BitSet;

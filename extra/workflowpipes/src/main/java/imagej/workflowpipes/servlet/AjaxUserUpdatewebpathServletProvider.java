@@ -35,18 +35,16 @@
 
 package imagej.workflowpipes.servlet;
 
+import imagej.workflowpipes.controller.PipesController;
+
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import imagej.workflowpipes.controller.PipesController;
 
 /**
  * ajax.user.updatewebpath takes four inputs through the post; path, _rnd, .crumb, and _out

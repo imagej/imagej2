@@ -35,6 +35,11 @@
 
 package imagej.workflowpipes.servlet;
 
+import imagej.workflowpipes.controller.PipesController;
+import imagej.workflowpipes.pipes.ResultFinder;
+import imagej.workflowpipes.pipes.Service;
+import imagej.workflowpipes.pipesapi.Module;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -44,12 +49,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-
-
-import imagej.workflowpipes.controller.PipesController;
-import imagej.workflowpipes.pipes.ResultFinder;
-import imagej.workflowpipes.pipes.Service;
-import imagej.workflowpipes.pipesapi.Module;
 
 /**
  * Does a Post with the following parameters:

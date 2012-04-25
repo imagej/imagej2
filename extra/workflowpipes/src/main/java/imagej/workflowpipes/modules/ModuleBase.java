@@ -35,37 +35,25 @@
 
 package imagej.workflowpipes.modules;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import imagej.workflow.IItemInfo;
 import imagej.workflow.IModuleInfo;
 import imagej.workflow.debug.PreviewInfo;
 import imagej.workflowpipes.pipesapi.Module;
-import imagej.workflowpipes.pipesentity.Attr;
 import imagej.workflowpipes.pipesentity.Conf;
-import imagej.workflowpipes.pipesentity.Connector;
-import imagej.workflowpipes.pipesentity.Content;
-import imagej.workflowpipes.pipesentity.Count;
 import imagej.workflowpipes.pipesentity.Description;
-import imagej.workflowpipes.pipesentity.Error;
 import imagej.workflowpipes.pipesentity.ID;
 import imagej.workflowpipes.pipesentity.Item;
-import imagej.workflowpipes.pipesentity.Message;
 import imagej.workflowpipes.pipesentity.Name;
-import imagej.workflowpipes.pipesentity.Prop;
 import imagej.workflowpipes.pipesentity.Tag;
 import imagej.workflowpipes.pipesentity.Terminal;
 import imagej.workflowpipes.pipesentity.Type;
 import imagej.workflowpipes.pipesentity.UI;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ModuleBase extends Module {
     List<NameTypeDesc> m_nameTypeDescList = new ArrayList<NameTypeDesc>();

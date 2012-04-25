@@ -39,7 +39,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
-import imagej.data.display.DefaultDatasetView;
 import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;

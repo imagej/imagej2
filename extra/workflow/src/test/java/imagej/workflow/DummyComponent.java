@@ -35,22 +35,18 @@
 
 package imagej.workflow;
 
-import imagej.workflow.IModule;
-import imagej.workflow.Workflow;
-import imagej.workflow.IOutputListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import imagej.workflow.plugin.IPluginLauncher;
+import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
-import imagej.workflow.plugin.ItemWrapper;
-import imagej.workflow.plugin.IPluginLauncher;
 import imagej.workflow.util.xmllight.XMLException;
 import imagej.workflow.util.xmllight.XMLParser;
 import imagej.workflow.util.xmllight.XMLTag;
 import imagej.workflow.util.xmllight.XMLWriter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *

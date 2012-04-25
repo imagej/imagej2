@@ -35,8 +35,6 @@
 
 package imagej.workflow;
 
-import imagej.workflow.IModuleFactory;
-import imagej.workflow.IModule;
 
 /**
  *

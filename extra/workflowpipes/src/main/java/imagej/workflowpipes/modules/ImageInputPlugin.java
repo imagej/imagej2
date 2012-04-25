@@ -35,16 +35,17 @@
 
 package imagej.workflowpipes.modules;
 
+import imagej.workflow.plugin.AbstractPlugin;
+import imagej.workflow.plugin.IPlugin;
+import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Item;
+import imagej.workflow.plugin.annotations.Output;
+
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
-import imagej.workflow.plugin.AbstractPlugin;
-import imagej.workflow.plugin.IPlugin;
-import imagej.workflow.plugin.annotations.Item;
-import imagej.workflow.plugin.annotations.Input;
-import imagej.workflow.plugin.annotations.Output;
+import javax.imageio.ImageIO;
 
 /**
  * Plugin reads in an image.

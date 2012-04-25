@@ -35,12 +35,6 @@
 
 package imagej.ui.swing.tools;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import net.imglib2.RealPoint;
-
 import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -55,6 +49,12 @@ import imagej.ext.tool.Tool;
 import imagej.ui.swing.tools.overlay.LineAdapter;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.imglib2.RealPoint;
 
 /**
  * TODO

@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.mdi.display;
 
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayViewer;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayPanel;
@@ -45,7 +43,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.display.SwingDisplayPanel;
-import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
 
 import javax.swing.JInternalFrame;
 

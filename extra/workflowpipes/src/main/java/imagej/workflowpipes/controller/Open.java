@@ -41,8 +41,6 @@ import imagej.plugin.ij2.Ij2PluginFinder;
 import imagej.plugin.ij2.Ij2PluginRunner;
 import imagej.plugin.ij2.ParameterHandler;
 */
-import java.util.HashMap;
-
 import imagej.workflowpipes.experimental.OpenIDAuthenticationServlet;
 import imagej.workflowpipes.persistence.LoadLayouts;
 import imagej.workflowpipes.pipes.ModuleGenerator;
@@ -57,6 +55,8 @@ import imagej.workflowpipes.servlet.AjaxPipePreviewServletProvider;
 import imagej.workflowpipes.servlet.AjaxPipeSaveServletProvider;
 import imagej.workflowpipes.servlet.AjaxUserUpdatewebpathServletProvider;
 import imagej.workflowpipes.servlet.PipeDeleteServletProvider;
+
+import java.util.HashMap;
 
 
 //TODO:add implements run() from plugin

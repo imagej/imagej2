@@ -35,13 +35,11 @@
 
 package imagej.workflow;
 
-import imagej.workflow.Workflow;
+import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Output;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import imagej.workflow.plugin.annotations.Input;
-import imagej.workflow.plugin.annotations.Output;
 
 /**
  *

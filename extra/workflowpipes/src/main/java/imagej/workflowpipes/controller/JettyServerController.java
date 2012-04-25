@@ -35,9 +35,9 @@
 
 package imagej.workflowpipes.controller;
 
+import imagej.workflowpipes.util.OpenBrowser;
+
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.Servlet;
 
@@ -50,8 +50,6 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-
-import imagej.workflowpipes.util.OpenBrowser;
 
 /**
  * Helper class to control multiple servlet instances within a single controller

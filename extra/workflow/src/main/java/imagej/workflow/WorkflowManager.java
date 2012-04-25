@@ -35,23 +35,19 @@
 
 package imagej.workflow;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.prefs.Preferences;
-
-import imagej.workflow.plugin.annotations.Item;
+import imagej.workflow.plugin.IPlugin;
 import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Output;
 import imagej.workflow.util.xmllight.XMLException;
 import imagej.workflow.util.xmllight.XMLParser;
 import imagej.workflow.util.xmllight.XMLTag;
-import imagej.workflow.plugin.IPlugin;
-import imagej.workflow.plugin.PluginAnnotations;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;

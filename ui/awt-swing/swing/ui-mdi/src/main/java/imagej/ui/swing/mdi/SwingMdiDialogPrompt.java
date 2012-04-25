@@ -37,8 +37,8 @@ package imagej.ui.swing.mdi;
 
 import imagej.ImageJ;
 import imagej.ui.DialogPrompt;
-import imagej.ui.UserInterface;
 import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
 
 import java.util.HashMap;

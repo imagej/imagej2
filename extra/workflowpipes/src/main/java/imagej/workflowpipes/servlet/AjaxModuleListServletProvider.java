@@ -35,6 +35,9 @@
 
 package imagej.workflowpipes.servlet;
 
+import imagej.workflowpipes.controller.PipesController;
+import imagej.workflowpipes.pipesapi.Module;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -44,9 +47,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import imagej.workflowpipes.controller.PipesController;
-import imagej.workflowpipes.pipesapi.Module;
 
 public class AjaxModuleListServletProvider extends HttpServlet {
 

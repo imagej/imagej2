@@ -35,21 +35,18 @@
 
 package imagej.workflowpipes.modules;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.workflow.debug.PreviewInfo;
-
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Description;
-import imagej.workflowpipes.pipesentity.Error;
 import imagej.workflowpipes.pipesentity.ID;
 import imagej.workflowpipes.pipesentity.Name;
 import imagej.workflowpipes.pipesentity.Tag;
 import imagej.workflowpipes.pipesentity.Terminal;
 import imagej.workflowpipes.pipesentity.Type;
 import imagej.workflowpipes.pipesentity.UI;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Represents the module type "OUTPUT"

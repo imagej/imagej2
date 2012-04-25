@@ -35,10 +35,10 @@
 
 package imagej.workflowpipes.persistence;
 
+import imagej.workflowpipes.pipesentity.Layout;
+
 import java.net.URI;
 import java.util.HashMap;
-
-import imagej.workflowpipes.pipesentity.Layout;
 
 public class SaveLayouts {
 

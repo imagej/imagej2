@@ -45,9 +45,9 @@ import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.UserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 
 import java.awt.BorderLayout;
 import java.awt.MenuBar;

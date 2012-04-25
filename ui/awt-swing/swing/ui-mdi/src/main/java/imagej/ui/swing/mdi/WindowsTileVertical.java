@@ -40,8 +40,8 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.Arrangeable.Arrangement;
 import imagej.ui.Desktop;
-import imagej.ui.UserInterface;
 import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 
 /**
  * Arranges the Windows in an MDI environment.

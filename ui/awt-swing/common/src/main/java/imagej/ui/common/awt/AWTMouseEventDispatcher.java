@@ -35,7 +35,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayViewer;
 import imagej.event.EventService;
 import imagej.ext.InputModifiers;
@@ -49,8 +48,6 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
-import imagej.util.IntCoords;
-import imagej.util.Log;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

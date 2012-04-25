@@ -35,18 +35,6 @@
 
 package imagej.platform.macosx;
 
-import imagej.event.EventService;
-import imagej.platform.event.AppAboutEvent;
-import imagej.platform.event.AppFocusEvent;
-import imagej.platform.event.AppPreferencesEvent;
-import imagej.platform.event.AppPrintEvent;
-import imagej.platform.event.AppQuitEvent;
-import imagej.platform.event.AppReOpenEvent;
-import imagej.platform.event.AppScreenSleepEvent;
-import imagej.platform.event.AppSystemSleepEvent;
-import imagej.platform.event.AppUserSessionEvent;
-import imagej.platform.event.AppVisibleEvent;
-
 import com.apple.eawt.AboutHandler;
 import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.AppForegroundEvent;
@@ -69,6 +57,18 @@ import com.apple.eawt.QuitResponse;
 import com.apple.eawt.ScreenSleepListener;
 import com.apple.eawt.SystemSleepListener;
 import com.apple.eawt.UserSessionListener;
+
+import imagej.event.EventService;
+import imagej.platform.event.AppAboutEvent;
+import imagej.platform.event.AppFocusEvent;
+import imagej.platform.event.AppPreferencesEvent;
+import imagej.platform.event.AppPrintEvent;
+import imagej.platform.event.AppQuitEvent;
+import imagej.platform.event.AppReOpenEvent;
+import imagej.platform.event.AppScreenSleepEvent;
+import imagej.platform.event.AppSystemSleepEvent;
+import imagej.platform.event.AppUserSessionEvent;
+import imagej.platform.event.AppVisibleEvent;
 
 /**
  * Rebroadcasts Mac OS X application events as ImageJ events.

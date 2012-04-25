@@ -35,14 +35,13 @@
 
 package imagej.workflowpipes.pipes;
 
+import imagej.workflowpipes.pipesapi.Module;
+import imagej.workflowpipes.pipesentity.Result;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import imagej.workflowpipes.pipesapi.Module;
-import imagej.workflowpipes.pipesentity.Result;
 
 /**
  * 

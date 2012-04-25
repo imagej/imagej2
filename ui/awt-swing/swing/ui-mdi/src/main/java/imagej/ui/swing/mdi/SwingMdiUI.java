@@ -36,7 +36,6 @@
 package imagej.ui.swing.mdi;
 
 import imagej.ImageJ;
-import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
@@ -47,7 +46,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ui.Desktop;
-import imagej.ui.UIService;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;

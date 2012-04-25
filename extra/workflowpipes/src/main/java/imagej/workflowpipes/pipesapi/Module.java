@@ -35,17 +35,7 @@
 
 package imagej.workflowpipes.pipesapi;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import imagej.workflow.debug.PreviewInfo;
-
 import imagej.workflowpipes.pipesentity.Conf;
 import imagej.workflowpipes.pipesentity.Count;
 import imagej.workflowpipes.pipesentity.Description;
@@ -66,6 +56,15 @@ import imagej.workflowpipes.pipesentity.Tag;
 import imagej.workflowpipes.pipesentity.Terminal;
 import imagej.workflowpipes.pipesentity.Type;
 import imagej.workflowpipes.pipesentity.UI;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public abstract class Module implements Serializable {
 	

@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.display;
 
-import java.util.List;
-
 import imagej.ImageJ;
 import imagej.data.display.AbstractImageDisplayViewer;
 import imagej.event.EventHandler;

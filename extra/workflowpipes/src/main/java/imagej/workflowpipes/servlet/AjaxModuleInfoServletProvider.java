@@ -35,6 +35,12 @@
 
 package imagej.workflowpipes.servlet;
 
+import imagej.workflowpipes.controller.PipesController;
+import imagej.workflowpipes.pipes.ModuleSearch;
+import imagej.workflowpipes.pipes.Service;
+import imagej.workflowpipes.pipesapi.Module;
+import imagej.workflowpipes.pipesentity.Info;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -44,13 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-
-
-import imagej.workflowpipes.controller.PipesController;
-import imagej.workflowpipes.pipes.ModuleSearch;
-import imagej.workflowpipes.pipes.Service;
-import imagej.workflowpipes.pipesapi.Module;
-import imagej.workflowpipes.pipesentity.Info;
 
 public class AjaxModuleInfoServletProvider extends HttpServlet {
 

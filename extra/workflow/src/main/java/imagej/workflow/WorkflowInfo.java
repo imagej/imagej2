@@ -35,12 +35,12 @@
 
 package imagej.workflow;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.workflow.util.xmllight.XMLException;
 import imagej.workflow.util.xmllight.XMLParser;
 import imagej.workflow.util.xmllight.XMLTag;
+
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author aivar

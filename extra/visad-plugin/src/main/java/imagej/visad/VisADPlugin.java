@@ -35,6 +35,13 @@
 
 package imagej.visad;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
+import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.rmi.RemoteException;
@@ -58,12 +65,6 @@ import visad.ScalarMap;
 import visad.TupleType;
 import visad.VisADException;
 import visad.java3d.DisplayImplJ3D;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.WindowManager;
-import ij.plugin.PlugIn;
-import ij.process.ImageProcessor;
 
 /**
  * Displays an image using VisAD.

@@ -35,8 +35,6 @@
 
 package imagej.workflowpipes.pipes;
 
-import java.util.HashMap;
-
 import imagej.workflow.IModuleInfo;
 import imagej.workflow.WorkflowManager;
 import imagej.workflowpipes.modules.DisplayImage;
@@ -46,6 +44,8 @@ import imagej.workflowpipes.modules.Output;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Type;
 import imagej.workflowpipes.util.DeepCopy;
+
+import java.util.HashMap;
 
 public class ModuleGenerator {
 	

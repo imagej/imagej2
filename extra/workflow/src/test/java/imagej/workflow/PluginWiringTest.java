@@ -35,17 +35,11 @@
 
 package imagej.workflow;
 
-import imagej.workflow.ModuleFactory;
-import imagej.workflow.PluginModule;
-import imagej.workflow.IModule;
-import imagej.workflow.Workflow;
-import imagej.workflow.IWorkflow;
+import imagej.workflow.plugin.ItemWrapper;
+import imagej.workflow.util.xmllight.XMLException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import imagej.workflow.util.xmllight.XMLException;
-import imagej.workflow.plugin.ItemWrapper;
 
 /**
  *

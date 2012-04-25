@@ -35,12 +35,8 @@
 
 package imagej.display.zoomview;
 
-import imagej.display.zoomview.ITileSet;
-import imagej.display.zoomview.Tile;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *

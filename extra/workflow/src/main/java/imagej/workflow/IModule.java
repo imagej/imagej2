@@ -35,10 +35,10 @@
 
 package imagej.workflow;
 
-import java.util.Map;
-
-import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.IPluginLauncher;
+import imagej.workflow.plugin.ItemWrapper;
+
+import java.util.Map;
 
 /**
  *

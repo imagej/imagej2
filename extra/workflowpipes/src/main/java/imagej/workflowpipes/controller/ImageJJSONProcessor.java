@@ -35,8 +35,6 @@
 
 package imagej.workflowpipes.controller;
 
-import org.json.JSONObject;
-
 import imagej.workflowpipes.pipesentity.Definition;
 
 public class ImageJJSONProcessor implements DefinitionProcessor {

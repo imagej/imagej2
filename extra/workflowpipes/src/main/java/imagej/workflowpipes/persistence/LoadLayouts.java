@@ -35,10 +35,10 @@
 
 package imagej.workflowpipes.persistence;
 
-import java.util.HashMap;
-
 import imagej.workflowpipes.pipesentity.Layout;
 import imagej.workflowpipes.pipesentity.Type;
+
+import java.util.HashMap;
 
 public class LoadLayouts {
 	

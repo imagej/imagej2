@@ -36,11 +36,7 @@
 package imagej.workflowpipes.modules;
 
 
-import java.io.Serializable;
-import java.util.List;
-
 import imagej.workflow.debug.PreviewInfo;
-
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Attr;
 import imagej.workflowpipes.pipesentity.Conf;
@@ -56,6 +52,9 @@ import imagej.workflowpipes.pipesentity.Tag;
 import imagej.workflowpipes.pipesentity.Terminal;
 import imagej.workflowpipes.pipesentity.Type;
 import imagej.workflowpipes.pipesentity.UI;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Represents the module type "displayimage"

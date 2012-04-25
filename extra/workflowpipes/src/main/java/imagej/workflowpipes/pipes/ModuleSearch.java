@@ -35,9 +35,9 @@
 
 package imagej.workflowpipes.pipes;
 
-import java.util.HashMap;
-
 import imagej.workflowpipes.pipesapi.Module;
+
+import java.util.HashMap;
 
 public class ModuleSearch {
 

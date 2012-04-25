@@ -35,16 +35,10 @@
 
 package imagej.workflow;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
 import imagej.workflow.plugin.AbstractPlugin;
-import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.IPlugin;
 import imagej.workflow.plugin.IPluginLauncher;
+import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.PluginAnnotations;
 import imagej.workflow.plugin.PluginClassException;
 import imagej.workflow.plugin.PluginLauncher;
@@ -54,6 +48,12 @@ import imagej.workflow.util.xmllight.XMLException;
 import imagej.workflow.util.xmllight.XMLParser;
 import imagej.workflow.util.xmllight.XMLTag;
 import imagej.workflow.util.xmllight.XMLWriter;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 //TODO
 /*

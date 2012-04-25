@@ -35,9 +35,6 @@
 
 package imagej.display.zoomview;
 
-import imagej.display.zoomview.ITileSet;
-import imagej.display.zoomview.Tile;
-
 import java.awt.Dimension;
 
 /**

@@ -35,28 +35,16 @@
 
 package imagej.display.zoomview;
 
-import java.awt.Adjustable;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.event.MouseInputListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.SwingWorker;
-import javax.swing.border.TitledBorder;
+import javax.swing.event.MouseInputListener;
 
 /*
  import mpicbg.imglib.container.Img;

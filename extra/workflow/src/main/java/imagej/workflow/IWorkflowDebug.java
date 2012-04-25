@@ -35,10 +35,10 @@
 
 package imagej.workflow;
 
-import java.util.List;
-
 import imagej.workflow.debug.PreviewInfo;
 import imagej.workflow.debug.WorkflowDebugger;
+
+import java.util.List;
 
 /**
  *

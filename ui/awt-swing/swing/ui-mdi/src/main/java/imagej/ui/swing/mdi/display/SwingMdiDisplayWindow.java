@@ -35,30 +35,16 @@
 
 package imagej.ui.swing.mdi.display;
 
-import imagej.ImageJ;
-import imagej.event.EventHandler;
-import imagej.ext.InstantiableException;
-import imagej.ext.display.Display;
 import imagej.ext.display.DisplayPanel;
-import imagej.ext.display.DisplayViewer;
 import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.event.DisplayCreatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.UserInterface;
-import imagej.ui.UIService;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
-import imagej.ui.swing.mdi.JMDIDesktopPane;
-import imagej.util.Log;
 
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.beans.PropertyVetoException;
 
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 

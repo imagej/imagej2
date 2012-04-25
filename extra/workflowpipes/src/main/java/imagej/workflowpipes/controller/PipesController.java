@@ -35,24 +35,19 @@
 
 package imagej.workflowpipes.controller;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import imagej.workflowpipes.experimental.LocalDefEvaluator;
 import imagej.workflowpipes.pipes.Service;
 import imagej.workflowpipes.pipesapi.Module;
-import imagej.workflowpipes.pipesentity.Conf;
 import imagej.workflowpipes.pipesentity.Def;
-import imagej.workflowpipes.pipesentity.ID;
 import imagej.workflowpipes.pipesentity.Layout;
 import imagej.workflowpipes.pipesentity.Type;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Random;
+
+import org.json.JSONObject;
 
 public class PipesController {
 

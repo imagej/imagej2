@@ -35,13 +35,13 @@
 
 package imagej.workflowpipes.modules;
 
-import java.io.File;
-
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
-import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Output;
+
+import java.io.File;
 
 /**
  * Plugin that checks a given directory for files of a given suffix and puts

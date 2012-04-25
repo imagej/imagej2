@@ -35,22 +35,21 @@
 
 package imagej.workflowpipes.experimental;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import imagej.workflow.Workflow;
 import imagej.workflow.debug.PreviewInfo;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import imagej.workflowpipes.pipes.ModuleGenerator;
 import imagej.workflowpipes.pipes.Service;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Def;
 import imagej.workflowpipes.pipesentity.Preview;
 import imagej.workflowpipes.util.LayoutToWorkFlow;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 public class LocalDefEvaluator {
 
 	static final boolean DEBUG = true;

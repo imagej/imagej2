@@ -35,10 +35,8 @@
 
 package imagej.workflowpipes.util;
 
-import java.io.OutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 
 /**
  * Credit Credit http://javatechniques.com/blog/faster-deep-copies-of-java-objects/

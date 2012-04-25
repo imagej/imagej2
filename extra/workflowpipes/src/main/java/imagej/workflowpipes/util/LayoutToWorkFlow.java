@@ -35,20 +35,18 @@
 
 package imagej.workflowpipes.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-
 import imagej.workflow.IModule;
 import imagej.workflow.IModuleInfo;
 import imagej.workflow.Workflow;
 import imagej.workflow.WorkflowManager;
-import imagej.workflow.plugin.ItemWrapper;
-
 import imagej.workflowpipes.modules.ModuleBase;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Wire;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**

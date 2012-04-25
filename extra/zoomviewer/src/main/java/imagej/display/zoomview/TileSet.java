@@ -36,8 +36,6 @@
 package imagej.display.zoomview;
 
 import java.awt.Dimension;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**

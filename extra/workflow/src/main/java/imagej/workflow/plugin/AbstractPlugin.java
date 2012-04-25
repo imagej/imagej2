@@ -35,11 +35,10 @@
 
 package imagej.workflow.plugin;
 
-import java.util.Map;
-
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
-import imagej.workflow.plugin.ItemWrapper;
+
+import java.util.Map;
 
 /**
  * Abstract base class for plugin.  Starts up plugin processing, gets and

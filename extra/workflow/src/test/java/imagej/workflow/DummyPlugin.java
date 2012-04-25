@@ -37,8 +37,8 @@ package imagej.workflow;
 
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
-import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Output;
 
 /**
