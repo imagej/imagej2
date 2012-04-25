@@ -41,6 +41,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -79,7 +80,7 @@ public class CropImage implements ImageJPlugin {
 	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	// -- other instance variables --
