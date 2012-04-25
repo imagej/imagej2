@@ -35,8 +35,8 @@
 
 package imagej.ui.swing.sdi.display;
 
-import imagej.ext.display.DisplayPanel;
-import imagej.ext.display.DisplayWindow;
+import imagej.ext.display.ui.DisplayPanel;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;

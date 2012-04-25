@@ -33,7 +33,10 @@
  * #L%
  */
 
-package imagej.ext.display;
+package imagej.ext.display.ui;
+
+import imagej.ext.display.Display;
+import imagej.ext.display.TextDisplay;
 
 /**
  * TODO

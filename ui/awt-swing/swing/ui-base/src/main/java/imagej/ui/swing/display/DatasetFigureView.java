@@ -78,7 +78,7 @@ public class DatasetFigureView implements FigureView
 		this.datasetView = datasetView;
 		this.displayViewer = displayViewer;
 		needsUpdate = false;
-		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas)displayViewer.getCanvas();
+		final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		figure = new ImageFigure();
 		figure.setSelectable(false);

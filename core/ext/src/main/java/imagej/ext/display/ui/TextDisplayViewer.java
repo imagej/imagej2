@@ -33,16 +33,14 @@
  * #L%
  */
 
-package imagej.ext.display;
+package imagej.ext.display.ui;
+
 
 /**
- * This is a panel that can go inside a display window.
- * It displays text.
- * Also, it can be used inside OutputWindow.
- * 
  * @author Lee Kamentsky
+ *
+ * A display viewer for a display of strings.
  */
-public interface OutputPanel extends DisplayPanel {
-	public void append(final String text);
-	public void clear();
+public interface TextDisplayViewer extends DisplayViewer<String> {
+
 }

@@ -33,32 +33,39 @@
  * #L%
  */
 
-package imagej.ext.display;
+package imagej.ext.display.ui;
+
+import imagej.ext.display.Display;
+import imagej.util.ColorRGB;
+
+// CTR TODO - refactor to remove this class and all subclasses!
 
 /**
- * A user interface window associated with a Display, containing a
- * {@link DisplayPanel}.
+ * The panel housing a particular {@link Display}.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-public interface DisplayWindow {
+public interface DisplayPanel {
 
-	void setTitle(String s);
+	/** Gets the panel's associated display. */
+	Display<?> getDisplay();
 
-	void setContent(DisplayPanel panel);
+	// CTR TEMP - needed for now during refactoring process
+	DisplayWindow getWindow();
 
-	void pack(); // or reformat, or (re)validate, or somesuch.
-
-	/*
-	 * Places this component  into the desktop environment.
-	 * It should do appropriate size and locate the window.
-	 * Different types of DisplayWindows (e.g. Image, Text) can implement this differently, 
-	 * for instance in a tabbed enviroment, it is added to the appropriate set of tabs.
+	/**
+	 * Rebuilds the display window to reflect the display's current views,
+	 * dimensional lengths, etc. The window may change size, and hence may repack
+	 * itself.
 	 */
-	void showDisplay(boolean visible);
+	void redoLayout();
 
-	void requestFocus();
+	/** Sets the label at the top of the display panel. */
+	void setLabel(String s);
 
-	void close();
+	/** Sets the color of the display panel's border. */
+	void setBorderColor(ColorRGB color);
 
+	void redraw();
 }

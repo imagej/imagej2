@@ -33,8 +33,9 @@
  * #L%
  */
 
-package imagej.ext.display;
+package imagej.ext.display.ui;
 
+import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;

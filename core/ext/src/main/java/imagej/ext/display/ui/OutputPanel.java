@@ -33,20 +33,17 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.ext.display.ui;
 
-import imagej.ext.display.DisplayViewer;
 
 /**
- * A display viewer for DataViews.
- *
+ * This is a panel that can go inside a display window.
+ * It displays text.
+ * Also, it can be used inside OutputWindow.
+ * 
  * @author Lee Kamentsky
  */
-public interface ImageDisplayViewer extends DisplayViewer<DataView>{
-	/**
-	 * Return the display cast as an ImageDisplay
-	 * @return
-	 */
-	ImageDisplay getImageDisplay();
-	
+public interface OutputPanel extends DisplayPanel {
+	public void append(final String text);
+	public void clear();
 }

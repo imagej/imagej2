@@ -36,8 +36,8 @@
 package imagej.ui.swing;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.OutputPanel;
+import imagej.ext.display.ui.DisplayWindow;
+import imagej.ext.display.ui.OutputPanel;
 import imagej.util.ColorRGB;
 
 import java.awt.Font;

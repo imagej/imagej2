@@ -33,38 +33,22 @@
  * #L%
  */
 
-package imagej.ext.display;
+package imagej.data.display.ui;
 
-import imagej.util.ColorRGB;
-
-// CTR TODO - refactor to remove this class and all subclasses!
+import imagej.data.display.DataView;
+import imagej.data.display.ImageDisplay;
+import imagej.ext.display.ui.DisplayViewer;
 
 /**
- * The panel housing a particular {@link Display}.
- * 
- * @author Grant Harris
- * @author Curtis Rueden
+ * A display viewer for DataViews.
+ *
+ * @author Lee Kamentsky
  */
-public interface DisplayPanel {
-
-	/** Gets the panel's associated display. */
-	Display<?> getDisplay();
-
-	// CTR TEMP - needed for now during refactoring process
-	DisplayWindow getWindow();
-
+public interface ImageDisplayViewer extends DisplayViewer<DataView>{
 	/**
-	 * Rebuilds the display window to reflect the display's current views,
-	 * dimensional lengths, etc. The window may change size, and hence may repack
-	 * itself.
+	 * Return the display cast as an ImageDisplay
+	 * @return
 	 */
-	void redoLayout();
-
-	/** Sets the label at the top of the display panel. */
-	void setLabel(String s);
-
-	/** Sets the color of the display panel's border. */
-	void setBorderColor(ColorRGB color);
-
-	void redraw();
+	ImageDisplay getImageDisplay();
+	
 }

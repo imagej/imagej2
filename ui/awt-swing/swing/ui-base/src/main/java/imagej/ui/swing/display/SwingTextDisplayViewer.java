@@ -35,10 +35,10 @@
 
 package imagej.ui.swing.display;
 
-import imagej.ext.display.AbstractTextDisplayViewer;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayWindow;
-import imagej.ext.display.TextDisplayViewer;
+import imagej.ext.display.ui.AbstractTextDisplayViewer;
+import imagej.ext.display.ui.DisplayWindow;
+import imagej.ext.display.ui.TextDisplayViewer;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.SwingOutputPanel;
 

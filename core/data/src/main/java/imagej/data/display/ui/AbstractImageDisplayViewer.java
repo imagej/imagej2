@@ -33,19 +33,22 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.data.display.ui;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
+import imagej.data.display.DataView;
+import imagej.data.display.ImageCanvas;
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.event.ZoomEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.AbstractDisplayViewer;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayWindow;
 import imagej.ext.display.event.window.WinActivatedEvent;
+import imagej.ext.display.ui.AbstractDisplayViewer;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.tool.ToolService;
 import imagej.util.UnitUtils;
 

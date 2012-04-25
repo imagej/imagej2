@@ -35,7 +35,7 @@
 
 package imagej.ui.common.awt;
 
-import imagej.data.display.ImageDisplayViewer;
+import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.event.EventService;
 import imagej.ext.InputModifiers;
 import imagej.ext.display.event.input.MsButtonEvent;

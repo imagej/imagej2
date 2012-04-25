@@ -33,13 +33,32 @@
  * #L%
  */
 
-package imagej.ext.display;
+package imagej.ext.display.ui;
 
 /**
- * @author Lee Kamentsky
- *
- * A display viewer for a display of strings.
+ * A user interface window associated with a Display, containing a
+ * {@link DisplayPanel}.
+ * 
+ * @author Grant Harris
  */
-public interface TextDisplayViewer extends DisplayViewer<String> {
+public interface DisplayWindow {
+
+	void setTitle(String s);
+
+	void setContent(DisplayPanel panel);
+
+	void pack(); // or reformat, or (re)validate, or somesuch.
+
+	/*
+	 * Places this component  into the desktop environment.
+	 * It should do appropriate size and locate the window.
+	 * Different types of DisplayWindows (e.g. Image, Text) can implement this differently, 
+	 * for instance in a tabbed enviroment, it is added to the appropriate set of tabs.
+	 */
+	void showDisplay(boolean visible);
+
+	void requestFocus();
+
+	void close();
 
 }

@@ -35,10 +35,10 @@
 
 package imagej.ui.swing.mdi.display;
 
-import imagej.data.display.ImageDisplayViewer;
+import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayPanel;
-import imagej.ext.display.DisplayWindow;
+import imagej.ext.display.ui.DisplayPanel;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
