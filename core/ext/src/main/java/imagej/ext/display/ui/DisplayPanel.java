@@ -38,8 +38,6 @@ package imagej.ext.display.ui;
 import imagej.ext.display.Display;
 import imagej.util.ColorRGB;
 
-// CTR TODO - refactor to remove this class and all subclasses!
-
 /**
  * The panel housing a particular {@link Display}.
  * 
@@ -51,7 +49,7 @@ public interface DisplayPanel {
 	/** Gets the panel's associated display. */
 	Display<?> getDisplay();
 
-	// CTR TEMP - needed for now during refactoring process
+	/** Gets the window housing this panel. */
 	DisplayWindow getWindow();
 
 	/**
@@ -67,5 +65,7 @@ public interface DisplayPanel {
 	/** Sets the color of the display panel's border. */
 	void setBorderColor(ColorRGB color);
 
+	/** Redraws the contents of the panel. */
 	void redraw();
+
 }

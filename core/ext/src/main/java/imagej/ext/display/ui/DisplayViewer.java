@@ -43,68 +43,52 @@ import imagej.ext.plugin.IPlugin;
 
 /**
  * A display viewer is a UI widget that shows a display to a user.
- *
+ * 
  * @author Lee Kamentsky
  */
 public interface DisplayViewer<T> extends IPlugin {
+
 	/**
-	 * Return true if an instance of this display viewer
-	 * can view the given display.
-	 * 
-	 * @param display
-	 * @return
+	 * Returns true if an instance of this display viewer can view the given
+	 * display.
 	 */
 	boolean canView(Display<?> display);
+
 	/**
-	 * Begin viewing the given display.
+	 * Begins viewing the given display.
 	 * 
 	 * @param window The frame / window that will contain the GUI elements
 	 * @param display the model for the display to show.
 	 */
 	void view(DisplayWindow window, Display<?> display);
-	
-	/**
-	 * @return the display being viewed
-	 */
+
+	/** Gets the display being viewed. */
 	Display<T> getDisplay();
-	
-	/**
-	 * @return the window in which the view is displayed
-	 */
+
+	/** Gets the window in which the view is displayed. */
 	DisplayWindow getDisplayWindow();
-	
+
 	/**
-	 * Install the display panel
+	 * Installs the display panel.
 	 * 
 	 * @param panel the panel used to host the gui
 	 */
 	void setPanel(DisplayPanel panel);
-	
-	/**
-	 * @return the display panel that hosts the gui elements 
-	 */
+
+	/** Gets the display panel that hosts the gui elements. */
 	DisplayPanel getPanel();
-	
-	/**
-	 * Handle a display update event directed at this viewer's display.
-	 * 
-	 * @param e
-	 */
+
+	/** Handles a display update event directed at this viewer's display. */
 	void onDisplayUpdateEvent(DisplayUpdatedEvent e);
-	
-	/**
-	 * Handle a display deleted event directed at this viewer's display.
-	 * @param e
-	 */
+
+	/** Handles a display deleted event directed at this viewer's display. */
 	void onDisplayDeletedEvent(DisplayDeletedEvent e);
-	
+
 	/**
-	 * Handle a display activated event directed at this viewer's display.
-	 * 
-	 * Note that the event's display may not be the viewer's display,
-	 * but the active display will always be the viewer's display.
-	 * 
-	 * @param e
+	 * Handles a display activated event directed at this viewer's display. Note
+	 * that the event's display may not be the viewer's display, but the active
+	 * display will always be the viewer's display.
 	 */
 	void onDisplayActivatedEvent(DisplayActivatedEvent e);
+
 }
