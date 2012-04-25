@@ -37,7 +37,7 @@ package imagej.ui.swing;
 
 import imagej.ext.display.Display;
 import imagej.ext.display.ui.DisplayWindow;
-import imagej.ext.display.ui.OutputPanel;
+import imagej.ext.display.ui.TextDisplayPanel;
 import imagej.util.ColorRGB;
 
 import java.awt.Font;
@@ -50,17 +50,13 @@ import javax.swing.JTextArea;
  *
  * @author Lee Kamentsky
  */
-public class SwingOutputPanel extends JScrollPane implements OutputPanel {
-	final DisplayWindow window;
-	final Display<String> display;
-	final JTextArea textArea;
-	/**
-	 * Constructor takes a display and the parent window
-	 * 
-	 * @param display
-	 * @param window
-	 */
-	public SwingOutputPanel(Display<String> display, DisplayWindow window) {
+public class SwingTextDisplayPanel extends JScrollPane implements TextDisplayPanel {
+
+	private final DisplayWindow window;
+	private final Display<String> display;
+	private final JTextArea textArea;
+
+	public SwingTextDisplayPanel(Display<String> display, DisplayWindow window) {
 		this.display = display;
 		this.window = window;
 		textArea = new JTextArea();
@@ -72,6 +68,8 @@ public class SwingOutputPanel extends JScrollPane implements OutputPanel {
 		setViewportView(textArea);
 		window.setContent(this);
 	}
+
+	// -- DisplayPanel methods --
 
 	/* (non-Javadoc)
 	 * @see imagej.ext.display.DisplayPanel#getDisplay()

@@ -43,7 +43,7 @@ package imagej.ext.display.ui;
  * 
  * @author Lee Kamentsky
  */
-public interface OutputPanel extends DisplayPanel {
+public interface TextDisplayPanel extends DisplayPanel {
 	public void append(final String text);
 	public void clear();
 }

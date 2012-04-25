@@ -40,7 +40,7 @@ import imagej.ext.display.ui.AbstractTextDisplayViewer;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.display.ui.TextDisplayViewer;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.swing.SwingOutputPanel;
+import imagej.ui.swing.SwingTextDisplayPanel;
 
 /**
  * TODO
@@ -53,7 +53,7 @@ public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
 	@Override
 	public void view(DisplayWindow window, Display<?> display) {
 		super.view(window, display);
-		setPanel(new SwingOutputPanel(getDisplay(), window));
+		setPanel(new SwingTextDisplayPanel(getDisplay(), window));
 	}
 
 }
