@@ -43,48 +43,54 @@ import java.util.jar.Manifest;
 
 /**
  * TODO
- *
+ * 
  * @author Johannes Schindelin
  */
 public class JarLauncher {
-	public static void main(String[] args) {
+
+	public static void main(final String[] args) {
 		if (args.length < 1) {
 			System.err.println("Missing argument");
 			System.exit(1);
 		}
-		String[] shifted = new String[args.length - 1];
+		final String[] shifted = new String[args.length - 1];
 		System.arraycopy(args, 1, shifted, 0, shifted.length);
 		launchJar(args[0], shifted);
 	}
 
-	// helper to launch .jar files (by inspecting their Main-Class
-	// attribute).
-	public static void launchJar(String jarPath, String[] arguments) {
+	/**
+	 * Helper to launch .jar files (by inspecting their Main-Class attribute).
+	 */
+	public static void launchJar(final String jarPath, final String[] arguments) {
 		JarFile jar = null;
 		try {
 			jar = new JarFile(jarPath);
-		} catch (IOException e) {
+		}
+		catch (final IOException e) {
 			System.err.println("Could not read '" + jarPath + "'.");
 			System.exit(1);
+			return; // NB: Avoids warnings below.
 		}
 		Manifest manifest = null;
 		try {
 			manifest = jar.getManifest();
-		} catch (IOException e) { }
+		}
+		catch (final IOException e) {
+			// no action needed
+		}
 		if (manifest == null) {
-			System.err.println("No manifest found in '"
-					+ jarPath + "'.");
+			System.err.println("No manifest found in '" + jarPath + "'.");
 			System.exit(1);
+			return; // NB: Avoids warnings below.
 		}
-		Attributes attributes = manifest.getMainAttributes();
-		String className = attributes == null ? null :
-			attributes.getValue("Main-Class");
+		final Attributes attributes = manifest.getMainAttributes();
+		final String className =
+			attributes == null ? null : attributes.getValue("Main-Class");
 		if (className == null) {
-			System.err.println("No main class attribute found in '"
-					+ jarPath + "'.");
+			System.err.println("No main class attribute found in '" + jarPath + "'.");
 			System.exit(1);
 		}
-		ClassLoaderPlus loader = ClassLoaderPlus.get(new File(jarPath));
+		final ClassLoaderPlus loader = ClassLoaderPlus.get(new File(jarPath));
 		ClassLauncher.launch(loader, className, arguments);
 	}
 }
