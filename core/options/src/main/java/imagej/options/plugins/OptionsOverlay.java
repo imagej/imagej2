@@ -53,11 +53,13 @@ import imagej.util.Colors;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Overlay Options...") }, label = "Default Overlay Settings")
+@Plugin(type = OptionsPlugin.class,
+	menu = {
+		@Menu(label = MenuConstants.IMAGE_LABEL,
+			weight = MenuConstants.IMAGE_WEIGHT,
+			mnemonic = MenuConstants.IMAGE_MNEMONIC),
+		@Menu(label = "Overlay", mnemonic = 'o'),
+		@Menu(label = "Overlay Options...") }, label = "Default Overlay Settings")
 public class OptionsOverlay extends OptionsPlugin {
 
 	// -- public statics --

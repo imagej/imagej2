@@ -65,7 +65,7 @@ public class OptionsChannels extends OptionsPlugin {
 	// TODO - this should become a List<Double> when that widget is supported
 	@Parameter(label = "Foreground values")
 	private String fgValuesString = "255,255,255";
-	
+
 	// TODO - this should become a List<Double> when that widget is supported
 	@Parameter(label = "Background values")
 	private String bgValuesString = "0,0,0";
@@ -73,20 +73,22 @@ public class OptionsChannels extends OptionsPlugin {
 	// TODO
 	// Ideally this would be truly invisible and persisted. We use it to
 	// set IJ1 colors to IJ2 values.
-	@Parameter(label="Last foreground color",visibility=ItemVisibility.MESSAGE)
+	@Parameter(label = "Last foreground color",
+		visibility = ItemVisibility.MESSAGE)
 	private ColorRGB lastFgColor = Colors.WHITE;
-	
+
 	// TODO
 	// Ideally this would be truly invisible and persisted. We use it to
 	// set IJ1 colors to IJ2 values.
-	@Parameter(label="Last background color",visibility=ItemVisibility.MESSAGE)
+	@Parameter(label = "Last background color",
+		visibility = ItemVisibility.MESSAGE)
 	private ColorRGB lastBgColor = Colors.BLACK;
-	
+
 	// -- instance variables that are not Parameters --
 
-	private ChannelCollection fgValues;  // used by IJ2 consumers
-	private ChannelCollection bgValues;  // used by IJ2 consumers
-	
+	private ChannelCollection fgValues; // used by IJ2 consumers
+	private ChannelCollection bgValues; // used by IJ2 consumers
+
 	// -- OptionsChannels methods --
 
 	public OptionsChannels() {
@@ -109,25 +111,25 @@ public class OptionsChannels extends OptionsPlugin {
 	// NB - TEMP - FIXME This is a way to generate events when we have not been
 	// run by the plugin service. When not run by plugin service our eventService
 	// instance variable is NULL.
-	
-	public void setEventService(EventService s) {
+
+	public void setEventService(final EventService s) {
 		eventService = s;
 	}
-	
+
 	public ChannelCollection getFgValues() {
 		return fgValues;
 	}
-	
+
 	public ChannelCollection getBgValues() {
 		return bgValues;
 	}
 
-	public void setFgValues(ChannelCollection vals) {
+	public void setFgValues(final ChannelCollection vals) {
 		fgValues = vals;
 		fgValuesString = encode(fgValues);
 	}
-	
-	public void setBgValues(ChannelCollection vals) {
+
+	public void setBgValues(final ChannelCollection vals) {
 		bgValues = vals;
 		bgValuesString = encode(bgValues);
 	}
@@ -135,41 +137,40 @@ public class OptionsChannels extends OptionsPlugin {
 	public ColorRGB getLastFgColor() {
 		return lastFgColor;
 	}
-	
+
 	public ColorRGB getLastBgColor() {
 		return lastBgColor;
 	}
-	
-	public void setLastFgColor(ColorRGB c) {
+
+	public void setLastFgColor(final ColorRGB c) {
 		lastFgColor = c;
 		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
-		if (eventService != null)
-			eventService.publish(new OptionsEvent(this));
+		if (eventService != null) eventService.publish(new OptionsEvent(this));
 		// TODO FIXME - find a way to get a handle on the current EventService so
 		// we can always publish those events.
 	}
-	
-	public void setLastBgColor(ColorRGB c) {
+
+	public void setLastBgColor(final ColorRGB c) {
 		lastBgColor = c;
 		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
-		if (eventService != null)
-			eventService.publish(new OptionsEvent(this));
+		if (eventService != null) eventService.publish(new OptionsEvent(this));
 		// TODO FIXME - find a way to get a handle on the current EventService so
 		// we can always publish those events.
 	}
-	
+
 	// -- private helpers --
-	
-	private ChannelCollection decode(String channelString) {
+
+	private ChannelCollection decode(final String channelString) {
 		final List<Double> collection = new LinkedList<Double>();
 		final String[] values = channelString.split(",");
 		for (final String value : values) {
 			double val;
 			try {
 				val = Double.parseDouble(value);
-			} catch (NumberFormatException e) {
+			}
+			catch (final NumberFormatException e) {
 				val = 0;
 			}
 			collection.add(val);
@@ -177,16 +178,16 @@ public class OptionsChannels extends OptionsPlugin {
 		return new ChannelCollection(collection);
 	}
 
-	private String encode(ChannelCollection chans) {
+	private String encode(final ChannelCollection chans) {
 		final StringBuilder builder = new StringBuilder();
 		final long count = chans.getChannelCount();
 		for (long i = 0; i < count; i++) {
 			final String valString;
 			final double value = chans.getChannelValue(i);
-			if (value == Math.floor(value))
-				valString = String.format("%d",(long)value);
-			else
-				valString = String.format("%f",value);
+			if (value == Math.floor(value)) {
+				valString = String.format("%d", (long) value);
+			}
+			else valString = String.format("%f", value);
 			if (i != 0) builder.append(",");
 			builder.append(valString);
 		}
@@ -194,33 +195,34 @@ public class OptionsChannels extends OptionsPlugin {
 	}
 
 	private void cleanStrings() {
-		if (goodFormat(fgValuesString))
+		if (goodFormat(fgValuesString)) {
 			fgValuesString = noWhitespace(fgValuesString);
-		else
-			fgValuesString = encode(fgValues);
-		if (goodFormat(bgValuesString))
+		}
+		else fgValuesString = encode(fgValues);
+		if (goodFormat(bgValuesString)) {
 			bgValuesString = noWhitespace(bgValuesString);
-		else
-			bgValuesString = encode(bgValues);
+		}
+		else bgValuesString = encode(bgValues);
 	}
-	
-	private boolean goodFormat(String valuesString) {
+
+	private boolean goodFormat(final String valuesString) {
 		final String[] values = valuesString.split(",");
 		for (final String value : values) {
 			try {
 				Double.parseDouble(value);
-			} catch (NumberFormatException e) {
+			}
+			catch (final NumberFormatException e) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
-	private String noWhitespace(String str) {
-		StringBuilder builder = new StringBuilder();
-		int len = str.length();
+
+	private String noWhitespace(final String str) {
+		final StringBuilder builder = new StringBuilder();
+		final int len = str.length();
 		for (int i = 0; i < len; i++) {
-			char ch = str.charAt(i);
+			final char ch = str.charAt(i);
 			if (!Character.isWhitespace(ch)) builder.append(ch);
 		}
 		return builder.toString();

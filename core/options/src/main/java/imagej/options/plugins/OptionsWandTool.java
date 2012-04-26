@@ -55,8 +55,8 @@ public class OptionsWandTool extends OptionsPlugin {
 
 	// TODO - use an enum for mode
 
-	@Parameter(label = "Mode", choices = { "Legacy", "4-connected",
-		"8-connected" })
+	@Parameter(label = "Mode",
+		choices = { "Legacy", "4-connected", "8-connected" })
 	private String mode = "Legacy";
 
 	@Parameter(label = "Tolerance")

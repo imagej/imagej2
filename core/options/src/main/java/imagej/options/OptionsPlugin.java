@@ -113,8 +113,8 @@ public class OptionsPlugin extends DynamicPlugin {
 
 	// -- Helper methods --
 
-	private <R extends RunnablePlugin> PluginModule<R> createModule(
-		final R plugin)
+	private <R extends RunnablePlugin> PluginModule<R>
+		createModule(final R plugin)
 	{
 		final PluginService pluginService = ImageJ.get(PluginService.class);
 		@SuppressWarnings("unchecked")

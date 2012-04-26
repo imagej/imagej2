@@ -206,8 +206,7 @@ public class OptionsService extends AbstractService {
 	private PluginModuleInfo<OptionsPlugin>
 		getOptionsInfo(final String className)
 	{
-		final PluginModuleInfo<?> info =
-			pluginService.getRunnablePlugin(className);
+		final PluginModuleInfo<?> info = pluginService.getRunnablePlugin(className);
 		if (info == null) {
 			Log.error("No such options class: " + className);
 			return null;

@@ -57,7 +57,7 @@ public class OptionsAppearance extends OptionsPlugin {
 
 	@Parameter(label = "Selection color")
 	private ColorRGB selectionColor = Colors.YELLOW;
-	
+
 	@Parameter(label = "Interpolate zoomed images")
 	private boolean interpZoomedImages = false;
 
@@ -92,7 +92,7 @@ public class OptionsAppearance extends OptionsPlugin {
 	public ColorRGB getSelectionColor() {
 		return selectionColor;
 	}
-	
+
 	public boolean isInterpZoomedImages() {
 		return interpZoomedImages;
 	}
@@ -125,10 +125,10 @@ public class OptionsAppearance extends OptionsPlugin {
 		return displayFractionalScales;
 	}
 
-	public void setSelectionColor(ColorRGB c) {
+	public void setSelectionColor(final ColorRGB c) {
 		this.selectionColor = c;
 	}
-	
+
 	public void setInterpZoomedImages(final boolean interpZoomedImages) {
 		this.interpZoomedImages = interpZoomedImages;
 	}

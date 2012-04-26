@@ -55,8 +55,8 @@ import imagej.options.OptionsPlugin;
 public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	// -- instance variables that are Parameters --
-	
-	@Parameter(label = "Maximum memory (MB)", persist=false)
+
+	@Parameter(label = "Maximum memory (MB)", persist = false)
 	private int maxMemory = 0;
 
 	@Parameter(label = "Parallel threads for stacks")
@@ -70,23 +70,22 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	// -- private instance variables --
 
-	private ConfigFileParameters params = new ConfigFileParameters();
-	
+	private final ConfigFileParameters params = new ConfigFileParameters();
+
 	// -- OptionsMemoryAndThreads methods --
 
-	/** Default constructor */
 	public OptionsMemoryAndThreads() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	/** Loads the instance variable fields from persistent storage */
+	/** Loads the instance variable fields from persistent storage. */
 	@Override
 	public void load() {
 		super.load();
 		loadMaxMemory();
 	}
-	
-	/** Saves the instance variable fields to persistent storage */
+
+	/** Saves the instance variable fields to persistent storage. */
 	@Override
 	public void save() {
 		super.save();
@@ -94,8 +93,8 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 	}
 
 	/**
-	 * Returns the number of megabytes of memory that should be allocated for
-	 * use by ImageJ
+	 * Returns the number of megabytes of memory that should be allocated for use
+	 * by ImageJ.
 	 */
 	public int getMaxMemory() {
 		return maxMemory;
@@ -103,30 +102,28 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	/**
 	 * Returns the number of stack threads that should be allocated for use by
-	 * ImageJ
+	 * ImageJ.
 	 */
 	public int getStackThreads() {
 		return stackThreads;
 	}
 
-	/**
-	 * Returns true of ImageJ will maintain multiple undo buffers
-	 */
+	/** Returns true if ImageJ will maintain multiple undo buffers. */
 	public boolean isMultipleBuffers() {
 		return multipleBuffers;
 	}
 
 	/**
-	 * Returns true if ImageJ will run the garbage collector when user clicks
-	 * on the status area.
+	 * Returns true if ImageJ will run the garbage collector when user clicks on
+	 * the status area.
 	 */
 	public boolean isRunGcOnClick() {
 		return runGcOnClick;
 	}
 
 	/**
-	 * Sets the number of megabytes of memory that should be allocated for
-	 * use by ImageJ
+	 * Sets the number of megabytes of memory that should be allocated for use by
+	 * ImageJ.
 	 */
 	public void setMaxMemory(final int maxMemory) {
 		this.maxMemory = maxMemory;
@@ -135,22 +132,20 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	/**
 	 * Sets the number of stack threads that should be allocated for use by
-	 * ImageJ
+	 * ImageJ.
 	 */
 	public void setStackThreads(final int stackThreads) {
 		this.stackThreads = stackThreads;
 	}
 
-	/**
-	 * Sets whether ImageJ will maintain multiple undo buffers
-	 */
+	/** Sets whether ImageJ will maintain multiple undo buffers. */
 	public void setMultipleBuffers(final boolean multipleBuffers) {
 		this.multipleBuffers = multipleBuffers;
 	}
 
 	/**
-	 * Sets whether ImageJ will run the garbage collector when user clicks
-	 * on the status area.
+	 * Sets whether ImageJ will run the garbage collector when user clicks on the
+	 * status area.
 	 */
 	public void setRunGcOnClick(final boolean runGcOnClick) {
 		this.runGcOnClick = runGcOnClick;
@@ -158,14 +153,14 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	// -- private helpers --
 
-	/** loads the maxMemory instance variable from persistent storage */
+	/** Loads the maxMemory instance variable from persistent storage. */
 	private void loadMaxMemory() {
 		maxMemory = params.getMemoryInMB();
 	}
-	
-	/** saves the maxMemory instance variable to persistent storage */
+
+	/** Saves the maxMemory instance variable to persistent storage. */
 	private void saveMaxMemory() {
-		if (maxMemory != params.getMemoryInMB())
-			params.setMemoryInMB(maxMemory);
+		if (maxMemory == params.getMemoryInMB()) return;
+		params.setMemoryInMB(maxMemory);
 	}
 }
