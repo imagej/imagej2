@@ -35,12 +35,10 @@
 
 package imagej;
 
-import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.service.IService;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
-import imagej.thread.ThreadService;
 import imagej.util.DefaultUncaughtExceptionHandler;
 
 import java.util.ArrayList;
