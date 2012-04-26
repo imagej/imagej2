@@ -37,8 +37,7 @@ package imagej.legacy.patches;
 
 import ij.IJ;
 import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.util.Log;
 
 /**
@@ -65,15 +64,14 @@ public class IJMethods {
 	{
 		Log.debug("showProgress: " + currentIndex + "/" + finalIndex);
 		// report progress through global event mechanism
-		ImageJ.get(EventService.class).publish(
-			new StatusEvent(currentIndex, finalIndex));
+		ImageJ.get(StatusService.class).showProgress(currentIndex, finalIndex);
 	}
 
 	/** Appends {@link IJ#showStatus(String)}. */
 	public static void showStatus(final String s) {
 		Log.debug("showStatus: " + s);
 		// report status through global event mechanism
-		ImageJ.get(EventService.class).publish(new StatusEvent(s));
+		ImageJ.get(StatusService.class).showStatus(s);
 	}
 
 }

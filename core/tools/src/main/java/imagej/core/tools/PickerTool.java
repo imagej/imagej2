@@ -37,7 +37,7 @@ package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
 import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
@@ -71,6 +71,7 @@ public class PickerTool extends AbstractTool {
 	private final PixelRecorder recorder = new PixelRecorder(true);
 	private boolean altKeyDown = false;
 	private EventService eventService = null;
+	private StatusService statusService = null;
 
 	// -- Tool methods --
 
@@ -85,6 +86,7 @@ public class PickerTool extends AbstractTool {
 		}
 
 		eventService = getContext().getService(EventService.class);
+		statusService = getContext().getService(StatusService.class);
 
 		final OptionsChannels options = getOptions();
 
@@ -173,7 +175,7 @@ public class PickerTool extends AbstractTool {
 		builder.append(label);
 		builder.append(" = ");
 		builder.append(valuesString(values));
-		eventService.publish(new StatusEvent(builder.toString()));
+		statusService.showStatus(builder.toString());
 	}
 
 	private OptionsChannels getOptions() {

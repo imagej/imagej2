@@ -37,12 +37,11 @@ package imagej.ui.swing;
 
 import imagej.ImageJ;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
-import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsMemoryAndThreads;
 import imagej.ui.StatusBar;
+import imagej.ui.UIService;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -62,7 +61,7 @@ import javax.swing.border.BevelBorder;
  */
 public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
-	private final EventService eventService;
+	private final UIService uiService;
 	
 	private final JLabel statusText;
 	private final JProgressBar progressBar;
@@ -70,8 +69,8 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
-	public SwingStatusBar(final EventService eventService) {
-		this.eventService = eventService;
+	public SwingStatusBar(final UIService uiService) {
+		this.uiService = uiService;
 		statusText = new JLabel(getInfoString(false));
 		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		progressBar = new JProgressBar();
@@ -79,7 +78,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 		setLayout(new BorderLayout());
 		add(statusText, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.EAST);
-		subscribers = eventService.subscribe(this);
+		subscribers = uiService.getEventService().subscribe(this);
 		statusText.addMouseListener(this);
 	}
 
@@ -129,13 +128,10 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	@Override
 	public void mousePressed(final MouseEvent e) {
-		final OptionsService optionsService =
-			eventService.getContext().getService(OptionsService.class);
 		final OptionsMemoryAndThreads options =
-				optionsService.getOptions(OptionsMemoryAndThreads.class);
-		if (options.isRunGcOnClick())
-			System.gc();
-		eventService.publish(new StatusEvent(getInfoString(true)));
+			uiService.getOptionsService().getOptions(OptionsMemoryAndThreads.class);
+		if (options.isRunGcOnClick()) System.gc();
+		uiService.getStatusService().showStatus(getInfoString(true));
 	}
 
 	@Override

@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayDeletedEvent;
@@ -67,6 +67,7 @@ public class AnimationService extends AbstractService {
 	private static final String ALL_STOPPED_STATUS = "All animations stopped.";
 
 	private final EventService eventService;
+	private final StatusService statusService;
 
 	private final Map<ImageDisplay, Animation> animations =
 		new ConcurrentHashMap<ImageDisplay, Animation>();
@@ -79,10 +80,12 @@ public class AnimationService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public AnimationService(final ImageJ context, final EventService eventService)
+	public AnimationService(final ImageJ context,
+		final EventService eventService, final StatusService statusService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.statusService = statusService;
 
 		subscribeToEvents(eventService);
 	}
@@ -102,7 +105,7 @@ public class AnimationService extends AbstractService {
 	/** Starts animation for the given {@link ImageDisplay}. */
 	public void start(final ImageDisplay display) {
 		getAnimation(display).start();
-		eventService.publish(new StatusEvent(STARTED_STATUS));
+		statusService.showStatus(STARTED_STATUS);
 	}
 
 	/** Stops animation for the given {@link ImageDisplay}. */
@@ -110,7 +113,7 @@ public class AnimationService extends AbstractService {
 		final Animation animation = animations.get(display);
 		if (animation != null) {
 			animation.stop();
-			eventService.publish(new StatusEvent(STOPPED_STATUS));
+			statusService.showStatus(STOPPED_STATUS);
 		}
 	}
 
@@ -119,7 +122,7 @@ public class AnimationService extends AbstractService {
 		for (final Animation animation : animations.values()) {
 			animation.stop();
 		}
-		eventService.publish(new StatusEvent(ALL_STOPPED_STATUS));
+		statusService.showStatus(ALL_STOPPED_STATUS);
 	}
 
 	/** Gets the given {@link ImageDisplay}'s corresponding {@link Animation}. */

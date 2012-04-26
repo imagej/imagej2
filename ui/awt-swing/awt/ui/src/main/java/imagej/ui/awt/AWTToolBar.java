@@ -35,14 +35,12 @@
 
 package imagej.ui.awt;
 
-import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ui.ToolBar;
+import imagej.ui.UIService;
 import imagej.util.Log;
 
 import java.awt.Button;
@@ -67,15 +65,12 @@ import java.util.Map;
  */
 public class AWTToolBar extends Panel implements ToolBar {
 
-	private final ToolService toolService;
+	protected final UIService uiService;
 
 	private final Map<String, Button> toolButtons;
 
-	final protected EventService eventService;
-
-	public AWTToolBar() {
-		eventService = ImageJ.get(EventService.class);
-		toolService = ImageJ.get(ToolService.class);
+	public AWTToolBar(final UIService uiService) {
+		this.uiService = uiService;
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new FlowLayout());
 		populateToolBar();
@@ -85,21 +80,23 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 	@Override
 	public ToolService getToolService() {
-		return toolService;
+		return uiService.getToolService();
 	}
 
 	// -- Helper methods --
 
 	private void populateToolBar() {
 		Tool lastTool = null;
-		for (final Tool tool : toolService.getTools()) {
+		for (final Tool tool : getToolService().getTools()) {
 			try {
 				final Button button = createButton(tool);
 				toolButtons.put(tool.getInfo().getName(), button);
 				add(button);
 
 				// add a separator between tools where applicable
-				if (toolService.isSeparatorNeeded(tool, lastTool)) add(new Label(" "));
+				if (getToolService().isSeparatorNeeded(tool, lastTool)) {
+					add(new Label(" "));
+				}
 				lastTool = tool;
 			}
 			catch (final InstantiableException e) {
@@ -143,7 +140,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
-				eventService.publish(new StatusEvent(tool.getDescription()));
+				uiService.getStatusService().showStatus(tool.getDescription());
 			}
 			
 			@Override

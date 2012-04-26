@@ -43,6 +43,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayDeletedEvent;
@@ -84,6 +85,9 @@ public class ShadowsDemo implements ImageJPlugin {
 	private EventService eventService;
 
 	@Parameter(persist = false)
+	private StatusService statusService;
+
+	@Parameter(persist = false)
 	private ImageDisplayService imgDispService;
 
 	@Parameter(persist = false)
@@ -116,7 +120,7 @@ public class ShadowsDemo implements ImageJPlugin {
 			return;
 		}
 		subscribers = eventService.subscribe(this);
-		eventService.publish(new StatusEvent("Press ESC to terminate"));
+		statusService.showStatus("Press ESC to terminate");
 
 		final RealRect selection = overlayService.getSelectionBounds(currDisplay);
 		final Dataset originalData = input.duplicate();
@@ -136,7 +140,7 @@ public class ShadowsDemo implements ImageJPlugin {
 				if (userHasQuit) break;
 			}
 		}
-		eventService.publish(new StatusEvent("Shadows demo terminated"));
+		statusService.showStatus("Shadows demo terminated");
 
 		// unsubscribe from events; this keeps ImageJ from maintaining
 		// dangling references to obsolete event listeners

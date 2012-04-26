@@ -36,8 +36,7 @@
 package imagej.core.plugins.debug;
 
 import imagej.data.Dataset;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.module.ItemIO;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
@@ -60,7 +59,7 @@ import java.math.BigInteger;
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(persist = false)
-	private EventService eventService;
+	private StatusService statusService;
 
 	@Parameter(label = "boolean")
 	private boolean pBoolean;
@@ -233,7 +232,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Override
 	public void preview() {
 		Log.info("ParameterTester: " + ++previews + " previews and counting");
-		eventService.publish(new StatusEvent(message));
+		statusService.showStatus(message);
 	}
 
 	@Override

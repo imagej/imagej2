@@ -42,7 +42,6 @@ import imagej.ImageJ;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.StatusEvent;
 import imagej.io.plugins.NewImage;
 import imagej.io.plugins.OpenImage;
 import imagej.ui.OutputWindow;
@@ -94,13 +93,13 @@ public class AWTDropListener implements DropTargetListener {
 
 	@Override
 	public void dragEnter(final DropTargetDragEvent dtde) {
-		uiService.getEventService().publish(new StatusEvent("< <Drag and Drop> >"));
+		uiService.getStatusService().showStatus("< <Drag and Drop> >");
 		dtde.acceptDrag(DnDConstants.ACTION_COPY);
 	}
 
 	@Override
 	public void dragExit(final DropTargetEvent dte) {
-		uiService.getEventService().publish(new StatusEvent(""));
+		uiService.getStatusService().clearStatus();
 	}
 
 	@Override

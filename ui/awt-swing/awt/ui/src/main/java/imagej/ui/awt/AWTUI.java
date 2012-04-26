@@ -74,8 +74,8 @@ public class AWTUI implements UserInterface {
 		uiService = service;
 
 		frame = new AWTApplicationFrame("ImageJ");
-		toolBar = new AWTToolBar();
-		statusBar = new AWTStatusBar();
+		toolBar = new AWTToolBar(uiService);
+		statusBar = new AWTStatusBar(uiService);
 		createMenus();
 
 		frame.setLayout(new BorderLayout());

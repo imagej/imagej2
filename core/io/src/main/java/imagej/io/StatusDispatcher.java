@@ -35,23 +35,22 @@
 
 package imagej.io;
 
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import loci.common.StatusListener;
 
 /**
- * Rebroadcasts {@link loci.common.StatusEvent}s as ImageJ {@link StatusEvent}s.
+ * Rebroadcasts {@link loci.common.StatusEvent}s as ImageJ status notifications.
  * 
  * @author Curtis Rueden
  */
 public class StatusDispatcher implements StatusListener {
 
-	private final EventService eventService;
+	private final StatusService statusService;
 
 	private long lastTime;
 
-	public StatusDispatcher(final EventService eventService) {
-		this.eventService = eventService;
+	public StatusDispatcher(final StatusService statusService) {
+		this.statusService = statusService;
 	}
 
 	// -- StatusListener methods --
@@ -70,7 +69,7 @@ public class StatusDispatcher implements StatusListener {
 		}
 		lastTime = time;
 
-		eventService.publish(new StatusEvent(progress, maximum, message, warn));
+		statusService.showStatus(progress, maximum, message, warn);
 	}
 
 }

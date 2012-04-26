@@ -37,6 +37,7 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.event.EventService;
+import imagej.event.StatusService;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ui.WidgetStyle;
@@ -71,6 +72,9 @@ public class SaveAsImage implements ImageJPlugin {
 
 	@Parameter(persist = false)
 	private EventService eventService;
+
+	@Parameter(persist = false)
+	private StatusService statusService;
 
 	@Parameter(persist = false)
 	private UIService uiService;
@@ -115,7 +119,7 @@ public class SaveAsImage implements ImageJPlugin {
 			final ImgSaver imageSaver = new ImgSaver();
 			boolean saveImage = true;
 			try {
-				imageSaver.addStatusListener(new StatusDispatcher(eventService));
+				imageSaver.addStatusListener(new StatusDispatcher(statusService));
 
 				if (imageSaver.isCompressible(img)) result =
 					uiService.showDialog("Your image contains axes other than XYZCT.\n"

@@ -36,9 +36,7 @@
 package imagej.ui.swing;
 
 import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.tool.Tool;
@@ -46,6 +44,7 @@ import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ext.tool.event.ToolDeactivatedEvent;
 import imagej.ui.ToolBar;
+import imagej.ui.UIService;
 import imagej.util.Log;
 
 import java.awt.event.MouseAdapter;
@@ -78,9 +77,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	protected static final Border INACTIVE_BORDER = new BevelBorder(
 		BevelBorder.RAISED);
 
-	protected final EventService eventService;
-
-	private final ToolService toolService;
+	protected final UIService uiService;
 
 	private final Map<String, AbstractButton> toolButtons;
 
@@ -89,32 +86,31 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
-	public SwingToolBar(final EventService eventService) {
-		this.eventService = eventService;
-		toolService = eventService.getContext().getService(ToolService.class);
+	public SwingToolBar(final UIService uiService) {
+		this.uiService = uiService;
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
-		subscribers = eventService.subscribe(this);
+		subscribers = uiService.getEventService().subscribe(this);
 	}
 
 	// -- ToolBar methods --
 
 	@Override
 	public ToolService getToolService() {
-		return toolService;
+		return uiService.getToolService();
 	}
 	
 	// -- Helper methods --
 
 	private void populateToolBar() {
 		Tool lastTool = null;
-		for (final Tool tool : toolService.getTools()) {
+		for (final Tool tool : getToolService().getTools()) {
 			try {
 				final AbstractButton button = createButton(tool);
 				toolButtons.put(tool.getInfo().getName(), button);
 
 				// add a separator between tools where applicable
-				if (toolService.isSeparatorNeeded(tool, lastTool)) addSeparator();
+				if (getToolService().isSeparatorNeeded(tool, lastTool)) addSeparator();
 				lastTool = tool;
 
 				add(button);
@@ -158,7 +154,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
-				eventService.publish(new StatusEvent(tool.getDescription()));
+				uiService.getStatusService().showStatus(tool.getDescription());
 			}
 			
 			@Override

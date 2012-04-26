@@ -38,6 +38,7 @@ package imagej.ui;
 import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.event.StatusService;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
@@ -45,6 +46,7 @@ import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
+import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -64,11 +66,13 @@ import java.util.List;
 public final class UIService extends AbstractService {
 
 	private final EventService eventService;
+	private final StatusService statusService;
 	private final ThreadService threadService;
 	private final PlatformService platformService;
 	private final PluginService pluginService;
 	private final MenuService menuService;
 	private final ToolService toolService;
+	private final OptionsService optionsService;
 
 	/** The active user interface. */
 	private UserInterface userInterface;
@@ -85,17 +89,20 @@ public final class UIService extends AbstractService {
 	}
 
 	public UIService(final ImageJ context, final EventService eventService,
-		final ThreadService threadService, final PlatformService platformService,
-		final PluginService pluginService, final MenuService menuService,
-		final ToolService toolService)
+		final StatusService statusService, final ThreadService threadService,
+		final PlatformService platformService, final PluginService pluginService,
+		final MenuService menuService, final ToolService toolService,
+		final OptionsService optionsService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.statusService = statusService;
 		this.threadService = threadService;
 		this.platformService = platformService;
 		this.pluginService = pluginService;
 		this.menuService = menuService;
 		this.toolService = toolService;
+		this.optionsService = optionsService;
 
 		launchUI();
 
@@ -106,6 +113,10 @@ public final class UIService extends AbstractService {
 
 	public EventService getEventService() {
 		return eventService;
+	}
+
+	public StatusService getStatusService() {
+		return statusService;
 	}
 
 	public ThreadService getThreadService() {
@@ -126,6 +137,10 @@ public final class UIService extends AbstractService {
 
 	public ToolService getToolService() {
 		return toolService;
+	}
+
+	public OptionsService getOptionsService() {
+		return optionsService;
 	}
 
 	/** Processes the given command line arguments. */

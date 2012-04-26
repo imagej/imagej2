@@ -35,12 +35,11 @@
 
 package imagej.ui.awt;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
+import imagej.ui.UIService;
 
 import java.awt.Graphics;
 import java.awt.Label;
@@ -53,14 +52,17 @@ import java.util.List;
  */
 public class AWTStatusBar extends Label implements StatusBar {
 
+	protected final UIService uiService;
+
 	private int value;
 	private int maximum;
 
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
-	public AWTStatusBar() {
-		subscribers = ImageJ.get(EventService.class).subscribe(this);
+	public AWTStatusBar(final UIService uiService) {
+		this.uiService = uiService;
+		subscribers = uiService.getEventService().subscribe(this);
 	}
 
 	// -- Component methods --

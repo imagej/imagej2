@@ -35,20 +35,20 @@
 
 package imagej.core.plugins.assign;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.Function;
@@ -103,7 +103,7 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	ImageJ context;
 	
 	@Parameter(persist = false)
-	EventService eventService;
+	StatusService statusService;
 	
 	@Parameter(required = true, persist = false)
 	Dataset dataset;
@@ -229,14 +229,14 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 		int w = 1 + windowNegWidthSpan + windowPosWidthSpan;
 		int h = 1 + windowNegHeightSpan + windowPosHeightSpan;
 		String message = functionName + " of "+ w + " X " + h + " neighborhood ... beginning processing";
-		eventService.publish(new StatusEvent(message));
+		statusService.showStatus(message);
 	}
 	
 	private void notifyUserAtEnd() {
 		int w = 1 + windowNegWidthSpan + windowPosWidthSpan;
 		int h = 1 + windowNegHeightSpan + windowPosHeightSpan;
 		String message = functionName + " of "+ w + " X " + h + " neighborhood ... complete";
-		eventService.publish(new StatusEvent(message));
+		statusService.showStatus(message);
 	}
 	
 	private long[] offsets(int xOffset, int yOffset) {

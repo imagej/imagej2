@@ -39,6 +39,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.event.EventService;
+import imagej.event.StatusService;
 import imagej.ext.module.ModuleService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.service.AbstractService;
@@ -64,6 +65,7 @@ public final class IOService<T extends RealType<T> & NativeType<T>>
 	// handling ImgOpener's need to pass forward a T parameter.
 
 	private EventService eventService;
+	private StatusService statusService;
 	private ModuleService moduleService;
 	private DatasetService datasetService;
 
@@ -74,10 +76,12 @@ public final class IOService<T extends RealType<T> & NativeType<T>>
 	}
 
 	public IOService(final ImageJ context, final EventService eventService,
-		final ModuleService moduleService, final DatasetService datasetService)
+		final StatusService statusService, final ModuleService moduleService,
+		final DatasetService datasetService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.statusService = statusService;
 		this.moduleService = moduleService;
 		this.datasetService = datasetService;
 	}
@@ -86,6 +90,10 @@ public final class IOService<T extends RealType<T> & NativeType<T>>
 
 	public EventService getEventService() {
 		return eventService;
+	}
+
+	public StatusService getStatusService() {
+		return statusService;
 	}
 
 	public ModuleService getModuleService() {
@@ -102,7 +110,7 @@ public final class IOService<T extends RealType<T> & NativeType<T>>
 	{
 		if (source == null) return null;
 		final ImgOpener imageOpener = new ImgOpener();
-		imageOpener.addStatusListener(new StatusDispatcher(eventService));
+		imageOpener.addStatusListener(new StatusDispatcher(statusService));
 		final ImgPlus<T> imgPlus = imageOpener.openImg(source);
 		final Dataset dataset = datasetService.create(imgPlus);
 		eventService.publish(new FileOpenedEvent(source));

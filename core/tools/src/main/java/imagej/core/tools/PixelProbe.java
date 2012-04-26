@@ -35,16 +35,15 @@
 
 package imagej.core.tools;
 
-import net.imglib2.meta.Axes;
 import imagej.data.ChannelCollection;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
+import net.imglib2.meta.Axes;
 
 /**
  * Displays pixel values under the cursor.
@@ -62,14 +61,13 @@ public class PixelProbe extends AbstractTool {
 	
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
-		
-		final EventService eventService =
-				evt.getContext().getService(EventService.class);
+		final StatusService statusService =
+				evt.getContext().getService(StatusService.class);
 		final ImageDisplayService dispService =
 				evt.getContext().getService(ImageDisplayService.class);
 		final ImageDisplay disp = dispService.getActiveImageDisplay();
 		if ((disp == null) || !recorder.record(evt)) {
-			eventService.publish(new StatusEvent(null));
+			statusService.clearStatus();
 			return;
 		}
 		final int channelIndex = disp.getAxisIndex(Axes.CHANNEL);
@@ -101,7 +99,7 @@ public class PixelProbe extends AbstractTool {
 			}
 			builder.append(")");
 		}
-		eventService.publish(new StatusEvent(builder.toString()));
+		statusService.showStatus(builder.toString());
 	}
 	
 	// -- helpers --

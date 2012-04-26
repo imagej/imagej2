@@ -39,8 +39,7 @@ import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
-import imagej.ext.plugin.PluginModuleInfo;
+import imagej.event.StatusService;
 import imagej.platform.event.AppQuitEvent;
 import imagej.updater.core.UpToDate;
 import imagej.updater.ui.UpdatesAvailable;
@@ -151,6 +150,10 @@ public abstract class AbstractUserInterface implements UserInterface {
 		return uiService.getEventService();
 	}
 
+	protected StatusService getStatusService() {
+		return uiService.getStatusService();
+	}
+
 	/** Shows the readme, if this is the first time ImageJ has run. */
 	private void displayReadme() {
 		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
@@ -181,8 +184,7 @@ public abstract class AbstractUserInterface implements UserInterface {
 					final String message =
 						"Your ImageJ installation cannot be updated because it is read-only";
 					Log.warn(message);
-					// TODO: add uiService.setStatus(message)
-					uiService.getEventService().publish(new StatusEvent(message, false));
+					getStatusService().showStatus(message);
 					break;
 				default:
 					Log.error("Unhandled UpToDate case: " + result);

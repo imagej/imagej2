@@ -37,7 +37,7 @@ package imagej.ext.module;
 
 import imagej.ImageJ;
 import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.module.event.ModuleCanceledEvent;
 import imagej.ext.module.event.ModuleExecutedEvent;
 import imagej.ext.module.event.ModuleExecutingEvent;
@@ -84,6 +84,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	public boolean preProcess() {
 		if (pre == null) return true; // no preprocessors
 		final EventService eventService = ImageJ.get(EventService.class);
+		final StatusService statusService = ImageJ.get(StatusService.class);
 
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
@@ -92,7 +93,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 				// notify interested parties of any warning messages
 				final String cancelMessage = p.getMessage();
 				if (cancelMessage != null) {
-					eventService.publish(new StatusEvent(cancelMessage, true));
+					statusService.warn(cancelMessage);
 				}
 				return false;
 			}
