@@ -36,6 +36,7 @@
 package imagej.ui.swing.display;
 
 import imagej.data.Extents;
+import imagej.data.display.CanvasHelper;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
@@ -48,6 +49,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.swing.StaticSwingUtils;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
@@ -55,6 +57,7 @@ import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.HashMap;
@@ -167,6 +170,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 				createSliders();
 				updateBorder(0);
 				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
+				doInitialSizing();
 				displayViewer.getCanvas().rebuild();
 				window.setTitle(getDisplay().getName());
 				window.showDisplay(true);
@@ -288,12 +292,59 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		setBorderColor(color);
 	}
 
+	private void doInitialSizing() {
+		final double scale = findFullyVisibleScale();
+		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
+		ImageCanvas canvas = displayViewer.getImageDisplay().getCanvas();
+		canvas.setZoomAndCenter(zoomLevel);
+		if (!initialScaleCalculated) {
+			canvas.setInitialScale(canvas.getZoomFactor());
+			initialScaleCalculated = true;
+		}
+	}
+
 	private void updateAxis(final AxisType axis) {
 		final int value = (int) display.getLongPosition(axis);
 		final JScrollBar scrollBar = axisSliders.get(axis);
 		if (scrollBar != null) scrollBar.setValue(value);
 		if (axis == Axes.CHANNEL) updateBorder(value);
 		getDisplay().update();
+	}
+
+	private double findFullyVisibleScale() {
+		final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
+		final Dimension canvasSize = canvas.getPreferredSize();
+		final Rectangle deskBounds = StaticSwingUtils.getWorkSpaceBounds();
+
+		// calc height variables
+		final int labelHeight = imageLabel.getPreferredSize().height;
+		final int sliderHeight = sliderPanel.getPreferredSize().height;
+		final int extraSpace = 64;
+
+		// determine largest viewable panel sizes
+		final int maxViewHeight =
+			deskBounds.height - labelHeight - sliderHeight - extraSpace;
+		final int maxViewWidth = deskBounds.width - extraSpace;
+
+		// is canvas bigger than largest viewable panel?
+		if ((canvasSize.width > maxViewWidth) ||
+			(canvasSize.height > maxViewHeight))
+		{
+			// yes it is
+			// so calc best scale that brings whole image into max viewable panel size
+
+			final double canvasAspect = 1.0 * canvasSize.width / canvasSize.height;
+			final double viewAspect = 1.0 * maxViewWidth / maxViewHeight;
+			if (canvasAspect < viewAspect) {
+				// image height the issue
+				return 1.0 * maxViewHeight / canvasSize.height;
+			}
+			// else image width the issue
+			return 1.0 * maxViewWidth / canvasSize.width;
+		}
+
+		// else canvas fits on screen as is
+		return 1;
 	}
 
 }
