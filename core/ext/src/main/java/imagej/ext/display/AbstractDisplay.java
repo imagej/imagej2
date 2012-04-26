@@ -37,7 +37,6 @@ package imagej.ext.display;
 
 import imagej.ImageJ;
 import imagej.event.EventService;
-import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
@@ -287,7 +286,7 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 	}
 
 	@Override
-	public <T> T[] toArray(final T[] a) {
+	public <U> U[] toArray(final U[] a) {
 		return objects.toArray(a);
 	}
 
