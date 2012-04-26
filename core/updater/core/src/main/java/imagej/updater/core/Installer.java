@@ -115,6 +115,10 @@ public class Installer extends Downloader {
 		for (final FileObject file : files.toInstallOrUpdate()) {
 			final String name = file.filename;
 			File saveTo = files.prefixUpdate(name);
+			if (file.localFilename != null && !file.localFilename.equals(file.filename)) {
+				// if the name changed, remove the file with the old name
+				FileObject.touch(files.prefixUpdate(file.localFilename));
+			}
 			if (file.executable) {
 				saveTo = files.prefix(name);
 				String oldName = saveTo.getAbsolutePath() + ".old";
@@ -191,7 +195,7 @@ public class Installer extends Downloader {
 			"Incorrect checksum " + "for " + destination + ":\n" + actualDigest +
 				"\n(expected " + digest + ")");
 
-		file.setLocalVersion(digest, file.getTimestamp());
+		file.setLocalVersion(file.getFilename(), digest, file.getTimestamp());
 		file.setStatus(FileObject.Status.INSTALLED);
 
 		if (file.executable && !Util.platform.startsWith("win")) try {

@@ -180,7 +180,7 @@ public class FileObject {
 	public long filesize;
 	public boolean metadataChanged;
 
-	public String localChecksum;
+	public String localFilename, localChecksum;
 	public long localTimestamp;
 
 	// These are LinkedHashMaps to retain the order of the entries
@@ -250,7 +250,8 @@ public class FileObject {
 		current = new Version(checksum, timestamp);
 	}
 
-	public void setLocalVersion(final String checksum, final long timestamp) {
+	public void setLocalVersion(final String filename, final String checksum, final long timestamp) {
+		localFilename = filename;
 		if (current != null && checksum.equals(current.checksum)) {
 			if (status != Status.LOCAL_ONLY) status = Status.INSTALLED;
 			setNoAction();
