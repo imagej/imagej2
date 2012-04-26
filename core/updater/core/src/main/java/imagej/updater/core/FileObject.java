@@ -387,7 +387,10 @@ public class FileObject {
 		if (!status.isValid(action)) throw new Error(
 			"Invalid action requested for file " + filename + "(" + action + ", " +
 				status + ")");
-		if (action == Action.UPLOAD) files.updateDependencies(this);
+		if (action == Action.UPLOAD) {
+			if (localFilename != null) filename = localFilename;
+			files.updateDependencies(this);
+		}
 		this.action = action;
 	}
 
