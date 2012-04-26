@@ -36,6 +36,7 @@
 package imagej.updater.core;
 
 import imagej.updater.util.Util;
+import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * TODO
@@ -422,7 +425,40 @@ public class FileObject {
 	}
 
 	public String getFilename() {
+		return getFilename(false);
+	}
+
+	protected final static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+)+[a-z]?(-[A-Za-z0-9.]+)*)(\\.jar)");
+
+	protected static Matcher matchVersion(String filename) {
+		if (!filename.endsWith(".jar")) return null;
+		final Matcher matcher = versionPattern.matcher(filename);
+		return matcher.matches() ? matcher : null;
+	}
+
+	public String getFilename(boolean stripVersion) {
+		return getFilename(filename, stripVersion);
+	}
+
+	public static String getFilename(final String filename, boolean stripVersion) {
+		final Matcher matcher;
+		if (stripVersion && (matcher = matchVersion(filename)) != null) {
+			return matcher.group(1) + matcher.group(5);
+		}
 		return filename;
+	}
+
+	public String getBaseName() {
+		final Matcher matcher = matchVersion(filename);
+		if (matcher != null) return matcher.group(1);
+		final String extension = FileUtils.getExtension(filename);
+		return filename.substring(0, filename.length() - extension.length() - 1);
+	}
+
+	public String getFileVersion() {
+		final Matcher matcher = matchVersion(filename);
+		if (matcher != null) return matcher.group(2);
+		return "";
 	}
 
 	public String getChecksum() {

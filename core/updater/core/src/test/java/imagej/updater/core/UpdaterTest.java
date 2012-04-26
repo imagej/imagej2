@@ -488,6 +488,13 @@ public class UpdaterTest {
 		assertStatus(Status.LOCAL_ONLY, files.get("jars/new.jar"));
 	}
 
+	@Test
+	public void testStripVersionFromFilename() {
+		assertEquals("jars/bio-formats.jar", FileObject.getFilename("jars/bio-formats-4.4-imagej-2.0.0-beta1.jar", true));
+		assertEquals(FileObject.getFilename("jars/ij-data-2.0.0-beta1.jar", true), FileObject.getFilename("jars/ij-data-2.0.0-SNAPSHOT.jar", true));
+		assertEquals(FileObject.getFilename("jars/ij-1.44.jar", true), FileObject.getFilename("jars/ij-1.46b.jar", true));
+	}
+
 	//
 	// Debug functions
 	//
