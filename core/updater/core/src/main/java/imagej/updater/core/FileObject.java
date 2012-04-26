@@ -40,9 +40,11 @@ import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -168,6 +170,7 @@ public class FileObject {
 		}
 	}
 
+	protected List<String> overriddenUpdateSites = new ArrayList<String>();
 	private Status status;
 	private Action action;
 	public String updateSite, filename, description;

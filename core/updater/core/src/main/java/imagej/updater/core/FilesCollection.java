@@ -82,6 +82,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 		public String url, sshHost, uploadDirectory;
 		public long timestamp;
+		public int rank;
 
 		public UpdateSite(String url, final String sshHost, String uploadDirectory,
 			final long timestamp)
@@ -119,7 +120,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 	}
 
-	protected Map<String, UpdateSite> updateSites;
+	private Map<String, UpdateSite> updateSites;
 
 	/**
 	 * This constructor takes the imagejRoot primarily for testing purposes.
@@ -136,8 +137,13 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public void addUpdateSite(final String name, final String url,
 		final String sshHost, final String uploadDirectory, final long timestamp)
 	{
-		updateSites.put(name, new UpdateSite(url, sshHost, uploadDirectory,
+		addUpdateSite(name, new UpdateSite(url, sshHost, uploadDirectory,
 			timestamp));
+	}
+
+	protected void addUpdateSite(final String name, final UpdateSite updateSite) {
+		updateSite.rank = updateSites.size();
+		updateSites.put(name,  updateSite);
 	}
 
 	public void renameUpdateSite(final String oldName, final String newName) {
@@ -151,13 +157,11 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			if (file.updateSite.equals(oldName)) file.updateSite = newName;
 
 		// preserve order
-		final HashMap<String, UpdateSite> newMap =
-			new LinkedHashMap<String, UpdateSite>();
-		for (final String name : updateSites.keySet())
-			if (name.equals(oldName)) newMap.put(newName, getUpdateSite(oldName));
-			else newMap.put(name, getUpdateSite(name));
-
-		updateSites = newMap;
+		final Map<String, UpdateSite> oldMap = updateSites;
+		updateSites = new LinkedHashMap<String, UpdateSite>();
+		for (final String name : oldMap.keySet()) {
+			addUpdateSite(name.equals(oldName) ? newName : name, oldMap.get(name));
+		}
 	}
 
 	public void removeUpdateSite(final String name) {
@@ -170,6 +174,12 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 				file.setStatus(Status.LOCAL_ONLY);
 			}
 		updateSites.remove(name);
+
+		// update rank
+		int counter = 1;
+		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
+			entry.getValue().rank = counter++;
+		}
 	}
 
 	public UpdateSite getUpdateSite(final String name) {

@@ -212,10 +212,15 @@ public class XMLFileReader extends DefaultHandler {
 				files.getUpdateSite(current.updateSite) == null) ; // ignore file with invalid update site
 			else if (file == null) files.add(current);
 			else {
-				file.merge(current);
-				if (updateSite != null &&
-					(file.updateSite == null || !file.updateSite
-						.equals(current.updateSite))) file.updateSite = current.updateSite;
+				if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
+					current.overriddenUpdateSites.addAll(file.overriddenUpdateSites);
+					if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
+						current.overriddenUpdateSites.add(file.updateSite);
+					}
+					files.add(current);
+				}
+				else
+					file.overriddenUpdateSites.add(updateSite);
 			}
 			current = null;
 		}
@@ -230,5 +235,11 @@ public class XMLFileReader extends DefaultHandler {
 	private long getLong(final Attributes attributes, final String key) {
 		final String value = attributes.getValue(key);
 		return value == null ? 0 : Long.parseLong(value);
+	}
+
+	private int getRank(final FilesCollection files, final String updateSite) {
+		if (updateSite == null || files == null) return -1;
+		UpdateSite site = files.getUpdateSite(updateSite);
+		return site == null ? -1 : site.rank;
 	}
 }
