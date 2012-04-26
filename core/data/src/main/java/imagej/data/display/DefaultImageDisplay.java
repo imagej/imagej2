@@ -152,7 +152,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 				pos.put(axis, min(i));
 			}
 		}
-
 	}
 
 	// -- ImageDisplay methods --
@@ -216,6 +215,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void display(final Object o) {
+		// TODO: Eliminate case logic in favor of extensible discovery mechanism.
 		if (o instanceof Dataset) {
 			Dataset dataset = (Dataset) o;
 			setName(createName(dataset.getName()));
