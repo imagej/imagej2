@@ -51,6 +51,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -188,7 +189,12 @@ public class SitesDialog extends JDialog implements ActionListener,
 			file.updateSite = null;
 			file.setStatus(FileObject.Status.LOCAL_ONLY);
 		}
-		files.removeUpdateSite(name);
+		try {
+			files.removeUpdateSite(name);
+		} catch (IOException e) {
+			Log.error(e);
+			error("Could not re-read update sites (restart might be necessary):\n" + e);
+		}
 		names.remove(row);
 		tableModel.rowChanged(row);
 		updaterFrame.updateFilesTable();

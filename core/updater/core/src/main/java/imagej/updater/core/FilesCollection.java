@@ -181,16 +181,24 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 	}
 
-	public void removeUpdateSite(final String name) {
-		// remove NOT_INSTALLED plugins, mark others LOCAL_ONLY
-		for (final FileObject file : forUpdateSite(name))
+	public void removeUpdateSite(final String name) throws IOException {
+		// TODO: remove NOT_INSTALLED files, mark others LOCAL_ONLY
+		Set<String> toReRead = new HashSet<String>();
+		for (final FileObject file : forUpdateSite(name)) {
+			toReRead.addAll(file.overriddenUpdateSites);
 			if (file.getStatus() == Status.NOT_INSTALLED) {
 				remove(file);
 			}
 			else {
 				file.setStatus(Status.LOCAL_ONLY);
+				file.updateSite = null;
 			}
+		}
 		updateSites.remove(name);
+
+		// re-read the overridden sites
+		// no need to sort, the XMLFileReader will only override data from higher-ranked sites
+		new XMLFileDownloader(this, toReRead).start();
 
 		// update rank
 		int counter = 1;
