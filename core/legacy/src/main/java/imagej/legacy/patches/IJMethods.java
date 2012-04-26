@@ -65,7 +65,9 @@ public class IJMethods {
 	{
 		Log.debug("showProgress: " + currentIndex + "/" + finalIndex);
 		// report progress through global event mechanism
-		ImageJ.get(StatusService.class).showProgress(currentIndex, finalIndex);
+		final StatusService statusService = ImageJ.get(StatusService.class);
+		if (statusService == null) return;
+		statusService.showProgress(currentIndex, finalIndex);
 	}
 
 	/** Appends {@link IJ#showStatus(String)}. */
@@ -77,7 +79,9 @@ public class IJMethods {
 			return;
 		}
 		// report status through global event mechanism
-		ImageJ.get(StatusService.class).showStatus(s);
+		final StatusService statusService = ImageJ.get(StatusService.class);
+		if (statusService == null) return;
+		statusService.showStatus(s);
 	}
 
 }
