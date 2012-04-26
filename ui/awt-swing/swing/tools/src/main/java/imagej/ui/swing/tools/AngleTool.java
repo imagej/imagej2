@@ -63,36 +63,40 @@ import net.imglib2.RealPoint;
  */
 @Plugin(type = Tool.class, name = "Angle", description = "Angle tool",
 	iconPath = "/icons/tools/angle.png", priority = AngleTool.PRIORITY,
-	enabled=false)
+	enabled = false)
 public class AngleTool extends AbstractTool {
 
 	public static final int PRIORITY = LineAdapter.PRIORITY - 1;
-	
-	private List<RealPoint> coords = new LinkedList<RealPoint>();
+
+	private final List<RealPoint> coords = new LinkedList<RealPoint>();
 
 	@Override
-	public void onMouseDown(MsPressedEvent evt) {
+	public void onMouseDown(final MsPressedEvent evt) {
 		if (evt.getDisplay() == null) return;
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		final ImageDisplayService imgService = evt.getContext().getService(ImageDisplayService.class);
-		ImageDisplay imgDisp = imgService.getActiveImageDisplay();
-		IntCoords panelPoint = new IntCoords(evt.getX(), evt.getY());
-		RealCoords modelPoint = imgDisp.getCanvas().panelToImageCoords(panelPoint);
-		RealPoint realPoint = new RealPoint(modelPoint.x, modelPoint.y);
+		final ImageDisplayService imgService =
+			evt.getContext().getService(ImageDisplayService.class);
+		final ImageDisplay imgDisp = imgService.getActiveImageDisplay();
+		final IntCoords panelPoint = new IntCoords(evt.getX(), evt.getY());
+		final RealCoords modelPoint =
+			imgDisp.getCanvas().panelToImageCoords(panelPoint);
+		final RealPoint realPoint = new RealPoint(modelPoint.x, modelPoint.y);
 		handlePoint(evt.getContext(), imgDisp, realPoint);
 		evt.consume();
 	}
 
-	private void handlePoint(ImageJ context, ImageDisplay display, RealPoint point) {
-		OverlayService os = context.getService(OverlayService.class);
+	private void handlePoint(final ImageJ context, final ImageDisplay display,
+		final RealPoint point)
+	{
+		final OverlayService os = context.getService(OverlayService.class);
 		coords.add(point);
-		while (coords.size()/3 >= 1) {
-			AngleOverlay angleOverlay = new AngleOverlay(context);
-			angleOverlay.setEndPoint1(coords.remove(0)); 
-			angleOverlay.setCenterPoint(coords.remove(0)); 
+		while (coords.size() / 3 >= 1) {
+			final AngleOverlay angleOverlay = new AngleOverlay(context);
+			angleOverlay.setEndPoint1(coords.remove(0));
+			angleOverlay.setCenterPoint(coords.remove(0));
 			angleOverlay.setEndPoint2(coords.remove(0));
 			// TMP HACK
-			Overlay overlay = angleOverlay;
+			final Overlay overlay = angleOverlay;
 			os.addOverlays(display, Arrays.asList(overlay));
 			System.out.println("Angle overlay added");
 			// END TMP HACK

@@ -112,8 +112,8 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 			final IndexColorModel cm =
 				new IndexColorModel(1, 2, new byte[] { 0, (byte) color.getRed() },
 					new byte[] { 0, (byte) color.getGreen() }, new byte[] { 0,
-						(byte) color.getBlue() },
-					new byte[] { 0, (byte) overlay.getData().getAlpha() });
+						(byte) color.getBlue() }, new byte[] { 0,
+						(byte) overlay.getData().getAlpha() });
 			final int w = (int) (maxX - minX);
 			final int h = (int) (maxY - minY);
 			final BufferedImage img =

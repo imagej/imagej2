@@ -58,8 +58,8 @@ import org.jhotdraw.draw.decoration.ArrowTip;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
-	extends AbstractTool implements IJHotDrawOverlayAdapter
+public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
+	AbstractTool implements IJHotDrawOverlayAdapter
 {
 
 	// NB: The line styles here are taken from
@@ -73,7 +73,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 	static final protected double[] dotDashLineStyle = { 6, 2, 1, 2 };
 
 	private int priority;
-	
+
 	@Override
 	public int getPriority() {
 		return priority;
@@ -89,7 +89,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 		final ColorRGB lineColor = overlay.getData().getLineColor();
 		if (overlay.getData().getLineStyle() != Overlay.LineStyle.NONE) {
 			figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
-			
+
 			// FIXME - is this next line dangerous for drawing attributes? width could
 			// conceivably need to always stay 0.
 			figure.set(AttributeKeys.STROKE_WIDTH, overlay.getData().getLineWidth());
@@ -143,7 +143,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 		overlay.getData().setLineColor(AWTColors.getColorRGB(strokeColor));
 		// The line style is intentionally omitted here because it is ambiguous and
 		// because there is no UI for setting it by the JHotDraw UI.
-		
+
 		// FIXME - is this next line dangerous for drawing attributes? width could
 		// conceivably be 0.
 		overlay.getData().setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
@@ -159,28 +159,28 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay>
 		// context. So its possible getContext() would return null here and a NPE
 		// can get thrown. Happens when you run a legacy plugin if getContext() used
 		// here.
-		OverlaySettings settings =
-				ImageJ.get(OverlayService.class).getDefaultSettings();
-		ColorRGB color = settings.getLineColor();
-		int r = color.getRed();
-		int g = color.getGreen();
-		int b = color.getBlue();
-		return new Color(r,g,b,255);
+		final OverlaySettings settings =
+			ImageJ.get(OverlayService.class).getDefaultSettings();
+		final ColorRGB color = settings.getLineColor();
+		final int r = color.getRed();
+		final int g = color.getGreen();
+		final int b = color.getBlue();
+		return new Color(r, g, b, 255);
 	}
-	
+
 	public Color getDefaultFillColor() {
 		// TODO - eliminate deprecated use. Note that simply using getContext() is
 		// not sufficient. The figure adapters do not initialize their ImageJ
 		// context. So its possible getContext() would return null here and a NPE
 		// can get thrown. Happens when you run a legacy plugin if getContext() used
 		// here.
-		OverlaySettings settings =
-				ImageJ.get(OverlayService.class).getDefaultSettings();
-		ColorRGB color = settings.getFillColor();
-		int r = color.getRed();
-		int g = color.getGreen();
-		int b = color.getBlue();
-		int a = settings.getAlpha();
-		return new Color(r,g,b,a);
+		final OverlaySettings settings =
+			ImageJ.get(OverlayService.class).getDefaultSettings();
+		final ColorRGB color = settings.getFillColor();
+		final int r = color.getRed();
+		final int g = color.getGreen();
+		final int b = color.getBlue();
+		final int a = settings.getAlpha();
+		return new Color(r, g, b, a);
 	}
 }
