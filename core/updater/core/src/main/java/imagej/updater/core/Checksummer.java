@@ -299,10 +299,16 @@ public class Checksummer extends Progressable {
 			queueDir(directories[i], directories[i + 1]);
 
 		final Set<String> alreadyQueued = new HashSet<String>();
-		for (final StringAndFile pair : queue)
-			alreadyQueued.add(pair.path);
+		for (final StringAndFile pair : queue) {
+			String pathWithoutVersion = FileObject.getFilename(pair.path, true);
+			if (alreadyQueued.contains(pathWithoutVersion)) {
+				Log.warn("Multiple versions found for " + pathWithoutVersion);
+			} else {
+				alreadyQueued.add(pathWithoutVersion);
+			}
+		}
 		for (final FileObject file : files)
-			if (!alreadyQueued.contains(file.getFilename())) queue(file.getFilename());
+			if (!alreadyQueued.contains(file.getFilename(true))) queue(file.getFilename());
 	}
 
 	public void updateFromLocal() {
