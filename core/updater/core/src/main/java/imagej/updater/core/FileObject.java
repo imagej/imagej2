@@ -646,6 +646,25 @@ public class FileObject {
 			setAction(files, Action.UPLOAD);
 		}
 		this.updateSite = updateSite;
+
+		String baseName = getBaseName();
+		String withoutVersion = getFilename(true);
+		List<Dependency> fixup = new ArrayList<Dependency>();
+		for (final FileObject file : files.forUpdateSite(updateSite)) {
+			if (file.isObsolete()) continue;
+			fixup.clear();
+			for (final Dependency dependency : file.getDependencies()) {
+				if (dependency.overrides) continue;
+				if (dependency.filename.startsWith(baseName) && withoutVersion.equals(getFilename(dependency.filename, true)) && !dependency.filename.equals(filename)) {
+					fixup.add(dependency);
+				}
+			}
+			for (final Dependency dependency : fixup) {
+				file.dependencies.remove(dependency.filename);
+				dependency.filename = filename;
+				file.dependencies.put(filename, dependency);
+			}
+		}
 	}
 
 	public void stageForUninstall(final FilesCollection files) throws IOException
