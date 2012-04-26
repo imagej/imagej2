@@ -72,6 +72,7 @@ public class XMLFileDownloader extends Progressable {
 	}
 
 	public void start() throws IOException {
+		if (updateSites == null || updateSites.size() == 0) return;
 		setTitle("Updating the index of available files");
 		final XMLFileReader reader = new XMLFileReader(files);
 		final int current = 0, total = updateSites.size();
