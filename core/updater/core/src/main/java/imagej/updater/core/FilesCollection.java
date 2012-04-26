@@ -243,7 +243,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		new XMLFileReader(this).read(name);
 		final List<String> filesFromSite = new ArrayList<String>();
 		for (final FileObject file : forUpdateSite(name))
-			filesFromSite.add(file.filename);
+			filesFromSite.add(file.localFilename != null ? file.localFilename : file.filename);
 		final Checksummer checksummer =
 			new Checksummer(this, progress);
 		checksummer.updateFromLocal(filesFromSite);
