@@ -209,9 +209,7 @@ public class XMLFileReader extends DefaultHandler {
 			}
 			final FileObject file = files.get(current.filename);
 			if (updateSite == null && current.updateSite != null &&
-				files.getUpdateSite(current.updateSite) == null) ; // ignore file
-																														// with invalid
-																														// update site
+				files.getUpdateSite(current.updateSite) == null) ; // ignore file with invalid update site
 			else if (file == null) files.add(current);
 			else {
 				file.merge(current);
