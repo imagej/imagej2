@@ -48,6 +48,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
@@ -493,6 +494,68 @@ public class UpdaterTest {
 		assertEquals("jars/bio-formats.jar", FileObject.getFilename("jars/bio-formats-4.4-imagej-2.0.0-beta1.jar", true));
 		assertEquals(FileObject.getFilename("jars/ij-data-2.0.0-beta1.jar", true), FileObject.getFilename("jars/ij-data-2.0.0-SNAPSHOT.jar", true));
 		assertEquals(FileObject.getFilename("jars/ij-1.44.jar", true), FileObject.getFilename("jars/ij-1.46b.jar", true));
+	}
+
+	@Test
+	public void testUpdateVersionedJars() throws Exception {
+		initializeUpdateSite("jars/obsoleted-2.1.jar", "jars/without.jar",
+			"jars/with-2.0.jar", "jars/too-old-3.11.jar", "plugins/plugin.jar");
+
+		// Add the dependency relations
+
+		FilesCollection files = readDb(true, true);
+		FileObject[] list = makeList(files);
+		assertEquals(5, list.length);
+		FileObject obsoleted = list[0];
+		FileObject without = list[1];
+		FileObject with = list[2];
+		FileObject tooOld = list[3];
+		FileObject plugin = list[4];
+		plugin.addDependency(obsoleted.getFilename(), Util.getTimestamp(files
+			.prefix(obsoleted)), true);
+		plugin.addDependency(files, without);
+		plugin.addDependency(files, with);
+		plugin.addDependency(files, tooOld);
+
+		assertTrue(plugin.dependencies.containsKey("jars/without.jar"));
+		assertTrue(plugin.dependencies.containsKey("jars/with-2.0.jar"));
+		assertFalse(plugin.dependencies.containsKey("jars/with.jar"));
+		assertTrue(plugin.dependencies.containsKey("jars/too-old-3.11.jar"));
+		assertFalse(plugin.dependencies.containsKey("jars/too-old.jar"));
+
+		assertTrue(files.containsKey("jars/without.jar"));
+		assertTrue(files.containsKey("jars/with.jar"));
+		assertTrue(files.containsKey("jars/too-old.jar"));
+
+		assertNotNull(files.get("jars/with.jar"));
+		assertSame(files.get("jars/with.jar"), files.get("jars/with-2.0.jar"));
+
+		assertTrue(files.prefix(obsoleted).delete());
+		new Checksummer(files, progress).updateFromLocal();
+		assertStatus(Status.NOT_INSTALLED, obsoleted);
+		obsoleted.setAction(files, Action.REMOVE);
+		//writeFile(files.prefix(jars), "modified");
+		upload(files);
+
+		// Update one .jar file to a newer version
+
+		files = readDb(true, true);
+		assertTrue(files.prefix("jars/too-old-3.11.jar").delete());
+		writeFile("jars/too-old-3.12.jar");
+		new Checksummer(files, progress).updateFromLocal();
+		tooOld = files.get("jars/too-old.jar");
+		assertTrue(tooOld.getFilename().equals("jars/too-old-3.11.jar"));
+		assertTrue(tooOld.localFilename.equals("jars/too-old-3.12.jar"));
+		tooOld.stageForUpload(files, tooOld.updateSite);
+		upload(files);
+
+		assertTrue(new File(webRoot, "jars/too-old-3.12.jar-" + tooOld.localTimestamp).exists());
+
+		// The dependencies should be updated automatically
+
+		files = readDb(true, true);
+		plugin = files.get("plugins/plugin.jar");
+		assertTrue(plugin.dependencies.containsKey("jars/too-old-3.12.jar"));
 	}
 
 	//

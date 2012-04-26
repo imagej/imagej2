@@ -739,7 +739,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		});
 		this.clear();
 		for (final FileObject file : files) {
-			put(file.filename, file);
+			super.put(file.filename, file);
 		}
 	}
 
@@ -823,7 +823,17 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public void add(final FileObject file) {
-		put(file.filename, file);
+		super.put(file.getFilename(true), file);
+	}
+
+	@Override
+	public FileObject get(final Object filename) {
+		return super.get(FileObject.getFilename((String)filename, true));
+	}
+
+	@Override
+	public FileObject put(final String key, final FileObject file) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
