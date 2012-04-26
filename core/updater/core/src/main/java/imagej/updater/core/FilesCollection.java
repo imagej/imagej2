@@ -38,6 +38,7 @@ package imagej.updater.core;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.DependencyAnalyzer;
+import imagej.updater.util.Progress;
 import imagej.updater.util.Util;
 import imagej.util.Log;
 
@@ -236,6 +237,16 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		for (final String name : updateSites.keySet())
 			if (getUpdateSite(name).isUploadable()) return true;
 		return false;
+	}
+
+	public void reReadUpdateSite(final String name, final Progress progress) throws ParserConfigurationException, IOException, SAXException {
+		new XMLFileReader(this).read(name);
+		final List<String> filesFromSite = new ArrayList<String>();
+		for (final FileObject file : forUpdateSite(name))
+			filesFromSite.add(file.filename);
+		final Checksummer checksummer =
+			new Checksummer(this, progress);
+		checksummer.updateFromLocal(filesFromSite);
 	}
 
 	public Action[] getActions(final FileObject file) {

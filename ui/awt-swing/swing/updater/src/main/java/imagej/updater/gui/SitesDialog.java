@@ -35,11 +35,9 @@
 
 package imagej.updater.gui;
 
-import imagej.updater.core.Checksummer;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
-import imagej.updater.core.XMLFileReader;
 import imagej.updater.util.Util;
 import imagej.util.Log;
 
@@ -358,13 +356,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 		protected boolean readFromSite(final String name) {
 			try {
-				new XMLFileReader(files).read(name);
-				final List<String> filesFromSite = new ArrayList<String>();
-				for (final FileObject file : files.forUpdateSite(name))
-					filesFromSite.add(file.filename);
-				final Checksummer checksummer =
-					new Checksummer(files, updaterFrame.getProgress("Czechsummer"));
-				checksummer.updateFromLocal(filesFromSite);
+				files.reReadUpdateSite(name, updaterFrame.getProgress("Czechsummer"));
 			}
 			catch (final Exception e) {
 				error("Not a valid URL: " + url.getText());
