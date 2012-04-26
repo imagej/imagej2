@@ -64,8 +64,7 @@ public final class AWTWindows {
 	}
 
 	/** Centers the given window within the specified bounds. */
-	public static void centerWindow(final Rectangle bounds, final Window window)
-	{
+	public static void centerWindow(final Rectangle bounds, final Window window) {
 		final Dimension w = window.getSize();
 		int x = bounds.x + (bounds.width - w.width) / 2;
 		int y = bounds.y + (bounds.height - w.height) / 2;
