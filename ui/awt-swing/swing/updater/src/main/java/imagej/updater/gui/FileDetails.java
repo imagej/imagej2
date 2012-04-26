@@ -274,7 +274,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 
 	public void showFileDetails(final FileObject file) {
 		if (!getText().equals("")) blankLine();
-		title(file.getFilename());
+		title(file.getLocalFilename());
 		if (file.isUpdateable()) italic("\n(Update available)");
 		else if (file.isLocalOnly()) italic("(Local-only)");
 		if (file.isLocallyModified()) {

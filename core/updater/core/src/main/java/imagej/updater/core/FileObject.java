@@ -431,6 +431,11 @@ public class FileObject {
 		current = null;
 	}
 
+	public String getLocalFilename() {
+		if (localFilename == null || localFilename.equals(filename)) return filename;
+		return filename + " (local: " + localFilename + ")";
+	}
+
 	public String getFilename() {
 		return getFilename(false);
 	}
