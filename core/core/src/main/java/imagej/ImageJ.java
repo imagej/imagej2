@@ -35,12 +35,15 @@
 
 package imagej;
 
+import imagej.event.EventService;
 import imagej.event.ImageJEvent;
 import imagej.service.IService;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
+import imagej.thread.ThreadService;
 import imagej.util.DefaultUncaughtExceptionHandler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -63,7 +66,27 @@ public class ImageJ {
 		return createContext((List<Class<? extends IService>>) null);
 	}
 
-	/** Creates a new ImageJ application context with the specified services. */
+	/**
+	 * Creates a new ImageJ application context with the specified service (and
+	 * any required service dependencies).
+	 */
+	public static ImageJ createContext(
+		final Class<? extends IService> serviceClass)
+	{
+		// NB: Although the createContext(Class<? extends IService>...) method
+		// covers a superset of this case, it results in a warning in client code.
+		// Needing a single service (e.g., for unit testing) is common enough to
+		// warrant this extra method to avoid the problem for this special case.
+		final List<Class<? extends IService>> serviceClassList =
+			new ArrayList<Class<? extends IService>>();
+		serviceClassList.add(serviceClass);
+		return createContext(serviceClassList);
+	}
+
+	/**
+	 * Creates a new ImageJ application context with the specified services (and
+	 * any required service dependencies).
+	 */
 	public static ImageJ createContext(
 		final Class<? extends IService>... serviceClasses)
 	{
@@ -80,7 +103,10 @@ public class ImageJ {
 	// TODO - remove this!
 	private static ImageJ staticContext;
 
-	/** Creates a new ImageJ application context with the specified services. */
+	/**
+	 * Creates a new ImageJ application context with the specified services (and
+	 * any required service dependencies).
+	 */
 	public static ImageJ createContext(
 		final Collection<Class<? extends IService>> serviceClasses)
 	{

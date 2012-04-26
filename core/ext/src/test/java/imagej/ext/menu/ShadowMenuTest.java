@@ -113,7 +113,6 @@ public class ShadowMenuTest {
 	// -- Helper methods --
 
 	private ShadowMenu createShadowMenu() {
-		@SuppressWarnings("unchecked")
 		final ImageJ context = ImageJ.createContext(MenuService.class);
 		final MenuService menuService = context.getService(MenuService.class);
 

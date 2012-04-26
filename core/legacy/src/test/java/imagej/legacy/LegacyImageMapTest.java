@@ -79,7 +79,6 @@ public class LegacyImageMapTest {
 
 	@Test
 	public void testRegisterDataset() {
-		@SuppressWarnings("unchecked")
 		final ImageJ context = ImageJ.createContext(DatasetService.class);
 		final DatasetService datasetService =
 			context.getService(DatasetService.class);

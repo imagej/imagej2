@@ -52,7 +52,6 @@ public class PluginDiscovery {
 	 */
 	public static void main(final String[] args) {
 		System.out.println("Scanning for plugins:");
-		@SuppressWarnings("unchecked")
 		final ImageJ context = ImageJ.createContext(PluginService.class);
 		final PluginService pluginService = context.getService(PluginService.class);
 		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
