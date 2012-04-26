@@ -43,19 +43,20 @@ import imagej.ui.UIService;
 
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Sandbox>TestDialogPrompt")
 public class TestDialogPrompt implements ImageJPlugin {
-	
+
 	@Parameter(persist = false)
 	private UIService uiService;
-	
+
 	@Override
 	public void run() {
-		DialogPrompt.Result result = uiService.showDialog("This is the Question", "Question Dialog",
-				DialogPrompt.MessageType.QUESTION_MESSAGE, 
+		final DialogPrompt.Result result =
+			uiService.showDialog("This is the Question", "Question Dialog",
+				DialogPrompt.MessageType.QUESTION_MESSAGE,
 				DialogPrompt.OptionType.YES_NO_OPTION);
 		if (result == DialogPrompt.Result.YES_OPTION) {
 			System.out.println("That's a YES");

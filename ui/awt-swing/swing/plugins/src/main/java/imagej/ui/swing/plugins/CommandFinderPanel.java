@@ -72,7 +72,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	protected final JTextField searchField;
 	protected final JList commandsList;
 	private final JCheckBox showFullCheckbox;
-	
+
 	private final List<Command> commands;
 
 	public CommandFinderPanel(final ModuleService moduleService) {
@@ -98,45 +98,47 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		add(showFullCheckbox, "center, span 2");
 
 		searchField.addKeyListener(new KeyAdapter() {
+
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(final KeyEvent e) {
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_DOWN:
-					commandsList.ensureIndexIsVisible(0);
-					commandsList.setSelectedIndex(0);
-					commandsList.grabFocus();
-					break;
-				case KeyEvent.VK_UP:
-					int index = commandsList.getModel().getSize() - 1;
-					commandsList.ensureIndexIsVisible(index);
-					commandsList.setSelectedIndex(index);
-					commandsList.grabFocus();
-					break;
-				default:
-					return;
+					case KeyEvent.VK_DOWN:
+						commandsList.ensureIndexIsVisible(0);
+						commandsList.setSelectedIndex(0);
+						commandsList.grabFocus();
+						break;
+					case KeyEvent.VK_UP:
+						final int index = commandsList.getModel().getSize() - 1;
+						commandsList.ensureIndexIsVisible(index);
+						commandsList.setSelectedIndex(index);
+						commandsList.grabFocus();
+						break;
+					default:
+						return;
 				}
 				e.consume();
 			}
 		});
 
 		commandsList.addKeyListener(new KeyAdapter() {
+
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(final KeyEvent e) {
 				int selected;
 
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_DOWN:
-					selected = commandsList.getSelectedIndex();
-					if (selected != commandsList.getModel().getSize() - 1) return;
-					searchField.grabFocus();
-					break;
-				case KeyEvent.VK_UP:
-					selected = commandsList.getSelectedIndex();
-					if (selected != 0) return;
-					searchField.grabFocus();
-					break;
-				default:
-					return;
+					case KeyEvent.VK_DOWN:
+						selected = commandsList.getSelectedIndex();
+						if (selected != commandsList.getModel().getSize() - 1) return;
+						searchField.grabFocus();
+						break;
+					case KeyEvent.VK_UP:
+						selected = commandsList.getSelectedIndex();
+						if (selected != 0) return;
+						searchField.grabFocus();
+						break;
+					default:
+						return;
 				}
 				e.consume();
 			}
@@ -204,7 +206,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		}
 
 		Collections.sort(list);
-		
+
 		return list;
 	}
 

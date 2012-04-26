@@ -75,7 +75,9 @@ import net.imglib2.util.Util;
  * 
  * @author Grant Harris
  */
-public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implements Algorithm, MultiThreaded, Benchmark {
+public class StatisticsComputer<T extends RealType<T> & Comparable<T>>
+	implements Algorithm, MultiThreaded, Benchmark
+{
 
 	final Img<T> image;
 	String errorMessage = "";
@@ -89,7 +91,6 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 	private double histoMin;
 	private double histoMax;
 
-
 	public StatisticsComputer(final Img<T> image) {
 		setNumThreads();
 		this.image = image;
@@ -99,7 +100,9 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 		// + set default histoMin/Max
 	}
 
-	public void setHistogramBinsMinMax(int bins, double min, double max) {
+	public void setHistogramBinsMinMax(final int bins, final double min,
+		final double max)
+	{
 		this.bins = bins;
 		this.histoMin = min;
 		this.histoMax = max;
@@ -113,10 +116,10 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 		return max;
 	}
 
-	public int[] getHistogram(){
+	public int[] getHistogram() {
 		return histogram;
 	}
-			
+
 	@Override
 	public boolean process() {
 		final long startTime = System.currentTimeMillis();
@@ -126,7 +129,8 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 		final AtomicInteger ai = new AtomicInteger(0);
 		final Thread[] threads = SimpleMultiThreading.newThreads(getNumThreads());
 
-		final Vector<Chunk> threadChunks = SimpleMultiThreading.divideIntoChunks(imageSize, numThreads);
+		final Vector<Chunk> threadChunks =
+			SimpleMultiThreading.divideIntoChunks(imageSize, numThreads);
 		final Vector<T> minValues = new Vector<T>();
 		final Vector<T> maxValues = new Vector<T>();
 		final Vector<int[]> histograms = new Vector<int[]>();
@@ -136,22 +140,24 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 			maxValues.add(image.firstElement().createVariable());
 			histograms.add(new int[bins]);
 			threads[ithread] = new Thread(new Runnable() {
+
+				@Override
 				public void run() {
 					// Thread ID
 					final int myNumber = ai.getAndIncrement();
 					// get chunk of pixels to process
 					final Chunk myChunk = threadChunks.get(myNumber);
 					// compute min and max
-					compute(myChunk.getStartPosition(), myChunk.getLoopSize(),
-							minValues.get(myNumber), maxValues.get(myNumber),
-							histograms.get(myNumber));
+					compute(myChunk.getStartPosition(), myChunk.getLoopSize(), minValues
+						.get(myNumber), maxValues.get(myNumber), histograms.get(myNumber));
 				}
 			});
 		}
 
 		SimpleMultiThreading.startAndJoin(threads);
 
-		// Consolidate results from threads.... compute overall min and max, histogram...
+		// Consolidate results from threads.... compute overall min and max,
+		// histogram...
 		min.set(minValues.get(0));
 		max.set(maxValues.get(0));
 		histogram = new int[bins];
@@ -164,7 +170,7 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 			if (Util.max(max, value) == value) {
 				max.set(value);
 			}
-			int[] h = histograms.get(i);
+			final int[] h = histograms.get(i);
 			for (int j = 0; j < h.length; j++) {
 				histogram[j] += h[j];
 			}
@@ -173,7 +179,9 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 		return true;
 	}
 
-	protected void compute(final long startPos, final long loopSize, final T min, final T max, final int[] histo) {
+	protected void compute(final long startPos, final long loopSize, final T min,
+		final T max, final int[] histo)
+	{
 		final Cursor<T> cursor = image.cursor();
 
 		// init min and max
@@ -186,17 +194,17 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 
 		// move to the starting position of the current thread
 		cursor.jumpFwd(startPos);
-		
+
 		// calculate multiple for determining bin
-		
-		//double k = (BINS - 1)/ (max - min);
-		double k = (bins - 1)/ (histoMax - histoMin);
+
+		// double k = (BINS - 1)/ (max - min);
+		final double k = (bins - 1) / (histoMax - histoMin);
 
 		// do as many pixels as wanted by this thread
 		for (long j = 0; j < loopSize; ++j) {
 			cursor.fwd();
 			final T value = cursor.get();
-			
+
 			// for min/max
 			if (Util.min(min, value) == value) {
 				min.set(value);
@@ -204,15 +212,15 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 			if (Util.max(max, value) == value) {
 				max.set(value);
 			}
-			
+
 			// for histogram
-			double v = value.getRealDouble();
+			final double v = value.getRealDouble();
 			final int bin = computeBin(v, k);
 			histo[bin]++;
 		}
 	}
 
-	private int computeBin(final double value, double k) {
+	private int computeBin(final double value, final double k) {
 		double v = value;
 		if (v < histoMin) {
 			v = histoMin;
@@ -221,18 +229,20 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>> implement
 			v = histoMax;
 		}
 		final int bin = (int) (k * (v - histoMin));
-		//final int bin = (int) ((BINS - 1) * (v - histMin) / (histMax - histMin));
+		// final int bin = (int) ((BINS - 1) * (v - histMin) / (histMax - histMin));
 		return bin;
 	}
-	
+
 	@Override
 	public boolean checkInput() {
 		if (errorMessage.length() > 0) {
 			return false;
-		} else if (image == null) {
+		}
+		else if (image == null) {
 			errorMessage = "ScaleSpace: [Image<A> img] is null.";
 			return false;
-		} else {
+		}
+		else {
 			return true;
 		}
 	}

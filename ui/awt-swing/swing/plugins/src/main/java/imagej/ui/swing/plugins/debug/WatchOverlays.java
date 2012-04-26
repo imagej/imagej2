@@ -89,15 +89,15 @@ public class WatchOverlays implements ImageJPlugin {
 	}
 
 	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final ObjectsListEvent event)
+	protected void onEvent(@SuppressWarnings("unused")
+	final ObjectsListEvent event)
 	{
 		updateOverlaysShown();
 	}
 
 	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final DisplayActivatedEvent event)
+	protected void onEvent(@SuppressWarnings("unused")
+	final DisplayActivatedEvent event)
 	{
 		updateOverlaysShown();
 	}
