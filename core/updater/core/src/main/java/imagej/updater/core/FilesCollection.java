@@ -78,7 +78,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	protected File imagejRoot;
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 
-	public static class UpdateSite implements Cloneable {
+	public static class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 
 		public String url, sshHost, uploadDirectory;
 		public long timestamp;
@@ -117,6 +117,23 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		public String toString() {
 			return url + (sshHost != null ? ", " + sshHost : "") +
 				(uploadDirectory != null ? ", " + uploadDirectory : "");
+		}
+
+		@Override
+		public int compareTo(UpdateSite other) {
+			return rank - other.rank;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other instanceof UpdateSite)
+				return rank == ((UpdateSite)other).rank;
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return rank;
 		}
 	}
 
