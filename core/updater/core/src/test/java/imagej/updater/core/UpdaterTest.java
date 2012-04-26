@@ -558,6 +558,13 @@ public class UpdaterTest {
 		assertTrue(plugin.dependencies.containsKey("jars/too-old-3.12.jar"));
 	}
 
+	@Test
+	public void testMultipleUpdateSites() throws Exception {
+		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
+		initializeUpdateSite(webRoot2, "jars/hello.jar");
+		assertFalse(new File(webRoot, "db.xml.gz").exists());
+	}
+
 	//
 	// Debug functions
 	//
@@ -606,8 +613,13 @@ public class UpdaterTest {
 	//
 
 	protected void initializeUpdateSite(final String... fileNames)
-		throws Exception
-	{
+			throws Exception {
+		initializeUpdateSite(webRoot, fileNames);
+	}
+
+	protected void initializeUpdateSite(final File webRoot, final String... fileNames)
+				throws Exception
+			{
 		final File localDb = new File(ijRoot, "db.xml.gz");
 		final File remoteDb = new File(webRoot, "db.xml.gz");
 
@@ -640,7 +652,7 @@ public class UpdaterTest {
 
 			// Initialize db.xml.gz
 
-			final FilesCollection files = readDb(false, false);
+			final FilesCollection files = readDb(false, false, webRoot);
 			assertEquals(0, files.size());
 
 			files.write();
@@ -667,6 +679,12 @@ public class UpdaterTest {
 		final boolean runChecksummer) throws IOException,
 		ParserConfigurationException, SAXException
 	{
+		return readDb(readLocalDb, runChecksummer, webRoot);
+	}
+
+	protected FilesCollection readDb(final boolean readLocalDb,
+			final boolean runChecksummer, final File webRoot) throws IOException,
+			ParserConfigurationException, SAXException {
 		final FilesCollection files = new FilesCollection(ijRoot);
 		final File localDb = new File(ijRoot, "db.xml.gz");
 		if (readLocalDb) files.read(localDb);
