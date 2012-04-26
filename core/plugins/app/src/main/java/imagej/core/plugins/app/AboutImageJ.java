@@ -41,8 +41,10 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
 import imagej.data.DrawingTool.TextJustification;
+import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -110,6 +112,9 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	@Parameter(persist = false)
 	private IOService ioService;
 
+	@Parameter(type = ItemIO.OUTPUT)
+	private Display<?> display;
+
 	// -- instance variables that are not parameters --
 
 	private final List<String> attributionStrings = new LinkedList<String>();
@@ -125,7 +130,11 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	public void run() {
 		final Dataset dataset = createDataset();
 		drawTextOverImage(dataset);
-		dispSrv.createDisplay("About ImageJ", dataset);
+		display = dispSrv.createDisplay("About ImageJ", dataset);
+	}
+
+	public Display<?> getDisplay() {
+		return display;
 	}
 
 	// -- private helpers --
