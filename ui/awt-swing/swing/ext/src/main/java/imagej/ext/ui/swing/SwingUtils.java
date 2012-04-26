@@ -102,7 +102,7 @@ public final class SwingUtils {
 		if (doScrollPane) {
 			final Component[] optionComponents = optionPane.getComponents();
 			int messageIndex = 0, buttonIndex = optionComponents.length - 1;
-			for (int i = 0 ; i < optionComponents.length; i++) {
+			for (int i = 0; i < optionComponents.length; i++) {
 				final String compName = optionComponents[i].getName();
 				if ("OptionPane.messageArea".equals(compName)) messageIndex = i;
 				else if ("OptionPane.buttonArea".equals(compName)) buttonIndex = i;
@@ -130,7 +130,7 @@ public final class SwingUtils {
 
 			// rebuild option pane with wrapped components
 			optionPane.removeAll();
-			for (int i=0; i<optionComponents.length; i++) {
+			for (int i = 0; i < optionComponents.length; i++) {
 				if (i == messageIndex) optionPane.add(wrappedMainPane);
 				else if (i == buttonIndex) optionPane.add(wrappedButtonPane);
 				else optionPane.add(optionComponents[i]);
@@ -153,10 +153,10 @@ public final class SwingUtils {
 			setDefaultFocusComponent(dialog, focusComponent);
 		}
 		dialog.setVisible(true);
-		
+
 		// get result
 		final Integer rval = (Integer) optionPane.getValue();
-		
+
 		// free resources
 		dialog.dispose();
 

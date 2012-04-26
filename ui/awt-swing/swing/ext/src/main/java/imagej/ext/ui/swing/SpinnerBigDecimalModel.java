@@ -44,7 +44,8 @@ import javax.swing.SpinnerNumberModel;
  * 
  * @author Curtis Rueden
  */
-public class SpinnerBigDecimalModel extends SpinnerTypedNumberModel<BigDecimal> {
+public class SpinnerBigDecimalModel extends SpinnerTypedNumberModel<BigDecimal>
+{
 
 	public SpinnerBigDecimalModel(final BigDecimal value,
 		final Comparable<BigDecimal> min, final Comparable<BigDecimal> max,

@@ -48,8 +48,8 @@ import javax.swing.JComboBox;
  * 
  * @author Curtis Rueden
  */
-public class SwingChoiceWidget extends SwingInputWidget
-	implements ActionListener, ChoiceWidget
+public class SwingChoiceWidget extends SwingInputWidget implements
+	ActionListener, ChoiceWidget
 {
 
 	private final JComboBox comboBox;

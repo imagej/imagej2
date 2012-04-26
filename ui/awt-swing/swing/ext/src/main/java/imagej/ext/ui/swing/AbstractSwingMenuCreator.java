@@ -77,8 +77,7 @@ public abstract class AbstractSwingMenuCreator<T> extends
 	}
 
 	@Override
-	protected JMenu
-		addNonLeafToMenu(final ShadowMenu shadow, final JMenu target)
+	protected JMenu addNonLeafToMenu(final ShadowMenu shadow, final JMenu target)
 	{
 		final JMenu menu = createNonLeaf(shadow);
 		target.add(menu);
@@ -93,7 +92,7 @@ public abstract class AbstractSwingMenuCreator<T> extends
 	protected JMenuItem createLeaf(final ShadowMenu shadow) {
 		final String name = shadow.getMenuEntry().getName();
 		final JMenuItem menuItem;
-		if (false); // CTR TEMP - disable checkbox menu items for beta1 release
+		if (false) ; // CTR TEMP - disable checkbox menu items for beta1 release
 //		if (shadow.isCheckBox()) {
 //			menuItem = new JCheckBoxMenuItem(name, isSelected(shadow));
 //		}

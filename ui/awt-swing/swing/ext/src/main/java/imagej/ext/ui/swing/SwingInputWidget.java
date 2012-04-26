@@ -50,7 +50,7 @@ import net.miginfocom.swing.MigLayout;
  */
 public abstract class SwingInputWidget extends JPanel implements InputWidget {
 
-	private WidgetModel model;
+	private final WidgetModel model;
 
 	public SwingInputWidget(final WidgetModel model) {
 		this.model = model;

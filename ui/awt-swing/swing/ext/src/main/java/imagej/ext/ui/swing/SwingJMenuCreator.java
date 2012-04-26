@@ -52,8 +52,7 @@ public class SwingJMenuCreator extends AbstractSwingMenuCreator<JMenu> {
 	}
 
 	@Override
-	protected JMenu addNonLeafToTop(final ShadowMenu shadow, final JMenu target)
-	{
+	protected JMenu addNonLeafToTop(final ShadowMenu shadow, final JMenu target) {
 		return addNonLeafToMenu(shadow, target);
 	}
 

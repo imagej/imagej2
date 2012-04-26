@@ -111,8 +111,7 @@ public class SwingColorWidget extends SwingInputWidget implements
 		color = AWTColors.getColor(value);
 
 		final BufferedImage image =
-			new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT,
-				BufferedImage.TYPE_INT_RGB);
+			new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		final Graphics g = image.getGraphics();
 		g.setColor(color);
 		g.fillRect(0, 0, image.getWidth(), image.getHeight());

@@ -52,15 +52,15 @@ import javax.swing.event.DocumentListener;
 
 /**
  * Swing implementation of file selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
-public class SwingFileWidget extends SwingInputWidget
-	implements FileWidget, ActionListener, DocumentListener
+public class SwingFileWidget extends SwingInputWidget implements FileWidget,
+	ActionListener, DocumentListener
 {
 
-	private JTextField path;
-	private JButton browse;
+	private final JTextField path;
+	private final JButton browse;
 
 	public SwingFileWidget(final WidgetModel model) {
 		super(model);
@@ -102,7 +102,7 @@ public class SwingFileWidget extends SwingInputWidget
 	// -- ActionListener methods --
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(final ActionEvent e) {
 		File file = new File(path.getText());
 		if (!file.isDirectory()) {
 			file = file.getParentFile();
@@ -131,17 +131,17 @@ public class SwingFileWidget extends SwingInputWidget
 	// -- DocumentListener methods --
 
 	@Override
-	public void changedUpdate(DocumentEvent e) {
+	public void changedUpdate(final DocumentEvent e) {
 		updateModel();
 	}
 
 	@Override
-	public void insertUpdate(DocumentEvent e) {
+	public void insertUpdate(final DocumentEvent e) {
 		updateModel();
 	}
 
 	@Override
-	public void removeUpdate(DocumentEvent e) {
+	public void removeUpdate(final DocumentEvent e) {
 		updateModel();
 	}
 

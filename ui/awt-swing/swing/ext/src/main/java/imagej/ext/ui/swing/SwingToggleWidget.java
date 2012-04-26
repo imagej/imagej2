@@ -47,8 +47,8 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingToggleWidget extends SwingInputWidget
-	implements ChangeListener, ToggleWidget
+public class SwingToggleWidget extends SwingInputWidget implements
+	ChangeListener, ToggleWidget
 {
 
 	private final JCheckBox checkBox;
@@ -82,9 +82,8 @@ public class SwingToggleWidget extends SwingInputWidget
 
 	@Override
 	public void refreshWidget() {
-		boolean value = (Boolean)  getModel().getValue();
-		if (value != checkBox.isSelected())
-			checkBox.setSelected(value);
+		final boolean value = (Boolean) getModel().getValue();
+		if (value != checkBox.isSelected()) checkBox.setSelected(value);
 	}
 
 }
