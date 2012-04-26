@@ -56,9 +56,9 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 	public SwingApplicationFrame(final String title) throws HeadlessException {
 		super(title);
 	}
-	
+
 	// -- SwingApplicationFrame methods --
-	
+
 	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
 		addKeyListener(dispatcher);
 		addKeyDispatcher(dispatcher, getContentPane());
@@ -77,7 +77,7 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 	}
 
 	// -- Helper methods --
-		
+
 	/** Recursively listens for keyboard events on the given component. */
 	private void addKeyDispatcher(final AWTKeyEventDispatcher keyDispatcher,
 		final Component comp)
@@ -95,6 +95,7 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 	@Override
 	public void activate() {
 		EventQueue.invokeLater(new Runnable() {
+
 			@Override
 			public void run() {
 				// NB: You might think calling requestFocus() would work, but no.

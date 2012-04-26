@@ -93,12 +93,11 @@ public final class SwingColorBar extends JPanel {
 	}
 
 	public static void main(final String[] args) {
-		final ColorTable8[] luts = {
-			ColorTables.FIRE, ColorTables.ICE, ColorTables.SPECTRUM,
-			ColorTables.RED, ColorTables.GREEN, ColorTables.BLUE,
-			ColorTables.CYAN, ColorTables.MAGENTA, ColorTables.YELLOW,
-			ColorTables.GRAYS, ColorTables.REDGREEN, ColorTables.RGB332
-		};
+		final ColorTable8[] luts =
+			{ ColorTables.FIRE, ColorTables.ICE, ColorTables.SPECTRUM,
+				ColorTables.RED, ColorTables.GREEN, ColorTables.BLUE, ColorTables.CYAN,
+				ColorTables.MAGENTA, ColorTables.YELLOW, ColorTables.GRAYS,
+				ColorTables.REDGREEN, ColorTables.RGB332 };
 
 		final JFrame frame = new JFrame();
 		frame.setTitle("LUTs");
@@ -106,6 +105,7 @@ public final class SwingColorBar extends JPanel {
 		frame.setContentPane(pane);
 		pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 		frame.addWindowListener(new WindowAdapter() {
+
 			@Override
 			public void windowClosing(final WindowEvent e) {
 				System.exit(0);

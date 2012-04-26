@@ -71,8 +71,7 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 
 	// -- SwingMdiDisplayWindow methods --
 
-	public void
-		addEventDispatcher(final InternalFrameEventDispatcher dispatcher)
+	public void addEventDispatcher(final InternalFrameEventDispatcher dispatcher)
 	{
 		addInternalFrameListener(dispatcher);
 	}

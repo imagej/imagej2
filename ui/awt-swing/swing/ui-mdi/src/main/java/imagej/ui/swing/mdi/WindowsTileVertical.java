@@ -48,13 +48,13 @@ import imagej.ui.UserInterface;
  * 
  * @author Grant Harris
  */
-@Plugin( menuPath = "Window>Tile Vertical")
+@Plugin(menuPath = "Window>Tile Vertical")
 public class WindowsTileVertical implements ImageJPlugin {
 
 	@Override
 	public void run() {
 		final UserInterface ui = ImageJ.get(UIService.class).getUI();
-		Desktop desk = ui.getDesktop();
+		final Desktop desk = ui.getDesktop();
 		desk.setArrangement(Arrangement.VERTICAL);
 	}
 

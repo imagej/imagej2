@@ -52,14 +52,16 @@ import javax.swing.JFrame;
  * @see AbstractSwingImageDisplayViewer
  */
 @Plugin(type = ImageDisplayViewer.class)
-public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer {
+public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
+{
 
 	@Override
-	public void view(DisplayWindow window, Display<?> display) {
+	public void view(final DisplayWindow window, final Display<?> display) {
 		super.view(window, display);
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
 
-		sdiWindow.addEventDispatcher(new AWTKeyEventDispatcher(display, eventService));
+		sdiWindow.addEventDispatcher(new AWTKeyEventDispatcher(display,
+			eventService));
 	}
 
 }

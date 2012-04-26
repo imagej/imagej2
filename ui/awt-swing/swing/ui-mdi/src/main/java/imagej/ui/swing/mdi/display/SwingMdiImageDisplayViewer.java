@@ -55,14 +55,15 @@ import javax.swing.JInternalFrame;
  * @see AbstractSwingImageDisplayViewer
  */
 @Plugin(type = ImageDisplayViewer.class)
-public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer {
+public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
+{
 
 	@Override
-	public void view(DisplayWindow window, Display<?> display) {
+	public void view(final DisplayWindow window, final Display<?> display) {
 		super.view(window, display);
-		DisplayPanel panel = getPanel();
+		final DisplayPanel panel = getPanel();
 		assert panel instanceof SwingDisplayPanel;
-		SwingDisplayPanel sPanel = (SwingDisplayPanel)panel;
+		final SwingDisplayPanel sPanel = (SwingDisplayPanel) panel;
 		sPanel.addEventDispatcher(new AWTKeyEventDispatcher(display, eventService));
 	}
 

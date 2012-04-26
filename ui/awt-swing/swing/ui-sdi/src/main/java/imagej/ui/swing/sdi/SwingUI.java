@@ -90,7 +90,6 @@ public class SwingUI extends AbstractSwingUI {
 		appFrame.pack();
 	}
 
-	
 	protected void deleteMenuBar(final JFrame f) {
 		f.setJMenuBar(null);
 		// HACK - w/o this next call the JMenuBars do not get garbage collected.
@@ -105,8 +104,8 @@ public class SwingUI extends AbstractSwingUI {
 	// -- Event handlers --
 
 	/**
-	 * This is the magical place where the display model
-	 * is connected with the real UI.
+	 * This is the magical place where the display model is connected with the
+	 * real UI.
 	 * 
 	 * @param event
 	 */
@@ -116,22 +115,26 @@ public class SwingUI extends AbstractSwingUI {
 		final ImageJ imageJ = display.getContext();
 		final PluginService pluginService = imageJ.getService(PluginService.class);
 		final EventService eventService = imageJ.getService(EventService.class);
-		for (@SuppressWarnings("rawtypes") PluginInfo<DisplayViewer> info:pluginService.getPluginsOfType(DisplayViewer.class)) {
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<DisplayViewer> info : pluginService
+			.getPluginsOfType(DisplayViewer.class))
+		{
 			try {
 				final DisplayViewer<?> displayViewer = info.createInstance();
-				if (displayViewer.canView(display)){
-					final SwingDisplayWindow displayWindow = new SwingDisplayWindow(); 
+				if (displayViewer.canView(display)) {
+					final SwingDisplayWindow displayWindow = new SwingDisplayWindow();
 					displayViewer.view(displayWindow, display);
 					displayViewers.add(displayViewer);
 					// add a copy of the JMenuBar to the new display
 					if (displayWindow.getJMenuBar() == null) {
 						createMenuBar(displayWindow);
 					}
-					displayWindow.addEventDispatcher(new AWTWindowEventDispatcher(display,
-													 eventService));
+					displayWindow.addEventDispatcher(new AWTWindowEventDispatcher(
+						display, eventService));
 					return;
 				}
-			} catch (InstantiableException e) {
+			}
+			catch (final InstantiableException e) {
 				Log.warn("Failed to create instance of " + info.getClassName(), e);
 			}
 		}
@@ -144,7 +147,7 @@ public class SwingUI extends AbstractSwingUI {
 		if (displayViewer != null) {
 			final DisplayWindow displayWindow = displayViewer.getDisplayWindow();
 			if ((displayWindow != null) && (displayWindow instanceof JFrame)) {
-				deleteMenuBar((JFrame)displayWindow);
+				deleteMenuBar((JFrame) displayWindow);
 			}
 		}
 	}

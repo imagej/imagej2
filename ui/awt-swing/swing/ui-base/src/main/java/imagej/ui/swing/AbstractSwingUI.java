@@ -82,7 +82,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	// NB: I'm a little queasy about including this.
 	// It's a list of extant display viewers and it's needed
 	// in order to find the viewer associated with a display
-	protected final List<DisplayViewer<?>> displayViewers = new ArrayList<DisplayViewer<?>>();
+	protected final List<DisplayViewer<?>> displayViewers =
+		new ArrayList<DisplayViewer<?>>();
 
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
@@ -130,7 +131,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final JPopupMenu popupMenu = new JPopupMenu();
 		new SwingJPopupMenuCreator().createMenus(shadowMenu, popupMenu);
 
-		DisplayViewer<?> displayViewer = getDisplayViewer(display);
+		final DisplayViewer<?> displayViewer = getDisplayViewer(display);
 		if (displayViewer != null) {
 			final Component invoker = (Component) displayViewer.getPanel();
 			popupMenu.show(invoker, x, y);
@@ -192,51 +193,53 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * or MDI).
 	 */
 	protected abstract void setupAppFrame();
-	
+
 	/**
 	 * Called any time a display is created.
 	 * 
 	 * @param e
 	 */
 	protected abstract void onDisplayCreated(DisplayCreatedEvent e);
-	
+
 	/**
-	 * Called any time a display is deleted. The display viewer
-	 * is not removed from the list of viewers until after this returns.
+	 * Called any time a display is deleted. The display viewer is not removed
+	 * from the list of viewers until after this returns.
 	 * 
 	 * @param e
 	 */
 	protected abstract void onDisplayDeleted(DisplayDeletedEvent e);
-	
+
 	/**
 	 * Called any time a display is updated.
-	 * @param e
-	 */
-	protected void onDisplayUpdated(DisplayUpdatedEvent e) {
-		DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
-		if (displayViewer != null) {
-			displayViewer.onDisplayUpdateEvent(e);
-		}
-		
-	}
-	
-	/**
-	 * Called any time a display is activated.
-	 *
-	 * The goal here is to eventually synchronize the window
-	 * activation state with the display activation state
-	 * if the display activation state changed programatically.
-	 * We queue a call on the UI thread to activate the
-	 * display viewer of the currently active window.
 	 * 
 	 * @param e
 	 */
-	protected synchronized void onDisplayActivated(DisplayActivatedEvent e) {
-		final DisplayService displayService = 
+	protected void onDisplayUpdated(final DisplayUpdatedEvent e) {
+		final DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
+		if (displayViewer != null) {
+			displayViewer.onDisplayUpdateEvent(e);
+		}
+
+	}
+
+	/**
+	 * Called any time a display is activated.
+	 * <p>
+	 * The goal here is to eventually synchronize the window activation state with
+	 * the display activation state if the display activation state changed
+	 * programatically. We queue a call on the UI thread to activate the display
+	 * viewer of the currently active window.
+	 * </p>
+	 * 
+	 * @param e
+	 */
+	protected synchronized void onDisplayActivated(final DisplayActivatedEvent e)
+	{
+		final DisplayService displayService =
 			e.getContext().getService(DisplayService.class);
-		Display<?> activeDisplay = displayService.getActiveDisplay();
+		final Display<?> activeDisplay = displayService.getActiveDisplay();
 		if (activeDisplay != null) {
-			DisplayViewer<?> displayViewer = getDisplayViewer(activeDisplay);
+			final DisplayViewer<?> displayViewer = getDisplayViewer(activeDisplay);
 			if (displayViewer != null) {
 				displayViewer.onDisplayActivatedEvent(e);
 			}
@@ -246,52 +249,56 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 	/**
 	 * Handle a DisplayCreatedEvent.
-	 * 
-	 * Note that the handling of all display events is synchronized
-	 * on the GUI singleton in order to serialize processing.
+	 * <p>
+	 * Note that the handling of all display events is synchronized on the GUI
+	 * singleton in order to serialize processing.
+	 * </p>
 	 * 
 	 * @param e
 	 */
 	@EventHandler
-	protected synchronized void onEvent(DisplayCreatedEvent e) {
+	protected synchronized void onEvent(final DisplayCreatedEvent e) {
 		onDisplayCreated(e);
 	}
-	
+
 	@EventHandler
-	protected synchronized void onEvent(DisplayDeletedEvent e) {
-		DisplayViewer<?> displayViewer = getDisplayViewer(e.getObject());
+	protected synchronized void onEvent(final DisplayDeletedEvent e) {
+		final DisplayViewer<?> displayViewer = getDisplayViewer(e.getObject());
 		if (displayViewer != null) {
 			onDisplayDeleted(e);
 			displayViewer.onDisplayDeletedEvent(e);
 			displayViewers.remove(displayViewer);
 		}
 	}
-	
+
 	@EventHandler
-	protected synchronized void onEvent(DisplayUpdatedEvent e) {
-		DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
+	protected synchronized void onEvent(final DisplayUpdatedEvent e) {
+		final DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
 		if (displayViewer != null) {
 			onDisplayUpdated(e);
 		}
 	}
-	
+
 	@EventHandler
 	protected synchronized void onEvent(final DisplayActivatedEvent e) {
 		if (activationInvocationPending) return;
 		activationInvocationPending = true;
 		SwingUtilities.invokeLater(new Runnable() {
+
 			@Override
 			public void run() {
 				onDisplayActivated(e);
-			}});
+			}
+		});
 	}
+
 	// FIXME - temp hack - made this method public so that the SwingOverlayManager
 	// (which is not a display) could make sure menu bar available when it is
 	// running. A better approach would be to keep this method protected and make
 	// a new event tied to a menu bar listener of some sort. Creating any window
 	// (not just displays) could keep the menu bar in place as needed. Filinf as
 	// ticket.
-	
+
 	/**
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
 	 * and adds it to the given {@link JFrame}.
@@ -306,11 +313,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	}
 
 	protected DisplayViewer<?> getDisplayViewer(final Display<?> display) {
-		for (DisplayViewer<?> displayViewer:displayViewers) {
-			if (displayViewer.getDisplay() == display)
-				return displayViewer;
+		for (final DisplayViewer<?> displayViewer : displayViewers) {
+			if (displayViewer.getDisplay() == display) return displayViewer;
 		}
-		Log.warn("No DisplayViewer found for display, \"" + display.getName() + "\"");
+		Log.warn("No DisplayViewer found for display, \"" + display.getName() +
+			"\"");
 		return null;
 	}
 

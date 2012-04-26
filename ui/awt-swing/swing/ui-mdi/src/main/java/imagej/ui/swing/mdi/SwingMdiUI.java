@@ -77,7 +77,7 @@ public class SwingMdiUI extends AbstractSwingUI {
 
 	@Override
 	public Desktop getDesktop() {
-		return desktopPane; 
+		return desktopPane;
 	}
 
 	@Override
@@ -111,8 +111,8 @@ public class SwingMdiUI extends AbstractSwingUI {
 	// -- Event handlers --
 
 	/**
-	 * This is the magical place where the display model
-	 * is connected with the real UI.
+	 * This is the magical place where the display model is connected with the
+	 * real UI.
 	 * 
 	 * @param event
 	 */
@@ -122,19 +122,24 @@ public class SwingMdiUI extends AbstractSwingUI {
 		final ImageJ imageJ = display.getContext();
 		final PluginService pluginService = imageJ.getService(PluginService.class);
 		final EventService eventService = imageJ.getService(EventService.class);
-		for (@SuppressWarnings("rawtypes") PluginInfo<DisplayViewer> info:pluginService.getPluginsOfType(DisplayViewer.class)) {
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<DisplayViewer> info : pluginService
+			.getPluginsOfType(DisplayViewer.class))
+		{
 			try {
 				final DisplayViewer<?> displayViewer = info.createInstance();
-				if (displayViewer.canView(display)){
-					final SwingMdiDisplayWindow displayWindow = new SwingMdiDisplayWindow(); 
+				if (displayViewer.canView(display)) {
+					final SwingMdiDisplayWindow displayWindow =
+						new SwingMdiDisplayWindow();
 					displayViewer.view(displayWindow, display);
 					displayWindow.showDisplay(true);
 					desktopPane.add(displayWindow);
-					displayWindow.addEventDispatcher(
-							new InternalFrameEventDispatcher(display, eventService));
+					displayWindow.addEventDispatcher(new InternalFrameEventDispatcher(
+						display, eventService));
 					return;
 				}
-			} catch (InstantiableException e) {
+			}
+			catch (final InstantiableException e) {
 				Log.warn("Failed to create instance of " + info.getClassName(), e);
 			}
 		}
@@ -142,8 +147,8 @@ public class SwingMdiUI extends AbstractSwingUI {
 	}
 
 	@Override
-	protected void onDisplayDeleted(DisplayDeletedEvent e) {
+	protected void onDisplayDeleted(final DisplayDeletedEvent e) {
 		// No action.
-		
+
 	}
 }

@@ -103,13 +103,14 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	private final Map<AxisType, JScrollBar> axisSliders =
 		new ConcurrentHashMap<AxisType, JScrollBar>();
 
-	private final Map<AxisType, JLabel> axisLabels = new HashMap<AxisType, JLabel>();
+	private final Map<AxisType, JLabel> axisLabels =
+		new HashMap<AxisType, JLabel>();
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	// -- constructors --
-	
+
 	public SwingDisplayPanel(final AbstractSwingImageDisplayViewer displayViewer,
 		final DisplayWindow window)
 	{
@@ -138,7 +139,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		window.setContent(this);
 
-		EventService eventService = display.getContext().getService(EventService.class);
+		final EventService eventService =
+			display.getContext().getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 	}
 
@@ -199,18 +201,23 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	@Override
 	public void redraw() {
 		final ImageDisplayService imageDisplayService =
-				display.getContext().getService(ImageDisplayService.class);
-			final DatasetView view = imageDisplayService.getActiveDatasetView(display);
-			if (view == null) return; // no active dataset
-			view.getProjector().map();
+			display.getContext().getService(ImageDisplayService.class);
+		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
+		if (view == null) return; // no active dataset
+		view.getProjector().map();
 		EventQueue.invokeLater(new Runnable() {
-			public void run() { displayViewer.getCanvas().update(); }});
+
+			@Override
+			public void run() {
+				displayViewer.getCanvas().update();
+			}
+		});
 	}
-	
+
 	// -- Event handlers --
 
 	@EventHandler
-	protected void onEvent(AxisPositionEvent event) {
+	protected void onEvent(final AxisPositionEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
 		final AxisType axis = event.getAxis();
 		updateAxis(axis);
@@ -230,7 +237,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			axisSliders.remove(axis);
 			axisLabels.remove(axis);
 		}
-		
+
 		// configure sliders to match axes and extents
 		for (int i = 0; i < axes.length; i++) {
 			final AxisType axis = axes[i];
@@ -247,10 +254,10 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 				label.setHorizontalAlignment(SwingConstants.RIGHT);
 				axisLabels.put(axis, label);
 
-				final JScrollBar slider = new JScrollBar(Adjustable.HORIZONTAL, value,
-					1, min, max);
+				final JScrollBar slider =
+					new JScrollBar(Adjustable.HORIZONTAL, value, 1, min, max);
 				slider.addAdjustmentListener(new AdjustmentListener() {
-	
+
 					@Override
 					public void adjustmentValueChanged(final AdjustmentEvent e) {
 						display.setPosition(slider.getValue(), axis);
@@ -279,10 +286,9 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
-				view.getConverters();
+			view.getConverters();
 		if (c >= converters.size()) return;
-		final RealLUTConverter<? extends RealType<?>> converter =
-			converters.get(c);
+		final RealLUTConverter<? extends RealType<?>> converter = converters.get(c);
 		final ColorTable8 lut = converter.getLUT();
 		final int last = lut.getLength() - 1;
 		final int r = lut.get(0, last);
@@ -295,7 +301,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	private void doInitialSizing() {
 		final double scale = findFullyVisibleScale();
 		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
-		ImageCanvas canvas = displayViewer.getImageDisplay().getCanvas();
+		final ImageCanvas canvas = displayViewer.getImageDisplay().getCanvas();
 		canvas.setZoomAndCenter(zoomLevel);
 		if (!initialScaleCalculated) {
 			canvas.setInitialScale(canvas.getZoomFactor());

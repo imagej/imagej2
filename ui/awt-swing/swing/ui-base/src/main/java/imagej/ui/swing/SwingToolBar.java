@@ -84,7 +84,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	public SwingToolBar(final UIService uiService) {
 		this.uiService = uiService;
@@ -99,7 +99,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	public ToolService getToolService() {
 		return uiService.getToolService();
 	}
-	
+
 	// -- Helper methods --
 
 	private void populateToolBar() {
@@ -156,7 +156,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 			public void mouseEntered(final MouseEvent evt) {
 				uiService.getStatusService().showStatus(tool.getDescription());
 			}
-			
+
 			@Override
 			public void mousePressed(final MouseEvent evt) {
 				if (evt.getButton() == MouseEvent.NOBUTTON) return;

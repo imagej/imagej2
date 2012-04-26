@@ -49,9 +49,9 @@ import imagej.ui.swing.SwingTextDisplayPanel;
  */
 @Plugin(type = TextDisplayViewer.class)
 public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
-	
+
 	@Override
-	public void view(DisplayWindow window, Display<?> display) {
+	public void view(final DisplayWindow window, final Display<?> display) {
 		super.view(window, display);
 		setPanel(new SwingTextDisplayPanel(getDisplay(), window));
 	}

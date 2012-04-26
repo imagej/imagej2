@@ -62,12 +62,12 @@ import javax.swing.border.BevelBorder;
 public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	private final UIService uiService;
-	
+
 	private final JLabel statusText;
 	private final JProgressBar progressBar;
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	public SwingStatusBar(final UIService uiService) {
 		this.uiService = uiService;

@@ -56,7 +56,9 @@ public class SwingDialogPrompt implements DialogPrompt {
 	public SwingDialogPrompt(final String message, final String title,
 		final MessageType messageType, final OptionType optionType)
 	{
-		pane =new JOptionPane(message, msgMap.get(messageType), optionMap.get(optionType));
+		pane =
+			new JOptionPane(message, msgMap.get(messageType), optionMap
+				.get(optionType));
 		// pane.set.Xxxx(...); // Configure
 		dialog = pane.createDialog(null, title);
 	}
@@ -69,7 +71,8 @@ public class SwingDialogPrompt implements DialogPrompt {
 
 	}
 
-	/// Translate DialogPrompt types and results to JOptionPane types and results.
+	// / Translate DialogPrompt types and results to JOptionPane types and
+	// results.
 
 	static final Map<DialogPrompt.MessageType, Integer> msgMap =
 		new HashMap<DialogPrompt.MessageType, Integer>();
@@ -99,10 +102,8 @@ public class SwingDialogPrompt implements DialogPrompt {
 		optionMap.put(DialogPrompt.OptionType.YES_NO_OPTION,
 			JOptionPane.YES_NO_OPTION);
 		//
-		resultMap
-			.put(JOptionPane.CANCEL_OPTION, DialogPrompt.Result.CANCEL_OPTION);
-		resultMap
-			.put(JOptionPane.CLOSED_OPTION, DialogPrompt.Result.CLOSED_OPTION);
+		resultMap.put(JOptionPane.CANCEL_OPTION, DialogPrompt.Result.CANCEL_OPTION);
+		resultMap.put(JOptionPane.CLOSED_OPTION, DialogPrompt.Result.CLOSED_OPTION);
 		resultMap.put(JOptionPane.NO_OPTION, DialogPrompt.Result.NO_OPTION);
 		resultMap.put(JOptionPane.OK_OPTION, DialogPrompt.Result.OK_OPTION);
 		resultMap.put(JOptionPane.YES_OPTION, DialogPrompt.Result.YES_OPTION);

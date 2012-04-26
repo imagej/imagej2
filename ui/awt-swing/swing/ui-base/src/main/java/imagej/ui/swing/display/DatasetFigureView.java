@@ -62,8 +62,7 @@ import org.jhotdraw.draw.ImageFigure;
  * 
  * @author Curtis Rueden
  */
-public class DatasetFigureView implements FigureView
-{
+public class DatasetFigureView implements FigureView {
 
 	private final DatasetView datasetView;
 	private final ImageFigure figure;
@@ -83,7 +82,7 @@ public class DatasetFigureView implements FigureView
 		figure = new ImageFigure();
 		figure.setSelectable(false);
 		figure.setTransformable(false);
-		Dataset dataset = datasetView.getData();
+		final Dataset dataset = datasetView.getData();
 		final double minX = dataset.getImgPlus().realMin(0);
 		final double minY = dataset.getImgPlus().realMin(1);
 		final double maxX = dataset.getImgPlus().realMax(0);
@@ -92,19 +91,19 @@ public class DatasetFigureView implements FigureView
 			maxY));
 		drawing.add(figure);
 		final ImageJ context = dataset.getContext();
-		EventService eventService = context.getService(EventService.class);
+		final EventService eventService = context.getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 	}
 
 	@EventHandler
 	protected void onDataViewUpdatedEvent(final DataViewUpdatedEvent event) {
-		if (event.getView() == datasetView)
-			update();
+		if (event.getView() == datasetView) update();
 	}
 
+	@Override
 	@SuppressWarnings("synthetic-access")
 	public synchronized void update() {
-		if ((!needsUpdate) && (! disposeScheduled)) {
+		if ((!needsUpdate) && (!disposeScheduled)) {
 			needsUpdate = true;
 			EventQueue.invokeLater(new Runnable() {
 
@@ -139,20 +138,22 @@ public class DatasetFigureView implements FigureView
 
 	@Override
 	public void dispose() {
-		synchronized(this) {
-			if (! disposeScheduled) {
+		synchronized (this) {
+			if (!disposeScheduled) {
 				EventQueue.invokeLater(new Runnable() {
 
 					@Override
 					public void run() {
-						synchronized(DatasetFigureView.this) {
+						synchronized (DatasetFigureView.this) {
 							figure.requestRemove();
 						}
-					}});
+					}
+				});
 				disposeScheduled = true;
 			}
 		}
 	}
+
 	@Override
 	public DataView getDataView() {
 		return datasetView;
