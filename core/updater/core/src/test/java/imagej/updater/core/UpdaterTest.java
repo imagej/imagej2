@@ -585,9 +585,34 @@ public class UpdaterTest {
 
 	@Test
 	public void testMultipleUpdateSites() throws Exception {
+		// initialize secondary update site
 		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
 		initializeUpdateSite(webRoot2, "jars/hello.jar");
 		assertFalse(new File(webRoot, "db.xml.gz").exists());
+
+		// initialize main update site
+		assertTrue(new File(ijRoot, "db.xml.gz").delete());
+		initializeUpdateSite("macros/macro.ijm");
+
+		FilesCollection files = readDb(true, true);
+		assertStatus(Status.LOCAL_ONLY, files.get("jars/hello.jar"));
+
+		// add second update site
+		files.addUpdateSite("second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
+
+		// re-read files from update site
+		files.reReadUpdateSite("second", progress);
+		assertStatus(Status.INSTALLED, files.get("jars/hello.jar"));
+		files.write();
+
+		// modify locally and re-read from update site
+		assertTrue(new File(ijRoot, ".checksums").delete());
+		assertTrue(new File(ijRoot, "jars/hello.jar").delete());
+		writeJar("jars/hello-2.0.jar", "new-file", "empty");
+		new Checksummer(files, progress).updateFromLocal();
+
+		files.reReadUpdateSite("second", progress);
+		assertStatus(Status.MODIFIED, files.get("jars/hello.jar"));
 	}
 
 	//

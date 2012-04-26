@@ -217,6 +217,9 @@ public class XMLFileReader extends DefaultHandler {
 					if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
 						current.overriddenUpdateSites.add(file.updateSite);
 					}
+					if (file.localFilename != null) {
+						current.localFilename = file.localFilename;
+					}
 					files.add(current);
 				}
 				else
