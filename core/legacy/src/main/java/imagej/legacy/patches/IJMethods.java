@@ -38,6 +38,7 @@ package imagej.legacy.patches;
 import ij.IJ;
 import imagej.ImageJ;
 import imagej.event.StatusService;
+import imagej.legacy.LegacyService;
 import imagej.util.Log;
 
 /**
@@ -70,6 +71,11 @@ public class IJMethods {
 	/** Appends {@link IJ#showStatus(String)}. */
 	public static void showStatus(final String s) {
 		Log.debug("showStatus: " + s);
+		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		if (legacyService == null || !legacyService.isInitialized()) {
+			// suppress ImageJ1 bootup messages
+			return;
+		}
 		// report status through global event mechanism
 		ImageJ.get(StatusService.class).showStatus(s);
 	}

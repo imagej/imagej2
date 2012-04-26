@@ -90,6 +90,7 @@ public final class LegacyService extends AbstractService {
 	private final OptionsService optionsService;
 	private final ImageDisplayService imageDisplayService;
 	private boolean lastDebugMode;
+	private boolean initialized;
 	
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
@@ -137,6 +138,8 @@ public final class LegacyService extends AbstractService {
 		updateIJ1Settings();
 
 		subscribeToEvents(eventService);
+
+		initialized = true;
 	}
 
 	// -- LegacyService methods --
@@ -187,6 +190,10 @@ public final class LegacyService extends AbstractService {
 			imageDisplayService.getActiveImageDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
 		WindowManager.setTempCurrentImage(activeImagePlus);
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	// TODO - make private only???
