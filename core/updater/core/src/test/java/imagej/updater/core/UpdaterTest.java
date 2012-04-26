@@ -581,7 +581,7 @@ public class UpdaterTest {
 
 			for (final String name : fileNames) {
 				final FileObject file = files.get(name);
-				org.junit.Assert.assertNotNull(name, file);
+				assertNotNull(name, file);
 				file.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 			}
 			uploader = new FilesUploader(files, FilesCollection.DEFAULT_UPDATE_SITE);
