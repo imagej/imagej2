@@ -47,10 +47,9 @@ import java.util.List;
 
 /**
  * A collection of helper methods for {@link ImageCanvas} objects, particularly
- * panning and zooming. The helper controls its canvas: the canvas has
- * the center, viewport size and zoom factor and the CanvasHelper
- * implements the pannable and zoomable behavior by manipulating these
- * canvas variables.
+ * panning and zooming. The helper controls its canvas: the canvas has the
+ * center, viewport size and zoom factor and the CanvasHelper implements the
+ * pannable and zoomable behavior by manipulating these canvas variables.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -60,7 +59,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 	private static final int MIN_ALLOWED_VIEW_SIZE = 25;
 
 	private static double maxZoom;
-	
+
 	private static double[] defaultZooms;
 
 	static {
@@ -115,8 +114,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 		defaultZooms = new double[combinedZoomLevels.size()];
 		for (int i = 0; i < defaultZooms.length; i++)
 			defaultZooms[i] = combinedZoomLevels.get(i);
-		
-		maxZoom = hiZooms.get(hiZooms.size()-1);
+
+		maxZoom = hiZooms.get(hiZooms.size() - 1);
 	}
 
 	/** The {@link ImageCanvas} on which this helper operates. */
@@ -134,7 +133,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 		this(canvas, defaultZoomLevels());
 	}
 
-	public CanvasHelper(final DefaultImageCanvas canvas, final double[] zoomLevels) {
+	public CanvasHelper(final DefaultImageCanvas canvas, final double[] zoomLevels)
+	{
 		this.canvas = canvas;
 		this.zoomLevels = validatedZoomLevels(zoomLevels);
 	}
@@ -157,8 +157,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 	}
 
 	public IntCoords imageToPanelCoords(final RealCoords imageCoords) {
-		final int panelX = (int) Math.round(getZoomFactor() * (imageCoords.x - getLeftImageX()));
-		final int panelY = (int) Math.round(getZoomFactor() * (imageCoords.y - getTopImageY()));
+		final int panelX =
+			(int) Math.round(getZoomFactor() * (imageCoords.x - getLeftImageX()));
+		final int panelY =
+			(int) Math.round(getZoomFactor() * (imageCoords.y - getTopImageY()));
 		return new IntCoords(panelX, panelY);
 	}
 
@@ -166,8 +168,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void pan(final IntCoords delta) {
-		double centerX = getPanCenter().x + delta.x / getZoomFactor();
-		double centerY = getPanCenter().y + delta.y / getZoomFactor();
+		final double centerX = getPanCenter().x + delta.x / getZoomFactor();
+		final double centerY = getPanCenter().y + delta.y / getZoomFactor();
 		canvas.doSetCenter(centerX, centerY);
 	}
 
@@ -178,10 +180,9 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void panReset() {
-		RealRect extents = canvas.getDisplay().getImageExtents();
-		canvas.doSetCenter(
-				extents.x + extents.height / 2,
-				extents.y + extents.width / 2);
+		final RealRect extents = canvas.getDisplay().getImageExtents();
+		canvas.doSetCenter(extents.x + extents.height / 2, extents.y +
+			extents.width / 2);
 	}
 
 	@Override
@@ -193,8 +194,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void setZoom(final double factor) {
-		double desiredScale = (factor == 0)? initialScale: factor;
-		if (scaleOutOfBounds(desiredScale) || (desiredScale == getZoomFactor())) return;
+		final double desiredScale = factor == 0 ? initialScale : factor;
+		if (scaleOutOfBounds(desiredScale) || desiredScale == getZoomFactor()) {
+			return;
+		}
 		canvas.doSetZoom(desiredScale);
 	}
 
@@ -202,12 +205,13 @@ public class CanvasHelper implements Pannable, Zoomable {
 	public void setZoom(final double factor, final IntCoords center) {
 		double desiredScale = factor;
 		if (factor == 0) desiredScale = initialScale;
-		RealCoords newCenter = panelToImageCoords(center);
-		if (scaleOutOfBounds(desiredScale) ||
-			((desiredScale == getZoomFactor()) &&
-			 (getPanCenter().x == newCenter.x) &&
-			 (getPanCenter().y == newCenter.y))) return;
-		
+		final RealCoords newCenter = panelToImageCoords(center);
+		if (scaleOutOfBounds(desiredScale) || desiredScale == getZoomFactor() &&
+			getPanCenter().x == newCenter.x && getPanCenter().y == newCenter.y)
+		{
+			return;
+		}
+
 		canvas.doSetZoomAndCenter(desiredScale, newCenter.x, newCenter.y);
 	}
 
@@ -237,10 +241,10 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void zoomToFit(final IntCoords topLeft, final IntCoords bottomRight) {
-		RealCoords imageTopLeft = panelToImageCoords(topLeft);
-		RealCoords imageBottomRight = panelToImageCoords(bottomRight);
-		double newCenterX = Math.abs(imageBottomRight.x + imageTopLeft.x) / 2;
-		double newCenterY = Math.abs(imageBottomRight.y + imageTopLeft.y) / 2;
+		final RealCoords imageTopLeft = panelToImageCoords(topLeft);
+		final RealCoords imageBottomRight = panelToImageCoords(bottomRight);
+		final double newCenterX = Math.abs(imageBottomRight.x + imageTopLeft.x) / 2;
+		final double newCenterY = Math.abs(imageBottomRight.y + imageTopLeft.y) / 2;
 		final double imageSizeX = Math.abs(imageBottomRight.x - imageTopLeft.x);
 		final double imageSizeY = Math.abs(imageBottomRight.y - imageTopLeft.y);
 		final double xZoom = canvas.getViewportWidth() / imageSizeX;
@@ -250,14 +254,15 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 		canvas.doSetZoomAndCenter(factor, newCenterX, newCenterY);
 	}
-	
+
 	@Override
 	public void zoomToFit(final RealRect viewportRect) {
-		double newCenterX = (viewportRect.x + viewportRect.width/2);
-		double newCenterY = (viewportRect.y + viewportRect.height/2);
-		double scale = Math.min(
-				canvas.getViewportWidth() / viewportRect.width, 
-				canvas.getViewportHeight() / viewportRect.height);
+		final double newCenterX = (viewportRect.x + viewportRect.width / 2);
+		final double newCenterY = (viewportRect.y + viewportRect.height / 2);
+		final double scale =
+			Math.min(canvas.getViewportWidth() / viewportRect.width, canvas
+				.getViewportHeight() /
+				viewportRect.height);
 		if (scaleOutOfBounds(scale)) return;
 		canvas.doSetZoomAndCenter(scale, newCenterX, newCenterY);
 	}
@@ -268,29 +273,32 @@ public class CanvasHelper implements Pannable, Zoomable {
 	}
 
 	@Override
-	public void setZoomAndCenter(double factor) {
-		final double desiredScale = (factor == 0)? initialScale: factor;
+	public void setZoomAndCenter(final double factor) {
+		final double desiredScale = factor == 0 ? initialScale : factor;
 		if (scaleOutOfBounds(desiredScale)) return;
-		canvas.doSetZoomAndCenter(desiredScale,
-				canvas.getViewportWidth() / getZoomFactor() / 2.0,
-				canvas.getViewportHeight() / getZoomFactor() / 2.0);
+		canvas
+			.doSetZoomAndCenter(desiredScale, canvas.getViewportWidth() /
+				getZoomFactor() / 2.0, canvas.getViewportHeight() / getZoomFactor() /
+				2.0);
 	}
 
 	@Override
-	public void setZoom(double factor, RealCoords center) {
-		final double desiredScale = (factor == 0)? initialScale: factor;
+	public void setZoom(final double factor, final RealCoords center) {
+		final double desiredScale = factor == 0 ? initialScale : factor;
 		if (scaleOutOfBounds(desiredScale)) return;
 		canvas.doSetZoomAndCenter(desiredScale, center.x, center.y);
 	}
 
 	@Override
 	public RealRect getViewportImageRect() {
-		RealCoords topLeft = panelToImageCoords(new IntCoords(0,0));
-		RealCoords bottomRight = panelToImageCoords(
-				new IntCoords(canvas.getViewportWidth(), canvas.getViewportHeight()));
-		return new RealRect(topLeft.x, topLeft.y, 
-				bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+		final RealCoords topLeft = panelToImageCoords(new IntCoords(0, 0));
+		final RealCoords bottomRight =
+			panelToImageCoords(new IntCoords(canvas.getViewportWidth(), canvas
+				.getViewportHeight()));
+		return new RealRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
+			bottomRight.y - topLeft.y);
 	}
+
 	public void setInitialScale(final double value) {
 		if (value <= 0) {
 			throw new IllegalArgumentException("Initial scale must be > 0");
@@ -311,20 +319,23 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 		return nextSmallerZoom(levels, fractionalScale);
 	}
-	
+
 	// -- Helper methods --
 
 	/**
 	 * @return the coordinate of the left edge of the viewport in image space.
 	 */
 	private double getLeftImageX() {
-		return getPanCenter().x - canvas.getViewportWidth() / canvas.getZoomFactor() / 2;
+		return getPanCenter().x - canvas.getViewportWidth() /
+			canvas.getZoomFactor() / 2;
 	}
+
 	/**
 	 * @return the coordinate of the top edge of the viewport in image space.
 	 */
 	private double getTopImageY() {
-		return getPanCenter().y - canvas.getViewportHeight() / canvas.getZoomFactor() / 2;
+		return getPanCenter().y - canvas.getViewportHeight() /
+			canvas.getZoomFactor() / 2;
 	}
 
 	private boolean scaleOutOfBounds(final double desiredScale) {
@@ -346,16 +357,16 @@ public class CanvasHelper implements Pannable, Zoomable {
 		}
 		*/
 		if (desiredScale > maxZoom) return true;
-	
+
 		// check if trying to zoom out too far
 		if (desiredScale < getZoomFactor()) {
 			// get boundaries of image in panel coords
-			RealRect displayExtents = getImageExtents();
-			final IntCoords nearCornerPanel = imageToPanelCoords(
-					new RealCoords(displayExtents.x, displayExtents.y));
-			final IntCoords farCornerPanel = imageToPanelCoords(
-					new RealCoords(displayExtents.x + displayExtents.width, 
-							       displayExtents.y + displayExtents.height) );
+			final RealRect displayExtents = getImageExtents();
+			final IntCoords nearCornerPanel =
+				imageToPanelCoords(new RealCoords(displayExtents.x, displayExtents.y));
+			final IntCoords farCornerPanel =
+				imageToPanelCoords(new RealCoords(displayExtents.x +
+					displayExtents.width, displayExtents.y + displayExtents.height));
 
 			// if boundaries take up less than min allowed pixels in either dimension
 			final int panelX = farCornerPanel.x - nearCornerPanel.x;
@@ -367,14 +378,14 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 		return false;
 	}
-	
+
 	/**
 	 * @return the extents of the display in image coordinates.
 	 */
 	private RealRect getImageExtents() {
 		return canvas.getDisplay().getImageExtents();
 	}
-	
+
 	private static double nextSmallerZoom(final double[] zoomLevels,
 		final double currScale)
 	{
