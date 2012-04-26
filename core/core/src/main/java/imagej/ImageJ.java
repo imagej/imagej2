@@ -55,7 +55,7 @@ import java.util.List;
 public class ImageJ {
 
 	/** Version of the ImageJ software. */
-	public static final String VERSION = "2.0.0-beta1-DEV";
+	public static final String VERSION = "2.0.0-beta2-DEV";
 
 	/** Creates a new ImageJ application context with all available services. */
 	public static ImageJ createContext() {
