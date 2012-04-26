@@ -40,6 +40,7 @@ import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.DependencyMap;
 import imagej.updater.util.Util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -210,6 +211,19 @@ public class Conflicts {
 					(dep.getStatus().isValid(Action.UPLOAD) && dep.getAction() != Action.UPLOAD)) toUpload
 					.add(dep, file);
 			}
+			// test whether there are conflicting versions of the same file
+			if (!files.ignoredConflicts.contains(file) && file.filename.endsWith(".jar")) {
+				String baseName = file.getBaseName();
+				int slash = baseName.lastIndexOf('/');
+				String prefix = baseName.substring(0, slash + 1);
+				baseName = baseName.substring(slash + 1);
+				for (final String name : files.prefix(file).getParentFile().list()) {
+					final String prefixed = prefix + name;
+					if (name.startsWith(baseName) && !file.filename.equals(prefixed) && file.getFilename(true).equals(FileObject.getFilename(prefixed, true))) {
+						conflicts.add(conflictingVersions(file, files.prefix(prefixed), prefixed));
+					}
+				}
+			}
 		}
 		for (final FileObject file : toUpload.keySet())
 			conflicts.add(needUpload(file, toUpload.get(file)));
@@ -339,6 +353,12 @@ public class Conflicts {
 			.toArray(new Resolution[resolutions.size()]));
 	}
 
+	protected Conflict conflictingVersions(final FileObject file, final File otherFile, final String otherFileName) {
+		return new Conflict(true, file, "Conflicting version found: " + otherFileName,
+				deleteFile("Delete " + otherFileName + " (dangerous!)", otherFile),
+				ignoreResolution("Ignore the problem (also dangerous!)", file));
+	}
+
 	protected Resolution ignoreResolution(final String description,
 		final FileObject file)
 	{
@@ -347,6 +367,16 @@ public class Conflicts {
 			@Override
 			public void resolve() {
 				files.ignoredConflicts.add(file);
+			}
+		};
+	}
+
+	protected Resolution deleteFile(final String description, final File file) {
+		return new Resolution(description) {
+
+			@Override
+			public void resolve() {
+				file.delete();
 			}
 		};
 	}

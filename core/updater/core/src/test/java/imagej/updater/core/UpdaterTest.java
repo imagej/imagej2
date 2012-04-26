@@ -559,6 +559,31 @@ public class UpdaterTest {
 	}
 
 	@Test
+	public void testConflictingVersionsToUpload() throws Exception {
+		initializeUpdateSite("macros/macro.ijm");
+
+		// There should be an upload conflict if .jar file names differ only in version number
+
+		writeFile("jars/file.jar");
+		writeFile("jars/file-3.0.jar");
+		final FilesCollection files = readDb(true, true);
+		files.get("jars/file.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+
+		final Conflicts conflicts = new Conflicts(files);
+		conflicts.conflicts = new ArrayList<Conflict>();
+		conflicts.listUploadIssues();
+		assertCount(1, conflicts.conflicts);
+
+		// resolve by deleting the file
+
+		assertTrue(files.prefix("jars/file.jar").exists());
+		conflicts.conflicts.get(0).getResolutions()[0].resolve();
+		assertFalse(files.prefix("jars/file.jar").exists());
+
+		upload(files);
+	}
+
+	@Test
 	public void testMultipleUpdateSites() throws Exception {
 		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
 		initializeUpdateSite(webRoot2, "jars/hello.jar");
