@@ -873,7 +873,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	@Override
 	public Iterator<FileObject> iterator() {
-		final Iterator<String> iterator = keySet().iterator();
+		final Iterator<Map.Entry<String, FileObject>> iterator = entrySet().iterator();
 		return new Iterator<FileObject>() {
 
 			@Override
@@ -883,7 +883,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 			@Override
 			public FileObject next() {
-				return get(iterator.next());
+				return iterator.next().getValue();
 			}
 
 			@Override
