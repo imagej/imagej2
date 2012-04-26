@@ -221,7 +221,7 @@ public class FilesUploader {
 		if (checkTimestamp) {
 			final long stored =
 				uploadable.file.getStatus() == FileObject.Status.LOCAL_ONLY
-					? uploadable.file.current.timestamp : uploadable.file.newTimestamp;
+					? uploadable.file.current.timestamp : uploadable.file.localTimestamp;
 			if (stored != Util.getTimestamp(uploadable.source)) throw new RuntimeException(
 				"Timestamp of " + uploadable.file.filename +
 					" changed since being checksummed (was " + stored + " but is " +
@@ -236,7 +236,7 @@ public class FilesUploader {
 			final FileObject file = uploadable.file;
 			if (file == null) continue;
 			file.filesize = uploadable.filesize = uploadable.source.length();
-			file.newTimestamp = timestamp;
+			file.localTimestamp = timestamp;
 			uploadable.filename = file.filename + "-" + timestamp;
 			if (file.getStatus() == FileObject.Status.LOCAL_ONLY) {
 				file.setStatus(FileObject.Status.INSTALLED);

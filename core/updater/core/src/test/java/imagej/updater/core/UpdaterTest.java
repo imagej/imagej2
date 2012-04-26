@@ -338,9 +338,9 @@ public class UpdaterTest {
 
 		final Resolution[] resolutions = conflict.getResolutions();
 		assertEquals(1, resolutions.length);
-		assertEquals(20030115203432l, object.newTimestamp);
+		assertEquals(20030115203432l, object.localTimestamp);
 		resolutions[0].resolve();
-		assertNotSame(20030115203432l, object.newTimestamp);
+		assertNotSame(20030115203432l, object.localTimestamp);
 
 		// Make sure that the resolution allows the upload to succeed
 

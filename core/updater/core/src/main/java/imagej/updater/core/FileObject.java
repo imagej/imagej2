@@ -170,12 +170,15 @@ public class FileObject {
 
 	private Status status;
 	private Action action;
-	public String updateSite, filename, description, newChecksum;
+	public String updateSite, filename, description;
 	public boolean executable;
 	public Version current;
 	public Set<Version> previous;
-	public long filesize, newTimestamp;
+	public long filesize;
 	public boolean metadataChanged;
+
+	public String localChecksum;
+	public long localTimestamp;
 
 	// These are LinkedHashMaps to retain the order of the entries
 	protected Map<String, Dependency> dependencies;
@@ -255,8 +258,8 @@ public class FileObject {
 				: Status.UPDATEABLE) : (current == null ? Status.OBSOLETE_MODIFIED
 				: Status.MODIFIED);
 		setNoAction();
-		newChecksum = checksum;
-		newTimestamp = timestamp;
+		localChecksum = checksum;
+		localTimestamp = timestamp;
 	}
 
 	public String getDescription() {
@@ -403,18 +406,18 @@ public class FileObject {
 	public void markUploaded() {
 		if (isLocalOnly()) {
 			status = Status.INSTALLED;
-			newChecksum = current.checksum;
-			newTimestamp = current.timestamp;
+			localChecksum = current.checksum;
+			localTimestamp = current.timestamp;
 		}
 		else if (isObsolete() || status == Status.UPDATEABLE) {
 			/* force re-upload */
 			status = Status.INSTALLED;
-			setVersion(newChecksum, newTimestamp);
+			setVersion(localChecksum, localTimestamp);
 		}
 		else {
-			if (newChecksum == null || newChecksum.equals(current.checksum)) throw new Error(
+			if (localChecksum == null || localChecksum.equals(current.checksum)) throw new Error(
 				filename + " is already uploaded");
-			setVersion(newChecksum, newTimestamp);
+			setVersion(localChecksum, localTimestamp);
 		}
 	}
 
@@ -462,13 +465,13 @@ public class FileObject {
 	}
 
 	public String getChecksum() {
-		return action == Action.UPLOAD ? newChecksum : action == Action.REMOVE ||
+		return action == Action.UPLOAD ? localChecksum : action == Action.REMOVE ||
 			current == null ? null : current.checksum;
 	}
 
 	public long getTimestamp() {
 		return action == Action.UPLOAD ? (status == Status.LOCAL_ONLY &&
-			current != null ? current.timestamp : newTimestamp)
+			current != null ? current.timestamp : localTimestamp)
 			: (action == Action.REMOVE || current == null ? 0 : current.timestamp);
 	}
 
@@ -621,8 +624,8 @@ public class FileObject {
 		final String updateSite)
 	{
 		if (status == Status.LOCAL_ONLY) {
-			newChecksum = current.checksum;
-			newTimestamp = current.timestamp;
+			localChecksum = current.checksum;
+			localTimestamp = current.timestamp;
 		}
 		if (status == Status.NOT_INSTALLED) {
 			setAction(files, Action.REMOVE);
