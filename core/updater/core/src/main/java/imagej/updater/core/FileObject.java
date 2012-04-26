@@ -115,7 +115,7 @@ public class FileObject {
 		public String toString() {
 			return label;
 		}
-	};
+	}
 
 	public static enum Status {
 		NOT_INSTALLED(new Action[] { Action.NOT_INSTALLED, Action.INSTALL },
@@ -163,7 +163,7 @@ public class FileObject {
 		public Action getNoAction() {
 			return actions[0];
 		}
-	};
+	}
 
 	private Status status;
 	private Action action;

@@ -121,7 +121,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 	
 	private final List<FigureView> figureViews = new ArrayList<FigureView>();
 
-	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
 
 	public JHotDrawImageCanvas(final AbstractSwingImageDisplayViewer displayViewer) {
@@ -518,7 +517,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener
 		if (false) {
 			new Thread() {
 				@Override
-				@SuppressWarnings("synthetic-access")
 				public void run() {
 					// NB - its not enough to be in separate thread - it must sleep a little
 					try { Thread.sleep(30); } catch (Exception e) {/*do nothing*/}

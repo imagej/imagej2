@@ -52,7 +52,6 @@ import net.imglib2.ops.PointSetIterator;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
-import net.imglib2.ops.input.PointInputIterator;
 import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
 import net.imglib2.ops.pointset.HyperVolumePointSet;

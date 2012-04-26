@@ -44,7 +44,6 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**

@@ -41,9 +41,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
-import imagej.ext.display.event.DisplayDeletedEvent;
-
 import java.util.HashMap;
 import java.util.Map;
 

@@ -42,7 +42,6 @@ import imagej.data.display.OverlayService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
 import imagej.event.StatusService;
 import imagej.ext.KeyCode;
 import imagej.ext.display.Display;

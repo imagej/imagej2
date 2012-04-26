@@ -36,7 +36,6 @@
 package imagej.service;
 
 import imagej.IContext;
-import imagej.ImageJ;
 
 /**
  * An ImageJ service, for a particular area of functionality. ImageJ discovers

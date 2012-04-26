@@ -69,7 +69,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	protected enum ZoomScaleOption {
 		OPTIONS_PERCENT_SCALE,
 		OPTIONS_FRACTIONAL_SCALE
-	};
+	}
 	
 	protected ImageCanvas canvas;
 	protected EventService eventService;
@@ -272,7 +272,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	}
 	
 	//-- Event handlers --//
-	@SuppressWarnings("unused")
+
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
 		if (event.getDisplay() != this.getDisplay()) return;
@@ -283,7 +283,6 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		getImageDisplay().getCanvas().setCursor(toolService.getActiveTool().getCursor());
 	}
 
-	@SuppressWarnings("unused")
 	@EventHandler
 	protected void onEvent(final ZoomEvent event) {
 		if (event.getCanvas() != getImageDisplay().getCanvas()) return;

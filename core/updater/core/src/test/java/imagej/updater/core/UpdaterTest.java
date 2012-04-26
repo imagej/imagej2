@@ -225,7 +225,7 @@ public class UpdaterTest {
 		int counter = 0;
 		for (final FileObject file : files) {
 			names[counter++] = file.getFilename();
-		};
+		}
 		assertEquals(3, counter);
 		names[counter++] = "jars/hello.jar";
 

@@ -111,7 +111,7 @@ public class OverlayFigureView implements FigureView {
 				public void run() {
 					synchronized(OverlayFigureView.this) {
 						if (! disposeScheduled) {
-							final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) display.getCanvas();
+							final JHotDrawImageCanvas canvas = display.getCanvas();
 							final Drawing drawing = canvas.getDrawing();
 							drawing.add(OverlayFigureView.this.figure);
 							figureAdded = true;
@@ -178,7 +178,7 @@ public class OverlayFigureView implements FigureView {
 	}
 
 	private void show(final boolean doShow) {
-		final JHotDrawImageCanvas canvas = (JHotDrawImageCanvas) displayViewer.getCanvas();
+		final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		final Figure fig = getFigure();
 		if (doShow) {

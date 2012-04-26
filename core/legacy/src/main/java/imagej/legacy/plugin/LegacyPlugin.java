@@ -63,8 +63,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import net.imglib2.meta.Axes;
-
 /**
  * Executes an IJ1 plugin.
  * 

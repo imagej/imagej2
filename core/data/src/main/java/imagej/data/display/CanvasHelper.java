@@ -35,10 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
-import imagej.data.Extents;
-import imagej.data.display.event.ZoomEvent;
-import imagej.event.EventService;
 import imagej.util.IntCoords;
 import imagej.util.Log;
 import imagej.util.RealCoords;
@@ -48,9 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 
 /**
  * A collection of helper methods for {@link ImageCanvas} objects, particularly
@@ -325,13 +318,13 @@ public class CanvasHelper implements Pannable, Zoomable {
 	 * @return the coordinate of the left edge of the viewport in image space.
 	 */
 	private double getLeftImageX() {
-		return getPanCenter().x - (double)(canvas.getViewportWidth()) / canvas.getZoomFactor() / 2;
+		return getPanCenter().x - canvas.getViewportWidth() / canvas.getZoomFactor() / 2;
 	}
 	/**
 	 * @return the coordinate of the top edge of the viewport in image space.
 	 */
 	private double getTopImageY() {
-		return getPanCenter().y - (double)(canvas.getViewportHeight()) / canvas.getZoomFactor() / 2;
+		return getPanCenter().y - canvas.getViewportHeight() / canvas.getZoomFactor() / 2;
 	}
 
 	private boolean scaleOutOfBounds(final double desiredScale) {

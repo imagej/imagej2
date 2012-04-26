@@ -35,14 +35,9 @@
 
 package imagej.ui;
 
-import imagej.ImageJ;
 import imagej.ext.display.AbstractTextDisplay;
 import imagej.ext.display.TextDisplay;
 import imagej.ext.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Display for showing text onscreen.

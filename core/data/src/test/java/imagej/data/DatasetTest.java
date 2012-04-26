@@ -65,7 +65,6 @@ public class DatasetTest {
 	private static final long[] DIMENSIONS = { 4, 4, CPLANES, ZPLANES, TPLANES };
 
 	private Dataset createDataset(final ImgFactory<IntType> factory) {
-		@SuppressWarnings("unchecked")
 		final ImageJ context = ImageJ.createContext(DatasetService.class);
 		final DatasetService datasetService =
 			context.getService(DatasetService.class);

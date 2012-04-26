@@ -68,7 +68,7 @@ public class UpToDate {
 	public enum Result {
 		UP_TO_DATE, UPDATEABLE, PROXY_NEEDS_AUTHENTICATION, OFFLINE, REMIND_LATER,
 			CHECK_TURNED_OFF, READ_ONLY, UPDATES_MANAGED_DIFFERENTLY /* e.g. Debian packaging */, DEVELOPER
-	};
+	}
 
 	protected final static String KEY = "latestNag";
 	protected final static long REMINDER_INTERVAL = 86400 * 7; // one week

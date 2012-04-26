@@ -74,9 +74,9 @@ public class SimpleTypingApproach {
 		//   numbers implement the interface and should have the correct signatures.
 		// note this method is useful if an external user has a ComplexImage<?>
 		//   rather than a ComplexImage<T>.
-		@SuppressWarnings({"unchecked"})
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		public Cursor<ComplexType<?>> complexCursor() {
-			return (Cursor<ComplexType<?>>) ((Cursor)cursor());
+			return (Cursor) cursor();
 		}
 	}
 	
@@ -97,9 +97,9 @@ public class SimpleTypingApproach {
 		//   numbers implement the interface and should have the correct signatures.
 		// note this method is useful if an external user has a RealImage<?>
 		//   rather than a RealImage<T>.
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		public Cursor<RealType<?>> realCursor() {
-			return (Cursor<RealType<?>>) ((Cursor)cursor());
+			return (Cursor) cursor();
 		}
 	}
 

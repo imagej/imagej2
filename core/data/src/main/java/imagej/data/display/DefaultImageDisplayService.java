@@ -37,15 +37,12 @@ package imagej.data.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
-import imagej.ext.display.event.window.WinClosedEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
