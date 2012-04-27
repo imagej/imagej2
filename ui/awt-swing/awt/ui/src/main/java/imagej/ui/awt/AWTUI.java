@@ -68,7 +68,7 @@ public class AWTUI implements UserInterface {
 	private AWTApplicationFrame frame;
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
-	private AWTClipboard clipboard;
+	private AWTClipboard systemClipboard;
 	
 	// -- UserInterface methods --
 
@@ -79,7 +79,7 @@ public class AWTUI implements UserInterface {
 		frame = new AWTApplicationFrame("ImageJ");
 		toolBar = new AWTToolBar(uiService);
 		statusBar = new AWTStatusBar(uiService);
-		clipboard = new AWTClipboard();
+		systemClipboard = new AWTClipboard();
 		createMenus();
 
 		frame.setLayout(new BorderLayout());
@@ -139,7 +139,7 @@ public class AWTUI implements UserInterface {
 
 	@Override
 	public SystemClipboard getSystemClipboard() {
-		return clipboard;
+		return systemClipboard;
 	}
 
 	@Override
