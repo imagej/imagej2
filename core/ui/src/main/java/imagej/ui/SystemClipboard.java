@@ -35,62 +35,16 @@
 
 package imagej.ui;
 
-import imagej.ext.display.Display;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.util.ARGB_Plane;
 
 /**
- * An end-user ImageJ application user interface. UIs discoverable at runtime
- * must implement this interface and be annotated with
- * <code>@{@link Plugin}(type = UserInterface.class)</code>.
+ * UI agnostic representation of the system clipboard.
  * 
- * @author Curtis Rueden
- * @see Plugin
- * @see UIService
+ * @author Barry DeZonia
+ *
  */
-public interface UserInterface extends IPlugin {
-
-	void initialize(UIService uiService);
-
-	UIService getUIService();
-
-	void processArgs(final String[] args);
-
-	/** Desktop for use with multi-document interfaces (MDI). */
-	Desktop getDesktop();
-
-	ApplicationFrame getApplicationFrame();
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
-
-	SystemClipboard getSystemClipboard();
+public interface SystemClipboard {
 	
-	void createMenus();
-
-	OutputWindow newOutputWindow(String title);
-
-	/**
-	 * Creates a dialog prompter.
-	 * 
-	 * @param message The message in the dialog itself.
-	 * @param title The title of the dialog.
-	 * @param messageType The type of message. This typically is rendered as an
-	 *          icon next to the message. For example,
-	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
-	 *          as an exclamation point.
-	 * @param optionType The choices available when dismissing the dialog. These
-	 *          choices are typically rendered as buttons for the user to click.
-	 * @return The newly created DialogPrompt object.
-	 */
-	DialogPrompt dialogPrompt(String message, String title,
-		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
-
-	/**
-	 * Displays a popup context menu for the given display at the specified
-	 * position.
-	 */
-	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
-
+	/** method that accepts a plane of ARGB data */
+	void pixelsToSystemClipboard(ARGB_Plane plane);
 }

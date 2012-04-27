@@ -50,6 +50,7 @@ import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.legacy.plugin.LegacyPlugin;
 import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
@@ -59,6 +60,8 @@ import imagej.service.Service;
 import imagej.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Service for working with legacy ImageJ 1.x.
@@ -164,6 +167,14 @@ public final class LegacyService extends AbstractService {
 		return imageMap;
 	}
 
+	public void runLegacyPlugin(String ij1ClassName, String argument) {
+		final String arg = (argument == null) ? "" : argument;
+		final Map<String,Object> inputMap = new HashMap<String, Object>();
+		inputMap.put("className", ij1ClassName);
+		inputMap.put("arg", arg);
+		pluginService.run(LegacyPlugin.class, inputMap);
+	}
+
 	/**
 	 * Indicates to the service that the given {@link ImagePlus} has changed as
 	 * part of a legacy plugin execution.
@@ -254,6 +265,8 @@ public final class LegacyService extends AbstractService {
 		}
 	}
 
+	// -- helpers --
+	
 	private void updateMenus(OptionsMisc optsMisc) {
 		pluginService.reloadPlugins();
 		boolean enableBlacklist = !optsMisc.isDebugMode();
@@ -266,7 +279,7 @@ public final class LegacyService extends AbstractService {
 		new LegacyPluginFinder(enableBlacklist).findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 	}
-	
+
 	/* 3-1-12
 
 	 We are no longer going to synchronize colors from IJ1 to IJ2

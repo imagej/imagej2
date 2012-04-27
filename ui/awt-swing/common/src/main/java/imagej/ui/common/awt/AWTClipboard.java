@@ -33,64 +33,66 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.ui.common.awt;
 
-import imagej.ext.display.Display;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.image.BufferedImage;
+
+import imagej.ui.SystemClipboard;
+import imagej.util.ARGB_Plane;
 
 /**
- * An end-user ImageJ application user interface. UIs discoverable at runtime
- * must implement this interface and be annotated with
- * <code>@{@link Plugin}(type = UserInterface.class)</code>.
+ * AWT implementation of the SystemClipboard interface
  * 
- * @author Curtis Rueden
- * @see Plugin
- * @see UIService
+ * @author Barry DeZonia
+ *
  */
-public interface UserInterface extends IPlugin {
-
-	void initialize(UIService uiService);
-
-	UIService getUIService();
-
-	void processArgs(final String[] args);
-
-	/** Desktop for use with multi-document interfaces (MDI). */
-	Desktop getDesktop();
-
-	ApplicationFrame getApplicationFrame();
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
-
-	SystemClipboard getSystemClipboard();
+public class AWTClipboard implements SystemClipboard, Transferable {
+	private static java.awt.datatransfer.Clipboard clipboard = null;
+	private ARGB_Plane plane;
 	
-	void createMenus();
+	public AWTClipboard() {
+		if (clipboard == null)
+			clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+	}
 
-	OutputWindow newOutputWindow(String title);
+	// -- SystemClipboard methods --
+	
+	@Override
+	public void pixelsToSystemClipboard(ARGB_Plane plane) {
+		this.plane = plane;
+		try {
+			clipboard.setContents(this, null);
+		} catch (Throwable t) {}
+		
+	}
 
-	/**
-	 * Creates a dialog prompter.
-	 * 
-	 * @param message The message in the dialog itself.
-	 * @param title The title of the dialog.
-	 * @param messageType The type of message. This typically is rendered as an
-	 *          icon next to the message. For example,
-	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
-	 *          as an exclamation point.
-	 * @param optionType The choices available when dismissing the dialog. These
-	 *          choices are typically rendered as buttons for the user to click.
-	 * @return The newly created DialogPrompt object.
-	 */
-	DialogPrompt dialogPrompt(String message, String title,
-		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
+	// -- Transferable methods --
+	
+	@Override
+	public DataFlavor[] getTransferDataFlavors() {
+		return new DataFlavor[] { DataFlavor.imageFlavor };
+	}
 
-	/**
-	 * Displays a popup context menu for the given display at the specified
-	 * position.
-	 */
-	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		return DataFlavor.imageFlavor.equals(flavor);
+	}
 
+	@Override
+	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+		if (!isDataFlavorSupported(flavor))
+			throw new UnsupportedFlavorException(flavor);
+		BufferedImage img = new BufferedImage(
+				plane.getWidth(), plane.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < plane.getWidth(); x++) {
+			for (int y = 0; y < plane.getHeight(); y++) {
+				img.setRGB(x, y, plane.getARGB(x, y));
+			}
+		}
+		return img;
+	}
 }

@@ -1,6 +1,7 @@
 #ij.plugin.Commands("new")                 # File>New
 ij.plugin.Commands("open")                # File>Open
 ij.plugin.Commands("quit")                # File>Quit
+ij.plugin.Clipboard("scopy")              # Edit>Copy To System
 ij.plugin.filter.Filler("fill")           # Edit>Fill
 ij.plugin.filter.Filters("invert")        # Edit>Invert
 ij.plugin.Options("line")                 # Edit>Options>Line Width

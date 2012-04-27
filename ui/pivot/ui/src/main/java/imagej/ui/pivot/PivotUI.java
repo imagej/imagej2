@@ -37,6 +37,7 @@ package imagej.ui.pivot;
 
 import imagej.ext.display.Display;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.SystemClipboard;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -100,6 +101,11 @@ public class PivotUI implements UserInterface, Callable<Object> {
 	@Override
 	public PivotStatusBar getStatusBar() {
 		return null;
+	}
+
+	@Override
+	public SystemClipboard getSystemClipboard() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override

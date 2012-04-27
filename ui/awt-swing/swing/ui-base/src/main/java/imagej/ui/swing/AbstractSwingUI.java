@@ -51,7 +51,9 @@ import imagej.ext.ui.swing.SwingJPopupMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
+import imagej.ui.SystemClipboard;
 import imagej.ui.OutputWindow;
+import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropListener;
 import imagej.ui.common.awt.AWTKeyEventDispatcher;
 import imagej.util.Log;
@@ -88,6 +90,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
+	private AWTClipboard systemClipboard;
 	private boolean activationInvocationPending = false;
 
 	@SuppressWarnings("unused")
@@ -108,6 +111,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	public SwingStatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	@Override
+	public SystemClipboard getSystemClipboard() {
+		return systemClipboard;
 	}
 
 	@Override
@@ -145,6 +153,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame = new SwingApplicationFrame("ImageJ");
 		toolBar = new SwingToolBar(getUIService());
 		statusBar = new SwingStatusBar(getUIService());
+		systemClipboard = new AWTClipboard();
 		createMenus();
 
 		setupAppFrame();

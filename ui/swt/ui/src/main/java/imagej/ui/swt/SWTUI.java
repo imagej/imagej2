@@ -40,6 +40,7 @@ import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.swt.SWTMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.SystemClipboard;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -128,6 +129,11 @@ public class SWTUI implements UserInterface, Runnable {
 	@Override
 	public SWTStatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	@Override
+	public SystemClipboard getSystemClipboard() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override

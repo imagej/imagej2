@@ -41,6 +41,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.ApplicationFrame;
+import imagej.ui.SystemClipboard;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -48,6 +49,7 @@ import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.common.awt.AWTClipboard;
 
 import java.awt.BorderLayout;
 import java.awt.MenuBar;
@@ -66,7 +68,8 @@ public class AWTUI implements UserInterface {
 	private AWTApplicationFrame frame;
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
-
+	private AWTClipboard clipboard;
+	
 	// -- UserInterface methods --
 
 	@Override
@@ -76,6 +79,7 @@ public class AWTUI implements UserInterface {
 		frame = new AWTApplicationFrame("ImageJ");
 		toolBar = new AWTToolBar(uiService);
 		statusBar = new AWTStatusBar(uiService);
+		clipboard = new AWTClipboard();
 		createMenus();
 
 		frame.setLayout(new BorderLayout());
@@ -131,6 +135,11 @@ public class AWTUI implements UserInterface {
 	@Override
 	public AWTStatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	@Override
+	public SystemClipboard getSystemClipboard() {
+		return clipboard;
 	}
 
 	@Override
