@@ -294,7 +294,7 @@ public class DrawingTool {
 			drawPixel(u - 1, v - 1);
 		}
 		else { // 3 or more pixels wide
-			drawCircle(u, v);
+			fillCircle(u, v);
 		}
 	}
 
@@ -342,16 +342,16 @@ public class DrawingTool {
 		lineTo(u2, v2);
 	}
 
-	// TODO - performance improve drawCircle? Necessary? Test.
+	// TODO - performance improve fillCircle? Necessary? Test.
 	// TODO - make a version that draws the outline only. That version would need
 	// user to provide radius. Line width would be the width of the outline.
-	// TODO - make an ellipse method. have drawCircle call it.
+	// TODO - make an ellipse method. have fillCircle call it.
 
 	/**
 	 * Draws a filled circle in the current UV plane centered at the specified UV
 	 * coordinates. The radius of the circle is equals the current line width.
 	 */
-	public void drawCircle(final long uc, final long vc) {
+	public void fillCircle(final long uc, final long vc) {
 		double r = lineWidth / 2.0;
 		final long umin = (long) (uc - r + 0.5);
 		final long vmin = (long) (vc - r + 0.5);
