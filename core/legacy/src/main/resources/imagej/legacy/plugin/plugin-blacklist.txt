@@ -21,6 +21,7 @@ ij.plugin.ProxySettings                   # Edit>Options>Proxy Settings
 ij.plugin.Compiler("options")             # Edit>Options>Compiler
 ij.plugin.Options("dicom")                # Edit>Options>DICOM
 ij.plugin.Options("misc")                 # Edit>Options>Misc.
+ij.plugin.filter.LutViewer                # Image>Color>Show LUT
 ij.plugin.Resizer("crop")                 # Image>Crop
 ij.plugin.Duplicator                      # Image>Duplicate
 ij.plugin.filter.Transformer("fliph")     # Image>Transform>Flip Horizontally

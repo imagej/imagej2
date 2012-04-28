@@ -35,8 +35,6 @@
 
 package imagej.data;
 
-import imagej.util.RealRect;
-
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -373,26 +371,34 @@ public class DrawingTool {
 		}
 	}
 
-	// TODO - IJ1 fill() applies to the ROI rectangle bounds. Do we want to mirror
-	// this behavior in IJ2? For now implement two fill methods. But perhaps in
-	// the future the DrawingTool might track a region of interest within a plane.
+	/**
+	 * Draws the outline of a rectangle in the current UV plane. Uses given
+	 * width, height, and origin.
+	 */
+	public void drawRect(long u0, long v0, long w, long h) {
+		drawLine(u0,     v0,     u0,     v0+h-1);
+		drawLine(u0,     v0,     u0+w-1, v0);
+		drawLine(u0+w-1, v0+h-1, u0,     v0+h-1);
+		drawLine(u0+w-1, v0+h-1, u0+w-1, v0);
+	}
+	
+	/**
+	 * Draws a filled rectangle in the current UV plane. Uses given width,
+	 * height, and origin.
+	 */
+	public void fillRect(long u0, long v0, long w, long h) {
+		for (long du = 0; du < w; du++) {
+			for (long dv = 0; dv < h; dv++) {
+				drawPixel(u0+du, v0+dv);
+			}
+		}
+	}
 
 	/**
 	 * Fills the current UV plane.
 	 */
 	public void fill() {
-		for (long u = 0; u <= maxU; u++)
-			for (long v = 0; v <= maxV; v++)
-				drawPixel(u, v);
-	}
-
-	/**
-	 * Fills a subset of the current UV plane.
-	 */
-	public void fill(final RealRect rect) {
-		for (long u = (long) rect.x; u < rect.x + rect.width; u++)
-			for (long v = (long) rect.y; v < rect.y + rect.height; v++)
-				drawPixel(u, v);
+		fillRect(0, 0, maxU+1, maxV+1);
 	}
 
 	/**
