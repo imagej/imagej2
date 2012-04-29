@@ -40,15 +40,19 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.util.RealRect;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
+import net.imglib2.ops.Condition;
 import net.imglib2.ops.InputIteratorFactory;
+import net.imglib2.ops.condition.UVInsideRoiCondition;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
 import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
+import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.ComplexType;
 
 /**
@@ -67,6 +71,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	private final Dataset dataset;
 	private long[] origin;
 	private long[] span;
+	private RegionOfInterest region;
 	private final ImageAssignment<I,O,long[]> assigner;
 
 	// -- constructor --
@@ -74,17 +79,22 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	public InplaceUnaryTransform(final ImageDisplay display,
 		final ComplexUnaryOperation<O,O> operation, O outType)
 	{
-		dataset = ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
+		dataset =
+			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
 		final Img<I> img = (Img<I>)dataset.getImgPlus();
 		final ComplexImageFunction<I,O> f1 =
 				new ComplexImageFunction<I,O>(img, outType.createVariable());
 		final GeneralUnaryFunction<long[],O,O> function = new
-				GeneralUnaryFunction<long[],O,O>(f1, operation, outType.createVariable());
-		setOriginAndSpan(display);
-		final InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
+				GeneralUnaryFunction<long[],O,O>(
+					f1, operation, outType.createVariable());
+		setRegion(display);
+		final InputIteratorFactory<long[]> factory =
+				new PointInputIteratorFactory();
+		Condition<long[]> condition =
+				(region == null) ? null : new UVInsideRoiCondition(region);
 		assigner =
-			new ImageAssignment<I,O, long[]>(img, origin, span, function, null,
-				factory);
+			new ImageAssignment<I,O, long[]>(img, origin, span, function,
+					condition, factory);
 	}
 
 	/*
@@ -117,14 +127,15 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 
 	// -- private helpers --
 
-	private void setOriginAndSpan(final ImageDisplay disp) {
+	private void setRegion(final ImageDisplay disp) {
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 
 		final Dataset ds = imageDisplayService.getActiveDataset(disp);
 		final RealRect bounds = overlayService.getSelectionBounds(disp);
-
+		final Overlay overlay = overlayService.getActiveOverlay(disp);
+		
 		// check dimensions of Dataset
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
@@ -147,6 +158,8 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 			span[i] = dims[i];
 		span[xIndex] = w;
 		span[yIndex] = h;
+		
+		region = (overlay == null) ? null : overlay.getRegionOfInterest();
 	}
 
 }
