@@ -577,8 +577,10 @@ public class UpdaterTest {
 		// resolve by deleting the file
 
 		assertTrue(files.prefix("jars/file.jar").exists());
+		assertTrue(files.prefix("jars/file-3.0.jar").exists());
 		conflicts.conflicts.get(0).getResolutions()[0].resolve();
-		assertFalse(files.prefix("jars/file.jar").exists());
+		assertTrue(files.prefix("jars/file.jar").exists() ^
+			files.prefix("jars/file-3.0.jar").exists());
 
 		upload(files);
 	}
