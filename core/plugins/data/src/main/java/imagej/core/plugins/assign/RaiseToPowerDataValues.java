@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Power...", weight = 5) }, headless = true)
 public class RaiseToPowerDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T>
+	extends AbstractPreviewPlugin<T>
 {
 
 	// -- instance variables that are Parameters --

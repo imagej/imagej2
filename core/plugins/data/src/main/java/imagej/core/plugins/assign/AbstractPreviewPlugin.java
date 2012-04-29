@@ -45,17 +45,15 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import net.imglib2.RandomAccess;
-import net.imglib2.RealRandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.Condition;
 import net.imglib2.ops.PointSet;
 import net.imglib2.ops.PointSetIterator;
 import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.condition.UVInsideRoiCondition;
 import net.imglib2.ops.function.real.PrimitiveDoubleArray;
 import net.imglib2.ops.pointset.ConditionalPointSet;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
-import net.imglib2.roi.RegionOfInterest;
-import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
@@ -64,7 +62,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractAssignPlugin<T extends RealType<T>>
+public abstract class AbstractPreviewPlugin<T extends RealType<T>>
 	implements ImageJPlugin, PreviewPlugin
 {
 	// -- instance variables that are Parameters --
@@ -96,7 +94,7 @@ public abstract class AbstractAssignPlugin<T extends RealType<T>>
 	
 	// -- public interface --
 
-	public AbstractAssignPlugin()
+	public AbstractPreviewPlugin()
 	{
 	}
 
@@ -275,7 +273,7 @@ public abstract class AbstractAssignPlugin<T extends RealType<T>>
 		// constrain points within outline of overlay if desired
 		if (overlay != null) {
 			Condition<long[]> condition =
-					new UVInsideROICondition(overlay.getRegionOfInterest());
+					new UVInsideRoiCondition(overlay.getRegionOfInterest());
 			ps = new ConditionalPointSet(ps, condition);
 		}
 		
@@ -305,35 +303,12 @@ public abstract class AbstractAssignPlugin<T extends RealType<T>>
 		// constrain within outline of overlay if desired
 		if (overlay != null) {
 			Condition<long[]> condition =
-					new UVInsideROICondition(overlay.getRegionOfInterest());
+					new UVInsideRoiCondition(overlay.getRegionOfInterest());
 			ps = new ConditionalPointSet(ps, condition);
 		}
 		
 		return ps;
 	}
 
-	private class UVInsideROICondition implements Condition<long[]> {
-
-		private final RegionOfInterest roi;
-		private final RealRandomAccess<BitType> accessor;
-		
-		public UVInsideROICondition(RegionOfInterest roi) {
-			this.roi = roi;
-			this.accessor = roi.realRandomAccess();
-		}
-		
-		@Override
-		public boolean isTrue(long[] val) {
-			accessor.setPosition(val[0],0); // U == index 0
-			accessor.setPosition(val[1],1); // V == index 1
-			return accessor.get().get();
-		}
-
-		@Override
-		public UVInsideROICondition copy() {
-			return new UVInsideROICondition(roi);
-		}
-		
-	}
 	
 }

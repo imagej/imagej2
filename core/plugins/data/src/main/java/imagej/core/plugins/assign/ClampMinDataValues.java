@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Min...", weight = 9) },
 	headless = true)
 public class ClampMinDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T>
+	extends AbstractPreviewPlugin<T>
 {
 
 	// -- instance variables that are Parameters --

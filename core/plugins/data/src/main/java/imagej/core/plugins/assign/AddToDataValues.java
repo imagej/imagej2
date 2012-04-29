@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) },
 	headless = true)
 public class AddToDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T>
+	extends AbstractPreviewPlugin<T>
 {
 	// -- Parameters --
 	

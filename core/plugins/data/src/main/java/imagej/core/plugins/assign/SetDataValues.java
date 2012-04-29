@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Set...", weight = 12) },
 	headless = true)
 public class SetDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T>
+	extends AbstractPreviewPlugin<T>
 {
 
 	// -- instance variables that are Parameters --
