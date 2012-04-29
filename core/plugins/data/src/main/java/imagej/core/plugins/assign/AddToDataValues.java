@@ -39,6 +39,7 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import net.imglib2.ops.UnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAddConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -55,32 +56,30 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) },
 	headless = true)
-public class AddToDataValues<T extends RealType<T>> extends
-	AbstractAssignPlugin<T, DoubleType>
+public class AddToDataValues<T extends RealType<T>>
+	extends AbstractAssignPlugin<T>
 {
-
-	// -- instance variables that are Parameters --
-
-	@Parameter
+	// -- Parameters --
+	
+	@Parameter(label = "Value")
 	private double value;
 
 	// -- public interface --
 
 	public AddToDataValues() {
-		super(new DoubleType());
-	}
-
-	@Override
-	public RealAddConstant<DoubleType, DoubleType> getOperation() {
-		return new RealAddConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {
 		return value;
 	}
 
-	public void setValue(final double value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 
+	// -- private helpers --
+	
+	public UnaryOperation<T,DoubleType> getOperation() {
+		return new RealAddConstant<T,DoubleType>(value);
+	}
 }

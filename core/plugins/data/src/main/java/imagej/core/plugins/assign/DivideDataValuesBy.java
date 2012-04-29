@@ -58,8 +58,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Divide...", weight = 4) }, headless = true)
-public class DivideDataValuesBy<T extends RealType<T>> extends
-	AbstractAssignPlugin<T, DoubleType>
+public class DivideDataValuesBy<T extends RealType<T>>
+	extends AbstractAssignPlugin<T>
 {
 
 	// -- instance variables that are Parameters --
@@ -73,11 +73,10 @@ public class DivideDataValuesBy<T extends RealType<T>> extends
 	// -- public interface --
 
 	public DivideDataValuesBy() {
-		super(new DoubleType());
 	}
 
 	@Override
-	public RealDivideConstant<DoubleType, DoubleType> getOperation() {
+	public RealDivideConstant<T, DoubleType> getOperation() {
 		final OptionsMisc optionsMisc =
 			optionsService.getOptions(OptionsMisc.class);
 		final String dbzString = optionsMisc.getDivByZeroVal();
@@ -88,7 +87,7 @@ public class DivideDataValuesBy<T extends RealType<T>> extends
 		catch (final NumberFormatException e) {
 			dbzVal = Double.POSITIVE_INFINITY;
 		}
-		return new RealDivideConstant<DoubleType, DoubleType>(value, dbzVal);
+		return new RealDivideConstant<T, DoubleType>(value, dbzVal);
 	}
 
 	public double getValue() {

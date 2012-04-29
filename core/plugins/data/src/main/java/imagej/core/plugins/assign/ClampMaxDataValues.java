@@ -56,8 +56,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) },
 	headless = true)
-public class ClampMaxDataValues<T extends RealType<T>> extends
-	AbstractAssignPlugin<T, DoubleType>
+public class ClampMaxDataValues<T extends RealType<T>>
+	extends	AbstractAssignPlugin<T>
 {
 
 	// -- instance variables that are Parameters --
@@ -68,12 +68,11 @@ public class ClampMaxDataValues<T extends RealType<T>> extends
 	// -- public interface --
 
 	public ClampMaxDataValues() {
-		super(new DoubleType());
 	}
 
 	@Override
-	public RealMaxConstant<DoubleType, DoubleType> getOperation() {
-		return new RealMaxConstant<DoubleType, DoubleType>(value);
+	public RealMaxConstant<T, DoubleType> getOperation() {
+		return new RealMaxConstant<T, DoubleType>(value);
 	}
 
 	public double getValue() {

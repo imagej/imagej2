@@ -56,8 +56,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Power...", weight = 5) }, headless = true)
-public class RaiseToPowerDataValues<T extends RealType<T>> extends
-	AbstractAssignPlugin<T, DoubleType>
+public class RaiseToPowerDataValues<T extends RealType<T>>
+	extends AbstractAssignPlugin<T>
 {
 
 	// -- instance variables that are Parameters --
@@ -68,12 +68,11 @@ public class RaiseToPowerDataValues<T extends RealType<T>> extends
 	// -- public interface --
 
 	public RaiseToPowerDataValues() {
-		super(new DoubleType());
 	}
 
 	@Override
-	public RealPowerConstant<DoubleType, DoubleType> getOperation() {
-		return new RealPowerConstant<DoubleType, DoubleType>(value);
+	public RealPowerConstant<T, DoubleType> getOperation() {
+		return new RealPowerConstant<T, DoubleType>(value);
 	}
 
 	public double getValue() {

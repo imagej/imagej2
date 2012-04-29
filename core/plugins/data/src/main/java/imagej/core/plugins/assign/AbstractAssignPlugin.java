@@ -40,40 +40,34 @@ import imagej.data.Position;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
-import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Img;
+import net.imglib2.RealRandomAccess;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.InputIteratorFactory;
+import net.imglib2.ops.Condition;
+import net.imglib2.ops.PointSet;
 import net.imglib2.ops.PointSetIterator;
-import net.imglib2.ops.function.complex.ComplexImageFunction;
-import net.imglib2.ops.function.general.GeneralUnaryFunction;
-import net.imglib2.ops.image.ImageAssignment;
-import net.imglib2.ops.input.PointInputIteratorFactory;
-import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
+import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.function.real.PrimitiveDoubleArray;
+import net.imglib2.ops.pointset.ConditionalPointSet;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
-import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.roi.RegionOfInterest;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Base class for previewable math plugins.
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends ComplexType<O>>
+public abstract class AbstractAssignPlugin<T extends RealType<T>>
 	implements ImageJPlugin, PreviewPlugin
 {
-
 	// -- instance variables that are Parameters --
-
-	@Parameter(persist = false)
-	protected ImageDisplayService displayService;
-
-	@Parameter(persist = false)
-	protected OverlayService overlayService;
 
 	@Parameter(persist = false)
 	protected ImageDisplay display;
@@ -81,77 +75,87 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 	@Parameter(label = "Preview")
 	protected boolean preview;
 
+	@Parameter(label = "Apply to all planes")
+	protected boolean allPlanes;
+
 	// -- instance variables --
 
+	private DoubleType tmpVar;
+	
 	private Dataset dataset;
 
-	private RealRect bounds;
+	private PrimitiveDoubleArray planeBackup;
 
-	private double[] dataBackup;
+	private PointSetIterator planeIter;
 
-	private long[] planeOrigin;
+	private PointSetIterator imageIter;
 
-	private long[] planeSpan;
-
-	private long[] imageOrigin;
-
-	private long[] imageSpan;
-
-	private PointSetIterator iter;
-
-	private RandomAccess<? extends RealType<?>> accessor;
+	private RandomAccess<T> accessor;
 	
-	private O outType;
-
+	private int xAxis, yAxis;
+	
 	// -- public interface --
 
-	public AbstractAssignPlugin(O outType) {
-		this.outType = outType;
+	public AbstractAssignPlugin()
+	{
 	}
-	
+
+	public abstract UnaryOperation<T,DoubleType> getOperation();
+
+	// TODO - optimize when doing single plane case
+	// to not restore/transform unnecessarily
+
 	@Override
 	public void run() {
-		if (dataset == null) {
-			initialize();
-		}
-		else if (preview) {
-			restoreViewedPlane();
-		}
-		transformDataset();
+		initialize();
+		restoreRegionInPlane();
+		if (allPlanes)
+			transformRegionAcrossPlanes();
+		else
+			transformRegionInPlane();
 	}
+
+	// TODO - optimize when doing single plane case
+	// to not restore/transform unnecessarily
 
 	@Override
 	public void preview() {
-		if (dataBackup == null) {
-			initialize();
-			saveViewedPlane();
-		}
-		else restoreViewedPlane();
-		if (preview) transformViewedPlane();
+		initialize();
+		restoreRegionInPlane();
+		if (preview == true) transformRegionInPlane();
 	}
+
+	// TODO - optimize when doing single plane case
+	// to not restore/transform unnecessarily
 
 	@Override
 	public void cancel() {
-		if (preview) restoreViewedPlane();
+		restoreRegionInPlane();
 	}
 
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-
-	public void setDisplay(final ImageDisplay display) {
+	
+	public void setDisplay(ImageDisplay display) {
 		this.display = display;
 	}
-
-	public Dataset getDataset() {
-		return dataset;
+	
+	public boolean isAllPlanes() {
+		return allPlanes;
 	}
 
-	public void setDataset(final Dataset dataset) {
-		this.dataset = dataset;
+	public void setAllPlanes(boolean value) {
+		this.allPlanes = value;
+	}
+	
+	public boolean isPreview() {
+		return preview;
 	}
 
-	public abstract ComplexUnaryOperation<O,O> getOperation();
+	public void setPreview(boolean value) {
+		this.preview = value;
+	}
 
 	// -- private helpers --
 
@@ -165,110 +169,171 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 	// cause precision loss for long data
 
 	private void initialize() {
+		if (dataset != null) return;
+		ImageDisplayService displayService =
+				display.getContext().getService(ImageDisplayService.class);
 		dataset = displayService.getActiveDataset(display);
-		bounds = overlayService.getSelectionBounds(display);
 
+		tmpVar = new DoubleType();
+		
 		// check dimensions of Dataset
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
-		if ((xIndex < 0) || (yIndex < 0)) throw new IllegalArgumentException(
+		xAxis = dataset.getAxisIndex(Axes.X);
+		yAxis = dataset.getAxisIndex(Axes.Y);
+		if ((xAxis < 0) || (yAxis < 0)) throw new IllegalArgumentException(
 			"display does not have XY planes");
-		final long[] dims = dataset.getDims();
-		final long w = (long) bounds.width;
-		final long h = (long) bounds.height;
-		if (w * h > Integer.MAX_VALUE) throw new IllegalArgumentException(
-			"plane region too large to copy into memory");
-
-		// calc origin of preview plane
-		final Position planePos = display.getActiveView().getPlanePosition();
-		planeOrigin = new long[dims.length];
-		planeOrigin[xIndex] = (long) bounds.x;
-		planeOrigin[yIndex] = (long) bounds.y;
-		int p = 0;
-		for (int i = 0; i < planeOrigin.length; i++) {
-			if ((i == xIndex) || (i == yIndex)) continue;
-			planeOrigin[i] = planePos.getLongPosition(p++);
-		}
-
-		// calc span of preview plane
-		planeSpan = new long[dims.length];
-		for (int i = 0; i < planeSpan.length; i++)
-			planeSpan[i] = 1;
-		planeSpan[xIndex] = w;
-		planeSpan[yIndex] = h;
-
-		// calc origin of image for actual data changes
-		imageOrigin = new long[dims.length];
-		for (int i = 0; i < imageOrigin.length; i++)
-			imageOrigin[i] = 0;
-		imageOrigin[xIndex] = (long) bounds.x;
-		imageOrigin[yIndex] = (long) bounds.y;
-
-		// calc span of image for actual data changes
-		imageSpan = new long[dims.length];
-		for (int i = 0; i < imageSpan.length; i++)
-			imageSpan[i] = dims[i];
-		imageSpan[xIndex] = w;
-		imageSpan[yIndex] = h;
-
-		// calc plane offsets for region iterator
-		final long[] planeOffsets = new long[planeSpan.length];
-		for (int i = 0; i < planeOffsets.length; i++)
-			planeOffsets[i] = planeSpan[i] - 1;
-
-		// setup region iterator
-		accessor = dataset.getImgPlus().randomAccess();
-		iter = new HyperVolumePointSet(planeOrigin, new long[planeOrigin.length],
-				planeOffsets).createIterator();
-		dataBackup = new double[(int) (w * h)];
+		
+		OverlayService overlayService =
+				display.getContext().getService(OverlayService.class);
+		Overlay overlay = overlayService.getActiveOverlay(display);
+		accessor = (RandomAccess<T>) dataset.getImgPlus().randomAccess();
+		PointSet planeRegion = getRegionInPlane(dataset, overlay);
+		planeIter = planeRegion.createIterator();
+		PointSet imageRegion = getRegionAcrossPlanes(dataset, overlay);
+		imageIter = imageRegion.createIterator();
+		
+		// check size of preview region
+		if (planeRegion.calcSize() > Integer.MAX_VALUE)
+			throw new IllegalArgumentException(
+				"work region too large to hold in memory");
+		
+		saveRegionInPlane();
 	}
 
-	private void saveViewedPlane() {
-
+	private void saveRegionInPlane() {
 		// copy data to a double[]
-		int index = 0;
-		iter.reset();
-		while (iter.hasNext()) {
-			accessor.setPosition(iter.next());
-			dataBackup[index++] = accessor.get().getRealDouble();
+		planeBackup = new PrimitiveDoubleArray();
+		planeBackup.clear();
+		planeIter.reset();
+		while (planeIter.hasNext()) {
+			accessor.setPosition(planeIter.next());
+			planeBackup.add(accessor.get().getRealDouble());
 		}
 	}
 
-	private void restoreViewedPlane() {
-
+	private void restoreRegionInPlane() {
 		// restore data from our double[]
 		int index = 0;
-		iter.reset();
-		while (iter.hasNext()) {
-			accessor.setPosition(iter.next());
-			accessor.get().setReal(dataBackup[index++]);
+		planeIter.reset();
+		while (planeIter.hasNext()) {
+			accessor.setPosition(planeIter.next());
+			accessor.get().setReal(planeBackup.get(index++));
 		}
 		dataset.update();
 	}
 
-	private void transformDataset() {
-		transformData(imageOrigin, imageSpan);
+	private void transformRegionAcrossPlanes() {
+		transformData(imageIter);
 	}
 
-	private void transformViewedPlane() {
-		transformData(planeOrigin, planeSpan);
+	private void transformRegionInPlane() {
+		transformData(planeIter);
 	}
 
-	private void transformData(final long[] origin, final long[] span) {
-		final Img<I> image = (Img<I>) dataset.getImgPlus();
-		final ComplexImageFunction<I,O> imageFunc =
-			new ComplexImageFunction<I,O>(image, outType.createVariable());
-		final ComplexUnaryOperation<O,O> op = getOperation();
-		final GeneralUnaryFunction<long[],O,O> function = new
-				GeneralUnaryFunction<long[],O,O>(imageFunc, op, outType.createVariable());
-		final InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
-		final ImageAssignment<I,O,long[]> assigner =
-			new ImageAssignment<I,O,long[]>(image, origin, span, function, null, factory);
-		//long start = System.currentTimeMillis();
-		assigner.assign();
-		//long stop = System.currentTimeMillis();
-		//System.out.println("time spent in seconds = "+(stop-start)/1000.0);
+	private void transformData(PointSetIterator iter) {
+		// NB - the call to getOperation() must be deferred as late as
+		// possible as operation is affected by changing dialog settings.
+		// Thats why we do it here at the last possible moment.
+		UnaryOperation<T,DoubleType> operation = getOperation();
+		iter.reset();
+		while (iter.hasNext()) {
+			accessor.setPosition(iter.next());
+			operation.compute(accessor.get(), tmpVar);
+			accessor.get().setReal(tmpVar.getRealDouble());
+		}
 		dataset.update();
 	}
 
+	private PointSet getRegionInPlane(Dataset ds, Overlay overlay) {
+		
+		final Position planePos = display.getActiveView().getPlanePosition();
+		long[] planeMin = new long[ds.numDimensions()];
+		long[] planeMax = new long[ds.numDimensions()];
+		
+		// calc min and max points
+		for (int i = 0; i < planeMax.length; i++)
+			planeMax[i] = ds.dimension(i) - 1;
+		int p = 0;
+		for (int i = 0; i < planeMin.length; i++) {
+			if ((i == xAxis) || (i == yAxis)) continue;
+			long pos = planePos.getLongPosition(p++);
+			planeMin[i] = pos;
+			planeMax[i] = pos;
+		}
+		
+		// Minimize size of PointSet if an overlay is present
+		// This improves performance
+		if (overlay != null) {
+			planeMin[xAxis] = (long) overlay.realMin(0);
+			planeMin[yAxis] = (long) overlay.realMin(1);
+			planeMax[xAxis] = (long) overlay.realMax(0);
+			planeMax[yAxis] = (long) overlay.realMax(1);
+		}
+		
+		// create encompassing PointSet
+		PointSet ps = new HyperVolumePointSet(planeMin, planeMax);
+		
+		// constrain points within outline of overlay if desired
+		if (overlay != null) {
+			Condition<long[]> condition =
+					new UVInsideROICondition(overlay.getRegionOfInterest());
+			ps = new ConditionalPointSet(ps, condition);
+		}
+		
+		return ps;
+	}
+	
+	private PointSet getRegionAcrossPlanes(Dataset ds, Overlay overlay) {
+
+		// calc min and max points
+		long[] imageMin = new long[ds.numDimensions()];
+		long[] imageMax = new long[ds.numDimensions()];
+		for (int i = 0; i < imageMax.length; i++)
+			imageMax[i] = ds.dimension(i) - 1;
+
+		// Minimize size of PointSet if an overlay is present
+		// This improves performance
+		if (overlay != null) {
+			imageMin[xAxis] = (long) overlay.realMin(0);
+			imageMin[yAxis] = (long) overlay.realMin(1);
+			imageMax[xAxis] = (long) overlay.realMax(0);
+			imageMax[yAxis] = (long) overlay.realMax(1);
+		}
+		
+		// create encompassing PointSet
+		PointSet ps = new HyperVolumePointSet(imageMin, imageMax);
+		
+		// constrain within outline of overlay if desired
+		if (overlay != null) {
+			Condition<long[]> condition =
+					new UVInsideROICondition(overlay.getRegionOfInterest());
+			ps = new ConditionalPointSet(ps, condition);
+		}
+		
+		return ps;
+	}
+
+	private class UVInsideROICondition implements Condition<long[]> {
+
+		private final RegionOfInterest roi;
+		private final RealRandomAccess<BitType> accessor;
+		
+		public UVInsideROICondition(RegionOfInterest roi) {
+			this.roi = roi;
+			this.accessor = roi.realRandomAccess();
+		}
+		
+		@Override
+		public boolean isTrue(long[] val) {
+			accessor.setPosition(val[0],0); // U == index 0
+			accessor.setPosition(val[1],1); // V == index 1
+			return accessor.get().get();
+		}
+
+		@Override
+		public UVInsideROICondition copy() {
+			return new UVInsideROICondition(roi);
+		}
+		
+	}
+	
 }
