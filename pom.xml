@@ -13,7 +13,7 @@
 
 	<groupId>net.imagej</groupId>
 	<artifactId>pom-ij-base</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>2.0.0-beta2</version>
 	<packaging>pom</packaging>
 
 	<name>ImageJ Projects</name>
@@ -49,6 +49,15 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			</plugin>
 		</plugins>
 	</build>
+
+	<properties>
+		<imagej.version>${project.version}</imagej.version>
+		<imagej1.version>1.46k</imagej1.version>
+		<imglib1.version>2.0.0-beta2</imglib1.version>
+		<imglib2.version>2.0.0-beta2</imglib2.version>
+		<nar.version>2.1-20120403</nar.version>
+		<scifio.version>4.4-imagej-2.0.0-beta1</scifio.version>
+	</properties>
 
 	<licenses>
 		<license>
