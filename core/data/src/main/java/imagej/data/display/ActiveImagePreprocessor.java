@@ -84,6 +84,7 @@ public class ActiveImagePreprocessor implements PreprocessorPlugin {
 	public void process(final Module module) {
 		final ImageDisplayService displayService =
 			ImageJ.get(ImageDisplayService.class);
+		if (displayService == null) return;
 		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
 		if (activeDisplay == null) return;
 

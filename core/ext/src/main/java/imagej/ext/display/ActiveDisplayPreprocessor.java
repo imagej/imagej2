@@ -76,10 +76,12 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 	@Override
 	public void process(final Module module) {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		if (displayService == null) return;
 		final Display<?> activeDisplay = displayService.getActiveDisplay();
 		if (activeDisplay == null) return;
 
 		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+		if (moduleService == null) return;
 
 		// assign active display to single Display input
 		final ModuleItem<?> displayInput =
