@@ -93,13 +93,16 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 	private String title = "";
 
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex1 = "[x,y], x^2 + y^2";
+	private String ex1 = "[x,y], img * 2";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex2 = "[u,v,w] , 2*u - 3*w";
+	private String ex2 = "[x,y], x^2 + y^2";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex3 = "[x,y,c,z,t], sin(z)";
+	private String ex3 = "[u,v,w] , -2.003*u - 3.41*w + E + PI";
+	
+	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
+	private String ex4 = "[x,y,c,z,t], cos(t) + sin(z)";
 	
 	@Parameter(label = "Apply to all planes")
 	private boolean allPlanes;
@@ -116,14 +119,14 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		setRegion(display, allPlanes);
 		RealEquationFunctionParser parser = new RealEquationFunctionParser();
 		Tuple2<Function<long[],DoubleType>, String> result =
-				parser.parse(equationString);
+				parser.parse(equationString, dataset.getImgPlus());
 		if (result.get2() != null) {
 			uiService.showDialog(result.get2(), "Equation parsing error");
 			return;
 		}
-		setRegion(display, allPlanes);
 		InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
 		Function<long[],DoubleType> function = result.get1();
 		ImageAssignment<T,DoubleType,long[]> assigner =
