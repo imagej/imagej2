@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Square Root", weight = 16) }, headless = true)
+	@Menu(label = "Square Root...", weight = 16) }, headless = true)
 public class SquareRootDataValues<T extends RealType<T>> implements
 	ImageJPlugin
 {
@@ -66,6 +66,9 @@ public class SquareRootDataValues<T extends RealType<T>> implements
 	@Parameter(persist = false)
 	private ImageDisplay display;
 
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
+
 	// -- public interface --
 
 	@Override
@@ -73,7 +76,7 @@ public class SquareRootDataValues<T extends RealType<T>> implements
 		final RealSqrt<DoubleType, DoubleType> op =
 			new RealSqrt<DoubleType, DoubleType>();
 		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
+			new InplaceUnaryTransform<T, DoubleType>(display, allPlanes, op, new DoubleType());
 		transform.run();
 	}
 

@@ -54,7 +54,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Exp", weight = 14) },
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Exp...", weight = 14) },
 	headless = true)
 public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 
@@ -63,6 +63,9 @@ public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Parameter(persist = false)
 	private ImageDisplay display;
 
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
+
 	// -- public interface --
 
 	@Override
@@ -70,7 +73,7 @@ public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 		final RealExp<DoubleType, DoubleType> op =
 			new RealExp<DoubleType, DoubleType>();
 		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
+			new InplaceUnaryTransform<T, DoubleType>(display, allPlanes, op, new DoubleType());
 		transform.run();
 	}
 

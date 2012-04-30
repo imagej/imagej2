@@ -71,14 +71,17 @@ public class AddNoiseToDataValues<T extends RealType<T>> {
 	 */
 	private double rangeMin, rangeMax;
 
+	private boolean allPlanes;
+	
 	// -- constructor --
 
 	/**
 	 * Constructor - takes an input Dataset as the baseline data to compute
 	 * perturbed values from.
 	 */
-	public AddNoiseToDataValues(final ImageDisplay display) {
+	public AddNoiseToDataValues(ImageDisplay display, boolean allPlanes) {
 		this.display = display;
+		this.allPlanes = allPlanes;
 	}
 
 	// -- public interface --
@@ -101,7 +104,7 @@ public class AddNoiseToDataValues<T extends RealType<T>> {
 			new RealAddNoise<DoubleType,DoubleType>(rangeMin, rangeMax, rangeStdDev);
 
 		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(display, op, new DoubleType());
+			new InplaceUnaryTransform<T,DoubleType>(display, allPlanes, op, new DoubleType());
 
 		transform.run();
 	}

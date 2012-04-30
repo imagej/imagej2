@@ -37,11 +37,12 @@ package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.Position;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.util.RealRect;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.Condition;
@@ -52,7 +53,6 @@ import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
 import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
-import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.ComplexType;
 
 /**
@@ -71,13 +71,16 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	private final Dataset dataset;
 	private long[] origin;
 	private long[] span;
-	private RegionOfInterest region;
+	private Condition<long[]> condition;
 	private final ImageAssignment<I,O,long[]> assigner;
 
 	// -- constructor --
 
-	public InplaceUnaryTransform(final ImageDisplay display,
-		final ComplexUnaryOperation<O,O> operation, O outType)
+	public InplaceUnaryTransform(
+			final ImageDisplay display,
+			final boolean allPlanes,
+			final ComplexUnaryOperation<O,O> operation,
+			O outType)
 	{
 		dataset =
 			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
@@ -87,11 +90,9 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		final GeneralUnaryFunction<long[],O,O> function = new
 				GeneralUnaryFunction<long[],O,O>(
 					f1, operation, outType.createVariable());
-		setRegion(display);
+		setRegion(display, allPlanes);
 		final InputIteratorFactory<long[]> factory =
 				new PointInputIteratorFactory();
-		Condition<long[]> condition =
-				(region == null) ? null : new UVInsideRoiCondition(region);
 		assigner =
 			new ImageAssignment<I,O, long[]>(img, origin, span, function,
 					condition, factory);
@@ -127,39 +128,65 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 
 	// -- private helpers --
 
-	private void setRegion(final ImageDisplay disp) {
+	private void setRegion(final ImageDisplay disp, boolean allPlanes) {
 		final ImageDisplayService imageDisplayService =
 			ImageJ.get(ImageDisplayService.class);
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
 
 		final Dataset ds = imageDisplayService.getActiveDataset(disp);
-		final RealRect bounds = overlayService.getSelectionBounds(disp);
 		final Overlay overlay = overlayService.getActiveOverlay(disp);
+		final DatasetView view = imageDisplayService.getActiveDatasetView(disp);
 		
 		// check dimensions of Dataset
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
-		if ((xIndex < 0) || (yIndex < 0)) throw new IllegalArgumentException(
-			"display does not have XY planes");
-		final long[] dims = ds.getDims();
-		final long w = (long) bounds.width;
-		final long h = (long) bounds.height;
-
-		// calc origin of image for actual data changes
-		origin = new long[dims.length];
-		for (int i = 0; i < origin.length; i++)
-			origin[i] = 0;
-		origin[xIndex] = (long) bounds.x;
-		origin[yIndex] = (long) bounds.y;
-
-		// calc span of image for actual data changes
-		span = new long[dims.length];
-		for (int i = 0; i < span.length; i++)
-			span[i] = dims[i];
-		span[xIndex] = w;
-		span[yIndex] = h;
+		if ((xIndex < 0) || (yIndex < 0))
+			throw new IllegalArgumentException(
+				"display does not have XY planes");
 		
-		region = (overlay == null) ? null : overlay.getRegionOfInterest();
+		// calc XY outline boundary
+		final long[] dims = ds.getDims();
+		final long x,y,w,h;
+		if (overlay == null) {
+			x = 0;
+			y = 0;
+			w = dims[xIndex];
+			h = dims[yIndex];
+		}
+		else {
+			x = (long)overlay.realMin(0);
+			y = (long)overlay.realMin(1);
+			w = (long) Math.round(overlay.realMax(0) - x);
+			h = (long) Math.round(overlay.realMax(1) - y);
+		}
+
+		// calc origin and span values
+		origin = new long[dims.length];
+		span = new long[dims.length];
+		Position pos = view.getPlanePosition();
+		int p = 0;
+		for (int i = 0; i < dims.length; i++) {
+			if (i == xIndex) {
+				origin[xIndex] = x;
+				span[xIndex] = w;
+			}
+			else if (i == yIndex) {
+				origin[yIndex] = y;
+				span[yIndex] = h;
+			}
+			else if (allPlanes) {
+				origin[i] = 0;
+				span[i] = dims[i];
+			}
+			else {
+				origin[i] = pos.getLongPosition(p++);
+				span[i] = 1;
+			}
+		}
+		
+		condition = null;
+		if (overlay != null)
+			condition = new UVInsideRoiCondition(overlay.getRegionOfInterest());
 	}
 
 }

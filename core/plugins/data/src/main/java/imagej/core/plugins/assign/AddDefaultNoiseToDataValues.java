@@ -54,7 +54,7 @@ import net.imglib2.type.numeric.RealType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
-	@Menu(label = "Add Noise", weight = 1) }, headless = true)
+	@Menu(label = "Add Noise...", weight = 1) }, headless = true)
 public class AddDefaultNoiseToDataValues<T extends RealType<T>> implements
 	ImageJPlugin
 {
@@ -64,12 +64,15 @@ public class AddDefaultNoiseToDataValues<T extends RealType<T>> implements
 	@Parameter(persist = false)
 	private ImageDisplay display;
 
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
+
 	// -- public interface --
 
 	@Override
 	public void run() {
 		final AddNoiseToDataValues<T> noiseAdder =
-			new AddNoiseToDataValues<T>(display);
+			new AddNoiseToDataValues<T>(display, allPlanes);
 		noiseAdder.setStdDev(25.0);
 		noiseAdder.run();
 	}

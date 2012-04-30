@@ -59,7 +59,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Invert", weight = 30, accelerator = "shift control I") },
+	@Menu(label = "Invert...", weight = 30, accelerator = "shift control I") },
 	headless = true)
 public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 
@@ -70,6 +70,9 @@ public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	@Parameter(persist = false)
 	private ImageDisplay display;
+
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
 
 	// -- instance variables --
 
@@ -95,7 +98,7 @@ public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 		final RealInvert<DoubleType, DoubleType> op =
 			new RealInvert<DoubleType, DoubleType>(min, max);
 		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
+			new InplaceUnaryTransform<T, DoubleType>(display, allPlanes, op, new DoubleType());
 		transform.run();
 	}
 

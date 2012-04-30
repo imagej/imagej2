@@ -67,12 +67,15 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 	@Parameter(label = "Standard deviation")
 	private double stdDev;
 
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
+
 	// -- public interface --
 
 	@Override
 	public void run() {
 		final AddNoiseToDataValues<T> noiseAdder =
-			new AddNoiseToDataValues<T>(display);
+			new AddNoiseToDataValues<T>(display, allPlanes);
 		noiseAdder.setStdDev(stdDev);
 		noiseAdder.run();
 	}

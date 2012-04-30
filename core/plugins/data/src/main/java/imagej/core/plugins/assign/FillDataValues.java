@@ -35,8 +35,6 @@
 
 package imagej.core.plugins.assign;
 
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
@@ -47,10 +45,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsChannels;
-import imagej.util.RealRect;
-import net.imglib2.Cursor;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.meta.Axes;
+import imagej.ui.UIService;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -74,6 +69,9 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 	private OptionsService optionsService;
 
 	@Parameter(persist = false)
+	private UIService uiService;
+
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --
@@ -84,8 +82,11 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 			optionsService.getOptions(OptionsChannels.class);
 		if (opts == null) return;
 		final Overlay overlay = overlayService.getActiveOverlay(display);
-		if (overlay == null) return;
-		overlayService.fillOverlay(overlay, display, opts.getFgValues());
+		if (overlay == null) {
+			uiService.showDialog("This command requires a selection");
+		}
+		else
+			overlayService.fillOverlay(overlay, display, opts.getFgValues());
 	}
 
 	public ImageDisplay getDisplay() {
@@ -99,7 +100,7 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 	// -- private helpers --
 
 	// TODO - make this part of Dataset API maybe. or somewhere else.
-
+	/*
 	private void fillSelectedRegion(final Dataset dataset,
 		final ChannelCollection channels)
 	{
@@ -126,4 +127,5 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 		}
 		dataset.update();
 	}
+	*/
 }

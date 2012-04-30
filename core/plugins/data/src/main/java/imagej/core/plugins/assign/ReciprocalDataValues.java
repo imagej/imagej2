@@ -58,7 +58,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Reciprocal", weight = 17) }, headless = true)
+	@Menu(label = "Reciprocal...", weight = 17) }, headless = true)
 public class ReciprocalDataValues<T extends RealType<T>> implements
 	ImageJPlugin
 {
@@ -70,6 +70,9 @@ public class ReciprocalDataValues<T extends RealType<T>> implements
 
 	@Parameter(persist = false)
 	private ImageDisplay display;
+
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
 
 	// -- public interface --
 
@@ -88,7 +91,7 @@ public class ReciprocalDataValues<T extends RealType<T>> implements
 		final RealReciprocal<DoubleType, DoubleType> op =
 			new RealReciprocal<DoubleType, DoubleType>(dbzVal);
 		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
+			new InplaceUnaryTransform<T, DoubleType>(display, allPlanes, op, new DoubleType());
 		transform.run();
 	}
 

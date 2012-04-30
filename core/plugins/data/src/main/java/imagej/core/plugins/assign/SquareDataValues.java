@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = MenuConstants.PROCESS_LABEL,
 			weight = MenuConstants.PROCESS_WEIGHT,
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Square", weight = 15) },
+		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Square...", weight = 15) },
 	headless = true)
 public class SquareDataValues<T extends RealType<T>> implements ImageJPlugin {
 
@@ -65,6 +65,9 @@ public class SquareDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Parameter(persist = false)
 	private ImageDisplay display;
 
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
+
 	// -- public interface --
 
 	@Override
@@ -72,7 +75,7 @@ public class SquareDataValues<T extends RealType<T>> implements ImageJPlugin {
 		final RealSqr<DoubleType, DoubleType> op =
 			new RealSqr<DoubleType, DoubleType>();
 		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(display, op, new DoubleType());
+			new InplaceUnaryTransform<T, DoubleType>(display, allPlanes, op, new DoubleType());
 		transform.run();
 	}
 
