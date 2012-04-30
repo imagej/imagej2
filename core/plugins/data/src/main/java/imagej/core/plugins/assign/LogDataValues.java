@@ -85,4 +85,12 @@ public class LogDataValues<T extends RealType<T>> implements ImageJPlugin {
 		this.display = display;
 	}
 
+	public boolean isAllPlanes() {
+		return allPlanes;
+	}
+	
+	public void setAllPlanes(boolean value) {
+		this.allPlanes = value;
+	}
+	
 }

@@ -103,4 +103,12 @@ public class ReciprocalDataValues<T extends RealType<T>> implements
 		this.display = display;
 	}
 
+	public boolean isAllPlanes() {
+		return allPlanes;
+	}
+	
+	public void setAllPlanes(boolean value) {
+		this.allPlanes = value;
+	}
+	
 }
