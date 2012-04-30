@@ -79,6 +79,7 @@ ij.plugin.filter.ImageMath("sqrt")        # Process>Math>Sqrt
 ij.plugin.filter.ImageMath("reciprocal")  # Process>Math>Reciprocal
 ij.plugin.filter.ImageMath("nan")         # Process>Math>Set Background To NaN
 ij.plugin.filter.ImageMath("abs")         # Process>Math>Abs
+ij.plugin.filter.ImageMath("macro")       # Process>Math>Macro
 ij.plugin.filter.Shadows("demo")          # Process>Shadows>Shadows Demo
 ij.plugin.CommandFinder                   # Plugins>Utilities>Find Commands
 ij.plugin.HyperStackConverter("stacktohs") # Image>HyperStack>Stack To HyperStack
