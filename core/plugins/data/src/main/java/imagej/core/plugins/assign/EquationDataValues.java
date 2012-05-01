@@ -99,7 +99,7 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 	private String ex2 = "[x,y], x^2 + y^2";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex3 = "[u,v,w] , -2.003*u - 3.41*w + E + PI";
+	private String ex3 = "[u1,v1,w1] , -2.003*u1 - 3.41*w1 + E + PI";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
 	private String ex4 = "[x,y,c,z,t], cos(t) + sin(z)";
