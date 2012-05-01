@@ -36,8 +36,11 @@
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -66,27 +69,29 @@ public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter(persist = false)
-	private ImageDisplayService imageDisplayService;
+	private OverlayService overlayService;
 
 	@Parameter(persist = false)
+	private ImageDisplayService imgDispService;
+
+	@Parameter(persist=false)
 	private ImageDisplay display;
 
 	@Parameter(label = "Apply to all planes")
 	private boolean allPlanes;
 
-	// -- instance variables --
-
-	private Dataset dataset;
+	// -- other instance variables --
+	
 	private double min, max;
 
 	// -- public interface --
 
-	/**
-	 * Fills the output image from the input image
-	 */
 	@Override
 	public void run() {
-		dataset = imageDisplayService.getActiveDataset(display);
+		Dataset dataset = imgDispService.getActiveDataset(display);
+		Overlay overlay = overlayService.getActiveOverlay(display);
+		DatasetView view = imgDispService.getActiveDatasetView(display);
+		
 		// this is similar to IJ1
 		if (dataset.isInteger() && !dataset.isSigned() &&
 			dataset.getType().getBitsPerPixel() == 8)
@@ -94,11 +99,22 @@ public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 			min = 0;
 			max = 255;
 		}
-		else calcValueRange();
+		else calcValueRange(dataset);
 		final RealInvert<DoubleType, DoubleType> op =
 			new RealInvert<DoubleType, DoubleType>(min, max);
-		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(display, allPlanes, op, new DoubleType());
+		
+		final InplaceUnaryTransform<T, DoubleType> transform;
+		
+		if (allPlanes)
+			transform = 
+				new InplaceUnaryTransform<T, DoubleType>(
+					op, new DoubleType(), dataset, overlay);
+		else
+			transform = 
+				new InplaceUnaryTransform<T, DoubleType>(
+					op, new DoubleType(), dataset, overlay,
+					view.getPlanePosition());
+		
 		transform.run();
 	}
 
@@ -106,7 +122,7 @@ public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 		return display;
 	}
 
-	public void setDisplay(final ImageDisplay display) {
+	public void setDisplay(ImageDisplay display) {
 		this.display = display;
 	}
 
@@ -117,14 +133,14 @@ public class InvertDataValues<T extends RealType<T>> implements ImageJPlugin {
 	public void setAllPlanes(boolean value) {
 		this.allPlanes = value;
 	}
-	
+
 	// -- private interface --
 
 	/**
 	 * Finds the smallest and largest data values actually present in the input
 	 * image
 	 */
-	private void calcValueRange() {
+	private void calcValueRange(Dataset dataset) {
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 

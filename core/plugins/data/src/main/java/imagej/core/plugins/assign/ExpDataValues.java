@@ -35,7 +35,12 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.data.Dataset;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -61,8 +66,14 @@ public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
 	@Parameter(persist = false)
-	private ImageDisplay display;
+	private OverlayService overlayService;
 
+	@Parameter(persist = false)
+	private ImageDisplayService imgDispService;
+
+	@Parameter(persist=false)
+	private ImageDisplay display;
+	
 	@Parameter(label = "Apply to all planes")
 	private boolean allPlanes;
 
@@ -70,10 +81,25 @@ public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		Dataset dataset = imgDispService.getActiveDataset(display);
+		Overlay overlay = overlayService.getActiveOverlay(display);
+		DatasetView view = imgDispService.getActiveDatasetView(display);
+		
 		final RealExp<DoubleType, DoubleType> op =
 			new RealExp<DoubleType, DoubleType>();
-		final InplaceUnaryTransform<T, DoubleType> transform =
-			new InplaceUnaryTransform<T, DoubleType>(display, allPlanes, op, new DoubleType());
+		
+		final InplaceUnaryTransform<T, DoubleType> transform;
+		
+		if (allPlanes)
+			transform = 
+				new InplaceUnaryTransform<T, DoubleType>(
+					op, new DoubleType(), dataset, overlay);
+		else
+			transform = 
+				new InplaceUnaryTransform<T, DoubleType>(
+					op, new DoubleType(), dataset, overlay,
+					view.getPlanePosition());
+		
 		transform.run();
 	}
 
@@ -81,7 +107,7 @@ public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 		return display;
 	}
 
-	public void setDisplay(final ImageDisplay display) {
+	public void setDisplay(ImageDisplay display) {
 		this.display = display;
 	}
 
@@ -92,5 +118,5 @@ public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
 	public void setAllPlanes(boolean value) {
 		this.allPlanes = value;
 	}
-	
+
 }

@@ -35,7 +35,13 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.data.Dataset;
+import imagej.data.Position;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -62,6 +68,12 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 	// -- instance variables that are Parameters --
 
 	@Parameter(persist = false)
+	private ImageDisplayService displayService;
+
+	@Parameter(persist = false)
+	private OverlayService overlayService;
+
+	@Parameter(persist = false)
 	private ImageDisplay display;
 
 	@Parameter(label = "Standard deviation")
@@ -74,8 +86,12 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 
 	@Override
 	public void run() {
-		final AddNoiseToDataValues<T> noiseAdder =
-			new AddNoiseToDataValues<T>(display, allPlanes);
+		Dataset dataset = displayService.getActiveDataset(display);
+		Overlay overlay = overlayService.getActiveOverlay(display);
+		DatasetView view = displayService.getActiveDatasetView(display);
+		Position planePos = (allPlanes) ? null : view.getPlanePosition();
+		AddNoiseToDataValues<T> noiseAdder =
+			new AddNoiseToDataValues<T>(dataset, overlay, planePos);
 		noiseAdder.setStdDev(stdDev);
 		noiseAdder.run();
 	}
@@ -86,14 +102,6 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 
 	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
-	}
-
-	public double getStdDev() {
-		return stdDev;
-	}
-
-	public void setStdDev(final double stdDev) {
-		this.stdDev = stdDev;
 	}
 
 	public boolean isAllPlanes() {

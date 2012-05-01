@@ -35,10 +35,9 @@
 
 package imagej.core.plugins.assign;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
+import imagej.data.Position;
+import imagej.data.overlay.Overlay;
 import net.imglib2.ops.operation.unary.real.RealAddNoise;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -56,8 +55,10 @@ public class AddNoiseToDataValues<T extends RealType<T>> {
 
 	// -- instance variables --
 
-	private final ImageDisplay display;
-
+	private final Dataset dataset;
+	private final Overlay overlay;
+	private final Position planePos;
+	
 	/**
 	 * The stand deviation of the gaussian random value used to create perturbed
 	 * values
@@ -71,17 +72,16 @@ public class AddNoiseToDataValues<T extends RealType<T>> {
 	 */
 	private double rangeMin, rangeMax;
 
-	private boolean allPlanes;
-	
 	// -- constructor --
 
 	/**
 	 * Constructor - takes an input Dataset as the baseline data to compute
 	 * perturbed values from.
 	 */
-	public AddNoiseToDataValues(ImageDisplay display, boolean allPlanes) {
-		this.display = display;
-		this.allPlanes = allPlanes;
+	public AddNoiseToDataValues(Dataset dataset, Overlay overlay, Position pos) {
+		this.dataset = dataset;
+		this.overlay = overlay;
+		this.planePos = pos;
 	}
 
 	// -- public interface --
@@ -103,8 +103,14 @@ public class AddNoiseToDataValues<T extends RealType<T>> {
 		final RealAddNoise<DoubleType, DoubleType> op =
 			new RealAddNoise<DoubleType,DoubleType>(rangeMin, rangeMax, rangeStdDev);
 
-		final InplaceUnaryTransform<T,DoubleType> transform =
-			new InplaceUnaryTransform<T,DoubleType>(display, allPlanes, op, new DoubleType());
+		final InplaceUnaryTransform<T,DoubleType> transform;
+		
+		if (planePos == null)
+			transform = 
+				new InplaceUnaryTransform<T,DoubleType>(op, new DoubleType(), dataset, overlay);
+		else
+			transform =
+				new InplaceUnaryTransform<T, DoubleType>(op, new DoubleType(), dataset, overlay, planePos);
 
 		transform.run();
 	}
@@ -116,10 +122,8 @@ public class AddNoiseToDataValues<T extends RealType<T>> {
 	 * upon its underlying data type
 	 */
 	private void calcTypeMinAndMax() {
-		final Dataset input =
-			ImageJ.get(ImageDisplayService.class).getActiveDataset(display);
-		rangeMin = input.getType().getMinValue();
-		rangeMax = input.getType().getMaxValue();
+		rangeMin = dataset.getType().getMinValue();
+		rangeMax = dataset.getType().getMaxValue();
 	}
 
 }
