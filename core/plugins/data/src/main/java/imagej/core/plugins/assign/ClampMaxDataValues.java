@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) },
 	headless = true)
 public class ClampMaxDataValues<T extends RealType<T>>
-	extends	AbstractPreviewPlugin<T>
+	extends	AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -68,11 +68,12 @@ public class ClampMaxDataValues<T extends RealType<T>>
 	// -- public interface --
 
 	public ClampMaxDataValues() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealMaxConstant<T, DoubleType> getOperation() {
-		return new RealMaxConstant<T, DoubleType>(value);
+	public RealMaxConstant<DoubleType, DoubleType> getOperation() {
+		return new RealMaxConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Set...", weight = 12) },
 	headless = true)
 public class SetDataValues<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T, DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -68,11 +68,12 @@ public class SetDataValues<T extends RealType<T>>
 	// -- public interface --
 
 	public SetDataValues() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealConstant<T, DoubleType> getOperation() {
-		return new RealConstant<T, DoubleType>(value);
+	public RealConstant<DoubleType, DoubleType> getOperation() {
+		return new RealConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

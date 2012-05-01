@@ -127,6 +127,10 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		dataset.update();
 	}
 
+	public long[] getRegionOrigin() { return origin; }
+	
+	public long[] getRegionSpan() { return span; }
+
 	// -- private helpers --
 
 	/** All planes version */

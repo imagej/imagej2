@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Subtract...", weight = 2) }, headless = true)
 public class SubtractFromDataValues<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -67,11 +67,12 @@ public class SubtractFromDataValues<T extends RealType<T>>
 	// -- public interface --
 
 	public SubtractFromDataValues() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealSubtractConstant<T, DoubleType> getOperation() {
-		return new RealSubtractConstant<T, DoubleType>(value);
+	public RealSubtractConstant<DoubleType, DoubleType> getOperation() {
+		return new RealSubtractConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

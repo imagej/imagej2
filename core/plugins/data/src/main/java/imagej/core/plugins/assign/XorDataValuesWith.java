@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "XOR...", weight = 8) },
 	headless = true)
 public class XorDataValuesWith<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -67,11 +67,12 @@ public class XorDataValuesWith<T extends RealType<T>>
 	// -- public interface --
 
 	public XorDataValuesWith() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealXorConstant<T, DoubleType> getOperation() {
-		return new RealXorConstant<T, DoubleType>(value);
+	public RealXorConstant<DoubleType, DoubleType> getOperation() {
+		return new RealXorConstant<DoubleType, DoubleType>(value);
 	}
 
 	public long getValue() {

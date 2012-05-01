@@ -58,7 +58,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Gamma...", weight = 11) }, headless = true)
 public class GammaDataValues<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -69,11 +69,12 @@ public class GammaDataValues<T extends RealType<T>>
 	// -- public interface --
 
 	public GammaDataValues() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealGammaConstant<T, DoubleType> getOperation() {
-		return new RealGammaConstant<T, DoubleType>(value);
+	public RealGammaConstant<DoubleType, DoubleType> getOperation() {
+		return new RealGammaConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

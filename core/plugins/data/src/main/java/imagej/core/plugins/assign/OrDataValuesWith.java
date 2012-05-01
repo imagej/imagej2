@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "OR...", weight = 7) },
 	headless = true)
 public class OrDataValuesWith<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -67,11 +67,12 @@ public class OrDataValuesWith<T extends RealType<T>>
 	// -- public interface --
 
 	public OrDataValuesWith() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealOrConstant<T, DoubleType> getOperation() {
-		return new RealOrConstant<T, DoubleType>(value);
+	public RealOrConstant<DoubleType, DoubleType> getOperation() {
+		return new RealOrConstant<DoubleType, DoubleType>(value);
 	}
 
 	public long getValue() {

@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Multiply...", weight = 3) }, headless = true)
 public class MultiplyDataValuesBy<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -67,11 +67,12 @@ public class MultiplyDataValuesBy<T extends RealType<T>>
 	// -- public interface --
 
 	public MultiplyDataValuesBy() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealMultiplyConstant<T, DoubleType> getOperation() {
-		return new RealMultiplyConstant<T, DoubleType>(value);
+	public RealMultiplyConstant<DoubleType, DoubleType> getOperation() {
+		return new RealMultiplyConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

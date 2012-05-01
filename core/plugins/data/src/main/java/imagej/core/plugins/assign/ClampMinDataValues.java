@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Min...", weight = 9) },
 	headless = true)
 public class ClampMinDataValues<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -67,11 +67,12 @@ public class ClampMinDataValues<T extends RealType<T>>
 	// -- public interface --
 
 	public ClampMinDataValues() {
+		super(new DoubleType());
 	}
 
 	@Override
-	public RealMinConstant<T, DoubleType> getOperation() {
-		return new RealMinConstant<T, DoubleType>(value);
+	public RealMinConstant<DoubleType, DoubleType> getOperation() {
+		return new RealMinConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

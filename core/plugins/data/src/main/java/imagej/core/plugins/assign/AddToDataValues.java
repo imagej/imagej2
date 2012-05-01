@@ -39,7 +39,7 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.UnaryOperation;
+import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAddConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) },
 	headless = true)
 public class AddToDataValues<T extends RealType<T>>
-	extends AbstractPreviewPlugin<T>
+	extends AbstractAssignPlugin<T,DoubleType>
 {
 	// -- Parameters --
 	
@@ -67,6 +67,7 @@ public class AddToDataValues<T extends RealType<T>>
 	// -- public interface --
 
 	public AddToDataValues() {
+		super(new DoubleType());
 	}
 
 	public double getValue() {
@@ -79,7 +80,7 @@ public class AddToDataValues<T extends RealType<T>>
 
 	// -- private helpers --
 	
-	public UnaryOperation<T,DoubleType> getOperation() {
-		return new RealAddConstant<T,DoubleType>(value);
+	public RealAddConstant<DoubleType,DoubleType> getOperation() {
+		return new RealAddConstant<DoubleType,DoubleType>(value);
 	}
 }
