@@ -93,7 +93,7 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 	private String title = "";
 
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex1 = "[x,y], img * 2";
+	private String ex1 = "img + 12";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
 	private String ex2 = "[x,y], x^2 + y^2";
