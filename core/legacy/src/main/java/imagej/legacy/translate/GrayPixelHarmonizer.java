@@ -44,6 +44,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.ShortType;
 
 /**
  * Supports bidirectional synchronization between {@link ImagePlus}es and gray
@@ -65,6 +66,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	 */
 	@Override
 	public void updateDataset(final Dataset ds, final ImagePlus imp) {
+		final boolean signed16BitImp = imp.getCalibration().isSigned16Bit();
 		final RealType<?> type = ds.getType();
 		final double typeMin = type.getMinValue();
 		final double typeMax = type.getMaxValue();
@@ -97,6 +99,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 							if (yIndex >= 0) pos[yIndex] = y;
 							accessor.setPosition(pos);
 							float value = proc.getf(x, y);
+							if (signed16BitImp) value -= 32768.0;
 							if (value < typeMin) value = (float) typeMin;
 							if (value > typeMax) value = (float) typeMax;
 							accessor.get().setReal(value);
@@ -118,6 +121,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	 */
 	@Override
 	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
+		final boolean signed16BitData = ds.getType() instanceof ShortType;
 		final boolean bitData = ds.getType() instanceof BitType;
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
@@ -148,6 +152,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 							if (yIndex >= 0) pos[yIndex] = y;
 							accessor.setPosition(pos);
 							float value = accessor.get().getRealFloat();
+							if (signed16BitData) value += 32768.0;
 							if (bitData) if (value > 0) value = 255;
 							proc.setf(x, y, value);
 						}
@@ -156,7 +161,5 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 			}
 		}
 	}
-
-	// -- private interface --
 
 }

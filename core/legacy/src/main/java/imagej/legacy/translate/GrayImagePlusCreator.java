@@ -38,11 +38,13 @@ package imagej.legacy.translate;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.measure.Calibration;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.type.numeric.integer.ShortType;
 
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing gray data.
@@ -122,18 +124,19 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 		final ImageStack stack = new ImageStack(dimValues[0], dimValues[1]);
 
-		Object dummyPlane = null;
+		Object dummyPlane = makeDummyPlanes ?
+				planeMaker.makePlane(dimValues[0], dimValues[1]) : null;
+				
 		for (long t = 0; t < tCount; t++) {
 			for (long z = 0; z < zCount; z++) {
 				for (long c = 0; c < cCount; c++) {
 					Object plane;
 					if (makeDummyPlanes) {
-						if (dummyPlane == null) {
-							dummyPlane = planeMaker.makePlane(dimValues[0], dimValues[1]);
-						}
 						plane = dummyPlane;
 					}
-					else plane = planeMaker.makePlane(dimValues[0], dimValues[1]);
+					else {
+						plane = planeMaker.makePlane(dimValues[0], dimValues[1]);
+					}
 					stack.addSlice(null, plane);
 				}
 			}
@@ -143,6 +146,8 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 		imp.setDimensions(cCount, zCount, tCount);
 
+		if (ds.getType() instanceof ShortType) markAsSigned16Bit(imp);
+		
 		return imp;
 	}
 
@@ -208,6 +213,13 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		return new CompositeImage(imp, CompositeImage.COMPOSITE);
 	}
 
+	/** Updates an {@link ImagePlus} so that IJ1 treats it as a signed
+	 *  16 bit image */
+	private void markAsSigned16Bit(ImagePlus imp) {
+		Calibration cal = imp.getCalibration();
+		cal.setSigned16BitCalibration();
+	}
+	
 	/**
 	 * Finds the best {@link PlaneMaker} for a given {@link Dataset}. The best
 	 * PlaneMaker is the one that makes planes in the type that can best represent

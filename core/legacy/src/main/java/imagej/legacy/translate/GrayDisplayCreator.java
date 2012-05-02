@@ -49,8 +49,8 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Creates {@link ImageDisplay}s from {@link ImagePlus}es containing gray data
- * values.
+ * Creates {@link ImageDisplay}s containing gray data values from
+ * {@link ImagePlus}es.
  * 
  * @author Barry DeZonia
  */
@@ -69,10 +69,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private final PositionHarmonizer positionHarmonizer;
 
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
-	// while
-	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction
-	// as
-	// Harmonizer always catches that case.
+	// while avoiding the Harmonizer. Not required in the Display->ImagePlus
+	// direction as Harmonizer always catches that case.
 
 	// -- constructor --
 
@@ -130,11 +128,22 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final AxisType[] preferredOrder)
 	{
 		Dataset ds;
-		if (preferredOrder[0] == Axes.X && preferredOrder[1] == Axes.Y) {
+		boolean exactlyRepresentable = false;
+		boolean isBinaryImp = false;
+		if (preferredOrder[0] == Axes.X &&
+				preferredOrder[1] == Axes.Y &&
+				!imp.getCalibration().isSigned16Bit())
+		{
+			isBinaryImp = isBinary(imp);
+			exactlyRepresentable = !isBinaryImp;
+		}
+		if (exactlyRepresentable)
+		{
 			ds = makeExactDataset(imp, preferredOrder);
+			planeHarmonizer.updateDataset(ds, imp);
 		}
 		else {
-			ds = makeGrayDatasetFromGrayImp(imp, preferredOrder);
+			ds = makeGrayDatasetFromGrayImp(imp, preferredOrder, isBinaryImp);
 			pixelHarmonizer.updateDataset(ds, imp);
 		}
 		metadataHarmonizer.updateDataset(ds, imp);
@@ -164,7 +173,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private Dataset makeGrayDatasetFromColorImp(final ImagePlus imp,
 		final AxisType[] preferredOrder)
 	{
-
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
@@ -173,7 +181,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 		if (imp.getType() != ImagePlus.COLOR_RGB) {
 			throw new IllegalArgumentException("this method designed for "
-				+ "creating a color Dataset from a multichannel RGB ImagePlus");
+				+ "creating a gray Dataset from a multichannel RGB ImagePlus");
 		}
 
 		final int[] inputDims = new int[] { x, y, c * 3, z, t };
@@ -246,8 +254,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	/**
 	 * Makes a planar {@link Dataset} whose dimensions match a given
-	 * {@link ImagePlus}. Data is exactly the same as plane references are shared
-	 * between the Dataset and the ImagePlus. Assumes it will never be called with
+	 * {@link ImagePlus}. Assumes it will never be called with
 	 * any kind of color ImagePlus. Does not set metadata of Dataset.
 	 */
 	private Dataset makeExactDataset(final ImagePlus imp,
@@ -270,8 +277,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
-		planeHarmonizer.updateDataset(ds, imp);
-
 		DatasetUtils.initColorTables(ds);
 
 		return ds;
@@ -284,9 +289,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 	 * metadata of Dataset.
 	 */
 	private Dataset makeGrayDatasetFromGrayImp(final ImagePlus imp,
-		final AxisType[] preferredOrder)
+		final AxisType[] preferredOrder, boolean isBinaryImp)
 	{
-
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
@@ -302,7 +306,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final boolean floating;
 		final int bitsPerPixel;
 
-		if (isBinary(imp)) {
+		if (isBinaryImp) {
 			bitsPerPixel = 1;
 			signed = false;
 			floating = false;
@@ -345,7 +349,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	/** Returns true if an {@link ImagePlus} is backed by a signed type. */
 	private boolean isSigned(final ImagePlus imp) {
-		// TODO - ignores IJ1's support of signed 16 bit. OK?
+		if (imp.getCalibration().isSigned16Bit()) return true;
 		return isGray32PixelType(imp);
 	}
 
