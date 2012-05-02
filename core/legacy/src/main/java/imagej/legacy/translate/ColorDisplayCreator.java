@@ -62,10 +62,8 @@ public class ColorDisplayCreator implements DisplayCreator {
 	private final PositionHarmonizer positionHarmonizer;
 	
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
-	// while
-	// avoiding the Harmonizer. Not required in the Display->ImagePlus direction
-	// as
-	// Harmonizer always catches that case.
+	// while avoiding the Harmonizer. Not required in the Display->ImagePlus
+	// direction as Harmonizer always catches that case.
 
 	// -- constructor --
 
