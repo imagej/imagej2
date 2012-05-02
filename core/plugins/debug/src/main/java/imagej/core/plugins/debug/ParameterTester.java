@@ -41,6 +41,7 @@ import imagej.ext.module.ItemIO;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.ParameterGroup;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;
@@ -154,6 +155,13 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter(description = "Demonstrates preview functionality by "
 		+ "displaying the given message in the ImageJ status bar.")
 	private String message = "Type a status message here.";
+	
+	@Parameter(label = "Advanced 1", group = @ParameterGroup(id = "advanced",
+		label = "Advanced", collapsed = true))
+	private String advancedString = "Advanced!";
+
+	@Parameter(label = "Advanced 2", group = @ParameterGroup(id = "advanced"))
+	private BigInteger advancedNumber;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private String output;
@@ -223,6 +231,8 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		append(sb, "\tx = " + x);
 		append(sb, "\t2x = " + twoX);
 		append(sb, "\tmessage = " + message);
+		append(sb, "\tadvanced string = " + advancedString);
+		append(sb, "\tadvanced number = " + advancedNumber);
 
 		output = sb.toString();
 	}

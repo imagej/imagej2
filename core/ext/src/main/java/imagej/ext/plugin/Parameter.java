@@ -107,6 +107,8 @@ public @interface Parameter {
 	// See:
 	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
 	ItemVisibility visibility() default imagej.ext.module.ItemVisibility.NORMAL;
+	
+	ParameterGroup group() default @ParameterGroup();
 
 	/**
 	 * Defines whether the parameter value should be auto-filled, if possible,
