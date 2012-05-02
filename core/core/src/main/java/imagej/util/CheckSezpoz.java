@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -54,8 +55,28 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class CheckSezpoz {
 
@@ -113,15 +134,18 @@ public class CheckSezpoz {
 			Log.warn("Ignoring non-Maven build directory: " + classes.getPath());
 			return true;
 		}
-		final File source =
-			new File(classes.getParentFile().getParentFile(), "src/main/java");
+		final File projectRoot = classes.getParentFile().getParentFile();
+		final File source = new File(projectRoot, "src/main/java");
 		if (!source.isDirectory()) {
 			Log.warn("No src/main/java found for " + classes);
 			return true;
 		}
 		final long latestCheck = getLatestCheck(classes.getParentFile());
 		final boolean upToDate = checkDirectory(classes, source, latestCheck);
-		if (!upToDate) return !fix(classes, source);
+		if (!upToDate) {
+			fixEclipseConfiguration(projectRoot);
+			return !fix(classes, source);
+		}
 		return true;
 	}
 
@@ -236,7 +260,8 @@ public class CheckSezpoz {
 						for (;;) {
 							clazz = line.indexOf("class", clazz);
 							if (clazz < 0) break;
-							// is "class" the keyword, i.e. not a substring of something else?
+							// is "class" the keyword, i.e. not a substring of
+							// something else?
 							if ((clazz == 0 || !Character.isJavaIdentifierPart(line
 								.charAt(clazz - 1))) &&
 								(clazz + 4 >= end || !Character.isJavaIdentifierPart(line
@@ -267,7 +292,8 @@ public class CheckSezpoz {
 			return false;
 		}
 		catch (final Exception e) {
-			// If we cannot read it, it does not have an annotation for all we know.
+			// If we cannot read it, it does not have an annotation for all we
+			// know.
 			return false;
 		}
 	}
@@ -395,6 +421,114 @@ public class CheckSezpoz {
 
 	protected static void touch(final File file) throws IOException {
 		new FileOutputStream(file, true).close();
+	}
+
+	protected static void fixEclipseConfiguration(final File directory)
+		throws IOException
+	{
+		// is this an Eclipse project at all?
+		if (!new File(directory, ".settings").isDirectory()) return;
+		fixFactoryPath(directory);
+		fixAnnotationProcessingSettings(directory);
+	}
+
+	protected static void fixFactoryPath(final File directory) throws IOException
+	{
+		final File factoryPath = new File(directory, ".factorypath");
+		try {
+			final Document xml;
+			if (factoryPath.exists()) {
+				xml = readXMLFile(factoryPath);
+			}
+			else {
+				xml =
+					DocumentBuilderFactory.newInstance().newDocumentBuilder()
+						.newDocument();
+				xml.appendChild(xml.createElement("factorypath"));
+			}
+			if (!containsSezpozId(xml.getElementsByTagName("factorypathentry"))) {
+				final Element element = xml.createElement("factorypathentry");
+				element.setAttribute("enabled", "true");
+				element.setAttribute("id",
+					"M2_REPO/net/java/sezpoz/sezpoz/1.9/sezpoz-1.9.jar");
+				element.setAttribute("kind", "VARJAR");
+				element.setAttribute("runInBatchMode", "true");
+				xml.getDocumentElement().appendChild(element);
+				writeXMLFile(xml, factoryPath);
+			}
+		}
+		catch (final Exception e) {
+			Log.error("Could not modify " + factoryPath, e);
+		}
+	}
+
+	private static boolean containsSezpozId(final NodeList elements) {
+		if (elements == null) return false;
+		for (int i = 0; i < elements.getLength(); i++) {
+			final NamedNodeMap attributes = elements.item(i).getAttributes();
+			for (int j = 0; j < attributes.getLength(); j++) {
+				final Attr attribute = (Attr) attributes.item(j);
+				if (attribute.getName().equals("id") &&
+					attribute.getValue().indexOf("sezpoz") >= 0) return true;
+			}
+		}
+		return false;
+	}
+
+	protected static Document readXMLFile(final File file)
+		throws ParserConfigurationException, SAXException, IOException
+	{
+		final DocumentBuilderFactory builderFactory =
+			DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		builder = builderFactory.newDocumentBuilder();
+		return builder.parse(file);
+	}
+
+	public static void writeXMLFile(final Document xml, final File file)
+		throws TransformerException
+	{
+		final Source source = new DOMSource(xml);
+		final Result result = new StreamResult(file);
+		final TransformerFactory factory = TransformerFactory.newInstance();
+		final Transformer transformer = factory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
+			"4");
+		transformer.transform(source, result);
+	}
+
+	protected static void fixAnnotationProcessingSettings(final File directory) {
+		final File jdtSettings =
+			new File(directory, ".settings/org.eclipse.jdt.apt.core.prefs");
+		try {
+			final Properties properties = new Properties();
+			if (jdtSettings.exists()) properties
+				.load(new FileInputStream(jdtSettings));
+			boolean changed = false;
+			for (final String pair : new String[] { "aptEnabled=true",
+				"genSrcDir=target/classes", "reconcileEnabled=false" })
+			{
+				final int equals = pair.indexOf('=');
+				final String key = "org.eclipse.jdt.apt." + pair.substring(0, equals);
+				final String value = pair.substring(equals + 1);
+				if (value.equals(properties.get(key))) continue;
+				properties.put(key, value);
+				changed = true;
+			}
+			if (changed) properties.store(new FileOutputStream(jdtSettings), null);
+		}
+		catch (final Exception e) {
+			Log.error("Could not edit " + jdtSettings, e);
+		}
+	}
+
+	protected static void write(final File file, final String contents)
+		throws IOException, UnsupportedEncodingException
+	{
+		final OutputStream out = new FileOutputStream(file);
+		out.write(contents.getBytes("UTF-8"));
+		out.close();
 	}
 
 	public static <T> Iterable<T> iterate(final Enumeration<T> en) {
