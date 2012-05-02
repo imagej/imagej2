@@ -377,10 +377,15 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			}
 		}
 
+		ImageDisplayService service = context.getService(ImageDisplayService.class);
+		Dataset dataset = service.getActiveDataset(disp);
+		RealType<?> type = dataset.getType();
 		for (int c = 0; c < channelCount; c++) {
+			double mn = (min[c] > type.getMinValue()) ? min[c] : type.getMinValue(); 
+			double mx = (max[c] < type.getMaxValue()) ? max[c] : type.getMaxValue(); 
 			final RealLUTConverter<? extends RealType<?>> conv = converters.get(c);
-			conv.setMin(min[c]);
-			conv.setMax(max[c]);
+			conv.setMin(mn);
+			conv.setMax(mx);
 		}
 	}
 
