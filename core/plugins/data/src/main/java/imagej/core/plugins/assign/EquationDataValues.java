@@ -93,16 +93,16 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 	private String title = "";
 
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex1 = "img + 12";
+	private String ex1 = "img + 40";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
 	private String ex2 = "[x,y], x^2 + y^2";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex3 = "[u1,v1,w1] , -2.003*u1 - 3.41*w1 + E + PI";
+	private String ex3 = "[u1,v1,w1] , -2.003*u1 + 8.41*w1 + E + PI";
 	
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex4 = "[x,y,c,z,t], cos(t) + sin(z)";
+	private String ex4 = "[x,y,c,z,t], cos(t*PI/7) + sin(z*PI/12)";
 	
 	@Parameter(label = "Apply to all planes")
 	private boolean allPlanes;
