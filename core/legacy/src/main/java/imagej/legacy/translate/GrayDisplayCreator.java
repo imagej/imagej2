@@ -36,7 +36,6 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.process.ImageProcessor;
 import imagej.ImageJ;
 import imagej.data.Dataset;
@@ -89,22 +88,27 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), LegacyUtils.isBinary(imp));
+	}
+
+	@Override
+	public ImageDisplay createDisplay(final ImagePlus imp, boolean isBinaryImp) {
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), isBinaryImp);
 	}
 
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
-		final AxisType[] preferredOrder)
+		final AxisType[] preferredOrder, boolean isBinaryImp)
 	{
-		if (imp.getType() == ImagePlus.COLOR_RGB) return colorCase(imp,
-			preferredOrder);
-		return grayCase(imp, preferredOrder);
+		if (imp.getType() == ImagePlus.COLOR_RGB)
+			return colorCase(imp, preferredOrder, isBinaryImp);
+		return grayCase(imp, preferredOrder, isBinaryImp);
 	}
 
 	// -- private interface --
 
 	private ImageDisplay colorCase(final ImagePlus imp,
-		final AxisType[] preferredOrder)
+		final AxisType[] preferredOrder, boolean isBinaryImp)
 	{
 		final Dataset ds = makeGrayDatasetFromColorImp(imp, preferredOrder);
 		setDatasetGrayDataFromColorImp(ds, imp);
@@ -125,19 +129,13 @@ public class GrayDisplayCreator implements DisplayCreator {
 	}
 
 	private ImageDisplay grayCase(final ImagePlus imp,
-		final AxisType[] preferredOrder)
+		final AxisType[] preferredOrder, boolean isBinaryImp)
 	{
 		Dataset ds;
-		boolean exactlyRepresentable = false;
-		boolean isBinaryImp = false;
 		if (preferredOrder[0] == Axes.X &&
 				preferredOrder[1] == Axes.Y &&
-				!imp.getCalibration().isSigned16Bit())
-		{
-			isBinaryImp = isBinary(imp);
-			exactlyRepresentable = !isBinaryImp;
-		}
-		if (exactlyRepresentable)
+				!imp.getCalibration().isSigned16Bit() &&
+				!isBinaryImp)
 		{
 			ds = makeExactDataset(imp, preferredOrder);
 			planeHarmonizer.updateDataset(ds, imp);
@@ -325,20 +323,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 		DatasetUtils.initColorTables(ds);
 
 		return ds;
-	}
-
-	/**
-	 * Determines whether an ImagePlus is an IJ1 binary image (i.e. it is unsigned
-	 * 8 bit data with only values 0 & 255 present)
-	 */
-	private boolean isBinary(final ImagePlus imp) {
-		final int numSlices = imp.getStackSize();
-		if (numSlices == 1) return imp.getProcessor().isBinary();
-		final ImageStack stack = imp.getStack();
-		for (int i = 1; i <= numSlices; i++) {
-			if (!stack.getProcessor(i).isBinary()) return false;
-		}
-		return true;
 	}
 
 	/** Returns true if an {@link ImagePlus} is of type GRAY32. */

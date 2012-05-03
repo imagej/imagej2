@@ -73,12 +73,22 @@ public class DefaultImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
+		
+		return createDisplay(imp, LegacyUtils.isBinary(imp));
+	}
+
+	/**
+	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
+	 * data when possible.
+	 */
+	@Override
+	public ImageDisplay createDisplay(final ImagePlus imp, boolean isBinaryImp) {
 
 		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
-			return colorDisplayCreator.createDisplay(imp);
+			return colorDisplayCreator.createDisplay(imp, isBinaryImp);
 		}
 
-		return grayDisplayCreator.createDisplay(imp);
+		return grayDisplayCreator.createDisplay(imp, isBinaryImp);
 	}
 
 	/**
@@ -87,14 +97,14 @@ public class DefaultImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
-		final AxisType[] preferredOrder)
+		final AxisType[] preferredOrder, boolean isBinaryImp)
 	{
 
 		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
-			return colorDisplayCreator.createDisplay(imp, preferredOrder);
+			return colorDisplayCreator.createDisplay(imp, preferredOrder, isBinaryImp);
 		}
 
-		return grayDisplayCreator.createDisplay(imp, preferredOrder);
+		return grayDisplayCreator.createDisplay(imp, preferredOrder, isBinaryImp);
 	}
 
 	/**

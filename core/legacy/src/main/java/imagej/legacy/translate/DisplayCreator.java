@@ -48,6 +48,8 @@ public interface DisplayCreator {
 
 	ImageDisplay createDisplay(final ImagePlus imp);
 
-	ImageDisplay createDisplay(final ImagePlus imp, AxisType[] preferredOrder);
+	ImageDisplay createDisplay(final ImagePlus imp, boolean isBinaryImp);
+
+	ImageDisplay createDisplay(final ImagePlus imp, AxisType[] preferredOrder, boolean isBinaryImp);
 
 }

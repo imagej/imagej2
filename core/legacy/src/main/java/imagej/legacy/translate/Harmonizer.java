@@ -48,7 +48,9 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
  * Provides methods for synchronizing data between an {@link ImageDisplay} and
@@ -103,7 +105,16 @@ public class Harmonizer {
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
-		if (!imagePlusIsNearestType(ds, imp)) {
+		boolean binaryTypeChange = false;
+		if (imp.getBitDepth() == 8) {
+			if (ds.getType() instanceof BitType) {
+				binaryTypeChange = !LegacyUtils.isBinary(imp);
+			}
+			else if (ds.getType() instanceof UnsignedByteType) {
+				binaryTypeChange = LegacyUtils.isBinary(imp);
+			}
+		}
+		if (!imagePlusIsNearestType(ds, imp) || binaryTypeChange) {
 			rebuildImagePlusData(display, imp);
 		}
 		else {
@@ -157,8 +168,20 @@ public class Harmonizer {
 			oldBitDepth = imp.getBitDepth();
 			bitDepthMap.put(imp, imp.getBitDepth());
 		}
-		if (imp.getBitDepth() != oldBitDepth) {
-			rebuildDatasetData(ds, imp);
+		boolean typeChanged = imp.getBitDepth() != oldBitDepth;
+		boolean isBinaryImp = false;
+		if (!typeChanged && imp.getBitDepth() == 8) {
+			if (ds.getType() instanceof BitType) {
+				isBinaryImp = LegacyUtils.isBinary(imp);
+				typeChanged = !isBinaryImp;
+			}
+			else if (ds.getType() instanceof UnsignedByteType) {
+				isBinaryImp = LegacyUtils.isBinary(imp);
+				typeChanged = isBinaryImp;
+			}
+		}
+		if (typeChanged) {
+			rebuildDatasetData(ds, imp, isBinaryImp);
 		}
 		else { // ImagePlus type unchanged
 			if (!dimensionsCompatible(ds, imp)) {
@@ -326,7 +349,7 @@ public class Harmonizer {
 	 * {@link ImagePlus}. Internally the Dataset refers to an all new {@link
 	 * ImgPlus}. 
 	 */
-	private void rebuildDatasetData(final Dataset ds, final ImagePlus imp)
+	private void rebuildDatasetData(final Dataset ds, final ImagePlus imp, boolean isBinaryImp)
 	{
 		// NB - create display from copy of original ImagePlus? Not right now. But
 		// will need to in future if createDisplay() registers "imp" with legacy
@@ -337,7 +360,7 @@ public class Harmonizer {
 		//final ImageDisplay tmpDisplay =
 		//		imageTranslator.createDisplay(impCopy, ds.getAxes());
 		final ImageDisplay tmpDisplay = 
-			imageTranslator.createDisplay(imp, ds.getAxes());
+			imageTranslator.createDisplay(imp, ds.getAxes(), isBinaryImp);
 		ImageDisplayService idSrv = context.getService(ImageDisplayService.class);
 		final Dataset tmpDs = idSrv.getActiveDataset(tmpDisplay);
 		ds.setImgPlus(tmpDs.getImgPlus());

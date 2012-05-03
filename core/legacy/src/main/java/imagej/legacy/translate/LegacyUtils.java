@@ -36,6 +36,7 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.macro.Interpreter;
@@ -400,6 +401,20 @@ public class LegacyUtils {
 			if (plane != null && plane instanceof float[]) return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Determines whether an ImagePlus is an IJ1 binary image (i.e. it is unsigned
+	 * 8 bit data with only values 0 & 255 present)
+	 */
+	public static boolean isBinary(final ImagePlus imp) {
+		final int numSlices = imp.getStackSize();
+		if (numSlices == 1) return imp.getProcessor().isBinary();
+		final ImageStack stack = imp.getStack();
+		for (int i = 1; i <= numSlices; i++) {
+			if (!stack.getProcessor(i).isBinary()) return false;
+		}
+		return true;
 	}
 
 }
