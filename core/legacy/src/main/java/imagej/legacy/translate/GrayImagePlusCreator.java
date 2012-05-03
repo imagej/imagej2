@@ -82,6 +82,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		ImagePlus imp;
 		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
 			imp = makeExactImagePlus(dataset);
+			planeHarmonizer.updateLegacyImage(dataset, imp);
 		}
 		else {
 			imp = makeNearestTypeGrayImagePlus(dataset);
@@ -172,8 +173,6 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 		final ImagePlus imp = makeImagePlus(ds, getPlaneMaker(ds), true);
 
-		planeHarmonizer.updateLegacyImage(ds, imp);
-
 		imp.setDimensions(c, z, t);
 
 		return imp;
@@ -230,7 +229,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		final boolean integer = ds.isInteger();
 		final int bitsPerPixel = ds.getType().getBitsPerPixel();
 		if (!signed && integer && bitsPerPixel <= 8) return new BytePlaneMaker();
-		if (!signed && integer && bitsPerPixel <= 16) return new ShortPlaneMaker();
+		if (integer && bitsPerPixel <= 16) return new ShortPlaneMaker();
 		return new FloatPlaneMaker();
 	}
 

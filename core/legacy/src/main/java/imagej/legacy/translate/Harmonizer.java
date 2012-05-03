@@ -48,9 +48,12 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
+import net.imglib2.ops.Tuple2;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 /**
  * Provides methods for synchronizing data between an {@link ImageDisplay} and
@@ -170,15 +173,10 @@ public class Harmonizer {
 		}
 		boolean typeChanged = imp.getBitDepth() != oldBitDepth;
 		boolean isBinaryImp = false;
-		if (!typeChanged && imp.getBitDepth() == 8) {
-			if (ds.getType() instanceof BitType) {
-				isBinaryImp = LegacyUtils.isBinary(imp);
-				typeChanged = !isBinaryImp;
-			}
-			else if (ds.getType() instanceof UnsignedByteType) {
-				isBinaryImp = LegacyUtils.isBinary(imp);
-				typeChanged = isBinaryImp;
-			}
+		if (!typeChanged) {
+			Tuple2<Boolean,Boolean> result = sameBitDepthTypeChange(ds, imp);
+			typeChanged = result.get1();
+			isBinaryImp = result.get2();
 		}
 		if (typeChanged) {
 			rebuildDatasetData(ds, imp, isBinaryImp);
@@ -236,8 +234,8 @@ public class Harmonizer {
 	{
 		final int impType = imp.getType();
 
-		if (impType == ImagePlus.COLOR_RGB) return LegacyUtils
-			.isColorCompatible(ds);
+		if (impType == ImagePlus.COLOR_RGB)
+			return LegacyUtils.isColorCompatible(ds);
 
 		final RealType<?> dsType = ds.getType();
 		final boolean isSigned = ds.isSigned();
@@ -248,7 +246,7 @@ public class Harmonizer {
 			return impType == ImagePlus.GRAY8 || impType == ImagePlus.COLOR_256;
 		}
 
-		if (!isSigned && isInteger && bitsPerPix <= 16) {
+		if (isInteger && bitsPerPix <= 16) {
 			return impType == ImagePlus.GRAY16;
 		}
 
@@ -366,5 +364,36 @@ public class Harmonizer {
 		ds.setImgPlus(tmpDs.getImgPlus());
 		ds.setRGBMerged(tmpDs.isRGBMerged());
 		tmpDisplay.close();
+	}
+	
+	/** Detect type changes when bit depth matches but sign or content incompatible */
+	private Tuple2<Boolean, Boolean> sameBitDepthTypeChange(Dataset ds, ImagePlus imp) {
+		boolean typeChanged = false;
+		boolean isBinaryImp = false;
+		if (imp.getBitDepth() == 8) {
+			if (ds.getType() instanceof BitType) {
+				isBinaryImp = LegacyUtils.isBinary(imp);
+				typeChanged = !isBinaryImp;
+			}
+			else if (ds.getType() instanceof UnsignedByteType) {
+				isBinaryImp = LegacyUtils.isBinary(imp);
+				typeChanged = isBinaryImp;
+			}
+		}
+		else if (imp.getBitDepth() == 16) {
+			boolean isSigned16Imp = imp.getCalibration().isSigned16Bit();
+			if (ds.getType() instanceof ShortType) {
+				typeChanged = !isSigned16Imp;
+			}
+			else if (ds.getType() instanceof UnsignedShortType) {
+				typeChanged = isSigned16Imp;
+			}
+		}
+		else { // some other bit depth : can't detect any change
+			isBinaryImp = false;
+			typeChanged = false;
+		}
+		
+		return new Tuple2<Boolean,Boolean>(typeChanged, isBinaryImp);
 	}
 }

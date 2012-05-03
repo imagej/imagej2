@@ -69,8 +69,6 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final RealType<?> type = ds.getType();
 		final double typeMin = type.getMinValue();
 		final double typeMax = type.getMaxValue();
-		// NB - originally set bool to imp.getCalibration().isSigned16Bit()
-		// but that did not seem to be well maintained by IJ1
 		final boolean signed16BitData = type instanceof ShortType;
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
