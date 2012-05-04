@@ -60,6 +60,22 @@ import java.net.UnknownHostException;
 /**
  * The Updater. As plugin.
  * 
+ * Incidentally, this class can be used as an out-of-ImageJ entry point to the updater,
+ * as it does not *require* an eventService to run. Use this Beanshell script as a template:
+ *
+ *	import java.io.File;
+ *	import java.net.URL;
+ *	import java.net.URLClassLoader;
+ *
+ *	prefix = "file:/path/to/imagej/";
+ *	loader = new URLClassLoader(new URL[] {
+ *		new URL(prefix + "ui/awt-swing/swing/updater/target/ij-ui-swing-updater-2.0.0-SNAPSHOT.jar"),
+ *		new URL(prefix + "core/updater/core/target/ij-updater-core-2.0.0-SNAPSHOT.jar"),
+ *		new URL(prefix + "core/core/target/ij-core-2.0.0-SNAPSHOT.jar"),
+ *		new URL(prefix + "core/ext/target/ij-ext-2.0.0-SNAPSHOT.jar")
+ *	});
+ *	loader.loadClass("imagej.updater.gui.ImageJUpdater").newInstance().run();
+ * 
  * @author Johannes Schindelin
  */
 @Plugin(type = UpdaterUIPlugin.class, menu = { @Menu(label = "Help"),
