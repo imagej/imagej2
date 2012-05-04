@@ -617,6 +617,19 @@ public class UpdaterTest {
 		assertStatus(Status.MODIFIED, files.get("jars/hello.jar"));
 	}
 
+	@Test
+	public void testReReadFiles() throws Exception {
+		initializeUpdateSite("macros/macro.ijm");
+		FilesCollection files = readDb(true, true);
+		files.get("macros/macro.ijm").description = "Narf";
+		files.write();
+
+		files = readDb(true, true);
+		assertEquals("Narf", files.get("macros/macro.ijm").description);
+		new Checksummer(files, progress).updateFromLocal();
+		assertEquals("Narf", files.get("macros/macro.ijm").description);
+	}
+
 	//
 	// Debug functions
 	//

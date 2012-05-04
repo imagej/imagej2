@@ -220,6 +220,8 @@ public class XMLFileReader extends DefaultHandler {
 					if (file.localFilename != null) {
 						current.localFilename = file.localFilename;
 					}
+					// do not forget metadata
+					current.completeMetadataFrom(file);
 					files.add(current);
 				}
 				else

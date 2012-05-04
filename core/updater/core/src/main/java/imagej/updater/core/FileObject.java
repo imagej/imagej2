@@ -231,6 +231,19 @@ public class FileObject {
 		}
 	}
 
+	/**
+	 * Fill unset metadata with metadata from another object
+	 *   
+	 * @param other the metadata source
+	 */
+	public void completeMetadataFrom(final FileObject other) {
+		if (description == null || description.length() == 0) description = other.description;
+		if (links == null || links.size() == 0) links = other.links;
+		if (authors == null || authors.size() == 0) authors = other.authors;
+		if (platforms == null || platforms.size() == 0) platforms = other.platforms;
+		if (categories == null || categories.size() == 0) categories = other.categories;
+	}
+
 	public boolean hasPreviousVersion(final String checksum) {
 		if (current != null && current.checksum.equals(checksum)) return true;
 		for (final Version version : previous)
