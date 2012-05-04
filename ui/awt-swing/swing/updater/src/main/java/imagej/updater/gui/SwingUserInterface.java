@@ -109,7 +109,7 @@ public class SwingUserInterface extends UpdaterUserInterface {
 	@Override
 	public void showStatus(final String message) {
 
-		eventService.publish(new StatusEvent(message, false));
+		if (eventService != null) eventService.publish(new StatusEvent(message, false));
 
 	}
 
