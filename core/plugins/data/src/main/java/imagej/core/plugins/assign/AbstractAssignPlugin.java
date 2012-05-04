@@ -46,6 +46,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import net.imglib2.RandomAccess;
+import net.imglib2.meta.Axes;
 import net.imglib2.ops.PointSetIterator;
 import net.imglib2.ops.function.real.PrimitiveDoubleArray;
 import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
@@ -61,7 +62,6 @@ import net.imglib2.type.numeric.RealType;
 public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends ComplexType<O>>
 	implements ImageJPlugin, PreviewPlugin
 {
-
 	// -- instance variables that are Parameters --
 
 	@Parameter(persist = false)
@@ -83,8 +83,6 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 
 	private O outType;
 	private PrimitiveDoubleArray dataBackup;
-	//private InplaceUnaryTransform<I,O> previewTransform;
-	//private InplaceUnaryTransform<I,O> finalTransform;
 	private PointSetIterator iter;
 	private RandomAccess<? extends RealType<?>> accessor;
 	private Dataset dataset;
@@ -152,7 +150,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		InplaceUnaryTransform<?,?> xform =
 				getPreviewTransform(dataset, overlay);
 		accessor = dataset.getImgPlus().randomAccess();
-		iter = initIterator(xform.getRegionOrigin(), xform.getRegionSpan());
+		iter = initIterator(dataset, xform.getRegionOrigin(), xform.getRegionSpan());
 		dataBackup = new PrimitiveDoubleArray();
 
 		// check dimensions of Dataset
@@ -179,14 +177,20 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		return getPreviewTransform(ds, ov);
 	}
 
-	private PointSetIterator initIterator(long[] planeOrigin, long[] planeSpan) {
+	private PointSetIterator initIterator(Dataset ds, long[] planeOrigin, long[] planeSpan) {
 		// copy data to a double[]
-		final long[] planeOffsets = planeSpan.clone();
-		for (int i = 0; i < planeOffsets.length; i++)
-			planeOffsets[i]--;
+		final long[] origin = planeOrigin.clone();
+		final long[] offsets = planeSpan.clone();
+		if (dataset.isRGBMerged()) {
+			int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+			origin[chIndex] = 0;
+			offsets[chIndex] = 3;
+		}
+		for (int i = 0; i < offsets.length; i++)
+			offsets[i]--;
 		return new HyperVolumePointSet(
-						planeOrigin, new long[planeOrigin.length],
-						planeOffsets).createIterator();
+						origin, new long[origin.length],
+						offsets).createIterator();
 	}
 	
 	// NB

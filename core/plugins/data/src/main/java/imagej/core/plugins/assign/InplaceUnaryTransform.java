@@ -64,7 +64,9 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 
 	// -- instance variables --
 
-	private final ImageAssignment<I,O,long[]> assigner;
+	private final ImageAssignment<I,O,long[]> assigner1;
+	private final ImageAssignment<I,O,long[]> assigner2;
+	private final ImageAssignment<I,O,long[]> assigner3;
 	private final Dataset dataset;
 	private long[] origin;
 	private long[] span;
@@ -90,9 +92,11 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 					f1, operation, outType.createVariable());
 		final InputIteratorFactory<long[]> factory =
 				new PointInputIteratorFactory();
-		assigner =
+		assigner1 =
 			new ImageAssignment<I,O, long[]>(img, origin, span, function,
 					condition, factory);
+		assigner2 = null;
+		assigner3 = null;
 	}
 
 	/** Single plane versions */
@@ -114,16 +118,37 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 					f1, operation, outType.createVariable());
 		final InputIteratorFactory<long[]> factory =
 				new PointInputIteratorFactory();
-		assigner =
+		boolean rgb = dataset.isRGBMerged();
+		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		if (rgb) {
+			origin[chIndex] = 0;
+		}
+		assigner1 =
 			new ImageAssignment<I,O, long[]>(img, origin, span, function,
 					condition, factory);
+		if (rgb) {
+			origin[chIndex] = 1;
+			assigner2 =
+				new ImageAssignment<I,O, long[]>(img, origin, span, function,
+					condition, factory);
+			origin[chIndex] = 2;
+			assigner3 =
+				new ImageAssignment<I,O, long[]>(img, origin, span, function,
+					condition, factory);
+		}
+		else {
+			assigner2 = null;
+			assigner3 = null;
+		}
 	}
 
 	
 	// -- public interface --
 
 	public void run() {
-		assigner.assign();
+		if (assigner1 != null) assigner1.assign();
+		if (assigner2 != null) assigner2.assign();
+		if (assigner3 != null) assigner3.assign();
 		dataset.update();
 	}
 
@@ -217,8 +242,8 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 			rect.h = dims[yIndex];
 		}
 		else {
-			rect.x = (long)overlay.realMin(0);
-			rect.y = (long)overlay.realMin(1);
+			rect.x = (long) overlay.realMin(0);
+			rect.y = (long) overlay.realMin(1);
 			rect.w = (long) Math.round(overlay.realMax(0) - rect.x);
 			rect.h = (long) Math.round(overlay.realMax(1) - rect.y);
 		}
