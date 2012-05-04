@@ -71,6 +71,7 @@ public class AxisPositionForward implements ImageJPlugin {
 	public void run() {
 		animationService.getAnimation(display).stop();
 		final AxisType axis = display.getActiveAxis();
+		if (axis == null) return;
 		display.setPosition(display.getLongPosition(axis) + 1, axis);
 	}
 
