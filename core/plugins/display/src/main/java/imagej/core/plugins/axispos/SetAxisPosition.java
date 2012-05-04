@@ -37,7 +37,8 @@ package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -53,7 +54,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Set Axis Position...") }, headless = true)
-public class SetAxisPosition implements ImageJPlugin {
+public class SetAxisPosition extends DynamicPlugin {
 
 	@Parameter(persist = false)
 	private AnimationService animationService;
@@ -61,9 +62,23 @@ public class SetAxisPosition implements ImageJPlugin {
 	@Parameter(persist = false)
 	private ImageDisplay display;
 
-	@Parameter(label = "Position", min = "1")
-	private long oneBasedPosition;
+	@Parameter(persist = false, initializer = "initPosition")
+	private long oneBasedPosition = 1;
 
+	
+	protected void initPosition() {
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<Long> positionItem =
+			(DefaultModuleItem<Long>) getInfo().getInput("oneBasedPosition");
+		positionItem.setLabel("Position");
+		positionItem.setMinimumValue(1L);
+		final AxisType axis = display.getActiveAxis();
+		if (axis == null) return;
+		int dim = display.getAxisIndex(axis);
+		Long value = display.getDims()[dim];
+		positionItem.setMaximumValue(value);
+	}
+	
 	@Override
 	public void run() {
 		animationService.stop(display);
@@ -72,5 +87,4 @@ public class SetAxisPosition implements ImageJPlugin {
 		final long newPosition = oneBasedPosition - 1;
 		display.setPosition(newPosition, axis);
 	}
-
 }
