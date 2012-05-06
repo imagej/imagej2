@@ -634,11 +634,12 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public void updateTheUpdater() {
+		final FileObject updater = files.get("jars/ij-updater-core.jar");
 		final FilesCollection.Filter filter = new FilesCollection.Filter() {
 
 			@Override
 			public boolean matches(final FileObject file) {
-				if (file.filename.equals("jars/ij-updater-core.jar")) {
+				if (file == updater) {
 					file.setAction(files, Action.UPDATE);
 					return true;
 				}
