@@ -630,6 +630,44 @@ public class UpdaterTest {
 		assertEquals("Narf", files.get("macros/macro.ijm").description);
 	}
 
+	@Test
+	public void testUpdateTheUpdater() throws Exception {
+		final String name1 = "jars/ij-updater-core-1.46n.jar";
+		final String name2 = "jars/ij-updater-core-2.0.0.jar";
+
+		// initialize main update site
+		initializeUpdateSite(name1);
+
+		// "change" updater
+		assertTrue(new File(ijRoot, name1).delete());
+		writeJar(name2, "files.txt", "modified");
+		FilesCollection files = readDb(true, true);
+		assertTrue(files.get(name1) == files.get(name2));
+		assertStatus(Status.MODIFIED, files.get(name1));
+		final String modifiedChecksum = files.get(name2).localChecksum;
+		files.get(name1).stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		upload(files);
+
+		// revert back to "old" updater
+		writeJar(name1);
+		assertTrue(new File(ijRoot, name2).delete());
+
+		// now the updater should be updated first thing
+		files = readDb(true, true);
+		assertNotSame(modifiedChecksum, files.get(name2).current.checksum);
+		assertTrue(Installer.isTheUpdaterUpdateable(files));
+		Installer.updateTheUpdater(files, progress);
+		assertTrue(new File(ijRoot, "update/" + name1).exists());
+		assertEquals(0l, new File(ijRoot, "update/" + name1).length());
+		assertTrue(new File(ijRoot, "update/" + name2).exists());
+
+		assertTrue(new File(ijRoot, name1).delete());
+		assertFalse(new File(ijRoot, name2).exists());
+		assertTrue(new File(ijRoot, "update/" + name2).renameTo(new File(ijRoot, name2)));
+		new Checksummer(files, progress).updateFromLocal();
+		assertEquals(modifiedChecksum, files.get(name2).current.checksum);
+	}
+
 	//
 	// Debug functions
 	//
