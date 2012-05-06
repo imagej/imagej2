@@ -634,33 +634,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public void updateTheUpdater() {
-		final FileObject updater = files.get("jars/ij-updater-core.jar");
-		final FilesCollection.Filter filter = new FilesCollection.Filter() {
-
-			@Override
-			public boolean matches(final FileObject file) {
-				if (file == updater) {
-					file.setAction(files, Action.UPDATE);
-					return true;
-				}
-				return false;
-			}
-		};
-		final FilesCollection justTheUpdater = files.clone(files.filter(filter));
-		final Installer installer =
-			new Installer(justTheUpdater, getProgress("Installing the updater..."));
 		try {
-			installer.start();
+			Installer.updateTheUpdater(files, getProgress("Installing the updater..."));
 		}
 		catch (final Canceled e) {
-			// TODO: remove "update/" directory
 			error("Canceled");
-			installer.done();
 		}
 		catch (final IOException e) {
-			// TODO: remove "update/" directory
 			error("Installer failed: " + e);
-			installer.done();
 		}
 	}
 

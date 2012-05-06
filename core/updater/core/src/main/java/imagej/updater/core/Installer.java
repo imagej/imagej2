@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
@@ -146,6 +147,38 @@ public class Installer extends Downloader {
 			if (file.isLocalOnly()) files.remove(file);
 			else file.setStatus(file.isObsolete() ? Status.OBSOLETE_UNINSTALLED
 				: Status.NOT_INSTALLED);
+	}
+
+	// TODO: find all updater-related files
+	protected final static String UPDATER_JAR_NAME = "jars/ij-updater-core.jar";
+
+	public static boolean isTheUpdaterUpdateable(final FilesCollection files) {
+		final FileObject updater = files.get(UPDATER_JAR_NAME);
+		return updater != null && updater.getStatus() == FileObject.Status.UPDATEABLE;
+	}
+
+	public static void updateTheUpdater(final FilesCollection files, final Progress progress) throws IOException {
+		final FileObject updater = files.get(UPDATER_JAR_NAME);
+		final FilesCollection.Filter filter = new FilesCollection.Filter() {
+
+			@Override
+			public boolean matches(final FileObject file) {
+				if (file == updater) {
+					file.setAction(files, Action.UPDATE);
+					return true;
+				}
+				return false;
+			}
+		};
+		final FilesCollection justTheUpdater = files.clone(files.filter(filter));
+		final Installer installer = new Installer(justTheUpdater, progress);
+		try {
+			installer.start();
+		}
+		finally {
+			// TODO: remove "update/" directory
+			installer.done();
+		}
 	}
 
 	class VerifyFiles implements Progress {
