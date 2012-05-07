@@ -54,6 +54,7 @@ import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.FileUtils;
 import imagej.util.Log;
+import imagej.util.MersenneTwisterFast;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -216,9 +217,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 		});
 
 		// choose a random image file
-		// TODO - this default RNG is pretty bad. With 4 images some of them show up
-		// repeatedly and some rarely. Think of a better implementation.
-		final Random rng = new Random();
+		final MersenneTwisterFast rng = new MersenneTwisterFast();
 		final int index = rng.nextInt(aboutFiles.length);
 		return aboutFiles[index];
 	}
