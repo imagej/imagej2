@@ -44,7 +44,7 @@ import imagej.data.display.DataView;
  */
 public class DataViewUpdatedEvent extends DataViewEvent {
 
-	public DataViewUpdatedEvent(DataView view) {
+	public DataViewUpdatedEvent(final DataView view) {
 		super(view);
 	}
 

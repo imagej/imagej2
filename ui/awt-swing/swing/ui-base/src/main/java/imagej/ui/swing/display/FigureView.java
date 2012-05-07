@@ -43,7 +43,6 @@ import org.jhotdraw.draw.Figure;
  * A figure view has an associated figure.
  * 
  * @author Lee Kamentsky
- * @param T The type of data view, e.g. OverlayView or DatasetView
  */
 public interface FigureView {
 

@@ -70,17 +70,18 @@ import net.imglib2.meta.AxisType;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-@Plugin(type=ImageDisplay.class)
-public class DefaultImageDisplay extends AbstractDisplay<DataView>
-	implements ImageDisplay
+@Plugin(type = ImageDisplay.class)
+public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
+	ImageDisplay
 {
+
 	private List<EventSubscriber<?>> subscribers;
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
 	private final CombinedInterval combinedInterval = new CombinedInterval();
 
 	private AxisType activeAxis = null;
-	
+
 	final private ImageCanvas canvas;
 
 	// NB - older comment - see 12-7-11 note
@@ -112,13 +113,15 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		}
 	}
 
-	// -- Display method overrides --
+	// -- Display methods --
+
 	@Override
-	public void setContext(ImageJ context) {
+	public void setContext(final ImageJ context) {
 		super.setContext(context);
 		assert subscribers == null;
 		subscribers = eventService.subscribe(this);
 	}
+
 	// -- AbstractDisplay methods --
 
 	@Override
@@ -217,12 +220,12 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	public void display(final Object o) {
 		// TODO: Eliminate case logic in favor of extensible discovery mechanism.
 		if (o instanceof Dataset) {
-			Dataset dataset = (Dataset) o;
+			final Dataset dataset = (Dataset) o;
 			setName(createName(dataset.getName()));
 			add(new DefaultDatasetView(dataset));
 		}
 		else if (o instanceof Overlay) {
-			Overlay overlay = (Overlay) o;
+			final Overlay overlay = (Overlay) o;
 			add(new DefaultOverlayView(overlay));
 		}
 		else super.display(o);
@@ -416,8 +419,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		// update position and notify interested parties of the change
 		pos.put(axis, value);
 		// NB: DataView.setPosition is called only in update method.
-		if (eventService != null)
+		if (eventService != null) {
 			eventService.publish(new AxisPositionEvent(this, axis));
+		}
 	}
 
 	// -- Localizable methods --
@@ -571,28 +575,29 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
 		if (event.getObject() != this) return;
-		
+
 		cleanup();
 	}
 
 	// -- Helper methods --
-	
+
 	/**
-	 * Create a name for the display based on the given name
-	 * accounting for collisions with other image displays
+	 * Create a name for the display based on the given name accounting for
+	 * collisions with other image displays
 	 * 
 	 * @param proposedName
 	 * @return the name with stuff added to make it unique
 	 */
-	private String createName(String proposedName) {
-		final DisplayService displayService = getContext().getService(DisplayService.class);
+	private String createName(final String proposedName) {
+		final DisplayService displayService =
+			getContext().getService(DisplayService.class);
 		String theName = proposedName;
 		int n = 0;
 		while (!displayService.isUniqueName(theName)) {
 			n++;
 			theName = proposedName + "-" + n;
 		}
-		return theName;		
+		return theName;
 	}
 
 	/** Frees resources associated with the display. */
@@ -622,9 +627,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		final Extents extents = this.getExtents();
 		final int xAxis = this.getAxisIndex(Axes.X);
 		final int yAxis = this.getAxisIndex(Axes.Y);
-		return new RealRect(extents.realMin(xAxis), 
-				extents.realMin(yAxis),
-				extents.realMax(xAxis) - extents.realMin(xAxis),
-				extents.realMax(yAxis) - extents.realMin(yAxis));
+		return new RealRect(extents.realMin(xAxis), extents.realMin(yAxis), extents
+			.realMax(xAxis) -
+			extents.realMin(xAxis), extents.realMax(yAxis) - extents.realMin(yAxis));
 	}
 }
