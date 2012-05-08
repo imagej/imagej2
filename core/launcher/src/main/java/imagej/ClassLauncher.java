@@ -47,7 +47,16 @@ import java.util.Arrays;
  */
 public class ClassLauncher {
 
-	protected static boolean debug = System.getenv("DEBUG_IJ_LAUNCHER") != null;
+	protected static boolean debug;
+
+	static {
+		try {
+			debug = System.getenv("DEBUG_IJ_LAUNCHER") != null;
+		} catch (Throwable t) {
+			// ignore; Java 1.4 pretended that getenv() goes away
+		}
+	}
+
 	protected static String[] originalArguments;
 
 	/**
