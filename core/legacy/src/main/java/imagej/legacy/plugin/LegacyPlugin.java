@@ -43,6 +43,9 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.event.EventService;
+import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
@@ -84,6 +87,9 @@ public class LegacyPlugin implements ImageJPlugin {
 	private ImageJ context;
 
 	@Parameter(persist = false)
+	private StatusService statusService;
+
+	@Parameter(persist = false)
 	private ImageDisplayService imageDisplayService;
 
 	@Parameter(persist = false)
@@ -105,6 +111,9 @@ public class LegacyPlugin implements ImageJPlugin {
 	public void run() {
 
 		//System.out.println("Start a legacy plugin");
+
+		String startStatus = "Running legacy plugin ...";
+		statusService.showStatus(startStatus);
 		
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
@@ -186,6 +195,10 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// reflect any changes to globals in IJ2 options/prefs
 		legacyService.updateIJ2Settings();
+
+		if (startStatus.equals(statusService.getCurrentStatusString()))
+			statusService.showStatus("Completed run of legacy plugin");
+
 		//System.out.println("end a legacy plugin");
 	}
 

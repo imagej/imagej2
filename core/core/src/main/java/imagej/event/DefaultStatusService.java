@@ -53,6 +53,8 @@ public class DefaultStatusService extends AbstractService implements
 
 	private EventService eventService;
 
+	private String currStatusString;
+	
 	// -- Constructors --
 
 	public DefaultStatusService() {
@@ -66,17 +68,20 @@ public class DefaultStatusService extends AbstractService implements
 	{
 		super(context);
 		this.eventService = eventService;
+		this.currStatusString = "";
 	}
 
 	// -- StatusService methods --
 
 	@Override
 	public void showProgress(final int value, final int maximum) {
+		currStatusString = "";
 		eventService.publish(new StatusEvent(value, maximum));
 	}
 
 	@Override
 	public void showStatus(final String message) {
+		currStatusString = message;
 		eventService.publish(new StatusEvent(message));
 	}
 
@@ -84,11 +89,13 @@ public class DefaultStatusService extends AbstractService implements
 	public void showStatus(final int progress, final int maximum,
 		final String message)
 	{
+		currStatusString = message;
 		eventService.publish(new StatusEvent(progress, maximum, message));
 	}
 
 	@Override
 	public void warn(final String message) {
+		currStatusString = message;
 		eventService.publish(new StatusEvent(message, true));
 	}
 
@@ -96,12 +103,18 @@ public class DefaultStatusService extends AbstractService implements
 	public void
 		showStatus(int progress, int maximum, String message, boolean warn)
 	{
+		currStatusString = message;
 		eventService.publish(new StatusEvent(progress, maximum, message, warn));
 	}
 
 	@Override
 	public void clearStatus() {
+		currStatusString = "";
 		eventService.publish(new StatusEvent(null));
 	}
 
+	@Override
+	public String getCurrentStatusString() {
+		return currStatusString;
+	}
 }
