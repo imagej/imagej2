@@ -1695,6 +1695,25 @@ static void add_java_home_to_path(void)
 	string_release(new_path);
 }
 
+static void add_retrotranslator_to_path(struct string *path)
+{
+	const char *retro = ij_path("retro/");
+	DIR *dir = opendir(retro);
+	struct dirent *entry;
+	int counter = 0;
+
+	while ((entry = readdir(dir))) {
+		if (suffixcmp(entry->d_name, -1, ".jar"))
+			continue;
+		string_append_path_list(path, retro);
+		string_append(path, entry->d_name);
+		counter++;
+	}
+
+	if (!counter)
+		die ("Could not find Retrotranslator!");
+}
+
 static int headless, headless_argc;
 
 static struct string *set_property(JNIEnv *env,
@@ -3311,9 +3330,6 @@ static void parse_command_line(void)
 	if (jdb)
 		add_launcher_option(&options, "-jdb", NULL);
 
-	if (retrotranslator)
-		add_launcher_option(&options, "-retrotranslator", NULL);
-
 	for (i = 1; i < main_argc; i++)
 		add_option(&options, main_argv[i], 1);
 
@@ -3345,6 +3361,8 @@ static void parse_command_line(void)
 
 	if (!skip_class_launcher && strcmp(main_class, "org.apache.tools.ant.Main")) {
 		struct string *string = string_initf("-Djava.class.path=%s", ij_launcher_jar);
+		if (retrotranslator)
+			add_retrotranslator_to_path(string);
 		add_option_string(&options, string, 0);
 		add_launcher_option(&options, main_class, NULL);
 		prepend_string_array(&options.ij_options, &options.launcher_options);
@@ -3371,6 +3389,12 @@ static void parse_command_line(void)
 		if (class_path->length)
 			add_option_string(&options, class_path, 0);
 		string_release(class_path);
+	}
+
+	if (retrotranslator) {
+		prepend_string(&options.ij_options, strdup(main_class));
+		prepend_string(&options.ij_options, "-advanced");
+		main_class = "net.sf.retrotranslator.transformer.JITRetrotranslator";
 	}
 
 	if (options.debug) {
