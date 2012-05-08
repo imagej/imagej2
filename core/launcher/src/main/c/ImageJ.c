@@ -856,7 +856,8 @@ static int is_slash(char c)
 	return c == '/';
 }
 
-const char *ij_dir;
+static const char *ij_dir;
+static char *ij_launcher_jar;
 
 static const char *ij_path(const char *relative_path)
 {
@@ -1212,7 +1213,7 @@ static void show_splash(void)
 
 	SplashInit();
 	SplashLoadFile(image_path);
-	SplashSetFileJarName(image_path, ij_path("jars/ij-launcher.jar"));
+	SplashSetFileJarName(image_path, ij_launcher_jar);
 
 	string_release(lib_path);
 }
@@ -1308,11 +1309,12 @@ static const char *get_ij_dir(const char *argv0)
 	else if (!suffixcmp(argv0, len, "/Contents/MacOS")) {
 		struct string *scratch;
 		len -= strlen("/Contents/MacOS");
-		scratch = string_initf("%.*s/jars/ij-launcher.jar", len, argv0);
-		if (len && !file_exists(scratch->buffer))
+		scratch = string_initf("%.*s/jars", len, argv0);
+		if (len && !dir_exists(scratch->buffer))
 			while (--len && argv0[len] != '/')
 				; /* ignore */
 		slash = argv0 + len;
+		string_release(scratch);
 	}
 #endif
 #ifdef WIN32
@@ -1571,6 +1573,37 @@ static int mkdir_p(const char *path)
 	result = mkdir_recursively(buffer);
 	string_release(buffer);
 	return result;
+}
+
+static void initialize_ij_launcher_jar_path(void)
+{
+	const char *jars_directory = ij_path("jars/");
+	struct string *buffer = string_initf("%s", jars_directory);
+	int length;
+	time_t mtime = 0;
+	DIR *directory = opendir(jars_directory);
+	struct dirent *entry;
+	struct stat st;
+
+	length = buffer->length;
+	while ((entry = readdir(directory))) {
+		const char *name = entry->d_name;
+		if (prefixcmp(name, "ij-launcher") ||
+			(strcmp(name + 11, ".jar") &&
+			 (name[11] != '-' ||
+			  !isdigit(name[12]) ||
+			  suffixcmp(name + 13, -1, ".jar"))))
+			continue;
+		string_set_length(buffer, length);
+		string_append(buffer, name);
+		if (!stat(buffer->buffer, &st) && st.st_mtime > mtime) {
+			free(ij_launcher_jar);
+			ij_launcher_jar = strdup(buffer->buffer);
+			mtime = st.st_mtime;
+		}
+	}
+	closedir(directory);
+	string_release(buffer);
 }
 
 static MAYBE_UNUSED int find_file(struct string *search_root, int max_depth, const char *file, struct string *result)
@@ -3311,7 +3344,7 @@ static void parse_command_line(void)
 	keep_only_one_memory_option(&options.java_options);
 
 	if (!skip_class_launcher && strcmp(main_class, "org.apache.tools.ant.Main")) {
-		struct string *string = string_initf("-Djava.class.path=%s", ij_path("jars/ij-launcher.jar"));
+		struct string *string = string_initf("-Djava.class.path=%s", ij_launcher_jar);
 		add_option_string(&options, string, 0);
 		add_launcher_option(&options, main_class, NULL);
 		prepend_string_array(&options.ij_options, &options.launcher_options);
@@ -4212,6 +4245,7 @@ int main(int argc, char **argv, char **e)
 	if (file_exists(ij_path("jars/fiji-compat.jar")))
 		legacy_mode = 1;
 
+	initialize_ij_launcher_jar_path();
 	parse_command_line();
 
 	return start_ij();
