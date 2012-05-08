@@ -25,6 +25,22 @@
 		<ij.launcher.packaging>jar</ij.launcher.packaging>
 	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>imagej</packageName>
+							<mainClass>imagej.ClassLauncher</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<profiles>
 		<!-- HACK: The m2e plugin does not support maven-nar-plugin. -->
 		<profile>
