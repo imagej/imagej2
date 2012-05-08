@@ -204,9 +204,9 @@ public class ClassLoaderPlus extends URLClassLoader {
 		String path = System.getProperty("ij.dir");
 		if (path != null) return path;
 		final String prefix = "file:";
-		final String suffix = "/jars/ij-launcher.jar!/fiji/ClassLoaderPlus.class";
+		final String suffix = "/jars/ij-launcher.jar!/imagej/ClassLoaderPlus.class";
 		path =
-			Class.forName("fiji.ClassLoaderPlus")
+			Class.forName("imagej.ClassLoaderPlus")
 				.getResource("ClassLoaderPlus.class").getPath();
 		if (path.startsWith(prefix)) path = path.substring(prefix.length());
 		if (path.endsWith(suffix)) {
