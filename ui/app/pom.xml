@@ -369,7 +369,7 @@
 											<version>${project.version}</version>
 											<type>nar</type>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>ij-launcher.jar</destFileName>
+											<destFileName>ij-launcher-${project.version}.jar</destFileName>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
