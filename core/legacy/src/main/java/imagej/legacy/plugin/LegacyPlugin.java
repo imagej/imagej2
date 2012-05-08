@@ -219,6 +219,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				// Ignore some threads that IJ1 hatches that never terminate
 				if (whitelisted(thread)) continue;
 				if (thread.isAlive()) {
+					//System.out.println(thread.getName() + " thread is alive");
 					//reportThreadInfo(thread, currentThreads, threadsToIgnore);
 					allDead = false;
 					break;
@@ -358,6 +359,10 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		String threadName = thread.getName();
 		
+		// the wait loop generates a timer that needs to be ignored. Ignoring all
+		// timers is likely fine because associated worker threads should exist too.
+		if (threadName.startsWith("Timer")) return true;
+
 		// StackWindow slider selector thread: thread does not go away until the
 		// window closes.
 		if (threadName.equals("zSelector")) return true;
