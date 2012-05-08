@@ -914,12 +914,14 @@ static MAYBE_UNUSED const char *get_java_home_env(void)
 	return NULL;
 }
 
+static char *discover_system_java_home(void);
+
 static const char *get_java_home(void)
 {
 	if (absolute_java_home)
 		return absolute_java_home;
 	if (!relative_java_home)
-		return NULL;
+		return discover_system_java_home();
 	return ij_path(relative_java_home);
 }
 
@@ -972,6 +974,20 @@ const char *last_slash(const char *path)
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
+
+static void follow_symlinks(struct string *path, int max_recursion)
+{
+#ifndef WIN32
+	char buffer[PATH_MAX];
+	int count = readlink(path->buffer, buffer, sizeof(buffer) - 1);
+	if (count < 0)
+		return;
+	string_set_length(path, 0);
+	string_addf(path, "%.*s", count, buffer);
+	if (max_recursion > 0)
+		follow_symlinks(path, max_recursion - 1);
+#endif
+}
 
 static const char *make_absolute_path(const char *path)
 {
@@ -2055,6 +2071,31 @@ static const char *get_java_command(void)
 		return "javaw";
 #endif
 	return "java";
+}
+
+static char *discover_system_java_home(void)
+{
+	const char *java_executable = find_in_path(get_java_command());
+
+	if (java_executable) {
+		char *path = strdup(java_executable);
+		const char *suffixes[] = {
+#ifdef WIN32
+			".exe", "javaw",
+#endif
+			"java", "\\", "/", "bin", "\\", "/",
+			NULL
+		};
+		int len = strlen(path), i;
+		for (i = 0; suffixes[i]; i++)
+			if (!suffixcmp(path, len, suffixes[i])) {
+				len -= strlen(suffixes[i]);
+				path[len] = '\0';
+			}
+		return path;
+	}
+
+	return NULL;
 }
 
 static void show_commandline(struct options *options)
