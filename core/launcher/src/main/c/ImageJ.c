@@ -1248,10 +1248,10 @@ static void maybe_reexec_with_correct_lib_path(void)
 	jli = string_initf("%s/jli", lib_path->buffer);
 
 	string_release(path);
-	string_release(parent);
 
 	/* Is this JDK6? */
 	if (!dir_exists(get_jre_home()) || dir_exists(jli->buffer)) {
+		string_release(parent);
 		string_release(lib_path);
 		string_release(jli);
 		return;
@@ -1260,14 +1260,17 @@ static void maybe_reexec_with_correct_lib_path(void)
 
 	original = getenv("LD_LIBRARY_PATH");
 	if (original && path_list_contains(original, lib_path->buffer)) {
+		string_release(parent);
 		string_release(lib_path);
 		return;
 	}
 
+	string_append_path_list(lib_path, parent->buffer);
+	string_release(parent);
 	if (original)
 		string_append_path_list(lib_path, original);
 	setenv_or_exit("LD_LIBRARY_PATH", lib_path->buffer, 1);
-	error("Re-executing with correct library lookup path");
+	error("Re-executing with correct library lookup path (%s)", lib_path->buffer);
 	hide_splash();
 	execv(main_argv_backup[0], main_argv_backup);
 	die("Could not re-exec with correct library lookup!");
