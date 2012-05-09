@@ -383,6 +383,8 @@ static void string_vaddf(struct string *string, const char *fmt, va_list ap)
 		switch (*p) {
 		case 's': {
 			const char *s = va_arg(ap, const char *);
+			if (!s)
+				s = "(null)";
 			if (fill) {
 				int len = size - strlen(s);
 				while (len-- > 0)
