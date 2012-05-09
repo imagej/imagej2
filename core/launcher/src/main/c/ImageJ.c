@@ -1196,16 +1196,17 @@ struct string *get_splashscreen_lib_path(void)
 #endif
 }
 
+#define SPLASH_PATH "images/icon.png"
 /* So far, only Windows and MacOSX support splash with alpha, Linux does not */
 #if defined(WIN32) || defined(__APPLE__)
-#define SPLASH_PATH "images/icon.png"
+#define FLAT_SPLASH_PATH NULL
 #else
-#define SPLASH_PATH "images/icon-flat.png"
+#define FLAT_SPLASH_PATH "images/icon-flat.png"
 #endif
 
 static void show_splash(void)
 {
-	const char *image_path = ij_path(SPLASH_PATH);
+	const char *image_path = NULL;
 	struct string *lib_path = get_splashscreen_lib_path();
 	void *splashscreen;
 	int (*SplashInit)(void);
@@ -1214,6 +1215,14 @@ static void show_splash(void)
 
 	if (no_splash || !lib_path || SplashClose)
 		return;
+
+	if (FLAT_SPLASH_PATH)
+		image_path = ij_path(FLAT_SPLASH_PATH);
+	if (!image_path || !file_exists(image_path))
+		image_path = ij_path(SPLASH_PATH);
+	if (!image_path || !file_exists(image_path))
+		return;
+
 	splashscreen = dlopen(lib_path->buffer, RTLD_LAZY);
 	if (!splashscreen) {
 		string_release(lib_path);
