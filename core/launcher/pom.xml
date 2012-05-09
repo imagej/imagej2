@@ -20,6 +20,7 @@
 		<java.os.include/>
 		<stack.protector.option/>
 		<architecture.option/>
+		<subsystem.option/>
 		<libdl.name>dl</libdl.name>
 		<debug.option/>
 		<ij.launcher.packaging>jar</ij.launcher.packaging>
@@ -70,6 +71,7 @@
 									<option>${java.os.include}</option>
 									<option>${stack.protector.option}</option>
 									<option>${architecture.option}</option>
+									<option>${subsystem.option}</option>
 									<option>${debug.option}</option>
 								</options>
 							</c>
@@ -77,6 +79,7 @@
 								<name>gcc</name>
 								<options>
 									<option>${architecture.option}</option>
+									<option>${subsystem.option}</option>
 								</options>
 								<sysLibs>
 									<sysLib>
@@ -138,6 +141,7 @@
 			<properties>
 				<java.os.include>-I${JAVA_HOME}/include/win32</java.os.include>
 				<architecture.option>-m32</architecture.option>
+				<subsystem.option>-mwindows</subsystem.option>
 				<libdl.name>kernel32</libdl.name>
 			</properties>
 		</profile>
@@ -153,6 +157,7 @@
 			<properties>
 				<java.os.include>-I${JAVA_HOME}/include/win32</java.os.include>
 				<architecture.option>-m64</architecture.option>
+				<subsystem.option>-mwindows</subsystem.option>
 				<libdl.name>kernel32</libdl.name>
 			</properties>
 		</profile>
