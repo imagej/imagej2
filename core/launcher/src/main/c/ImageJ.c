@@ -3421,9 +3421,6 @@ static int start_ij(void)
 	struct string *buffer = string_init(32);
 	int i;
 
-	/* Handle update/ */
-	update_all_files();
-
 	memset(&args, 0, sizeof(args));
 	/* JNI_VERSION_1_4 is used on Mac OS X to indicate 1.4.x and later */
 	args.version = JNI_VERSION_1_4;
@@ -4241,6 +4238,10 @@ int main(int argc, char **argv, char **e)
 	int size;
 
 	ij_dir = get_ij_dir(argv[0]);
+
+	/* Handle update/ */
+	update_all_files();
+
 #if defined(__APPLE__)
 	launch_32bit_on_tiger(argc, argv);
 #elif defined(WIN32)
