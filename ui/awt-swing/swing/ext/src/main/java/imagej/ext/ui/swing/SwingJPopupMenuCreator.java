@@ -38,11 +38,23 @@ package imagej.ext.ui.swing;
 import imagej.ext.menu.ShadowMenu;
 
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 /**
  * Populates a {@link JPopupMenu} with menu items from a {@link ShadowMenu}.
+ * <p>
+ * Unfortunately, the {@link SwingJMenuBarCreator}, {@link SwingJMenuCreator}
+ * and {@link SwingJPopupMenuCreator} classes must all exist and replicate some
+ * code, because {@link JMenuBar}, {@link JMenuItem} and {@link JPopupMenu} do
+ * not share a common interface for operations such as {@link JMenu#add}.
+ * </p>
+ * <p>
+ * This class is called <code>SwingJPopupMenuCreator</code> rather than simply
+ * <code>JPopupMenuCreator</code> for consistency with other UI implementations
+ * such as <code>imagej.ext.ui.awt.AWTMenuCreator</code>.
+ * </p>
  * 
  * @author Curtis Rueden
  */

@@ -53,6 +53,13 @@ import javax.swing.KeyStroke;
 
 /**
  * Populates a Swing menu structure with menu items from a {@link ShadowMenu}.
+ * <p>
+ * This class is called <code>AbstractSwingMenuCreator</code> rather than simply
+ * <code>AbstractMenuCreator</code> to avoid having multiple classes with the
+ * same name in different packages (e.g.,
+ * <code>imagej.ext.menu.AbstractMenuCreator</code> and
+ * <code>imagej.ext.ui.swing.AbstractAWTMenuCreator</code>).
+ * </p>
  * 
  * @author Curtis Rueden
  */

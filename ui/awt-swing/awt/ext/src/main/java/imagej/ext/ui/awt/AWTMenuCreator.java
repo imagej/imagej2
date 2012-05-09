@@ -35,12 +35,27 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.menu.MenuCreator;
 import imagej.ext.menu.ShadowMenu;
 
 import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 
 /**
  * Populates an AWT {@link Menu} with menu items from a {@link ShadowMenu}.
+ * <p>
+ * Unfortunately, the {@link AWTMenuBarCreator}, {@link AWTMenuCreator} and
+ * {@link AWTPopupMenuCreator} classes must all exist and replicate some code,
+ * because {@link MenuBar}, {@link MenuItem} and {@link PopupMenu} do not share
+ * a common interface for operations such as {@link Menu#add}.
+ * </p>
+ * <p>
+ * This class is called <code>AWTMenuCreator</code> rather than simply
+ * <code>MenuCreator</code> to avoid a name clash with the toplevel
+ * {@link MenuCreator} interface.
+ * </p>
  * 
  * @author Curtis Rueden
  */
