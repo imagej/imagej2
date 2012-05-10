@@ -72,7 +72,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		imgCanvas.addEventDispatcher(new AWTKeyEventDispatcher(display,
 			eventService));
 		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
-			eventService, false));
+			eventService));
 
 		imgPanel = new SwingDisplayPanel(this, window);
 		setPanel(imgPanel);

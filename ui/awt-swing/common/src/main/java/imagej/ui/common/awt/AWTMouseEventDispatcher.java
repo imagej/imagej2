@@ -66,47 +66,14 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 {
 
 	private final ImageDisplayViewer displayViewer;
-	private final boolean relative;
 	private final EventService eventService;
 
-	/**
-	 * Creates an AWT event dispatcher for the given display, which assumes
-	 * viewport mouse coordinates.
-	 */
-	public AWTMouseEventDispatcher(final ImageDisplayViewer display,
+	/** Creates an AWT input event dispatcher for the given display viewer. */
+	public AWTMouseEventDispatcher(final ImageDisplayViewer displayViewer,
 		final EventService eventService)
 	{
-		this(display, eventService, true);
-	}
-
-	/**
-	 * Creates an AWT event dispatcher for the given display, with mouse
-	 * coordinates interpreted according to the relative flag.
-	 * 
-	 * @param relative If true, coordinates are relative to the entire image
-	 *          canvas rather than just the viewport; hence, the pan offset is
-	 *          already factored in.
-	 */
-	public AWTMouseEventDispatcher(final ImageDisplayViewer displayViewer,
-		final EventService eventService, final boolean relative)
-	{
 		this.displayViewer = displayViewer;
-		this.relative = relative;
 		this.eventService = eventService;
-	}
-
-	// -- AWTEventDispatcher methods --
-
-	/**
-	 * Gets whether mouse coordinates are provided relative to the unpanned image
-	 * canvas. If true, the coordinates are measured from the top left corner of
-	 * the image canvas, regardless of the current pan. Hence, the coordinate
-	 * values will equal the pan offset plus the viewport coordinate values. If
-	 * false, the coordinates are relative to the canvas's viewport, meaning that
-	 * the pan offset is not lumped into the coordinate values.
-	 */
-	public boolean isRelative() {
-		return relative;
 	}
 
 	// -- MouseListener methods --
@@ -115,8 +82,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mouseClicked(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsClickedEvent evt =
-			new MsClickedEvent(displayViewer.getDisplay(), modifiers, getX(e),
-				getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
+			new MsClickedEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY(), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -125,8 +92,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mousePressed(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsPressedEvent evt =
-			new MsPressedEvent(displayViewer.getDisplay(), modifiers, getX(e),
-				getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
+			new MsPressedEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY(), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -135,8 +102,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mouseReleased(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsReleasedEvent evt =
-			new MsReleasedEvent(displayViewer.getDisplay(), modifiers, getX(e),
-				getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
+			new MsReleasedEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY(), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -147,8 +114,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mouseEntered(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsEnteredEvent evt =
-			new MsEnteredEvent(displayViewer.getDisplay(), modifiers, getX(e),
-				getY(e));
+			new MsEnteredEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -157,7 +124,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mouseExited(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsExitedEvent evt =
-			new MsExitedEvent(displayViewer.getDisplay(), modifiers, getX(e), getY(e));
+			new MsExitedEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -166,8 +134,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mouseDragged(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsDraggedEvent evt =
-			new MsDraggedEvent(displayViewer.getDisplay(), modifiers, getX(e),
-				getY(e), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
+			new MsDraggedEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY(), mouseButton(e), e.getClickCount(), e.isPopupTrigger());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -176,7 +144,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mouseMoved(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsMovedEvent evt =
-			new MsMovedEvent(displayViewer.getDisplay(), modifiers, getX(e), getY(e));
+			new MsMovedEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -187,8 +156,8 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 	public void mouseWheelMoved(final MouseWheelEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
 		final MsWheelEvent evt =
-			new MsWheelEvent(displayViewer.getDisplay(), modifiers, getX(e), getY(e),
-				e.getWheelRotation());
+			new MsWheelEvent(displayViewer.getDisplay(), modifiers, e.getX(), e
+				.getY(), e.getWheelRotation());
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -206,20 +175,6 @@ public class AWTMouseEventDispatcher extends AWTInputEventDispatcher implements
 			default:
 				return -1;
 		}
-	}
-
-	private int getX(final MouseEvent e) {
-		final int x = e.getX();
-		if (relative) return x;
-		// TODO: figure out how & why we need to adjust and do it.
-		return x;
-	}
-
-	private int getY(final MouseEvent e) {
-		final int y = e.getY();
-		if (relative) return y;
-		// TODO: figure out how & why we need to adjust and do it.
-		return y;
 	}
 
 }
