@@ -43,10 +43,10 @@ import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
+import imagej.util.IntCoords;
 
 /**
- * Handles keyboard operations that change the zoom (when the {@link ZoomTool}
- * is not activated).
+ * Handles keyboard operations that change the zoom.
  * 
  * @author Curtis Rueden
  */
@@ -60,17 +60,24 @@ public class ZoomHandler extends AbstractTool {
 		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
+		final int x = evt.getX();
+		final int y = evt.getY();
+		final IntCoords center = x < 0 || y < 0 ? null : new IntCoords(x, y);
+		System.out.println("zoom center = " + center + ", x = " + x + ", y = " + y);//TEMP
+
 		final KeyCode keyCode = evt.getCode();
 		final char keyChar = evt.getCharacter();
 
 		if (keyCode == KeyCode.EQUALS || keyCode == KeyCode.PLUS ||
 			keyChar == '=' || keyChar == '+')
 		{
-			imageDisplay.getCanvas().zoomIn();
+			if (center == null) imageDisplay.getCanvas().zoomIn();
+			else imageDisplay.getCanvas().zoomIn(center);
 			evt.consume();
 		}
 		else if (keyCode == KeyCode.MINUS || keyChar == '-') {
-			imageDisplay.getCanvas().zoomOut();
+			if (center == null) imageDisplay.getCanvas().zoomOut();
+			else imageDisplay.getCanvas().zoomOut(center);
 			evt.consume();
 		}
 	}
