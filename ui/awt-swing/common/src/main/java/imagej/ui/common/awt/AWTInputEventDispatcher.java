@@ -157,8 +157,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mouseClicked(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final int clickCount = e.getClickCount();
 		final boolean isPopupTrigger = e.isPopupTrigger();
 		final MsClickedEvent evt =
@@ -171,8 +170,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mousePressed(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final int clickCount = e.getClickCount();
 		final boolean isPopupTrigger = e.isPopupTrigger();
 		final MsPressedEvent evt =
@@ -185,8 +183,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mouseReleased(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final int clickCount = e.getClickCount();
 		final boolean isPopupTrigger = e.isPopupTrigger();
 		final MsReleasedEvent evt =
@@ -201,8 +198,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mouseEntered(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final MsEnteredEvent evt = new MsEnteredEvent(display, modifiers, x, y);
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
@@ -211,10 +207,9 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mouseExited(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final MsExitedEvent evt = new MsExitedEvent(display, modifiers, x, y);
-		x = y = -1; // mouse coordinates are now invalid
+		clearMouseCoords();
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -222,8 +217,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mouseDragged(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final int clickCount = e.getClickCount();
 		final boolean isPopupTrigger = e.isPopupTrigger();
 		final MsDraggedEvent evt =
@@ -236,8 +230,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mouseMoved(final MouseEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final MsMovedEvent evt = new MsMovedEvent(display, modifiers, x, y);
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
@@ -248,8 +241,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
 		final InputModifiers modifiers = createModifiers(e.getModifiersEx());
-		x = e.getX();
-		y = e.getY();
+		updateMouseCoords(e);
 		final int wheelRotation = e.getWheelRotation();
 		final MsWheelEvent evt =
 			new MsWheelEvent(display, modifiers, x, y, wheelRotation);
@@ -288,6 +280,17 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 			default:
 				return -1;
 		}
+	}
+
+	/** Updates last known mouse coordinates. */
+	private void updateMouseCoords(MouseEvent e) {
+		x = e.getX();
+		y = e.getY();
+	}
+
+	/** Invalidates last known mouse coordinates. */
+	private void clearMouseCoords() {
+		x = y = -1;
 	}
 
 }
