@@ -40,16 +40,17 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
 
 /**
- * An event indicating keyboard activity in a display.
+ * An event indicating a keyboard key was pressed in a display.
  * 
  * @author Curtis Rueden
  */
 public class KyPressedEvent extends KyEvent {
 
 	public KyPressedEvent(final Display<?> display,
-		final InputModifiers modifiers, final char character, final KeyCode code)
+		final InputModifiers modifiers, final int x, final int y,
+		final char character, final KeyCode code)
 	{
-		super(display, modifiers, character, code);
+		super(display, modifiers, x, y, character, code);
 	}
 
 }

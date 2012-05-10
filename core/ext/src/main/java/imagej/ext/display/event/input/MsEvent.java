@@ -49,29 +49,10 @@ import imagej.ext.display.Display;
  */
 public abstract class MsEvent extends InputEvent {
 
-	private final int x, y;
-
 	public MsEvent(final Display<?> display, final InputModifiers modifiers,
 		final int x, final int y)
 	{
-		super(display, modifiers);
-		this.x = x;
-		this.y = y;
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return super.toString() + "\n\tx = " + x + "\n\ty = " + y;
+		super(display, modifiers, x, y);
 	}
 
 }

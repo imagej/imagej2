@@ -55,9 +55,9 @@ public abstract class KyEvent extends InputEvent {
 	private final KeyCode code;
 
 	public KyEvent(final Display<?> display, final InputModifiers modifiers,
-		final char character, final KeyCode code)
+		final int x, final int y, final char character, final KeyCode code)
 	{
-		super(display, modifiers);
+		super(display, modifiers, x, y);
 		this.character = character;
 		this.code = code;
 	}

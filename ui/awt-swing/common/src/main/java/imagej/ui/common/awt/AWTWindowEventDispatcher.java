@@ -46,6 +46,7 @@ import imagej.ext.display.event.window.WinEvent;
 import imagej.ext.display.event.window.WinIconifiedEvent;
 import imagej.ext.display.event.window.WinOpenedEvent;
 
+import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -70,6 +71,12 @@ public class AWTWindowEventDispatcher implements WindowListener {
 	{
 		this.display = display;
 		this.eventService = eventService;
+	}
+
+	// -- AWTWindowEventDispatcher methods --
+
+	public void register(final Window w) {
+		w.addWindowListener(this);
 	}
 
 	// -- WindowListener methods --

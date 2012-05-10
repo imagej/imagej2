@@ -39,7 +39,7 @@ import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.ext.display.Display;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 
 import javax.swing.JFrame;
@@ -60,7 +60,7 @@ public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 		super.view(window, display);
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) window;
 
-		sdiWindow.addEventDispatcher(new AWTKeyEventDispatcher(display,
+		sdiWindow.addEventDispatcher(new AWTInputEventDispatcher(display,
 			eventService));
 	}
 

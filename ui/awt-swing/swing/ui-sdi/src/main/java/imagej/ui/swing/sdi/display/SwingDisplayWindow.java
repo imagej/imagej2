@@ -37,7 +37,7 @@ package imagej.ui.swing.sdi.display;
 
 import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 
@@ -63,12 +63,12 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 
 	// -- SwingDisplayWindow methods --
 
-	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
-		addKeyListener(dispatcher);
+	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
+		dispatcher.register(this);
 	}
 
 	public void addEventDispatcher(final AWTWindowEventDispatcher dispatcher) {
-		addWindowListener(dispatcher);
+		dispatcher.register(this);
 	}
 
 	// -- DisplayWindow methods --

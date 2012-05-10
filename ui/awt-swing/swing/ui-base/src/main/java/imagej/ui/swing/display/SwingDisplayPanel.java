@@ -48,7 +48,7 @@ import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
 import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
@@ -146,8 +146,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	// -- SwingDisplayPanel methods --
 
-	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
-		addKeyListener(dispatcher);
+	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
+		dispatcher.register(this);
 	}
 
 	// -- DisplayPanel methods --

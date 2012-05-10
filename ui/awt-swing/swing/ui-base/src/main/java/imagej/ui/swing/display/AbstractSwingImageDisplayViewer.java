@@ -43,8 +43,7 @@ import imagej.ext.display.ui.DisplayWindow;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsAppearance;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
-import imagej.ui.common.awt.AWTMouseEventDispatcher;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
@@ -69,9 +68,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		super.view(w, d);
 
 		imgCanvas = new JHotDrawImageCanvas(this);
-		imgCanvas.addEventDispatcher(new AWTKeyEventDispatcher(display,
-			eventService));
-		imgCanvas.addEventDispatcher(new AWTMouseEventDispatcher(this,
+		imgCanvas.addEventDispatcher(new AWTInputEventDispatcher(display,
 			eventService));
 
 		imgPanel = new SwingDisplayPanel(this, window);

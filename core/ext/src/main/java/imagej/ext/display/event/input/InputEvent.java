@@ -48,21 +48,35 @@ import imagej.ext.display.event.DisplayEvent;
 public abstract class InputEvent extends DisplayEvent {
 
 	private final InputModifiers modifiers;
+	private final int x, y;
 
-	public InputEvent(final Display<?> display, final InputModifiers modifiers) {
+	public InputEvent(final Display<?> display, final InputModifiers modifiers,
+		final int x, final int y)
+	{
 		super(display);
 		this.modifiers = modifiers;
+		this.x = x;
+		this.y = y;
 	}
 
 	public InputModifiers getModifiers() {
 		return modifiers;
 	}
 
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tmodifiers = " + modifiers;
+		return super.toString() + "\n\tmodifiers = " + modifiers + "\n\tx = " + x +
+			"\n\ty = " + y;
 	}
 
 }

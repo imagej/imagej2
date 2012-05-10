@@ -36,7 +36,7 @@
 package imagej.ui.swing;
 
 import imagej.ui.ApplicationFrame;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -59,8 +59,8 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 
 	// -- SwingApplicationFrame methods --
 
-	public void addEventDispatcher(final AWTKeyEventDispatcher dispatcher) {
-		addKeyListener(dispatcher);
+	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
+		dispatcher.register(this);
 		addKeyDispatcher(dispatcher, getContentPane());
 	}
 
@@ -76,22 +76,6 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 		return getLocation().y;
 	}
 
-	// -- Helper methods --
-
-	/** Recursively listens for keyboard events on the given component. */
-	private void addKeyDispatcher(final AWTKeyEventDispatcher keyDispatcher,
-		final Component comp)
-	{
-		comp.addKeyListener(keyDispatcher);
-		if (!(comp instanceof Container)) return;
-		final Container c = (Container) comp;
-		final int childCount = c.getComponentCount();
-		for (int i = 0; i < childCount; i++) {
-			final Component child = c.getComponent(i);
-			addKeyDispatcher(keyDispatcher, child);
-		}
-	}
-
 	@Override
 	public void activate() {
 		EventQueue.invokeLater(new Runnable() {
@@ -104,6 +88,22 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 				repaint();
 			}
 		});
+	}
+
+	// -- Helper methods --
+
+	/** Recursively listens for keyboard events on the given component. */
+	private void addKeyDispatcher(final AWTInputEventDispatcher dispatcher,
+		final Component comp)
+	{
+		comp.addKeyListener(dispatcher);
+		if (!(comp instanceof Container)) return;
+		final Container c = (Container) comp;
+		final int childCount = c.getComponentCount();
+		for (int i = 0; i < childCount; i++) {
+			final Component child = c.getComponent(i);
+			addKeyDispatcher(dispatcher, child);
+		}
 	}
 
 }

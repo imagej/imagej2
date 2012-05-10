@@ -40,7 +40,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.display.SwingDisplayPanel;
 
@@ -64,7 +64,8 @@ public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 		final DisplayPanel panel = getPanel();
 		assert panel instanceof SwingDisplayPanel;
 		final SwingDisplayPanel sPanel = (SwingDisplayPanel) panel;
-		sPanel.addEventDispatcher(new AWTKeyEventDispatcher(display, eventService));
+		sPanel.addEventDispatcher(new AWTInputEventDispatcher(display,
+			eventService));
 	}
 
 }

@@ -51,11 +51,11 @@ import imagej.ext.ui.swing.SwingJPopupMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
-import imagej.ui.SystemClipboard;
 import imagej.ui.OutputWindow;
+import imagej.ui.SystemClipboard;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropListener;
-import imagej.ui.common.awt.AWTKeyEventDispatcher;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.util.Log;
 
 import java.awt.BorderLayout;
@@ -175,10 +175,10 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.getContentPane().add(toolBar, BorderLayout.NORTH);
 		appFrame.getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-		// listen for keyboard events on all components of the app frame
-		final AWTKeyEventDispatcher keyDispatcher =
-			new AWTKeyEventDispatcher(null, getEventService());
-		appFrame.addEventDispatcher(keyDispatcher);
+		// listen for input events on all components of the app frame
+		final AWTInputEventDispatcher dispatcher =
+			new AWTInputEventDispatcher(null, getEventService());
+		appFrame.addEventDispatcher(dispatcher);
 
 		appFrame.pack();
 		appFrame.setVisible(true);
