@@ -42,7 +42,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 
 import imagej.ui.SystemClipboard;
-import imagej.util.ARGB_Plane;
+import imagej.util.ARGBPlane;
 
 /**
  * AWT implementation of the SystemClipboard interface
@@ -52,7 +52,7 @@ import imagej.util.ARGB_Plane;
  */
 public class AWTClipboard implements SystemClipboard, Transferable {
 	private static java.awt.datatransfer.Clipboard clipboard = null;
-	private ARGB_Plane plane;
+	private ARGBPlane plane;
 	
 	public AWTClipboard() {
 		if (clipboard == null)
@@ -62,7 +62,7 @@ public class AWTClipboard implements SystemClipboard, Transferable {
 	// -- SystemClipboard methods --
 	
 	@Override
-	public void pixelsToSystemClipboard(ARGB_Plane plane) {
+	public void pixelsToSystemClipboard(ARGBPlane plane) {
 		this.plane = plane;
 		try {
 			clipboard.setContents(this, null);

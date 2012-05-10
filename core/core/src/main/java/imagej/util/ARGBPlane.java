@@ -42,7 +42,7 @@ package imagej.util;
  * @author Barry DeZonia
  *
  */
-public class ARGB_Plane {
+public class ARGBPlane {
 
 	//-- instance variables --
 	
@@ -52,7 +52,7 @@ public class ARGB_Plane {
 	
 	// -- constructors --
 	
-	public ARGB_Plane(int width, int height, int[] data) {
+	public ARGBPlane(int width, int height, int[] data) {
 		this.width = width;
 		this.height = height;
 		this.data = data;
@@ -65,7 +65,7 @@ public class ARGB_Plane {
 			throw new IllegalArgumentException("Data size mismatch");
 	}
 	
-	public ARGB_Plane(int width, int height) {
+	public ARGBPlane(int width, int height) {
 		this(width, height, new int[width*height]);
 	}
 	

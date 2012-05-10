@@ -48,7 +48,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
-import imagej.util.ARGB_Plane;
+import imagej.util.ARGBPlane;
 
 /**
  * Copies an ARGB image plane to the system clipboard for use by
@@ -80,7 +80,7 @@ public class CopyToSystem implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		final ARGB_Plane pixels = getARGBPixels();
+		final ARGBPlane pixels = getARGBPixels();
 		if (pixels == null) return;
 		uis.getUI().getSystemClipboard().pixelsToSystemClipboard(pixels);
 		final String notice =
@@ -89,7 +89,7 @@ public class CopyToSystem implements ImageJPlugin {
 		eventService.publish(new StatusEvent(notice));
 	}
 	
-	private ARGB_Plane getARGBPixels() {
+	private ARGBPlane getARGBPixels() {
 		final DatasetView view =
 				imgDispService.getActiveDatasetView(imageDisplay);
 		if (view == null) return null;
@@ -116,7 +116,7 @@ public class CopyToSystem implements ImageJPlugin {
 			w = Math.min(imageWidth, ovrMaxX) - x + 1;
 			h = Math.min(imageHeight, ovrMaxY) - y + 1;
 		}
-		final ARGB_Plane plane = new ARGB_Plane(w, h);
+		final ARGBPlane plane = new ARGBPlane(w, h);
 		for (int u = 0; u < w; u++) {
 			for (int v = 0; v < h; v++) {
 				final int argbLoc = (y+v)*imageWidth + (x+u);

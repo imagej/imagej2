@@ -35,7 +35,7 @@
 
 package imagej.ui;
 
-import imagej.util.ARGB_Plane;
+import imagej.util.ARGBPlane;
 
 /**
  * UI agnostic representation of the system clipboard.
@@ -46,5 +46,5 @@ import imagej.util.ARGB_Plane;
 public interface SystemClipboard {
 	
 	/** method that accepts a plane of ARGB data */
-	void pixelsToSystemClipboard(ARGB_Plane plane);
+	void pixelsToSystemClipboard(ARGBPlane plane);
 }
