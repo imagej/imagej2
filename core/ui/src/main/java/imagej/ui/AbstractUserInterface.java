@@ -36,17 +36,12 @@
 package imagej.ui;
 
 import imagej.ImageJ;
-import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.event.StatusService;
-import imagej.platform.event.AppQuitEvent;
 import imagej.updater.core.UpToDate;
 import imagej.updater.ui.UpdatesAvailable;
 import imagej.util.Log;
 import imagej.util.Prefs;
-
-import java.util.List;
 
 /**
  * Abstract superclass for {@link UserInterface} implementations.
@@ -60,9 +55,6 @@ public abstract class AbstractUserInterface implements UserInterface {
 	private static final String LAST_Y = "lastYLocation";
 
 	private UIService uiService;
-
-	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- UserInterface methods --
 
@@ -104,20 +96,8 @@ public abstract class AbstractUserInterface implements UserInterface {
 		return null;
 	}
 
-	// -- Internal methods --
-
-	/**
-	 * Subclasses override to control UI creation. They must also call
-	 * super.createUI() after creating the {@link ApplicationFrame} but before
-	 * showing it (assuming the UI has an {@link ApplicationFrame}).
-	 */
-	protected void createUI() {
-		subscribers = getEventService().subscribe(this);
-		restoreLocation();
-	}
-
-	/** Persists the application frame's current location. */
-	protected void saveLocation() {
+	@Override
+	public void saveLocation() {
 		final ApplicationFrame appFrame = getApplicationFrame();
 		if (appFrame != null) {
 			Prefs.put(getClass(), LAST_X, appFrame.getLocationX());
@@ -125,8 +105,8 @@ public abstract class AbstractUserInterface implements UserInterface {
 		}
 	}
 
-	/** Restores the application frame's current location. */
-	protected void restoreLocation() {
+	@Override
+	public void restoreLocation() {
 		final ApplicationFrame appFrame = getApplicationFrame();
 		if (appFrame != null) {
 			final int lastX = Prefs.getInt(getClass(), LAST_X, 0);
@@ -135,13 +115,15 @@ public abstract class AbstractUserInterface implements UserInterface {
 		}
 	}
 
-	// -- Event handlers --
+	// -- Internal methods --
 
-	// TODO - migrate event handling logic to UIService
-
-	@EventHandler
-	public void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
-		saveLocation();
+	/**
+	 * Subclasses override to control UI creation. They must also call
+	 * super.createUI() after creating the {@link ApplicationFrame} but before
+	 * showing it (assuming the UI has an {@link ApplicationFrame}).
+	 */
+	protected void createUI() {
+		restoreLocation();
 	}
 
 	// -- Helper methods --

@@ -49,6 +49,7 @@ import imagej.ext.tool.ToolService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
+import imagej.platform.event.AppQuitEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
@@ -265,6 +266,11 @@ public final class UIService extends AbstractService {
 		// the MenuCreator API to be more powerful.
 		if (userInterface == null) return;
 		userInterface.createMenus();
+	}
+
+	@EventHandler
+	public void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+		userInterface.saveLocation();
 	}
 
 	// -- Helper methods --

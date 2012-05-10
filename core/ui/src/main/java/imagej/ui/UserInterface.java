@@ -93,4 +93,10 @@ public interface UserInterface extends IPlugin {
 	 */
 	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
 
+	/** Persists the application frame's current location. */
+	void saveLocation();
+
+	/** Restores the application frame's current location. */
+	void restoreLocation();
+
 }
