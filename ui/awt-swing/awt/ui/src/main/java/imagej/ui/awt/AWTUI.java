@@ -87,7 +87,7 @@ public class AWTUI implements UserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent e) {
-				System.exit(0);
+				getUIService().getAppService().quit();
 			}
 		});
 

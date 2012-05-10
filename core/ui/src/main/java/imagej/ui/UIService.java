@@ -47,6 +47,7 @@ import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
 import imagej.options.OptionsService;
+import imagej.platform.AppService;
 import imagej.platform.PlatformService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -73,6 +74,7 @@ public final class UIService extends AbstractService {
 	private final MenuService menuService;
 	private final ToolService toolService;
 	private final OptionsService optionsService;
+	private final AppService appService;
 
 	/** The active user interface. */
 	private UserInterface userInterface;
@@ -92,7 +94,7 @@ public final class UIService extends AbstractService {
 		final StatusService statusService, final ThreadService threadService,
 		final PlatformService platformService, final PluginService pluginService,
 		final MenuService menuService, final ToolService toolService,
-		final OptionsService optionsService)
+		final OptionsService optionsService, final AppService appService)
 	{
 		super(context);
 		this.eventService = eventService;
@@ -103,6 +105,7 @@ public final class UIService extends AbstractService {
 		this.menuService = menuService;
 		this.toolService = toolService;
 		this.optionsService = optionsService;
+		this.appService = appService;
 
 		launchUI();
 
@@ -141,6 +144,10 @@ public final class UIService extends AbstractService {
 
 	public OptionsService getOptionsService() {
 		return optionsService;
+	}
+
+	public AppService getAppService() {
+		return appService;
 	}
 
 	/** Processes the given command line arguments. */

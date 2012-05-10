@@ -167,7 +167,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent evt) {
-				getUIService().getEventService().publish(new AppQuitEvent());
+				getUIService().getAppService().quit();
 			}
 
 		});
