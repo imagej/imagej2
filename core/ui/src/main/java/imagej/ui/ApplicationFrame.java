@@ -43,12 +43,16 @@ package imagej.ui;
  */
 public interface ApplicationFrame {
 
+	/** Sets the coordinates of the application frame's top left corner. */
 	void setLocation(int x, int y);
 
+	/** Gets the X coordinate of the application frame's top left corner. */
 	int getLocationX();
 
+	/** Gets the Y coordinate of the application frame's top left corner. */
 	int getLocationY();
 
+	/** Activate the application frame, bringing it to the front. */
 	void activate();
 
 }
