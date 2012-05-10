@@ -77,6 +77,13 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		window.setTitle(display.getName());
 	}
 
+	// -- DisplayViewer methods --
+
+	@Override
+	public SwingDisplayPanel getPanel() {
+		return imgPanel;
+	}
+
 	// -- AbstractSwingImageDisplayViewer methods --
 
 	public JHotDrawImageCanvas getCanvas() {
