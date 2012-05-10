@@ -41,8 +41,6 @@ import imagej.util.awt.AWTImageTools;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.BoxLayout;
@@ -104,13 +102,7 @@ public final class SwingColorBar extends JPanel {
 		final JPanel pane = new JPanel();
 		frame.setContentPane(pane);
 		pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
-		frame.addWindowListener(new WindowAdapter() {
-
-			@Override
-			public void windowClosing(final WindowEvent e) {
-				System.exit(0);
-			}
-		});
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		for (final ColorTable8 lut : luts) {
 			pane.add(new SwingColorBar(lut));
 		}

@@ -77,8 +77,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -999,25 +999,13 @@ public class SwingOverlayManager
 	}
 	
 	private void setupCloseListener() {
-		addWindowListener(new WindowListener() {
+		addWindowListener(new WindowAdapter() {
 			@Override
 			@SuppressWarnings("synthetic-access")
 			public void windowClosing(WindowEvent e) {
 				// Remember screen location of window for next time
 				saveLocation();
 			}
-			@Override
-			public void windowOpened(WindowEvent e) { /* do nothing */ }			
-			@Override
-			public void windowIconified(WindowEvent e) { /* do nothing */ }
-			@Override
-			public void windowDeiconified(WindowEvent e) { /* do nothing */ }
-			@Override
-			public void windowDeactivated(WindowEvent e) { /* do nothing */ }
-			@Override
-			public void windowClosed(WindowEvent e) { /* do nothing */ }
-			@Override
-			public void windowActivated(WindowEvent e) { /* do nothing */ }
 		});
 	}
 
