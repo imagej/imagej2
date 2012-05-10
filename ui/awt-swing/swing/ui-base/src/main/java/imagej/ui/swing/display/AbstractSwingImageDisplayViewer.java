@@ -58,6 +58,8 @@ public abstract class AbstractSwingImageDisplayViewer extends
 	AbstractImageDisplayViewer
 {
 
+	protected AWTInputEventDispatcher dispatcher;
+
 	private JHotDrawImageCanvas imgCanvas;
 	private SwingDisplayPanel imgPanel;
 
@@ -67,9 +69,10 @@ public abstract class AbstractSwingImageDisplayViewer extends
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
 
+		dispatcher = new AWTInputEventDispatcher(display, eventService);
+
 		imgCanvas = new JHotDrawImageCanvas(this);
-		imgCanvas.addEventDispatcher(new AWTInputEventDispatcher(display,
-			eventService));
+		imgCanvas.addEventDispatcher(dispatcher);
 
 		imgPanel = new SwingDisplayPanel(this, window);
 		setPanel(imgPanel);

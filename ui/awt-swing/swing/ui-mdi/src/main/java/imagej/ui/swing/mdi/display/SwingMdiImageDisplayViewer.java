@@ -37,12 +37,9 @@ package imagej.ui.swing.mdi.display;
 
 import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
-import imagej.ui.swing.display.SwingDisplayPanel;
 
 import javax.swing.JInternalFrame;
 
@@ -61,11 +58,7 @@ public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 	@Override
 	public void view(final DisplayWindow window, final Display<?> display) {
 		super.view(window, display);
-		final DisplayPanel panel = getPanel();
-		assert panel instanceof SwingDisplayPanel;
-		final SwingDisplayPanel sPanel = (SwingDisplayPanel) panel;
-		sPanel.addEventDispatcher(new AWTInputEventDispatcher(display,
-			eventService));
+		getPanel().addEventDispatcher(dispatcher);
 	}
 
 }
