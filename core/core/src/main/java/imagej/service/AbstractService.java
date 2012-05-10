@@ -66,6 +66,7 @@ public abstract class AbstractService implements IService {
 	// -- Internal methods --
 
 	protected void subscribeToEvents(final EventService eventService) {
+		if (eventService == null) return;
 		eventSubscribers = eventService.subscribe(this);
 	}
 
