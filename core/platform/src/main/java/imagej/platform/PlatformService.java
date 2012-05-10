@@ -54,7 +54,7 @@ public interface PlatformService extends IService {
 
 	PluginService getPluginService();
 
-	AppEventService getAppEventService();
+	AppService getAppService();
 
 	/** Gets the platform handlers applicable to this platform. */
 	List<Platform> getTargetPlatforms();

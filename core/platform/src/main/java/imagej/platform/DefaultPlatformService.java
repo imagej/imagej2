@@ -62,7 +62,7 @@ public final class DefaultPlatformService extends AbstractService implements
 
 	private final EventService eventService;
 	private final PluginService pluginService;
-	private final AppEventService appEventService;
+	private final AppService appService;
 
 	/** Platform handlers applicable to this platform. */
 	private List<Platform> targetPlatforms;
@@ -80,12 +80,12 @@ public final class DefaultPlatformService extends AbstractService implements
 
 	public DefaultPlatformService(final ImageJ context,
 		final EventService eventService, final PluginService pluginService,
-		final AppEventService appEventService)
+		final AppService appEventService)
 	{
 		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
-		this.appEventService = appEventService;
+		this.appService = appEventService;
 
 		final List<Platform> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
@@ -109,8 +109,8 @@ public final class DefaultPlatformService extends AbstractService implements
 	}
 
 	@Override
-	public AppEventService getAppEventService() {
-		return appEventService;
+	public AppService getAppService() {
+		return appService;
 	}
 
 	@Override

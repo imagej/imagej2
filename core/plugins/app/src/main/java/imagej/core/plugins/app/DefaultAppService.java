@@ -40,7 +40,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
-import imagej.platform.AppEventService;
+import imagej.platform.AppService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
@@ -51,46 +51,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Default service for executing plugins in response to application events.
+ * Default service for providing application-level functionality.
  * 
  * @author Curtis Rueden
  */
 @Service
-public final class DefaultAppEventService extends AbstractService implements
-	AppEventService
+public final class DefaultAppService extends AbstractService implements
+	AppService
 {
 
-	private final EventService eventService;
+	// -- Fields --
+
 	private final PluginService pluginService;
 
 	// -- Constructors --
 
-	public DefaultAppEventService() {
+	public DefaultAppService() {
 		// NB: Required by SezPoz.
 		super(null);
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultAppEventService(final ImageJ context,
+	public DefaultAppService(final ImageJ context,
 		final EventService eventService, final PluginService pluginService)
 	{
 		super(context);
-		this.eventService = eventService;
 		this.pluginService = pluginService;
 
 		subscribeToEvents(eventService);
 	}
 
-	// -- AppEventService methods --
+	// -- AppService methods --
 
 	@Override
-	public EventService getEventService() {
-		return eventService;
+	public void about() {
+		pluginService.run(AboutImageJ.class);
 	}
 
 	@Override
-	public PluginService getPluginService() {
-		return pluginService;
+	public void showPrefs() {
+		pluginService.run(ShowPrefs.class);
+	}
+
+	@Override
+	public void quit() {
+		pluginService.run(QuitProgram.class);
 	}
 
 	@Override
@@ -109,20 +114,20 @@ public final class DefaultAppEventService extends AbstractService implements
 	protected void
 		onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
 	{
-		getPluginService().run(AboutImageJ.class);
+		about();
 	}
 
 	@EventHandler
 	protected void onEvent(
 		@SuppressWarnings("unused") final AppPreferencesEvent event)
 	{
-		getPluginService().run(ShowPrefs.class);
+		showPrefs();
 	}
 
 	@EventHandler
 	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event)
 	{
-		getPluginService().run(QuitProgram.class);
+		quit();
 	}
 
 }

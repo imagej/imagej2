@@ -35,24 +35,26 @@
 
 package imagej.platform;
 
-import imagej.event.EventService;
 import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.platform.event.ApplicationEvent;
 import imagej.service.IService;
 
 import java.util.List;
 
 /**
- * Interface for service that handles {@link ApplicationEvent}s.
+ * Interface for service that provides application-level functionality.
  * 
  * @author Curtis Rueden
  */
-public interface AppEventService extends IService {
+public interface AppService extends IService {
 
-	EventService getEventService();
+	/** Displays an About ImageJ dialog. */
+	public void about();
 
-	PluginService getPluginService();
+	/** Displays ImageJ preferences. */
+	public void showPrefs();
+
+	/** Quits ImageJ. */
+	public void quit();
 
 	/** Gets the list of plugins handled by this service. */
 	List<PluginModuleInfo<?>> getHandledPlugins();

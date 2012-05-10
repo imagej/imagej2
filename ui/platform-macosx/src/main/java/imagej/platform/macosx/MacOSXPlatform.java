@@ -40,7 +40,7 @@ import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.platform.AbstractPlatform;
-import imagej.platform.AppEventService;
+import imagej.platform.AppService;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
 
@@ -108,8 +108,8 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 	private void removeAppPluginsFromMenu() {
 		final EventService eventService = platformService.getEventService();
-		final AppEventService appEventService =
-			platformService.getAppEventService();
+		final AppService appEventService =
+			platformService.getAppService();
 		final List<PluginModuleInfo<?>> plugins =
 			appEventService.getHandledPlugins();
 		for (final PluginModuleInfo<?> info : plugins) {
