@@ -40,12 +40,12 @@ import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.swt.SWTMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.ui.SystemClipboard;
-import imagej.ui.Desktop;
+import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
+import imagej.ui.SystemClipboard;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import net.miginfocom.swt.MigLayout;
@@ -59,30 +59,29 @@ import org.eclipse.swt.widgets.Menu;
  * @author Curtis Rueden
  */
 @Plugin(type = UserInterface.class)
-public class SWTUI implements UserInterface, Runnable {
+public class SWTUI extends AbstractUserInterface implements Runnable {
 
-	private UIService uiService;
 	private EventService eventService;
 
 	private SWTApplicationFrame shell;
 	private SWTToolBar toolBar;
 	private SWTStatusBar statusBar;
 
-	private Display display;
+	private Display swtDisplay;
 
 	// -- UserInterface methods --
 
 	@Override
 	public void initialize(final UIService service) {
-		uiService = service;
-		eventService = uiService.getEventService();
+		super.initialize(service);
+		eventService = getUIService().getEventService();
 
-		display = new Display();
+		swtDisplay = new Display();
 
-		shell = new SWTApplicationFrame(display);
+		shell = new SWTApplicationFrame(swtDisplay);
 		shell.setLayout(new MigLayout("wrap 1"));
 		shell.setText("ImageJ");
-		toolBar = new SWTToolBar(display, shell);
+		toolBar = new SWTToolBar(swtDisplay, shell);
 		statusBar = new SWTStatusBar(shell, eventService);
 		createMenus();
 
@@ -99,7 +98,7 @@ public class SWTUI implements UserInterface, Runnable {
 
 	@Override
 	public void createMenus() {
-		final MenuService menuService = uiService.getMenuService();
+		final MenuService menuService = getUIService().getMenuService();
 		final Menu menuBar =
 			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
 		shell.setMenuBar(menuBar); // TODO - is this necessary?
@@ -107,18 +106,8 @@ public class SWTUI implements UserInterface, Runnable {
 	}
 
 	@Override
-	public UIService getUIService() {
-		return uiService;
-	}
-
-	@Override
 	public SWTApplicationFrame getApplicationFrame() {
 		return shell;
-	}
-
-	@Override
-	public Desktop getDesktop() {
-		return null;
 	}
 
 	@Override
@@ -160,9 +149,9 @@ public class SWTUI implements UserInterface, Runnable {
 	@Override
 	public void run() {
 		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) display.sleep();
+			if (!swtDisplay.readAndDispatch()) swtDisplay.sleep();
 		}
-		display.dispose();
+		swtDisplay.dispose();
 	}
 
 }

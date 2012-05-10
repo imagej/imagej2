@@ -40,13 +40,13 @@ import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.AbstractUserInterface;
 import imagej.ui.ApplicationFrame;
-import imagej.ui.SystemClipboard;
-import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
+import imagej.ui.SystemClipboard;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.common.awt.AWTClipboard;
@@ -62,9 +62,8 @@ import java.awt.event.WindowEvent;
  * @author Curtis Rueden
  */
 @Plugin(type = UserInterface.class)
-public class AWTUI implements UserInterface {
+public class AWTUI extends AbstractUserInterface {
 
-	private UIService uiService;
 	private AWTApplicationFrame frame;
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
@@ -74,11 +73,11 @@ public class AWTUI implements UserInterface {
 
 	@Override
 	public void initialize(final UIService service) {
-		uiService = service;
+		super.initialize(service);
 
 		frame = new AWTApplicationFrame("ImageJ");
-		toolBar = new AWTToolBar(uiService);
-		statusBar = new AWTStatusBar(uiService);
+		toolBar = new AWTToolBar(getUIService());
+		statusBar = new AWTStatusBar(getUIService());
 		systemClipboard = new AWTClipboard();
 		createMenus();
 
@@ -105,26 +104,17 @@ public class AWTUI implements UserInterface {
 
 	@Override
 	public void createMenus() {
-		final MenuService menuService = uiService.getMenuService();
+		final MenuService menuService = getUIService().getMenuService();
 		final MenuBar menuBar =
 			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
 		frame.setMenuBar(menuBar);
-		uiService.getEventService().publish(new AppMenusCreatedEvent(menuBar));
-	}
-
-	@Override
-	public UIService getUIService() {
-		return uiService;
+		getUIService().getEventService()
+			.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 	@Override
 	public ApplicationFrame getApplicationFrame() {
 		return frame;
-	}
-
-	@Override
-	public Desktop getDesktop() {
-		return null;
 	}
 
 	@Override

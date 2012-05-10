@@ -37,12 +37,12 @@ package imagej.ui.pivot;
 
 import imagej.ext.display.Display;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.SystemClipboard;
-import imagej.ui.Desktop;
+import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
+import imagej.ui.SystemClipboard;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 
@@ -56,16 +56,15 @@ import org.apache.pivot.wtk.DesktopApplicationContext;
  * @author Curtis Rueden
  */
 @Plugin(type = UserInterface.class)
-public class PivotUI implements UserInterface, Callable<Object> {
-
-	private UIService uiService;
+public class PivotUI extends AbstractUserInterface implements Callable<Object>
+{
 
 	// -- IUserInterface methods --
 
 	@Override
 	public void initialize(final UIService service) {
-		uiService = service;
-		uiService.getThreadService().run(this);
+		super.initialize(service);
+		getUIService().getThreadService().run(this);
 	}
 
 	@Override
@@ -79,27 +78,20 @@ public class PivotUI implements UserInterface, Callable<Object> {
 	}
 
 	@Override
-	public UIService getUIService() {
-		return uiService;
-	}
-
-	@Override
 	public PivotApplicationFrame getApplicationFrame() {
-		return null;
-	}
-
-	@Override
-	public Desktop getDesktop() {
+		// TODO
 		return null;
 	}
 
 	@Override
 	public PivotToolBar getToolBar() {
+		// TODO
 		return null;
 	}
 
 	@Override
 	public PivotStatusBar getStatusBar() {
+		// TODO
 		return null;
 	}
 
