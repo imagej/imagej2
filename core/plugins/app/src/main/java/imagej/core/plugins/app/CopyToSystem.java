@@ -62,26 +62,26 @@ import imagej.util.ARGBPlane;
 		@Menu(label = "Copy To System", weight = 12) })
 public class CopyToSystem implements ImageJPlugin {
 
-	@Parameter(required = true, persist = false)
-	private UIService uis;
+	@Parameter(persist = false)
+	private UIService uiService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private OverlayService overlayService;
 	
-	@Parameter(required = true, persist = false)
-	private ImageDisplayService imgDispService;
+	@Parameter(persist = false)
+	private ImageDisplayService imageDisplayService;
 	
 	@Parameter(persist = false)
 	private StatusService statusService;
 	
-	@Parameter(required = true)
+	@Parameter
 	private ImageDisplay imageDisplay;
 	
 	@Override
 	public void run() {
 		final ARGBPlane pixels = getARGBPixels();
 		if (pixels == null) return;
-		uis.getUI().getSystemClipboard().pixelsToSystemClipboard(pixels);
+		uiService.getUI().getSystemClipboard().pixelsToSystemClipboard(pixels);
 		final String notice =
 				pixels.getWidth() + "x" + pixels.getHeight() +
 				" image copied to system clipboard";
@@ -90,7 +90,7 @@ public class CopyToSystem implements ImageJPlugin {
 	
 	private ARGBPlane getARGBPixels() {
 		final DatasetView view =
-				imgDispService.getActiveDatasetView(imageDisplay);
+				imageDisplayService.getActiveDatasetView(imageDisplay);
 		if (view == null) return null;
 		final Overlay overlay = overlayService.getActiveOverlay(imageDisplay);
 		final long[] dims = imageDisplay.getDims();
