@@ -83,9 +83,9 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 		final boolean addToExisting = addToExisting(output);
 		final ArrayList<Display<?>> displays = new ArrayList<Display<?>>();
 
-		// get list of existing displays containing this output
+		// get list of existing displays currently visualizing this output
 		final List<Display<?>> existingDisplays =
-			displayService.getDisplaysContaining(output);
+			displayService.getDisplays(output);
 		displays.addAll(existingDisplays);
 
 		if (displays.isEmpty()) {

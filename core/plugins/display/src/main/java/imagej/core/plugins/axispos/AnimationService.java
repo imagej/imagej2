@@ -161,7 +161,7 @@ public class AnimationService extends AbstractService {
 		final Data data = event.getObject();
 		for (final Animation animation : animations.values()) {
 			final ImageDisplay display = animation.getDisplay();
-			if (display.containsData(data)) stop(display);
+			if (display.isDisplaying(data)) stop(display);
 		}
 	}
 

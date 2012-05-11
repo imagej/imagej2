@@ -63,9 +63,6 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	/** Sets the axis currently designated as active. */
 	void setActiveAxis(AxisType axis);
 
-	/** Tests whether this display contains the given data object (via a view). */
-	boolean containsData(Data data);
-
 	/**
 	 * Tests whether the given view should currently be visible in this display. A
 	 * view is visible when the current position falls within the bounds of the

@@ -179,10 +179,10 @@ public final class DefaultDisplayService extends AbstractService implements
 	}
 
 	@Override
-	public List<Display<?>> getDisplaysContaining(final Object o) {
+	public List<Display<?>> getDisplays(final Object o) {
 		final ArrayList<Display<?>> displays = new ArrayList<Display<?>>();
 		for (final Display<?> display : getDisplays()) {
-			if (display.contains(o)) displays.add(display);
+			if (display.isDisplaying(o)) displays.add(display);
 		}
 		return displays;
 	}

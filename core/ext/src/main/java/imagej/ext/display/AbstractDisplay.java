@@ -89,6 +89,11 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 		return context;
 	}
 
+	@Override
+	public boolean isDisplaying(final Object o) {
+		return contains(o);
+	}
+
 	// -- AbstractDisplay methods --
 
 	protected void rebuild() {

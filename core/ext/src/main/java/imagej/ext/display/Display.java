@@ -60,6 +60,7 @@ public interface Display<T> extends List<T>, IPlugin, IContext {
 	 * @param context
 	 */
 	void setContext(ImageJ context);
+
 	/**
 	 * Tests whether the display is capable of visualizing objects of the given
 	 * class.
@@ -84,6 +85,21 @@ public interface Display<T> extends List<T>, IPlugin, IContext {
 	 *           if {@link #canDisplay(Object)} returns false).
 	 */
 	void display(Object o);
+
+	/**
+	 * Tests whether the display is currently visualizing the given object.
+	 * <p>
+	 * Note that this method may behave differently than {@link #contains}; in
+	 * general, any time {@link #contains} returns true, this method will also
+	 * return true, but not vice versa. For example, an
+	 * <code>imagej.data.display.ImageDisplay</code> is a
+	 * <code>Display&lt;DataView&gt;</code> but calling <code>isDisplaying</code>
+	 * an a <code>Dataset</code> (which is not a <code>DataView</code>) will
+	 * return true if the <code>ImageDisplay</code> currently contains a
+	 * <code>DatasetView</code> that wraps that <code>Dataset</code>.
+	 * </p>
+	 */
+	boolean isDisplaying(Object o);
 
 	/** Updates and redraws the display onscreen. */
 	void update();

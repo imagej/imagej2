@@ -122,6 +122,18 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		subscribers = eventService.subscribe(this);
 	}
 
+	@Override
+	public boolean isDisplaying(final Object o) {
+		if (super.isDisplaying(o)) return true;
+
+		// check for wrapped Data objects
+		for (final DataView view : this) {
+			if (o == view.getData()) return true;
+		}
+
+		return false;
+	}
+
 	// -- AbstractDisplay methods --
 
 	@Override
@@ -175,14 +187,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		activeAxis = axis;
-	}
-
-	@Override
-	public boolean containsData(final Data data) {
-		for (final DataView view : this) {
-			if (data == view.getData()) return true;
-		}
-		return false;
 	}
 
 	@Override

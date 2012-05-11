@@ -103,8 +103,8 @@ public interface DisplayService extends IService {
 	/** Gets a display by its name. */
 	Display<?> getDisplay(final String name);
 
-	/** Gets a list of displays containing the given object. */
-	List<Display<?>> getDisplaysContaining(final Object o);
+	/** Gets a list of displays currently visualizing the given object. */
+	List<Display<?>> getDisplays(final Object o);
 
 	/**
 	 * Checks whether the given name is already taken by an existing display.
