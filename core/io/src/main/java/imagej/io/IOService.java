@@ -57,8 +57,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Service
-public final class IOService<T extends RealType<T> & NativeType<T>>
-	extends AbstractService
+public final class IOService extends AbstractService
 {
 	
 	// TODO: eliminate bogus T parameter above. Rather, find a different way of
@@ -109,9 +108,10 @@ public final class IOService<T extends RealType<T> & NativeType<T>>
 		IncompatibleTypeException
 	{
 		if (source == null) return null;
-		final ImgOpener imageOpener = new ImgOpener();
-		imageOpener.addStatusListener(new StatusDispatcher(statusService));
-		final ImgPlus<T> imgPlus = imageOpener.openImg(source);
+		final ImgOpener imgOpener = new ImgOpener();
+		imgOpener.addStatusListener(new StatusDispatcher(statusService));
+		@SuppressWarnings("rawtypes")
+		final ImgPlus imgPlus = imgOpener.<UnRealNaiveWorkaround>openImg(source);
 		final Dataset dataset = datasetService.create(imgPlus);
 		eventService.publish(new FileOpenedEvent(source));
 		return dataset;
@@ -128,5 +128,13 @@ public final class IOService<T extends RealType<T> & NativeType<T>>
 	}
 
 	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+
+	// -- Helper classes --
+
+	private abstract class UnRealNaiveWorkaround implements
+		RealType<UnRealNaiveWorkaround>, NativeType<UnRealNaiveWorkaround>
+	{
+		// no implementation needed
+	}
 
 }
