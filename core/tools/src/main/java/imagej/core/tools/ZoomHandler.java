@@ -63,7 +63,6 @@ public class ZoomHandler extends AbstractTool {
 		final int x = evt.getX();
 		final int y = evt.getY();
 		final IntCoords center = x < 0 || y < 0 ? null : new IntCoords(x, y);
-		System.out.println("zoom center = " + center + ", x = " + x + ", y = " + y);//TEMP
 
 		final KeyCode keyCode = evt.getCode();
 		final char keyChar = evt.getCharacter();
