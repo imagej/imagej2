@@ -35,7 +35,7 @@
 
 package imagej.updater.gui;
 
-import imagej.event.EventService;
+import imagej.event.StatusService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -62,7 +62,7 @@ import java.net.UnknownHostException;
  * The Updater. As plugin.
  * 
  * Incidentally, this class can be used as an out-of-ImageJ entry point to the updater,
- * as it does not *require* an eventService to run. Use this Beanshell script as a template:
+ * as it does not *require* a StatusService to run. Use this Beanshell script as a template:
  *
  *	import java.io.File;
  *	import java.net.URL;
@@ -83,13 +83,13 @@ import java.net.UnknownHostException;
 	@Menu(label = "Update...") })
 public class ImageJUpdater implements UpdaterUIPlugin {
 
-	@Parameter(persist = false)
-	private EventService eventService;
+	@Parameter(required = false, persist = false)
+	private StatusService statusService;
 
 	@Override
 	public void run() {
 
-		UpdaterUserInterface.set(new SwingUserInterface(eventService));
+		UpdaterUserInterface.set(new SwingUserInterface(statusService));
 
 		if (errorIfDebian()) return;
 

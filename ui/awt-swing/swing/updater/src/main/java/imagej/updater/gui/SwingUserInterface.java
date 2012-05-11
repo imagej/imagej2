@@ -35,8 +35,7 @@
 
 package imagej.updater.gui;
 
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Log;
 import imagej.util.Prefs;
@@ -60,10 +59,10 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingUserInterface extends UpdaterUserInterface {
 
-	final protected EventService eventService;
+	protected final StatusService statusService;
 
-	public SwingUserInterface(final EventService eventService) {
-		this.eventService = eventService;
+	public SwingUserInterface(final StatusService statusService) {
+		this.statusService = statusService;
 	}
 
 	@Override
@@ -109,7 +108,7 @@ public class SwingUserInterface extends UpdaterUserInterface {
 	@Override
 	public void showStatus(final String message) {
 
-		if (eventService != null) eventService.publish(new StatusEvent(message, false));
+		if (statusService != null) statusService.showStatus(message);
 
 	}
 
