@@ -40,8 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
+import imagej.event.StatusService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -72,8 +71,8 @@ public class CopyToSystem implements ImageJPlugin {
 	@Parameter(required = true, persist = false)
 	private ImageDisplayService imgDispService;
 	
-	@Parameter(required = true, persist = false)
-	private EventService eventService;
+	@Parameter(persist = false)
+	private StatusService statusService;
 	
 	@Parameter(required = true)
 	private ImageDisplay imageDisplay;
@@ -86,7 +85,7 @@ public class CopyToSystem implements ImageJPlugin {
 		final String notice =
 				pixels.getWidth() + "x" + pixels.getHeight() +
 				" image copied to system clipboard";
-		eventService.publish(new StatusEvent(notice));
+		statusService.showStatus(notice);
 	}
 	
 	private ARGBPlane getARGBPixels() {
