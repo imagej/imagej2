@@ -3599,7 +3599,7 @@ static void append_icon_path(struct string *str)
 	for (i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
 		string_append(str, ij_path(paths[i]));
 		if (file_exists(str->buffer + length))
-			break;
+			return;
 		string_set_length(str, length);
 	}
 
@@ -3608,7 +3608,7 @@ static void append_icon_path(struct string *str)
 		for (i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
 			string_addf(str, "%.*s%s", (int)(slash - main_argv0) - 14, main_argv0, paths[i]);
 			if (file_exists(str->buffer + length))
-				break;
+				return;
 			string_set_length(str, length);
 		}
 }
