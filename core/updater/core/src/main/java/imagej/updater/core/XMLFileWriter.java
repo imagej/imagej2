@@ -154,52 +154,57 @@ public class XMLFileWriter {
 		}
 
 		for (final FileObject file : files.managedFiles()) {
-			attr.clear();
-			assert (file.updateSite != null && !file.updateSite.equals(""));
-			if (local) setAttribute(attr, "update-site", file.updateSite);
-			setAttribute(attr, "filename", file.filename);
-			if (file.executable) setAttribute(attr, "executable", "true");
-			handler.startElement("", "", "plugin", attr);
-			writeSimpleTags("platform", file.getPlatforms());
-			writeSimpleTags("category", file.getCategories());
-
-			final FileObject.Version current = file.current;
-			if (file.getChecksum() != null) {
-				attr.clear();
-				setAttribute(attr, "checksum", file.getChecksum());
-				setAttribute(attr, "timestamp", file.getTimestamp());
-				setAttribute(attr, "filesize", file.filesize);
-				handler.startElement("", "", "version", attr);
-				if (file.description != null) writeSimpleTag("description",
-					file.description);
-
-				for (final Dependency dependency : file.getDependencies()) {
-					attr.clear();
-					setAttribute(attr, "filename", dependency.filename);
-					setAttribute(attr, "timestamp", dependency.timestamp);
-					if (dependency.overrides) setAttribute(attr, "overrides", "true");
-					writeSimpleTag("dependency", null, attr);
-				}
-
-				writeSimpleTags("link", file.getLinks());
-				writeSimpleTags("author", file.getAuthors());
-				handler.endElement("", "", "version");
-			}
-			if (current != null && !current.checksum.equals(file.getChecksum())) file
-				.addPreviousVersion(current.checksum, current.timestamp, current.filename);
-			for (final FileObject.Version version : file.getPrevious()) {
-				attr.clear();
-				setAttribute(attr, "timestamp", version.timestamp);
-				setAttribute(attr, "checksum", version.checksum);
-				if (version.filename != null) setAttribute(attr, "filename", version.filename);
-				writeSimpleTag("previous-version", null, attr);
-			}
-			handler.endElement("", "", "plugin");
+			writeSingle(local, attr, file);
 		}
 		handler.endElement("", "", "pluginRecords");
 		handler.endDocument();
 		out.flush();
 		out.close();
+	}
+
+	protected void writeSingle(final boolean local, final AttributesImpl attr,
+			final FileObject file) throws SAXException {
+		attr.clear();
+		assert (file.updateSite != null && !file.updateSite.equals(""));
+		if (local) setAttribute(attr, "update-site", file.updateSite);
+		setAttribute(attr, "filename", file.filename);
+		if (file.executable) setAttribute(attr, "executable", "true");
+		handler.startElement("", "", "plugin", attr);
+		writeSimpleTags("platform", file.getPlatforms());
+		writeSimpleTags("category", file.getCategories());
+
+		final FileObject.Version current = file.current;
+		if (file.getChecksum() != null) {
+			attr.clear();
+			setAttribute(attr, "checksum", file.getChecksum());
+			setAttribute(attr, "timestamp", file.getTimestamp());
+			setAttribute(attr, "filesize", file.filesize);
+			handler.startElement("", "", "version", attr);
+			if (file.description != null) writeSimpleTag("description",
+				file.description);
+
+			for (final Dependency dependency : file.getDependencies()) {
+				attr.clear();
+				setAttribute(attr, "filename", dependency.filename);
+				setAttribute(attr, "timestamp", dependency.timestamp);
+				if (dependency.overrides) setAttribute(attr, "overrides", "true");
+				writeSimpleTag("dependency", null, attr);
+			}
+
+			writeSimpleTags("link", file.getLinks());
+			writeSimpleTags("author", file.getAuthors());
+			handler.endElement("", "", "version");
+		}
+		if (current != null && !current.checksum.equals(file.getChecksum())) file
+			.addPreviousVersion(current.checksum, current.timestamp, current.filename);
+		for (final FileObject.Version version : file.getPrevious()) {
+			attr.clear();
+			setAttribute(attr, "timestamp", version.timestamp);
+			setAttribute(attr, "checksum", version.checksum);
+			if (version.filename != null) setAttribute(attr, "filename", version.filename);
+			writeSimpleTag("previous-version", null, attr);
+		}
+		handler.endElement("", "", "plugin");
 	}
 
 	protected void setAttribute(final AttributesImpl attributes,
