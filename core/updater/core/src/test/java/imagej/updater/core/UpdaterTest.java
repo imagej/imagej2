@@ -265,7 +265,8 @@ public class UpdaterTest {
 		assertFalse(file.exists());
 
 		// Pretend that db.xml.gz is out-of-date
-		FilesCollection files = readDb(true, true);
+		FilesCollection files = new FilesCollection(ijRoot);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
 		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).timestamp =
 			19991224134121l;
 		files.write();
