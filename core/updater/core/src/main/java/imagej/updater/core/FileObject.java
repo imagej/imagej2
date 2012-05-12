@@ -64,6 +64,8 @@ public class FileObject {
 		// Instead, it is Long.parseLong(Util.timestamp(epoch))
 		public long timestamp;
 
+		public String filename; // optional (can be different from FileObject.filename if the version was different
+
 		Version(final String checksum, final long timestamp) {
 			this.checksum = checksum;
 			this.timestamp = timestamp;
@@ -207,7 +209,7 @@ public class FileObject {
 
 	public void merge(final FileObject upstream) {
 		for (final Version previous : upstream.previous)
-			addPreviousVersion(previous.checksum, previous.timestamp);
+			addPreviousVersion(previous.checksum, previous.timestamp, previous.filename);
 		if (updateSite == null || updateSite.equals(upstream.updateSite)) {
 			updateSite = upstream.updateSite;
 			description = upstream.description;
@@ -219,7 +221,7 @@ public class FileObject {
 			filesize = upstream.filesize;
 			executable = upstream.executable;
 			if (current != null && !upstream.hasPreviousVersion(current.checksum)) addPreviousVersion(
-				current.checksum, current.timestamp);
+				current.checksum, current.timestamp, current.filename);
 			current = upstream.current;
 			status = upstream.status;
 			action = upstream.action;
@@ -227,7 +229,7 @@ public class FileObject {
 		else {
 			final Version other = upstream.current;
 			if (other != null && !hasPreviousVersion(other.checksum)) addPreviousVersion(
-				other.checksum, other.timestamp);
+				other.checksum, other.timestamp, other.filename);
 		}
 	}
 
@@ -261,6 +263,7 @@ public class FileObject {
 	void setVersion(final String checksum, final long timestamp) {
 		if (current != null) previous.add(current);
 		current = new Version(checksum, timestamp);
+		current.filename = filename;
 	}
 
 	public void setLocalVersion(final String filename, final String checksum, final long timestamp) {
@@ -387,8 +390,9 @@ public class FileObject {
 		return previous;
 	}
 
-	public void addPreviousVersion(final String checksum, final long timestamp) {
+	public void addPreviousVersion(final String checksum, final long timestamp, final String filename) {
 		final Version version = new Version(checksum, timestamp);
+		if (filename != null && !"".equals(filename)) version.filename = filename;
 		if (!previous.contains(version)) previous.add(version);
 	}
 
@@ -401,7 +405,10 @@ public class FileObject {
 			"Invalid action requested for file " + filename + "(" + action + ", " +
 				status + ")");
 		if (action == Action.UPLOAD) {
-			if (localFilename != null) filename = localFilename;
+			if (localFilename != null) {
+				current.filename = filename;
+				filename = localFilename;
+			}
 			files.updateDependencies(this);
 		}
 		this.action = action;
@@ -442,7 +449,7 @@ public class FileObject {
 	}
 
 	public void markRemoved() {
-		addPreviousVersion(current.checksum, current.timestamp);
+		addPreviousVersion(current.checksum, current.timestamp, current.filename);
 		setStatus(Status.OBSOLETE);
 		current = null;
 	}

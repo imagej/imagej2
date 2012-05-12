@@ -168,7 +168,7 @@ public class XMLFileReader extends DefaultHandler {
 			if ("true".equalsIgnoreCase(executable)) current.executable = true;
 		}
 		else if (currentTag.equals("previous-version")) current.addPreviousVersion(
-			atts.getValue("checksum"), getLong(atts, "timestamp"));
+			atts.getValue("checksum"), getLong(atts, "timestamp"), atts.getValue("filename"));
 		else if (currentTag.equals("version")) {
 			current.setVersion(atts.getValue("checksum"), getLong(atts, "timestamp"));
 			current.filesize = getLong(atts, "filesize");

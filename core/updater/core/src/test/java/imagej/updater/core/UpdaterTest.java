@@ -60,16 +60,21 @@ import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
 import imagej.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -548,6 +553,11 @@ public class UpdaterTest {
 		assertTrue(tooOld.localFilename.equals("jars/too-old-3.12.jar"));
 		tooOld.stageForUpload(files, tooOld.updateSite);
 		upload(files);
+
+		// check that webRoot's db.xml.gz's previous versions contain the old filename
+		final String db = readGzippedStream(new FileInputStream(new File(webRoot, "db.xml.gz")));
+		Pattern regex = Pattern.compile(".*<previous-version [^>]*filename=\"jars/too-old-3.11.jar\".*", Pattern.DOTALL);
+		assertTrue(regex.matcher(db).matches());
 
 		assertTrue(new File(webRoot, "jars/too-old-3.12.jar-" + tooOld.localTimestamp).exists());
 
@@ -1099,4 +1109,34 @@ public class UpdaterTest {
 		}
 	}
 
+	/**
+	 * Read a gzip'ed stream and return what we got as a String
+	 * 
+	 * @param in the input stream as compressed by gzip
+	 * @return the contents, as a String
+	 * @throws IOException
+	 */
+	protected String readGzippedStream(final InputStream in) throws IOException {
+		return readStream(new GZIPInputStream(in));
+	}
+
+	/**
+	 * Read a stream and return what we got as a String
+	 * 
+	 * @param in the input stream
+	 * @return the contents, as a String
+	 * @throws IOException
+	 */
+	protected String readStream(final InputStream in) throws IOException {
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		final byte[] buffer = new byte[16384];
+		for (;;) {
+			int count = in.read(buffer);
+			if (count < 0) break;
+			out.write(buffer, 0, count);
+		}
+		in.close();
+		out.close();
+		return out.toString();
+	}
 }

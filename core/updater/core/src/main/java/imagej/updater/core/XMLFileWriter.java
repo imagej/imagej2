@@ -94,6 +94,7 @@ public class XMLFileWriter {
 		+ "<!ATTLIST version timestamp CDATA #REQUIRED>\n"
 		+ "<!ATTLIST version checksum CDATA #REQUIRED>\n"
 		+ "<!ATTLIST version filesize CDATA #REQUIRED>\n"
+		+ "<!ATTLIST previous-version filename CDATA #IMPLIED>\n"
 		+ "<!ATTLIST previous-version timestamp CDATA #REQUIRED>\n"
 		+ "<!ATTLIST previous-version checksum CDATA #REQUIRED>]>\n";
 
@@ -185,11 +186,12 @@ public class XMLFileWriter {
 				handler.endElement("", "", "version");
 			}
 			if (current != null && !current.checksum.equals(file.getChecksum())) file
-				.addPreviousVersion(current.checksum, current.timestamp);
+				.addPreviousVersion(current.checksum, current.timestamp, current.filename);
 			for (final FileObject.Version version : file.getPrevious()) {
 				attr.clear();
 				setAttribute(attr, "timestamp", version.timestamp);
 				setAttribute(attr, "checksum", version.checksum);
+				if (version.filename != null) setAttribute(attr, "filename", version.filename);
 				writeSimpleTag("previous-version", null, attr);
 			}
 			handler.endElement("", "", "plugin");
