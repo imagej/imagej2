@@ -207,12 +207,28 @@ public class XMLFileReader extends DefaultHandler {
 				current.setAction(files, current.isUpdateablePlatform()
 					? FileObject.Action.INSTALL : FileObject.Action.NEW);
 			}
-			final FileObject file = files.get(current.filename);
+			FileObject file = files.get(current.filename);
 			if (updateSite == null && current.updateSite != null &&
 				files.getUpdateSite(current.updateSite) == null) ; // ignore file with invalid update site
 			else if (file == null) files.add(current);
 			else {
-				if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
+				// Be nice to old-style update sites where Jama-1.0.2.jar and Jama.jar were different file objects
+				if ((updateSite != null && updateSite.equals(file.updateSite)) || (updateSite == null && file.updateSite == null)) {
+					if (file.isObsolete()) {
+						files.remove(file.filename);
+						final FileObject swap = file;
+						file = current;
+						current = swap;
+						files.add(file);
+					}
+					if (current.current != null) {
+						current.addPreviousVersion(current.current.checksum, current.current.timestamp, current.filename);
+					}
+					for (final FileObject.Version version : current.previous) {
+						if (version.filename == null) version.filename = current.filename;
+						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
+					}
+				} else if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
 					current.overriddenUpdateSites.addAll(file.overriddenUpdateSites);
 					if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
 						current.overriddenUpdateSites.add(file.updateSite);

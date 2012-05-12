@@ -570,6 +570,37 @@ public class UpdaterTest {
 	}
 
 	@Test
+	public void testMultipleVersionsSameSite() throws Exception {
+		final String db = "<pluginRecords>"
+				+ " <plugin filename=\"jars/Jama-1.0.2.jar\">"
+				+ "  <previous-version timestamp=\"1\" checksum=\"a\" />"
+				+ "  <previous-version timestamp=\"2\" checksum=\"b\" />"
+				+ " </plugin>"
+				+ " <plugin filename=\"jars/Jama.jar\">"
+				+ "  <version checksum=\"d\" timestamp=\"4\" filesize=\"10\" />"
+				+ "  <previous-version timestamp=\"3\" checksum=\"c\" />"
+				+ " </plugin>"
+				+ "</pluginRecords>";
+		writeGZippedFile(webRoot, "db.xml.gz", db);
+		final FilesCollection files = new FilesCollection(ijRoot);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
+		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
+		final FileObject jama = files.get("jars/Jama.jar");
+		assertNotNull(jama);
+		assertCount(3, jama.previous);
+		final FileObject.Version previous[] = new FileObject.Version[3];
+		for (final FileObject.Version version : jama.previous) {
+			previous[(int)(version.timestamp - 1)] = version;
+		}
+		assertTrue("a".equals(previous[0].checksum));
+		assertEquals(previous[0].filename, "jars/Jama-1.0.2.jar");
+		assertTrue("b".equals(previous[1].checksum));
+		assertEquals(previous[1].filename, "jars/Jama-1.0.2.jar");
+		assertTrue("c".equals(previous[2].checksum));
+		assertSame(previous[2].filename, null);
+	}
+
+	@Test
 	public void testConflictingVersionsToUpload() throws Exception {
 		initializeUpdateSite("macros/macro.ijm");
 
