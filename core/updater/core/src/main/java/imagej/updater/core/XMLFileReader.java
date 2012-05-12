@@ -104,7 +104,7 @@ public class XMLFileReader extends DefaultHandler {
 	public void read(final InputStream in) throws ParserConfigurationException,
 		IOException, SAXException
 	{
-		read(null, new GZIPInputStream(in), 0);
+		read(null, new GZIPInputStream(in), Long.MAX_VALUE);
 	}
 
 	// timestamp is the timestamp (not the Unix epoch) we last saw updates from
