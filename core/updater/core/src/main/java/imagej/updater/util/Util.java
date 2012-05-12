@@ -57,7 +57,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -371,4 +373,27 @@ public class Util {
 		writeFile(infoPList, contents);
 		return true;
 	}
+
+	public static<T> Iterable<T> iterate(final Enumeration<T> en) {
+        final Iterator<T> iterator = new Iterator<T>() {
+            public boolean hasNext() {
+                    return en.hasMoreElements();
+            }
+
+            public T next() {
+                    return en.nextElement();
+            }
+
+            public void remove() {
+                    throw new UnsupportedOperationException();
+            }
+        };
+
+	    return new Iterable<T>() {
+            public Iterator<T> iterator() {
+                    return iterator;
+            }
+	    };
+	}
+
 }
