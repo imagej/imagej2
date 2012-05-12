@@ -267,7 +267,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
 	String prettyPrintTimestamp(final long timestamp) {
-		final String t = "" + timestamp;
+		final String t = "" + timestamp + "00000000";
 		return t.substring(6, 8) + " " +
 			months[Integer.parseInt(t.substring(4, 6))] + " " + t.substring(0, 4);
 	}
