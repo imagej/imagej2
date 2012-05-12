@@ -70,6 +70,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -708,6 +709,31 @@ public class UpdaterTest {
 		assertTrue(new File(ijRoot, "update/" + name2).renameTo(new File(ijRoot, name2)));
 		new Checksummer(files, progress).updateFromLocal();
 		assertEquals(modifiedChecksum, files.get(name2).current.checksum);
+	}
+
+	@Test
+	public void testFillMetadataFromPOM() throws Exception {
+		writeJar("jars/hello.jar", "META-INF/maven/egads/hello/pom.xml", "<project>"
+				+ " <description>Take over the world!</description>"
+				+ " <developers>"
+				+ "  <developer><name>Jenna Jenkins</name></developer>"
+				+ "  <developer><name>Bugs Bunny</name></developer>"
+				+ " </developers>"
+				+ "</project>");
+		final FilesCollection files = new FilesCollection(ijRoot);
+		new Checksummer(files, progress).updateFromLocal();
+		final FileObject object = files.get("jars/hello.jar");
+		assertNotNull(object);
+		assertEquals(object.description, "Take over the world!");
+		assertCount(2, object.authors.keySet());
+		final String[] authors = new String[2];
+		int counter = 0;
+		for (final String author : object.authors.keySet()) {
+			authors[counter++] = author;
+		}
+		Arrays.sort(authors);
+		assertEquals(authors[0], "Bugs Bunny");
+		assertEquals(authors[1], "Jenna Jenkins");
 	}
 
 	//

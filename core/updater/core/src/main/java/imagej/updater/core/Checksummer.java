@@ -166,6 +166,11 @@ public class Checksummer extends Progressable {
 				if ((!isWindows && file.canExecute()) || path.endsWith(".exe")) object.executable =
 					true;
 				tryToGuessPlatform(object);
+				if (path.endsWith((".jar"))) try {
+					POMParser.fillMetadataFromJar(object, file);
+				} catch (Exception e) {
+					Log.error("Could not read pom.xml from " + path);
+				}
 				files.add(object);
 			}
 			else if (checksum != null) {
