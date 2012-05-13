@@ -44,7 +44,7 @@ while (<$in>) {
 		while (<$in>) {
 			if (/^data (.*)/) {
 				my $count = $1;
-				$msg = $_;
+				$msg = '';
 				while (<$in>) {
 					$msg .= $_;
 					$count -= length($_);
@@ -56,14 +56,16 @@ while (<$in>) {
 		}
 
 		my $author = '';
-		if ($msg =~ /^data \d+\n(.*\n)Authored-by: ([^\n]*)\s*(.*)/s) {
+		if ($msg =~ /^(.*\n)Authored-by: ([^\n]*)\s*(.*)/s) {
 			$msg = $1 . $3;
-			$msg = 'data ' . length($msg) . "\n" . $msg;
 			$author = $2;
 			$author = $authors{'leek'}
 				if ($author eq 'Lee Kamentsky');
 		}
 		$headers = rewrite_author($author, $headers);
+
+		$msg =~ s/^git-svn-id: .*trunk@(\d+) .*$/This used to be revision r\1./m;
+		$msg = 'data ' . length($msg) . "\n" . $msg;
 		print $out $headers;
 		print $out $msg;
 
