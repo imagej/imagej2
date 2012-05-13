@@ -5,7 +5,12 @@ our %authors = {};
 open ($in, '<authors.txt');
 while (<$in>) {
 	if (/^(.*?)\s*=\s*(.*)$/) {
-		$authors{$1} = $2;
+		my $nick = $1;
+		my $ident = $2;
+		if ($ident =~ /^(.* )(<.*>)$/) {
+			$ident = $1 . lc($2);
+		}
+		$authors{$nick} = $ident;
 	}
 }
 close($in);
