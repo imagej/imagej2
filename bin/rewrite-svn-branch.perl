@@ -16,16 +16,16 @@ sub rewrite_author($$) {
 	my $author = $_[0];
 	my $headers = $_[1];
 
-	if ($author eq '' && $headers =~ /^author (\S+)/m) {
-		$author = $authors{$1};
+	my $committer;
+	if ($headers =~ /^committer (\S+)/m) {
+		$committer = $authors{$1};
+		die('Could not determine committer from headers ' . $headers)
+			if ($committer eq '');
 	}
-
-	if ($author eq '') {
-		die('Could not determine author from headers ' . $headers);
-	}
+	$author = $committer if ($author eq '');
 
 	$headers =~ s/^(author )\S+ <\S+>( .*)$/\1$author\2/m;
-	$headers =~ s/^(committer )\S+ <\S+>( .*)$/\1$author\2/m;
+	$headers =~ s/^(committer )\S+ <\S+>( .*)$/\1$committer\2/m;
 	return $headers;
 }
 
@@ -55,7 +55,15 @@ while (<$in>) {
 			$headers .= $_;
 		}
 
-		$headers = rewrite_author('', $headers);
+		my $author = '';
+		if ($msg =~ /^data \d+\n(.*\n)Authored-by: ([^\n]*)\s*(.*)/s) {
+			$msg = $1 . $3;
+			$msg = 'data ' . length($msg) . "\n" . $msg;
+			$author = $2;
+			$author = $authors{'leek'}
+				if ($author eq 'Lee Kamentsky');
+		}
+		$headers = rewrite_author($author, $headers);
 		print $out $headers;
 		print $out $msg;
 
