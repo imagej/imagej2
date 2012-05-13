@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+use DateTime;
+
 # read authors.txt
 our %authors = {};
 open ($in, '<authors.txt');
@@ -15,7 +17,30 @@ while (<$in>) {
 }
 close($in);
 
-# TODO: adjust timezones? if so, how to determine DST?
+our %timezones = (
+	'Aivar Grislis' => 'America/Chicago',
+	'Barry DeZonia' => 'America/Chicago',
+	'Curtis Rueden' => 'America/Chicago',
+	'Johannes Schindelin' => 'America/Chicago',
+	'Mark Hiner' => 'America/Chicago',
+	'Melissa Linkert' => 'America/Chicago',
+	'Rick Lentz' => 'America/Chicago',
+	'Adam Fraser' => 'America/Detroit',
+	'Grant Harris' => 'America/Detroit',
+	'Lee Kamentsky' => 'America/Detroit'
+);
+
+sub get_timezone($$) {
+	my $epoch = $_[0];
+	my $person = $_[1];
+	my $timezone = $timezones{$person};
+
+	die('Could not determine time zone for ' . $person) if ($timezone eq '');
+
+	my $datetime = DateTime->from_epoch('epoch' => $epoch);
+	$datetime->set_time_zone($timezone);
+	return $datetime->strftime('%z');
+}
 
 sub rewrite_author($$) {
 	my $author = $_[0];
@@ -31,6 +56,10 @@ sub rewrite_author($$) {
 
 	$headers =~ s/^(author )\S+ <\S+>( .*)$/\1$author\2/m;
 	$headers =~ s/^(committer )\S+ <\S+>( .*)$/\1$committer\2/m;
+
+	# adjust timezone
+	$headers =~ s/^((author|committer)\s+([^<]+?)\s+<.*>\s+(\d+)\s+)[-+]\d{4}$/$1 . get_timezone($4, $3)/meg;
+
 	return $headers;
 }
 
