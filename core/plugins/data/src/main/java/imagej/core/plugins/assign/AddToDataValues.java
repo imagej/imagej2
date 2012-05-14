@@ -39,7 +39,6 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
 import net.imglib2.ops.operation.unary.real.RealAddConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -80,6 +79,7 @@ public class AddToDataValues<T extends RealType<T>>
 
 	// -- private helpers --
 	
+	@Override
 	public RealAddConstant<DoubleType,DoubleType> getOperation() {
 		return new RealAddConstant<DoubleType,DoubleType>(value);
 	}

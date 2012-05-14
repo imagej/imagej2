@@ -230,6 +230,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 			condition = new UVInsideRoiCondition(overlay.getRegionOfInterest());
 	}
 
+	@SuppressWarnings("synthetic-access")
 	private LongRect findXYRegion(Dataset ds, Overlay overlay, int xIndex, int yIndex) {
 
 		// calc XY outline boundary
@@ -244,8 +245,8 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		else {
 			rect.x = (long) overlay.realMin(0);
 			rect.y = (long) overlay.realMin(1);
-			rect.w = (long) Math.round(overlay.realMax(0) - rect.x);
-			rect.h = (long) Math.round(overlay.realMax(1) - rect.y);
+			rect.w = Math.round(overlay.realMax(0) - rect.x);
+			rect.h = Math.round(overlay.realMax(1) - rect.y);
 		}
 		return rect;
 	}

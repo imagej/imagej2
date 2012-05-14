@@ -251,6 +251,7 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 			"Image Calculator");
 	}
 
+	@SuppressWarnings("unchecked")
 	private void assignPixelValues(final long[] span) {
 		final long[] origin = new long[span.length];
 		final BinaryOperation<DoubleType, DoubleType, DoubleType> binOp =

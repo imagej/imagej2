@@ -89,18 +89,23 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Parameter(persist = false)
 	private ImageDisplay display;
 
+	@SuppressWarnings("unused")
 	@Parameter(label = "Format examples", visibility=ItemVisibility.MESSAGE)
 	private String title = "";
 
+	@SuppressWarnings("unused")
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
 	private String ex1 = "img + 40";
 	
+	@SuppressWarnings("unused")
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
 	private String ex2 = "[x,y], x^2 + y^2";
 	
+	@SuppressWarnings("unused")
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
 	private String ex3 = "[u1,v1,w1] , -2.003*u1 + 8.41*w1 + E + PI";
 	
+	@SuppressWarnings("unused")
 	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
 	private String ex4 = "[x,y,c,z,t], cos(t*PI/7) + sin(z*PI/12)";
 	
@@ -129,6 +134,7 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 		}
 		InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
 		Function<long[],DoubleType> function = result.get1();
+		@SuppressWarnings("unchecked")
 		ImageAssignment<T,DoubleType,long[]> assigner =
 				new ImageAssignment<T, DoubleType, long[]>(
 						(Img<T>)dataset.getImgPlus(), origin, span,
@@ -187,8 +193,8 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 		else {
 			x = (long)overlay.realMin(0);
 			y = (long)overlay.realMin(1);
-			w = (long) Math.round(overlay.realMax(0) - x);
-			h = (long) Math.round(overlay.realMax(1) - y);
+			w = Math.round(overlay.realMax(0) - x);
+			h = Math.round(overlay.realMax(1) - y);
 		}
 
 		// calc origin and span values
