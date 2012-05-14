@@ -342,6 +342,7 @@ public final class DefaultOverlayService extends AbstractService implements
 			minL[i] = (long) Math.floor(minD[i]);
 			maxL[i] = (long) Math.ceil(maxD[i]);
 		}
+		// TODO - rather than a pointSet use an IterableInterval? Investigate.
 		final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
 		final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
 		final PointSetIterator iter = pointSet.createIterator();
