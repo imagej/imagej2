@@ -113,6 +113,11 @@ public interface OverlayService extends IService {
 	ImageDisplay getFirstDisplay(Overlay o);
 
 	/**
+	 * Returns all the displays associated with an overlay
+	 */
+	List<ImageDisplay> getDisplays(Overlay o);
+	
+	/**
 	 * Returns the active overlay associated with a display
 	 */
 	Overlay getActiveOverlay(ImageDisplay disp);

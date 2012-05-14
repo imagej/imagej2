@@ -265,6 +265,24 @@ public final class DefaultOverlayService extends AbstractService implements
 		}
 		return null;
 	}
+
+	@Override
+	public List<ImageDisplay> getDisplays(Overlay o) {
+		final ArrayList<ImageDisplay> containers = new ArrayList<ImageDisplay>();
+		final List<Display<?>> displays = displayService.getDisplays();
+		for (Display<?> display : displays) {
+			if ( ! (display instanceof ImageDisplay) ) continue;
+			final ImageDisplay imageDisplay = (ImageDisplay) display;
+			for (final DataView view : imageDisplay) {
+				final Data data = view.getData();
+				if ( ! (data instanceof Overlay) ) continue;
+				final Overlay overlay = (Overlay) data;
+				if (overlay == o)
+					containers.add(imageDisplay);
+			}
+		}
+		return containers;
+	}
 	
 	// TODO - assumes first selected overlay view is the only one. bad?
 	@Override
