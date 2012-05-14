@@ -16,6 +16,7 @@
 	<description>The artist formerly known as the Fiji launcher. This is the executable which runs ImageJ2. Its purpose is also to make sure that updates downloaded by the ImageJ Updater will be put into place before starting the Java Virtual Machine.</description>
 
 	<properties>
+		<project.rootdir>${basedir}/../..</project.rootdir>
 		<skipTests>true</skipTests>
 		<java.os.include/>
 		<stack.protector.option/>

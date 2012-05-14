@@ -16,6 +16,10 @@
 	<name>ImageJ Sandbox</name>
 	<description>Experimental classes not currently in use.</description>
 
+	<properties>
+		<project.rootdir>${basedir}/..</project.rootdir>
+	</properties>
+
 	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>

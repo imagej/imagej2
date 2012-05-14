@@ -23,6 +23,7 @@
 	</modules>
 
 	<properties>
+		<project.rootdir>${basedir}/../..</project.rootdir>
 		<pivot.version>2.0</pivot.version>
 	</properties>
 

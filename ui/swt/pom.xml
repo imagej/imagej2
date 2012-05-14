@@ -23,6 +23,7 @@
 	</modules>
 
 	<properties>
+		<project.rootdir>${basedir}/../..</project.rootdir>
 		<swt.version>3.0m7</swt.version>
 	</properties>
 

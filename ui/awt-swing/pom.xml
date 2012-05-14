@@ -17,6 +17,10 @@
 	<name>ImageJ POM: AWT and Swing UIs</name>
 	<description>ImageJ user interface projects for Swing and AWT.</description>
 
+	<properties>
+		<project.rootdir>${basedir}/../..</project.rootdir>
+	</properties>
+
 	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>

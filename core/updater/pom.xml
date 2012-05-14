@@ -22,6 +22,10 @@
 		<module>ssh</module>
 	</modules>
 
+	<properties>
+		<project.rootdir>${basedir}/../..</project.rootdir>
+	</properties>
+
 	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>
