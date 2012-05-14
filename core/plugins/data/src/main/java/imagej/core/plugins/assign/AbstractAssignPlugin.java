@@ -181,8 +181,8 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 		// copy data to a double[]
 		final long[] origin = planeOrigin.clone();
 		final long[] offsets = planeSpan.clone();
-		if (dataset.isRGBMerged()) {
-			int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		if (ds.isRGBMerged()) {
+			int chIndex = ds.getAxisIndex(Axes.CHANNEL);
 			origin[chIndex] = 0;
 			offsets[chIndex] = 3;
 		}
