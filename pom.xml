@@ -33,6 +33,14 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+				<artifactId>maven-java-formatter-plugin</artifactId>
+				<version>0.3.1</version>
+				<configuration>
+					<configFile>${project.rootdir}/config/eclipse-code-formatter-profile.xml</configFile>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
