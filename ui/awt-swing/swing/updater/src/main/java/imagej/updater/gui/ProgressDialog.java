@@ -38,11 +38,14 @@ package imagej.updater.gui;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
 
+import java.awt.Adjustable;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -114,6 +117,17 @@ public class ProgressDialog extends JDialog implements Progress {
 			new JScrollPane(details,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		detailsScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				final int value = e.getValue();
+				final Adjustable adjustable = e.getAdjustable();
+				final int maximum = adjustable.getMaximum();
+				if (value != maximum)
+					adjustable.setValue(maximum);
+			}
+		});
 		detailsScrollPane.setVisible(false);
 		root.add(detailsScrollPane);
 
@@ -235,8 +249,6 @@ public class ProgressDialog extends JDialog implements Progress {
 
 		public void addDetail(final Detail detail) {
 			add(detail);
-			final JScrollBar vertical = detailsScrollPane.getVerticalScrollBar();
-			vertical.setValue(vertical.getMaximum());
 			latestDetail = detail;
 		}
 	}
