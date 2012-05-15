@@ -40,6 +40,7 @@ import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -86,7 +87,7 @@ public class SaveAsImage implements ImageJPlugin {
 	@Parameter
 	private Dataset dataset;
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private Display<?> display;
 
 	public void initOutputFile() {

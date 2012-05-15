@@ -39,6 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -71,7 +72,7 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 	@Parameter(persist = false)
 	private UIService uiService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private ImageDisplay display;
 
 	// -- public interface --

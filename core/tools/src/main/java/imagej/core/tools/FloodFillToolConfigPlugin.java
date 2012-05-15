@@ -35,6 +35,7 @@
 
 package imagej.core.tools;
 
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -54,7 +55,7 @@ public class FloodFillToolConfigPlugin implements ImageJPlugin {
 
 	// -- Parameters --
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private FloodFillTool tool;
 
 	// TODO - it would be nice to persist this. but the associated tool cannot
@@ -71,8 +72,8 @@ public class FloodFillToolConfigPlugin implements ImageJPlugin {
 	/** Configures the connectivity of the FloodFillTool */
 	@Override
 	public void run() {
-		if (connectivity.equals(FOUR)) tool
-			.setConnectivity(FloodFillTool.Connectivity.FOUR);
+		if (connectivity.equals(FOUR))
+			tool.setConnectivity(FloodFillTool.Connectivity.FOUR);
 		else tool.setConnectivity(FloodFillTool.Connectivity.EIGHT);
 	}
 

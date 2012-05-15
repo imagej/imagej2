@@ -35,8 +35,8 @@
 
 package imagej.ui.swing.mdi;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.Arrangeable.Arrangement;
 import imagej.ui.Desktop;
@@ -51,9 +51,12 @@ import imagej.ui.UserInterface;
 @Plugin(menuPath = "Window>Tile Vertical")
 public class WindowsTileVertical implements ImageJPlugin {
 
+	@Parameter(persist = false)
+	private UIService uiService;
+	
 	@Override
 	public void run() {
-		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		final UserInterface ui = uiService.getUI();
 		final Desktop desk = ui.getDesktop();
 		desk.setArrangement(Arrangement.VERTICAL);
 	}

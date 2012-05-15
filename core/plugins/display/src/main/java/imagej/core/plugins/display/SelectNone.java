@@ -38,6 +38,7 @@ package imagej.core.plugins.display;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -56,7 +57,7 @@ import imagej.ext.plugin.Plugin;
 		weight = 4) }, headless = true)
 public class SelectNone implements ImageJPlugin {
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override

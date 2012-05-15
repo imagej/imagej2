@@ -42,6 +42,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
@@ -70,7 +71,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 	@Parameter(persist = false)
 	protected OverlayService overlayService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	protected ImageDisplay display;
 
 	@Parameter(label = "Preview")

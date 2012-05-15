@@ -37,6 +37,7 @@ package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -64,7 +65,7 @@ public class AxisPositionForward implements ImageJPlugin {
 	@Parameter(persist = false)
 	private AnimationService animationService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private ImageDisplay display;
 
 	@Override

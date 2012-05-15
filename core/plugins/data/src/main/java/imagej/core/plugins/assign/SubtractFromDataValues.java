@@ -61,7 +61,7 @@ public class SubtractFromDataValues<T extends RealType<T>>
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
+	@Parameter(label = "Value")
 	private double value;
 
 	// -- public interface --

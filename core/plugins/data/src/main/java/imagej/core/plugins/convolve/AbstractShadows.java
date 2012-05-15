@@ -39,6 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.util.RealRect;
@@ -56,7 +57,7 @@ public abstract class AbstractShadows implements ImageJPlugin {
 	@Parameter(persist = false)
 	private OverlayService overlayService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private ImageDisplay display;
 
 	private final double[] kernel;

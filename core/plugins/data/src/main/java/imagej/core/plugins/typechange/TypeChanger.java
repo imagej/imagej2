@@ -37,6 +37,7 @@ package imagej.core.plugins.typechange;
 
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuService;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import net.imglib2.Cursor;
@@ -61,7 +62,7 @@ public abstract class TypeChanger implements ImageJPlugin {
 	@Parameter(persist = false)
 	protected MenuService menuService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	protected Dataset input;
 
 	protected <T extends RealType<T> & NativeType<T>> void changeType(

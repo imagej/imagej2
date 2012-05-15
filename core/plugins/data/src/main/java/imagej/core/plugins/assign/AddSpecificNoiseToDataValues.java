@@ -43,6 +43,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -73,7 +74,7 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 	@Parameter(persist = false)
 	private OverlayService overlayService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private ImageDisplay display;
 
 	@Parameter(label = "Standard deviation")

@@ -37,6 +37,7 @@ package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -62,7 +63,7 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 
 	// -- instance variables --
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private Dataset input;
 
 	@Parameter(
@@ -112,8 +113,8 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 
 			final double inputValue = cursor.get().getRealDouble();
 
-			if ((inputValue < loThreshold) || (inputValue > hiThreshold)) cursor
-				.get().setReal(Double.NaN);
+			if ((inputValue < loThreshold) || (inputValue > hiThreshold))
+				cursor.get().setReal(Double.NaN);
 		}
 	}
 

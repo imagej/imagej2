@@ -40,6 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -70,7 +71,7 @@ public class ZoomUserDefined extends DynamicPlugin {
 	@Parameter(persist = false)
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private ImageDisplay display;
 
 	@Parameter(label = "Zoom (%) :", persist = false, initializer = "initAll")

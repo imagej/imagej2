@@ -37,6 +37,7 @@ package imagej.core.plugins.zoom;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -55,7 +56,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "In", weight = 1, accelerator = "PLUS") }, headless = true)
 public class ZoomIn implements ImageJPlugin {
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private ImageDisplay display;
 
 	@Override

@@ -38,6 +38,7 @@ package imagej.core.plugins.display;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -78,7 +79,7 @@ public class AutoContrast implements ImageJPlugin {
 	private static final int AUTO_THRESHOLD = 5000;
 	private static int autoThreshold;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private DatasetView view;
 
 	@Override

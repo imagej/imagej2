@@ -96,7 +96,7 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 	@Parameter(persist = false)
 	private UIService uiService;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private Dataset input1;
 
 	@Parameter(persist = false)

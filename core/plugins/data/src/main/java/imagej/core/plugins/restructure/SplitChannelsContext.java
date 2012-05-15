@@ -67,6 +67,8 @@ public class SplitChannelsContext implements ImageJPlugin {
 		final HashMap<String, Object> inputValues = new HashMap<String, Object>();
 		inputValues.put("className", "ij.plugin.ChannelSplitter");
 		pluginService.run("imagej.legacy.plugin.LegacyPlugin", inputValues);
+		
+		// TODO - replace with LegacyService::reunLegacyPlugin() ?
 	}
 
 }

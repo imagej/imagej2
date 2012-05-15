@@ -63,7 +63,7 @@ public class GammaDataValues<T extends RealType<T>>
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(min = "0.05", max = "5.00", stepSize = "0.05")
+	@Parameter(label = "Value", min = "0.05", max = "5.00", stepSize = "0.05")
 	private double value;
 
 	// -- public interface --

@@ -36,6 +36,7 @@
 package imagej.io.plugins;
 
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -55,7 +56,7 @@ import imagej.io.RecentFileService;
 		mnemonic = 'c') })
 public class ClearRecent implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private RecentFileService recentFileService;
 
 	// -- RunnablePlugin methods --

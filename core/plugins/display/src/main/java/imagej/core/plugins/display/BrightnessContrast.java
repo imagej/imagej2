@@ -38,6 +38,7 @@ package imagej.core.plugins.display;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -82,7 +83,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 	 */
 	private static final int MAX_POWER = 4;
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")

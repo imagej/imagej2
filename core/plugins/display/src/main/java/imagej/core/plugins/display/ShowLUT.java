@@ -64,9 +64,10 @@ import imagej.util.Colors;
 // the LUT in tabular form when clicked
 
 /**
- * This code adapted from Wayne Rasband's IJ1 LutViewer class.
+ * This class adapted from IJ1's LutViewer class.
  * 
  * @author Barry DeZonia
+ * @author Wayne Rasband
  */
 @Plugin(menu = {
 		@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,

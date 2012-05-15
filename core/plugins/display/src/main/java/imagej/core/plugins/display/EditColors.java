@@ -38,6 +38,7 @@ package imagej.core.plugins.display;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -60,7 +61,7 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	public static final String COLOR = "Color";
 	public static final String COMPOSITE = "Composite";
 
-	@Parameter(persist = false)
+	@Parameter(type = ItemIO.BOTH, persist = false)
 	private DatasetView view;
 
 	// TODO: Add support for enums to plugin framework?
