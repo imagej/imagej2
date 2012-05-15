@@ -78,13 +78,13 @@ public class ShowLUT implements ImageJPlugin {
 
 	// -- Parameters --
 	
-	@Parameter(required = true, persist = false)
+	@Parameter
 	ImageDisplayService imgDispService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter
 	DatasetService datasetService;
 
-	@Parameter(required = true, persist = false)
+	@Parameter
 	ImageDisplay display;
 	
 	@Parameter(type = ItemIO.OUTPUT)

@@ -54,10 +54,7 @@ public class SelectedManagerOverlayProperties extends OverlayProperties {
 
 	// -- Parameters --
 	
-	// NB - If we require the overlays then users cannot run this plugin without
-	// appropriately initializing the field.
-	
-	@Parameter(required = true, persist = false)
+	@Parameter(persist = false)
 	private List<Overlay> overlays = null;
 
 	// -- initializers --

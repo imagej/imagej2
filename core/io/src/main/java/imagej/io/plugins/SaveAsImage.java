@@ -71,13 +71,13 @@ import net.imglib2.io.ImgSaver;
 	@Menu(label = "Save As...", weight = 21) })
 public class SaveAsImage implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private EventService eventService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private StatusService statusService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
 	@Parameter(label = "File to save", style = WidgetStyle.FILE_SAVE,

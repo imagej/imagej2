@@ -57,10 +57,10 @@ import net.imglib2.meta.AxisType;
 	@Menu(label = "Set Axis Position...") }, headless = true)
 public class SetAxisPosition extends DynamicPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private AnimationService animationService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Parameter(persist = false, initializer = "initPosition")

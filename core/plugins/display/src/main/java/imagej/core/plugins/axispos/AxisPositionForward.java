@@ -62,10 +62,10 @@ import net.imglib2.meta.AxisType;
 	headless = true)
 public class AxisPositionForward implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private AnimationService animationService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override

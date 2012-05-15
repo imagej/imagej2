@@ -83,7 +83,7 @@ import java.net.UnknownHostException;
 	@Menu(label = "Update...") })
 public class ImageJUpdater implements UpdaterUIPlugin {
 
-	@Parameter(required = false, persist = false)
+	@Parameter
 	private StatusService statusService;
 
 	@Override

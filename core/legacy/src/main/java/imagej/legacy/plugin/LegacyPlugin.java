@@ -83,19 +83,19 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Parameter(type = ItemIO.OUTPUT)
 	private List<ImageDisplay> outputs;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageJ context;
 
-	@Parameter(persist = false)
+	@Parameter
 	private StatusService statusService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private LegacyService legacyService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
 	// -- LegacyPlugin methods --

@@ -104,13 +104,13 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 
 	// -- parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private DatasetService dataSrv;
 
-	@Parameter(persist = false)
+	@Parameter
 	private DisplayService dispSrv;
 
-	@Parameter(persist = false)
+	@Parameter
 	private IOService ioService;
 
 	@Parameter(type = ItemIO.OUTPUT)

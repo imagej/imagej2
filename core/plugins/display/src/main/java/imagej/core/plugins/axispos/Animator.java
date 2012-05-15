@@ -61,10 +61,10 @@ public class Animator implements ImageJPlugin {
 
 	// -- Plugin parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private AnimationService animationService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplay imageDisplay;
 
 	// -- Runnable methods --

@@ -83,10 +83,10 @@ public class WatchEvents implements ImageJPlugin {
 
 	// -- Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private EventService eventService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)

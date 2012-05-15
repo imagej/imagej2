@@ -68,13 +68,13 @@ public class AddDefaultNoiseToDataValues<T extends RealType<T>> implements
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService displayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Parameter(label = "Apply to all planes")

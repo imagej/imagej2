@@ -96,7 +96,7 @@ public class ImageToBinaryMask implements ImageJPlugin {
 		max = "255")
 	private int alpha = 128;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageJ context;
 
 	@Override

@@ -60,10 +60,10 @@ import javax.swing.SwingUtilities;
 @Plugin(menuPath = "Plugins>Debug>Watch Displays")
 public class WatchDisplays implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private EventService eventService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private DisplayService displayService;
 
 	protected static SwingOutputWindow window;

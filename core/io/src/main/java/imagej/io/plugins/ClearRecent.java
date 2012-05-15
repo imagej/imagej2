@@ -56,7 +56,7 @@ import imagej.io.RecentFileService;
 		mnemonic = 'c') })
 public class ClearRecent implements ImageJPlugin {
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private RecentFileService recentFileService;
 
 	// -- RunnablePlugin methods --

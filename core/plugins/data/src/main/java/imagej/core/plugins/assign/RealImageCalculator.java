@@ -90,16 +90,16 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private DatasetService datasetService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private Dataset input1;
 
-	@Parameter(persist = false)
+	@Parameter
 	private Dataset input2;
 
 	@Parameter(type = ItemIO.OUTPUT)

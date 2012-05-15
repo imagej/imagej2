@@ -51,7 +51,7 @@ import imagej.ui.swing.SwingOverlayManager;
 	@Menu(label = "Overlay Manager") })
 public class SwingOverlayManagerPlugin implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageJ context;
 
 	@Override

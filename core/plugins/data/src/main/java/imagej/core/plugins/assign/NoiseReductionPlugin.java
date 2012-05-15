@@ -99,13 +99,13 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 
 	// -- Parameters --
 	
-	@Parameter(persist = false)
+	@Parameter
 	ImageJ context;
 	
-	@Parameter(persist = false)
+	@Parameter
 	StatusService statusService;
 	
-	@Parameter(required = true, persist = false)
+	@Parameter
 	Dataset dataset;
 	
 	@Parameter(label = "Method: ", choices = { MEDIAN, MEAN, MIN, MAX, MIDPOINT,

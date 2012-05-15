@@ -66,13 +66,13 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	// -- public interface --

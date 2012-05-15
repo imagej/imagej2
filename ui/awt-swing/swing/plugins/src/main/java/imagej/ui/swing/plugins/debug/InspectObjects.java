@@ -50,7 +50,7 @@ import imagej.object.ObjectService;
 @Plugin(menuPath = "Plugins>Debug>Inspect Objects")
 public class InspectObjects implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private ObjectService objectService;
 
 	@Override

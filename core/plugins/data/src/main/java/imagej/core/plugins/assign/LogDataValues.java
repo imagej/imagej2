@@ -66,10 +66,10 @@ public class LogDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imgDispService;
 
 	@Parameter(type = ItemIO.BOTH, persist=false)

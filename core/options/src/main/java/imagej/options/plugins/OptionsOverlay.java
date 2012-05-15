@@ -74,7 +74,7 @@ public class OptionsOverlay extends OptionsPlugin {
 
 	// -- private statics --
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
 	@Parameter(label = "Line color")

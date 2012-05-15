@@ -78,16 +78,16 @@ public class EquationDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	OverlayService overlayService;
 	
-	@Parameter(persist = false)
+	@Parameter
 	ImageDisplayService imgDispService;
 	
-	@Parameter(persist = false)
+	@Parameter
 	UIService uiService;
 	
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@SuppressWarnings("unused")

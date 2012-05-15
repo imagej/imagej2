@@ -60,10 +60,10 @@ public class QuitProgram implements ImageJPlugin {
 
 	public static final String MESSAGE = "Quit ImageJ?";
 
-	@Parameter(persist = false)
+	@Parameter
 	private WindowMenuService windowMenuService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
 	@Override

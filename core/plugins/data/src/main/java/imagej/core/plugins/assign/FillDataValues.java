@@ -63,16 +63,16 @@ public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private OptionsService optionsService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	// -- public interface --

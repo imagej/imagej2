@@ -80,16 +80,16 @@ public class ShadowsDemo implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private EventService eventService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private StatusService statusService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imgDispService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
 	@Parameter

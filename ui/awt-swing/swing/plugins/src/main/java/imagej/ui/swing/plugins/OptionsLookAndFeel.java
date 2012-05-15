@@ -72,7 +72,7 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 
 	// -- Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
 	@Parameter(label = "Look & Feel", persist = false,

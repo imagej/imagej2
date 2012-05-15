@@ -51,13 +51,13 @@ import imagej.util.RealRect;
  */
 public abstract class AbstractShadows implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	private final double[] kernel;

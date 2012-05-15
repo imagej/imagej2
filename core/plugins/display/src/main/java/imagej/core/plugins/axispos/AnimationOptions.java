@@ -64,10 +64,10 @@ public class AnimationOptions extends DynamicPlugin {
 
 	// -- Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private AnimationService animationService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplay display;
 
 	@Parameter(label = "Axis", persist = false, initializer = "initAxisName",

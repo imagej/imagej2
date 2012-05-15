@@ -59,10 +59,10 @@ import net.imglib2.type.numeric.RealType;
  */
 public abstract class TypeChanger implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	protected MenuService menuService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	protected Dataset input;
 
 	protected <T extends RealType<T> & NativeType<T>> void changeType(

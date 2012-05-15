@@ -72,13 +72,13 @@ public class DeleteAxis extends DynamicPlugin {
 
 	// -- Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplay display;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
 
 	@Parameter(label = "Axis to delete", persist = false,

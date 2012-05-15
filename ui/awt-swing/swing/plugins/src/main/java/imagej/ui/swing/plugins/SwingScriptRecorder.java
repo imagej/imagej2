@@ -83,10 +83,10 @@ import javax.swing.WindowConstants;
 	@Menu(label = "Record...", weight = 4) })
 public class SwingScriptRecorder implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private EventService eventService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
 	// private static SwingOutputWindow window;

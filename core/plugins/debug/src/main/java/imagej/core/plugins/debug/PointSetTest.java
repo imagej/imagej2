@@ -63,13 +63,13 @@ public class PointSetTest implements ImageJPlugin {
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset output;
 	
-	@Parameter(required = true, persist = false)
+	@Parameter
 	ImageJ context;
 	
-	@Parameter(required = true, persist = false)
+	@Parameter
 	DatasetService ds;
 	
-	@Parameter(required = true, persist = false)
+	@Parameter
 	UIService uiService;
 
 	@Override

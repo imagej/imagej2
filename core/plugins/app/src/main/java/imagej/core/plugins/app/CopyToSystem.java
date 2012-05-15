@@ -62,16 +62,16 @@ import imagej.util.ARGBPlane;
 		@Menu(label = "Copy To System", weight = 12) })
 public class CopyToSystem implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 	
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imageDisplayService;
 	
-	@Parameter(persist = false)
+	@Parameter
 	private StatusService statusService;
 	
 	@Parameter

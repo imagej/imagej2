@@ -68,10 +68,10 @@ public class ZoomUserDefined extends DynamicPlugin {
 
 	// -- Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Parameter(label = "Zoom (%) :", persist = false, initializer = "initAll")

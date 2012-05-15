@@ -82,7 +82,7 @@ public class OptionsPlugin extends DynamicPlugin {
 
 	// -- Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	protected EventService eventService;
 
 	// -- OptionsPlugin methods --

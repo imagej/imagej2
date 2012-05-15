@@ -101,21 +101,21 @@ public class HistogramPlot implements ImageJPlugin {
 //	@Parameter(label = "Value (binary)")
 //	private long value;
 
-	@Parameter(persist = false)
+	@Parameter
 	private DatasetView view;
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService displayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplay display;
 
 	private Dataset dataset;

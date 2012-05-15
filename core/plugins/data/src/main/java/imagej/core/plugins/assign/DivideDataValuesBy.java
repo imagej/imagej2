@@ -64,7 +64,7 @@ public class DivideDataValuesBy<T extends RealType<T>>
 
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private OptionsService optionsService;
 
 	@Parameter(label = "Value")

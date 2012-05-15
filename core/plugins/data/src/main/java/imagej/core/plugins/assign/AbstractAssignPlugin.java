@@ -65,13 +65,13 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 {
 	// -- instance variables that are Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	protected ImageDisplayService displayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	protected OverlayService overlayService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	protected ImageDisplay display;
 
 	@Parameter(label = "Preview")

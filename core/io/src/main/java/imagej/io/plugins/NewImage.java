@@ -75,7 +75,7 @@ public class NewImage implements ImageJPlugin {
 	public static final String RAMP = "Ramp";
 	public static final String ZERO = "Zero";
 
-	@Parameter(persist = false)
+	@Parameter
 	private DatasetService datasetService;
 
 	@Parameter

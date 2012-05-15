@@ -66,13 +66,13 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 @Plugin(menuPath = "Plugins>Debug>Watch Overlays")
 public class WatchOverlays implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private EventService eventService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ImageDisplayService imageDisplayService;
 
-	@Parameter(persist = false)
+	@Parameter
 	private ObjectService objectService;
 
 	private static SwingOutputWindow window;

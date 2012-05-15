@@ -49,7 +49,7 @@ import imagej.ui.UIService;
 @Plugin(menuPath = "Plugins>Sandbox>TestDialogPrompt")
 public class TestDialogPrompt implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
 	@Override

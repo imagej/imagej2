@@ -64,7 +64,7 @@ public class SelectedDisplayOverlaysProperties extends OverlayProperties {
 
 	// -- parameters --
 
-	@Parameter(required = true, persist = false)
+	@Parameter
 	private ImageDisplay display;
 
 	// -- initializers --

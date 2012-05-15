@@ -53,7 +53,7 @@ public class DuplicateImageContext implements ImageJPlugin {
 
 	// -- Plugin parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private PluginService pluginService;
 
 	// -- RunnablePlugin methods --

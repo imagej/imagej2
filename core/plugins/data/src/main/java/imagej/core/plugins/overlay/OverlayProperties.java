@@ -99,7 +99,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "Update default overlay settings", persist = false)
 	protected boolean updateDefaults = false;
 
-	@Parameter(persist = false)
+	@Parameter
 	protected OptionsService os;
 
 	// -- instance variables --

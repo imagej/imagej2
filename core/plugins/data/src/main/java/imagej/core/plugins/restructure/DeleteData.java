@@ -73,10 +73,10 @@ public class DeleteData extends DynamicPlugin {
 
 	// -- Parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private UIService uiService;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
 
 	@Parameter(label = "Axis to modify", persist = false,

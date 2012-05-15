@@ -50,7 +50,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(label = "Select Window...")
 public class SelectWindow implements ImageJPlugin {
 
-	@Parameter(autoFill = false, persist = false)
+	@Parameter(autoFill = false)
 	private Display<?> display;
 
 	// -- Runnable methods --

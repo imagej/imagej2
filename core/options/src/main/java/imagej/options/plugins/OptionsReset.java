@@ -59,7 +59,7 @@ import java.util.List;
 		@Menu(label = "Reset", weight = 18) })
 public class OptionsReset implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private OptionsService optionsService;
 
 	@Override

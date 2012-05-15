@@ -83,7 +83,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 	 */
 	private static final int MAX_POWER = 4;
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")

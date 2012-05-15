@@ -70,7 +70,7 @@ public class SetActiveAxis extends DynamicPlugin {
 
 	// -- Parameters --
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Parameter(persist = false, initializer = "initAxisName")

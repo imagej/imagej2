@@ -54,7 +54,7 @@ public class SplitChannelsContext implements ImageJPlugin {
 
 	// -- Plugin parameters --
 
-	@Parameter(persist = false)
+	@Parameter
 	private PluginService pluginService;
 
 	// -- RunnablePlugin methods --

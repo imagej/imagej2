@@ -59,7 +59,7 @@ import java.util.List;
 @Plugin(menuPath = "Plugins>Debug>Subscribers", headless = true)
 public class ShowSubscribers implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter
 	private EventService eventService;
 
 	@Parameter(label = "Subscriber Log", type = ItemIO.OUTPUT)
