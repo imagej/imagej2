@@ -103,11 +103,44 @@ public final class ClassUtils {
 			final Constructor<T> ctor = saneType.getConstructor(value.getClass());
 			return ctor.newInstance(value);
 		}
-		catch (final Exception e) {
-			// NB: Many types of exceptions; simpler to handle them all the same.
-			Log.warn("Cannot convert '" + value + "' to " + type.getName(), e);
+		catch (final Exception exc) {
+			// NB: Multiple types of exceptions; simpler to handle them all the same.
+			Log.warn("Cannot convert '" + value + "' to " + type.getName(), exc);
 		}
 		return null;
+	}
+
+	/**
+	 * Checks whether the given object can be converted to the specified type.
+	 * 
+	 * @see #convert(Object, Class)
+	 */
+	public static <T> boolean canConvert(final Object value, final Class<T> type)
+	{
+		if (value == null) return true;
+
+		// ensure type is well-behaved, rather than a primitive type
+		final Class<T> saneType = getNonprimitiveType(type);
+
+		// OK if the existing object can be casted
+		if (canCast(value, saneType)) return true;
+
+		// OK if string
+		if (saneType == String.class) return true;
+
+		// OK if appropriate wrapper constructor exists
+		try {
+			saneType.getConstructor(value.getClass());
+			return true;
+		}
+		catch (final Exception exc) {
+			// NB: Multiple types of exceptions; simpler to handle them all the same.
+			Log.debug("No such constructor: " + saneType.getName() + "(" +
+				value.getClass().getName() + ")", exc);
+		}
+
+		// no known way to convert
+		return false;
 	}
 
 	/**
@@ -121,7 +154,10 @@ public final class ClassUtils {
 		return result;
 	}
 
-	/** Checks whether the given object can be cast to the specified type. */
+	/**
+	 * Checks whether the given object can be cast to the specified type.
+	 * @see #cast(Object, Class)
+	 */
 	public static boolean canCast(final Object obj, final Class<?> type) {
 		return (type.isAssignableFrom(obj.getClass()));
 	}
