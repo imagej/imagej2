@@ -152,7 +152,9 @@ public class SaveAsImage implements ImageJPlugin {
 				dataset.setDirty(false);
 
 				display.setName(outputFile.getName());
-				display.update();
+				// NB - removed when display became ItemIO.Both.
+				//  Restore later if necessary.
+				//display.update();
 			}
 		}
 	}
