@@ -41,7 +41,10 @@ import imagej.data.Position;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.ZoomEvent;
+import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -78,16 +81,16 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	public AbstractImageDisplayViewer() {
 	}
 	@Override
-	public boolean canView(Display<?> display) {
-		return display instanceof ImageDisplay;
+	public boolean canView(Display<?> disp) {
+		return disp instanceof ImageDisplay;
 	}
 	
 	@Override
-	public void view(DisplayWindow window, Display<?> display) {
-		super.view(window, display);
-		this.window = window;
-		assert display instanceof ImageDisplay;
-		eventService = display.getContext().getService(EventService.class);
+	public void view(DisplayWindow win, Display<?> disp) {
+		super.view(win, disp);
+		this.window = win;
+		assert disp instanceof ImageDisplay;
+		eventService = disp.getContext().getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 	}
 	
@@ -97,10 +100,8 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		return (ImageDisplay)getDisplay();
 	}
 	
-	//-- Helper methods --//
 	/**
 	 * Make some informative label text by inspecting the views.
-	 * @return
 	 */
 	public String makeLabel() {
 		// CTR TODO - Fix window label to show beyond just the active view.
@@ -151,13 +152,15 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		final Data data = view.getData();
 		return data instanceof Dataset ? (Dataset) data : null;
 	}
-	// -- Helper methods --
 
-	private String byteInfoString(Dataset ds) {
-		final double byteCount = ds.getBytesOfInfo();
-		return UnitUtils.getAbbreviatedByteLabel(byteCount);
+	/**
+	 * Recalculate the label text and update it on the panel.
+	 */
+	protected void updateLabel() {
+		if (getImageDisplay().getActiveView() != null)
+			getPanel().setLabel(makeLabel());
 	}
-
+	
 	/**
 	 * Implement this in the derived class to get the user's
 	 * preference for displaying zoom scale (as a fraction or percent)
@@ -166,6 +169,14 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	 */
 	protected abstract ZoomScaleOption getZoomScaleOption();
 	
+	// -- Helper methods --
+
+	private String byteInfoString(Dataset ds) {
+		final double byteCount = ds.getBytesOfInfo();
+		return UnitUtils.getAbbreviatedByteLabel(byteCount);
+	}
+
+	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
 
 		if (getZoomScaleOption().equals(ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE))
@@ -263,12 +274,12 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 
 	}
 
-	/**
-	 * Recalculate the label text and update it on the panel.
-	 */
-	protected void updateLabel() {
-		if (getImageDisplay().getActiveView() != null)
-			getPanel().setLabel(makeLabel());
+	private boolean isMyDataset(Dataset ds) {
+		if (ds == null) return false;
+		ImageDisplayService service =
+				eventService.getContext().getService(ImageDisplayService.class);
+		ImageDisplay disp = getImageDisplay();
+		return service.getActiveDataset(disp) == ds;
 	}
 	
 	//-- Event handlers --//
@@ -285,8 +296,17 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 
 	@EventHandler
 	protected void onEvent(final ZoomEvent event) {
-		if (event.getCanvas() != getImageDisplay().getCanvas()) return;
-		updateLabel();
+		if (event.getCanvas() == getImageDisplay().getCanvas()) updateLabel();
+	}
+
+	@EventHandler
+	protected void onEvent(final DatasetRestructuredEvent event) {
+		if (isMyDataset(event.getObject())) updateLabel();
+	}
+
+	@EventHandler
+	protected void onEvent(final DatasetTypeChangedEvent event) {
+		if (isMyDataset(event.getObject())) updateLabel();
 	}
 
 
