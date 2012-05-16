@@ -42,6 +42,7 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
@@ -309,5 +310,9 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		if (isMyDataset(event.getObject())) updateLabel();
 	}
 
+	@EventHandler
+	protected void onEvent(final AxisPositionEvent event) {
+		if (event.getDisplay() == getDisplay()) updateLabel();
+	}
 
 }
