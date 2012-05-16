@@ -56,7 +56,7 @@ import imagej.ext.plugin.Plugin;
 	headless = true)
 public class Zoom100Percent implements ImageJPlugin {
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override

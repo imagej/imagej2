@@ -56,7 +56,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "In", weight = 1, accelerator = "PLUS") }, headless = true)
 public class ZoomIn implements ImageJPlugin {
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override

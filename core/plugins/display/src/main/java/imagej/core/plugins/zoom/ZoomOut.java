@@ -56,7 +56,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Out", weight = 2, accelerator = "MINUS") }, headless = true)
 public class ZoomOut implements ImageJPlugin {
 
-	@Parameter(type = ItemIO.BOTH, persist = false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override

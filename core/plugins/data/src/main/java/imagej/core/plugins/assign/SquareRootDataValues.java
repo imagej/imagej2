@@ -75,7 +75,7 @@ public class SquareRootDataValues<T extends RealType<T>> implements
 	@Parameter
 	private ImageDisplayService imgDispService;
 
-	@Parameter(type = ItemIO.BOTH, persist=false)
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 	
 	@Parameter(label = "Apply to all planes")
