@@ -61,6 +61,9 @@ import java.util.List;
 @Plugin(type = Platform.class)
 public class MacOSXPlatform extends AbstractPlatform {
 
+	/** Debugging flag to allow easy toggling of Mac screen menu bar behavior. */
+	private static final boolean SCREEN_MENU = true;
+
 	@SuppressWarnings("unused")
 	private MacOSXAppEventDispatcher appEventDispatcher;
 
@@ -76,7 +79,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		super.configure(service);
 
 		// use Mac OS X screen menu bar
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		if (SCREEN_MENU) System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		// remove app plugins from menu structure
 		removeAppPluginsFromMenu();
@@ -94,7 +97,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		}
 
 		// duplicate menu bar across all window frames
-		platformService.setMenuBarDuplicated(true);
+		if (SCREEN_MENU) platformService.setMenuBarDuplicated(true);
 	}
 
 	@Override
