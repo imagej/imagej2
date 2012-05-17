@@ -74,7 +74,8 @@ public abstract class AbstractImageDisplayViewer extends
 		OPTIONS_PERCENT_SCALE, OPTIONS_FRACTIONAL_SCALE
 	}
 
-	protected List<EventSubscriber<?>> subscribers;
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	@Override
 	public boolean canView(final Display<?> d) {
