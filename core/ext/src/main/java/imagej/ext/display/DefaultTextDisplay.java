@@ -44,8 +44,8 @@ import imagej.ext.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(type = TextDisplay.class, priority = Priority.LOW_PRIORITY)
-public class DefaultTextDisplay extends AbstractDisplay<String>
-	implements TextDisplay
+public class DefaultTextDisplay extends AbstractDisplay<String> implements
+	TextDisplay
 {
 
 	public DefaultTextDisplay() {
@@ -53,7 +53,7 @@ public class DefaultTextDisplay extends AbstractDisplay<String>
 	}
 
 	@Override
-	public void append(String text) {
+	public void append(final String text) {
 		add(text);
 	}
 

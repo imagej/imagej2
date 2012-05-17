@@ -50,14 +50,13 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  * @author Grant Harris
- * 
  * @see TextDisplay
  */
 public interface Display<T> extends List<T>, IPlugin, IContext {
 
 	/**
-	 * Set the ImageJ service context for the display. This should
-	 * only be done once if at all as part of initialization.
+	 * Set the ImageJ service context for the display. This should only be done
+	 * once if at all as part of initialization.
 	 * 
 	 * @param context
 	 */
