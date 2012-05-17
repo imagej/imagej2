@@ -77,6 +77,8 @@ public abstract class AbstractImageDisplayViewer extends
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
+	// -- DisplayViewer methods --
+
 	@Override
 	public boolean canView(final Display<?> d) {
 		return d instanceof ImageDisplay;
@@ -95,6 +97,8 @@ public abstract class AbstractImageDisplayViewer extends
 		assert getDisplay() instanceof ImageDisplay;
 		return (ImageDisplay) getDisplay();
 	}
+
+	// -- Internal AbstractImageDisplayViewer methods --
 
 	protected Dataset getDataset(final DataView view) {
 		final Data data = view.getData();
