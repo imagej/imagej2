@@ -134,10 +134,10 @@ public class SwingMdiUI extends AbstractSwingUI {
 						new SwingMdiDisplayWindow();
 					displayViewer.view(displayWindow, display);
 					displayWindow.setTitle(display.getName());
-					displayWindow.showDisplay(true);
 					desktopPane.add(displayWindow);
 					displayWindow.addEventDispatcher(new InternalFrameEventDispatcher(
 						display, eventService));
+					displayWindow.showDisplay(true);
 					return;
 				}
 			}

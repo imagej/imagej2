@@ -251,7 +251,7 @@ public class SwingOverlayManager
 		// event here. Filing as ticket.
 		
 		final UIService uiService = context.getService(UIService.class);
-		((AbstractSwingUI)uiService.getUI()).createMenuBar(this);
+		((AbstractSwingUI)uiService.getUI()).createMenuBar(this, false);
 		
 		populateOverlayList();
 	}

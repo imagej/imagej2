@@ -122,7 +122,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 	@Override
 	public void createMenus() {
-		final JMenuBar menuBar = createMenuBar(appFrame);
+		final JMenuBar menuBar = createMenuBar(appFrame, true);
 		getEventService().publish(new AppMenusCreatedEvent(menuBar));
 	}
 
@@ -191,12 +191,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		new DropTarget(statusBar, dropListener);
 		new DropTarget(appFrame, dropListener);
 
-		if (getUIService().getPlatformService().isMenuBarDuplicated()) {
-			// NB: If menu bars are supposed to be duplicated across all window
-			// frames, listen for display creations and deletions and clone the menu
-			// bar accordingly.
-			subscribers = getEventService().subscribe(this);
-		}
+		subscribers = getEventService().subscribe(this);
 	}
 
 	/**
@@ -314,12 +309,21 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
 	 * and adds it to the given {@link JFrame}.
 	 */
-	public JMenuBar createMenuBar(final JFrame f) {
+	public JMenuBar createMenuBar(final JFrame f, final boolean force) {
+		if (!force && !getUIService().getPlatformService().isMenuBarDuplicated()) {
+			// NB: Menus are not configured to be duplicated across window frames.
+			return null;
+		}
+
+		if (!force && (f.getMenuBar() != null || f.getJMenuBar() != null)) {
+			// NB: Frame already has a menu bar; don't build a new one.
+			return f.getJMenuBar();
+		}
+
 		final MenuService menuService = getUIService().getMenuService();
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		f.setJMenuBar(menuBar);
-		f.pack();
 		return menuBar;
 	}
 
