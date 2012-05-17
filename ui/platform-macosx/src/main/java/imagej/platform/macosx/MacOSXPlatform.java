@@ -91,7 +91,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		}
 		catch (final NoClassDefFoundError e) {
 			// the interfaces implemented by MacOSXAppEventDispatcher might not be
-			// available
+			// available:
 			// - on MacOSX Tiger without recent Java Updates
 			// - on earlier MacOSX versions
 		}
