@@ -35,9 +35,6 @@
 
 package imagej.core.tools;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -53,6 +50,10 @@ import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.img.Img;

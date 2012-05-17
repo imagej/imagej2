@@ -49,7 +49,6 @@ import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.ext.ui.swing.SwingJPopupMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.platform.event.AppQuitEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;

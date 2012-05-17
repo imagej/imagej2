@@ -41,8 +41,8 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.ui.ApplicationFrame;
-import imagej.ui.UserInterface;
 import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 
 /**
  * Brings the main application window into focus when ENTER is pressed.

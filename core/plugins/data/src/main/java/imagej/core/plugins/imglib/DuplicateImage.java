@@ -35,10 +35,6 @@
 
 package imagej.core.plugins.imglib;
 
-import net.imglib2.img.ImgPlus;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.type.numeric.RealType;
 import imagej.ImageJ;
 import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
@@ -52,6 +48,10 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Fills an output Dataset with the contents of an input Dataset.

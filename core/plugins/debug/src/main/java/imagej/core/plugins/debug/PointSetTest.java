@@ -35,11 +35,6 @@
 
 package imagej.core.plugins.debug;
 
-import net.imglib2.RandomAccess;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.PointSetIterator;
-import net.imglib2.ops.pointset.TextSpecifiedPointSet;
-import net.imglib2.type.numeric.RealType;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -48,6 +43,11 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
+import net.imglib2.RandomAccess;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.ops.PointSetIterator;
+import net.imglib2.ops.pointset.TextSpecifiedPointSet;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * A test of TextSpecifiedPointSets

@@ -42,8 +42,6 @@ import ij.ImageStack;
 import ij.process.ByteProcessor;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.legacy.translate.LegacyUtils;
-
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 

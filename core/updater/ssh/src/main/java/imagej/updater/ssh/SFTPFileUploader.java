@@ -35,6 +35,9 @@
 
 package imagej.updater.ssh;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploadable;
@@ -47,9 +50,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 /**
  * Uploads files to an update server using only SFTP protocol. In contrast to

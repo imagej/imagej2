@@ -35,19 +35,19 @@
 
 package imagej.updater.ssh;
 
-import imagej.updater.util.UpdaterUserInterface;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
+
+import imagej.updater.util.UpdaterUserInterface;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Wraps low level SFTP operations and isolates from implementation API.

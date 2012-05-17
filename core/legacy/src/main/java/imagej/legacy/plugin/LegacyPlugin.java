@@ -43,8 +43,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
 import imagej.event.StatusService;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;

@@ -35,11 +35,6 @@
 
 package imagej.core.plugins.display;
 
-import java.util.List;
-
-import net.imglib2.display.ColorTable8;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -57,6 +52,12 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+
+import java.util.List;
+
+import net.imglib2.display.ColorTable8;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 
 // TODO

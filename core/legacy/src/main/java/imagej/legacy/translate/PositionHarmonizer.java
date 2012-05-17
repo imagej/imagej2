@@ -35,10 +35,10 @@
 
 package imagej.legacy.translate;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * This class is responsible for harmonizing slider position values (and active

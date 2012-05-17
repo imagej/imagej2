@@ -35,15 +35,15 @@
 
 package imagej.legacy.patches;
 
+import ij.io.PluginClassLoader;
+import imagej.util.Log;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import ij.io.PluginClassLoader;
-import imagej.util.Log;
 
 /**
  * Augments {@link PluginClassLoader} methods.

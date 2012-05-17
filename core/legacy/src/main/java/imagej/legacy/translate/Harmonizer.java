@@ -41,6 +41,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+
 import java.util.HashMap;
 import java.util.Map;
 

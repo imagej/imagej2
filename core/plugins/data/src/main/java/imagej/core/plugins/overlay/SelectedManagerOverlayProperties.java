@@ -35,11 +35,11 @@
 
 package imagej.core.plugins.overlay;
 
-import java.util.List;
-
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+
+import java.util.List;
 
 /**
  * A plugin to change the properties (e.g., line color, line width) of a set of

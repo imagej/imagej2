@@ -49,12 +49,12 @@ import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.event.FileOpenedEvent;
-
 import imagej.io.event.FileSavedEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.FileUtils;
 import imagej.util.Prefs;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
