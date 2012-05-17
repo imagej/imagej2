@@ -99,6 +99,14 @@ while (<$in>) {
 		$headers = rewrite_author($author, $headers);
 
 		$msg =~ s/^git-svn-id: .*trunk@(\d+) .*$/This used to be revision r\1./m;
+
+		if ($msg =~ /^Release version 2.0.0-beta2/m) {
+			$msg = "Failed attempt at 2.0.0-beta2 release\n\n"
+				. "Due to various issues, this commit does *not* represent the state of the\n"
+				. "codebase for the actual 2.0.0-beta2 release. Please use the v2.0.0-beta2\n"
+				. "tag instead.\n\n"
+				. "This used to be revision r5392.\n";
+		}
 		$msg = 'data ' . length($msg) . "\n" . $msg;
 		print $out $headers;
 		print $out $msg;
