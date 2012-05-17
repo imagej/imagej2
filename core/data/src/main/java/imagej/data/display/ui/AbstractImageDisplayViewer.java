@@ -76,9 +76,6 @@ public abstract class AbstractImageDisplayViewer extends
 
 	private ImageDisplay display;
 
-	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
-
 	// -- ImageDisplayViewer methods --
 
 	@Override
@@ -97,7 +94,6 @@ public abstract class AbstractImageDisplayViewer extends
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
 		display = (ImageDisplay) d;
-		subscribers = getEventService().subscribe(this);
 	}
 
 	// -- Internal AbstractImageDisplayViewer methods --

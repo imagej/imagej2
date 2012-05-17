@@ -58,7 +58,6 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 	private DisplayWindow window;
 	private DisplayPanel panel;
 
-	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
 	@Override
@@ -71,6 +70,7 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 		display = typedDisplay;
 		window = w;
 
+		if (subscribers != null) getEventService().unsubscribe(subscribers);
 		subscribers = getEventService().subscribe(this);
 	}
 
