@@ -40,6 +40,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
+import imagej.ui.swing.display.SwingImageDisplayViewer;
 
 import javax.swing.JInternalFrame;
 
@@ -50,7 +51,7 @@ import javax.swing.JInternalFrame;
  * @author Grant Harris
  * @author Curtis Rueden
  * @author Lee Kamentsky
- * @see AbstractSwingImageDisplayViewer
+ * @see SwingImageDisplayViewer
  */
 @Plugin(type = ImageDisplayViewer.class)
 public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer

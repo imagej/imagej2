@@ -92,7 +92,7 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
-	private final AbstractSwingImageDisplayViewer displayViewer;
+	private final SwingImageDisplayViewer displayViewer;
 	private final ImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel imagePane;
@@ -111,7 +111,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	// -- constructors --
 
-	public SwingDisplayPanel(final AbstractSwingImageDisplayViewer displayViewer,
+	public SwingDisplayPanel(final SwingImageDisplayViewer displayViewer,
 		final DisplayWindow window)
 	{
 		this.displayViewer = displayViewer;

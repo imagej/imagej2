@@ -72,7 +72,7 @@ public class DatasetFigureView implements FigureView {
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
 
-	public DatasetFigureView(final AbstractSwingImageDisplayViewer displayViewer,
+	public DatasetFigureView(final SwingImageDisplayViewer displayViewer,
 		final DatasetView datasetView)
 	{
 		this.datasetView = datasetView;

@@ -55,7 +55,7 @@ import imagej.ui.common.awt.AWTInputEventDispatcher;
  * @author Barry DeZonia
  */
 public abstract class AbstractSwingImageDisplayViewer extends
-	AbstractImageDisplayViewer
+	AbstractImageDisplayViewer implements SwingImageDisplayViewer
 {
 
 	protected AWTInputEventDispatcher dispatcher;
@@ -78,17 +78,18 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		window.setTitle(display.getName());
 	}
 
+	// -- SwingImageDisplayViewer methods --
+
+	@Override
+	public JHotDrawImageCanvas getCanvas() {
+		return imgCanvas;
+	}
+
 	// -- DisplayViewer methods --
 
 	@Override
 	public SwingDisplayPanel getPanel() {
 		return imgPanel;
-	}
-
-	// -- AbstractSwingImageDisplayViewer methods --
-
-	public JHotDrawImageCanvas getCanvas() {
-		return imgCanvas;
 	}
 
 	// -- AbstractImageDisplayViewer methods --

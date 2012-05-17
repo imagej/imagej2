@@ -59,7 +59,7 @@ import org.jhotdraw.draw.event.FigureEvent;
 @SuppressWarnings("synthetic-access")
 public class OverlayFigureView implements FigureView {
 
-	private final AbstractSwingImageDisplayViewer displayViewer;
+	private final SwingImageDisplayViewer displayViewer;
 	private final OverlayView overlayView;
 
 	/** JHotDraw {@link Figure} linked to the associated {@link Overlay}. */
@@ -85,7 +85,7 @@ public class OverlayFigureView implements FigureView {
 	 * @param display - hook to this display
 	 * @param overlayView - represent this overlay
 	 */
-	public OverlayFigureView(final AbstractSwingImageDisplayViewer display,
+	public OverlayFigureView(final SwingImageDisplayViewer display,
 		final OverlayView overlayView)
 	{
 		this(display, overlayView, null);
@@ -99,7 +99,7 @@ public class OverlayFigureView implements FigureView {
 	 * @param overlayView - represent this overlay
 	 * @param figure - draw using this figure
 	 */
-	public OverlayFigureView(final AbstractSwingImageDisplayViewer display,
+	public OverlayFigureView(final SwingImageDisplayViewer display,
 		final OverlayView overlayView, final Figure figure)
 	{
 		this.displayViewer = display;

@@ -106,7 +106,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private final AbstractSwingImageDisplayViewer displayViewer;
+	private final SwingImageDisplayViewer displayViewer;
 
 	private final Drawing drawing;
 	private final DefaultDrawingView drawingView;
@@ -121,8 +121,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 	private final List<EventSubscriber<?>> subscribers;
 
-	public JHotDrawImageCanvas(final AbstractSwingImageDisplayViewer displayViewer)
-	{
+	public JHotDrawImageCanvas(final SwingImageDisplayViewer displayViewer) {
 		this.displayViewer = displayViewer;
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
