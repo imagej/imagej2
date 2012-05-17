@@ -76,7 +76,7 @@ public final class DefaultDisplayService extends AbstractService implements
 	// iterate through the list of known displays for the first match.
 
 	private Display<?> activeDisplay;
-	
+
 	public DefaultDisplayService() {
 		// NB: Required by SezPoz.
 		super(null);
@@ -118,12 +118,13 @@ public final class DefaultDisplayService extends AbstractService implements
 	public Display<?> getActiveDisplay() {
 		return activeDisplay;
 	}
-	
+
 	@Override
-	public void setActiveDisplay(Display<?> display) {
+	public void setActiveDisplay(final Display<?> display) {
 		activeDisplay = display;
-		if (display != null)
+		if (display != null) {
 			eventService.publish(new DisplayActivatedEvent(display));
+		}
 	}
 
 	// -- DisplayService methods - display plugin discovery --
@@ -163,8 +164,7 @@ public final class DefaultDisplayService extends AbstractService implements
 	}
 
 	@Override
-	public <D extends Display<?>> List<D> getDisplaysOfType(final Class<D> type)
-	{
+	public <D extends Display<?>> List<D> getDisplaysOfType(final Class<D> type) {
 		return objectService.getObjects(type);
 	}
 
