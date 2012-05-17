@@ -77,6 +77,14 @@ public abstract class AbstractImageDisplayViewer extends
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
+	// -- ImageDisplayViewer methods --
+
+	@Override
+	public ImageDisplay getImageDisplay() {
+		assert getDisplay() instanceof ImageDisplay;
+		return (ImageDisplay) getDisplay();
+	}
+
 	// -- DisplayViewer methods --
 
 	@Override
@@ -90,12 +98,6 @@ public abstract class AbstractImageDisplayViewer extends
 		this.window = w;
 		assert d instanceof ImageDisplay;
 		subscribers = getEventService().subscribe(this);
-	}
-
-	@Override
-	public ImageDisplay getImageDisplay() {
-		assert getDisplay() instanceof ImageDisplay;
-		return (ImageDisplay) getDisplay();
 	}
 
 	// -- Internal AbstractImageDisplayViewer methods --
