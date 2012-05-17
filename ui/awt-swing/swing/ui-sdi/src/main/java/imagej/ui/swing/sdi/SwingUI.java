@@ -87,7 +87,6 @@ public class SwingUI extends AbstractSwingUI {
 		final JPanel pane = new JPanel();
 		appFrame.setContentPane(pane);
 		pane.setLayout(new BorderLayout());
-		appFrame.pack();
 	}
 
 	protected void deleteMenuBar(final JFrame f) {

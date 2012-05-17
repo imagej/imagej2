@@ -67,7 +67,6 @@ import imagej.util.RealRect;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -526,43 +525,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		if (bottomRight.x - topLeft.x > bounds.width) return;
 		if (bottomRight.y - topLeft.y > bounds.height) return;
 
-		// FIXME TEMP
-		// NB BDZ - there is an issue where zoom out does not always pack()
-		// correctly. There seems like there is a race condition. I have tried a
-		// number of approaches to a fix but nothing has fallen out yet. Approaches
-		// included:
-		// - generating a "INeedARepackEvent" and trying to handle elsewhere
-		// - calling redoLayout() on the panel (infinite loop)
-		// - call pack() after a slight delay
-		// Current approach:
-		// Update on a different thread after a slight delay.
-		// Note this always resizes correctly (except for off by a fixed
-		// scrollbar size which I have handled in getPreferredSize())
-		if (false) {
-			new Thread() {
-
-				@Override
-				public void run() {
-					// NB: Not enough to be in separate thread - it must sleep a little.
-					try {
-						Thread.sleep(30);
-					}
-					catch (final Exception e) {
-						// no action needed
-					}
-					displayViewer.getPanel().getWindow().pack();
-				}
-			}.start();
-		}
-		else {
-			EventQueue.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					displayViewer.getPanel().getWindow().pack();
-				}
-			});
-		}
+		// TODO: Be smarter about the thread we use for packing.
+		displayViewer.getWindow().pack();
 	}
 
 }

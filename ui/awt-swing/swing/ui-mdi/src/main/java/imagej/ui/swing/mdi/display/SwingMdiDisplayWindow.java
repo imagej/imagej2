@@ -86,6 +86,7 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 
 	@Override
 	public void showDisplay(final boolean visible) {
+		pack();
 		setVisible(visible);
 		if (visible) {
 //		if (desktop.getComponentCount() == 1) {
