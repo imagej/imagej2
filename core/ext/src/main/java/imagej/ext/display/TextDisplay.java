@@ -44,8 +44,9 @@ public interface TextDisplay extends Display<String> {
 
 	/**
 	 * Add a line to the display.
+	 * 
 	 * @param text
 	 */
 	void append(String text);
-	
+
 }

@@ -60,7 +60,7 @@ public interface DisplayService extends IService {
 
 	/** Gets the currently active display. */
 	Display<?> getActiveDisplay();
-	
+
 	/**
 	 * Set the active display.
 	 * 

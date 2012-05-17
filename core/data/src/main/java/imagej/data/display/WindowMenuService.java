@@ -126,15 +126,14 @@ public final class WindowMenuService extends AbstractService {
 
 	/** Adds a path to the list of window files. */
 	public void add(final String displayName) {
-		final boolean present = windowModules.containsKey(displayName);
-		if (present) {
-			remove(displayName);
+		final ModuleInfo info = windowModules.get(displayName);
+		if (info != null) { // already present
 			updateInfo(displayName);
 		}
 		else {
 			windowModules.put(displayName, createInfo(displayName));
+			openWindows.add(displayName);
 		}
-		openWindows.add(displayName);
 	}
 
 	/** Removes a path from the list of window files. */

@@ -69,14 +69,14 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 	protected EventService eventService;
 
 	protected ImageJ context;
-	
+
 	protected boolean isClosed = false;
 
 	public AbstractDisplay(final Class<T> type) {
 		this.type = type;
 		objects = new ArrayList<T>();
 	}
-	
+
 	@Override
 	public void setContext(final ImageJ context) {
 		assert this.context == null;
@@ -123,9 +123,9 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 
 	@Override
 	public void update() {
-		if (eventService != null && ! isClosed) {
-			eventService.publish(new DisplayUpdatedEvent(this,
-					structureChanged? DisplayUpdateLevel.REBUILD : DisplayUpdateLevel.UPDATE));
+		if (eventService != null && !isClosed) {
+			eventService.publish(new DisplayUpdatedEvent(this, structureChanged
+				? DisplayUpdateLevel.REBUILD : DisplayUpdateLevel.UPDATE));
 		}
 		structureChanged = false;
 	}
@@ -133,13 +133,15 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 	@Override
 	public void close() {
 		if (isClosed) return;
-		DisplayService displayService = getContext().getService(DisplayService.class);
+		final DisplayService displayService =
+			getContext().getService(DisplayService.class);
 		if (displayService != null && displayService.getActiveDisplay() == this) {
 			displayService.setActiveDisplay(null);
 		}
 
-		if (eventService != null)
+		if (eventService != null) {
 			eventService.publish(new DisplayDeletedEvent(this));
+		}
 		isClosed = true;
 	}
 
