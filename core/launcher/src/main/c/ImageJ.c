@@ -2708,7 +2708,9 @@ static void jvm_workarounds(struct options *options)
 	unsigned int java_version = guess_java_version();
 
 	if (java_version == 0x01070000 || java_version == 0x01070001) {
+#ifndef WIN32
 		add_option(options, "-XX:-UseLoopPredicate", 0);
+#endif
 		if (main_class && !strcmp(main_class, "sun.tools.javap.Main"))
 			main_class = "com.sun.tools.javap.Main";
 	}
