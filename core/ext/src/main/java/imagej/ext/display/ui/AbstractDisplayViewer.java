@@ -57,9 +57,6 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 	protected DisplayWindow window;
 	protected DisplayPanel panel;
 	List<EventSubscriber<?>> subscribers;
-	
-	public AbstractDisplayViewer() {
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
