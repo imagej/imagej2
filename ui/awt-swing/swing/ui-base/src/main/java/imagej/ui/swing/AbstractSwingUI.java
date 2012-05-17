@@ -223,7 +223,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	protected void onDisplayUpdated(final DisplayUpdatedEvent e) {
 		final DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
 		if (displayViewer != null) {
-			displayViewer.onDisplayUpdateEvent(e);
+			displayViewer.onDisplayUpdatedEvent(e);
 		}
 
 	}

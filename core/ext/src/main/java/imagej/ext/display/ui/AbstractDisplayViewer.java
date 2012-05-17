@@ -111,7 +111,7 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 	 * @param e
 	 */
 	@Override
-	public void onDisplayUpdateEvent(DisplayUpdatedEvent e) {
+	public void onDisplayUpdatedEvent(DisplayUpdatedEvent e) {
 		if (e.getLevel() == DisplayUpdateLevel.REBUILD)
 			getPanel().redoLayout();
 		getPanel().redraw();

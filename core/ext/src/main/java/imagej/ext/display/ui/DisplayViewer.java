@@ -79,7 +79,7 @@ public interface DisplayViewer<T> extends IPlugin {
 	DisplayPanel getPanel();
 
 	/** Handles a display update event directed at this viewer's display. */
-	void onDisplayUpdateEvent(DisplayUpdatedEvent e);
+	void onDisplayUpdatedEvent(DisplayUpdatedEvent e);
 
 	/** Handles a display deleted event directed at this viewer's display. */
 	void onDisplayDeletedEvent(DisplayDeletedEvent e);
