@@ -46,10 +46,5 @@ import imagej.ext.plugin.Plugin;
  */
 @Plugin(type = TextDisplay.class)
 public class DefaultTextDisplay extends AbstractTextDisplay {
-
-	@Override
-	public void append(String text) {
-		add(text);
-	}
-
+	// no implementation needed
 }

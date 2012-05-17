@@ -48,4 +48,9 @@ public abstract class AbstractTextDisplay extends AbstractDisplay<String>
 		super(String.class);
 	}
 
+	@Override
+	public void append(String text) {
+		add(text);
+	}
+
 }
