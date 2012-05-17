@@ -81,9 +81,11 @@ import javax.swing.WindowConstants;
  */
 public abstract class AbstractSwingUI extends AbstractUserInterface {
 
+	/**
+	 * A list of extant display viewers. It's needed in order to find the viewer
+	 * associated with a display.
+	 */
 	// NB: I'm a little queasy about including this.
-	// It's a list of extant display viewers and it's needed
-	// in order to find the viewer associated with a display
 	protected final List<DisplayViewer<?>> displayViewers =
 		new ArrayList<DisplayViewer<?>>();
 
