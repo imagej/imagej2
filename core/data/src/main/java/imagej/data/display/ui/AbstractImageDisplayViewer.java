@@ -60,7 +60,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 /**
- * The AbstractImageDisplayViewer implements the gui-independent elements of an
+ * The AbstractImageDisplayViewer implements the UI-independent elements of an
  * image display viewer. It subscribes to the events of its controlled display
  * and distills these into abstract lifecycle actions.
  * 
