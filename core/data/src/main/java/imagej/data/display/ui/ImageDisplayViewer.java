@@ -45,10 +45,8 @@ import imagej.ext.display.ui.DisplayViewer;
  * @author Lee Kamentsky
  */
 public interface ImageDisplayViewer extends DisplayViewer<DataView>{
-	/**
-	 * Return the display cast as an ImageDisplay
-	 * @return
-	 */
-	ImageDisplay getImageDisplay();
-	
+
+	@Override
+	ImageDisplay getDisplay();
+
 }

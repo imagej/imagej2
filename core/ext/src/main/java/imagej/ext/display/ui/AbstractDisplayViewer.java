@@ -61,12 +61,16 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void view(DisplayWindow w, Display<?> d) {
-		this.window = w;
-		assert this.canView(d);
-		this.display = (Display<T>)d;
+		if (!canView(d)) {
+			throw new IllegalArgumentException("Incompatible display: " + d);
+		}
+		@SuppressWarnings("unchecked")
+		final Display<T> typedDisplay = (Display<T>) d;
+		display = typedDisplay;
+		window = w;
+
 		subscribers = getEventService().subscribe(this);
 	}
 

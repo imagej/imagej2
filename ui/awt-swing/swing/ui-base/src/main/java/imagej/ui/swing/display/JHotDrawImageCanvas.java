@@ -141,7 +141,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-		final ImageJ context = displayViewer.getImageDisplay().getContext();
+		final ImageJ context = displayViewer.getDisplay().getContext();
 		final ToolService toolService = context.getService(ToolService.class);
 		final Tool activeTool = toolService.getActiveTool();
 		activateTool(activeTool);
@@ -314,7 +314,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				@Override
 				public void overlayCreated(final FigureCreatedEvent e) {
 					final OverlayView overlay = e.getOverlay();
-					final ImageDisplay display = displayViewer.getImageDisplay();
+					final ImageDisplay display = displayViewer.getDisplay();
 					for (int i = 0; i < display.numDimensions(); i++) {
 						final AxisType axis = display.axis(i);
 						if (Axes.isXY(axis)) continue;
@@ -418,7 +418,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	// -- Helper methods --
 
 	private ImageDisplay getDisplay() {
-		return displayViewer.getImageDisplay();
+		return displayViewer.getDisplay();
 	}
 
 	// -- AdjustmentListener methods --

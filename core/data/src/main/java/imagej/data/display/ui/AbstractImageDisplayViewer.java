@@ -74,15 +74,16 @@ public abstract class AbstractImageDisplayViewer extends
 		OPTIONS_PERCENT_SCALE, OPTIONS_FRACTIONAL_SCALE
 	}
 
+	private ImageDisplay display;
+
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
 
 	// -- ImageDisplayViewer methods --
 
 	@Override
-	public ImageDisplay getImageDisplay() {
-		assert getDisplay() instanceof ImageDisplay;
-		return (ImageDisplay) getDisplay();
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
 	// -- DisplayViewer methods --
@@ -95,7 +96,7 @@ public abstract class AbstractImageDisplayViewer extends
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
-		assert d instanceof ImageDisplay;
+		display = (ImageDisplay) d;
 		subscribers = getEventService().subscribe(this);
 	}
 
@@ -110,7 +111,7 @@ public abstract class AbstractImageDisplayViewer extends
 	 * Recalculate the label text and update it on the panel.
 	 */
 	protected void updateLabel() {
-		if (getImageDisplay().getActiveView() != null) {
+		if (getDisplay().getActiveView() != null) {
 			getPanel().setLabel(makeLabel());
 		}
 	}
@@ -129,7 +130,7 @@ public abstract class AbstractImageDisplayViewer extends
 	/** Makes some informative label text by inspecting the views. */
 	private String makeLabel() {
 		// CTR TODO - Fix window label to show beyond just the active view.
-		final DataView view = getImageDisplay().getActiveView();
+		final DataView view = getDisplay().getActiveView();
 		final Dataset dataset = getDataset(view);
 
 		final int xIndex = dataset.getAxisIndex(Axes.X);
@@ -162,7 +163,7 @@ public abstract class AbstractImageDisplayViewer extends
 		sb.append(byteInfoString(dataset));
 		sb.append("; ");
 
-		final double zoomFactor = getImageDisplay().getCanvas().getZoomFactor();
+		final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
 		if (zoomFactor != 1) {
 			sb.append("(");
 			sb.append(getScaleConverter().getString(zoomFactor));
@@ -279,7 +280,7 @@ public abstract class AbstractImageDisplayViewer extends
 		if (ds == null) return false;
 		final ImageDisplayService service =
 			getEventService().getContext().getService(ImageDisplayService.class);
-		final ImageDisplay disp = getImageDisplay();
+		final ImageDisplay disp = getDisplay();
 		return service.getActiveDataset(disp) == ds;
 	}
 
@@ -287,18 +288,16 @@ public abstract class AbstractImageDisplayViewer extends
 
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
-		if (event.getDisplay() != this.getDisplay()) return;
-		// final UserInterface ui = ImageJ.get(UIService.class).getUI();
-		// final ToolService toolMgr = ui.getToolBar().getToolService();
+		if (event.getDisplay() != getDisplay()) return;
 		final ToolService toolService =
 			event.getContext().getService(ToolService.class);
-		getImageDisplay().getCanvas().setCursor(
+		getDisplay().getCanvas().setCursor(
 			toolService.getActiveTool().getCursor());
 	}
 
 	@EventHandler
 	protected void onEvent(final ZoomEvent event) {
-		if (event.getCanvas() == getImageDisplay().getCanvas()) updateLabel();
+		if (event.getCanvas() == getDisplay().getCanvas()) updateLabel();
 	}
 
 	@EventHandler

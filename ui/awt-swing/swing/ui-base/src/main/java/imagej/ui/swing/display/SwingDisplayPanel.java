@@ -115,7 +115,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		final DisplayWindow window)
 	{
 		this.displayViewer = displayViewer;
-		this.display = displayViewer.getImageDisplay();
+		this.display = displayViewer.getDisplay();
 		this.window = window;
 
 		imageLabel = new JLabel(" ");
@@ -299,7 +299,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	private void doInitialSizing() {
 		final double scale = findFullyVisibleScale();
 		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
-		final ImageCanvas canvas = displayViewer.getImageDisplay().getCanvas();
+		final ImageCanvas canvas = displayViewer.getDisplay().getCanvas();
 		canvas.setZoomAndCenter(zoomLevel);
 		if (!initialScaleCalculated) {
 			canvas.setInitialScale(canvas.getZoomFactor());
