@@ -46,16 +46,12 @@ import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.event.EventHandler;
-import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.display.ui.AbstractDisplayViewer;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.tool.ToolService;
 import imagej.util.UnitUtils;
-
-import java.util.List;
-
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
