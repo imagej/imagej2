@@ -52,15 +52,15 @@ public interface DisplayViewer<T> extends IPlugin {
 	 * Returns true if an instance of this display viewer can view the given
 	 * display.
 	 */
-	boolean canView(Display<?> display);
+	boolean canView(Display<?> d);
 
 	/**
 	 * Begins viewing the given display.
 	 * 
-	 * @param window The frame / window that will contain the GUI elements
-	 * @param display the model for the display to show.
+	 * @param w The frame / window that will contain the GUI elements
+	 * @param d the model for the display to show.
 	 */
-	void view(DisplayWindow window, Display<?> display);
+	void view(DisplayWindow w, Display<?> d);
 
 	/** Gets the display being viewed. */
 	Display<T> getDisplay();

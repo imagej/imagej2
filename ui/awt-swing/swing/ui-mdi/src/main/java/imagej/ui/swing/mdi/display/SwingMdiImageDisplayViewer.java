@@ -58,8 +58,8 @@ public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
 
 	@Override
-	public void view(final DisplayWindow window, final Display<?> display) {
-		super.view(window, display);
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
 		getPanel().addEventDispatcher(dispatcher);
 	}
 

@@ -81,16 +81,16 @@ public abstract class AbstractImageDisplayViewer extends
 	protected List<EventSubscriber<?>> subscribers;
 
 	@Override
-	public boolean canView(final Display<?> disp) {
-		return disp instanceof ImageDisplay;
+	public boolean canView(final Display<?> d) {
+		return d instanceof ImageDisplay;
 	}
 
 	@Override
-	public void view(final DisplayWindow win, final Display<?> disp) {
-		super.view(win, disp);
-		this.window = win;
-		assert disp instanceof ImageDisplay;
-		eventService = disp.getContext().getService(EventService.class);
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
+		this.window = w;
+		assert d instanceof ImageDisplay;
+		eventService = d.getContext().getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 	}
 

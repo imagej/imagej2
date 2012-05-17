@@ -48,8 +48,8 @@ public abstract class AbstractTextDisplayViewer extends
 {
 
 	@Override
-	public boolean canView(final Display<?> display) {
-		return display instanceof TextDisplay;
+	public boolean canView(final Display<?> d) {
+		return d instanceof TextDisplay;
 	}
 
 }
