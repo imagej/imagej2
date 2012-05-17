@@ -65,6 +65,7 @@ import net.imglib2.meta.AxisType;
  * and distills these into abstract lifecycle actions.
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
 public abstract class AbstractImageDisplayViewer extends
 	AbstractDisplayViewer<DataView> implements ImageDisplayViewer

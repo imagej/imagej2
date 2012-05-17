@@ -75,6 +75,7 @@ import javax.swing.WindowConstants;
  * Abstract superclass for Swing-based user interfaces.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  * @author Barry DeZonia
  * @author Grant Harris
  */

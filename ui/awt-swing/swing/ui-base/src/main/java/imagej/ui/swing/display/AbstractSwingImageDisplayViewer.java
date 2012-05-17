@@ -51,6 +51,7 @@ import imagej.ui.common.awt.AWTInputEventDispatcher;
  * provides a {@link DisplayWindow} in which the display should be housed.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  * @author Grant Harris
  * @author Barry DeZonia
  */

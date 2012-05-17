@@ -51,6 +51,7 @@ import java.util.List;
  * and panel for a DisplayViewer.
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
 public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 
