@@ -39,7 +39,6 @@ import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DataView;
-import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
@@ -76,7 +75,6 @@ public abstract class AbstractImageDisplayViewer extends
 		OPTIONS_PERCENT_SCALE, OPTIONS_FRACTIONAL_SCALE
 	}
 
-	protected ImageCanvas canvas;
 	protected EventService eventService;
 	protected List<EventSubscriber<?>> subscribers;
 
