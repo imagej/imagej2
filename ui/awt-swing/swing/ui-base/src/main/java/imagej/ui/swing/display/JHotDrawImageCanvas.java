@@ -258,7 +258,9 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	@EventHandler
-	protected void onEvent(final MouseCursorEvent event) {
+	protected void onEvent(
+		@SuppressWarnings("unused") final MouseCursorEvent event)
+	{
 		drawingView.setCursor(AWTCursors.getCursor(getDisplay().getCanvas()
 			.getCursor()));
 	}
