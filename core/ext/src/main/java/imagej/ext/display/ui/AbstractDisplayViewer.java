@@ -64,8 +64,7 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 		this.window = w;
 		assert this.canView(d);
 		this.display = (Display<T>)d;
-		EventService eventService = d.getContext().getService(EventService.class);
-		subscribers = eventService.subscribe(this);
+		subscribers = getEventService().subscribe(this);
 	}
 
 	@Override
@@ -119,5 +118,15 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 		getPanel().getWindow().requestFocus();
 	}
 
+	// -- Internal AbstractDisplayViewer methods --
+
+	/** Convenience method to obtain the appropriate {@link EventService}. */
+	protected EventService getEventService() {
+		// NB: It is best to use the direct reference to display here rather than
+		// calling getDisplay(), since it has access to the context, and should
+		// always be populated via an initial call to super.view(w, d).
+		if (display == null) return null;
+		return display.getContext().getService(EventService.class);
+	}
 	
 }

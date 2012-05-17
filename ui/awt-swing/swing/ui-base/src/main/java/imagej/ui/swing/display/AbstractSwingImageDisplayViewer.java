@@ -67,7 +67,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
 
-		dispatcher = new AWTInputEventDispatcher(display, eventService);
+		dispatcher = new AWTInputEventDispatcher(display, getEventService());
 
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgCanvas.addEventDispatcher(dispatcher);

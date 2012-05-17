@@ -46,7 +46,6 @@ import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.window.WinActivatedEvent;
@@ -75,7 +74,6 @@ public abstract class AbstractImageDisplayViewer extends
 		OPTIONS_PERCENT_SCALE, OPTIONS_FRACTIONAL_SCALE
 	}
 
-	protected EventService eventService;
 	protected List<EventSubscriber<?>> subscribers;
 
 	@Override
@@ -88,8 +86,7 @@ public abstract class AbstractImageDisplayViewer extends
 		super.view(w, d);
 		this.window = w;
 		assert d instanceof ImageDisplay;
-		eventService = d.getContext().getService(EventService.class);
-		subscribers = eventService.subscribe(this);
+		subscribers = getEventService().subscribe(this);
 	}
 
 	@Override
@@ -277,7 +274,7 @@ public abstract class AbstractImageDisplayViewer extends
 	private boolean isMyDataset(final Dataset ds) {
 		if (ds == null) return false;
 		final ImageDisplayService service =
-			eventService.getContext().getService(ImageDisplayService.class);
+			getEventService().getContext().getService(ImageDisplayService.class);
 		final ImageDisplay disp = getImageDisplay();
 		return service.getActiveDataset(disp) == ds;
 	}
