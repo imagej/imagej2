@@ -124,6 +124,8 @@ public class SwingUI extends AbstractSwingUI {
 				if (displayViewer.canView(display)) {
 					final SwingDisplayWindow displayWindow = new SwingDisplayWindow();
 					displayViewer.view(displayWindow, display);
+					displayWindow.setTitle(display.getName());
+					displayWindow.showDisplay(true);
 					displayViewers.add(displayViewer);
 					// add a copy of the JMenuBar to the new display
 					if (displayWindow.getJMenuBar() == null) {

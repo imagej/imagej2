@@ -127,11 +127,13 @@ public class SwingMdiUI extends AbstractSwingUI {
 			.getPluginsOfType(DisplayViewer.class))
 		{
 			try {
+				// FIXME: reconcile this with SwingUI
 				final DisplayViewer<?> displayViewer = info.createInstance();
 				if (displayViewer.canView(display)) {
 					final SwingMdiDisplayWindow displayWindow =
 						new SwingMdiDisplayWindow();
 					displayViewer.view(displayWindow, display);
+					displayWindow.setTitle(display.getName());
 					displayWindow.showDisplay(true);
 					desktopPane.add(displayWindow);
 					displayWindow.addEventDispatcher(new InternalFrameEventDispatcher(

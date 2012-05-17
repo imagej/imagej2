@@ -174,8 +174,6 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
 				doInitialSizing();
 				displayViewer.getCanvas().rebuild();
-				window.setTitle(getDisplay().getName());
-				window.showDisplay(true);
 			}
 		});
 	}
