@@ -66,7 +66,7 @@ public interface DisplayViewer<T> extends IPlugin {
 	Display<T> getDisplay();
 
 	/** Gets the window in which the view is displayed. */
-	DisplayWindow getDisplayWindow();
+	DisplayWindow getWindow();
 
 	/**
 	 * Installs the display panel.

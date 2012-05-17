@@ -147,7 +147,7 @@ public class SwingUI extends AbstractSwingUI {
 	protected void onDisplayDeleted(final DisplayDeletedEvent event) {
 		final DisplayViewer<?> displayViewer = getDisplayViewer(event.getObject());
 		if (displayViewer != null) {
-			final DisplayWindow displayWindow = displayViewer.getDisplayWindow();
+			final DisplayWindow displayWindow = displayViewer.getWindow();
 			if ((displayWindow != null) && (displayWindow instanceof JFrame)) {
 				deleteMenuBar((JFrame) displayWindow);
 			}

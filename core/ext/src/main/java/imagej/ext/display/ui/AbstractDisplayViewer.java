@@ -77,7 +77,7 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 	}
 
 	@Override
-	public DisplayWindow getDisplayWindow() {
+	public DisplayWindow getWindow() {
 		return window;
 	}
 
