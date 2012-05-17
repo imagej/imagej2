@@ -2075,16 +2075,40 @@ static const char *get_java_command(void)
 
 static char *discover_system_java_home(void)
 {
+#ifdef WIN32
+	HKEY key;
+	HRESULT result;
+	const char *key_root = "SOFTWARE\\JavaSoft\\Java Development Kit";
+	struct string *string;
+	char buffer[PATH_MAX];
+	DWORD valuelen = sizeof(buffer);
+
+	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key_root, 0, KEY_READ, &key);
+	if (ERROR_SUCCESS != result)
+		return NULL;
+	result = RegQueryValueEx(key, "CurrentVersion", NULL, NULL, (LPBYTE)buffer, &valuelen);
+	RegCloseKey(key);
+	if (ERROR_SUCCESS != result)
+{ error(get_win_error());
+		return NULL;
+}
+	string = string_initf("%s\\%s", key_root, buffer);
+	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, string->buffer, 0, KEY_READ, &key);
+	if (ERROR_SUCCESS != result)
+		return NULL;
+	valuelen = sizeof(buffer);
+	result = RegQueryValueEx(key, "JavaHome", NULL, NULL, (LPBYTE)buffer, &valuelen);
+	RegCloseKey(key);
+	if (ERROR_SUCCESS != result)
+		return NULL;
+	return strdup(buffer);
+#else
 	const char *java_executable = find_in_path(get_java_command());
 
 	if (java_executable) {
 		char *path = strdup(java_executable);
 		const char *suffixes[] = {
-#ifdef WIN32
-			".exe", "javaw",
-#endif
-			"java", "\\", "/", "bin", "\\", "/",
-			NULL
+			"java", "\\", "/", "bin", "\\", "/", NULL
 		};
 		int len = strlen(path), i;
 		for (i = 0; suffixes[i]; i++)
@@ -2094,8 +2118,8 @@ static char *discover_system_java_home(void)
 			}
 		return path;
 	}
-
 	return NULL;
+#endif
 }
 
 static void show_commandline(struct options *options)
