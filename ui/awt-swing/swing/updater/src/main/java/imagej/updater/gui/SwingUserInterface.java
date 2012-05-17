@@ -186,6 +186,7 @@ public class SwingUserInterface extends UpdaterUserInterface {
 
 		panel.add(new JLabel("Password:"));
 		final JPasswordField password = new JPasswordField();
+		password.setColumns(20);
 		panel.add(password);
 
 		if (JOptionPane.showConfirmDialog(null, panel, title,
