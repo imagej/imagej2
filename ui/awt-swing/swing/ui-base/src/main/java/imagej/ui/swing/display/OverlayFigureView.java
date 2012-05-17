@@ -83,7 +83,7 @@ public class OverlayFigureView implements FigureView {
 	 * Constructor to use to discover the figure to use for an overlay
 	 * 
 	 * @param display - hook to this display
-	 * @param overlay - represent this overlay
+	 * @param overlayView - represent this overlay
 	 */
 	public OverlayFigureView(final AbstractSwingImageDisplayViewer display,
 		final OverlayView overlayView)
@@ -96,7 +96,7 @@ public class OverlayFigureView implements FigureView {
 	 * created using the CreationTool
 	 * 
 	 * @param display - hook to this display
-	 * @param overlay - represent this overlay
+	 * @param overlayView - represent this overlay
 	 * @param figure - draw using this figure
 	 */
 	public OverlayFigureView(final AbstractSwingImageDisplayViewer display,
@@ -169,11 +169,11 @@ public class OverlayFigureView implements FigureView {
 				synchronized (OverlayFigureView.this) {
 					if (disposed || disposeScheduled) return;
 				}
-				final ImageDisplay display = getDisplay();
-				if (display.isVisible(OverlayFigureView.this.overlayView)) {
-					display.remove(OverlayFigureView.this);
+				final ImageDisplay d = getDisplay();
+				if (d.isVisible(OverlayFigureView.this.overlayView)) {
+					d.remove(OverlayFigureView.this);
 					dispose();
-					display.update();
+					d.update();
 				}
 			}
 		});

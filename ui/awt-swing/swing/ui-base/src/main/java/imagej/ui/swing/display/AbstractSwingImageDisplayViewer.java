@@ -46,7 +46,7 @@ import imagej.options.plugins.OptionsAppearance;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 
 /**
- * A Swing image display plugin, which displays 2D planes in grayscale or
+ * A Swing image display viewer, which displays 2D planes in grayscale or
  * composite color. Intended to be subclassed by a concrete implementation that
  * provides a {@link DisplayWindow} in which the display should be housed.
  * 
@@ -62,8 +62,6 @@ public abstract class AbstractSwingImageDisplayViewer extends
 
 	private JHotDrawImageCanvas imgCanvas;
 	private SwingDisplayPanel imgPanel;
-
-	public AbstractSwingImageDisplayViewer() {}
 
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {
@@ -108,9 +106,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 	// -- Event handlers --
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused")
-	final OptionsEvent e)
-	{
+	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent e) {
 		updateLabel();
 	}
 

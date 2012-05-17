@@ -44,10 +44,11 @@ import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import javax.swing.JFrame;
 
 /**
- * Single Document Interface implementation of Swing image display plugin. The
+ * Single Document Interface implementation of Swing image display viewer. The
  * SDI display is housed in a {@link JFrame}.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  * @see AbstractSwingImageDisplayViewer
  */
 @Plugin(type = ImageDisplayViewer.class)

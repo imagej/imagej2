@@ -37,7 +37,6 @@ package imagej.ui.swing.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.event.EventHandler;
@@ -54,28 +53,29 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import org.jhotdraw.draw.Drawing;
-import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
 
 /**
- * TODO
+ * A figure view that links an ImageJ {@link DatasetView} to a JHotDraw
+ * {@link ImageFigure}.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
 public class DatasetFigureView implements FigureView {
 
 	private final DatasetView datasetView;
 	private final ImageFigure figure;
-	private final AbstractSwingImageDisplayViewer displayViewer;
 	private boolean needsUpdate;
 	private boolean disposeScheduled;
+
+	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
 
 	public DatasetFigureView(final AbstractSwingImageDisplayViewer displayViewer,
 		final DatasetView datasetView)
 	{
 		this.datasetView = datasetView;
-		this.displayViewer = displayViewer;
 		needsUpdate = false;
 		final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
@@ -132,8 +132,13 @@ public class DatasetFigureView implements FigureView {
 	// -- FigureView methods --
 
 	@Override
-	public Figure getFigure() {
+	public ImageFigure getFigure() {
 		return figure;
+	}
+
+	@Override
+	public DatasetView getDataView() {
+		return datasetView;
 	}
 
 	@Override
@@ -145,7 +150,7 @@ public class DatasetFigureView implements FigureView {
 					@Override
 					public void run() {
 						synchronized (DatasetFigureView.this) {
-							figure.requestRemove();
+							getFigure().requestRemove();
 						}
 					}
 				});
@@ -154,8 +159,4 @@ public class DatasetFigureView implements FigureView {
 		}
 	}
 
-	@Override
-	public DataView getDataView() {
-		return datasetView;
-	}
 }

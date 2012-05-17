@@ -43,10 +43,12 @@ import imagej.ext.display.TextDisplay;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractTextDisplayViewer extends AbstractDisplayViewer<String> {
+public abstract class AbstractTextDisplayViewer extends
+	AbstractDisplayViewer<String>
+{
 
 	@Override
-	public boolean canView(Display<?> display) {
+	public boolean canView(final Display<?> display) {
 		return display instanceof TextDisplay;
 	}
 

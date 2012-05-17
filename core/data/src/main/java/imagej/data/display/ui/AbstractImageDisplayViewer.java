@@ -62,45 +62,44 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 /**
- * The AbstractImageDisplayViewer implements the gui-independent
- * elements of an image display viewer. It subscribes to the
- * events of its controlled display and distills these into
- * abstract lifecycle actions.
+ * The AbstractImageDisplayViewer implements the gui-independent elements of an
+ * image display viewer. It subscribes to the events of its controlled display
+ * and distills these into abstract lifecycle actions.
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<DataView> implements ImageDisplayViewer {
+public abstract class AbstractImageDisplayViewer extends
+	AbstractDisplayViewer<DataView> implements ImageDisplayViewer
+{
+
 	protected enum ZoomScaleOption {
-		OPTIONS_PERCENT_SCALE,
-		OPTIONS_FRACTIONAL_SCALE
+		OPTIONS_PERCENT_SCALE, OPTIONS_FRACTIONAL_SCALE
 	}
-	
+
 	protected ImageCanvas canvas;
 	protected EventService eventService;
 	protected List<EventSubscriber<?>> subscribers;
-	
-	public AbstractImageDisplayViewer() {
-	}
+
 	@Override
-	public boolean canView(Display<?> disp) {
+	public boolean canView(final Display<?> disp) {
 		return disp instanceof ImageDisplay;
 	}
-	
+
 	@Override
-	public void view(DisplayWindow win, Display<?> disp) {
+	public void view(final DisplayWindow win, final Display<?> disp) {
 		super.view(win, disp);
 		this.window = win;
 		assert disp instanceof ImageDisplay;
 		eventService = disp.getContext().getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 	}
-	
+
 	@Override
 	public ImageDisplay getImageDisplay() {
 		assert getDisplay() instanceof ImageDisplay;
-		return (ImageDisplay)getDisplay();
+		return (ImageDisplay) getDisplay();
 	}
-	
+
 	/**
 	 * Make some informative label text by inspecting the views.
 	 */
@@ -135,7 +134,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 
 		sb.append(dataset.getTypeLabelLong());
 		sb.append("; ");
-		
+
 		sb.append(byteInfoString(dataset));
 		sb.append("; ");
 
@@ -148,7 +147,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 
 		return sb.toString();
 	}
-	
+
 	protected Dataset getDataset(final DataView view) {
 		final Data data = view.getData();
 		return data instanceof Dataset ? (Dataset) data : null;
@@ -158,30 +157,32 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 	 * Recalculate the label text and update it on the panel.
 	 */
 	protected void updateLabel() {
-		if (getImageDisplay().getActiveView() != null)
+		if (getImageDisplay().getActiveView() != null) {
 			getPanel().setLabel(makeLabel());
+		}
 	}
-	
+
 	/**
-	 * Implement this in the derived class to get the user's
-	 * preference for displaying zoom scale (as a fraction or percent)
+	 * Implement this in the derived class to get the user's preference for
+	 * displaying zoom scale (as a fraction or percent)
 	 * 
-	 * @return ZoomScaleOption.OPTION_PERCENT_SCALE or ZoomScaleOption.OPTION_FRACTIONAL_SCALE
+	 * @return {@link ZoomScaleOption#OPTIONS_PERCENT_SCALE} or
+	 *         {@link ZoomScaleOption#OPTIONS_FRACTIONAL_SCALE}
 	 */
 	protected abstract ZoomScaleOption getZoomScaleOption();
-	
+
 	// -- Helper methods --
 
-	private String byteInfoString(Dataset ds) {
+	private String byteInfoString(final Dataset ds) {
 		final double byteCount = ds.getBytesOfInfo();
 		return UnitUtils.getAbbreviatedByteLabel(byteCount);
 	}
 
-	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
 
-		if (getZoomScaleOption().equals(ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE))
+		if (getZoomScaleOption().equals(ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE)) {
 			return new FractionalScaleConverter();
+		}
 
 		return new PercentScaleConverter();
 	}
@@ -214,8 +215,9 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 				return String.format("1/%.2fX", (1 / realScale));
 			}
 			// or do we have a whole number scale?
-			else if (scale.getDenom() == 1)
+			if (scale.getDenom() == 1) {
 				return String.format("%dX", scale.getNumer());
+			}
 			// else have valid fraction
 			return String.format("%d/%dX", scale.getNumer(), scale.getDenom());
 		}
@@ -243,8 +245,7 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 					denom = (int) floor;
 				}
 			}
-			if (denom == 0)
-				lookForBestFraction(realScale);
+			if (denom == 0) lookForBestFraction(realScale);
 		}
 
 		int getNumer() {
@@ -275,15 +276,15 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 
 	}
 
-	private boolean isMyDataset(Dataset ds) {
+	private boolean isMyDataset(final Dataset ds) {
 		if (ds == null) return false;
-		ImageDisplayService service =
-				eventService.getContext().getService(ImageDisplayService.class);
-		ImageDisplay disp = getImageDisplay();
+		final ImageDisplayService service =
+			eventService.getContext().getService(ImageDisplayService.class);
+		final ImageDisplay disp = getImageDisplay();
 		return service.getActiveDataset(disp) == ds;
 	}
-	
-	//-- Event handlers --//
+
+	// -- Event handlers --
 
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
@@ -292,7 +293,8 @@ public abstract class AbstractImageDisplayViewer extends AbstractDisplayViewer<D
 		// final ToolService toolMgr = ui.getToolBar().getToolService();
 		final ToolService toolService =
 			event.getContext().getService(ToolService.class);
-		getImageDisplay().getCanvas().setCursor(toolService.getActiveTool().getCursor());
+		getImageDisplay().getCanvas().setCursor(
+			toolService.getActiveTool().getCursor());
 	}
 
 	@EventHandler

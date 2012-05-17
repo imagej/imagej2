@@ -44,11 +44,12 @@ import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import javax.swing.JInternalFrame;
 
 /**
- * Multiple Document Interface implementation of Swing image display plugin. The
+ * Multiple Document Interface implementation of Swing image display viewer. The
  * MDI display is housed in a {@link JInternalFrame}.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  * @see AbstractSwingImageDisplayViewer
  */
 @Plugin(type = ImageDisplayViewer.class)

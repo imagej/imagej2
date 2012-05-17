@@ -40,27 +40,23 @@ import imagej.data.display.DataView;
 import org.jhotdraw.draw.Figure;
 
 /**
- * A figure view has an associated figure.
+ * A figure view renders a {@link DataView} with a linked JHotDraw
+ * {@link Figure}.
  * 
  * @author Lee Kamentsky
  */
 public interface FigureView {
 
-	/**
-	 * @return the figure associated with this view
-	 */
+	/** Gets the linked JHotDraw figure. */
 	public Figure getFigure();
 
+	/** Gets the linked ImageJ data view. */
 	public DataView getDataView();
 
-	/**
-	 * Update the appearance to match that of the Data object
-	 */
+	/** Updates the figure to match the linked data view. */
 	public void update();
 
-	/**
-	 * Remove the figure from the scene.
-	 */
+	/** Removes the figure from the scene. */
 	public void dispose();
 
 }
