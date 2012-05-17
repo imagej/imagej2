@@ -95,7 +95,6 @@ public abstract class AbstractImageDisplayViewer extends
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
-		this.window = w;
 		assert d instanceof ImageDisplay;
 		subscribers = getEventService().subscribe(this);
 	}

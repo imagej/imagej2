@@ -53,9 +53,10 @@ import java.util.List;
  * @author Lee Kamentsky
  */
 public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
-	protected Display<T> display;
-	protected DisplayWindow window;
-	protected DisplayPanel panel;
+
+	private Display<T> display;
+	private DisplayWindow window;
+	private DisplayPanel panel;
 
 	@SuppressWarnings("unused")
 	private List<EventSubscriber<?>> subscribers;
