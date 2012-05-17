@@ -325,8 +325,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		for (final DisplayViewer<?> displayViewer : displayViewers) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
 		}
-		Log.warn("No DisplayViewer found for display, \"" + display.getName() +
-			"\"");
+		Log.warn("No DisplayViewer found for display: '" + display.getName() + "'");
 		return null;
 	}
 
