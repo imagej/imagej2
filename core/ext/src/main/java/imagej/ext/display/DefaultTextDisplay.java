@@ -33,18 +33,28 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.ext.display;
 
-import imagej.ext.display.AbstractTextDisplay;
-import imagej.ext.display.TextDisplay;
+import imagej.ext.Priority;
 import imagej.ext.plugin.Plugin;
 
 /**
- * Display for showing text onscreen.
+ * Default display for text.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = TextDisplay.class)
-public class DefaultTextDisplay extends AbstractTextDisplay {
-	// no implementation needed
+@Plugin(type = TextDisplay.class, priority = Priority.LOW_PRIORITY)
+public class DefaultTextDisplay extends AbstractDisplay<String>
+	implements TextDisplay
+{
+
+	public DefaultTextDisplay() {
+		super(String.class);
+	}
+
+	@Override
+	public void append(String text) {
+		add(text);
+	}
+
 }
