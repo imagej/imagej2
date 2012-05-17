@@ -94,6 +94,8 @@ public abstract class AbstractSwingImageDisplayViewer extends
 
 	// -- AbstractImageDisplayViewer methods --
 
+	// CTR TODO - This logic is not Swing-specific and should be factored up.
+
 	@Override
 	protected ZoomScaleOption getZoomScaleOption() {
 		final ImageJ context = getDisplay().getContext();
