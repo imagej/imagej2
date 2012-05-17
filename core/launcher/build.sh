@@ -23,6 +23,7 @@ then
 fi
 
 CWD="$(dirname "$0")"
+mkdir -p "$CWD"/target
 gcc -g \
 	-fno-stack-protector \
 	-o "$CWD"/target/ImageJ \
