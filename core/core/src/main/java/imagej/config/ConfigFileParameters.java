@@ -99,7 +99,7 @@ public class ConfigFileParameters {
 
 	// -- public interface --
 
-	/** Finds the default name/location of the launcher config file */
+	/** Finds the default name/location of the launcher config file. */
 	public static String getCfgFileName() {
 		final File directory = FileUtils.getImageJDirectory();
 		return new File(directory, CONFIG_FILE).getAbsolutePath();
@@ -175,12 +175,12 @@ public class ConfigFileParameters {
 		else loadModernConfigValues(dataMap, filename);
 	}
 
-	/** Saves current values to the launcher config file */
+	/** Saves current values to the launcher config file. */
 	private void save() {
 		saveConfigValues(dataMap, filename);
 	}
 
-	/** initializes launcher config file values to valid defaults */
+	/** Initializes launcher config file values to valid defaults. */
 	private void setDefaultValues(final Map<String, String> map) {
 		map.clear();
 		map.put(MEMORY_KEY, MINIMUM_MEMORY.toString());
@@ -188,8 +188,8 @@ public class ConfigFileParameters {
 	}
 
 	/**
-	 * returns true if specified config file is an old legacy style launcher
-	 * config file
+	 * Returns true if specified config file is an old legacy style launcher
+	 * config file.
 	 */
 	private boolean isLegacyConfigFile(final String fname) {
 		try {
@@ -206,7 +206,7 @@ public class ConfigFileParameters {
 		}
 	}
 
-	/** loads launcher config file values from an old legacy style file */
+	/** Loads launcher config file values from an old legacy style file. */
 	private boolean loadLegacyConfigValues(final Map<String, String> map,
 		final String fname)
 	{
@@ -234,7 +234,7 @@ public class ConfigFileParameters {
 		}
 	}
 
-	/** loads launcher config file values from a modern IJ2 style file */
+	/** Loads launcher config file values from a modern IJ2 style file. */
 	private boolean loadModernConfigValues(final Map<String, String> map,
 		final String fname)
 	{
@@ -266,7 +266,7 @@ public class ConfigFileParameters {
 		}
 	}
 
-	/** writes launcher config values to an IJ2 style launcher config file */
+	/** Writes launcher config values to an IJ2 style launcher config file. */
 	private void saveConfigValues(final Map<String, String> map,
 		final String fname)
 	{
@@ -292,7 +292,7 @@ public class ConfigFileParameters {
 	}
 
 	/**
-	 * returns the number of megabytes specified in a text line from a legacy
+	 * Returns the number of megabytes specified in a text line from a legacy
 	 * launcher config file (3rd line).
 	 */
 	private int memorySize(final String argList) {
@@ -316,7 +316,7 @@ public class ConfigFileParameters {
 	}
 
 	/**
-	 * returns a string containing all the command line arguments from a legacy
+	 * Returns a string containing all the command line arguments from a legacy
 	 * launcher config file (3rd line). Ignores memory specification as that is
 	 * handled by memorySize().
 	 */
@@ -339,4 +339,5 @@ public class ConfigFileParameters {
 		}
 		return value;
 	}
+
 }

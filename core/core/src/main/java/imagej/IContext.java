@@ -42,8 +42,8 @@ package imagej;
  * @author Lee Kamentsky
  */
 public interface IContext {
-	/**
-	 * @return the instance of ImageJ in which the object lives
-	 */
+
+	/** Gets the instance of ImageJ in which the object lives. */
 	ImageJ getContext();
+
 }

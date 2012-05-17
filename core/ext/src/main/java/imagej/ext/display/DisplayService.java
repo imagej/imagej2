@@ -114,7 +114,20 @@ public interface DisplayService extends IService {
 	 */
 	boolean isUniqueName(final String name);
 
-	/** Creates a display for the given object. */
+	/**
+	 * Creates a display for the given object.
+	 * 
+	 * @param name The name to be assigned to the display.
+	 * @param o The object for which a display should be created. The object is
+	 *          then added to the display.
+	 * @return Newly created Display<?> containing the given object. The Display
+	 *         is typed with ? rather than T matching the Object because it is
+	 *         possible for the Display to be a collection of some other sort of
+	 *         object than the one being added. For example, ImageDisplay is a
+	 *         Display<DataView> with the DataView wrapping a Dataset, yet the
+	 *         ImageDisplay supports adding Datasets directly, taking care of
+	 *         wrapping them in a DataView as needed.
+	 */
 	Display<?> createDisplay(final String name, final Object o);
 
 }

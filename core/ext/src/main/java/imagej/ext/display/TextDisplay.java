@@ -36,7 +36,7 @@
 package imagej.ext.display;
 
 /**
- * A {@link Display} for visualizing text.
+ * Interface for text {@link Display}s.
  * 
  * @author Curtis Rueden
  */

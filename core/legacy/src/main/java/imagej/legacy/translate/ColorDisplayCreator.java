@@ -100,7 +100,8 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 		final DisplayService displayService =
 			context.getService(DisplayService.class);
-		// CTR FIXME
+		// CTR FIXME - add imageDisplayService.createImageDisplay method?
+		// returns null if it cannot find an ImageDisplay-compatible display?
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
