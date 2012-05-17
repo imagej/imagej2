@@ -13,6 +13,7 @@ public interface SwingImageDisplayViewer extends ImageDisplayViewer {
 	@Override
 	SwingDisplayPanel getPanel();
 
+	/** Gets the JHotDraw canvas used by the viewer. */
 	JHotDrawImageCanvas getCanvas();
 
 }
