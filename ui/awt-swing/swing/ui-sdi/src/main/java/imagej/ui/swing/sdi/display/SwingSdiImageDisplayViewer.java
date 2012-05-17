@@ -56,11 +56,12 @@ import javax.swing.JFrame;
 public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
 
+	// -- DisplayViewer methods --
+
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) w;
-
 		sdiWindow.addEventDispatcher(dispatcher);
 	}
 
