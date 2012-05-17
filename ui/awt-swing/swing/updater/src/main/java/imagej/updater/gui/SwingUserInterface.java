@@ -181,12 +181,15 @@ public class SwingUserInterface extends UpdaterUserInterface {
 
 	@Override
 	public String getPassword(final String title) {
+		final JPanel panel = new JPanel();
+		panel.setLayout(new MigLayout());
 
-		final JLabel label = new JLabel("Password:");
+		panel.add(new JLabel("Password:"));
 		final JPasswordField password = new JPasswordField();
+		panel.add(password);
 
-		if (JOptionPane.showConfirmDialog(null, new Object[] { label, password },
-			title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
+		if (JOptionPane.showConfirmDialog(null, panel, title,
+			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
 		return new String(password.getPassword());
 
 	}
