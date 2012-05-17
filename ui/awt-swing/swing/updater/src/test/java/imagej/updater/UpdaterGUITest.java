@@ -1,10 +1,16 @@
 package imagej.updater;
 
 import imagej.updater.gui.ProgressDialog;
+import imagej.updater.gui.SwingUserInterface;
 import imagej.util.MersenneTwisterFast;
 
-public class ProgressTest {
+public class UpdaterGUITest {
 	public static void main(String[] args) {
+		//testProgressDialog();
+		testPassword();
+	}
+
+	protected static void testProgressDialog() {
 		int count = 35;
 		int minSize = 8192;
 		int maxSize = 65536;
@@ -47,5 +53,10 @@ public class ProgressTest {
 			progress.itemDone(item);
 		}
 		progress.done();
+	}
+
+	protected static void testPassword() {
+		SwingUserInterface ui = new SwingUserInterface(null);
+		System.err.println(ui.getPassword("Enter password"));
 	}
 }
