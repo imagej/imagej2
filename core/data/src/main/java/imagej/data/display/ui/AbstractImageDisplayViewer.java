@@ -96,10 +96,33 @@ public abstract class AbstractImageDisplayViewer extends
 		return (ImageDisplay) getDisplay();
 	}
 
+	protected Dataset getDataset(final DataView view) {
+		final Data data = view.getData();
+		return data instanceof Dataset ? (Dataset) data : null;
+	}
+
 	/**
-	 * Make some informative label text by inspecting the views.
+	 * Recalculate the label text and update it on the panel.
 	 */
-	public String makeLabel() {
+	protected void updateLabel() {
+		if (getImageDisplay().getActiveView() != null) {
+			getPanel().setLabel(makeLabel());
+		}
+	}
+
+	/**
+	 * Implement this in the derived class to get the user's preference for
+	 * displaying zoom scale (as a fraction or percent)
+	 * 
+	 * @return {@link ZoomScaleOption#OPTIONS_PERCENT_SCALE} or
+	 *         {@link ZoomScaleOption#OPTIONS_FRACTIONAL_SCALE}
+	 */
+	protected abstract ZoomScaleOption getZoomScaleOption();
+
+	// -- Helper methods --
+
+	/** Makes some informative label text by inspecting the views. */
+	private String makeLabel() {
 		// CTR TODO - Fix window label to show beyond just the active view.
 		final DataView view = getImageDisplay().getActiveView();
 		final Dataset dataset = getDataset(view);
@@ -143,31 +166,6 @@ public abstract class AbstractImageDisplayViewer extends
 
 		return sb.toString();
 	}
-
-	protected Dataset getDataset(final DataView view) {
-		final Data data = view.getData();
-		return data instanceof Dataset ? (Dataset) data : null;
-	}
-
-	/**
-	 * Recalculate the label text and update it on the panel.
-	 */
-	protected void updateLabel() {
-		if (getImageDisplay().getActiveView() != null) {
-			getPanel().setLabel(makeLabel());
-		}
-	}
-
-	/**
-	 * Implement this in the derived class to get the user's preference for
-	 * displaying zoom scale (as a fraction or percent)
-	 * 
-	 * @return {@link ZoomScaleOption#OPTIONS_PERCENT_SCALE} or
-	 *         {@link ZoomScaleOption#OPTIONS_FRACTIONAL_SCALE}
-	 */
-	protected abstract ZoomScaleOption getZoomScaleOption();
-
-	// -- Helper methods --
 
 	private String byteInfoString(final Dataset ds) {
 		final double byteCount = ds.getBytesOfInfo();
