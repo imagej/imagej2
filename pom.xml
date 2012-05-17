@@ -287,10 +287,10 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 	</mailingLists>
 
 	<scm>
-		<connection>scm:svn:http://code.imagej.net/svn/imagej</connection>
-		<developerConnection>scm:svn:http://code.imagej.net/svn/imagej</developerConnection>
+		<connection>scm:git:git://github.com/imagej/imagej.git</connection>
+		<developerConnection>scm:git:git@github.com:imagej/imagej.git</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://code.imagej.net/svn/imagej</url>
+		<url>https://github.com/imagej/imagej</url>
 	</scm>
 
 	<!-- NB: for project parent -->
