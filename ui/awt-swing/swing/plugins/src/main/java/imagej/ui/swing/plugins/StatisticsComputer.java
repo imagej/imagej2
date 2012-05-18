@@ -179,16 +179,16 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>>
 		return true;
 	}
 
-	protected void compute(final long startPos, final long loopSize, final T min,
-		final T max, final int[] histo)
+	protected void compute(final long startPos, final long loopSize, final T mn,
+		final T mx, final int[] histo)
 	{
 		final Cursor<T> cursor = image.cursor();
 
 		// init min and max
 		cursor.fwd();
 
-		min.set(cursor.get());
-		max.set(cursor.get());
+		mn.set(cursor.get());
+		mx.set(cursor.get());
 
 		cursor.reset();
 
@@ -197,7 +197,7 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>>
 
 		// calculate multiple for determining bin
 
-		// double k = (BINS - 1)/ (max - min);
+		// double k = (BINS - 1)/ (mx - mn);
 		final double k = (bins - 1) / (histoMax - histoMin);
 
 		// do as many pixels as wanted by this thread
@@ -206,11 +206,11 @@ public class StatisticsComputer<T extends RealType<T> & Comparable<T>>
 			final T value = cursor.get();
 
 			// for min/max
-			if (Util.min(min, value) == value) {
-				min.set(value);
+			if (Util.min(mn, value) == value) {
+				mn.set(value);
 			}
-			if (Util.max(max, value) == value) {
-				max.set(value);
+			if (Util.max(mx, value) == value) {
+				mx.set(value);
 			}
 
 			// for histogram

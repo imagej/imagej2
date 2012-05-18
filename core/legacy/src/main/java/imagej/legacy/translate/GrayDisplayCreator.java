@@ -108,7 +108,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 	// -- private interface --
 
 	private ImageDisplay colorCase(final ImagePlus imp,
-		final AxisType[] preferredOrder, boolean isBinaryImp)
+		final AxisType[] preferredOrder,@SuppressWarnings("unused") boolean isBinaryImp)
 	{
 		final Dataset ds = makeGrayDatasetFromColorImp(imp, preferredOrder);
 		setDatasetGrayDataFromColorImp(ds, imp);

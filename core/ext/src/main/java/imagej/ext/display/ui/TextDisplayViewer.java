@@ -42,5 +42,5 @@ package imagej.ext.display.ui;
  * A display viewer for a display of strings.
  */
 public interface TextDisplayViewer extends DisplayViewer<String> {
-
+	// no methods to define. simply enforces type
 }

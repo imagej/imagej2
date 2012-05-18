@@ -113,16 +113,16 @@ public class DefaultImageCanvas implements ImageCanvas {
 		canvasHelper.zoomIn();
 	}
 	@Override
-	public void zoomIn(IntCoords center) {
-		canvasHelper.zoomIn(center);
+	public void zoomIn(IntCoords ctr) {
+		canvasHelper.zoomIn(ctr);
 	}
 	@Override
 	public void zoomOut() {
 		canvasHelper.zoomOut();
 	}
 	@Override
-	public void zoomOut(IntCoords center) {
-		canvasHelper.zoomOut(center);
+	public void zoomOut(IntCoords ctr) {
+		canvasHelper.zoomOut(ctr);
 	}
 	@Override
 	public void zoomToFit(IntCoords topLeft, IntCoords bottomRight) {
@@ -212,10 +212,10 @@ public class DefaultImageCanvas implements ImageCanvas {
 	 * an event that tells the world that the
 	 * viewport mapping changed.
 	 *  
-	 * @param scale
+	 * @param scaleFactor
 	 */
-	void doSetZoom(double scale) {
-		this.scale = scale;
+	void doSetZoom(double scaleFactor) {
+		this.scale = scaleFactor;
 		publishZoomEvent();
 	}
 	
@@ -224,18 +224,18 @@ public class DefaultImageCanvas implements ImageCanvas {
 	 * and publish an event that tells the world that
 	 * the viewport mapping changed.
 	 * 
-	 * @param scale
+	 * @param scaleFactor
 	 * @param x
 	 * @param y
 	 */
-	void doSetZoomAndCenter(double scale, double x, double y) {
+	void doSetZoomAndCenter(double scaleFactor, double x, double y) {
 		if (center == null) {
 			center = new RealCoords(x, y);
 		} else {
 			center.x = x;
 			center.y = y;
 		}
-		this.scale = scale;
+		this.scale = scaleFactor;
 		publishZoomEvent();
 	}
 	

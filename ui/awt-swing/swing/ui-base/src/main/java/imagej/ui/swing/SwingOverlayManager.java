@@ -363,6 +363,7 @@ public class SwingOverlayManager
 			return addOverlayInfo(last,info);
 		}
 		
+		@SuppressWarnings("synthetic-access")
 		public boolean addOverlay(int i, Overlay overlay) {
 			if (findIndex(overlay) >= 0) return false;
 			final OverlayInfo info = new OverlayInfo();
@@ -381,6 +382,7 @@ public class SwingOverlayManager
 			return false;
 		}
 		
+		@SuppressWarnings({"synthetic-access","unused"})
 		public boolean replaceOverlay(int i, Overlay overlay) {
 			final OverlayInfo info = new OverlayInfo();
 			info.overlay = overlay;
@@ -394,6 +396,7 @@ public class SwingOverlayManager
 			return true;
 		}
 		
+		@SuppressWarnings("unused")
 		public boolean deleteOverlayInfo(OverlayInfo info) {
 			final int index = findIndex(info);
 			if (index < 0) return false;
@@ -421,6 +424,7 @@ public class SwingOverlayManager
 			return -1;
 		}
 		
+		@SuppressWarnings("synthetic-access")
 		public int findIndex(Overlay overlay) {
 			for (int i = 0; i < list.size(); i++)
 				if (overlay == list.get(i).overlay)
@@ -436,6 +440,7 @@ public class SwingOverlayManager
 				}});
 		}
 		
+		@SuppressWarnings("synthetic-access")
 		public int[] selectedIndices() {
 			int selCount = 0;
 			for (int i = 0; i < getOverlayInfoCount(); i++) {
@@ -449,12 +454,14 @@ public class SwingOverlayManager
 			return selectedIndices;
 		}
 		
+		@SuppressWarnings("synthetic-access")
 		public void deselectAll() {
 			for (int i = 0; i < getOverlayInfoCount(); i++) {
 				getOverlayInfo(i).selected = false;
 			}
 		}
 		
+		@SuppressWarnings("synthetic-access")
 		public List<Overlay> selectedOverlays() {
 			ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 			for (int i = 0; i < getOverlayInfoCount(); i++) {
@@ -490,6 +497,7 @@ public class SwingOverlayManager
 
 	/*
 	*/
+	@SuppressWarnings("synthetic-access")
 	private void populateOverlayList() {
 		// Populate the list with all overlays
 		final OverlayService ovrSrv = context.getService(OverlayService.class);
@@ -576,6 +584,7 @@ public class SwingOverlayManager
 	}
 	*/
 
+	@SuppressWarnings("synthetic-access")
 	@EventHandler
 	protected void onEvent(final DataViewSelectionEvent event) {
 		if (selecting) return;
@@ -624,11 +633,13 @@ public class SwingOverlayManager
 	}
 	*/
 	
+	@SuppressWarnings("unused")
 	@EventHandler
 	protected void onEvent(OverlayRestructuredEvent event) {
 		jlist.updateUI();
 	}
 
+	@SuppressWarnings("unused")
 	@EventHandler
 	protected void onEvent(OverlayUpdatedEvent event) {
 		jlist.updateUI();
@@ -660,6 +671,7 @@ public class SwingOverlayManager
 		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
+	@SuppressWarnings("synthetic-access")
 	private void delete() {
 		if (infoList.getOverlayInfoCount() == 0) return;
 		final OverlayService ovrSrv = context.getService(OverlayService.class);
@@ -827,6 +839,7 @@ public class SwingOverlayManager
 		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
+	@SuppressWarnings("synthetic-access")
 	private void rename() {
 		final int[] selectedIndices = infoList.selectedIndices();
 		if (selectedIndices.length < 1) {
@@ -1305,6 +1318,7 @@ public class SwingOverlayManager
 	// -- private helpers for TODO XXXX --
 	
 	// TODO - assumes first selected overlay view is the only one. bad?
+	@SuppressWarnings("unused")
 	private Overlay getActiveOverlay() {
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
 		final ImageDisplay activeDisplay = ids.getActiveImageDisplay();

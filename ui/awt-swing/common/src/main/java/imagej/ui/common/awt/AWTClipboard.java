@@ -62,12 +62,13 @@ public class AWTClipboard implements SystemClipboard, Transferable {
 	// -- SystemClipboard methods --
 	
 	@Override
-	public void pixelsToSystemClipboard(ARGBPlane plane) {
-		this.plane = plane;
+	public void pixelsToSystemClipboard(ARGBPlane argbPlane) {
+		this.plane = argbPlane;
 		try {
 			clipboard.setContents(this, null);
-		} catch (Throwable t) {}
-		
+		} catch (Throwable t) {
+			// do nothing - TODO - do something
+		}
 	}
 
 	// -- Transferable methods --

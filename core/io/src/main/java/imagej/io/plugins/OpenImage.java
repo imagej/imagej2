@@ -69,6 +69,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
 
+	@SuppressWarnings("rawtypes")
 	@Parameter
 	private IOService ioService;
 
