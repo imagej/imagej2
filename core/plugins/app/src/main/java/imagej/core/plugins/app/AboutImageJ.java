@@ -74,12 +74,12 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 // TODO
-//   Have imageX.tif files and ImageX.metadata.txt files
+//   Have imageX.ext image file and imageX.ext.txt metadata files
 //     Metadata file lists some useful info
 //     - image attribution
 //     - best color to render text in
-//     - recommended font size???
-//   This plugin should load a random image and display info including
+//     - recommended font size
+//   This plugin loads a random image and displays info including
 //     attribution text
 
 /**
@@ -109,6 +109,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	@Parameter
 	private DisplayService dispSrv;
 
+	@SuppressWarnings("rawtypes")
 	@Parameter
 	private IOService ioService;
 
