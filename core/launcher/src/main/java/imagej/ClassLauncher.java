@@ -195,7 +195,7 @@ public class ClassLauncher {
 	protected static void launch(ClassLoader classLoader, final String className,
 		final String[] arguments)
 	{
-		Class main = null;
+		Class<?> main = null;
 		if (classLoader == null) {
 			classLoader = Thread.currentThread().getContextClassLoader();
 		}
@@ -206,7 +206,7 @@ public class ClassLauncher {
 			System.err.println("Class '" + className + "' was not found");
 			System.exit(1);
 		}
-		final Class[] argsType = new Class[] { arguments.getClass() };
+		final Class<?>[] argsType = new Class<?>[] { arguments.getClass() };
 		Method mainMethod = null;
 		try {
 			mainMethod = main.getMethod("main", argsType);
