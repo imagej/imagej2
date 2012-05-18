@@ -59,10 +59,10 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RealPoint;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.img.NativeImg;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.basictypeaccess.BitAccess;
-import net.imglib2.img.basictypeaccess.ByteAccess;
+import net.imglib2.img.basictypeaccess.array.BitArray;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -124,7 +124,7 @@ public class Helper {
 	{
 		final long w = mask.length;
 		final long h = mask[0].length;
-		final NativeImg<BitType, BitAccess> img =
+		final ArrayImg<BitType, BitArray> img =
 			new ArrayImgFactory<BitType>().createBitInstance(new long[] { w, h }, 1);
 		final BitType t = new BitType(img);
 		img.setLinkedType(t);
@@ -175,7 +175,7 @@ public class Helper {
 	{
 		final int w = data.length;
 		final int h = data[0].length;
-		final NativeImg<ByteType, ByteAccess> img =
+		final ArrayImg<ByteType, ByteArray> img =
 			new ArrayImgFactory<ByteType>()
 				.createByteInstance(new long[] { w, h }, 1);
 		final ByteType t = new ByteType(img);

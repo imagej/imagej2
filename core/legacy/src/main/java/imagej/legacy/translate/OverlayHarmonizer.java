@@ -72,9 +72,9 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.img.Img;
-import net.imglib2.img.NativeImg;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.basictypeaccess.BitAccess;
+import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.CompositeRegionOfInterest;
@@ -595,15 +595,15 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final int yO)
 	{
 		final Rectangle bounds = roi.getBounds();
-		final NativeImg<BitType, BitAccess> nativeImg =
+		final ArrayImg<BitType, BitArray> arrayImg =
 			new ArrayImgFactory<BitType>().createBitInstance(new long[] {
 				bounds.width, bounds.height }, 1);
-		final BitType t = new BitType(nativeImg);
-		nativeImg.setLinkedType(t);
+		final BitType t = new BitType(arrayImg);
+		arrayImg.setLinkedType(t);
 		final int xOff = bounds.x;
 		final int yOff = bounds.y;
 		final Img<BitType> img =
-			new ImgTranslationAdapter<BitType, Img<BitType>>(nativeImg, new long[] {
+			new ImgTranslationAdapter<BitType, Img<BitType>>(arrayImg, new long[] {
 				xOff, yOff });
 		final RandomAccess<BitType> ra = img.randomAccess();
 		final ImageProcessor ip = roi.getMask();

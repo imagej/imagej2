@@ -53,9 +53,9 @@ import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
 import net.imglib2.img.Img;
-import net.imglib2.img.NativeImg;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.basictypeaccess.BitAccess;
+import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.sampler.special.ConstantRandomAccessible;
 import net.imglib2.type.logic.BitType;
@@ -166,7 +166,7 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		for (int i = 0; i < nDimensions; i++) {
 			dimensions[i] = in.readLong();
 		}
-		final NativeImg<BitType, BitAccess> img =
+		final ArrayImg<BitType, BitArray> img =
 			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
 		final BitType t = new BitType(img);
 		img.setLinkedType(t);

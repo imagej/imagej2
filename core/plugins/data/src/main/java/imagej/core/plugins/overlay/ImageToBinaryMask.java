@@ -53,9 +53,9 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.img.NativeImg;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.basictypeaccess.BitAccess;
+import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.type.logic.BitType;
@@ -129,13 +129,13 @@ public class ImageToBinaryMask implements ImageJPlugin {
 		for (int i = 0; i < imgplus.numDimensions(); i++) {
 			dimensions[i] = max[i] - min[i] + 1;
 		}
-		final NativeImg<BitType, BitAccess> nativeMask =
+		final ArrayImg<BitType, BitArray> arrayMask =
 			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
-		final BitType t = new BitType(nativeMask);
-		nativeMask.setLinkedType(t);
+		final BitType t = new BitType(arrayMask);
+		arrayMask.setLinkedType(t);
 		final Img<BitType> mask =
-			new ImgTranslationAdapter<BitType, NativeImg<BitType, BitAccess>>(
-				nativeMask, min);
+			new ImgTranslationAdapter<BitType, ArrayImg<BitType, BitArray>>(
+				arrayMask, min);
 		final RandomAccess<BitType> raMask = mask.randomAccess();
 		c.reset();
 		while (c.hasNext()) {
