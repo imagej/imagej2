@@ -164,6 +164,17 @@ public class ClassLoaderPlus extends URLClassLoader {
 		Thread.currentThread().setContextClassLoader(this);
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(getClass().getName()).append("(");
+		for (final URL url : getURLs()) {
+			builder.append(" ").append(url.toString());
+		}
+		builder.append(" )");
+		return builder.toString();
+	}
+
 	public static void addInImageJDirectory(final URLClassLoader classLoader, final String relativePath) {
 		try {
 			add(classLoader, new File(getImageJDir(), relativePath));
@@ -220,17 +231,6 @@ public class ClassLoaderPlus extends URLClassLoader {
 				builder.append(sep).append(url.getPath());
 				sep = File.pathSeparator;
 			}
-		return builder.toString();
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append(getClass().getName()).append("(");
-		for (final URL url : getURLs()) {
-			builder.append(" ").append(url.toString());
-		}
-		builder.append(" )");
 		return builder.toString();
 	}
 
