@@ -279,6 +279,7 @@ public class DrawingTool {
 			if (channelAxis != -1) accessor.setPosition(c, channelAxis);
 			accessor.get().setReal(value);
 		}
+		dataset.setDirty(true);
 	}
 
 	/**
@@ -375,21 +376,21 @@ public class DrawingTool {
 	 * Draws the outline of a rectangle in the current UV plane. Uses given
 	 * width, height, and origin.
 	 */
-	public void drawRect(long u0, long v0, long w, long h) {
-		drawLine(u0,     v0,     u0,     v0+h-1);
-		drawLine(u0,     v0,     u0+w-1, v0);
-		drawLine(u0+w-1, v0+h-1, u0,     v0+h-1);
-		drawLine(u0+w-1, v0+h-1, u0+w-1, v0);
+	public void drawRect(long uOrg, long vOrg, long w, long h) {
+		drawLine(uOrg,     vOrg,     uOrg,     vOrg+h-1);
+		drawLine(uOrg,     vOrg,     uOrg+w-1, vOrg);
+		drawLine(uOrg+w-1, vOrg+h-1, uOrg,     vOrg+h-1);
+		drawLine(uOrg+w-1, vOrg+h-1, uOrg+w-1, vOrg);
 	}
 	
 	/**
 	 * Draws a filled rectangle in the current UV plane. Uses given width,
 	 * height, and origin.
 	 */
-	public void fillRect(long u0, long v0, long w, long h) {
+	public void fillRect(long uOrigin, long vOrigin, long w, long h) {
 		for (long du = 0; du < w; du++) {
 			for (long dv = 0; dv < h; dv++) {
-				drawPixel(u0+du, v0+dv);
+				drawPixel(uOrigin+du, vOrigin+dv);
 			}
 		}
 	}
