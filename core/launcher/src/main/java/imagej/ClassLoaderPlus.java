@@ -36,11 +36,16 @@
 package imagej;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A classloader whose classpath can be augmented after instantiation.
@@ -50,10 +55,11 @@ import java.util.List;
 public class ClassLoaderPlus extends URLClassLoader {
 
 	// A frozen ClassLoaderPlus will add only to the urls array
-	protected boolean frozen;
-	protected List<URL> urls = new ArrayList<URL>();
+	protected static Set<ClassLoader> frozen = new HashSet<ClassLoader>();
+	protected static Map<URLClassLoader, List<URL>> urlsMap = new HashMap<URLClassLoader, List<URL>>();
+	protected static Method addURL;
 
-	public static ClassLoaderPlus getInImageJDirectory(
+	public static URLClassLoader getInImageJDirectory(final URLClassLoader classLoader,
 		final String... relativePaths)
 	{
 		try {
@@ -62,7 +68,7 @@ public class ClassLoaderPlus extends URLClassLoader {
 			for (int i = 0; i < urls.length; i++) {
 				urls[i] = new File(directory, relativePaths[i]).toURI().toURL();
 			}
-			return get(urls);
+			return get(classLoader, urls);
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
@@ -70,13 +76,13 @@ public class ClassLoaderPlus extends URLClassLoader {
 		}
 	}
 
-	public static ClassLoaderPlus get(final File... files) {
+	public static URLClassLoader get(final URLClassLoader classLoader, final File... files) {
 		try {
 			final URL[] urls = new URL[files.length];
 			for (int i = 0; i < urls.length; i++) {
 				urls[i] = files[i].toURI().toURL();
 			}
-			return get(urls);
+			return get(classLoader, urls);
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
@@ -84,35 +90,41 @@ public class ClassLoaderPlus extends URLClassLoader {
 		}
 	}
 
-	public static ClassLoaderPlus get(final URL... urls) {
-		final ClassLoader classLoader =
-			Thread.currentThread().getContextClassLoader();
-		if (classLoader instanceof ClassLoaderPlus) {
-			final ClassLoaderPlus classLoaderPlus = (ClassLoaderPlus) classLoader;
-			for (final URL url : urls) {
-				classLoaderPlus.add(url);
+	public static URLClassLoader get(URLClassLoader classLoader, final URL... urls) {
+		if (classLoader == null) {
+			final ClassLoader currentClassLoader = ClassLoaderPlus.class.getClassLoader();
+			if (currentClassLoader instanceof URLClassLoader) {
+				classLoader = (URLClassLoader)currentClassLoader;
+			} else {
+				final ClassLoader contextClassLoader =
+					Thread.currentThread().getContextClassLoader();
+				if (contextClassLoader instanceof URLClassLoader) {
+					classLoader = (URLClassLoader)contextClassLoader;
+				}
 			}
-			return classLoaderPlus;
 		}
-		return new ClassLoaderPlus(urls);
+		if (classLoader == null) return new ClassLoaderPlus(urls);
+		for (final URL url : urls) {
+			add(classLoader, url);
+		}
+		return classLoader;
 	}
 
-	public static ClassLoaderPlus getRecursivelyInImageJDirectory(
+	public static URLClassLoader getRecursivelyInImageJDirectory(final URLClassLoader classLoader,
 		final String... relativePaths)
 	{
-		return getRecursivelyInImageJDirectory(false, relativePaths);
+		return getRecursivelyInImageJDirectory(classLoader, false, relativePaths);
 	}
 
-	public static ClassLoaderPlus getRecursivelyInImageJDirectory(
+	public static URLClassLoader getRecursivelyInImageJDirectory(URLClassLoader classLoader,
 		final boolean onlyJars, final String... relativePaths)
 	{
 		try {
 			final File directory = new File(getImageJDir());
-			ClassLoaderPlus classLoader = null;
 			final File[] files = new File[relativePaths.length];
 			for (int i = 0; i < files.length; i++)
 				classLoader =
-					getRecursively(onlyJars, new File(directory, relativePaths[i]));
+					getRecursively(classLoader, onlyJars, new File(directory, relativePaths[i]));
 			return classLoader;
 		}
 		catch (final Exception e) {
@@ -121,19 +133,20 @@ public class ClassLoaderPlus extends URLClassLoader {
 		}
 	}
 
-	public static ClassLoaderPlus getRecursively(final File directory) {
-		return getRecursively(false, directory);
+	public static URLClassLoader getRecursively(final URLClassLoader classLoader, final File directory) {
+		return getRecursively(classLoader, false, directory);
 	}
 
-	public static ClassLoaderPlus getRecursively(final boolean onlyJars,
+	public static URLClassLoader getRecursively(URLClassLoader classLoader, final boolean onlyJars,
 		final File directory)
 	{
 		try {
-			ClassLoaderPlus classLoader = onlyJars ? null : get(directory);
+			if (!onlyJars)
+				classLoader = get(classLoader, directory);
 			final File[] list = directory.listFiles();
 			if (list != null) for (final File file : list)
-				if (file.isDirectory()) classLoader = getRecursively(onlyJars, file);
-				else if (file.getName().endsWith(".jar")) classLoader = get(file);
+				if (file.isDirectory()) classLoader = getRecursively(classLoader, onlyJars, file);
+				else if (file.getName().endsWith(".jar")) classLoader = get(classLoader, file);
 			return classLoader;
 		}
 		catch (final Exception e) {
@@ -151,9 +164,9 @@ public class ClassLoaderPlus extends URLClassLoader {
 		Thread.currentThread().setContextClassLoader(this);
 	}
 
-	public void addInImageJDirectory(final String relativePath) {
+	public static void addInImageJDirectory(final URLClassLoader classLoader, final String relativePath) {
 		try {
-			add(new File(getImageJDir(), relativePath));
+			add(classLoader, new File(getImageJDir(), relativePath));
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
@@ -161,24 +174,45 @@ public class ClassLoaderPlus extends URLClassLoader {
 		}
 	}
 
-	public void add(final String path) throws MalformedURLException {
-		add(new File(path));
+	public static void add(final URLClassLoader classLoader, final String path) throws MalformedURLException {
+		add(classLoader, new File(path));
 	}
 
-	public void add(final File file) throws MalformedURLException {
-		add(file.toURI().toURL());
+	public static void add(final URLClassLoader classLoader, final File file) throws MalformedURLException {
+		add(classLoader, file.toURI().toURL());
 	}
 
-	public void add(final URL url) {
+	public static void add(final URLClassLoader classLoader, final URL url) {
+		List<URL> urls = urlsMap.get(classLoader);
+		if (urls == null) {
+			urls = new ArrayList<URL>();
+			urlsMap.put(classLoader, urls);
+		}
 		urls.add(url);
-		if (!frozen) addURL(url);
+		if (!frozen.contains(classLoader)) {
+			if (classLoader instanceof ClassLoaderPlus) {
+				((ClassLoaderPlus)classLoader).addURL(url);
+			}
+			else try {
+				if (addURL == null) {
+					addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+					addURL.setAccessible(true);
+				}
+				addURL.invoke(classLoader, url);
+			} catch (Throwable t) {
+				throw new RuntimeException(t);
+			}
+		}
 	}
 
-	public void freeze() {
-		frozen = true;
+	public static void freeze(final ClassLoader classLoader) {
+		frozen.add(classLoader);
 	}
 
-	public String getClassPath() {
+	public static String getClassPath(final ClassLoader classLoader) {
+		List<URL> urls = urlsMap.get(classLoader);
+		if (urls == null) return "";
+
 		final StringBuilder builder = new StringBuilder();
 		String sep = "";
 		for (final URL url : urls)
@@ -215,9 +249,9 @@ public class ClassLoaderPlus extends URLClassLoader {
 		return path;
 	}
 
-	public String getJarPath(final String className) {
+	public static String getJarPath(final ClassLoader classLoader, final String className) {
 		try {
-			final Class clazz = loadClass(className);
+			final Class<?> clazz = classLoader.loadClass(className);
 			String path =
 				clazz.getResource("/" + className.replace('.', '/') + ".class")
 					.getPath();

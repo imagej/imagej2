@@ -38,6 +38,7 @@ package imagej;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 
 /**
@@ -79,32 +80,32 @@ public class ClassLauncher {
 
 	protected static void run(String[] arguments) {
 		boolean retrotranslator = false, jdb = false, passClasspath = false;
-		ClassLoaderPlus classLoader = null;
+		URLClassLoader classLoader = null;
 		int i = 0;
 		for (; i < arguments.length && arguments[i].charAt(0) == '-'; i++) {
 			final String option = arguments[i];
 			if (option.equals("-cp") || option.equals("-classpath")) {
-				classLoader = ClassLoaderPlus.get(new File(arguments[++i]));
+				classLoader = ClassLoaderPlus.get(null, new File(arguments[++i]));
 			}
 			else if (option.equals("-ijcp") || option.equals("-ijclasspath")) {
-				classLoader = ClassLoaderPlus.getInImageJDirectory(arguments[++i]);
+				classLoader = ClassLoaderPlus.getInImageJDirectory(null, arguments[++i]);
 			}
 			else if (option.equals("-jarpath")) {
 				classLoader =
-					ClassLoaderPlus.getRecursively(true, new File(arguments[++i]));
+					ClassLoaderPlus.getRecursively(null, true, new File(arguments[++i]));
 			}
 			else if (option.equals("-ijjarpath")) {
 				classLoader =
-					ClassLoaderPlus.getRecursivelyInImageJDirectory(true, arguments[++i]);
+					ClassLoaderPlus.getRecursivelyInImageJDirectory(null, true, arguments[++i]);
 			}
 			else if (option.equals("-jdb")) jdb = true;
 			else if (option.equals("-retrotranslator")) {
 				classLoader =
-					ClassLoaderPlus.getRecursivelyInImageJDirectory(true, "retro");
+					ClassLoaderPlus.getRecursivelyInImageJDirectory(null, true, "retro");
 				retrotranslator = true;
 			}
 			else if (option.equals("-pass-classpath")) passClasspath = true;
-			else if (option.equals("-freeze-classloader")) classLoader.freeze();
+			else if (option.equals("-freeze-classloader")) ClassLoaderPlus.freeze(classLoader);
 			else {
 				System.err.println("Unknown option: " + option + "!");
 				System.exit(1);
@@ -124,7 +125,7 @@ public class ClassLauncher {
 			!mainClass.equals("fiji.build.MiniMaven"))
 		{
 			classLoader =
-				ClassLoaderPlus.getInImageJDirectory("jars/fiji-compat.jar",
+				ClassLoaderPlus.getInImageJDirectory(null, "jars/fiji-compat.jar",
 					"jars/ij.jar", "jars/javassist.jar");
 			try {
 				patchIJ1(classLoader);
@@ -135,14 +136,14 @@ public class ClassLauncher {
 		}
 
 		if (passClasspath && classLoader != null) {
-			arguments = prepend(arguments, "-classpath", classLoader.getClassPath());
+			arguments = prepend(arguments, "-classpath", ClassLoaderPlus.getClassPath(classLoader));
 		}
 
 		if (jdb) {
 			arguments = prepend(arguments, mainClass);
 			if (classLoader != null) {
 				arguments =
-					prepend(arguments, "-classpath", classLoader.getClassPath());
+					prepend(arguments, "-classpath", ClassLoaderPlus.getClassPath(classLoader));
 			}
 			mainClass = "com.sun.tools.example.debug.tty.TTY";
 		}
