@@ -3,7 +3,7 @@
 usage () {
 	test $# = 0 || echo "$*" >&2
 	cat >&2 << EOF
-Usage: $ARGV0 (launcher|app) <token> [<branch>]
+Usage: $ARGV0 [<options>...] (launcher|app) <token> [<branch>]
 
 Use this script to trigger Jenkins to build and deploy ImageJ. It will
 push the current commit to GitHub, under a temporary branchname, and
@@ -16,12 +16,33 @@ ImageJ itself ('app').
 The token must match the secret stored in the Jenkins job.
 
 If no branch name is provided, a temporary one is generated from the
-current time
+current time.
+
+Options:
+
+--no-push	Do not push the branch but assume it was already pushed.
 EOF
 	exit 1
 }
 
 ARGV0=$0
+
+NO_PUSH=
+while test $# -gt 0
+do
+	case "$1" in
+	--no-push)
+		NO_PUSH=t
+		;;
+	-*)
+		usage "Unknown option: $1"
+		;;
+	*)
+		break
+		;;
+	esac
+	shift
+done
 
 case $# in [23]) ;; *) usage;; esac
 
@@ -47,6 +68,7 @@ else
 fi
 
 # make sure the branch is pushed
+test -n "$NO_PUSH" ||
 git push github.com:imagej/imagej HEAD:refs/heads/$BRANCHNAME
 
 # trigger the build
