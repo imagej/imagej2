@@ -105,9 +105,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/curtis-2010.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>dscho</id>
@@ -121,9 +118,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/johannes.jpeg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>acardona</id>
@@ -136,9 +130,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>+1</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/Cardona_pic1.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>aivar</id>
@@ -151,9 +142,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>bdezonia</id>
@@ -166,9 +154,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/Barry_DeZonia.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>leek</id>
@@ -181,9 +166,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-5</timezone>
-			<properties>
-				<picUrl>http://www.broadinstitute.org/~leek/lee_small.jpg</picUrl>
-			</properties>
 		</developer>
 	</developers>
 
@@ -199,9 +181,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-5</timezone>
-			<properties>
-				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/GBH-2010.jpg</picUrl>
-			</properties>
 		</contributor>
 		<contributor>
 			<name>Rick Lentz</name>
@@ -212,9 +191,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
-			</properties>
 		</contributor>
 		<contributor>
 			<name>Adam Fraser</name>
@@ -236,9 +212,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://developer.imagej.net/files/imagej/profile-pictures/Mark.jpg?1305649677</picUrl>
-			</properties>
 		</contributor>
 	</contributors>
 
