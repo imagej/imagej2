@@ -130,6 +130,7 @@ public class AddAxis extends DynamicPlugin {
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		dstImgPlus.setCompositeChannelCount(dataset.getCompositeChannelCount());
 		RestructureUtils.allocateColorTables(dstImgPlus);
+		@SuppressWarnings("synthetic-access")
 		final ColorTableRemapper remapper =
 			new ColorTableRemapper(new RemapAlgorithm());
 		remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);

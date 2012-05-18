@@ -151,6 +151,7 @@ public class AddData extends DynamicPlugin {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
+			@SuppressWarnings("synthetic-access")
 			final ColorTableRemapper remapper =
 				new ColorTableRemapper(new RemapAlgorithm());
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
@@ -269,6 +270,7 @@ public class AddData extends DynamicPlugin {
 			return true;
 		}
 
+		@SuppressWarnings("synthetic-access")
 		@Override
 		public void remapPlanePosition(final long[] origPlaneDims,
 			final long[] origPlanePos, final long[] newPlanePos)
@@ -341,7 +343,7 @@ public class AddData extends DynamicPlugin {
 	}
 
 	private void setItemRange(final String fieldName, final long min,
-		final long max)
+		@SuppressWarnings("unused") final long max)
 	{
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Long> item =

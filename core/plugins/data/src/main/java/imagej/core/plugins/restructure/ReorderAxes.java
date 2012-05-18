@@ -110,6 +110,7 @@ public class ReorderAxes extends DynamicPlugin {
 		// reportDims(dataset.getImgPlus());
 		// reportDims(newImgPlus);
 		RestructureUtils.allocateColorTables(newImgPlus);
+		@SuppressWarnings("synthetic-access")
 		final ColorTableRemapper remapper =
 			new ColorTableRemapper(new RemapAlgorithm());
 		remapper.remapColorTables(dataset.getImgPlus(), newImgPlus);
@@ -298,6 +299,7 @@ public class ReorderAxes extends DynamicPlugin {
 			permutedAxes[permutationAxisIndices[i]] = origAxes[i];
 	}
 
+	@SuppressWarnings("synthetic-access")
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
 
 		private final long[] inputPos =
