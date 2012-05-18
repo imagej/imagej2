@@ -556,6 +556,7 @@ static const char *library_path;
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
+static int retrotranslator;
 
 static int is_default_ij1_class(const char *name)
 {
@@ -2788,6 +2789,8 @@ static void jvm_workarounds(struct options *options)
 		if (main_class && !strcmp(main_class, "sun.tools.javap.Main"))
 			main_class = "com.sun.tools.javap.Main";
 	}
+	else if (java_version < 0x01060000)
+		retrotranslator = 1;
 }
 
 /* the maximal size of the heap on 32-bit systems, in megabyte */
@@ -2926,8 +2929,6 @@ static int imagej1_option_count(const char *option)
 }
 
 const char *properties[32];
-
-static int retrotranslator;
 
 static struct options options;
 static long megabytes = 0;
