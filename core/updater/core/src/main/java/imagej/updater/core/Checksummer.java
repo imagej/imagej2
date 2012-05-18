@@ -163,7 +163,7 @@ public class Checksummer extends Progressable {
 				object =
 					new FileObject(null, path, file.length(), checksum, timestamp,
 						Status.LOCAL_ONLY);
-				if ((!isWindows && file.canExecute()) || path.endsWith(".exe")) object.executable =
+				if ((!isWindows && Util.canExecute(file)) || path.endsWith(".exe")) object.executable =
 					true;
 				tryToGuessPlatform(object);
 				if (path.endsWith((".jar"))) try {
