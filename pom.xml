@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.11</version>
+		<version>1.13</version>
 	</parent>
 
 	<groupId>net.imagej</groupId>
@@ -39,6 +39,10 @@
 				<configuration>
 					<configFile>${project.rootdir}/config/eclipse-code-formatter-profile.xml</configFile>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -77,7 +81,7 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 
 	<developers>
 		<developer>
-			<id>wsr</id>
+			<id>rasband</id>
 			<name>Wayne Rasband</name>
 			<email>wsr@nih.gov</email>
 			<url>http://www.linkedin.com/pub/wayne-rasband/11/140/477</url>
@@ -90,7 +94,7 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			<timezone>-5</timezone>
 		</developer>
 		<developer>
-			<id>curtis</id>
+			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
 			<email>ctrueden@wisc.edu</email>
 			<url>http://loci.wisc.edu/people/curtis-rueden</url>
@@ -101,9 +105,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/curtis-2010.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>dscho</id>
@@ -117,9 +118,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/johannes.jpeg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>acardona</id>
@@ -132,12 +130,9 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>+1</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/Cardona_pic1.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
-			<id>aivar</id>
+			<id>grislis</id>
 			<name>Aivar Grislis</name>
 			<email>grislis@wisc.edu</email>
 			<url>http://loci.wisc.edu/people/aivar-grislis</url>
@@ -147,9 +142,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>bdezonia</id>
@@ -162,12 +154,9 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/Barry_DeZonia.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
-			<id>leek</id>
+			<id>LeeKamentsky</id>
 			<name>Lee Kamentsky</name>
 			<email>leek@broadinstitute.org</email>
 			<url>http://www.broadinstitute.org/~leek/</url>
@@ -177,9 +166,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-5</timezone>
-			<properties>
-				<picUrl>http://www.broadinstitute.org/~leek/lee_small.jpg</picUrl>
-			</properties>
 		</developer>
 	</developers>
 
@@ -195,9 +181,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-5</timezone>
-			<properties>
-				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/GBH-2010.jpg</picUrl>
-			</properties>
 		</contributor>
 		<contributor>
 			<name>Rick Lentz</name>
@@ -208,9 +191,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
-			</properties>
 		</contributor>
 		<contributor>
 			<name>Adam Fraser</name>
@@ -224,17 +204,14 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 		</contributor>
 		<contributor>
 			<name>Mark Hiner</name>
-			<email>hinerm@gmail.edu</email>
-			<url>http://developer.imagej.net/users/hinerm</url>
+			<email>hiner@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/mark-hiner</url>
 			<organization>UW-Madison LOCI</organization>
 			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
 			<roles>
 				<role>developer</role>
 			</roles>
 			<timezone>-6</timezone>
-			<properties>
-				<picUrl>http://developer.imagej.net/files/imagej/profile-pictures/Mark.jpg?1305649677</picUrl>
-			</properties>
 		</contributor>
 	</contributors>
 
@@ -287,10 +264,10 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 	</mailingLists>
 
 	<scm>
-		<connection>scm:svn:http://code.imagej.net/svn/imagej</connection>
-		<developerConnection>scm:svn:http://code.imagej.net/svn/imagej</developerConnection>
+		<connection>scm:git:git://github.com/imagej/imagej.git</connection>
+		<developerConnection>scm:git:git@github.com:imagej/imagej.git</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://code.imagej.net/svn/imagej</url>
+		<url>https://github.com/imagej/imagej</url>
 	</scm>
 
 	<!-- NB: for project parent -->

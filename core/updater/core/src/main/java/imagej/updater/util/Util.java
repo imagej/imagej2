@@ -357,6 +357,16 @@ public class Util {
 		result.renameTo(file);
 	}
 
+	// This method protects us from Java5's absence of File.canExecute
+	public static boolean canExecute(File file) {
+		try {
+			return file.canExecute();
+		} catch (Throwable t) {
+			// ignore
+			return false;
+		}
+	}
+
 	public static boolean patchInfoPList(final File infoPList, final String executable)
 		throws IOException
 	{
