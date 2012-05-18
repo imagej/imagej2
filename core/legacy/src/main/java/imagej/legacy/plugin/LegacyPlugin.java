@@ -107,7 +107,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-
+		
 		//System.out.println("Start a legacy plugin");
 
 		String startStatus = "Running legacy plugin ...";
@@ -131,68 +131,91 @@ public class LegacyPlugin implements ImageJPlugin {
 		final ImageTranslator imageTranslator = new DefaultImageTranslator(context);
 		final Harmonizer harmonizer = new Harmonizer(context, imageTranslator);
 
-		final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
-		final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
+		// NB - BDZ
+		// In order to keep threads from waiting on each other unnecessarily when
+		// multiple legacy plugins are running simultaneously we run the plugin
+		// in its own thread group. waitForPluginThreads() only waits for those
+		// threads in its group.
+		
+		ThreadGroup group = new ThreadGroup("plugin thread group");
+		Thread thread = new Thread(group, "plugin thread") {
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void run() {
+				final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
+				final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
 
-		harmonizer.resetTypeTracking();
+				harmonizer.resetTypeTracking();
 
-		updateImagePlusesFromDisplays(map, harmonizer);
+				updateImagePlusesFromDisplays(map, harmonizer);
 
-		// must happen after updateImagePlusesFromDisplays()
-		outputSet.clear();
-		closedSet.clear();
+				// must happen after updateImagePlusesFromDisplays()
+				outputSet.clear();
+				closedSet.clear();
 
-		// set ImageJ1's active image
-		legacyService.syncActiveImage();
+				// set ImageJ1's active image
+				legacyService.syncActiveImage();
 
+				final List<Thread> originalThreads = getCurrentThreads();
+
+				try {
+					// execute the legacy plugin
+					IJ.runPlugIn(className, arg);
+					
+					// we always sleep at least once to make sure plugin has time to hatch
+					// it's first thread if its going to create any.
+					try {
+						Thread.sleep(50);
+					}
+					catch (final InterruptedException e) {/**/}
+	
+					// wait for any threads hatched by plugin to terminate
+					waitForPluginThreads(this, originalThreads);
+	
+					// sync modern displays to match existing legacy images
+					outputs = updateDisplaysFromImagePluses(map, harmonizer);
+	
+					// close any displays that IJ1 wants closed
+					for (final ImagePlus imp : closedSet) {
+						final ImageDisplay disp = map.lookupDisplay(imp);
+						if (disp != null) {
+							// REMOVED next line to fix #803. May leave extra windows open.
+							// outputs.remove(display);
+							// Now only close displays that have not been changed
+							if (!outputs.contains(disp)) disp.close();
+						}
+					}
+					
+					// reflect any changes to globals in IJ2 options/prefs
+					legacyService.updateIJ2Settings();
+
+				}
+				catch (Exception e) {
+					final String msg = "ImageJ 1.x plugin threw exception";
+					Log.error(msg, e);
+					notifyUser(msg);
+					// make sure our ImagePluses are in sync with original Datasets
+					updateImagePlusesFromDisplays(map, harmonizer);
+					// return no outputs
+					outputs = new ArrayList<ImageDisplay>();
+				}
+				finally {
+					// clean up - basically avoid dangling refs to large objects
+					harmonizer.resetTypeTracking();
+					outputSet.clear();
+					closedSet.clear();
+				}
+			}
+		};
+
+		// enforce the desired order of thread execution
 		try {
-
-			final List<Thread> originalThreads = getCurrentThreads();
-
-			// execute the legacy plugin
-			IJ.runPlugIn(className, arg);
-
-			// we always sleep at least once to make sure plugin has time to hatch
-			// it's first thread if its going to create any.
-			try {
-				Thread.sleep(50);
-			}
-			catch (final InterruptedException e) {/**/}
-
-			// wait for any threads hatched by plugin to terminate
-			waitForPluginThreads(originalThreads);
-
-			// sync modern displays to match existing legacy images
-			outputs = updateDisplaysFromImagePluses(map, harmonizer);
+			thread.start();
+			thread.join();
 		}
-		catch (final Exception e) {
-			final String msg = "ImageJ 1.x plugin threw exception";
-			Log.error(msg, e);
-			notifyUser(msg);
-			// make sure our ImagePluses are in sync with original Datasets
-			updateImagePlusesFromDisplays(map, harmonizer);
-			// return no outputs
-			outputs = new ArrayList<ImageDisplay>();
+		catch (Exception e) {
+			// will have been handled earlier
 		}
-
-		// close any displays that IJ1 wants closed
-		for (final ImagePlus imp : closedSet) {
-			final ImageDisplay disp = map.lookupDisplay(imp);
-			if (disp != null) {
-				// REMOVED next line to fix #803. May leave extra windows open.
-				// outputs.remove(display);
-				// Now only close displays that have not been changed
-				if (!outputs.contains(disp)) disp.close();
-			}
-		}
-
-		// clean up
-		harmonizer.resetTypeTracking();
-		outputSet.clear();
-		closedSet.clear();
-
-		// reflect any changes to globals in IJ2 options/prefs
-		legacyService.updateIJ2Settings();
 
 		if (startStatus.equals(statusService.getCurrentStatusString()))
 			statusService.showStatus("Completed run of legacy plugin");
@@ -219,13 +242,15 @@ public class LegacyPlugin implements ImageJPlugin {
 		return threadList;
 	}
 
-	private void waitForPluginThreads(final List<Thread> threadsToIgnore) {
+	private void waitForPluginThreads(Thread owner, final List<Thread> threadsToIgnore) {
 		//System.out.println("  begin waitForPluginThreads()");
 		while (true) {
 			boolean allDead = true;
 			final List<Thread> currentThreads = getCurrentThreads();
 			for (final Thread thread : currentThreads) {
 				if (thread == Thread.currentThread()) continue;
+				final ThreadGroup otherThreadGroup = thread.getThreadGroup();
+				if (!owner.getThreadGroup().parentOf(otherThreadGroup)) continue;
 				if (threadsToIgnore.contains(thread)) continue;
 				// Ignore some threads that IJ1 hatches that never terminate
 				if (whitelisted(thread)) continue;
