@@ -3605,10 +3605,8 @@ static int start_ij(void)
 
 		string_set(buffer, get_java_command());
 		java_home_env = getenv("JAVA_HOME");
-		if (java_home_env && strlen(java_home_env) > 0) {
-			error("Found that JAVA_HOME was: '%s'", java_home_env);
+		if (java_home_env && strlen(java_home_env) > 0)
 			string_setf(buffer, "%s/bin/%s", java_home_env, get_java_command());
-		}
 		options.java_options.list[0] = buffer->buffer;
 		hide_splash();
 #ifndef WIN32
