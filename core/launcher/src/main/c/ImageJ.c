@@ -556,6 +556,7 @@ static const char *library_path;
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
+static int retrotranslator;
 
 static int is_default_ij1_class(const char *name)
 {
@@ -914,12 +915,14 @@ static MAYBE_UNUSED const char *get_java_home_env(void)
 	return NULL;
 }
 
+static char *discover_system_java_home(void);
+
 static const char *get_java_home(void)
 {
 	if (absolute_java_home)
 		return absolute_java_home;
 	if (!relative_java_home)
-		return NULL;
+		return discover_system_java_home();
 	return ij_path(relative_java_home);
 }
 
@@ -972,6 +975,20 @@ const char *last_slash(const char *path)
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
+
+static void follow_symlinks(struct string *path, int max_recursion)
+{
+#ifndef WIN32
+	char buffer[PATH_MAX];
+	int count = readlink(path->buffer, buffer, sizeof(buffer) - 1);
+	if (count < 0)
+		return;
+	string_set_length(path, 0);
+	string_addf(path, "%.*s", count, buffer);
+	if (max_recursion > 0)
+		follow_symlinks(path, max_recursion - 1);
+#endif
+}
 
 static const char *make_absolute_path(const char *path)
 {
@@ -1180,16 +1197,17 @@ struct string *get_splashscreen_lib_path(void)
 #endif
 }
 
+#define SPLASH_PATH "images/icon.png"
 /* So far, only Windows and MacOSX support splash with alpha, Linux does not */
 #if defined(WIN32) || defined(__APPLE__)
-#define SPLASH_PATH "images/icon.png"
+#define FLAT_SPLASH_PATH NULL
 #else
-#define SPLASH_PATH "images/icon-flat.png"
+#define FLAT_SPLASH_PATH "images/icon-flat.png"
 #endif
 
 static void show_splash(void)
 {
-	const char *image_path = ij_path(SPLASH_PATH);
+	const char *image_path = NULL;
 	struct string *lib_path = get_splashscreen_lib_path();
 	void *splashscreen;
 	int (*SplashInit)(void);
@@ -1198,6 +1216,14 @@ static void show_splash(void)
 
 	if (no_splash || !lib_path || SplashClose)
 		return;
+
+	if (FLAT_SPLASH_PATH)
+		image_path = ij_path(FLAT_SPLASH_PATH);
+	if (!image_path || !file_exists(image_path))
+		image_path = ij_path(SPLASH_PATH);
+	if (!image_path || !file_exists(image_path))
+		return;
+
 	splashscreen = dlopen(lib_path->buffer, RTLD_LAZY);
 	if (!splashscreen) {
 		string_release(lib_path);
@@ -2057,6 +2083,55 @@ static const char *get_java_command(void)
 	return "java";
 }
 
+static char *discover_system_java_home(void)
+{
+#ifdef WIN32
+	HKEY key;
+	HRESULT result;
+	const char *key_root = "SOFTWARE\\JavaSoft\\Java Development Kit";
+	struct string *string;
+	char buffer[PATH_MAX];
+	DWORD valuelen = sizeof(buffer);
+
+	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key_root, 0, KEY_READ, &key);
+	if (ERROR_SUCCESS != result)
+		return NULL;
+	result = RegQueryValueEx(key, "CurrentVersion", NULL, NULL, (LPBYTE)buffer, &valuelen);
+	RegCloseKey(key);
+	if (ERROR_SUCCESS != result)
+{ error(get_win_error());
+		return NULL;
+}
+	string = string_initf("%s\\%s", key_root, buffer);
+	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, string->buffer, 0, KEY_READ, &key);
+	if (ERROR_SUCCESS != result)
+		return NULL;
+	valuelen = sizeof(buffer);
+	result = RegQueryValueEx(key, "JavaHome", NULL, NULL, (LPBYTE)buffer, &valuelen);
+	RegCloseKey(key);
+	if (ERROR_SUCCESS != result)
+		return NULL;
+	return strdup(buffer);
+#else
+	const char *java_executable = find_in_path(get_java_command());
+
+	if (java_executable) {
+		char *path = strdup(java_executable);
+		const char *suffixes[] = {
+			"java", "\\", "/", "bin", "\\", "/", NULL
+		};
+		int len = strlen(path), i;
+		for (i = 0; suffixes[i]; i++)
+			if (!suffixcmp(path, len, suffixes[i])) {
+				len -= strlen(suffixes[i]);
+				path[len] = '\0';
+			}
+		return path;
+	}
+	return NULL;
+#endif
+}
+
 static void show_commandline(struct options *options)
 {
 	int j;
@@ -2708,10 +2783,14 @@ static void jvm_workarounds(struct options *options)
 	unsigned int java_version = guess_java_version();
 
 	if (java_version == 0x01070000 || java_version == 0x01070001) {
+#ifndef WIN32
 		add_option(options, "-XX:-UseLoopPredicate", 0);
+#endif
 		if (main_class && !strcmp(main_class, "sun.tools.javap.Main"))
 			main_class = "com.sun.tools.javap.Main";
 	}
+	else if (java_version < 0x01060000)
+		retrotranslator = 1;
 }
 
 /* the maximal size of the heap on 32-bit systems, in megabyte */
@@ -2850,8 +2929,6 @@ static int imagej1_option_count(const char *option)
 }
 
 const char *properties[32];
-
-static int retrotranslator;
 
 static struct options options;
 static long megabytes = 0;

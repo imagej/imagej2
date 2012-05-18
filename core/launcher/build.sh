@@ -22,7 +22,15 @@ then
 	fi
 fi
 
+LIBS=
+case "$(uname -s)" in
+Linux|Darwin)
+	LIBS=-ldl
+	;;
+esac
+
 CWD="$(dirname "$0")"
+mkdir -p "$CWD"/target
 gcc -g \
 	-fno-stack-protector \
 	-o "$CWD"/target/ImageJ \
@@ -31,4 +39,4 @@ gcc -g \
 	-I "$JAVA_HOME"/include/linux/ \
 	-I "$JAVA_HOME"/include/win32/ \
 	"$CWD"/src/main/c/ImageJ.c \
-	-ldl
+	"$LIBS"

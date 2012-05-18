@@ -37,6 +37,7 @@ package imagej;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -90,7 +91,7 @@ public class JarLauncher {
 			System.err.println("No main class attribute found in '" + jarPath + "'.");
 			System.exit(1);
 		}
-		final ClassLoaderPlus loader = ClassLoaderPlus.get(new File(jarPath));
+		final URLClassLoader loader = ClassLoaderPlus.get(null, new File(jarPath));
 		ClassLauncher.launch(loader, className, arguments);
 	}
 }
