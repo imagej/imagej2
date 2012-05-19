@@ -137,8 +137,8 @@ public class LegacyPlugin implements ImageJPlugin {
 		// in its own thread group. waitForPluginThreads() only waits for those
 		// threads in its group.
 		
-		ThreadGroup group = new ThreadGroup("plugin thread group");
-		Thread thread = new Thread(group, "plugin thread") {
+		final ThreadGroup group = new ThreadGroup("plugin thread group");
+		final Thread thread = new Thread(group, "plugin thread") {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
@@ -156,8 +156,6 @@ public class LegacyPlugin implements ImageJPlugin {
 				// set ImageJ1's active image
 				legacyService.syncActiveImage();
 
-				final List<Thread> originalThreads = getCurrentThreads();
-
 				try {
 					// execute the legacy plugin
 					IJ.runPlugIn(className, arg);
@@ -170,7 +168,7 @@ public class LegacyPlugin implements ImageJPlugin {
 					catch (final InterruptedException e) {/**/}
 	
 					// wait for any threads hatched by plugin to terminate
-					waitForPluginThreads(this, originalThreads);
+					waitForPluginThreads(group);
 	
 					// sync modern displays to match existing legacy images
 					outputs = updateDisplaysFromImagePluses(map, harmonizer);
@@ -225,11 +223,10 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	// -- Helper methods --
 
-	private List<Thread> getCurrentThreads() {
-		final ThreadGroup group = Thread.currentThread().getThreadGroup();
+	private List<Thread> getCurrentThreads(ThreadGroup group) {
 		Thread[] threads;
 		int numThreads;
-		int size = 25;
+		int size = 10;
 		do {
 			threads = new Thread[size];
 			numThreads = group.enumerate(threads);
@@ -242,16 +239,14 @@ public class LegacyPlugin implements ImageJPlugin {
 		return threadList;
 	}
 
-	private void waitForPluginThreads(Thread owner, final List<Thread> threadsToIgnore) {
+	private void waitForPluginThreads(ThreadGroup group) {
 		//System.out.println("  begin waitForPluginThreads()");
 		while (true) {
 			boolean allDead = true;
-			final List<Thread> currentThreads = getCurrentThreads();
+			final List<Thread> currentThreads = getCurrentThreads(group);
 			for (final Thread thread : currentThreads) {
 				if (thread == Thread.currentThread()) continue;
-				final ThreadGroup otherThreadGroup = thread.getThreadGroup();
-				if (!owner.getThreadGroup().parentOf(otherThreadGroup)) continue;
-				if (threadsToIgnore.contains(thread)) continue;
+				//if (threadsToIgnore.contains(thread)) continue;
 				// Ignore some threads that IJ1 hatches that never terminate
 				if (whitelisted(thread)) continue;
 				if (thread.isAlive()) {
