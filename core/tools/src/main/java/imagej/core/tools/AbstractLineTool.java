@@ -42,8 +42,6 @@ import imagej.data.DrawingTool;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
@@ -66,7 +64,6 @@ public abstract class AbstractLineTool extends AbstractTool {
 
 	private DrawingTool drawingTool;
 	private long lineWidth = 1;
-	private boolean altKeyDown = false;
 
 	// -- public interface --
 
@@ -124,26 +121,6 @@ public abstract class AbstractLineTool extends AbstractTool {
 		evt.consume();
 	}
 
-	/**
-	 * Tracks the ALT key status. ALT key determines whether to draw in foreground
-	 * or background color.
-	 */
-	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
-		altKeyDown =
-			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-	}
-
-	/**
-	 * Tracks the ALT key status. ALT key determines whether to draw in foreground
-	 * or background color.
-	 */
-	@Override
-	public void onKeyUp(final KyReleasedEvent evt) {
-		altKeyDown =
-			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-	}
-
 	// -- private helpers --
 
 	/** Allocates and initializes a DrawingTool if possible. */
@@ -160,7 +137,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 		OptionsChannels options = oSrv.getOptions(OptionsChannels.class);
 
 		ChannelCollection channels;
-		if (altKeyDown)
+		if (evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown())
 			channels = options.getBgValues();
 		else
 			channels = options.getFgValues();

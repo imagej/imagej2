@@ -78,6 +78,7 @@ public class PixelRecorder {
 	private Dataset dataset = null;
 	private ChannelCollection channels = null;
 	private ColorRGB color = Colors.BLACK;
+	private boolean wasAltKeyDown = false;
 	private boolean recordColor = false;
 	
 	// -- public interface --
@@ -108,6 +109,9 @@ public class PixelRecorder {
 		if (!canvas.isInImage(mousePos)) return false;
 
 		// mouse is over image
+
+		wasAltKeyDown =
+				evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 
 		// TODO - update tool to probe more than just the active view
 		final DataView activeView = imageDisplay.getActiveView();
@@ -205,6 +209,12 @@ public class PixelRecorder {
 		return cy;
 	}
 
+	/** Returns true if the alt key was down during the mouse event that was
+	 * recorded. */
+	public boolean wasAltKeyDown() {
+		return wasAltKeyDown;
+	}
+	
 	// -- private helpers --
 
 	/** Sets the position of a randomAccess to (u,v,planePos). */

@@ -38,8 +38,6 @@ package imagej.core.tools;
 import imagej.data.ChannelCollection;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
@@ -69,7 +67,6 @@ public class PickerTool extends AbstractTool {
 	// -- instance variables --
 
 	private final PixelRecorder recorder = new PixelRecorder(true);
-	private boolean altKeyDown = false;
 	private EventService eventService = null;
 	private StatusService statusService = null;
 
@@ -79,7 +76,9 @@ public class PickerTool extends AbstractTool {
 	public void onMouseClick(final MsClickedEvent evt) {
 
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		
+
+		// if click did not happen within the bounds of an ImageDisplay then
+		// just consume event and return
 		if (!recorder.record(evt)) {
 			evt.consume();
 			return;
@@ -99,7 +98,7 @@ public class PickerTool extends AbstractTool {
 		String name;
 		
 		// background case?
-		if (altKeyDown) {
+		if (recorder.wasAltKeyDown()) {
 			name = "BG";
 			options.setBgValues(values);
 			options.setLastBgColor(recorder.getColor());
@@ -117,18 +116,6 @@ public class PickerTool extends AbstractTool {
 		statusMessage(name, values);
 
 		evt.consume();
-	}
-
-	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
-		altKeyDown =
-			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-	}
-
-	@Override
-	public void onKeyUp(final KyReleasedEvent evt) {
-		altKeyDown =
-			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
 	}
 
 	@Override

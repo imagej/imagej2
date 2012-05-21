@@ -40,8 +40,6 @@ import imagej.data.Dataset;
 import imagej.data.DrawingTool;
 import imagej.data.FloodFiller;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
@@ -71,8 +69,6 @@ public class FloodFillTool extends AbstractTool {
 
 	private Connectivity connectivity = Connectivity.EIGHT;
 
-	private boolean altKeyDown = false;
-
 	// -- public interface --
 
 	/** Specify whether this flood fill operation should be 4 or 8 connected. */
@@ -101,7 +97,9 @@ public class FloodFillTool extends AbstractTool {
 			if (imageDisplay != null) {
 				final PixelRecorder recorder = new PixelRecorder(false);
 				if (recorder.record(evt)) {
-					final DrawingTool drawingTool = initDrawingTool(recorder.getDataset());
+					final DrawingTool drawingTool =
+							initDrawingTool(
+								recorder.wasAltKeyDown(), recorder.getDataset());
 					final long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(recorder.getCX(), recorder.getCY(), currPos, connectivity, drawingTool);
 					evt.getDisplay().update();
@@ -111,24 +109,10 @@ public class FloodFillTool extends AbstractTool {
 		}
 	}
 
-	/** Tracks ALT key status. Changes color of fill between FG/BG. */
-	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
-		altKeyDown =
-			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-	}
-
-	/** Tracks ALT key status. Changes color of fill between FG/BG. */
-	@Override
-	public void onKeyUp(final KyReleasedEvent evt) {
-		altKeyDown =
-			evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown();
-	}
-
 	// -- private helpers --
 
 	/** Returns an initialized DrawingTool. */
-	private DrawingTool initDrawingTool(final Dataset ds) {
+	private DrawingTool initDrawingTool(boolean altKeyDown, final Dataset ds) {
 		final OptionsChannels opts = getChannelOptions();
 		ChannelCollection fillValues;
 		if (altKeyDown)
