@@ -64,6 +64,7 @@ import net.imglib2.type.logic.BitType;
  * Default service for working with {@link Overlay}s.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Service
 public final class DefaultOverlayService extends AbstractService implements
