@@ -113,19 +113,30 @@ public final class DefaultOverlayService extends AbstractService implements
 
 	/**
 	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
+	 * If selectedOnly is true then it will gather overlays from the selected
+	 * views only. Otherwise it will gather overlays from all the views.
+	 */
+	@Override
+	public List<Overlay> getOverlays(ImageDisplay display, boolean selectedOnly) {
+		ArrayList<Overlay> overlays = new ArrayList<Overlay>();
+		for (final DataView view : display) {
+			if (selectedOnly)
+				if (!view.isSelected()) continue; // ignore non-selected objects
+			final Data data = view.getData();
+			if (!(data instanceof Overlay)) continue; // ignore non-overlays
+			final Overlay overlay = (Overlay) data;
+			overlays.add(overlay);
+		}
+		return overlays;
+	}
+	
+	/**
+	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
+	 * A shortcut for getOverlays(display,false).
 	 */
 	@Override
 	public List<Overlay> getOverlays(final ImageDisplay display) {
-		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		if (display != null) {
-			for (final DataView view : display) {
-				final Data data = view.getData();
-				if (!(data instanceof Overlay)) continue;
-				final Overlay overlay = (Overlay) data;
-				overlays.add(overlay);
-			}
-		}
-		return overlays;
+		return getOverlays(display, false);
 	}
 
 	/** Adds the list of {@link Overlay}s to the given {@link ImageDisplay}. */
@@ -196,16 +207,12 @@ public final class DefaultOverlayService extends AbstractService implements
 		// For example, why don't all Data objects have Extents?
 
 		// determine XY bounding box by checking all overlays
+		List<Overlay> overlays = getOverlays(display, true);
 		double xMin = Double.POSITIVE_INFINITY;
 		double xMax = Double.NEGATIVE_INFINITY;
 		double yMin = Double.POSITIVE_INFINITY;
 		double yMax = Double.NEGATIVE_INFINITY;
-		for (final DataView view : display) {
-			if (!view.isSelected()) continue; // ignore non-selected objects
-			final Data data = view.getData();
-			if (!(data instanceof Overlay)) continue; // ignore non-overlays
-
-			final Overlay overlay = (Overlay) data;
+		for (Overlay overlay : overlays) {
 			final RegionOfInterest roi = overlay.getRegionOfInterest();
 			final double min0 = roi.realMin(0);
 			final double max0 = roi.realMax(0);

@@ -61,6 +61,14 @@ public interface OverlayService extends IService {
 
 	/**
 	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
+	 * If selectedOnly is true then it will gather overlays from the selected
+	 * views only. Otherwise it will gather overlays from all the views.
+	 */
+	List<Overlay> getOverlays(ImageDisplay display, boolean selectedOnly);
+
+	/**
+	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
+	 * A shortcut for getOverlays(display,false).
 	 */
 	List<Overlay> getOverlays(final ImageDisplay display);
 
