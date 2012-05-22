@@ -37,6 +37,8 @@ package imagej.core.tools;
 
 import java.util.Random;
 
+import net.imglib2.meta.Axes;
+
 import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -58,8 +60,7 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 // TODO
-//   - make rates look similar to IJ1
-//   - only draw on the current channel of the currently viewed plane (IJ1?)
+//   - make lowest drawing rate work like IJ1 (too fast right now)
 
 /**
  * Adapted from IJ1's SprayCanTool.txt macro tool
@@ -178,6 +179,12 @@ public class SprayCanTool extends AbstractTool {
 		for (int i = 0; i < currPos.length; i++)
 			currPos[i] = imageDisplay.getLongPosition(i);
 		drawingTool.setPosition(currPos);
+
+		int dsChanIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		if (dsChanIndex >= 0) {
+			long currChanPos = currPos[dsChanIndex];
+			drawingTool.setPreferredChannel(currChanPos);
+		}
 
 		// TODO - change here to make this work on any two arbitrary axes
 		drawingTool.setUAxis(0);

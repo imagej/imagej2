@@ -77,6 +77,7 @@ public class DrawingTool {
 	private int uAxis;
 	private int vAxis;
 	private int channelAxis;
+	private long preferredChannel;
 	private final RandomAccess<? extends RealType<?>> accessor;
 	private long lineWidth;
 	private long u0, v0;
@@ -116,11 +117,34 @@ public class DrawingTool {
 		this.textRenderer = new AWTTextRenderer();
 		this.u0 = 0;
 		this.v0 = 0;
+		this.preferredChannel = -1;
 		initAxisVariables();
 	}
 
 	// -- public interface --
 
+	/**
+	 * Set the preferred channel to draw on. By default drawing takes place
+	 * across all channels of the current plane. If you specify a nonnegative
+	 * channel number with this method drawing will be restricted to that channel.
+	 * If the channel number specified is negative then drawing is done on all
+	 * channels. In general one should specify setPreferredChannel(-1) to undo
+	 * any specification of a preferred channel.
+	 * 
+	 * @param channelNumber
+	 */
+	public void setPreferredChannel(long channelNumber) {
+		if (channelNumber > 0) {
+			boolean invalid = channelAxis < 0;
+			if (!invalid)
+				invalid = channelNumber >= dataset.dimension(channelAxis);
+			if (invalid)
+				throw new IllegalArgumentException(
+					"preferred channel outside valid range");
+		}
+		this.preferredChannel = channelNumber;
+	}
+	
 	/** Return the Dataset associated with this DrawingTool. */
 	public Dataset getDataset() {
 		return dataset;
@@ -272,12 +296,20 @@ public class DrawingTool {
 		if (v > maxV) return;
 		accessor.setPosition(u, uAxis);
 		accessor.setPosition(v, vAxis);
-		long numChan = 1;
-		if (channelAxis != -1) numChan = dataset.dimension(channelAxis);
-		for (long c = 0; c < numChan; c++) {
-			final double value = intensity * channels.getChannelValue(c);
-			if (channelAxis != -1) accessor.setPosition(c, channelAxis);
+		// draw in single channel mode
+		if (preferredChannel >= 0) {
+			final double value = intensity * channels.getChannelValue(preferredChannel);
+			if (channelAxis != -1) accessor.setPosition(preferredChannel, channelAxis);
 			accessor.get().setReal(value);
+		}
+		else { // draw across all channels
+			long numChannels = 1;
+			if (channelAxis != -1) numChannels = dataset.dimension(channelAxis);
+			for (long c = 0; c < numChannels; c++) {
+				final double value = intensity * channels.getChannelValue(c);
+				if (channelAxis != -1) accessor.setPosition(c, channelAxis);
+				accessor.get().setReal(value);
+			}
 		}
 		dataset.setDirty(true);
 	}
