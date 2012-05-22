@@ -90,7 +90,7 @@ public class SprayCanTool extends AbstractTool {
 			//IJ1 : delayMax = (long) (25 * Math.exp(0.9*(10-rate)));
 			long dimension = (long) (25 * Math.exp(0.1*(rate-1)));
 			numPixels = dimension * dimension;
-			System.out.println("numPixels = "+numPixels);
+			//System.out.println("numPixels = "+numPixels);
 		}
 		evt.consume();
 	}

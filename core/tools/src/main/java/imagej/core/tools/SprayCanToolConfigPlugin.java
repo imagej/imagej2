@@ -63,7 +63,7 @@ public class SprayCanToolConfigPlugin implements ImageJPlugin {
   private int dotSize;
   
   @Parameter(label = "Flow Rate (1-10):", min = "1", max = "10", persist=false)
-  int rate;
+  private int rate;
   
 	@Override
 	public void run() {
