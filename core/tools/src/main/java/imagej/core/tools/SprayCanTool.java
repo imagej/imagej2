@@ -59,15 +59,10 @@ import imagej.options.plugins.OptionsChannels;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
-// TODO
-//   - make lowest drawing rate work like IJ1 (too fast right now)
-
 /**
- * Adapted from IJ1's SprayCanTool.txt macro tool
+ * Implements a spray can drawing tool
  * 
  * @author Barry DeZonia
- * @author Rick Lentz
- * @author Grant Harris
  */
 @Plugin(type = Tool.class, name = "SprayCan", label = "Spray Can",
 	description = "Spray Can Tool", iconPath = "/icons/tools/spray-can.png",
@@ -88,10 +83,15 @@ public class SprayCanTool extends AbstractTool {
 		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
 		initDrawingTool(evt);
 		if (drawingTool != null) {
-			//IJ1 : delayMax = (long) (25 * Math.exp(0.9*(10-rate)));
-			long dimension = (long) (25 * Math.exp(0.1*(rate-1)));
-			numPixels = dimension * dimension;
-			//System.out.println("numPixels = "+numPixels);
+			// linear function in rate variable from 4% to 66%
+			//double frac = 0.7 * (0.1*(rate) - 0.05);
+			// linear function in rate variable from 1% to 63%
+			//double frac = (0.07*(rate) - 0.06);
+			// linear function in rate variable from 1% to 37%
+			double frac = (0.04*(rate) - 0.03);
+			// numPixels is fraction of the area of the circle of specified width
+			numPixels = (long) (frac * Math.PI * Math.pow(width/2.0,2));
+			if (numPixels <= 0) numPixels = 1;
 		}
 		evt.consume();
 	}
@@ -113,17 +113,20 @@ public class SprayCanTool extends AbstractTool {
 		ImageCanvas canv = disp.getCanvas();
 		IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
 		RealCoords realCoords = canv.panelToImageCoords(panelCoords);
+		// begin: adapted from IJ1's SprayCanTool.txt macro courtesy Wayne Rasband
 		long ox = realCoords.getLongX();
 		long oy = realCoords.getLongY();
 		double radius = width / 2.0;
 		double radius2 = radius * radius;
 		for (int i = 0; i < numPixels; i++) {
-	    long dx = (long) ((rng.nextDouble()-0.5)*width);
-	    long dy = (long) ((rng.nextDouble()-0.5)*width);
-	    if (dx*dx + dy*dy < radius2) {
-	      drawingTool.drawLine(ox + dx, oy + dy, ox + dx, oy + dy);
-	    }
+			long dx, dy;
+			do {
+	      dx = (long) ((rng.nextDouble()-0.5)*width);
+	      dy = (long) ((rng.nextDouble()-0.5)*width);
+			} while (dx*dx + dy*dy > radius2);
+	    drawingTool.drawDot(ox + dx, oy + dy);
 		}
+		// end: adapted from IJ1's SprayCanTool.txt macro courtesy Wayne Rasband
 		evt.getDisplay().update();
 		evt.consume();
 	}
@@ -180,16 +183,19 @@ public class SprayCanTool extends AbstractTool {
 			currPos[i] = imageDisplay.getLongPosition(i);
 		drawingTool.setPosition(currPos);
 
-		int dsChanIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		if (dsChanIndex >= 0) {
-			long currChanPos = currPos[dsChanIndex];
+		// restrict to a single channel if a multichannel image
+		int chanIndex = imageDisplay.getAxisIndex(Axes.CHANNEL);
+		if (chanIndex >= 0) {
+			long currChanPos = currPos[chanIndex];
 			drawingTool.setPreferredChannel(currChanPos);
 		}
 
+		// define the UV drawing axes that the tool will use
 		// TODO - change here to make this work on any two arbitrary axes
-		drawingTool.setUAxis(0);
-		drawingTool.setVAxis(1);
+		drawingTool.setUAxis(0); // U will be axis 0 (which by convention is X)
+		drawingTool.setVAxis(1); // V will be axis 1 (which by convention is Y)
 
+		// set the size used to draw dots
 		drawingTool.setLineWidth(getDotSize());
 	}
 
