@@ -88,7 +88,9 @@ public class SprayCanTool extends AbstractTool {
 			// linear function in rate variable from 1% to 63%
 			//double frac = (0.07*(rate) - 0.06);
 			// linear function in rate variable from 1% to 37%
-			double frac = (0.04*(rate) - 0.03);
+			//double frac = (0.04*(rate) - 0.03);
+			// linear function in rate variable from 0.4% to 45.4%
+			double frac = 0.05*rate - 0.046;
 			// numPixels is fraction of the area of the circle of specified width
 			numPixels = (long) (frac * Math.PI * Math.pow(width/2.0,2));
 			if (numPixels <= 0) numPixels = 1;
