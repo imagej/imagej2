@@ -84,7 +84,7 @@ public class SprayCanTool extends AbstractTool {
 		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
 		initDrawingTool(evt);
 		if (drawingTool != null) {
-			numPixels = calcPixelCount(0.1625, 60.0);
+			numPixels = calcPixelCount();
 			doOneSpray(evt);
 		}
 		evt.consume();
@@ -123,10 +123,16 @@ public class SprayCanTool extends AbstractTool {
 
 	// -- private helpers --
 
-	private long calcPixelCount(double minPct, double maxPct) {
-		double dialSetting = (rate-1)/9.0; // ranges from 0 to 1
-		double percent = minPct + dialSetting * (maxPct - minPct);
-		double fraction = percent / 100;
+	private double calcFraction() {
+		// NB - formula arrived at by trying IJ1's version at each of the 10 rate
+		// settings and counting the pixels drawn in a radius 50 circle. Then used
+		// those values to fit a curve. This is not exactly like IJ1 but works
+		// better than previous linear interpolation schemes. 
+		return (13 * Math.pow(2.02,rate-1)) / 7854.0;
+	}
+	
+	private long calcPixelCount() {
+		double fraction = calcFraction();
 		// numPixels is fraction of the area of the circle of specified width
 		long count = (long) (fraction * Math.PI * Math.pow(width/2.0,2));
 		if (count <= 0) return 1;
