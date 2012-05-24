@@ -48,6 +48,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
+import imagej.ext.display.event.input.MsEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.plugin.Plugin;
@@ -83,17 +84,8 @@ public class SprayCanTool extends AbstractTool {
 		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
 		initDrawingTool(evt);
 		if (drawingTool != null) {
-			// linear function in rate variable from 4% to 66%
-			//double frac = 0.7 * (0.1*(rate) - 0.05);
-			// linear function in rate variable from 1% to 63%
-			//double frac = (0.07*(rate) - 0.06);
-			// linear function in rate variable from 1% to 37%
-			//double frac = (0.04*(rate) - 0.03);
-			// linear function in rate variable from 0.4% to 45.4%
-			double frac = 0.05*rate - 0.046;
-			// numPixels is fraction of the area of the circle of specified width
-			numPixels = (long) (frac * Math.PI * Math.pow(width/2.0,2));
-			if (numPixels <= 0) numPixels = 1;
+			numPixels = calcPixelCount(0.4, 45.4);
+			doOneSpray(evt);
 		}
 		evt.consume();
 	}
@@ -110,26 +102,7 @@ public class SprayCanTool extends AbstractTool {
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		if (drawingTool == null) return;
-		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
-		ImageDisplay disp = (ImageDisplay) evt.getDisplay();
-		ImageCanvas canv = disp.getCanvas();
-		IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
-		RealCoords realCoords = canv.panelToImageCoords(panelCoords);
-		// begin: adapted from IJ1's SprayCanTool.txt macro courtesy Wayne Rasband
-		long ox = realCoords.getLongX();
-		long oy = realCoords.getLongY();
-		double radius = width / 2.0;
-		double radius2 = radius * radius;
-		for (int i = 0; i < numPixels; i++) {
-			long dx, dy;
-			do {
-	      dx = (long) ((rng.nextDouble()-0.5)*width);
-	      dy = (long) ((rng.nextDouble()-0.5)*width);
-			} while (dx*dx + dy*dy > radius2);
-	    drawingTool.drawDot(ox + dx, oy + dy);
-		}
-		// end: adapted from IJ1's SprayCanTool.txt macro courtesy Wayne Rasband
-		evt.getDisplay().update();
+		doOneSpray(evt);
 		evt.consume();
 	}
 
@@ -150,6 +123,40 @@ public class SprayCanTool extends AbstractTool {
 
 	// -- private helpers --
 
+	private long calcPixelCount(double minPct, double maxPct) {
+		double dialSetting = (rate-1)/9.0; // ranges from 0 to 1
+		double percent = minPct + dialSetting * (maxPct - minPct);
+		double fraction = percent / 100;
+		// numPixels is fraction of the area of the circle of specified width
+		long count = (long) (fraction * Math.PI * Math.pow(width/2.0,2));
+		if (count <= 0) return 1;
+		return count;
+	}
+	
+	private void doOneSpray(MsEvent evt) {
+		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
+		ImageDisplay disp = (ImageDisplay) evt.getDisplay();
+		ImageCanvas canv = disp.getCanvas();
+		IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
+		RealCoords realCoords = canv.panelToImageCoords(panelCoords);
+		drawPixels(realCoords.getLongX(), realCoords.getLongY());
+		evt.getDisplay().update();
+	}
+	
+	// NB: adapted from IJ1's SprayCanTool.txt macro courtesy Wayne Rasband
+	private void drawPixels(long ox, long oy) {
+		double radius = width / 2.0;
+		double radius2 = radius * radius;
+		for (int i = 0; i < numPixels; i++) {
+			long dx, dy;
+			do {
+	      dx = (long) ((rng.nextDouble()-0.5)*width);
+	      dy = (long) ((rng.nextDouble()-0.5)*width);
+			} while (dx*dx + dy*dy > radius2);
+	    drawingTool.drawDot(ox + dx, oy + dy);
+		}
+	}
+	
 	/** Allocates and initializes a DrawingTool if possible. */
 	private void initDrawingTool(final MsPressedEvent evt) {
 
