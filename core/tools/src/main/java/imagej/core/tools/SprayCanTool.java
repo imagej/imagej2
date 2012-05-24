@@ -84,7 +84,7 @@ public class SprayCanTool extends AbstractTool {
 		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
 		initDrawingTool(evt);
 		if (drawingTool != null) {
-			numPixels = calcPixelCount(0.4, 45.4);
+			numPixels = calcPixelCount(0.1625, 60.0);
 			doOneSpray(evt);
 		}
 		evt.consume();
