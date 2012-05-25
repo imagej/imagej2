@@ -44,6 +44,7 @@ import java.io.ObjectOutput;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
+import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
  * Represents a line going from here to there, possibly with arrows on one end,
@@ -51,13 +52,13 @@ import net.imglib2.meta.Axes;
  * 
  * @author Lee Kamentsky
  */
-public class LineOverlay extends AbstractOverlay {
+public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 
 	private RealPoint ptStart;
 	private RealPoint ptEnd;
 
 	public LineOverlay(final ImageJ context) {
-		super(context);
+		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		ptStart = new RealPoint(2);
 		ptEnd = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
@@ -67,10 +68,13 @@ public class LineOverlay extends AbstractOverlay {
 	public LineOverlay(final ImageJ context, final RealLocalizable ptStart,
 		final RealLocalizable ptEnd)
 	{
-		super(context);
+		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		assert ptStart.numDimensions() == ptEnd.numDimensions();
 		this.ptStart = new RealPoint(ptStart);
 		this.ptEnd = new RealPoint(ptEnd);
+		this.setAxis(Axes.X, 0);
+		this.setAxis(Axes.Y, 1);
+		updateRegionOfInterest();
 	}
 
 	public RealLocalizable getLineStart() {
@@ -83,10 +87,12 @@ public class LineOverlay extends AbstractOverlay {
 
 	public void setLineStart(final RealLocalizable pt) {
 		ptStart.setPosition(pt);
+		updateRegionOfInterest();
 	}
 
 	public void setLineEnd(final RealLocalizable pt) {
 		ptEnd.setPosition(pt);
+		updateRegionOfInterest();
 	}
 
 	/* (non-Javadoc)
@@ -130,5 +136,73 @@ public class LineOverlay extends AbstractOverlay {
 		}
 		ptStart = pts[0];
 		ptEnd = pts[1];
+		updateRegionOfInterest();
 	}
+
+	@Override
+	public Overlay duplicate() {
+		LineOverlay overlay = new LineOverlay(getContext());
+		RealLocalizable origPt1 = getLineStart();
+		RealLocalizable origPt2 = getLineEnd();
+		overlay.setLineStart(origPt1);
+		overlay.setLineEnd(origPt2);
+		overlay.setAlpha(getAlpha());
+		overlay.setAxis(Axes.X, Axes.X.ordinal());
+		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setFillColor(getFillColor());
+		overlay.setLineColor(getLineColor());
+		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
+		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
+		overlay.setLineStyle(getLineStyle());
+		overlay.setLineWidth(getLineWidth());
+		overlay.setName(getName());
+		return overlay;
+	}
+
+	@Override
+	public void move(double[] deltas) {
+		for (int i = 0; i < deltas.length; i++) {
+			double currPos = ptStart.getDoublePosition(i);
+			ptStart.setPosition(currPos+deltas[i], i);
+			currPos = ptEnd.getDoublePosition(i);
+			ptEnd.setPosition(currPos+deltas[i], i);
+		}
+		updateRegionOfInterest();
+	}
+	
+	@Override
+	public long max(int d) {
+		double v1 = getLineStart().getDoublePosition(d);
+		double v2 = getLineEnd().getDoublePosition(d);
+		return Math.round(Math.max(v1, v2));
+	}
+	
+	@Override
+	public long min(int d) {
+		double v1 = getLineStart().getDoublePosition(d);
+		double v2 = getLineEnd().getDoublePosition(d);
+		return (long) Math.floor(Math.min(v1, v2));
+	}
+
+	private void updateRegionOfInterest() {
+		double minX = myMin(0);
+		double minY = myMin(1);
+		double maxX = myMax(0);
+		double maxY = myMax(1);
+		getRegionOfInterest().setOrigin(new double[]{minX, minY});
+		getRegionOfInterest().setExtent(new double[]{maxX-minX, maxY-minY});
+	}
+
+	private double myMax(int d) {
+		double v1 = ptStart.getDoublePosition(d);
+		double v2 = ptEnd.getDoublePosition(d);
+		return Math.max(v1, v2);
+	}
+	
+	private double myMin(int d) {
+		double v1 = ptStart.getDoublePosition(d);
+		double v2 = ptEnd.getDoublePosition(d);
+		return Math.min(v1, v2);
+	}
+
 }

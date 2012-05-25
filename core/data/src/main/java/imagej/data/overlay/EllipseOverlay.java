@@ -59,9 +59,9 @@ public class EllipseOverlay extends
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());
 	}
-
 	private static final long serialVersionUID = 1L;
 
+	
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
@@ -82,6 +82,34 @@ public class EllipseOverlay extends
 		roi.setOrigin(in.readDouble(), 1);
 		roi.setRadius(in.readDouble(), 0);
 		roi.setRadius(in.readDouble(), 1);
+	}
+
+
+	@Override
+	public Overlay duplicate() {
+		EllipseRegionOfInterest origRoi = getRegionOfInterest();
+		EllipseOverlay overlay = new EllipseOverlay(getContext());
+		EllipseRegionOfInterest newRoi = overlay.getRegionOfInterest();
+		for (int i = 0; i < 2; i++) {
+			newRoi.setOrigin(origRoi.getOrigin(i), i);
+			newRoi.setRadius(origRoi.getRadius(i), i);
+		}
+		overlay.setAlpha(getAlpha());
+		overlay.setAxis(Axes.X, Axes.X.ordinal());
+		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setFillColor(getFillColor());
+		overlay.setLineColor(getLineColor());
+		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
+		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
+		overlay.setLineStyle(getLineStyle());
+		overlay.setLineWidth(getLineWidth());
+		overlay.setName(getName());
+		return overlay;
+	}
+
+	@Override
+	public void move(double[] deltas) {
+		getRegionOfInterest().move(deltas);
 	}
 
 }

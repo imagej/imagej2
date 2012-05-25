@@ -35,12 +35,17 @@
 
 package imagej.core.plugins.imglib;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import imagej.ImageJ;
 import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
+import imagej.ext.display.DisplayService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -54,7 +59,9 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Fills an output Dataset with the contents of an input Dataset.
+ * Duplicates data from one input display to an output display. If there are
+ * overlays in the view then only the selected region is duplicated. Otherwise
+ * the entire display is duplicated.
  * 
  * @author Barry DeZonia
  */
@@ -74,17 +81,20 @@ public class DuplicateImage implements ImageJPlugin {
 	private OverlayService overlayService;
 	
 	@Parameter
+	private DisplayService displayService;
+	
+	@Parameter
 	private ImageDisplay display;
 
 	@Parameter
-	private Dataset input;
+	private Dataset dataset;
 
 	@Parameter(type = ItemIO.OUTPUT)
-	private Dataset output;
+	private ImageDisplay output;
 
 	// -- DuplicateImage methods --
 
-	public Dataset getOutput() {
+	public ImageDisplay getOutput() {
 		return output;
 	}
 
@@ -92,12 +102,16 @@ public class DuplicateImage implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		int xAxis = input.getAxisIndex(Axes.X);
-		int yAxis = input.getAxisIndex(Axes.Y);
+		int xAxis = dataset.getAxisIndex(Axes.X);
+		int yAxis = dataset.getAxisIndex(Axes.Y);
 		if ((xAxis < 0) || (yAxis < 0))
 			throw new IllegalArgumentException("X and Y axes required");
-		long[] dims = input.getDims();
+		long[] dims = dataset.getDims();
 		RealRect bounds = overlayService.getSelectionBounds(display);
+		// bounds could be a single point
+		if (bounds.width == 0) bounds.width = 1;
+		if (bounds.height == 0) bounds.height = 1;
+		List<Overlay> overlays = overlayService.getOverlays(display);
 		long[] srcOrigin = new long[dims.length];
 		srcOrigin[xAxis] = (long) bounds.x;
 		srcOrigin[yAxis] = (long) bounds.y;
@@ -108,16 +122,36 @@ public class DuplicateImage implements ImageJPlugin {
 		long[] dstSpan = dims.clone();
 		dstSpan[xAxis] = (long)(bounds.width);
 		dstSpan[yAxis] = (long)(bounds.height);
-		AxisType[] axes = input.getAxes();
+		AxisType[] axes = dataset.getAxes();
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-				RestructureUtils.createNewImgPlus(input, dstSpan, axes);
+				RestructureUtils.createNewImgPlus(dataset, dstSpan, axes);
 		RestructureUtils.copyHyperVolume(
-				input.getImgPlus(), srcOrigin, srcSpan,
+				dataset.getImgPlus(), srcOrigin, srcSpan,
 				dstImgPlus, dstOrigin, dstSpan);
-		output = new DefaultDataset(context, dstImgPlus);
-		// TODO - problems
-		// in IJ1 the ROI is also created in the new image. i.e. an ellipse
-		//    can be transferred
+		Dataset newDataset = new DefaultDataset(context, dstImgPlus);
+		// CTR FIXME (BDZ - the cast?)
+		output = (ImageDisplay)
+				displayService.createDisplay(newDataset.getName(), newDataset);
+		// create new overlays relative to new origin
+		double[] toOrigin = new double[2];
+		toOrigin[0] = -srcOrigin[0];
+		toOrigin[1] = -srcOrigin[1];
+		List<Overlay> newOverlays = new ArrayList<Overlay>();
+		for (Overlay overlay : overlays) {
+			if (overlayContained(overlay, bounds)) {
+				Overlay newOverlay = overlay.duplicate();
+				newOverlay.move(toOrigin);
+				newOverlays.add(newOverlay);
+			}
+		}
+		overlayService.addOverlays(output, newOverlays);
 	}
 
+	private boolean overlayContained(Overlay overlay, RealRect bounds) {
+		if (overlay.min(0) < bounds.x) return false;
+		if (overlay.min(1) < bounds.y) return false;
+		if (overlay.max(0) > bounds.x + bounds.width) return false;
+		if (overlay.max(1) > bounds.y + bounds.height) return false;
+		return true;
+	}
 }

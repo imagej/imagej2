@@ -44,28 +44,35 @@ import java.io.ObjectOutput;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
+import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
  * Represents a user specified point
  * 
  * @author Barry DeZonia
  */
-public class PointOverlay extends AbstractOverlay {
+public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private RealPoint point;
 
 	public PointOverlay(final ImageJ context) {
-		super(context);
+		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		point = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
 	public PointOverlay(final ImageJ context, final RealLocalizable pt) {
-		super(context);
-		this.point = new RealPoint(pt);
+		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
+		point = new RealPoint(2);
+		this.setAxis(Axes.X, 0);
+		this.setAxis(Axes.Y, 1);
+		for (int i = 0; i < 2; i++) {
+			point.setPosition(pt.getDoublePosition(i), i);
+			getRegionOfInterest().setOrigin(pt.getDoublePosition(i), i);
+		}
 	}
 
 	public RealLocalizable getPoint() {
@@ -74,6 +81,7 @@ public class PointOverlay extends AbstractOverlay {
 	
 	public void setPoint(final RealLocalizable pt) {
 		point.setPosition(pt);
+		getRegionOfInterest().setOrigin(new double[]{pt.getDoublePosition(0), pt.getDoublePosition(1)});
 	}
 
 	/* (non-Javadoc)
@@ -110,5 +118,34 @@ public class PointOverlay extends AbstractOverlay {
 			position[j] = in.readDouble();
 		}
 		point = new RealPoint(position);
+		getRegionOfInterest().setOrigin(new double[]{position[0], position[1]});
 	}
+
+	@Override
+	public Overlay duplicate() {
+		PointOverlay overlay = new PointOverlay(getContext());
+		RealLocalizable origPt = getPoint();
+		overlay.setPoint(origPt);
+		overlay.setAlpha(getAlpha());
+		overlay.setAxis(Axes.X, Axes.X.ordinal());
+		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setFillColor(getFillColor());
+		overlay.setLineColor(getLineColor());
+		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
+		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
+		overlay.setLineStyle(getLineStyle());
+		overlay.setLineWidth(getLineWidth());
+		overlay.setName(getName());
+		return overlay;
+	}
+
+	@Override
+	public void move(double[] deltas) {
+		for (int i = 0; i < deltas.length; i++) {
+			double currPos = point.getDoublePosition(i);
+			point.setPosition(currPos+deltas[i], i);
+		}
+		getRegionOfInterest().move(deltas);
+	}
+	
 }

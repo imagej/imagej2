@@ -44,13 +44,14 @@ import java.io.ObjectOutput;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
+import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
  * Represents an angle having a center point and two end points.
  * 
  * @author Barry DeZonia
  */
-public class AngleOverlay extends AbstractOverlay {
+public class AngleOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -59,7 +60,7 @@ public class AngleOverlay extends AbstractOverlay {
 	private RealPoint endPoint2;
 
 	public AngleOverlay(final ImageJ context) {
-		super(context);
+		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		ctrPoint = new RealPoint(2);
 		endPoint1 = new RealPoint(2);
 		endPoint2 = new RealPoint(2);
@@ -70,12 +71,15 @@ public class AngleOverlay extends AbstractOverlay {
 	public AngleOverlay(final ImageJ context, final RealLocalizable ctr,
 		final RealLocalizable end1, final RealLocalizable end2)
 	{
-		super(context);
+		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		assert ctr.numDimensions() == end1.numDimensions();
 		assert ctr.numDimensions() == end2.numDimensions();
 		this.ctrPoint = new RealPoint(ctr);
 		this.endPoint1 = new RealPoint(end1);
 		this.endPoint2 = new RealPoint(end2);
+		this.setAxis(Axes.X, 0);
+		this.setAxis(Axes.Y, 1);
+		updateRegionOfInterest();
 	}
 
 	public RealLocalizable getCenterPoint() {
@@ -92,14 +96,17 @@ public class AngleOverlay extends AbstractOverlay {
 
 	public void setCenterPoint(final RealLocalizable pt) {
 		ctrPoint.setPosition(pt);
+		updateRegionOfInterest();
 	}
 
 	public void setEndPoint1(final RealLocalizable pt) {
 		endPoint1.setPosition(pt);
+		updateRegionOfInterest();
 	}
 
 	public void setEndPoint2(final RealLocalizable pt) {
 		endPoint2.setPosition(pt);
+		updateRegionOfInterest();
 	}
 
 	/* (non-Javadoc)
@@ -144,5 +151,68 @@ public class AngleOverlay extends AbstractOverlay {
 		ctrPoint = pts[0];
 		endPoint1 = pts[1];
 		endPoint2 = pts[2];
+		updateRegionOfInterest();
 	}
+
+	@Override
+	public Overlay duplicate() {
+		AngleOverlay overlay = new AngleOverlay(getContext());
+		RealLocalizable cp = getCenterPoint();
+		RealLocalizable pt1 = getEndPoint1();
+		RealLocalizable pt2 = getEndPoint2();
+		RealPoint ncp = new RealPoint(cp.getDoublePosition(0), cp.getDoublePosition(1));
+		RealPoint npt1 = new RealPoint(pt1.getDoublePosition(0), pt1.getDoublePosition(1));
+		RealPoint npt2 = new RealPoint(pt2.getDoublePosition(0), pt2.getDoublePosition(1));
+		overlay.setCenterPoint(ncp);
+		overlay.setEndPoint1(npt1);
+		overlay.setEndPoint2(npt2);
+		overlay.setAlpha(getAlpha());
+		overlay.setAxis(Axes.X, Axes.X.ordinal());
+		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setFillColor(getFillColor());
+		overlay.setLineColor(getLineColor());
+		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
+		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
+		overlay.setLineStyle(getLineStyle());
+		overlay.setLineWidth(getLineWidth());
+		overlay.setName(getName());
+		return overlay;
+	}
+
+	@Override
+	public void move(double[] deltas) {
+		for (int i = 0; i < deltas.length; i++) {
+			double currPos = ctrPoint.getDoublePosition(i);
+			ctrPoint.setPosition(currPos+deltas[i], i);
+			currPos = endPoint1.getDoublePosition(i);
+			endPoint1.setPosition(currPos+deltas[i], i);
+			currPos = endPoint2.getDoublePosition(i);
+			endPoint2.setPosition(currPos+deltas[i], i);
+		}
+		getRegionOfInterest().move(deltas);
+	}
+	
+	private void updateRegionOfInterest() {
+		double minX = myMin(0);
+		double minY = myMin(1);
+		double maxX = myMax(0);
+		double maxY = myMax(1);
+		getRegionOfInterest().setOrigin(new double[]{minX, minY});
+		getRegionOfInterest().setExtent(new double[]{maxX-minX, maxY-minY});
+	}
+
+	private double myMax(int d) {
+		double v1 = ctrPoint.getDoublePosition(d);
+		double v2 = endPoint1.getDoublePosition(d);
+		double v3 = endPoint2.getDoublePosition(d);
+		return Math.max(v1, Math.max(v2, v3));
+	}
+	
+	private double myMin(int d) {
+		double v1 = ctrPoint.getDoublePosition(d);
+		double v2 = endPoint1.getDoublePosition(d);
+		double v3 = endPoint2.getDoublePosition(d);
+		return Math.min(v1, Math.min(v2, v3));
+	}
+
 }

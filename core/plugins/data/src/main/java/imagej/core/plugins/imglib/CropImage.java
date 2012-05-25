@@ -35,6 +35,9 @@
 
 package imagej.core.plugins.imglib;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -99,15 +102,29 @@ public class CropImage implements ImageJPlugin {
 	public void run() {
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		final RealRect bounds = overlayService.getSelectionBounds(display);
+		// bounds could be a single point
+		if (bounds.width == 0) bounds.width = 1;
+		if (bounds.height == 0) bounds.height = 1;
 
 		final ImgPlus<? extends RealType<?>> croppedData =
 			generateCroppedData(dataset, bounds);
 
-		// remove all overlays
-		// TODO - could be a problem when multiple datasets in one display
-		// TODO - could just remove those that are not wholly contained in
-		// crop region. Could translate or recreate others.
+		// update all overlays
+		//   delete all but remember those wholly contained in the selected region 
+		final double[] toNewOrigin = new double[2];
+		toNewOrigin[0] = -bounds.x;
+		toNewOrigin[1] = -bounds.y;
+		List<Overlay> newOverlays = new ArrayList<Overlay>();
 		for (final Overlay overlay : overlayService.getOverlays(display)) {
+			Overlay newOverlay = null;
+			if (overlayContained(overlay, bounds)) {
+				// can't just move() the overlay. JHotDraw gets confused. So delete all
+				// overlays at current position and add back copies translated to new
+				// origin
+				newOverlay = overlay.duplicate();
+				newOverlay.move(toNewOrigin);
+				newOverlays.add(newOverlay);
+			}
 			overlayService.removeOverlay(display, overlay);
 		}
 
@@ -129,11 +146,8 @@ public class CropImage implements ImageJPlugin {
 
 		dataset.setImgPlus(croppedData);
 
-		// TODO - could create an overlay that selects all afterwards or
-		// move original one. Or just make sure region is marked as selected
-		// for (final DataView view : display) {
-		// view.setSelected(true);
-		// }
+		// here the duplicated and origin translated overlays are attached
+		overlayService.addOverlays(display, newOverlays);
 	}
 
 	// -- private interface --
@@ -201,4 +215,11 @@ public class CropImage implements ImageJPlugin {
 		}
 	}
 
+	private boolean overlayContained(Overlay overlay, RealRect bounds) {
+		if (overlay.min(0) < bounds.x) return false;
+		if (overlay.min(1) < bounds.y) return false;
+		if (overlay.max(0) > bounds.x + bounds.width) return false;
+		if (overlay.max(1) > bounds.y + bounds.height) return false;
+		return true;
+	}
 }

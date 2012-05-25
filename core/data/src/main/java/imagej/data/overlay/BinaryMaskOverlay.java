@@ -56,6 +56,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.BitArray;
+import net.imglib2.meta.Axes;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.sampler.special.ConstantRandomAccessible;
 import net.imglib2.type.logic.BitType;
@@ -65,14 +66,16 @@ import net.imglib2.type.logic.BitType;
  * 
  * @author Lee Kamentsky
  */
-public class BinaryMaskOverlay extends AbstractOverlay {
+public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends AbstractROIOverlay<BinaryMaskRegionOfInterest<U, V>> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi;
+	//private BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi;
+
+	/*
 
 	// TODO: Decide whether to keep this noargs constructor.
 	// It is currently present only so that TestBinaryMaskOverlay code passes
@@ -87,19 +90,20 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		super(context);
 	}
 
+	*/
+	
 	public BinaryMaskOverlay(
 		final ImageJ context,
-		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi)
+		final BinaryMaskRegionOfInterest<U, V> roi)
 	{
-		super(context);
-		this.roi = roi;
+		super(context, roi);
+		//this.roi = roi;
 	}
 
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> theRoi =
-			getRegionOfInterest();
+		final BinaryMaskRegionOfInterest<U,V> theRoi = getRegionOfInterest();
 		final BitType b = new BitType();
 		b.set(true);
 		final RandomAccessible<BitType> ra =
@@ -111,6 +115,9 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		for (int i = 0; i < theRoi.numDimensions(); i++) {
 			out.writeLong(ii.dimension(i));
 		}
+		long[] maskOrigin = theRoi.getOrigin(); // TODO broken: doubles would be nicer
+		for (int i = 0; i < maskOrigin.length; i++)
+			out.writeLong(maskOrigin[i]);
 		/*
 		 * This is a run-length encoding of the binary mask. The method is similar to PNG.
 		 */
@@ -166,6 +173,10 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		for (int i = 0; i < nDimensions; i++) {
 			dimensions[i] = in.readLong();
 		}
+		double[] maskOrigin = new double[nDimensions];
+		for (int i = 0; i < nDimensions; i++) {
+			maskOrigin[i] = in.readLong();
+		}
 		final ArrayImg<BitType, BitArray> img =
 			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
 		final BitType t = new BitType(img);
@@ -188,17 +199,42 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 				ra.get().set(true);
 			}
 		}
-		roi = new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
+		setRegionOfInterest(new BinaryMaskRegionOfInterest(img));
+		getRegionOfInterest().move(maskOrigin);
 	}
 
 	/* (non-Javadoc)
 	 * @see imagej.data.roi.AbstractOverlay#getRegionOfInterest()
 	 */
+	//@Override
+	//public BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>>
+	//	getRegionOfInterest()
+	//{
+	//	return roi;
+	//}
+
+
 	@Override
-	public BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>>
-		getRegionOfInterest()
-	{
-		return roi;
+	public Overlay duplicate() {
+		BinaryMaskRegionOfInterest<U,V> newRoi =
+				new BinaryMaskRegionOfInterest<U,V>((V)(getRegionOfInterest().getImg().copy()));
+		BinaryMaskOverlay<U,V> overlay = new BinaryMaskOverlay<U,V>(getContext(), newRoi);
+		overlay.setAlpha(getAlpha());
+		overlay.setAxis(Axes.X, Axes.X.ordinal());
+		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setFillColor(getFillColor());
+		overlay.setLineColor(getLineColor());
+		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
+		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
+		overlay.setLineStyle(getLineStyle());
+		overlay.setLineWidth(getLineWidth());
+		overlay.setName(getName());
+		return overlay;
+	}
+
+	@Override
+	public void move(double[] deltas) {
+		getRegionOfInterest().move(deltas);
 	}
 
 }

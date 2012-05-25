@@ -36,7 +36,9 @@
 package imagej.data.overlay;
 
 import imagej.ImageJ;
+import net.imglib2.meta.Axes;
 import net.imglib2.roi.CompositeRegionOfInterest;
+import net.imglib2.roi.EllipseRegionOfInterest;
 
 /**
  * A composite of several overlays.
@@ -59,6 +61,33 @@ public class CompositeOverlay extends
 		final CompositeRegionOfInterest roi)
 	{
 		super(context, roi);
+	}
+
+	@Override
+	public Overlay duplicate() {
+		throw new UnsupportedOperationException("must implement");
+		/*
+		CompositeRegionOfInterest origRoi = getRegionOfInterest();
+		CompositeOverlay overlay = new CompositeOverlay(getContext());
+		CompositeRegionOfInterest newRoi = overlay.getRegionOfInterest();
+		// TODO ITS UNKNOWN WHAT TO DO HERE. I THINK ROIS MUST HAVE .duplicate()
+		overlay.setAlpha(getAlpha());
+		overlay.setAxis(Axes.X, Axes.X.ordinal());
+		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setFillColor(getFillColor());
+		overlay.setLineColor(getLineColor());
+		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
+		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
+		overlay.setLineStyle(getLineStyle());
+		overlay.setLineWidth(getLineWidth());
+		overlay.setName(getName());
+		return overlay;
+		*/
+	}
+
+	@Override
+	public void move(double[] deltas) {
+		getRegionOfInterest().move(deltas);
 	}
 
 }

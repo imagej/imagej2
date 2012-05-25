@@ -43,6 +43,7 @@ import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
+import net.imglib2.roi.RegionOfInterest;
 
 /**
  * An axis-aligned rectangle, backed by a {@link RectangleRegionOfInterest}.
@@ -82,5 +83,43 @@ public class RectangleOverlay extends
 		roi.setOrigin(in.readDouble(), 1);
 		roi.setExtent(in.readDouble(), 0);
 		roi.setExtent(in.readDouble(), 1);
+	}
+	
+	@Override
+	public Overlay duplicate() {
+		RectangleOverlay overlay = new RectangleOverlay(getContext());
+		RegionOfInterest origRoi = getRegionOfInterest();
+		double[] origin = new double[origRoi.numDimensions()];
+		double[] extent = new double[origRoi.numDimensions()];
+		for (int i = 0; i < origin.length; i++) {
+			origin[i] = origRoi.realMin(i);
+			extent[i] = origRoi.realMax(i) - origin[i];
+		}
+		overlay.getRegionOfInterest().setOrigin(origin);
+		overlay.getRegionOfInterest().setExtent(extent);
+		overlay.setAlpha(getAlpha());
+		overlay.setAxis(Axes.X, Axes.X.ordinal());
+		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setFillColor(getFillColor());
+		overlay.setLineColor(getLineColor());
+		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
+		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
+		overlay.setLineStyle(getLineStyle());
+		overlay.setLineWidth(getLineWidth());
+		overlay.setName(getName());
+		return overlay;
+	}
+	
+	@Override
+	public void move(double[] deltas) {
+		RectangleRegionOfInterest roi = getRegionOfInterest();
+		double[] origin = new double[roi.numDimensions()];
+		roi.getOrigin(origin);
+		for (int i = 0; i < roi.numDimensions(); i++) {
+			origin[i] += deltas[i];
+		}
+		roi.setOrigin(origin);
+		// TODO - does it need this. I think so.
+		//rebuild();
 	}
 }

@@ -62,7 +62,7 @@ import net.imglib2.roi.RegionOfInterest;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public class AbstractOverlay extends AbstractData implements Overlay {
+public abstract class AbstractOverlay extends AbstractData implements Overlay {
 
 	private static final long serialVersionUID = 1L;
 
@@ -251,32 +251,36 @@ public class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public long min(final int d) {
-		throw new UnsupportedOperationException();
+		return (long) Math.floor(realMin(d));
 	}
 
 	@Override
 	public void min(final long[] min) {
-		throw new UnsupportedOperationException();
+		for (int i = 0; i < min.length; i++)
+			min[i] = min(i);
 	}
 
 	@Override
 	public void min(final Positionable min) {
-		throw new UnsupportedOperationException();
+		for (int i = 0; i < min.numDimensions(); i++)
+			min.setPosition(min(i), i);
 	}
 
 	@Override
 	public long max(final int d) {
-		throw new UnsupportedOperationException();
+		return Math.round(realMax(d));
 	}
 
 	@Override
 	public void max(final long[] max) {
-		throw new UnsupportedOperationException();
+		for (int i = 0; i < max.length; i++)
+			max[i] = max(i);
 	}
 
 	@Override
 	public void max(final Positionable max) {
-		throw new UnsupportedOperationException();
+		for (int i = 0; i < max.numDimensions(); i++)
+			max.setPosition(max(i), i);
 	}
 
 	@Override

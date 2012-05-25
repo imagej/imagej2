@@ -148,4 +148,7 @@ public interface Overlay extends Data {
 	 */
 	void setLineEndArrowStyle(ArrowStyle style);
 
+	Overlay duplicate();
+	
+	void move(double[] deltas);
 }

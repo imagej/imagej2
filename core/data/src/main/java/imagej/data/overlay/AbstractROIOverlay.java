@@ -49,7 +49,7 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 
 	private static final long serialVersionUID = 1L;
 
-	private final R roi;
+	private R roi;
 
 	protected AbstractROIOverlay(final ImageJ context, final R roi) {
 		super(context);
@@ -64,6 +64,10 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 	@Override
 	public R getRegionOfInterest() {
 		return roi;
+	}
+
+	protected void setRegionOfInterest(R roi) {
+		this.roi = roi;
 	}
 
 }
