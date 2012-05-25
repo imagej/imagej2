@@ -76,6 +76,8 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 	//private BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi;
 
 	/*
+	*/
+	
 
 	// TODO: Decide whether to keep this noargs constructor.
 	// It is currently present only so that TestBinaryMaskOverlay code passes
@@ -83,15 +85,13 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 	// Externalizable objects may need a noargs constructor to work properly.
 
 	public BinaryMaskOverlay() {
-		super(null);
+		super(null, null);
 	}
 
 	public BinaryMaskOverlay(final ImageJ context) {
-		super(context);
+		super(context, null);
 	}
 
-	*/
-	
 	public BinaryMaskOverlay(
 		final ImageJ context,
 		final BinaryMaskRegionOfInterest<U, V> roi)
