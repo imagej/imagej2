@@ -115,9 +115,9 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 		for (int i = 0; i < theRoi.numDimensions(); i++) {
 			out.writeLong(ii.dimension(i));
 		}
-		long[] maskOrigin = theRoi.getOrigin(); // TODO broken: doubles would be nicer
+		double[] maskOrigin = theRoi.getOrigin();
 		for (int i = 0; i < maskOrigin.length; i++)
-			out.writeLong(maskOrigin[i]);
+			out.writeDouble(maskOrigin[i]);
 		/*
 		 * This is a run-length encoding of the binary mask. The method is similar to PNG.
 		 */
@@ -175,7 +175,7 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 		}
 		double[] maskOrigin = new double[nDimensions];
 		for (int i = 0; i < nDimensions; i++) {
-			maskOrigin[i] = in.readLong();
+			maskOrigin[i] = in.readDouble();
 		}
 		final ArrayImg<BitType, BitArray> img =
 			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
