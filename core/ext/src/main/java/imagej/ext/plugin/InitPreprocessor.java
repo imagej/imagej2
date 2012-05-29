@@ -44,7 +44,7 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
  * A preprocessor plugin that populates initial parameter values.
  * <p>
  * First, the {@link Module}'s global initializer method is called (i.e.,
- * {@link Module#initialize()}), followed by the individal {@link ModuleItem}
+ * {@link Module#initialize()}), followed by the individual {@link ModuleItem}
  * initializer methods (i.e., {@link ModuleItem#initialize(Module)}).
  * </p>
  * 
