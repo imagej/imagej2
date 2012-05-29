@@ -23,6 +23,7 @@
 		<architecture.option/>
 		<subsystem.option/>
 		<libdl.name>dl</libdl.name>
+		<libpthread.name></libpthread.name>
 		<debug.option/>
 		<ij.launcher.packaging>jar</ij.launcher.packaging>
 	</properties>
@@ -86,6 +87,9 @@
 									<sysLib>
 										<name>${libdl.name}</name>
 									</sysLib>
+									<sysLib>
+										<name>${libpthread.name}</name>
+									</sysLib>
 								</sysLibs>
 							</linker>
 							<libraries>
@@ -113,6 +117,7 @@
 				<java.os.include>-I${JAVA_HOME}/include/linux</java.os.include>
 				<stack.protector.option>-fno-stack-protector</stack.protector.option>
 				<architecture.option>-m64</architecture.option>
+				<libpthread.name>pthread</libpthread.name>
 			</properties>
 		</profile>
 
@@ -128,6 +133,7 @@
 				<java.os.include>-I${JAVA_HOME}/include/linux</java.os.include>
 				<stack.protector.option>-fno-stack-protector</stack.protector.option>
 				<architecture.option>-m32</architecture.option>
+				<libpthread.name>pthread</libpthread.name>
 			</properties>
 		</profile>
 
