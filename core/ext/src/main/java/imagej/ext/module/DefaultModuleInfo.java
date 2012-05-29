@@ -178,6 +178,15 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 	public void update(final EventService eventService) {
 		eventService.publish(new ModulesUpdatedEvent(this));
 	}
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public List<String> getProblems() {
+		return null;
+	}
 
 	// -- UIDetails methods --
 

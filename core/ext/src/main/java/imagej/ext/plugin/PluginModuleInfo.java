@@ -84,6 +84,9 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	 */
 	private boolean paramsParsed;
 
+	/** List of problems detected when parsing plugin parameters. */
+	private List<String> paramErrors = new ArrayList<String>();
+
 	/** Table of inputs, keyed on name. */
 	private final Map<String, ModuleItem<?>> inputMap =
 		new HashMap<String, ModuleItem<?>>();
@@ -222,6 +225,17 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 		eventService.publish(new ModulesUpdatedEvent(this));
 	}
 
+	@Override
+	public boolean isValid() {
+		parseParams();
+		return paramErrors.isEmpty();
+	}
+
+	@Override
+	public List<String> getProblems() {
+		return isValid() ? null : Collections.unmodifiableList(paramErrors);
+	}
+
 	// -- UIDetails methods --
 
 	@Override
@@ -244,7 +258,7 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	private void parseParams() {
 		if (paramsParsed) return;
 		paramsParsed = true;
-		checkFields(loadPluginClass(), true);
+		checkFields(loadPluginClass());
 	}
 
 	/**
@@ -255,28 +269,41 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	 * fields of the given type and ancestor types, including non-public fields.
 	 * </p>
 	 */
-	private void checkFields(final Class<?> type,
-		final boolean includePrivateFields)
-	{
+	private void checkFields(final Class<?> type) {
 		if (type == null) return;
 
 		for (final Field f : type.getDeclaredFields()) {
-			final boolean isPrivate = Modifier.isPrivate(f.getModifiers());
-			if (isPrivate && !includePrivateFields) continue;
 			f.setAccessible(true); // expose private fields
 
 			final Parameter param = f.getAnnotation(Parameter.class);
 			if (param == null) continue; // not a parameter
 
+			boolean valid = true;
+
 			final boolean isFinal = Modifier.isFinal(f.getModifiers());
 			final boolean isMessage = param.visibility() == ItemVisibility.MESSAGE;
 			if (isFinal && !isMessage) {
-				// NB: Skip final parameters, since they cannot be modified.
-				Log.warn("Ignoring final parameter: " + f);
-				continue;
+				// NB: Final parameters are bad because they cannot be modified.
+				final String error = "Invalid final parameter: " + f;
+				paramErrors.add(error);
+				Log.error(error);
+				valid = false;
 			}
 
 			final String name = f.getName();
+			if (inputMap.containsKey(name) || outputMap.containsKey(name)) {
+				// NB: Shadowed parameters are bad because they are ambiguous.
+				final String error = "Invalid duplicate parameter: " + f;
+				paramErrors.add(error);
+				Log.error(error);
+				valid = false;
+			}
+
+			if (!valid) {
+				// NB: Skip invalid parameters.
+				continue;
+			}
+
 			final boolean isPreset = presets.containsKey(name);
 
 			// add item to the relevant list (inputs or outputs)
@@ -293,9 +320,9 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 		}
 
 		// check super-types for annotated fields as well
-		checkFields(type.getSuperclass(), false);
+		checkFields(type.getSuperclass());
 		for (final Class<?> c : type.getInterfaces()) {
-			checkFields(c, false);
+			checkFields(c);
 		}
 	}
 

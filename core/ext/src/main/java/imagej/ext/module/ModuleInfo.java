@@ -38,6 +38,9 @@ package imagej.ext.module;
 import imagej.event.EventService;
 import imagej.ext.UIDetails;
 import imagej.ext.module.event.ModulesUpdatedEvent;
+import imagej.ext.plugin.PluginModuleInfo;
+
+import java.util.List;
 
 /**
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}
@@ -123,5 +126,24 @@ public interface ModuleInfo extends UIDetails {
 	 * </p>
 	 */
 	void update(EventService eventService);
+
+	/**
+	 * Gets whether the module info is completely valid.
+	 * <p>
+	 * In most cases, this method will return true. But this mechanism exists in
+	 * case of programmatically generated module infos whose input data comes from
+	 * an untrusted source.
+	 * </p>
+	 * @see PluginModuleInfo#isValid()
+	 */
+	boolean isValid();
+
+	/**
+	 * Gets the list of problems encountered while initializing the module info.
+	 * 
+	 * @return The list of problems, or a zero-length list in the case of
+	 *         {@link #isValid()} returning true.
+	 */
+	List<String> getProblems();
 
 }
