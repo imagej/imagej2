@@ -51,21 +51,29 @@ import imagej.util.RealRect;
  */
 public abstract class AbstractShadows implements ImageJPlugin {
 
+	// -- Parameters --
+	
 	@Parameter
-	private ImageDisplayService imageDisplayService;
+	protected ImageDisplayService imageDisplayService;
 
 	@Parameter
-	private OverlayService overlayService;
+	protected OverlayService overlayService;
 
 	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
+	protected ImageDisplay display;
 
+	// -- other instance variables --
+	
 	private final double[] kernel;
 
+	// -- constructor --
+	
 	AbstractShadows(final double[] kernel) {
 		this.kernel = kernel;
 	}
 
+	// -- public interface --
+	
 	@Override
 	public void run() {
 		final Dataset input = imageDisplayService.getActiveDataset(display);
