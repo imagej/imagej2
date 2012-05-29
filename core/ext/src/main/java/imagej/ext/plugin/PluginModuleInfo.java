@@ -272,6 +272,12 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	private void checkFields(final Class<?> type) {
 		if (type == null) return;
 
+		// check super-types for annotated fields first
+		checkFields(type.getSuperclass());
+		for (final Class<?> c : type.getInterfaces()) {
+			checkFields(c);
+		}
+
 		for (final Field f : type.getDeclaredFields()) {
 			f.setAccessible(true); // expose private fields
 
@@ -317,12 +323,6 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 				outputMap.put(name, item);
 				if (!isPreset) outputList.add(item);
 			}
-		}
-
-		// check super-types for annotated fields as well
-		checkFields(type.getSuperclass());
-		for (final Class<?> c : type.getInterfaces()) {
-			checkFields(c);
 		}
 	}
 
