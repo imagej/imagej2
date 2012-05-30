@@ -251,7 +251,7 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public long min(final int d) {
-		return (long) Math.floor(realMin(d));
+		return (long) Math.ceil(realMin(d));
 	}
 
 	@Override
@@ -268,7 +268,7 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public long max(final int d) {
-		return Math.round(realMax(d));
+		return (long) Math.floor(realMax(d));
 	}
 
 	@Override
