@@ -114,18 +114,8 @@ public class CropImage implements ImageJPlugin {
 		final double[] toNewOrigin = new double[2];
 		toNewOrigin[0] = -bounds.x;
 		toNewOrigin[1] = -bounds.y;
-		List<Overlay> newOverlays = new ArrayList<Overlay>();
 		for (final Overlay overlay : overlayService.getOverlays(display)) {
-			Overlay newOverlay = null;
-			if (overlayContained(overlay, bounds)) {
-				// can't just move() the overlay. JHotDraw gets confused. So delete all
-				// overlays at current position and add back copies translated to new
-				// origin
-				newOverlay = overlay.duplicate();
-				newOverlay.move(toNewOrigin);
-				newOverlays.add(newOverlay);
-			}
-			overlayService.removeOverlay(display, overlay);
+			overlay.move( toNewOrigin );
 		}
 
 		// BDZ - HACK - FIXME
@@ -145,9 +135,7 @@ public class CropImage implements ImageJPlugin {
 		// display.getCanvas().setZoom(1);
 
 		dataset.setImgPlus(croppedData);
-
-		// here the duplicated and origin translated overlays are attached
-		overlayService.addOverlays(display, newOverlays);
+		dataset.rebuild();
 	}
 
 	// -- private interface --

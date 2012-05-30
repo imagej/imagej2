@@ -46,6 +46,7 @@ import imagej.ui.swing.overlay.JHotDrawAdapterFinder;
 import java.awt.EventQueue;
 
 import org.jhotdraw.draw.Drawing;
+import org.jhotdraw.draw.DrawingView;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
@@ -234,7 +235,7 @@ public class OverlayFigureView implements FigureView {
 		}
 	}
 
-	private synchronized void updateFigure() {
+	private void updateFigure() {
 		if (updatingOverlay || disposeScheduled) return;
 		if (!updateScheduled) {
 			EventQueue.invokeLater(new Runnable() {
@@ -257,7 +258,12 @@ public class OverlayFigureView implements FigureView {
 		if (disposeScheduled) return;
 		updatingFigure = true;
 		try {
+			final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
+			final DrawingView drawingView = canvas.getDrawingView();
+			final boolean was_selected = drawingView.getSelectedFigures().contains( figure );
+			if (was_selected) drawingView.removeFromSelection( figure );
 			adapter.updateFigure(this.overlayView, figure);
+			if (was_selected) drawingView.addToSelection( figure );
 		}
 		finally {
 			updatingFigure = false;
