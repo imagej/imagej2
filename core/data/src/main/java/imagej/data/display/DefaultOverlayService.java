@@ -75,7 +75,8 @@ public final class DefaultOverlayService extends AbstractService implements
 	private final DisplayService displayService;
 	private final ImageDisplayService imageDisplayService;
 
-	private OverlaySettings defaultSettings;
+	private final OverlaySettings defaultSettings;
+	private final OverlayInfoList overlayInfo;
 
 	// -- Constructors --
 
@@ -93,6 +94,8 @@ public final class DefaultOverlayService extends AbstractService implements
 		this.objectService = objectService;
 		this.displayService = displayService;
 		this.imageDisplayService = imageDisplayService;
+		this.defaultSettings = new OverlaySettings();
+		this.overlayInfo = new OverlayInfoList();
 	}
 
 	// -- OverlayService methods --
@@ -247,7 +250,6 @@ public final class DefaultOverlayService extends AbstractService implements
 
 	@Override
 	public OverlaySettings getDefaultSettings() {
-		if (defaultSettings == null) defaultSettings = new OverlaySettings();
 		return defaultSettings;
 	}
 
@@ -300,6 +302,11 @@ public final class DefaultOverlayService extends AbstractService implements
 				return ((OverlayView) view).getData();
 		}
 		return null;
+	}
+	
+	@Override
+	public OverlayInfoList getOverlayInfo() {
+		return overlayInfo;
 	}
 	
 	// -- helpers --

@@ -44,6 +44,8 @@ import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayInfo;
+import imagej.data.display.OverlayInfoList;
 import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewSelectionEvent;
@@ -81,9 +83,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -179,8 +178,8 @@ public class SwingOverlayManager
 	private final JCheckBox editModeCheckBox;
 	private boolean shiftDown = false;
 	private boolean altDown = false;
-	private final OverlayInfoList infoList;
-
+	private final OverlayService ovrSrv;
+	
 	// -- constructor --
 	
 	/**
@@ -188,8 +187,8 @@ public class SwingOverlayManager
 	 */
 	public SwingOverlayManager(final ImageJ context) {
 		this.context = context;
-		infoList = new OverlayInfoList();
-		jlist = new JList(new OverlayListModel(infoList));
+		this.ovrSrv = context.getService(OverlayService.class);
+		jlist = new JList(new OverlayListModel(ovrSrv.getOverlayInfo()));
 		//jlist.setCellRenderer(new OverlayRenderer());
 
 		final JScrollPane listScroller = new JScrollPane(jlist);
@@ -318,160 +317,6 @@ public class SwingOverlayManager
 
 	// -- private helpers for overlay list maintenance --
 
-	private class OverlayInfo {
-		private Overlay overlay;
-		private boolean selected;
-		
-		@Override
-		public String toString() {
-			if (overlay.getName() != null)
-				return overlay.getName();
-			String xVal = String.format("x=%07.1f", overlay.realMin(0));
-			String yVal = String.format("y=%07.1f", overlay.realMin(1));
-			StringBuilder builder = new StringBuilder();
-			builder.append(xVal);
-			builder.append(", ");
-			builder.append(yVal);
-			return builder.toString();
-		}
-	}
-
-	private class OverlayInfoList {
-		private final LinkedList<OverlayInfo> list;
-		
-		public OverlayInfoList() {
-			list = new LinkedList<OverlayInfo>();
-		}
-
-		public int getOverlayInfoCount() {
-			return list.size();
-		}
-		
-		public OverlayInfo getOverlayInfo(int i) {
-			return list.get(i);
-		}
-		
-		public boolean addOverlayInfo(int i, OverlayInfo info) {
-			if (findIndex(info) >= 0) return false;
-			list.add(i, info);
-			//info.overlay.incrementReferences();
-			return true;
-		}
-		
-		public boolean addOverlayInfo(OverlayInfo info) {
-			int last = list.size();
-			return addOverlayInfo(last,info);
-		}
-		
-		@SuppressWarnings("synthetic-access")
-		public boolean addOverlay(int i, Overlay overlay) {
-			if (findIndex(overlay) >= 0) return false;
-			final OverlayInfo info = new OverlayInfo();
-			info.overlay = overlay;
-			return addOverlayInfo(i,info);
-		}
-
-		public boolean addOverlay(Overlay overlay) {
-			int last = list.size();
-			return addOverlay(last, overlay);
-		}
-		
-		public boolean replaceOverlayInfo(int i, OverlayInfo info) {
-			if (deleteOverlayInfo(i))
-				return addOverlayInfo(i, info);
-			return false;
-		}
-		
-		@SuppressWarnings({"synthetic-access","unused"})
-		public boolean replaceOverlay(int i, Overlay overlay) {
-			final OverlayInfo info = new OverlayInfo();
-			info.overlay = overlay;
-			return replaceOverlayInfo(i, info);
-		}
-		
-		public boolean deleteOverlayInfo(int i) {
-			final OverlayInfo info = list.remove(i);
-			if (info == null) return false;
-			//info.overlay.decrementReferences();
-			return true;
-		}
-		
-		@SuppressWarnings("unused")
-		public boolean deleteOverlayInfo(OverlayInfo info) {
-			final int index = findIndex(info);
-			if (index < 0) return false;
-			return deleteOverlayInfo(index);
-		}
-
-		public boolean deleteOverlay(Overlay overlay) {
-			final int index = findIndex(overlay);
-			if (index < 0) return false;
-			return deleteOverlayInfo(index);
-		}
-
-		/*
-		public void deleteAll() {
-			final int num = list.size();
-			for (int i = 0; i < num; i++)
-				deleteOverlayInfo(0);
-		}
-		*/
-		
-		public int findIndex(OverlayInfo info) {
-			for (int i = 0; i < list.size(); i++)
-				if (info == list.get(i))
-					return i;
-			return -1;
-		}
-		
-		@SuppressWarnings("synthetic-access")
-		public int findIndex(Overlay overlay) {
-			for (int i = 0; i < list.size(); i++)
-				if (overlay == list.get(i).overlay)
-					return i;
-			return -1;
-		}
-
-		public void sort() {
-			Collections.sort(list, new Comparator<OverlayInfo>() {
-				@Override
-				public int compare(OverlayInfo arg0, OverlayInfo arg1) {
-					return arg0.toString().compareTo(arg1.toString());
-				}});
-		}
-		
-		@SuppressWarnings("synthetic-access")
-		public int[] selectedIndices() {
-			int selCount = 0;
-			for (int i = 0; i < getOverlayInfoCount(); i++) {
-				if (getOverlayInfo(i).selected) selCount++;
-			}
-			int[] selectedIndices = new int[selCount];
-			int index = 0;
-			for (int i = 0; i < getOverlayInfoCount(); i++) {
-				if (getOverlayInfo(i).selected) selectedIndices[index++] = i;
-			}
-			return selectedIndices;
-		}
-		
-		@SuppressWarnings("synthetic-access")
-		public void deselectAll() {
-			for (int i = 0; i < getOverlayInfoCount(); i++) {
-				getOverlayInfo(i).selected = false;
-			}
-		}
-		
-		@SuppressWarnings("synthetic-access")
-		public List<Overlay> selectedOverlays() {
-			ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-			for (int i = 0; i < getOverlayInfoCount(); i++) {
-				OverlayInfo info = infoList.getOverlayInfo(i);
-				if (info.selected)
-					overlays.add(info.overlay);
-			}
-			return overlays;
-		}
-	}
 	
 	private class OverlayListModel extends AbstractListModel {
 
@@ -497,24 +342,21 @@ public class SwingOverlayManager
 
 	/*
 	*/
-	@SuppressWarnings("synthetic-access")
 	private void populateOverlayList() {
 		// Populate the list with all overlays
-		final OverlayService ovrSrv = context.getService(OverlayService.class);
 		for (final Overlay overlay : ovrSrv.getOverlays()) {
 			boolean found = false;
-			int totOverlays = infoList.getOverlayInfoCount();
+			int totOverlays = ovrSrv.getOverlayInfo().getOverlayInfoCount();
 			for (int i = 0; i < totOverlays; i++) {
-				OverlayInfo info = infoList.getOverlayInfo(i);
-				if (overlay == info.overlay) {
+				OverlayInfo info = ovrSrv.getOverlayInfo().getOverlayInfo(i);
+				if (overlay == info.getOverlay()) {
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				OverlayInfo info = new OverlayInfo();
-				info.overlay = overlay;
-				infoList.addOverlayInfo(info);
+				OverlayInfo info = new OverlayInfo(overlay);
+				ovrSrv.getOverlayInfo().addOverlayInfo(info);
 			}
 		}
 		jlist.updateUI();
@@ -560,7 +402,7 @@ public class SwingOverlayManager
 	@EventHandler
 	protected void onEvent(final OverlayCreatedEvent event) {
 		//System.out.println("\tCREATED: " + event.toString());
-		infoList.addOverlay(event.getObject());
+		ovrSrv.getOverlayInfo().addOverlay(event.getObject());
 		jlist.updateUI();
 	}
 
@@ -568,8 +410,8 @@ public class SwingOverlayManager
 	protected void onEvent(final OverlayDeletedEvent event) {
 		//System.out.println("\tDELETED: " + event.toString());
 		Overlay overlay = event.getObject();
-		infoList.deleteOverlay(overlay);
-		int[] newSelectedIndices = infoList.selectedIndices();
+		ovrSrv.getOverlayInfo().deleteOverlay(overlay);
+		int[] newSelectedIndices = ovrSrv.getOverlayInfo().selectedIndices();
 		jlist.setSelectedIndices(newSelectedIndices);
 		jlist.updateUI();
 	}
@@ -584,16 +426,15 @@ public class SwingOverlayManager
 	}
 	*/
 
-	@SuppressWarnings("synthetic-access")
 	@EventHandler
 	protected void onEvent(final DataViewSelectionEvent event) {
 		if (selecting) return;
 		selecting = true;
 		// Select or deselect the corresponding overlay in the list
 		final Overlay overlay = (Overlay) event.getView().getData();
-		final int overlayIndex = infoList.findIndex(overlay);
-		final OverlayInfo overlayInfo = infoList.getOverlayInfo(overlayIndex);
-		overlayInfo.selected = event.isSelected();
+		final int overlayIndex = ovrSrv.getOverlayInfo().findIndex(overlay);
+		final OverlayInfo overlayInfo = ovrSrv.getOverlayInfo().getOverlayInfo(overlayIndex);
+		overlayInfo.setSelected(event.isSelected());
 		/* old way
 		if (event.isSelected()) {
 			final int[] current_sel = jlist.getSelectedIndices();
@@ -612,7 +453,7 @@ public class SwingOverlayManager
 			}
 		}
 		*/
-		int[] selections = infoList.selectedIndices();
+		int[] selections = ovrSrv.getOverlayInfo().selectedIndices();
 		jlist.setSelectedIndices(selections);
 		selecting = false;
 	}
@@ -636,12 +477,14 @@ public class SwingOverlayManager
 	@SuppressWarnings("unused")
 	@EventHandler
 	protected void onEvent(OverlayRestructuredEvent event) {
+		//System.out.println("restructured");
 		jlist.updateUI();
 	}
 
 	@SuppressWarnings("unused")
 	@EventHandler
 	protected void onEvent(OverlayUpdatedEvent event) {
+		//System.out.println("updated");
 		jlist.updateUI();
 	}
 
@@ -671,25 +514,23 @@ public class SwingOverlayManager
 		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
-	@SuppressWarnings("synthetic-access")
 	private void delete() {
-		if (infoList.getOverlayInfoCount() == 0) return;
-		final OverlayService ovrSrv = context.getService(OverlayService.class);
+		if (ovrSrv.getOverlayInfo().getOverlayInfoCount() == 0) return;
 		List<Overlay> overlaysToDelete = new LinkedList<Overlay>();
-		final int[] selectedIndices = infoList.selectedIndices();
+		final int[] selectedIndices = ovrSrv.getOverlayInfo().selectedIndices();
 		if (selectedIndices.length == 0) {
 			final int result =
 				JOptionPane.showConfirmDialog(
 					this, "Delete all overlays?", "Delete All", JOptionPane.YES_NO_OPTION);
 			if (result != JOptionPane.YES_OPTION) return;
-			for (int i = 0; i < infoList.getOverlayInfoCount(); i++) {
-				overlaysToDelete.add(infoList.getOverlayInfo(i).overlay);
+			for (int i = 0; i < ovrSrv.getOverlayInfo().getOverlayInfoCount(); i++) {
+				overlaysToDelete.add(ovrSrv.getOverlayInfo().getOverlayInfo(i).getOverlay());
 			}
 		}
 		else {
 			for (int i = 0; i < selectedIndices.length; i++) {
 				int index = selectedIndices[i];
-				overlaysToDelete.add(infoList.getOverlayInfo(index).overlay);
+				overlaysToDelete.add(ovrSrv.getOverlayInfo().getOverlayInfo(index).getOverlay());
 			}
 		}
 		for (Overlay overlay : overlaysToDelete) {
@@ -701,14 +542,14 @@ public class SwingOverlayManager
 	}
 	
 	private void deselect() {
-		infoList.deselectAll();
+		ovrSrv.getOverlayInfo().deselectAll();
 		jlist.clearSelection();
 	}
 	
 	private void draw() {
 		OverlayService os = context.getService(OverlayService.class);
 		ChannelCollection channels = getChannels();
-		List<Overlay> selected = infoList.selectedOverlays();
+		List<Overlay> selected = ovrSrv.getOverlayInfo().selectedOverlays();
 		for (Overlay o : selected) {
 			ImageDisplay disp = os.getFirstDisplay(o);
 			os.drawOverlay(o, disp, channels);
@@ -718,7 +559,7 @@ public class SwingOverlayManager
 	private void fill() {
 		OverlayService os = context.getService(OverlayService.class);
 		ChannelCollection channels = getChannels();
-		List<Overlay> selected = infoList.selectedOverlays();
+		List<Overlay> selected = ovrSrv.getOverlayInfo().selectedOverlays();
 		for (Overlay o : selected) {
 			ImageDisplay disp = os.getFirstDisplay(o);
 			os.fillOverlay(o, disp, channels);
@@ -826,7 +667,7 @@ public class SwingOverlayManager
 	}
 	
 	private void properties() {
-		int[] selected = infoList.selectedIndices();
+		int[] selected = ovrSrv.getOverlayInfo().selectedIndices();
 		if (selected.length == 0) {
 			JOptionPane.showMessageDialog(this, "This command requires one or more selections");
 			return;
@@ -839,9 +680,8 @@ public class SwingOverlayManager
 		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
-	@SuppressWarnings("synthetic-access")
 	private void rename() {
-		final int[] selectedIndices = infoList.selectedIndices();
+		final int[] selectedIndices = ovrSrv.getOverlayInfo().selectedIndices();
 		if (selectedIndices.length < 1) {
 			JOptionPane.showMessageDialog(this, "Must select an overlay to rename");
 			return;
@@ -850,14 +690,14 @@ public class SwingOverlayManager
 			JOptionPane.showMessageDialog(this, "Cannot rename multiple overlays simultaneously");
 			return;
 		}
-		final OverlayInfo info = infoList.getOverlayInfo(selectedIndices[0]);
+		final OverlayInfo info = ovrSrv.getOverlayInfo().getOverlayInfo(selectedIndices[0]);
 		if (info == null) return;
 		// TODO - UI agnostic way here
 		final String name = JOptionPane.showInputDialog(this, "Enter new name for overlay");
 		if ((name == null) || (name.length() == 0))
-			info.overlay.setName(null);
+			info.getOverlay().setName(null);
 		else
-			info.overlay.setName(name);
+			info.getOverlay().setName(name);
 		jlist.updateUI();
 	}
 	
@@ -904,8 +744,8 @@ public class SwingOverlayManager
 	}
 	
 	private void sort() {
-		infoList.sort();
-		int[] newSelections = infoList.selectedIndices();
+		ovrSrv.getOverlayInfo().sort();
+		int[] newSelections = ovrSrv.getOverlayInfo().selectedIndices();
 		jlist.setSelectedIndices(newSelections);
 		jlist.updateUI();
 	}
@@ -1039,17 +879,17 @@ public class SwingOverlayManager
 					if (display == null) return;
 					final JList list = (JList) listSelectionEvent.getSource();
 					final Object[] selectionValues = list.getSelectedValues();
-					infoList.deselectAll();
+					ovrSrv.getOverlayInfo().deselectAll();
 					for (final Object overlayInfoObj : selectionValues) {
 						final OverlayInfo overlayInfo = (OverlayInfo) overlayInfoObj;
-						overlayInfo.selected = true;
+						overlayInfo.setSelected(true);
 					}
 					for (final DataView overlayView : display) {
 						overlayView.setSelected(false);
 						for (final Object overlayInfoObj : selectionValues) {
 							final OverlayInfo overlayInfo = (OverlayInfo) overlayInfoObj;
-							if (overlayInfo.overlay == overlayView.getData()) {
-								overlayInfo.selected = true;
+							if (overlayInfo.getOverlay() == overlayView.getData()) {
+								overlayInfo.setSelected(true);
 								overlayView.setSelected(true);
 								break;
 							}
@@ -1333,7 +1173,7 @@ public class SwingOverlayManager
 	
 	private void runPropertiesPlugin() {
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
-		inputMap.put("overlays", infoList.selectedOverlays());
+		inputMap.put("overlays", ovrSrv.getOverlayInfo().selectedOverlays());
 		PluginService pluginService = context.getService(PluginService.class);
 		pluginService.run(SelectedManagerOverlayProperties.class, inputMap);
 		/*

@@ -129,4 +129,11 @@ public interface OverlayService extends IService {
 	 * Returns the active overlay associated with a display
 	 */
 	Overlay getActiveOverlay(ImageDisplay disp);
+
+	/**
+	 * Returns the overlay info list associated with this service. There is one
+	 * list per ImageJ context. It tracks overlay selection info and is used by
+	 * any defined overlay managers.
+	 */
+	OverlayInfoList getOverlayInfo();
 }
