@@ -218,6 +218,7 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 	public Overlay duplicate() {
 		BinaryMaskRegionOfInterest<U,V> newRoi =
 				new BinaryMaskRegionOfInterest<U,V>((V)(getRegionOfInterest().getImg().copy()));
+		newRoi.move(getRegionOfInterest().getOrigin());
 		BinaryMaskOverlay<U,V> overlay = new BinaryMaskOverlay<U,V>(getContext(), newRoi);
 		overlay.setAlpha(getAlpha());
 		overlay.setAxis(Axes.X, Axes.X.ordinal());
