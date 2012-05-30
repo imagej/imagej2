@@ -76,6 +76,9 @@ public class SetActiveAxis extends DynamicPlugin {
 	@Parameter(persist = false, initializer = "initAxisName")
 	private String axisName;
 
+	@Parameter
+	private AnimationService animationService;
+	
 	// -- SetActiveAxis methods --
 
 	public ImageDisplay getDisplay() {
@@ -99,7 +102,18 @@ public class SetActiveAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = getAxis();
-		if (axis != null) display.setActiveAxis(axis);
+		if (axis != null) {
+			display.setActiveAxis(axis);
+			int axisIndex = display.getAxisIndex(axis);
+			long last = display.getExtents().dimension(axisIndex) - 1;
+			Animation a = animationService.getAnimation(display);
+			boolean active = a.isActive();
+			if (active) a.stop();
+			a.setAxis(axis);
+			a.setFirst(0);
+			a.setLast(last);
+			if (active) a.start();
+		}
 	}
 
 	// -- Initializers --
