@@ -36,9 +36,7 @@
 package imagej.data.overlay;
 
 import imagej.ImageJ;
-import net.imglib2.meta.Axes;
 import net.imglib2.roi.CompositeRegionOfInterest;
-import net.imglib2.roi.EllipseRegionOfInterest;
 
 /**
  * A composite of several overlays.
