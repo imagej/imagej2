@@ -77,7 +77,6 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
-import net.imglib2.roi.CompositeRegionOfInterest;
 import net.imglib2.roi.EllipseRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RectangleRegionOfInterest;
@@ -467,18 +466,10 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 					overlays.add(subOverlays.get(0));
 					return;
 				}
-				final CompositeRegionOfInterest croi =
-					new CompositeRegionOfInterest(2);
-				for (final Overlay overlay : subOverlays) {
-					final RegionOfInterest subRoi = overlay.getRegionOfInterest();
-					if (subRoi == null) {
-						Log.warn(String.format("Can't composite %s", overlay.toString()));
-					}
-					else {
-						croi.xor(subRoi);
-					}
+				final CompositeOverlay coverlay = new CompositeOverlay(context);
+				for (Overlay subOverlay : subOverlays) {
+					coverlay.xor(subOverlay);
 				}
-				final CompositeOverlay coverlay = new CompositeOverlay(context, croi);
 				/*
 				 * An arbitrary guess - set the fill color to red with a 1/3 alpha
 				 */

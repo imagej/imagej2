@@ -77,11 +77,6 @@ public class CompositeOverlay extends
 		super(context, new CompositeRegionOfInterest(numDimensions));
 	}
 
-	public CompositeOverlay(ImageJ context, CompositeRegionOfInterest croi) {
-		super(context,croi);
-		//throw new UnsupportedOperationException("this constructor now obseolete");
-	}
-
 	@Override
 	public void move(double[] deltas) {
 		for (Overlay o : overlays)
@@ -118,18 +113,30 @@ public class CompositeOverlay extends
 	}
 	
 	public void and(Overlay o) {
+		if (overlays.size() == 0) {
+			startWith(o);
+			return;
+		}
 		overlays.add(o);
 		operations.add(Operation.AND);
 		getRegionOfInterest().and(o.getRegionOfInterest());
 	}
 	
 	public void or(Overlay o) {
+		if (overlays.size() == 0) {
+			startWith(o);
+			return;
+		}
 		overlays.add(o);
 		operations.add(Operation.OR);
 		getRegionOfInterest().or(o.getRegionOfInterest());
 	}
 	
 	public void xor(Overlay o) {
+		if (overlays.size() == 0) {
+			startWith(o);
+			return;
+		}
 		overlays.add(o);
 		operations.add(Operation.XOR);
 		getRegionOfInterest().xor(o.getRegionOfInterest());
