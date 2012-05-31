@@ -79,7 +79,7 @@ public class CompositeOverlay extends
 
 	public CompositeOverlay(ImageJ context, CompositeRegionOfInterest croi) {
 		super(context,croi);
-		throw new UnsupportedOperationException("this constructor now obseolete");
+		//throw new UnsupportedOperationException("this constructor now obseolete");
 	}
 
 	@Override
