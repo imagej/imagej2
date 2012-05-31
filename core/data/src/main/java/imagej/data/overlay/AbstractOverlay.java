@@ -44,9 +44,13 @@ import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
 import imagej.util.ColorRGB;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,8 +70,8 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 
 	private static final long serialVersionUID = 1L;
 
-	private final List<AxisType> axes = new ArrayList<AxisType>();
-	private final List<Double> cal = new ArrayList<Double>();
+	private List<AxisType> axes = new ArrayList<AxisType>();
+	private List<Double> cal = new ArrayList<Double>();
 
 	private int alpha;
 	private ColorRGB fillColor;
@@ -77,6 +81,12 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 	private ArrowStyle startArrowStyle;
 	private ArrowStyle endArrowStyle;
 
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public AbstractOverlay() {
+		super();
+	}
+	
 	public AbstractOverlay(final ImageJ context) {
 		super(context);
 		final OverlayService overlayService =
@@ -182,6 +192,26 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 		endArrowStyle = style;
 	}
 
+	@Override
+	public Overlay duplicate() {
+		try {
+			ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+			ObjectOutputStream objOutStream = new ObjectOutputStream(bytesOut);
+			objOutStream.writeObject(this);
+			objOutStream.flush();
+			objOutStream.close();
+			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytesOut.toByteArray());
+			ObjectInputStream objInStream = new ObjectInputStream(bytesIn);
+			Overlay overlay = (Overlay) objInStream.readObject();
+			objInStream.close();
+			overlay.setContext(getContext());
+			return overlay;
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+	
 	// -- Data methods --
 
 	@Override
@@ -333,6 +363,9 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		out.writeObject(axes);
+		out.writeObject(cal);
 		out.writeInt(alpha);
 		out.writeObject(fillColor);
 		out.writeObject(lineColor);
@@ -340,13 +373,16 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 		out.writeObject(lineStyle.toString());
 		out.writeObject(startArrowStyle.toString());
 		out.writeObject(endArrowStyle.toString());
-		super.writeExternal(out);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
 	{
+		super.readExternal(in);
+		axes = (List<AxisType>) in.readObject();
+		cal = (List<Double>) in.readObject();
 		alpha = in.readInt();
 		fillColor = (ColorRGB) in.readObject();
 		lineColor = (ColorRGB) in.readObject();
@@ -354,7 +390,6 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 		lineStyle = Overlay.LineStyle.valueOf((String) in.readObject());
 		startArrowStyle = ArrowStyle.valueOf((String) in.readObject());
 		endArrowStyle = ArrowStyle.valueOf((String) in.readObject());
-		super.readExternal(in);
 	}
 
 	// -- Helper methods --

@@ -163,6 +163,7 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 		out.write(buffer);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
@@ -199,7 +200,7 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 				ra.get().set(true);
 			}
 		}
-		setRegionOfInterest(new BinaryMaskRegionOfInterest(img));
+		setRegionOfInterest(new BinaryMaskRegionOfInterest<U,V>((V)img));
 		getRegionOfInterest().move(maskOrigin);
 	}
 
@@ -216,6 +217,7 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 
 	@Override
 	public Overlay duplicate() {
+		@SuppressWarnings("unchecked")
 		BinaryMaskRegionOfInterest<U,V> newRoi =
 				new BinaryMaskRegionOfInterest<U,V>((V)(getRegionOfInterest().getImg().copy()));
 		newRoi.move(getRegionOfInterest().getOrigin());

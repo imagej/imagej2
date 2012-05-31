@@ -35,18 +35,40 @@
 
 package imagej.data.overlay;
 
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import imagej.ImageJ;
 import net.imglib2.roi.CompositeRegionOfInterest;
 
 /**
  * A composite of several overlays.
  * 
+ * @author Barry DeZonia
  * @author Lee Kamentsky
  */
 public class CompositeOverlay extends
 	AbstractROIOverlay<CompositeRegionOfInterest>
 {
+	private enum Operation
+	{
+		AND, OR, XOR, NOT
+	}
 
+	private List< Overlay > overlays = new ArrayList< Overlay >();
+	private List< Operation > operations = new ArrayList< Operation >();
+	
+
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public CompositeOverlay() {
+		super(new CompositeRegionOfInterest(2));
+	}
+	
 	public CompositeOverlay(final ImageJ context) {
 		this(context, 2);
 	}
@@ -55,37 +77,68 @@ public class CompositeOverlay extends
 		super(context, new CompositeRegionOfInterest(numDimensions));
 	}
 
-	public CompositeOverlay(final ImageJ context,
-		final CompositeRegionOfInterest roi)
-	{
-		super(context, roi);
-	}
-
-	@Override
-	public Overlay duplicate() {
-		throw new UnsupportedOperationException("must implement");
-		/*
-		CompositeRegionOfInterest origRoi = getRegionOfInterest();
-		CompositeOverlay overlay = new CompositeOverlay(getContext());
-		CompositeRegionOfInterest newRoi = overlay.getRegionOfInterest();
-		// TODO ITS UNKNOWN WHAT TO DO HERE. I THINK ROIS MUST HAVE .duplicate()
-		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-		overlay.setFillColor(getFillColor());
-		overlay.setLineColor(getLineColor());
-		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
-		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
-		overlay.setLineStyle(getLineStyle());
-		overlay.setLineWidth(getLineWidth());
-		overlay.setName(getName());
-		return overlay;
-		*/
+	public CompositeOverlay(ImageJ context, CompositeRegionOfInterest croi) {
+		super(context,croi);
+		throw new UnsupportedOperationException("this constructor now obseolete");
 	}
 
 	@Override
 	public void move(double[] deltas) {
+		for (Overlay o : overlays)
+			o.move(deltas);
 		getRegionOfInterest().move(deltas);
 	}
 
+	/*
+	@SuppressWarnings("unchecked")
+	@Override
+	public void readExternal(java.io.ObjectInput in)
+		throws IOException ,ClassNotFoundException
+	{
+		super.readExternal(in);
+		overlays = (List<Overlay>) in.readObject();
+		operations = (List< Operation>) in.readObject();
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		out.writeObject(overlays);
+		out.writeObject(operations);
+	}
+	*/
+	
+	public void startWith(Overlay o) {
+		overlays.clear();
+		operations.clear();
+		overlays.add(o);
+		CompositeRegionOfInterest newRoi =
+				new CompositeRegionOfInterest(o.getRegionOfInterest());
+		setRegionOfInterest(newRoi);
+	}
+	
+	public void and(Overlay o) {
+		overlays.add(o);
+		operations.add(Operation.AND);
+		getRegionOfInterest().and(o.getRegionOfInterest());
+	}
+	
+	public void or(Overlay o) {
+		overlays.add(o);
+		operations.add(Operation.OR);
+		getRegionOfInterest().or(o.getRegionOfInterest());
+	}
+	
+	public void xor(Overlay o) {
+		overlays.add(o);
+		operations.add(Operation.XOR);
+		getRegionOfInterest().xor(o.getRegionOfInterest());
+	}
+
+	/*
+	public void not() {
+		operations.add(Operation.NOT);
+		getRegionOfInterest().not();
+	}
+	*/
 }

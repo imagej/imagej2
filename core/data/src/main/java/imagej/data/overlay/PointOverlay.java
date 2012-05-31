@@ -57,6 +57,13 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 	
 	private RealPoint point;
 
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public PointOverlay() {
+		super(new RectangleRegionOfInterest(new double[2], new double[2]));
+		point = new RealPoint(2);
+	}
+	
 	public PointOverlay(final ImageJ context) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		point = new RealPoint(2);
@@ -121,6 +128,7 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		getRegionOfInterest().setOrigin(new double[]{position[0], position[1]});
 	}
 
+	/*
 	@Override
 	public Overlay duplicate() {
 		PointOverlay overlay = new PointOverlay(getContext());
@@ -138,6 +146,7 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		overlay.setName(getName());
 		return overlay;
 	}
+	*/
 
 	@Override
 	public void move(double[] deltas) {

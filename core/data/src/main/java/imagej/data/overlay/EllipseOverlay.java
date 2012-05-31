@@ -53,7 +53,12 @@ import net.imglib2.roi.EllipseRegionOfInterest;
 public class EllipseOverlay extends
 	AbstractROIOverlay<EllipseRegionOfInterest>
 {
-
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public EllipseOverlay() {
+		super(new EllipseRegionOfInterest(2));
+	}
+	
 	public EllipseOverlay(final ImageJ context) {
 		super(context, new EllipseRegionOfInterest(2));
 		setAxis(Axes.X, Axes.X.ordinal());
@@ -85,6 +90,7 @@ public class EllipseOverlay extends
 	}
 
 
+	/*
 	@Override
 	public Overlay duplicate() {
 		EllipseRegionOfInterest origRoi = getRegionOfInterest();
@@ -106,7 +112,8 @@ public class EllipseOverlay extends
 		overlay.setName(getName());
 		return overlay;
 	}
-
+	*/
+	
 	@Override
 	public void move(double[] deltas) {
 		getRegionOfInterest().move(deltas);

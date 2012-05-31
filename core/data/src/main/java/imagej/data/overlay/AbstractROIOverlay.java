@@ -51,6 +51,13 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 
 	private R roi;
 
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	protected AbstractROIOverlay(R roi) {
+		super();
+		this.roi = roi;
+	}
+	
 	protected AbstractROIOverlay(final ImageJ context, final R roi) {
 		super(context);
 		this.roi = roi;
@@ -70,4 +77,20 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 		this.roi = roi;
 	}
 
+	/*
+	@Override
+	public void writeExternal(final ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		out.writeObject(roi);
+	}
+
+	@Override
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
+		super.readExternal(in);
+		roi = (R) in.readObject();
+	}
+	*/
+	
 }

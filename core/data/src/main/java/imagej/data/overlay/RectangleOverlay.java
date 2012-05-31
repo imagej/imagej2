@@ -43,7 +43,6 @@ import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
-import net.imglib2.roi.RegionOfInterest;
 
 /**
  * An axis-aligned rectangle, backed by a {@link RectangleRegionOfInterest}.
@@ -56,6 +55,13 @@ public class RectangleOverlay extends
 
 	private static final long serialVersionUID = 1L;
 
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public RectangleOverlay() {
+		super(new RectangleRegionOfInterest(new double[] { 0, 0 },
+			new double[] { 0, 0 }));
+	}
+	
 	public RectangleOverlay(final ImageJ context) {
 		super(context, new RectangleRegionOfInterest(new double[] { 0, 0 },
 			new double[] { 0, 0 }));
@@ -85,6 +91,7 @@ public class RectangleOverlay extends
 		roi.setExtent(in.readDouble(), 1);
 	}
 	
+	/*
 	@Override
 	public Overlay duplicate() {
 		RectangleOverlay overlay = new RectangleOverlay(getContext());
@@ -109,6 +116,7 @@ public class RectangleOverlay extends
 		overlay.setName(getName());
 		return overlay;
 	}
+	*/
 	
 	@Override
 	public void move(double[] deltas) {

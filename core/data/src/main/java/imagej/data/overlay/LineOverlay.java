@@ -57,6 +57,14 @@ public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 	private RealPoint ptStart;
 	private RealPoint ptEnd;
 
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public LineOverlay() {
+		super(new RectangleRegionOfInterest(new double[2], new double[2]));
+		ptStart = new RealPoint(2);
+		ptEnd = new RealPoint(2);
+	}
+	
 	public LineOverlay(final ImageJ context) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		ptStart = new RealPoint(2);
@@ -139,6 +147,7 @@ public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 		updateRegionOfInterest();
 	}
 
+	/*
 	@Override
 	public Overlay duplicate() {
 		LineOverlay overlay = new LineOverlay(getContext());
@@ -158,7 +167,8 @@ public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 		overlay.setName(getName());
 		return overlay;
 	}
-
+	*/
+	
 	@Override
 	public void move(double[] deltas) {
 		for (int i = 0; i < deltas.length; i++) {

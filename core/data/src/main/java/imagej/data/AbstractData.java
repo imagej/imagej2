@@ -68,6 +68,11 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 
 	private int refs = 0;
 
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public AbstractData() {
+	}
+	
 	public AbstractData(final ImageJ context) {
 		this.context = context;
 	}
@@ -179,25 +184,42 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 
 	// -- Externalizable methods --
 
+	private final static String BOGUS_NAME = "NULL 42 PI E 8 GAMMA PHI WOOHOO!";
+	
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
+		/* these seem like they should be handled by subclasses. so removing
+		 * on 5-31-12 BDZ
+		 *
 		final AxisType[] axes = getAxes();
-		final double[] cal = new double[numDimensions()];
+		final double[] cal = new double[axes.length];
 		calibration(cal);
 		out.writeObject(axes);
 		out.writeObject(cal);
+		*/
+		if (name == null)
+			out.writeUTF(BOGUS_NAME);
+		else
+			out.writeUTF(name);
 	}
 
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
 	{
+		/* these seem like they should be handled by subclasses. so removing
+		 * on 5-31-12 BDZ
+		 *
 		final AxisType[] axes = (AxisType[]) in.readObject();
 		final double[] cal = (double[]) in.readObject();
 		for (int d = 0; d < axes.length; d++) {
 			setAxis(axes[d], d);
 			setCalibration(cal[d], d);
 		}
+		*/
+		name = in.readUTF();
+		if (name.equals(BOGUS_NAME))
+			name = null;
 	}
 
 	// -- Internal methods --

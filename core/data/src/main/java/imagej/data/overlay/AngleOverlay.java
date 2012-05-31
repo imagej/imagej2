@@ -59,6 +59,15 @@ public class AngleOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 	private RealPoint endPoint1;
 	private RealPoint endPoint2;
 
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public AngleOverlay() {
+		super(new RectangleRegionOfInterest(new double[2], new double[2]));
+		ctrPoint = new RealPoint(2);
+		endPoint1 = new RealPoint(2);
+		endPoint2 = new RealPoint(2);
+	}
+	
 	public AngleOverlay(final ImageJ context) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		ctrPoint = new RealPoint(2);
@@ -154,6 +163,7 @@ public class AngleOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		updateRegionOfInterest();
 	}
 
+	/*
 	@Override
 	public Overlay duplicate() {
 		AngleOverlay overlay = new AngleOverlay(getContext());
@@ -178,7 +188,8 @@ public class AngleOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		overlay.setName(getName());
 		return overlay;
 	}
-
+	*/
+	
 	@Override
 	public void move(double[] deltas) {
 		for (int i = 0; i < deltas.length; i++) {

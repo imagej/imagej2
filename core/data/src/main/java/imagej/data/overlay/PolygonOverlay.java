@@ -54,7 +54,12 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 public class PolygonOverlay extends
 	AbstractROIOverlay<PolygonRegionOfInterest>
 {
-
+	// default constructor for use by serialization code
+	//   (see AbstractOverlay::duplicate())
+	public PolygonOverlay() {
+		super(new PolygonRegionOfInterest());
+	}
+	
 	public PolygonOverlay(final ImageJ context) {
 		super(context, new PolygonRegionOfInterest());
 		setAxis(Axes.X, Axes.X.ordinal());
@@ -94,6 +99,7 @@ public class PolygonOverlay extends
 	}
 
 
+	/*
 	@Override
 	public Overlay duplicate() {
 		PolygonOverlay overlay = new PolygonOverlay(getContext());
@@ -117,6 +123,7 @@ public class PolygonOverlay extends
 		overlay.setName(getName());
 		return overlay;
 	}
+	*/
 
 	@Override
 	public void move(double[] deltas) {
