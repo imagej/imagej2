@@ -38,15 +38,19 @@ package imagej.data.overlay;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import imagej.ImageJ;
 import net.imglib2.roi.CompositeRegionOfInterest;
 
+//TODO
+//  The various query methods might need to be defined such that it gets
+//  composited info. Axes? Calibration? mins/maxes/realMins/realMaxes probably
+//  work already. One thing we could do is enforce consistency of axes defs
+//  and such when adding overlays.
+
 /**
- * A composite of several overlays.
+ * A composite of one or more overlays.
  * 
  * @author Barry DeZonia
  * @author Lee Kamentsky
@@ -54,15 +58,21 @@ import net.imglib2.roi.CompositeRegionOfInterest;
 public class CompositeOverlay extends
 	AbstractROIOverlay<CompositeRegionOfInterest>
 {
+	// -- type declarations --
+	
 	private enum Operation
 	{
 		AND, OR, XOR, NOT
 	}
 
+	// -- instance variables --
+	
 	private List< Overlay > overlays = new ArrayList< Overlay >();
 	private List< Operation > operations = new ArrayList< Operation >();
 	
 
+	// -- CompositeOverlay methods --
+	
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	public CompositeOverlay() {
@@ -84,7 +94,6 @@ public class CompositeOverlay extends
 		getRegionOfInterest().move(deltas);
 	}
 
-	/*
 	@SuppressWarnings("unchecked")
 	@Override
 	public void readExternal(java.io.ObjectInput in)
@@ -101,12 +110,12 @@ public class CompositeOverlay extends
 		out.writeObject(overlays);
 		out.writeObject(operations);
 	}
-	*/
 	
 	public void startWith(Overlay o) {
 		overlays.clear();
 		operations.clear();
 		overlays.add(o);
+		operations.add(Operation.OR);
 		CompositeRegionOfInterest newRoi =
 				new CompositeRegionOfInterest(o.getRegionOfInterest());
 		setRegionOfInterest(newRoi);
@@ -142,10 +151,56 @@ public class CompositeOverlay extends
 		getRegionOfInterest().xor(o.getRegionOfInterest());
 	}
 
-	/*
-	public void not() {
+	public void not(Overlay o) {
+		// NB - A CompositeOverlay is expected to be made of one or more Overlays.
+		// Must avoid a situation where you define nothing but a NOT which inverts
+		// all of space. In that case we cannot sensibly define its containing
+		// region of interest
+		if (overlays.size() == 0) {
+			throw new IllegalArgumentException(
+				"CompositeOverlay cannot start with a NOT operation");
+		}
+		overlays.add(o);
 		operations.add(Operation.NOT);
-		getRegionOfInterest().not();
+		getRegionOfInterest().not(o.getRegionOfInterest());
 	}
-	*/
+
+	public void remove(Overlay o) {
+		int i = 0;
+		while (i < overlays.size()) {
+			Overlay ovr = overlays.get(i);
+			if (ovr == o) {
+				overlays.remove(i);
+				operations.remove(i);
+			}
+			else
+				i++;
+		}
+		if (overlays.size() == 0)
+			throw new IllegalArgumentException(
+				"Modified CompositeOverlay now consists of no overlays");
+		if (operations.get(0) == Operation.NOT)
+			throw new IllegalArgumentException(
+				"Modified CompositeOverlay now starts with a NOT operation");
+		recalcRegionOfInterest();
+	}
+
+	// -- private helpers --
+	
+	private void recalcRegionOfInterest() {
+		CompositeRegionOfInterest newRoi =
+				new CompositeRegionOfInterest(overlays.get(0).getRegionOfInterest());
+		for (int i = 1; i < overlays.size(); i++) {
+			Overlay o = overlays.get(i);
+			Operation op = operations.get(i);
+			switch (op) {
+				case AND : newRoi.and(o.getRegionOfInterest()); break;
+				case OR  : newRoi.or(o.getRegionOfInterest()); break;
+				case XOR : newRoi.xor(o.getRegionOfInterest()); break;
+				case NOT : newRoi.not(o.getRegionOfInterest()); break;
+				default: throw new IllegalArgumentException("Unknown operation "+ op);
+			}
+		}
+		setRegionOfInterest(newRoi);
+	}
 }
