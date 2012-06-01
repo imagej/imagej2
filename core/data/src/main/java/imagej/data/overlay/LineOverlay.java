@@ -44,15 +44,16 @@ import java.io.ObjectOutput;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
-import net.imglib2.roi.RectangleRegionOfInterest;
+import net.imglib2.roi.LineRegionOfInterest;
 
 /**
  * Represents a line going from here to there, possibly with arrows on one end,
  * the other or both.
  * 
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
-public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
+public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 
 	private RealPoint ptStart;
 	private RealPoint ptEnd;
@@ -60,13 +61,13 @@ public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	public LineOverlay() {
-		super(new RectangleRegionOfInterest(new double[2], new double[2]));
+		super(new LineRegionOfInterest(new double[2], new double[2]));
 		ptStart = new RealPoint(2);
 		ptEnd = new RealPoint(2);
 	}
 	
 	public LineOverlay(final ImageJ context) {
-		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
+		super(context, new LineRegionOfInterest(new double[2], new double[2]));
 		ptStart = new RealPoint(2);
 		ptEnd = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
@@ -76,7 +77,10 @@ public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 	public LineOverlay(final ImageJ context, final RealLocalizable ptStart,
 		final RealLocalizable ptEnd)
 	{
-		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
+		super(context,
+			new LineRegionOfInterest(
+				new double[ptStart.numDimensions()],
+				new double[ptEnd.numDimensions()]));
 		assert ptStart.numDimensions() == ptEnd.numDimensions();
 		this.ptStart = new RealPoint(ptStart);
 		this.ptEnd = new RealPoint(ptEnd);
@@ -195,24 +199,12 @@ public class LineOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 	}
 
 	private void updateRegionOfInterest() {
-		double minX = myMin(0);
-		double minY = myMin(1);
-		double maxX = myMax(0);
-		double maxY = myMax(1);
-		getRegionOfInterest().setOrigin(new double[]{minX, minY});
-		getRegionOfInterest().setExtent(new double[]{maxX-minX, maxY-minY});
-	}
-
-	private double myMax(int d) {
-		double v1 = ptStart.getDoublePosition(d);
-		double v2 = ptEnd.getDoublePosition(d);
-		return Math.max(v1, v2);
-	}
-	
-	private double myMin(int d) {
-		double v1 = ptStart.getDoublePosition(d);
-		double v2 = ptEnd.getDoublePosition(d);
-		return Math.min(v1, v2);
+		double[] p1 = new double[ptStart.numDimensions()];
+		double[] p2 = new double[ptStart.numDimensions()];
+		ptStart.localize(p1);
+		ptEnd.localize(p2);
+		LineRegionOfInterest roi = new LineRegionOfInterest(p1, p2);
+		setRegionOfInterest(roi);
 	}
 
 }
