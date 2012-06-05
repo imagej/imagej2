@@ -1723,12 +1723,17 @@ static void add_java_home_to_path(void)
 	string_release(new_path);
 }
 
-static void add_retrotranslator_to_path(struct string *path)
+static int add_retrotranslator_to_path(struct string *path)
 {
 	const char *retro = ij_path("retro/");
 	DIR *dir = opendir(retro);
 	struct dirent *entry;
 	int counter = 0;
+
+	if (!dir) {
+		error("Could not find Retrotranslator, trying to continue without.");
+		return 0;
+	}
 
 	while ((entry = readdir(dir))) {
 		if (suffixcmp(entry->d_name, -1, ".jar"))
@@ -1739,7 +1744,8 @@ static void add_retrotranslator_to_path(struct string *path)
 	}
 
 	if (!counter)
-		die ("Could not find Retrotranslator!");
+		error("Could not find Retrotranslator, trying to continue without.");
+	return counter;
 }
 
 static int headless, headless_argc;
@@ -3440,8 +3446,8 @@ static void parse_command_line(void)
 
 	if (!skip_class_launcher && strcmp(main_class, "org.apache.tools.ant.Main")) {
 		struct string *string = string_initf("-Djava.class.path=%s", ij_launcher_jar);
-		if (retrotranslator)
-			add_retrotranslator_to_path(string);
+		if (retrotranslator && !add_retrotranslator_to_path(string))
+			retrotranslator = 0;
 		add_option_string(&options, string, 0);
 		add_launcher_option(&options, main_class, NULL);
 		prepend_string_array(&options.ij_options, &options.launcher_options);
