@@ -2795,7 +2795,7 @@ static void jvm_workarounds(struct options *options)
 		if (main_class && !strcmp(main_class, "sun.tools.javap.Main"))
 			main_class = "com.sun.tools.javap.Main";
 	}
-	else if (java_version < 0x01060000)
+	else if (java_version && java_version < 0x01060000)
 		retrotranslator = 1;
 }
 
