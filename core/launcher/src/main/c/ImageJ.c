@@ -1255,7 +1255,7 @@ static void hide_splash(void)
 }
 
 /*
- * On Linux, JDK5 does not find the library path with libmlib_image.so,
+ * On Linux, Java5 does not find the library path with libmlib_image.so,
  * so we have to add that explicitely to the LD_LIBRARY_PATH.
  *
  * Unfortunately, ld.so only looks at LD_LIBRARY_PATH at startup, so we
@@ -1263,45 +1263,49 @@ static void hide_splash(void)
  *
  * See also line 140ff of
  * http://hg.openjdk.java.net/jdk6/jdk6/hotspot/file/14f7b2425c86/src/os/solaris/launcher/java_md.c
+ *
+ * As noticed by Ilan Tal, we also need to re-execute if the LD_LIBRARY_PATH
+ * was extended for some other reason, e.g. when native libraries were discovered
+ * in $IJDIR/lib/; This also affects Java6 because it is only clever enough to handle
+ * the inter-dependent JRE libraries without requiring a correctly set LD_LIBRARY_PATH.
+ *
+ * We assume here that java_library_path was initialized with the value
+ * of the environment variable LD_LIBRARY_PATH; if at the end, java_library_path
+ * is longer than LD_LIBRARY_PATH, we have to reset it (and for Java5, re-execute).
  */
-static void maybe_reexec_with_correct_lib_path(void)
+static void maybe_reexec_with_correct_lib_path(struct string *java_library_path)
 {
 #ifdef __linux__
-	const char *jre_home = get_jre_home(), *original;
-	struct string *path, *parent, *lib_path, *jli;
+	const char *jre_home = get_jre_home(), *original = getenv("LD_LIBRARY_PATH");
 
-	if (!jre_home)
-		return;
+	if (jre_home) {
+		struct string *path, *parent, *lib_path, *jli;
 
-	path = string_initf("%s/%s", jre_home, library_path);
-	parent = get_parent_directory(path->buffer);
-	lib_path = get_parent_directory(parent->buffer);
-	jli = string_initf("%s/jli", lib_path->buffer);
+		path = string_initf("%s/%s", jre_home, library_path);
+		parent = get_parent_directory(path->buffer);
+		lib_path = get_parent_directory(parent->buffer);
+		jli = string_initf("%s/jli", lib_path->buffer);
 
-	string_release(path);
-
-	/* Is this JDK6? */
-	if (!dir_exists(get_jre_home()) || dir_exists(jli->buffer)) {
-		string_release(parent);
-		string_release(lib_path);
+		/* Is this JDK5? */
+		if (dir_exists(get_jre_home()) && !dir_exists(jli->buffer)) {
+			/* need to make sure the JRE lib/ is in LD_LIBRARY_PATH */
+			if (!path_list_contains(java_library_path->buffer, lib_path->buffer))
+				string_append_path_list(java_library_path, lib_path->buffer);
+			if (!path_list_contains(java_library_path->buffer, parent->buffer))
+				string_append_path_list(java_library_path, parent->buffer);
+		}
 		string_release(jli);
-		return;
-	}
-	string_release(jli);
-
-	original = getenv("LD_LIBRARY_PATH");
-	if (original && path_list_contains(original, lib_path->buffer)) {
-		string_release(parent);
 		string_release(lib_path);
-		return;
+		string_release(parent);
+		string_release(path);
 	}
 
-	string_append_path_list(lib_path, parent->buffer);
-	string_release(parent);
-	if (original)
-		string_append_path_list(lib_path, original);
-	setenv_or_exit("LD_LIBRARY_PATH", lib_path->buffer, 1);
-	error("Re-executing with correct library lookup path (%s)", lib_path->buffer);
+	/* Was LD_LIBRARY_PATH already correct? */
+	if (java_library_path->length == (original ? strlen(original) : 0))
+		return;
+
+	setenv_or_exit("LD_LIBRARY_PATH", java_library_path->buffer, 1);
+	error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
 	hide_splash();
 	execv(main_argv_backup[0], main_argv_backup);
 	die("Could not re-exec with correct library lookup!");
@@ -3347,7 +3351,7 @@ static void parse_command_line(void)
 			main_class = legacy_mode ? default_fiji1_class : default_main_class;
 	}
 
-	maybe_reexec_with_correct_lib_path();
+	maybe_reexec_with_correct_lib_path(java_library_path);
 
 	if (!options.debug && !options.use_system_jvm && !headless && (is_default_ij1_class(main_class) || !strcmp(default_main_class, main_class)))
 		show_splash();
