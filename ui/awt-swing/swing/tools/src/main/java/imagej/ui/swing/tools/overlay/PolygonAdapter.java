@@ -205,6 +205,7 @@ public class PolygonAdapter extends
 				roi.setVertexPosition(i, position);
 			}
 		}
+		poverlay.update();
 	}
 
 	@Override

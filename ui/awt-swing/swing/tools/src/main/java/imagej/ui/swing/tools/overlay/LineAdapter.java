@@ -129,6 +129,7 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 		final Node endNode = line.getNode(1);
 		lineOverlay.setLineEnd(new RealPoint(new double[] {
 			endNode.getControlPoint(0).x, endNode.getControlPoint(0).y }));
+		overlay.update();
 	}
 
 	@Override

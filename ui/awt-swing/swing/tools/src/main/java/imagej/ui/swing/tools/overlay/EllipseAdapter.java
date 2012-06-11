@@ -143,6 +143,7 @@ public class EllipseAdapter extends
 		eRoi.setOrigin(ptCenter);
 		eRoi.setRadius(r.width / 2, 0);
 		eRoi.setRadius(r.height / 2, 1);
+		overlay.update();
 	}
 
 	@Override

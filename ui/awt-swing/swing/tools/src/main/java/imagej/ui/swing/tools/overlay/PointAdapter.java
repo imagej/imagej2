@@ -123,6 +123,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
 		pointOverlay.setPoint(new RealPoint(new double[] { point.getX(),
 			point.getY() }));
+		overlay.update();
 	}
 
 	@Override

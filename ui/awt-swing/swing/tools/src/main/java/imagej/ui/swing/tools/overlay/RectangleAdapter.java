@@ -148,6 +148,7 @@ public class RectangleAdapter extends
 		roi.setOrigin(bounds.getMinY(), 1);
 		roi.setExtent(bounds.getWidth(), 0);
 		roi.setExtent(bounds.getHeight(), 1);
+		rOverlay.update();
 	}
 
 	// NB - show x,y,w,h of rectangle in StatusBar on click-drag
