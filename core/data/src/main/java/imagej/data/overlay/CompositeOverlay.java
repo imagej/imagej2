@@ -91,7 +91,7 @@ public class CompositeOverlay extends
 	public void move(double[] deltas) {
 		for (Overlay o : overlays)
 			o.move(deltas);
-		getRegionOfInterest().move(deltas);
+		recalcRegionOfInterest();
 	}
 
 	@SuppressWarnings("unchecked")
