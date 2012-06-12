@@ -221,14 +221,6 @@ public class CheckSezpoz {
 			return false;
 		}
 
-		// before running, remove possibly outdated annotations
-		final File[] obsoleteAnnotations =
-			new File(classes, "META-INF/annotations").listFiles();
-		if (obsoleteAnnotations != null) {
-			for (final File annotation : obsoleteAnnotations)
-				annotation.delete();
-		}
-
 		final List<String> aptArgs = new ArrayList<String>();
 		aptArgs.add("-nocompile");
 		if (verbose) aptArgs.add("-verbose");
@@ -236,7 +228,18 @@ public class CheckSezpoz {
 		aptArgs.add("net.java.sezpoz.impl.IndexerFactory");
 		aptArgs.add("-d");
 		aptArgs.add(classes.getPath());
+		final int count = aptArgs.size();
 		addJavaPathsRecursively(aptArgs, sources);
+		// do nothing if there is nothing to
+		if (count == aptArgs.size()) return false;
+		// remove possibly outdated annotations
+		final File[] obsoleteAnnotations =
+			new File(classes, "META-INF/annotations").listFiles();
+		if (obsoleteAnnotations != null) {
+			for (final File annotation : obsoleteAnnotations)
+				annotation.delete();
+		}
+
 		final String[] args = aptArgs.toArray(new String[aptArgs.size()]);
 		try {
 			Log.warn("Updating the annotation index in " + classes);
