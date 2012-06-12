@@ -177,8 +177,8 @@ public final class DefaultPlatformService extends AbstractService implements
 	protected void onEvent(final AppMenusCreatedEvent event) {
 		registerAppMenuContainer(event.getMenuContainer());
 	}
-	 
-	 // -- Helper methods --
+
+	// -- Helper methods --
 
 	/** Discovers target platform handlers. */
 	private List<Platform> discoverTargetPlatforms() {
