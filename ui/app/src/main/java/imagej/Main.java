@@ -55,6 +55,7 @@ public final class Main {
 		context.getService(UIService.class).createUI();
 
 		// pass in command line arguments
+		// TODO: create a ConsoleService for this, instead of using UIService
 		context.getService(UIService.class).processArgs(args);
 	}
 
