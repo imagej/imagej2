@@ -86,6 +86,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * associated with a display.
 	 */
 	// NB: I'm a little queasy about including this.
+	// TODO: push up into DefaultUIService?
 	protected final List<DisplayViewer<?>> displayViewers =
 		new ArrayList<DisplayViewer<?>>();
 
