@@ -253,6 +253,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		activationInvocationPending = false;
 	}
 
+	// -- Event handling methods --
+
 	/**
 	 * Handle a DisplayCreatedEvent.
 	 * <p>
@@ -297,6 +299,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			}
 		});
 	}
+
+	// -- Internal methods --
 
 	/* TODO OBSOLETE?
 	// FIXME - temp hack - made this method public so that the SwingOverlayManager
