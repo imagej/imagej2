@@ -47,7 +47,7 @@ import java.net.URL;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(type = Platform.class)
+@Plugin(type = Platform.class, name = "Windows")
 public class WindowsPlatform extends AbstractPlatform {
 
 	// -- Platform methods --

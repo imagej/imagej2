@@ -62,7 +62,7 @@ import javax.swing.JMenuBar;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Platform.class)
+@Plugin(type = Platform.class, name = "Mac OS X")
 public class MacOSXPlatform extends AbstractPlatform {
 
 	/** Debugging flag to allow easy toggling of Mac screen menu bar behavior. */
