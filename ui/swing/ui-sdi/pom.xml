@@ -45,7 +45,7 @@
 	</dependencies>
 
 	<properties>
-		<project.rootdir>${basedir}/../../../..</project.rootdir>
+		<project.rootdir>${basedir}/../../..</project.rootdir>
 	</properties>
 
 	<build>

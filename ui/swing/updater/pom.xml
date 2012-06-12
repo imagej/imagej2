@@ -11,10 +11,10 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-swing-mdi</artifactId>
+	<artifactId>ij-ui-swing-updater</artifactId>
 
-	<name>ImageJ UI: Swing (MDI)</name>
-	<description>A Swing-based ImageJ user interface (MDI).</description>
+	<name>ImageJ Updater (Swing)</name>
+	<description>The updater for ImageJ (formerly known as Fiji Updater).</description>
 
 	<dependencies>
 		<dependency>
@@ -29,23 +29,19 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
+			<artifactId>ij-updater-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-common-awt</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-base</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>${miglayout.version}</version>
+			<classifier>swing</classifier>
 		</dependency>
 	</dependencies>
 
 	<properties>
-		<project.rootdir>${basedir}/../../../..</project.rootdir>
+		<project.rootdir>${basedir}/../../..</project.rootdir>
 	</properties>
 
 	<build>
@@ -55,7 +51,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.swing.mdi</packageName>
+							<packageName>imagej.core.plugins</packageName>
 						</manifest>
 					</archive>
 				</configuration>

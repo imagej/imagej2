@@ -15,7 +15,12 @@
 	<packaging>pom</packaging>
 
 	<name>ImageJ POM: AWT and Swing UIs</name>
-	<description>ImageJ user interface projects for Swing and AWT.</description>
+	<description>ImageJ user interface projects for use with both AWT and Swing.</description>
+
+	<modules>
+		<module>common</module>
+		<module>util</module>
+	</modules>
 
 	<properties>
 		<project.rootdir>${basedir}/../..</project.rootdir>
@@ -32,43 +37,5 @@
 			<url>http://maven.imagej.net/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
-
-	<profiles>
-		<profile>
-			<id>all</id>
-			<modules>
-				<module>awt</module>
-				<module>common</module>
-				<module>swing</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>awt</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>awt</value>
-				</property>
-			</activation>
-			<modules>
-				<module>awt</module>
-				<module>common</module>
-				<module>util</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swing</id>
-			<activation>
-				<property>
-					<name>!ij.ui</name>
-				</property>
-			</activation>
-			<modules>
-				<module>common</module>
-				<module>swing</module>
-				<module>util</module>
-			</modules>
-		</profile>
-	</profiles>
 
 </project>

@@ -11,10 +11,10 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-awt</artifactId>
+	<artifactId>ij-ext-awt</artifactId>
 
-	<name>ImageJ UI: AWT</name>
-	<description>An AWT-based ImageJ user interface. Not yet fully functional.</description>
+	<name>ImageJ Extensibility Framework: AWT</name>
+	<description>The ext-awt component provides AWT-based user interface components for use with the ImageJ extensibility framework--i.e., a collection of AWT UI classes for working with modules. It includes facilities for harvesting input parameters from a user dialog, as well as building an AWT MenuBar containing available modules.</description>
 
 	<dependencies>
 		<dependency>
@@ -24,32 +24,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ext</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ext-awt</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-platform</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-common-awt</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -57,10 +32,17 @@
 			<artifactId>ij-util-awt</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>${miglayout.version}</version>
+			<classifier>swing</classifier>
+		</dependency>
 	</dependencies>
 
 	<properties>
-		<project.rootdir>${basedir}/../../../..</project.rootdir>
+		<project.rootdir>${basedir}/../../..</project.rootdir>
 	</properties>
 
 	<build>
@@ -70,7 +52,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.awt</packageName>
+							<packageName>imagej.ext.ui.awt</packageName>
 						</manifest>
 					</archive>
 				</configuration>
