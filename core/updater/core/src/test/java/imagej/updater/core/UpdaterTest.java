@@ -71,6 +71,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -734,6 +735,40 @@ public class UpdaterTest {
 		Arrays.sort(authors);
 		assertEquals(authors[0], "Bugs Bunny");
 		assertEquals(authors[1], "Jenna Jenkins");
+	}
+
+	@Test
+	public void testPomPropertiesHashing() throws Exception {
+		final String oldContents = "blub = true\n"
+			+ "#Tue Jun 12 06:43:48 IST 2012\n"
+			+ "narf.egads = pinkie\n";
+		final String newContents = "blub = true\n"
+			+ "#Tue Jun 17 09:47:43 CST 2012\n"
+			+ "narf.egads = pinkie\n";
+		final File oldOldJar = writeJarWithProperties("old.jar", 2012, 6, 12, oldContents);
+		final File oldNewJar = writeJarWithProperties("new.jar", 2012, 6, 12, newContents);
+		final File newOldJar = writeJarWithProperties("old2.jar", 2012, 6, 17, oldContents);
+		final File newNewJar = writeJarWithProperties("new2.jar", 2012, 6, 17, newContents);
+
+		// before June 15th, they were considered different
+		assertNotSame(Util.getJarDigest(oldOldJar), Util.getJarDigest(oldNewJar));
+		// after June 15th, they are considered unchanged
+		assertEquals(Util.getJarDigest(newOldJar), Util.getJarDigest(newNewJar));
+		// checksums must be different if contents are the same but the timestamps are on opposite sides of the cutoff
+		assertNotSame(Util.getJarDigest(oldOldJar), Util.getJarDigest(newOldJar));
+	}
+
+	private File writeJarWithProperties(String fileName, int year, int month, int day,
+			String propertiesContents) throws IOException {
+		final File file = new File(ijRoot, fileName);
+		final JarOutputStream out = new JarOutputStream(new FileOutputStream(file));
+		final JarEntry entry = new JarEntry("META-INF/maven/net.imagej/updater-test/pom.properties");
+		entry.setTime(new GregorianCalendar(year, month, day).getTimeInMillis());
+		out.putNextEntry(entry);
+		out.write(propertiesContents.getBytes());
+		out.closeEntry();
+		out.close();
+		return file;
 	}
 
 	//

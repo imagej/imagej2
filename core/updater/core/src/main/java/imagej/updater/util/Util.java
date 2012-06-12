@@ -214,7 +214,13 @@ public class Util {
 
 			for (final JarEntry entry : list) {
 				digest.update(entry.getName().getBytes("ASCII"));
-				updateDigest(jar.getInputStream(entry), digest);
+				InputStream inputStream = jar.getInputStream(entry);
+				// .properties files have a date in a comment; let's ignore this for the checksum
+				// For backwards-compatibility, activate the .properties mangling only from June 15th, 2012
+				if (entry.getTime() >= 1339718400 && entry.getName().endsWith(".properties")) {
+					inputStream = new SkipHashedLines(inputStream);
+				}
+				updateDigest(inputStream, digest);
 			}
 		}
 		return toHex(digest.digest());
