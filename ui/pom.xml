@@ -17,11 +17,6 @@
 	<name>ImageJ POM: User Interface</name>
 	<description>ImageJ user interface projects.</description>
 
-	<modules>
-		<module>platform-macosx</module>
-		<module>platform-windows</module>
-	</modules>
-
 	<properties>
 		<project.rootdir>${basedir}/..</project.rootdir>
 		<miglayout.version>3.7.3.1</miglayout.version>
