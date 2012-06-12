@@ -49,6 +49,7 @@ import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.ext.ui.swing.SwingJPopupMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.service.event.ServicesLoadedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
@@ -120,8 +121,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		return systemClipboard;
 	}
 
-	@Override
-	public void createMenus() {
+	protected void createMenus() {
 		final JMenuBar menuBar = createMenuBar(appFrame, true);
 		getEventService().publish(new AppMenusCreatedEvent(menuBar));
 	}
@@ -156,7 +156,9 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		toolBar = new SwingToolBar(getUIService());
 		statusBar = new SwingStatusBar(getUIService());
 		systemClipboard = new AWTClipboard();
-		createMenus();
+		
+		// defer until after all services loaded
+		//createMenus();
 
 		setupAppFrame();
 
@@ -214,6 +216,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * @param e
 	 */
 	protected abstract void onDisplayDeleted(DisplayDeletedEvent e);
+
+	@EventHandler
+	protected synchronized void onEvent(final ServicesLoadedEvent e) {
+		createMenus();
+	}
 
 	/**
 	 * Called any time a display is updated.
@@ -298,18 +305,21 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		});
 	}
 
+	/* TODO OBSOLETE?
 	// FIXME - temp hack - made this method public so that the SwingOverlayManager
 	// (which is not a display) could make sure menu bar available when it is
 	// running. A better approach would be to keep this method protected and make
 	// a new event tied to a menu bar listener of some sort. Creating any window
-	// (not just displays) could keep the menu bar in place as needed. Filinf as
+	// (not just displays) could keep the menu bar in place as needed. Filing as
 	// ticket.
+	 */
 
 	/**
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
 	 * and adds it to the given {@link JFrame}.
 	 */
-	public JMenuBar createMenuBar(final JFrame f, final boolean force) {
+	protected JMenuBar createMenuBar(final JFrame f, final boolean force) {
+		// TODO - 6-11-12 is this case now obsolete? We never duplicate, right?
 		if (!force && !getUIService().getPlatformService().isMenuBarDuplicated()) {
 			// NB: Menus are not configured to be duplicated across window frames.
 			return null;

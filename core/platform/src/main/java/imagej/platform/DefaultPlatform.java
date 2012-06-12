@@ -47,7 +47,8 @@ import java.net.URL;
  * @author Curtis Rueden
  * @author Johannes Schindelin
  */
-@Plugin(type = Platform.class, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = Platform.class, name = "Default",
+	priority = Priority.VERY_LOW_PRIORITY)
 public class DefaultPlatform extends AbstractPlatform {
 
 	// -- PlatformHandler methods --

@@ -89,6 +89,9 @@ public class SwingUI extends AbstractSwingUI {
 		pane.setLayout(new BorderLayout());
 	}
 
+	/* NOTE BDZ removed 6-11-12. We should no longer repeatedly create and destroy 
+	 * menubars.
+	 *
 	protected void deleteMenuBar(final JFrame f) {
 		f.setJMenuBar(null);
 		// HACK - w/o this next call the JMenuBars do not get garbage collected.
@@ -99,6 +102,7 @@ public class SwingUI extends AbstractSwingUI {
 		// this issue.
 		f.setMenuBar(null);
 	}
+	*/
 
 	// -- Event handlers --
 
@@ -125,8 +129,11 @@ public class SwingUI extends AbstractSwingUI {
 					displayViewer.view(displayWindow, display);
 					displayWindow.setTitle(display.getName());
 					displayViewers.add(displayViewer);
+					/* NOTE BDZ removed 6-11-12. We no longer repeatedly create and destroy
+					 * menubars.
 					// TODO: Rework how menus are added to display viewers.
 					createMenuBar(displayWindow, false);
+					*/
 					displayWindow.addEventDispatcher(new AWTWindowEventDispatcher(
 						display, eventService));
 					displayWindow.showDisplay(true);
@@ -146,7 +153,10 @@ public class SwingUI extends AbstractSwingUI {
 		if (displayViewer != null) {
 			final DisplayWindow displayWindow = displayViewer.getWindow();
 			if ((displayWindow != null) && (displayWindow instanceof JFrame)) {
+				/* NOTE BDZ removed 6-11-12. We no longer repeatedly create and destroy
+				 * menubars.
 				deleteMenuBar((JFrame) displayWindow);
+				 */
 			}
 		}
 	}

@@ -79,4 +79,9 @@ public interface PlatformService extends IService {
 	/** Executes a native program and waits for it to return. */
 	boolean exec(final String... args) throws IOException;
 
+	/**
+	 * Lets each platform know a menu bar has come into existence.
+	 * Some platforms care about this.
+	 */
+	 void registerAppMenuContainer(Object menuContainer);
 }

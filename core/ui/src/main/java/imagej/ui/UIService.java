@@ -259,6 +259,9 @@ public final class UIService extends AbstractService {
 	protected void onEvent(@SuppressWarnings("unused")
 	final MenuEvent event)
 	{
+		/* NOTE BDZ removed 6-11-12. Menus get created once. We will need to update
+		 * this event to tweak existing menu accordingly. 
+		 * 
 		// TODO - This rebuilds the entire menu structure whenever the
 		// menus change at all. Better would be to listen to MenusAddedEvent,
 		// MenusRemovedEvent and MenusUpdatedEvent separately and surgically
@@ -266,6 +269,8 @@ public final class UIService extends AbstractService {
 		// the MenuCreator API to be more powerful.
 		if (userInterface == null) return;
 		userInterface.createMenus();
+		
+		*/
 	}
 
 	@EventHandler

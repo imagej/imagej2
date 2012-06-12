@@ -67,8 +67,6 @@ public interface UserInterface extends IPlugin {
 
 	SystemClipboard getSystemClipboard();
 	
-	void createMenus();
-
 	OutputWindow newOutputWindow(String title);
 
 	/**
