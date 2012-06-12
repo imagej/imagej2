@@ -65,7 +65,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -121,9 +120,15 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		return systemClipboard;
 	}
 
-	protected void createMenus() {
-		final JMenuBar menuBar = createMenuBar(appFrame, true);
+	/**
+	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure.
+	 */
+	protected JMenuBar createMenus() {
+		final MenuService menuService = getUIService().getMenuService();
+		final JMenuBar menuBar =
+			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		getEventService().publish(new AppMenusCreatedEvent(menuBar));
+		return menuBar;
 	}
 
 	@Override
@@ -302,32 +307,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	}
 
 	// -- Internal methods --
-
-	/* TODO OBSOLETE?
-	// FIXME - temp hack - made this method public so that the SwingOverlayManager
-	// (which is not a display) could make sure menu bar available when it is
-	// running. A better approach would be to keep this method protected and make
-	// a new event tied to a menu bar listener of some sort. Creating any window
-	// (not just displays) could keep the menu bar in place as needed. Filing as
-	// ticket.
-	 */
-
-	/**
-	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
-	 * and adds it to the given {@link JFrame}.
-	 */
-	protected JMenuBar createMenuBar(final JFrame f, final boolean force) {
-		if (!force && (f.getMenuBar() != null || f.getJMenuBar() != null)) {
-			// NB: Frame already has a menu bar; don't build a new one.
-			return f.getJMenuBar();
-		}
-
-		final MenuService menuService = getUIService().getMenuService();
-		final JMenuBar menuBar =
-			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
-		f.setJMenuBar(menuBar);
-		return menuBar;
-	}
 
 	protected DisplayViewer<?> getDisplayViewer(final Display<?> display) {
 		for (final DisplayViewer<?> displayViewer : displayViewers) {
