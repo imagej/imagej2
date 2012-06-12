@@ -138,8 +138,11 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	public void run() {
 		if (module == null) return;
 		final EventService es = context.getService(EventService.class);
+		final StatusService ss = context.getService(StatusService.class);
 
 		// execute module
+		final String title = module.getInfo().getTitle();
+		if (ss != null) ss.showStatus("Running command: " + title);
 		if (es != null) es.publish(new ModuleStartedEvent(module));
 		final boolean ok = preProcess();
 		if (!ok) {
@@ -153,6 +156,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 		if (es != null) es.publish(new ModuleExecutedEvent(module));
 		postProcess();
 		if (es != null) es.publish(new ModuleFinishedEvent(module));
+		if (ss != null) ss.showStatus("Command finished: " + title);
 	}
 
 }
