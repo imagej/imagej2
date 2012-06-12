@@ -40,7 +40,6 @@
 				<module>awt</module>
 				<module>common</module>
 				<module>swing</module>
-				<module>util</module>
 			</modules>
 		</profile>
 		<profile>

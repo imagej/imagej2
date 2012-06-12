@@ -20,6 +20,7 @@
 	<modules>
 		<module>ext</module>
 		<module>ui</module>
+		<module>util</module>
 	</modules>
 
 	<properties>
