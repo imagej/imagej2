@@ -18,7 +18,6 @@
 	<description>ImageJ user interface projects.</description>
 
 	<modules>
-		<module>app</module>
 		<module>platform-macosx</module>
 		<module>platform-windows</module>
 	</modules>

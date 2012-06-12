@@ -22,6 +22,7 @@
 	<inceptionYear>1997</inceptionYear>
 
 	<modules>
+		<module>app</module>
 		<module>core</module>
 		<module>ui</module>
 	</modules>
