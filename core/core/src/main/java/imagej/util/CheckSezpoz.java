@@ -37,17 +37,23 @@ package imagej.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -232,11 +238,19 @@ public class CheckSezpoz {
 		addJavaPathsRecursively(aptArgs, sources);
 		// do nothing if there is nothing to
 		if (count == aptArgs.size()) return false;
+
 		// remove possibly outdated annotations
-		final File[] obsoleteAnnotations =
+		final File[] annotationsBefore =
 			new File(classes, "META-INF/annotations").listFiles();
-		if (obsoleteAnnotations != null) {
-			for (final File annotation : obsoleteAnnotations)
+
+		// checksum the annotations so that we can determine whether something
+		// changed
+		// if nothing changed, we can safely proceed
+		final Map<String, byte[]> checksumsBefore = checksum(annotationsBefore);
+
+		// before running, remove possibly outdated annotations
+		if (annotationsBefore != null) {
+			for (final File annotation : annotationsBefore)
 				annotation.delete();
 		}
 
@@ -250,8 +264,51 @@ public class CheckSezpoz {
 			return false;
 		}
 
+		boolean result = true;
+
+		final File[] annotationsAfter =
+			new File(classes, "META-INF/annotations").listFiles();
+		final Map<String, byte[]> checksumsAfter = checksum(annotationsAfter);
+		if (checksumsAfter.size() == checksumsBefore.size()) {
+			result = false;
+			for (final String key : checksumsAfter.keySet()) {
+				final byte[] before = checksumsBefore.get(key);
+				if (before == null || !Arrays.equals(before, checksumsAfter.get(key))) {
+					result = true;
+				}
+			}
+		}
+
 		setLatestCheck(classes.getParentFile());
-		return true;
+		return result;
+	}
+
+	private static MessageDigest digest;
+
+	protected static Map<String, byte[]> checksum(final File[] files) {
+		final Map<String, byte[]> result = new HashMap<String, byte[]>();
+		if (files != null && files.length != 0) {
+			for (final File file : files)
+				result.put(file.getName(), checksum(file));
+		}
+		return result;
+	}
+
+	protected synchronized static byte[] checksum(final File file) {
+		try {
+			if (digest == null) digest = MessageDigest.getInstance("SHA-1");
+			else digest.reset();
+			final byte[] buffer = new byte[65536];
+			final DigestInputStream digestStream =
+				new DigestInputStream(new FileInputStream(file), digest);
+			while (digestStream.read(buffer) >= 0); /* do nothing */
+			digestStream.close();
+			return digest.digest();
+		}
+		catch (final Exception e) {
+			Log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	protected static void addJavaPathsRecursively(final List<String> list,
