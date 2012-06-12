@@ -17,6 +17,8 @@ my $dir = `dirname "$0"`;
 chop $dir;
 require "$dir/subs.pl";
 
+chdir "$dir/..";
+
 # -- Constants --
 
 my $nameColor = '#d8ecf8';
@@ -36,13 +38,14 @@ my $sourcePrefix = "$githubURL/tree/master";
 # -- Main --
 
 {
+  section('App', 'app');
   section('Core', 'core');
-  section('UI', 'ui/app ui/platform-macosx ui/platform-windows ' .
-    'ui/awt-swing/common ui/awt-swing/util');
-  section('UI: Swing', 'ui/awt-swing/swing');
-  section('UI: AWT', 'ui/awt-swing/awt');
+  section('Platform', 'platform');
+  section('UI: AWT &amp; Swing', 'ui/awt-swing');
+  section('UI: AWT', 'ui/awt');
   section('UI: Pivot', 'ui/pivot');
   section('UI: SWT', 'ui/swt');
+  section('UI: Swing', 'ui/swing');
   section('Extra', 'extra');
 }
 
@@ -63,7 +66,7 @@ sub section($$) {
   print "<th>Browse source</th>\n";
   print "</tr>\n";
 
-  my @poms = `find $dirs -name 'pom.xml'`;
+  my @poms = `find $dirs -name 'pom.xml' | grep -v '/target/'`;
   foreach my $pom (@poms) {
     chop $pom;
     process($pom);

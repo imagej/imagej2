@@ -10,9 +10,9 @@
 
 set -e
 
-cd "$(dirname "$0")"/../ui/app
+cd "$(dirname "$0")"/../app
 mvn dependency:copy-dependencies > /dev/null
-find ../../core -name '*Event.java' | \
+find ../core -name '*Event.java' | \
   sed -e 's/.*src\/main\/java\///' -e 's/\//./g' -e 's/\.java$//' |
   xargs java \
     -cp 'target/classes:target/test-classes:target/dependency/*' \
