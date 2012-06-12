@@ -50,6 +50,11 @@ public final class Main {
 
 	public static void main(final String[] args) {
 		final ImageJ context = ImageJ.createContext();
+
+		// display the user interface
+		context.getService(UIService.class).createUI();
+
+		// pass in command line arguments
 		context.getService(UIService.class).processArgs(args);
 	}
 

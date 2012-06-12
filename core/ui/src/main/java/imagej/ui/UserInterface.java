@@ -54,6 +54,8 @@ public interface UserInterface extends IPlugin {
 
 	UIService getUIService();
 
+	void create();
+
 	void processArgs(final String[] args);
 
 	/** Desktop for use with multi-document interfaces (MDI). */
