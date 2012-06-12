@@ -49,7 +49,6 @@ import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
 import imagej.ext.ui.swing.SwingJPopupMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.service.event.ServicesLoadedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
@@ -152,13 +151,12 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 	@Override
 	protected void createUI() {
+		createMenus();
+
 		appFrame = new SwingApplicationFrame("ImageJ");
 		toolBar = new SwingToolBar(getUIService());
 		statusBar = new SwingStatusBar(getUIService());
 		systemClipboard = new AWTClipboard();
-		
-		// defer until after all services loaded
-		//createMenus();
 
 		setupAppFrame();
 
@@ -216,11 +214,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * @param e
 	 */
 	protected abstract void onDisplayDeleted(DisplayDeletedEvent e);
-
-	@EventHandler
-	protected synchronized void onEvent(final ServicesLoadedEvent e) {
-		createMenus();
-	}
 
 	/**
 	 * Called any time a display is updated.
