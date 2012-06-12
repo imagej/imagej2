@@ -73,7 +73,8 @@ public final class DefaultImageDisplayService extends AbstractService
 		this.eventService = eventService;
 		this.displayService = displayService;
 
-		subscribeToEvents(eventService);
+		// there are no longer any defined @EventHandlers. restore later if needed
+		//subscribeToEvents(eventService);
 	}
 
 	// -- ImageDisplayService methods --
