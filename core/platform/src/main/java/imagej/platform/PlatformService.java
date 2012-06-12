@@ -60,16 +60,6 @@ public interface PlatformService extends IService {
 	List<Platform> getTargetPlatforms();
 
 	/**
-	 * Returns true if the menu bar should be duplicated for every window frame.
-	 * If false, the menu bar should be present on the main ImageJ application
-	 * frame only.
-	 */
-	boolean isMenuBarDuplicated();
-
-	/** Sets whether the menu bar should be duplicated for every window frame. */
-	void setMenuBarDuplicated(final boolean menuBarDuplicated);
-
-	/**
 	 * Opens a URL in a platform-dependent way. Typically the URL is opened
 	 * external web browser instance, but the behavior is ultimately defined the
 	 * available platform handler implementations.

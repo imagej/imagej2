@@ -316,12 +316,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * and adds it to the given {@link JFrame}.
 	 */
 	protected JMenuBar createMenuBar(final JFrame f, final boolean force) {
-		// TODO - 6-11-12 is this case now obsolete? We never duplicate, right?
-		if (!force && !getUIService().getPlatformService().isMenuBarDuplicated()) {
-			// NB: Menus are not configured to be duplicated across window frames.
-			return null;
-		}
-
 		if (!force && (f.getMenuBar() != null || f.getJMenuBar() != null)) {
 			// NB: Frame already has a menu bar; don't build a new one.
 			return f.getJMenuBar();

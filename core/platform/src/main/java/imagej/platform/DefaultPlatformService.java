@@ -69,9 +69,6 @@ public final class DefaultPlatformService extends AbstractService implements
 	/** Platform handlers applicable to this platform. */
 	private List<Platform> targetPlatforms;
 
-	/** Whether the menu bar should be duplicated for every window frame. */
-	private boolean menuBarDuplicated;
-
 	// -- Constructors --
 
 	public DefaultPlatformService() {
@@ -121,16 +118,6 @@ public final class DefaultPlatformService extends AbstractService implements
 	@Override
 	public List<Platform> getTargetPlatforms() {
 		return targetPlatforms;
-	}
-
-	@Override
-	public boolean isMenuBarDuplicated() {
-		return menuBarDuplicated;
-	}
-
-	@Override
-	public void setMenuBarDuplicated(final boolean menuBarDuplicated) {
-		this.menuBarDuplicated = menuBarDuplicated;
 	}
 
 	@Override
