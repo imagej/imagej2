@@ -23,6 +23,7 @@
 		<module>tools</module>
 		<module>ui-base</module>
 		<module>updater</module>
+		<module>util</module>
 	</modules>
 
 	<properties>
