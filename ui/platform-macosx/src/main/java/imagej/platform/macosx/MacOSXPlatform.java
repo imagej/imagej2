@@ -35,6 +35,8 @@
 
 package imagej.platform.macosx;
 
+import com.apple.eawt.Application;
+
 import imagej.event.EventService;
 import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.Plugin;
@@ -47,6 +49,8 @@ import imagej.platform.PlatformService;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+
+import javax.swing.JMenuBar;
 
 /**
  * A platform implementation for handling Mac OS X platform issues:
@@ -96,8 +100,12 @@ public class MacOSXPlatform extends AbstractPlatform {
 			// - on earlier MacOSX versions
 		}
 
+		/* NOTE BDZ removed 6-11-12. We no longer create and destroy menubars on
+		 * Mac OS X. Rather we use a default menu bar.
+		 *
 		// duplicate menu bar across all window frames
 		if (SCREEN_MENU) platformService.setMenuBarDuplicated(true);
+		*/
 	}
 
 	@Override
@@ -107,7 +115,14 @@ public class MacOSXPlatform extends AbstractPlatform {
 		}
 	}
 
-	// -- Helper methods --
+	@Override
+	public void registerAppMenuContainer(Object menuContainer) {
+		if (menuContainer instanceof JMenuBar) {
+			Application.getApplication().setDefaultMenuBar((JMenuBar)menuContainer);
+		}
+	}
+
+// -- Helper methods --
 
 	private void removeAppPluginsFromMenu() {
 		final EventService eventService = platformService.getEventService();

@@ -33,51 +33,20 @@
  * #L%
  */
 
-package imagej.platform;
+package imagej.service.event;
+
+import imagej.ImageJ;
+import imagej.event.ImageJEvent;
+
 
 /**
- * Abstract superclass of platform implementations.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
+ *
  */
-public abstract class AbstractPlatform implements Platform {
+public class ServicesLoadedEvent extends ImageJEvent {
 
-	protected PlatformService platformService;
-
-	// -- Platform methods --
-
-	@Override
-	public String javaVendor() {
-		return null;
-	}
-
-	@Override
-	public String javaVersion() {
-		return null;
-	}
-
-	@Override
-	public String osArch() {
-		return null;
-	}
-
-	@Override
-	public String osName() {
-		return null;
-	}
-
-	@Override
-	public String osVersion() {
-		return null;
-	}
-
-	@Override
-	public void configure(final PlatformService service) {
-		platformService = service;
-	}
-
-	@Override
-	public void registerAppMenuContainer(Object menuContainer) {
-		/* do nothing */
+	public ServicesLoadedEvent(ImageJ context) {
+		setContext(context);
 	}
 }

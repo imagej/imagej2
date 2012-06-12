@@ -36,6 +36,8 @@
 package imagej.service;
 
 import imagej.ImageJ;
+import imagej.event.EventService;
+import imagej.service.event.ServicesLoadedEvent;
 import imagej.util.Log;
 
 import java.lang.reflect.Constructor;
@@ -109,6 +111,9 @@ public class ServiceHelper {
 		for (final Class<? extends IService> serviceClass : serviceClasses) {
 			loadService(serviceClass);
 		}
+		EventService eventService = context.getService(EventService.class);
+		if (eventService != null)
+			eventService.publish(new ServicesLoadedEvent(context));
 	}
 
 	/**

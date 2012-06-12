@@ -72,8 +72,7 @@ public class PivotUI extends AbstractUserInterface implements Callable<Object>
 		// TODO
 	}
 
-	@Override
-	public void createMenus() {
+	protected void createMenus() {
 		//
 	}
 

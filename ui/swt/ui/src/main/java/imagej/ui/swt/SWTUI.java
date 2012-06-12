@@ -96,8 +96,7 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 		// TODO
 	}
 
-	@Override
-	public void createMenus() {
+	protected void createMenus() {
 		final MenuService menuService = getUIService().getMenuService();
 		final Menu menuBar =
 			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));

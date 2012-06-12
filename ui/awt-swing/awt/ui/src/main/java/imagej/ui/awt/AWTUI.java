@@ -102,8 +102,7 @@ public class AWTUI extends AbstractUserInterface {
 		// TODO
 	}
 
-	@Override
-	public void createMenus() {
+	protected void createMenus() {
 		final MenuService menuService = getUIService().getMenuService();
 		final MenuBar menuBar =
 			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());

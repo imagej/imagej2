@@ -72,4 +72,5 @@ public interface Platform extends IPlugin {
 
 	void open(URL url) throws IOException;
 
+	void registerAppMenuContainer(Object menuContainer);
 }

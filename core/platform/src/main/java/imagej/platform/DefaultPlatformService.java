@@ -36,10 +36,12 @@
 package imagej.platform;
 
 import imagej.ImageJ;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.Log;
@@ -94,6 +96,9 @@ public final class DefaultPlatformService extends AbstractService implements
 			platform.configure(this);
 		}
 		if (platforms.size() == 0) Log.info("No platforms to configure.");
+		// ENABLE NEXT LINE and all plugins run twice
+		// DISABLE NEXT LINE and default menu disappears
+		subscribeToEvents(eventService);
 	}
 
 	// -- PlatformService methods --
@@ -159,7 +164,19 @@ public final class DefaultPlatformService extends AbstractService implements
 		}
 	}
 
-	// -- Helper methods --
+	@Override
+	public void registerAppMenuContainer(Object menuContainer) {
+		for (final Platform platform : getTargetPlatforms()) {
+			platform.registerAppMenuContainer(menuContainer);
+		}
+	}
+  
+	@EventHandler
+	protected void onEvent(final AppMenusCreatedEvent event) {
+		registerAppMenuContainer(event.getMenuContainer());
+	 }
+	 
+	 // -- Helper methods --
 
 	/** Discovers target platform handlers. */
 	private List<Platform> discoverTargetPlatforms() {
