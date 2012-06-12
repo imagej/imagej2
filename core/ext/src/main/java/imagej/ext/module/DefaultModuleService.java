@@ -187,7 +187,8 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 		final Map<String, Object> inputMap)
 	{
 		assignInputs(module, inputMap);
-		final ModuleRunner runner = new ModuleRunner(module, pre, post);
+		final ModuleRunner runner =
+			new ModuleRunner(getContext(), module, pre, post);
 		@SuppressWarnings("unchecked")
 		final Future<M> future = (Future<M>) threadService.run(runner);
 		return future;
