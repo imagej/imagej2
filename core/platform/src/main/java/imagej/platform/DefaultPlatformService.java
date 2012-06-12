@@ -159,7 +159,7 @@ public final class DefaultPlatformService extends AbstractService implements
 			return process.exitValue() == 0;
 		}
 		catch (final InterruptedException ie) {
-			throw new IOException("InterruptedException while launching browser: " +
+			throw new IOException("InterruptedException during execution: " +
 				ie.getMessage());
 		}
 	}
