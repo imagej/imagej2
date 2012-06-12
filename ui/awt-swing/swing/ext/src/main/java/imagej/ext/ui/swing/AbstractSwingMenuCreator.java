@@ -167,7 +167,6 @@ public abstract class AbstractSwingMenuCreator<T> extends
 				shadow.run();
 			}
 		});
-		menuItem.setEnabled(shadow.getModuleInfo().isEnabled());
 	}
 
 }
