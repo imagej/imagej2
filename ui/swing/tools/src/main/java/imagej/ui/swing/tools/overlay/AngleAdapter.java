@@ -111,14 +111,11 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 		assert overlay instanceof AngleOverlay;
 		final AngleOverlay angleOverlay = (AngleOverlay) overlay;
 		RealLocalizable overlayPt = angleOverlay.getEndPoint1();
-		Point2D.Double figurePt = new Point2D.Double(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
-		angleFig.setEndPoint1(figurePt);
+		angleFig.setEndPoint1(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
 		overlayPt = angleOverlay.getCenterPoint();
-		figurePt = new Point2D.Double(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
-		angleFig.setCenterPoint(figurePt);
-		overlayPt = angleOverlay.getEndPoint2();
-		figurePt = new Point2D.Double(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
-		angleFig.setEndPoint2(figurePt);
+		angleFig.setCenterPoint(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
+		overlayPt = angleOverlay.getCenterPoint();
+		angleFig.setEndPoint2(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
 	}
 
 	@Override
@@ -131,13 +128,13 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 		assert overlay instanceof AngleOverlay;
 		final AngleOverlay angleOverlay = (AngleOverlay) overlay;
 		Node node = angleFig.getNode(0);
-		RealPoint point = new RealPoint(new double[]{node.getControlPoint(0).x, node.getControlPoint(0).y});
+		RealPoint point = new RealPoint(node.x[0], node.y[0]);
 		angleOverlay.setEndPoint1(point);
 		node = angleFig.getNode(1);
-		point = new RealPoint(new double[]{node.getControlPoint(0).x, node.getControlPoint(0).y});
+		point = new RealPoint(node.x[0], node.y[0]);
 		angleOverlay.setCenterPoint(point);
 		node = angleFig.getNode(2);
-		point = new RealPoint(new double[]{node.getControlPoint(0).x, node.getControlPoint(0).y});
+		point = new RealPoint(node.x[0], node.y[0]);
 		angleOverlay.setEndPoint2(point);
 		overlay.update();
 	}
@@ -150,20 +147,32 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 	}
 
 	private class AngleFigure extends BezierFigure {
+		
 		public AngleFigure() {
-      addNode(new BezierPath.Node(new Point2D.Double(5,0)));
-      addNode(new BezierPath.Node(new Point2D.Double(0,0)));
-      addNode(new BezierPath.Node(new Point2D.Double(0,5)));
-      setConnectable(false);
+			addNode(new BezierPath.Node());
+			addNode(new BezierPath.Node());
+			addNode(new BezierPath.Node());
+			setConnectable(false);
+			setEndPoint1(6,1);
+			setCenterPoint(1,1);
+			setEndPoint2(1,6);
 		}
-		public void setEndPoint1(Point2D.Double p) {
-			getNode(0).setTo(new BezierPath.Node(p));
+		
+		public void setEndPoint1(double x, double y) {
+			setPoint(0,x,y);
 		}
-		public void setCenterPoint(Point2D.Double p) {
-			getNode(1).setTo(new BezierPath.Node(p));
+		
+		public void setCenterPoint(double x, double y) {
+			setPoint(1,x,y);
 		}
-		public void setEndPoint2(Point2D.Double p) {
-			getNode(2).setTo(new BezierPath.Node(p));
+
+		public void setEndPoint2(double x, double y) {
+			setPoint(2,x,y);
+		}
+		
+		private void setPoint(int nodeNum, double x, double y) {
+			Point2D.Double p = new Point2D.Double(x, y);
+			getNode(nodeNum).setTo(new BezierPath.Node(p));
 		}
 	}
 }
