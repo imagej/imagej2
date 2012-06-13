@@ -26,6 +26,28 @@ import org.junit.Test;
 public class CheckSezpozTest {
 
 	@Test
+	public void testIsAnnotation() throws Exception {
+		final File tmpDirectory = createTempDirectory("test-sezpoz");
+		final File file = new File(tmpDirectory, "Charlieee.java");
+		assertAnnotation(file, "/* Hello */ @Is", true);
+		assertAnnotation(file, "/* Hello class \n" + "*/@Blob", true);
+		assertAnnotation(file, "/* Hello class */\n" + "// @Blob\n" + " class",
+			false);
+		assertAnnotation(file,
+			"/* Hello class */ import Someclass; /* nothing */ @Annotation", true);
+	}
+
+	protected void assertAnnotation(final File file, final String contents,
+		final boolean expectAnnotation) throws Exception
+	{
+		final FileOutputStream out = new FileOutputStream(file);
+		out.write(contents.getBytes());
+		out.close();
+		final boolean hasAnnotation = CheckSezpoz.hasAnnotation(file);
+		assertEquals(hasAnnotation, expectAnnotation);
+	}
+
+	@Test
 	public void testBasic() throws Exception {
 		final File tmpDirectory = createTempDirectory("test-sezpoz");
 		final File classes = new File(tmpDirectory, "target/classes");

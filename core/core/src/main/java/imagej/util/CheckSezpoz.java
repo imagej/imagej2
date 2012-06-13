@@ -179,7 +179,12 @@ public class CheckSezpoz {
 			if (file.isDirectory()) {
 				if (!checkDirectory(file, new File(source, name), olderThan)) return false;
 			}
-			else if (file.isFile() && file.lastModified() > olderThan) {
+			else if (file.isFile() &&
+				file.lastModified() > olderThan &&
+				name.endsWith(".class") &&
+				hasAnnotation(new File(source, name.substring(0, name.length() - 5) +
+					"java")))
+			{
 				return false;
 			}
 		}
@@ -199,6 +204,71 @@ public class CheckSezpoz {
 				throw new IOException("Annotations for " + entry + " in " + file +
 					" are out-of-date!");
 			}
+		}
+	}
+
+	protected static boolean hasAnnotation(final File file) {
+		if (!file.getName().endsWith(".java")) return false;
+		try {
+			final BufferedReader reader = new BufferedReader(new FileReader(file));
+			boolean inComment = false;
+			for (;;) {
+				final String line = reader.readLine();
+				if (line == null) break;
+				int offset = 0;
+				if (inComment) {
+					offset = line.indexOf("*/");
+					if (offset < 0) continue;
+					offset += 2;
+					inComment = false;
+				}
+				final int eol = line.length();
+				while (offset < eol) {
+					final int commentStart = line.indexOf("/*", offset);
+					final int lineCommentStart = line.indexOf("//", offset);
+					final int end =
+						Math.min(eol, Math.min(commentStart < 0 ? Integer.MAX_VALUE
+							: commentStart, lineCommentStart < 0 ? Integer.MAX_VALUE
+							: lineCommentStart));
+					if (offset < end) {
+						final int at = line.indexOf("@", offset);
+						int clazz = offset;
+						for (;;) {
+							clazz = line.indexOf("class", clazz);
+							if (clazz < 0) break;
+							// is "class" the keyword, i.e. not a substring of something else?
+							if ((clazz == 0 || !Character.isJavaIdentifierPart(line
+								.charAt(clazz - 1))) &&
+								(clazz + 4 >= end || !Character.isJavaIdentifierPart(line
+									.charAt(clazz + 5)))) break;
+							clazz += 4;
+						}
+						if (at >= 0 && at < end && (clazz < 0 || at < clazz)) {
+							reader.close();
+							return true;
+						}
+						if (clazz >= 0 && clazz < end) {
+							reader.close();
+							return false;
+						}
+					}
+					if (end == commentStart) {
+						offset = line.indexOf("*/", commentStart + 2);
+						if (offset > 0) {
+							offset += 2;
+							continue;
+						}
+						inComment = true;
+					}
+					break;
+				}
+			}
+			reader.close();
+			return false;
+		}
+		catch (final Exception e) {
+			// If we cannot read it, it does not have an annotation for all we know.
+			return false;
 		}
 	}
 
