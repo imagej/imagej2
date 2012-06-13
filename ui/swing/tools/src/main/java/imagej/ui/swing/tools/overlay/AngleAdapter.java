@@ -149,13 +149,10 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 	private class AngleFigure extends BezierFigure {
 		
 		public AngleFigure() {
-			addNode(new BezierPath.Node());
-			addNode(new BezierPath.Node());
-			addNode(new BezierPath.Node());
+			addNode(new BezierPath.Node(point(6,1)));
+			addNode(new BezierPath.Node(point(1,1)));
+			addNode(new BezierPath.Node(point(1,6)));
 			setConnectable(false);
-			setEndPoint1(6,1);
-			setCenterPoint(1,1);
-			setEndPoint2(1,6);
 		}
 		
 		public void setEndPoint1(double x, double y) {
@@ -171,8 +168,11 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 		}
 		
 		private void setPoint(int nodeNum, double x, double y) {
-			Point2D.Double p = new Point2D.Double(x, y);
-			getNode(nodeNum).setTo(new BezierPath.Node(p));
+			getNode(nodeNum).setTo(new BezierPath.Node(point(x,y)));
+		}
+		
+		private Point2D.Double point(double x, double y) {
+			return new Point2D.Double(x, y);
 		}
 	}
 }
