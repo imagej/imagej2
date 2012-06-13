@@ -46,7 +46,6 @@ import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
-import imagej.ui.swing.tools.AngleTool;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -78,7 +77,7 @@ import org.jhotdraw.geom.Geom;
 @JHotDrawOverlayAdapter(priority = PointAdapter.PRIORITY)
 public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
-	public static final int PRIORITY = AngleTool.PRIORITY - 1;
+	public static final int PRIORITY = AngleAdapter.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
