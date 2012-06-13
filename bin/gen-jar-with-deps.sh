@@ -14,7 +14,7 @@ set -e
 ROOT=`cd "$(dirname $0)/.." ; pwd`
 EXTRA='src/main/assembly/all'
 
-cd "$ROOT/ui/app"
+cd "$ROOT/app"
 
 # build individual JARs and copy dependencies
 mvn package dependency:copy-dependencies
@@ -29,7 +29,7 @@ echo "Copying source files..."
 # NB: This is a lame HACK because I am too stupid to figure out how to write a
 # proper Maven assembly descriptor that includes the source code of all IJ2
 # modules in the toplevel directory structure alongside the class files.
-files=`find ../../core ../../ui -name '*.java' | grep 'src/main/java/'`
+files=`find ../app ../core ../platform ../ui -name '*.java' | grep 'src/main/java/'`
 for f in $files
 do
   dest=`echo $f | sed -e 's/.*\/src\/main\/java\///'`

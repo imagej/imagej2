@@ -64,7 +64,9 @@ import java.util.concurrent.Future;
  * @see ModuleInfo
  */
 @Service
-public class DefaultModuleService extends AbstractService implements ModuleService {
+public class DefaultModuleService extends AbstractService implements
+	ModuleService
+{
 
 	private final EventService eventService;
 	private final ThreadService threadService;
@@ -80,8 +82,8 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultModuleService(final ImageJ context, final EventService eventService,
-		final ThreadService threadService)
+	public DefaultModuleService(final ImageJ context,
+		final EventService eventService, final ThreadService threadService)
 	{
 		super(context);
 		this.eventService = eventService;
@@ -97,26 +99,30 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 
 	@Override
 	public void addModule(final ModuleInfo module) {
-		if (moduleIndex.add(module))
+		if (moduleIndex.add(module)) {
 			eventService.publish(new ModulesAddedEvent(module));
+		}
 	}
 
 	@Override
 	public void removeModule(final ModuleInfo module) {
-		if (moduleIndex.remove(module))
+		if (moduleIndex.remove(module)) {
 			eventService.publish(new ModulesRemovedEvent(module));
+		}
 	}
 
 	@Override
 	public void addModules(final Collection<? extends ModuleInfo> modules) {
-		if (moduleIndex.addAll(modules))
+		if (moduleIndex.addAll(modules)) {
 			eventService.publish(new ModulesAddedEvent(modules));
+		}
 	}
 
 	@Override
 	public void removeModules(final Collection<? extends ModuleInfo> modules) {
-		if (moduleIndex.removeAll(modules))
+		if (moduleIndex.removeAll(modules)) {
 			eventService.publish(new ModulesRemovedEvent(modules));
+		}
 	}
 
 	@Override
@@ -135,17 +141,16 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 	}
 
 	@Override
-	public Future<Module>
-		run(final ModuleInfo info, final Object... inputValues)
+	public Future<Module> run(final ModuleInfo info, final Object... inputValues)
 	{
 		return run(info, null, null, inputValues);
 	}
 
 	@Override
-	public Future<Module> run(final ModuleInfo info,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final Object... inputValues)
+	public Future<Module>
+		run(final ModuleInfo info, final List<? extends ModulePreprocessor> pre,
+			final List<? extends ModulePostprocessor> post,
+			final Object... inputValues)
 	{
 		return run(info, pre, post, createMap(info, inputValues));
 	}
@@ -172,10 +177,10 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 	}
 
 	@Override
-	public Future<Module> run(final Module module,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final Object... inputValues)
+	public Future<Module>
+		run(final Module module, final List<? extends ModulePreprocessor> pre,
+			final List<? extends ModulePostprocessor> post,
+			final Object... inputValues)
 	{
 		return run(module, pre, post, createMap(module.getInfo(), inputValues));
 	}
@@ -187,7 +192,8 @@ public class DefaultModuleService extends AbstractService implements ModuleServi
 		final Map<String, Object> inputMap)
 	{
 		assignInputs(module, inputMap);
-		final ModuleRunner runner = new ModuleRunner(module, pre, post);
+		final ModuleRunner runner =
+			new ModuleRunner(getContext(), module, pre, post);
 		@SuppressWarnings("unchecked")
 		final Future<M> future = (Future<M>) threadService.run(runner);
 		return future;

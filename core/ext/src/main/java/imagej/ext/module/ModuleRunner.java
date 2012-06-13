@@ -65,14 +65,16 @@ import java.util.concurrent.Callable;
  */
 public class ModuleRunner implements Callable<Module>, Runnable {
 
+	private final ImageJ context;
 	private final Module module;
 	private final List<? extends ModulePreprocessor> pre;
 	private final List<? extends ModulePostprocessor> post;
 
-	public ModuleRunner(final Module module,
+	public ModuleRunner(final ImageJ context, final Module module,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post)
 	{
+		this.context = context;
 		this.module = module;
 		this.pre = pre;
 		this.post = post;
@@ -83,17 +85,17 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	/** Feeds the module through the {@link ModulePreprocessor}s. */
 	public boolean preProcess() {
 		if (pre == null) return true; // no preprocessors
-		final EventService eventService = ImageJ.get(EventService.class);
-		final StatusService statusService = ImageJ.get(StatusService.class);
+		final EventService es = context.getService(EventService.class);
+		final StatusService ss = context.getService(StatusService.class);
 
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
-			eventService.publish(new ModulePreprocessEvent(module, p));
+			if (es != null) es.publish(new ModulePreprocessEvent(module, p));
 			if (p.canceled()) {
 				// notify interested parties of any warning messages
 				final String cancelMessage = p.getMessage();
-				if (cancelMessage != null) {
-					statusService.warn(cancelMessage);
+				if (ss != null && cancelMessage != null) {
+					ss.warn(cancelMessage);
 				}
 				return false;
 			}
@@ -104,11 +106,11 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	/** Feeds the module through the {@link ModulePostprocessor}s. */
 	public void postProcess() {
 		if (post == null) return; // no postprocessors
-		final EventService eventService = ImageJ.get(EventService.class);
+		final EventService es = context.getService(EventService.class);
 
 		for (final ModulePostprocessor p : post) {
 			p.process(module);
-			eventService.publish(new ModulePostprocessEvent(module, p));
+			if (es != null) es.publish(new ModulePostprocessEvent(module, p));
 		}
 	}
 
@@ -135,22 +137,26 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	@Override
 	public void run() {
 		if (module == null) return;
-		final EventService eventService = ImageJ.get(EventService.class);
+		final EventService es = context.getService(EventService.class);
+		final StatusService ss = context.getService(StatusService.class);
 
 		// execute module
-		eventService.publish(new ModuleStartedEvent(module));
+		final String title = module.getInfo().getTitle();
+		if (ss != null) ss.showStatus("Running command: " + title);
+		if (es != null) es.publish(new ModuleStartedEvent(module));
 		final boolean ok = preProcess();
 		if (!ok) {
 			// execution canceled
 			module.cancel();
-			eventService.publish(new ModuleCanceledEvent(module));
+			if (es != null) es.publish(new ModuleCanceledEvent(module));
 			return;
 		}
-		eventService.publish(new ModuleExecutingEvent(module));
+		if (es != null) es.publish(new ModuleExecutingEvent(module));
 		module.run();
-		eventService.publish(new ModuleExecutedEvent(module));
+		if (es != null) es.publish(new ModuleExecutedEvent(module));
 		postProcess();
-		eventService.publish(new ModuleFinishedEvent(module));
+		if (es != null) es.publish(new ModuleFinishedEvent(module));
+		if (ss != null) ss.showStatus("Command finished: " + title);
 	}
 
 }

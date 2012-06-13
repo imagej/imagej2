@@ -33,70 +33,30 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej;
 
-import imagej.ext.display.Display;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.ui.UIService;
 
 /**
- * An end-user ImageJ application user interface. UIs discoverable at runtime
- * must implement this interface and be annotated with
- * <code>@{@link Plugin}(type = UserInterface.class)</code>.
+ * Launches ImageJ.
  * 
  * @author Curtis Rueden
- * @see Plugin
- * @see UIService
  */
-public interface UserInterface extends IPlugin {
+public final class Main {
 
-	void initialize(UIService uiService);
+	private Main() {
+		// prevent instantiation of utility class
+	}
 
-	UIService getUIService();
+	public static void main(final String[] args) {
+		final ImageJ context = ImageJ.createContext();
 
-	void create();
+		// display the user interface
+		context.getService(UIService.class).createUI();
 
-	void processArgs(final String[] args);
-
-	/** Desktop for use with multi-document interfaces (MDI). */
-	Desktop getDesktop();
-
-	ApplicationFrame getApplicationFrame();
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
-
-	SystemClipboard getSystemClipboard();
-	
-	OutputWindow newOutputWindow(String title);
-
-	/**
-	 * Creates a dialog prompter.
-	 * 
-	 * @param message The message in the dialog itself.
-	 * @param title The title of the dialog.
-	 * @param messageType The type of message. This typically is rendered as an
-	 *          icon next to the message. For example,
-	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
-	 *          as an exclamation point.
-	 * @param optionType The choices available when dismissing the dialog. These
-	 *          choices are typically rendered as buttons for the user to click.
-	 * @return The newly created DialogPrompt object.
-	 */
-	DialogPrompt dialogPrompt(String message, String title,
-		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
-
-	/**
-	 * Displays a popup context menu for the given display at the specified
-	 * position.
-	 */
-	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
-
-	/** Persists the application frame's current location. */
-	void saveLocation();
-
-	/** Restores the application frame's current location. */
-	void restoreLocation();
+		// pass in command line arguments
+		// TODO: create a ConsoleService for this, instead of using UIService
+		context.getService(UIService.class).processArgs(args);
+	}
 
 }

@@ -151,6 +151,11 @@ public final class UIService extends AbstractService {
 		return appService;
 	}
 
+	public void createUI() {
+		if (userInterface == null) return;
+		userInterface.create();
+	}
+
 	/** Processes the given command line arguments. */
 	public void processArgs(final String[] args) {
 		Log.info("Received command line arguments:");

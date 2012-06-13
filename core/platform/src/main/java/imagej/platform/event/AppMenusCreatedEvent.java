@@ -42,21 +42,21 @@ package imagej.platform.event;
  */
 public class AppMenusCreatedEvent extends ApplicationEvent {
 
-	private final Object menuContainer;
+	private final Object menus;
 
-	public AppMenusCreatedEvent(final Object menuContainer) {
-		this.menuContainer = menuContainer;
+	public AppMenusCreatedEvent(final Object menus) {
+		this.menus = menus;
 	}
 
-	public Object getMenuContainer() {
-		return menuContainer;
+	public Object getMenus() {
+		return menus;
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tmenus = " + menuContainer;
+		return super.toString() + "\n\tmenus = " + menus;
 	}
 
 }

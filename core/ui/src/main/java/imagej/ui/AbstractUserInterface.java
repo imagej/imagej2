@@ -61,14 +61,18 @@ public abstract class AbstractUserInterface implements UserInterface {
 	@Override
 	public void initialize(final UIService service) {
 		uiService = service;
-		createUI();
-		displayReadme();
-		updaterCheck();
 	}
 
 	@Override
 	public UIService getUIService() {
 		return uiService;
+	}
+
+	@Override
+	public void create() {
+		createUI();
+		displayReadme();
+		updaterCheck();
 	}
 
 	@Override

@@ -17,12 +17,6 @@
 	<name>ImageJ POM: User Interface</name>
 	<description>ImageJ user interface projects.</description>
 
-	<modules>
-		<module>app</module>
-		<module>platform-macosx</module>
-		<module>platform-windows</module>
-	</modules>
-
 	<properties>
 		<project.rootdir>${basedir}/..</project.rootdir>
 		<miglayout.version>3.7.3.1</miglayout.version>
@@ -45,7 +39,9 @@
 			<id>all</id>
 			<modules>
 				<module>awt-swing</module>
+				<module>awt</module>
 				<module>pivot</module>
+				<module>swing</module>
 				<module>swt</module>
 			</modules>
 		</profile>
@@ -59,6 +55,7 @@
 			</activation>
 			<modules>
 				<module>awt-swing</module>
+				<module>awt</module>
 			</modules>
 		</profile>
 		<profile>
@@ -82,6 +79,7 @@
 			</activation>
 			<modules>
 				<module>awt-swing</module>
+				<module>swing</module>
 			</modules>
 		</profile>
 		<profile>
