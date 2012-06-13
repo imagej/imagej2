@@ -253,14 +253,16 @@ public final class DefaultOverlayService extends AbstractService implements
 		return defaultSettings;
 	}
 
+	@SuppressWarnings("synthetic-access")
 	@Override
 	public void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
-		outlineOrFill(o, display, channels, DrawMode.OUTLINE);
+		draw(o, display, channels, new OverlayOutliner());
 	}
 
+	@SuppressWarnings("synthetic-access")
 	@Override
 	public void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
-		outlineOrFill(o, display, channels, DrawMode.FILL);
+		draw(o, display, channels, new OverlayFiller());
 	}
 
 	@Override
@@ -311,10 +313,90 @@ public final class DefaultOverlayService extends AbstractService implements
 	
 	// -- helpers --
 
-	private enum DrawMode {OUTLINE, FILL}
-	
+	private interface Drawer {
+		void draw(Overlay o, DrawingTool tool);
+	}
 
-	private void outlineOrFill(Overlay o, ImageDisplay display, ChannelCollection channels, DrawMode mode)
+	private static class OverlayOutliner implements Drawer {
+		@Override
+		public void draw(Overlay o, DrawingTool tool) {
+			final RegionOfInterest reg = o.getRegionOfInterest();
+			final int numDims = reg.numDimensions();
+			final double[] minD = new double[numDims];
+			final double[] maxD = new double[numDims];
+			reg.realMin(minD);
+			reg.realMax(maxD);
+			final long[] minL = new long[numDims];
+			final long[] maxL = new long[numDims];
+			for (int i = 0; i < numDims; i++) {
+				minL[i] = (long) Math.floor(minD[i]);
+				maxL[i] = (long) Math.ceil(maxD[i]);
+			}
+			// TODO - rather than a pointSet use an IterableInterval? Investigate.
+			final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
+			final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+			final PointSetIterator iter = pointSet.createIterator();
+			long[] pos;
+			while (iter.hasNext()) {
+				pos = iter.next();
+				accessor.setPosition(pos);
+				if (accessor.get().get())
+					if (isBorderPixel(accessor, pos, maxL[0], maxL[1]))
+						tool.drawPixel(pos[0], pos[1]);
+			}
+		}
+		
+		private boolean isBorderPixel(RealRandomAccess<BitType> accessor, long[] pos,
+			long maxX, long maxY)
+		{
+			if (pos[0] == 0) return true;
+			if (pos[0] == maxX) return true;
+			if (pos[1] == 0) return true;
+			if (pos[1] == maxY) return true;
+			accessor.setPosition(pos[0]-1,0);
+			if (!accessor.get().get()) return true;
+			accessor.setPosition(pos[0]+1,0);
+			if (!accessor.get().get()) return true;
+			accessor.setPosition(pos[0],0);
+			accessor.setPosition(pos[1]-1,1);
+			if (!accessor.get().get()) return true;
+			accessor.setPosition(pos[1]+1,1);
+			if (!accessor.get().get()) return true;
+			return false;
+		}
+
+	}
+
+	private static class OverlayFiller implements Drawer {
+		@Override
+		public void draw(Overlay o, DrawingTool tool) {
+			final RegionOfInterest reg = o.getRegionOfInterest();
+			final int numDims = reg.numDimensions();
+			final double[] minD = new double[numDims];
+			final double[] maxD = new double[numDims];
+			reg.realMin(minD);
+			reg.realMax(maxD);
+			final long[] minL = new long[numDims];
+			final long[] maxL = new long[numDims];
+			for (int i = 0; i < numDims; i++) {
+				minL[i] = (long) Math.floor(minD[i]);
+				maxL[i] = (long) Math.ceil(maxD[i]);
+			}
+			final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
+			final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+			final PointSetIterator iter = pointSet.createIterator();
+			long[] pos;
+			while (iter.hasNext()) {
+				pos = iter.next();
+				accessor.setPosition(pos);
+				if (accessor.get().get())
+					tool.drawPixel(pos[0], pos[1]);
+			}
+			
+		}
+	}
+
+	private void draw(Overlay o, ImageDisplay display, ChannelCollection channels, Drawer drawer)
 	{
 		final Dataset ds = getDataset(display);
 		if (ds == null) return;
@@ -327,88 +409,10 @@ public final class DefaultOverlayService extends AbstractService implements
 			fullPos[i] = pp[i-2];
 		tool.setPosition(fullPos);
 		tool.setChannels(channels);
-		if (mode == DrawMode.FILL)
-			fillOverlay(o, tool);
-		else if (mode == DrawMode.OUTLINE)
-			outlineOverlay(o, tool);
-		else
-			throw new IllegalArgumentException("unknown draw mode "+mode);
+		drawer.draw(o, tool);
 		ds.update();
 	}
 	
-	private void fillOverlay(Overlay o, DrawingTool tool) {
-		final RegionOfInterest reg = o.getRegionOfInterest();
-		final int numDims = reg.numDimensions();
-		final double[] minD = new double[numDims];
-		final double[] maxD = new double[numDims];
-		reg.realMin(minD);
-		reg.realMax(maxD);
-		final long[] minL = new long[numDims];
-		final long[] maxL = new long[numDims];
-		for (int i = 0; i < numDims; i++) {
-			minL[i] = (long) Math.floor(minD[i]);
-			maxL[i] = (long) Math.ceil(maxD[i]);
-		}
-		final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-		final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
-		final PointSetIterator iter = pointSet.createIterator();
-		long[] pos;
-		while (iter.hasNext()) {
-			pos = iter.next();
-			accessor.setPosition(pos);
-			if (accessor.get().get())
-				tool.drawPixel(pos[0], pos[1]);
-		}
-		
-	}
-
-	private void outlineOverlay(Overlay o, DrawingTool tool) {
-		final RegionOfInterest reg = o.getRegionOfInterest();
-		final int numDims = reg.numDimensions();
-		final double[] minD = new double[numDims];
-		final double[] maxD = new double[numDims];
-		reg.realMin(minD);
-		reg.realMax(maxD);
-		final long[] minL = new long[numDims];
-		final long[] maxL = new long[numDims];
-		for (int i = 0; i < numDims; i++) {
-			minL[i] = (long) Math.floor(minD[i]);
-			maxL[i] = (long) Math.ceil(maxD[i]);
-		}
-		// TODO - rather than a pointSet use an IterableInterval? Investigate.
-		final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-		final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
-		final PointSetIterator iter = pointSet.createIterator();
-		long[] pos;
-		while (iter.hasNext()) {
-			pos = iter.next();
-			accessor.setPosition(pos);
-			if (accessor.get().get())
-				if (isBorderPixel(accessor, pos, maxL[0], maxL[1]))
-					tool.drawPixel(pos[0], pos[1]);
-		}
-	}
-	
-	private boolean isBorderPixel(RealRandomAccess<BitType> accessor, long[] pos,
-		long maxX, long maxY)
-	{
-		if (pos[0] == 0) return true;
-		if (pos[0] == maxX) return true;
-		if (pos[1] == 0) return true;
-		if (pos[1] == maxY) return true;
-		accessor.setPosition(pos[0]-1,0);
-		if (!accessor.get().get()) return true;
-		accessor.setPosition(pos[0]+1,0);
-		if (!accessor.get().get()) return true;
-		accessor.setPosition(pos[0],0);
-		accessor.setPosition(pos[1]-1,1);
-		if (!accessor.get().get()) return true;
-		accessor.setPosition(pos[1]+1,1);
-		if (!accessor.get().get()) return true;
-		return false;
-	}
-	
-
 	private Dataset getDataset(ImageDisplay display) {
 		return imageDisplayService.getActiveDataset(display);
 	}
