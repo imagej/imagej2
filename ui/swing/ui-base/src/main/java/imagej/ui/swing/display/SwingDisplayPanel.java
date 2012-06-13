@@ -307,12 +307,15 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		}
 	}
 
+	// NB - BDZ streamlined to avoid extra display updates.
 	private void updateAxis(final AxisType axis) {
 		final int value = (int) display.getLongPosition(axis);
-		final JScrollBar scrollBar = axisSliders.get(axis);
-		if (scrollBar != null) scrollBar.setValue(value);
 		if (axis == Axes.CHANNEL) updateBorder(value);
-		getDisplay().update();
+		final JScrollBar scrollBar = axisSliders.get(axis);
+		if ((scrollBar != null) && (scrollBar.getValue() != value)) {
+			scrollBar.setValue(value);
+			getDisplay().update();
+		}
 	}
 
 	private double findFullyVisibleScale() {
