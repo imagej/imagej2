@@ -171,7 +171,12 @@ public class OverlayFigureView implements FigureView {
 				}
 				final ImageDisplay d = getDisplay();
 				if (d.isVisible(OverlayFigureView.this.overlayView)) {
-					d.remove(OverlayFigureView.this.getDataView());
+					DataView view = OverlayFigureView.this.getDataView();
+					// TODO : replace next two lines with call to OverlayService to
+					// removeOverlay(d,OverlayFigureView.this.getDataView().getData());
+					d.remove(view);
+					view.dispose();
+					// end TODO replace
 					dispose();
 					d.update();
 				}
