@@ -370,6 +370,7 @@ public class DefaultDatasetView extends AbstractDataView implements
 			return;
 		}
 		if (dataset == event.getObject()) {
+			if (event.isMetaDataOnly()) return;
 			projector.map();
 		}
 	}

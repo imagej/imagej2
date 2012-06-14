@@ -45,6 +45,6 @@ import imagej.data.Dataset;
 public class DatasetTypeChangedEvent extends DatasetUpdatedEvent {
 
 	public DatasetTypeChangedEvent(final Dataset dataset) {
-		super(dataset);
+		super(dataset, false);
 	}
 }

@@ -45,7 +45,7 @@ import imagej.data.Dataset;
 public class DatasetRGBChangedEvent extends DatasetUpdatedEvent {
 
 	public DatasetRGBChangedEvent(final Dataset dataset) {
-		super(dataset);
+		super(dataset, false);
 	}
 
 }

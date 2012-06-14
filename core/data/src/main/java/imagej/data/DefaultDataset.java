@@ -200,7 +200,10 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		if (newPlane == currPlane) return;
 		final ArrayDataAccess<?> array = createArrayDataAccess(newPlane);
 		setPlane(no, planarAccess, array);
-		update();
+		// FIXME this a a temp debugging hack to remove this. reenable if found!
+		// Note: hiding this did not eliminate any redraws. But it likely sped up
+		// the legacy layer translation.
+		update(false);
 	}
 
 	@Override
@@ -314,8 +317,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void update() {
-		setDirty(true);
-		publish(new DatasetUpdatedEvent(this));
+		update(false);
 	}
 
 	@Override
@@ -350,8 +352,9 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setAxis(final AxisType axis, final int d) {
+		if (imgPlus.axis(d).equals(axis)) return;
 		imgPlus.setAxis(axis, d);
-		update();
+		update(true);
 	}
 
 	@Override
@@ -368,7 +371,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void setCalibration(final double cal, final int d) {
 		if (imgPlus.calibration(d) == cal) return;
 		imgPlus.setCalibration(cal, d);
-		update();
+		update(true);
 	}
 
 	// -- EuclideanSpace methods --
@@ -463,7 +466,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void setName(final String name) {
 		if (imgPlus.getName().equals(name)) return;
 		imgPlus.setName(name);
-		update();
+		update(true);
 	}
 
 	// -- Sourced methods --
@@ -531,7 +534,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void setColorTable(final ColorTable8 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 		// TODO - ???
-		// update();
+		// update(true);
 	}
 
 	@Override
@@ -543,14 +546,14 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void setColorTable(final ColorTable16 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 		// TODO - ???
-		// update();
+		// update(true);
 	}
 
 	@Override
 	public void initializeColorTables(final int count) {
 		imgPlus.initializeColorTables(count);
 		// TODO - ???
-		// update();
+		// update(true);
 	}
 
 	@Override
@@ -698,4 +701,8 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		return new ImgPlus<T>(newImg, getName(), axes, calib);
 	}
 
+	private void update(boolean metadataOnly) {
+		setDirty(true);
+		publish(new DatasetUpdatedEvent(this, metadataOnly));
+	}
 }

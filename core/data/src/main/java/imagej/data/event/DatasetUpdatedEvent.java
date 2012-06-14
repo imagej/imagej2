@@ -47,10 +47,12 @@ import imagej.data.Dataset;
 public class DatasetUpdatedEvent extends DataUpdatedEvent {
 
 	private final Dataset dataset;
+	private final boolean metadataOnly;
 
-	public DatasetUpdatedEvent(final Dataset dataset) {
+	public DatasetUpdatedEvent(final Dataset dataset, boolean metadataOnly) {
 		super(dataset);
 		this.dataset = dataset;
+		this.metadataOnly = metadataOnly;
 	}
 
 	// -- ObjectEvent methods --
@@ -60,4 +62,7 @@ public class DatasetUpdatedEvent extends DataUpdatedEvent {
 		return dataset;
 	}
 
+	public boolean isMetaDataOnly() {
+		return metadataOnly;
+	}
 }
