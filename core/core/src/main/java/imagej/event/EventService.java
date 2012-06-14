@@ -48,7 +48,7 @@ import java.util.List;
  */
 public interface EventService extends IService {
 
-	/** TODO */
+	/** Publishes the given event, reporting it to all subscribers. */
 	<E extends ImageJEvent> void publish(final E e);
 
 	/**
@@ -64,10 +64,16 @@ public interface EventService extends IService {
 	 */
 	List<EventSubscriber<?>> subscribe(final Object o);
 
-	/** TODO */
+	/**
+	 * Removes all the given subscribers; they will no longer be notified when
+	 * events are published.
+	 */
 	void unsubscribe(final Collection<EventSubscriber<?>> subscribers);
 
-	/** TODO */
+	/**
+	 * Gets a list of all subscribers to the given event class (and subclasses
+	 * thereof).
+	 */
 	<E extends ImageJEvent> List<EventSubscriber<E>> getSubscribers(
 		final Class<E> c);
 
