@@ -172,6 +172,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 				createSliders();
 				updateBorder(0);
 				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
+				sliderPanel.invalidate(); // BDZ added: helps fix bug #1219
 				doInitialSizing();
 				displayViewer.getCanvas().rebuild();
 			}

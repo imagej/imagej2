@@ -138,6 +138,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	protected void rebuild() {
+		
+		super.rebuild(); // added by BDZ. helps fix bug #1219
+		
 		// combine constituent views into a single aggregate spatial interval
 		combinedInterval.clear();
 		for (final DataView view : this) {
@@ -155,7 +158,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 		// remove obsolete axes
 		for (final AxisType axis : pos.keySet()) {
-			if (getAxisIndex(axis) < 0) pos.remove(axis);
+			if (getAxisIndex(axis) < 0) {
+				pos.remove(axis);
+			}
 		}
 
 		// initialize position of new axes
