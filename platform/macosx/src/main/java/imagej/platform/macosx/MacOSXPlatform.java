@@ -116,9 +116,9 @@ public class MacOSXPlatform extends AbstractPlatform {
 	}
 
 	@Override
-	public void registerAppMenuContainer(Object menuContainer) {
-		if (menuContainer instanceof JMenuBar) {
-			Application.getApplication().setDefaultMenuBar((JMenuBar)menuContainer);
+	public void registerAppMenus(Object menus) {
+		if (menus instanceof JMenuBar) {
+			Application.getApplication().setDefaultMenuBar((JMenuBar)menus);
 		}
 	}
 

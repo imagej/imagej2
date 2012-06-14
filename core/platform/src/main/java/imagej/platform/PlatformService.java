@@ -73,5 +73,6 @@ public interface PlatformService extends IService {
 	 * Lets each platform know a menu bar has come into existence.
 	 * Some platforms care about this.
 	 */
-	 void registerAppMenuContainer(Object menuContainer);
+	void registerAppMenus(final Object menus);
+
 }

@@ -152,9 +152,9 @@ public final class DefaultPlatformService extends AbstractService implements
 	}
 
 	@Override
-	public void registerAppMenuContainer(Object menuContainer) {
+	public void registerAppMenus(final Object menus) {
 		for (final Platform platform : getTargetPlatforms()) {
-			platform.registerAppMenuContainer(menuContainer);
+			platform.registerAppMenus(menus);
 		}
 	}
 
@@ -162,7 +162,7 @@ public final class DefaultPlatformService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(final AppMenusCreatedEvent event) {
-		registerAppMenuContainer(event.getMenus());
+		registerAppMenus(event.getMenus());
 	}
 
 	// -- Helper methods --
