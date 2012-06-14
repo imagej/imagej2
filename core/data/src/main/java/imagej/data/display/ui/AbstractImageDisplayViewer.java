@@ -44,7 +44,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.ZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
-import imagej.data.event.DatasetTypeChangedEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.window.WinActivatedEvent;
@@ -171,6 +171,7 @@ public abstract class AbstractImageDisplayViewer extends
 		return UnitUtils.getAbbreviatedByteLabel(byteCount);
 	}
 
+	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
 
 		if (getZoomScaleOption().equals(ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE)) {
@@ -298,8 +299,11 @@ public abstract class AbstractImageDisplayViewer extends
 		if (isMyDataset(event.getObject())) updateLabel();
 	}
 
+	// NB - using less restrictive event type here. This captures both dataset
+	// data type changes and dataset axis type changes. each affect label.
+	
 	@EventHandler
-	protected void onEvent(final DatasetTypeChangedEvent event) {
+	protected void onEvent(final DatasetUpdatedEvent event) {
 		if (isMyDataset(event.getObject())) updateLabel();
 	}
 
