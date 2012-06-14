@@ -351,10 +351,27 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
+	public void setAxes(final AxisType[] axes) {
+		if (axes.length != numDimensions())
+			throw new IllegalArgumentException(
+				"number of axes must match dimensionality of dataset");
+		boolean changes = false;
+		for (int i = 0; i < axes.length; i++) {
+			AxisType axis = axes[i];
+			if (!imgPlus.axis(i).equals(axis)) {
+				changes = true;
+				imgPlus.setAxis(axis, i);
+			}
+		}
+		if (changes) rebuild();
+	}
+
+	@Override
 	public void setAxis(final AxisType axis, final int d) {
 		if (imgPlus.axis(d).equals(axis)) return;
 		imgPlus.setAxis(axis, d);
-		update(true);
+		update(true); // TODO : false instead of true?
+		// Maybe we need more levels of discrimination with update(bool)
 	}
 
 	@Override

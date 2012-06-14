@@ -36,6 +36,7 @@
 package imagej.data;
 
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.AxisType;
 import net.imglib2.meta.Metadata;
 import net.imglib2.type.numeric.RealType;
 
@@ -140,4 +141,7 @@ public interface Dataset extends Data, Metadata {
 	void copyDataFrom(final Dataset other);
 
 	double getBytesOfInfo();
+	
+	// TODO - move into Imglib
+	void setAxes(AxisType[] axes);
 }

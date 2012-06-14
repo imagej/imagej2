@@ -63,17 +63,18 @@ import net.imglib2.type.numeric.RealType;
 // TODO: add callbacks as appropriate to keep input valid
 
 /**
- * Changes the internal ImgPlus of a Dataset so that its data values stay the
- * same but the order of the axes is changed.
+ * Changes the storage order of the pixels of a Dataset. One can change the
+ * order in many ways (such as from [x,y,c,z,t] to [x,y,t,c,z]). The pixel data
+ * and axis labels are rearranged to match the new axis order.
  * 
  * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Axes...") },
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Reorder Data...") },
 	headless = true, initializer = "initAxes")
-public class ReorderAxes extends DynamicPlugin {
+public class ReorderData extends DynamicPlugin {
 
 	// -- Parameters --
 
@@ -98,7 +99,7 @@ public class ReorderAxes extends DynamicPlugin {
 
 	// -- Runnable methods --
 
-	/** Runs the plugin and reorders axes as specified by user. */
+	/** Runs the plugin and reorders data as specified by user. */
 	@Override
 	public void run() {
 		if (dataset == null) return;
@@ -303,9 +304,9 @@ public class ReorderAxes extends DynamicPlugin {
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
 
 		private final long[] inputPos =
-			new long[ReorderAxes.this.permutationAxisIndices.length];
+			new long[ReorderData.this.permutationAxisIndices.length];
 		private final long[] outputPos =
-			new long[ReorderAxes.this.permutationAxisIndices.length];
+			new long[ReorderData.this.permutationAxisIndices.length];
 
 		@Override
 		public boolean isValidSourcePlane(final long i) {
