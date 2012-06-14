@@ -52,8 +52,8 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 // TODO
-// - can reorder X & Y out of 1st two positions. This could be useful in future
-//     but might need to block right now.
+// - code elsewhere assumes X and Y always present. this plugin can break that
+//   assumption. This could be useful in future but might need to block now.
 
 // TODO: add callbacks as appropriate to keep input valid
 
