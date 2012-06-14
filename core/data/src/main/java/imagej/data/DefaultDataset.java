@@ -183,29 +183,36 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void setPlane(final int no, final Object newPlane) {
+	public boolean setPlaneSilently(final int planeNum, final Object newPlane) {
 		final Img<? extends RealType<?>> img = imgPlus.getImg();
 		if (!(img instanceof PlanarAccess)) {
 			// cannot set by reference
 			Log.error("Cannot set plane for non-planar image");
-			return;
+			return false;
 		}
 		// TODO - copy the plane if it cannot be set by reference
 		@SuppressWarnings("rawtypes")
 		final PlanarAccess planarAccess = (PlanarAccess) img;
 		final ArrayDataAccess<?> arrayAccess =
-			(ArrayDataAccess<?>) planarAccess.getPlane(no);
+			(ArrayDataAccess<?>) planarAccess.getPlane(planeNum);
 		final Object currPlane = arrayAccess.getCurrentStorageArray();
-		if (newPlane == currPlane) return;
+		if (newPlane == currPlane) return false;
 		final ArrayDataAccess<?> array = createArrayDataAccess(newPlane);
-		setPlane(no, planarAccess, array);
-		// FIXME this a a temp debugging hack to remove this. reenable if found!
-		// Note: hiding this did not eliminate any redraws. But it likely sped up
-		// the legacy layer translation.
-		update(false);
+		planarAccess.setPlane(planeNum, array);
+		return true;
 	}
 
+	@Override
+	public boolean setPlane(final int planeNum, final Object newPlane) {
+		if (setPlaneSilently(planeNum, newPlane)) {
+			update(false);
+			return true;
+		}
+		return false;
+	}
+		
 	@Override
 	public RealType<?> getType() {
 		return imgPlus.firstElement();
@@ -615,13 +622,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 			return new DoubleArray((double[]) newPlane);
 		}
 		return null;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void setPlane(final int no, final PlanarAccess planarAccess,
-		final ArrayDataAccess<?> array)
-	{
-		planarAccess.setPlane(no, array);
 	}
 
 	// NB - assumes the two images are of the exact same dimensions

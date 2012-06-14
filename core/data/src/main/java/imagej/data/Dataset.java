@@ -83,7 +83,10 @@ public interface Dataset extends Data, Metadata {
 	Object getPlane(final int planeNumber, boolean copyOK);
 
 	/** TODO */
-	void setPlane(final int no, final Object newPlane);
+	boolean setPlane(final int planeNum, final Object newPlane);
+
+	/** TODO */
+	boolean setPlaneSilently(final int planeNum, final Object newPlane);
 
 	/** TODO */
 	RealType<?> getType();

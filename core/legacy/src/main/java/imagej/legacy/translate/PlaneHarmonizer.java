@@ -74,9 +74,9 @@ public class PlaneHarmonizer implements DataHarmonizer {
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
-
+		boolean changes = false;
 		if (imp.getStackSize() == 1) {
-			ds.setPlane(0, imp.getProcessor().getPixels());
+			changes |= ds.setPlaneSilently(0, imp.getProcessor().getPixels());
 		}
 		else {
 			int stackPosition = 1;
@@ -92,12 +92,12 @@ public class PlaneHarmonizer implements DataHarmonizer {
 								(stackPosition - 1));
 						}
 						final int planeNum = (int) planePos.getIndex();
-						ds.setPlane(planeNum, plane);
+						changes |= ds.setPlaneSilently(planeNum, plane);
 					}
 				}
 			}
 		}
-		// no need to call ds.update() - setPlane() tracks it
+		if (changes) ds.update();
 	}
 
 	/**
