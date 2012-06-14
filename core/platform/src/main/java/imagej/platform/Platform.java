@@ -72,5 +72,14 @@ public interface Platform extends IPlugin {
 
 	void open(URL url) throws IOException;
 
-	void registerAppMenus(Object menus);
+	/**
+	 * Informs the platform of a UI's newly created application menu structure.
+	 * The platform may choose to do something platform-specific with the menus.
+	 * 
+	 * @param menus The UI's newly created menu structure
+	 * @return true iff the menus should not be added to the UI as normal because
+	 *         the platform did something platform-specific with them instead.
+	 */
+	boolean registerAppMenus(Object menus);
+
 }

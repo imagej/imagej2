@@ -86,7 +86,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		if (SCREEN_MENU) System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		// remove app plugins from menu structure
-		removeAppPluginsFromMenu();
+		if (SCREEN_MENU) removeAppPluginsFromMenu();
 
 		// translate Mac OS X application events into ImageJ events
 		final EventService eventService = platformService.getEventService();
@@ -99,13 +99,6 @@ public class MacOSXPlatform extends AbstractPlatform {
 			// - on MacOSX Tiger without recent Java Updates
 			// - on earlier MacOSX versions
 		}
-
-		/* NOTE BDZ removed 6-11-12. We no longer create and destroy menubars on
-		 * Mac OS X. Rather we use a default menu bar.
-		 *
-		// duplicate menu bar across all window frames
-		if (SCREEN_MENU) platformService.setMenuBarDuplicated(true);
-		*/
 	}
 
 	@Override
@@ -116,10 +109,14 @@ public class MacOSXPlatform extends AbstractPlatform {
 	}
 
 	@Override
-	public void registerAppMenus(Object menus) {
-		if (menus instanceof JMenuBar) {
-			Application.getApplication().setDefaultMenuBar((JMenuBar)menus);
+	public boolean registerAppMenus(final Object menus) {
+		if (SCREEN_MENU && menus instanceof JMenuBar) {
+			final JMenuBar menuBar = (JMenuBar) menus;
+			// TODO: Test whether this works on older versions of Mac OS X.
+			Application.getApplication().setDefaultMenuBar(menuBar);
+			return true;
 		}
+		return false;
 	}
 
 // -- Helper methods --

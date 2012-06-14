@@ -70,9 +70,15 @@ public interface PlatformService extends IService {
 	boolean exec(final String... args) throws IOException;
 
 	/**
-	 * Lets each platform know a menu bar has come into existence.
-	 * Some platforms care about this.
+	 * Informs the active platform handlers of a UI's newly created application
+	 * menu structure. Each active platform handler may choose to do something
+	 * platform-specific with the menus.
+	 * 
+	 * @param menus The UI's newly created menu structure
+	 * @return true iff the menus should not be added to the UI as normal because
+	 *         a platform handler did something platform-specific with them
+	 *         instead.
 	 */
-	void registerAppMenus(final Object menus);
+	boolean registerAppMenus(final Object menus);
 
 }

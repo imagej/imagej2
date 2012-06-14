@@ -77,7 +77,8 @@ public abstract class AbstractPlatform implements Platform {
 	}
 
 	@Override
-	public void registerAppMenus(Object menus) {
-		/* do nothing */
+	public boolean registerAppMenus(final Object menus) {
+		return false;
 	}
+
 }

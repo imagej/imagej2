@@ -152,10 +152,11 @@ public final class DefaultPlatformService extends AbstractService implements
 	}
 
 	@Override
-	public void registerAppMenus(final Object menus) {
+	public boolean registerAppMenus(final Object menus) {
 		for (final Platform platform : getTargetPlatforms()) {
-			platform.registerAppMenus(menus);
+			if (platform.registerAppMenus(menus)) return true;
 		}
+		return false;
 	}
 
 	// -- Event handlers --

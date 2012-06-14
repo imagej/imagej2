@@ -127,7 +127,13 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final MenuService menuService = getUIService().getMenuService();
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
-		getEventService().publish(new AppMenusCreatedEvent(menuBar));
+		final AppMenusCreatedEvent appMenusCreatedEvent =
+			new AppMenusCreatedEvent(menuBar);
+		getEventService().publish(appMenusCreatedEvent);
+		if (appMenusCreatedEvent.isConsumed()) {
+			// something else (e.g., MacOSXPlatform) handled the menus
+			return null;
+		}
 		return menuBar;
 	}
 
@@ -157,9 +163,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 	@Override
 	protected void createUI() {
-		createMenus();
+		final JMenuBar menuBar = createMenus();
 
 		appFrame = new SwingApplicationFrame("ImageJ");
+		if (menuBar != null) appFrame.setJMenuBar(menuBar);
+
 		toolBar = new SwingToolBar(getUIService());
 		statusBar = new SwingStatusBar(getUIService());
 		systemClipboard = new AWTClipboard();
