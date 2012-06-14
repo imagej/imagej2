@@ -20,7 +20,6 @@
 	<modules>
 		<module>core</module>
 		<module>data</module>
-		<module>ext</module>
 		<module>io</module>
 		<module>legacy</module>
 		<module>options</module>
