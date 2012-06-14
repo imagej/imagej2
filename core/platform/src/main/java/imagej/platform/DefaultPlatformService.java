@@ -163,7 +163,7 @@ public final class DefaultPlatformService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(final AppMenusCreatedEvent event) {
-		registerAppMenus(event.getMenus());
+		if (registerAppMenus(event.getMenus())) event.consume();
 	}
 
 	// -- Helper methods --
