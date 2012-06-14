@@ -119,7 +119,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		return false;
 	}
 
-// -- Helper methods --
+	// -- Helper methods --
 
 	private void removeAppPluginsFromMenu() {
 		final EventService eventService = platformService.getEventService();
