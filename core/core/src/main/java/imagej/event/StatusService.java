@@ -70,8 +70,8 @@ public interface StatusService extends IService {
 
 	/** Clears ImageJ's status message. */
 	void clearStatus();
-	
+
 	/** retrieve the currently displayed status string */
-	String getCurrentStatusString() ;
+	String getCurrentStatusString();
 
 }
