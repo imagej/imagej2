@@ -147,8 +147,10 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 		final boolean ok = preProcess();
 		if (!ok) {
 			// execution canceled
+			if (ss != null) ss.showStatus("Canceling command: " + title);
 			module.cancel();
 			if (es != null) es.publish(new ModuleCanceledEvent(module));
+			if (ss != null) ss.showStatus("Command canceled: " + title);
 			return;
 		}
 		if (es != null) es.publish(new ModuleExecutingEvent(module));
