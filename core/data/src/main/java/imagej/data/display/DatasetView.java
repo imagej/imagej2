@@ -63,17 +63,17 @@ public interface DatasetView extends DataView {
 
 	List<RealLUTConverter<? extends RealType<?>>> getConverters();
 
-	void setComposite(final boolean composite);
+	void setComposite(boolean composite);
 
 	List<ColorTable8> getColorTables();
 
-	void setColorTable(final ColorTable8 colorTable, final int channel);
+	void setColorTable(ColorTable8 colorTable, int channel);
 
-	void resetColorTables(final boolean grayscale);
+	void resetColorTables(boolean grayscale);
 
 	ColorMode getColorMode();
 
-	void setColorMode(final ColorMode colorMode);
+	void setColorMode(ColorMode colorMode);
 
 	@Override
 	Dataset getData();

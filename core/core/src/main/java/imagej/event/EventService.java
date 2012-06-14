@@ -49,7 +49,7 @@ import java.util.List;
 public interface EventService extends IService {
 
 	/** Publishes the given event, reporting it to all subscribers. */
-	<E extends ImageJEvent> void publish(final E e);
+	<E extends ImageJEvent> void publish(E e);
 
 	/**
 	 * Subscribes all of the given object's @{@link EventHandler} annotated
@@ -62,19 +62,18 @@ public interface EventService extends IService {
 	 *         to fall out of scope or they will be garbage collected (in which
 	 *         case events will not be delivered to them!).
 	 */
-	List<EventSubscriber<?>> subscribe(final Object o);
+	List<EventSubscriber<?>> subscribe(Object o);
 
 	/**
 	 * Removes all the given subscribers; they will no longer be notified when
 	 * events are published.
 	 */
-	void unsubscribe(final Collection<EventSubscriber<?>> subscribers);
+	void unsubscribe(Collection<EventSubscriber<?>> subscribers);
 
 	/**
 	 * Gets a list of all subscribers to the given event class (and subclasses
 	 * thereof).
 	 */
-	<E extends ImageJEvent> List<EventSubscriber<E>> getSubscribers(
-		final Class<E> c);
+	<E extends ImageJEvent> List<EventSubscriber<E>> getSubscribers(Class<E> c);
 
 }

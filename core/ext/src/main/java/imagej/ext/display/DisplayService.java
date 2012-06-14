@@ -74,22 +74,21 @@ public interface DisplayService extends IService {
 	/**
 	 * Gets the display plugin of the given class, or null if none.
 	 */
-	<D extends Display<?>> PluginInfo<D> getDisplayPlugin(
-		final Class<D> pluginClass);
+	<D extends Display<?>> PluginInfo<D> getDisplayPlugin(Class<D> pluginClass);
 
 	/**
 	 * Gets the display plugin of the given class name, or null if none.
 	 * 
 	 * @throws ClassCastException if the plugin found is not a display plugin.
 	 */
-	PluginInfo<Display<?>> getDisplayPlugin(final String className);
+	PluginInfo<Display<?>> getDisplayPlugin(String className);
 
 	/**
 	 * Gets the list of display plugins of the given type (e.g.,
 	 * <code>ImageDisplay.class</code>).
 	 */
 	<D extends Display<?>> List<PluginInfo<D>> getDisplayPluginsOfType(
-		final Class<D> type);
+		Class<D> type);
 
 	/** Gets a list of all available displays. */
 	List<Display<?>> getDisplays();
@@ -98,13 +97,13 @@ public interface DisplayService extends IService {
 	 * Gets a list of all available displays of the given type (e.g.,
 	 * <code>ImageDisplay.class</code>).
 	 */
-	<D extends Display<?>> List<D> getDisplaysOfType(final Class<D> type);
+	<D extends Display<?>> List<D> getDisplaysOfType(Class<D> type);
 
 	/** Gets a display by its name. */
-	Display<?> getDisplay(final String name);
+	Display<?> getDisplay(String name);
 
 	/** Gets a list of displays currently visualizing the given object. */
-	List<Display<?>> getDisplays(final Object o);
+	List<Display<?>> getDisplays(Object o);
 
 	/**
 	 * Checks whether the given name is already taken by an existing display.
@@ -112,7 +111,7 @@ public interface DisplayService extends IService {
 	 * @param name The name to check.
 	 * @return true if the name is available, false if already taken.
 	 */
-	boolean isUniqueName(final String name);
+	boolean isUniqueName(String name);
 
 	/**
 	 * Creates a display for the given object.
@@ -128,6 +127,6 @@ public interface DisplayService extends IService {
 	 *         ImageDisplay supports adding Datasets directly, taking care of
 	 *         wrapping them in a DataView as needed.
 	 */
-	Display<?> createDisplay(final String name, final Object o);
+	Display<?> createDisplay(String name, Object o);
 
 }

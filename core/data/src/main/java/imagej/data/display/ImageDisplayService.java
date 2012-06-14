@@ -73,13 +73,13 @@ public interface ImageDisplayService extends IService {
 	/**
 	 * Gets the active {@link Dataset}, if any, of the given {@link ImageDisplay}.
 	 */
-	Dataset getActiveDataset(final ImageDisplay display);
+	Dataset getActiveDataset(ImageDisplay display);
 
 	/**
 	 * Gets the active {@link DatasetView}, if any, of the given
 	 * {@link ImageDisplay}.
 	 */
-	DatasetView getActiveDatasetView(final ImageDisplay display);
+	DatasetView getActiveDatasetView(ImageDisplay display);
 
 	/** Gets a list of all available {@link ImageDisplay}s. */
 	List<ImageDisplay> getImageDisplays();

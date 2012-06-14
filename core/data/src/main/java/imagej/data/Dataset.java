@@ -64,14 +64,14 @@ public interface Dataset extends Data, Metadata {
 	<T extends RealType<T>> ImgPlus<T> typedImg(T t);
 
 	/** TODO */
-	void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus);
+	void setImgPlus(ImgPlus<? extends RealType<?>> imgPlus);
 
 	/**
 	 * gets a plane of data from the Dataset. The representation of the plane is
 	 * determined by the native ImgLib container. This method will create a copy
 	 * of the original data if it cannot obtain a direct reference.
 	 */
-	Object getPlane(final int planeNumber);
+	Object getPlane(int planeNumber);
 
 	/**
 	 * gets a plane of data from the Dataset. The representation of the plane is
@@ -80,7 +80,7 @@ public interface Dataset extends Data, Metadata {
 	 * the input copyOK boolean. If copyOK is true a copy of the data is created
 	 * and returned. If copyOK is false null is returned.
 	 */
-	Object getPlane(final int planeNumber, boolean copyOK);
+	Object getPlane(int planeNumber, boolean copyOK);
 
 	/**
 	 * sets a plane of data within the dataset. generates an update event if the
@@ -88,7 +88,7 @@ public interface Dataset extends Data, Metadata {
 	 * the given plane number. returns true if the reference was changed or false
 	 * if it was not. This method only works with PlanarAccess backed Img's.
 	 */
-	boolean setPlane(final int planeNum, final Object newPlane);
+	boolean setPlane(int planeNum, Object newPlane);
 
 	/**
 	 * sets a plane of data within the dataset. NEVER generates update events. if
@@ -96,7 +96,7 @@ public interface Dataset extends Data, Metadata {
 	 * with the given plane number returns true else false. This method only works
 	 * with PlanarAccess backed Img's.
 	 */
-	boolean setPlaneSilently(final int planeNum, final Object newPlane);
+	boolean setPlaneSilently(int planeNum, Object newPlane);
 
 	/** TODO */
 	RealType<?> getType();
@@ -120,7 +120,7 @@ public interface Dataset extends Data, Metadata {
 	Dataset duplicateBlank();
 
 	/** Copies the dataset's pixels into the given target dataset. */
-	void copyInto(final Dataset target);
+	void copyInto(Dataset target);
 
 	// TODO - eliminate legacy layer specific functionality in favor of a
 	// generic properties system (setProperty(String, Object),
@@ -131,7 +131,7 @@ public interface Dataset extends Data, Metadata {
 	 * For use in legacy layer only, this flag allows the various legacy layer
 	 * image translators to support color images correctly.
 	 */
-	void setRGBMerged(final boolean rgbMerged);
+	void setRGBMerged(boolean rgbMerged);
 
 	/**
 	 * For use in legacy layer only, this flag allows the various legacy layer
@@ -151,10 +151,10 @@ public interface Dataset extends Data, Metadata {
 	 * representations to copy data from other Datasets as needed to get around
 	 * the fact that its data is not being shared by reference.
 	 */
-	void copyDataFrom(final Dataset other);
+	void copyDataFrom(Dataset other);
 
 	double getBytesOfInfo();
-	
+
 	// TODO - move into Imglib
 	void setAxes(AxisType[] axes);
 }

@@ -53,7 +53,7 @@ public interface ToolService extends IService {
 
 	PluginService getPluginService();
 
-	Tool getTool(final String name);
+	Tool getTool(String name);
 
 	/**
 	 * Get a tool given its class.
@@ -62,7 +62,7 @@ public interface ToolService extends IService {
 	 * @param toolClass the class of the tool to fetch
 	 * @return the tool, or null if no such tool
 	 */
-	<T extends Tool> T getTool(final Class<T> toolClass);
+	<T extends Tool> T getTool(Class<T> toolClass);
 
 	List<Tool> getTools();
 
@@ -70,12 +70,12 @@ public interface ToolService extends IService {
 
 	Tool getActiveTool();
 
-	void setActiveTool(final Tool activeTool);
+	void setActiveTool(Tool activeTool);
 
 	/**
 	 * Returns true if the two specified tools should have a separator between
 	 * them on the tool bar.
 	 */
-	boolean isSeparatorNeeded(final Tool tool1, final Tool tool2);
+	boolean isSeparatorNeeded(Tool tool1, Tool tool2);
 
 }

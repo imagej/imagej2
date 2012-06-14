@@ -46,10 +46,11 @@ import net.imglib2.meta.AxisType;
  */
 public interface DisplayCreator {
 
-	ImageDisplay createDisplay(final ImagePlus imp);
+	ImageDisplay createDisplay(ImagePlus imp);
 
-	ImageDisplay createDisplay(final ImagePlus imp, boolean isBinaryImp);
+	ImageDisplay createDisplay(ImagePlus imp, boolean isBinaryImp);
 
-	ImageDisplay createDisplay(final ImagePlus imp, AxisType[] preferredOrder, boolean isBinaryImp);
+	ImageDisplay createDisplay(ImagePlus imp, AxisType[] preferredOrder,
+		boolean isBinaryImp);
 
 }

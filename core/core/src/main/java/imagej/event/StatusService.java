@@ -45,13 +45,13 @@ import imagej.service.IService;
 public interface StatusService extends IService {
 
 	/** Updates ImageJ's progress bar. */
-	void showProgress(final int value, final int maximum);
+	void showProgress(int value, int maximum);
 
 	/** Updates ImageJ's status message. */
-	void showStatus(final String message);
+	void showStatus(String message);
 
 	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(final int progress, final int maximum, final String message);
+	void showStatus(int progress, int maximum, String message);
 
 	/**
 	 * Updates ImageJ's status message and progress bar, optionally flagging the
@@ -62,11 +62,10 @@ public interface StatusService extends IService {
 	 * @param message New status message
 	 * @param warn Whether or not this notification constitutes a warning
 	 */
-	void showStatus(final int progress, final int maximum, final String message,
-		final boolean warn);
+	void showStatus(int progress, int maximum, String message, boolean warn);
 
 	/** Issues a warning message. */
-	void warn(final String message);
+	void warn(String message);
 
 	/** Clears ImageJ's status message. */
 	void clearStatus();

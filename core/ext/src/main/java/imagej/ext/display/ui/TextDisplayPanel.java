@@ -35,7 +35,6 @@
 
 package imagej.ext.display.ui;
 
-
 /**
  * This is a panel that can go inside a display window.
  * It displays text.
@@ -44,6 +43,9 @@ package imagej.ext.display.ui;
  * @author Lee Kamentsky
  */
 public interface TextDisplayPanel extends DisplayPanel {
-	public void append(final String text);
+
+	public void append(String text);
+
 	public void clear();
+
 }

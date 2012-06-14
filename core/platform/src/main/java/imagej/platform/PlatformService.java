@@ -64,10 +64,10 @@ public interface PlatformService extends IService {
 	 * external web browser instance, but the behavior is ultimately defined the
 	 * available platform handler implementations.
 	 */
-	void open(final URL url) throws IOException;
+	void open(URL url) throws IOException;
 
 	/** Executes a native program and waits for it to return. */
-	boolean exec(final String... args) throws IOException;
+	boolean exec(String... args) throws IOException;
 
 	/**
 	 * Informs the active platform handlers of a UI's newly created application
@@ -79,6 +79,6 @@ public interface PlatformService extends IService {
 	 *         a platform handler did something platform-specific with them
 	 *         instead.
 	 */
-	boolean registerAppMenus(final Object menus);
+	boolean registerAppMenus(Object menus);
 
 }

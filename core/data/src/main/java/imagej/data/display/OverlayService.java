@@ -70,10 +70,10 @@ public interface OverlayService extends IService {
 	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
 	 * A shortcut for getOverlays(display,false).
 	 */
-	List<Overlay> getOverlays(final ImageDisplay display);
+	List<Overlay> getOverlays(ImageDisplay display);
 
 	/** Adds the list of {@link Overlay}s to the given {@link ImageDisplay}. */
-	void addOverlays(final ImageDisplay display, final List<Overlay> overlays);
+	void addOverlays(ImageDisplay display, List<Overlay> overlays);
 
 	/**
 	 * Removes an {@link Overlay} from the given {@link ImageDisplay}.
@@ -82,14 +82,14 @@ public interface OverlayService extends IService {
 	 *          removed
 	 * @param overlay the {@link Overlay} to remove
 	 */
-	void removeOverlay(final ImageDisplay display, final Overlay overlay);
+	void removeOverlay(ImageDisplay display, Overlay overlay);
 
 	/**
 	 * Removes an {@link Overlay} from all {@link ImageDisplay}s.
 	 * 
 	 * @param overlay the {@link Overlay} to remove
 	 */
-	void removeOverlay(final Overlay overlay);
+	void removeOverlay(Overlay overlay);
 
 	/**
 	 * Gets the bounding box for the selected overlays in the given
@@ -99,7 +99,7 @@ public interface OverlayService extends IService {
 	 *          be computed
 	 * @return the smallest bounding box encompassing all selected overlays
 	 */
-	RealRect getSelectionBounds(final ImageDisplay display);
+	RealRect getSelectionBounds(ImageDisplay display);
 
 	OverlaySettings getDefaultSettings();
 

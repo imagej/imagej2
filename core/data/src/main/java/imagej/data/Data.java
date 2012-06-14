@@ -49,7 +49,7 @@ import imagej.data.overlay.Overlay;
 public interface Data extends CalibratedInterval, IContext {
 
 	/** Sets the application context to which this data object belongs. */
-	void setContext(final ImageJ context);
+	void setContext(ImageJ context);
 
 	/**
 	 * Informs interested parties that the data object has undergone a

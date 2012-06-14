@@ -53,12 +53,12 @@ public interface ObjectService extends IService {
 	ObjectIndex<Object> getIndex();
 
 	/** Gets a list of all registered objects compatible with the given type. */
-	<T> List<T> getObjects(final Class<T> type);
+	<T> List<T> getObjects(Class<T> type);
 
 	/** Registers an object with the object service. */
-	void addObject(final Object obj);
+	void addObject(Object obj);
 
 	/** Deregisters an object with the object service. */
-	void removeObject(final Object obj);
+	void removeObject(Object obj);
 
 }

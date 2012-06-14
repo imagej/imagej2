@@ -65,7 +65,7 @@ public interface DatasetService extends IService {
 	/**
 	 * Gets a list of {@link Dataset}s linked to the given {@link ImageDisplay}.
 	 */
-	List<Dataset> getDatasets(final ImageDisplay display);
+	List<Dataset> getDatasets(ImageDisplay display);
 
 	/**
 	 * Creates a new dataset.
@@ -81,8 +81,8 @@ public interface DatasetService extends IService {
 	 * @throws IllegalArgumentException If the combination of bitsPerPixel, signed
 	 *           and floating parameters do not form a valid data type.
 	 */
-	Dataset create(final long[] dims, final String name, final AxisType[] axes,
-		final int bitsPerPixel, final boolean signed, final boolean floating);
+	Dataset create(long[] dims, String name, AxisType[] axes, int bitsPerPixel,
+		boolean signed, boolean floating);
 
 	/**
 	 * Creates a new dataset.
@@ -94,8 +94,8 @@ public interface DatasetService extends IService {
 	 * @param axes The dataset's dimensional axis labels.
 	 * @return The newly created dataset.
 	 */
-	<T extends RealType<T> & NativeType<T>> Dataset create(final T type,
-		final long[] dims, final String name, final AxisType[] axes);
+	<T extends RealType<T> & NativeType<T>> Dataset create(T type, long[] dims,
+		String name, AxisType[] axes);
 
 	/**
 	 * Creates a new dataset using the provided {@link ImgFactory}.
@@ -109,8 +109,7 @@ public interface DatasetService extends IService {
 	 * @return The newly created dataset.
 	 */
 	<T extends RealType<T> & NativeType<T>> Dataset create(
-		final ImgFactory<T> factory, final T type, final long[] dims,
-		final String name, final AxisType[] axes);
+		ImgFactory<T> factory, T type, long[] dims, String name, AxisType[] axes);
 
 	/**
 	 * Creates a new dataset using the provided {@link ImgPlus}.
@@ -118,7 +117,6 @@ public interface DatasetService extends IService {
 	 * @param imgPlus The {@link ImgPlus} backing the dataset.
 	 * @return The newly created dataset.
 	 */
-	<T extends RealType<T> & NativeType<T>> Dataset create(
-		final ImgPlus<T> imgPlus);
+	<T extends RealType<T> & NativeType<T>> Dataset create(ImgPlus<T> imgPlus);
 
 }

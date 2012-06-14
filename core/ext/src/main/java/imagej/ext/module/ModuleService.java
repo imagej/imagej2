@@ -56,16 +56,16 @@ public interface ModuleService extends IService {
 	ModuleIndex getIndex();
 
 	/** Manually registers a module with the module service. */
-	void addModule(final ModuleInfo module);
+	void addModule(ModuleInfo module);
 
 	/** Manually unregisters a module with the module service. */
-	void removeModule(final ModuleInfo module);
+	void removeModule(ModuleInfo module);
 
 	/** Manually registers a list of modules with the module service. */
-	void addModules(final Collection<? extends ModuleInfo> modules);
+	void addModules(Collection<? extends ModuleInfo> modules);
 
 	/** Manually unregisters a list of modules with the module service. */
-	void removeModules(final Collection<? extends ModuleInfo> modules);
+	void removeModules(Collection<? extends ModuleInfo> modules);
 
 	/** Gets the list of available modules. */
 	List<ModuleInfo> getModules();
@@ -76,7 +76,7 @@ public interface ModuleService extends IService {
 	 * @param acc the accelerator for which to search.
 	 * @return the module info for the corresponding module, or null.
 	 */
-	ModuleInfo getModuleForAccelerator(final Accelerator acc);
+	ModuleInfo getModuleForAccelerator(Accelerator acc);
 
 	/**
 	 * Executes the given module, without any pre- or postprocessing.
@@ -91,7 +91,7 @@ public interface ModuleService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final ModuleInfo info, final Object... inputValues);
+	Future<Module> run(ModuleInfo info, Object... inputValues);
 
 	/**
 	 * Executes the given module.
@@ -108,10 +108,8 @@ public interface ModuleService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final ModuleInfo info,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final Object... inputValues);
+	Future<Module> run(ModuleInfo info, List<? extends ModulePreprocessor> pre,
+		List<? extends ModulePostprocessor> post, Object... inputValues);
 
 	/**
 	 * Executes the given module.
@@ -126,10 +124,8 @@ public interface ModuleService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final ModuleInfo info,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final Map<String, Object> inputMap);
+	Future<Module> run(ModuleInfo info, List<? extends ModulePreprocessor> pre,
+		List<? extends ModulePostprocessor> post, Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module, without any pre- or postprocessing.
@@ -144,7 +140,7 @@ public interface ModuleService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final Module module, final Object... inputValues);
+	Future<Module> run(Module module, Object... inputValues);
 
 	/**
 	 * Executes the given module.
@@ -161,10 +157,8 @@ public interface ModuleService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final Module module,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final Object... inputValues);
+	Future<Module> run(Module module, List<? extends ModulePreprocessor> pre,
+		List<? extends ModulePostprocessor> post, Object... inputValues);
 
 	/**
 	 * Executes the given module.
@@ -179,26 +173,25 @@ public interface ModuleService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<M extends Module> Future<M> run(final M module,
-		final List<? extends ModulePreprocessor> pre,
-		final List<? extends ModulePostprocessor> post,
-		final Map<String, Object> inputMap);
+	<M extends Module> Future<M> run(M module,
+		List<? extends ModulePreprocessor> pre,
+		List<? extends ModulePostprocessor> post, Map<String, Object> inputMap);
 
 	/** Blocks until the given module is finished executing. */
-	<M extends Module> M waitFor(final Future<M> future);
+	<M extends Module> M waitFor(Future<M> future);
 
 	/**
 	 * Checks the given module for a solitary unresolved input of the given type,
 	 * returning the relevant {@link ModuleItem} if found, or null if not exactly
 	 * one unresolved input of that type.
 	 */
-	<T> ModuleItem<T> getSingleInput(final Module module, final Class<T> type);
+	<T> ModuleItem<T> getSingleInput(Module module, Class<T> type);
 
 	/**
 	 * Checks the given module for a solitary unresolved output of the given type,
 	 * returning the relevant {@link ModuleItem} if found, or null if not exactly
 	 * one unresolved output of that type.
 	 */
-	<T> ModuleItem<T> getSingleOutput(final Module module, final Class<T> type);
+	<T> ModuleItem<T> getSingleOutput(Module module, Class<T> type);
 
 }

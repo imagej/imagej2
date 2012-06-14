@@ -48,6 +48,6 @@ import java.util.concurrent.ThreadFactory;
  */
 public interface ThreadService extends IService, ThreadFactory {
 
-	<V> Future<V> run(final Callable<V> code);
+	<V> Future<V> run(Callable<V> code);
 
 }

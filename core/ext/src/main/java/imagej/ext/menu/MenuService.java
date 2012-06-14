@@ -62,7 +62,7 @@ public interface MenuService extends IService {
 	 * @param menuRoot the root of the desired menu structure (see
 	 *          {@link ModuleInfo#getMenuRoot()}).
 	 */
-	ShadowMenu getMenu(final String menuRoot);
+	ShadowMenu getMenu(String menuRoot);
 
 	/**
 	 * Populates a UI-specific application menu structure.
@@ -70,7 +70,7 @@ public interface MenuService extends IService {
 	 * @param creator the {@link MenuCreator} to use to populate the menus.
 	 * @param menu the destination menu structure to populate.
 	 */
-	<T> T createMenus(final MenuCreator<T> creator, final T menu);
+	<T> T createMenus(MenuCreator<T> creator, T menu);
 
 	/**
 	 * Populates a UI-specific menu structure.
@@ -80,28 +80,27 @@ public interface MenuService extends IService {
 	 * @param creator the {@link MenuCreator} to use to populate the menus.
 	 * @param menu the destination menu structure to populate.
 	 */
-	<T> T createMenus(final String menuRoot, final MenuCreator<T> creator,
-		final T menu);
+	<T> T createMenus(String menuRoot, MenuCreator<T> creator, T menu);
 
 	/** Selects or deselects the given module in the menu structure. */
-	void setSelected(final Module module, final boolean selected);
+	void setSelected(Module module, boolean selected);
 
 	/** Selects or deselects the given plugin in the menu structure. */
-	void setSelected(final RunnablePlugin plugin, final boolean selected);
+	void setSelected(RunnablePlugin plugin, boolean selected);
 
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	<R extends RunnablePlugin> void setSelected(final Class<R> pluginClass,
-		final boolean selected);
+	<R extends RunnablePlugin> void setSelected(Class<R> pluginClass,
+		boolean selected);
 
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	<R extends RunnablePlugin> void setSelected(final String pluginClassName,
-		final boolean selected);
+	<R extends RunnablePlugin> void setSelected(String pluginClassName,
+		boolean selected);
 
 	/** Selects or deselects the given module in the menu structure. */
-	void setSelected(final ModuleInfo info, final boolean selected);
+	void setSelected(ModuleInfo info, boolean selected);
 
 }

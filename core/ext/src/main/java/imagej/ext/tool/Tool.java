@@ -68,10 +68,10 @@ public interface Tool extends IPlugin, IContext {
 	PluginInfo<Tool> getInfo();
 
 	/** Sets the info describing the tool. */
-	void setInfo(final PluginInfo<Tool> info);
+	void setInfo(PluginInfo<Tool> info);
 
 	/** Sets the application context of the tool. */
-	void setContext(final ImageJ context);
+	void setContext(ImageJ context);
 
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();

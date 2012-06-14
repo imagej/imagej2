@@ -43,8 +43,8 @@ package imagej.ui;
  */
 public interface StatusBar {
 
-	void setStatus(final String message);
+	void setStatus(String message);
 
-	void setProgress(final int val, final int max);
+	void setProgress(int val, int max);
 
 }

@@ -66,32 +66,32 @@ public interface PluginService extends IService {
 	void reloadPlugins();
 
 	/** Manually registers a plugin with the plugin service. */
-	void addPlugin(final PluginInfo<?> plugin);
+	void addPlugin(PluginInfo<?> plugin);
 
 	/** Manually registers plugins with the plugin service. */
-	<T extends PluginInfo<?>> void addPlugins(final Collection<T> plugins);
+	<T extends PluginInfo<?>> void addPlugins(Collection<T> plugins);
 
 	/** Manually unregisters a plugin with the plugin service. */
-	void removePlugin(final PluginInfo<?> plugin);
+	void removePlugin(PluginInfo<?> plugin);
 
 	/** Manually unregisters plugins with the plugin service. */
-	<T extends PluginInfo<?>> void removePlugins(final Collection<T> plugins);
+	<T extends PluginInfo<?>> void removePlugins(Collection<T> plugins);
 
 	/** Gets the list of known plugins. */
 	List<PluginInfo<?>> getPlugins();
 
 	/** Gets the first available plugin of the given class, or null if none. */
-	<P extends IPlugin> PluginInfo<P> getPlugin(final Class<P> pluginClass);
+	<P extends IPlugin> PluginInfo<P> getPlugin(Class<P> pluginClass);
 
 	/**
 	 * Gets the first available plugin of the given class name, or null if none.
 	 */
-	PluginInfo<IPlugin> getPlugin(final String className);
+	PluginInfo<IPlugin> getPlugin(String className);
 
 	/**
 	 * Gets the list of plugins of the given type (e.g., {@link ImageJPlugin}).
 	 */
-	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(final Class<P> type);
+	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(Class<P> type);
 
 	/**
 	 * Gets the list of plugins of the given class.
@@ -101,7 +101,7 @@ public interface PluginService extends IService {
 	 * </p>
 	 */
 	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
-		final Class<P> pluginClass);
+		Class<P> pluginClass);
 
 	/**
 	 * Gets the list of plugins with the given class name.
@@ -110,7 +110,7 @@ public interface PluginService extends IService {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	List<PluginInfo<IPlugin>> getPluginsOfClass(final String className);
+	List<PluginInfo<IPlugin>> getPluginsOfClass(String className);
 
 	/** Gets the list of executable plugins (i.e., {@link RunnablePlugin}s). */
 	List<PluginModuleInfo<RunnablePlugin>> getRunnablePlugins();
@@ -120,17 +120,17 @@ public interface PluginService extends IService {
 	 * none.
 	 */
 	<R extends RunnablePlugin> PluginModuleInfo<R> getRunnablePlugin(
-		final Class<R> pluginClass);
+		Class<R> pluginClass);
 
 	/**
 	 * Gets the first available executable plugin of the given class name, or null
 	 * if none.
 	 */
-	PluginModuleInfo<RunnablePlugin> getRunnablePlugin(final String className);
+	PluginModuleInfo<RunnablePlugin> getRunnablePlugin(String className);
 
 	/** Gets the list of executable plugins of the given type. */
 	<R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfType(final Class<R> type);
+		getRunnablePluginsOfType(Class<R> type);
 
 	/**
 	 * Gets the list of executable plugins of the given class.
@@ -140,7 +140,7 @@ public interface PluginService extends IService {
 	 * </p>
 	 */
 	<R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfClass(final Class<R> pluginClass);
+		getRunnablePluginsOfClass(Class<R> pluginClass);
 
 	/**
 	 * Gets the list of executable plugins with the given class name.
@@ -150,13 +150,13 @@ public interface PluginService extends IService {
 	 * </p>
 	 */
 	List<PluginModuleInfo<RunnablePlugin>> getRunnablePluginsOfClass(
-		final String className);
+		String className);
 
 	/** Creates one instance each of the available plugins of the given type. */
-	<P extends IPlugin> List<P> createInstances(final Class<P> type);
+	<P extends IPlugin> List<P> createInstances(Class<P> type);
 
 	/** Creates an instance of each of the plugins on the given list. */
-	<P extends IPlugin> List<P> createInstances(final List<PluginInfo<P>> infos);
+	<P extends IPlugin> List<P> createInstances(List<PluginInfo<P>> infos);
 
 	/**
 	 * Executes the first runnable plugin of the given class name.
@@ -171,7 +171,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final String className, final Object... inputValues);
+	Future<Module> run(String className, Object... inputValues);
 
 	/**
 	 * Executes the first runnable plugin of the given class name.
@@ -184,8 +184,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module>
-		run(final String className, final Map<String, Object> inputMap);
+	Future<Module> run(String className, Map<String, Object> inputMap);
 
 	/**
 	 * Executes the first runnable plugin of the given class.
@@ -201,8 +200,8 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<R extends RunnablePlugin> Future<PluginModule<R>> run(
-		final Class<R> pluginClass, final Object... inputValues);
+	<R extends RunnablePlugin> Future<PluginModule<R>> run(Class<R> pluginClass,
+		Object... inputValues);
 
 	/**
 	 * Executes the first runnable plugin of the given class.
@@ -216,8 +215,8 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<R extends RunnablePlugin> Future<PluginModule<R>> run(
-		final Class<R> pluginClass, final Map<String, Object> inputMap);
+	<R extends RunnablePlugin> Future<PluginModule<R>> run(Class<R> pluginClass,
+		Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -234,7 +233,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final ModuleInfo info, final Object... inputValues);
+	Future<Module> run(ModuleInfo info, Object... inputValues);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -249,7 +248,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(final ModuleInfo info, final Map<String, Object> inputMap);
+	Future<Module> run(ModuleInfo info, Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -266,7 +265,7 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<M extends Module> Future<M> run(final M module, final Object... inputValues);
+	<M extends Module> Future<M> run(M module, Object... inputValues);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -281,7 +280,6 @@ public interface PluginService extends IService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<M extends Module> Future<M> run(final M module,
-		final Map<String, Object> inputMap);
+	<M extends Module> Future<M> run(M module, Map<String, Object> inputMap);
 
 }

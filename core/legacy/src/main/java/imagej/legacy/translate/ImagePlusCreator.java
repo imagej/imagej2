@@ -45,6 +45,6 @@ import imagej.data.display.ImageDisplay;
  */
 public interface ImagePlusCreator {
 
-	ImagePlus createLegacyImage(final ImageDisplay display);
+	ImagePlus createLegacyImage(ImageDisplay display);
 
 }
