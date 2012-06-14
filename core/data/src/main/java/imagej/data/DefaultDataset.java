@@ -534,7 +534,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void setColorTable(final ColorTable8 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 		// TODO - ???
-		// update(true);
+		// update(false);
 	}
 
 	@Override
@@ -546,14 +546,14 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void setColorTable(final ColorTable16 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 		// TODO - ???
-		// update(true);
+		// update(false);
 	}
 
 	@Override
 	public void initializeColorTables(final int count) {
 		imgPlus.initializeColorTables(count);
 		// TODO - ???
-		// update(true);
+		// update(false);
 	}
 
 	@Override
