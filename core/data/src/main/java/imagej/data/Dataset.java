@@ -82,10 +82,20 @@ public interface Dataset extends Data, Metadata {
 	 */
 	Object getPlane(final int planeNumber, boolean copyOK);
 
-	/** TODO */
+	/**
+	 * sets a plane of data within the dataset. generates an update event if the
+	 * plane reference differs from the current plane reference associated with
+	 * the given plane number. returns true if the reference was changed or false
+	 * if it was not. This method only works with PlanarAccess backed Img's.
+	 */
 	boolean setPlane(final int planeNum, final Object newPlane);
 
-	/** TODO */
+	/**
+	 * sets a plane of data within the dataset. NEVER generates update events. if
+	 * the plane reference differs from the current plane reference associated
+	 * with the given plane number returns true else false. This method only works
+	 * with PlanarAccess backed Img's.
+	 */
 	boolean setPlaneSilently(final int planeNum, final Object newPlane);
 
 	/** TODO */
