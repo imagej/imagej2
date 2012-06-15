@@ -133,6 +133,90 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>ij-launcher</artifactId>
+									<version>${project.version}</version>
+									<type>nar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+									<destFileName>ij-launcher-${project.version}.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>ij-launcher</artifactId>
+									<version>${project.version}</version>
+									<classifier>amd64-Linux-gcc-executable</classifier>
+									<type>nar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>ij-launcher</artifactId>
+									<version>${project.version}</version>
+									<classifier>i386-Linux-gcc-executable</classifier>
+									<type>nar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>ij-launcher</artifactId>
+									<version>${project.version}</version>
+									<classifier>amd64-Windows-gcc-executable</classifier>
+									<type>nar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>ij-launcher</artifactId>
+									<version>${project.version}</version>
+									<classifier>x86-Windows-gcc-executable</classifier>
+									<type>nar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>ij-launcher</artifactId>
+									<version>${project.version}</version>
+									<classifier>i386-MacOSX-gcc-executable</classifier>
+									<type>nar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>ij-launcher</artifactId>
+									<version>${project.version}</version>
+									<classifier>x86_64-MacOSX-gcc-executable</classifier>
+									<type>nar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
@@ -163,6 +247,50 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!-- This plugin's configuration is used to store Eclipse m2e settings
+				     only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId></groupId>
+										<artifactId></artifactId>
+										<versionRange>${project.version}</versionRange>
+										<goals>
+											<goal></goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>copy</goal>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<!-- NB: for project parent, in case of partial checkout -->
@@ -339,104 +467,6 @@
 								<goals>
 									<goal>single</goal>
 								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<!-- HACK: The m2e plugin does not support copy or unpack. -->
-		<profile>
-			<id>not-eclipse</id>
-			<activation>
-				<property>
-					<name>!m2e.version</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>copy</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>ij-launcher</artifactId>
-											<version>${project.version}</version>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>ij-launcher-${project.version}.jar</destFileName>
-										</artifactItem>
-									</artifactItems>
-								</configuration>
-							</execution>
-							<execution>
-								<id>unpack</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>unpack</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>ij-launcher</artifactId>
-											<version>${project.version}</version>
-											<classifier>amd64-Linux-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>ij-launcher</artifactId>
-											<version>${project.version}</version>
-											<classifier>i386-Linux-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>ij-launcher</artifactId>
-											<version>${project.version}</version>
-											<classifier>amd64-Windows-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>ij-launcher</artifactId>
-											<version>${project.version}</version>
-											<classifier>x86-Windows-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>ij-launcher</artifactId>
-											<version>${project.version}</version>
-											<classifier>i386-MacOSX-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>ij-launcher</artifactId>
-											<version>${project.version}</version>
-											<classifier>x86_64-MacOSX-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-									</artifactItems>
-									<overWriteSnapshots>true</overWriteSnapshots>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
