@@ -308,15 +308,19 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		}
 	}
 
-	// NB - BDZ streamlined to avoid extra display updates.
+	// NB - BDZ would like to streamline this to avoid extra display updates.
+	// However testing scroll bar position versus current display's position
+	// fails as the display position always matches already. So we can't avoid
+	// calling display.update() by testing such. We need to make the display
+	// update mechanism smarter if possible. Perhaps by giving it hints about
+	// the changes being made.
+	
 	private void updateAxis(final AxisType axis) {
 		final int value = (int) display.getLongPosition(axis);
 		if (axis == Axes.CHANNEL) updateBorder(value);
 		final JScrollBar scrollBar = axisSliders.get(axis);
-		if ((scrollBar != null) && (scrollBar.getValue() != value)) {
-			scrollBar.setValue(value);
-			getDisplay().update();
-		}
+		if (scrollBar != null) scrollBar.setValue(value);
+		getDisplay().update();
 	}
 
 	private double findFullyVisibleScale() {
