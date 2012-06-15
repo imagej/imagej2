@@ -48,8 +48,43 @@ import java.util.List;
  */
 public interface EventService extends IService {
 
-	/** Publishes the given event, reporting it to all subscribers. */
+	/**
+	 * Publishes the given event immediately, reporting it to all subscribers.
+	 * Does not return until all subscribers have handled the event.
+	 * <p>
+	 * Note that with {@link #publish}, in the case of multiple events
+	 * published in a chain to multiple subscribers, the delivery order will
+	 * resemble that of a stack. For example:
+	 * </p>
+	 * <ol>
+	 * <li>{@link ModulesUpdatedEvent} is published with {@link #publish}.</li>
+	 * <li>{@link DefaultMenuService} receives the event and handles it,
+	 * publishing {@link MenusUpdatedEvent} in response.</li>
+	 * <li>A third party that subscribes to both {@link ModulesUpdatedEvent} and
+	 * {@link MenusUpdatedEvent} will receive the latter before the former.</li>
+	 * </ol>
+	 */
 	<E extends ImageJEvent> void publish(E e);
+
+	/**
+	 * Queues the given event for publication, typically on a separate thread
+	 * (called the "event dispatch thread"). This method returns immediately,
+	 * before subscribers have fully received the event.
+	 * <p>
+	 * Note that with {@link #publishLater}, in the case of multiple events
+	 * published in a chain to multiple subscribers, the delivery order will
+	 * resemble that of a queue. For example:
+	 * </p>
+	 * <ol>
+	 * <li>{@link ModulesUpdatedEvent} is published with {@link #publishLater}.</li>
+	 * <li>{@link DefaultMenuService} receives the event and handles it,
+	 * publishing {@link MenusUpdatedEvent} in response.</li>
+	 * <li>A third party that subscribes to both {@link ModulesUpdatedEvent} and
+	 * {@link MenusUpdatedEvent} will receive the former first, since it was
+	 * already queued by the time the latter was published.</li>
+	 * </ol>
+	 */
+	<E extends ImageJEvent> void publishLater(E e);
 
 	/**
 	 * Subscribes all of the given object's @{@link EventHandler} annotated

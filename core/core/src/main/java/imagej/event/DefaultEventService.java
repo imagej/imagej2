@@ -38,6 +38,7 @@ package imagej.event;
 import imagej.ImageJ;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.thread.ThreadService;
 import imagej.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.bushe.swing.event.SwingEventService;
 import org.bushe.swing.event.annotation.AbstractProxySubscriber;
 import org.bushe.swing.event.annotation.BaseProxySubscriber;
 import org.bushe.swing.event.annotation.ReferenceStrength;
@@ -58,11 +58,11 @@ import org.bushe.swing.event.annotation.ReferenceStrength;
  * @author Grant Harris
  */
 @Service
-public class DefaultEventService extends AbstractService
-	implements EventService
+public class DefaultEventService extends AbstractService implements
+	EventService
 {
 
-	protected org.bushe.swing.event.EventService eventBus;
+	protected DefaultEventBus eventBus;
 
 	// -- Constructors --
 
@@ -72,23 +72,26 @@ public class DefaultEventService extends AbstractService
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultEventService(final ImageJ context) {
+	public DefaultEventService(final ImageJ context,
+		final ThreadService threadService)
+	{
 		super(context);
-
-		// TODO - Use ThreadSafeEventService instead of SwingEventService.
-		// Unfortunately, without further care elsewhere in the code (subject to
-		// further investigation), using it results in a race condition where
-		// JHotDraw partially repaints images before they are done being processed.
-		// See ticket #719: http://trac.imagej.net/ticket/719
-		eventBus = new SwingEventService();
+		eventBus = new DefaultEventBus(threadService);
 	}
 
 	// -- EventService methods --
 
 	@Override
 	public <E extends ImageJEvent> void publish(final E e) {
+		// CTR FIXME refactor this method to "publishNow"
 		e.setContext(getContext());
-		eventBus.publish(e);
+		eventBus.publishNow(e);
+	}
+
+	@Override
+	public <E extends ImageJEvent> void publishLater(final E e) {
+		e.setContext(getContext());
+		eventBus.publishLater(e);
 	}
 
 	@Override
@@ -127,9 +130,8 @@ public class DefaultEventService extends AbstractService
 	 * Recursively scans for @{@link EventHandler} annotated methods, and
 	 * subscribes them to the event service.
 	 */
-	private void subscribeRecursively(
-		final List<EventSubscriber<?>> subscribers, final Class<?> type,
-		final Object o)
+	private void subscribeRecursively(final List<EventSubscriber<?>> subscribers,
+		final Class<?> type, final Object o)
 	{
 		if (type == null || type == Object.class) return;
 		for (final Method m : type.getDeclaredMethods()) {

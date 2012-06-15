@@ -37,6 +37,7 @@ package imagej.thread;
 
 import imagej.service.IService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
@@ -49,5 +50,12 @@ import java.util.concurrent.ThreadFactory;
 public interface ThreadService extends IService, ThreadFactory {
 
 	<V> Future<V> run(Callable<V> code);
+
+	boolean isEventDispatchThread();
+
+	void invoke(final Runnable code) throws InterruptedException,
+		InvocationTargetException;
+
+	void queue(final Runnable code);
 
 }

@@ -39,6 +39,8 @@ import imagej.ImageJ;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
+import java.awt.EventQueue;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,6 +79,30 @@ public final class DefaultThreadService extends AbstractService implements
 	@Override
 	public <V> Future<V> run(final Callable<V> code) {
 		return executor.submit(code);
+	}
+
+	@Override
+	public boolean isEventDispatchThread() {
+		return EventQueue.isDispatchThread();
+	}
+
+	@Override
+	public void invoke(final Runnable code) throws InterruptedException,
+		InvocationTargetException
+	{
+		if (isEventDispatchThread()) {
+			// just call the code
+			code.run();
+		}
+		else {
+			// invoke on the EDT
+			EventQueue.invokeAndWait(code);
+		}
+	}
+
+	@Override
+	public void queue(final Runnable code) {
+		EventQueue.invokeLater(code);
 	}
 
 	// -- ThreadFactory methods --
