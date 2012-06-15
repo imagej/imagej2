@@ -83,7 +83,6 @@ public class DefaultEventService extends AbstractService implements
 
 	@Override
 	public <E extends ImageJEvent> void publish(final E e) {
-		// CTR FIXME refactor this method to "publishNow"
 		e.setContext(getContext());
 		eventBus.publishNow(e);
 	}
