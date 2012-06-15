@@ -120,23 +120,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		return systemClipboard;
 	}
 
-	/**
-	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure.
-	 */
-	protected JMenuBar createMenus() {
-		final MenuService menuService = getUIService().getMenuService();
-		final JMenuBar menuBar =
-			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
-		final AppMenusCreatedEvent appMenusCreatedEvent =
-			new AppMenusCreatedEvent(menuBar);
-		getEventService().publish(appMenusCreatedEvent);
-		if (appMenusCreatedEvent.isConsumed()) {
-			// something else (e.g., MacOSXPlatform) handled the menus
-			return null;
-		}
-		return menuBar;
-	}
-
 	@Override
 	public OutputWindow newOutputWindow(final String title) {
 		return new SwingOutputWindow(title);
@@ -206,6 +189,23 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		new DropTarget(appFrame, dropListener);
 
 		subscribers = getEventService().subscribe(this);
+	}
+
+	/**
+	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure.
+	 */
+	protected JMenuBar createMenus() {
+		final MenuService menuService = getUIService().getMenuService();
+		final JMenuBar menuBar =
+			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
+		final AppMenusCreatedEvent appMenusCreatedEvent =
+			new AppMenusCreatedEvent(menuBar);
+		getEventService().publish(appMenusCreatedEvent);
+		if (appMenusCreatedEvent.isConsumed()) {
+			// something else (e.g., MacOSXPlatform) handled the menus
+			return null;
+		}
+		return menuBar;
 	}
 
 	/**
