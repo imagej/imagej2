@@ -51,8 +51,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'),
-	@Menu(label = "Tools", mnemonic = 't'),
+	@Menu(label = "Animation", mnemonic = 'a'),
 	@Menu(label = "Stop Animation", weight = 2) }, headless = true)
 public class StopAnimation implements ImageJPlugin {
 

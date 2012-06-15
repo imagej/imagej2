@@ -61,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Axis...") },
+	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Delete Axis...") },
 	headless = true, initializer = "initAll")
 public class DeleteAxis extends DynamicPlugin {
 

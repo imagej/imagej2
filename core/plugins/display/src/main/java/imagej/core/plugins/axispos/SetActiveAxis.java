@@ -60,7 +60,7 @@ import net.imglib2.meta.AxisType;
 		@Menu(label = MenuConstants.IMAGE_LABEL,
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
-		@Menu(label = "Stacks", mnemonic = 's'),
+		@Menu(label = "Axes", mnemonic = 'a'),
 		@Menu(label = "Set Active Axis...") }, headless = true)
 public class SetActiveAxis extends DynamicPlugin {
 

@@ -60,7 +60,7 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Axis...") },
+	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Add Axis...") },
 	headless = true, initializer = "initAll")
 public class AddAxis extends DynamicPlugin {
 

@@ -61,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Delete Data...") },
+	@Menu(label = "Data", mnemonic = 'd'), @Menu(label = "Delete Data...") },
 	headless = true, initializer = "initAll")
 public class DeleteData extends DynamicPlugin {
 

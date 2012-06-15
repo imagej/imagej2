@@ -68,7 +68,7 @@ import net.imglib2.meta.AxisType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Assign Axes...") },
+	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Assign Axes...") },
 	headless = true, initializer = "initAxes")
 public class AssignAxes extends DynamicPlugin {
 

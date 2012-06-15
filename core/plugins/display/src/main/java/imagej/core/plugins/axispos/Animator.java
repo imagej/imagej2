@@ -54,8 +54,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'),
-	@Menu(label = "Tools", mnemonic = 't'),
+	@Menu(label = "Animation", mnemonic = 'a'),
 	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
 public class Animator implements ImageJPlugin {
 

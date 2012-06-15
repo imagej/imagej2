@@ -60,7 +60,7 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Data...") },
+	@Menu(label = "Data", mnemonic = 'd'), @Menu(label = "Add Data...") },
 	headless = true, initializer = "initAll")
 public class AddData extends DynamicPlugin {
 
