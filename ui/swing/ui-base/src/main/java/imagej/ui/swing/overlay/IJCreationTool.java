@@ -35,6 +35,8 @@
 
 package imagej.ui.swing.overlay;
 
+import java.awt.event.MouseEvent;
+
 import imagej.data.display.DefaultOverlayView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
@@ -112,4 +114,30 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		return createdFigure != null;
 	}
 
+	@Override
+	public void mouseClicked(MouseEvent evt) {
+		// ignore clicks other than left
+		if ((evt.getButton() == MouseEvent.BUTTON2) ||
+			(evt.getButton() == MouseEvent.BUTTON3))
+			return;
+		super.mouseClicked(evt);
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent evt) {
+		// ignore clicks other than left
+		if ((evt.getButton() == MouseEvent.BUTTON2) ||
+				(evt.getButton() == MouseEvent.BUTTON3))
+				return;
+		super.mousePressed(evt);
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent evt) {
+		// ignore clicks other than left
+		if ((evt.getButton() == MouseEvent.BUTTON2) ||
+				(evt.getButton() == MouseEvent.BUTTON3))
+				return;
+		super.mouseReleased(evt);
+	}
 }
