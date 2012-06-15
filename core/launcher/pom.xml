@@ -12,7 +12,7 @@
 	</parent>
 
 	<artifactId>ij-launcher</artifactId>
-	<packaging>${ij.launcher.packaging}</packaging>
+	<packaging>nar</packaging>
 
 	<name>ImageJ Launcher</name>
 	<description>The artist formerly known as the Fiji launcher. This is the executable which runs ImageJ2. Its purpose is also to make sure that updates downloaded by the ImageJ Updater will be put into place before starting the Java Virtual Machine.</description>
@@ -26,7 +26,6 @@
 		<subsystem.option/>
 		<libdl.name>dl</libdl.name>
 		<debug.option/>
-		<ij.launcher.packaging>jar</ij.launcher.packaging>
 	</properties>
 
 	<build>
@@ -42,67 +41,107 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-nar-plugin</artifactId>
+				<version>${nar.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<c>
+						<name>gcc</name>
+						<includes>
+							<include>**/*.c</include>
+						</includes>
+						<options>
+							<option>-I${JAVA_HOME}/include</option>
+							<option>${java.os.include}</option>
+							<option>${stack.protector.option}</option>
+							<option>${architecture.option}</option>
+							<option>${subsystem.option}</option>
+							<option>${debug.option}</option>
+						</options>
+					</c>
+					<linker>
+						<name>gcc</name>
+						<options>
+							<option>${architecture.option}</option>
+							<option>${subsystem.option}</option>
+						</options>
+						<sysLibs>
+							<sysLib>
+								<name>${libdl.name}</name>
+							</sysLib>
+						</sysLibs>
+					</linker>
+					<libraries>
+						<library>
+							<type>executable</type>
+							<!-- <run>true</run> -->
+							<subSystem>gui</subSystem>
+						</library>
+					</libraries>
+				</configuration>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!-- This plugin's configuration is used to store Eclipse m2e settings
+				     only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId></groupId>
+										<artifactId></artifactId>
+										<versionRange>${project.version}</versionRange>
+										<goals>
+											<goal></goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-nar-plugin</artifactId>
+										<versionRange>${nar.version}</versionRange>
+										<goals>
+											<goal>nar-compile</goal>
+											<goal>nar-download</goal>
+											<goal>nar-gnu-configure</goal>
+											<goal>nar-gnu-make</goal>
+											<goal>nar-gnu-process</goal>
+											<goal>nar-gnu-resources</goal>
+											<goal>nar-javah</goal>
+											<goal>nar-resources</goal>
+											<goal>nar-system-generate</goal>
+											<goal>nar-testCompile</goal>
+											<goal>nar-testDownload</goal>
+											<goal>nar-testUnpack</goal>
+											<goal>nar-unpack</goal>
+											<goal>nar-validate</goal>
+											<goal>nar-vcproj</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<profiles>
-		<!-- HACK: The m2e plugin does not support maven-nar-plugin. -->
-		<profile>
-			<id>no-nar</id>
-			<activation>
-				<property>
-					<name>!m2e.version</name>
-				</property>
-			</activation>
-			<properties>
-				<ij.launcher.packaging>nar</ij.launcher.packaging>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-nar-plugin</artifactId>
-						<version>${nar.version}</version>
-						<extensions>true</extensions>
-						<configuration>
-							<c>
-								<name>gcc</name>
-								<includes>
-									<include>**/*.c</include>
-								</includes>
-								<options>
-									<option>-I${JAVA_HOME}/include</option>
-									<option>${java.os.include}</option>
-									<option>${stack.protector.option}</option>
-									<option>${architecture.option}</option>
-									<option>${subsystem.option}</option>
-									<option>${debug.option}</option>
-								</options>
-							</c>
-							<linker>
-								<name>gcc</name>
-								<options>
-									<option>${architecture.option}</option>
-									<option>${subsystem.option}</option>
-								</options>
-								<sysLibs>
-									<sysLib>
-										<name>${libdl.name}</name>
-									</sysLib>
-								</sysLibs>
-							</linker>
-							<libraries>
-								<library>
-									<type>executable</type>
-									<!-- <run>true</run> -->
-									<subSystem>gui</subSystem>
-								</library>
-							</libraries>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
 		<profile>
 			<id>amd64-Linux</id>
 			<activation>
