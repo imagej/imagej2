@@ -62,7 +62,7 @@ public class DefaultEventService extends AbstractService implements
 	EventService
 {
 
-	protected DefaultEventBus eventBus;
+	private final DefaultEventBus eventBus;
 
 	// -- Constructors --
 
