@@ -43,8 +43,8 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
+import imagej.log.LogService;
 import imagej.util.ColorRGB;
-import imagej.util.Log;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -57,6 +57,9 @@ import java.math.BigInteger;
  */
 @Plugin(menuPath = "Plugins>Debug>Parameter Tester", headless = true)
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
+
+	@Parameter
+	private LogService log;
 
 	@Parameter
 	private StatusService statusService;
@@ -231,24 +234,24 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Override
 	public void preview() {
-		Log.info("ParameterTester: " + ++previews + " previews and counting");
+		log.info("ParameterTester: " + ++previews + " previews and counting");
 		statusService.showStatus(message);
 	}
 
 	@Override
 	public void cancel() {
-		Log.info("ParameterTester: canceled");
+		log.info("ParameterTester: canceled");
 	}
 
 	@SuppressWarnings("unused")
 	private void xChanged() {
-		Log.info("ParameterTester: x changed");
+		log.info("ParameterTester: x changed");
 		twoX = x * 2;
 	}
 
 	@SuppressWarnings("unused")
 	private void twoXChanged() {
-		Log.info("ParameterTester: 2x changed");
+		log.info("ParameterTester: 2x changed");
 		x = twoX / 2;
 	}
 

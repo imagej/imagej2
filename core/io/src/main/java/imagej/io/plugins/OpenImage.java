@@ -43,9 +43,9 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.io.IOService;
+import imagej.log.LogService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.util.Log;
 
 import java.io.File;
 
@@ -69,6 +69,9 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
 
+	@Parameter
+	private LogService log;
+
 	@SuppressWarnings("rawtypes")
 	@Parameter
 	private IOService ioService;
@@ -89,12 +92,12 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 			dataset = ioService.loadDataset(source);
 		}
 		catch (final ImgIOException e) {
-			Log.error(e);
+			log.error(e);
 			uiService.showDialog(e.getMessage(), "ImageJ",
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 		catch (final IncompatibleTypeException e) {
-			Log.error(e);
+			log.error(e);
 			uiService.showDialog(e.getMessage(), "ImageJ",
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}

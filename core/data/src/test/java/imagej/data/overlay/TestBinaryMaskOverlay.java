@@ -38,8 +38,8 @@ package imagej.data.overlay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import imagej.ImageJ;
+import imagej.log.LogService;
 import imagej.util.ColorRGB;
-import imagej.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -97,6 +97,7 @@ public class TestBinaryMaskOverlay {
 	@Test
 	public void testWriteExternal() {
 		final ImageJ context = ImageJ.createContext();
+		final LogService log = context.getService(LogService.class);
 		final BinaryMaskOverlay overlay =
 			makeOverlay(context, new boolean[][] { { true } });
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -105,7 +106,7 @@ public class TestBinaryMaskOverlay {
 			out.writeObject(overlay);
 		}
 		catch (final IOException e) {
-			Log.error(e);
+			log.error(e);
 			throw new AssertionError(e.getMessage());
 		}
 
@@ -114,6 +115,7 @@ public class TestBinaryMaskOverlay {
 	@Test
 	public void testReadExternal() {
 		final ImageJ context = ImageJ.createContext();
+		final LogService log = context.getService(LogService.class);
 		final Random r = new Random(54321);
 		for (int iter = 0; iter < 100; iter++) {
 			final boolean[][] imgArray = new boolean[5][5];
@@ -152,11 +154,11 @@ public class TestBinaryMaskOverlay {
 				}
 			}
 			catch (final IOException e) {
-				Log.error(e);
+				log.error(e);
 				throw new AssertionError(e.getMessage());
 			}
 			catch (final ClassNotFoundException e) {
-				Log.error(e);
+				log.error(e);
 				throw new AssertionError(e.getMessage());
 			}
 		}

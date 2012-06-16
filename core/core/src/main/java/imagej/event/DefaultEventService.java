@@ -36,10 +36,10 @@
 package imagej.event;
 
 import imagej.ImageJ;
+import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
-import imagej.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -62,6 +62,7 @@ public class DefaultEventService extends AbstractService implements
 	EventService
 {
 
+	private final LogService log;
 	private final DefaultEventBus eventBus;
 
 	// -- Constructors --
@@ -73,10 +74,11 @@ public class DefaultEventService extends AbstractService implements
 	}
 
 	public DefaultEventService(final ImageJ context,
-		final ThreadService threadService)
+		final ThreadService threadService, final LogService log)
 	{
 		super(context);
-		eventBus = new DefaultEventBus(threadService);
+		this.log = log;
+		eventBus = new DefaultEventBus(threadService, log);
 	}
 
 	// -- EventService methods --
@@ -139,7 +141,7 @@ public class DefaultEventService extends AbstractService implements
 
 			final Class<? extends ImageJEvent> eventClass = getEventClass(m);
 			if (eventClass == null) {
-				Log.warn("Invalid EventHandler method: " + m);
+				log.warn("Invalid EventHandler method: " + m);
 				continue;
 			}
 
@@ -226,13 +228,13 @@ public class DefaultEventService extends AbstractService implements
 				getSubscriptionMethod().invoke(obj, event);
 			}
 			catch (final IllegalAccessException exc) {
-				Log.error("Exception during event handling:\n\t[Event] " +
+				log.error("Exception during event handling:\n\t[Event] " +
 					event.getClass().getName() + ":" + event + "\n\t[Subscriber] " +
 					getProxiedSubscriber() + "\n\t[Method] " + getSubscriptionMethod(),
 					exc);
 			}
 			catch (final InvocationTargetException exc) {
-				Log.error("Exception during event handling:\n\t[Event] " +
+				log.error("Exception during event handling:\n\t[Event] " +
 					event.getClass().getName() + event + "\n\t[Subscriber] " +
 					getProxiedSubscriber() + "\n\t[Method] " + getSubscriptionMethod(),
 					exc.getCause());

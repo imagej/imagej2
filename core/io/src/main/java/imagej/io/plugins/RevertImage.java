@@ -43,9 +43,9 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.io.IOService;
+import imagej.log.LogService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.util.Log;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.type.NativeType;
@@ -65,6 +65,9 @@ import net.imglib2.type.numeric.RealType;
 public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
+
+	@Parameter
+	private LogService log;
 
 	@SuppressWarnings("rawtypes")
 	@Parameter
@@ -88,12 +91,12 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 			ioService.revertDataset(dataset);
 		}
 		catch (final ImgIOException e) {
-			Log.error(e);
+			log.error(e);
 			uiService.showDialog(e.getMessage(), "ImageJ",
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 		catch (final IncompatibleTypeException e) {
-			Log.error(e);
+			log.error(e);
 			uiService.showDialog(e.getMessage(), "ImageJ",
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}

@@ -40,8 +40,8 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.log.LogService;
 import imagej.platform.PlatformService;
-import imagej.util.Log;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,6 +58,9 @@ import java.net.URL;
 public class ImageJWebsite implements ImageJPlugin {
 
 	@Parameter
+	private LogService log;
+
+	@Parameter
 	private PlatformService platformService;
 
 	public final static String url = "http://developer.imagej.net";
@@ -68,7 +71,7 @@ public class ImageJWebsite implements ImageJPlugin {
 			platformService.open(new URL(url));
 		}
 		catch (final IOException e) {
-			Log.error(e);
+			log.error(e);
 		}
 	}
 

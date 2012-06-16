@@ -48,10 +48,10 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.io.StatusDispatcher;
 import imagej.io.event.FileSavedEvent;
+import imagej.log.LogService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
-import imagej.util.Log;
 
 import java.io.File;
 
@@ -70,6 +70,9 @@ import net.imglib2.io.ImgSaver;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save As...", weight = 21) })
 public class SaveAsImage implements ImageJPlugin {
+
+	@Parameter
+	private LogService log;
 
 	@Parameter
 	private EventService eventService;
@@ -135,13 +138,13 @@ public class SaveAsImage implements ImageJPlugin {
 				eventService.publish(new FileSavedEvent(img.getSource()));
 			}
 			catch (final ImgIOException e) {
-				Log.error(e);
+				log.error(e);
 				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
 					DialogPrompt.MessageType.ERROR_MESSAGE);
 				return;
 			}
 			catch (final IncompatibleTypeException e) {
-				Log.error(e);
+				log.error(e);
 				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
 					DialogPrompt.MessageType.ERROR_MESSAGE);
 				return;

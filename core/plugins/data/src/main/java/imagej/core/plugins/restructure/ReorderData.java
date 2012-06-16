@@ -43,7 +43,7 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -77,6 +77,9 @@ import net.imglib2.type.numeric.RealType;
 public class ReorderData extends DynamicPlugin {
 
 	// -- Parameters --
+
+	@Parameter
+	private LogService log;
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
@@ -171,7 +174,7 @@ public class ReorderData extends DynamicPlugin {
 		for (int i = 0; i < desiredAxisOrder.length; i++)
 			for (int j = i + 1; j < desiredAxisOrder.length; j++)
 				if (desiredAxisOrder[i] == desiredAxisOrder[j]) {
-					Log.error("at least one axis preference is repeated:"
+					log.error("at least one axis preference is repeated:"
 						+ " axis preferences must be mututally exclusive");
 					return true;
 				}

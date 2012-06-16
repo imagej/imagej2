@@ -42,9 +42,9 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
+import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,6 +66,7 @@ public class DefaultPluginService extends AbstractService implements
 	PluginService
 {
 
+	private final LogService log;
 	private final ModuleService moduleService;
 
 	/** Index of registered plugins. */
@@ -79,10 +80,11 @@ public class DefaultPluginService extends AbstractService implements
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultPluginService(final ImageJ context,
+	public DefaultPluginService(final ImageJ context, final LogService log,
 		final ModuleService moduleService)
 	{
 		super(context);
+		this.log = log;
 		this.moduleService = moduleService;
 
 		reloadPlugins();
@@ -270,7 +272,7 @@ public class DefaultPluginService extends AbstractService implements
 				list.add(info.createInstance());
 			}
 			catch (final InstantiableException e) {
-				Log.error("Cannot create plugin: " + info.getClassName());
+				log.error("Cannot create plugin: " + info.getClassName());
 			}
 		}
 		return list;
@@ -376,7 +378,7 @@ public class DefaultPluginService extends AbstractService implements
 		final String name)
 	{
 		if (plugin == null) {
-			Log.error("No such plugin: " + name);
+			log.error("No such plugin: " + name);
 			return false;
 		}
 		return true;

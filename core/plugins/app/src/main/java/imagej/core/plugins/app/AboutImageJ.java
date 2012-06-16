@@ -50,10 +50,10 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.io.IOService;
+import imagej.log.LogService;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.FileUtils;
-import imagej.util.Log;
 import imagej.util.MersenneTwisterFast;
 
 import java.io.BufferedReader;
@@ -102,6 +102,9 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	private static final long ONE_M_BYTES = ONE_K_BYTES * ONE_K_BYTES;
 
 	// -- parameters --
+
+	@Parameter
+	private LogService log;
 
 	@Parameter
 	private DatasetService dataSrv;
@@ -153,10 +156,10 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 			ds = ioService.loadDataset(imageFile.getAbsolutePath());
 		}
 		catch (final ImgIOException e) {
-			Log.error(e);
+			log.error(e);
 		}
 		catch (final IncompatibleTypeException e) {
-			Log.error(e);
+			log.error(e);
 		}
 
 		// did we successfully load a background image?
@@ -179,7 +182,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 
 		// Did we fail to load a valid dataset?
 		if (ds == null) {
-			Log.warn("Could not load a 3 channel unsigned 8 bit image as backdrop");
+			log.warn("Could not load a 3 channel unsigned 8 bit image as backdrop");
 			// make a black 3 channel 8-bit unsigned background image.
 			ds =
 				dataSrv.create(new long[] { 500, 500, 3 }, title, new AxisType[] {
@@ -202,7 +205,7 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 		final File aboutDir = new File(FileUtils.getImageJDirectory(), "about");
 		if (!aboutDir.exists()) {
 			// no "about" folder found
-			Log.warn("About folder '" + aboutDir.getPath() + "' does not exist.");
+			log.warn("About folder '" + aboutDir.getPath() + "' does not exist.");
 			return null;
 		}
 

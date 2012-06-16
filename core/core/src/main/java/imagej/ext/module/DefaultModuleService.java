@@ -43,11 +43,11 @@ import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
+import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
 import imagej.util.ClassUtils;
-import imagej.util.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,6 +68,7 @@ public class DefaultModuleService extends AbstractService implements
 	ModuleService
 {
 
+	private final LogService log;
 	private final EventService eventService;
 	private final ThreadService threadService;
 
@@ -82,10 +83,11 @@ public class DefaultModuleService extends AbstractService implements
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultModuleService(final ImageJ context,
+	public DefaultModuleService(final ImageJ context, final LogService log,
 		final EventService eventService, final ThreadService threadService)
 	{
 		super(context);
+		this.log = log;
 		this.eventService = eventService;
 		this.threadService = threadService;
 	}
@@ -166,7 +168,7 @@ public class DefaultModuleService extends AbstractService implements
 			return run(module, pre, post, inputMap);
 		}
 		catch (final ModuleException e) {
-			Log.error("Could not execute module: " + info, e);
+			log.error("Could not execute module: " + info, e);
 		}
 		return null;
 	}
@@ -205,10 +207,10 @@ public class DefaultModuleService extends AbstractService implements
 			return future.get();
 		}
 		catch (final InterruptedException e) {
-			Log.error("Module execution interrupted", e);
+			log.error("Module execution interrupted", e);
 		}
 		catch (final ExecutionException e) {
-			Log.error("Error during module execution", e);
+			log.error("Error during module execution", e);
 		}
 		return null;
 	}
@@ -249,7 +251,7 @@ public class DefaultModuleService extends AbstractService implements
 		}
 		i++;
 		if (i != values.length) {
-			Log.warn("Argument mismatch: " + values.length + " of " + i +
+			log.warn("Argument mismatch: " + values.length + " of " + i +
 				" inputs provided:");
 		}
 		return inputMap;
@@ -264,14 +266,14 @@ public class DefaultModuleService extends AbstractService implements
 		for (final String name : inputMap.keySet()) {
 			final ModuleItem<?> input = module.getInfo().getInput(name);
 			if (input == null) {
-				Log.error("No such input: " + name);
+				log.error("No such input: " + name);
 				continue;
 			}
 			final Object value = inputMap.get(name);
 			final Class<?> type = input.getType();
 			final Object converted = ClassUtils.convert(value, type);
 			if (value != null && converted == null) {
-				Log.error("For input " + name + ": incompatible object " +
+				log.error("For input " + name + ": incompatible object " +
 					value.getClass().getName() + " for type " + type.getName());
 				continue;
 			}

@@ -45,7 +45,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.List;
 
@@ -82,6 +82,9 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 	 * at minimum contrast.
 	 */
 	private static final int MAX_POWER = 4;
+
+	@Parameter
+	private LogService log;
 
 	@Parameter(type = ItemIO.BOTH)
 	private DatasetView view;
@@ -201,7 +204,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		computeMinMax.process();
 		dataMin = computeMinMax.getMin().getRealDouble();
 		dataMax = computeMinMax.getMax().getRealDouble();
-		Log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
+		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
 	}
 
 	private void computeInitialMinMax() {
@@ -212,7 +215,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 			initialMax = conv.getMax();
 			break; // use only first channel, for now
 		}
-		Log.debug("computeInitialMinMax: initialMin=" + initialMin +
+		log.debug("computeInitialMinMax: initialMin=" + initialMin +
 			", initialMax=" + initialMax);
 	}
 
@@ -240,7 +243,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		min = (dataMax - dataMin) * minUnit + dataMin;
 		max = (dataMax - dataMin) * maxUnit + dataMin;
 
-		Log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" + b +
+		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" + b +
 			", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit + ", min=" +
 			min + ", max=" + max);
 	}
@@ -270,7 +273,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		brightness = (int) ((SLIDER_MAX - SLIDER_MIN) * bUnit + SLIDER_MIN + 0.5);
 		contrast = (int) ((SLIDER_MAX - SLIDER_MIN) * cUnit + SLIDER_MIN + 0.5);
 
-		Log.debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
+		log.debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
 			maxUnit + ", m=" + m + ", b=" + b + ", bUnit=" + bUnit + ", cUnit=" +
 			cUnit + ", brightness=" + brightness + ", contrast=" + contrast);
 	}
