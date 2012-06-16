@@ -70,8 +70,6 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 // TODO
 //   Have imageX.ext image file and imageX.ext.txt metadata files
@@ -92,9 +90,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
 		mnemonic = MenuConstants.HELP_MNEMONIC),
 	@Menu(label = "About ImageJ...", weight = 43) }, headless = true)
-public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin
-{
+public class AboutImageJ implements ImageJPlugin {
 
 	// -- constants --
 
@@ -109,7 +105,6 @@ public class AboutImageJ<T extends RealType<T> & NativeType<T>> implements
 	@Parameter
 	private DisplayService dispSrv;
 
-	@SuppressWarnings("rawtypes")
 	@Parameter
 	private IOService ioService;
 

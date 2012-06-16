@@ -48,8 +48,6 @@ import imagej.ui.UIService;
 import imagej.util.Log;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * Resets the current {@link Dataset} to its original state.
@@ -62,11 +60,8 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
 		accelerator = "control R") })
-public class RevertImage<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin
-{
+public class RevertImage implements ImageJPlugin {
 
-	@SuppressWarnings("rawtypes")
 	@Parameter
 	private IOService ioService;
 

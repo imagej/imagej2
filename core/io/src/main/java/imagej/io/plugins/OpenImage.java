@@ -51,8 +51,6 @@ import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * Opens the selected file as a {@link Dataset}.
@@ -65,11 +63,8 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
-public class OpenImage<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin
-{
+public class OpenImage implements ImageJPlugin {
 
-	@SuppressWarnings("rawtypes")
 	@Parameter
 	private IOService ioService;
 
