@@ -35,97 +35,37 @@
 
 package imagej.io;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.module.ModuleService;
-import imagej.io.event.FileOpenedEvent;
-import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 /**
- * Service that provides convenience methods for I/O.
+ * Interface for providing I/O convenience methods.
  * 
  * @author Curtis Rueden
  */
-@Service
-public final class IOService<T extends RealType<T> & NativeType<T>>
-	extends AbstractService
-{
-	
-	// TODO: eliminate bogus T parameter above. Rather, find a different way of
-	// handling ImgOpener's need to pass forward a T parameter.
+public interface IOService extends IService {
 
-	private EventService eventService;
-	private StatusService statusService;
-	private ModuleService moduleService;
-	private DatasetService datasetService;
+	EventService getEventService();
 
-	public IOService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	StatusService getStatusService();
 
-	public IOService(final ImageJ context, final EventService eventService,
-		final StatusService statusService, final ModuleService moduleService,
-		final DatasetService datasetService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.statusService = statusService;
-		this.moduleService = moduleService;
-		this.datasetService = datasetService;
-	}
+	ModuleService getModuleService();
 
-	// -- IOService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	public StatusService getStatusService() {
-		return statusService;
-	}
-
-	public ModuleService getModuleService() {
-		return moduleService;
-	}
-
-	public DatasetService getDatasetService() {
-		return datasetService;
-	}
+	DatasetService getDatasetService();
 
 	/** Loads a dataset from a source (such as a file on disk). */
-	public Dataset loadDataset(final String source) throws ImgIOException,
-		IncompatibleTypeException
-	{
-		if (source == null) return null;
-		final ImgOpener imageOpener = new ImgOpener();
-		imageOpener.addStatusListener(new StatusDispatcher(statusService));
-		final ImgPlus<T> imgPlus = imageOpener.openImg(source);
-		final Dataset dataset = datasetService.create(imgPlus);
-		eventService.publish(new FileOpenedEvent(source));
-		return dataset;
-	}
+	Dataset loadDataset(String source) throws ImgIOException,
+		IncompatibleTypeException;
 
 	/** Reverts the given dataset to its original source. */
-	public void revertDataset(final Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException
-	{
-		final String source = dataset.getSource();
-		if (source == null) return; // no way to revert
-		final Dataset revertedDataset = loadDataset(source);
-		revertedDataset.copyInto(dataset);
-	}
+	void revertDataset(Dataset dataset) throws ImgIOException,
+		IncompatibleTypeException;
 
 	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
 
