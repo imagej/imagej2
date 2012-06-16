@@ -2,12 +2,12 @@ ImageJ depends on several other software packages, each with its own license.
 
 You can generate an up-to-date list of dependencies from the source code:
 
-  cd ui/app
+  cd app
   mvn dependency:resolve
 
 Or to display them as a tree:
 
-  cd ui/app
+  cd app
   mvn dependency:tree
 
 As of this writing, the full list is as follows:
