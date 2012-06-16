@@ -52,7 +52,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Log;
+import imagej.log.LogService;
 import imagej.util.RealRect;
 
 import java.util.List;
@@ -79,6 +79,9 @@ public class ShadowsDemo implements ImageJPlugin {
 		ShadowsWest.KERNEL, ShadowsNorthwest.KERNEL };
 
 	// -- instance variables that are Parameters --
+
+	@Parameter
+	private LogService log;
 
 	@Parameter
 	private EventService eventService;
@@ -115,7 +118,7 @@ public class ShadowsDemo implements ImageJPlugin {
 		if (display == null) return;
 		currDisplay = display;
 		if (unsupportedImage()) {
-			Log.error("This command only works with a single plane of data");
+			log.error("This command only works with a single plane of data");
 			return;
 		}
 		subscribers = eventService.subscribe(this);

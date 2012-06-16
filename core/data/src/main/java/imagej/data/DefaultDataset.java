@@ -42,7 +42,7 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.util.Log;
+import imagej.log.LogService;
 import net.imglib2.Cursor;
 import net.imglib2.Positionable;
 import net.imglib2.RandomAccess;
@@ -77,6 +77,8 @@ import net.imglib2.type.numeric.RealType;
  */
 public class DefaultDataset extends AbstractData implements Dataset {
 
+	private final LogService log;
+
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
 	private boolean isDirty;
@@ -85,6 +87,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final ImgPlus<? extends RealType<?>> imgPlus)
 	{
 		super(context);
+		log = context.getService(LogService.class);
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;
@@ -189,7 +192,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final Img<? extends RealType<?>> img = imgPlus.getImg();
 		if (!(img instanceof PlanarAccess)) {
 			// cannot set by reference
-			Log.error("Cannot set plane for non-planar image");
+			log.error("Cannot set plane for non-planar image");
 			return false;
 		}
 		// TODO - copy the plane if it cannot be set by reference

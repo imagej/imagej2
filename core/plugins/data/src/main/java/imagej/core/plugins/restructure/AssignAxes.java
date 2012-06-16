@@ -43,7 +43,7 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -73,6 +73,9 @@ import net.imglib2.meta.AxisType;
 public class AssignAxes extends DynamicPlugin {
 
 	// -- Parameters --
+
+	@Parameter
+	private LogService log;
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
@@ -142,7 +145,7 @@ public class AssignAxes extends DynamicPlugin {
 		for (int i = 0; i < axes.length; i++) {
 			for (int j = i+1; j < axes.length; j++) {
 				if (axes[i].equals(axes[j])) {
-					Log.error("At least one axis designation is repeated:"
+					log.error("At least one axis designation is repeated:"
 							+ " axis designations must be mututally exclusive");
 					return true;
 				}

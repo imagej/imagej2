@@ -52,9 +52,9 @@ import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ext.tool.event.ToolDeactivatedEvent;
+import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +75,7 @@ public class DefaultToolService extends AbstractService implements ToolService {
 
 	private static final double SEPARATOR_DISTANCE = 10;
 
+	private final LogService log;
 	private final EventService eventService;
 	private final PluginService pluginService;
 
@@ -94,10 +95,11 @@ public class DefaultToolService extends AbstractService implements ToolService {
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultToolService(final ImageJ context, final EventService eventService,
-		final PluginService pluginService)
+	public DefaultToolService(final ImageJ context, final LogService log,
+		final EventService eventService, final PluginService pluginService)
 	{
 		super(context);
+		this.log = log;
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 
@@ -288,7 +290,7 @@ public class DefaultToolService extends AbstractService implements ToolService {
 				tool.setInfo(info);
 			}
 			catch (final InstantiableException e) {
-				Log.error("Invalid tool: " + info.getName(), e);
+				log.error("Invalid tool: " + info.getName(), e);
 				continue;
 			}
 			if (info.isAlwaysActive()) {

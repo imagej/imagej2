@@ -35,9 +35,9 @@
 
 package imagej.event;
 
+import imagej.log.LogService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
-import imagej.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
@@ -60,6 +60,7 @@ import org.bushe.swing.event.ThreadSafeEventService;
 public class DefaultEventBus extends ThreadSafeEventService {
 
 	private final ThreadService threadService;
+	private final LogService log;
 
 	// TODO - Think more about how publishing events should work.
 	// Unfortunately, without further care elsewhere in the code (subject to
@@ -68,9 +69,12 @@ public class DefaultEventBus extends ThreadSafeEventService {
 	// processed.
 	// See ticket #719: http://trac.imagej.net/ticket/719
 
-	public DefaultEventBus(final ThreadService threadService) {
+	public DefaultEventBus(final ThreadService threadService,
+		final LogService log)
+	{
 		super(200L, false, null, null, null);
 		this.threadService = threadService;
+		this.log = log;
 	}
 
 	// -- DefaultEventBus methods --
@@ -164,7 +168,7 @@ public class DefaultEventBus extends ThreadSafeEventService {
 
 				@Override
 				public void run() {
-					Log.debug("publish(" + event + "," + topic + "," + eventObj +
+					log.debug("publish(" + event + "," + topic + "," + eventObj +
 						"), called from non-EDT Thread:" + Arrays.toString(callingStack));
 					DefaultEventBus.super.publish(event, topic, eventObj, subscribers,
 						vetoSubscribers, callingStack);
@@ -172,10 +176,10 @@ public class DefaultEventBus extends ThreadSafeEventService {
 			});
 		}
 		catch (final InterruptedException exc) {
-			Log.error(exc);
+			log.error(exc);
 		}
 		catch (final InvocationTargetException exc) {
-			Log.error(exc);
+			log.error(exc);
 		}
 	}
 
@@ -189,7 +193,7 @@ public class DefaultEventBus extends ThreadSafeEventService {
 
 			@Override
 			public void run() {
-				Log.debug("publish(" + event + "," + topic + "," + eventObj +
+				log.debug("publish(" + event + "," + topic + "," + eventObj +
 					"), called from non-EDT Thread:" + Arrays.toString(callingStack));
 				DefaultEventBus.super.publish(event, topic, eventObj, subscribers,
 					vetoSubscribers, callingStack);

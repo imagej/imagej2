@@ -33,46 +33,60 @@
  * #L%
  */
 
-package imagej.core.plugins.app;
+package imagej.log;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.log.LogService;
-import imagej.platform.PlatformService;
-
-import java.io.IOException;
-import java.net.URL;
+import imagej.service.IService;
 
 /**
- * Open the ImageJ web site in a browser.
+ * Interface for the logging service.
+ * <p>
+ * The service supports five common logging levels: error, warn, info, trace and
+ * debug. It provides methods for logging messages, exception stack traces and
+ * combinations of the two.
+ * </p>
  * 
- * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-@Plugin(iconPath = "/icons/plugins/world_link.png", menu = {
-	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
-		mnemonic = MenuConstants.HELP_MNEMONIC),
-	@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)
-public class ImageJWebsite implements ImageJPlugin {
+public interface LogService extends IService {
 
-	@Parameter
-	private LogService log;
+	void debug(Object msg);
 
-	@Parameter
-	private PlatformService platformService;
+	void debug(Throwable t);
 
-	public final static String url = "http://developer.imagej.net";
+	void debug(Object msg, Throwable t);
 
-	@Override
-	public void run() {
-		try {
-			platformService.open(new URL(url));
-		}
-		catch (final IOException e) {
-			log.error(e);
-		}
-	}
+	void error(Object msg);
+
+	void error(Throwable t);
+
+	void error(Object msg, Throwable t);
+
+	void info(Object msg);
+
+	void info(Throwable t);
+
+	void info(Object msg, Throwable t);
+
+	void trace(Object msg);
+
+	void trace(Throwable t);
+
+	void trace(Object msg, Throwable t);
+
+	void warn(Object msg);
+
+	void warn(Throwable t);
+
+	void warn(Object msg, Throwable t);
+
+	boolean isDebug();
+
+	boolean isError();
+
+	boolean isInfo();
+
+	boolean isTrace();
+
+	boolean isWarn();
 
 }

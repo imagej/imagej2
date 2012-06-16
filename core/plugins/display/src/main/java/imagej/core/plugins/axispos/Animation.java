@@ -36,7 +36,7 @@
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
-import imagej.util.Log;
+import imagej.log.LogService;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -53,6 +53,7 @@ import net.imglib2.meta.AxisType;
 public class Animation implements Runnable {
 
 	private final ImageDisplay display;
+	private final LogService log;
 
 	private boolean active;
 	private Thread thread;
@@ -70,6 +71,7 @@ public class Animation implements Runnable {
 	/** Creates an animation for the given {@link ImageDisplay}. */
 	public Animation(final ImageDisplay display) {
 		this.display = display;
+		log = display.getContext().getService(LogService.class);
 
 		// assign default animation options
 		if (display.numDimensions() > 2) {
@@ -110,7 +112,7 @@ public class Animation implements Runnable {
 				thread.join();
 			}
 			catch (final InterruptedException exc) {
-				Log.error("Error stopping animation", exc);
+				log.error("Error stopping animation", exc);
 			}
 			thread = null;
 		}

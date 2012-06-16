@@ -33,125 +33,157 @@
  * #L%
  */
 
-package imagej.util;
+package imagej.log;
 
-import imagej.log.LogService;
+import imagej.ImageJ;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple logging utility class that uses <a
+ * Default service for logging, implemented using <a
  * href="http://www.slf4j.org/">SLF4J</a>.
- * <p>
- * The class supports five common logging levels: error, warn, info, trace and
- * debug. It provides methods for logging messages, exception stack traces
- * and combinations of the two.
- * </p>
  * 
  * @author Curtis Rueden
- * @deprecated Use {@link LogService} instead.
  */
-@Deprecated
-public final class Log {
+@Service
+public final class DefaultLogService extends AbstractService implements
+	LogService
+{
 
-	private Log() {
-		// prevent instantiation of utility class
+	private Logger logger;
+
+	// -- Constructors --
+
+	public DefaultLogService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
 	}
 
-	private static Logger logger = LoggerFactory.getLogger(Log.class);
+	public DefaultLogService(final ImageJ context) {
+		super(context);
 
-	public static Logger getLogger() {
+		logger = LoggerFactory.getLogger(DefaultLogService.class);
+	}
+
+	// -- DefaultLogService methods --
+
+	public Logger getLogger() {
 		return logger;
 	}
 
-	public static void setLogger(final Logger logger) {
-		Log.logger = logger;
+	public void setLogger(final Logger logger) {
+		this.logger = logger;
 	}
 
-	public static void debug(final Object msg) {
+	// -- LogService methods --
+
+	@Override
+	public void debug(final Object msg) {
 		logger.debug(s(msg));
 	}
 
-	public static void debug(final Throwable t) {
+	@Override
+	public void debug(final Throwable t) {
 		debug("Exception", t);
 	}
 
-	public static void debug(final Object msg, final Throwable t) {
+	@Override
+	public void debug(final Object msg, final Throwable t) {
 		logger.debug(s(msg), t);
 	}
 
-	public static void error(final Object msg) {
+	@Override
+	public void error(final Object msg) {
 		logger.error(s(msg));
 	}
 
-	public static void error(final Throwable t) {
+	@Override
+	public void error(final Throwable t) {
 		error("Exception", t);
 	}
 
-	public static void error(final Object msg, final Throwable t) {
+	@Override
+	public void error(final Object msg, final Throwable t) {
 		logger.error(s(msg), t);
 	}
 
-	public static void info(final Object msg) {
+	@Override
+	public void info(final Object msg) {
 		logger.info(s(msg));
 	}
 
-	public static void info(final Throwable t) {
+	@Override
+	public void info(final Throwable t) {
 		info("Exception", t);
 	}
 
-	public static void info(final Object msg, final Throwable t) {
+	@Override
+	public void info(final Object msg, final Throwable t) {
 		logger.info(s(msg), t);
 	}
 
-	public static void trace(final Object msg) {
+	@Override
+	public void trace(final Object msg) {
 		logger.trace(s(msg));
 	}
 
-	public static void trace(final Throwable t) {
+	@Override
+	public void trace(final Throwable t) {
 		trace("Exception", t);
 	}
 
-	public static void trace(final Object msg, final Throwable t) {
+	@Override
+	public void trace(final Object msg, final Throwable t) {
 		logger.trace(s(msg), t);
 	}
 
-	public static void warn(final Object msg) {
+	@Override
+	public void warn(final Object msg) {
 		logger.warn(s(msg));
 	}
 
-	public static void warn(final Throwable t) {
+	@Override
+	public void warn(final Throwable t) {
 		warn("Exception", t);
 	}
 
-	public static void warn(final Object msg, final Throwable t) {
+	@Override
+	public void warn(final Object msg, final Throwable t) {
 		logger.warn(s(msg), t);
 	}
 
-	public static boolean isDebug() {
+	@Override
+	public boolean isDebug() {
 		return logger.isDebugEnabled();
 	}
 
-	public static boolean isError() {
+	@Override
+	public boolean isError() {
 		return logger.isErrorEnabled();
 	}
 
-	public static boolean isInfo() {
+	@Override
+	public boolean isInfo() {
 		return logger.isInfoEnabled();
 	}
 
-	public static boolean isTrace() {
+	@Override
+	public boolean isTrace() {
 		return logger.isTraceEnabled();
 	}
 
-	public static boolean isWarn() {
+	@Override
+	public boolean isWarn() {
 		return logger.isWarnEnabled();
 	}
 
 	// -- Helper methods --
 
-	private static String s(final Object o) {
+	private String s(final Object o) {
 		return o == null ? null : o.toString();
 	}
 

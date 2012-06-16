@@ -43,7 +43,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +63,9 @@ import java.util.concurrent.Future;
 public class InvokePluginTest implements ImageJPlugin {
 
 	@Parameter
+	private LogService log;
+
+	@Parameter
 	private ModuleService moduleService;
 
 	@Parameter
@@ -73,7 +76,7 @@ public class InvokePluginTest implements ImageJPlugin {
 		final Future<Module> future = invokeWithArgs(); // or invokeWithMap()
 		final Module module = moduleService.waitFor(future);
 		final Dataset dataset = (Dataset) module.getOutput("dataset");
-		Log.info("InvokePluginTest: dataset = " + dataset);
+		log.info("InvokePluginTest: dataset = " + dataset);
 	}
 
 	public Future<Module> invokeWithArgs() {
