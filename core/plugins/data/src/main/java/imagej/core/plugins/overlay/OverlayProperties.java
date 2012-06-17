@@ -112,7 +112,9 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		this.overlays = overlays;
 	}
 	
-	/** Updates all elements from the first overlay within the list of overlays. */
+	/**
+	 * Updates all elements from the first overlay within the list of overlays.
+	 */
 	protected void updateValues() {
 		// set default values to match the first overlay
 		if (overlays.size() > 0) {
