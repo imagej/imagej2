@@ -85,7 +85,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 		sm.append("name", name);
 		sm.append("label", label);
 		sm.append("description", description);
-		sm.append("menu", menuPath.getMenuString());
+		sm.append("menu", menuPath == null ? null : menuPath.getMenuString());
 		sm.append("iconPath", iconPath);
 		sm.append("priority", priority, Integer.MAX_VALUE);
 		if (selectable) {
