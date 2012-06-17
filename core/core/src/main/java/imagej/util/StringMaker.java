@@ -64,6 +64,11 @@ public final class StringMaker {
 
 	// -- StringMaker methods --
 
+	public void append(final String s) {
+		if (builder.length() > 0) builder.append(", ");
+		builder.append(s);
+	}
+
 	public void append(final String key, final Object value) {
 		append(key, value, null);
 	}
