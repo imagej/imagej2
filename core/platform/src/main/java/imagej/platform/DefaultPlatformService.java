@@ -41,10 +41,10 @@ import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.util.Log;
 
 import java.io.IOException;
 import java.net.URL;
@@ -62,6 +62,7 @@ public final class DefaultPlatformService extends AbstractService implements
 	PlatformService
 {
 
+	private final LogService log;
 	private final EventService eventService;
 	private final PluginService pluginService;
 	private final AppService appService;
@@ -77,11 +78,12 @@ public final class DefaultPlatformService extends AbstractService implements
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultPlatformService(final ImageJ context,
+	public DefaultPlatformService(final ImageJ context, final LogService log,
 		final EventService eventService, final PluginService pluginService,
 		final AppService appEventService)
 	{
 		super(context);
+		this.log = log;
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 		this.appService = appEventService;
@@ -89,10 +91,10 @@ public final class DefaultPlatformService extends AbstractService implements
 		final List<Platform> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
 		for (final Platform platform : platforms) {
-			Log.info("Configuring platform: " + platform.getClass().getName());
+			log.info("Configuring platform: " + platform.getClass().getName());
 			platform.configure(this);
 		}
-		if (platforms.size() == 0) Log.info("No platforms to configure.");
+		if (platforms.size() == 0) log.info("No platforms to configure.");
 		// ENABLE NEXT LINE and all plugins run twice
 		// DISABLE NEXT LINE and default menu disappears
 		subscribeToEvents(eventService);
@@ -134,7 +136,7 @@ public final class DefaultPlatformService extends AbstractService implements
 		}
 		if (exception != null) throw exception;
 
-		Log.error("Could not find a browser; URL=" + url);
+		log.error("Could not find a browser; URL=" + url);
 		throw new IOException("No browser found");
 	}
 
@@ -180,7 +182,7 @@ public final class DefaultPlatformService extends AbstractService implements
 				platforms.add(platform);
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid platform: " + info.getClassName(), e);
+				log.warn("Invalid platform: " + info.getClassName(), e);
 			}
 		}
 		return platforms;
