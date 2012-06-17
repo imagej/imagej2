@@ -139,8 +139,8 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 	public String toString() {
 		final StringMaker sm = new StringMaker();
 		sm.append("class", className);
-		sm.append(", ", super.toString());
-		sm.append(", pluginType", pluginType);
+		sm.append(super.toString());
+		sm.append("pluginType", pluginType);
 		return sm.toString();
 	}
 
