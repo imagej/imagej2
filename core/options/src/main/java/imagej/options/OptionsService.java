@@ -41,9 +41,12 @@ import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleRunner;
+import imagej.ext.plugin.InitPreprocessor;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.plugin.ServicePreprocessor;
+import imagej.ext.plugin.ValidityPreprocessor;
 import imagej.ext.plugin.process.PreprocessorPlugin;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
@@ -213,9 +216,14 @@ public class OptionsService extends AbstractService {
 			return null;
 		}
 
-		// execute available preprocessors on the newly created options plugin
+		// execute key preprocessors on the newly created options plugin
+		final ArrayList<PluginInfo<? extends PreprocessorPlugin>> preInfos =
+			new ArrayList<PluginInfo<? extends PreprocessorPlugin>>();
+		preInfos.add(pluginService.getPlugin(ValidityPreprocessor.class));
+		preInfos.add(pluginService.getPlugin(ServicePreprocessor.class));
+		preInfos.add(pluginService.getPlugin(InitPreprocessor.class));
 		final List<? extends PreprocessorPlugin> pre =
-			pluginService.createInstancesOfType(PreprocessorPlugin.class);
+			pluginService.createInstances(preInfos);
 		final ModuleRunner moduleRunner =
 			new ModuleRunner(getContext(), optionsPlugin, pre, null);
 		moduleRunner.preProcess();
