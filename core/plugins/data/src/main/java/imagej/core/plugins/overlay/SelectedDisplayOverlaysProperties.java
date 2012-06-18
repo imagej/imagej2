@@ -47,7 +47,6 @@ import imagej.ext.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * A plugin to change the properties (e.g., line color, line width) of a set of
  * overlays selected in an image display.

@@ -32,12 +32,18 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.updater;
 
 import imagej.updater.gui.ProgressDialog;
 import imagej.updater.gui.SwingUserInterface;
 import imagej.util.MersenneTwisterFast;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class UpdaterGUITest {
 	public static void main(String[] args) {
 		//testProgressDialog();

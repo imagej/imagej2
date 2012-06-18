@@ -194,17 +194,19 @@ import java.util.Random;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  *
- @version 17
-*/
-
-// Note: this class is hard-inlined in all of its methods.  This makes some of
-// the methods well-nigh unreadable in their complexity.  In fact, the Mersenne
-// Twister is fairly easy code to understand: if you're trying to get a handle
-// on the code, I strongly suggest looking at MersenneTwister.java first.
-// -- Sean
-
+ * @author Sean Luke
+ * @version 17
+ */
 public strictfp class MersenneTwisterFast implements Serializable, Cloneable
     {
+
+    // Note: this class is hard-inlined in all of its methods.  This makes some
+    // of the methods well-nigh unreadable in their complexity.  In fact, the
+    // Mersenne Twister is fairly easy code to understand: if you're trying to
+    // get a handle on the code, I strongly suggest looking at
+    // MersenneTwister.java first.
+    // -- Sean
+
     // Serialization
     private static final long serialVersionUID = -8219700664442619525L;  // locked as of Version 15
     

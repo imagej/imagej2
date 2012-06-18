@@ -39,6 +39,11 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class SkipHashedLines extends BufferedInputStream {
 	protected boolean atLineStart;
 

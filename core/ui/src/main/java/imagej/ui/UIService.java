@@ -51,7 +51,11 @@ import imagej.thread.ThreadService;
 
 import java.util.List;
 
-/** Interface for service that handles ImageJ user interfaces. */
+/**
+ * Interface for service that handles ImageJ user interfaces.
+ * 
+ * @author Curtis Rueden
+ */
 public interface UIService extends IService {
 
 	EventService getEventService();

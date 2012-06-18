@@ -43,13 +43,11 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-
 /**
  * Stores data that is used by various OverlayManager implementations. There
  * is one {@link OverlayInfoList} per {@link OverlayService}.
  * 
  * @author Barry DeZonia
- *
  */
 public class OverlayInfoList {
 

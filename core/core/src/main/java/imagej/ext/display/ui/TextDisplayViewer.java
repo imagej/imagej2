@@ -35,11 +35,10 @@
 
 package imagej.ext.display.ui;
 
-
 /**
- * @author Lee Kamentsky
- *
  * A display viewer for a display of strings.
+ * 
+ * @author Lee Kamentsky
  */
 public interface TextDisplayViewer extends DisplayViewer<String> {
 	// no methods to define. simply enforces type

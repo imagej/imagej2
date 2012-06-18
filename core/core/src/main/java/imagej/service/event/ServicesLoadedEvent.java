@@ -38,11 +38,10 @@ package imagej.service.event;
 import imagej.ImageJ;
 import imagej.event.ImageJEvent;
 
-
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 public class ServicesLoadedEvent extends ImageJEvent {
 

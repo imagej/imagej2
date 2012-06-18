@@ -59,7 +59,6 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
-
 // TODO
 // this implementation does not support a "List" button which shows
 // the LUT in tabular form when clicked
