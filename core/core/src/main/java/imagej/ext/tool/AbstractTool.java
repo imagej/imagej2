@@ -62,17 +62,17 @@ import imagej.ext.plugin.PluginInfo;
  */
 public abstract class AbstractTool implements Tool {
 
-	private PluginInfo<Tool> info;
+	private PluginInfo<? extends Tool> info;
 
 	private ImageJ context;
 
 	@Override
-	public PluginInfo<Tool> getInfo() {
+	public PluginInfo<? extends Tool> getInfo() {
 		return info;
 	}
 
 	@Override
-	public void setInfo(final PluginInfo<Tool> info) {
+	public void setInfo(final PluginInfo<? extends Tool> info) {
 		this.info = info;
 	}
 

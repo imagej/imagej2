@@ -280,7 +280,7 @@ public final class DefaultUIService extends AbstractService implements
 	/** Discovers available user interfaces. */
 	private List<UserInterface> discoverUIs() {
 		final List<UserInterface> uis = new ArrayList<UserInterface>();
-		for (final PluginInfo<UserInterface> info : pluginService
+		for (final PluginInfo<? extends UserInterface> info : pluginService
 			.getPluginsOfType(UserInterface.class))
 		{
 			try {

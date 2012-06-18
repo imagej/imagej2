@@ -151,8 +151,8 @@ public final class DefaultDisplayService extends AbstractService implements
 	}
 
 	@Override
-	public <D extends Display<?>> List<PluginInfo<D>> getDisplayPluginsOfType(
-		final Class<D> type)
+	public <D extends Display<?>> List<PluginInfo<? extends D>>
+		getDisplayPluginsOfType(final Class<D> type)
 	{
 		return pluginService.getPluginsOfType(type);
 	}

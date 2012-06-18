@@ -88,7 +88,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 
 	private void populateToolBar() {
 		for (final Tool tool : toolService.getTools()) {
-			final PluginInfo<Tool> info = tool.getInfo();
+			final PluginInfo<? extends Tool> info = tool.getInfo();
 			try {
 				final Button button = createButton(tool);
 				toolButtons.put(info.getName(), button);
@@ -102,7 +102,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 	private Button createButton(final Tool tool)
 		throws InstantiableException
 	{
-		final PluginInfo<Tool> info = tool.getInfo();
+		final PluginInfo<? extends Tool> info = tool.getInfo();
 		final String name = info.getName();
 		final URL iconURL = info.getIconURL();
 

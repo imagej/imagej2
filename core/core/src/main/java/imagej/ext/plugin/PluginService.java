@@ -111,7 +111,8 @@ public interface PluginService extends IService {
 	/**
 	 * Gets the list of plugins of the given type (e.g., {@link ImageJPlugin}).
 	 */
-	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(Class<P> type);
+	<P extends IPlugin> List<PluginInfo<? extends P>> getPluginsOfType(
+		Class<P> type);
 
 	/**
 	 * Gets the list of plugins of the given class.
@@ -180,7 +181,7 @@ public interface PluginService extends IService {
 	 * be executed, etc.
 	 * </p>
 	 */
-	<P extends IPlugin> List<P> createInstancesOfType(Class<P> type);
+	<P extends IPlugin> List<? extends P> createInstancesOfType(Class<P> type);
 
 	/**
 	 * Creates an instance of each of the plugins on the given list.
@@ -190,7 +191,8 @@ public interface PluginService extends IService {
 	 * be executed, etc.
 	 * </p>
 	 */
-	<P extends IPlugin> List<P> createInstances(List<PluginInfo<P>> infos);
+	<P extends IPlugin> List<? extends P> createInstances(
+		List<PluginInfo<? extends P>> infos);
 
 	/**
 	 * Executes the first runnable plugin of the given class name.

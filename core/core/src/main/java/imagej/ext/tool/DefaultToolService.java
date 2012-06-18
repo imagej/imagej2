@@ -274,7 +274,7 @@ public class DefaultToolService extends AbstractService implements ToolService {
 
 	private void createTools() {
 		// discover available tools
-		final List<PluginInfo<Tool>> toolEntries =
+		final List<PluginInfo<? extends Tool>> toolEntries =
 			pluginService.getPluginsOfType(Tool.class);
 
 		// create tool instances
@@ -282,7 +282,7 @@ public class DefaultToolService extends AbstractService implements ToolService {
 		alwaysActiveToolList = new ArrayList<Tool>();
 		tools = new HashMap<String, Tool>();
 		toolList = new ArrayList<Tool>();
-		for (final PluginInfo<Tool> info : toolEntries) {
+		for (final PluginInfo<? extends Tool> info : toolEntries) {
 			final Tool tool;
 			try {
 				tool = info.createInstance();

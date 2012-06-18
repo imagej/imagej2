@@ -182,12 +182,12 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(
+	public <P extends IPlugin> List<PluginInfo<? extends P>> getPluginsOfType(
 		final Class<P> type)
 	{
 		final List<PluginInfo<?>> list = pluginIndex.get(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<P>> result = (List) list;
+		final List<PluginInfo<? extends P>> result = (List) list;
 		return result;
 	}
 
@@ -258,17 +258,18 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends IPlugin> List<P> createInstancesOfType(final Class<P> type)
+	public <P extends IPlugin> List<? extends P> createInstancesOfType(
+		final Class<P> type)
 	{
 		return createInstances(getPluginsOfType(type));
 	}
 
 	@Override
-	public <P extends IPlugin> List<P> createInstances(
-		final List<PluginInfo<P>> infos)
+	public <P extends IPlugin> List<? extends P> createInstances(
+		final List<PluginInfo<? extends P>> infos)
 	{
 		final ArrayList<P> list = new ArrayList<P>();
-		for (final PluginInfo<P> info : infos) {
+		for (final PluginInfo<? extends P> info : infos) {
 			try {
 				list.add(info.createInstance());
 			}
@@ -367,11 +368,11 @@ public class DefaultPluginService extends AbstractService implements
 
 	}
 
-	private List<PreprocessorPlugin> pre() {
+	private List<? extends PreprocessorPlugin> pre() {
 		return createInstancesOfType(PreprocessorPlugin.class);
 	}
 
-	private List<PostprocessorPlugin> post() {
+	private List<? extends PostprocessorPlugin> post() {
 		return createInstancesOfType(PostprocessorPlugin.class);
 	}
 

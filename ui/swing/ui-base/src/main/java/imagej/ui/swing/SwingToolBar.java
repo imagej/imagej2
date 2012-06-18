@@ -124,7 +124,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	private AbstractButton createButton(final Tool tool)
 		throws InstantiableException
 	{
-		final PluginInfo<Tool> info = tool.getInfo();
+		final PluginInfo<? extends Tool> info = tool.getInfo();
 		final String name = info.getName();
 		final String label = info.getLabel();
 		final URL iconURL = info.getIconURL();
@@ -192,7 +192,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	@EventHandler
 	protected void onEvent(final ToolActivatedEvent event) {
-		final PluginInfo<Tool> info = event.getTool().getInfo();
+		final PluginInfo<? extends Tool> info = event.getTool().getInfo();
 		if (info == null) return; // no info, no button
 		final String name = info.getName();
 		if (name == null) return; // no name, no button?
@@ -205,7 +205,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	@EventHandler
 	protected void onEvent(final ToolDeactivatedEvent event) {
-		final PluginInfo<Tool> info = event.getTool().getInfo();
+		final PluginInfo<? extends Tool> info = event.getTool().getInfo();
 		if (info == null) return; // no info, no button
 		final String name = info.getName();
 		if (name == null) return; // no name, no button?

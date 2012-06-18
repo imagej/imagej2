@@ -98,13 +98,13 @@ public class OptionsService extends AbstractService {
 	/** Gets a list of all available options. */
 	public List<OptionsPlugin> getOptions() {
 		// get the list of available options plugins
-		final List<PluginInfo<OptionsPlugin>> infos =
+		final List<PluginInfo<? extends OptionsPlugin>> infos =
 			pluginService.getPluginsOfType(OptionsPlugin.class);
 
 		// instantiate one instance of each options plugin
 		final ArrayList<OptionsPlugin> optionsPlugins =
 			new ArrayList<OptionsPlugin>();
-		for (final PluginInfo<OptionsPlugin> info : infos) {
+		for (final PluginInfo<? extends OptionsPlugin> info : infos) {
 			optionsPlugins.add(createInstance(info));
 		}
 
@@ -214,7 +214,7 @@ public class OptionsService extends AbstractService {
 		}
 
 		// execute available preprocessors on the newly created options plugin
-		final List<PreprocessorPlugin> pre =
+		final List<? extends PreprocessorPlugin> pre =
 			pluginService.createInstancesOfType(PreprocessorPlugin.class);
 		final ModuleRunner moduleRunner =
 			new ModuleRunner(getContext(), optionsPlugin, pre, null);

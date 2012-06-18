@@ -65,10 +65,10 @@ import imagej.ext.plugin.PluginInfo;
 public interface Tool extends IPlugin, IContext {
 
 	/** Gets the info describing the tool. */
-	PluginInfo<Tool> getInfo();
+	PluginInfo<? extends Tool> getInfo();
 
 	/** Sets the info describing the tool. */
-	void setInfo(PluginInfo<Tool> info);
+	void setInfo(PluginInfo<? extends Tool> info);
 
 	/** Sets the application context of the tool. */
 	void setContext(ImageJ context);

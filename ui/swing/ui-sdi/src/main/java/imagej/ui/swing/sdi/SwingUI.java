@@ -119,7 +119,7 @@ public class SwingUI extends AbstractSwingUI {
 		final PluginService pluginService = imageJ.getService(PluginService.class);
 		final EventService eventService = imageJ.getService(EventService.class);
 		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<DisplayViewer> info : pluginService
+		final PluginInfo<? extends DisplayViewer> info : pluginService
 			.getPluginsOfType(DisplayViewer.class))
 		{
 			try {
