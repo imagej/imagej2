@@ -46,5 +46,5 @@ import imagej.IContext;
  * @see Service
  */
 public interface IService extends IContext {
-
+	// top-level marker interface for discovery via SezPoz
 }
