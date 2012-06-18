@@ -35,7 +35,6 @@
 
 package imagej.options;
 
-import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
@@ -85,6 +84,9 @@ public class OptionsPlugin extends DynamicPlugin {
 	@Parameter
 	protected EventService eventService;
 
+	@Parameter
+	private PluginService pluginService;
+
 	// -- OptionsPlugin methods --
 
 	/** Loads option values from persistent storage. */
@@ -116,7 +118,6 @@ public class OptionsPlugin extends DynamicPlugin {
 	private <R extends RunnablePlugin> PluginModule<R>
 		createModule(final R plugin)
 	{
-		final PluginService pluginService = ImageJ.get(PluginService.class);
 		@SuppressWarnings("unchecked")
 		final Class<R> pluginClass = (Class<R>) plugin.getClass();
 		final PluginModuleInfo<R> info =
