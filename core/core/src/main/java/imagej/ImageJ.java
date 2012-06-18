@@ -62,6 +62,11 @@ public class ImageJ {
 		return createContext((List<Class<? extends IService>>) null);
 	}
 
+	/** Creates a new ImageJ application context with no services. */
+	public static ImageJ createEmptyContext() {
+		return createContext(new ArrayList<Class<? extends IService>>());
+	}
+
 	/**
 	 * Creates a new ImageJ application context with the specified service (and
 	 * any required service dependencies).
