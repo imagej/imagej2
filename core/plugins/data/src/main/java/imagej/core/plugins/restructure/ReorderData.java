@@ -86,7 +86,6 @@ public class ReorderData extends DynamicPlugin {
 
 	// -- Fields --
 
-	private String[] axisNames;
 	private int[] permutationAxisIndices;
 	private AxisType[] desiredAxisOrder;
 
@@ -100,14 +99,37 @@ public class ReorderData extends DynamicPlugin {
 		this.dataset = dataset;
 	}
 
+	/**
+	 * Sets newAxes[index] from existingAxes[fromPosition]
+	 * @param index The index within the new axis order
+	 * @param fromPosition The index within the current axis order
+	 */
+	public void setNewAxisIndex(int index, int fromPosition) {
+		AxisType axis = dataset.axis(fromPosition);
+		setInput(name(index), axis.getLabel());
+	}
+
+	/**
+	 * Gets newAxes[index] which is the position within existing Dataset's axes.   
+	 * @param index The index within the new axis order
+	 * @return
+	 */
+	public int getNewAxisIndex(int index) {
+		String axisName = (String) getInput(name(index));
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			if (axisName.equals(dataset.axis(i).getLabel())) return i;
+		}
+		throw new IllegalArgumentException("axis "+index+" not found");
+	}
+	
 	// -- Runnable methods --
 
 	/** Runs the plugin and reorders data as specified by user. */
 	@Override
 	public void run() {
 		if (dataset == null) return;
-		getAxisNamesInOrder();
-		setupDesiredAxisOrder();
+		String[] axisNames = getAxisNamesInOrder();
+		setupDesiredAxisOrder(axisNames);
 		if (inputBad()) return;
 		setupPermutationVars();
 		final ImgPlus<? extends RealType<?>> newImgPlus = getReorganizedData();
@@ -148,11 +170,12 @@ public class ReorderData extends DynamicPlugin {
 		return "Axis #" + i;
 	}
 
-	private void getAxisNamesInOrder() {
+	private String[] getAxisNamesInOrder() {
 		final Map<String, Object> inputs = getInputs();
-		axisNames = new String[dataset.getImgPlus().numDimensions()];
+		String[] axisNames = new String[dataset.getImgPlus().numDimensions()];
 		for (int i = 0; i < axisNames.length; i++)
 			axisNames[i] = (String) inputs.get(name(i));
+		return axisNames;
 	}
 
 	/**
@@ -160,7 +183,7 @@ public class ReorderData extends DynamicPlugin {
 	 * the user specified in the dialog. all axes are present rather than just
 	 * those present in the input Dataset.
 	 */
-	private void setupDesiredAxisOrder() {
+	private void setupDesiredAxisOrder(String[] axisNames) {
 		desiredAxisOrder = new AxisType[axisNames.length];
 		for (int i = 0; i < axisNames.length; i++)
 			desiredAxisOrder[i] = Axes.get(axisNames[i]);

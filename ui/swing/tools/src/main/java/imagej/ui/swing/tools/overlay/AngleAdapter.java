@@ -80,7 +80,13 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 
 	@Override
 	public AngleOverlay createNewOverlay() {
-		return new AngleOverlay(getContext());
+		AngleOverlay overlay = new AngleOverlay(getContext());
+		/* no effect
+		overlay.setEndPoint1(new RealPoint(new double[]{6,1}));
+		overlay.setCenterPoint(new RealPoint(new double[]{1,1}));
+		overlay.setEndPoint2(new RealPoint(new double[]{1,6}));
+		*/
+		return overlay;
 	}
 
 	@Override
@@ -96,6 +102,11 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 				super.draw(g);
 			}
 		};
+		/* no effect
+		figure.setEndPoint1(6, 1);
+		figure.setCenterPoint(1, 1);
+		figure.setEndPoint1(1,6);
+		*/
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
 		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
@@ -149,9 +160,15 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 	private class AngleFigure extends BezierFigure {
 		
 		public AngleFigure() {
+			// coords have no effect on initial placement in window
 			addNode(new BezierPath.Node(point(6,1)));
 			addNode(new BezierPath.Node(point(1,1)));
 			addNode(new BezierPath.Node(point(1,6)));
+			/* no effect
+			getNode(0).setControlPoint(0, point(6,1));
+			getNode(1).setControlPoint(0, point(1,1));
+			getNode(2).setControlPoint(0, point(1,6));
+			*/
 			setConnectable(false);
 		}
 		

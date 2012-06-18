@@ -54,8 +54,8 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Plugins>Sandbox>PointSet Test")
-public class PointSetTest implements ImageJPlugin {
+@Plugin(menuPath = "Plugins>Sandbox>PointSet Demo")
+public class PointSetDemo implements ImageJPlugin {
 
 	@Parameter(label="PointSet specification", type = ItemIO.INPUT)
 	private String specification;
