@@ -1,5 +1,7 @@
-#ij.plugin.Commands("new")                 # File>New
+ij.plugin.Commands("new")                 # File>New>Image...
 ij.plugin.Commands("open")                # File>Open
+ij.plugin.Commands("revert")              # File>Revert
+ij.plugin.Commands("save")                # File>Save
 ij.plugin.Commands("quit")                # File>Quit
 ij.plugin.Clipboard("scopy")              # Edit>Copy To System
 ij.plugin.filter.Filler("fill")           # Edit>Fill
@@ -22,9 +24,14 @@ ij.plugin.Compiler("options")             # Edit>Options>Compiler
 ij.plugin.Options("dicom")                # Edit>Options>DICOM
 ij.plugin.Options("misc")                 # Edit>Options>Misc.
 ij.plugin.Options("reset")                # Edit>Options>Reset...
+ij.plugin.Selection("all")                # Edit>Selection>Select All
+ij.plugin.Selection("none")               # Edit>Selection>Select None
+ij.plugin.AboutBox                        # Help>About ImageJ...
+ij.plugin.BrowserLauncher                 # Help>ImageJ Website...
 ij.plugin.filter.LutViewer                # Image>Color>Show LUT
 ij.plugin.Resizer("crop")                 # Image>Crop
 ij.plugin.Duplicator                      # Image>Duplicate
+ij.plugin.OverlayCommands("options")      # Image>Overlay>Overlay Options...
 ij.plugin.filter.Transformer("fliph")     # Image>Transform>Flip Horizontally
 ij.plugin.filter.Transformer("flipv")     # Image>Transform>Flip Vertically
 ij.plugin.filter.Transformer("left")      # Image>Transform>Rotate 90 Degrees Left
@@ -37,6 +44,7 @@ ij.plugin.Zoom("to")                      # Image>Zoom>To Selection
 ij.plugin.Zoom("set")                     # Image>Zoom>Set...
 ij.plugin.Zoom("max")                     # possible Image > Zoom command
 ij.plugin.frame.ContrastAdjuster          # Image>Adjust>Brightness/Contrast
+ij.plugin.OverlayCommands("remove")       # Image>Overlay>Remove Overlay
 ij.plugin.Converter("8-bit")              # Image>Type>8-bit
 ij.plugin.Converter("16-bit")             # Image>Type>16-bit
 ij.plugin.Converter("32-bit")             # Image>Type>32-bit
@@ -48,6 +56,8 @@ ij.plugin.StackEditor("delete")           # Image>Stacks>Delete Slice
 ij.plugin.Animator("start")               # Image>Stacks>Tools>Start Animation
 ij.plugin.Animator("stop")                # Image>Stacks>Tools>Stop Animation
 ij.plugin.Animator("options")             # Image>Stacks>Tools>Animation Options...
+ij.plugin.Thresholder("mask")             # Process>Binary>Convert to Mask
+ij.plugin.ImageCalculator                 # Process>Image Calculator
 ij.plugin.filter.Filters("smooth")        # Process>Smooth
 ij.plugin.filter.Filters("sharpen")       # Process>Sharpen
 ij.plugin.filter.Filters("edge")          # Process>Find Edges
@@ -57,6 +67,7 @@ ij.plugin.filter.SaltAndPepper            # Process>Noise>Salt and Pepper
 ij.plugin.filter.Shadows("north")         # Process>Shadows>North
 ij.plugin.filter.Shadows("northeast")     # Process>Shadows>Northeast
 ij.plugin.filter.Shadows("east")          # Process>Shadows>East
+ij.plugin.frame.Recorder                  # Plugins>Macros>Record...
 ij.plugin.filter.Shadows("southeast")     # Process>Shadows>Southeast
 ij.plugin.filter.Shadows("south")         # Process>Shadows>South
 ij.plugin.filter.Shadows("southwest")     # Process>Shadows>Southwest
@@ -90,4 +101,3 @@ ij.plugin.HyperStackConverter("hstostack") # Image>HyperStack>HyperStack To Stac
 #ij.plugin.Converter("RGB Color")          # Image>Type>RGB Color
 #ij.plugin.Converter("RGB Stack")          # Image>Type>RGB Stack
 #ij.plugin.Converter("HSB Stack")          # Image>Type>HSB Stack
-#ij.plugin.ImageCalculator                 # Process>Image Calculator  -- temporarily reenabled for testing
