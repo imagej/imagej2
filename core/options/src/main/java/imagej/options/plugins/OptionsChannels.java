@@ -36,7 +36,6 @@
 package imagej.options.plugins;
 
 import imagej.data.ChannelCollection;
-import imagej.event.EventService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.plugin.Menu;
@@ -108,13 +107,6 @@ public class OptionsChannels extends OptionsPlugin {
 		super.save();
 	}
 
-	// NB - TEMP - FIXME This is a way to generate events when we have not been
-	// run by the plugin service. When not run by plugin service our eventService
-	// instance variable is NULL.
-
-	public void setEventService(final EventService s) {
-		eventService = s;
-	}
 
 	public ChannelCollection getFgValues() {
 		return fgValues;
@@ -147,8 +139,6 @@ public class OptionsChannels extends OptionsPlugin {
 		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
 		if (eventService != null) eventService.publish(new OptionsEvent(this));
-		// TODO FIXME - find a way to get a handle on the current EventService so
-		// we can always publish those events.
 	}
 
 	public void setLastBgColor(final ColorRGB c) {
@@ -156,8 +146,6 @@ public class OptionsChannels extends OptionsPlugin {
 		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
 		if (eventService != null) eventService.publish(new OptionsEvent(this));
-		// TODO FIXME - find a way to get a handle on the current EventService so
-		// we can always publish those events.
 	}
 
 	// -- private helpers --

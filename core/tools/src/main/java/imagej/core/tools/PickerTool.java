@@ -36,7 +36,6 @@
 package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
-import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
@@ -67,7 +66,6 @@ public class PickerTool extends AbstractTool {
 	// -- instance variables --
 
 	private final PixelRecorder recorder = new PixelRecorder(true);
-	private EventService eventService = null;
 	private StatusService statusService = null;
 
 	// -- Tool methods --
@@ -84,14 +82,9 @@ public class PickerTool extends AbstractTool {
 			return;
 		}
 
-		eventService = getContext().getService(EventService.class);
 		statusService = getContext().getService(StatusService.class);
 
 		final OptionsChannels options = getOptions();
-
-		// FIXME Hack that allows options to publish events about the changing
-		// values. This is how IJ1 is informed about current FG/BG colors.
-		options.setEventService(eventService);
 
 		final ChannelCollection values = recorder.getValues();
 
