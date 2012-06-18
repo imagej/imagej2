@@ -88,25 +88,13 @@ public class OptionsChannels extends OptionsPlugin {
 	private ChannelCollection fgValues; // used by IJ2 consumers
 	private ChannelCollection bgValues; // used by IJ2 consumers
 
-	// -- OptionsChannels methods --
+	// -- Constructor --
 
 	public OptionsChannels() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	@Override
-	public void load() {
-		super.load();
-		fgValues = decode(fgValuesString);
-		bgValues = decode(bgValuesString);
-	}
-
-	@Override
-	public void save() {
-		cleanStrings();
-		super.save();
-	}
-
+	// -- OptionsChannels methods --
 
 	public ChannelCollection getFgValues() {
 		return fgValues;
@@ -146,6 +134,21 @@ public class OptionsChannels extends OptionsPlugin {
 		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
 		if (eventService != null) eventService.publish(new OptionsEvent(this));
+	}
+
+	// -- OptionsPlugin methods --
+
+	@Override
+	public void load() {
+		super.load();
+		fgValues = decode(fgValuesString);
+		bgValues = decode(bgValuesString);
+	}
+
+	@Override
+	public void save() {
+		cleanStrings();
+		super.save();
 	}
 
 	// -- private helpers --
@@ -215,4 +218,5 @@ public class OptionsChannels extends OptionsPlugin {
 		}
 		return builder.toString();
 	}
+
 }
