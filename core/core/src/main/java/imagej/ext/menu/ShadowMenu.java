@@ -41,8 +41,8 @@ import imagej.ext.menu.event.MenusAddedEvent;
 import imagej.ext.menu.event.MenusRemovedEvent;
 import imagej.ext.menu.event.MenusUpdatedEvent;
 import imagej.ext.module.ModuleInfo;
+import imagej.log.LogService;
 import imagej.util.ClassUtils;
-import imagej.util.Log;
 
 import java.lang.reflect.Array;
 import java.net.URL;
@@ -78,6 +78,9 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	/** Icon to use for leaf entries by default, if no icon is specified. */
 	private static final String DEFAULT_ICON_PATH = "/icons/plugin.png";
 
+	/** The service to use for logging. */
+	private final LogService log;
+
 	/** The service to use for executing modules and publishing menu events. */
 	private final MenuService menuService;
 
@@ -97,16 +100,17 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	private final Map<String, ShadowMenu> children;
 
 	/** Constructs a root menu node populated with the given modules. */
-	public ShadowMenu(final MenuService menuService,
+	public ShadowMenu(final LogService log, final MenuService menuService,
 		final Collection<? extends ModuleInfo> modules)
 	{
-		this(menuService, null, -1, null);
+		this(log, menuService, null, -1, null);
 		addAll(modules);
 	}
 
-	private ShadowMenu(final MenuService menuService,
+	private ShadowMenu(final LogService log, final MenuService menuService,
 		final ModuleInfo moduleInfo, final int menuDepth, final ShadowMenu parent)
 	{
+		this.log = log;
 		this.menuService = menuService;
 		if (moduleInfo == null) {
 			this.moduleInfo = null;
@@ -211,7 +215,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		if (c == null) return null;
 		final URL iconURL = c.getResource(iconPath);
 		if (iconURL == null) {
-			Log.error("Could not load icon: " + iconPath);
+			log.error("Could not load icon: " + iconPath);
 		}
 		return iconURL;
 	}
@@ -472,7 +476,8 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		if (existingChild == null) {
 			// create new child and add to table
 			final String menuName = entry.getName();
-			final ShadowMenu newChild = new ShadowMenu(menuService, info, depth, this);
+			final ShadowMenu newChild =
+				new ShadowMenu(log, menuService, info, depth, this);
 			children.put(menuName, newChild);
 			child = newChild;
 		}
@@ -486,7 +491,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		// recursively add remaining child menus
 		if (!leaf) child.addChild(info, depth + 1);
 		else if (existingChild != null) {
-			Log.warn("ShadowMenu: leaf item already exists: " + existingChild);
+			log.warn("ShadowMenu: leaf item already exists: " + existingChild);
 		}
 		return child;
 	}

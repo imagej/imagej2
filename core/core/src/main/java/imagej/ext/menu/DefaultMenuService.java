@@ -46,6 +46,7 @@ import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -63,6 +64,7 @@ import java.util.List;
 @Service
 public class DefaultMenuService extends AbstractService implements MenuService {
 
+	private final LogService log;
 	private final EventService eventService;
 	private final PluginService pluginService;
 
@@ -77,10 +79,11 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultMenuService(final ImageJ context,
+	public DefaultMenuService(final ImageJ context, final LogService log,
 		final EventService eventService, final PluginService pluginService)
 	{
 		super(context);
+		this.log = log;
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 
@@ -203,7 +206,7 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 			ShadowMenu menu = rootMenus.get(menuRoot);
 			if (menu == null) {
 				// new menu root: create new menu structure
-				menu = new ShadowMenu(this, modules);
+				menu = new ShadowMenu(log, this, modules);
 				rootMenus.put(menuRoot, menu);
 			}
 			else {
