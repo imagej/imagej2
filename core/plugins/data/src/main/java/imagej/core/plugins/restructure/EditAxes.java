@@ -46,7 +46,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -90,22 +89,36 @@ public class EditAxes extends DynamicPlugin {
 		this.dataset = dataset;
 	}
 
+	public AxisType getMapping(int axisNum) {
+		String axisName = (String) getInput(name(axisNum));
+		return Axes.get(axisName);
+	}
+	
+	public void setAxisMapping(int axisNum, AxisType axis) {
+		String axisName = name(axisNum);
+		setInput(axisName, axis.getLabel());
+	}
+	
 	// -- Runnable methods --
 
 	/** Runs the plugin and assigns axes as specified by user. */
 	@Override
 	public void run() {
-		if (dataset == null) return;
-		String[] axisNames = getAxisNames();
-		if (inputBad(axisNames)) return;
-		AxisType[] desiredAxes = getDesiredAxes(axisNames);
+		if (dataset == null) {
+			log.error("EditAxes plugin error: given a null dataset as input");
+		}
+		AxisType[] desiredAxes = getAxes();
+		if (inputBad(desiredAxes)) {
+			// error already logged
+			return;
+		}
 		dataset.setAxes(desiredAxes);
 	}
 
 	// -- Initializers --
 
 	protected void initAxes() {
-		final ArrayList<String> choices = new ArrayList<String>();
+		ArrayList<String> choices = new ArrayList<String>();
 		AxisType[] axes = Axes.values();
 		for (AxisType axis : axes) {
 			choices.add(axis.getLabel());
@@ -129,19 +142,19 @@ public class EditAxes extends DynamicPlugin {
 	/**
 	 * Gets the names of the axes in the order the user specified.
 	 */
-	private String[] getAxisNames() {
-		final Map<String, Object> inputs = getInputs();
-		String[] axisNames = new String[dataset.getImgPlus().numDimensions()];
-		for (int i = 0; i < axisNames.length; i++)
-			axisNames[i] = (String) inputs.get(name(i));
-		return axisNames;
+	private AxisType[] getAxes() {
+		AxisType[] axes = new AxisType[dataset.getImgPlus().numDimensions()];
+		for (int i = 0; i < axes.length; i++) {
+			axes[i] = getMapping(i);
+		}
+		return axes;
 	}
 
 	/**
 	 * Returns true if user input is invalid. Basically this is a test that the
 	 * user did not repeat any axis when specifying the axis ordering.
 	 */
-	private boolean inputBad(String[] axes) {
+	private boolean inputBad(AxisType[] axes) {
 		for (int i = 0; i < axes.length; i++) {
 			for (int j = i+1; j < axes.length; j++) {
 				if (axes[i].equals(axes[j])) {
@@ -152,17 +165,6 @@ public class EditAxes extends DynamicPlugin {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Returns the new axes as specified by the user.
-	 */
-	private AxisType[] getDesiredAxes(String[] axisNames) {
-		final AxisType[] newAxes = new AxisType[axisNames.length];
-		for (int i = 0; i < newAxes.length; i++) {
-			newAxes[i] = Axes.get(axisNames[i]);
-		}
-		return newAxes;
 	}
 
 }
