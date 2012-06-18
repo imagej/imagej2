@@ -113,8 +113,7 @@ public class ShadowMenuTest {
 	// -- Helper methods --
 
 	private ShadowMenu createShadowMenu() {
-		final ImageJ context = ImageJ.createContext(MenuService.class);
-		final MenuService menuService = context.getService(MenuService.class);
+		final ImageJ context = ImageJ.createEmptyContext();
 
 		final ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		modules.add(createModuleInfo("Edit>Copy"));
@@ -126,7 +125,7 @@ public class ShadowMenuTest {
 		modules.add(createModuleInfo("File>Open"));
 		modules.add(createModuleInfo("File>Save"));
 
-		return new ShadowMenu(menuService, modules);
+		return new ShadowMenu(context, modules);
 	}
 
 	private ModuleInfo createModuleInfo(final String path) {
