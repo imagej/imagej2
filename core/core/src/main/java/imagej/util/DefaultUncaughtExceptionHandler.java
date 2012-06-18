@@ -35,6 +35,8 @@
 
 package imagej.util;
 
+import imagej.log.LogService;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 
 /**
@@ -50,18 +52,27 @@ public class DefaultUncaughtExceptionHandler implements
 	UncaughtExceptionHandler
 {
 
+	private final LogService log;
+
+	public DefaultUncaughtExceptionHandler(final LogService log) {
+		this.log = log;
+	}
+
 	@Override
 	public void uncaughtException(final Thread thread, final Throwable throwable)
 	{
-		Log.error("Uncaught exception in thread " + thread, throwable);
+		log.error("Uncaught exception in thread " + thread, throwable);
 	}
 
 	public void handle(final Exception exception) {
-		Log.error("Uncaught exception on the Event Dispatch Thread", exception);
+		log.error("Uncaught exception on the Event Dispatch Thread", exception);
 	}
 
-	public static void install() {
-		Thread.setDefaultUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler());
+	public static void install(final LogService log) {
+		final UncaughtExceptionHandler handler =
+			new DefaultUncaughtExceptionHandler(log);
+		Thread.setDefaultUncaughtExceptionHandler(handler);
+
 		// Needed for modal dialog handling before Java7:
 		System.setProperty("sun.awt.exception.handler",
 			DefaultUncaughtExceptionHandler.class.getName());

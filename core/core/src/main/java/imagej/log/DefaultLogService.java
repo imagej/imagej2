@@ -38,6 +38,7 @@ package imagej.log;
 import imagej.ImageJ;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.util.DefaultUncaughtExceptionHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,10 @@ public final class DefaultLogService extends AbstractService implements
 
 	public DefaultLogService(final ImageJ context) {
 		super(context);
+
+		// HACK: Dirty, because every time a new ImageJ context is created with a
+		// DefaultLogService, it will "steal" the default exception handling.
+		DefaultUncaughtExceptionHandler.install(this);
 
 		logger = LoggerFactory.getLogger(DefaultLogService.class);
 	}
