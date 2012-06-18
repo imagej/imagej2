@@ -47,7 +47,7 @@ import imagej.ext.module.event.ModulePreprocessEvent;
 import imagej.ext.module.event.ModuleStartedEvent;
 import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -122,7 +122,8 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 			run();
 		}
 		catch (final RuntimeException e) {
-			Log.error("Module threw exception", e);
+			final LogService log = context.getService(LogService.class);
+			if (log != null) log.error("Module threw exception", e);
 			throw e;
 		}
 		return module;
