@@ -160,7 +160,7 @@ public interface PluginService extends IService {
 	 * be executed, etc.
 	 * </p>
 	 */
-	<P extends IPlugin> List<P> createInstances(Class<P> type);
+	<P extends IPlugin> List<P> createInstancesOfType(Class<P> type);
 
 	/**
 	 * Creates an instance of each of the plugins on the given list.

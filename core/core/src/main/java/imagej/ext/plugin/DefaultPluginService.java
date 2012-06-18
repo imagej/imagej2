@@ -258,7 +258,8 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends IPlugin> List<P> createInstances(final Class<P> type) {
+	public <P extends IPlugin> List<P> createInstancesOfType(final Class<P> type)
+	{
 		return createInstances(getPluginsOfType(type));
 	}
 
@@ -367,11 +368,11 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	private List<PreprocessorPlugin> pre() {
-		return createInstances(PreprocessorPlugin.class);
+		return createInstancesOfType(PreprocessorPlugin.class);
 	}
 
 	private List<PostprocessorPlugin> post() {
-		return createInstances(PostprocessorPlugin.class);
+		return createInstancesOfType(PostprocessorPlugin.class);
 	}
 
 	private boolean checkPlugin(final PluginModuleInfo<?> plugin,

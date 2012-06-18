@@ -95,7 +95,7 @@ public class OptionsService extends AbstractService {
 
 	/** Gets a list of all available options. */
 	public List<OptionsPlugin> getOptions() {
-		return pluginService.createInstances(OptionsPlugin.class);
+		return pluginService.createInstancesOfType(OptionsPlugin.class);
 	}
 
 	/** Gets options associated with the given options plugin, or null if none. */
