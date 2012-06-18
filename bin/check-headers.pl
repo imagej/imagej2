@@ -191,9 +191,8 @@ sub process($) {
   }
 
   # check type declaration
-  if ($data[$i++] !~
-    /^(public )?(abstract )?(final )?(class)|(enum)|(interface) $class[ <]/)
-  {
+  my $keywords = '(public )?(abstract )?(final )?(strictfp )?';
+  if ($data[$i++] !~ /^$keywords(class)|(enum)|(interface) $class[ <]/) {
     print "$file: invalid type declaration at line #$i\n";
     return;
   }
