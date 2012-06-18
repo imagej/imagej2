@@ -44,10 +44,10 @@ import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.ClassUtils;
-import imagej.util.Log;
 
 import java.util.List;
 import java.util.Map;
@@ -62,6 +62,7 @@ import java.util.Map;
 @Service
 public class OptionsService extends AbstractService {
 
+	private final LogService log;
 	private final EventService eventService;
 	private final PluginService pluginService;
 
@@ -73,10 +74,11 @@ public class OptionsService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public OptionsService(final ImageJ context, final EventService eventService,
-		final PluginService pluginService)
+	public OptionsService(final ImageJ context, final LogService log,
+		final EventService eventService, final PluginService pluginService)
 	{
 		super(context);
+		this.log = log;
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 	}
@@ -166,7 +168,7 @@ public class OptionsService extends AbstractService {
 			module = info.createModule();
 		}
 		catch (final ModuleException e) {
-			Log.error("Cannot create module: " + info.getClassName());
+			log.error("Cannot create module: " + info.getClassName());
 			return;
 		}
 
@@ -187,7 +189,7 @@ public class OptionsService extends AbstractService {
 			return info.createInstance();
 		}
 		catch (final InstantiableException e) {
-			Log.error("Cannot create plugin: " + info.getClassName());
+			log.error("Cannot create plugin: " + info.getClassName());
 		}
 		return null;
 	}
@@ -198,7 +200,7 @@ public class OptionsService extends AbstractService {
 		final PluginModuleInfo<O> info =
 			pluginService.getRunnablePlugin(optionsClass);
 		if (info == null) {
-			Log.error("No such options class: " + optionsClass.getName());
+			log.error("No such options class: " + optionsClass.getName());
 		}
 		return info;
 	}
@@ -208,11 +210,11 @@ public class OptionsService extends AbstractService {
 	{
 		final PluginModuleInfo<?> info = pluginService.getRunnablePlugin(className);
 		if (info == null) {
-			Log.error("No such options class: " + className);
+			log.error("No such options class: " + className);
 			return null;
 		}
 		if (!OptionsPlugin.class.isAssignableFrom(info.getPluginType())) {
-			Log.error("Not an options plugin: " + className);
+			log.error("Not an options plugin: " + className);
 			// not an options plugin
 			return null;
 		}
@@ -228,7 +230,7 @@ public class OptionsService extends AbstractService {
 			return info.createModule().getInput(name);
 		}
 		catch (final ModuleException e) {
-			Log.error("Cannot create module: " + info.getClassName());
+			log.error("Cannot create module: " + info.getClassName());
 		}
 		return null;
 	}
@@ -239,7 +241,7 @@ public class OptionsService extends AbstractService {
 			return info.createModule().getInputs();
 		}
 		catch (final ModuleException e) {
-			Log.error("Cannot create module: " + info.getClassName());
+			log.error("Cannot create module: " + info.getClassName());
 		}
 		return null;
 	}
