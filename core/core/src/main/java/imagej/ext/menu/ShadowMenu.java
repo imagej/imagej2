@@ -502,8 +502,9 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		else if (existingChild != null) {
 			final LogService log = context.getService(LogService.class);
 			if (log != null) {
-				log.warn("ShadowMenu: leaf item already exists: " +
-					existingChild.getModuleInfo());
+				log.warn("ShadowMenu: menu item already exists:\n" +
+					"\texisting: " + existingChild.getModuleInfo() + "\n" +
+					"\t ignored: " + info);
 			}
 		}
 		return child;
