@@ -47,8 +47,28 @@ import java.util.concurrent.Future;
 
 /**
  * Interface for service that tracks and executes available modules.
+ * <p>
+ * The module service keeps a master index of all modules known to the system.
+ * At heart, a module is a {@link Runnable} piece of code, but with explicit
+ * typed input and output parameters.
+ * </p>
+ * <p>
+ * The module service has no innate ability to discover modules, and must be
+ * explicitly told about them via the {@link #addModule} and {@link #addModules}
+ * methods.
+ * </p>
+ * <p>
+ * A <em>module</em> is distinct from a <em>plugin</em> in that plugins extend
+ * ImageJ's functionality in some way, taking many forms, whereas modules are
+ * always runnable code with typed inputs and outputs. There is a particular
+ * type of plugin called a {@link imagej.ext.plugin.RunnablePlugin} which is
+ * also a module, but many plugins (e.g., {@link imagej.ext.tool.Tool}s and
+ * {@link imagej.ext.display.Display}s) are not modules.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see Module
+ * @see imagej.ext.plugin.PluginService
  */
 public interface ModuleService extends IService {
 

@@ -49,8 +49,28 @@ import java.util.concurrent.Future;
 
 /**
  * Interface for service that keeps track of available plugins.
+ * <p>
+ * The plugin service keeps a master index of all plugins known to the system.
+ * At heart, a plugin is a piece of functionality that extends ImageJ's
+ * capabilities. Plugins take many forms; see {@link IPlugin} for details.
+ * </p>
+ * <p>
+ * The default plugin service discovers available plugins on the classpath.
+ * Plugins that are runnable as modules are reported to the
+ * {@link ModuleService}.
+ * </p>
+ * <p>
+ * A <em>plugin</em> is distinct from a <em>module</em> in that plugins extend
+ * ImageJ's functionality in some way, taking many forms, whereas modules are
+ * always runnable code with typed inputs and outputs. There is a particular
+ * type of plugin called a {@link imagej.ext.plugin.RunnablePlugin} which is
+ * also a module, but many plugins (e.g., {@link imagej.ext.tool.Tool}s and
+ * {@link imagej.ext.display.Display}s) are not modules.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see IPlugin
+ * @see imagej.ext.module.ModuleService
  */
 public interface PluginService extends IService {
 
