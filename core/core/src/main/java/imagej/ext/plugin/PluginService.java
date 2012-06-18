@@ -152,10 +152,24 @@ public interface PluginService extends IService {
 	List<PluginModuleInfo<RunnablePlugin>> getRunnablePluginsOfClass(
 		String className);
 
-	/** Creates one instance each of the available plugins of the given type. */
+	/**
+	 * Creates one instance each of the available plugins of the given type.
+	 * <p>
+	 * Note that this method does <em>not</em> do any preprocessing on the plugin
+	 * instances, so parameters will not be auto-populated, initializers will not
+	 * be executed, etc.
+	 * </p>
+	 */
 	<P extends IPlugin> List<P> createInstances(Class<P> type);
 
-	/** Creates an instance of each of the plugins on the given list. */
+	/**
+	 * Creates an instance of each of the plugins on the given list.
+	 * <p>
+	 * Note that this method does <em>not</em> do any preprocessing on the plugin
+	 * instances, so parameters will not be auto-populated, initializers will not
+	 * be executed, etc.
+	 * </p>
+	 */
 	<P extends IPlugin> List<P> createInstances(List<PluginInfo<P>> infos);
 
 	/**
