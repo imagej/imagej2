@@ -130,6 +130,7 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 		else {
 			textArea.setText(targetText.toString());
 		}
+		// make sure the last line is always visible
 		textArea.setCaretPosition(targetText.length());
 	}
 
