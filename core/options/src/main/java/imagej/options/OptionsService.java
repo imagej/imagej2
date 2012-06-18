@@ -40,15 +40,17 @@ import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
-import imagej.ext.plugin.IPlugin;
+import imagej.ext.module.ModuleRunner;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.plugin.process.PreprocessorPlugin;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.ClassUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +97,18 @@ public class OptionsService extends AbstractService {
 
 	/** Gets a list of all available options. */
 	public List<OptionsPlugin> getOptions() {
-		return pluginService.createInstancesOfType(OptionsPlugin.class);
+		// get the list of available options plugins
+		final List<PluginInfo<OptionsPlugin>> infos =
+			pluginService.getPluginsOfType(OptionsPlugin.class);
+
+		// instantiate one instance of each options plugin
+		final ArrayList<OptionsPlugin> optionsPlugins =
+			new ArrayList<OptionsPlugin>();
+		for (final PluginInfo<OptionsPlugin> info : infos) {
+			optionsPlugins.add(createInstance(info));
+		}
+
+		return optionsPlugins;
 	}
 
 	/** Gets options associated with the given options plugin, or null if none. */
@@ -183,15 +196,31 @@ public class OptionsService extends AbstractService {
 
 	// -- Helper methods --
 
-	private <P extends IPlugin> P createInstance(final PluginInfo<P> info) {
+	/**
+	 * Creates an instance of the {@link OptionsPlugin} described by the given
+	 * {@link PluginInfo}, preprocessing it with available preprocessors.
+	 */
+	private <O extends OptionsPlugin> O createInstance(final PluginInfo<O> info) {
 		if (info == null) return null;
+
+		// instantiate the options plugin
+		final O optionsPlugin;
 		try {
-			return info.createInstance();
+			optionsPlugin = info.createInstance();
 		}
 		catch (final InstantiableException e) {
 			log.error("Cannot create plugin: " + info.getClassName());
+			return null;
 		}
-		return null;
+
+		// execute available preprocessors on the newly created options plugin
+		final List<PreprocessorPlugin> pre =
+			pluginService.createInstancesOfType(PreprocessorPlugin.class);
+		final ModuleRunner moduleRunner =
+			new ModuleRunner(getContext(), optionsPlugin, pre, null);
+		moduleRunner.preProcess();
+
+		return optionsPlugin;
 	}
 
 	private <O extends OptionsPlugin> PluginModuleInfo<O> getOptionsInfo(
