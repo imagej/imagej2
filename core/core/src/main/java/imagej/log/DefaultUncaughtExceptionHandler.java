@@ -33,9 +33,8 @@
  * #L%
  */
 
-package imagej.util;
+package imagej.log;
 
-import imagej.log.LogService;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 

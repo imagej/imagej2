@@ -38,7 +38,6 @@ package imagej.log;
 import imagej.ImageJ;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.util.DefaultUncaughtExceptionHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
