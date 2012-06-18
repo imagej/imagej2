@@ -56,7 +56,7 @@ public abstract class AbstractService implements IService {
 		this.context = context;
 	}
 
-	// -- IService methods --
+	// -- IContext methods --
 
 	@Override
 	public ImageJ getContext() {
