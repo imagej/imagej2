@@ -46,6 +46,7 @@ import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
+import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
@@ -53,7 +54,6 @@ import imagej.platform.event.AppQuitEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
-import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,6 +69,7 @@ public final class DefaultUIService extends AbstractService implements
 	UIService
 {
 
+	private final LogService log;
 	private final EventService eventService;
 	private final StatusService statusService;
 	private final ThreadService threadService;
@@ -93,7 +94,7 @@ public final class DefaultUIService extends AbstractService implements
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultUIService(final ImageJ context,
+	public DefaultUIService(final ImageJ context, final LogService log,
 		final EventService eventService, final StatusService statusService,
 		final ThreadService threadService, final PlatformService platformService,
 		final PluginService pluginService, final MenuService menuService,
@@ -101,6 +102,7 @@ public final class DefaultUIService extends AbstractService implements
 		final AppService appService)
 	{
 		super(context);
+		this.log = log;
 		this.eventService = eventService;
 		this.statusService = statusService;
 		this.threadService = threadService;
@@ -171,9 +173,9 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public void processArgs(final String[] args) {
-		Log.info("Received command line arguments:");
+		log.info("Received command line arguments:");
 		for (final String arg : args) {
-			Log.info("\t" + arg);
+			log.info("\t" + arg);
 		}
 		if (userInterface == null) return;
 		userInterface.processArgs(args);
@@ -267,12 +269,12 @@ public final class DefaultUIService extends AbstractService implements
 		availableUIs = Collections.unmodifiableList(uis);
 		if (uis.size() > 0) {
 			final UserInterface ui = uis.get(0);
-			Log.info("Launching user interface: " + ui.getClass().getName());
+			log.info("Launching user interface: " + ui.getClass().getName());
 			ui.initialize(this);
 			userInterface = ui;
 		}
 		else {
-			Log.warn("No user interfaces found.");
+			log.warn("No user interfaces found.");
 			userInterface = null;
 		}
 	}
@@ -285,11 +287,11 @@ public final class DefaultUIService extends AbstractService implements
 		{
 			try {
 				final UserInterface ui = info.createInstance();
-				Log.info("Discovered user interface: " + ui.getClass().getName());
+				log.info("Discovered user interface: " + ui.getClass().getName());
 				uis.add(ui);
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid user interface: " + info.getClassName(), e);
+				log.warn("Invalid user interface: " + info.getClassName(), e);
 			}
 		}
 		return uis;
