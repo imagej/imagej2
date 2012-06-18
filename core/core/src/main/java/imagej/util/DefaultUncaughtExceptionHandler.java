@@ -41,11 +41,12 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 /**
  * A handler for otherwise uncaught exceptions.
- *
+ * <p>
  * Installing this handler will automatically log the exceptions that would
- * otherwise be missed, e.g. when things go awry on the AWT Event Dispatch
+ * otherwise be missed; e.g., when things go awry on the AWT Event Dispatch
  * Thread.
- *
+ * </p>
+ * 
  * @author Johannes Schindelin
  */
 public class DefaultUncaughtExceptionHandler implements
@@ -77,4 +78,5 @@ public class DefaultUncaughtExceptionHandler implements
 		System.setProperty("sun.awt.exception.handler",
 			DefaultUncaughtExceptionHandler.class.getName());
 	}
+
 }
