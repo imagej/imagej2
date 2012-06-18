@@ -36,14 +36,9 @@
 package imagej.options;
 
 import imagej.event.EventService;
-import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.PluginModule;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.options.event.OptionsEvent;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
@@ -84,24 +79,19 @@ public class OptionsPlugin extends DynamicPlugin {
 	@Parameter
 	protected EventService eventService;
 
-	@Parameter
-	private PluginService pluginService;
-
 	// -- OptionsPlugin methods --
 
 	/** Loads option values from persistent storage. */
 	public void load() {
-		final PluginModule<?> module = createModule(this);
-		for (final ModuleItem<?> input : module.getInfo().inputs()) {
-			loadInput(module, input);
+		for (final ModuleItem<?> input : getInfo().inputs()) {
+			loadInput(input);
 		}
 	}
 
 	/** Saves option values to persistent storage. */
 	public void save() {
-		final PluginModule<?> module = createModule(this);
-		for (final ModuleItem<?> input : module.getInfo().inputs()) {
-			saveInput(module, input);
+		for (final ModuleItem<?> input : getInfo().inputs()) {
+			saveInput(input);
 		}
 	}
 
@@ -115,23 +105,13 @@ public class OptionsPlugin extends DynamicPlugin {
 
 	// -- Helper methods --
 
-	private <R extends RunnablePlugin> PluginModule<R>
-		createModule(final R plugin)
-	{
-		@SuppressWarnings("unchecked")
-		final Class<R> pluginClass = (Class<R>) plugin.getClass();
-		final PluginModuleInfo<R> info =
-			pluginService.getRunnablePlugin(pluginClass);
-		return new PluginModule<R>(info, plugin);
-	}
-
-	private <T> void loadInput(final Module module, final ModuleItem<T> input) {
+	private <T> void loadInput(final ModuleItem<T> input) {
 		final T value = input.loadValue();
-		if (value != null) input.setValue(module, value);
+		if (value != null) input.setValue(this, value);
 	}
 
-	private <T> void saveInput(final Module module, final ModuleItem<T> input) {
-		final T value = input.getValue(module);
+	private <T> void saveInput(final ModuleItem<T> input) {
+		final T value = input.getValue(this);
 		input.saveValue(value);
 	}
 
