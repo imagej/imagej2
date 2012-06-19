@@ -172,6 +172,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 				pos.put(axis, min(i));
 			}
 		}
+		
+		if (getActiveAxis() == null) initActiveAxis();
 	}
 
 	// -- ImageDisplay methods --
