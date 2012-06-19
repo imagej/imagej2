@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -258,23 +259,23 @@ public final class Prefs {
 	/**
 	 * Puts a list into the preferences.
 	 */
-	public static void putMap(Map map, String key) {
+	public static void putMap(Map<String, String> map, String key) {
 		putMap(prefs(null), map, key);
 	}
 	
-	public static void putMap(Preferences preferences, Map map, String key) {
+	public static void putMap(Preferences preferences, Map<String, String> map, String key) {
 		putMap(preferences.node(key), map);
 	}
 
 	/**
 	 * Puts a list into the preferences.
 	 */
-	public static void putMap(Preferences preferences, Map map) {
+	public static void putMap(Preferences preferences, Map<String, String> map) {
 		if (preferences == null) {
 			throw new IllegalArgumentException("Preferences not set.");
 		}
-		for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
+		for (Iterator<Entry<String, String>> iter = map.entrySet().iterator(); iter.hasNext();) {
+			final Entry<String, String> entry = iter.next();
 			Object value = entry.getValue();
 			preferences.put(entry.getKey().toString(), value == null ? null : value.toString());
 		}
@@ -283,22 +284,22 @@ public final class Prefs {
 	/**
 	 * Gets a Map from the preferences.
 	 */
-	public static Map getMap(String key) {
+	public static Map<String, String> getMap(String key) {
 		return getMap(prefs(null), key);
 	}
 	
-	public static Map getMap(Preferences preferences, String key) {
+	public static Map<String, String> getMap(Preferences preferences, String key) {
 		return getMap(preferences.node(key));
 	}
 
 	/**
 	 * Gets a Map from the preferences.
 	 */
-	public static Map getMap(Preferences preferences) {
+	public static Map<String, String> getMap(Preferences preferences) {
 		if (preferences == null) {
 			throw new IllegalArgumentException("Preferences not set.");
 		}
-		Map map = new HashMap();
+		Map<String, String> map = new HashMap<String, String>();
 		try {
 			String[] keys = preferences.keys();
 			for (int index = 0; index < keys.length; index++) {
@@ -372,7 +373,7 @@ public final class Prefs {
 		try {
 			Preferences prefs = Preferences.userNodeForPackage(String.class);
 			// Map...
-			Map map = new HashMap();
+			Map<String, String> map = new HashMap<String, String>();
 			map.put("0", "A");
 			map.put("1", "B");
 			map.put("2", "C");
