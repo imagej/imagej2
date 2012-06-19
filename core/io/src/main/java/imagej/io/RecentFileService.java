@@ -41,7 +41,6 @@ import imagej.event.EventService;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.menu.MenuService;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.ImageJPlugin;
@@ -93,7 +92,6 @@ public final class RecentFileService extends AbstractService {
 	// -- Fields --
 
 	private final EventService eventService;
-	private final MenuService menuService;
 	private final ModuleService moduleService;
 	private final PluginService pluginService;
 
@@ -109,12 +107,11 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	public RecentFileService(final ImageJ context,
-		final EventService eventService, final MenuService menuService,
-		final ModuleService moduleService, final PluginService pluginService)
+		final EventService eventService, final ModuleService moduleService,
+		final PluginService pluginService)
 	{
 		super(context);
 		this.eventService = eventService;
-		this.menuService = menuService;
 		this.moduleService = moduleService;
 		this.pluginService = pluginService;
 
@@ -128,18 +125,6 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	// -- RecentFileService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	public MenuService getMenuService() {
-		return menuService;
-	}
-
-	public ModuleService getModuleService() {
-		return moduleService;
-	}
 
 	/** Adds a path to the list of recent files. */
 	public void add(final String path) {
