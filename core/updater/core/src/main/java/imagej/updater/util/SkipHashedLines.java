@@ -40,7 +40,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * TODO
+ * A helper class for the Checksummer.
+ * 
+ * When checksumming .properties files for the Updater, we would like to ignore
+ * comments, because java.util.Properties writes the current date into a comment
+ * when writing pom.properties and nar.properties files. This date is a
+ * non-functional change which we would like to ignore when checking whether a
+ * .jar file is up-to-date.
+ * 
+ * This class takes an InputStream that is expected to represent a .properties
+ * file and offers an InputStream which skips the lines starting with a '#'.
  * 
  * @author Johannes Schindelin
  */
