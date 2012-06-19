@@ -40,6 +40,7 @@ import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.data.ImageGrabber;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
@@ -59,10 +60,10 @@ import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.options.plugins.OptionsChannels;
 import imagej.platform.PlatformService;
-import imagej.util.Log;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -599,42 +600,18 @@ public class SwingOverlayManager
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
 		final DatasetView view = ids.getActiveDatasetView(imageDisplay);
-		ARGBScreenImage screenImage = view.getScreenImage();
-		long[] dims = new long[3];
-		screenImage.dimensions(dims);  // fill X & Y
-		dims[2] = 3;  // fill Z
-		if (dims[0] * dims[1] > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("image is too big to fit into memory");
-		int xSize = (int) dims[0];
-		int ySize = (int) dims[1];
-		int[] argbPixels = view.getScreenImage().getData();
+		if (view == null) return;
 		DatasetService dss = context.getService(DatasetService.class);
-		String newName = "Flattened - "+imageDisplay.getName();
-		Dataset dataset = dss.create(new UnsignedByteType(), dims, newName, new Axes[]{Axes.X, Axes.Y, Axes.CHANNEL});
-		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-		RandomAccess<? extends RealType<?>> accessor = imgPlus.randomAccess();
-		for (int x = 0; x < xSize; x++) {
-			accessor.setPosition(x, 0);
-			for (int y = 0; y < ySize; y++) {
-				accessor.setPosition(y, 1);
-				int index = y*xSize + x; 
-				int pixel = argbPixels[index];
-				accessor.setPosition(0, 2);
-				accessor.get().setReal((pixel >> 16) & 0xff);
-				accessor.setPosition(1, 2);
-				accessor.get().setReal((pixel >>  8) & 0xff);
-				accessor.setPosition(2, 2);
-				accessor.get().setReal((pixel >>  0) & 0xff);
-			}
-		}
-		dataset.setRGBMerged(true);
+		String datasetName = imageDisplay.getName() + " - flattened";
+		Dataset dataset = new ImageGrabber(dss).grab(view, datasetName);
 		DisplayService ds = context.getService(DisplayService.class);
-		ds.createDisplay(newName, dataset);
+		ds.createDisplay(dataset.getName(), dataset);
 		// TODO - This currently does not show the ROI outline
 	}
 	
 	private void help() {
-		Log.warn("TODO in SwingOverlayManager::help() - using old IJ1 URL for this command");
+		LogService log = context.getService(LogService.class);
+		log.warn("TODO in SwingOverlayManager::help() - using old IJ1 URL for this command");
 		final PlatformService ps = context.getService(PlatformService.class);
 		try {
 			final URL url =
@@ -1198,4 +1175,5 @@ public class SwingOverlayManager
 		if (altDown) return opts.getBgValues();
 		return opts.getFgValues();
 	}
+	
 }
