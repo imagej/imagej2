@@ -217,6 +217,8 @@ public class FloodFiller {
 		return true;
 	}
 
+	// NOTE - ported from IJ1 but not yet in use anywhere
+	
 	/**
 	 * In IJ1 this method is used by the particle analyzer to remove interior
 	 *  holes from particle masks.
