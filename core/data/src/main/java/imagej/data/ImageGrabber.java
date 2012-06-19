@@ -56,7 +56,7 @@ public class ImageGrabber {
 
 	/**
 	 * Constructs an {@link ImageGrabber} for a given (@link DatasetService}. The
-	 * {@link DatasetService} is used to create {@link Dataset}.
+	 * {@link DatasetService} is used to create {@link Dataset}s.
 	 */
 	public ImageGrabber(DatasetService service) {
 		this.service = service;
@@ -64,13 +64,13 @@ public class ImageGrabber {
 	
 	/**
 	 * Creates a merged color {@link Dataset} from a {@link DatasetView}. This
-	 * method used the provided String name for the output {@link Dataset}.
+	 * method uses the provided String name for the output {@link Dataset}.
 	 */
 	public Dataset grab(DatasetView view, String outputName) {
 		ARGBScreenImage screenImage = view.getScreenImage();
 		long[] dims = new long[3];
-		screenImage.dimensions(dims);  // fill X & Y
-		dims[2] = 3;  // fill Z
+		screenImage.dimensions(dims);  // fill X count & Y count
+		dims[2] = 3;  // fill CHANNEL count
 		if (dims[0] * dims[1] > Integer.MAX_VALUE)
 			throw new IllegalArgumentException("image is too big to fit into memory");
 		int xSize = (int) dims[0];
