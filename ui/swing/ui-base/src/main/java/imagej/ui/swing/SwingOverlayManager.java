@@ -36,6 +36,7 @@
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.core.plugins.dataset.LoadDataset;
 import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -59,6 +60,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
@@ -594,9 +596,16 @@ public class SwingOverlayManager
 		DatasetService dss = context.getService(DatasetService.class);
 		String datasetName = imageDisplay.getName() + " - flattened";
 		Dataset dataset = new ImageGrabber(dss).grab(view, datasetName);
-		DisplayService ds = context.getService(DisplayService.class);
-		ds.createDisplay(dataset.getName(), dataset);
-		// TODO - This currently does not show the ROI outline
+		PluginService ps = context.getService(PluginService.class);
+		ps.run(LoadDataset.class, dataset);
+		
+		// OLD way before PluginService way. Display would not initialize correctly.
+		// See bug #1215 for more info.
+		//DisplayService ds = context.getService(DisplayService.class);
+		//ds.createDisplay(dataset.getName(), dataset);
+		
+		// TODO - The ROI outline is not currently drawn and needs to be. Somehow
+		// we should stamp the Dataset before handing it to the PluginService. 
 	}
 	
 	private void help() {
