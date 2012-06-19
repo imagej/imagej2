@@ -79,16 +79,28 @@ import java.util.Map;
 @Service
 public final class RecentFileService extends AbstractService {
 
+	// -- Constants --
+
 	public static final int MAX_FILES_SHOWN = 10;
+
 	/** Maximum pathname length shown. */
 	private static final int MAX_DISPLAY_LENGTH = 40;
+
 	private static final String RECENT_MENU_NAME = "Open Recent";
+
 	private static final String RECENT_FILES_KEY = "recentfiles";
-	private EventService eventService;
-	private MenuService menuService;
-	private ModuleService moduleService;
-	private List<String> recentFiles;
-	private Map<String, ModuleInfo> recentModules;
+
+	// -- Fields --
+
+	private final EventService eventService;
+	private final MenuService menuService;
+	private final ModuleService moduleService;
+	private final PluginService pluginService;
+
+	private final List<String> recentFiles;
+	private final Map<String, ModuleInfo> recentModules;
+
+	// -- Constructors --
 
 	public RecentFileService() {
 		// NB: Required by SezPoz.
@@ -97,17 +109,18 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	public RecentFileService(final ImageJ context,
-			final EventService eventService, final MenuService menuService,
-			final ModuleService moduleService) {
+		final EventService eventService, final MenuService menuService,
+		final ModuleService moduleService, final PluginService pluginService)
+	{
 		super(context);
 		this.eventService = eventService;
 		this.menuService = menuService;
 		this.moduleService = moduleService;
+		this.pluginService = pluginService;
 
-		//recentFiles = new ArrayList<String>();
 		recentFiles = Prefs.getList(RECENT_FILES_KEY);
 		recentModules = new HashMap<String, ModuleInfo>();
-		for (String path : recentFiles) {
+		for (final String path : recentFiles) {
 			recentModules.put(path, createInfo(path));
 		}
 
@@ -115,6 +128,7 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	// -- RecentFileService methods --
+
 	public EventService getEventService() {
 		return eventService;
 	}
@@ -133,7 +147,8 @@ public final class RecentFileService extends AbstractService {
 		if (present) {
 //			remove(path);
 //			updateInfo(path);
-		} else {
+		}
+		else {
 			recentModules.put(path, createInfo(path));
 			recentFiles.add(path);
 			Prefs.putList(recentFiles, RECENT_FILES_KEY);
@@ -146,8 +161,8 @@ public final class RecentFileService extends AbstractService {
 		if (info != null) {
 			moduleService.removeModule(info);
 		}
-		boolean result = recentFiles.remove(path);
-		//Prefs.putList(recentFiles, RECENT_FILES_KEY);
+		final boolean result = recentFiles.remove(path);
+//		Prefs.putList(recentFiles, RECENT_FILES_KEY);
 		return result;
 	}
 
@@ -165,6 +180,7 @@ public final class RecentFileService extends AbstractService {
 	}
 
 	// -- Event handlers --
+
 	@EventHandler
 	protected void onEvent(final FileOpenedEvent event) {
 		add(event.getPath());
@@ -175,16 +191,12 @@ public final class RecentFileService extends AbstractService {
 		add(event.getPath());
 	}
 
-	// TODO
-	// FileSavedEvent
-	// ?? FileClosedEvent
-	// DisplayCreatedEvent
-	// DisplayDeletedEvent
 	// -- Helper methods --
+
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String path) {
 		final PluginModuleInfo<ImageJPlugin> info =
-				new PluginModuleInfo<ImageJPlugin>("imagej.io.plugins.OpenImage",
+			new PluginModuleInfo<ImageJPlugin>("imagej.io.plugins.OpenImage",
 				ImageJPlugin.class);
 
 		// hard code path to open as a preset
@@ -204,9 +216,8 @@ public final class RecentFileService extends AbstractService {
 		leaf.setWeight(0); // TODO - do this properly
 
 		// use the same icon as File > Open
-		final PluginService pluginService = ImageJ.get(PluginService.class);
 		final PluginModuleInfo<RunnablePlugin> fileOpen =
-				pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
+			pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
 		final String iconPath = fileOpen.getIconPath();
 		info.setIconPath(iconPath);
 		leaf.setIconPath(iconPath);
