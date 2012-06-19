@@ -48,6 +48,8 @@ import java.util.prefs.Preferences;
  * Simple utility class that stores and retrieves user preferences.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
+ * @author Grant Harris
  */
 public final class Prefs {
 
