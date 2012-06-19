@@ -46,9 +46,9 @@ import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.event.FileOpenedEvent;
 import imagej.io.event.FileSavedEvent;
+import imagej.io.plugins.OpenImage;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.FileUtils;
@@ -121,41 +121,64 @@ public final class RecentFileService extends AbstractService {
 			recentModules.put(path, createInfo(path));
 		}
 
+		// register the modules with the module service
+		moduleService.addModules(recentModules.values());
+
 		subscribeToEvents(eventService);
 	}
 
 	// -- RecentFileService methods --
 
-	/** Adds a path to the list of recent files. */
+	/** Adds or refreshes a path on the list of recent files. */
 	public void add(final String path) {
 		final boolean present = recentModules.containsKey(path);
+
+		// add path to recent files list
+		if (present) recentFiles.remove(path);
+		recentFiles.add(path);
+
+		// persist the updated list
+		Prefs.putList(recentFiles, RECENT_FILES_KEY);
+
 		if (present) {
-//			remove(path);
-//			updateInfo(path);
+			// path already present; update linked module info
+			final ModuleInfo info = recentModules.get(path);
+			// TODO - update module weights
+			info.update(eventService);
 		}
 		else {
-			recentModules.put(path, createInfo(path));
-			recentFiles.add(path);
-			Prefs.putList(recentFiles, RECENT_FILES_KEY);
+			// new path; create linked module info
+			final ModuleInfo info = createInfo(path);
+			recentModules.put(path, info);
+
+			// register the module with the module service
+			moduleService.addModule(info);
 		}
 	}
 
 	/** Removes a path from the list of recent files. */
 	public boolean remove(final String path) {
+		// remove path from recent files list
+		final boolean success = recentFiles.remove(path);
+
+		// persist the updated list
+		Prefs.putList(recentFiles, RECENT_FILES_KEY);
+
+		// remove linked module info
 		final ModuleInfo info = recentModules.remove(path);
-		if (info != null) {
-			moduleService.removeModule(info);
-		}
-		final boolean result = recentFiles.remove(path);
-//		Prefs.putList(recentFiles, RECENT_FILES_KEY);
-		return result;
+		if (info != null) moduleService.removeModule(info);
+
+		return success;
 	}
 
 	/** Clears the list of recent files. */
 	public void clear() {
 		recentFiles.clear();
 		Prefs.clear(RECENT_FILES_KEY);
+
+		// unregister the modules with the module service
 		moduleService.removeModules(recentModules.values());
+
 		recentModules.clear();
 	}
 
@@ -201,26 +224,12 @@ public final class RecentFileService extends AbstractService {
 		leaf.setWeight(0); // TODO - do this properly
 
 		// use the same icon as File > Open
-		final PluginModuleInfo<RunnablePlugin> fileOpen =
-			pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
+		final PluginModuleInfo<OpenImage> fileOpen =
+			pluginService.getRunnablePlugin(OpenImage.class);
 		final String iconPath = fileOpen.getIconPath();
 		info.setIconPath(iconPath);
-		leaf.setIconPath(iconPath);
-
-		// register the module with the module service
-		moduleService.addModule(info);
 
 		return info;
-	}
-
-	private void updateInfo(final String path) {
-		final ModuleInfo info = recentModules.get(path);
-
-		// TODO - update module weights
-		if (info != null) {
-			// notify interested parties
-			info.update(eventService);
-		}
 	}
 
 	/** Shortens the given path to ensure it conforms to a maximum length. */
