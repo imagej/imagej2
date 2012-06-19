@@ -104,13 +104,6 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.imglib2.RandomAccess;
-import net.imglib2.display.ARGBScreenImage;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.meta.Axes;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-
 // TODO
 //
 // - implement methods that actually do stuff
@@ -578,15 +571,12 @@ public class SwingOverlayManager
 	 * problem? Edit mode renders differently. This might affect OverlayService
 	 * for drawOverlay() and fillOverlay(). Do we need a way to show single
 	 * overlays now? Probably. More hints for OverlayService I suppose. Anyhow
-	 * we should be able to grab the current view's (or the active overlay's
-	 * view's) ARGBScreenImage and create a new Dataset from it. We could make a
-	 * capture() method to ImageDisplay. Right now this implementation does not
-	 * show the ROI outline. Thats all the special case code the ROI Mgr flatten
-	 * does compared to the menu command flatten. We need a way to tell the
-	 * OverlayService to draw an Overlay in a given Dataset. But we want to draw
-	 * using fg/bg sometimes and using default drawing capabilities sometimes
-	 * (like JHotDraw's rendering). Ideally capture window exactly as is but
-	 * without mouse cursor. Right?
+	 * we grab the current view as a merged color dataset using an ImageGrabber.
+	 * Right now this implementation does not show the ROI outline. Thats all the
+	 * special case code the ROI Mgr flatten does compared to the menu command
+	 * flatten. We need a way to tell the OverlayService to draw an Overlay in a
+	 * given Dataset. But we want to draw using fg/bg sometimes and using default
+	 * drawing capabilities sometimes (like JHotDraw's rendering).
 	 */
 	private void flatten() {
 		/*
@@ -1156,17 +1146,6 @@ public class SwingOverlayManager
 		inputMap.put("overlays", ovrSrv.getOverlayInfo().selectedOverlays());
 		PluginService pluginService = context.getService(PluginService.class);
 		pluginService.run(SelectedManagerOverlayProperties.class, inputMap);
-		/*
-		String name = info.toString();
-		ColorRGB lineColor = info.overlay.getLineColor();
-		ColorRGB fillColor = info.overlay.getFillColor();
-		double width = info.overlay.getLineWidth();
-		JOptionPane.showMessageDialog(this,
-			"(" + name +
-			") (" + lineColor +
-			") (" + fillColor +
-			") (" + width + ")");
-		*/
 	}
 
 	private ChannelCollection getChannels() {
