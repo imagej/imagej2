@@ -42,7 +42,6 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.log.LogService;
 import imagej.ui.UIService;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -66,8 +65,8 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	// -- instance variables --
 
 	@Parameter
-	//private UIService ui;
-	private LogService log;
+	private UIService ui;
+	//private LogService log;
 	
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset input;
@@ -88,8 +87,8 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	public void run() {
 		if (input.isInteger()) {
 			// TODO - decide whether to use UIService or LogService for report.
-			//ui.showDialog("This plugin requires a floating point dataset");
-			log.error("This plugin requires a floating point dataset");
+			ui.showDialog("This plugin requires a floating point dataset");
+			//log.error("This plugin requires a floating point dataset");
 			return;
 		}
 		checkInput();
