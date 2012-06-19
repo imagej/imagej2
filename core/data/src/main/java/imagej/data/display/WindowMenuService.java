@@ -70,8 +70,9 @@ public final class WindowMenuService extends AbstractService {
 
 	public static final int MAX_FILES_SHOWN = 10;
 
-	/** Maximum title length shown. */
-	private static final int MAX_DISPLAY_LENGTH = 40;
+	// max name width constants
+	private static final int MAX_LEADER_SIZE = 10;
+	private static final int MAX_TRAILER_SIZE = 26;
 
 	private final MenuService menuService;
 
@@ -168,8 +169,8 @@ public final class WindowMenuService extends AbstractService {
 	@EventHandler
 	protected void onEvent(final DisplayActivatedEvent event) {
 		final Display<?> display = event.getDisplay();
-		// @TODO - needs checkbox menu functionality
-		// setActiveWindow(display);
+		// TODO - needs checkbox menu functionality
+		//setActiveWindow(display);
 	}
 
 	@EventHandler
@@ -224,10 +225,18 @@ public final class WindowMenuService extends AbstractService {
 		info.update(eventService);
 	}
 
+	// TODO - BDZ - this is a first attempt. Friendlier algorithms must exist.
+	
 	/** Shortens the given path to ensure it conforms to a maximum length. */
 	private String shortPath(final String path) {
-		// TODO - shorten path name as needed
-		return path;
+		String newPath = path;
+		if (path.length() > (MAX_LEADER_SIZE + 3 + MAX_TRAILER_SIZE)) {
+			newPath = path.substring(0, MAX_LEADER_SIZE);
+			newPath += "...";
+			int p = path.length() - MAX_TRAILER_SIZE - 1;
+			newPath += path.substring(p, p + MAX_TRAILER_SIZE);
+		}
+		return newPath;
 	}
 
 }
