@@ -172,6 +172,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 				pos.put(axis, min(i));
 			}
 		}
+		
+		if (getActiveAxis() == null) initActiveAxis();
 	}
 
 	// -- ImageDisplay methods --
@@ -429,7 +431,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		pos.put(axis, value);
 		// NB: DataView.setPosition is called only in update method.
 		if (eventService != null) {
-			eventService.publish(new AxisPositionEvent(this, axis));
+			// NB: BDZ changed from publish() to publishLater(). This fixes bug #1234.
+			// We may want to change order of events to allow publish() instead.
+			eventService.publishLater(new AxisPositionEvent(this, axis));
 		}
 	}
 
