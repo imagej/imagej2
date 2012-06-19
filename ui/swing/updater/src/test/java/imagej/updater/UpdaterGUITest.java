@@ -40,7 +40,13 @@ import imagej.updater.gui.SwingUserInterface;
 import imagej.util.MersenneTwisterFast;
 
 /**
- * TODO
+ * This class is meant for interactive debugging of GUI issues in the Updater.
+ * 
+ * Issues such as problems with the password dialog are often tested much more
+ * efficiently when run outside of the Updater, without having to start ImageJ
+ * over and over again. This class helps with such issues.
+ * 
+ * It is not meant to be run unattendedly, ie. with JUnit.
  * 
  * @author Johannes Schindelin
  */
