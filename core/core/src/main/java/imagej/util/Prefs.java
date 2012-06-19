@@ -204,6 +204,9 @@ public final class Prefs {
 
 	// -- Other/unsorted --
 
+	// TODO - Evaluate which of these methods are really needed, and which are
+	// duplicate of similar functionality above.
+
 	/** Clears everything. */
 	public static void clearAll() {
 		try {
