@@ -50,14 +50,8 @@ import net.imglib2.type.numeric.RealType;
 
 // TODO
 // - move awt code out of here to avoid a dependency
-// - black color draws in weird blue
-//     Ok, the problem is the image is 3 channel composite and not RGBMerged.
-//     So the draw gray code is called. Which draws on a single channel (the
-//     first?). Need code like elsewhere that draws to all channels if its a
-//     composite image. And maybe track channel fill values in draw tool rather
-//     than color/gray split.
 // - text drawing uses shades of the current color. what is to be done when
-//     you're drawing into a gray dataset?
+//     you're drawing into a gray dataset? (LATER - is this comment obsolete?)
 
 /**
  * Draws data across all channels in an orthoplane of a {@link Dataset}. Many
