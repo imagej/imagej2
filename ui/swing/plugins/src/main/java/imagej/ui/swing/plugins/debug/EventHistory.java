@@ -99,7 +99,6 @@ public class EventHistory extends AbstractService {
 		final Set<Class<? extends ImageJEvent>> highlighted)
 	{
 		final StringBuilder sb = new StringBuilder();
-		sb.append("<html><body style=\"font-family: monospaced;\">");
 		for (final EventDetails details : history) {
 			final Class<? extends ImageJEvent> eventType = details.getEventType();
 			if (filtered != null && filtered.contains(eventType)) {
@@ -109,9 +108,7 @@ public class EventHistory extends AbstractService {
 			final boolean bold =
 				highlighted != null && highlighted.contains(eventType);
 			sb.append(details.toHTML(bold));
-			sb.append("<br>");
 		}
-		sb.append("</body></html>");
 		return sb.toString();
 	}
 

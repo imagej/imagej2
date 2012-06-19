@@ -35,81 +35,60 @@
 
 package imagej.ui.swing.plugins.debug;
 
-import imagej.event.ImageJEvent;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.log.LogService;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
- * Caches details of a particular {@link ImageJEvent}, without saving the event
- * itself (since doing so could leave dangling references).
+ * Listens for events, displaying results in a text window.
  * 
  * @author Curtis Rueden
  */
-public class EventDetails {
+@Plugin(menuPath = "Plugins>Debug>Watch Events")
+public class WatchEvents implements ImageJPlugin, EventHistoryListener {
 
-	private final Date timestamp;
-	private final Class<? extends ImageJEvent> eventType;
-	private final String eventString;
+	// -- Parameters --
 
-	public EventDetails(final ImageJEvent event) {
-		timestamp = new Date();
-		eventType = event.getClass();
-		eventString = event.toString();
+	@Parameter
+	private EventHistory eventHistory;
+
+	@Parameter
+	private LogService log;
+
+	// -- Fields --
+
+	private WatchEventsFrame watchEventsFrame;
+
+	// -- Runnable methods --
+
+	@Override
+	public void run() {
+		watchEventsFrame = new WatchEventsFrame(eventHistory, log);
+
+		// update UI when event history changes
+		eventHistory.addListener(this);
+
+		// stop listening for history changes when the UI goes away
+		watchEventsFrame.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				eventHistory.removeListener(WatchEvents.this);
+			}
+		});
+
+		watchEventsFrame.setVisible(true);
 	}
 
-	// -- EventDetails methods --
+	// -- EventHistoryListener methods --
 
-	public Class<? extends ImageJEvent> getEventType() {
-		return eventType;
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	public String getEventString() {
-		return eventString;
-	}
-
-	public String toHTML(final boolean bold) {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("<p style=\"font-family: monospaced;\"");
-		if (bold) sb.append("<b>");
-
-		// append timestamp
-		sb.append("<font color=\"gray\">[");
-		sb.append(timestampAsString());
-		sb.append("] </font>");
-
-		// append event class name
-		sb.append("<font color=\"green\">");
-		sb.append(eventType.getSimpleName());
-		sb.append("</font>");
-
-		// append event string
-		sb.append("<font color=\"black\">");
-		sb.append(htmlize(eventString));
-		sb.append("</font>");
-
-		if (bold) sb.append("</b>");
-		sb.append("</p>");
-		return sb.toString();
-	}
-
-	// -- Helper methods --
-
-	private String timestampAsString() {
-		final SimpleDateFormat formatter =
-			new SimpleDateFormat("hh:mm:ss.SS", Locale.getDefault());
-		final String dateStr = formatter.format(timestamp);
-		return dateStr;
-	}
-
-	private String htmlize(String s) {
-		final String tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
-		return s.replaceAll("\\t", tab).replaceAll("\\n", "<br>");
+	@Override
+	public void eventOccurred(final EventDetails details) {
+		watchEventsFrame.append(details);
 	}
 
 }
