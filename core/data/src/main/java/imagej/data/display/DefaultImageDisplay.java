@@ -616,6 +616,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 			view.dispose();
 		}
 		clear();
+		combinedInterval.clear();
 		// NB - this is necessary to make sure resources get returned via GC.
 		// Else there is a memory leak.
 		eventService.unsubscribe(subscribers);

@@ -305,6 +305,15 @@ public class CombinedInterval extends ArrayList<CalibratedInterval> implements
 		this.name = name;
 	}
 
+	// -- ArrayList methods --
+	
+	@Override
+	public void clear() {
+		super.clear();
+		mappings.clear();
+		indices.clear();
+	}
+	
 	// -- Helper classes --
 
 	protected class DimensionMapping {
