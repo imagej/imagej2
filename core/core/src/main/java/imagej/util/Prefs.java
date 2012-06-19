@@ -369,36 +369,5 @@ public final class Prefs {
 		return list;
 	}
 
-	// Tests for Map and List... 
-	
-	public static void main(String[] args) {
-		try {
-			Preferences prefs = Preferences.userNodeForPackage(String.class);
-			// Map...
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("0", "A");
-			map.put("1", "B");
-			map.put("2", "C");
-			map.put("3", "D");
-			map.put("5", "f");
-			final String MAP_KEY = "MapKey";
-			putMap(prefs, map, MAP_KEY);
-			System.out.println(getMap(prefs, MAP_KEY));
-			clear(prefs, MAP_KEY);
-			// List...
-			String RECENT_FILES = "RecentFiles";
-			List<String> recentFiles = new  ArrayList<String>(); 
-			//List recentFiles = PrefsUtil.getList(prefs, RECENT_FILES);
-			recentFiles.add("some/path1");
-			recentFiles.add("some/path2");
-			recentFiles.add("some/path3");
-			putList(prefs, recentFiles, RECENT_FILES);
-			System.out.println(getList(prefs, RECENT_FILES));
-			clear(prefs, RECENT_FILES );
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-//}	
 
 }
