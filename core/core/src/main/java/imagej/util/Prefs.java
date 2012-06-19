@@ -46,6 +46,11 @@ import java.util.prefs.Preferences;
 
 /**
  * Simple utility class that stores and retrieves user preferences.
+ * <p>
+ * Some of this code was adapted from the <a href=
+ * "http://www.java2s.com/Code/Java/Development-Class/Utilityclassforpreferences.htm"
+ * >PrefsUtil class by Robin Sharp of Javelin Software.</a>.
+ * </p>
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -67,14 +72,13 @@ public final class Prefs {
 		return get(null, name, defaultValue);
 	}
 
-	public static boolean getBoolean(final String name,
-		final boolean defaultValue)
+	public static boolean
+		getBoolean(final String name, final boolean defaultValue)
 	{
 		return getBoolean(null, name, defaultValue);
 	}
 
-	public static double getDouble(final String name, final double defaultValue)
-	{
+	public static double getDouble(final String name, final double defaultValue) {
 		return getDouble(null, name, defaultValue);
 	}
 
@@ -156,8 +160,8 @@ public final class Prefs {
 		return prefs(c).getLong(key(c, name), defaultValue);
 	}
 
-	public static void put(final Class<?> c, final String name,
-		final String value)
+	public static void
+		put(final Class<?> c, final String name, final String value)
 	{
 		prefs(c).put(key(c, name), value);
 	}
@@ -168,8 +172,8 @@ public final class Prefs {
 		prefs(c).putBoolean(key(c, name), value);
 	}
 
-	public static void put(final Class<?> c, final String name,
-		final double value)
+	public static void
+		put(final Class<?> c, final String name, final double value)
 	{
 		prefs(c).putDouble(key(c, name), value);
 	}
@@ -180,13 +184,11 @@ public final class Prefs {
 		prefs(c).putFloat(key(c, name), value);
 	}
 
-	public static void put(final Class<?> c, final String name, final int value)
-	{
+	public static void put(final Class<?> c, final String name, final int value) {
 		prefs(c).putInt(key(c, name), value);
 	}
 
-	public static void
-		put(final Class<?> c, final String name, final long value)
+	public static void put(final Class<?> c, final String name, final long value)
 	{
 		prefs(c).putLong(key(c, name), value);
 	}
@@ -200,6 +202,9 @@ public final class Prefs {
 		}
 	}
 
+	// -- Other/unsorted --
+
+	/** Clears everything. */
 	public static void clearAll() {
 		try {
 			final String[] childNames = Preferences.userRoot().childrenNames();
@@ -211,6 +216,144 @@ public final class Prefs {
 		}
 	}
 
+	/** Clears the node. */
+	public static void clear(final String key) {
+		clear(prefs(null), key);
+	}
+
+	public static void clear(final Preferences preferences, final String key) {
+		try {
+			if (preferences.nodeExists(key)) {
+				preferences.node(key).clear();
+			}
+		}
+		catch (final BackingStoreException bse) {
+			bse.printStackTrace();
+		}
+	}
+
+	/** Removes the node. */
+	public static void remove(final Preferences preferences, final String key) {
+		try {
+			if (preferences.nodeExists(key)) {
+				preferences.node(key).removeNode();
+			}
+		}
+		catch (final BackingStoreException bse) {
+			bse.printStackTrace();
+		}
+	}
+
+	/** Puts a list into the preferences. */
+	public static void putMap(final Map<String, String> map, final String key) {
+		putMap(prefs(null), map, key);
+	}
+
+	public static void putMap(final Preferences preferences,
+		final Map<String, String> map, final String key)
+	{
+		putMap(preferences.node(key), map);
+	}
+
+	/** Puts a list into the preferences. */
+	public static void putMap(final Preferences preferences,
+		final Map<String, String> map)
+	{
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		final Iterator<Entry<String, String>> iter = map.entrySet().iterator();
+		while (iter.hasNext()) {
+			final Entry<String, String> entry = iter.next();
+			final Object value = entry.getValue();
+			preferences.put(entry.getKey().toString(), value == null ? null : value
+				.toString());
+		}
+	}
+
+	/** Gets a Map from the preferences. */
+	public static Map<String, String> getMap(final String key) {
+		return getMap(prefs(null), key);
+	}
+
+	public static Map<String, String> getMap(final Preferences preferences,
+		final String key)
+	{
+		return getMap(preferences.node(key));
+	}
+
+	/** Gets a Map from the preferences. */
+	public static Map<String, String> getMap(final Preferences preferences) {
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		final Map<String, String> map = new HashMap<String, String>();
+		try {
+			final String[] keys = preferences.keys();
+			for (int index = 0; index < keys.length; index++) {
+				map.put(keys[index], preferences.get(keys[index], null));
+			}
+		}
+		catch (final BackingStoreException bse) {
+			bse.printStackTrace();
+		}
+		return map;
+	}
+
+	/** Puts a list into the preferences. */
+	public static void putList(final List<String> list, final String key) {
+		putList(prefs(null), list, key);
+	}
+
+	public static void putList(final Preferences preferences,
+		final List<String> list, final String key)
+	{
+		putList(preferences.node(key), list);
+	}
+
+	/** Puts a list into the preferences. */
+	public static void putList(final Preferences preferences,
+		final List<String> list)
+	{
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		for (int index = 0; list != null && index < list.size(); index++) {
+			final Object value = list.get(index);
+			preferences.put("" + index, value == null ? null : value.toString());
+		}
+	}
+
+	/** Gets a List from the preferences. */
+	public static List<String> getList(final String key) {
+		return getList(prefs(null), key);
+	}
+
+	public static List<String> getList(final Preferences preferences,
+		final String key)
+	{
+		return getList(preferences.node(key));
+	}
+
+	/**
+	 * Gets a List from the preferences. Returns an empty list if nothing in
+	 * prefs.
+	 */
+	public static List<String> getList(final Preferences preferences) {
+		if (preferences == null) {
+			throw new IllegalArgumentException("Preferences not set.");
+		}
+		final List<String> list = new ArrayList<String>();
+		for (int index = 0; index < 1000; index++) {
+			final String value = preferences.get("" + index, null);
+			if (value == null) {
+				break;
+			}
+			list.add(value);
+		}
+		return list;
+	}
+
 	// -- Helper methods --
 
 	private static Preferences prefs(final Class<?> c) {
@@ -220,154 +363,5 @@ public final class Prefs {
 	private static String key(final Class<?> c, final String name) {
 		return c == null ? name : c.getSimpleName() + "." + name;
 	}
-	
-// public class PrefsUtil {
-/**
- * Utility class for prefs
- * from http://www.java2s.com/Code/Java/Development-Class/Utilityclassforpreferences.htm
- * Copyright Javelin Software, All rights reserved.
- * @author Robin Sharp
- */
-	/**
-	 * Clear all the node
-	 */
-	public static void clear(String key) {
-		clear(prefs(null), key);
-	}
-	
-	public static void clear(Preferences preferences, String key) {
-		try {
-			if (preferences.nodeExists(key)) {
-				preferences.node(key).clear();
-			}
-		} catch (BackingStoreException bse) {
-			bse.printStackTrace();
-		}
-	}
-
-	/**
-	 * Remove the node
-	 */
-	public static void remove(Preferences preferences, String key) {
-		try {
-			if (preferences.nodeExists(key)) {
-				preferences.node(key).removeNode();
-			}
-		} catch (BackingStoreException bse) {
-			bse.printStackTrace();
-		}
-	}
-
-	/**
-	 * Puts a list into the preferences.
-	 */
-	public static void putMap(Map<String, String> map, String key) {
-		putMap(prefs(null), map, key);
-	}
-	
-	public static void putMap(Preferences preferences, Map<String, String> map, String key) {
-		putMap(preferences.node(key), map);
-	}
-
-	/**
-	 * Puts a list into the preferences.
-	 */
-	public static void putMap(Preferences preferences, Map<String, String> map) {
-		if (preferences == null) {
-			throw new IllegalArgumentException("Preferences not set.");
-		}
-		for (Iterator<Entry<String, String>> iter = map.entrySet().iterator(); iter.hasNext();) {
-			final Entry<String, String> entry = iter.next();
-			Object value = entry.getValue();
-			preferences.put(entry.getKey().toString(), value == null ? null : value.toString());
-		}
-	}
-
-	/**
-	 * Gets a Map from the preferences.
-	 */
-	public static Map<String, String> getMap(String key) {
-		return getMap(prefs(null), key);
-	}
-	
-	public static Map<String, String> getMap(Preferences preferences, String key) {
-		return getMap(preferences.node(key));
-	}
-
-	/**
-	 * Gets a Map from the preferences.
-	 */
-	public static Map<String, String> getMap(Preferences preferences) {
-		if (preferences == null) {
-			throw new IllegalArgumentException("Preferences not set.");
-		}
-		Map<String, String> map = new HashMap<String, String>();
-		try {
-			String[] keys = preferences.keys();
-			for (int index = 0; index < keys.length; index++) {
-				map.put(keys[index], preferences.get(keys[index], null));
-			}
-		} catch (BackingStoreException bse) {
-			bse.printStackTrace();
-		}
-		return map;
-	}
-
-	/**
-	 * Puts a list into the preferences starting with "0" then "1"
-	 */
-	public static void putList(List<String> list, String key) {
-		putList(prefs(null), list, key);
-	}
-	
-	public static void putList(Preferences preferences, List<String> list, String key) {
-		putList(preferences.node(key), list);
-	}
-
-	/**
-	 * Puts a list into the preferences starting with "0" then "1"
-	 */
-	public static void putList(Preferences preferences, List<String> list) {
-		if (preferences == null) {
-			throw new IllegalArgumentException("Preferences not set.");
-		}
-		//System.out.println( "LIST=" + list );
-		for (int index = 0; list != null && index < list.size(); index++) {
-			Object value = list.get(index);
-			preferences.put("" + index, value == null ? null : value.toString());
-		}
-	}
-
-	/**
-	 * Gets a List from the preferences, starting with "0", then "1" etc
-	 */
-	public static List<String> getList(String key) {
-		return getList(prefs(null), key);
-	}
-
-	public static List<String> getList(Preferences preferences, String key) {
-		return getList(preferences.node(key));
-	}
-
-	/**
-	 * Gets a List from the preferences, starting with "0", then "1" etc
-	 * Returns an empty ArrayList if nothing in prefs.
-	 */
-	public static List<String> getList(Preferences preferences) {
-		if (preferences == null) {
-			throw new IllegalArgumentException("Preferences not set.");
-		}
-		List<String> list = new ArrayList<String>();
-		for (int index = 0; index < 1000; index++) {
-			String value = preferences.get("" + index, null);
-			if (value == null) {
-				break;
-			}
-			//System.out.println( ""+index+ " " + value );
-			list.add(value);
-		}
-		return list;
-	}
-
 
 }
