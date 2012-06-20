@@ -57,8 +57,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.List;
 
-import net.imglib2.RealPoint;
-
 import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
@@ -103,12 +101,11 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	public void updateFigure(final OverlayView overlayView, final Figure figure) {
 		super.updateFigure(overlayView, figure);
 		assert figure instanceof PointFigure;
-		final PointFigure point = (PointFigure) figure;
+		final PointFigure pointFig = (PointFigure) figure;
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
-		point.set(pointOverlay.getPoint().getDoublePosition(0), pointOverlay
-			.getPoint().getDoublePosition(1));
+		pointFig.set(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
 	}
 
 	@Override
@@ -120,8 +117,8 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
-		pointOverlay.setPoint(new RealPoint(new double[] { point.getX(),
-			point.getY() }));
+		pointOverlay.setPoint(point.getX(), 0);
+		pointOverlay.setPoint(point.getY(), 1);
 		overlay.update();
 	}
 

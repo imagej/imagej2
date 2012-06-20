@@ -50,9 +50,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import net.imglib2.RealPoint;
-import net.imglib2.roi.EllipseRegionOfInterest;
-
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
@@ -121,11 +118,10 @@ public class EllipseAdapter extends
 		super.updateFigure(o, f);
 		final EllipseOverlay overlay = downcastOverlay(o.getData());
 		final EllipseFigure figure = downcastFigure(f);
-		final EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
-		final double centerX = eRoi.getOrigin(0);
-		final double centerY = eRoi.getOrigin(1);
-		final double radiusX = eRoi.getRadius(0);
-		final double radiusY = eRoi.getRadius(1);
+		final double centerX = overlay.getOrigin(0);
+		final double centerY = overlay.getOrigin(1);
+		final double radiusX = overlay.getRadius(0);
+		final double radiusY = overlay.getRadius(1);
 
 		figure.setBounds(new Point2D.Double(centerX - radiusX, centerY - radiusY),
 			new Point2D.Double(centerX + radiusX, centerY + radiusY));
@@ -137,12 +133,10 @@ public class EllipseAdapter extends
 		final EllipseOverlay overlay = downcastOverlay(o.getData());
 		final EllipseFigure eFigure = downcastFigure(figure);
 		final Rectangle2D.Double r = eFigure.getBounds();
-		final RealPoint ptCenter =
-			new RealPoint(new double[] { r.x + r.width / 2, r.y + r.height / 2 });
-		final EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
-		eRoi.setOrigin(ptCenter);
-		eRoi.setRadius(r.width / 2, 0);
-		eRoi.setRadius(r.height / 2, 1);
+		overlay.setOrigin(r.x + r.width / 2, 0);
+		overlay.setOrigin(r.y + r.height / 2, 1);
+		overlay.setRadius(r.width / 2, 0);
+		overlay.setRadius(r.height / 2, 1);
 		overlay.update();
 	}
 

@@ -92,5 +92,4 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 		roi = (R) in.readObject();
 	}
 	*/
-	
 }

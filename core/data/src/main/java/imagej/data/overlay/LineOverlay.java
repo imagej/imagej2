@@ -41,8 +41,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.LineRegionOfInterest;
 
@@ -55,56 +53,57 @@ import net.imglib2.roi.LineRegionOfInterest;
  */
 public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 
-	private RealPoint ptStart;
-	private RealPoint ptEnd;
-
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	public LineOverlay() {
 		super(new LineRegionOfInterest(new double[2], new double[2]));
-		ptStart = new RealPoint(2);
-		ptEnd = new RealPoint(2);
 	}
 	
 	public LineOverlay(final ImageJ context) {
 		super(context, new LineRegionOfInterest(new double[2], new double[2]));
-		ptStart = new RealPoint(2);
-		ptEnd = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public LineOverlay(final ImageJ context, final RealLocalizable ptStart,
-		final RealLocalizable ptEnd)
+	public LineOverlay(final ImageJ context, final double[] ptStart,
+		final double[] ptEnd)
 	{
-		super(context,
-			new LineRegionOfInterest(
-				new double[ptStart.numDimensions()],
-				new double[ptEnd.numDimensions()]));
-		assert ptStart.numDimensions() == ptEnd.numDimensions();
-		this.ptStart = new RealPoint(ptStart);
-		this.ptEnd = new RealPoint(ptEnd);
+		super(context, new LineRegionOfInterest(ptStart,ptEnd));
+		assert ptStart.length == ptEnd.length;
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
-		updateRegionOfInterest();
 	}
 
-	public RealLocalizable getLineStart() {
-		return ptStart;
+	public void getLineStart(double[] pt) {
+		getRegionOfInterest().getPoint1(pt);
 	}
 
-	public RealLocalizable getLineEnd() {
-		return ptEnd;
+	public void getLineEnd(double[] pt) {
+		getRegionOfInterest().getPoint2(pt);
 	}
 
-	public void setLineStart(final RealLocalizable pt) {
-		ptStart.setPosition(pt);
-		updateRegionOfInterest();
+	public void setLineStart(final double[] pt) {
+		getRegionOfInterest().setPoint1(pt);
 	}
 
-	public void setLineEnd(final RealLocalizable pt) {
-		ptEnd.setPosition(pt);
-		updateRegionOfInterest();
+	public void setLineEnd(final double[] pt) {
+		getRegionOfInterest().setPoint2(pt);
+	}
+
+	public double getLineStart(int dim) {
+		return getRegionOfInterest().getPoint1(dim);
+	}
+
+	public double getLineEnd(int dim) {
+		return getRegionOfInterest().getPoint2(dim);
+	}
+
+	public void setLineStart(double val, int dim) {
+		getRegionOfInterest().setPoint1(val, dim);
+	}
+
+	public void setLineEnd(double val, int dim) {
+		getRegionOfInterest().setPoint2(val, dim);
 	}
 
 	/* (non-Javadoc)
@@ -112,7 +111,7 @@ public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 	 */
 	@Override
 	public int numDimensions() {
-		return ptStart.numDimensions();
+		return getRegionOfInterest().numDimensions();
 	}
 
 	/* (non-Javadoc)
@@ -121,11 +120,14 @@ public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		out.writeInt(this.numDimensions());
-		for (final RealLocalizable pt : new RealLocalizable[] { ptStart, ptEnd }) {
-			for (int i = 0; i < numDimensions(); i++) {
-				out.writeDouble(pt.getDoublePosition(i));
-			}
+		LineRegionOfInterest roi = getRegionOfInterest();
+		int numDims = roi.numDimensions();
+		out.writeInt(numDims);
+		for (int i = 0; i < numDims; i++) {
+			out.writeDouble(roi.getPoint1(i));
+		}
+		for (int i = 0; i < numDims; i++) {
+			out.writeDouble(roi.getPoint2(i));
 		}
 	}
 
@@ -138,73 +140,22 @@ public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 	{
 		super.readExternal(in);
 		final int nDimensions = in.readInt();
-		final RealPoint[] pts = new RealPoint[2];
-		final double[] position = new double[nDimensions];
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < nDimensions; j++) {
-				position[j] = in.readDouble();
-			}
-			pts[i] = new RealPoint(position);
+		final double[] pt1 = new double[nDimensions];
+		final double[] pt2 = new double[nDimensions];
+		for (int i = 0; i < nDimensions; i++) {
+			pt1[i] = in.readDouble();
 		}
-		ptStart = pts[0];
-		ptEnd = pts[1];
-		updateRegionOfInterest();
+		for (int i = 0; i < nDimensions; i++) {
+			pt2[i] = in.readDouble();
+		}
+		LineRegionOfInterest roi = getRegionOfInterest();
+		roi.setPoint1(pt1);
+		roi.setPoint1(pt2);
 	}
 
-	/*
-	@Override
-	public Overlay duplicate() {
-		LineOverlay overlay = new LineOverlay(getContext());
-		RealLocalizable origPt1 = getLineStart();
-		RealLocalizable origPt2 = getLineEnd();
-		overlay.setLineStart(origPt1);
-		overlay.setLineEnd(origPt2);
-		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-		overlay.setFillColor(getFillColor());
-		overlay.setLineColor(getLineColor());
-		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
-		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
-		overlay.setLineStyle(getLineStyle());
-		overlay.setLineWidth(getLineWidth());
-		overlay.setName(getName());
-		return overlay;
-	}
-	*/
-	
 	@Override
 	public void move(double[] deltas) {
-		for (int i = 0; i < deltas.length; i++) {
-			double currPos = ptStart.getDoublePosition(i);
-			ptStart.setPosition(currPos+deltas[i], i);
-			currPos = ptEnd.getDoublePosition(i);
-			ptEnd.setPosition(currPos+deltas[i], i);
-		}
-		updateRegionOfInterest();
-	}
-	
-	@Override
-	public long max(int d) {
-		double v1 = getLineStart().getDoublePosition(d);
-		double v2 = getLineEnd().getDoublePosition(d);
-		return Math.round(Math.max(v1, v2));
-	}
-	
-	@Override
-	public long min(int d) {
-		double v1 = getLineStart().getDoublePosition(d);
-		double v2 = getLineEnd().getDoublePosition(d);
-		return (long) Math.floor(Math.min(v1, v2));
-	}
-
-	private void updateRegionOfInterest() {
-		double[] p1 = new double[ptStart.numDimensions()];
-		double[] p2 = new double[ptStart.numDimensions()];
-		ptStart.localize(p1);
-		ptEnd.localize(p2);
-		LineRegionOfInterest roi = new LineRegionOfInterest(p1, p2);
-		setRegionOfInterest(roi);
+		getRegionOfInterest().move(deltas);
 	}
 
 }

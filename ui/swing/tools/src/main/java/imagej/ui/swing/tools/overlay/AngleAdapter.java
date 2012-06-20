@@ -49,14 +49,10 @@ import imagej.ui.swing.overlay.OverlayCreatedListener;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
-
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.geom.BezierPath;
-import org.jhotdraw.geom.BezierPath.Node;
 
 /**
  * TODO
@@ -103,10 +99,11 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 			}
 		};
 		/* no effect
+		*/
 		figure.setEndPoint1(6, 1);
 		figure.setCenterPoint(1, 1);
 		figure.setEndPoint1(1,6);
-		*/
+
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
 		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
@@ -121,12 +118,16 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof AngleOverlay;
 		final AngleOverlay angleOverlay = (AngleOverlay) overlay;
-		RealLocalizable overlayPt = angleOverlay.getEndPoint1();
-		angleFig.setEndPoint1(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
-		overlayPt = angleOverlay.getCenterPoint();
-		angleFig.setCenterPoint(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
-		overlayPt = angleOverlay.getCenterPoint();
-		angleFig.setEndPoint2(overlayPt.getDoublePosition(0), overlayPt.getDoublePosition(1));
+		double ptX, ptY;
+		ptX = angleOverlay.getPoint1(0);
+		ptY = angleOverlay.getPoint1(1);
+		angleFig.setEndPoint1(ptX, ptY);
+		ptX = angleOverlay.getCenter(0);
+		ptY = angleOverlay.getCenter(1);
+		angleFig.setCenterPoint(ptX, ptY);
+		ptX = angleOverlay.getPoint2(0);
+		ptY = angleOverlay.getPoint2(1);
+		angleFig.setEndPoint2(ptX, ptY);
 	}
 
 	@Override
@@ -138,16 +139,21 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof AngleOverlay;
 		final AngleOverlay angleOverlay = (AngleOverlay) overlay;
-		Node node = angleFig.getNode(0);
-		RealPoint point = new RealPoint(node.x[0], node.y[0]);
-		angleOverlay.setEndPoint1(point);
-		node = angleFig.getNode(1);
-		point = new RealPoint(node.x[0], node.y[0]);
-		angleOverlay.setCenterPoint(point);
-		node = angleFig.getNode(2);
-		point = new RealPoint(node.x[0], node.y[0]);
-		angleOverlay.setEndPoint2(point);
-		overlay.update();
+		Point2D.Double figPt;
+		double[] ovPt = new double[angleOverlay.numDimensions()];
+		figPt = angleFig.getEndPoint1();
+		ovPt[0] = figPt.x; ovPt[1] = figPt.y;
+		for (int i = 0; i < ovPt.length; i++)
+			angleOverlay.setPoint1(ovPt[i], i);
+		figPt = angleFig.getCenterPoint();
+		ovPt[0] = figPt.x; ovPt[1] = figPt.y;
+		for (int i = 0; i < ovPt.length; i++)
+			angleOverlay.setCenter(ovPt[i], i);
+		figPt = angleFig.getEndPoint2();
+		ovPt[0] = figPt.x; ovPt[1] = figPt.y;
+		for (int i = 0; i < ovPt.length; i++)
+			angleOverlay.setPoint2(ovPt[i], i);
+		angleOverlay.update();
 	}
 
 	@Override
@@ -173,23 +179,36 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 		}
 		
 		public void setEndPoint1(double x, double y) {
-			setPoint(0,x,y);
+			setPoint(0, x, y);
 		}
 		
 		public void setCenterPoint(double x, double y) {
-			setPoint(1,x,y);
+			setPoint(1, x, y);
 		}
 
 		public void setEndPoint2(double x, double y) {
-			setPoint(2,x,y);
+			setPoint(2, x, y);
+		}
+		
+		public Point2D.Double getEndPoint1() {
+			return getPoint(0);
+		}
+		
+		public Point2D.Double getCenterPoint() {
+			return getPoint(1);
+		}
+
+		public Point2D.Double getEndPoint2() {
+			return getPoint(2);
 		}
 		
 		private void setPoint(int nodeNum, double x, double y) {
-			getNode(nodeNum).setTo(new BezierPath.Node(point(x,y)));
+			getNode(nodeNum).setTo(new BezierPath.Node(point(x, y)));
 		}
 		
 		private Point2D.Double point(double x, double y) {
 			return new Point2D.Double(x, y);
 		}
+
 	}
 }

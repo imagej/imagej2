@@ -41,8 +41,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
@@ -55,48 +53,46 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 
 	private static final long serialVersionUID = 1L;
 	
-	private RealPoint point;
-
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	public PointOverlay() {
 		super(new RectangleRegionOfInterest(new double[2], new double[2]));
-		point = new RealPoint(2);
 	}
 	
 	public PointOverlay(final ImageJ context) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
-		point = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public PointOverlay(final ImageJ context, final RealLocalizable pt) {
+	public PointOverlay(final ImageJ context, final double[] pt) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
-		point = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 		for (int i = 0; i < 2; i++) {
-			point.setPosition(pt.getDoublePosition(i), i);
-			getRegionOfInterest().setOrigin(pt.getDoublePosition(i), i);
+			getRegionOfInterest().setOrigin(pt[i], i);
 		}
 	}
 
-	public RealLocalizable getPoint() {
-		return point;
-	}
-	
-	public void setPoint(final RealLocalizable pt) {
-		point.setPosition(pt);
-		getRegionOfInterest().setOrigin(new double[]{pt.getDoublePosition(0), pt.getDoublePosition(1)});
+	public void setPoint(final double[] pt) {
+		getRegionOfInterest().setOrigin(pt[0], 0);
+		getRegionOfInterest().setOrigin(pt[1], 1);
 	}
 
+	public void setPoint(double val, int dim) {
+		getRegionOfInterest().setOrigin(val, dim);
+	}
+	
+	public double getPoint(int dim) {
+		return getRegionOfInterest().getOrigin(dim);
+	}
+	
 	/* (non-Javadoc)
 	 * @see imagej.data.roi.AbstractOverlay#numDimensions()
 	 */
 	@Override
 	public int numDimensions() {
-		return point.numDimensions();
+		return 2;
 	}
 
 	/* (non-Javadoc)
@@ -107,7 +103,7 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		super.writeExternal(out);
 		out.writeInt(this.numDimensions());
 		for (int i = 0; i < numDimensions(); i++) {
-			out.writeDouble(point.getDoublePosition(i));
+			out.writeDouble(getRegionOfInterest().getOrigin(i));
 		}
 	}
 
@@ -124,8 +120,7 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		for (int j = 0; j < nDimensions; j++) {
 			position[j] = in.readDouble();
 		}
-		point = new RealPoint(position);
-		getRegionOfInterest().setOrigin(new double[]{position[0], position[1]});
+		getRegionOfInterest().setOrigin(position);
 	}
 
 	/*
@@ -150,10 +145,6 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 
 	@Override
 	public void move(double[] deltas) {
-		for (int i = 0; i < deltas.length; i++) {
-			double currPos = point.getDoublePosition(i);
-			point.setPosition(currPos+deltas[i], i);
-		}
 		getRegionOfInterest().move(deltas);
 	}
 	

@@ -49,8 +49,6 @@ import imagej.ui.swing.overlay.OverlayCreatedListener;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import net.imglib2.RealPoint;
-
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.LineFigure;
@@ -104,14 +102,16 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 	public void updateFigure(final OverlayView overlayView, final Figure figure) {
 		super.updateFigure(overlayView, figure);
 		assert figure instanceof LineFigure;
-		final LineFigure line = (LineFigure) figure;
+		final LineFigure lineFig = (LineFigure) figure;
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof LineOverlay;
 		final LineOverlay lineOverlay = (LineOverlay) overlay;
-		line.setStartPoint(new Point2D.Double(lineOverlay.getLineStart()
-			.getDoublePosition(0), lineOverlay.getLineStart().getDoublePosition(1)));
-		line.setEndPoint(new Point2D.Double(lineOverlay.getLineEnd()
-			.getDoublePosition(0), lineOverlay.getLineEnd().getDoublePosition(1)));
+		double pt1X = lineOverlay.getLineStart(0);
+		double pt1Y = lineOverlay.getLineStart(1);
+		double pt2X = lineOverlay.getLineEnd(0);
+		double pt2Y = lineOverlay.getLineEnd(1);
+		lineFig.setStartPoint(new Point2D.Double(pt1X, pt1Y));
+		lineFig.setEndPoint(new Point2D.Double(pt2X, pt2Y));
 	}
 
 	@Override
@@ -124,12 +124,12 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 		assert overlay instanceof LineOverlay;
 		final LineOverlay lineOverlay = (LineOverlay) overlay;
 		final Node startNode = line.getNode(0);
-		lineOverlay.setLineStart(new RealPoint(new double[] {
-			startNode.getControlPoint(0).x, startNode.getControlPoint(0).y }));
+		lineOverlay.setLineStart(startNode.getControlPoint(0).x, 0);
+		lineOverlay.setLineStart(startNode.getControlPoint(0).y, 1);
 		final Node endNode = line.getNode(1);
-		lineOverlay.setLineEnd(new RealPoint(new double[] {
-			endNode.getControlPoint(0).x, endNode.getControlPoint(0).y }));
-		overlay.update();
+		lineOverlay.setLineEnd(endNode.getControlPoint(0).x, 0);
+		lineOverlay.setLineEnd(endNode.getControlPoint(0).y, 1);
+		lineOverlay.update();
 	}
 
 	@Override

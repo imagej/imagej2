@@ -223,25 +223,31 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	
 	// From a LineOverlay
 	private Roi createLineRoi(final LineOverlay overlay) {
-		final RealLocalizable p1 = overlay.getLineStart();
-		final RealLocalizable p2 = overlay.getLineEnd();
+		double[] p1 = new double[overlay.numDimensions()];
+		double[] p2 = new double[overlay.numDimensions()];
+		overlay.getLineStart(p1);
+		overlay.getLineEnd(p2);
 		return createLineRoi(overlay, p1, p2);
 	}
 
 	// From a PolygonOverlay that has two points
 	private Roi createLineRoi(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
-		final RealLocalizable p1 = region.getVertex(0);
-		final RealLocalizable p2 = region.getVertex(1);
+		double[] p1 = new double[overlay.numDimensions()];
+		double[] p2 = new double[overlay.numDimensions()];
+		final RealLocalizable vp1 = region.getVertex(0);
+		final RealLocalizable vp2 = region.getVertex(1);
+		vp1.localize(p1);
+		vp2.localize(p2);
 		return createLineRoi(overlay, p1, p2);
 	}
 
 	// helper to support other createLineRoi() methods
-	private Roi createLineRoi(Overlay overlay, RealLocalizable p1, RealLocalizable p2) {
-		final double x1 = p1.getDoublePosition(0);
-		final double y1 = p1.getDoublePosition(1);
-		final double x2 = p2.getDoublePosition(0);
-		final double y2 = p2.getDoublePosition(1);
+	private Roi createLineRoi(Overlay overlay, double[] p1, double[] p2) {
+		final double x1 = p1[0];
+		final double y1 = p1[1];
+		final double x2 = p2[0];
+		final double y2 = p2[1];
 		final Line line = new Line(x1, y1, x2, y2);
 		assignPropertiesToRoi(line, overlay);
 		return line;
@@ -299,18 +305,20 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	private Roi createPointRoi(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final RealLocalizable point = region.getVertex(0);
-		return createPointRoi(overlay, point);
+		double ptX = point.getDoublePosition(0);
+		double ptY = point.getDoublePosition(1);
+		return createPointRoi(overlay, ptX, ptY);
 	}
 
 	// From a PointOverlay
 	private Roi createPointRoi(final PointOverlay overlay) {
-		return createPointRoi(overlay, overlay.getPoint());
+		return createPointRoi(overlay, overlay.getPoint(0), overlay.getPoint(1));
 	}
 
 	// helper to support other createPointRoi() methods
-	private Roi createPointRoi(final Overlay overlay, final RealLocalizable pt) {
-		final int x = (int) pt.getDoublePosition(0);
-		final int y = (int) pt.getDoublePosition(1);
+	private Roi createPointRoi(final Overlay overlay, double ptX, double ptY) {
+		final int x = (int) ptX;
+		final int y = (int) ptY;
 		final PointRoi point = new PointRoi(x,y);
 		assignPropertiesToRoi(point, overlay);
 		return point;
@@ -318,12 +326,16 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	
 	// TODO - subpixel resolution
 	private Roi createAngleRoi(final AngleOverlay overlay) {
-		int xb = (int) overlay.getEndPoint1().getFloatPosition(0);
-		int yb = (int) overlay.getEndPoint1().getFloatPosition(1);
-		int xc = (int) overlay.getCenterPoint().getFloatPosition(0);
-		int yc = (int) overlay.getCenterPoint().getFloatPosition(1);
-		int xe = (int) overlay.getEndPoint2().getFloatPosition(0);
-		int ye = (int) overlay.getEndPoint2().getFloatPosition(1);
+		double[] pt = new double[overlay.numDimensions()];
+		overlay.getPoint1(pt);
+		int xb = (int) pt[0];
+		int yb = (int) pt[1];
+		overlay.getCenter(pt);
+		int xc = (int) pt[0];
+		int yc = (int) pt[1];
+		overlay.getPoint2(pt);
+		int xe = (int) pt[0];
+		int ye = (int) pt[1];
 		int[] xpoints = new int[]{xb,xc,xe};
 		int[] ypoints = new int[]{yb,yc,ye};
 		return new PolygonRoi(xpoints, ypoints, 3, Roi.ANGLE);
@@ -490,14 +502,14 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		assert roi instanceof PolygonRoi;
 		PolygonRoi pRoi = (PolygonRoi) roi;
 		FloatPolygon poly = pRoi.getFloatPolygon();
-		RealPoint pt;
+		double[] pt;
 		AngleOverlay angleOverlay = new AngleOverlay(context);
-		pt = new RealPoint((double)poly.xpoints[0], (double)poly.ypoints[0]);
-		angleOverlay.setEndPoint1(pt);
-		pt = new RealPoint((double)poly.xpoints[1], (double)poly.ypoints[1]);
-		angleOverlay.setCenterPoint(pt);
-		pt = new RealPoint((double)poly.xpoints[2], (double)poly.ypoints[2]);
-		angleOverlay.setEndPoint2(pt);
+		pt = new double[]{(double)poly.xpoints[0], (double)poly.ypoints[0]};
+		angleOverlay.setPoint1(pt);
+		pt = new double[]{(double)poly.xpoints[1], (double)poly.ypoints[1]};
+		angleOverlay.setCenter(pt);
+		pt = new double[]{(double)poly.xpoints[2], (double)poly.ypoints[2]};
+		angleOverlay.setPoint2(pt);
 		return angleOverlay;
 	}
 	
@@ -507,8 +519,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		assert roi instanceof Line;
 		final Line line = (Line) roi;
 		final LineOverlay lineOverlay =
-			new LineOverlay(context, new RealPoint(line.x1d + xOff, line.y1d + yOff),
-				new RealPoint(line.x2d + xOff, line.y2d + yOff));
+			new LineOverlay(context, new double[]{line.x1d + xOff, line.y1d + yOff},
+				new double[]{line.x2d + xOff, line.y2d + yOff});
 		assignPropertiesToOverlay(lineOverlay, roi);
 		return lineOverlay;
 	}
@@ -573,7 +585,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		for (int i = 0; i < ptRoi.getNCoordinates(); i++) {
 			final double x = ptRoi.getXCoordinates()[i] + roi.getBounds().x;
 			final double y = ptRoi.getYCoordinates()[i] + roi.getBounds().y;
-			final RealPoint pt = new RealPoint(x,y);
+			final double[] pt = new double[]{x,y};
 			final PointOverlay pointOverlay = new PointOverlay(context, pt);
 			assignPropertiesToOverlay(pointOverlay, roi);
 			overlays.add(pointOverlay);

@@ -48,11 +48,11 @@ import net.imglib2.roi.RectangleRegionOfInterest;
  * An axis-aligned rectangle, backed by a {@link RectangleRegionOfInterest}.
  * 
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 public class RectangleOverlay extends
 	AbstractROIOverlay<RectangleRegionOfInterest>
 {
-
 	private static final long serialVersionUID = 1L;
 
 	// default constructor for use by serialization code
@@ -120,14 +120,22 @@ public class RectangleOverlay extends
 	
 	@Override
 	public void move(double[] deltas) {
-		RectangleRegionOfInterest roi = getRegionOfInterest();
-		double[] origin = new double[roi.numDimensions()];
-		roi.getOrigin(origin);
-		for (int i = 0; i < roi.numDimensions(); i++) {
-			origin[i] += deltas[i];
-		}
-		roi.setOrigin(origin);
-		// TODO - does it need this. I think so.
-		//rebuild();
+		getRegionOfInterest().move(deltas);
+	}
+	
+	public void setOrigin(double val, int dim) {
+		getRegionOfInterest().setOrigin(val, dim);
+	}
+
+	public void setExtent(double val, int dim) {
+		getRegionOfInterest().setExtent(val, dim);
+	}
+	
+	public double getOrigin(int dim) {
+		return getRegionOfInterest().getOrigin(dim);
+	}
+
+	public double getExtent(int dim) {
+		return getRegionOfInterest().getExtent(dim);
 	}
 }

@@ -58,8 +58,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import net.imglib2.roi.RectangleRegionOfInterest;
-
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
@@ -125,14 +123,12 @@ public class RectangleAdapter extends
 	@Override
 	public void updateFigure(final OverlayView overlay, final Figure f) {
 		super.updateFigure(overlay, f);
-		final RectangleOverlay rectangleOverlay =
+		final RectangleOverlay rectOvr =
 			downcastOverlay(overlay.getData());
-		final RectangleRegionOfInterest roi =
-			rectangleOverlay.getRegionOfInterest();
-		final double x0 = roi.getOrigin(0);
-		final double w = roi.getExtent(0);
-		final double y0 = roi.getOrigin(1);
-		final double h = roi.getExtent(1);
+		final double x0 = rectOvr.getOrigin(0);
+		final double y0 = rectOvr.getOrigin(1);
+		final double w = rectOvr.getExtent(0);
+		final double h = rectOvr.getExtent(1);
 		final Point2D.Double anch = new Point2D.Double(x0, y0);
 		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
 		f.setBounds(anch, lead);
@@ -141,14 +137,13 @@ public class RectangleAdapter extends
 	@Override
 	public void updateOverlay(final Figure figure, final OverlayView overlay) {
 		super.updateOverlay(figure, overlay);
-		final RectangleOverlay rOverlay = downcastOverlay(overlay.getData());
-		final RectangleRegionOfInterest roi = rOverlay.getRegionOfInterest();
+		final RectangleOverlay rectOvr = downcastOverlay(overlay.getData());
 		final Rectangle2D.Double bounds = figure.getBounds();
-		roi.setOrigin(bounds.getMinX(), 0);
-		roi.setOrigin(bounds.getMinY(), 1);
-		roi.setExtent(bounds.getWidth(), 0);
-		roi.setExtent(bounds.getHeight(), 1);
-		rOverlay.update();
+		rectOvr.setOrigin(bounds.getMinX(), 0);
+		rectOvr.setOrigin(bounds.getMinY(), 1);
+		rectOvr.setExtent(bounds.getWidth(), 0);
+		rectOvr.setExtent(bounds.getHeight(), 1);
+		rectOvr.update();
 	}
 
 	// NB - show x,y,w,h of rectangle in StatusBar on click-drag

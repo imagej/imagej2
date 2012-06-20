@@ -53,6 +53,8 @@ import net.imglib2.roi.EllipseRegionOfInterest;
 public class EllipseOverlay extends
 	AbstractROIOverlay<EllipseRegionOfInterest>
 {
+	private static final long serialVersionUID = 1L;
+
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	public EllipseOverlay() {
@@ -64,7 +66,6 @@ public class EllipseOverlay extends
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());
 	}
-	private static final long serialVersionUID = 1L;
 
 	
 	@Override
@@ -89,34 +90,24 @@ public class EllipseOverlay extends
 		roi.setRadius(in.readDouble(), 1);
 	}
 
-
-	/*
-	@Override
-	public Overlay duplicate() {
-		EllipseRegionOfInterest origRoi = getRegionOfInterest();
-		EllipseOverlay overlay = new EllipseOverlay(getContext());
-		EllipseRegionOfInterest newRoi = overlay.getRegionOfInterest();
-		for (int i = 0; i < 2; i++) {
-			newRoi.setOrigin(origRoi.getOrigin(i), i);
-			newRoi.setRadius(origRoi.getRadius(i), i);
-		}
-		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-		overlay.setFillColor(getFillColor());
-		overlay.setLineColor(getLineColor());
-		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
-		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
-		overlay.setLineStyle(getLineStyle());
-		overlay.setLineWidth(getLineWidth());
-		overlay.setName(getName());
-		return overlay;
-	}
-	*/
-	
 	@Override
 	public void move(double[] deltas) {
 		getRegionOfInterest().move(deltas);
 	}
 
+	public double getOrigin(int dim) {
+		return getRegionOfInterest().getOrigin(dim);
+	}
+
+	public double getRadius(int dim) {
+		return getRegionOfInterest().getRadius(dim);
+	}
+	
+	public void setOrigin(double val, int dim) {
+		getRegionOfInterest().setOrigin(val, dim);
+	}
+	
+	public void setRadius(double val, int dim) {
+		getRegionOfInterest().setRadius(val, dim);
+	}
 }

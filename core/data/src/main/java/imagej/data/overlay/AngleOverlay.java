@@ -41,8 +41,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.AngleRegionOfInterest;
 
@@ -55,71 +53,82 @@ public class AngleOverlay extends AbstractROIOverlay<AngleRegionOfInterest> {
 
 	private static final long serialVersionUID = 1L;
 
-	private RealPoint ctrPoint;
-	private RealPoint endPoint1;
-	private RealPoint endPoint2;
-
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	public AngleOverlay() {
 		super(new AngleRegionOfInterest(new double[2], new double[2], new double[2]));
-		ctrPoint = new RealPoint(2);
-		endPoint1 = new RealPoint(2);
-		endPoint2 = new RealPoint(2);
 	}
 	
 	public AngleOverlay(final ImageJ context) {
 		super(context, new AngleRegionOfInterest(new double[2], new double[2], new double[2]));
-		ctrPoint = new RealPoint(2);
-		endPoint1 = new RealPoint(2);
-		endPoint2 = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public AngleOverlay(final ImageJ context, final RealLocalizable ctr,
-		final RealLocalizable end1, final RealLocalizable end2)
+	public AngleOverlay(final ImageJ context, double[] ctr,
+		final double[] end1, final double[] end2)
 	{
 		super(context,
 			new AngleRegionOfInterest(
-				new double[ctr.numDimensions()], 
-				new double[end1.numDimensions()],
-				new double[end2.numDimensions()]));
-		assert ctr.numDimensions() == end1.numDimensions();
-		assert ctr.numDimensions() == end2.numDimensions();
-		this.ctrPoint = new RealPoint(ctr);
-		this.endPoint1 = new RealPoint(end1);
-		this.endPoint2 = new RealPoint(end2);
+				new double[ctr.length],
+				new double[end1.length],
+				new double[end2.length]));
+		assert ctr.length == end1.length;
+		assert ctr.length == end2.length;
+		AngleRegionOfInterest roi = getRegionOfInterest();
+		roi.setCenter(ctr);
+		roi.setPoint1(end1);
+		roi.setPoint2(end2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
-		updateRegionOfInterest();
 	}
 
-	public RealLocalizable getCenterPoint() {
-		return ctrPoint;
+	public void getCenter(double[] pt) {
+		getRegionOfInterest().getCenter(pt);
 	}
 	
-	public RealLocalizable getEndPoint1() {
-		return endPoint1;
+	public void getPoint1(double[] pt) {
+		getRegionOfInterest().getPoint1(pt);
 	}
 
-	public RealLocalizable getEndPoint2() {
-		return endPoint2;
+	public void getPoint2(double[] pt) {
+		getRegionOfInterest().getPoint2(pt);
 	}
 
-	public void setCenterPoint(final RealLocalizable pt) {
-		ctrPoint.setPosition(pt);
-		updateRegionOfInterest();
+	public void setCenter(final double[] pt) {
+		getRegionOfInterest().setCenter(pt);
 	}
 
-	public void setEndPoint1(final RealLocalizable pt) {
-		endPoint1.setPosition(pt);
-		updateRegionOfInterest();
+	public void setPoint1(final double[] pt) {
+		getRegionOfInterest().setPoint1(pt);
 	}
 
-	public void setEndPoint2(final RealLocalizable pt) {
-		endPoint2.setPosition(pt);
-		updateRegionOfInterest();
+	public void setPoint2(final double[] pt) {
+		getRegionOfInterest().setPoint2(pt);
+	}
+
+	public double getCenter(int dim) {
+		return getRegionOfInterest().getCenter(dim);
+	}
+	
+	public double getPoint1(int dim) {
+		return getRegionOfInterest().getPoint1(dim);
+	}
+
+	public double getPoint2(int dim) {
+		return getRegionOfInterest().getPoint2(dim);
+	}
+
+	public void setCenter(double val, int dim) {
+		getRegionOfInterest().setCenter(val, dim);
+	}
+
+	public void setPoint1(double val, int dim) {
+		getRegionOfInterest().setPoint1(val, dim);
+	}
+
+	public void setPoint2(double val, int dim) {
+		getRegionOfInterest().setPoint2(val, dim);
 	}
 
 	/* (non-Javadoc)
@@ -127,7 +136,7 @@ public class AngleOverlay extends AbstractROIOverlay<AngleRegionOfInterest> {
 	 */
 	@Override
 	public int numDimensions() {
-		return ctrPoint.numDimensions();
+		return getRegionOfInterest().numDimensions();
 	}
 
 	/* (non-Javadoc)
@@ -136,14 +145,15 @@ public class AngleOverlay extends AbstractROIOverlay<AngleRegionOfInterest> {
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		out.writeInt(this.numDimensions());
-		for (final RealLocalizable pt :
-					new RealLocalizable[] { ctrPoint, endPoint1, endPoint2 })
-		{
-			for (int i = 0; i < numDimensions(); i++) {
-				out.writeDouble(pt.getDoublePosition(i));
-			}
-		}
+		AngleRegionOfInterest roi = getRegionOfInterest();
+		int numDims = roi.numDimensions();
+		out.writeInt(numDims);
+		for (int i = 0; i < numDims; i++)
+			out.writeDouble(roi.getPoint1(i));
+		for (int i = 0; i < numDims; i++)
+			out.writeDouble(roi.getCenter(i));
+		for (int i = 0; i < numDims; i++)
+			out.writeDouble(roi.getPoint2(i));
 	}
 
 	/* (non-Javadoc)
@@ -155,41 +165,20 @@ public class AngleOverlay extends AbstractROIOverlay<AngleRegionOfInterest> {
 	{
 		super.readExternal(in);
 		final int nDimensions = in.readInt();
-		final RealPoint[] pts = new RealPoint[3];
-		final double[] position = new double[nDimensions];
+		final double[][] pts = new double[3][nDimensions];
 		for (int i = 0; i < pts.length; i++) {
 			for (int j = 0; j < nDimensions; j++) {
-				position[j] = in.readDouble();
+				pts[i][j] = in.readDouble();
 			}
-			pts[i] = new RealPoint(position);
 		}
-		ctrPoint = pts[0];
-		endPoint1 = pts[1];
-		endPoint2 = pts[2];
-		updateRegionOfInterest();
+		AngleRegionOfInterest roi = getRegionOfInterest();
+		roi.setPoint1(pts[0]);
+		roi.setCenter(pts[1]);
+		roi.setPoint2(pts[2]);
 	}
 
 	@Override
 	public void move(double[] deltas) {
-		for (int i = 0; i < deltas.length; i++) {
-			double currPos = ctrPoint.getDoublePosition(i);
-			ctrPoint.setPosition(currPos+deltas[i], i);
-			currPos = endPoint1.getDoublePosition(i);
-			endPoint1.setPosition(currPos+deltas[i], i);
-			currPos = endPoint2.getDoublePosition(i);
-			endPoint2.setPosition(currPos+deltas[i], i);
-		}
 		getRegionOfInterest().move(deltas);
-	}
-	
-	private void updateRegionOfInterest() {
-		double[] ct = new double[ctrPoint.numDimensions()];
-		double[] p1 = new double[endPoint1.numDimensions()];
-		double[] p2 = new double[endPoint2.numDimensions()];
-		ctrPoint.localize(ct);
-		endPoint1.localize(p1);
-		endPoint2.localize(p2);
-		AngleRegionOfInterest roi = new AngleRegionOfInterest(ct, p1, p2);
-		setRegionOfInterest(roi);
 	}
 }
