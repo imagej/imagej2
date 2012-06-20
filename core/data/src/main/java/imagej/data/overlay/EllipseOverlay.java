@@ -49,6 +49,7 @@ import net.imglib2.roi.EllipseRegionOfInterest;
  * {@link EllipseRegionOfInterest}.
  * 
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 public class EllipseOverlay extends
 	AbstractROIOverlay<EllipseRegionOfInterest>
