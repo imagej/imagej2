@@ -99,10 +99,10 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 			}
 		};
 		/* no effect
+		figure.setEndPoint1(6,1);
+		figure.setCenterPoint(1,1);
+		figure.setEndPoint2(1,6);
 		*/
-		figure.setEndPoint1(6, 1);
-		figure.setCenterPoint(1, 1);
-		figure.setEndPoint1(1,6);
 
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
 		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
