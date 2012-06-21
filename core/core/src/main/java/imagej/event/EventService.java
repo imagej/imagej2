@@ -52,17 +52,29 @@ public interface EventService extends IService {
 	 * Publishes the given event immediately, reporting it to all subscribers.
 	 * Does not return until all subscribers have handled the event.
 	 * <p>
-	 * Note that with {@link #publish}, in the case of multiple events
-	 * published in a chain to multiple subscribers, the delivery order will
-	 * resemble that of a stack. For example:
+	 * Note that with {@link #publish}, in the case of multiple events published
+	 * in a chain to multiple subscribers, the delivery order will resemble that
+	 * of a stack. For example:
 	 * </p>
 	 * <ol>
-	 * <li>{@link ModulesUpdatedEvent} is published with {@link #publish}.</li>
-	 * <li>{@link DefaultMenuService} receives the event and handles it,
-	 * publishing {@link MenusUpdatedEvent} in response.</li>
-	 * <li>A third party that subscribes to both {@link ModulesUpdatedEvent} and
-	 * {@link MenusUpdatedEvent} will receive the latter before the former.</li>
+	 * <li>{@link imagej.ext.module.event.ModulesUpdatedEvent} is published with
+	 * {@link #publish}.</li>
+	 * <li>{@link imagej.ext.menu.DefaultMenuService} receives the event and
+	 * handles it, publishing {@link imagej.ext.menu.event.MenusUpdatedEvent} in
+	 * response.</li>
+	 * <li>A third party that subscribes to both
+	 * {@link imagej.ext.module.event.ModulesUpdatedEvent} and
+	 * {@link imagej.ext.menu.event.MenusUpdatedEvent} will receive the latter
+	 * before the former.</li>
 	 * </ol>
+	 * That said, the behavior of {@link #publish} depends on the thread from
+	 * which it is called: if called from a thread identified as a dispatch thread
+	 * by {@link imagej.thread.ThreadService#isDispatchThread()}, it will publish
+	 * immediately; otherwise, it will be queued for publication on a dispatch
+	 * thread, and block the calling thread until publication is complete. This
+	 * means that a chain of events published with a mixture of {@link #publish}
+	 * and {@link #publishLater} may result in event delivery in an unintuitive
+	 * order.
 	 */
 	<E extends ImageJEvent> void publish(E e);
 
@@ -76,12 +88,15 @@ public interface EventService extends IService {
 	 * resemble that of a queue. For example:
 	 * </p>
 	 * <ol>
-	 * <li>{@link ModulesUpdatedEvent} is published with {@link #publishLater}.</li>
-	 * <li>{@link DefaultMenuService} receives the event and handles it,
-	 * publishing {@link MenusUpdatedEvent} in response.</li>
-	 * <li>A third party that subscribes to both {@link ModulesUpdatedEvent} and
-	 * {@link MenusUpdatedEvent} will receive the former first, since it was
-	 * already queued by the time the latter was published.</li>
+	 * <li>{@link imagej.ext.module.event.ModulesUpdatedEvent} is published with
+	 * {@link #publishLater}.</li>
+	 * <li>{@link imagej.ext.menu.DefaultMenuService} receives the event and
+	 * handles it, publishing {@link imagej.ext.menu.event.MenusUpdatedEvent} in
+	 * response.</li>
+	 * <li>A third party that subscribes to both
+	 * {@link imagej.ext.module.event.ModulesUpdatedEvent} and
+	 * {@link imagej.ext.menu.event.MenusUpdatedEvent} will receive the former
+	 * first, since it was already queued by the time the latter was published.</li>
 	 * </ol>
 	 */
 	<E extends ImageJEvent> void publishLater(E e);
