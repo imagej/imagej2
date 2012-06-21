@@ -46,6 +46,8 @@ import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
+import imagej.util.ColorRGB;
+import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -105,7 +107,8 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
-		pointFig.set(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
+		pointFig.setColor(pointOverlay.getFillColor());
+		pointFig.setPoint(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
 	}
 
 	@Override
@@ -159,7 +162,8 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
 		protected Rectangle2D.Double bounds;
 		private final Rectangle2D.Double rect;
-
+		private Color fillColor = Color.yellow;
+		
 		/** Creates a new instance. */
 		public PointFigure() {
 			this(0, 0);
@@ -170,11 +174,18 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			rect = new Rectangle2D.Double();
 		}
 
-		public void set(final double x, final double y) {
+		public void setPoint(final double x, final double y) {
 			bounds.x = x;
 			bounds.y = y;
 		}
 
+		public void setColor(ColorRGB c) {
+			if (c == null)
+				fillColor = Color.yellow;
+			else
+				fillColor = AWTColors.getColor(c);
+		}
+		
 		public double getX() {
 			return bounds.x;
 		}
@@ -291,7 +302,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			rect.height = 5 / sy;
 			g.fill(rect);
 
-			g.setColor(Color.yellow);
+			g.setColor(fillColor);
 
 			// yellow center
 			rect.x = ctrX - 1 / sx;
@@ -352,7 +363,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			final double currY = figure.getY();
 			final double dx = lead.x - anchor.x;
 			final double dy = lead.y - anchor.y;
-			figure.set(currX + dx, currY + dy);
+			figure.setPoint(currX + dx, currY + dy);
 		}
 
 		@Override
