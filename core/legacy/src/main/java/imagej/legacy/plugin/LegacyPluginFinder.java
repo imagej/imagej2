@@ -84,7 +84,7 @@ public class LegacyPluginFinder {
 	/** A list of plugins to exclude from legacy plugin discovery. */
 	private final Set<String> blacklist;
 
-	public LegacyPluginFinder(boolean enableBlacklist) {
+	public LegacyPluginFinder(final boolean enableBlacklist) {
 		blacklist = new HashSet<String>();
 
 		if (enableBlacklist) {
@@ -107,8 +107,7 @@ public class LegacyPluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		Log.info("Found " + commands.size() + " legacy plugins.");
 		for (final Object key : commands.keySet()) {
-			final PluginInfo<ImageJPlugin> pe =
-				createEntry(key, commands, menuTable);
+			final PluginInfo<ImageJPlugin> pe = createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
 		}
 	}
@@ -167,7 +166,7 @@ public class LegacyPluginFinder {
 
 		return pe;
 	}
-	
+
 	/** Creates a table mapping IJ1 command labels to menu paths. */
 	private Map<String, MenuPath> parseMenus(final ij.ImageJ ij) {
 		final Map<String, MenuPath> menuTable = new HashMap<String, MenuPath>();
@@ -195,8 +194,7 @@ public class LegacyPluginFinder {
 			final boolean shift = shortcut.usesShiftModifier();
 			final KeyCode keyCode = KeyCode.get(code);
 			final InputModifiers modifiers =
-				new InputModifiers(false, false, ctrl, meta, shift, false, false,
-					false);
+				new InputModifiers(false, false, ctrl, meta, shift, false, false, false);
 			final Accelerator acc = new Accelerator(keyCode, modifiers);
 			entry.setAccelerator(acc);
 		}
