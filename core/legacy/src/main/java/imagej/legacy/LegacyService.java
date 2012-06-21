@@ -52,12 +52,12 @@ import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.legacy.plugin.LegacyPlugin;
 import imagej.legacy.plugin.LegacyPluginFinder;
+import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsMisc;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,6 +88,7 @@ public final class LegacyService extends AbstractService {
 		new LegacyInjector().injectHooks();
 	}
 
+	private final LogService log;
 	private final EventService eventService;
 	private final PluginService pluginService;
 	private final OptionsService optionsService;
@@ -109,11 +110,13 @@ public final class LegacyService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public LegacyService(final ImageJ context, final EventService eventService,
-		final PluginService pluginService, final OptionsService optionsService,
+	public LegacyService(final ImageJ context, final LogService log,
+		final EventService eventService, final PluginService pluginService,
+		final OptionsService optionsService,
 		final ImageDisplayService imageDisplayService)
 	{
 		super(context);
+		this.log = log;
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 		this.optionsService = optionsService;
@@ -127,7 +130,7 @@ public final class LegacyService extends AbstractService {
 			new ij.ImageJ(ij.ImageJ.NO_SHOW);
 		}
 		catch (final Throwable t) {
-			Log.warn("Failed to instantiate IJ1.", t);
+			log.warn("Failed to instantiate IJ1.", t);
 		}
 
 		// discover legacy plugins
@@ -276,7 +279,7 @@ public final class LegacyService extends AbstractService {
 	
 	private void addLegacyPlugins(boolean enableBlacklist) {
 		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		new LegacyPluginFinder(enableBlacklist).findPlugins(plugins);
+		new LegacyPluginFinder(log, enableBlacklist).findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 	}
 

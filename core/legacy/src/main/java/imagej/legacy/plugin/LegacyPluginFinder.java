@@ -45,7 +45,7 @@ import imagej.ext.MenuPath;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -81,10 +81,14 @@ public class LegacyPluginFinder {
 	private static final String PLUGIN_BLACKLIST = "plugin-blacklist.txt";
 	private static final String LEGACY_PLUGIN_ICON = "/icons/legacy.png";
 
+	private final LogService log;
+
 	/** A list of plugins to exclude from legacy plugin discovery. */
 	private final Set<String> blacklist;
 
-	public LegacyPluginFinder(final boolean enableBlacklist) {
+	public LegacyPluginFinder(final LogService log, final boolean enableBlacklist)
+	{
+		this.log = log;
 		blacklist = new HashSet<String>();
 
 		if (enableBlacklist) {
@@ -93,7 +97,7 @@ public class LegacyPluginFinder {
 				readBlacklistFile(blacklist, PLUGIN_BLACKLIST);
 			}
 			catch (final IOException e) {
-				Log.error("Error reading blacklist", e);
+				log.error("Error reading blacklist", e);
 			}
 		}
 	}
@@ -105,7 +109,7 @@ public class LegacyPluginFinder {
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
 		final Map<String, MenuPath> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
-		Log.info("Found " + commands.size() + " legacy plugins.");
+		log.info("Found " + commands.size() + " legacy plugins.");
 		for (final Object key : commands.keySet()) {
 			final PluginInfo<ImageJPlugin> pe = createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
@@ -138,14 +142,14 @@ public class LegacyPluginFinder {
 		final MenuPath menuPath = menuTable.get(key);
 
 		final String debugString;
-		if (Log.isDebug()) {
+		if (log.isDebug()) {
 			debugString =
 				"- " + (blacklisted ? "[BLACKLISTED] " : "") + ij1PluginString +
 					" [menu = " + menuPath.getMenuString() + ", weight = " +
 					menuPath.getLeaf().getWeight() + "]";
 		}
 		else debugString = null;
-		Log.debug(debugString);
+		log.debug(debugString);
 
 		if (blacklisted) return null;
 
