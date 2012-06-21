@@ -369,8 +369,12 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			}
 		}
 		else {
-			final double mn = imp.getDisplayRangeMin();
-			final double mx = imp.getDisplayRangeMax();
+			double mn = imp.getDisplayRangeMin();
+			double mx = imp.getDisplayRangeMax();
+			if ((imp.getBitDepth() == 16) && (imp.getCalibration().isSigned16Bit())) {
+				mn -= 32768.0;
+				mx -= 32768.0;
+			}
 			for (int c = 0; c < channelCount; c++) {
 				min[c] = mn;
 				max[c] = mx;
