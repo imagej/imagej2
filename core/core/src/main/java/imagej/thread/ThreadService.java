@@ -49,13 +49,59 @@ import java.util.concurrent.ThreadFactory;
  */
 public interface ThreadService extends IService, ThreadFactory {
 
+	/**
+	 * Asynchronously executes the given code in a new thread, as decided by the
+	 * thread service. Typically this means that the service allocates a thread
+	 * from its pool, but ultimately the behavior is implementation-dependent.
+	 * This method returns immediately.
+	 * 
+	 * @param code The code to execute.
+	 * @return A {@link Future} that will contain the result once the execution
+	 *         has finished. Call {@link Future#get()} to access to the return
+	 *         value (which will block until execution has completed).
+	 */
 	<V> Future<V> run(Callable<V> code);
 
+	/**
+	 * Gets whether the current thread is a dispatch thread for use with
+	 * {@link #invoke} and {@link #queue}.
+	 * <p>
+	 * In the case of AWT-based applications (e.g., Java on the desktop), this is
+	 * typically the AWT Event Dispatch Thread (EDT). Howveer, ultimately the
+	 * behavior is implementation-dependent.
+	 * </p>
+	 * 
+	 * @return True iff the current thread is considered a dispatch thread.
+	 */
 	boolean isEventDispatchThread();
 
+	/**
+	 * Executes the given code in a special dispatch thread, blocking until
+	 * execution is complete.
+	 * <p>
+	 * In the case of AWT-based applications (e.g., Java on the desktop), this is
+	 * typically the AWT Event Dispatch Thread (EDT). Howveer, ultimately the
+	 * behavior is implementation-dependent.
+	 * </p>
+	 * 
+	 * @param code The code to execute.
+	 * @throws InterruptedException If the code execution is interrupted.
+	 * @throws InvocationTargetException If an uncaught exception occurs in the
+	 *           code during execution.
+	 */
 	void invoke(final Runnable code) throws InterruptedException,
 		InvocationTargetException;
 
+	/**
+	 * Queues the given code for later execution in a special dispatch thread.
+	 * <p>
+	 * In the case of AWT-based applications (e.g., Java on the desktop), this is
+	 * typically the AWT Event Dispatch Thread (EDT). Howveer, ultimately the
+	 * behavior is implementation-dependent.
+	 * </p>
+	 * 
+	 * @param code The code to execute.
+	 */
 	void queue(final Runnable code);
 
 }
