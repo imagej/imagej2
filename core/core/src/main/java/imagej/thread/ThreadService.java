@@ -73,7 +73,7 @@ public interface ThreadService extends IService, ThreadFactory {
 	 * 
 	 * @return True iff the current thread is considered a dispatch thread.
 	 */
-	boolean isEventDispatchThread();
+	boolean isDispatchThread();
 
 	/**
 	 * Executes the given code in a special dispatch thread, blocking until

@@ -82,7 +82,7 @@ public final class DefaultThreadService extends AbstractService implements
 	}
 
 	@Override
-	public boolean isEventDispatchThread() {
+	public boolean isDispatchThread() {
 		return EventQueue.isDispatchThread();
 	}
 
@@ -90,7 +90,7 @@ public final class DefaultThreadService extends AbstractService implements
 	public void invoke(final Runnable code) throws InterruptedException,
 		InvocationTargetException
 	{
-		if (isEventDispatchThread()) {
+		if (isDispatchThread()) {
 			// just call the code
 			code.run();
 		}
