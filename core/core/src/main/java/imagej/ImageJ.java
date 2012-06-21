@@ -39,7 +39,10 @@ import imagej.event.ImageJEvent;
 import imagej.service.IService;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
+import imagej.util.CheckSezpoz;
+import imagej.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,6 +62,19 @@ public class ImageJ {
 
 	/** Creates a new ImageJ application context with all available services. */
 	public static ImageJ createContext() {
+		try {
+			if (!CheckSezpoz.check(false)) {
+				// unfortunately, we *have* to restart. Sezpoz uses
+				// ClassLoader.getResources() which is already initialized by the time
+				// we come here
+				Log.error("Sezpoz generated annotations. "
+					+ "You need to restart for ImageJ2 to work properly!");
+				System.exit(1);
+			}
+		}
+		catch (final IOException e) {
+			Log.error(e);
+		}
 		return createContext((List<Class<? extends IService>>) null);
 	}
 
