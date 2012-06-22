@@ -37,6 +37,7 @@ package imagej.core.plugins.assign;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
+import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
@@ -45,7 +46,6 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsChannels;
 import imagej.ui.UIService;
 import net.imglib2.type.numeric.RealType;
 

@@ -36,6 +36,7 @@
 package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
+import imagej.data.options.OptionsChannels;
 import imagej.event.StatusService;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
@@ -44,7 +45,6 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsChannels;
 
 /**
  * Sets foreground and background values when tool is active and mouse clicked

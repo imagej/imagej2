@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.overlay;
 
+import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
@@ -43,7 +44,6 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsOverlay;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 

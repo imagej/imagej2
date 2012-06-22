@@ -42,13 +42,13 @@ import imagej.data.DrawingTool;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.options.OptionsChannels;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.tool.AbstractTool;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsChannels;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 

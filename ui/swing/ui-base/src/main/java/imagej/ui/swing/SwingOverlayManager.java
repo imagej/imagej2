@@ -55,6 +55,7 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
+import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
@@ -62,7 +63,6 @@ import imagej.event.EventSubscriber;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsChannels;
 import imagej.platform.PlatformService;
 import imagej.util.Prefs;
 

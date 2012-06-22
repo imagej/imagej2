@@ -40,6 +40,7 @@ import imagej.data.Dataset;
 import imagej.data.DrawingTool;
 import imagej.data.FloodFiller;
 import imagej.data.display.ImageDisplay;
+import imagej.data.options.OptionsChannels;
 import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
@@ -47,7 +48,6 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsChannels;
 
 /**
  * Tool implementation for flood fill.

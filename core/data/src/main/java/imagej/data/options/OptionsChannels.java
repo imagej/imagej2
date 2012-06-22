@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.data.options;
 
 import imagej.data.ChannelCollection;
 import imagej.ext.menu.MenuConstants;

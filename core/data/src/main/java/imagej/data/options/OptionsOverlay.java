@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.data.options;
 
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay.ArrowStyle;
@@ -115,7 +115,12 @@ public class OptionsOverlay extends OptionsPlugin {
 
 	@Override
 	public void run() {
-		final OverlaySettings settings = overlayService.getDefaultSettings();
+		updateSettings(overlayService.getDefaultSettings());
+		super.run();
+	}
+
+	/** Updates the given overlay settings to match these options. */
+	public void updateSettings(final OverlaySettings settings) {
 		settings.setLineColor(getLineColor());
 		settings.setLineWidth(getLineWidth());
 		settings.setLineStyle(getLineStyle());
@@ -123,7 +128,6 @@ public class OptionsOverlay extends OptionsPlugin {
 		settings.setAlpha(getAlpha());
 		settings.setStartArrowStyle(getStartArrowStyle());
 		settings.setEndArrowStyle(getEndArrowStyle());
-		super.run();
 	}
 
 	public void setLineColor(final ColorRGB color) {
