@@ -108,8 +108,8 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		addAll(modules);
 	}
 
-	private ShadowMenu(final ImageJ context,
-		final ModuleInfo moduleInfo, final int menuDepth, final ShadowMenu parent)
+	private ShadowMenu(final ImageJ context, final ModuleInfo moduleInfo,
+		final int menuDepth, final ShadowMenu parent)
 	{
 		this.context = context;
 		if (moduleInfo == null) {
@@ -502,9 +502,8 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		else if (existingChild != null) {
 			final LogService log = context.getService(LogService.class);
 			if (log != null) {
-				log.warn("ShadowMenu: menu item already exists:\n" +
-					"\texisting: " + existingChild.getModuleInfo() + "\n" +
-					"\t ignored: " + info);
+				log.warn("ShadowMenu: menu item already exists:\n\texisting: " +
+					existingChild.getModuleInfo() + "\n\t ignored: " + info);
 			}
 		}
 		return child;
