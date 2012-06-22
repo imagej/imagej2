@@ -62,6 +62,11 @@ import java.util.Map;
  * A tree representing a menu structure independent of any particular user
  * interface.
  * <p>
+ * A <code>ShadowMenu</code> is a tree node with links to other tree nodes. It
+ * is possible to traverse the entire menu structure from any given node, though
+ * by convention the root node is used to represent the menu as a whole.
+ * </p>
+ * <p>
  * The class is implemented as a {@link Collection} of modules (i.e.,
  * {@link ModuleInfo} objects), with the tree structure generated from the
  * modules' menu paths (see {@link ModuleInfo#getMenuPath()}). The class also
@@ -108,8 +113,8 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		addAll(modules);
 	}
 
-	private ShadowMenu(final ImageJ context,
-		final ModuleInfo moduleInfo, final int menuDepth, final ShadowMenu parent)
+	private ShadowMenu(final ImageJ context, final ModuleInfo moduleInfo,
+		final int menuDepth, final ShadowMenu parent)
 	{
 		this.context = context;
 		if (moduleInfo == null) {
@@ -133,6 +138,23 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	/** Gets the module linked to this node, or null if node is not a leaf. */
 	public ModuleInfo getModuleInfo() {
 		return moduleInfo;
+	}
+
+	/**
+	 * Gets the node with the given menu path (relative to this node), or null if
+	 * no such menu node.
+	 * <p>
+	 * For example, asking for "File &gt; New &gt; Image..." from the root
+	 * application menu node would retrieve the node for "Image...", as would
+	 * asking for "New &gt; Image..." from the "File" node.
+	 * </p>
+	 */
+	public ShadowMenu getMenu(final MenuPath menuPath) {
+		return getMenu(menuPath, 0);
+	}
+
+	public ShadowMenu getMenu(final String path) {
+		return getMenu(new MenuPath(path), 0);
 	}
 
 	/**
@@ -502,9 +524,8 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		else if (existingChild != null) {
 			final LogService log = context.getService(LogService.class);
 			if (log != null) {
-				log.warn("ShadowMenu: menu item already exists:\n" +
-					"\texisting: " + existingChild.getModuleInfo() + "\n" +
-					"\t ignored: " + info);
+				log.warn("ShadowMenu: menu item already exists:\n\texisting: " +
+					existingChild.getModuleInfo() + "\n\t ignored: " + info);
 			}
 		}
 		return child;
@@ -512,6 +533,24 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	private boolean isLeaf(final int depth, final MenuPath path) {
 		return depth == path.size() - 1;
+	}
+
+	private ShadowMenu getMenu(final MenuPath menuPath, final int index) {
+		final MenuEntry entry = menuPath.get(index);
+
+		// search for a child with matching menu entry
+		for (final ShadowMenu child : children.values()) {
+			if (entry.getName().equals(child.getMenuEntry().getName())) {
+				// found matching child
+				if (isLeaf(index, menuPath)) {
+					// return child directly
+					return child;
+				}
+				// recurse downward
+				return child.getMenu(menuPath, index + 1);
+			}
+		}
+		return null;
 	}
 
 }
