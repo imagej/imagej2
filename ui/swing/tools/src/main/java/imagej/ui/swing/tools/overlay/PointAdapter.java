@@ -36,8 +36,10 @@
 package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.data.overlay.OverlaySettings;
 import imagej.data.overlay.PointOverlay;
 import imagej.ext.MouseCursor;
 import imagej.ext.plugin.Plugin;
@@ -107,48 +109,38 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
-		pointFig.setColor(pointOverlay.getFillColor());
+		pointFig.setFillColor(pointOverlay.getFillColor());
+		pointFig.setLineColor(pointOverlay.getLineColor());
 		pointFig.setPoint(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
 	}
 
 	@Override
 	public void updateOverlay(final Figure figure, final OverlayView overlayView)
 	{
-		super.updateOverlay(figure, overlayView);
 		assert figure instanceof PointFigure;
 		final PointFigure point = (PointFigure) figure;
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
+		// do not let call to super.updateOverlay() mess with drawing attributes
+		// so save colors
+		ColorRGB fillColor = pointOverlay.getFillColor(); 
+		ColorRGB lineColor = pointOverlay.getLineColor();
+		// call super in case it initializes anything of importance
+		super.updateOverlay(figure, overlayView);
+		// and restore colors to what we really want
+		pointOverlay.setFillColor(fillColor);
+		pointOverlay.setLineColor(lineColor);
+		// set location
 		pointOverlay.setPoint(point.getX(), 0);
 		pointOverlay.setPoint(point.getY(), 1);
-		overlay.update();
+		pointOverlay.update();
 	}
 
 	@Override
 	public MouseCursor getCursor() {
 		return MouseCursor.CROSSHAIR;
 	}
-
-	/*
-	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
-		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		evt.consume();
-	}
-
-	@Override
-	public void onMouseDrag(final MsDraggedEvent evt) {
-		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		evt.consume();
-	}
-
-	@Override
-	public void onMouseClick(imagej.ext.display.event.input.MsClickedEvent evt) {
-		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		evt.consume();
-	}
-	*/
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display,
@@ -163,6 +155,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 		protected Rectangle2D.Double bounds;
 		private final Rectangle2D.Double rect;
 		private Color fillColor = Color.yellow;
+		private Color lineColor = Color.white;
 		
 		/** Creates a new instance. */
 		public PointFigure() {
@@ -179,11 +172,24 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			bounds.y = y;
 		}
 
-		public void setColor(ColorRGB c) {
-			if (c == null)
-				fillColor = Color.yellow;
+		public void setFillColor(ColorRGB c) {
+			if (c == null) {
+				OverlayService srv = getContext().getService(OverlayService.class);
+				OverlaySettings settings = srv.getDefaultSettings();
+				fillColor = AWTColors.getColor(settings.getFillColor());
+			}
 			else
 				fillColor = AWTColors.getColor(c);
+		}
+		
+		public void setLineColor(ColorRGB c) {
+			if (c == null) {
+				OverlayService srv = getContext().getService(OverlayService.class);
+				OverlaySettings settings = srv.getDefaultSettings();
+				lineColor = AWTColors.getColor(settings.getLineColor());
+			}
+			else
+				lineColor = AWTColors.getColor(c);
 		}
 		
 		public double getX() {
@@ -295,7 +301,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
 			g.setColor(Color.black);
 
-			// black outline
+			// black outline around center region
 			rect.x = ctrX - 2 / sx;
 			rect.y = ctrY - 2 / sy;
 			rect.width = 5 / sx;
@@ -304,37 +310,37 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
 			g.setColor(fillColor);
 
-			// yellow center
+			// center region
 			rect.x = ctrX - 1 / sx;
 			rect.y = ctrY - 1 / sy;
 			rect.width = 3 / sx;
 			rect.height = 3 / sy;
 			g.fill(rect);
 
-			g.setColor(Color.white);
+			g.setColor(lineColor);
 
-			// white line # 1
+			// tick mark line # 1
 			rect.x = ctrX + 3 / sx;
 			rect.y = ctrY;
 			rect.width = 4 / sx;
 			rect.height = 1 / sy;
 			g.fill(rect);
 
-			// white line # 2
+			// tick mark line # 2
 			rect.x = ctrX - 6 / sx;
 			rect.y = ctrY;
 			rect.width = 4 / sx;
 			rect.height = 1 / sy;
 			g.fill(rect);
 
-			// white line # 3
+			// tick mark line # 3
 			rect.x = ctrX;
 			rect.y = ctrY - 6 / sy;
 			rect.width = 1 / sx;
 			rect.height = 4 / sy;
 			g.fill(rect);
 
-			// white line # 4
+			// tick mark line # 4
 			rect.x = ctrX;
 			rect.y = ctrY + 3 / sy;
 			rect.width = 1 / sx;

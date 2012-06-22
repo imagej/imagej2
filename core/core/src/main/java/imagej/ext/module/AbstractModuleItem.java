@@ -156,7 +156,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		final String sValue = value == null ? "" : value.toString();
 
 		// do not persist if object cannot be converted back from a string
-		if (!ClassUtils.canCast(sValue, getType())) return;
+		if (!ClassUtils.canConvert(sValue, getType())) return;
 
 		final String persistKey = getPersistKey();
 		if (persistKey == null || persistKey.isEmpty()) {
