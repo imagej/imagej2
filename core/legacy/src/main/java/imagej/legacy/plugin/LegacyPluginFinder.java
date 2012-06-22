@@ -42,6 +42,7 @@ import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
+import imagej.ext.menu.ShadowMenu;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -82,13 +83,16 @@ public class LegacyPluginFinder {
 	private static final String LEGACY_PLUGIN_ICON = "/icons/legacy.png";
 
 	private final LogService log;
+	private final ShadowMenu appMenu;
 
 	/** A list of plugins to exclude from legacy plugin discovery. */
 	private final Set<String> blacklist;
 
-	public LegacyPluginFinder(final LogService log, final boolean enableBlacklist)
+	public LegacyPluginFinder(final LogService log, final ShadowMenu menu,
+		final boolean enableBlacklist)
 	{
 		this.log = log;
+		this.appMenu = menu;
 		blacklist = new HashSet<String>();
 
 		if (enableBlacklist) {
@@ -109,11 +113,15 @@ public class LegacyPluginFinder {
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
 		final Map<String, MenuPath> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
-		log.info("Found " + commands.size() + " legacy plugins.");
+		final int startSize = plugins.size();
 		for (final Object key : commands.keySet()) {
 			final PluginInfo<ImageJPlugin> pe = createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
 		}
+		final int pluginCount = plugins.size() - startSize;
+		final int ignoredCount = commands.size() - pluginCount;
+		log.info("Found " + pluginCount + " legacy plugins (plus " + ignoredCount +
+			" ignored).");
 	}
 
 	// -- Helper methods --
@@ -138,20 +146,31 @@ public class LegacyPluginFinder {
 		final Hashtable<?, ?> commands, final Map<String, MenuPath> menuTable)
 	{
 		final String ij1PluginString = commands.get(key).toString();
+
+		// NB: Check whether legacy plugin is on the blacklist.
 		final boolean blacklisted = blacklist.contains(ij1PluginString);
+
+		// NB: Check whether menu path is already taken by an ImageJ2 plugin.
+		// This allows transparent override of legacy plugins.
 		final MenuPath menuPath = menuTable.get(key);
+		final boolean overridden = appMenu.getMenu(menuPath) != null;
 
-		final String debugString;
 		if (log.isDebug()) {
-			debugString =
-				"- " + (blacklisted ? "[BLACKLISTED] " : "") + ij1PluginString +
-					" [menu = " + menuPath.getMenuString() + ", weight = " +
-					menuPath.getLeaf().getWeight() + "]";
+			// output discovery info for this legacy plugin
+			final String status;
+			if (blacklisted && overridden) status = "[BLACKLISTED, OVERRIDDEN] ";
+			else if (blacklisted) status = "[BLACKLISTED] ";
+			else if (overridden) status = "[OVERRIDDEN] ";
+			else status = "";
+			log.debug("- " + status + ij1PluginString + " [menu = " +
+				menuPath.getMenuString() + ", weight = " +
+				menuPath.getLeaf().getWeight() + "]");
 		}
-		else debugString = null;
-		log.debug(debugString);
+		if (blacklisted && overridden) {
+			log.warn("Overridden plugin " + ij1PluginString + " is blacklisted");
+		}
 
-		if (blacklisted) return null;
+		if (blacklisted || overridden) return null;
 
 		final String className = parsePluginClass(ij1PluginString);
 		final String arg = parseArg(ij1PluginString);

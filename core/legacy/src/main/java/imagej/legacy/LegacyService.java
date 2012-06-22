@@ -48,6 +48,7 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.legacy.plugin.LegacyPlugin;
@@ -93,6 +94,7 @@ public final class LegacyService extends AbstractService {
 	private final PluginService pluginService;
 	private final OptionsService optionsService;
 	private final ImageDisplayService imageDisplayService;
+	private final MenuService menuService;
 	private boolean lastDebugMode;
 	private boolean initialized;
 
@@ -113,7 +115,7 @@ public final class LegacyService extends AbstractService {
 	public LegacyService(final ImageJ context, final LogService log,
 		final EventService eventService, final PluginService pluginService,
 		final OptionsService optionsService,
-		final ImageDisplayService imageDisplayService)
+		final ImageDisplayService imageDisplayService, final MenuService menuService)
 	{
 		super(context);
 		this.log = log;
@@ -121,6 +123,7 @@ public final class LegacyService extends AbstractService {
 		this.pluginService = pluginService;
 		this.optionsService = optionsService;
 		this.imageDisplayService = imageDisplayService;
+		this.menuService = menuService;
 
 		imageMap = new LegacyImageMap(context);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
@@ -276,7 +279,7 @@ public final class LegacyService extends AbstractService {
 
 	private void addLegacyPlugins(final boolean enableBlacklist) {
 		final LegacyPluginFinder finder =
-			new LegacyPluginFinder(log, enableBlacklist);
+			new LegacyPluginFinder(log, menuService.getMenu(), enableBlacklist);
 		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
 		finder.findPlugins(plugins);
 		pluginService.addPlugins(plugins);
