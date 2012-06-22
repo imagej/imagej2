@@ -90,14 +90,19 @@ public final class DefaultOverlayService extends AbstractService implements
 
 	public DefaultOverlayService(final ImageJ context,
 		final ObjectService objectService, final DisplayService displayService,
-		final ImageDisplayService imageDisplayService)
+		final ImageDisplayService imageDisplayService,
+		final OptionsService optionsService)
 	{
 		super(context);
 		this.objectService = objectService;
 		this.displayService = displayService;
 		this.imageDisplayService = imageDisplayService;
-		this.defaultSettings = new OverlaySettings();
-		this.overlayInfo = new OverlayInfoList();
+
+		defaultSettings = new OverlaySettings();
+		final OptionsOverlay overlayOptions =
+			optionsService.getOptions(OptionsOverlay.class);
+		overlayOptions.updateSettings(defaultSettings);
+		overlayInfo = new OverlayInfoList();
 	}
 
 	// -- OverlayService methods --
