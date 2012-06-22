@@ -95,7 +95,7 @@ public final class LegacyService extends AbstractService {
 	private final ImageDisplayService imageDisplayService;
 	private boolean lastDebugMode;
 	private boolean initialized;
-	
+
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
@@ -134,12 +134,10 @@ public final class LegacyService extends AbstractService {
 		}
 
 		// discover legacy plugins
-		OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
+		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
 		lastDebugMode = optsMisc.isDebugMode();
-		boolean enableBlacklist = !optsMisc.isDebugMode();
+		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyPlugins(enableBlacklist);
-
-		//IJ.addEventListener(new IJ1EventListener());
 
 		updateIJ1Settings();
 
@@ -170,9 +168,10 @@ public final class LegacyService extends AbstractService {
 		return imageMap;
 	}
 
-	public void runLegacyPlugin(String ij1ClassName, String argument) {
+	public void runLegacyPlugin(final String ij1ClassName, final String argument)
+	{
 		final String arg = (argument == null) ? "" : argument;
-		final Map<String,Object> inputMap = new HashMap<String, Object>();
+		final Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("className", ij1ClassName);
 		inputMap.put("arg", arg);
 		pluginService.run(LegacyPlugin.class, inputMap);
@@ -234,12 +233,10 @@ public final class LegacyService extends AbstractService {
 	}
 
 	@EventHandler
-	protected void onEvent(final OptionsEvent event)
-	{
+	protected void onEvent(final OptionsEvent event) {
 		if (event.getOptions().getClass() == OptionsMisc.class) {
-			OptionsMisc opts = (OptionsMisc)event.getOptions();
-			if (opts.isDebugMode() != lastDebugMode)
-				updateMenus(opts);
+			final OptionsMisc opts = (OptionsMisc) event.getOptions();
+			if (opts.isDebugMode() != lastDebugMode) updateMenus(opts);
 		}
 		updateIJ1Settings();
 	}
@@ -269,17 +266,19 @@ public final class LegacyService extends AbstractService {
 	}
 
 	// -- helpers --
-	
-	private void updateMenus(OptionsMisc optsMisc) {
+
+	private void updateMenus(final OptionsMisc optsMisc) {
 		pluginService.reloadPlugins();
-		boolean enableBlacklist = !optsMisc.isDebugMode();
+		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyPlugins(enableBlacklist);
 		lastDebugMode = optsMisc.isDebugMode();
 	}
-	
-	private void addLegacyPlugins(boolean enableBlacklist) {
+
+	private void addLegacyPlugins(final boolean enableBlacklist) {
+		final LegacyPluginFinder finder =
+			new LegacyPluginFinder(log, enableBlacklist);
 		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		new LegacyPluginFinder(log, enableBlacklist).findPlugins(plugins);
+		finder.findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 	}
 
