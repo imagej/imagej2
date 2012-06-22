@@ -1,50 +1,16 @@
-ij.plugin.Commands("new")                  # File > New > Image...
-ij.plugin.Commands("open")                 # File > Open
-ij.plugin.Commands("revert")               # File > Revert
-ij.plugin.Commands("save")                 # File > Save
 ij.plugin.Commands("quit")                 # File > Quit
 ij.plugin.Clipboard("scopy")               # Edit > Copy To System
-ij.plugin.filter.Filler("fill")            # Edit > Fill
 ij.plugin.filter.Filters("invert")         # Edit > Invert
-ij.plugin.Options("line")                  # Edit > Options > Line Width
-ij.plugin.Options("io")                    # Edit > Options > Input/Output
-ij.plugin.frame.Fonts                      # Edit > Options > Fonts
-ij.plugin.filter.Profiler("set")           # Edit > Options > Profile Plot
-ij.plugin.RectToolOptions                  # Edit > Options > Rounded Rect Tool
-ij.plugin.ArrowToolOptions                 # Edit > Options > Arrow Tool
-ij.plugin.Colors("point")                  # Edit > Options > Point Tool
-ij.plugin.WandToolOptions                  # Edit > Options > Wand Tools
 ij.plugin.Colors                           # Edit > Options > Colors
 ij.plugin.Options("display")               # Edit > Options > Appearance (old)
-ij.plugin.AppearanceOptions                # Edit > Options > Appearance (newer)
-ij.plugin.Options("conv")                  # Edit > Options > Conversions
-ij.plugin.Memory                           # Edit > Options > Memory & Threads
-ij.plugin.ProxySettings                    # Edit > Options > Proxy Settings
-ij.plugin.Compiler("options")              # Edit > Options > Compiler
-ij.plugin.Options("dicom")                 # Edit > Options > DICOM
-ij.plugin.Options("misc")                  # Edit > Options > Misc.
 ij.plugin.Options("reset")                 # Edit > Options > Reset...
-ij.plugin.Selection("all")                 # Edit > Selection > Select All
-ij.plugin.Selection("none")                # Edit > Selection > Select None
 ij.plugin.AboutBox                         # Help > About ImageJ...
-ij.plugin.BrowserLauncher                  # Help > ImageJ Website...
-ij.plugin.filter.LutViewer                 # Image > Color > Show LUT
-ij.plugin.Resizer("crop")                  # Image > Crop
 ij.plugin.Duplicator                       # Image > Duplicate
-ij.plugin.OverlayCommands("options")       # Image > Overlay > Overlay Options...
-ij.plugin.filter.Transformer("fliph")      # Image > Transform > Flip Horizontally
-ij.plugin.filter.Transformer("flipv")      # Image > Transform > Flip Vertically
-ij.plugin.filter.Transformer("left")       # Image > Transform > Rotate 90 Degrees Left
-ij.plugin.filter.Transformer("right")      # Image > Transform > Rotate 90 Degrees Right
 ij.plugin.Zoom("in")                       # Image > Zoom > In
 ij.plugin.Zoom("out")                      # Image > Zoom > Out
-ij.plugin.Zoom("orig")                     # Image > Zoom > Original Scale
-ij.plugin.Zoom("100%")                     # Image > Zoom > View 100%
-ij.plugin.Zoom("to")                       # Image > Zoom > To Selection
 ij.plugin.Zoom("set")                      # Image > Zoom > Set...
 ij.plugin.Zoom("max")                      # possible Image > Zoom command
 ij.plugin.frame.ContrastAdjuster           # Image > Adjust > Brightness/Contrast
-ij.plugin.OverlayCommands("remove")        # Image > Overlay > Remove Overlay
 ij.plugin.Converter("8-bit")               # Image > Type > 8-bit
 ij.plugin.Converter("16-bit")              # Image > Type > 16-bit
 ij.plugin.Converter("32-bit")              # Image > Type > 32-bit
@@ -56,44 +22,14 @@ ij.plugin.StackEditor("delete")            # Image > Stacks > Delete Slice
 ij.plugin.Animator("start")                # Image > Stacks > Tools > Start Animation
 ij.plugin.Animator("stop")                 # Image > Stacks > Tools > Stop Animation
 ij.plugin.Animator("options")              # Image > Stacks > Tools > Animation Options...
-ij.plugin.Thresholder("mask")              # Process > Binary > Convert to Mask
-ij.plugin.ImageCalculator                  # Process > Image Calculator
-ij.plugin.filter.Filters("smooth")         # Process > Smooth
-ij.plugin.filter.Filters("sharpen")        # Process > Sharpen
-ij.plugin.filter.Filters("edge")           # Process > Find Edges
 ij.plugin.filter.Filters("add")            # Process > Noise > Add Noise
-ij.plugin.filter.Filters("noise")          # Process > Noise > Add Specified Noise
-ij.plugin.filter.SaltAndPepper             # Process > Noise > Salt and Pepper
-ij.plugin.filter.Shadows("north")          # Process > Shadows > North
-ij.plugin.filter.Shadows("northeast")      # Process > Shadows > Northeast
-ij.plugin.filter.Shadows("east")           # Process > Shadows > East
-ij.plugin.frame.Recorder                   # Plugins > Macros > Record...
-ij.plugin.filter.Shadows("southeast")      # Process > Shadows > Southeast
-ij.plugin.filter.Shadows("south")          # Process > Shadows > South
-ij.plugin.filter.Shadows("southwest")      # Process > Shadows > Southwest
-ij.plugin.filter.Shadows("west")           # Process > Shadows > West
-ij.plugin.filter.Shadows("northwest")      # Process > Shadows > Northwest
-ij.plugin.filter.ImageMath("add")          # Process > Math > Add
-ij.plugin.filter.ImageMath("sub")          # Process > Math > Subtract
-ij.plugin.filter.ImageMath("mul")          # Process > Math > Multiply
-ij.plugin.filter.ImageMath("div")          # Process > Math > Divide
-ij.plugin.filter.ImageMath("and")          # Process > Math > AND
-ij.plugin.filter.ImageMath("or")           # Process > Math > OR
-ij.plugin.filter.ImageMath("xor")          # Process > Math > XOR
-ij.plugin.filter.ImageMath("min")          # Process > Math > Min
-ij.plugin.filter.ImageMath("max")          # Process > Math > Max
-ij.plugin.filter.ImageMath("gamma")        # Process > Math > Gamma
-ij.plugin.filter.ImageMath("set")          # Process > Math > Set
 ij.plugin.filter.ImageMath("log")          # Process > Math > Log
 ij.plugin.filter.ImageMath("exp")          # Process > Math > Exp
 ij.plugin.filter.ImageMath("sqr")          # Process > Math > Sqr
 ij.plugin.filter.ImageMath("sqrt")         # Process > Math > Sqrt
 ij.plugin.filter.ImageMath("reciprocal")   # Process > Math > Reciprocal
-ij.plugin.filter.ImageMath("nan")          # Process > Math > Set Background To NaN
 ij.plugin.filter.ImageMath("abs")          # Process > Math > Abs
 ij.plugin.filter.ImageMath("macro")        # Process > Math > Macro
-ij.plugin.filter.Shadows("demo")           # Process > Shadows > Shadows Demo
-ij.plugin.CommandFinder                    # Plugins > Utilities > Find Commands
 ij.plugin.HyperStackConverter("stacktohs") # Image > HyperStack > Stack To HyperStack
 ij.plugin.HyperStackConverter("hstostack") # Image > HyperStack > HyperStack To Stack 
 ###### PHASE THESE OUT SOON
