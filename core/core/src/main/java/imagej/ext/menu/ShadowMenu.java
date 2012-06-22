@@ -136,6 +136,23 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 	}
 
 	/**
+	 * Gets the node with the given menu path (relative to this node), or null if
+	 * no such menu node.
+	 * <p>
+	 * For example, asking for "File &gt; New &gt; Image..." from the root
+	 * application menu node would retrieve the node for "Image...", as would
+	 * asking for "New &gt; Image..." from the "File" node.
+	 * </p>
+	 */
+	public ShadowMenu getMenu(final MenuPath menuPath) {
+		return getMenu(menuPath, 0);
+	}
+
+	public ShadowMenu getMenu(final String path) {
+		return getMenu(new MenuPath(path), 0);
+	}
+
+	/**
 	 * Gets the menu entry corresponding to this node. May be a non-leaf menu
 	 * (e.g., "File") or a leaf item (e.g., "Exit").
 	 */
@@ -511,6 +528,24 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 
 	private boolean isLeaf(final int depth, final MenuPath path) {
 		return depth == path.size() - 1;
+	}
+
+	private ShadowMenu getMenu(final MenuPath menuPath, final int index) {
+		final MenuEntry entry = menuPath.get(index);
+
+		// search for a child with matching menu entry
+		for (final ShadowMenu child : children.values()) {
+			if (entry.getName().equals(child.getMenuEntry().getName())) {
+				// found matching child
+				if (isLeaf(index, menuPath)) {
+					// return child directly
+					return child;
+				}
+				// recurse downward
+				return child.getMenu(menuPath, index + 1);
+			}
+		}
+		return null;
 	}
 
 }

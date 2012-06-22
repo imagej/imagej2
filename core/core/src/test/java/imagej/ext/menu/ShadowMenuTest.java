@@ -110,6 +110,31 @@ public class ShadowMenuTest {
 		checkStructure(root);
 	}
 
+	/** Tests {@link ShadowMenu#getMenu(MenuPath)}. */
+	@Test
+	public void testGetMenu() {
+		final ShadowMenu root = createShadowMenu();
+
+		final ShadowMenu eFile = root.getChildren().get(1);
+		final ShadowMenu aFile = root.getMenu(new MenuPath("File"));
+		assertEquals(eFile, aFile);
+
+		final ShadowMenu eFileNew = eFile.getChildren().get(1);
+		final ShadowMenu aFileNew1 = root.getMenu(new MenuPath("File>New"));
+		assertEquals(eFileNew, aFileNew1);
+		final ShadowMenu aFileNew2 = eFile.getMenu(new MenuPath("New"));
+		assertEquals(eFileNew, aFileNew2);
+
+		final ShadowMenu eFileNewImage = eFileNew.getChildren().get(0);
+		final ShadowMenu aFileNewImage1 =
+			root.getMenu(new MenuPath("File>New>Image"));
+		assertEquals(eFileNewImage, aFileNewImage1);
+		final ShadowMenu aFileNewImage2 = aFile.getMenu(new MenuPath("New>Image"));
+		assertEquals(eFileNewImage, aFileNewImage2);
+		final ShadowMenu aFileNewImage3 = eFileNew.getMenu(new MenuPath("Image"));
+		assertEquals(eFileNewImage, aFileNewImage3);
+	}
+
 	// -- Helper methods --
 
 	private ShadowMenu createShadowMenu() {
@@ -158,8 +183,7 @@ public class ShadowMenuTest {
 		checkNode(fileExit, "Exit", 1, 1, 0);
 
 		final ShadowMenu fileNew = fileChildren.get(1);
-		final List<ShadowMenu> fileNewChildren =
-			checkNode(fileNew, "New", 2, 1, 2);
+		final List<ShadowMenu> fileNewChildren = checkNode(fileNew, "New", 2, 1, 2);
 
 		final ShadowMenu fileNewImage = fileNewChildren.get(0);
 		checkNode(fileNewImage, "Image", 1, 2, 0);
@@ -204,7 +228,7 @@ public class ShadowMenuTest {
 			assertNull(node.getModuleInfo());
 		}
 
-		for (ShadowMenu child : children) {
+		for (final ShadowMenu child : children) {
 			assertEquals(node, child.getParent());
 		}
 
