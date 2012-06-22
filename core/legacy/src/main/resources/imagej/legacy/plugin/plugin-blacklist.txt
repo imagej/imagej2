@@ -1,3 +1,5 @@
+# This file lists legacy plugins to explicitly ignore.
+
 ij.plugin.Commands("quit")                 # File > Quit
 ij.plugin.Clipboard("scopy")               # Edit > Copy To System
 ij.plugin.filter.Filters("invert")         # Edit > Invert
