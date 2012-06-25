@@ -36,6 +36,7 @@
 package imagej.core.plugins.app;
 
 import imagej.data.display.WindowMenuService;
+import imagej.event.StatusService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
@@ -61,6 +62,9 @@ public class QuitProgram implements ImageJPlugin {
 	public static final String MESSAGE = "Quit ImageJ?";
 
 	@Parameter
+	private StatusService statusService;
+
+	@Parameter
 	private WindowMenuService windowMenuService;
 
 	@Parameter
@@ -80,6 +84,7 @@ public class QuitProgram implements ImageJPlugin {
 		}
 		// TODO - call ImageJ.getContext().shutdown() or some such, rather than
 		// using System.exit(0), which kills the entire JVM.
+		statusService.showStatus("Quitting...");
 		System.exit(0);
 	}
 
