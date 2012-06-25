@@ -229,12 +229,10 @@ public final class FileUtils {
 
 		// look for valid base directory relative to this class
 		final String corePath = getBaseDirectory(FileUtils.class.getName());
-		System.out.println("corePath = " + corePath);//TEMP
 		if (corePath != null) return new File(corePath);
 
 		// HACK: look for valid base directory relative to ImageJ launcher class
 		final String appPath = getBaseDirectory("imagej.Main");
-		System.out.println("appPath = " + appPath);//TEMP
 		if (appPath != null) return new File(appPath);
 
 		// last resort: use current working directory
