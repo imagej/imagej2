@@ -41,16 +41,22 @@ import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JDialog;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /**
  * Swing implementation of color chooser widget.
@@ -62,6 +68,15 @@ public class SwingColorWidget extends SwingInputWidget implements
 {
 
 	private static final int SWATCH_WIDTH = 64, SWATCH_HEIGHT = 16;
+
+	private static final String HSB_CLASS_NAME =
+		"javax.swing.colorchooser.DefaultHSBChooserPanel";
+
+	protected static final String RGB_CLASS_NAME =
+		"javax.swing.colorchooser.DefaultRGBChooserPanel";
+
+	protected static final String SWATCHES_CLASS_NAME =
+		"javax.swing.colorchooser.DefaultSwatchChooserPanel";
 
 	private final JButton choose;
 	private Color color;
@@ -88,8 +103,7 @@ public class SwingColorWidget extends SwingInputWidget implements
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		final Color choice =
-			JColorChooser.showDialog(choose, "Select a color", color);
+		final Color choice = showColorDialog(choose, "Select a color", color);
 		if (choice == null) return;
 		color = choice;
 		updateModel();
@@ -118,6 +132,88 @@ public class SwingColorWidget extends SwingInputWidget implements
 		g.dispose();
 		final ImageIcon icon = new ImageIcon(image);
 		choose.setIcon(icon);
+	}
+
+	// -- Utility methods --
+
+	/**
+	 * This method is identical to
+	 * {@link JColorChooser#showDialog(Component, String, Color)} except that it
+	 * reorders the panels of the color chooser to be more desirable. It uses
+	 * (HSB, RGB, Swatches) rather than the default of (Swatches, HSB, RGB).
+	 */
+	public static Color showColorDialog(final Component component,
+		final String title, final Color initialColor) throws HeadlessException
+	{
+		final JColorChooser pane = createColorChooser(initialColor);
+
+		class ColorTracker implements ActionListener {
+
+			private final JColorChooser chooser;
+			private Color color;
+
+			public ColorTracker(final JColorChooser c) {
+				chooser = c;
+			}
+
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				color = chooser.getColor();
+			}
+
+			public Color getColor() {
+				return color;
+			}
+		}
+		final ColorTracker ok = new ColorTracker(pane);
+
+		final JDialog dialog =
+			JColorChooser.createDialog(component, title, true, pane, ok, null);
+
+		dialog.setVisible(true);
+
+		return ok.getColor();
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Creates a new {@link JColorChooser} with panels in a desirable order.
+	 * <p>
+	 * All of this code exists solely to reorder the panels from (Swatches, HSB,
+	 * RGB) to (HSB, RGB, Swatches) since we believe the HSB tab is the most
+	 * commonly useful.
+	 * </p>
+	 */
+	private static JColorChooser createColorChooser(final Color initialColor) {
+		final JColorChooser chooser =
+			new JColorChooser(initialColor != null ? initialColor : Color.white);
+
+		// get the list of panels
+		final AbstractColorChooserPanel[] panels =
+			chooser.getChooserPanels().clone();
+
+		// sort panels into the desired order
+		Arrays.sort(panels, new Comparator<Object>() {
+
+			@Override
+			public int compare(final Object o1, final Object o2) {
+				return value(o1) - value(o2);
+			}
+
+			private int value(final Object o) {
+				final String className = o.getClass().getName();
+				if (className.equals(HSB_CLASS_NAME)) return 1;
+				if (className.equals(RGB_CLASS_NAME)) return 2;
+				if (className.equals(SWATCHES_CLASS_NAME)) return 3;
+				return 4;
+			}
+		});
+
+		// reset the panels to match the sorted list
+		chooser.setChooserPanels(panels);
+
+		return chooser;
 	}
 
 }
