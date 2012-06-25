@@ -226,32 +226,60 @@ public final class FileUtils {
 			final File dir = new File(property);
 			if (dir.isDirectory()) return dir;
 		}
-		final Class<?> clazz = FileUtils.class;
-		String path = clazz.getResource("FileUtils.class").getPath();
+
+		// look for valid base directory relative to this class
+		final String corePath = getBaseDirectory(FileUtils.class.getName());
+		System.out.println("corePath = " + corePath);//TEMP
+		if (corePath != null) return new File(corePath);
+
+		// HACK: look for valid base directory relative to ImageJ launcher class
+		final String appPath = getBaseDirectory("imagej.Main");
+		System.out.println("appPath = " + appPath);//TEMP
+		if (appPath != null) return new File(appPath);
+
+		// last resort: use current working directory
+		return new File(".").getAbsoluteFile();
+	}
+
+	/** Gets the base file system directory containing the given class file. */
+	public static String getBaseDirectory(final String className) {
+		final Class<?> c;
+		try {
+			c = Class.forName(className);
+		}
+		catch (ClassNotFoundException exc) {
+			return null;
+		}
+		String path = c.getResource(c.getSimpleName() + ".class").getPath();
 		if (path.startsWith("file:")) path = path.substring(5);
 
-		final String suffix = clazz.getCanonicalName().replace('.', '/') + ".class";
+		final String suffix = c.getCanonicalName().replace('.', '/') + ".class";
 		if (path.endsWith(suffix)) {
 			path = path.substring(0, path.length() - suffix.length());
 		}
-		if (path.endsWith(".jar!/")) {
+		if (path.contains("/.m2/repository/")) {
+			// NB: The class is in a JAR in the Maven repository cache.
+			// We cannot find the base directory relative to this path.
+			return null;
+		}
+		else if (path.endsWith(".jar!/")) {
 			int slash = path.lastIndexOf('/', path.length() - 6);
-			// assume that the .jar lives in a subdirectory of <IMAGEJDIR>
+			// NB: We assume that the JAR resides one level below <BASEDIR>.
 			if (slash > 0) slash = path.lastIndexOf('/', slash - 1);
 			if (slash > 0) path = path.substring(0, slash + 1);
 		}
 		else if (path.endsWith("/target/classes/")) {
-			// Assume that there are pom.xml files in all parent directories up to the
-			// root
+			// NB: Class is in a Maven build directory. We look for
+			// pom.xml files in parent directories up to <BASEDIR>.
 			File up = new File(path).getParentFile().getParentFile();
 			for (;;) {
 				final File parent = up.getParentFile();
 				if (parent == null || !new File(parent, "pom.xml").exists()) break;
 				up = parent;
 			}
-			return up;
+			path = up.getAbsolutePath();
 		}
-		return new File(path);
+		return path;
 	}
 
 }
