@@ -1308,7 +1308,7 @@ static void maybe_reexec_with_correct_lib_path(struct string *java_library_path)
 	error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
 	hide_splash();
 	execv(main_argv_backup[0], main_argv_backup);
-	die("Could not re-exec with correct library lookup!");
+	die("Could not re-exec with correct library lookup (%d: %s)!", errno, strerror(errno));
 #endif
 }
 
