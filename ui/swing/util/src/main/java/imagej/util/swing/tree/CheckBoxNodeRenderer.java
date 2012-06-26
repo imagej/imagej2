@@ -109,10 +109,14 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 		if (selected) {
 			panel.setForeground(selectionForeground);
 			panel.setBackground(selectionBackground);
+			panel.label.setForeground(selectionForeground);
+			panel.label.setBackground(selectionBackground);
 		}
 		else {
 			panel.setForeground(textForeground);
 			panel.setBackground(textBackground);
+			panel.label.setForeground(textForeground);
+			panel.label.setBackground(textBackground);
 		}
 
 		if (data == null) {
