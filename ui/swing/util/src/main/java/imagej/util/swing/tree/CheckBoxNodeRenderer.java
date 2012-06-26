@@ -116,7 +116,7 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 				if (userObject instanceof CheckBoxNodeData) {
 					final CheckBoxNodeData node = (CheckBoxNodeData) userObject;
 					leafRenderer.label.setText(node.getText());
-					leafRenderer.check.setSelected(node.isSelected());
+					leafRenderer.check.setSelected(node.isChecked());
 				}
 			}
 			returnValue = leafRenderer;
