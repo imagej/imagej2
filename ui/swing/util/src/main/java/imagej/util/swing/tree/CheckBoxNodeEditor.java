@@ -42,7 +42,6 @@ import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
-import javax.swing.JCheckBox;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
@@ -115,9 +114,9 @@ public class CheckBoxNodeEditor extends AbstractCellEditor implements
 				}
 			}
 		};
-		if (editor instanceof JCheckBox) {
-			final JCheckBox checkBox = (JCheckBox) editor;
-			checkBox.addItemListener(itemListener);
+		if (editor instanceof CheckBoxNodePanel) {
+			final CheckBoxNodePanel panel = (CheckBoxNodePanel) editor;
+			panel.check.addItemListener(itemListener);
 		}
 
 		return editor;
