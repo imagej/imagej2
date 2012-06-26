@@ -118,6 +118,12 @@ public class PivotUI extends AbstractUserInterface implements Callable<Object>
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	// TODO
+	@Override
+	public imagej.ext.display.ui.DisplayViewer<?> getDisplayViewer(imagej.ext.display.Display<?> disp) {
+		return null;
+	}
+
 	// -- Callable methods --
 
 	@Override

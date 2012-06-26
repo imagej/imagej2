@@ -150,4 +150,10 @@ public class AWTUI extends AbstractUserInterface {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	// TODO
+	@Override
+	public imagej.ext.display.ui.DisplayViewer<?> getDisplayViewer(imagej.ext.display.Display<?> disp) {
+		return null;
+	}
+
 }
