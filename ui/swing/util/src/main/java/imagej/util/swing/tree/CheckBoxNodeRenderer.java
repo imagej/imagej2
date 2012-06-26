@@ -39,7 +39,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
-import javax.swing.JCheckBox;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -58,7 +57,7 @@ import javax.swing.tree.TreeCellRenderer;
  */
 public class CheckBoxNodeRenderer implements TreeCellRenderer {
 
-	private final JCheckBox leafRenderer = new JCheckBox();
+	private final CheckBoxNodePanel leafRenderer = new CheckBoxNodePanel();
 
 	private final DefaultTreeCellRenderer nonLeafRenderer =
 		new DefaultTreeCellRenderer();
@@ -66,7 +65,7 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 	private final Color selectionBorderColor, selectionForeground,
 			selectionBackground, textForeground, textBackground;
 
-	protected JCheckBox getLeafRenderer() {
+	protected CheckBoxNodePanel getLeafRenderer() {
 		return leafRenderer;
 	}
 
@@ -77,7 +76,7 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 		}
 		final Boolean focusPainted =
 			(Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
-		leafRenderer.setFocusPainted(focusPainted != null && focusPainted);
+		leafRenderer.check.setFocusPainted(focusPainted != null && focusPainted);
 
 		selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
 		selectionForeground = UIManager.getColor("Tree.selectionForeground");
@@ -97,8 +96,8 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 
 			final String stringValue =
 				tree.convertValueToText(value, selected, expanded, leaf, row, false);
-			leafRenderer.setText(stringValue);
-			leafRenderer.setSelected(false);
+			leafRenderer.label.setText(stringValue);
+			leafRenderer.check.setSelected(false);
 
 			leafRenderer.setEnabled(tree.isEnabled());
 
@@ -116,8 +115,8 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 					((DefaultMutableTreeNode) value).getUserObject();
 				if (userObject instanceof CheckBoxNode) {
 					final CheckBoxNode node = (CheckBoxNode) userObject;
-					leafRenderer.setText(node.getText());
-					leafRenderer.setSelected(node.isSelected());
+					leafRenderer.label.setText(node.getText());
+					leafRenderer.check.setSelected(node.isSelected());
 				}
 			}
 			returnValue = leafRenderer;
