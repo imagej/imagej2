@@ -62,8 +62,8 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 	private final DefaultTreeCellRenderer defaultRenderer =
 		new DefaultTreeCellRenderer();
 
-	private final Color selectionBorderColor, selectionForeground,
-			selectionBackground, textForeground, textBackground;
+	private final Color selectionForeground, selectionBackground;
+	private final Color textForeground, textBackground;
 
 	protected CheckBoxNodePanel getPanel() {
 		return panel;
@@ -77,7 +77,6 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 			(Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
 		panel.check.setFocusPainted(focusPainted != null && focusPainted);
 
-		selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
 		selectionForeground = UIManager.getColor("Tree.selectionForeground");
 		selectionBackground = UIManager.getColor("Tree.selectionBackground");
 		textForeground = UIManager.getColor("Tree.textForeground");
