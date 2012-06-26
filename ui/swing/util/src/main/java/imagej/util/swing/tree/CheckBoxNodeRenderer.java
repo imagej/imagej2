@@ -47,7 +47,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 /**
- * TODO
+ * A {@link TreeCellRenderer} for check box tree nodes.
  * <p>
  * Thanks to John Zukowski for the <a
  * href="http://www.java2s.com/Code/Java/Swing-JFC/CheckBoxNodeTreeSample.htm"
@@ -63,23 +63,21 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 	private final DefaultTreeCellRenderer nonLeafRenderer =
 		new DefaultTreeCellRenderer();
 
-	Color selectionBorderColor, selectionForeground, selectionBackground,
-			textForeground, textBackground;
+	private final Color selectionBorderColor, selectionForeground,
+			selectionBackground, textForeground, textBackground;
 
 	protected JCheckBox getLeafRenderer() {
 		return leafRenderer;
 	}
 
 	public CheckBoxNodeRenderer() {
-		Font fontValue;
-		fontValue = UIManager.getFont("Tree.font");
+		final Font fontValue = UIManager.getFont("Tree.font");
 		if (fontValue != null) {
 			leafRenderer.setFont(fontValue);
 		}
-		final Boolean booleanValue =
+		final Boolean focusPainted =
 			(Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
-		leafRenderer.setFocusPainted((booleanValue != null) &&
-			(booleanValue.booleanValue()));
+		leafRenderer.setFocusPainted(focusPainted != null && focusPainted);
 
 		selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
 		selectionForeground = UIManager.getColor("Tree.selectionForeground");
@@ -113,7 +111,7 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 				leafRenderer.setBackground(textBackground);
 			}
 
-			if ((value != null) && (value instanceof DefaultMutableTreeNode)) {
+			if (value != null && value instanceof DefaultMutableTreeNode) {
 				final Object userObject =
 					((DefaultMutableTreeNode) value).getUserObject();
 				if (userObject instanceof CheckBoxNode) {
@@ -131,4 +129,5 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 		}
 		return returnValue;
 	}
+
 }

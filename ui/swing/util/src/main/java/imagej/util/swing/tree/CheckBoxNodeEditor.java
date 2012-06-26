@@ -49,7 +49,7 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 
 /**
- * TODO
+ * A {@link TreeCellEditor} for check box tree nodes.
  * <p>
  * Thanks to John Zukowski for the <a
  * href="http://www.java2s.com/Code/Java/Swing-JFC/CheckBoxNodeTreeSample.htm"
@@ -63,6 +63,7 @@ public class CheckBoxNodeEditor extends AbstractCellEditor implements
 {
 
 	private final CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+
 	private final JTree tree;
 
 	public CheckBoxNodeEditor(final JTree tree) {

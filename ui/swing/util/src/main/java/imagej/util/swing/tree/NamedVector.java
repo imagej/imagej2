@@ -35,14 +35,10 @@
 
 package imagej.util.swing.tree;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
+import java.util.Vector;
 
 /**
- * TODO
+ * A {@link Vector} with a name.
  * <p>
  * Thanks to John Zukowski for the <a
  * href="http://www.java2s.com/Code/Java/Swing-JFC/CheckBoxNodeTreeSample.htm"
@@ -50,39 +46,26 @@ import javax.swing.JTree;
  * </p>
  * 
  * @author Curtis Rueden
+ * @param <T> The type of object the vector stores.
  */
-public class CheckBoxNodeTreeSample {
+public class NamedVector<T> extends Vector<T> {
 
-	public static void main(final String args[]) {
-		final JFrame frame = new JFrame("CheckBox Tree");
+	String name;
 
-		final CheckBoxNode accessOptions = new CheckBoxNode("Accessibility");
-		accessOptions.add(new CheckBoxNode(
-			"Move system caret with focus/selection changes", false));
-		accessOptions.add(new CheckBoxNode("Always expand alt text for images",
-			true));
-
-		final CheckBoxNode browseOptions = new CheckBoxNode("Browsing");
-		browseOptions.add(new CheckBoxNode("Notify when downloads complete", true));
-		browseOptions.add(new CheckBoxNode("Disable script debugging", true));
-		browseOptions.add(new CheckBoxNode("Use AutoComplete", true));
-		browseOptions.add(new CheckBoxNode("Browse in a new process", false));
-
-		final CheckBoxNode rootNode = new CheckBoxNode("Root");
-		rootNode.add(accessOptions);
-		rootNode.add(browseOptions);
-
-		final JTree tree = new JTree(rootNode);
-
-		final CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
-		tree.setCellRenderer(renderer);
-
-		tree.setCellEditor(new CheckBoxNodeEditor(tree));
-		tree.setEditable(true);
-
-		final JScrollPane scrollPane = new JScrollPane(tree);
-		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-		frame.setSize(300, 150);
-		frame.setVisible(true);
+	public NamedVector(final String name) {
+		this.name = name;
 	}
+
+	public NamedVector(final String name, final T elements[]) {
+		this.name = name;
+		for (int i = 0, n = elements.length; i < n; i++) {
+			add(elements[i]);
+		}
+	}
+
+	@Override
+	public synchronized String toString() {
+		return "[" + name + "]";
+	}
+
 }

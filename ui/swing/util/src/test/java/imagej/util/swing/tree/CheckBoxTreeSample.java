@@ -35,11 +35,15 @@
 
 package imagej.util.swing.tree;
 
+import java.awt.BorderLayout;
+import java.util.Vector;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 
 /**
- * A tree node, for use with a {@link JTree}, that can track whether it is
- * selected using an associated check box.
+ * Illustrates usage of the check box tree in {@link imagej.util.swing.tree}.
  * <p>
  * Thanks to John Zukowski for the <a
  * href="http://www.java2s.com/Code/Java/Swing-JFC/CheckBoxNodeTreeSample.htm"
@@ -47,38 +51,41 @@ import javax.swing.JTree;
  * </p>
  * 
  * @author Curtis Rueden
- * @see CheckBoxNodeEditor
- * @see CheckBoxNodeRenderer
  */
-class CheckBoxNode {
+public class CheckBoxTreeSample {
 
-	String text;
+	public static void main(final String args[]) {
+		final JFrame frame = new JFrame("CheckBox Tree");
 
-	boolean selected;
+		final CheckBoxNode accessibilityOptions[] =
+			{
+				new CheckBoxNode("Move system caret with focus/selection changes",
+					false), new CheckBoxNode("Always expand alt text for images", true) };
+		final CheckBoxNode browsingOptions[] =
+			{ new CheckBoxNode("Notify when downloads complete", true),
+				new CheckBoxNode("Disable script debugging", true),
+				new CheckBoxNode("Use AutoComplete", true),
+				new CheckBoxNode("Browse in a new process", false) };
+		final Vector<CheckBoxNode> accessVector =
+			new NamedVector<CheckBoxNode>("Accessibility", accessibilityOptions);
+		final Vector<CheckBoxNode> browseVector =
+			new NamedVector<CheckBoxNode>("Browsing", browsingOptions);
+		final Object rootNodes[] = { accessVector, browseVector };
+		final Vector<Object> rootVector =
+			new NamedVector<Object>("Root", rootNodes);
+		final JTree tree = new JTree(rootVector);
 
-	public CheckBoxNode(final String text, final boolean selected) {
-		this.text = text;
-		this.selected = selected;
+		final CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+		tree.setCellRenderer(renderer);
+
+		tree.setCellEditor(new CheckBoxNodeEditor(tree));
+		tree.setEditable(true);
+
+		final JScrollPane scrollPane = new JScrollPane(tree);
+		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(300, 150);
+		frame.setVisible(true);
 	}
 
-	public boolean isSelected() {
-		return selected;
-	}
-
-	public void setSelected(final boolean newValue) {
-		selected = newValue;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(final String newValue) {
-		text = newValue;
-	}
-
-	@Override
-	public String toString() {
-		return getClass().getName() + "[" + text + "/" + selected + "]";
-	}
 }
