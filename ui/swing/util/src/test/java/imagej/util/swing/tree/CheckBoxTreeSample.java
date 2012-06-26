@@ -57,19 +57,19 @@ public class CheckBoxTreeSample {
 	public static void main(final String args[]) {
 		final JFrame frame = new JFrame("CheckBox Tree");
 
-		final CheckBoxNode accessibilityOptions[] =
+		final CheckBoxNodeData accessibilityOptions[] =
 			{
-				new CheckBoxNode("Move system caret with focus/selection changes",
-					false), new CheckBoxNode("Always expand alt text for images", true) };
-		final CheckBoxNode browsingOptions[] =
-			{ new CheckBoxNode("Notify when downloads complete", true),
-				new CheckBoxNode("Disable script debugging", true),
-				new CheckBoxNode("Use AutoComplete", true),
-				new CheckBoxNode("Browse in a new process", false) };
-		final Vector<CheckBoxNode> accessVector =
-			new NamedVector<CheckBoxNode>("Accessibility", accessibilityOptions);
-		final Vector<CheckBoxNode> browseVector =
-			new NamedVector<CheckBoxNode>("Browsing", browsingOptions);
+				new CheckBoxNodeData("Move system caret with focus/selection changes",
+					false), new CheckBoxNodeData("Always expand alt text for images", true) };
+		final CheckBoxNodeData browsingOptions[] =
+			{ new CheckBoxNodeData("Notify when downloads complete", true),
+				new CheckBoxNodeData("Disable script debugging", true),
+				new CheckBoxNodeData("Use AutoComplete", true),
+				new CheckBoxNodeData("Browse in a new process", false) };
+		final Vector<CheckBoxNodeData> accessVector =
+			new NamedVector<CheckBoxNodeData>("Accessibility", accessibilityOptions);
+		final Vector<CheckBoxNodeData> browseVector =
+			new NamedVector<CheckBoxNodeData>("Browsing", browsingOptions);
 		final Object rootNodes[] = { accessVector, browseVector };
 		final Vector<Object> rootVector =
 			new NamedVector<Object>("Root", rootNodes);

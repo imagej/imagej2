@@ -38,8 +38,8 @@ package imagej.util.swing.tree;
 import javax.swing.JTree;
 
 /**
- * A tree node, for use with a {@link JTree}, that can track whether it is
- * selected using an associated check box.
+ * A tree node user object, for use with a {@link JTree}, that can track whether
+ * it is selected using an associated check box.
  * <p>
  * Thanks to John Zukowski for the <a
  * href="http://www.java2s.com/Code/Java/Swing-JFC/CheckBoxNodeTreeSample.htm"
@@ -50,13 +50,13 @@ import javax.swing.JTree;
  * @see CheckBoxNodeEditor
  * @see CheckBoxNodeRenderer
  */
-class CheckBoxNode {
+class CheckBoxNodeData {
 
 	String text;
 
 	boolean selected;
 
-	public CheckBoxNode(final String text, final boolean selected) {
+	public CheckBoxNodeData(final String text, final boolean selected) {
 		this.text = text;
 		this.selected = selected;
 	}

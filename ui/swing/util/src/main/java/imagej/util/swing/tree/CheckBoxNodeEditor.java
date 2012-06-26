@@ -73,8 +73,8 @@ public class CheckBoxNodeEditor extends AbstractCellEditor implements
 	@Override
 	public Object getCellEditorValue() {
 		final CheckBoxNodePanel panel = renderer.getLeafRenderer();
-		final CheckBoxNode checkBoxNode =
-			new CheckBoxNode(panel.label.getText(), panel.check.isSelected());
+		final CheckBoxNodeData checkBoxNode =
+			new CheckBoxNodeData(panel.label.getText(), panel.check.isSelected());
 		return checkBoxNode;
 	}
 
@@ -91,7 +91,7 @@ public class CheckBoxNodeEditor extends AbstractCellEditor implements
 					final DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
 					final Object userObject = treeNode.getUserObject();
 					returnValue =
-						((treeNode.isLeaf()) && (userObject instanceof CheckBoxNode));
+						((treeNode.isLeaf()) && (userObject instanceof CheckBoxNodeData));
 				}
 			}
 		}
