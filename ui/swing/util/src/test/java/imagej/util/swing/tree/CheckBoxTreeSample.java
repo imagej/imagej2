@@ -60,7 +60,7 @@ public class CheckBoxTreeSample {
 		final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
 
 		final DefaultMutableTreeNode accessibility =
-			new DefaultMutableTreeNode("Accessibility");
+			add(root, "Accessibility", true);
 		add(accessibility, "Move system caret with focus/selection changes", false);
 		add(accessibility, "Always expand alt text for images", true);
 		root.add(accessibility);
@@ -88,12 +88,14 @@ public class CheckBoxTreeSample {
 		frame.setVisible(true);
 	}
 
-	private static void add(final DefaultMutableTreeNode parent,
-		final String text, final boolean checked)
+	private static DefaultMutableTreeNode add(
+		final DefaultMutableTreeNode parent, final String text,
+		final boolean checked)
 	{
 		final CheckBoxNodeData data = new CheckBoxNodeData(text, checked);
 		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(data);
 		parent.add(node);
+		return node;
 	}
 
 }

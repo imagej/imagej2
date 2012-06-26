@@ -57,26 +57,26 @@ import javax.swing.tree.TreeCellRenderer;
  */
 public class CheckBoxNodeRenderer implements TreeCellRenderer {
 
-	private final CheckBoxNodePanel leafRenderer = new CheckBoxNodePanel();
+	private final CheckBoxNodePanel panel = new CheckBoxNodePanel();
 
-	private final DefaultTreeCellRenderer nonLeafRenderer =
+	private final DefaultTreeCellRenderer defaultRenderer =
 		new DefaultTreeCellRenderer();
 
 	private final Color selectionBorderColor, selectionForeground,
 			selectionBackground, textForeground, textBackground;
 
-	protected CheckBoxNodePanel getLeafRenderer() {
-		return leafRenderer;
+	protected CheckBoxNodePanel getPanel() {
+		return panel;
 	}
 
 	public CheckBoxNodeRenderer() {
 		final Font fontValue = UIManager.getFont("Tree.font");
 		if (fontValue != null) {
-			leafRenderer.setFont(fontValue);
+			panel.setFont(fontValue);
 		}
 		final Boolean focusPainted =
 			(Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
-		leafRenderer.check.setFocusPainted(focusPainted != null && focusPainted);
+		panel.check.setFocusPainted(focusPainted != null && focusPainted);
 
 		selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
 		selectionForeground = UIManager.getColor("Tree.selectionForeground");
@@ -90,43 +90,41 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 		final Object value, final boolean selected, final boolean expanded,
 		final boolean leaf, final int row, final boolean hasFocus)
 	{
-
-		Component returnValue;
-		if (leaf) {
-
-			final String stringValue =
-				tree.convertValueToText(value, selected, expanded, leaf, row, false);
-			leafRenderer.label.setText(stringValue);
-			leafRenderer.check.setSelected(false);
-
-			leafRenderer.setEnabled(tree.isEnabled());
-
-			if (selected) {
-				leafRenderer.setForeground(selectionForeground);
-				leafRenderer.setBackground(selectionBackground);
+		CheckBoxNodeData data = null;
+		if (value instanceof DefaultMutableTreeNode) {
+			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			final Object userObject = node.getUserObject();
+			if (userObject instanceof CheckBoxNodeData) {
+				data = (CheckBoxNodeData) userObject;
 			}
-			else {
-				leafRenderer.setForeground(textForeground);
-				leafRenderer.setBackground(textBackground);
-			}
+		}
 
-			if (value != null && value instanceof DefaultMutableTreeNode) {
-				final Object userObject =
-					((DefaultMutableTreeNode) value).getUserObject();
-				if (userObject instanceof CheckBoxNodeData) {
-					final CheckBoxNodeData node = (CheckBoxNodeData) userObject;
-					leafRenderer.label.setText(node.getText());
-					leafRenderer.check.setSelected(node.isChecked());
-				}
-			}
-			returnValue = leafRenderer;
+		final String stringValue =
+			tree.convertValueToText(value, selected, expanded, leaf, row, false);
+		panel.label.setText(stringValue);
+		panel.check.setSelected(false);
+
+		panel.setEnabled(tree.isEnabled());
+
+		if (selected) {
+			panel.setForeground(selectionForeground);
+			panel.setBackground(selectionBackground);
 		}
 		else {
-			returnValue =
-				nonLeafRenderer.getTreeCellRendererComponent(tree, value, selected,
-					expanded, leaf, row, hasFocus);
+			panel.setForeground(textForeground);
+			panel.setBackground(textBackground);
 		}
-		return returnValue;
+
+		if (data == null) {
+			// not a check box node; return default cell renderer
+			return defaultRenderer.getTreeCellRendererComponent(tree, value,
+				selected, expanded, leaf, row, hasFocus);
+		}
+
+		panel.label.setText(data.getText());
+		panel.check.setSelected(data.isChecked());
+
+		return panel;
 	}
 
 }
