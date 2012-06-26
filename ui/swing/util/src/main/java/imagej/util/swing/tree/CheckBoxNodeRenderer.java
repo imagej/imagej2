@@ -83,6 +83,8 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 		textBackground = UIManager.getColor("Tree.textBackground");
 	}
 
+	// -- TreeCellRenderer methods --
+
 	@Override
 	public Component getTreeCellRendererComponent(final JTree tree,
 		final Object value, final boolean selected, final boolean expanded,
