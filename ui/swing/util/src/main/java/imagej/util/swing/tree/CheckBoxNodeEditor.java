@@ -64,10 +64,10 @@ public class CheckBoxNodeEditor extends AbstractCellEditor implements
 
 	private final CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
 
-	private final JTree tree;
+	private final JTree theTree;
 
 	public CheckBoxNodeEditor(final JTree tree) {
-		this.tree = tree;
+		theTree = tree;
 	}
 
 	@Override
@@ -80,22 +80,19 @@ public class CheckBoxNodeEditor extends AbstractCellEditor implements
 
 	@Override
 	public boolean isCellEditable(final EventObject event) {
-		boolean returnValue = false;
-		if (event instanceof MouseEvent) {
-			final MouseEvent mouseEvent = (MouseEvent) event;
-			final TreePath path =
-				tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
-			if (path != null) {
-				final Object node = path.getLastPathComponent();
-				if ((node != null) && (node instanceof DefaultMutableTreeNode)) {
-					final DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-					final Object userObject = treeNode.getUserObject();
-					returnValue =
-						((treeNode.isLeaf()) && (userObject instanceof CheckBoxNodeData));
-				}
-			}
-		}
-		return returnValue;
+		if (!(event instanceof MouseEvent)) return false;
+		final MouseEvent mouseEvent = (MouseEvent) event;
+
+		final TreePath path =
+			theTree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
+		if (path == null) return false;
+
+		final Object node = path.getLastPathComponent();
+		if (!(node instanceof DefaultMutableTreeNode)) return false;
+		final DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+
+		final Object userObject = treeNode.getUserObject();
+		return (treeNode.isLeaf() && userObject instanceof CheckBoxNodeData);
 	}
 
 	@Override
@@ -119,7 +116,8 @@ public class CheckBoxNodeEditor extends AbstractCellEditor implements
 			}
 		};
 		if (editor instanceof JCheckBox) {
-			((JCheckBox) editor).addItemListener(itemListener);
+			final JCheckBox checkBox = (JCheckBox) editor;
+			checkBox.addItemListener(itemListener);
 		}
 
 		return editor;
