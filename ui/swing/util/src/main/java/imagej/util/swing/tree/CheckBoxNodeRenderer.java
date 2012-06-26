@@ -71,9 +71,8 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
 
 	public CheckBoxNodeRenderer() {
 		final Font fontValue = UIManager.getFont("Tree.font");
-		if (fontValue != null) {
-			panel.setFont(fontValue);
-		}
+		if (fontValue != null) panel.label.setFont(fontValue);
+
 		final Boolean focusPainted =
 			(Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
 		panel.check.setFocusPainted(focusPainted != null && focusPainted);
