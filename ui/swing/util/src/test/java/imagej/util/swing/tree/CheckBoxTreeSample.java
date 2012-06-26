@@ -36,11 +36,11 @@
 package imagej.util.swing.tree;
 
 import java.awt.BorderLayout;
-import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * Illustrates usage of the check box tree in {@link imagej.util.swing.tree}.
@@ -57,23 +57,23 @@ public class CheckBoxTreeSample {
 	public static void main(final String args[]) {
 		final JFrame frame = new JFrame("CheckBox Tree");
 
-		final CheckBoxNodeData accessibilityOptions[] =
-			{
-				new CheckBoxNodeData("Move system caret with focus/selection changes",
-					false), new CheckBoxNodeData("Always expand alt text for images", true) };
-		final CheckBoxNodeData browsingOptions[] =
-			{ new CheckBoxNodeData("Notify when downloads complete", true),
-				new CheckBoxNodeData("Disable script debugging", true),
-				new CheckBoxNodeData("Use AutoComplete", true),
-				new CheckBoxNodeData("Browse in a new process", false) };
-		final Vector<CheckBoxNodeData> accessVector =
-			new NamedVector<CheckBoxNodeData>("Accessibility", accessibilityOptions);
-		final Vector<CheckBoxNodeData> browseVector =
-			new NamedVector<CheckBoxNodeData>("Browsing", browsingOptions);
-		final Object rootNodes[] = { accessVector, browseVector };
-		final Vector<Object> rootVector =
-			new NamedVector<Object>("Root", rootNodes);
-		final JTree tree = new JTree(rootVector);
+		final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
+
+		final DefaultMutableTreeNode accessibility =
+			new DefaultMutableTreeNode("Accessibility");
+		add(accessibility, "Move system caret with focus/selection changes", false);
+		add(accessibility, "Always expand alt text for images", true);
+		root.add(accessibility);
+
+		final DefaultMutableTreeNode browsing =
+			new DefaultMutableTreeNode("Browsing");
+		add(browsing, "Notify when downloads complete", true);
+		add(browsing, "Disable script debugging", true);
+		add(browsing, "Use AutoComplete", true);
+		add(browsing, "Browse in a new process", false);
+		root.add(browsing);
+
+		final JTree tree = new JTree(root);
 
 		final CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
 		tree.setCellRenderer(renderer);
@@ -86,6 +86,14 @@ public class CheckBoxTreeSample {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(300, 150);
 		frame.setVisible(true);
+	}
+
+	private static void add(final DefaultMutableTreeNode parent,
+		final String text, final boolean checked)
+	{
+		final CheckBoxNodeData data = new CheckBoxNodeData(text, checked);
+		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(data);
+		parent.add(node);
 	}
 
 }
