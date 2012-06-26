@@ -40,7 +40,12 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  * Illustrates usage of the check box tree in {@link imagej.util.swing.tree}.
@@ -55,8 +60,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class CheckBoxTreeSample {
 
 	public static void main(final String args[]) {
-		final JFrame frame = new JFrame("CheckBox Tree");
-
 		final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
 
 		final DefaultMutableTreeNode accessibility =
@@ -73,14 +76,51 @@ public class CheckBoxTreeSample {
 		add(browsing, "Browse in a new process", false);
 		root.add(browsing);
 
-		final JTree tree = new JTree(root);
+		final DefaultTreeModel treeModel = new DefaultTreeModel(root);
+		final JTree tree = new JTree(treeModel);
 
 		final CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
 		tree.setCellRenderer(renderer);
 
-		tree.setCellEditor(new CheckBoxNodeEditor(tree));
+		final CheckBoxNodeEditor editor = new CheckBoxNodeEditor(tree);
+		tree.setCellEditor(editor);
 		tree.setEditable(true);
 
+		// listen for changes in the selection
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+
+			@Override
+			public void valueChanged(final TreeSelectionEvent e) {
+				System.out.println(System.currentTimeMillis() + ": selection changed");
+			}
+		});
+
+		// listen for changes in the model (including check box toggles)
+		treeModel.addTreeModelListener(new TreeModelListener() {
+
+			@Override
+			public void treeNodesChanged(final TreeModelEvent e) {
+				System.out.println(System.currentTimeMillis() + ": nodes changed");
+			}
+
+			@Override
+			public void treeNodesInserted(final TreeModelEvent e) {
+				System.out.println(System.currentTimeMillis() + ": nodes inserted");
+			}
+
+			@Override
+			public void treeNodesRemoved(final TreeModelEvent e) {
+				System.out.println(System.currentTimeMillis() + ": nodes removed");
+			}
+
+			@Override
+			public void treeStructureChanged(final TreeModelEvent e) {
+				System.out.println(System.currentTimeMillis() + ": structure changed");
+			}
+		});
+
+		// show the tree onscreen
+		final JFrame frame = new JFrame("CheckBox Tree");
 		final JScrollPane scrollPane = new JScrollPane(tree);
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
