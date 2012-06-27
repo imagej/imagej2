@@ -45,43 +45,47 @@ import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
 /**
- * The DefaultImageCanvas maintains a viewport, a zoom scale
- * and a center coordinate that it uses to map viewport pixels
- * to display coordinates. It also maintains an abstract mouse
- * cursor.
+ * The DefaultImageCanvas maintains a viewport, a zoom scale and a center
+ * coordinate that it uses to map viewport pixels to display coordinates. It
+ * also maintains an abstract mouse cursor. The canvas sends a zoom event
+ * whenever it is panned or zoomed. It sends a mouse event whenever the mouse
+ * changes.
  * 
- * The canvas sends a zoom event whenever it is panned or
- * zoomed. It sends a mouse event whenever the mouse changes. 
- *
  * @author Lee Kamentsky
  */
 public class DefaultImageCanvas implements ImageCanvas {
+
 	private final ImageDisplay display;
 	private MouseCursor mouseCursor;
-	private CanvasHelper canvasHelper;
+	private final CanvasHelper canvasHelper;
 	private RealCoords center;
 	private final IntCoords viewportSize;
 	private double scale = 1.0;
 
-	public DefaultImageCanvas(ImageDisplay display) {
+	public DefaultImageCanvas(final ImageDisplay display) {
 		this.display = display;
 		mouseCursor = MouseCursor.DEFAULT;
 		canvasHelper = new CanvasHelper(this);
 		viewportSize = new IntCoords(100, 100);
 	}
-	//-- Pannable methods --//
+
+	// -- Pannable methods --
+
 	@Override
-	public void pan(IntCoords delta) {
+	public void pan(final IntCoords delta) {
 		canvasHelper.pan(delta);
 	}
+
 	@Override
-	public void setPan(RealCoords center) {
+	public void setPan(final RealCoords center) {
 		canvasHelper.setPan(center);
 	}
+
 	@Override
 	public void panReset() {
 		canvasHelper.panReset();
 	}
+
 	@Override
 	public RealCoords getPanCenter() {
 		if (center == null) {
@@ -90,163 +94,176 @@ public class DefaultImageCanvas implements ImageCanvas {
 		assert center != null;
 		return new RealCoords(center.x, center.y);
 	}
-	//-- Zoomable methods --//
+
+	// -- Zoomable methods --
+
 	@Override
-	public void setZoom(double factor) {
+	public void setZoom(final double factor) {
 		canvasHelper.setZoom(factor);
 	}
+
 	@Override
-	public void setZoom(double factor, IntCoords center) {
+	public void setZoom(final double factor, final IntCoords center) {
 		canvasHelper.setZoom(factor, center);
 	}
 
 	@Override
-	public void setZoom(double factor, RealCoords center) {
+	public void setZoom(final double factor, final RealCoords center) {
 		canvasHelper.setZoom(factor, center);
 	}
+
 	@Override
-	public void setZoomAndCenter(double factor) {
+	public void setZoomAndCenter(final double factor) {
 		canvasHelper.setZoomAndCenter(factor);
 	}
+
 	@Override
 	public void zoomIn() {
 		canvasHelper.zoomIn();
 	}
+
 	@Override
-	public void zoomIn(IntCoords ctr) {
+	public void zoomIn(final IntCoords ctr) {
 		canvasHelper.zoomIn(ctr);
 	}
+
 	@Override
 	public void zoomOut() {
 		canvasHelper.zoomOut();
 	}
+
 	@Override
-	public void zoomOut(IntCoords ctr) {
+	public void zoomOut(final IntCoords ctr) {
 		canvasHelper.zoomOut(ctr);
 	}
+
 	@Override
-	public void zoomToFit(IntCoords topLeft, IntCoords bottomRight) {
+	public void zoomToFit(final IntCoords topLeft, final IntCoords bottomRight) {
 		canvasHelper.zoomToFit(topLeft, bottomRight);
 	}
+
 	@Override
-	public void zoomToFit(RealRect viewportRect) {
+	public void zoomToFit(final RealRect viewportRect) {
 		canvasHelper.zoomToFit(viewportRect);
 	}
-	
+
 	@Override
 	public double getZoomFactor() {
 		return this.scale;
 	}
+
 	@Override
 	public RealRect getViewportImageRect() {
 		return canvasHelper.getViewportImageRect();
 	}
-	//-- ImageCanvas methods --//
+
+	// -- ImageCanvas methods --
+
 	@Override
 	public ImageDisplay getDisplay() {
 		return display;
 	}
+
 	@Override
 	public int getViewportWidth() {
 		return viewportSize.x;
 	}
+
 	@Override
 	public int getViewportHeight() {
 		return viewportSize.y;
 	}
+
 	@Override
-	public void setViewportSize(int width, int height) {
+	public void setViewportSize(final int width, final int height) {
 		viewportSize.x = width;
 		viewportSize.y = height;
 	}
+
 	@Override
-	public boolean isInImage(IntCoords point) {
+	public boolean isInImage(final IntCoords point) {
 		return canvasHelper.isInImage(point);
 	}
+
 	@Override
-	public RealCoords panelToImageCoords(IntCoords panelCoords) {
+	public RealCoords panelToImageCoords(final IntCoords panelCoords) {
 		return canvasHelper.panelToImageCoords(panelCoords);
 	}
+
 	@Override
-	public IntCoords imageToPanelCoords(RealCoords imageCoords) {
+	public IntCoords imageToPanelCoords(final RealCoords imageCoords) {
 		return canvasHelper.imageToPanelCoords(imageCoords);
 	}
+
 	@Override
 	public MouseCursor getCursor() {
 		return mouseCursor;
 	}
+
 	@Override
-	public void setCursor(MouseCursor cursor) {
+	public void setCursor(final MouseCursor cursor) {
 		mouseCursor = cursor;
 		final ImageJ context = display.getContext();
 		if (context == null) return;
-		EventService eventService = context.getService(EventService.class);
-		if (eventService != null)
-			eventService.publish(new MouseCursorEvent(this));
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService != null) eventService.publish(new MouseCursorEvent(this));
 	}
-	
+
 	@Override
-	public void setInitialScale(double zoomFactor) {
+	public void setInitialScale(final double zoomFactor) {
 		canvasHelper.setInitialScale(zoomFactor);
 	}
+
 	/**
-	 * Set the canvas's center X and Y and
-	 * publish an event that tells the world that
-	 * the viewport mapping changed.
-	 * 
-	 * @param x
-	 * @param y
+	 * Set the canvas's center X and Y and publish an event that tells the world
+	 * that the viewport mapping changed.
 	 */
-	void doSetCenter(double x, double y) {
+	void doSetCenter(final double x, final double y) {
 		if (center == null) {
 			center = new RealCoords(x, y);
-		} else {
+		}
+		else {
 			center.x = x;
 			center.y = y;
 		}
 		publishZoomEvent();
 	}
-	
+
 	/**
-	 * Set the canvas's zoom scale and publish
-	 * an event that tells the world that the
-	 * viewport mapping changed.
-	 *  
-	 * @param scaleFactor
+	 * Set the canvas's zoom scale and publish an event that tells the world that
+	 * the viewport mapping changed.
 	 */
-	void doSetZoom(double scaleFactor) {
+	void doSetZoom(final double scaleFactor) {
 		this.scale = scaleFactor;
 		publishZoomEvent();
 	}
-	
+
 	/**
-	 * Set the canvas's X, Y and scale simultaneously
-	 * and publish an event that tells the world that
-	 * the viewport mapping changed.
-	 * 
-	 * @param scaleFactor
-	 * @param x
-	 * @param y
+	 * Set the canvas's X, Y and scale simultaneously and publish an event that
+	 * tells the world that the viewport mapping changed.
 	 */
-	void doSetZoomAndCenter(double scaleFactor, double x, double y) {
+	void doSetZoomAndCenter(final double scaleFactor, final double x,
+		final double y)
+	{
 		if (center == null) {
 			center = new RealCoords(x, y);
-		} else {
+		}
+		else {
 			center.x = x;
 			center.y = y;
 		}
 		this.scale = scaleFactor;
 		publishZoomEvent();
 	}
-	
-	//-- helper methods --//
-	
+
+	// -- Helper methods --
+
 	private void publishZoomEvent() {
-		ImageJ context = getDisplay().getContext();
+		final ImageJ context = getDisplay().getContext();
 		if (context == null) return;
-		
-		EventService eventService = context.getService(EventService.class);
-		if (eventService != null)
-			eventService.publish(new ZoomEvent(this));
+
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService != null) eventService.publish(new ZoomEvent(this));
 	}
+
 }
