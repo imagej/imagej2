@@ -36,7 +36,7 @@
 package imagej.ui;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayViewer;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
 
@@ -70,6 +70,8 @@ public interface UserInterface extends IPlugin {
 
 	SystemClipboard getSystemClipboard();
 	
+	DisplayWindow createDisplayWindow(Display<?> display);
+
 	OutputWindow newOutputWindow(String title);
 
 	/**
@@ -99,7 +101,5 @@ public interface UserInterface extends IPlugin {
 
 	/** Restores the application frame's current location. */
 	void restoreLocation();
-	
-	DisplayViewer<?> getDisplayViewer(Display<?> disp);
 
 }

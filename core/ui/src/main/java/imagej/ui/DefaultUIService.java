@@ -41,8 +41,14 @@ import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
+import imagej.ext.display.DisplayService;
+import imagej.ext.display.event.DisplayActivatedEvent;
+import imagej.ext.display.event.DisplayCreatedEvent;
+import imagej.ext.display.event.DisplayDeletedEvent;
+import imagej.ext.display.event.DisplayUpdatedEvent;
+import imagej.ext.display.ui.DisplayViewer;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.menu.MenuService;
-import imagej.ext.menu.event.MenuEvent;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
@@ -80,11 +86,20 @@ public final class DefaultUIService extends AbstractService implements
 	private final OptionsService optionsService;
 	private final AppService appService;
 
+	/**
+	 * A list of extant display viewers. It's needed in order to find the viewer
+	 * associated with a display.
+	 */
+	protected final List<DisplayViewer<?>> displayViewers =
+		new ArrayList<DisplayViewer<?>>();
+
 	/** The active user interface. */
 	private UserInterface userInterface;
 
 	/** Available user interfaces. */
 	private List<UserInterface> availableUIs;
+
+	private boolean activationInvocationPending = false;
 
 	// -- Constructors --
 
@@ -192,6 +207,15 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
+		for (final DisplayViewer<?> displayViewer : displayViewers) {
+			if (displayViewer.getDisplay() == display) return displayViewer;
+		}
+		log.warn("No viewer found for display: '" + display.getName() + "'");
+		return null;
+	}
+
+	@Override
 	public OutputWindow createOutputWindow(final String title) {
 		if (userInterface == null) return null;
 		return userInterface.newOutputWindow(title);
@@ -238,6 +262,94 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	// -- Event handlers --
+
+	/**
+	 * Called when a display is created. This is the magical place where the
+	 * display model is connected with the real UI.
+	 * <p>
+	 * Note that the handling of all display events is synchronized on the GUI
+	 * singleton in order to serialize processing.
+	 * </p>
+	 */
+	@EventHandler
+	protected synchronized void onEvent(final DisplayCreatedEvent e) {
+		final Display<?> display = e.getObject();
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<? extends DisplayViewer> info : pluginService
+			.getPluginsOfType(DisplayViewer.class))
+		{
+			try {
+				final DisplayViewer<?> displayViewer = info.createInstance();
+				if (displayViewer.canView(display)) {
+					final DisplayWindow displayWindow =
+						getUI().createDisplayWindow(display);
+					displayViewer.view(displayWindow, display);
+					displayWindow.setTitle(display.getName());
+					displayViewers.add(displayViewer);
+					displayWindow.showDisplay(true);
+					return;
+				}
+			}
+			catch (final InstantiableException exc) {
+				log.warn("Failed to create instance of " + info.getClassName(), exc);
+			}
+		}
+		log.warn("No suitable DisplayViewer found for display");
+	}
+
+	/**
+	 * Called when a display is deleted. The display viewer is not removed
+	 * from the list of viewers until after this returns.
+	 */
+	@EventHandler
+	protected synchronized void onEvent(final DisplayDeletedEvent e) {
+		final Display<?> display = e.getObject();
+		final DisplayViewer<?> displayViewer = getDisplayViewer(display);
+		if (displayViewer != null) {
+			displayViewer.onDisplayDeletedEvent(e);
+			displayViewers.remove(displayViewer);
+		}
+	}
+
+	/** Called when a display is updated. */
+	@EventHandler
+	protected synchronized void onEvent(final DisplayUpdatedEvent e) {
+		final Display<?> display = e.getDisplay();
+		final DisplayViewer<?> displayViewer = getDisplayViewer(display);
+		if (displayViewer != null) {
+			displayViewer.onDisplayUpdatedEvent(e);
+		}
+	}
+
+	/**
+	 * Called when a display is activated.
+	 * <p>
+	 * The goal here is to eventually synchronize the window activation state with
+	 * the display activation state if the display activation state changed
+	 * programatically. We queue a call on the UI thread to activate the display
+	 * viewer of the currently active window.
+	 * </p>
+	 */
+	@EventHandler
+	protected synchronized void onEvent(final DisplayActivatedEvent e) {
+		if (activationInvocationPending) return;
+		activationInvocationPending = true;
+		threadService.queue(new Runnable() {
+
+			@Override
+			public void run() {
+				final DisplayService displayService =
+					e.getContext().getService(DisplayService.class);
+				final Display<?> activeDisplay = displayService.getActiveDisplay();
+				if (activeDisplay != null) {
+					final DisplayViewer<?> displayViewer =
+						getDisplayViewer(activeDisplay);
+					if (displayViewer != null) displayViewer.onDisplayActivatedEvent(e);
+				}
+				activationInvocationPending = false;
+			}
+		});
+	}
 
 	@Override
 	@EventHandler

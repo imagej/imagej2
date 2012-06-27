@@ -35,17 +35,8 @@
 
 package imagej.ui.swing.sdi;
 
-import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayCreatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.ui.DisplayViewer;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -54,11 +45,9 @@ import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 import imagej.ui.swing.sdi.display.SwingDisplayWindow;
-import imagej.util.Log;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
@@ -71,6 +60,13 @@ import javax.swing.JPanel;
 public class SwingUI extends AbstractSwingUI {
 
 	// -- UserInterface methods --
+
+	@Override
+	public SwingDisplayWindow createDisplayWindow(final Display<?> display) {
+		final SwingDisplayWindow displayWindow = new SwingDisplayWindow();
+		displayWindow.addEventDispatcher(new AWTWindowEventDispatcher(display));
+		return displayWindow;
+	}
 
 	@Override
 	public DialogPrompt dialogPrompt(final String message, final String title,
@@ -87,78 +83,6 @@ public class SwingUI extends AbstractSwingUI {
 		final JPanel pane = new JPanel();
 		appFrame.setContentPane(pane);
 		pane.setLayout(new BorderLayout());
-	}
-
-	/* NOTE BDZ removed 6-11-12. We should no longer repeatedly create and destroy 
-	 * menubars.
-	 *
-	protected void deleteMenuBar(final JFrame f) {
-		f.setJMenuBar(null);
-		// HACK - w/o this next call the JMenuBars do not get garbage collected.
-		// At least its true on the Mac. This might be a Java bug. Update:
-		// I hunted on web and have found multiple people with the same problem.
-		// The Apple ScreenMenus don't GC when a Frame disposes. Their workaround
-		// was exactly the same. I have not found any official documentation of
-		// this issue.
-		f.setMenuBar(null);
-	}
-	*/
-
-	// -- Event handlers --
-
-	/**
-	 * This is the magical place where the display model is connected with the
-	 * real UI.
-	 * 
-	 * @param event
-	 */
-	@Override
-	protected void onDisplayCreated(final DisplayCreatedEvent event) {
-		final Display<?> display = event.getObject();
-		final ImageJ imageJ = display.getContext();
-		final PluginService pluginService = imageJ.getService(PluginService.class);
-		final EventService eventService = imageJ.getService(EventService.class);
-		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<? extends DisplayViewer> info : pluginService
-			.getPluginsOfType(DisplayViewer.class))
-		{
-			try {
-				final DisplayViewer<?> displayViewer = info.createInstance();
-				if (displayViewer.canView(display)) {
-					final SwingDisplayWindow displayWindow = new SwingDisplayWindow();
-					displayViewer.view(displayWindow, display);
-					displayWindow.setTitle(display.getName());
-					displayViewers.add(displayViewer);
-					/* NOTE BDZ removed 6-11-12. We no longer repeatedly create and destroy
-					 * menubars.
-					// TODO: Rework how menus are added to display viewers.
-					createMenuBar(displayWindow, false);
-					*/
-					displayWindow.addEventDispatcher(new AWTWindowEventDispatcher(
-						display, eventService));
-					displayWindow.showDisplay(true);
-					return;
-				}
-			}
-			catch (final InstantiableException e) {
-				Log.warn("Failed to create instance of " + info.getClassName(), e);
-			}
-		}
-		Log.warn("No suitable DisplayViewer found for display");
-	}
-
-	@Override
-	protected void onDisplayDeleted(final DisplayDeletedEvent event) {
-		final DisplayViewer<?> displayViewer = getDisplayViewer(event.getObject());
-		if (displayViewer != null) {
-			final DisplayWindow displayWindow = displayViewer.getWindow();
-			if ((displayWindow != null) && (displayWindow instanceof JFrame)) {
-				/* NOTE BDZ removed 6-11-12. We no longer repeatedly create and destroy
-				 * menubars.
-				deleteMenuBar((JFrame) displayWindow);
-				 */
-			}
-		}
 	}
 
 }
