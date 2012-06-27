@@ -46,10 +46,8 @@ import imagej.util.RealCoords;
  * @author Curtis Rueden
  */
 public interface ImageCanvas extends Pannable, Zoomable {
-	
-	/**
-	 * @return the canvas's display.
-	 */
+
+	/** Gets the canvas's display. */
 	ImageDisplay getDisplay();
 
 	/** Gets the current width of the canvas viewport in pixels. */
@@ -57,9 +55,9 @@ public interface ImageCanvas extends Pannable, Zoomable {
 
 	/** Gets the current height of the canvas viewport in pixels. */
 	int getViewportHeight();
-	
+
 	/**
-	 * Set the height and width of the viewport.
+	 * Sets the height and width of the viewport.
 	 * 
 	 * @param width
 	 * @param height
@@ -79,19 +77,19 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Converts the given original image coordinates into panel coordinates. */
 	IntCoords imageToPanelCoords(RealCoords imageCoords);
 
-	/**
-	 * @return the current mouse cursor.
-	 */
+	/** Gets the current mouse cursor. */
 	MouseCursor getCursor();
-	
+
 	/** Sets the mouse to the given {@link MouseCursor} type. */
 	void setCursor(MouseCursor cursor);
 
-	/**
-	 * Set the scale to use when reverting after zooming
-	 * 
-	 * @param zoomFactor
-	 */
+	/** Gets the scale to use when reverting after zooming. */
+	double getInitialScale();
+
+	/** Sets the scale to use when reverting after zooming. */
 	void setInitialScale(double zoomFactor);
+
+	/** Gets the closest step-wise zoom factor below the given scale. */
+	double getBestZoomLevel(final double fractionalScale);
 
 }

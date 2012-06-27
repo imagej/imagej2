@@ -36,7 +36,6 @@
 package imagej.ui.swing.display;
 
 import imagej.data.Extents;
-import imagej.data.display.CanvasHelper;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
@@ -299,7 +298,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	private void doInitialSizing() {
 		final double scale = findFullyVisibleScale();
-		final double zoomLevel = CanvasHelper.getBestZoomLevel(scale);
+		final double zoomLevel = display.getCanvas().getBestZoomLevel(scale);
 		final ImageCanvas canvas = displayViewer.getDisplay().getCanvas();
 		canvas.setZoomAndCenter(zoomLevel);
 		if (!initialScaleCalculated) {
