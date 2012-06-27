@@ -36,6 +36,7 @@
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.KeyboardModifiersService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;

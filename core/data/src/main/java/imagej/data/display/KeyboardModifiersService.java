@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.plugins.axispos;
+package imagej.data.display;
 
 import imagej.ImageJ;
 import imagej.event.EventHandler;
