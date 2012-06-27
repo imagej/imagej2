@@ -72,9 +72,6 @@ public final class DefaultImageDisplayService extends AbstractService
 		super(context);
 		this.eventService = eventService;
 		this.displayService = displayService;
-
-		// there are no longer any defined @EventHandlers. restore later if needed
-		//subscribeToEvents(eventService);
 	}
 
 	// -- ImageDisplayService methods --
@@ -131,25 +128,4 @@ public final class DefaultImageDisplayService extends AbstractService
 		return displayService.getDisplaysOfType(ImageDisplay.class);
 	}
 
-	// -- Event handlers --
-
-	/* BDZ 3-1-12 - pretty sure this is no longer necessary
-
-	// CTR FIXME display views should not be disposed here!
-	// This is the job of the display itself when display.dispose()
-	// and/or display.close() gets called.
-
-	// Disposes views when display window is closed.
-	@EventHandler
-	protected void onEvent(final WinClosedEvent event) {
-		final Display<?> display = event.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
-		final ImageDisplay imageDisplay = (ImageDisplay) display;
-		final ArrayList<DataView> views = new ArrayList<DataView>(imageDisplay);
-		for (final DataView view : views) {
-			System.out.println("Disposing of a view in DefaultImageDisplay!!!!");
-			view.dispose();
-		}
-	}
-	*/
 }
