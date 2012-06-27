@@ -93,7 +93,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 		if (errorIfDebian()) return;
 
-		final File imagejRoot = FileUtils.getImageJDirectory();
+		final File imagejRoot = FileUtils.getBaseDirectory();
 		if (new File(imagejRoot, "update").exists()) {
 			UpdaterUserInterface.get().error(
 				"ImageJ restart required to finalize previous update");

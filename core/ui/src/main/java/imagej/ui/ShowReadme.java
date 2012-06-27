@@ -76,7 +76,7 @@ public class ShowReadme implements ImageJPlugin {
 	// -- Helper methods --
 
 	private String loadReadmeFile() {
-		final File baseDir = FileUtils.getImageJDirectory();
+		final File baseDir = FileUtils.getBaseDirectory();
 		final File readmeFile = new File(baseDir, README_FILE);
 
 		try {

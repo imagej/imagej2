@@ -85,7 +85,7 @@ public class UpToDate {
 	public static Result check() throws IOException,
 		ParserConfigurationException, SAXException
 	{
-		return check(FileUtils.getImageJDirectory());
+		return check(FileUtils.getBaseDirectory());
 	}
 
 	/**

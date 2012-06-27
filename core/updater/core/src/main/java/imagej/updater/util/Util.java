@@ -101,7 +101,7 @@ public class Util {
 
 	static {
 		// TODO: since this is all dependent on the ijRoot, don't make it static.
-		final File imagejRoot = FileUtils.getImageJDirectory();
+		final File imagejRoot = FileUtils.getBaseDirectory();
 		platform = getPlatform();
 
 		platforms =

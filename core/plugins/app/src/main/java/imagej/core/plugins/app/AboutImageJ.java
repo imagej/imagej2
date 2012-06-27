@@ -197,7 +197,7 @@ public class AboutImageJ implements ImageJPlugin {
 	 * @return file path of the chosen image
 	 */
 	private File getRandomAboutImagePath() {
-		final File aboutDir = new File(FileUtils.getImageJDirectory(), "about");
+		final File aboutDir = new File(FileUtils.getBaseDirectory(), "about");
 		if (!aboutDir.exists()) {
 			// no "about" folder found
 			log.warn("About folder '" + aboutDir.getPath() + "' does not exist.");

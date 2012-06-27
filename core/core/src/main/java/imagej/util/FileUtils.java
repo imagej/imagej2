@@ -220,7 +220,7 @@ public final class FileUtils {
 	 * it is used. Otherwise, we scan up the tree from this class for a suitable
 	 * directory.
 	 */
-	public static File getImageJDirectory() {
+	public static File getBaseDirectory() {
 		final String property = System.getProperty("ij.dir");
 		if (property != null) {
 			final File dir = new File(property);

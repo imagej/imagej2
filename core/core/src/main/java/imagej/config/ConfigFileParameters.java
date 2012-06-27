@@ -101,7 +101,7 @@ public class ConfigFileParameters {
 
 	/** Finds the default name/location of the launcher config file. */
 	public static String getCfgFileName() {
-		final File directory = FileUtils.getImageJDirectory();
+		final File directory = FileUtils.getBaseDirectory();
 		return new File(directory, CONFIG_FILE).getAbsolutePath();
 	}
 
