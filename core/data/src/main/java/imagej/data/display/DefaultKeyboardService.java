@@ -43,27 +43,27 @@ import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
-
 /**
- * A service that allows plugins to get the current keyboard modifier statuses
+ * Default implementation of {@link KeyboardService}.
  * 
  * @author Barry DeZonia
- *
  */
 @Service
-public class DefaultKeyboardService extends AbstractService implements KeyboardService {
+public class DefaultKeyboardService extends AbstractService implements
+	KeyboardService
+{
 
 	private EventService eventService;
-	
+
 	private boolean altDown = false;
 	private boolean altGrDown = false;
 	private boolean ctrlDown = false;
 	private boolean metaDown = false;
 	private boolean shiftDown = false;
-	
-	public DefaultKeyboardService(ImageJ context) {
-		// NB : required by SezPoz
-		super(context);
+
+	public DefaultKeyboardService() {
+		// NB: Required by SezPoz.
+		super(null);
 		throw new UnsupportedOperationException();
 	}
 
@@ -82,18 +82,34 @@ public class DefaultKeyboardService extends AbstractService implements KeyboardS
 	}
 
 	@Override
-	public boolean isAltDown()    { return altDown; }
+	public boolean isAltDown() {
+		return altDown;
+	}
+
 	@Override
-	public boolean isAltGrDown()  { return altGrDown; }
+	public boolean isAltGrDown() {
+		return altGrDown;
+	}
+
 	@Override
-	public boolean isCtrlDown()   { return ctrlDown; }
+	public boolean isCtrlDown() {
+		return ctrlDown;
+	}
+
 	@Override
-	public boolean isMetaDown()   { return metaDown; }
+	public boolean isMetaDown() {
+		return metaDown;
+	}
+
 	@Override
-	public boolean isShiftDown()  { return shiftDown; }
-	
+	public boolean isShiftDown() {
+		return shiftDown;
+	}
+
+	// -- Event handlers --
+
 	@EventHandler
-	void onEvent(KyPressedEvent evt) {
+	void onEvent(final KyPressedEvent evt) {
 		altDown = evt.getModifiers().isAltDown();
 		altGrDown = evt.getModifiers().isAltGrDown();
 		ctrlDown = evt.getModifiers().isCtrlDown();
@@ -102,11 +118,12 @@ public class DefaultKeyboardService extends AbstractService implements KeyboardS
 	}
 
 	@EventHandler
-	void onEvent(KyReleasedEvent evt) {
+	void onEvent(final KyReleasedEvent evt) {
 		altDown = evt.getModifiers().isAltDown();
 		altGrDown = evt.getModifiers().isAltGrDown();
 		ctrlDown = evt.getModifiers().isCtrlDown();
 		metaDown = evt.getModifiers().isMetaDown();
 		shiftDown = evt.getModifiers().isShiftDown();
 	}
+
 }
