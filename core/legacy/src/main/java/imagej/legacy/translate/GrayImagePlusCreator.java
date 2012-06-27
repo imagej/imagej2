@@ -147,7 +147,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 		imp.setDimensions(cCount, zCount, tCount);
 
-		if (imp.getNDimensions() > 3) imp.setOpenAsHyperStack(true);
+		imp.setOpenAsHyperStack(imp.getNDimensions() > 3);
 		
 		if (ds.getType() instanceof ShortType) markAsSigned16Bit(imp);
 		
@@ -176,6 +176,8 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		final ImagePlus imp = makeImagePlus(ds, getPlaneMaker(ds), true);
 
 		imp.setDimensions(c, z, t);
+		
+		imp.setOpenAsHyperStack(imp.getNDimensions() > 3);
 
 		return imp;
 	}

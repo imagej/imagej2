@@ -340,6 +340,7 @@ public class Harmonizer {
 		final int z = newImp.getNSlices();
 		final int t = newImp.getNFrames();
 		imp.setDimensions(c, z, t);
+		imp.setOpenAsHyperStack(imp.getNDimensions() > 3);
 		LegacyUtils.deleteImagePlus(newImp);
 	}
 

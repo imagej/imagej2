@@ -115,7 +115,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 		imp.setDimensions(c, z, t);
 
-		if (imp.getNDimensions() > 3) imp.setOpenAsHyperStack(true);
+		imp.setOpenAsHyperStack(imp.getNDimensions() > 3);
 
 		return imp;
 	}
