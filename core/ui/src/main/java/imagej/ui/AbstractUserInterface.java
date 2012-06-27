@@ -40,7 +40,6 @@ import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.updater.core.UpToDate;
 import imagej.updater.ui.UpdatesAvailable;
-import imagej.util.Log;
 import imagej.util.Prefs;
 
 /**
@@ -169,15 +168,15 @@ public abstract class AbstractUserInterface implements UserInterface {
 				case READ_ONLY:
 					final String message =
 						"Your ImageJ installation cannot be updated because it is read-only";
-					Log.warn(message);
+					uiService.getLog().warn(message);
 					getStatusService().showStatus(message);
 					break;
 				default:
-					Log.error("Unhandled UpToDate case: " + result);
+					uiService.getLog().error("Unhandled UpToDate case: " + result);
 			}
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			uiService.getLog().error(e);
 			return;
 		}
 	}
