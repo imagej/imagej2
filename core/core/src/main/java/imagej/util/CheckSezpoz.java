@@ -85,7 +85,7 @@ public class CheckSezpoz {
 	public static final String FILE_NAME = "latest-sezpoz-check.txt";
 
 	/**
-	 * Check the annotations of all CLASSPATH components Optionally, it only
+	 * Check the annotations of all CLASSPATH components. Optionally, it only
 	 * checks the non-.jar components of the CLASSPATH. This is for Eclipse.
 	 * Eclipse fails to run the annotation processor at each incremental build. In
 	 * contrast to Maven, Eclipse usually does not build .jar files, though, so we
@@ -108,7 +108,7 @@ public class CheckSezpoz {
 	}
 
 	/**
-	 * Check the annotations of a CLASSPATH component
+	 * Check the annotations of a CLASSPATH component.
 	 * 
 	 * @param file the CLASSPATH component (.jar file or directory)
 	 * @return false, when the annotation processor had to be run
@@ -123,9 +123,9 @@ public class CheckSezpoz {
 	}
 
 	/**
-	 * Check the annotations of a directory in the CLASSPATH
+	 * Check the annotations of a directory in the CLASSPATH.
 	 * 
-	 * @param file the CLASSPATH component directory
+	 * @param classes the CLASSPATH component directory
 	 * @return false, when the annotation processor had to be run
 	 * @throws IOException
 	 */
@@ -397,7 +397,9 @@ public class CheckSezpoz {
 			final byte[] buffer = new byte[65536];
 			final DigestInputStream digestStream =
 				new DigestInputStream(new FileInputStream(file), digest);
-			while (digestStream.read(buffer) >= 0); /* do nothing */
+			while (digestStream.read(buffer) >= 0) {
+				// do nothing
+			}
 			digestStream.close();
 			return digest.digest();
 		}
@@ -423,17 +425,14 @@ public class CheckSezpoz {
 		new FileOutputStream(file, true).close();
 	}
 
-	protected static void fixEclipseConfiguration(final File directory)
-		throws IOException
-	{
+	protected static void fixEclipseConfiguration(final File directory) {
 		// is this an Eclipse project at all?
 		if (!new File(directory, ".settings").isDirectory()) return;
 		fixFactoryPath(directory);
 		fixAnnotationProcessingSettings(directory);
 	}
 
-	protected static void fixFactoryPath(final File directory) throws IOException
-	{
+	protected static void fixFactoryPath(final File directory) {
 		final File factoryPath = new File(directory, ".factorypath");
 		try {
 			final Document xml;
