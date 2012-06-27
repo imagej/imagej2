@@ -91,10 +91,10 @@ public class RealRect {
 	}
 
 	/**
-	 * Returns a Rect representing the doubleersection of this Rect with the given
-	 * Rect. If the two Rects do not doubleersect, the result is an empty Rect.
+	 * Returns a Rect representing the intersection of this Rect with the given
+	 * Rect. If the two Rects do not intersect, the result is an empty Rect.
 	 */
-	public RealRect doubleersection(final RealRect r) {
+	public RealRect intersection(final RealRect r) {
 		final double newX = Math.max(this.x, r.x);
 		final double newY = Math.max(this.y, r.y);
 		double newW = Math.min(this.x + this.width, r.x + r.width) - x;
