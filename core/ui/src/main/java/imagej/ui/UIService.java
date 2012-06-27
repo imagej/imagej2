@@ -43,6 +43,7 @@ import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
+import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
@@ -59,11 +60,13 @@ import java.util.List;
  */
 public interface UIService extends IService {
 
+	LogService getLog();
+
+	ThreadService getThreadService();
+
 	EventService getEventService();
 
 	StatusService getStatusService();
-
-	ThreadService getThreadService();
 
 	PlatformService getPlatformService();
 

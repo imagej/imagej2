@@ -110,17 +110,17 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	public DefaultUIService(final ImageJ context, final LogService log,
-		final EventService eventService, final StatusService statusService,
-		final ThreadService threadService, final PlatformService platformService,
+		final ThreadService threadService, final EventService eventService,
+		final StatusService statusService, final PlatformService platformService,
 		final PluginService pluginService, final MenuService menuService,
 		final ToolService toolService, final OptionsService optionsService,
 		final AppService appService)
 	{
 		super(context);
 		this.log = log;
+		this.threadService = threadService;
 		this.eventService = eventService;
 		this.statusService = statusService;
-		this.threadService = threadService;
 		this.platformService = platformService;
 		this.pluginService = pluginService;
 		this.menuService = menuService;
@@ -136,6 +136,16 @@ public final class DefaultUIService extends AbstractService implements
 	// -- UIService methods --
 
 	@Override
+	public LogService getLog() {
+		return log;
+	}
+
+	@Override
+	public ThreadService getThreadService() {
+		return threadService;
+	}
+
+	@Override
 	public EventService getEventService() {
 		return eventService;
 	}
@@ -143,11 +153,6 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public StatusService getStatusService() {
 		return statusService;
-	}
-
-	@Override
-	public ThreadService getThreadService() {
-		return threadService;
 	}
 
 	@Override
