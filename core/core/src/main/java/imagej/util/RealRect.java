@@ -122,6 +122,8 @@ public class RealRect {
 		return new RealCoords(x + width, y + height);
 	}
 
+	// -- Object methods --
+
 	@Override
 	public String toString() {
 		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;

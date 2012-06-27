@@ -122,6 +122,8 @@ public class IntRect {
 		return new IntCoords(x + width, y + height);
 	}
 
+	// -- Object methods --
+
 	@Override
 	public String toString() {
 		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;
