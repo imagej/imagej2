@@ -106,9 +106,10 @@ public class RealRect {
 		return new RealRect(newX, newY, newW, newH);
 	}
 	
+	/** Tests whether the given coordinates lie within the rectangle. */
 	public boolean contains(final RealCoords coords) {
-		return (coords.x >= this.x) && (coords.x < this.x + this.width) &&
-			   (coords.y >= this.y) && (coords.y < this.y + this.height);
+		return coords.x >= this.x && coords.x < this.x + this.width &&
+			coords.y >= this.y && coords.y < this.y + this.height;
 	}
 	
 	@Override

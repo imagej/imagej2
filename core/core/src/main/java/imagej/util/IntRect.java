@@ -106,6 +106,12 @@ public class IntRect {
 		return new IntRect(newX, newY, newW, newH);
 	}
 
+	/** Tests whether the given coordinates lie within the rectangle. */
+	public boolean contains(final IntCoords coords) {
+		return coords.x >= this.x && coords.x < this.x + this.width &&
+			coords.y >= this.y && coords.y < this.y + this.height;
+	}
+
 	@Override
 	public String toString() {
 		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;
