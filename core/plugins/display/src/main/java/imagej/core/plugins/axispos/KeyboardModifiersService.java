@@ -35,50 +35,72 @@
 
 package imagej.core.plugins.axispos;
 
-import imagej.data.display.ImageDisplay;
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import net.imglib2.meta.AxisType;
+import imagej.ImageJ;
+import imagej.event.EventHandler;
+import imagej.event.EventService;
+import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.display.event.input.KyReleasedEvent;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
-// NB: The accelerator of "LESS" does not actually trigger this plugin.
-// However, the AxisPositionHandler does listen for '<' key events and updates
-// the position accordingly. So from an end user perspective, pressing the key
-// will have the expected result.
 
 /**
- * Updates the current display to show the previous plane along an axis
+ * A service that allows plugins to get the current keyboard modifier statuses
  * 
  * @author Barry DeZonia
+ *
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Axes", mnemonic = 'a'),
-	@Menu(label = "Axis Position Backward", accelerator = "LESS") },
-	headless = true)
-public class AxisPositionBackward implements ImageJPlugin {
+@Service
+public class KeyboardModifiersService extends AbstractService {
 
-	@Parameter
-	private AnimationService animationService;
-
-	@Parameter
-	private KeyboardModifiersService keyboardService;
-
-	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
-
-	@Override
-	public void run() {
-		animationService.getAnimation(display).stop();
-		AxisType axis = display.getActiveAxis();
-		if (axis == null) return;
-		long decrement = 1;
-		if (keyboardService.isAltDown()) decrement = 10;
-		display.setPosition(display.getLongPosition(axis) - decrement, axis);
+	private EventService eventService;
+	
+	private boolean altDown = false;
+	private boolean altGrDown = false;
+	private boolean ctrlDown = false;
+	private boolean metaDown = false;
+	private boolean shiftDown = false;
+	
+	public KeyboardModifiersService(ImageJ context) {
+		// NB : required by SezPoz
+		super(context);
+		throw new UnsupportedOperationException();
 	}
 
+	public KeyboardModifiersService(final ImageJ context,
+		final EventService eventService)
+	{
+		super(context);
+		this.eventService = eventService;
+
+		subscribeToEvents(eventService);
+	}
+
+	public EventService getEventService() {
+		return eventService;
+	}
+
+	public boolean isAltDown()    { return altDown; }
+	public boolean isAltGrDown()  { return altGrDown; }
+	public boolean isCtrlDown()   { return ctrlDown; }
+	public boolean isMetaDown()   { return metaDown; }
+	public boolean isShiftDown()  { return shiftDown; }
+	
+	@EventHandler
+	void onEvent(KyPressedEvent evt) {
+		altDown = evt.getModifiers().isAltDown();
+		altGrDown = evt.getModifiers().isAltGrDown();
+		ctrlDown = evt.getModifiers().isCtrlDown();
+		metaDown = evt.getModifiers().isMetaDown();
+		shiftDown = evt.getModifiers().isShiftDown();
+	}
+
+	@EventHandler
+	void onEvent(KyReleasedEvent evt) {
+		altDown = evt.getModifiers().isAltDown();
+		altGrDown = evt.getModifiers().isAltGrDown();
+		ctrlDown = evt.getModifiers().isCtrlDown();
+		metaDown = evt.getModifiers().isMetaDown();
+		shiftDown = evt.getModifiers().isShiftDown();
+	}
 }

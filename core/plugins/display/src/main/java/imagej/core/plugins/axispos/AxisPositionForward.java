@@ -65,15 +65,20 @@ public class AxisPositionForward implements ImageJPlugin {
 	@Parameter
 	private AnimationService animationService;
 
+	@Parameter
+	private KeyboardModifiersService keyboardService;
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
 		animationService.getAnimation(display).stop();
-		final AxisType axis = display.getActiveAxis();
+		AxisType axis = display.getActiveAxis();
 		if (axis == null) return;
-		display.setPosition(display.getLongPosition(axis) + 1, axis);
+		long increment = 1;
+		if (keyboardService.isAltDown()) increment = 10;
+		display.setPosition(display.getLongPosition(axis) + increment, axis);
 	}
 
 }

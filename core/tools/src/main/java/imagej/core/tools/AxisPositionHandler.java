@@ -69,23 +69,29 @@ public class AxisPositionHandler extends AbstractTool {
 		final char keyChar = evt.getCharacter();
 
 		// determine direction to move based on key press
-		final int increment;
+		final int delta;
 		if (keyCode == KeyCode.PERIOD || keyCode == KeyCode.GREATER ||
 			keyCode == KeyCode.KP_RIGHT || keyCode == KeyCode.RIGHT || keyChar == '>')
 		{
-			increment = 1;
+			if (evt.getModifiers().isAltDown())
+				delta = 10;
+			else
+				delta = 1;
 		}
 		else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.LESS ||
 			keyCode == KeyCode.KP_LEFT || keyCode == KeyCode.LEFT || keyChar == '<')
 		{
-			increment = -1;
+			if (evt.getModifiers().isAltDown())
+				delta = -10;
+			else
+				delta = -1;
 		}
 		else return; // inapplicable key
 
 		final AxisType axis = getAxis(imageDisplay, evt.getModifiers());
 		if (axis == null) return;
 
-		final long pos = imageDisplay.getLongPosition(axis) + increment;
+		final long pos = imageDisplay.getLongPosition(axis) + delta;
 		imageDisplay.setPosition(pos, axis);
 		evt.consume();
 	}
