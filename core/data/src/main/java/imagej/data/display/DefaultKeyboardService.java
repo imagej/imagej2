@@ -51,7 +51,7 @@ import imagej.service.Service;
  *
  */
 @Service
-public class KeyboardModifiersService extends AbstractService {
+public class DefaultKeyboardService extends AbstractService implements KeyboardService {
 
 	private EventService eventService;
 	
@@ -61,13 +61,13 @@ public class KeyboardModifiersService extends AbstractService {
 	private boolean metaDown = false;
 	private boolean shiftDown = false;
 	
-	public KeyboardModifiersService(ImageJ context) {
+	public DefaultKeyboardService(ImageJ context) {
 		// NB : required by SezPoz
 		super(context);
 		throw new UnsupportedOperationException();
 	}
 
-	public KeyboardModifiersService(final ImageJ context,
+	public DefaultKeyboardService(final ImageJ context,
 		final EventService eventService)
 	{
 		super(context);
@@ -76,14 +76,20 @@ public class KeyboardModifiersService extends AbstractService {
 		subscribeToEvents(eventService);
 	}
 
+	@Override
 	public EventService getEventService() {
 		return eventService;
 	}
 
+	@Override
 	public boolean isAltDown()    { return altDown; }
+	@Override
 	public boolean isAltGrDown()  { return altGrDown; }
+	@Override
 	public boolean isCtrlDown()   { return ctrlDown; }
+	@Override
 	public boolean isMetaDown()   { return metaDown; }
+	@Override
 	public boolean isShiftDown()  { return shiftDown; }
 	
 	@EventHandler

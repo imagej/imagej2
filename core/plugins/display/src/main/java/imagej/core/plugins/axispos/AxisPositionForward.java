@@ -36,7 +36,7 @@
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.KeyboardModifiersService;
+import imagej.data.display.KeyboardService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -67,7 +67,7 @@ public class AxisPositionForward implements ImageJPlugin {
 	private AnimationService animationService;
 
 	@Parameter
-	private KeyboardModifiersService keyboardService;
+	private KeyboardService keyboardService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
