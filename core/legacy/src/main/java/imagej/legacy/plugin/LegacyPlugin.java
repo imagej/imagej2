@@ -53,9 +53,9 @@ import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
+import imagej.log.LogService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +82,10 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Parameter
 	private ImageJ context;
-	
+
+	@Parameter
+	private LogService log;
+
 	@Parameter
 	private ImageDisplayService imageDisplayService;
 
@@ -109,20 +112,20 @@ public class LegacyPlugin implements ImageJPlugin {
 		if (!isLegacyCompatible(activeDisplay)) {
 			final String err =
 				"The active dataset is too large to be represented inside IJ1.";
-			Log.error(err);
+			log.error(err);
 			notifyUser(err);
 			outputs = new ArrayList<ImageDisplay>();
 			return;
 		}
 
 		final LegacyPluginThread thread = new LegacyPluginThread();
-		
+
 		// enforce the desired order of thread execution
 		try {
 			thread.start();
 			thread.join();
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			// will have been handled earlier
 		}
 	}
@@ -142,14 +145,14 @@ public class LegacyPlugin implements ImageJPlugin {
 	}
 
 	// -- helper class --
-	
+
 	@SuppressWarnings("synthetic-access")
 	private class LegacyPluginThread extends Thread {
-		
+
 		final ThreadGroup group;
 		final LegacyImageMap map;
 		final Harmonizer harmonizer;
-		
+
 		// NB - BDZ
 		// In order to keep threads from waiting on each other unnecessarily when
 		// multiple legacy plugins are running simultaneously we run the plugin
@@ -160,11 +163,12 @@ public class LegacyPlugin implements ImageJPlugin {
 			super(new ThreadGroup("plugin thread group"), "plugin thread");
 			this.group = getThreadGroup();
 			this.map = legacyService.getImageMap();
-			final ImageTranslator imageTranslator = new DefaultImageTranslator(context);
+			final ImageTranslator imageTranslator =
+				new DefaultImageTranslator(context);
 			this.harmonizer = new Harmonizer(context, imageTranslator);
-			
+
 		}
-			
+
 		@Override
 		public void run() {
 			final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
@@ -184,7 +188,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			try {
 				// execute the legacy plugin
 				IJ.runPlugIn(className, arg);
-				
+
 				// we always sleep at least once to make sure plugin has time to hatch
 				// it's first thread if its going to create any.
 				try {
@@ -202,20 +206,18 @@ public class LegacyPlugin implements ImageJPlugin {
 				for (final ImagePlus imp : closedSet) {
 					final ImageDisplay disp = map.lookupDisplay(imp);
 					if (disp != null) {
-						// REMOVED next line to fix #803. May leave extra windows open.
-						// outputs.remove(display);
-						// Now only close displays that have not been changed
+						// only close displays that have not been changed
 						if (!outputs.contains(disp)) disp.close();
 					}
 				}
-				
+
 				// reflect any changes to globals in IJ2 options/prefs
 				legacyService.updateIJ2Settings();
 
 			}
-			catch (Exception e) {
+			catch (final Exception e) {
 				final String msg = "ImageJ 1.x plugin threw exception";
-				Log.error(msg, e);
+				log.error(msg, e);
 				notifyUser(msg);
 				// make sure our ImagePluses are in sync with original Datasets
 				updateImagePlusesFromDisplays();
@@ -231,7 +233,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 
 		private void waitForPluginThreads() {
-			//System.out.println("  begin waitForPluginThreads()");
+			log.debug("LegacyPlugin: begin waitForPluginThreads()");
 			while (true) {
 				boolean allDead = true;
 				final List<Thread> currentThreads = getCurrentThreads();
@@ -240,16 +242,19 @@ public class LegacyPlugin implements ImageJPlugin {
 					// Ignore some threads that IJ1 hatches that never terminate
 					if (whitelisted(thread)) continue;
 					if (thread.isAlive()) {
-						//System.out.println(thread.getName() + " thread is alive");
-						//reportThreadInfo(thread, currentThreads, threadsToIgnore);
+						// System.out.println(thread.getName() + " thread is alive");
+						// reportThreadInfo(thread, currentThreads, threadsToIgnore);
 						allDead = false;
 						break;
 					}
 				}
 				if (allDead) break;
-				try { Thread.sleep(200); } catch (Exception e) {/**/}
+				try {
+					Thread.sleep(200);
+				}
+				catch (final Exception e) {/**/}
 			}
-			//System.out.println("  end waitForPluginThreads()");
+			log.debug("LegacyPlugin: end waitForPluginThreads()");
 		}
 
 		private List<Thread> getCurrentThreads() {
@@ -269,14 +274,15 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 
 		/**
-		 * Identifies threads that IJ1 hatches that don't terminate in a timely way
+		 * Identifies threads that IJ1 hatches that don't terminate in a timely way.
 		 */
 		private boolean whitelisted(final Thread thread) {
 
-			String threadName = thread.getName();
-			
+			final String threadName = thread.getName();
+
 			// the wait loop generates a timer that needs to be ignored. Ignoring all
-			// timers is likely fine because associated worker threads should exist too.
+			// timers is likely fine because associated worker threads should exist
+			// too.
 			if (threadName.startsWith("Timer")) return true;
 
 			// StackWindow slider selector thread: thread does not go away until the
@@ -285,9 +291,11 @@ public class LegacyPlugin implements ImageJPlugin {
 
 			// threads that load images from web can sleep a long time waiting after
 			// their data has already been loaded
-			if (threadName.contains("Image Fetcher"))
-				if (thread.getState() == Thread.State.TIMED_WAITING)
-					return true;
+			if (threadName.contains("Image Fetcher") &&
+				thread.getState() == Thread.State.TIMED_WAITING)
+			{
+				return true;
+			}
 			/*
 				// select by class name
 				System.out.println("---"+thread.getClass().getDeclaringClass());
@@ -309,9 +317,8 @@ public class LegacyPlugin implements ImageJPlugin {
 		// has a existing ImagePlus mapping then we are likely assuming its legal
 		// when its not. Put in tests to address this situation rather than having
 		// harmonization or something else fail.
-		
-		private void updateImagePlusesFromDisplays()
-		{
+
+		private void updateImagePlusesFromDisplays() {
 			// TODO - track events and keep a dirty bit, then only harmonize those
 			// displays that have changed. See ticket #546.
 			final List<ImageDisplay> imageDisplays =
@@ -334,8 +341,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			}
 		}
 
-		private List<ImageDisplay> updateDisplaysFromImagePluses()
-		{
+		private List<ImageDisplay> updateDisplaysFromImagePluses() {
 			// TODO - check the changes flag for each ImagePlus that already has a
 			// ImageDisplay and only harmonize those that have changed. Maybe changes
 			// flag does not track everything (such as metadata changes?) and thus
@@ -411,7 +417,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			}
 		}
 		*/
-		
+
 		// Finishes any in progress paste() operations. Done before harmonization.
 		// In IJ1 the paste operations are usually handled by ImageCanvas::paint().
 		// In IJ2 that method is never called. It would be nice to hook something
@@ -435,6 +441,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			if (roi.getPasteMode() == Roi.NOT_PASTING) return;
 			roi.endPaste();
 		}
-		
+
 	}
+
 }
