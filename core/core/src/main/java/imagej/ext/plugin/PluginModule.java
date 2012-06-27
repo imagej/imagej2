@@ -143,6 +143,13 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 		ClassUtils.setValue(item.getField(), plugin, value);
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return plugin.getClass().getName();
+	}
+
 	// -- Runnable methods --
 
 	@Override
