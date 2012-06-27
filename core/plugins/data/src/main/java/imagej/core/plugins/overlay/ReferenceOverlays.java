@@ -49,8 +49,8 @@ import imagej.ext.plugin.Plugin;
 
 
 /**
- * Copies the overlays currently selected in the Overlay Manager into the
- * current display.
+ * After running this plugin the current display will now reference (and
+ * show) the overlays that are currently selected in the Overlay Manager.
  * 
  * @author Barry DeZonia
  *
