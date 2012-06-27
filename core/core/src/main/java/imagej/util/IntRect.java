@@ -112,6 +112,16 @@ public class IntRect {
 			coords.y >= this.y && coords.y < this.y + this.height;
 	}
 
+	/** Gets the top left coordinate of the rectangle. */
+	public IntCoords getTopLeft() {
+		return new IntCoords(x, y);
+	}
+
+	/** Gets the bottom right coordinate of the rectangle. */
+	public IntCoords getBottomRight() {
+		return new IntCoords(x + width, y + height);
+	}
+
 	@Override
 	public String toString() {
 		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;

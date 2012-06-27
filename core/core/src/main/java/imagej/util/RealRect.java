@@ -112,6 +112,16 @@ public class RealRect {
 			coords.y >= this.y && coords.y < this.y + this.height;
 	}
 	
+	/** Gets the top left coordinate of the rectangle. */
+	public RealCoords getTopLeft() {
+		return new RealCoords(x, y);
+	}
+
+	/** Gets the bottom right coordinate of the rectangle. */
+	public RealCoords getBottomRight() {
+		return new RealCoords(x + width, y + height);
+	}
+
 	@Override
 	public String toString() {
 		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;
