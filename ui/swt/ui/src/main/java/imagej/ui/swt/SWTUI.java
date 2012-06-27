@@ -36,6 +36,7 @@
 package imagej.ui.swt;
 
 import imagej.event.EventService;
+import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.swt.SWTMenuCreator;
@@ -141,6 +142,12 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 		final imagej.ext.display.Display<?> display, final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+	
+	// TODO
+	@Override
+	public imagej.ext.display.ui.DisplayViewer<?> getDisplayViewer(imagej.ext.display.Display<?> disp) {
+		return null;
 	}
 
 	// -- Runnable methods --

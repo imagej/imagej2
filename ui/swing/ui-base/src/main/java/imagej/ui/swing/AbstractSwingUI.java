@@ -316,7 +316,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 	// -- Internal methods --
 
-	protected DisplayViewer<?> getDisplayViewer(final Display<?> display) {
+	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
 		for (final DisplayViewer<?> displayViewer : displayViewers) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
 		}

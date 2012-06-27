@@ -40,10 +40,7 @@ import imagej.core.plugins.dataset.LoadDataset;
 import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.ImageGrabber;
 import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayInfo;
@@ -60,10 +57,13 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
+import imagej.ui.UIService;
+import imagej.ui.swing.display.SwingImageDisplayViewer;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -579,31 +579,35 @@ public class SwingOverlayManager
 	 * drawing capabilities sometimes (like JHotDraw's rendering).
 	 */
 	private void flatten() {
-		/*
-		List<Overlay> selOverlays = infoList.selectedOverlays();
-		if (selOverlays.size() == 0) {
-			JOptionPane.showMessageDialog(this, "At least one overlay must be selected");
-			return;
-		}
-		*/
+		// TODO - this code should go to a flatten plugin. Some possible issues:
+		// - some dependencies may be needed to be added to various POMs
+		// - currently we can cast to SwingDisplayViewer below because we are in
+		//   a Swing class here. If we relocate to a plugin we'll need to change the
+		//   agnostic classes to facilitate the capture() call no matter what kind
+		//   of DisplayViewer we have. Currently the display viewer class knows
+		//   nothing about Datasets. We could also have capture() return something
+		//   else and the plugin can translate it to a Dataset.
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		final DatasetView view = ids.getActiveDatasetView(imageDisplay);
-		if (view == null) return;
-		DatasetService dss = context.getService(DatasetService.class);
-		String datasetName = imageDisplay.getName() + " - flattened";
-		Dataset dataset = new ImageGrabber(dss).grab(view, datasetName);
-		PluginService ps = context.getService(PluginService.class);
-		ps.run(LoadDataset.class, dataset);
+		UIService uis = context.getService(UIService.class);
+		DisplayViewer<?> viewer = uis.getUI().getDisplayViewer(imageDisplay);
+		if (viewer == null) return;
+		SwingImageDisplayViewer sviewer = (SwingImageDisplayViewer) viewer;
+		Dataset dataset = sviewer.capture();
+		
+		// NOTE that if this code was contained in a plugin the Dataset could be an
+		// @Parameter and we'd be done. But since inside OverlayManager we need to
+		// make sure the display is created correctly.
 		
 		// OLD way before PluginService way. Display would not initialize correctly.
 		// See bug #1215 for more info.
 		//DisplayService ds = context.getService(DisplayService.class);
 		//ds.createDisplay(dataset.getName(), dataset);
 		
-		// TODO - The ROI outline is not currently drawn and needs to be. Somehow
-		// we should stamp the Dataset before handing it to the PluginService. 
+		// NEW way that fixes #1215 (by making display postprocessors run)
+		PluginService ps = context.getService(PluginService.class);
+		ps.run(LoadDataset.class, dataset);
 	}
 	
 	private void help() {

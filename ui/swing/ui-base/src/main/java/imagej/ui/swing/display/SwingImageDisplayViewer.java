@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.display;
 
+import imagej.data.Dataset;
 import imagej.data.display.ui.ImageDisplayViewer;
 
 /**
@@ -50,4 +51,5 @@ public interface SwingImageDisplayViewer extends ImageDisplayViewer {
 	/** Gets the JHotDraw canvas used by the viewer. */
 	JHotDrawImageCanvas getCanvas();
 
+	Dataset capture();
 }

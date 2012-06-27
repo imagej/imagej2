@@ -36,10 +36,13 @@
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.data.display.DataView;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
@@ -67,6 +70,8 @@ import imagej.util.RealRect;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -74,6 +79,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -82,8 +88,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 
+import net.imglib2.RandomAccess;
+import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.type.numeric.RealType;
 
 import org.jhotdraw.draw.DefaultDrawing;
 import org.jhotdraw.draw.DefaultDrawingEditor;
@@ -263,7 +272,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		drawingView.setCursor(AWTCursors.getCursor(getDisplay().getCanvas()
 			.getCursor()));
 	}
-
 	void rebuild() {
 		for (final DataView dataView : getDisplay()) {
 			FigureView figureView = getFigureView(dataView);
@@ -529,4 +537,58 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		displayViewer.getWindow().pack();
 	}
 
+
+	// captures the current view of data displayed in the window. includes
+	// all JHotDraw embellishments
+	public Dataset capture() {
+		ImageDisplay display = displayViewer.getDisplay();
+		if (display == null) return null;
+		ImageDisplayService dispSrv = display.getContext().getService(ImageDisplayService.class);
+		DatasetView dsView = dispSrv.getActiveDatasetView(display);
+		if (dsView == null) return null;
+
+		ARGBScreenImage screenImage = dsView.getScreenImage();
+		Image pixels = screenImage.image();
+
+		int w = pixels.getWidth(null);
+		int h = pixels.getHeight(null);
+		
+		// draw the backdrop image info
+		BufferedImage outputImage =
+				new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D outputGraphics = outputImage.createGraphics();
+		outputGraphics.drawImage(pixels, 0, 0, null);
+
+		// draw the overlay info
+		for (FigureView view : figureViews) {
+			view.getFigure().draw(outputGraphics);
+		}
+		
+		// create a dataset that has view data with overlay info on top
+		DatasetService dss = display.getContext().getService(DatasetService.class);
+		Dataset dataset =
+				dss.create(
+					new long[]{w,h,3}, "Captured view",
+					new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL}, 8, false, false);
+		dataset.setRGBMerged(true);
+		RandomAccess<? extends RealType<?>> accessor = dataset.getImgPlus().randomAccess();
+		for (int x = 0; x < w; x++) {
+			accessor.setPosition(x, 0);
+			for (int y = 0; y < h; y++) {
+				accessor.setPosition(y, 1);
+				int rgb = outputImage.getRGB(x, y);
+				int r = (rgb >> 16) & 0xff;
+				int g = (rgb >>  8) & 0xff;
+				int b = (rgb >>  0) & 0xff;
+				accessor.setPosition(0, 2);
+				accessor.get().setReal(r);
+				accessor.setPosition(1, 2);
+				accessor.get().setReal(g);
+				accessor.setPosition(2, 2);
+				accessor.get().setReal(b);
+			}
+		}
+		return dataset;
+	}
+	
 }
