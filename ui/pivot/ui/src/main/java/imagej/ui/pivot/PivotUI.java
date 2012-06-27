@@ -36,6 +36,7 @@
 package imagej.ui.pivot;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
@@ -100,6 +101,11 @@ public class PivotUI extends AbstractUserInterface implements Callable<Object>
 	}
 
 	@Override
+	public DisplayWindow createDisplayWindow(final Display<?> display) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
 	public OutputWindow newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -116,12 +122,6 @@ public class PivotUI extends AbstractUserInterface implements Callable<Object>
 		final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	// TODO
-	@Override
-	public imagej.ext.display.ui.DisplayViewer<?> getDisplayViewer(imagej.ext.display.Display<?> disp) {
-		return null;
 	}
 
 	// -- Callable methods --

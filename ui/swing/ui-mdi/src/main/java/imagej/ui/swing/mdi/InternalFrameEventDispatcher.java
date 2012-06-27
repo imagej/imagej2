@@ -61,11 +61,9 @@ public class InternalFrameEventDispatcher implements InternalFrameListener {
 	private final EventService eventService;
 
 	/** Creates an AWT event dispatcher for the given display. */
-	public InternalFrameEventDispatcher(final Display<?> display,
-		final EventService eventService)
-	{
-		this.eventService = eventService;
+	public InternalFrameEventDispatcher(final Display<?> display) {
 		this.display = display;
+		eventService = display.getContext().getService(EventService.class);
 	}
 
 	// -- InternalFrameListener methods --

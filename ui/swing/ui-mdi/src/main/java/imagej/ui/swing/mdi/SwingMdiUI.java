@@ -35,16 +35,8 @@
 
 package imagej.ui.swing.mdi;
 
-import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.ext.InstantiableException;
 import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayCreatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -52,7 +44,6 @@ import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 import imagej.ui.swing.mdi.display.SwingMdiDisplayWindow;
-import imagej.util.Log;
 
 import java.awt.Color;
 import java.awt.GraphicsEnvironment;
@@ -78,6 +69,14 @@ public class SwingMdiUI extends AbstractSwingUI {
 	@Override
 	public Desktop getDesktop() {
 		return desktopPane;
+	}
+
+	@Override
+	public SwingMdiDisplayWindow createDisplayWindow(Display<?> display) {
+		final SwingMdiDisplayWindow displayWindow = new SwingMdiDisplayWindow();
+		displayWindow
+			.addEventDispatcher(new InternalFrameEventDispatcher(display));
+		return displayWindow;
 	}
 
 	@Override
@@ -108,49 +107,4 @@ public class SwingMdiUI extends AbstractSwingUI {
 			.getMaximumWindowBounds();
 	}
 
-	// -- Event handlers --
-
-	/**
-	 * This is the magical place where the display model is connected with the
-	 * real UI.
-	 * 
-	 * @param event
-	 */
-	@Override
-	protected void onDisplayCreated(final DisplayCreatedEvent event) {
-		final Display<?> display = event.getObject();
-		final ImageJ imageJ = display.getContext();
-		final PluginService pluginService = imageJ.getService(PluginService.class);
-		final EventService eventService = imageJ.getService(EventService.class);
-		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<? extends DisplayViewer> info : pluginService
-			.getPluginsOfType(DisplayViewer.class))
-		{
-			try {
-				// FIXME: reconcile this with SwingUI
-				final DisplayViewer<?> displayViewer = info.createInstance();
-				if (displayViewer.canView(display)) {
-					final SwingMdiDisplayWindow displayWindow =
-						new SwingMdiDisplayWindow();
-					displayViewer.view(displayWindow, display);
-					displayWindow.setTitle(display.getName());
-					desktopPane.add(displayWindow);
-					displayWindow.addEventDispatcher(new InternalFrameEventDispatcher(
-						display, eventService));
-					displayWindow.showDisplay(true);
-					return;
-				}
-			}
-			catch (final InstantiableException e) {
-				Log.warn("Failed to create instance of " + info.getClassName(), e);
-			}
-		}
-		Log.warn("No suitable DisplayViewer found for display");
-	}
-
-	@Override
-	protected void onDisplayDeleted(final DisplayDeletedEvent e) {
-		// No action.
-
-	}
 }

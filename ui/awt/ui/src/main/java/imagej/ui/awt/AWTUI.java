@@ -36,6 +36,7 @@
 package imagej.ui.awt;
 
 import imagej.ext.display.Display;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.awt.AWTMenuBarCreator;
@@ -68,7 +69,7 @@ public class AWTUI extends AbstractUserInterface {
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
 	private AWTClipboard systemClipboard;
-	
+
 	// -- UserInterface methods --
 
 	@Override
@@ -132,6 +133,11 @@ public class AWTUI extends AbstractUserInterface {
 	}
 
 	@Override
+	public DisplayWindow createDisplayWindow(final Display<?> display) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
 	public OutputWindow newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -148,12 +154,6 @@ public class AWTUI extends AbstractUserInterface {
 		final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	// TODO
-	@Override
-	public imagej.ext.display.ui.DisplayViewer<?> getDisplayViewer(imagej.ext.display.Display<?> disp) {
-		return null;
 	}
 
 }

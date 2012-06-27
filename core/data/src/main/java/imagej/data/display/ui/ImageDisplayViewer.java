@@ -35,6 +35,7 @@
 
 package imagej.data.display.ui;
 
+import imagej.data.Dataset;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.display.ui.DisplayViewer;
@@ -48,5 +49,7 @@ public interface ImageDisplayViewer extends DisplayViewer<DataView>{
 
 	@Override
 	ImageDisplay getDisplay();
+
+	Dataset capture();
 
 }

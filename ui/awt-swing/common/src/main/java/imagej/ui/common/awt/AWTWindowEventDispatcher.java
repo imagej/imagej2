@@ -66,11 +66,9 @@ public class AWTWindowEventDispatcher implements WindowListener {
 	private final EventService eventService;
 
 	/** Creates an AWT event dispatcher for the given display. */
-	public AWTWindowEventDispatcher(final Display<?> display,
-		final EventService eventService)
-	{
+	public AWTWindowEventDispatcher(final Display<?> display) {
 		this.display = display;
-		this.eventService = eventService;
+		eventService = display.getContext().getService(EventService.class);
 	}
 
 	// -- AWTWindowEventDispatcher methods --

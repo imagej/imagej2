@@ -590,8 +590,8 @@ public class SwingOverlayManager
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		UIService uis = context.getService(UIService.class);
-		DisplayViewer<?> viewer = uis.getUI().getDisplayViewer(imageDisplay);
+		UIService uiService = context.getService(UIService.class);
+		DisplayViewer<?> viewer = uiService.getDisplayViewer(imageDisplay);
 		if (viewer == null) return;
 		SwingImageDisplayViewer sviewer = (SwingImageDisplayViewer) viewer;
 		Dataset dataset = sviewer.capture();

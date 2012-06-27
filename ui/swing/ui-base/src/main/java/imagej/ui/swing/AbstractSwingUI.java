@@ -35,14 +35,7 @@
 
 package imagej.ui.swing;
 
-import imagej.event.EventHandler;
-import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
-import imagej.ext.display.DisplayService;
-import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.DisplayCreatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
@@ -55,19 +48,15 @@ import imagej.ui.SystemClipboard;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropListener;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
-import imagej.util.Log;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
@@ -80,23 +69,10 @@ import javax.swing.WindowConstants;
  */
 public abstract class AbstractSwingUI extends AbstractUserInterface {
 
-	/**
-	 * A list of extant display viewers. It's needed in order to find the viewer
-	 * associated with a display.
-	 */
-	// NB: I'm a little queasy about including this.
-	// TODO: push up into DefaultUIService?
-	protected final List<DisplayViewer<?>> displayViewers =
-		new ArrayList<DisplayViewer<?>>();
-
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
 	private AWTClipboard systemClipboard;
-	private boolean activationInvocationPending = false;
-
-	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- UserInterface methods --
 
@@ -135,7 +111,8 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		final JPopupMenu popupMenu = new JPopupMenu();
 		new SwingJPopupMenuCreator().createMenus(shadowMenu, popupMenu);
 
-		final DisplayViewer<?> displayViewer = getDisplayViewer(display);
+		final DisplayViewer<?> displayViewer =
+			getUIService().getDisplayViewer(display);
 		if (displayViewer != null) {
 			final Component invoker = (Component) displayViewer.getPanel();
 			popupMenu.show(invoker, x, y);
@@ -187,8 +164,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		new DropTarget(toolBar, dropListener);
 		new DropTarget(statusBar, dropListener);
 		new DropTarget(appFrame, dropListener);
-
-		subscribers = getEventService().subscribe(this);
 	}
 
 	/**
@@ -213,115 +188,5 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * or MDI).
 	 */
 	protected abstract void setupAppFrame();
-
-	/**
-	 * Called any time a display is created.
-	 * 
-	 * @param e
-	 */
-	protected abstract void onDisplayCreated(DisplayCreatedEvent e);
-
-	/**
-	 * Called any time a display is deleted. The display viewer is not removed
-	 * from the list of viewers until after this returns.
-	 * 
-	 * @param e
-	 */
-	protected abstract void onDisplayDeleted(DisplayDeletedEvent e);
-
-	/**
-	 * Called any time a display is updated.
-	 * 
-	 * @param e
-	 */
-	protected void onDisplayUpdated(final DisplayUpdatedEvent e) {
-		final DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
-		if (displayViewer != null) {
-			displayViewer.onDisplayUpdatedEvent(e);
-		}
-
-	}
-
-	/**
-	 * Called any time a display is activated.
-	 * <p>
-	 * The goal here is to eventually synchronize the window activation state with
-	 * the display activation state if the display activation state changed
-	 * programatically. We queue a call on the UI thread to activate the display
-	 * viewer of the currently active window.
-	 * </p>
-	 * 
-	 * @param e
-	 */
-	protected synchronized void onDisplayActivated(final DisplayActivatedEvent e)
-	{
-		final DisplayService displayService =
-			e.getContext().getService(DisplayService.class);
-		final Display<?> activeDisplay = displayService.getActiveDisplay();
-		if (activeDisplay != null) {
-			final DisplayViewer<?> displayViewer = getDisplayViewer(activeDisplay);
-			if (displayViewer != null) {
-				displayViewer.onDisplayActivatedEvent(e);
-			}
-		}
-		activationInvocationPending = false;
-	}
-
-	// -- Event handling methods --
-
-	/**
-	 * Handle a DisplayCreatedEvent.
-	 * <p>
-	 * Note that the handling of all display events is synchronized on the GUI
-	 * singleton in order to serialize processing.
-	 * </p>
-	 * 
-	 * @param e
-	 */
-	@EventHandler
-	protected synchronized void onEvent(final DisplayCreatedEvent e) {
-		onDisplayCreated(e);
-	}
-
-	@EventHandler
-	protected synchronized void onEvent(final DisplayDeletedEvent e) {
-		final DisplayViewer<?> displayViewer = getDisplayViewer(e.getObject());
-		if (displayViewer != null) {
-			onDisplayDeleted(e);
-			displayViewer.onDisplayDeletedEvent(e);
-			displayViewers.remove(displayViewer);
-		}
-	}
-
-	@EventHandler
-	protected synchronized void onEvent(final DisplayUpdatedEvent e) {
-		final DisplayViewer<?> displayViewer = getDisplayViewer(e.getDisplay());
-		if (displayViewer != null) {
-			onDisplayUpdated(e);
-		}
-	}
-
-	@EventHandler
-	protected synchronized void onEvent(final DisplayActivatedEvent e) {
-		if (activationInvocationPending) return;
-		activationInvocationPending = true;
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				onDisplayActivated(e);
-			}
-		});
-	}
-
-	// -- Internal methods --
-
-	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
-		for (final DisplayViewer<?> displayViewer : displayViewers) {
-			if (displayViewer.getDisplay() == display) return displayViewer;
-		}
-		Log.warn("No DisplayViewer found for display: '" + display.getName() + "'");
-		return null;
-	}
 
 }
