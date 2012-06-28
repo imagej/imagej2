@@ -59,7 +59,7 @@ public interface Zoomable {
 	 * @param factor the zoom level used to display this panel's image.
 	 */
 	void setZoom(double factor);
-	
+
 	/**
 	 * Set the zoom and center the viewport within the image.
 	 * 
@@ -68,44 +68,42 @@ public interface Zoomable {
 	void setZoomAndCenter(double factor);
 
 	/**
-	 * Sets the zoom level used to display the image, and the zooming center,
-	 * around which zooming is done.
-	 * <p>
-	 * This method is used in programmatic zooming. After a new zoom level is set
-	 * the image is repainted.
-	 * </p>
+	 * Recenters the image around the given <em>image</em> coordinates, then sets
+	 * the zoom level.
 	 * 
-	 * @param factor the zoom level used to display this panel's image.
-	 * @param center the zoom center, in image coordinates.
+	 * @param factor The new zoom level.
+	 * @param center The center in <em>image</em> coordinates.
 	 */
 	void setZoom(double factor, RealCoords center);
-	
+
 	/**
-	 * Sets the zoom level used to display the image and recenters
-	 * the image around the given coordinate in the current panel space.
+	 * Recenters the image around the given <em>panel</em> coordinates, then sets
+	 * the zoom level.
 	 * 
-	 * @param factor new zoom level
-	 * @param center the center in panel space
+	 * @param factor The new zoom level.
+	 * @param center The center in <em>panel</em> coordinates.
 	 */
 	void setZoom(double factor, IntCoords center);
 
-	/** Zooms in by the default amount, centered around the panel's middle. */
+	/** Zooms in by the default amount, centered around the panel's center. */
 	void zoomIn();
 
 	/**
-	 * Zooms in by the default amount, centered around the given coordinates.
+	 * Zooms in by the default amount, centered around the given <em>panel</em>
+	 * coordinates.
 	 * 
-	 * @param center The zoom center, in panel coordinates (pixels).
+	 * @param center The zoom center, in <em>panel</em> coordinates.
 	 */
 	void zoomIn(IntCoords center);
 
-	/** Zooms out by the default amount, centered around the panel's middle. */
+	/** Zooms out by the default amount, centered around the panel's center. */
 	void zoomOut();
 
 	/**
-	 * Zooms out by the default amount, centered around the given coordinates.
+	 * Zooms out by the default amount, centered around the given <em>panel</em>
+	 * coordinates.
 	 * 
-	 * @param center The zoom center, in panel coordinates (pixels).
+	 * @param center The zoom center, in <em>panel</em> coordinates.
 	 */
 	void zoomOut(IntCoords center);
 

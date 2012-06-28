@@ -41,6 +41,13 @@ import imagej.util.RealCoords;
 
 /**
  * A canvas upon which an {@link ImageDisplay} draws its output.
+ * <p>
+ * An image canvas supports two different coordinate systems, and provides a
+ * mechanism for conversion between them. The first is <em>panel</em>
+ * coordinates, which are in pixels onscreen. The second is <em>image</em>
+ * coordinates, which match the linked {@link ImageDisplay}'s original
+ * coordinate system.
+ * </p>
  * 
  * @author Grant Harris
  * @author Curtis Rueden
@@ -50,31 +57,39 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Gets the canvas's display. */
 	ImageDisplay getDisplay();
 
-	/** Gets the current width of the canvas viewport in pixels. */
+	/**
+	 * Gets the current width of the canvas viewport in <em>panel</em>
+	 * coordinates.
+	 */
 	int getViewportWidth();
 
-	/** Gets the current height of the canvas viewport in pixels. */
+	/**
+	 * Gets the current height of the canvas viewport in <em>panel</em>
+	 * coordinates.
+	 */
 	int getViewportHeight();
 
-	/**
-	 * Sets the height and width of the viewport.
-	 * 
-	 * @param width
-	 * @param height
-	 */
+	/** Sets the dimensions of the viewport in <em>panel</em> coordinates. */
 	void setViewportSize(int width, int height);
 
 	/**
-	 * Tests whether a given point in the panel falls within the image boundaries.
+	 * Tests whether a given point in the panel falls within the boundaries of the
+	 * display space.
 	 * 
-	 * @param point The point to check, in panel coordinates (pixels).
+	 * @param point The point to check, in <em>panel</em> coordinates.
 	 */
 	boolean isInImage(IntCoords point);
 
-	/** Converts the given panel coordinates into original image coordinates. */
+	/**
+	 * Converts the given <em>panel</em> coordinates into <em>image</em>
+	 * coordinates.
+	 */
 	RealCoords panelToImageCoords(IntCoords panelCoords);
 
-	/** Converts the given original image coordinates into panel coordinates. */
+	/**
+	 * Converts the given <em>image</em> coordinates into <em>panel</em>
+	 * coordinates.
+	 */
 	IntCoords imageToPanelCoords(RealCoords imageCoords);
 
 	/** Gets the current mouse cursor. */

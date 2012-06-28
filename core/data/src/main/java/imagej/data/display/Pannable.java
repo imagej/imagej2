@@ -39,15 +39,19 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**
- * Defines methods needed to adjust the pan position of an {@link ImageCanvas}.
- * 
- * The pan position is the center of the viewport. The assumption is that
- * the user cares most about what's in the center of the viewport, especially
- * for operations like a pure zoom.
+ * Defines methods needed to adjust the pan position of a viewport, such as an
+ * {@link ImageCanvas}.
+ * <p>
+ * The pan position is the center of the viewport. The assumption is that the
+ * user cares most about what's in the center of the viewport, especially for
+ * operations like a pure zoom.
+ * </p>
  * 
  * @author Grant Harris
  * @author Curtis Rueden
  * @author Barry DeZonia
+ * @author Lee Kamentsky
+ * @see ImageCanvas
  */
 public interface Pannable {
 
@@ -59,9 +63,10 @@ public interface Pannable {
 	void pan(IntCoords delta);
 
 	/**
-	 * Pans the image to the given absolute (X, Y) position.
+	 * Pans to the given absolute (X, Y) position in <em>image</em> coordinate
+	 * space.
 	 * 
-	 * @param center Absolute coordinates, in image coordinate space.
+	 * @param center Absolute coordinates, in <em>image</em> coordinate space.
 	 */
 	void setPan(RealCoords center);
 
