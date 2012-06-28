@@ -187,8 +187,8 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 		final int clickCount = e.getClickCount();
 		final boolean isPopupTrigger = e.isPopupTrigger();
 		final MsReleasedEvent evt =
-			new MsReleasedEvent(display, modifiers, x, y, mouseButton(e),
-				clickCount, isPopupTrigger);
+			new MsReleasedEvent(display, modifiers, x, y, mouseButton(e), clickCount,
+				isPopupTrigger);
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -258,8 +258,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 		final boolean metaDown = isOn(modsEx, InputEvent.META_DOWN_MASK);
 		final boolean shiftDown = isOn(modsEx, InputEvent.SHIFT_DOWN_MASK);
 		final boolean leftButtonDown = isOn(modsEx, InputEvent.BUTTON1_DOWN_MASK);
-		final boolean middleButtonDown =
-			isOn(modsEx, InputEvent.BUTTON3_DOWN_MASK);
+		final boolean middleButtonDown = isOn(modsEx, InputEvent.BUTTON3_DOWN_MASK);
 		final boolean rightButtonDown = isOn(modsEx, InputEvent.BUTTON2_DOWN_MASK);
 		return new InputModifiers(altDown, altGrDown, ctrlDown, metaDown,
 			shiftDown, leftButtonDown, middleButtonDown, rightButtonDown);
@@ -283,7 +282,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	}
 
 	/** Updates last known mouse coordinates. */
-	private void updateMouseCoords(MouseEvent e) {
+	private void updateMouseCoords(final MouseEvent e) {
 		x = e.getX();
 		y = e.getY();
 	}
