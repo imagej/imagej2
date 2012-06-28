@@ -56,11 +56,12 @@ import imagej.util.RealCoords;
 public interface Pannable {
 
 	/**
-	 * Adjusts the pan by the given (X, Y) amount.
+	 * Gets the coordinates of the <em>image</em> space point currently displayed
+	 * in the center of the viewport.
 	 * 
-	 * @param delta Pan modifier, in panel coordinate space (pixels).
+	 * @return Pan center coordinates, in <em>image</em> coordinate space.
 	 */
-	void pan(IntCoords delta);
+	RealCoords getPanCenter();
 
 	/**
 	 * Pans to the given absolute (X, Y) position in <em>image</em> coordinate
@@ -68,17 +69,31 @@ public interface Pannable {
 	 * 
 	 * @param center Absolute coordinates, in <em>image</em> coordinate space.
 	 */
-	void setPan(RealCoords center);
+	void setPanCenter(RealCoords center);
+
+	/**
+	 * Pans to the given absolute (X, Y) position in <em>panel</em> coordinate
+	 * space.
+	 * 
+	 * @param center Absolute coordinates, in <em>panel</em> coordinate space.
+	 */
+	void setPanCenter(IntCoords center);
+
+	/**
+	 * Adjusts the pan by the given (X, Y) amount.
+	 * 
+	 * @param delta Pan modifier, in <em>image</em> coordinate space.
+	 */
+	void pan(RealCoords delta);
+
+	/**
+	 * Adjusts the pan by the given (X, Y) amount in <em>panel</em> space.
+	 * 
+	 * @param delta Pan modifier, in <em>panel</em> coordinate space.
+	 */
+	void pan(IntCoords delta);
 
 	/** Resets the pan origin to the center of the display. */
 	void panReset();
-
-	/**
-	 * Gets the X coordinate of the image space point currently displayed in the
-	 * center of the window.
-	 * 
-	 * @return Pan origin coordinates, in panel coordinate space (pixels).
-	 */
-	RealCoords getPanCenter();
 
 }

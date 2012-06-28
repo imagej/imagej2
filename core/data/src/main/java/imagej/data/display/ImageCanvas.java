@@ -98,13 +98,4 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Sets the mouse to the given {@link MouseCursor} type. */
 	void setCursor(MouseCursor cursor);
 
-	/** Gets the scale to use when reverting after zooming. */
-	double getInitialScale();
-
-	/** Sets the scale to use when reverting after zooming. */
-	void setInitialScale(double zoomFactor);
-
-	/** Gets the closest step-wise zoom factor below the given scale. */
-	double getBestZoomLevel(final double fractionalScale);
-
 }

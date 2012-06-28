@@ -36,6 +36,7 @@
 package imagej.data.display;
 
 import imagej.util.IntCoords;
+import imagej.util.IntRect;
 import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
@@ -89,6 +90,14 @@ public interface Zoomable {
 	void zoomIn();
 
 	/**
+	 * Zooms in by the default amount, centered around the given <em>image</em>
+	 * coordinates.
+	 * 
+	 * @param center The zoom center, in <em>image</em> coordinates.
+	 */
+	void zoomIn(RealCoords center);
+
+	/**
 	 * Zooms in by the default amount, centered around the given <em>panel</em>
 	 * coordinates.
 	 * 
@@ -100,6 +109,14 @@ public interface Zoomable {
 	void zoomOut();
 
 	/**
+	 * Zooms out by the default amount, centered around the given <em>image</em>
+	 * coordinates.
+	 * 
+	 * @param center The zoom center, in <em>image</em> coordinates.
+	 */
+	void zoomOut(RealCoords center);
+
+	/**
 	 * Zooms out by the default amount, centered around the given <em>panel</em>
 	 * coordinates.
 	 * 
@@ -108,25 +125,33 @@ public interface Zoomable {
 	void zoomOut(IntCoords center);
 
 	/**
-	 * Zoom the viewport to the given coordinates in panel space
-	 * @param topLeft top left of the new viewport in panel space
-	 * @param bottomRight bottom right of the new viewport in panel space
-	 */
-	void zoomToFit(IntCoords topLeft, IntCoords bottomRight);
-	
-	/**
-	 * Zoom the viewport to fit the given rectangle in image space
+	 * Zoom the viewport to fit the given bounding box in <em>image</em>
+	 * coordinates.
 	 * 
-	 * @param viewportRect - the rectangle that the user wants to see.
+	 * @param viewportBox The viewport bounding box, in <em>image</em>
+	 *          coordinates.
 	 */
-	void zoomToFit(RealRect viewportRect);
+	void zoomToFit(RealRect viewportBox);
+
+	/**
+	 * Zooms the viewport to fit the given bounding box in <em>panel</em>
+	 * coordinates.
+	 * 
+	 * @param viewportBox The viewport bounding box, in <em>panel</em>
+	 *          coordinates.
+	 */
+	void zoomToFit(IntRect viewportBox);
 
 	/** Gets the current zoom level. */
 	double getZoomFactor();
-	
-	/**
-	 * @return the coordinates of the viewport into the image
-	 * in image coordinates.
-	 */
-	RealRect getViewportImageRect();
+
+	/** Gets the scale to use when reverting after zooming. */
+	double getInitialScale();
+
+	/** Sets the scale to use when reverting after zooming. */
+	void setInitialScale(double zoomFactor);
+
+	/** Gets the closest step-wise zoom factor below the given scale. */
+	double getBestZoomLevel(final double fractionalScale);
+
 }

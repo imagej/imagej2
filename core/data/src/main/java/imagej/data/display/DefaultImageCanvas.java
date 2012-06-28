@@ -42,6 +42,7 @@ import imagej.event.EventService;
 import imagej.ext.MouseCursor;
 import imagej.log.LogService;
 import imagej.util.IntCoords;
+import imagej.util.IntRect;
 import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
@@ -143,147 +144,13 @@ public class DefaultImageCanvas implements ImageCanvas {
 	private double scale = 1.0;
 
 	private MouseCursor mouseCursor;
-	private RealCoords center;
+	private RealCoords panCenter;
 
 	public DefaultImageCanvas(final ImageDisplay display) {
 		this.display = display;
 		mouseCursor = MouseCursor.DEFAULT;
 		viewportSize = new IntCoords(100, 100);
 		zoomLevels = validatedZoomLevels(defaultZooms);
-	}
-
-	// -- Pannable methods --
-
-	@Override
-	public void pan(final IntCoords delta) {
-		final double centerX = getPanCenter().x + delta.x / getZoomFactor();
-		final double centerY = getPanCenter().y + delta.y / getZoomFactor();
-		doSetCenter(centerX, centerY);
-	}
-
-	@Override
-	public void setPan(final RealCoords center) {
-		doSetCenter(center.x, center.y);
-	}
-
-	@Override
-	public void panReset() {
-		final RealRect extents = getDisplay().getPlaneExtents();
-		doSetCenter(extents.x + extents.height / 2, extents.y + extents.width / 2);
-	}
-
-	@Override
-	public RealCoords getPanCenter() {
-		if (center == null) {
-			panReset();
-		}
-		if (center == null) throw new IllegalStateException();
-		return new RealCoords(center.x, center.y);
-	}
-
-	// -- Zoomable methods --
-
-	@Override
-	public void setZoom(final double factor) {
-		final double desiredScale = factor == 0 ? initialScale : factor;
-		if (scaleOutOfBounds(desiredScale) || desiredScale == getZoomFactor()) {
-			return;
-		}
-		doSetZoom(desiredScale);
-	}
-
-	@Override
-	public void setZoom(final double factor, final IntCoords center) {
-		double desiredScale = factor;
-		if (factor == 0) desiredScale = initialScale;
-		final RealCoords newCenter = panelToImageCoords(center);
-		if (scaleOutOfBounds(desiredScale) || desiredScale == getZoomFactor() &&
-			getPanCenter().x == newCenter.x && getPanCenter().y == newCenter.y)
-		{
-			return;
-		}
-		doSetZoomAndCenter(desiredScale, newCenter.x, newCenter.y);
-	}
-
-	@Override
-	public void setZoom(final double factor, final RealCoords center) {
-		final double desiredScale = factor == 0 ? initialScale : factor;
-		if (scaleOutOfBounds(desiredScale)) return;
-		doSetZoomAndCenter(desiredScale, center.x, center.y);
-	}
-
-	@Override
-	public void setZoomAndCenter(final double factor) {
-		final double desiredScale = factor == 0 ? initialScale : factor;
-		if (scaleOutOfBounds(desiredScale)) return;
-		doSetZoomAndCenter(desiredScale,
-			getViewportWidth() / getZoomFactor() / 2.0, getViewportHeight() /
-				getZoomFactor() / 2.0);
-	}
-
-	@Override
-	public void zoomIn() {
-		final double newScale = nextLargerZoom(zoomLevels, getZoomFactor());
-		setZoom(newScale);
-	}
-
-	@Override
-	public void zoomIn(final IntCoords ctr) {
-		final double desiredScale = nextLargerZoom(zoomLevels, getZoomFactor());
-		setZoom(desiredScale, center);
-	}
-
-	@Override
-	public void zoomOut() {
-		final double desiredScale = nextSmallerZoom(zoomLevels, getZoomFactor());
-		setZoom(desiredScale);
-	}
-
-	@Override
-	public void zoomOut(final IntCoords ctr) {
-		final double newScale = nextSmallerZoom(zoomLevels, getZoomFactor());
-		setZoom(newScale, center);
-	}
-
-	@Override
-	public void zoomToFit(final IntCoords topLeft, final IntCoords bottomRight) {
-		final RealCoords imageTopLeft = panelToImageCoords(topLeft);
-		final RealCoords imageBottomRight = panelToImageCoords(bottomRight);
-		final double newCenterX = Math.abs(imageBottomRight.x + imageTopLeft.x) / 2;
-		final double newCenterY = Math.abs(imageBottomRight.y + imageTopLeft.y) / 2;
-		final double imageSizeX = Math.abs(imageBottomRight.x - imageTopLeft.x);
-		final double imageSizeY = Math.abs(imageBottomRight.y - imageTopLeft.y);
-		final double xZoom = getViewportWidth() / imageSizeX;
-		final double yZoom = getViewportHeight() / imageSizeY;
-		final double factor = Math.min(xZoom, yZoom);
-		if (scaleOutOfBounds(factor)) return;
-
-		doSetZoomAndCenter(factor, newCenterX, newCenterY);
-	}
-
-	@Override
-	public void zoomToFit(final RealRect viewportRect) {
-		final double newCenterX = (viewportRect.x + viewportRect.width / 2);
-		final double newCenterY = (viewportRect.y + viewportRect.height / 2);
-		final double minScale =
-			Math.min(getViewportWidth() / viewportRect.width, getViewportHeight() /
-				viewportRect.height);
-		if (scaleOutOfBounds(minScale)) return;
-		doSetZoomAndCenter(minScale, newCenterX, newCenterY);
-	}
-
-	@Override
-	public double getZoomFactor() {
-		return this.scale;
-	}
-
-	@Override
-	public RealRect getViewportImageRect() {
-		final RealCoords topLeft = panelToImageCoords(new IntCoords(0, 0));
-		final RealCoords bottomRight =
-			panelToImageCoords(new IntCoords(getViewportWidth(), getViewportHeight()));
-		return new RealRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
-			bottomRight.y - topLeft.y);
 	}
 
 	// -- ImageCanvas methods --
@@ -312,7 +179,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 	@Override
 	public boolean isInImage(final IntCoords point) {
 		final RealCoords imageCoords = panelToImageCoords(point);
-		return getImageExtents().contains(imageCoords);
+		return getDisplay().getPlaneExtents().contains(imageCoords);
 	}
 
 	@Override
@@ -343,6 +210,158 @@ public class DefaultImageCanvas implements ImageCanvas {
 		if (eventService != null) eventService.publish(new MouseCursorEvent(this));
 	}
 
+	// -- Pannable methods --
+
+	@Override
+	public RealCoords getPanCenter() {
+		if (panCenter == null) {
+			panReset();
+		}
+		if (panCenter == null) throw new IllegalStateException();
+		return new RealCoords(panCenter.x, panCenter.y);
+	}
+
+	@Override
+	public void setPanCenter(final RealCoords center) {
+		if (panCenter == null) {
+			panCenter = new RealCoords(center.x, center.y);
+		}
+		else {
+			panCenter.x = center.x;
+			panCenter.y = center.y;
+		}
+		publishZoomEvent();
+	}
+
+	@Override
+	public void setPanCenter(final IntCoords center) {
+		setPanCenter(panelToImageCoords(center));
+	}
+
+	@Override
+	public void pan(final RealCoords delta) {
+		final double centerX = getPanCenter().x + delta.x;
+		final double centerY = getPanCenter().y + delta.y;
+		setPanCenter(new RealCoords(centerX, centerY));
+	}
+
+	@Override
+	public void pan(final IntCoords delta) {
+		final double centerX = getPanCenter().x + delta.x / getZoomFactor();
+		final double centerY = getPanCenter().y + delta.y / getZoomFactor();
+		setPanCenter(new RealCoords(centerX, centerY));
+	}
+
+	@Override
+	public void panReset() {
+		final RealRect extents = getDisplay().getPlaneExtents();
+		final double centerX = extents.x + extents.width / 2;
+		final double centerY = extents.y + extents.height / 2;
+		setPanCenter(new RealCoords(centerX, centerY));
+	}
+
+	// -- Zoomable methods --
+
+	@Override
+	public void setZoom(final double factor) {
+		final double desiredScale = factor == 0 ? initialScale : factor;
+		if (scaleOutOfBounds(desiredScale) || desiredScale == getZoomFactor()) {
+			return;
+		}
+		doSetZoom(desiredScale);
+	}
+
+	@Override
+	public void setZoom(final double factor, final RealCoords center) {
+		final double desiredScale = factor == 0 ? initialScale : factor;
+		if (scaleOutOfBounds(desiredScale)) return;
+		doSetZoomAndCenter(desiredScale, center.x, center.y);
+	}
+
+	@Override
+	public void setZoom(final double factor, final IntCoords center) {
+		setZoom(factor, panelToImageCoords(center));
+	}
+
+	@Override
+	public void setZoomAndCenter(final double factor) {
+		final double desiredScale = factor == 0 ? initialScale : factor;
+		if (scaleOutOfBounds(desiredScale)) return;
+		final double x = getViewportWidth() / getZoomFactor() / 2;
+		final double y = getViewportHeight() / getZoomFactor() / 2;
+		doSetZoomAndCenter(desiredScale, x, y);
+	}
+
+	@Override
+	public void zoomIn() {
+		final double newScale = nextLargerZoom(zoomLevels, getZoomFactor());
+		setZoom(newScale);
+	}
+
+	@Override
+	public void zoomIn(final RealCoords center) {
+		final double desiredScale = nextLargerZoom(zoomLevels, getZoomFactor());
+		setZoom(desiredScale, center);
+	}
+
+	@Override
+	public void zoomIn(final IntCoords center) {
+		final double desiredScale = nextLargerZoom(zoomLevels, getZoomFactor());
+		setZoom(desiredScale, center);
+	}
+
+	@Override
+	public void zoomOut() {
+		final double desiredScale = nextSmallerZoom(zoomLevels, getZoomFactor());
+		setZoom(desiredScale);
+	}
+
+	@Override
+	public void zoomOut(final RealCoords center) {
+		final double newScale = nextSmallerZoom(zoomLevels, getZoomFactor());
+		setZoom(newScale, center);
+	}
+
+	@Override
+	public void zoomOut(final IntCoords center) {
+		final double newScale = nextSmallerZoom(zoomLevels, getZoomFactor());
+		setZoom(newScale, center);
+	}
+
+	@Override
+	public void zoomToFit(final IntRect viewportBox) {
+		final IntCoords topLeft = viewportBox.getTopLeft();
+		final IntCoords bottomRight = viewportBox.getBottomRight();
+		final RealCoords imageTopLeft = panelToImageCoords(topLeft);
+		final RealCoords imageBottomRight = panelToImageCoords(bottomRight);
+		final double newCenterX = Math.abs(imageBottomRight.x + imageTopLeft.x) / 2;
+		final double newCenterY = Math.abs(imageBottomRight.y + imageTopLeft.y) / 2;
+		final double imageSizeX = Math.abs(imageBottomRight.x - imageTopLeft.x);
+		final double imageSizeY = Math.abs(imageBottomRight.y - imageTopLeft.y);
+		final double xZoom = getViewportWidth() / imageSizeX;
+		final double yZoom = getViewportHeight() / imageSizeY;
+		final double factor = Math.min(xZoom, yZoom);
+		if (scaleOutOfBounds(factor)) return;
+
+		doSetZoomAndCenter(factor, newCenterX, newCenterY);
+	}
+
+	@Override
+	public void zoomToFit(final RealRect viewportBox) {
+		final double newCenterX = (viewportBox.x + viewportBox.width / 2);
+		final double newCenterY = (viewportBox.y + viewportBox.height / 2);
+		final double minScale =
+			Math.min(getViewportWidth() / viewportBox.width, getViewportHeight() /
+				viewportBox.height);
+		if (scaleOutOfBounds(minScale)) return;
+		doSetZoomAndCenter(minScale, newCenterX, newCenterY);
+	}
+
+	@Override
+	public double getZoomFactor() {
+		return this.scale;
+	}
+
 	@Override
 	public double getInitialScale() {
 		return initialScale;
@@ -370,21 +389,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 	// -- Helper methods --
 
 	/**
-	 * Sets the canvas's center X and Y and publish an event that tells the world
-	 * that the viewport mapping changed.
-	 */
-	private void doSetCenter(final double x, final double y) {
-		if (center == null) {
-			center = new RealCoords(x, y);
-		}
-		else {
-			center.x = x;
-			center.y = y;
-		}
-		publishZoomEvent();
-	}
-
-	/**
 	 * Sets the canvas's zoom scale and publish an event that tells the world that
 	 * the viewport mapping changed.
 	 */
@@ -400,12 +404,12 @@ public class DefaultImageCanvas implements ImageCanvas {
 	private void doSetZoomAndCenter(final double scaleFactor, final double x,
 		final double y)
 	{
-		if (center == null) {
-			center = new RealCoords(x, y);
+		if (panCenter == null) {
+			panCenter = new RealCoords(x, y);
 		}
 		else {
-			center.x = x;
-			center.y = y;
+			panCenter.x = x;
+			panCenter.y = y;
 		}
 		this.scale = scaleFactor;
 		publishZoomEvent();
@@ -436,12 +440,14 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	/** Gets the coordinate of the left edge of the viewport in image space. */
 	private double getLeftImageX() {
-		return getPanCenter().x - getViewportWidth() / getZoomFactor() / 2;
+		final double viewportImageWidth = getViewportWidth() / getZoomFactor();
+		return getPanCenter().x - viewportImageWidth / 2;
 	}
 
 	/** Gets the coordinate of the top edge of the viewport in image space. */
 	private double getTopImageY() {
-		return getPanCenter().y - getViewportHeight() / getZoomFactor() / 2;
+		final double viewportImageHeight = getViewportHeight() / getZoomFactor();
+		return getPanCenter().y - viewportImageHeight / 2;
 	}
 
 	/** Checks whether the given scale is out of bounds. */
@@ -457,12 +463,12 @@ public class DefaultImageCanvas implements ImageCanvas {
 		// check if trying to zoom out too far
 		if (desiredScale < getZoomFactor()) {
 			// get boundaries of image in panel coords
-			final RealRect displayExtents = getImageExtents();
+			final RealRect planeExtents = getDisplay().getPlaneExtents();
 			final IntCoords nearCornerPanel =
-				imageToPanelCoords(new RealCoords(displayExtents.x, displayExtents.y));
+				imageToPanelCoords(new RealCoords(planeExtents.x, planeExtents.y));
 			final IntCoords farCornerPanel =
-				imageToPanelCoords(new RealCoords(displayExtents.x +
-					displayExtents.width, displayExtents.y + displayExtents.height));
+				imageToPanelCoords(new RealCoords(planeExtents.x + planeExtents.width,
+					planeExtents.y + planeExtents.height));
 
 			// if boundaries take up less than min allowed pixels in either dimension
 			final int panelX = farCornerPanel.x - nearCornerPanel.x;
@@ -473,11 +479,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 		}
 
 		return false;
-	}
-
-	/** Gets the extents of the display in image coordinates. */
-	private RealRect getImageExtents() {
-		return getDisplay().getPlaneExtents();
 	}
 
 	private static double nextSmallerZoom(final double[] zoomLevels,

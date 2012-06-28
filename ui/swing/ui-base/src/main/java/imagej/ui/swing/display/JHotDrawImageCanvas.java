@@ -450,7 +450,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		if (!initialized) return;
 		final RealCoords oldCenter = canvas.getPanCenter();
 		if (oldCenter.x == center.x && oldCenter.y == center.y) return;
-		canvas.setPan(center);
+		canvas.setPanCenter(center);
 	}
 
 	private void syncPanAndZoom() {
@@ -476,7 +476,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 			final IntCoords origin = new IntCoords(originX, originY);
 			if (constrainOrigin(origin)) {
 				// Back-compute the center if origin was changed.
-				canvas.setPan(new RealCoords((origin.x + viewRect.width / 2.0) /
+				canvas.setPanCenter(new RealCoords((origin.x + viewRect.width / 2.0) /
 					zoomFactor, (origin.y + viewRect.height / 2.0) / zoomFactor));
 			}
 			if (viewPos.x != origin.x || viewPos.y != origin.y) {
