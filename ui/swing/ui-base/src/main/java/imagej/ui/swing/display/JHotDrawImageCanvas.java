@@ -409,7 +409,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		if (drawViewSize.height == 0 || drawViewSize.width == 0) {
 			// The image figure hasn't been placed yet. Calculate the projected size.
 			final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
-			final RealRect imageBounds = getDisplay().getImageExtents();
+			final RealRect imageBounds = getDisplay().getPlaneExtents();
 			final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
 			return new Dimension(Math.min((int) (imageBounds.width * zoomFactor) +
 				slop.width + 1, bounds.width), Math
@@ -523,7 +523,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 	private void maybeResizeWindow() {
 		final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
-		final RealRect imageBounds = getDisplay().getImageExtents();
+		final RealRect imageBounds = getDisplay().getPlaneExtents();
 		final ImageCanvas canvas = getDisplay().getCanvas();
 		final IntCoords topLeft =
 			canvas.imageToPanelCoords(new RealCoords(imageBounds.x, imageBounds.y));

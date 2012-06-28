@@ -168,7 +168,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public void panReset() {
-		final RealRect extents = getDisplay().getImageExtents();
+		final RealRect extents = getDisplay().getPlaneExtents();
 		doSetCenter(extents.x + extents.height / 2, extents.y + extents.width / 2);
 	}
 
@@ -477,7 +477,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	/** Gets the extents of the display in image coordinates. */
 	private RealRect getImageExtents() {
-		return getDisplay().getImageExtents();
+		return getDisplay().getPlaneExtents();
 	}
 
 	private static double nextSmallerZoom(final double[] zoomLevels,
