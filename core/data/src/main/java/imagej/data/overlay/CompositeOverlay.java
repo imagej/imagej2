@@ -38,6 +38,7 @@ package imagej.data.overlay;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import imagej.ImageJ;
@@ -193,6 +194,10 @@ public class CompositeOverlay extends
 			case NOT: not(o); break;
 			default: throw new IllegalStateException("Unknown operation: "+op);
 		}
+	}
+	
+	public List<Overlay> getSubcomponents() {
+		return Collections.unmodifiableList(overlays);
 	}
 	
 	// -- private helpers --

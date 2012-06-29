@@ -135,6 +135,7 @@ public class SwingOverlayManager
 	private static final String ACTION_AND = "and";
 	private static final String ACTION_DELETE = "delete";
 	private static final String ACTION_DESELECT = "deselect";
+	private static final String ACTION_DIVIDE = "divide";
 	private static final String ACTION_DRAW = "draw";
 	private static final String ACTION_FILL = "fill";
 	private static final String ACTION_FLATTEN = "flatten";
@@ -151,7 +152,6 @@ public class SwingOverlayManager
 	private static final String ACTION_SAVE = "save";
 	private static final String ACTION_SORT = "sort";
 	private static final String ACTION_SPECIFY = "specify";
-	private static final String ACTION_SPLIT = "split";
 	// no longer supported
 	//private static final String ACTION_UPDATE = "update";
 	private static final String ACTION_XOR = "xor";
@@ -271,6 +271,8 @@ public class SwingOverlayManager
 			delete();
 		else if (command.equals(ACTION_DESELECT))
 			deselect();
+		else if (command.equals(ACTION_DIVIDE))
+			divide();
 		else if (command.equals(ACTION_DRAW))
 			draw();
 		else if (command.equals(ACTION_FILL))
@@ -303,8 +305,6 @@ public class SwingOverlayManager
 			sort();
 		else if (command.equals(ACTION_SPECIFY))
 			specify();
-		else if (command.equals(ACTION_SPLIT))
-			split();
 		/*
 		else if (command.equals(ACTION_UPDATE))
 			update();
@@ -544,23 +544,66 @@ public class SwingOverlayManager
 		jlist.clearSelection();
 	}
 	
-	private void draw() {
-		OverlayService os = context.getService(OverlayService.class);
-		ChannelCollection channels = getChannels();
-		List<Overlay> selected = ovrSrv.getOverlayInfo().selectedOverlays();
-		for (Overlay o : selected) {
-			ImageDisplay disp = os.getFirstDisplay(o);
-			os.drawOverlay(o, disp, channels);
+	/**
+	 * Takes the currently selected CompositeOverlay and turns it into its
+	 * constituent overlays. The CompositeOverlay is deleted. It does one layer
+	 * of division (it is not a deep division).
+	 */
+	private void divide() {
+		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
+		int i = 0;
+		while (i < overlays.size()) {
+			Overlay o = overlays.get(i);
+			if (! (o instanceof CompositeOverlay))
+				overlays.remove(i);
+			else
+				i++;
+		}
+		if (overlays.size() == 0) {
+			JOptionPane.showMessageDialog(
+				this, "One or more composite overlays must be selected");
+			return;
+		}
+		for (Overlay o : overlays) {
+			CompositeOverlay overlay = (CompositeOverlay) o;
+			List<Overlay> subcomponents = overlay.getSubcomponents();
+			
+			// to each display that owns the composite
+			//   reference the original overlays (if not already)
+			
+			List<ImageDisplay> owners = ovrSrv.getDisplays(overlay);
+			for (ImageDisplay owner : owners) {
+				boolean changes = false;
+				List<Overlay> displayOverlays = ovrSrv.getOverlays(owner);
+				for (Overlay subcomponent : subcomponents) {
+					if (!displayOverlays.contains(subcomponent)) {
+						owner.display(subcomponent);
+						changes = true;
+					}
+				}
+				if (changes) owner.update();
+			}
+			
+			// delete the composite overlay
+			ovrSrv.removeOverlay(overlay);
 		}
 	}
 	
-	private void fill() {
-		OverlayService os = context.getService(OverlayService.class);
+	private void draw() {
 		ChannelCollection channels = getChannels();
 		List<Overlay> selected = ovrSrv.getOverlayInfo().selectedOverlays();
 		for (Overlay o : selected) {
-			ImageDisplay disp = os.getFirstDisplay(o);
-			os.fillOverlay(o, disp, channels);
+			ImageDisplay disp = ovrSrv.getFirstDisplay(o);
+			ovrSrv.drawOverlay(o, disp, channels);
+		}
+	}
+
+	private void fill() {
+		ChannelCollection channels = getChannels();
+		List<Overlay> selected = ovrSrv.getOverlayInfo().selectedOverlays();
+		for (Overlay o : selected) {
+			ImageDisplay disp = ovrSrv.getFirstDisplay(o);
+			ovrSrv.fillOverlay(o, disp, channels);
 		}
 	}
 	
@@ -736,10 +779,6 @@ public class SwingOverlayManager
 		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
 	
-	private void split() {
-		JOptionPane.showMessageDialog(this, "unimplemented");
-	}
-	
 	/*
 	 *  old functionality : now that all overlays always tracked this no longer
 	 * makes sense
@@ -898,7 +937,7 @@ public class SwingOverlayManager
 		menu.add(getAndMenuItem());
 		menu.add(getOrMenuItem());
 		menu.add(getXorMenuItem());
-		menu.add(getSplitMenuItem());
+		menu.add(getDivideMenuItem());
 		menu.add(getAddParticlesMenuItem());
 		menu.add(getMultiMeasureMenuItem());
 		menu.add(getMultiPlotMenuItem());
@@ -1006,10 +1045,10 @@ public class SwingOverlayManager
 		return item;
 	}
 	
-	private JMenuItem getSplitMenuItem() {
+	private JMenuItem getDivideMenuItem() {
 		final JMenuItem item;
-		item = new JMenuItem("Split");
-		item.setActionCommand(ACTION_SPLIT);
+		item = new JMenuItem("Divide");
+		item.setActionCommand(ACTION_DIVIDE);
 		item.addActionListener(this);
 		return item;
 	}
