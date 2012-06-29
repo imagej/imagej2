@@ -268,14 +268,23 @@ public class DefaultImageCanvas implements ImageCanvas {
 		if (scaleOutOfBounds(desiredScale) || desiredScale == getZoomFactor()) {
 			return;
 		}
-		doSetZoom(desiredScale);
+		scale = factor;
+		publishPanZoomEvent();
 	}
 
 	@Override
 	public void setZoom(final double factor, final RealCoords center) {
 		final double desiredScale = factor == 0 ? initialScale : factor;
 		if (scaleOutOfBounds(desiredScale)) return;
-		doSetZoomAndCenter(desiredScale, center.x, center.y);
+		if (panCenter == null) {
+			panCenter = new RealCoords(center.x, center.y);
+		}
+		else {
+			panCenter.x = center.x;
+			panCenter.y = center.y;
+		}
+		scale = desiredScale;
+		publishPanZoomEvent();
 	}
 
 	@Override
@@ -285,11 +294,9 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public void setZoomAndCenter(final double factor) {
-		final double desiredScale = factor == 0 ? initialScale : factor;
-		if (scaleOutOfBounds(desiredScale)) return;
 		final double x = getViewportWidth() / getZoomFactor() / 2;
 		final double y = getViewportHeight() / getZoomFactor() / 2;
-		doSetZoomAndCenter(desiredScale, x, y);
+		setZoom(factor, new RealCoords(x, y));
 	}
 
 	@Override
@@ -341,9 +348,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 		final double xZoom = getViewportWidth() / dataSizeX;
 		final double yZoom = getViewportHeight() / dataSizeY;
 		final double factor = Math.min(xZoom, yZoom);
-		if (scaleOutOfBounds(factor)) return;
-
-		doSetZoomAndCenter(factor, newCenterX, newCenterY);
+		setZoom(factor, new RealCoords(newCenterX, newCenterY));
 	}
 
 	@Override
@@ -353,8 +358,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 		final double minScale =
 			Math.min(getViewportWidth() / viewportBox.width, getViewportHeight() /
 				viewportBox.height);
-		if (scaleOutOfBounds(minScale)) return;
-		doSetZoomAndCenter(minScale, newCenterX, newCenterY);
+		setZoom(minScale, new RealCoords(newCenterX, newCenterY));
 	}
 
 	@Override
@@ -387,33 +391,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 	}
 
 	// -- Helper methods --
-
-	/**
-	 * Sets the canvas's zoom scale and publish an event that tells the world that
-	 * the viewport mapping changed.
-	 */
-	private void doSetZoom(final double scaleFactor) {
-		this.scale = scaleFactor;
-		publishPanZoomEvent();
-	}
-
-	/**
-	 * Sets the canvas's X, Y and scale simultaneously and publish an event that
-	 * tells the world that the viewport mapping changed.
-	 */
-	private void doSetZoomAndCenter(final double scaleFactor, final double x,
-		final double y)
-	{
-		if (panCenter == null) {
-			panCenter = new RealCoords(x, y);
-		}
-		else {
-			panCenter.x = x;
-			panCenter.y = y;
-		}
-		this.scale = scaleFactor;
-		publishPanZoomEvent();
-	}
 
 	private void publishPanZoomEvent() {
 		final ImageJ context = getDisplay().getContext();
