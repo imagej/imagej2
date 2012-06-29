@@ -69,11 +69,11 @@ public interface Zoomable {
 	void setZoomAndCenter(double factor);
 
 	/**
-	 * Recenters the image around the given <em>image</em> coordinates, then sets
+	 * Recenters the image around the given <em>data</em> coordinates, then sets
 	 * the zoom level.
 	 * 
 	 * @param factor The new zoom level.
-	 * @param center The center in <em>image</em> coordinates.
+	 * @param center The center in <em>data</em> coordinates.
 	 */
 	void setZoom(double factor, RealCoords center);
 
@@ -90,10 +90,10 @@ public interface Zoomable {
 	void zoomIn();
 
 	/**
-	 * Zooms in by the default amount, centered around the given <em>image</em>
+	 * Zooms in by the default amount, centered around the given <em>data</em>
 	 * coordinates.
 	 * 
-	 * @param center The zoom center, in <em>image</em> coordinates.
+	 * @param center The zoom center, in <em>data</em> coordinates.
 	 */
 	void zoomIn(RealCoords center);
 
@@ -109,10 +109,10 @@ public interface Zoomable {
 	void zoomOut();
 
 	/**
-	 * Zooms out by the default amount, centered around the given <em>image</em>
+	 * Zooms out by the default amount, centered around the given <em>data</em>
 	 * coordinates.
 	 * 
-	 * @param center The zoom center, in <em>image</em> coordinates.
+	 * @param center The zoom center, in <em>data</em> coordinates.
 	 */
 	void zoomOut(RealCoords center);
 
@@ -125,10 +125,10 @@ public interface Zoomable {
 	void zoomOut(IntCoords center);
 
 	/**
-	 * Zoom the viewport to fit the given bounding box in <em>image</em>
+	 * Zoom the viewport to fit the given bounding box in <em>data</em>
 	 * coordinates.
 	 * 
-	 * @param viewportBox The viewport bounding box, in <em>image</em>
+	 * @param viewportBox The viewport bounding box, in <em>data</em>
 	 *          coordinates.
 	 */
 	void zoomToFit(RealRect viewportBox);

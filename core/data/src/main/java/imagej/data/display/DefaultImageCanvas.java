@@ -178,23 +178,23 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public boolean isInImage(final IntCoords point) {
-		final RealCoords imageCoords = panelToImageCoords(point);
-		return getDisplay().getPlaneExtents().contains(imageCoords);
+		final RealCoords dataCoords = panelToDataCoords(point);
+		return getDisplay().getPlaneExtents().contains(dataCoords);
 	}
 
 	@Override
-	public RealCoords panelToImageCoords(final IntCoords panelCoords) {
-		final double imageX = panelCoords.x / getZoomFactor() + getLeftImageX();
-		final double imageY = panelCoords.y / getZoomFactor() + getTopImageY();
-		return new RealCoords(imageX, imageY);
+	public RealCoords panelToDataCoords(final IntCoords panelCoords) {
+		final double dataX = panelCoords.x / getZoomFactor() + getLeftImageX();
+		final double dataY = panelCoords.y / getZoomFactor() + getTopImageY();
+		return new RealCoords(dataX, dataY);
 	}
 
 	@Override
-	public IntCoords imageToPanelCoords(final RealCoords imageCoords) {
+	public IntCoords dataToPanelCoords(final RealCoords dataCoords) {
 		final int panelX =
-			(int) Math.round(getZoomFactor() * (imageCoords.x - getLeftImageX()));
+			(int) Math.round(getZoomFactor() * (dataCoords.x - getLeftImageX()));
 		final int panelY =
-			(int) Math.round(getZoomFactor() * (imageCoords.y - getTopImageY()));
+			(int) Math.round(getZoomFactor() * (dataCoords.y - getTopImageY()));
 		return new IntCoords(panelX, panelY);
 	}
 
@@ -235,7 +235,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public void setPanCenter(final IntCoords center) {
-		setPanCenter(panelToImageCoords(center));
+		setPanCenter(panelToDataCoords(center));
 	}
 
 	@Override
@@ -280,7 +280,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public void setZoom(final double factor, final IntCoords center) {
-		setZoom(factor, panelToImageCoords(center));
+		setZoom(factor, panelToDataCoords(center));
 	}
 
 	@Override
@@ -332,14 +332,14 @@ public class DefaultImageCanvas implements ImageCanvas {
 	public void zoomToFit(final IntRect viewportBox) {
 		final IntCoords topLeft = viewportBox.getTopLeft();
 		final IntCoords bottomRight = viewportBox.getBottomRight();
-		final RealCoords imageTopLeft = panelToImageCoords(topLeft);
-		final RealCoords imageBottomRight = panelToImageCoords(bottomRight);
-		final double newCenterX = Math.abs(imageBottomRight.x + imageTopLeft.x) / 2;
-		final double newCenterY = Math.abs(imageBottomRight.y + imageTopLeft.y) / 2;
-		final double imageSizeX = Math.abs(imageBottomRight.x - imageTopLeft.x);
-		final double imageSizeY = Math.abs(imageBottomRight.y - imageTopLeft.y);
-		final double xZoom = getViewportWidth() / imageSizeX;
-		final double yZoom = getViewportHeight() / imageSizeY;
+		final RealCoords dataTopLeft = panelToDataCoords(topLeft);
+		final RealCoords dataBottomRight = panelToDataCoords(bottomRight);
+		final double newCenterX = Math.abs(dataBottomRight.x + dataTopLeft.x) / 2;
+		final double newCenterY = Math.abs(dataBottomRight.y + dataTopLeft.y) / 2;
+		final double dataSizeX = Math.abs(dataBottomRight.x - dataTopLeft.x);
+		final double dataSizeY = Math.abs(dataBottomRight.y - dataTopLeft.y);
+		final double xZoom = getViewportWidth() / dataSizeX;
+		final double yZoom = getViewportHeight() / dataSizeY;
 		final double factor = Math.min(xZoom, yZoom);
 		if (scaleOutOfBounds(factor)) return;
 
@@ -438,13 +438,18 @@ public class DefaultImageCanvas implements ImageCanvas {
 		return context.getService(EventService.class);
 	}
 
-	/** Gets the coordinate of the left edge of the viewport in image space. */
+	/**
+	 * Gets the coordinate of the left edge of the viewport in <em>data</em>
+	 * space.
+	 */
 	private double getLeftImageX() {
 		final double viewportImageWidth = getViewportWidth() / getZoomFactor();
 		return getPanCenter().x - viewportImageWidth / 2;
 	}
 
-	/** Gets the coordinate of the top edge of the viewport in image space. */
+	/**
+	 * Gets the coordinate of the top edge of the viewport in <em>data</em> space.
+	 */
 	private double getTopImageY() {
 		final double viewportImageHeight = getViewportHeight() / getZoomFactor();
 		return getPanCenter().y - viewportImageHeight / 2;
@@ -462,12 +467,12 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 		// check if trying to zoom out too far
 		if (desiredScale < getZoomFactor()) {
-			// get boundaries of image in panel coords
+			// get boundaries of the plane in panel coordinates
 			final RealRect planeExtents = getDisplay().getPlaneExtents();
 			final IntCoords nearCornerPanel =
-				imageToPanelCoords(new RealCoords(planeExtents.x, planeExtents.y));
+				dataToPanelCoords(new RealCoords(planeExtents.x, planeExtents.y));
 			final IntCoords farCornerPanel =
-				imageToPanelCoords(new RealCoords(planeExtents.x + planeExtents.width,
+				dataToPanelCoords(new RealCoords(planeExtents.x + planeExtents.width,
 					planeExtents.y + planeExtents.height));
 
 			// if boundaries take up less than min allowed pixels in either dimension

@@ -92,11 +92,11 @@ public class ImageCanvasTest {
 		canvas.setPanCenter(panelCenter);
 		assertApproximatelyEqual(dataCenter, canvas.getPanCenter());
 
-		final RealCoords eTL = canvas.panelToImageCoords(panelTopLeft);
+		final RealCoords eTL = canvas.panelToDataCoords(panelTopLeft);
 		canvas.setPanCenter(panelTopLeft);
 		assertApproximatelyEqual(eTL, canvas.getPanCenter());
 
-		final RealCoords eBR = canvas.panelToImageCoords(panelBottomRight);
+		final RealCoords eBR = canvas.panelToDataCoords(panelBottomRight);
 		canvas.setPanCenter(panelBottomRight);
 		assertApproximatelyEqual(eBR, canvas.getPanCenter());
 	}
@@ -162,25 +162,25 @@ public class ImageCanvasTest {
 	public void testImageToPanelCoords() {
 		final ImageCanvas canvas = createImageCanvas();
 
-		final IntCoords computedPanelCenter = canvas.imageToPanelCoords(dataCenter);
+		final IntCoords computedPanelCenter = canvas.dataToPanelCoords(dataCenter);
 		assertEquals(panelCenter, computedPanelCenter);
 
-		final IntCoords aTL = canvas.imageToPanelCoords(dataTopLeft);
+		final IntCoords aTL = canvas.dataToPanelCoords(dataTopLeft);
 		final IntCoords eTL = dataTopLeftToPanel(1);
 		assertEquals(eTL, aTL);
 
-		final IntCoords aBR = canvas.imageToPanelCoords(dataBottomRight);
+		final IntCoords aBR = canvas.dataToPanelCoords(dataBottomRight);
 		final IntCoords eBR = dataBottomRightToPanel(1);
 		assertEquals(eBR, aBR);
 
 		final double zoom = 5.5;
 		canvas.setZoom(zoom);
 
-		final IntCoords aTLZoomed = canvas.imageToPanelCoords(dataTopLeft);
+		final IntCoords aTLZoomed = canvas.dataToPanelCoords(dataTopLeft);
 		final IntCoords eTLZoomed = dataTopLeftToPanel(zoom);
 		assertEquals(eTLZoomed, aTLZoomed);
 
-		final IntCoords aBRZoomed = canvas.imageToPanelCoords(dataBottomRight);
+		final IntCoords aBRZoomed = canvas.dataToPanelCoords(dataBottomRight);
 		final IntCoords eBRZoomed = dataBottomRightToPanel(zoom);
 		assertEquals(eBRZoomed, aBRZoomed);
 	}
@@ -190,25 +190,25 @@ public class ImageCanvasTest {
 		final ImageCanvas canvas = createImageCanvas();
 
 		final RealCoords computedDataCenter =
-			canvas.panelToImageCoords(panelCenter);
+			canvas.panelToDataCoords(panelCenter);
 		assertApproximatelyEqual(dataCenter, computedDataCenter);
 
-		final RealCoords aTL = canvas.panelToImageCoords(panelTopLeft);
+		final RealCoords aTL = canvas.panelToDataCoords(panelTopLeft);
 		final RealCoords eTL = panelTopLeftToData(1);
 		assertApproximatelyEqual(eTL, aTL);
 
-		final RealCoords aBR = canvas.panelToImageCoords(panelBottomRight);
+		final RealCoords aBR = canvas.panelToDataCoords(panelBottomRight);
 		final RealCoords eBR = panelBottomRightToData(1);
 		assertApproximatelyEqual(eBR, aBR);
 
 		final double zoom = 0.37;
 		canvas.setZoom(zoom);
 
-		final RealCoords aTLZoomed = canvas.panelToImageCoords(panelTopLeft);
+		final RealCoords aTLZoomed = canvas.panelToDataCoords(panelTopLeft);
 		final RealCoords eTLZoomed = panelTopLeftToData(zoom);
 		assertApproximatelyEqual(eTLZoomed, aTLZoomed);
 
-		final RealCoords aBRZoomed = canvas.panelToImageCoords(panelBottomRight);
+		final RealCoords aBRZoomed = canvas.panelToDataCoords(panelBottomRight);
 		final RealCoords eBRZoomed = panelBottomRightToData(zoom);
 		assertApproximatelyEqual(eBRZoomed, aBRZoomed);
 	}

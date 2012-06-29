@@ -526,9 +526,9 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		final RealRect imageBounds = getDisplay().getPlaneExtents();
 		final ImageCanvas canvas = getDisplay().getCanvas();
 		final IntCoords topLeft =
-			canvas.imageToPanelCoords(new RealCoords(imageBounds.x, imageBounds.y));
+			canvas.dataToPanelCoords(new RealCoords(imageBounds.x, imageBounds.y));
 		final IntCoords bottomRight =
-			canvas.imageToPanelCoords(new RealCoords(imageBounds.x +
+			canvas.dataToPanelCoords(new RealCoords(imageBounds.x +
 				imageBounds.width, imageBounds.y + imageBounds.height));
 		if (bottomRight.x - topLeft.x > bounds.width) return;
 		if (bottomRight.y - topLeft.y > bounds.height) return;

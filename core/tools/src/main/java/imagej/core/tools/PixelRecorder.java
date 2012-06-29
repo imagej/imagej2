@@ -124,7 +124,7 @@ public class PixelRecorder {
 		final int yAxis = dataset.getAxisIndex(Axes.Y);
 		final int chanAxis = dataset.getAxisIndex(Axes.CHANNEL);
 
-		final RealCoords coords = canvas.panelToImageCoords(mousePos);
+		final RealCoords coords = canvas.panelToDataCoords(mousePos);
 		cx = coords.getLongX();
 		cy = coords.getLongY();
 

@@ -44,7 +44,7 @@ import imagej.util.RealCoords;
  * <p>
  * An image canvas supports two different coordinate systems, and provides a
  * mechanism for conversion between them. The first is <em>panel</em>
- * coordinates, which are in pixels onscreen. The second is <em>image</em>
+ * coordinates, which are in pixels onscreen. The second is <em>data</em>
  * coordinates, which match the linked {@link ImageDisplay}'s original
  * coordinate system.
  * </p>
@@ -81,16 +81,16 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	boolean isInImage(IntCoords point);
 
 	/**
-	 * Converts the given <em>panel</em> coordinates into <em>image</em>
+	 * Converts the given <em>panel</em> coordinates into <em>data</em>
 	 * coordinates.
 	 */
-	RealCoords panelToImageCoords(IntCoords panelCoords);
+	RealCoords panelToDataCoords(IntCoords panelCoords);
 
 	/**
-	 * Converts the given <em>image</em> coordinates into <em>panel</em>
+	 * Converts the given <em>data</em> coordinates into <em>panel</em>
 	 * coordinates.
 	 */
-	IntCoords imageToPanelCoords(RealCoords imageCoords);
+	IntCoords dataToPanelCoords(RealCoords dataCoords);
 
 	/** Gets the current mouse cursor. */
 	MouseCursor getCursor();
