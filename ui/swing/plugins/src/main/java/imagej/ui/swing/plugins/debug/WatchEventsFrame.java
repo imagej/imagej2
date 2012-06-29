@@ -42,12 +42,18 @@ import imagej.util.swing.tree.CheckBoxNodeData;
 import imagej.util.swing.tree.CheckBoxNodeEditor;
 import imagej.util.swing.tree.CheckBoxNodeRenderer;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashSet;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
@@ -69,8 +75,8 @@ import javax.swing.tree.TreePath;
  * 
  * @author Curtis Rueden
  */
-public class WatchEventsFrame extends JFrame implements TreeModelListener,
-	TreeSelectionListener
+public class WatchEventsFrame extends JFrame implements ActionListener,
+	TreeModelListener, TreeSelectionListener
 {
 
 	private static final int STARTING_TREE_WIDTH = 450;
@@ -125,9 +131,24 @@ public class WatchEventsFrame extends JFrame implements TreeModelListener,
 		textPane.setPreferredSize(new Dimension(STARTING_TEXT_WIDTH, 0));
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		setContentPane(splitPane);
 		splitPane.add(new JScrollPane(tree));
 		splitPane.add(new JScrollPane(textPane));
+
+		// create clear history button
+		final JButton clearHistory = new JButton("Clear History");
+		clearHistory.setActionCommand("clearHistory");
+		clearHistory.addActionListener(this);
+
+		final JPanel buttonBar = new JPanel();
+		buttonBar.setLayout(new BoxLayout(buttonBar, BoxLayout.X_AXIS));
+		buttonBar.add(Box.createHorizontalGlue());
+		buttonBar.add(clearHistory);
+
+		final JPanel contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout());
+		setContentPane(contentPane);
+		contentPane.add(splitPane, BorderLayout.CENTER);
+		contentPane.add(buttonBar, BorderLayout.SOUTH);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -182,6 +203,17 @@ public class WatchEventsFrame extends JFrame implements TreeModelListener,
 	/** Clears the text pane. */
 	public void clear() {
 		textPane.setText("");
+	}
+
+	// -- ActionListener methods --
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final String cmd = e.getActionCommand();
+		if ("clearHistory".equals(cmd)) {
+			eventHistory.clear();
+			clear();
+		}
 	}
 
 	// -- TreeModelListener methods --
