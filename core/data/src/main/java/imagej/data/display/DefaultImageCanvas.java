@@ -37,7 +37,7 @@ package imagej.data.display;
 
 import imagej.ImageJ;
 import imagej.data.display.event.MouseCursorEvent;
-import imagej.data.display.event.ZoomEvent;
+import imagej.data.display.event.PanZoomEvent;
 import imagej.event.EventService;
 import imagej.ext.MouseCursor;
 import imagej.log.LogService;
@@ -56,8 +56,8 @@ import java.util.List;
  * coordinate that it uses to map viewport pixels to display coordinates. It
  * also maintains an abstract mouse cursor.
  * <p>
- * The canvas sends a zoom event whenever it is panned or zoomed. It sends a
- * mouse event whenever the mouse changes.
+ * The canvas sends a {@link PanZoomEvent} whenever it is panned or zoomed. It
+ * sends a {@link MouseCursorEvent} whenever the mouse cursor changes.
  * </p>
  * 
  * @author Lee Kamentsky
@@ -230,7 +230,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 			panCenter.x = center.x;
 			panCenter.y = center.y;
 		}
-		publishZoomEvent();
+		publishPanZoomEvent();
 	}
 
 	@Override
@@ -394,7 +394,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 	 */
 	private void doSetZoom(final double scaleFactor) {
 		this.scale = scaleFactor;
-		publishZoomEvent();
+		publishPanZoomEvent();
 	}
 
 	/**
@@ -412,14 +412,14 @@ public class DefaultImageCanvas implements ImageCanvas {
 			panCenter.y = y;
 		}
 		this.scale = scaleFactor;
-		publishZoomEvent();
+		publishPanZoomEvent();
 	}
 
-	private void publishZoomEvent() {
+	private void publishPanZoomEvent() {
 		final ImageJ context = getDisplay().getContext();
 		if (context == null) return;
 		final EventService eventService = getEventService();
-		if (eventService != null) eventService.publish(new ZoomEvent(this));
+		if (eventService != null) eventService.publish(new PanZoomEvent(this));
 	}
 
 	// -- Helper methods --

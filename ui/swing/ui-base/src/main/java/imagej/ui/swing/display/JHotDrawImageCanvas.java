@@ -47,7 +47,7 @@ import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.MouseCursorEvent;
-import imagej.data.display.event.ZoomEvent;
+import imagej.data.display.event.PanZoomEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -260,7 +260,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	@EventHandler
-	protected void onEvent(final ZoomEvent event) {
+	protected void onEvent(final PanZoomEvent event) {
 		if (event.getCanvas() != getDisplay().getCanvas()) return;
 		syncPanAndZoom();
 	}
