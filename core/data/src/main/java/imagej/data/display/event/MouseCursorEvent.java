@@ -47,9 +47,10 @@ public class MouseCursorEvent extends CanvasEvent {
 	public MouseCursorEvent(final ImageCanvas canvas) {
 		super(canvas);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Mouse cursor = " + getCanvas().getCursor().toString();
+		return super.toString() + "\n\tcursor = " + getCanvas().getCursor();
 	}
+
 }
