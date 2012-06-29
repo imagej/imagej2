@@ -38,6 +38,7 @@ package imagej.data.display;
 import imagej.ImageJ;
 import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.PanZoomEvent;
+import imagej.data.display.event.ViewportResizeEvent;
 import imagej.event.EventService;
 import imagej.ext.MouseCursor;
 import imagej.log.LogService;
@@ -174,6 +175,10 @@ public class DefaultImageCanvas implements ImageCanvas {
 	public void setViewportSize(final int width, final int height) {
 		viewportSize.x = width;
 		viewportSize.y = height;
+		final EventService eventService = getEventService();
+		if (eventService != null) {
+			eventService.publish(new ViewportResizeEvent(this));
+		}
 	}
 
 	@Override
