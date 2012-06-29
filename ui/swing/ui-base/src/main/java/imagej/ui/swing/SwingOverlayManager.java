@@ -509,21 +509,7 @@ public class SwingOverlayManager
 	}
 	
 	private void and() {
-		ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		ImageDisplay imageDisplay = ids.getActiveImageDisplay();
-		if (imageDisplay == null) return;
-		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
-		if (overlays.size() < 2) {
-			// TODO - IJ1 will use all overlays if none selected. Do we want that too?
-			JOptionPane.showMessageDialog(this,
-				"This command requires 2 or more overlays be selected");
-			return;
-		}
-		CompositeOverlay newOverlay = new CompositeOverlay(context);
-		for (Overlay o : overlays)
-			newOverlay.and(o);
-		imageDisplay.display(newOverlay);
-		imageDisplay.update();
+		makeComposite(CompositeOverlay.Operation.AND);
 	}
 	
 	private void delete() {
@@ -659,21 +645,7 @@ public class SwingOverlayManager
 	}
 	
 	private void or() {
-		ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		ImageDisplay imageDisplay = ids.getActiveImageDisplay();
-		if (imageDisplay == null) return;
-		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
-		if (overlays.size() < 2) {
-			// TODO - IJ1 will use all overlays if none selected. Do we want that too?
-			JOptionPane.showMessageDialog(this,
-				"This command requires 2 or more overlays be selected");
-			return;
-		}
-		CompositeOverlay newOverlay = new CompositeOverlay(context);
-		for (Overlay o : overlays)
-			newOverlay.or(o);
-		imageDisplay.display(newOverlay);
-		imageDisplay.update();
+		makeComposite(CompositeOverlay.Operation.OR);
 	}
 	
 	private void properties() {
@@ -804,21 +776,7 @@ public class SwingOverlayManager
 	 */
 	
 	private void xor() {
-		ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		ImageDisplay imageDisplay = ids.getActiveImageDisplay();
-		if (imageDisplay == null) return;
-		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
-		if (overlays.size() < 2) {
-			// TODO - IJ1 will use all overlays if none selected. Do we want that too?
-			JOptionPane.showMessageDialog(this,
-				"This command requires 2 or more overlays be selected");
-			return;
-		}
-		CompositeOverlay newOverlay = new CompositeOverlay(context);
-		for (Overlay o : overlays)
-			newOverlay.xor(o);
-		imageDisplay.display(newOverlay);
-		imageDisplay.update();
+		makeComposite(CompositeOverlay.Operation.XOR);
 	}
 	
 	// -- private helpers for hotkey handling --
@@ -1207,6 +1165,24 @@ public class SwingOverlayManager
 		OptionsChannels opts = oSrv.getOptions(OptionsChannels.class);
 		if (altDown) return opts.getBgValues();
 		return opts.getFgValues();
+	}
+	
+	private void makeComposite(CompositeOverlay.Operation op) {
+		ImageDisplayService ids = context.getService(ImageDisplayService.class);
+		ImageDisplay imageDisplay = ids.getActiveImageDisplay();
+		if (imageDisplay == null) return;
+		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
+		if (overlays.size() < 2) {
+			// TODO - IJ1 will use all overlays if none selected. Do we want that too?
+			JOptionPane.showMessageDialog(this,
+				"This command requires 2 or more overlays be selected");
+			return;
+		}
+		CompositeOverlay newOverlay = new CompositeOverlay(context);
+		for (Overlay o : overlays)
+			newOverlay.doOperation(op, o);
+		imageDisplay.display(newOverlay);
+		imageDisplay.update();
 	}
 	
 }

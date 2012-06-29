@@ -60,7 +60,7 @@ public class CompositeOverlay extends
 {
 	// -- type declarations --
 	
-	private enum Operation
+	public enum Operation
 	{
 		AND, OR, XOR, NOT
 	}
@@ -185,6 +185,16 @@ public class CompositeOverlay extends
 		recalcRegionOfInterest();
 	}
 
+	public void doOperation(Operation op, Overlay o) {
+		switch (op) {
+			case AND: and(o); break;
+			case OR:  or(o);  break;
+			case XOR: xor(o); break;
+			case NOT: not(o); break;
+			default: throw new IllegalStateException("Unknown operation: "+op);
+		}
+	}
+	
 	// -- private helpers --
 	
 	private void recalcRegionOfInterest() {
