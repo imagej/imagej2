@@ -44,7 +44,7 @@ import imagej.ext.display.event.DisplayEvent;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class CanvasEvent extends DisplayEvent {
+public abstract class CanvasEvent extends DisplayEvent {
 
 	private final ImageCanvas canvas;
 
