@@ -79,9 +79,6 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 	TreeModelListener, TreeSelectionListener
 {
 
-	private static final int STARTING_TREE_WIDTH = 450;
-	private static final int STARTING_TEXT_WIDTH = 500;
-
 	private final EventHistory eventHistory;
 	private final LogService log;
 
@@ -116,7 +113,6 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 		tree.setCellRenderer(new CheckBoxNodeRenderer());
 		tree.setCellEditor(new CheckBoxNodeEditor(tree));
 		tree.setEditable(true);
-		tree.setPreferredSize(new Dimension(STARTING_TREE_WIDTH, 0));
 		tree.setShowsRootHandles(true);
 		tree.addTreeSelectionListener(this);
 		treeModel.addTreeModelListener(this);
@@ -128,9 +124,9 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 		textPane.setEditorKit(kit);
 		textPane.setDocument(doc);
 		textPane.setEditable(false);
-		textPane.setPreferredSize(new Dimension(STARTING_TEXT_WIDTH, 0));
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setResizeWeight(0.35);
 		splitPane.add(new JScrollPane(tree));
 		splitPane.add(new JScrollPane(textPane));
 
@@ -152,7 +148,7 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		pack();
+		setSize(1000, 700);
 	}
 
 	// -- WatchEventsFrame methods --
