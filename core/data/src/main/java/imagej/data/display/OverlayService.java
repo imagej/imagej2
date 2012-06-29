@@ -36,6 +36,7 @@
 package imagej.data.display;
 
 import imagej.data.ChannelCollection;
+import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.object.ObjectService;
@@ -136,4 +137,10 @@ public interface OverlayService extends IService {
 	 * any defined overlay managers.
 	 */
 	OverlayInfoList getOverlayInfo();
+
+	/**
+	 * Divides a CompositeOverlay into its constituent parts and registers each
+	 * part with the appropriate displays. Deletes the CompositeOverlay.
+	 */
+	void divideCompositeOverlay(CompositeOverlay overlay);
 }

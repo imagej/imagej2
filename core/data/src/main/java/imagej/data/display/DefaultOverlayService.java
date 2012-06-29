@@ -43,6 +43,7 @@ import imagej.data.DrawingTool;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.data.options.OptionsOverlay;
+import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.ext.display.Display;
@@ -317,7 +318,30 @@ public final class DefaultOverlayService extends AbstractService implements
 	public OverlayInfoList getOverlayInfo() {
 		return overlayInfo;
 	}
-	
+
+	@Override
+	public void divideCompositeOverlay(CompositeOverlay overlay) {
+		List<Overlay> subcomponents = overlay.getSubcomponents();
+		
+		// to each display that owns the composite
+		//   reference the original overlays (if not already)
+		
+		List<ImageDisplay> owners = getDisplays(overlay);
+		for (ImageDisplay owner : owners) {
+			boolean changes = false;
+			List<Overlay> displayOverlays = getOverlays(owner);
+			for (Overlay subcomponent : subcomponents) {
+				if (!displayOverlays.contains(subcomponent)) {
+					owner.display(subcomponent);
+					changes = true;
+				}
+			}
+			if (changes) owner.update();
+		}
+		
+		// delete the composite overlay
+		removeOverlay(overlay);
+	}
 	// -- helpers --
 
 	private interface Drawer {

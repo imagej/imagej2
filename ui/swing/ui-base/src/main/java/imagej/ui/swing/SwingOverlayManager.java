@@ -565,27 +565,7 @@ public class SwingOverlayManager
 			return;
 		}
 		for (Overlay o : overlays) {
-			CompositeOverlay overlay = (CompositeOverlay) o;
-			List<Overlay> subcomponents = overlay.getSubcomponents();
-			
-			// to each display that owns the composite
-			//   reference the original overlays (if not already)
-			
-			List<ImageDisplay> owners = ovrSrv.getDisplays(overlay);
-			for (ImageDisplay owner : owners) {
-				boolean changes = false;
-				List<Overlay> displayOverlays = ovrSrv.getOverlays(owner);
-				for (Overlay subcomponent : subcomponents) {
-					if (!displayOverlays.contains(subcomponent)) {
-						owner.display(subcomponent);
-						changes = true;
-					}
-				}
-				if (changes) owner.update();
-			}
-			
-			// delete the composite overlay
-			ovrSrv.removeOverlay(overlay);
+			ovrSrv.divideCompositeOverlay((CompositeOverlay) o);
 		}
 	}
 	
