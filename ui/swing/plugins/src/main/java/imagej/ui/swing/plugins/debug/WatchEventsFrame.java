@@ -190,7 +190,7 @@ public class WatchEventsFrame extends JFrame implements TreeModelListener,
 	public void treeNodesChanged(final TreeModelEvent e) {
 		// recursively toggle the subtree to match
 		Object[] children = e.getChildren();
-		if (children == null) children = new Object[] {root};
+		if (children == null) children = new Object[] { root };
 		boolean anyChanged = false;
 		for (final Object child : children) {
 			if (!(child instanceof DefaultMutableTreeNode)) continue;
