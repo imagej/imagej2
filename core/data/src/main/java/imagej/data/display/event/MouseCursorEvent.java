@@ -38,9 +38,8 @@ package imagej.data.display.event;
 import imagej.data.display.ImageCanvas;
 
 /**
- * The MouseCursorEvent notifies subscribers of a change in
- * the mouse cursor.
- *
+ * An event indicating a change in the mouse cursor.
+ * 
  * @author Lee Kamentsky
  */
 public class MouseCursorEvent extends CanvasEvent {
