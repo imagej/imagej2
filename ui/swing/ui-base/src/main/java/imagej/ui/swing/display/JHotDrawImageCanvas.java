@@ -55,6 +55,7 @@ import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;
+import imagej.log.LogService;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
@@ -64,7 +65,6 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
-import imagej.util.Log;
 import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
@@ -115,6 +115,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	private static final long serialVersionUID = 1L;
 
 	private final SwingImageDisplayViewer displayViewer;
+	private final LogService log;
 
 	private final Drawing drawing;
 	private final DefaultDrawingView drawingView;
@@ -131,6 +132,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 	public JHotDrawImageCanvas(final SwingImageDisplayViewer displayViewer) {
 		this.displayViewer = displayViewer;
+		log = displayViewer.getDisplay().getContext().getService(LogService.class);
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
 
@@ -285,7 +287,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 						new OverlayFigureView(this.displayViewer, (OverlayView) dataView);
 				}
 				else {
-					Log.error("Don't know how to make a figure view for " +
+					log.error("Don't know how to make a figure view for " +
 						dataView.getClass().getName());
 					continue;
 				}
