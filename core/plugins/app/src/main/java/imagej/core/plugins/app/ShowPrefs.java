@@ -43,7 +43,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.Prefs;
 
 /**
- * TODO
+ * Displays the ImageJ preferences.
  * 
  * @author Curtis Rueden
  */
