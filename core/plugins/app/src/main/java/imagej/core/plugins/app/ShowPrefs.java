@@ -47,7 +47,7 @@ import imagej.util.Prefs;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(label = "Preferences", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Preferences", weight = 30) },
