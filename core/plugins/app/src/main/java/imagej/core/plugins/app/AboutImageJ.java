@@ -88,9 +88,10 @@ import net.imglib2.meta.AxisType;
  */
 @Plugin(label = "About ImageJ...",
 	iconPath = "/icons/plugins/information.png", menu = {
-	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
-		mnemonic = MenuConstants.HELP_MNEMONIC),
-	@Menu(label = "About ImageJ...", weight = 43) }, headless = true)
+		@Menu(label = MenuConstants.HELP_LABEL,
+			weight = MenuConstants.HELP_WEIGHT,
+			mnemonic = MenuConstants.HELP_MNEMONIC),
+		@Menu(label = "About ImageJ...", weight = 43) }, headless = true)
 public class AboutImageJ implements ImageJPlugin {
 
 	// -- constants --
