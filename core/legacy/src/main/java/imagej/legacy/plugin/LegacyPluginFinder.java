@@ -115,7 +115,8 @@ public class LegacyPluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		final int startSize = plugins.size();
 		for (final Object key : commands.keySet()) {
-			final PluginInfo<ImageJPlugin> pe = createEntry(key, commands, menuTable);
+			final PluginInfo<ImageJPlugin> pe =
+				createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
 		}
 		final int pluginCount = plugins.size() - startSize;
@@ -218,7 +219,8 @@ public class LegacyPluginFinder {
 			final boolean shift = shortcut.usesShiftModifier();
 			final KeyCode keyCode = KeyCode.get(code);
 			final InputModifiers modifiers =
-				new InputModifiers(false, false, ctrl, meta, shift, false, false, false);
+				new InputModifiers(false, false, ctrl, meta, shift, false, false,
+					false);
 			final Accelerator acc = new Accelerator(keyCode, modifiers);
 			entry.setAccelerator(acc);
 		}
