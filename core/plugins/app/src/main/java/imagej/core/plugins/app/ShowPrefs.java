@@ -43,19 +43,18 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.Prefs;
 
 /**
- * TODO
+ * Displays the ImageJ preferences.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(label = "Preferences", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Preferences", weight = 30) },
-	headless = true)
+	@Menu(label = "Preferences", weight = 30) }, headless = true)
 public class ShowPrefs implements ImageJPlugin {
 
 	@Parameter(label = "Clear all preferences")
-	private boolean clearAll = false;
+	private final boolean clearAll = false;
 
 	@Override
 	public void run() {
