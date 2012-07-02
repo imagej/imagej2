@@ -46,7 +46,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
  * An {@link ImageGrabber} creates a merged color {@link Dataset} from a
- * {@link DatasetView}.
+ * {@link DatasetView}. Note that it does not include overlay graphics.
  * 
  * @author Barry DeZonia
  *

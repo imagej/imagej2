@@ -48,7 +48,8 @@ import imagej.ui.UIService;
 
 
 /**
- * Captures the current view of an ImageDisplay to a color merged Dataset.
+ * Captures the current view of an {@link ImageDisplay} to a color merged
+ * {@link Dataset}. Includes overlay graphics.
  * 
  * @author Barry DeZonia
  *
