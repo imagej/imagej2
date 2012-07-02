@@ -54,7 +54,7 @@ import imagej.util.Prefs;
 public class ShowPrefs implements ImageJPlugin {
 
 	@Parameter(label = "Clear all preferences")
-	private final boolean clearAll = false;
+	private boolean clearAll = false;
 
 	@Override
 	public void run() {
