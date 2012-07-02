@@ -260,8 +260,8 @@ public class DefaultImageCanvas implements ImageCanvas {
 	@Override
 	public void panReset() {
 		final RealRect extents = getDisplay().getPlaneExtents();
-		final double centerX = extents.x + extents.width / 2;
-		final double centerY = extents.y + extents.height / 2;
+		final double centerX = extents.x + extents.width / 2d;
+		final double centerY = extents.y + extents.height / 2d;
 		setPanCenter(new RealCoords(centerX, centerY));
 	}
 
@@ -299,8 +299,8 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public void setZoomAndCenter(final double factor) {
-		final double x = getViewportWidth() / getZoomFactor() / 2;
-		final double y = getViewportHeight() / getZoomFactor() / 2;
+		final double x = getViewportWidth() / getZoomFactor() / 2d;
+		final double y = getViewportHeight() / getZoomFactor() / 2d;
 		setZoom(factor, new RealCoords(x, y));
 	}
 
@@ -346,8 +346,8 @@ public class DefaultImageCanvas implements ImageCanvas {
 		final IntCoords bottomRight = viewportBox.getBottomRight();
 		final RealCoords dataTopLeft = panelToDataCoords(topLeft);
 		final RealCoords dataBottomRight = panelToDataCoords(bottomRight);
-		final double newCenterX = Math.abs(dataBottomRight.x + dataTopLeft.x) / 2;
-		final double newCenterY = Math.abs(dataBottomRight.y + dataTopLeft.y) / 2;
+		final double newCenterX = Math.abs(dataBottomRight.x + dataTopLeft.x) / 2d;
+		final double newCenterY = Math.abs(dataBottomRight.y + dataTopLeft.y) / 2d;
 		final double dataSizeX = Math.abs(dataBottomRight.x - dataTopLeft.x);
 		final double dataSizeY = Math.abs(dataBottomRight.y - dataTopLeft.y);
 		final double xZoom = getViewportWidth() / dataSizeX;
@@ -358,8 +358,8 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public void zoomToFit(final RealRect viewportBox) {
-		final double newCenterX = (viewportBox.x + viewportBox.width / 2);
-		final double newCenterY = (viewportBox.y + viewportBox.height / 2);
+		final double newCenterX = (viewportBox.x + viewportBox.width / 2d);
+		final double newCenterY = (viewportBox.y + viewportBox.height / 2d);
 		final double minScale =
 			Math.min(getViewportWidth() / viewportBox.width, getViewportHeight() /
 				viewportBox.height);
@@ -426,7 +426,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 	 */
 	private double getLeftImageX() {
 		final double viewportImageWidth = getViewportWidth() / getZoomFactor();
-		return getPanCenter().x - viewportImageWidth / 2;
+		return getPanCenter().x - viewportImageWidth / 2d;
 	}
 
 	/**
@@ -434,7 +434,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 	 */
 	private double getTopImageY() {
 		final double viewportImageHeight = getViewportHeight() / getZoomFactor();
-		return getPanCenter().y - viewportImageHeight / 2;
+		return getPanCenter().y - viewportImageHeight / 2d;
 	}
 
 	/** Checks whether the given scale is out of bounds. */
