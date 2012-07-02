@@ -1191,12 +1191,13 @@ public class SwingOverlayManager
 		ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
 		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
-		// TODO - IJ1 will use all overlays if none selected. Do we want that too?
+		if (overlays.size() == 0) overlays = ovrSrv.getOverlays(imageDisplay);
 		if (overlays.size() < 2) {
 			JOptionPane.showMessageDialog(this,
-				"This command requires 2 or more overlays be selected");
-			return;
+					"This command only works with 2 or more overlays");
+				return;
 		}
+		// else overlays.size() >= 2
 		CompositeOverlay newOverlay = new CompositeOverlay(context);
 		for (Overlay o : overlays)
 			newOverlay.doOperation(op, o);
