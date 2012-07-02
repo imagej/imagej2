@@ -35,6 +35,8 @@
 
 package imagej.ui;
 
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
@@ -93,6 +95,9 @@ public interface UIService extends IService {
 
 	/** Gets the UI widget being used to visualize the given {@link Display}. */
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
+
+	/** Gets the UI widget being used to visualize the given {@link ImageDisplay}. */
+	ImageDisplayViewer getImageDisplayViewer(ImageDisplay display);
 
 	/** Creates a new output window. */
 	OutputWindow createOutputWindow(String title);

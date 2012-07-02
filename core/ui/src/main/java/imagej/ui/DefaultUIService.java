@@ -36,6 +36,8 @@
 package imagej.ui;
 
 import imagej.ImageJ;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
@@ -217,6 +219,17 @@ public final class DefaultUIService extends AbstractService implements
 			if (displayViewer.getDisplay() == display) return displayViewer;
 		}
 		log.warn("No viewer found for display: '" + display.getName() + "'");
+		return null;
+	}
+
+	@Override
+	public ImageDisplayViewer getImageDisplayViewer(final ImageDisplay display) {
+		for (final DisplayViewer<?> displayViewer : displayViewers) {
+			if (displayViewer.getDisplay() == display)
+				if (displayViewer instanceof ImageDisplayViewer)
+					return (ImageDisplayViewer) displayViewer;
+		}
+		log.warn("No image viewer found for display: '" + display.getName() + "'");
 		return null;
 	}
 

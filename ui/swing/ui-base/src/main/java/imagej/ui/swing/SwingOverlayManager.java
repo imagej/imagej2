@@ -36,10 +36,9 @@
 package imagej.ui.swing;
 
 import imagej.ImageJ;
-import imagej.core.plugins.dataset.LoadDataset;
+import imagej.core.plugins.display.ImageCapture;
 import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -58,13 +57,11 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
 import imagej.ui.UIService;
-import imagej.ui.swing.display.SwingImageDisplayViewer;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -590,51 +587,13 @@ public class SwingOverlayManager
 		}
 	}
 	
-	/* FIXME TODO notes
-	 * I'm pretty sure this just snapshots the current view and returns a new
-	 * Dataset/Img that is one dimensional, usually rgb, and shows drawn rois.
-	 * If show all is true it draws all rois, else it draws curr roi. Note that
-	 * we can get rid of show all I think because we always show all. Is that a
-	 * problem? Edit mode renders differently. This might affect OverlayService
-	 * for drawOverlay() and fillOverlay(). Do we need a way to show single
-	 * overlays now? Probably. More hints for OverlayService I suppose. Anyhow
-	 * we grab the current view as a merged color dataset using an ImageGrabber.
-	 * Right now this implementation does not show the ROI outline. Thats all the
-	 * special case code the ROI Mgr flatten does compared to the menu command
-	 * flatten. We need a way to tell the OverlayService to draw an Overlay in a
-	 * given Dataset. But we want to draw using fg/bg sometimes and using default
-	 * drawing capabilities sometimes (like JHotDraw's rendering).
-	 */
 	private void flatten() {
-		// TODO - this code should go to a flatten plugin. Some possible issues:
-		// - some dependencies may be needed to be added to various POMs
-		// - currently we can cast to SwingDisplayViewer below because we are in
-		//   a Swing class here. If we relocate to a plugin we'll need to change the
-		//   agnostic classes to facilitate the capture() call no matter what kind
-		//   of DisplayViewer we have. Currently the display viewer class knows
-		//   nothing about Datasets. We could also have capture() return something
-		//   else and the plugin can translate it to a Dataset.
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
 		UIService uiService = context.getService(UIService.class);
-		DisplayViewer<?> viewer = uiService.getDisplayViewer(imageDisplay);
-		if (viewer == null) return;
-		SwingImageDisplayViewer sviewer = (SwingImageDisplayViewer) viewer;
-		Dataset dataset = sviewer.capture();
-		
-		// NOTE that if this code was contained in a plugin the Dataset could be an
-		// @Parameter and we'd be done. But since inside OverlayManager we need to
-		// make sure the display is created correctly.
-		
-		// OLD way before PluginService way. Display would not initialize correctly.
-		// See bug #1215 for more info.
-		//DisplayService ds = context.getService(DisplayService.class);
-		//ds.createDisplay(dataset.getName(), dataset);
-		
-		// NEW way that fixes #1215 (by making display postprocessors run)
 		PluginService ps = context.getService(PluginService.class);
-		ps.run(LoadDataset.class, dataset);
+		ps.run(ImageCapture.class, uiService, imageDisplay);
 	}
 	
 	private void help() {
