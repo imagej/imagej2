@@ -49,11 +49,11 @@ import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
-import imagej.util.ColorRGB;
-import imagej.util.awt.AWTColors;
+import imagej.ui.swing.SwingColorBar;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -69,7 +69,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -96,6 +95,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	private final ImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel imagePane;
+	private final SwingColorBar colorBar;
 	private final JPanel sliderPanel;
 	private final DisplayWindow window;
 	private boolean initialScaleCalculated = false;
@@ -123,15 +123,21 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		imageLabel.setPreferredSize(new Dimension(0, prefHeight));
 
 		imagePane = new JPanel();
-		imagePane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
+		imagePane.setLayout(new MigLayout("ins 0,wrap 1", "fill,grow",
+			"[fill,grow|]"));
 		imagePane.add(displayViewer.getCanvas());
+
+		final int colorBarHeight = 8;
+		colorBar = new SwingColorBar(colorBarHeight);
+		colorBar.setPreferredSize(new Dimension(0, colorBarHeight));
+		colorBar.setBorder(new LineBorder(Color.black));
+		imagePane.add(colorBar);
 
 		sliderPanel = new JPanel();
 		sliderPanel.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
 
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(3, 3, 3, 3));
-		setBorderColor(null);
 
 		add(imageLabel, BorderLayout.NORTH);
 		add(imagePane, BorderLayout.CENTER);
@@ -168,7 +174,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 		// rebuild display panel UI
 		createSliders();
-		updateBorder(0);
+		updateColorBar(0);
 		sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
 		doInitialSizing();
 		displayViewer.getCanvas().rebuild();
@@ -191,19 +197,6 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	@Override
 	public void setLabel(final String s) {
 		imageLabel.setText(s);
-	}
-
-	@Override
-	public void setBorderColor(final ColorRGB color) {
-		final int width = 1;
-		final Border border;
-		if (color == null) {
-			border = new EmptyBorder(width, width, width, width);
-		}
-		else {
-			border = new LineBorder(AWTColors.getColor(color), width);
-		}
-		imagePane.setBorder(border);
 	}
 
 	@Override
@@ -288,7 +281,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		}
 	}
 
-	private void updateBorder(final int c) {
+	private void updateColorBar(final int c) {
 		final ImageDisplayService imageDisplayService =
 			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
@@ -298,12 +291,8 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		if (c >= converters.size()) return;
 		final RealLUTConverter<? extends RealType<?>> converter = converters.get(c);
 		final ColorTable8 lut = converter.getLUT();
-		final int last = lut.getLength() - 1;
-		final int r = lut.get(0, last);
-		final int g = lut.get(1, last);
-		final int b = lut.get(2, last);
-		final ColorRGB color = new ColorRGB(r, g, b);
-		setBorderColor(color);
+		colorBar.setColorTable(lut);
+		colorBar.repaint();
 	}
 
 	private void doInitialSizing() {
@@ -326,7 +315,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	
 	private void updateAxis(final AxisType axis) {
 		final int value = (int) display.getLongPosition(axis);
-		if (axis == Axes.CHANNEL) updateBorder(value);
+		if (axis == Axes.CHANNEL) updateColorBar(value);
 		final JScrollBar scrollBar = axisSliders.get(axis);
 		if (scrollBar != null) scrollBar.setValue(value);
 		getDisplay().update();

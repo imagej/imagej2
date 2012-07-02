@@ -38,7 +38,6 @@ package imagej.ui.swing;
 import imagej.ext.display.Display;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.display.ui.TextDisplayPanel;
-import imagej.util.ColorRGB;
 
 import java.awt.Font;
 
@@ -105,11 +104,6 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 	@Override
 	public void setLabel(final String s) {
 		// The label is not shown.
-	}
-
-	@Override
-	public void setBorderColor(final ColorRGB color) {
-		// The border color is not shown.
 	}
 
 	@Override

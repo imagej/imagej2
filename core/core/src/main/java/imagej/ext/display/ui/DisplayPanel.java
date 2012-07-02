@@ -36,7 +36,6 @@
 package imagej.ext.display.ui;
 
 import imagej.ext.display.Display;
-import imagej.util.ColorRGB;
 
 /**
  * The panel housing a particular {@link Display}.
@@ -61,9 +60,6 @@ public interface DisplayPanel {
 
 	/** Sets the label at the top of the display panel. */
 	void setLabel(String s);
-
-	/** Sets the color of the display panel's border. */
-	void setBorderColor(ColorRGB color);
 
 	/** Redraws the contents of the panel. */
 	void redraw();
