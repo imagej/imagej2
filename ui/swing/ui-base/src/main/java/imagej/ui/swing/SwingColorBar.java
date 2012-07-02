@@ -44,51 +44,91 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
 /**
- * A widget for displaying a {@link ColorTable8} bar.
+ * A widget for displaying a {@link ColorTable} as a bar.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public final class SwingColorBar extends JPanel {
+public final class SwingColorBar extends JComponent {
 
-	private final int length;
-	private final int height = 24;
+	private static final int DEFAULT_HEIGHT = 24;
 
-	public SwingColorBar(final ColorTable8 lut) {
-		length = lut.getLength();
+	private final int height;
 
-		// create compatible image
-		final BufferedImage bi = AWTImageTools.createImage(length + 2, height);
+	private BufferedImage bar;
+
+	private Dimension preferredSize;
+
+	public SwingColorBar() {
+		this(DEFAULT_HEIGHT);
+	}
+
+	public SwingColorBar(final int height) {
+		this(null, height);
+	}
+
+	public SwingColorBar(final ColorTable<?> lut) {
+		this(lut, DEFAULT_HEIGHT);
+	}
+
+	public SwingColorBar(final ColorTable<?> lut, final int height) {
+		this.height = height;
+		if (lut != null) setColorTable(lut);
+	}
+
+	// -- SwingColorBar methods --
+
+	/** Sets the {@link ColorTable} displayed by this color bar. */
+	public void setColorTable(final ColorTable<?> lut) {
+		if (bar == null || bar.getWidth() != lut.getLength()) {
+			// create compatible image
+			bar = AWTImageTools.createImage(lut.getLength(), 1);
+		}
 
 		// paint color table onto image
-		final Graphics gfx = bi.getGraphics();
-		gfx.setColor(Color.black);
-		gfx.drawRect(0, 0, length + 1, height - 1);
-		for (int i = 0; i < length; i++) {
-			final int r = lut.get(0, i);
-			final int g = lut.get(1, i);
-			final int b = lut.get(2, i);
-			gfx.setColor(new Color(r, g, b));
-			gfx.drawLine(i + 1, 1, i + 1, height - 2);
+		final Graphics gfx = bar.getGraphics();
+		for (int i = 0; i < lut.getLength(); i++) {
+			final int argb = lut.argb(i);
+			gfx.setColor(new Color(argb, false));
+			gfx.drawLine(i, 0, i, 1);
 		}
 		gfx.dispose();
+	}
 
-		// add image to component
-		add(new JLabel(new ImageIcon(bi)));
+	// -- JComponent methods --
+
+	@Override
+	public Dimension getMinimumSize() {
+		return new Dimension(0, height);
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(length + 2, height);
+		if (preferredSize != null) return preferredSize;
+		return new Dimension(bar == null ? 0 : bar.getWidth(), height);
 	}
+
+	@Override
+	public void setPreferredSize(final Dimension preferredSize) {
+		this.preferredSize = preferredSize;
+	}
+
+	@Override
+	public void paintComponent(final Graphics g) {
+		if (bar == null) return;
+		g.drawImage(bar, 0, 0, getWidth(), getHeight(), this);
+	}
+
+	// -- Main method --
 
 	public static void main(final String[] args) {
 		final ColorTable8[] luts =
@@ -104,7 +144,9 @@ public final class SwingColorBar extends JPanel {
 		pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		for (final ColorTable8 lut : luts) {
-			pane.add(new SwingColorBar(lut));
+			final SwingColorBar colorBar = new SwingColorBar(lut);
+			colorBar.setBorder(new LineBorder(Color.black));
+			pane.add(colorBar);
 		}
 		frame.pack();
 		frame.setVisible(true);
