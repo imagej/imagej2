@@ -140,6 +140,7 @@ public class SwingOverlayManager
 	private static final String ACTION_FILL = "fill";
 	private static final String ACTION_FLATTEN = "flatten";
 	private static final String ACTION_HELP = "help";
+	private static final String ACTION_LIST = "list";
 	private static final String ACTION_MEASURE = "measure";
 	private static final String ACTION_MULTI_MEASURE = "multi measure";
 	private static final String ACTION_MULTI_PLOT = "multi plot";
@@ -281,6 +282,8 @@ public class SwingOverlayManager
 			flatten();
 		else if (command.equals(ACTION_HELP))
 			help();
+		else if (command.equals(ACTION_LIST))
+			getList();
 		else if (command.equals(ACTION_MEASURE))
 			measure();
 		else if (command.equals(ACTION_MULTI_MEASURE))
@@ -647,6 +650,10 @@ public class SwingOverlayManager
 		}
 	}
 	
+	private void getList() {
+		JOptionPane.showMessageDialog(this, "unimplemented");
+	}
+	
 	private void measure() {
 		JOptionPane.showMessageDialog(this, "unimplemented");
 	}
@@ -924,6 +931,7 @@ public class SwingOverlayManager
 		menu.add(getSortMenuItem());
 		menu.add(getSpecifyMenuItem());
 		menu.add(getRemoveSliceInfoMenuItem());
+		menu.add(getListMenuItem());
 		menu.add(getHelpMenuItem());
 		menu.add(getOptionsMenuItem());
 		return menu;
@@ -949,6 +957,14 @@ public class SwingOverlayManager
 		final JMenuItem item;
 		item = new JMenuItem("Help");
 		item.setActionCommand(ACTION_HELP);
+		item.addActionListener(this);
+		return item;
+	}
+	
+	private JMenuItem getListMenuItem() {
+		final JMenuItem item;
+		item = new JMenuItem("List");
+		item.setActionCommand(ACTION_LIST);
 		item.addActionListener(this);
 		return item;
 	}
