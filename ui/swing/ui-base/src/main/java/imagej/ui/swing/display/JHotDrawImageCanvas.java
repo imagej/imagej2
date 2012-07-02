@@ -183,10 +183,10 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	/**
-	 * Respond to the JHotDraw figure selection event by selecting and deselecting
-	 * views whose state has changed
+	 * Responds to the JHotDraw figure selection event by selecting and
+	 * deselecting views whose state has changed.
 	 * 
-	 * @param event - event indicating that the figure selections have changed
+	 * @param event Event indicating that the figure selections have changed.
 	 */
 	protected void onFigureSelectionChanged(final FigureSelectionEvent event) {
 		final Set<Figure> newSelection = event.getNewSelection();
