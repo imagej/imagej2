@@ -372,6 +372,63 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		dispatcher.register(drawingView);
 	}
 
+	/**
+	 * Captures the current view of data displayed in the canvas, including
+	 * all JHotDraw embellishments.
+	 */
+	public Dataset capture() {
+		final ImageDisplay display = getDisplay();
+		if (display == null) return null;
+		final ImageDisplayService dispSrv =
+			display.getContext().getService(ImageDisplayService.class);
+		final DatasetView dsView = dispSrv.getActiveDatasetView(display);
+		if (dsView == null) return null;
+
+		final ARGBScreenImage screenImage = dsView.getScreenImage();
+		final Image pixels = screenImage.image();
+
+		final int w = pixels.getWidth(null);
+		final int h = pixels.getHeight(null);
+
+		// draw the backdrop image info
+		final BufferedImage outputImage =
+			new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D outputGraphics = outputImage.createGraphics();
+		outputGraphics.drawImage(pixels, 0, 0, null);
+
+		// draw the overlay info
+		for (final FigureView view : figureViews) {
+			view.getFigure().draw(outputGraphics);
+		}
+
+		// create a dataset that has view data with overlay info on top
+		final DatasetService dss =
+			display.getContext().getService(DatasetService.class);
+		final Dataset dataset =
+			dss.create(new long[] { w, h, 3 }, "Captured view", new AxisType[] {
+				Axes.X, Axes.Y, Axes.CHANNEL }, 8, false, false);
+		dataset.setRGBMerged(true);
+		final RandomAccess<? extends RealType<?>> accessor =
+			dataset.getImgPlus().randomAccess();
+		for (int x = 0; x < w; x++) {
+			accessor.setPosition(x, 0);
+			for (int y = 0; y < h; y++) {
+				accessor.setPosition(y, 1);
+				final int rgb = outputImage.getRGB(x, y);
+				final int r = (rgb >> 16) & 0xff;
+				final int g = (rgb >> 8) & 0xff;
+				final int b = (rgb >> 0) & 0xff;
+				accessor.setPosition(0, 2);
+				accessor.get().setReal(r);
+				accessor.setPosition(1, 2);
+				accessor.get().setReal(g);
+				accessor.setPosition(2, 2);
+				accessor.get().setReal(b);
+			}
+		}
+		return dataset;
+	}
+
 	// -- JComponent methods --
 	@Override
 	public Dimension getPreferredSize() {
@@ -539,58 +596,4 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		displayViewer.getWindow().pack();
 	}
 
-
-	// captures the current view of data displayed in the window. includes
-	// all JHotDraw embellishments
-	public Dataset capture() {
-		ImageDisplay display = displayViewer.getDisplay();
-		if (display == null) return null;
-		ImageDisplayService dispSrv = display.getContext().getService(ImageDisplayService.class);
-		DatasetView dsView = dispSrv.getActiveDatasetView(display);
-		if (dsView == null) return null;
-
-		ARGBScreenImage screenImage = dsView.getScreenImage();
-		Image pixels = screenImage.image();
-
-		int w = pixels.getWidth(null);
-		int h = pixels.getHeight(null);
-		
-		// draw the backdrop image info
-		BufferedImage outputImage =
-				new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D outputGraphics = outputImage.createGraphics();
-		outputGraphics.drawImage(pixels, 0, 0, null);
-
-		// draw the overlay info
-		for (FigureView view : figureViews) {
-			view.getFigure().draw(outputGraphics);
-		}
-		
-		// create a dataset that has view data with overlay info on top
-		DatasetService dss = display.getContext().getService(DatasetService.class);
-		Dataset dataset =
-				dss.create(
-					new long[]{w,h,3}, "Captured view",
-					new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL}, 8, false, false);
-		dataset.setRGBMerged(true);
-		RandomAccess<? extends RealType<?>> accessor = dataset.getImgPlus().randomAccess();
-		for (int x = 0; x < w; x++) {
-			accessor.setPosition(x, 0);
-			for (int y = 0; y < h; y++) {
-				accessor.setPosition(y, 1);
-				int rgb = outputImage.getRGB(x, y);
-				int r = (rgb >> 16) & 0xff;
-				int g = (rgb >>  8) & 0xff;
-				int b = (rgb >>  0) & 0xff;
-				accessor.setPosition(0, 2);
-				accessor.get().setReal(r);
-				accessor.setPosition(1, 2);
-				accessor.get().setReal(g);
-				accessor.setPosition(2, 2);
-				accessor.get().setReal(b);
-			}
-		}
-		return dataset;
-	}
-	
 }
