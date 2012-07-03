@@ -131,7 +131,6 @@ public class ZoomTool extends AbstractTool {
 	public void onMouseMove(final MsMovedEvent evt) {
 		mousePos.x = evt.getX();
 		mousePos.y = evt.getY();
-		evt.consume();
 	}
 
 	@Override
