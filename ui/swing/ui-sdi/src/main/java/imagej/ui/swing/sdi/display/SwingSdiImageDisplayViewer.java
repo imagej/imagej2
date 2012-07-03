@@ -62,7 +62,7 @@ public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
 		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) w;
-		sdiWindow.addEventDispatcher(dispatcher);
+		dispatcher.register(sdiWindow);
 	}
 
 }
