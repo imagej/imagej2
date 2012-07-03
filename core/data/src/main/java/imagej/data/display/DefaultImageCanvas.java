@@ -232,6 +232,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 			panCenter = new RealCoords(center.x, center.y);
 		}
 		else {
+			// NB: Reuse existing object to avoid allocating a new one.
 			panCenter.x = center.x;
 			panCenter.y = center.y;
 		}
@@ -281,15 +282,8 @@ public class DefaultImageCanvas implements ImageCanvas {
 	public void setZoom(final double factor, final RealCoords center) {
 		final double desiredScale = factor == 0 ? initialScale : factor;
 		if (scaleOutOfBounds(desiredScale)) return;
-		if (panCenter == null) {
-			panCenter = new RealCoords(center.x, center.y);
-		}
-		else {
-			panCenter.x = center.x;
-			panCenter.y = center.y;
-		}
 		scale = desiredScale;
-		publishPanZoomEvent();
+		setPanCenter(center);
 	}
 
 	@Override
