@@ -39,8 +39,7 @@ import imagej.event.EventService;
 import imagej.service.IService;
 
 /**
- * Interface for service that allows plugins to get the current keyboard
- * modifier statuses.
+ * Interface for service that tracks the current keyboard status.
  * 
  * @author Barry DeZonia
  */
