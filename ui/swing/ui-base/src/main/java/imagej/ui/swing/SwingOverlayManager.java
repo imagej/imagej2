@@ -509,7 +509,7 @@ public class SwingOverlayManager
 	}
 	
 	private void and() {
-		makeComposite(CompositeOverlay.Operation.AND);
+		makeCompositeOverlay(CompositeOverlay.Operation.AND);
 	}
 	
 	private void delete() {
@@ -634,7 +634,7 @@ public class SwingOverlayManager
 	}
 	
 	private void or() {
-		makeComposite(CompositeOverlay.Operation.OR);
+		makeCompositeOverlay(CompositeOverlay.Operation.OR);
 	}
 	
 	private void properties() {
@@ -761,7 +761,7 @@ public class SwingOverlayManager
 	 */
 	
 	private void xor() {
-		makeComposite(CompositeOverlay.Operation.XOR);
+		makeCompositeOverlay(CompositeOverlay.Operation.XOR);
 	}
 	
 	// -- private helpers for hotkey handling --
@@ -1161,7 +1161,7 @@ public class SwingOverlayManager
 		return opts.getFgValues();
 	}
 	
-	private void makeComposite(CompositeOverlay.Operation op) {
+	private void makeCompositeOverlay(CompositeOverlay.Operation op) {
 		ImageDisplayService ids = context.getService(ImageDisplayService.class);
 		ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
