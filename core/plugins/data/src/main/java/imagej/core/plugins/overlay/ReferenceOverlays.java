@@ -63,11 +63,15 @@ import imagej.ext.plugin.Plugin;
 	headless = true)
 public class ReferenceOverlays implements ImageJPlugin {
 
+	// -- Parameters --
+	
 	@Parameter(required = true)
 	private ImageDisplay display;
 	
 	@Parameter
 	private OverlayService ovrSrv;
+	
+	// -- ImageJPlugin methods --
 	
 	@Override
 	public void run() {
@@ -81,6 +85,24 @@ public class ReferenceOverlays implements ImageJPlugin {
 			display.display(overlay);
 		}
 		if (changes) display.update();
+	}
+	
+	// -- accessors --
+	
+	public OverlayService getOverlayService() {
+		return ovrSrv;
+	}
+	
+	public void setOverlayService(OverlayService os) {
+		ovrSrv = os;
+	}
+	
+	public ImageDisplay getImageDisplay() {
+		return display;
+	}
+	
+	public void setImageDisplay(ImageDisplay disp) {
+		display = disp;
 	}
 
 }
