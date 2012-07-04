@@ -132,7 +132,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 	public JHotDrawImageCanvas(final SwingImageDisplayViewer displayViewer) {
 		this.displayViewer = displayViewer;
-		log = displayViewer.getDisplay().getContext().getService(LogService.class);
+		log = getDisplay().getContext().getService(LogService.class);
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
 
@@ -151,7 +151,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-		final ImageJ context = displayViewer.getDisplay().getContext();
+		final ImageJ context = getDisplay().getContext();
 		final ToolService toolService = context.getService(ToolService.class);
 		final Tool activeTool = toolService.getActiveTool();
 		activateTool(activeTool);
@@ -191,7 +191,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	protected void onFigureSelectionChanged(final FigureSelectionEvent event) {
 		final Set<Figure> newSelection = event.getNewSelection();
 		final Set<Figure> oldSelection = event.getOldSelection();
-		for (final DataView view : displayViewer.getDisplay()) {
+		for (final DataView view : getDisplay()) {
 			final FigureView figureView = getFigureView(view);
 			if (figureView != null) {
 				final Figure figure = figureView.getFigure();
@@ -319,7 +319,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				@Override
 				public void overlayCreated(final FigureCreatedEvent e) {
 					final OverlayView overlay = e.getOverlay();
-					final ImageDisplay display = displayViewer.getDisplay();
+					final ImageDisplay display = getDisplay();
 					for (int i = 0; i < display.numDimensions(); i++) {
 						final AxisType axis = display.axis(i);
 						if (Axes.isXY(axis)) continue;
