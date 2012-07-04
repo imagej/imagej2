@@ -355,8 +355,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	/**
-	 * Captures the current view of data displayed in the canvas, including
-	 * all JHotDraw embellishments.
+	 * Captures the current view of data displayed in the canvas, including all
+	 * JHotDraw embellishments.
 	 */
 	public Dataset capture() {
 		final ImageDisplay display = getDisplay();
@@ -415,17 +415,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 	@Override
 	public Dimension getPreferredSize() {
-		// NB BDZ - Avoid space left around for nonexistent scroll bars
-		// This code works (except rare cases). Not sure why 4 is key. 3 and lower
-		// and sizing failures happen. We used to have a fudge factor of 5 in place
-		// elsewhere. Can no longer find it. But it is apparent from debugging
-		// statements that there is an off by 5(?). Notice we test versus 4 but add
-		// 5. If both 4 then initial zoom has scrollbars when not needed. If both 5
-		// then some zoom ins can leave empty scroll bar space. (I may have these
-		// conditions reversed). Anyhow printing in here can show getPreferredSize()
-		// starts out at w,h and before/during 1st redraw goes to w+1,h+1. Its this
-		// off by one that makes initial view have scroll bars unnecessarily. Look
-		// into this further.
+		// CTR FIXME: Rework this method.
+
 		final Dimension drawViewSize = drawingView.getPreferredSize();
 
 		final Border border = scrollPane.getBorder();
@@ -446,9 +437,9 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 			final RealRect imageBounds = getDisplay().getPlaneExtents();
 			final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
 			return new Dimension(Math.min((int) (imageBounds.width * zoomFactor) +
-				slop.width + 1, bounds.width), Math
-				.min((int) (imageBounds.height * zoomFactor) + slop.width + 1,
-					bounds.height));
+				slop.width + 1, bounds.width), Math.min(
+				(int) (imageBounds.height * zoomFactor) + slop.width + 1,
+				bounds.height));
 		}
 		if (bigDrawViewSize.width <= scrollPane.getPreferredSize().width &&
 			bigDrawViewSize.height <= scrollPane.getPreferredSize().height)
@@ -456,7 +447,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 			return bigDrawViewSize;
 		}
 
-		// NB Johannes
 		// HACK: Size the canvas one pixel larger. This is a workaround to an
 		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
 		// large X until it is finished being rendered. Unfortunately, the X is
