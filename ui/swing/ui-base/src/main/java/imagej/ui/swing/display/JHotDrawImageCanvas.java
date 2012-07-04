@@ -56,6 +56,7 @@ import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.log.LogService;
+import imagej.thread.ThreadService;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
@@ -483,6 +484,14 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	private void sync(final boolean updateCanvas) {
 		final ImageCanvas canvas = getDisplay().getCanvas();
 
+		// threading sanity check
+		final ThreadService threadService =
+			getDisplay().getContext().getService(ThreadService.class);
+		if (!threadService.isDispatchThread()) {
+			throw new IllegalStateException("Cannot sync viewport from thread: " +
+				Thread.currentThread().getName());
+		}
+
 		// get UI settings
 		final Dimension uiSize = scrollPane.getViewport().getExtentSize();
 		final double uiZoom = drawingView.getScaleFactor();
@@ -550,7 +559,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		if (bottomRight.x - topLeft.x > bounds.width) return;
 		if (bottomRight.y - topLeft.y > bounds.height) return;
 
-		// TODO: Be smarter about the thread we use for packing.
 		displayViewer.getWindow().pack();
 	}
 
