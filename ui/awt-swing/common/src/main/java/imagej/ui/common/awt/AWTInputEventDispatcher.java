@@ -35,6 +35,8 @@
 
 package imagej.ui.common.awt;
 
+import imagej.data.display.ImageCanvas;
+import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
@@ -53,6 +55,8 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 
 import java.awt.Component;
 import java.awt.event.InputEvent;
@@ -80,6 +84,9 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	/** Display associated with the dispatched events. */
 	private final Display<?> display;
 
+	/** The canvas associated with the dispatched events, if any. */
+	private final ImageCanvas imageCanvas;
+
 	/** Event service to use when dispatching events. */
 	private final EventService eventService;
 
@@ -95,6 +102,11 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	{
 		this.display = display;
 		this.eventService = eventService;
+		if (display instanceof ImageDisplay) {
+			final ImageDisplay imageDisplay = (ImageDisplay) display;
+			imageCanvas = imageDisplay.getCanvas();
+		}
+		else imageCanvas = null;
 	}
 
 	// -- AWTInputEventDispatcher methods --
@@ -283,8 +295,18 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 
 	/** Updates last known mouse coordinates. */
 	private void updateMouseCoords(final MouseEvent e) {
-		x = e.getX();
-		y = e.getY();
+		final int xOffset, yOffset;
+		if (imageCanvas == null) {
+			xOffset = yOffset = 0;
+		}
+		else {
+			final IntCoords canvasOffset =
+				imageCanvas.dataToPanelCoords(new RealCoords(0, 0));
+			xOffset = -canvasOffset.x;
+			yOffset = -canvasOffset.y;
+		}
+		x = e.getX() - xOffset;
+		y = e.getY() - yOffset;
 	}
 
 	/** Invalidates last known mouse coordinates. */
