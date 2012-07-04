@@ -64,6 +64,15 @@ public interface Pannable {
 	RealCoords getPanCenter();
 
 	/**
+	 * Gets the absolute offset of the viewport in pixels from the top left.
+	 * 
+	 * @return Pan offset in pixels; note that this value is not in <em>panel</em>
+	 *         coordinate space, since the pan offset in <em>panel</em> coordinate
+	 *         space is always (0, 0).
+	 */
+	IntCoords getPanOffset();
+
+	/**
 	 * Pans to the given absolute (X, Y) position in <em>data</em> coordinate
 	 * space.
 	 * 

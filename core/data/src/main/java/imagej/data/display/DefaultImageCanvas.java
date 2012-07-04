@@ -67,6 +67,8 @@ import java.util.List;
  */
 public class DefaultImageCanvas implements ImageCanvas {
 
+	private static final RealCoords DATA_ZERO = new RealCoords(0, 0);
+
 	private static final int MIN_ALLOWED_VIEW_SIZE = 25;
 
 	private static double maxZoom;
@@ -224,6 +226,14 @@ public class DefaultImageCanvas implements ImageCanvas {
 		}
 		if (panCenter == null) throw new IllegalStateException();
 		return new RealCoords(panCenter.x, panCenter.y);
+	}
+
+	@Override
+	public IntCoords getPanOffset() {
+		final IntCoords offset = dataToPanelCoords(DATA_ZERO);
+		offset.x = -offset.x;
+		offset.y = -offset.y;
+		return offset;
 	}
 
 	@Override

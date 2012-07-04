@@ -501,10 +501,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		final int canvasWidth = canvas.getViewportWidth();
 		final int canvasHeight = canvas.getViewportHeight();
 		final double canvasZoom = canvas.getZoomFactor();
-		final IntCoords canvasOffset =
-			canvas.dataToPanelCoords(new RealCoords(0, 0));
-		canvasOffset.x = -canvasOffset.x;
-		canvasOffset.y = -canvasOffset.y;
+		final IntCoords canvasOffset = canvas.getPanOffset();
 
 		final boolean sizeChanged =
 			uiSize.width != canvasWidth || uiSize.height != canvasHeight;

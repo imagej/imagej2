@@ -56,7 +56,6 @@ import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.util.IntCoords;
-import imagej.util.RealCoords;
 
 import java.awt.Component;
 import java.awt.event.InputEvent;
@@ -295,18 +294,13 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 
 	/** Updates last known mouse coordinates. */
 	private void updateMouseCoords(final MouseEvent e) {
-		final int xOffset, yOffset;
-		if (imageCanvas == null) {
-			xOffset = yOffset = 0;
+		x = e.getX();
+		y = e.getY();
+		if (imageCanvas != null) {
+			final IntCoords panOffset = imageCanvas.getPanOffset();
+			x -= panOffset.x;
+			y -= panOffset.y;
 		}
-		else {
-			final IntCoords canvasOffset =
-				imageCanvas.dataToPanelCoords(new RealCoords(0, 0));
-			xOffset = -canvasOffset.x;
-			yOffset = -canvasOffset.y;
-		}
-		x = e.getX() - xOffset;
-		y = e.getY() - yOffset;
 	}
 
 	/** Invalidates last known mouse coordinates. */
