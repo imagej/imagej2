@@ -123,8 +123,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	private final ToolDelegator toolDelegator;
 
 	private final JScrollPane scrollPane;
-	private boolean insideSynch = false;
-	private boolean initialized = false;
 
 	private final List<FigureView> figureViews = new ArrayList<FigureView>();
 
@@ -169,7 +167,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 			@Override
 			public void componentResized(final ComponentEvent e) {
-				onSizeChanged(e);
+				syncCanvas();
 			}
 
 		});
@@ -203,17 +201,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Tell the display's canvas that its viewport's size changed
-	 * 
-	 * @param e
-	 */
-	protected void onSizeChanged(final ComponentEvent e) {
-		final ImageCanvas canvas = getDisplay().getCanvas();
-		final Rectangle viewRect = scrollPane.getViewport().getViewRect();
-		canvas.setViewportSize(viewRect.width, viewRect.height);
 	}
 
 	@EventHandler
@@ -258,7 +245,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	@EventHandler
 	protected void onEvent(final PanZoomEvent event) {
 		if (event.getCanvas() != getDisplay().getCanvas()) return;
-		syncPanAndZoom();
+		syncUI();
 	}
 
 	@EventHandler
@@ -268,6 +255,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		drawingView.setCursor(AWTCursors.getCursor(getDisplay().getCanvas()
 			.getCursor()));
 	}
+
 	void rebuild() {
 		for (final DataView dataView : getDisplay()) {
 			FigureView figureView = getFigureView(dataView);
@@ -424,6 +412,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	// -- JComponent methods --
+
 	@Override
 	public Dimension getPreferredSize() {
 		// NB BDZ - Avoid space left around for nonexistent scroll bars
@@ -478,101 +467,85 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		return new Dimension(w, h);
 	}
 
+	// -- AdjustmentListener methods --
+
+	@Override
+	public void adjustmentValueChanged(final AdjustmentEvent e) {
+		syncCanvas();
+	}
+
 	// -- Helper methods --
 
 	private ImageDisplay getDisplay() {
 		return displayViewer.getDisplay();
 	}
 
-	// -- AdjustmentListener methods --
+	/** Updates the {@link ImageCanvas} to match the UI. */
+	private void syncCanvas() {
+		sync(true);
+	}
 
-	@Override
-	public void adjustmentValueChanged(final AdjustmentEvent e) {
-		if (insideSynch) return;
+	/** Updates the UI to match the {@link ImageCanvas}. */
+	private void syncUI() {
+		sync(false);
+	}
+
+	private void sync(final boolean updateCanvas) {
 		final ImageCanvas canvas = getDisplay().getCanvas();
-		final Point viewPos = scrollPane.getViewport().getViewPosition();
-		final Rectangle viewRect = scrollPane.getViewport().getViewRect();
-		if (viewRect.width != canvas.getViewportWidth() ||
-			viewRect.height != canvas.getViewportHeight())
-		{
-			canvas.setViewportSize(viewRect.width, viewRect.height);
-		}
-		final RealCoords center =
-			new RealCoords((viewPos.x + viewRect.width / 2) /
-				drawingView.getScaleFactor(), (viewPos.y + viewRect.height / 2) /
-				drawingView.getScaleFactor());
-		if (!initialized) return;
-		final RealCoords oldCenter = canvas.getPanCenter();
-		if (oldCenter.x == center.x && oldCenter.y == center.y) return;
-		canvas.setPanCenter(center);
-	}
 
-	private void syncPanAndZoom() {
-		if (insideSynch) return;
+		// get UI settings
+		final Dimension uiSize = scrollPane.getViewport().getExtentSize();
+		final double uiZoom = drawingView.getScaleFactor();
+		final Point uiOffset = scrollPane.getViewport().getViewPosition();
 
-		insideSynch = true;
-		try {
-			final ImageCanvas canvas = getDisplay().getCanvas();
-			boolean considerResize = !initialized;
-			final double zoomFactor = canvas.getZoomFactor();
-			if (drawingView.getScaleFactor() != zoomFactor) {
-				drawingView.setScaleFactor(zoomFactor);
-				scrollPane.validate();
-				considerResize = true;
-			}
-			final Point viewPos = scrollPane.getViewport().getViewPosition();
-			final Rectangle viewRect = scrollPane.getViewport().getViewRect();
-			final RealCoords center = canvas.getPanCenter();
-			final int originX =
-				(int) Math.round(center.x * zoomFactor - viewRect.width / 2.0);
-			final int originY =
-				(int) Math.round(center.y * zoomFactor - viewRect.height / 2.0);
-			final IntCoords origin = new IntCoords(originX, originY);
-			if (constrainOrigin(origin)) {
-				// Back-compute the center if origin was changed.
-				canvas.setPanCenter(new RealCoords((origin.x + viewRect.width / 2.0) /
-					zoomFactor, (origin.y + viewRect.height / 2.0) / zoomFactor));
-			}
-			if (viewPos.x != origin.x || viewPos.y != origin.y) {
-				scrollPane.getViewport().setViewPosition(new Point(origin.x, origin.y));
-			}
-			if (considerResize) maybeResizeWindow();
-		}
-		finally {
-			insideSynch = false;
-			initialized = true;
-		}
-	}
+		// get canvas settings
+		final int canvasWidth = canvas.getViewportWidth();
+		final int canvasHeight = canvas.getViewportHeight();
+		final double canvasZoom = canvas.getZoomFactor();
+		final IntCoords canvasOffset =
+			canvas.dataToPanelCoords(new RealCoords(0, 0));
+		canvasOffset.x = -canvasOffset.x;
+		canvasOffset.y = -canvasOffset.y;
 
-	/**
-	 * Constrain the origin to within the image.
-	 * 
-	 * @param origin
-	 * @return true if origin was changed.
-	 */
-	private boolean constrainOrigin(final IntCoords origin) {
-		boolean originChanged = false;
-		if (origin.x < 0) {
-			origin.x = 0;
-			originChanged = true;
+		final boolean sizeChanged =
+			uiSize.width != canvasWidth || uiSize.height != canvasHeight;
+		final boolean offsetChanged =
+			uiOffset.x != canvasOffset.x || uiOffset.y != canvasOffset.y;
+		final boolean zoomChanged = uiZoom != canvasZoom;
+
+		if (!sizeChanged && !offsetChanged && !zoomChanged) return;
+
+
+		if (updateCanvas) {
+			// sync canvas viewport size
+			if (sizeChanged) canvas.setViewportSize(uiSize.width, uiSize.height);
+
+			// sync canvas pan & zoom position
+			if (offsetChanged || zoomChanged) {
+				// back-compute the center from the origin
+				final double panCenterX = (uiOffset.x + uiSize.width / 2d) / uiZoom;
+				final double panCenterY = (uiOffset.y + uiSize.height / 2d) / uiZoom;
+				canvas.setZoom(uiZoom, new RealCoords(panCenterX, panCenterY));
+			}
+
+			if (zoomChanged) maybeResizeWindow();
 		}
-		if (origin.y < 0) {
-			origin.y = 0;
-			originChanged = true;
+		else { // update UI
+			// sync UI viewport size
+			if (sizeChanged) {
+				final Dimension newViewSize = new Dimension(canvasWidth, canvasHeight);
+				scrollPane.getViewport().setViewSize(newViewSize);
+			}
+
+			// sync UI zoom factor
+			if (zoomChanged) drawingView.setScaleFactor(canvasZoom);
+
+			// sync UI pan position
+			if (offsetChanged) {
+				final Point newViewPos = new Point(canvasOffset.x, canvasOffset.y);
+				scrollPane.getViewport().setViewPosition(newViewPos);
+			}
 		}
-		final Dimension viewportSize = scrollPane.getViewport().getSize();
-		final Dimension canvasSize = drawingView.getSize();
-		final int xMax = canvasSize.width - viewportSize.width;
-		final int yMax = canvasSize.height - viewportSize.height;
-		if (origin.x > xMax) {
-			origin.x = xMax;
-			originChanged = true;
-		}
-		if (origin.y > yMax) {
-			origin.y = yMax;
-			originChanged = true;
-		}
-		return originChanged;
 	}
 
 	private void maybeResizeWindow() {
