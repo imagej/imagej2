@@ -514,6 +514,18 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 		if (!sizeChanged && !offsetChanged && !zoomChanged) return;
 
+		if (log.isDebug()) {
+			log.debug(getClass().getSimpleName() + " " +
+				(updateCanvas ? "syncCanvas: " : "syncUI: ") + "\n\tUI size = " +
+				uiSize.width + " x " + uiSize.height + "\n\tUI offset = " +
+				uiOffset.x + ", " + uiOffset.y + "\n\tUI zoom = " + uiZoom +
+				"\n\tCanvas size = " + canvasWidth + " x " + canvasHeight +
+				"\n\tCanvas offset = " + canvasOffset.x + ", " + canvasOffset.y +
+				"\n\tCanvas zoom = " + canvasZoom + "\n\t" +
+				(sizeChanged ? "sizeChanged " : "") +
+				(offsetChanged ? "offsetChanged " : "") +
+				(zoomChanged ? "zoomChanged " : ""));
+		}
 
 		if (updateCanvas) {
 			// sync canvas viewport size
