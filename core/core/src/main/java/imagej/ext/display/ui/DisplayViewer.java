@@ -78,10 +78,10 @@ public interface DisplayViewer<T> extends IPlugin {
 	/** Gets the display panel that hosts the gui elements. */
 	DisplayPanel getPanel();
 
-	/** Handles a display update event directed at this viewer's display. */
+	/** Synchronizes the user interface appearance with the display model. */
 	void onDisplayUpdatedEvent(DisplayUpdatedEvent e);
 
-	/** Handles a display deleted event directed at this viewer's display. */
+	/** Removes the user interface when the display is deleted. */
 	void onDisplayDeletedEvent(DisplayDeletedEvent e);
 
 	/**
