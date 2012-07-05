@@ -36,12 +36,14 @@
 package imagej.core.plugins.zoom;
 
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.MouseService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.util.IntCoords;
 
 /**
  * Zooms in on the currently displayed image. Zoom multiplier is taken from the
@@ -56,12 +58,24 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "In", weight = 1, accelerator = "PLUS") }, headless = true)
 public class ZoomIn implements ImageJPlugin {
 
+	@Parameter
+	private MouseService mouseService;
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
-		display.getCanvas().zoomIn();
+		if (mouseService.getDisplay() == display) {
+			// zoom in centered around the mouse cursor
+			final int x = mouseService.getX();
+			final int y = mouseService.getY();
+			display.getCanvas().zoomIn(new IntCoords(x, y));
+		}
+		else {
+			// no mouse coordinates available; use default behavior
+			display.getCanvas().zoomOut();
+		}
 	}
 
 }
