@@ -35,7 +35,7 @@
 
 package imagej.core.plugins.zoom;
 
-import imagej.data.Dataset;
+import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.menu.MenuConstants;
@@ -46,6 +46,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.RealCoords;
+import imagej.util.RealRect;
 
 /**
  * Zooms in on the center of the image at the user-specified magnification
@@ -57,12 +58,12 @@ import imagej.util.RealCoords;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) },
-	headless = true)
+	headless = true, initializer = "initAll")
 public class ZoomUserDefined extends DynamicPlugin {
 
 	// -- Constants --
 
-	private static final String ZOOM = "userDefinedScale";
+	private static final String ZOOM = "zoomPercent";
 	private static final String CTR_U = "centerU";
 	private static final String CTR_V = "centerV";
 
@@ -74,18 +75,14 @@ public class ZoomUserDefined extends DynamicPlugin {
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
-	@Parameter(label = "Zoom (%) :", persist = false, initializer = "initAll")
+	@Parameter(label = "Zoom (%):", persist = false)
 	private double zoomPercent;
 
 	@Parameter(label = "X center:", persist = false)
-	private long centerU;
+	private double centerU;
 
 	@Parameter(label = "Y center:", persist = false)
-	private long centerV;
-
-	// -- Fields --
-
-	private long maxU, maxV;
+	private double centerV;
 
 	// -- ZoomUserDefined methods --
 
@@ -115,19 +112,19 @@ public class ZoomUserDefined extends DynamicPlugin {
 		this.zoomPercent = zoomPercent;
 	}
 
-	public long getCenterU() {
+	public double getCenterU() {
 		return centerU;
 	}
 
-	public void setCenterU(final long centerU) {
+	public void setCenterU(final double centerU) {
 		this.centerU = centerU;
 	}
 
-	public long getCenterV() {
+	public double getCenterV() {
 		return centerV;
 	}
 
-	public void setCenterV(final long centerV) {
+	public void setCenterV(final double centerV) {
 		this.centerV = centerV;
 	}
 
@@ -139,48 +136,43 @@ public class ZoomUserDefined extends DynamicPlugin {
 			new RealCoords(getCenterU(), getCenterV()));
 	}
 
-	public double getUserDefinedScale() {
-		return zoomPercent;
-	}
-
-	public void setUserDefinedScale(final double userDefinedScale) {
-		this.zoomPercent = userDefinedScale;
-	}
-
 	// -- Initializers --
 
 	protected void initAll() {
 		initZoom();
 		initCenter();
 	}
-
-	// -- Helper methods --
+ // -- Helper methods --
 
 	private void initZoom() {
+		final ImageCanvas canvas = display.getCanvas();
+
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<Double> zoomItem =
 			(DefaultModuleItem<Double>) getInfo().getInput(ZOOM);
 		zoomItem.setMinimumValue(0.1);
 		zoomItem.setMaximumValue(500000.0);
-		setZoomPercent(100);
+		setZoomPercent(100 * canvas.getZoomFactor());
 	}
 
 	private void initCenter() {
-		final Dataset dataset = imageDisplayService.getActiveDataset(display);
-		maxU = dataset.getImgPlus().dimension(0);
-		maxV = dataset.getImgPlus().dimension(1);
+		final RealRect planeExtents = display.getPlaneExtents();
+		final ImageCanvas canvas = display.getCanvas();
+		final RealCoords panCenter = canvas.getPanCenter();
+
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> centerXItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(CTR_U);
+		final DefaultModuleItem<Double> centerUItem =
+			(DefaultModuleItem<Double>) getInfo().getInput(CTR_U);
+		centerUItem.setMinimumValue(planeExtents.x);
+		centerUItem.setMaximumValue(planeExtents.x + planeExtents.width);
+		setCenterU(panCenter.x);
+
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> centerYItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(CTR_V);
-		centerXItem.setMinimumValue(0L);
-		centerXItem.setMaximumValue(maxU - 1);
-		centerYItem.setMinimumValue(0L);
-		centerYItem.setMaximumValue(maxV - 1);
-		setCenterU(maxU / 2);
-		setCenterV(maxV / 2);
+		final DefaultModuleItem<Double> centerVItem =
+			(DefaultModuleItem<Double>) getInfo().getInput(CTR_V);
+		centerVItem.setMinimumValue(planeExtents.y);
+		centerVItem.setMaximumValue(planeExtents.y + planeExtents.height);
+		setCenterV(panCenter.y);
 	}
 
 }
