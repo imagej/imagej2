@@ -53,7 +53,7 @@ import imagej.ui.UIService;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
-	@Menu(label = "Threshold",accelerator = "control shift T") })
+	@Menu(label = "Threshold...", accelerator = "control shift T") })
 public class Threshold implements ImageJPlugin {
 
 	// -- Parameters --
