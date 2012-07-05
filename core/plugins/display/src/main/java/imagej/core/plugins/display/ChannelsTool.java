@@ -53,9 +53,9 @@ import imagej.ext.plugin.PreviewPlugin;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
-	@Menu(label = "Edit Colors", weight = -5) },
+	@Menu(label = "Channels Tool...", weight = -5) },
 	iconPath = "/icons/plugins/color_wheel.png", headless = true)
-public class EditColors implements ImageJPlugin, PreviewPlugin {
+public class ChannelsTool implements ImageJPlugin, PreviewPlugin {
 
 	public static final String GRAYSCALE = "Grayscale";
 	public static final String COLOR = "Color";
@@ -70,7 +70,7 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 		COLOR, COMPOSITE })
 	private String modeString = GRAYSCALE;
 
-	public EditColors() {
+	public ChannelsTool() {
 		if (view != null) setColorMode(view.getColorMode());
 	}
 
