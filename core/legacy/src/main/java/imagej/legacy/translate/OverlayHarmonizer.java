@@ -383,6 +383,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 
 	private void assignPropertiesToRoi(final Roi roi, final Overlay overlay) {
+		roi.setName(overlay.getName());
 		roi.setStrokeWidth((float) overlay.getLineWidth());
 		roi.setStrokeColor(AWTColors.getColor(overlay.getLineColor()));
 		final Color fillColor = AWTColors.getColor(overlay.getFillColor());
@@ -624,6 +625,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 
 	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi)
 	{
+		overlay.setName(roi.getName());
 		overlay.setLineWidth(roi.getStrokeWidth());
 		final Color strokeColor = roi.getStrokeColor();
 		final Color fillColor = roi.getFillColor();
