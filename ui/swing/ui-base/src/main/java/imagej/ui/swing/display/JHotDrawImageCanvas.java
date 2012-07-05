@@ -73,7 +73,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
@@ -87,7 +86,6 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.Border;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ARGBScreenImage;
@@ -135,7 +133,26 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
 
-		drawingView = new DefaultDrawingView();
+		drawingView = new DefaultDrawingView() {
+			@Override
+			public Dimension getPreferredSize() {
+				final Dimension drawViewSize = super.getPreferredSize();
+				if (drawViewSize.width > 0 && drawViewSize.height > 0) {
+					// NB: Current preferred size is OK.
+					return drawViewSize;
+				}
+
+				// NB: One or more figures in the drawing view are not initialized yet.
+				// So we calculate the projected size manually.
+				final RealRect imageBounds = getDisplay().getPlaneExtents();
+				final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
+				final int x = (int) (imageBounds.width * zoomFactor);
+				final int y = (int) (imageBounds.height * zoomFactor);
+				// HACK: Add extra space to avoid unnecessary scroll bars.
+				final int extra = 2;
+				return new Dimension(x + extra, y + extra);
+			}
+		};
 		drawingView.setDrawing(drawing);
 
 		drawingEditor = new DefaultDrawingEditor();
@@ -412,52 +429,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		return dataset;
 	}
 
-	// -- JComponent methods --
-
-	@Override
-	public Dimension getPreferredSize() {
-		// CTR FIXME: Rework this method.
-
-		final Dimension drawViewSize = drawingView.getPreferredSize();
-
-		final Border border = scrollPane.getBorder();
-		Dimension slop = new Dimension(0, 0);
-		if (border != null) {
-			final Insets insets = border.getBorderInsets(scrollPane);
-			slop =
-				new Dimension(insets.left + insets.right, insets.top + insets.bottom);
-		}
-
-		final Dimension bigDrawViewSize =
-			new Dimension(drawViewSize.width + slop.width + 1, drawViewSize.height +
-				slop.height + 1);
-
-		if (drawViewSize.height == 0 || drawViewSize.width == 0) {
-			// The image figure hasn't been placed yet. Calculate the projected size.
-			final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
-			final RealRect imageBounds = getDisplay().getPlaneExtents();
-			final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
-			return new Dimension(Math.min((int) (imageBounds.width * zoomFactor) +
-				slop.width + 1, bounds.width), Math.min(
-				(int) (imageBounds.height * zoomFactor) + slop.width + 1,
-				bounds.height));
-		}
-		if (bigDrawViewSize.width <= scrollPane.getPreferredSize().width &&
-			bigDrawViewSize.height <= scrollPane.getPreferredSize().height)
-		{
-			return bigDrawViewSize;
-		}
-
-		// HACK: Size the canvas one pixel larger. This is a workaround to an
-		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
-		// large X until it is finished being rendered. Unfortunately, the X is
-		// slightly smaller than the image after being rendered.
-		final int w = scrollPane.getPreferredSize().width + 1;
-		final int h = scrollPane.getPreferredSize().height + 1;
-
-		return new Dimension(w, h);
-	}
-
 	// -- AdjustmentListener methods --
 
 	@Override
@@ -535,8 +506,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				final double panCenterY = (uiOffset.y + uiSize.height / 2d) / uiZoom;
 				canvas.setZoomAndCenter(uiZoom, new RealCoords(panCenterX, panCenterY));
 			}
-
-			if (zoomChanged) maybeResizeWindow();
 		}
 		else { // update UI
 			// sync UI viewport size
@@ -553,6 +522,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				final Point newViewPos = new Point(canvasOffset.x, canvasOffset.y);
 				scrollPane.getViewport().setViewPosition(newViewPos);
 			}
+
+			if (zoomChanged) maybeResizeWindow();
 		}
 	}
 
