@@ -271,13 +271,9 @@ public final class DefaultUIService extends AbstractService implements
 	/**
 	 * Called when a display is created. This is the magical place where the
 	 * display model is connected with the real UI.
-	 * <p>
-	 * Note that the handling of all display events is synchronized on the GUI
-	 * singleton in order to serialize processing.
-	 * </p>
 	 */
 	@EventHandler
-	protected synchronized void onEvent(final DisplayCreatedEvent e) {
+	protected void onEvent(final DisplayCreatedEvent e) {
 		final Display<?> display = e.getObject();
 		for (@SuppressWarnings("rawtypes")
 		final PluginInfo<? extends DisplayViewer> info : pluginService
@@ -307,7 +303,7 @@ public final class DefaultUIService extends AbstractService implements
 	 * from the list of viewers until after this returns.
 	 */
 	@EventHandler
-	protected synchronized void onEvent(final DisplayDeletedEvent e) {
+	protected void onEvent(final DisplayDeletedEvent e) {
 		final Display<?> display = e.getObject();
 		final DisplayViewer<?> displayViewer = getDisplayViewer(display);
 		if (displayViewer != null) {
@@ -318,7 +314,7 @@ public final class DefaultUIService extends AbstractService implements
 
 	/** Called when a display is updated. */
 	@EventHandler
-	protected synchronized void onEvent(final DisplayUpdatedEvent e) {
+	protected void onEvent(final DisplayUpdatedEvent e) {
 		final Display<?> display = e.getDisplay();
 		final DisplayViewer<?> displayViewer = getDisplayViewer(display);
 		if (displayViewer != null) {
@@ -336,7 +332,7 @@ public final class DefaultUIService extends AbstractService implements
 	 * </p>
 	 */
 	@EventHandler
-	protected synchronized void onEvent(final DisplayActivatedEvent e) {
+	protected void onEvent(final DisplayActivatedEvent e) {
 		if (activationInvocationPending) return;
 		activationInvocationPending = true;
 		threadService.queue(new Runnable() {
