@@ -36,7 +36,7 @@
 package imagej.ui.swing;
 
 import imagej.ImageJ;
-import imagej.core.plugins.display.ImageCapture;
+import imagej.core.plugins.display.Flatten;
 import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.core.plugins.overlay.SpecifyOverlay;
 import imagej.data.ChannelCollection;
@@ -594,7 +594,7 @@ public class SwingOverlayManager
 		if (imageDisplay == null) return;
 		UIService uiService = context.getService(UIService.class);
 		PluginService ps = context.getService(PluginService.class);
-		ps.run(ImageCapture.class, uiService, imageDisplay);
+		ps.run(Flatten.class, uiService, imageDisplay);
 	}
 	
 	private void help() {

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.plugins.display;
+package imagej.core.plugins.display.interactive;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;

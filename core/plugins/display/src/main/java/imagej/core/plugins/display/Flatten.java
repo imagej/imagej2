@@ -59,7 +59,7 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay"),
 	@Menu(label = "Flatten", weight = 7) })
-public class ImageCapture implements ImageJPlugin {
+public class Flatten implements ImageJPlugin {
 
 	// -- Parameters --
 	
