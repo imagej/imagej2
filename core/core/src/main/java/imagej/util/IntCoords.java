@@ -52,9 +52,26 @@ public class IntCoords {
 		this.y = y;
 	}
 
+	// -- Object methods --
+
 	@Override
 	public String toString() {
 		return "[Coords: x=" + x + ", y=" + y + "]";
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof IntCoords)) return false;
+		final IntCoords that = (IntCoords) o;
+		return x == that.x && y == that.y;
+	}
+
+	@Override
+	public int hashCode() {
+		// combine 16 least significant bits of x and y
+		final int b1 = x & 0xffff;
+		final int b2 = y & 0xffff;
+		return b1 | (b2 << 16);
 	}
 
 }

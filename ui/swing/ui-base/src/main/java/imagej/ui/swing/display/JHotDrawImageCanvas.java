@@ -47,7 +47,7 @@ import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.MouseCursorEvent;
-import imagej.data.display.event.ZoomEvent;
+import imagej.data.display.event.PanZoomEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -55,6 +55,8 @@ import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
 import imagej.ext.tool.event.ToolActivatedEvent;
+import imagej.log.LogService;
+import imagej.thread.ThreadService;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
@@ -64,7 +66,6 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
-import imagej.util.Log;
 import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
@@ -72,7 +73,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
@@ -86,7 +86,6 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.Border;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ARGBScreenImage;
@@ -115,6 +114,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	private static final long serialVersionUID = 1L;
 
 	private final SwingImageDisplayViewer displayViewer;
+	private final LogService log;
 
 	private final Drawing drawing;
 	private final DefaultDrawingView drawingView;
@@ -122,8 +122,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	private final ToolDelegator toolDelegator;
 
 	private final JScrollPane scrollPane;
-	private boolean insideSynch = false;
-	private boolean initialized = false;
 
 	private final List<FigureView> figureViews = new ArrayList<FigureView>();
 
@@ -131,10 +129,30 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 	public JHotDrawImageCanvas(final SwingImageDisplayViewer displayViewer) {
 		this.displayViewer = displayViewer;
+		log = getDisplay().getContext().getService(LogService.class);
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
 
-		drawingView = new DefaultDrawingView();
+		drawingView = new DefaultDrawingView() {
+			@Override
+			public Dimension getPreferredSize() {
+				final Dimension drawViewSize = super.getPreferredSize();
+				if (drawViewSize.width > 0 && drawViewSize.height > 0) {
+					// NB: Current preferred size is OK.
+					return drawViewSize;
+				}
+
+				// NB: One or more figures in the drawing view are not initialized yet.
+				// So we calculate the projected size manually.
+				final RealRect imageBounds = getDisplay().getPlaneExtents();
+				final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
+				final int x = (int) (imageBounds.width * zoomFactor);
+				final int y = (int) (imageBounds.height * zoomFactor);
+				// HACK: Add extra space to avoid unnecessary scroll bars.
+				final int extra = 2;
+				return new Dimension(x + extra, y + extra);
+			}
+		};
 		drawingView.setDrawing(drawing);
 
 		drawingEditor = new DefaultDrawingEditor();
@@ -149,7 +167,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-		final ImageJ context = displayViewer.getDisplay().getContext();
+		final ImageJ context = getDisplay().getContext();
 		final ToolService toolService = context.getService(ToolService.class);
 		final Tool activeTool = toolService.getActiveTool();
 		activateTool(activeTool);
@@ -167,7 +185,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 			@Override
 			public void componentResized(final ComponentEvent e) {
-				onSizeChanged(e);
+				syncCanvas();
 			}
 
 		});
@@ -181,25 +199,19 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	/**
-	 * Respond to the JHotDraw figure selection event by selecting and deselecting
-	 * views whose state has changed
+	 * Responds to the JHotDraw figure selection event by selecting and
+	 * deselecting views whose state has changed.
 	 * 
-	 * @param event - event indicating that the figure selections have changed
+	 * @param event Event indicating that the figure selections have changed.
 	 */
 	protected void onFigureSelectionChanged(final FigureSelectionEvent event) {
 		final Set<Figure> newSelection = event.getNewSelection();
 		final Set<Figure> oldSelection = event.getOldSelection();
-		for (final DataView view : displayViewer.getDisplay()) {
+		for (final DataView view : getDisplay()) {
 			final FigureView figureView = getFigureView(view);
 			if (figureView != null) {
 				final Figure figure = figureView.getFigure();
 				if (newSelection.contains(figure)) {
-					// BDZ removed next line 10-12-11
-					// Fixes drawing of multiple overlays (#817). Lee had this code
-					// here in anticipation of avoiding infinite event loops.
-					// Inspection seems to bear out that this possibility doesn't
-					// happen.
-					// if (!oldSelection.contains(figure))
 					view.setSelected(true);
 				}
 				else if (oldSelection.contains(figure)) {
@@ -207,17 +219,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Tell the display's canvas that its viewport's size changed
-	 * 
-	 * @param e
-	 */
-	protected void onSizeChanged(final ComponentEvent e) {
-		final ImageCanvas canvas = getDisplay().getCanvas();
-		final Rectangle viewRect = scrollPane.getViewport().getViewRect();
-		canvas.setViewportSize(viewRect.width, viewRect.height);
 	}
 
 	@EventHandler
@@ -260,9 +261,9 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	@EventHandler
-	protected void onEvent(final ZoomEvent event) {
+	protected void onEvent(final PanZoomEvent event) {
 		if (event.getCanvas() != getDisplay().getCanvas()) return;
-		syncPanAndZoom();
+		syncUI();
 	}
 
 	@EventHandler
@@ -272,6 +273,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		drawingView.setCursor(AWTCursors.getCursor(getDisplay().getCanvas()
 			.getCursor()));
 	}
+
 	void rebuild() {
 		for (final DataView dataView : getDisplay()) {
 			FigureView figureView = getFigureView(dataView);
@@ -285,7 +287,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 						new OverlayFigureView(this.displayViewer, (OverlayView) dataView);
 				}
 				else {
-					Log.error("Don't know how to make a figure view for " +
+					log.error("Don't know how to make a figure view for " +
 						dataView.getClass().getName());
 					continue;
 				}
@@ -323,7 +325,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				@Override
 				public void overlayCreated(final FigureCreatedEvent e) {
 					final OverlayView overlay = e.getOverlay();
-					final ImageDisplay display = displayViewer.getDisplay();
+					final ImageDisplay display = getDisplay();
 					for (int i = 0; i < display.numDimensions(); i++) {
 						final AxisType axis = display.axis(i);
 						if (Axes.isXY(axis)) continue;
@@ -370,216 +372,52 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		dispatcher.register(drawingView);
 	}
 
-	// -- JComponent methods --
-	@Override
-	public Dimension getPreferredSize() {
-		// NB Johannes
-		// HACK: Size the canvas one pixel larger. This is a workaround to an
-		// apparent bug in JHotDraw, where an ImageFigure is initially drawn as a
-		// large X until it is finished being rendered. Unfortunately, the X is
-		// slightly smaller than the image after being rendered.
-		final int w = scrollPane.getPreferredSize().width + 1;
-		final int h = scrollPane.getPreferredSize().height + 1;
-
-		// NB BDZ - Avoid space left around for nonexistent scroll bars
-		// This code works (except rare cases). Not sure why 4 is key. 3 and lower
-		// and sizing failures happen. We used to have a fudge factor of 5 in place
-		// elsewhere. Can no longer find it. But it is apparent from debugging
-		// statements that there is an off by 5(?). Notice we test versus 4 but add
-		// 5. If both 4 then initial zoom has scrollbars when not needed. If both 5
-		// then some zoom ins can leave empty scroll bar space. (I may have these
-		// conditions reversed). Anyhow printing in here can show getPreferredSize()
-		// starts out at w,h and before/during 1st redraw goes to w+1,h+1. Its this
-		// off by one that makes initial view have scroll bars unnecessarily. Look
-		// into this further.
-		final Dimension drawViewSize = drawingView.getPreferredSize();
-
-		final Border border = scrollPane.getBorder();
-		Dimension slop = new Dimension(0, 0);
-		if (border != null) {
-			final Insets insets = border.getBorderInsets(scrollPane);
-			slop =
-				new Dimension(insets.left + insets.right, insets.top + insets.bottom);
-		}
-
-		final Dimension bigDrawViewSize =
-			new Dimension(drawViewSize.width + slop.width + 1, drawViewSize.height +
-				slop.height + 1);
-
-		if (drawViewSize.height == 0 || drawViewSize.width == 0) {
-			// The image figure hasn't been placed yet. Calculate the projected size.
-			final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
-			final RealRect imageBounds = getDisplay().getImageExtents();
-			final double zoomFactor = getDisplay().getCanvas().getZoomFactor();
-			return new Dimension(Math.min((int) (imageBounds.width * zoomFactor) +
-				slop.width + 1, bounds.width), Math
-				.min((int) (imageBounds.height * zoomFactor) + slop.width + 1,
-					bounds.height));
-		}
-		if (bigDrawViewSize.width <= scrollPane.getPreferredSize().width &&
-			bigDrawViewSize.height <= scrollPane.getPreferredSize().height)
-		{
-			return bigDrawViewSize;
-		}
-		return new Dimension(w, h);
-	}
-
-	// -- Helper methods --
-
-	private ImageDisplay getDisplay() {
-		return displayViewer.getDisplay();
-	}
-
-	// -- AdjustmentListener methods --
-
-	@Override
-	public void adjustmentValueChanged(final AdjustmentEvent e) {
-		if (insideSynch) return;
-		final ImageCanvas canvas = getDisplay().getCanvas();
-		final Point viewPos = scrollPane.getViewport().getViewPosition();
-		final Rectangle viewRect = scrollPane.getViewport().getViewRect();
-		if (viewRect.width != canvas.getViewportWidth() ||
-			viewRect.height != canvas.getViewportHeight())
-		{
-			canvas.setViewportSize(viewRect.width, viewRect.height);
-		}
-		final RealCoords center =
-			new RealCoords((viewPos.x + viewRect.width / 2) /
-				drawingView.getScaleFactor(), (viewPos.y + viewRect.height / 2) /
-				drawingView.getScaleFactor());
-		if (!initialized) return;
-		final RealCoords oldCenter = canvas.getPanCenter();
-		if (oldCenter.x == center.x && oldCenter.y == center.y) return;
-		canvas.setPan(center);
-	}
-
-	private void syncPanAndZoom() {
-		if (insideSynch) return;
-
-		insideSynch = true;
-		try {
-			final ImageCanvas canvas = getDisplay().getCanvas();
-			boolean considerResize = !initialized;
-			final double zoomFactor = canvas.getZoomFactor();
-			if (drawingView.getScaleFactor() != zoomFactor) {
-				drawingView.setScaleFactor(zoomFactor);
-				scrollPane.validate();
-				considerResize = true;
-			}
-			final Point viewPos = scrollPane.getViewport().getViewPosition();
-			final Rectangle viewRect = scrollPane.getViewport().getViewRect();
-			final RealCoords center = canvas.getPanCenter();
-			final int originX =
-				(int) Math.round(center.x * zoomFactor - viewRect.width / 2.0);
-			final int originY =
-				(int) Math.round(center.y * zoomFactor - viewRect.height / 2.0);
-			final IntCoords origin = new IntCoords(originX, originY);
-			if (constrainOrigin(origin)) {
-				// Back-compute the center if origin was changed.
-				canvas.setPan(new RealCoords((origin.x + viewRect.width / 2.0) /
-					zoomFactor, (origin.y + viewRect.height / 2.0) / zoomFactor));
-			}
-			if (viewPos.x != origin.x || viewPos.y != origin.y) {
-				scrollPane.getViewport().setViewPosition(new Point(origin.x, origin.y));
-			}
-			if (considerResize) maybeResizeWindow();
-		}
-		finally {
-			insideSynch = false;
-			initialized = true;
-		}
-	}
-
 	/**
-	 * Constrain the origin to within the image.
-	 * 
-	 * @param origin
-	 * @return true if origin was changed.
+	 * Captures the current view of data displayed in the canvas, including all
+	 * JHotDraw embellishments.
 	 */
-	private boolean constrainOrigin(final IntCoords origin) {
-		boolean originChanged = false;
-		if (origin.x < 0) {
-			origin.x = 0;
-			originChanged = true;
-		}
-		if (origin.y < 0) {
-			origin.y = 0;
-			originChanged = true;
-		}
-		final Dimension viewportSize = scrollPane.getViewport().getSize();
-		final Dimension canvasSize = drawingView.getSize();
-		final int xMax = canvasSize.width - viewportSize.width;
-		final int yMax = canvasSize.height - viewportSize.height;
-		if (origin.x > xMax) {
-			origin.x = xMax;
-			originChanged = true;
-		}
-		if (origin.y > yMax) {
-			origin.y = yMax;
-			originChanged = true;
-		}
-		return originChanged;
-	}
-
-	private void maybeResizeWindow() {
-		final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
-		final RealRect imageBounds = getDisplay().getImageExtents();
-		final ImageCanvas canvas = getDisplay().getCanvas();
-		final IntCoords topLeft =
-			canvas.imageToPanelCoords(new RealCoords(imageBounds.x, imageBounds.y));
-		final IntCoords bottomRight =
-			canvas.imageToPanelCoords(new RealCoords(imageBounds.x +
-				imageBounds.width, imageBounds.y + imageBounds.height));
-		if (bottomRight.x - topLeft.x > bounds.width) return;
-		if (bottomRight.y - topLeft.y > bounds.height) return;
-
-		// TODO: Be smarter about the thread we use for packing.
-		displayViewer.getWindow().pack();
-	}
-
-
-	// captures the current view of data displayed in the window. includes
-	// all JHotDraw embellishments
 	public Dataset capture() {
-		ImageDisplay display = displayViewer.getDisplay();
+		final ImageDisplay display = getDisplay();
 		if (display == null) return null;
-		ImageDisplayService dispSrv = display.getContext().getService(ImageDisplayService.class);
-		DatasetView dsView = dispSrv.getActiveDatasetView(display);
+		final ImageDisplayService dispSrv =
+			display.getContext().getService(ImageDisplayService.class);
+		final DatasetView dsView = dispSrv.getActiveDatasetView(display);
 		if (dsView == null) return null;
 
-		ARGBScreenImage screenImage = dsView.getScreenImage();
-		Image pixels = screenImage.image();
+		final ARGBScreenImage screenImage = dsView.getScreenImage();
+		final Image pixels = screenImage.image();
 
-		int w = pixels.getWidth(null);
-		int h = pixels.getHeight(null);
-		
+		final int w = pixels.getWidth(null);
+		final int h = pixels.getHeight(null);
+
 		// draw the backdrop image info
-		BufferedImage outputImage =
-				new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D outputGraphics = outputImage.createGraphics();
+		final BufferedImage outputImage =
+			new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D outputGraphics = outputImage.createGraphics();
 		outputGraphics.drawImage(pixels, 0, 0, null);
 
 		// draw the overlay info
-		for (FigureView view : figureViews) {
+		for (final FigureView view : figureViews) {
 			view.getFigure().draw(outputGraphics);
 		}
-		
+
 		// create a dataset that has view data with overlay info on top
-		DatasetService dss = display.getContext().getService(DatasetService.class);
-		Dataset dataset =
-				dss.create(
-					new long[]{w,h,3}, "Captured view",
-					new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL}, 8, false, false);
+		final DatasetService dss =
+			display.getContext().getService(DatasetService.class);
+		final Dataset dataset =
+			dss.create(new long[] { w, h, 3 }, "Captured view", new AxisType[] {
+				Axes.X, Axes.Y, Axes.CHANNEL }, 8, false, false);
 		dataset.setRGBMerged(true);
-		RandomAccess<? extends RealType<?>> accessor = dataset.getImgPlus().randomAccess();
+		final RandomAccess<? extends RealType<?>> accessor =
+			dataset.getImgPlus().randomAccess();
 		for (int x = 0; x < w; x++) {
 			accessor.setPosition(x, 0);
 			for (int y = 0; y < h; y++) {
 				accessor.setPosition(y, 1);
-				int rgb = outputImage.getRGB(x, y);
-				int r = (rgb >> 16) & 0xff;
-				int g = (rgb >>  8) & 0xff;
-				int b = (rgb >>  0) & 0xff;
+				final int rgb = outputImage.getRGB(x, y);
+				final int r = (rgb >> 16) & 0xff;
+				final int g = (rgb >> 8) & 0xff;
+				final int b = (rgb >> 0) & 0xff;
 				accessor.setPosition(0, 2);
 				accessor.get().setReal(r);
 				accessor.setPosition(1, 2);
@@ -590,5 +428,118 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		}
 		return dataset;
 	}
-	
+
+	// -- AdjustmentListener methods --
+
+	@Override
+	public void adjustmentValueChanged(final AdjustmentEvent e) {
+		syncCanvas();
+	}
+
+	// -- Helper methods --
+
+	private ImageDisplay getDisplay() {
+		return displayViewer.getDisplay();
+	}
+
+	/** Updates the {@link ImageCanvas} to match the UI. */
+	private void syncCanvas() {
+		sync(true);
+	}
+
+	/** Updates the UI to match the {@link ImageCanvas}. */
+	private void syncUI() {
+		sync(false);
+	}
+
+	private void sync(final boolean updateCanvas) {
+		final ImageCanvas canvas = getDisplay().getCanvas();
+
+		// threading sanity check
+		final ThreadService threadService =
+			getDisplay().getContext().getService(ThreadService.class);
+		if (!threadService.isDispatchThread()) {
+			throw new IllegalStateException("Cannot sync viewport from thread: " +
+				Thread.currentThread().getName());
+		}
+
+		// get UI settings
+		final Dimension uiSize = scrollPane.getViewport().getExtentSize();
+		final double uiZoom = drawingView.getScaleFactor();
+		final Point uiOffset = scrollPane.getViewport().getViewPosition();
+
+		// get canvas settings
+		final int canvasWidth = canvas.getViewportWidth();
+		final int canvasHeight = canvas.getViewportHeight();
+		final double canvasZoom = canvas.getZoomFactor();
+		final IntCoords canvasOffset = canvas.getPanOffset();
+
+		final boolean sizeChanged =
+			uiSize.width != canvasWidth || uiSize.height != canvasHeight;
+		final boolean offsetChanged =
+			uiOffset.x != canvasOffset.x || uiOffset.y != canvasOffset.y;
+		final boolean zoomChanged = uiZoom != canvasZoom;
+
+		if (!sizeChanged && !offsetChanged && !zoomChanged) return;
+
+		if (log.isDebug()) {
+			log.debug(getClass().getSimpleName() + " " +
+				(updateCanvas ? "syncCanvas: " : "syncUI: ") + "\n\tUI size = " +
+				uiSize.width + " x " + uiSize.height + "\n\tUI offset = " +
+				uiOffset.x + ", " + uiOffset.y + "\n\tUI zoom = " + uiZoom +
+				"\n\tCanvas size = " + canvasWidth + " x " + canvasHeight +
+				"\n\tCanvas offset = " + canvasOffset.x + ", " + canvasOffset.y +
+				"\n\tCanvas zoom = " + canvasZoom + "\n\t" +
+				(sizeChanged ? "sizeChanged " : "") +
+				(offsetChanged ? "offsetChanged " : "") +
+				(zoomChanged ? "zoomChanged " : ""));
+		}
+
+		if (updateCanvas) {
+			// sync canvas viewport size
+			if (sizeChanged) canvas.setViewportSize(uiSize.width, uiSize.height);
+
+			// sync canvas pan & zoom position
+			if (offsetChanged || zoomChanged) {
+				// back-compute the center from the origin
+				final double panCenterX = (uiOffset.x + uiSize.width / 2d) / uiZoom;
+				final double panCenterY = (uiOffset.y + uiSize.height / 2d) / uiZoom;
+				canvas.setZoomAndCenter(uiZoom, new RealCoords(panCenterX, panCenterY));
+			}
+		}
+		else { // update UI
+			// sync UI viewport size
+			if (sizeChanged) {
+				final Dimension newViewSize = new Dimension(canvasWidth, canvasHeight);
+				scrollPane.getViewport().setViewSize(newViewSize);
+			}
+
+			// sync UI zoom factor
+			if (zoomChanged) drawingView.setScaleFactor(canvasZoom);
+
+			// sync UI pan position
+			if (offsetChanged) {
+				final Point newViewPos = new Point(canvasOffset.x, canvasOffset.y);
+				scrollPane.getViewport().setViewPosition(newViewPos);
+			}
+
+			if (zoomChanged) maybeResizeWindow();
+		}
+	}
+
+	private void maybeResizeWindow() {
+		final Rectangle bounds = StaticSwingUtils.getWorkSpaceBounds();
+		final RealRect imageBounds = getDisplay().getPlaneExtents();
+		final ImageCanvas canvas = getDisplay().getCanvas();
+		final IntCoords topLeft =
+			canvas.dataToPanelCoords(new RealCoords(imageBounds.x, imageBounds.y));
+		final IntCoords bottomRight =
+			canvas.dataToPanelCoords(new RealCoords(imageBounds.x +
+				imageBounds.width, imageBounds.y + imageBounds.height));
+		if (bottomRight.x - topLeft.x > bounds.width) return;
+		if (bottomRight.y - topLeft.y > bounds.height) return;
+
+		displayViewer.getWindow().pack();
+	}
+
 }

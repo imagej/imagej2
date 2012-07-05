@@ -54,6 +54,7 @@ import imagej.util.awt.AWTColors;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
@@ -163,19 +164,28 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	@Override
 	public void redoLayout() {
-		EventQueue.invokeLater(new Runnable() {
+		final int oldSliderHeight = sliderPanel.getPreferredSize().height;
 
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void run() {
-				createSliders();
-				updateBorder(0);
-				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
-				sliderPanel.invalidate(); // BDZ added: helps fix bug #1219
-				doInitialSizing();
-				displayViewer.getCanvas().rebuild();
-			}
-		});
+		// rebuild display panel UI
+		createSliders();
+		updateBorder(0);
+		sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
+		doInitialSizing();
+		displayViewer.getCanvas().rebuild();
+		revalidate();
+
+		final int newSliderHeight = sliderPanel.getPreferredSize().height;
+
+		// HACK: Grow DisplayWindow height to match slider panel height increase.
+		final int heightIncrease = newSliderHeight - oldSliderHeight;
+		if (heightIncrease > 0) {
+			final Component c = (Component) getWindow();
+			final Dimension size = c.getSize();
+			size.height += heightIncrease;
+			c.setSize(size);
+		}
+
+		repaint();
 	}
 
 	@Override

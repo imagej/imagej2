@@ -42,12 +42,18 @@ import imagej.util.swing.tree.CheckBoxNodeData;
 import imagej.util.swing.tree.CheckBoxNodeEditor;
 import imagej.util.swing.tree.CheckBoxNodeRenderer;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashSet;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
@@ -69,12 +75,9 @@ import javax.swing.tree.TreePath;
  * 
  * @author Curtis Rueden
  */
-public class WatchEventsFrame extends JFrame implements TreeModelListener,
-	TreeSelectionListener
+public class WatchEventsFrame extends JFrame implements ActionListener,
+	TreeModelListener, TreeSelectionListener
 {
-
-	private static final int STARTING_TREE_WIDTH = 450;
-	private static final int STARTING_TEXT_WIDTH = 500;
 
 	private final EventHistory eventHistory;
 	private final LogService log;
@@ -110,7 +113,6 @@ public class WatchEventsFrame extends JFrame implements TreeModelListener,
 		tree.setCellRenderer(new CheckBoxNodeRenderer());
 		tree.setCellEditor(new CheckBoxNodeEditor(tree));
 		tree.setEditable(true);
-		tree.setPreferredSize(new Dimension(STARTING_TREE_WIDTH, 0));
 		tree.setShowsRootHandles(true);
 		tree.addTreeSelectionListener(this);
 		treeModel.addTreeModelListener(this);
@@ -122,16 +124,31 @@ public class WatchEventsFrame extends JFrame implements TreeModelListener,
 		textPane.setEditorKit(kit);
 		textPane.setDocument(doc);
 		textPane.setEditable(false);
-		textPane.setPreferredSize(new Dimension(STARTING_TEXT_WIDTH, 0));
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		setContentPane(splitPane);
+		splitPane.setResizeWeight(0.35);
 		splitPane.add(new JScrollPane(tree));
 		splitPane.add(new JScrollPane(textPane));
 
+		// create clear history button
+		final JButton clearHistory = new JButton("Clear History");
+		clearHistory.setActionCommand("clearHistory");
+		clearHistory.addActionListener(this);
+
+		final JPanel buttonBar = new JPanel();
+		buttonBar.setLayout(new BoxLayout(buttonBar, BoxLayout.X_AXIS));
+		buttonBar.add(Box.createHorizontalGlue());
+		buttonBar.add(clearHistory);
+
+		final JPanel contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout());
+		setContentPane(contentPane);
+		contentPane.add(splitPane, BorderLayout.CENTER);
+		contentPane.add(buttonBar, BorderLayout.SOUTH);
+
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		pack();
+		setSize(1000, 700);
 	}
 
 	// -- WatchEventsFrame methods --
@@ -184,13 +201,24 @@ public class WatchEventsFrame extends JFrame implements TreeModelListener,
 		textPane.setText("");
 	}
 
+	// -- ActionListener methods --
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final String cmd = e.getActionCommand();
+		if ("clearHistory".equals(cmd)) {
+			eventHistory.clear();
+			clear();
+		}
+	}
+
 	// -- TreeModelListener methods --
 
 	@Override
 	public void treeNodesChanged(final TreeModelEvent e) {
 		// recursively toggle the subtree to match
 		Object[] children = e.getChildren();
-		if (children == null) children = new Object[] {root};
+		if (children == null) children = new Object[] { root };
 		boolean anyChanged = false;
 		for (final Object child : children) {
 			if (!(child instanceof DefaultMutableTreeNode)) continue;

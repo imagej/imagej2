@@ -64,7 +64,7 @@ public class SwingUI extends AbstractSwingUI {
 	@Override
 	public SwingDisplayWindow createDisplayWindow(final Display<?> display) {
 		final SwingDisplayWindow displayWindow = new SwingDisplayWindow();
-		displayWindow.addEventDispatcher(new AWTWindowEventDispatcher(display));
+		new AWTWindowEventDispatcher(display).register(displayWindow);
 		return displayWindow;
 	}
 

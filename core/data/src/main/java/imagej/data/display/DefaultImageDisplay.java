@@ -637,12 +637,15 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	}
 
 	@Override
-	public RealRect getImageExtents() {
-		final Extents extents = this.getExtents();
-		final int xAxis = this.getAxisIndex(Axes.X);
-		final int yAxis = this.getAxisIndex(Axes.Y);
-		return new RealRect(extents.realMin(xAxis), extents.realMin(yAxis), extents
-			.realMax(xAxis) -
-			extents.realMin(xAxis), extents.realMax(yAxis) - extents.realMin(yAxis));
+	public RealRect getPlaneExtents() {
+		final Extents extents = getExtents();
+		final int xAxis = getAxisIndex(Axes.X);
+		final int yAxis = getAxisIndex(Axes.Y);
+		final double xMin = extents.realMin(xAxis);
+		final double yMin = extents.realMin(yAxis);
+		final double width = extents.realMax(xAxis) - extents.realMin(xAxis);
+		final double height = extents.realMax(yAxis) - extents.realMin(yAxis);
+		return new RealRect(xMin, yMin, width, height);
 	}
+
 }

@@ -41,6 +41,13 @@ import imagej.util.RealCoords;
 
 /**
  * A canvas upon which an {@link ImageDisplay} draws its output.
+ * <p>
+ * An image canvas supports two different coordinate systems, and provides a
+ * mechanism for conversion between them. The first is <em>panel</em>
+ * coordinates, which are in pixels onscreen. The second is <em>data</em>
+ * coordinates, which match the linked {@link ImageDisplay}'s original
+ * coordinate system.
+ * </p>
  * 
  * @author Grant Harris
  * @author Curtis Rueden
@@ -50,46 +57,45 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Gets the canvas's display. */
 	ImageDisplay getDisplay();
 
-	/** Gets the current width of the canvas viewport in pixels. */
+	/**
+	 * Gets the current width of the canvas viewport in <em>panel</em>
+	 * coordinates.
+	 */
 	int getViewportWidth();
 
-	/** Gets the current height of the canvas viewport in pixels. */
+	/**
+	 * Gets the current height of the canvas viewport in <em>panel</em>
+	 * coordinates.
+	 */
 	int getViewportHeight();
 
-	/**
-	 * Sets the height and width of the viewport.
-	 * 
-	 * @param width
-	 * @param height
-	 */
+	/** Sets the dimensions of the viewport in <em>panel</em> coordinates. */
 	void setViewportSize(int width, int height);
 
 	/**
-	 * Tests whether a given point in the panel falls within the image boundaries.
+	 * Tests whether a given point in the panel falls within the boundaries of the
+	 * display space.
 	 * 
-	 * @param point The point to check, in panel coordinates (pixels).
+	 * @param point The point to check, in <em>panel</em> coordinates.
 	 */
 	boolean isInImage(IntCoords point);
 
-	/** Converts the given panel coordinates into original image coordinates. */
-	RealCoords panelToImageCoords(IntCoords panelCoords);
+	/**
+	 * Converts the given <em>panel</em> coordinates into <em>data</em>
+	 * coordinates.
+	 */
+	RealCoords panelToDataCoords(IntCoords panelCoords);
 
-	/** Converts the given original image coordinates into panel coordinates. */
-	IntCoords imageToPanelCoords(RealCoords imageCoords);
+	/**
+	 * Converts the given <em>data</em> coordinates into <em>panel</em>
+	 * coordinates.
+	 */
+	IntCoords dataToPanelCoords(RealCoords dataCoords);
 
 	/** Gets the current mouse cursor. */
 	MouseCursor getCursor();
 
 	/** Sets the mouse to the given {@link MouseCursor} type. */
 	void setCursor(MouseCursor cursor);
-
-	/** Gets the scale to use when reverting after zooming. */
-	double getInitialScale();
-
-	/** Sets the scale to use when reverting after zooming. */
-	void setInitialScale(double zoomFactor);
-
-	/** Gets the closest step-wise zoom factor below the given scale. */
-	double getBestZoomLevel(final double fractionalScale);
 
 }

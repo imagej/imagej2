@@ -135,7 +135,7 @@ public class ZoomUserDefined extends DynamicPlugin {
 
 	@Override
 	public void run() {
-		display.getCanvas().setZoom(zoomPercent / 100.0,
+		display.getCanvas().setZoomAndCenter(zoomPercent / 100.0,
 			new RealCoords(getCenterU(), getCenterV()));
 	}
 

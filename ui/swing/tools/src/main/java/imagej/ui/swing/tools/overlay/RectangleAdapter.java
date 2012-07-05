@@ -171,9 +171,9 @@ public class RectangleAdapter extends
 		final IntCoords endPt =
 			new IntCoords(evt.getX() - anchor.x, evt.getY() - anchor.y);
 		final RealCoords startPtModelSpace =
-			imgDisp.getCanvas().panelToImageCoords(startPt);
+			imgDisp.getCanvas().panelToDataCoords(startPt);
 		final RealCoords endPtModelSpace =
-			imgDisp.getCanvas().panelToImageCoords(endPt);
+			imgDisp.getCanvas().panelToDataCoords(endPt);
 		final int x = (int) startPtModelSpace.x;
 		final int y = (int) startPtModelSpace.y;
 		final int w = (int) endPtModelSpace.x;

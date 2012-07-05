@@ -35,6 +35,8 @@
 
 package imagej.ui.common.awt;
 
+import imagej.data.display.ImageCanvas;
+import imagej.data.display.ImageDisplay;
 import imagej.event.EventService;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
@@ -53,6 +55,7 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.util.IntCoords;
 
 import java.awt.Component;
 import java.awt.event.InputEvent;
@@ -80,6 +83,9 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	/** Display associated with the dispatched events. */
 	private final Display<?> display;
 
+	/** The canvas associated with the dispatched events, if any. */
+	private final ImageCanvas imageCanvas;
+
 	/** Event service to use when dispatching events. */
 	private final EventService eventService;
 
@@ -95,6 +101,11 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	{
 		this.display = display;
 		this.eventService = eventService;
+		if (display instanceof ImageDisplay) {
+			final ImageDisplay imageDisplay = (ImageDisplay) display;
+			imageCanvas = imageDisplay.getCanvas();
+		}
+		else imageCanvas = null;
 	}
 
 	// -- AWTInputEventDispatcher methods --
@@ -187,8 +198,8 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 		final int clickCount = e.getClickCount();
 		final boolean isPopupTrigger = e.isPopupTrigger();
 		final MsReleasedEvent evt =
-			new MsReleasedEvent(display, modifiers, x, y, mouseButton(e),
-				clickCount, isPopupTrigger);
+			new MsReleasedEvent(display, modifiers, x, y, mouseButton(e), clickCount,
+				isPopupTrigger);
 		eventService.publish(evt);
 		if (evt.isConsumed()) e.consume();
 	}
@@ -258,8 +269,7 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 		final boolean metaDown = isOn(modsEx, InputEvent.META_DOWN_MASK);
 		final boolean shiftDown = isOn(modsEx, InputEvent.SHIFT_DOWN_MASK);
 		final boolean leftButtonDown = isOn(modsEx, InputEvent.BUTTON1_DOWN_MASK);
-		final boolean middleButtonDown =
-			isOn(modsEx, InputEvent.BUTTON3_DOWN_MASK);
+		final boolean middleButtonDown = isOn(modsEx, InputEvent.BUTTON3_DOWN_MASK);
 		final boolean rightButtonDown = isOn(modsEx, InputEvent.BUTTON2_DOWN_MASK);
 		return new InputModifiers(altDown, altGrDown, ctrlDown, metaDown,
 			shiftDown, leftButtonDown, middleButtonDown, rightButtonDown);
@@ -283,9 +293,14 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	}
 
 	/** Updates last known mouse coordinates. */
-	private void updateMouseCoords(MouseEvent e) {
+	private void updateMouseCoords(final MouseEvent e) {
 		x = e.getX();
 		y = e.getY();
+		if (imageCanvas != null) {
+			final IntCoords panOffset = imageCanvas.getPanOffset();
+			x -= panOffset.x;
+			y -= panOffset.y;
+		}
 	}
 
 	/** Invalidates last known mouse coordinates. */

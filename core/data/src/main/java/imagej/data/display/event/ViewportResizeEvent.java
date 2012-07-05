@@ -33,36 +33,28 @@
  * #L%
  */
 
-package imagej.ui.swing.sdi.display;
+package imagej.data.display.event;
 
-import imagej.data.display.ui.ImageDisplayViewer;
-import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayWindow;
-import imagej.ext.plugin.Plugin;
-import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
-import imagej.ui.swing.display.SwingImageDisplayViewer;
-
-import javax.swing.JFrame;
+import imagej.data.display.ImageCanvas;
 
 /**
- * Single Document Interface implementation of Swing image display viewer. The
- * SDI display is housed in a {@link JFrame}.
+ * An event indicating an {@link ImageCanvas} viewport has changed size.
+ * {@link ImageCanvas}.
  * 
- * @author Curtis Rueden
- * @author Lee Kamentsky
- * @see SwingImageDisplayViewer
+ * @author Barry DeZonia
  */
-@Plugin(type = ImageDisplayViewer.class)
-public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
-{
+public class ViewportResizeEvent extends CanvasEvent {
 
-	// -- DisplayViewer methods --
+	public ViewportResizeEvent(final ImageCanvas canvas) {
+		super(canvas);
+	}
+
+	// -- Object methods --
 
 	@Override
-	public void view(final DisplayWindow w, final Display<?> d) {
-		super.view(w, d);
-		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) w;
-		dispatcher.register(sdiWindow);
+	public String toString() {
+		return super.toString() + "\n\tviewport = " +
+			getCanvas().getViewportWidth() + " x " + getCanvas().getViewportHeight();
 	}
 
 }

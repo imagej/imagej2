@@ -49,7 +49,7 @@ import imagej.ext.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(label = "Zoom Out", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),

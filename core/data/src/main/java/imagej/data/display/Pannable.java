@@ -39,41 +39,70 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**
- * Defines methods needed to adjust the pan position of an {@link ImageCanvas}.
- * 
- * The pan position is the center of the viewport. The assumption is that
- * the user cares most about what's in the center of the viewport, especially
- * for operations like a pure zoom.
+ * Defines methods needed to adjust the pan position of a viewport, such as an
+ * {@link ImageCanvas}.
+ * <p>
+ * The pan position is the center of the viewport. The assumption is that the
+ * user cares most about what's in the center of the viewport, especially for
+ * operations like a pure zoom.
+ * </p>
  * 
  * @author Grant Harris
  * @author Curtis Rueden
  * @author Barry DeZonia
+ * @author Lee Kamentsky
+ * @see ImageCanvas
  */
 public interface Pannable {
 
 	/**
+	 * Gets the coordinates of the <em>data</em> space point currently displayed
+	 * in the center of the viewport.
+	 * 
+	 * @return Pan center coordinates, in <em>data</em> coordinate space.
+	 */
+	RealCoords getPanCenter();
+
+	/**
+	 * Gets the absolute offset of the viewport in pixels from the top left.
+	 * 
+	 * @return Pan offset in pixels; note that this value is not in <em>panel</em>
+	 *         coordinate space, since the pan offset in <em>panel</em> coordinate
+	 *         space is always (0, 0).
+	 */
+	IntCoords getPanOffset();
+
+	/**
+	 * Pans to the given absolute (X, Y) position in <em>data</em> coordinate
+	 * space.
+	 * 
+	 * @param center Absolute coordinates, in <em>data</em> coordinate space.
+	 */
+	void setPanCenter(RealCoords center);
+
+	/**
+	 * Pans to the given absolute (X, Y) position in <em>panel</em> coordinate
+	 * space.
+	 * 
+	 * @param center Absolute coordinates, in <em>panel</em> coordinate space.
+	 */
+	void setPanCenter(IntCoords center);
+
+	/**
 	 * Adjusts the pan by the given (X, Y) amount.
 	 * 
-	 * @param delta Pan modifier, in panel coordinate space (pixels).
+	 * @param delta Pan modifier, in <em>data</em> coordinate space.
+	 */
+	void pan(RealCoords delta);
+
+	/**
+	 * Adjusts the pan by the given (X, Y) amount in <em>panel</em> space.
+	 * 
+	 * @param delta Pan modifier, in <em>panel</em> coordinate space.
 	 */
 	void pan(IntCoords delta);
 
-	/**
-	 * Pans the image to the given absolute (X, Y) position.
-	 * 
-	 * @param center Absolute coordinates, in image coordinate space.
-	 */
-	void setPan(RealCoords center);
-
 	/** Resets the pan origin to the center of the display. */
 	void panReset();
-
-	/**
-	 * Gets the X coordinate of the image space point currently displayed in the
-	 * center of the window.
-	 * 
-	 * @return Pan origin coordinates, in panel coordinate space (pixels).
-	 */
-	RealCoords getPanCenter();
 
 }

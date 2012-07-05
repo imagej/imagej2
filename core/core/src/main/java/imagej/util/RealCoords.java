@@ -52,6 +52,8 @@ public class RealCoords {
 		this.y = y;
 	}
 
+	// -- RealCoords methods --
+
 	public int getIntX() {
 		return (int) (x + 0.5);
 	}
@@ -68,9 +70,32 @@ public class RealCoords {
 		return (long) (y + 0.5);
 	}
 
+	// -- Object methods --
+
 	@Override
 	public String toString() {
 		return "[Coords: x=" + x + ",y=" + y + "]";
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof RealCoords)) return false;
+		final RealCoords that = (RealCoords) o;
+		return x == that.x && y == that.y;
+	}
+
+	@Override
+	public int hashCode() {
+		// combine 16 least significant bits of x and y
+		final int b1 = lsb16(x);
+		final int b2 = lsb16(y);
+		return b1 | (b2 << 16);
+	}
+
+	// -- Helper methods --
+
+	private int lsb16(final double d) {
+		return (int) Double.doubleToLongBits(d) & 0xffff;
 	}
 
 }

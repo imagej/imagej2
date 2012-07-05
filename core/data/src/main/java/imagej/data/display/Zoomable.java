@@ -36,6 +36,7 @@
 package imagej.data.display;
 
 import imagej.util.IntCoords;
+import imagej.util.IntRect;
 import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
@@ -49,86 +50,126 @@ import imagej.util.RealRect;
 public interface Zoomable {
 
 	/**
-	 * Sets the zoom level used to display the image.
-	 * <p>
-	 * This method is used in programmatic zooming. The zooming center is the
-	 * point of the image closest to the center of the panel. After a new zoom
-	 * level is set the image is repainted.
-	 * </p>
+	 * Zooms to the given scale factor, without changing the viewport's center.
 	 * 
-	 * @param factor the zoom level used to display this panel's image.
+	 * @param factor The new scale factor.
 	 */
 	void setZoom(double factor);
-	
+
 	/**
-	 * Set the zoom and center the viewport within the image.
+	 * Zooms to the given scale factor, recentering the viewport at the center of
+	 * the <em>data</em> space.
 	 * 
-	 * @param factor
+	 * @param factor The new scale factor.
 	 */
 	void setZoomAndCenter(double factor);
 
 	/**
-	 * Sets the zoom level used to display the image, and the zooming center,
-	 * around which zooming is done.
+	 * Zooms to the given scale factor, recentering the viewport at the specified
+	 * <em>data</em> coordinates.
+	 * 
+	 * @param factor The new scale factor.
+	 * @param center Absolute coordinates, in <em>data</em> coordinate space.
+	 */
+	void setZoomAndCenter(double factor, RealCoords center);
+
+	/**
+	 * Zooms to the given scale factor, such that the specified position in
+	 * <em>data</em> coordinates remains at the same place in the viewport.
 	 * <p>
-	 * This method is used in programmatic zooming. After a new zoom level is set
-	 * the image is repainted.
+	 * This is useful for repeatedly zooming at a chosen point in the data.
 	 * </p>
 	 * 
-	 * @param factor the zoom level used to display this panel's image.
-	 * @param center the zoom center, in image coordinates.
+	 * @param factor The new scale factor.
+	 * @param pos The <em>data</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void setZoom(double factor, RealCoords center);
-	
-	/**
-	 * Sets the zoom level used to display the image and recenters
-	 * the image around the given coordinate in the current panel space.
-	 * 
-	 * @param factor new zoom level
-	 * @param center the center in panel space
-	 */
-	void setZoom(double factor, IntCoords center);
+	void setZoomAtPoint(double factor, RealCoords pos);
 
-	/** Zooms in by the default amount, centered around the panel's middle. */
+	/**
+	 * Zooms to the given scale factor, such that the specified position in
+	 * <em>panel</em> coordinates remains at the same place in the viewport.
+	 * <p>
+	 * This is useful for repeatedly zooming at a clicked point.
+	 * </p>
+	 * 
+	 * @param factor The new scale factor.
+	 * @param pos The <em>panel</em> coordinates to keep in the same place within
+	 *          the viewport.
+	 */
+	void setZoomAtPoint(double factor, IntCoords pos);
+
+	/** Zooms in by the default amount, without changing the viewport's center. */
 	void zoomIn();
 
 	/**
-	 * Zooms in by the default amount, centered around the given coordinates.
+	 * Zooms in by the default amount, such that the specified position in
+	 * <em>data</em> coordinates remains at the same place in the viewport.
 	 * 
-	 * @param center The zoom center, in panel coordinates (pixels).
+	 * @param pos The <em>data</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void zoomIn(IntCoords center);
+	void zoomIn(RealCoords pos);
 
-	/** Zooms out by the default amount, centered around the panel's middle. */
+	/**
+	 * Zooms in by the default amount, such that the specified position in
+	 * <em>panel</em> coordinates remains at the same place in the viewport.
+	 * 
+	 * @param pos The <em>panel</em> coordinates to keep in the same place within
+	 *          the viewport.
+	 */
+	void zoomIn(IntCoords pos);
+
+	/**
+	 * Zooms out by the default amount, without changing the viewport's center.
+	 */
 	void zoomOut();
 
 	/**
-	 * Zooms out by the default amount, centered around the given coordinates.
+	 * Zooms out by the default amount, such that the specified position in
+	 * <em>data</em> coordinates remains at the same place in the viewport.
 	 * 
-	 * @param center The zoom center, in panel coordinates (pixels).
+	 * @param pos The <em>data</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void zoomOut(IntCoords center);
+	void zoomOut(RealCoords pos);
 
 	/**
-	 * Zoom the viewport to the given coordinates in panel space
-	 * @param topLeft top left of the new viewport in panel space
-	 * @param bottomRight bottom right of the new viewport in panel space
-	 */
-	void zoomToFit(IntCoords topLeft, IntCoords bottomRight);
-	
-	/**
-	 * Zoom the viewport to fit the given rectangle in image space
+	 * Zooms out by the default amount, such that the specified position in
+	 * <em>panel</em> coordinates remains at the same place in the viewport.
 	 * 
-	 * @param viewportRect - the rectangle that the user wants to see.
+	 * @param pos The <em>panel</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void zoomToFit(RealRect viewportRect);
+	void zoomOut(IntCoords pos);
+
+	/**
+	 * Zoom the viewport to fit the given bounding box in <em>data</em>
+	 * coordinates.
+	 * 
+	 * @param viewportBox The viewport bounding box, in <em>data</em> coordinates.
+	 */
+	void zoomToFit(RealRect viewportBox);
+
+	/**
+	 * Zooms the viewport to fit the given bounding box in <em>panel</em>
+	 * coordinates.
+	 * 
+	 * @param viewportBox The viewport bounding box, in <em>panel</em>
+	 *          coordinates.
+	 */
+	void zoomToFit(IntRect viewportBox);
 
 	/** Gets the current zoom level. */
 	double getZoomFactor();
-	
-	/**
-	 * @return the coordinates of the viewport into the image
-	 * in image coordinates.
-	 */
-	RealRect getViewportImageRect();
+
+	/** Gets the scale to use when reverting after zooming. */
+	double getInitialScale();
+
+	/** Sets the scale to use when reverting after zooming. */
+	void setInitialScale(double zoomFactor);
+
+	/** Gets the closest step-wise zoom factor below the given scale. */
+	double getBestZoomLevel(final double fractionalScale);
+
 }

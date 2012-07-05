@@ -38,9 +38,8 @@ package imagej.data.display.event;
 import imagej.data.display.ImageCanvas;
 
 /**
- * The MouseCursorEvent notifies subscribers of a change in
- * the mouse cursor.
- *
+ * An event indicating a change in the mouse cursor.
+ * 
  * @author Lee Kamentsky
  */
 public class MouseCursorEvent extends CanvasEvent {
@@ -48,9 +47,10 @@ public class MouseCursorEvent extends CanvasEvent {
 	public MouseCursorEvent(final ImageCanvas canvas) {
 		super(canvas);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Mouse cursor = " + getCanvas().getCursor().toString();
+		return super.toString() + "\n\tcursor = " + getCanvas().getCursor();
 	}
+
 }

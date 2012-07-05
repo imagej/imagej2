@@ -37,8 +37,6 @@ package imagej.ui.swing.sdi.display;
 
 import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
-import imagej.ui.common.awt.AWTInputEventDispatcher;
-import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 
 import java.awt.HeadlessException;
@@ -59,16 +57,6 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 	public SwingDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setLocation(StaticSwingUtils.nextFramePosition());
-	}
-
-	// -- SwingDisplayWindow methods --
-
-	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
-		dispatcher.register(this);
-	}
-
-	public void addEventDispatcher(final AWTWindowEventDispatcher dispatcher) {
-		dispatcher.register(this);
 	}
 
 	// -- DisplayWindow methods --

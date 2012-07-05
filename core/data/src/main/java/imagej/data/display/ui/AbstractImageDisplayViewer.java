@@ -42,7 +42,7 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
-import imagej.data.display.event.ZoomEvent;
+import imagej.data.display.event.PanZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
@@ -290,7 +290,7 @@ public abstract class AbstractImageDisplayViewer extends
 	}
 
 	@EventHandler
-	protected void onEvent(final ZoomEvent event) {
+	protected void onEvent(final PanZoomEvent event) {
 		if (event.getCanvas() == getDisplay().getCanvas()) updateLabel();
 	}
 

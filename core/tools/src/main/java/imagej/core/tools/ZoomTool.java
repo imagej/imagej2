@@ -46,6 +46,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
 import imagej.util.IntCoords;
+import imagej.util.IntRect;
 
 /**
  * Tool for zooming in and out of a display using the mouse.
@@ -105,7 +106,11 @@ public class ZoomTool extends AbstractTool {
 				mouseUp.y = mouseDown.y;
 				mouseDown.y = y;
 			}
-			imageDisplay.getCanvas().zoomToFit(mouseDown, mouseUp);
+			final int width = mouseUp.x - mouseDown.x;
+			final int height = mouseUp.y - mouseDown.y;
+			final IntRect bounds =
+				new IntRect(mouseDown.x, mouseDown.y, width, height);
+			imageDisplay.getCanvas().zoomToFit(bounds);
 		}
 		else {
 			// under threshold: just zoom
@@ -126,7 +131,6 @@ public class ZoomTool extends AbstractTool {
 	public void onMouseMove(final MsMovedEvent evt) {
 		mousePos.x = evt.getX();
 		mousePos.y = evt.getY();
-		evt.consume();
 	}
 
 	@Override

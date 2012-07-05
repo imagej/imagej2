@@ -95,32 +95,19 @@ public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
 		return panel;
 	}
 	
-	/**
-	 * Implement the user interface for deleting a display
-	 * @param e
-	 */
 	@Override
 	public void onDisplayDeletedEvent(DisplayDeletedEvent e) {
 		getPanel().getWindow().close();
 	}
 
-	/**
-	 * Synchronize the user interface appearance with that
-	 * of the display model.
-	 *  
-	 * @param e
-	 */
 	@Override
 	public void onDisplayUpdatedEvent(DisplayUpdatedEvent e) {
-		if (e.getLevel() == DisplayUpdateLevel.REBUILD)
+		if (e.getLevel() == DisplayUpdateLevel.REBUILD) {
 			getPanel().redoLayout();
+		}
 		getPanel().redraw();
 	}
 	
-	/**
-	 * Activate a display
-	 * @param e
-	 */
 	@Override
 	public void onDisplayActivatedEvent(DisplayActivatedEvent e) {
 		getPanel().getWindow().requestFocus();

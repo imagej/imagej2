@@ -89,7 +89,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 			ImageDisplay disp = (ImageDisplay) evt.getDisplay();
 			ImageCanvas canv = disp.getCanvas();
 			IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
-			RealCoords realCoords = canv.panelToImageCoords(panelCoords);
+			RealCoords realCoords = canv.panelToDataCoords(panelCoords);
 			long modelX = realCoords.getLongX();
 			long modelY = realCoords.getLongY();
 			drawingTool.moveTo(modelX, modelY);
@@ -113,7 +113,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 		ImageDisplay disp = (ImageDisplay) evt.getDisplay();
 		ImageCanvas canv = disp.getCanvas();
 		IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
-		RealCoords realCoords = canv.panelToImageCoords(panelCoords);
+		RealCoords realCoords = canv.panelToDataCoords(panelCoords);
 		long modelX = realCoords.getLongX();
 		long modelY = realCoords.getLongY();
 		drawingTool.lineTo(modelX, modelY);

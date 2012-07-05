@@ -91,10 +91,10 @@ public class RealRect {
 	}
 
 	/**
-	 * Returns a Rect representing the doubleersection of this Rect with the given
-	 * Rect. If the two Rects do not doubleersect, the result is an empty Rect.
+	 * Returns a Rect representing the intersection of this Rect with the given
+	 * Rect. If the two Rects do not intersect, the result is an empty Rect.
 	 */
-	public RealRect doubleersection(final RealRect r) {
+	public RealRect intersection(final RealRect r) {
 		final double newX = Math.max(this.x, r.x);
 		final double newY = Math.max(this.y, r.y);
 		double newW = Math.min(this.x + this.width, r.x + r.width) - x;
@@ -106,11 +106,24 @@ public class RealRect {
 		return new RealRect(newX, newY, newW, newH);
 	}
 	
+	/** Tests whether the given coordinates lie within the rectangle. */
 	public boolean contains(final RealCoords coords) {
-		return (coords.x >= this.x) && (coords.x < this.x + this.width) &&
-			   (coords.y >= this.y) && (coords.y < this.y + this.height);
+		return coords.x >= this.x && coords.x < this.x + this.width &&
+			coords.y >= this.y && coords.y < this.y + this.height;
 	}
 	
+	/** Gets the top left coordinate of the rectangle. */
+	public RealCoords getTopLeft() {
+		return new RealCoords(x, y);
+	}
+
+	/** Gets the bottom right coordinate of the rectangle. */
+	public RealCoords getBottomRight() {
+		return new RealCoords(x + width, y + height);
+	}
+
+	// -- Object methods --
+
 	@Override
 	public String toString() {
 		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;

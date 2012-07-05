@@ -38,14 +38,14 @@ package imagej.data.display.event;
 import imagej.data.display.ImageCanvas;
 
 /**
- * An event indicating a zoom change has happened to an ImageCanvas.
+ * An event indicating a pan and/or zoom change has happened to an
+ * {@link ImageCanvas}.
  * 
  * @author Barry DeZonia
  */
-public class ZoomEvent extends CanvasEvent {
+public class PanZoomEvent extends CanvasEvent {
 
-	public ZoomEvent(final ImageCanvas canvas)
-	{
+	public PanZoomEvent(final ImageCanvas canvas) {
 		super(canvas);
 	}
 
@@ -53,8 +53,9 @@ public class ZoomEvent extends CanvasEvent {
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tscale = " + getCanvas().getZoomFactor() + "\n\tcenterX = " +
-			getCanvas().getPanCenter().x + "\n\tcenterY = " + getCanvas().getPanCenter().y;
+		return super.toString() + "\n\tscale = " + getCanvas().getZoomFactor() +
+			"\n\tcenterX = " + getCanvas().getPanCenter().x + "\n\tcenterY = " +
+			getCanvas().getPanCenter().y;
 	}
 
 }

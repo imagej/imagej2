@@ -74,8 +74,9 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	ImageCanvas getCanvas();
 	
 	/**
-	 * @return a rectangle defining the extents of the image in the current X/Y plane
+	 * Gets a rectangle defining the extents of the image in the current X/Y
+	 * plane.
 	 */
-	RealRect getImageExtents();
+	RealRect getPlaneExtents();
 
 }
