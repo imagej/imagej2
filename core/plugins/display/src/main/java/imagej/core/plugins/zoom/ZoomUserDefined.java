@@ -53,7 +53,7 @@ import imagej.util.RealCoords;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(label = "Set Zoom...", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) },
