@@ -333,6 +333,7 @@ public final class DefaultUIService extends AbstractService implements
 	 */
 	@EventHandler
 	protected void onEvent(final DisplayActivatedEvent e) {
+		// CTR FIXME: Verify whether this threading logic is really necessary.
 		if (activationInvocationPending) return;
 		activationInvocationPending = true;
 		threadService.queue(new Runnable() {
