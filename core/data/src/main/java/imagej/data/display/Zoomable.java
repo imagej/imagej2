@@ -50,86 +50,104 @@ import imagej.util.RealRect;
 public interface Zoomable {
 
 	/**
-	 * Sets the zoom level used to display the image.
-	 * <p>
-	 * This method is used in programmatic zooming. The zooming center is the
-	 * point of the image closest to the center of the panel. After a new zoom
-	 * level is set the image is repainted.
-	 * </p>
+	 * Zooms to the given scale factor, without changing the viewport's center.
 	 * 
-	 * @param factor the zoom level used to display this panel's image.
+	 * @param factor The new scale factor.
 	 */
 	void setZoom(double factor);
 
 	/**
-	 * Set the zoom and center the viewport within the image.
+	 * Zooms to the given scale factor, recentering the viewport at the center of
+	 * the <em>data</em> space.
 	 * 
-	 * @param factor
+	 * @param factor The new scale factor.
 	 */
 	void setZoomAndCenter(double factor);
 
 	/**
-	 * Recenters the image around the given <em>data</em> coordinates, then sets
-	 * the zoom level.
+	 * Zooms to the given scale factor, recentering the viewport at the specified
+	 * <em>data</em> coordinates.
 	 * 
-	 * @param factor The new zoom level.
-	 * @param center The center in <em>data</em> coordinates.
+	 * @param factor The new scale factor.
+	 * @param center Absolute coordinates, in <em>data</em> coordinate space.
 	 */
-	void setZoom(double factor, RealCoords center);
+	void setZoomAndCenter(double factor, RealCoords center);
 
 	/**
-	 * Recenters the image around the given <em>panel</em> coordinates, then sets
-	 * the zoom level.
+	 * Zooms to the given scale factor, such that the specified position in
+	 * <em>data</em> coordinates remains at the same place in the viewport.
+	 * <p>
+	 * This is useful for repeatedly zooming at a chosen point in the data.
+	 * </p>
 	 * 
-	 * @param factor The new zoom level.
-	 * @param center The center in <em>panel</em> coordinates.
+	 * @param factor The new scale factor.
+	 * @param pos The <em>data</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void setZoom(double factor, IntCoords center);
+	void setZoomAtPoint(double factor, RealCoords pos);
 
-	/** Zooms in by the default amount, centered around the panel's center. */
+	/**
+	 * Zooms to the given scale factor, such that the specified position in
+	 * <em>panel</em> coordinates remains at the same place in the viewport.
+	 * <p>
+	 * This is useful for repeatedly zooming at a clicked point.
+	 * </p>
+	 * 
+	 * @param factor The new scale factor.
+	 * @param pos The <em>panel</em> coordinates to keep in the same place within
+	 *          the viewport.
+	 */
+	void setZoomAtPoint(double factor, IntCoords pos);
+
+	/** Zooms in by the default amount, without changing the viewport's center. */
 	void zoomIn();
 
 	/**
-	 * Zooms in by the default amount, centered around the given <em>data</em>
-	 * coordinates.
+	 * Zooms in by the default amount, such that the specified position in
+	 * <em>data</em> coordinates remains at the same place in the viewport.
 	 * 
-	 * @param center The zoom center, in <em>data</em> coordinates.
+	 * @param pos The <em>data</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void zoomIn(RealCoords center);
+	void zoomIn(RealCoords pos);
 
 	/**
-	 * Zooms in by the default amount, centered around the given <em>panel</em>
-	 * coordinates.
+	 * Zooms in by the default amount, such that the specified position in
+	 * <em>panel</em> coordinates remains at the same place in the viewport.
 	 * 
-	 * @param center The zoom center, in <em>panel</em> coordinates.
+	 * @param pos The <em>panel</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void zoomIn(IntCoords center);
+	void zoomIn(IntCoords pos);
 
-	/** Zooms out by the default amount, centered around the panel's center. */
+	/**
+	 * Zooms out by the default amount, without changing the viewport's center.
+	 */
 	void zoomOut();
 
 	/**
-	 * Zooms out by the default amount, centered around the given <em>data</em>
-	 * coordinates.
+	 * Zooms out by the default amount, such that the specified position in
+	 * <em>data</em> coordinates remains at the same place in the viewport.
 	 * 
-	 * @param center The zoom center, in <em>data</em> coordinates.
+	 * @param pos The <em>data</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void zoomOut(RealCoords center);
+	void zoomOut(RealCoords pos);
 
 	/**
-	 * Zooms out by the default amount, centered around the given <em>panel</em>
-	 * coordinates.
+	 * Zooms out by the default amount, such that the specified position in
+	 * <em>panel</em> coordinates remains at the same place in the viewport.
 	 * 
-	 * @param center The zoom center, in <em>panel</em> coordinates.
+	 * @param pos The <em>panel</em> coordinates to keep in the same place within
+	 *          the viewport.
 	 */
-	void zoomOut(IntCoords center);
+	void zoomOut(IntCoords pos);
 
 	/**
 	 * Zoom the viewport to fit the given bounding box in <em>data</em>
 	 * coordinates.
 	 * 
-	 * @param viewportBox The viewport bounding box, in <em>data</em>
-	 *          coordinates.
+	 * @param viewportBox The viewport bounding box, in <em>data</em> coordinates.
 	 */
 	void zoomToFit(RealRect viewportBox);
 

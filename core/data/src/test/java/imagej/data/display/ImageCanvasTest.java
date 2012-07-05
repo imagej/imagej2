@@ -151,11 +151,16 @@ public class ImageCanvasTest {
 
 		final RealCoords dataCoords =
 			new RealCoords(dataWidth / 4, 3 * dataHeight / 4);
+		final IntCoords panelCoordsBefore = canvas.dataToPanelCoords(dataCoords);
 
 		final double zoom = 2.3;
-		canvas.setZoom(zoom, dataCoords);
+		canvas.setZoomAtPoint(zoom, dataCoords);
+
 		assertEquals(zoom, canvas.getZoomFactor(), 0);
-		assertEquals(dataCoords, canvas.getPanCenter());
+
+		// NB: Panel coordinate transformation for dataCoords should be the same.
+		final IntCoords panelCoordsAfter = canvas.dataToPanelCoords(dataCoords);
+		assertEquals(panelCoordsBefore, panelCoordsAfter);
 	}
 
 	@Test

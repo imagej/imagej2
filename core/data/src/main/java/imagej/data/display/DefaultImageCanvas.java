@@ -280,32 +280,41 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	@Override
 	public void setZoom(final double factor) {
-		final double desiredScale = factor == 0 ? initialScale : factor;
-		if (scaleOutOfBounds(desiredScale) || desiredScale == getZoomFactor()) {
-			return;
-		}
-		scale = factor;
-		publishPanZoomEvent();
+		setZoomAndCenter(factor, getPanCenter());
 	}
 
 	@Override
-	public void setZoom(final double factor, final RealCoords center) {
-		final double desiredScale = factor == 0 ? initialScale : factor;
-		if (scaleOutOfBounds(desiredScale)) return;
-		scale = desiredScale;
-		setPanCenter(center);
+	public void setZoomAtPoint(final double factor, final RealCoords pos) {
+		final double newScale = factor == 0 ? initialScale : factor;
+
+		// NB: This was derived from the data <-> panel conversion equations.
+		final RealCoords center = getPanCenter();
+		center.x = pos.x - (pos.x - center.x) * scale / newScale;
+		center.y = pos.y - (pos.y - center.y) * scale / newScale;
+
+		setZoomAndCenter(newScale, center);
 	}
 
 	@Override
-	public void setZoom(final double factor, final IntCoords center) {
-		setZoom(factor, panelToDataCoords(center));
+	public void setZoomAtPoint(final double factor, final IntCoords pos) {
+		setZoomAtPoint(factor, panelToDataCoords(pos));
 	}
 
 	@Override
 	public void setZoomAndCenter(final double factor) {
 		final double x = getViewportWidth() / getZoomFactor() / 2d;
 		final double y = getViewportHeight() / getZoomFactor() / 2d;
-		setZoom(factor, new RealCoords(x, y));
+		setZoomAndCenter(factor, new RealCoords(x, y));
+	}
+
+	@Override
+	public void setZoomAndCenter(final double factor, final RealCoords center) {
+		final double newScale = factor == 0 ? initialScale : factor;
+		if (scaleOutOfBounds(newScale)) return;
+
+		scale = newScale;
+
+		setPanCenter(center);
 	}
 
 	@Override
@@ -315,15 +324,15 @@ public class DefaultImageCanvas implements ImageCanvas {
 	}
 
 	@Override
-	public void zoomIn(final RealCoords center) {
+	public void zoomIn(final RealCoords pos) {
 		final double desiredScale = nextLargerZoom(zoomLevels, getZoomFactor());
-		setZoom(desiredScale, center);
+		setZoomAtPoint(desiredScale, pos);
 	}
 
 	@Override
-	public void zoomIn(final IntCoords center) {
+	public void zoomIn(final IntCoords pos) {
 		final double desiredScale = nextLargerZoom(zoomLevels, getZoomFactor());
-		setZoom(desiredScale, center);
+		setZoomAtPoint(desiredScale, pos);
 	}
 
 	@Override
@@ -333,15 +342,15 @@ public class DefaultImageCanvas implements ImageCanvas {
 	}
 
 	@Override
-	public void zoomOut(final RealCoords center) {
+	public void zoomOut(final RealCoords pos) {
 		final double newScale = nextSmallerZoom(zoomLevels, getZoomFactor());
-		setZoom(newScale, center);
+		setZoomAtPoint(newScale, pos);
 	}
 
 	@Override
-	public void zoomOut(final IntCoords center) {
+	public void zoomOut(final IntCoords pos) {
 		final double newScale = nextSmallerZoom(zoomLevels, getZoomFactor());
-		setZoom(newScale, center);
+		setZoomAtPoint(newScale, pos);
 	}
 
 	@Override
@@ -357,7 +366,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 		final double xZoom = getViewportWidth() / dataSizeX;
 		final double yZoom = getViewportHeight() / dataSizeY;
 		final double factor = Math.min(xZoom, yZoom);
-		setZoom(factor, new RealCoords(newCenterX, newCenterY));
+		setZoomAndCenter(factor, new RealCoords(newCenterX, newCenterY));
 	}
 
 	@Override
@@ -367,7 +376,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 		final double minScale =
 			Math.min(getViewportWidth() / viewportBox.width, getViewportHeight() /
 				viewportBox.height);
-		setZoom(minScale, new RealCoords(newCenterX, newCenterY));
+		setZoomAndCenter(minScale, new RealCoords(newCenterX, newCenterY));
 	}
 
 	@Override

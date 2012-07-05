@@ -533,7 +533,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 				// back-compute the center from the origin
 				final double panCenterX = (uiOffset.x + uiSize.width / 2d) / uiZoom;
 				final double panCenterY = (uiOffset.y + uiSize.height / 2d) / uiZoom;
-				canvas.setZoom(uiZoom, new RealCoords(panCenterX, panCenterY));
+				canvas.setZoomAndCenter(uiZoom, new RealCoords(panCenterX, panCenterY));
 			}
 
 			if (zoomChanged) maybeResizeWindow();
