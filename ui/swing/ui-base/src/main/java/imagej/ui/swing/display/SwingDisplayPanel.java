@@ -163,19 +163,12 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 
 	@Override
 	public void redoLayout() {
-		EventQueue.invokeLater(new Runnable() {
-
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void run() {
-				createSliders();
-				updateBorder(0);
-				sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
-				sliderPanel.invalidate(); // BDZ added: helps fix bug #1219
-				doInitialSizing();
-				displayViewer.getCanvas().rebuild();
-			}
-		});
+		createSliders();
+		updateBorder(0);
+		sliderPanel.setVisible(sliderPanel.getComponentCount() > 0);
+		sliderPanel.invalidate(); // BDZ added: helps fix bug #1219
+		doInitialSizing();
+		displayViewer.getCanvas().rebuild();
 	}
 
 	@Override
