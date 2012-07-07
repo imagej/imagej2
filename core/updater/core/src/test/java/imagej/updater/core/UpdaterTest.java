@@ -746,10 +746,16 @@ public class UpdaterTest {
 		final String newContents = "blub = true\n"
 			+ "#Tue Jun 17 09:47:43 CST 2012\n"
 			+ "narf.egads = pinkie\n";
-		final File oldOldJar = writeJarWithProperties("old.jar", 2012, 6, 12, oldContents);
-		final File oldNewJar = writeJarWithProperties("new.jar", 2012, 6, 12, newContents);
-		final File newOldJar = writeJarWithProperties("old2.jar", 2012, 6, 17, oldContents);
-		final File newNewJar = writeJarWithProperties("new2.jar", 2012, 6, 17, newContents);
+		final String fileName =
+			"META-INF/maven/net.imagej/updater-test/pom.properties";
+		final File oldOldJar =
+			writeJarWithDatedFile("old.jar", 2012, 6, 12, fileName, oldContents);
+		final File oldNewJar =
+			writeJarWithDatedFile("new.jar", 2012, 6, 12, fileName, newContents);
+		final File newOldJar =
+			writeJarWithDatedFile("old2.jar", 2012, 6, 17, fileName, oldContents);
+		final File newNewJar =
+			writeJarWithDatedFile("new2.jar", 2012, 6, 17, fileName, newContents);
 
 		// before June 15th, they were considered different
 		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(oldNewJar));
@@ -760,11 +766,40 @@ public class UpdaterTest {
 		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(newOldJar));
 	}
 
-	private File writeJarWithProperties(String fileName, int year, int month, int day,
-			String propertiesContents) throws IOException {
-		final File file = new File(ijRoot, fileName);
+	@Test
+	public void testManifestHashing() throws Exception {
+		final String oldContents =
+			"Manifest-Version: 1.0\n" + "Built-By: Bugs Bunny\n"
+				+ "Main-Class: Buxtehude\n";
+		final String newContents =
+			"Manifest-Version: 1.0\n" + "Built-By: Donald Duck\n"
+				+ "Main-Class: Buxtehude\n";
+		final String fileName = "META-INF/MANIFEST.MF";
+		final File oldOldJar =
+			writeJarWithDatedFile("old.jar", 2012, 7, 4, fileName, oldContents);
+		final File oldNewJar =
+			writeJarWithDatedFile("new.jar", 2012, 7, 4, fileName, newContents);
+		final File newOldJar =
+			writeJarWithDatedFile("old2.jar", 2012, 7, 8, fileName, oldContents);
+		final File newNewJar =
+			writeJarWithDatedFile("new2.jar", 2012, 7, 8, fileName, newContents);
+
+		// before June 15th, they were considered different
+		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(oldNewJar));
+		// after June 15th, they are considered unchanged
+		assertEquals(Util.getJarDigest(newOldJar), Util.getJarDigest(newNewJar));
+		// checksums must be different if contents are the same but the timestamps
+		// are on opposite sides of the cutoff
+		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(newOldJar));
+	}
+
+	private File writeJarWithDatedFile(final String jarFileName, final int year,
+		final int month, final int day, final String fileName,
+		final String propertiesContents) throws IOException
+	{
+		final File file = new File(ijRoot, jarFileName);
 		final JarOutputStream out = new JarOutputStream(new FileOutputStream(file));
-		final JarEntry entry = new JarEntry("META-INF/maven/net.imagej/updater-test/pom.properties");
+		final JarEntry entry = new JarEntry(fileName);
 		entry.setTime(new GregorianCalendar(year, month, day).getTimeInMillis());
 		out.putNextEntry(entry);
 		out.write(propertiesContents.getBytes());
