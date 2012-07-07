@@ -217,7 +217,7 @@ public class Util {
 				InputStream inputStream = jar.getInputStream(entry);
 				// .properties files have a date in a comment; let's ignore this for the checksum
 				// For backwards-compatibility, activate the .properties mangling only from June 15th, 2012
-				if (entry.getTime() >= 1339718400000l && entry.getName().endsWith(".properties")) {
+				if (entry.getTime() >= 1342328400000l && entry.getName().endsWith(".properties")) {
 					inputStream = new SkipHashedLines(inputStream);
 				}
 				updateDigest(inputStream, digest);
