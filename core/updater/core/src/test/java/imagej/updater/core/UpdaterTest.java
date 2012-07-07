@@ -47,7 +47,6 @@ package imagej.updater.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import imagej.updater.core.Conflicts.Conflict;
@@ -167,17 +166,17 @@ public class UpdaterTest {
 		final FileObject narf = files.get("jars/narf.jar");
 		final FileObject egads = files.get("jars/egads.jar");
 
-		assertNotSame(null, ij);
-		assertNotSame(null, narf);
-		assertNotSame(null, egads);
+		assertNotEqual(null, ij);
+		assertNotEqual(null, narf);
+		assertNotEqual(null, egads);
 
 		assertEquals(true, ij.executable);
 		assertEquals(false, narf.executable);
 		assertEquals(false, egads.executable);
 
-		assertNotSame(ij.current.checksum, narf.current.checksum);
-		assertNotSame(narf.current.checksum, egads.current.checksum);
-		assertNotSame(egads.current.checksum, ij.current.checksum);
+		assertNotEqual(ij.current.checksum, narf.current.checksum);
+		assertNotEqual(narf.current.checksum, egads.current.checksum);
+		assertNotEqual(egads.current.checksum, ij.current.checksum);
 
 		assertCount(3, files.localOnly());
 
@@ -347,7 +346,7 @@ public class UpdaterTest {
 		assertEquals(1, resolutions.length);
 		assertEquals(20030115203432l, object.localTimestamp);
 		resolutions[0].resolve();
-		assertNotSame(20030115203432l, object.localTimestamp);
+		assertNotEqual(20030115203432l, object.localTimestamp);
 
 		// Make sure that the resolution allows the upload to succeed
 
@@ -697,7 +696,10 @@ public class UpdaterTest {
 
 		// now the updater should be updated first thing
 		files = readDb(true, true);
-		assertNotSame(modifiedChecksum, files.get(name2).current.checksum);
+		FileObject file2 = files.get(name2);
+		assertNotEqual(file2.localFilename, name2);
+		assertTrue(file2.isUpdateable());
+		assertNotEqual(modifiedChecksum, files.get(name2).localChecksum);
 		assertTrue(Installer.isTheUpdaterUpdateable(files));
 		Installer.updateTheUpdater(files, progress);
 		assertTrue(new File(ijRoot, "update/" + name1).exists());
@@ -750,11 +752,12 @@ public class UpdaterTest {
 		final File newNewJar = writeJarWithProperties("new2.jar", 2012, 6, 17, newContents);
 
 		// before June 15th, they were considered different
-		assertNotSame(Util.getJarDigest(oldOldJar), Util.getJarDigest(oldNewJar));
+		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(oldNewJar));
 		// after June 15th, they are considered unchanged
 		assertEquals(Util.getJarDigest(newOldJar), Util.getJarDigest(newNewJar));
-		// checksums must be different if contents are the same but the timestamps are on opposite sides of the cutoff
-		assertNotSame(Util.getJarDigest(oldOldJar), Util.getJarDigest(newOldJar));
+		// checksums must be different if contents are the same but the timestamps
+		// are on opposite sides of the cutoff
+		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(newOldJar));
 	}
 
 	private File writeJarWithProperties(String fileName, int year, int month, int day,
@@ -875,7 +878,7 @@ public class UpdaterTest {
 			assertTrue(uploader.login());
 			uploader.upload(progress);
 			assertTrue(remoteDb.exists());
-			assertNotSame(remoteDb.length(), remoteDbSize);
+			assertNotEqual(remoteDb.length(), remoteDbSize);
 		}
 
 	}
@@ -959,6 +962,21 @@ public class UpdaterTest {
 		final FileObject file = files.get(filename);
 		assertNotNull("Object " + filename, file);
 		assertEquals("Status of " + filename, action, file.getAction());
+	}
+
+	protected static void assertNotEqual(final Object object1,
+		final Object object2)
+	{
+		if (object1 == null) {
+			assertNotNull(object2);
+		}
+		else {
+			assertFalse(object1.equals(object2));
+		}
+	}
+
+	protected static void assertNotEqual(final long long1, final long long2) {
+		assertTrue(long1 != long2);
 	}
 
 	protected static void
