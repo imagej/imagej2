@@ -220,6 +220,10 @@ public class Util {
 				if (entry.getTime() >= 1342328400000l && entry.getName().endsWith(".properties")) {
 					inputStream = new SkipHashedLines(inputStream);
 				}
+				// same for manifests, but with July 6th, 2012
+				if (entry.getTime() >= 1344229200000l && entry.getName().equals("META-INF/MANIFEST.MF")) {
+					inputStream = new FilterManifest(inputStream);
+				}
 				updateDigest(inputStream, digest);
 			}
 		}
