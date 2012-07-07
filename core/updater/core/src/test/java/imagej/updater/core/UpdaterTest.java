@@ -58,7 +58,6 @@ import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
-import imagej.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -810,7 +809,7 @@ public class UpdaterTest {
 			}
 		}
 		catch (final Throwable t) {
-			Log.error(t);
+			t.printStackTrace();
 		}
 	}
 
