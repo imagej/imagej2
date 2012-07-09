@@ -36,6 +36,7 @@
 package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
+import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.event.StatusService;
@@ -70,15 +71,30 @@ public class PixelProbe extends AbstractTool {
 			statusService.clearStatus();
 			return;
 		}
+		final Dataset dataset = dispService.getActiveDataset();
+		int xAxis = dataset.getAxisIndex(Axes.X); 
+		int yAxis = dataset.getAxisIndex(Axes.Y);
+		double xcal = dataset.calibration(xAxis);
+		double ycal = dataset.calibration(yAxis);
 		final int channelIndex = disp.getAxisIndex(Axes.CHANNEL);
 		final long cx = recorder.getCX();
 		final long cy = recorder.getCY();
 		ChannelCollection values = recorder.getValues();
 		StringBuilder builder = new StringBuilder();
 		builder.append("x=");
-		builder.append(cx);
+		if (xcal != 1.0) {
+			String str = String.format("%.2f", (xcal * cx));
+			builder.append(str);
+		}
+		else
+			builder.append(cx);
 		builder.append(", y=");
-		builder.append(cy);
+		if (ycal != 1.0) {
+			String str = String.format("%.2f", (ycal * cy));
+			builder.append(str);
+		}
+		else
+			builder.append(cy);
 		builder.append(", value=");
 		// single channel image
 		if ((channelIndex == -1) ||
