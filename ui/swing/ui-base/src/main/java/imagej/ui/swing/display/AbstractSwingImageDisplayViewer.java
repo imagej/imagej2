@@ -77,7 +77,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		imgPanel = new SwingDisplayPanel(this, getWindow());
 		setPanel(imgPanel);
 
-		getWindow().setTitle(getDisplay().getName());
+		updateTitle();
 	}
 
 	// -- SwingImageDisplayViewer methods --
@@ -108,6 +108,11 @@ public abstract class AbstractSwingImageDisplayViewer extends
 			: ZoomScaleOption.OPTIONS_PERCENT_SCALE;
 	}
 
+	@Override
+	protected void updateTitle() {
+		getWindow().setTitle(getDisplay().getName());
+	}
+	
 	// -- Event handlers --
 
 	@EventHandler

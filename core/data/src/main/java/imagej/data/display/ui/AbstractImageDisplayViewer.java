@@ -95,6 +95,10 @@ public abstract class AbstractImageDisplayViewer extends
 
 	// -- Internal AbstractImageDisplayViewer methods --
 
+	protected void updateTitle() {
+		// placeholder - do nothing
+	}
+	
 	protected Dataset getDataset(final DataView view) {
 		final Data data = view.getData();
 		return data instanceof Dataset ? (Dataset) data : null;
@@ -304,7 +308,10 @@ public abstract class AbstractImageDisplayViewer extends
 	
 	@EventHandler
 	protected void onEvent(final DatasetUpdatedEvent event) {
-		if (isMyDataset(event.getObject())) updateLabel();
+		if (isMyDataset(event.getObject())) {
+			updateLabel();
+			updateTitle();
+		}
 	}
 
 	@EventHandler

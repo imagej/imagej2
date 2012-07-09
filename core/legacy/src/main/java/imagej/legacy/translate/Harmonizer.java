@@ -139,6 +139,8 @@ public class Harmonizer {
 		overlayHarmonizer.updateLegacyImage(display, imp);
 		colorTableHarmonizer.updateLegacyImage(display, imp);
 		positionHarmonizer.updateLegacyImage(display, imp);
+		
+		imp.setTitle(display.getName());
 	}
 
 	/**
@@ -199,6 +201,8 @@ public class Harmonizer {
 		overlayHarmonizer.updateDisplay(display, imp);
 		colorTableHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
+
+		display.setName(imp.getTitle());
 		
 		// TODO - this should not be necessary but Blobs will not display inverted
 		// without this. When we change the update mechanism so that drawing only
