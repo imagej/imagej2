@@ -9,6 +9,7 @@ ij.plugin.Options("reset")                 # Edit > Options > Reset...
 ij.plugin.Selection("add")                 # Edit > Selection > Add To Manager
 ij.plugin.AboutBox                         # Help > About ImageJ...
 ij.plugin.Duplicator                       # Image > Duplicate
+ij.plugin.frame.ColorPicker                # Image > Color > Color Picker
 ij.plugin.CompositeConverter               # Image > Color > Make Composite
 ij.plugin.frame.Channels                   # Image > Color > Channels Tool
 ij.plugin.Zoom("in")                       # Image > Zoom > In
