@@ -35,22 +35,40 @@
 
 package imagej.ext.module.event;
 
+import imagej.ext.Cancelable;
 import imagej.ext.module.Module;
+import imagej.ext.module.ModulePreprocessor;
 import imagej.ext.module.ui.InputHarvester;
 
 /**
- * An event indicating a module execution has been canceled.
+ * An event indicating a {@link Module} execution has been canceled.
  * <p>
- * Cancelation typically occurs due to a preprocessor, such as an
- * {@link InputHarvester} when the user presses the Cancel button.
+ * Cancelation can occur due to a {@link ModulePreprocessor}, such as an
+ * {@link InputHarvester} when the user presses the Cancel button, or due to the
+ * module itself implementing the {@link Cancelable} interface and then
+ * declaring itself canceled (via the {@link Cancelable#isCanceled()} method
+ * returning true) after its {@link Module#run()} method returns.
  * </p>
  * 
  * @author Curtis Rueden
  */
 public class ModuleCanceledEvent extends ModuleExecutionEvent {
 
+	private String reason;
+
 	public ModuleCanceledEvent(final Module module) {
+		this(module, null);
+	}
+
+	public ModuleCanceledEvent(final Module module, final String reason) {
 		super(module);
+		this.reason = reason;
+	}
+
+	// -- ModuleCanceledEvent methods --
+
+	public String getReason() {
+		return reason;
 	}
 
 }

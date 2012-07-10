@@ -38,6 +38,7 @@ package imagej.ext.module;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusService;
+import imagej.ext.Cancelable;
 import imagej.ext.module.event.ModuleCanceledEvent;
 import imagej.ext.module.event.ModuleExecutedEvent;
 import imagej.ext.module.event.ModuleExecutingEvent;
@@ -80,25 +81,23 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 
 	// -- ModuleRunner methods --
 
-	/** Feeds the module through the {@link ModulePreprocessor}s. */
-	public boolean preProcess() {
-		if (pre == null) return true; // no preprocessors
+	/**
+	 * Feeds the module through the {@link ModulePreprocessor}s.
+	 * 
+	 * @return The preprocessor that canceled the execution, or null if all
+	 *         preprocessors completed successfully.
+	 */
+	public ModulePreprocessor preProcess() {
+		if (pre == null) return null; // no preprocessors
+
 		final EventService es = context.getService(EventService.class);
-		final StatusService ss = context.getService(StatusService.class);
 
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
 			if (es != null) es.publish(new ModulePreprocessEvent(module, p));
-			if (p.isCanceled()) {
-				// notify interested parties of any warning messages
-				final String cancelReason = p.getCancelReason();
-				if (ss != null && cancelReason != null) {
-					ss.warn(cancelReason);
-				}
-				return false;
-			}
+			if (p.isCanceled()) return p;
 		}
-		return true;
+		return null;
 	}
 
 	/** Feeds the module through the {@link ModulePostprocessor}s. */
@@ -136,28 +135,56 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	@Override
 	public void run() {
 		if (module == null) return;
+
 		final EventService es = context.getService(EventService.class);
 		final StatusService ss = context.getService(StatusService.class);
-
-		// execute module
 		final String title = module.getInfo().getTitle();
+
+		// announce start of execution process
 		if (ss != null) ss.showStatus("Running command: " + title);
 		if (es != null) es.publish(new ModuleStartedEvent(module));
-		final boolean ok = preProcess();
-		if (!ok) {
-			// execution canceled
-			if (ss != null) ss.showStatus("Canceling command: " + title);
-			module.cancel();
-			if (es != null) es.publish(new ModuleCanceledEvent(module));
-			if (ss != null) ss.showStatus("Command canceled: " + title);
+
+		// execute preprocessors
+		final ModulePreprocessor canceler = preProcess();
+		if (canceler != null) {
+			// module execution was canceled by preprocessor
+			cancel(es, ss, title, canceler.getCancelReason());
 			return;
 		}
+
+		// execute module
 		if (es != null) es.publish(new ModuleExecutingEvent(module));
 		module.run();
+		if (module instanceof Cancelable) {
+			final Cancelable cancelable = (Cancelable) module;
+			if (cancelable.isCanceled()) {
+				// module execution was canceled by the module itself
+				cancel(es, ss, title, cancelable.getCancelReason());
+				return;
+			}
+		}
 		if (es != null) es.publish(new ModuleExecutedEvent(module));
+
+		// execute postprocessors
 		postProcess();
+
+		// announce completion of execution process
 		if (es != null) es.publish(new ModuleFinishedEvent(module));
 		if (ss != null) ss.showStatus("Command finished: " + title);
+	}
+
+	// -- Helper methods --
+
+	private void cancel(final EventService es, final StatusService ss,
+		final String title, final String reason)
+	{
+		if (ss != null) ss.showStatus("Canceling command: " + title);
+		module.cancel();
+		if (es != null) es.publish(new ModuleCanceledEvent(module, reason));
+		if (ss != null) {
+			ss.showStatus("Command canceled: " + title);
+			if (reason != null) ss.warn(reason);
+		}
 	}
 
 }
