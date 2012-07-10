@@ -35,12 +35,12 @@
 
 package imagej.ui.swing.overlay;
 
-import java.awt.event.MouseEvent;
-
 import imagej.data.display.DefaultOverlayView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+
+import java.awt.event.MouseEvent;
 
 import javax.swing.event.EventListenerList;
 

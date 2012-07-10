@@ -35,13 +35,14 @@
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import imagej.ImageJ;
 import net.imglib2.roi.CompositeRegionOfInterest;
 
 //TODO

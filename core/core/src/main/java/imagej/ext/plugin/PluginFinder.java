@@ -35,8 +35,6 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.MenuEntry;
-import imagej.ext.MenuPath;
 import imagej.util.Log;
 
 import java.util.List;

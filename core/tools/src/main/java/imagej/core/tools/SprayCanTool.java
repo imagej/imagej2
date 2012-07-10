@@ -35,10 +35,6 @@
 
 package imagej.core.tools;
 
-import java.util.Random;
-
-import net.imglib2.meta.Axes;
-
 import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -59,6 +55,10 @@ import imagej.ext.tool.Tool;
 import imagej.options.OptionsService;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+
+import java.util.Random;
+
+import net.imglib2.meta.Axes;
 
 /**
  * Implements a spray can drawing tool

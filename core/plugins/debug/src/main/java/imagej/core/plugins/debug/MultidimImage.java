@@ -35,11 +35,6 @@
 
 package imagej.core.plugins.debug;
 
-import java.util.Arrays;
-import java.util.List;
-
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -51,6 +46,11 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
+import java.util.Arrays;
+import java.util.List;
+
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 /**
  * A plugin that creates a simple multidimensional image with axes beyond those

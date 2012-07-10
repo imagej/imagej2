@@ -35,9 +35,6 @@
 
 package imagej.core.plugins.imglib;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -50,6 +47,10 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;

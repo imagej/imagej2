@@ -35,8 +35,6 @@
 
 package imagej.core.plugins.overlay;
 
-import java.util.List;
-
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayInfoList;
 import imagej.data.display.OverlayService;
@@ -46,6 +44,8 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+
+import java.util.List;
 
 
 /**

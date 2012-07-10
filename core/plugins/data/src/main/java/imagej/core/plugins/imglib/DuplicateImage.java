@@ -35,9 +35,6 @@
 
 package imagej.core.plugins.imglib;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.ImageJ;
 import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
@@ -53,6 +50,10 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
