@@ -49,7 +49,7 @@ import imagej.ui.UIService;
  * @author Barry DeZonia
  *
  */
-@Plugin(menu = {
+@Plugin(iconPath = "/icons/bricks.png", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
