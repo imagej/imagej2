@@ -41,7 +41,7 @@ import imagej.ext.module.ui.InputHarvester;
 import imagej.ext.module.ui.InputPanel;
 import imagej.ext.plugin.AbstractInputHarvesterPlugin;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.process.PreprocessorPlugin;
+import imagej.ext.plugin.PreprocessorPlugin;
 
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Sheet;

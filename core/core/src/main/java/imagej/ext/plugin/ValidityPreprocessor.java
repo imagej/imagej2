@@ -38,7 +38,6 @@ package imagej.ext.plugin;
 import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.process.PreprocessorPlugin;
 
 /**
  * A preprocessor plugin that verifies module validity. If the module is not

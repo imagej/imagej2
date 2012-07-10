@@ -40,8 +40,6 @@ import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.process.PostprocessorPlugin;
-import imagej.ext.plugin.process.PreprocessorPlugin;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;

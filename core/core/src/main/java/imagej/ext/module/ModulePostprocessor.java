@@ -33,18 +33,16 @@
  * #L%
  */
 
-package imagej.ext.plugin.process;
-
-import imagej.ext.module.process.ModulePostprocessor;
-import imagej.ext.plugin.IPlugin;
+package imagej.ext.module;
 
 /**
- * A plugin postprocessor defines a step that occurs immediately following the
- * actual execution of a plugin. Typically, a postprocessor does something with
- * the results of a plugin, such as displaying its outputs on screen.
+ * A module postprocessor defines a step that occurs immediately following the
+ * actual execution of a module. Typically, a postprocessor does something with
+ * the results of a module, such as displaying its outputs on screen.
  * 
  * @author Curtis Rueden
  */
-public interface PostprocessorPlugin extends IPlugin, ModulePostprocessor {
-	// marker interface for discovery via SezPoz
+public interface ModulePostprocessor extends ModuleProcessor {
+	// ModulePostprocessor trivially extends ModuleProcessor to differentiate
+	// preprocessors from postprocessors while sharing the same contract.
 }

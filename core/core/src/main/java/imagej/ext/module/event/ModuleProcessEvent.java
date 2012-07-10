@@ -36,7 +36,7 @@
 package imagej.ext.module.event;
 
 import imagej.ext.module.Module;
-import imagej.ext.module.process.ModuleProcessor;
+import imagej.ext.module.ModuleProcessor;
 
 /**
  * An event indicating a {@link ModuleProcessor} has been invoked as part of a

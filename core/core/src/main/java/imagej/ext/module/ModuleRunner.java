@@ -45,8 +45,6 @@ import imagej.ext.module.event.ModuleFinishedEvent;
 import imagej.ext.module.event.ModulePostprocessEvent;
 import imagej.ext.module.event.ModulePreprocessEvent;
 import imagej.ext.module.event.ModuleStartedEvent;
-import imagej.ext.module.process.ModulePostprocessor;
-import imagej.ext.module.process.ModulePreprocessor;
 import imagej.log.LogService;
 
 import java.util.List;

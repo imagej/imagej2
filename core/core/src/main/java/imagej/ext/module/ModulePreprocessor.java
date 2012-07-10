@@ -33,16 +33,25 @@
  * #L%
  */
 
-package imagej.ext.module.process;
+package imagej.ext.module;
 
 /**
- * A module postprocessor defines a step that occurs immediately following the
- * actual execution of a module. Typically, a postprocessor does something with
- * the results of a module, such as displaying its outputs on screen.
+ * A module preprocessor defines a step that occurs just prior to the actual
+ * execution of a module. Typically, a preprocessor prepares the module for
+ * execution in some way, such as populating module inputs or checking
+ * prerequisites.
  * 
  * @author Curtis Rueden
  */
-public interface ModulePostprocessor extends ModuleProcessor {
-	// ModulePostprocessor trivially extends ModuleProcessor to differentiate
-	// preprocessors from postprocessors while sharing the same contract.
+public interface ModulePreprocessor extends ModuleProcessor {
+
+	/** Returns whether the preprocessor has canceled the module execution. */
+	boolean canceled();
+
+	/**
+	 * Gets a message describing the results of the preprocessing step. If the
+	 * module was canceled, this message will typically explain why.
+	 */
+	String getMessage();
+
 }

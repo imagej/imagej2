@@ -38,8 +38,6 @@ package imagej.ext.plugin;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.process.PostprocessorPlugin;
-import imagej.ext.plugin.process.PreprocessorPlugin;
 import imagej.service.IService;
 
 import java.util.Collection;

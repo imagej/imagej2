@@ -33,19 +33,17 @@
  * #L%
  */
 
-package imagej.ext.plugin.process;
+package imagej.ext.plugin;
 
-import imagej.ext.module.process.ModulePreprocessor;
-import imagej.ext.plugin.IPlugin;
+import imagej.ext.module.ModulePostprocessor;
 
 /**
- * A plugin preprocessor defines a step that occurs just prior to the actual
- * execution of a plugin. Typically, a preprocessor prepares the plugin for
- * execution in some way, such as populating plugin inputs or checking
- * prerequisites.
+ * A plugin postprocessor defines a step that occurs immediately following the
+ * actual execution of a plugin. Typically, a postprocessor does something with
+ * the results of a plugin, such as displaying its outputs on screen.
  * 
  * @author Curtis Rueden
  */
-public interface PreprocessorPlugin extends IPlugin, ModulePreprocessor {
+public interface PostprocessorPlugin extends IPlugin, ModulePostprocessor {
 	// marker interface for discovery via SezPoz
 }

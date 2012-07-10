@@ -41,7 +41,7 @@ import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.process.PreprocessorPlugin;
+import imagej.ext.plugin.PreprocessorPlugin;
 
 /**
  * Assigns the active {@link Display} when there is one single unresolved

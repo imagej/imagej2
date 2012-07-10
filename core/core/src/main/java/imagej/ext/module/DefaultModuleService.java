@@ -41,8 +41,6 @@ import imagej.ext.Accelerator;
 import imagej.ext.MenuPath;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
-import imagej.ext.module.process.ModulePostprocessor;
-import imagej.ext.module.process.ModulePreprocessor;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;

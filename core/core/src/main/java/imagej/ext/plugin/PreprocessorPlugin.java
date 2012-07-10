@@ -33,25 +33,18 @@
  * #L%
  */
 
-package imagej.ext.module.process;
+package imagej.ext.plugin;
+
+import imagej.ext.module.ModulePreprocessor;
 
 /**
- * A module preprocessor defines a step that occurs just prior to the actual
- * execution of a module. Typically, a preprocessor prepares the module for
- * execution in some way, such as populating module inputs or checking
+ * A plugin preprocessor defines a step that occurs just prior to the actual
+ * execution of a plugin. Typically, a preprocessor prepares the plugin for
+ * execution in some way, such as populating plugin inputs or checking
  * prerequisites.
  * 
  * @author Curtis Rueden
  */
-public interface ModulePreprocessor extends ModuleProcessor {
-
-	/** Returns whether the preprocessor has canceled the module execution. */
-	boolean canceled();
-
-	/**
-	 * Gets a message describing the results of the preprocessing step. If the
-	 * module was canceled, this message will typically explain why.
-	 */
-	String getMessage();
-
+public interface PreprocessorPlugin extends IPlugin, ModulePreprocessor {
+	// marker interface for discovery via SezPoz
 }

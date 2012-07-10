@@ -40,7 +40,7 @@ import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.process.PostprocessorPlugin;
+import imagej.ext.plugin.PostprocessorPlugin;
 import imagej.util.Log;
 
 import java.util.ArrayList;

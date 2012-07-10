@@ -38,7 +38,6 @@ package imagej.ext.plugin;
 import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
-import imagej.ext.plugin.process.PreprocessorPlugin;
 
 /**
  * A preprocessor plugin that populates initial parameter values.

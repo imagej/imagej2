@@ -36,8 +36,6 @@
 package imagej.ext.module;
 
 import imagej.ext.Accelerator;
-import imagej.ext.module.process.ModulePostprocessor;
-import imagej.ext.module.process.ModulePreprocessor;
 import imagej.service.IService;
 
 import java.util.Collection;

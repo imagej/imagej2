@@ -36,7 +36,7 @@
 package imagej.ext.module.event;
 
 import imagej.ext.module.Module;
-import imagej.ext.module.process.ModulePreprocessor;
+import imagej.ext.module.ModulePreprocessor;
 
 /**
  * An event indicating a {@link ModulePreprocessor} has been invoked as part of
