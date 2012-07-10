@@ -38,6 +38,7 @@ package imagej.core.plugins.assign;
 import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.ext.Cancelable;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
@@ -85,7 +86,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
-public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
+public class RealImageCalculator<T extends RealType<T>> implements
+	ImageJPlugin, Cancelable
 {
 
 	// -- instance variables that are Parameters --
@@ -119,6 +121,8 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 	// -- other instance variables --
 
 	private final HashMap<String, RealBinaryOperation<DoubleType, DoubleType, DoubleType>> operators;
+
+	private String cancelReason;
 
 	// -- constructor --
 
@@ -161,7 +165,7 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 	public void run() {
 		final long[] span = calcOverlappedSpan(input1.getDims(), input2.getDims());
 		if (span == null) {
-			warnBadSpan();
+			cancelReason = "Input images have different number of dimensions";
 			return;
 		}
 		int bits = input1.getType().getBitsPerPixel();
@@ -187,6 +191,16 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 			copyDataIntoInput1(span);
 			output = null;
 		}
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return cancelReason != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
 	}
 
 	public Dataset getInput1() {
@@ -244,11 +258,6 @@ public class RealImageCalculator<T extends RealType<T>> implements ImageJPlugin
 			overlap[i] = Math.min(dimsA[i], dimsB[i]);
 
 		return overlap;
-	}
-
-	private void warnBadSpan() {
-		uiService.showDialog("Input images have different number of dimensions",
-			"Image Calculator");
 	}
 
 	@SuppressWarnings("unchecked")
