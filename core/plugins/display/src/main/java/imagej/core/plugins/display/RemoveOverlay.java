@@ -33,61 +33,88 @@
  * #L%
  */
 
-package imagej.core.plugins.overlay;
+package imagej.core.plugins.display;
+
+import java.util.ArrayList;
 
 import imagej.data.Data;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
+import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.UIService;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * A plugin to change the properties (e.g., line color, line width) of a set of
- * overlays selected in an image display.
+ * Removes the currently selected overlay from all displays
  * 
  * @author Barry DeZonia
+ *
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Properties...", mnemonic = 'p', weight = 5) },
-		headless = true,
-		initializer = "initialize")
-public class SelectedDisplayOverlaysProperties extends OverlayProperties {
+	@Menu(label = "Overlay"),
+	@Menu(label = "Remove Overlay", weight = 3) })
+public class RemoveOverlay implements ImageJPlugin {
 
-	// -- parameters --
+	// -- Parameters --
+	
+	@Parameter(required=true)
+	private UIService uiService;
 
-	@Parameter
+	@Parameter(required=true)
+	private OverlayService oService;
+
+	@Parameter(required=true)
 	private ImageDisplay display;
-
-	// -- initializers --
-
-	@SuppressWarnings("unused")
-	private void initialize() {
-		setOverlays(getSelectedOverlays());
-		updateValues();
+	
+	// -- accessors --
+	
+	public void setUIService(UIService srv) {
+		uiService = srv;
+	}
+	
+	public UIService getUIService() {
+		return uiService;
+	}
+	
+	public void setOverlayService(OverlayService srv) {
+		oService = srv;
+	}
+	
+	public OverlayService getOverlayService() {
+		return oService;
+	}
+	
+	public void setImageDisplay(ImageDisplay disp) {
+		display = disp;
 	}
 
-	// -- helpers --
+	public ImageDisplay getImageDisplay() {
+		return display;
+	}
 	
-	private List<Overlay> getSelectedOverlays() {
-		final ArrayList<Overlay> result = new ArrayList<Overlay>();
-		if (display == null) return result;
-		for (final DataView view : display) {
-			if (!view.isSelected()) continue;
-			final Data data = view.getData();
-			if (!(data instanceof Overlay)) continue;
-			final Overlay o = (Overlay) data;
-			result.add(o);
+	// -- run() method --
+	
+	@Override
+	public void run() {
+		final ArrayList<DataView> views = new ArrayList<DataView>(display);
+		for (final DataView view : views) {
+			if (view.isSelected()) {
+				if (view instanceof OverlayView) {
+					OverlayView overlayView = (OverlayView) view;
+					oService.removeOverlay(overlayView.getData());
+				}
+			}
 		}
-		return result;
 	}
 
 }

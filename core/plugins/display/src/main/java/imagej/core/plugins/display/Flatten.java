@@ -58,7 +58,7 @@ import imagej.ui.UIService;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 7) })
+	@Menu(label = "Flatten", weight = 4) })
 public class Flatten implements ImageJPlugin {
 
 	// -- Parameters --

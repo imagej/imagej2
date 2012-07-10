@@ -33,53 +33,35 @@
  * #L%
  */
 
-package imagej.core.plugins.display;
+package imagej.core.plugins.overlay;
 
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.UIService;
 
-import java.util.ArrayList;
 
 /**
- * Removes all selected views.
  * 
- * @author Lee Kamentsky
+ * @author Barry DeZonia
+ *
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Remove Overlay", weight = 6, mnemonic = 'r') },
-	headless = true)
-public class DeleteSelected implements ImageJPlugin {
+	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
+public class OverlayLabelSettings implements ImageJPlugin {
 
-	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
-
+	@Parameter
+	private UIService uiService;
+	
 	@Override
 	public void run() {
-		final ArrayList<DataView> views = new ArrayList<DataView>(display);
-		for (final DataView view : views) {
-			if (view.isSelected()) {
-				display.remove(view);
-				view.dispose();
-				display.update();
-			}
-		}
-	}
-
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-
-	public void setDisplay(final ImageDisplay display) {
-		this.display = display;
+		// TODO - implement some interactive plugin
+		uiService.showDialog("This feature has not been implemented yet");
 	}
 
 }

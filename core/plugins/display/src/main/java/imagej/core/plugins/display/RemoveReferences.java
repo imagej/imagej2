@@ -33,61 +33,53 @@
  * #L%
  */
 
-package imagej.core.plugins.overlay;
+package imagej.core.plugins.display;
 
-import imagej.data.Data;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
+import imagej.ext.module.ItemIO;
+import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * A plugin to change the properties (e.g., line color, line width) of a set of
- * overlays selected in an image display.
+ * Removes all selected views.
  * 
- * @author Barry DeZonia
+ * @author Lee Kamentsky
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Properties...", mnemonic = 'p', weight = 5) },
-		headless = true,
-		initializer = "initialize")
-public class SelectedDisplayOverlaysProperties extends OverlayProperties {
+	@Menu(label = "Remove Overlay Reference", weight = 2, mnemonic = 'r') },
+	headless = true)
+public class RemoveReferences implements ImageJPlugin {
 
-	// -- parameters --
-
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
-	// -- initializers --
-
-	@SuppressWarnings("unused")
-	private void initialize() {
-		setOverlays(getSelectedOverlays());
-		updateValues();
+	@Override
+	public void run() {
+		final ArrayList<DataView> views = new ArrayList<DataView>(display);
+		for (final DataView view : views) {
+			if (view.isSelected()) {
+				display.remove(view);
+				view.dispose();
+				display.update();
+			}
+		}
 	}
 
-	// -- helpers --
-	
-	private List<Overlay> getSelectedOverlays() {
-		final ArrayList<Overlay> result = new ArrayList<Overlay>();
-		if (display == null) return result;
-		for (final DataView view : display) {
-			if (!view.isSelected()) continue;
-			final Data data = view.getData();
-			if (!(data instanceof Overlay)) continue;
-			final Overlay o = (Overlay) data;
-			result.add(o);
-		}
-		return result;
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(final ImageDisplay display) {
+		this.display = display;
 	}
 
 }

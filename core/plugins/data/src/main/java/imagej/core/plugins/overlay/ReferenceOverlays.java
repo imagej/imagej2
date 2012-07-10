@@ -59,7 +59,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "From Overlay Manager", weight = 5, mnemonic = 'f') },
+	@Menu(label = "From Overlay Manager", weight = 1, mnemonic = 'f') },
 	headless = true)
 public class ReferenceOverlays implements ImageJPlugin {
 

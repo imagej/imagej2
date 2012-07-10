@@ -18,6 +18,10 @@ ij.plugin.Zoom("set")                      # Image > Zoom > Set...
 ij.plugin.Zoom("max")                      # possible Image > Zoom command
 ij.plugin.OverlayCommands("from")          # Image > Overlay > From ROI Manager
 ij.plugin.OverlayCommands("to")            # Image > Overlay > To ROI Manager
+ij.plugin.OverlayCommands("add")           # Image > Overlay > Add Selection
+ij.plugin.OverlayCommands("image")         # Image > Overlay > Add Image
+ij.plugin.OverlayCommands("hide")          # Image > Overlay > Hide Overlay
+ij.plugin.OverlayCommands("show")          # Image > Overlay > Show Overlay
 ij.plugin.Converter("8-bit")               # Image > Type > 8-bit
 ij.plugin.Converter("16-bit")              # Image > Type > 16-bit
 ij.plugin.Converter("32-bit")              # Image > Type > 32-bit
