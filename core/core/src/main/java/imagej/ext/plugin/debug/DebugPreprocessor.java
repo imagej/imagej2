@@ -37,6 +37,7 @@ package imagej.ext.plugin.debug;
 
 import imagej.ext.Priority;
 import imagej.ext.module.Module;
+import imagej.ext.plugin.AbstractPreprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
 import imagej.util.Log;
@@ -47,19 +48,7 @@ import imagej.util.Log;
  * @author Curtis Rueden
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
-public class DebugPreprocessor implements PreprocessorPlugin {
-
-	// -- ModulePreprocessor methods --
-
-	@Override
-	public boolean canceled() {
-		return false;
-	}
-
-	@Override
-	public String getMessage() {
-		return null;
-	}
+public class DebugPreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- ModuleProcessor methods --
 

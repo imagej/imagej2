@@ -35,68 +35,26 @@
 
 package imagej.ext.plugin;
 
-import imagej.ImageJ;
-import imagej.ext.Priority;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
-import imagej.service.IService;
-
 /**
- * The service preprocessor automatically populates module inputs that implement
- * {@link IService}.
- * <p>
- * Service objects are obtained from the ImageJ context associated with the
- * current thread.
- * </p>
+ * Abstract superclass of {@link PreprocessorPlugin} implementations.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY)
-public class ServicePreprocessor extends AbstractPreprocessorPlugin {
+public abstract class AbstractPreprocessorPlugin implements PreprocessorPlugin {
 
-	private ImageJ theContext;
+	protected boolean canceled;
+	protected String cancelReason;
 
-	public ServicePreprocessor() {}
-
-	public ServicePreprocessor(final ImageJ context) {
-		theContext = context;
-	}
-
-	// -- ModuleProcessor methods --
+	// -- Cancelable methods --
 
 	@Override
-	public void process(final Module module) {
-		final ImageJ context =
-			theContext == null ? ImageJ.getContext() : theContext;
-
-		for (final ModuleItem<?> input : module.getInfo().inputs()) {
-			if (!input.isAutoFill()) continue; // cannot auto-fill this input
-			final Class<?> type = input.getType();
-			if (IService.class.isAssignableFrom(type)) {
-				// input is a service
-				@SuppressWarnings("unchecked")
-				final ModuleItem<? extends IService> serviceInput =
-					(ModuleItem<? extends IService>) input;
-				setServiceValue(context, module, serviceInput);
-			}
-			if (context.getClass().isAssignableFrom(type)) {
-				// input is a compatible context
-				final String name = input.getName();
-				module.setInput(name, context);
-				module.setResolved(name, true);
-			}
-		}
+	public boolean isCanceled() {
+		return canceled;
 	}
 
-	// -- Helper methods --
-
-	private <S extends IService> void setServiceValue(final ImageJ context,
-		final Module module, final ModuleItem<S> input)
-	{
-		final S service = context.getService(input.getType());
-		input.setValue(module, service);
-		module.setResolved(input.getName(), true);
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
 	}
 
 }

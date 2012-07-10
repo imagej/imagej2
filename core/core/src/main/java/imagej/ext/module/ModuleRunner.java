@@ -89,11 +89,11 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
 			if (es != null) es.publish(new ModulePreprocessEvent(module, p));
-			if (p.canceled()) {
+			if (p.isCanceled()) {
 				// notify interested parties of any warning messages
-				final String cancelMessage = p.getMessage();
-				if (ss != null && cancelMessage != null) {
-					ss.warn(cancelMessage);
+				final String cancelReason = p.getCancelReason();
+				if (ss != null && cancelReason != null) {
+					ss.warn(cancelReason);
 				}
 				return false;
 			}

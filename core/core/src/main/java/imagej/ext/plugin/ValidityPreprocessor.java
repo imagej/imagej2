@@ -47,24 +47,7 @@ import imagej.ext.module.ModuleInfo;
  */
 @Plugin(type = PreprocessorPlugin.class,
 	priority = Priority.VERY_HIGH_PRIORITY + 1)
-public class ValidityPreprocessor implements PreprocessorPlugin {
-
-	// -- Fields --
-
-	private boolean canceled;
-	private String message;
-
-	// -- ModulePreprocessor methods --
-
-	@Override
-	public boolean canceled() {
-		return canceled;
-	}
-
-	@Override
-	public String getMessage() {
-		return message;
-	}
+public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- ModuleProcessor methods --
 
@@ -82,7 +65,7 @@ public class ValidityPreprocessor implements PreprocessorPlugin {
 			sb.append("- " + problem);
 			sb.append("\n");
 		}
-		message = sb.toString();
+		cancelReason = sb.toString();
 	}
 
 }

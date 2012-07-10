@@ -41,6 +41,7 @@ import imagej.ext.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.module.ModuleService;
+import imagej.ext.plugin.AbstractPreprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
 
@@ -64,19 +65,7 @@ import imagej.ext.plugin.PreprocessorPlugin;
  */
 @Plugin(type = PreprocessorPlugin.class,
 	priority = Priority.VERY_HIGH_PRIORITY)
-public class ActiveImagePreprocessor implements PreprocessorPlugin {
-
-	// -- ModulePreprocessor methods --
-
-	@Override
-	public boolean canceled() {
-		return false;
-	}
-
-	@Override
-	public String getMessage() {
-		return null;
-	}
+public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- ModuleProcessor methods --
 

@@ -53,19 +53,7 @@ public abstract class AbstractInputHarvesterPlugin extends
 {
 
 	private boolean canceled;
-	private String cancelMessage;
-
-	// -- ModulePreprocessor methods --
-
-	@Override
-	public boolean canceled() {
-		return canceled;
-	}
-
-	@Override
-	public String getMessage() {
-		return cancelMessage;
-	}
+	private String cancelReason;
 
 	// -- ModuleProcessor methods --
 
@@ -76,8 +64,20 @@ public abstract class AbstractInputHarvesterPlugin extends
 		}
 		catch (final ModuleException e) {
 			canceled = true;
-			cancelMessage = e.getMessage();
+			cancelReason = e.getMessage();
 		}
+	}
+
+	// -- Cancelable methods --
+
+	@Override
+	public boolean isCanceled() {
+		return canceled;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
 	}
 
 }

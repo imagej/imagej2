@@ -50,19 +50,7 @@ import imagej.ext.module.ModuleItem;
  * @author Curtis Rueden
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.HIGH_PRIORITY)
-public class InitPreprocessor implements PreprocessorPlugin {
-
-	// -- ModulePreprocessor methods --
-
-	@Override
-	public boolean canceled() {
-		return false;
-	}
-
-	@Override
-	public String getMessage() {
-		return null;
-	}
+public class InitPreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- ModuleProcessor methods --
 

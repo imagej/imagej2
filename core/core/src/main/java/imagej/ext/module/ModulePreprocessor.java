@@ -35,23 +35,22 @@
 
 package imagej.ext.module;
 
+import imagej.ext.Cancelable;
+
 /**
  * A module preprocessor defines a step that occurs just prior to the actual
  * execution of a module. Typically, a preprocessor prepares the module for
  * execution in some way, such as populating module inputs or checking
  * prerequisites.
+ * <p>
+ * The preprocessor may decide to cancel the module's pending execution, subject
+ * to its own criteria. In this case, its {@link #isCanceled()} method will
+ * return true, and its {@link #getCancelReason()} method may optionally explain
+ * why.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface ModulePreprocessor extends ModuleProcessor {
-
-	/** Returns whether the preprocessor has canceled the module execution. */
-	boolean canceled();
-
-	/**
-	 * Gets a message describing the results of the preprocessing step. If the
-	 * module was canceled, this message will typically explain why.
-	 */
-	String getMessage();
-
+public interface ModulePreprocessor extends ModuleProcessor, Cancelable {
+	// NB: No implementation needed.
 }
