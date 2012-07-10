@@ -35,6 +35,7 @@
 
 package imagej.ext.plugin;
 
+import imagej.ext.Cancelable;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.AbstractModule;
 import imagej.ext.module.ModuleException;
@@ -50,7 +51,9 @@ import java.util.Map;
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
+public class PluginModule<R extends RunnablePlugin> extends AbstractModule
+	implements Cancelable
+{
 
 	/** The plugin info describing the plugin. */
 	private final PluginModuleInfo<R> info;
@@ -160,6 +163,20 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 		catch (final Throwable t) {
 			Log.error(t);
 		}
+	}
+
+	// -- Cancelable methods --
+
+	@Override
+	public boolean isCanceled() {
+		if (!(plugin instanceof Cancelable)) return false;
+		return ((Cancelable) plugin).isCanceled();
+	}
+
+	@Override
+	public String getCancelReason() {
+		if (!(plugin instanceof Cancelable)) return null;
+		return ((Cancelable) plugin).getCancelReason();
 	}
 
 	// -- Helper methods --
