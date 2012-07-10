@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collections;
 
 /**
  * Direct responsibility: Download a list of files given their respective URLs
@@ -71,7 +72,7 @@ public class Downloader extends Progressable {
 
 	public synchronized void start(final Downloadable justOne) throws IOException
 	{
-		start(new OneItemIterable<Downloadable>(justOne));
+		start(Collections.singleton(justOne));
 	}
 
 	public void start(final Iterable<Downloadable> files) throws IOException {
