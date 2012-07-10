@@ -87,7 +87,7 @@ Artifact: com.jcraft:jsch:0.1.42
 ===============================================================================
 LOCI Common - http://loci.wisc.edu/software/bio-formats
 
-License: GPL 2+ (slated to be BSD)
+License: 2-clause BSD
 
 Artifact: loci:loci-common:4.4-SNAPSHOT
 
@@ -108,7 +108,7 @@ Artifact: com.github.sbridges.object-inspector:object-inspector:0.1
 ===============================================================================
 SCIFIO - http://loci.wisc.edu/software/scifio
 
-License: GPL 2+ (slated to be BSD)
+License: 2-clause BSD
 
 Artifact: loci:scifio:4.4-SNAPSHOT
 
