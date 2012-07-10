@@ -20,7 +20,6 @@
 	<modules>
 		<module>workflow</module>
 		<module>workflowpipes</module>
-		<module>zoomviewer</module>
 	</modules>
 
 	<properties>
