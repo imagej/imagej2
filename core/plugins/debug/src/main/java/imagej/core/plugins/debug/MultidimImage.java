@@ -57,36 +57,35 @@ import net.imglib2.meta.AxisType;
  * IJ1 provides.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menuPath = "Plugins>Sandbox>Multidimensional Test Image")
 public class MultidimImage implements ImageJPlugin {
 
 	@Parameter
 	private ImageJ context;
-	
+
 	@Parameter
 	private DatasetService service;
-	
 
-	@Parameter(type=ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset ds;
-	
+
 	@Override
 	public void run() {
-		long[] dims = new long[]{90,35,4,5,6,7};
-		String name = "Multidimensional Example";
-		AxisType[] axes =
-				new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.FREQUENCY,
-												Axes.Z, Axes.TIME};
-		int bitsPerPixel = 8;
-		boolean signed = false;
-		boolean floating = false;
+		final long[] dims = new long[] { 90, 35, 4, 5, 6, 7 };
+		final String name = "Multidimensional Example";
+		final AxisType[] axes =
+			new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.FREQUENCY, Axes.Z,
+				Axes.TIME };
+		final int bitsPerPixel = 8;
+		final boolean signed = false;
+		final boolean floating = false;
 		ds = service.create(dims, name, axes, bitsPerPixel, signed, floating);
-		long[] pos = new long[dims.length];
-		DrawingTool tool = new DrawingTool(ds);
-		List<Double> values = Arrays.asList(new Double[]{255.0,255.0,255.0,255.0});
-		ChannelCollection channels = new ChannelCollection(values);
+		final long[] pos = new long[dims.length];
+		final DrawingTool tool = new DrawingTool(ds);
+		final List<Double> values =
+			Arrays.asList(new Double[] { 255.0, 255.0, 255.0, 255.0 });
+		final ChannelCollection channels = new ChannelCollection(values);
 		tool.setChannels(channels);
 		for (int c = 0; c < dims[2]; c++) {
 			for (int f = 0; f < dims[3]; f++) {
@@ -98,7 +97,7 @@ public class MultidimImage implements ImageJPlugin {
 						pos[5] = t;
 						tool.setPosition(pos);
 						tool.setPreferredChannel(c);
-						String label = "c " + c + " f " + f + " z " + z + " t " + t;
+						final String label = "c " + c + " f " + f + " z " + z + " t " + t;
 						tool.drawText(5, 20, label, TextJustification.LEFT);
 					}
 				}
