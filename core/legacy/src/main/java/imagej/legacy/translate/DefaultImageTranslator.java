@@ -74,26 +74,15 @@ public class DefaultImageTranslator implements ImageTranslator {
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
 		
-		return createDisplay(imp, LegacyUtils.isBinary(imp));
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), LegacyUtils.isBinary(imp));
 	}
 
 	/**
 	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
-	 * data when possible.
-	 */
-	@Override
-	public ImageDisplay createDisplay(final ImagePlus imp, boolean isBinaryImp) {
-
-		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
-			return colorDisplayCreator.createDisplay(imp, isBinaryImp);
-		}
-
-		return grayDisplayCreator.createDisplay(imp, isBinaryImp);
-	}
-
-	/**
-	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
-	 * data when possible. Builds ImageDisplay with preferred Axis ordering.
+	 * data when possible. Builds ImageDisplay with preferred Axis ordering. The
+	 * isBinaryImp flag should specify whether the passed in ImagePlus is a binary
+	 * ImagePlus. This is useful for users who know and are trying to minimize
+	 * calls to the expensive LegacyUtils::isBinary(imp). 
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
@@ -101,7 +90,8 @@ public class DefaultImageTranslator implements ImageTranslator {
 	{
 
 		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
-			return colorDisplayCreator.createDisplay(imp, preferredOrder, isBinaryImp);
+			// NB : can force isBinaryImp to false since we know it is COLOR_RGB
+			return colorDisplayCreator.createDisplay(imp, preferredOrder, false);
 		}
 
 		return grayDisplayCreator.createDisplay(imp, preferredOrder, isBinaryImp);

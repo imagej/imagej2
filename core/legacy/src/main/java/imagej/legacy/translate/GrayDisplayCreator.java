@@ -92,11 +92,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 	}
 
 	@Override
-	public ImageDisplay createDisplay(final ImagePlus imp, boolean isBinaryImp) {
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), isBinaryImp);
-	}
-
-	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
 		final AxisType[] preferredOrder, boolean isBinaryImp)
 	{

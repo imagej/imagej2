@@ -46,10 +46,15 @@ import net.imglib2.meta.AxisType;
  */
 public interface DisplayCreator {
 
+	/** Create an ImageDisplay from an ImagePlus. Default call to be preferred in
+	 *  general. */
 	ImageDisplay createDisplay(ImagePlus imp);
 
-	ImageDisplay createDisplay(ImagePlus imp, boolean isBinaryImp);
-
+	/** Create an ImageDisplay from an ImagePlus. Optimized for speed when you can
+	 * resuse the isBinaryImp value from elsewhere. User must be careful that they
+	 * do not send nonsense values as input. For instance isBinaryImp should never
+	 * fail to match actual imp.isBinary() value.
+	 */
 	ImageDisplay createDisplay(ImagePlus imp, AxisType[] preferredOrder,
 		boolean isBinaryImp);
 
