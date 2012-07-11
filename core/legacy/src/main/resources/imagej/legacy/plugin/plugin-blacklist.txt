@@ -33,6 +33,8 @@ ij.plugin.StackEditor("delete")            # Image > Stacks > Delete Slice
 ij.plugin.Animator("start")                # Image > Stacks > Tools > Start Animation
 ij.plugin.Animator("stop")                 # Image > Stacks > Tools > Stop Animation
 ij.plugin.Animator("options")              # Image > Stacks > Tools > Animation Options...
+ij.plugin.HyperStackConverter("stacktohs") # Image > HyperStack > Stack To HyperStack
+ij.plugin.HyperStackConverter("hstostack") # Image > HyperStack > HyperStack To Stack
 ij.plugin.filter.Filters("add")            # Process > Noise > Add Noise
 ij.plugin.filter.ImageMath("log")          # Process > Math > Log
 ij.plugin.filter.ImageMath("exp")          # Process > Math > Exp
@@ -41,8 +43,7 @@ ij.plugin.filter.ImageMath("sqrt")         # Process > Math > Sqrt
 ij.plugin.filter.ImageMath("reciprocal")   # Process > Math > Reciprocal
 ij.plugin.filter.ImageMath("abs")          # Process > Math > Abs
 ij.plugin.filter.ImageMath("macro")        # Process > Math > Macro
-ij.plugin.HyperStackConverter("stacktohs") # Image > HyperStack > Stack To HyperStack
-ij.plugin.HyperStackConverter("hstostack") # Image > HyperStack > HyperStack To Stack
+ij.plugin.frame.RoiManager                 # Image > Analyze > Tools > ROI Manager
 ###### PHASE THESE OUT SOON
 #ij.plugin.Converter("8-bit Color")         # Image > Type > 8-bit Color
 #ij.plugin.Converter("RGB Color")           # Image > Type > RGB Color
