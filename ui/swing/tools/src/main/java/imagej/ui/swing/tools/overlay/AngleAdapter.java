@@ -46,10 +46,8 @@ import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.geom.BezierPath;
@@ -87,26 +85,13 @@ public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 
 	@Override
 	public Figure createDefaultFigure() {
-		@SuppressWarnings("serial")
-		final AngleFigure figure = new AngleFigure() {
-
-			// Make sure that the lines are always drawn 1 pixel wide
-			@Override
-			public void draw(final Graphics2D g) {
-				Double width = new Double(1 / g.getTransform().getScaleX());
-				set(AttributeKeys.STROKE_WIDTH, width);
-				super.draw(g);
-			}
-		};
+		final AngleFigure figure = new AngleFigure();
 		/* no effect
 		figure.setEndPoint1(6,1);
 		figure.setCenterPoint(1,1);
 		figure.setEndPoint2(1,6);
 		*/
-
-		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
-		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
-		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
+		initDefaultSettings(figure);
 		return figure;
 	}
 

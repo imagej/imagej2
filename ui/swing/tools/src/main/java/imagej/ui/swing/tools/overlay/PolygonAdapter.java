@@ -47,7 +47,6 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.Log;
 
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.util.Arrays;
@@ -58,7 +57,6 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
-import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.handle.BezierNodeHandle;
@@ -159,21 +157,8 @@ public class PolygonAdapter extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		@SuppressWarnings("serial")
-		final BezierFigure figure = new PolygonFigure() {
-
-			// Make sure that the lines are always drawn 1 pixel wide
-			@Override
-			public void draw(final Graphics2D g) {
-				set(AttributeKeys.STROKE_WIDTH, new Double(1 / g.getTransform()
-					.getScaleX()));
-				super.draw(g);
-			}
-		};
-		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor());
-		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
-		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
-		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
+		final BezierFigure figure = new PolygonFigure();
+		initDefaultSettings(figure);
 		return figure;
 	}
 
