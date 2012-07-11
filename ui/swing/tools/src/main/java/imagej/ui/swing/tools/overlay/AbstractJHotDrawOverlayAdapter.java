@@ -153,7 +153,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		overlay.getData().setAlpha(imageJColor.getAlpha());
 	}
 
-	public Color getDefaultStrokeColor() {
+	// -- Internal methods --
+
+	protected Color getDefaultStrokeColor() {
 		// TODO - eliminate deprecated use. Note that simply using getContext() is
 		// not sufficient. The figure adapters do not initialize their ImageJ
 		// context. So its possible getContext() would return null here and a NPE
@@ -168,7 +170,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		return new Color(r, g, b, 255);
 	}
 
-	public Color getDefaultFillColor() {
+	protected Color getDefaultFillColor() {
 		// TODO - eliminate deprecated use. Note that simply using getContext() is
 		// not sufficient. The figure adapters do not initialize their ImageJ
 		// context. So its possible getContext() would return null here and a NPE
