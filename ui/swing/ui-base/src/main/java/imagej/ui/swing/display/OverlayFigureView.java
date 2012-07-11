@@ -43,8 +43,6 @@ import imagej.ext.display.Display;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawAdapterFinder;
 
-import java.awt.EventQueue;
-
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureAdapter;
@@ -70,14 +68,6 @@ public class OverlayFigureView implements FigureView {
 	private boolean updatingFigure = false;
 
 	private boolean updatingOverlay = false;
-
-	private boolean updateScheduled = false;
-
-	private boolean disposeScheduled = false;
-
-	private boolean disposed = false;
-
-	private boolean figureAdded = false;
 
 	/**
 	 * Constructor to use to discover the figure to use for an overlay
@@ -108,72 +98,52 @@ public class OverlayFigureView implements FigureView {
 			JHotDrawAdapterFinder.getAdapterForOverlay(overlayView.getData(), figure);
 		if (figure == null) {
 			this.figure = adapter.createDefaultFigure();
-			adapter.updateFigure(this.overlayView, this.figure);
-			EventQueue.invokeLater(new Runnable() {
+			adapter.updateFigure(overlayView, this.figure);
 
-				@Override
-				public void run() {
-					synchronized (OverlayFigureView.this) {
-						if (!disposeScheduled) {
-							final JHotDrawImageCanvas canvas = display.getCanvas();
-							final Drawing drawing = canvas.getDrawing();
-							drawing.add(OverlayFigureView.this.figure);
-							figureAdded = true;
-						}
-					}
-				}
-			});
+			final JHotDrawImageCanvas canvas = display.getCanvas();
+			final Drawing drawing = canvas.getDrawing();
+			drawing.add(this.figure);
 		}
 		else {
 			this.figure = figure;
-			figureAdded = true;
 		}
 		this.figure.addFigureListener(new FigureAdapter() {
 
 			@Override
 			public void attributeChanged(final FigureEvent e) {
-				synchronized (OverlayFigureView.this) {
-					if (!updatingFigure) {
-						updatingOverlay = true;
-						try {
-							adapter.updateOverlay(OverlayFigureView.this.figure,
-								OverlayFigureView.this.overlayView);
-							overlayView.update();
-						}
-						finally {
-							updatingOverlay = false;
-						}
-					}
+				if (updatingFigure) return;
+				updatingOverlay = true;
+				try {
+					adapter.updateOverlay(OverlayFigureView.this.figure,
+						OverlayFigureView.this.overlayView);
+					overlayView.update();
+				}
+				finally {
+					updatingOverlay = false;
 				}
 			}
 
 			@Override
 			public void figureChanged(final FigureEvent e) {
-				synchronized (OverlayFigureView.this) {
-					if (!updatingFigure) {
-						updatingOverlay = true;
-						try {
-							adapter.updateOverlay(OverlayFigureView.this.figure,
-								OverlayFigureView.this.overlayView);
-							overlayView.update();
-						}
-						finally {
-							updatingOverlay = false;
-						}
-					}
+				if (updatingFigure) return;
+				updatingOverlay = true;
+				try {
+					adapter.updateOverlay(OverlayFigureView.this.figure,
+						OverlayFigureView.this.overlayView);
+					overlayView.update();
+				}
+				finally {
+					updatingOverlay = false;
 				}
 			}
 
 			@Override
 			public void figureRemoved(final FigureEvent e) {
-				synchronized (OverlayFigureView.this) {
-					if (disposed || disposeScheduled) return;
-				}
 				final ImageDisplay d = getDisplay();
-				if (d.isVisible(OverlayFigureView.this.overlayView)) {
-					DataView view = OverlayFigureView.this.getDataView();
+				if (d.isVisible(overlayView)) {
+					DataView view = getDataView();
 					// TODO : replace next two lines with call to OverlayService to
-					// removeOverlay(d,OverlayFigureView.this.getDataView().getData());
+					// removeOverlay(d, getDataView().getData());
 					d.remove(view);
 					view.dispose();
 					// end TODO replace
@@ -220,58 +190,24 @@ public class OverlayFigureView implements FigureView {
 
 	@Override
 	public void dispose() {
-		synchronized (this) {
-			if (!disposeScheduled) {
-				EventQueue.invokeLater(new Runnable() {
-
-					@Override
-					public void run() {
-						synchronized (OverlayFigureView.this) {
-							if (figureAdded) {
-								figure.requestRemove();
-							}
-							disposed = true;
-						}
-					}
-				});
-				disposeScheduled = true;
-			}
-		}
+		figure.requestRemove();
 	}
 
-	private synchronized void updateFigure() {
-		if (updatingOverlay || disposeScheduled) return;
-		if (!updateScheduled) {
-			EventQueue.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						doUpdateFigure();
-					}
-					finally {
-						updateScheduled = false;
-					}
-				}
-			});
-			updateScheduled = true;
-		}
-	}
-
-	private synchronized void doUpdateFigure() {
-		if (disposeScheduled) return;
+	private void updateFigure() {
+		if (updatingOverlay) return;
 		updatingFigure = true;
 		try {
-			adapter.updateFigure(this.overlayView, figure);
+			adapter.updateFigure(overlayView, figure);
+			show(getDisplay().isVisible(overlayView));
 		}
 		finally {
 			updatingFigure = false;
 		}
-		show(getDisplay().isVisible(this.overlayView));
 	}
 
 	@Override
 	public DataView getDataView() {
 		return overlayView;
 	}
+
 }
