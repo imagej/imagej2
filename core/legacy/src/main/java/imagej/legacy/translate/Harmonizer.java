@@ -49,7 +49,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.Tuple2;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ShortType;
@@ -154,8 +153,9 @@ public class Harmonizer {
 		// because imglib cannot represent an empty data container. So we catch
 		// the issue here:
 
-		if (imp.getStack().getSize() == 0) throw new IllegalArgumentException(
-			"cannot update a display with an ImagePlus that has an empty stack");
+		if (imp.getStack().getSize() == 0)
+			throw new IllegalArgumentException(
+					"cannot update a display with an ImagePlus that has an empty stack");
 
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
@@ -175,11 +175,9 @@ public class Harmonizer {
 			bitDepthMap.put(imp, imp.getBitDepth());
 		}
 		boolean typeChanged = imp.getBitDepth() != oldBitDepth;
-		boolean isBinaryImp = false;
+		boolean isBinaryImp = LegacyUtils.isBinary(imp);
 		if (!typeChanged) {
-			Tuple2<Boolean,Boolean> result = sameBitDepthTypeChange(ds, imp);
-			typeChanged = result.get1();
-			isBinaryImp = result.get2();
+			typeChanged = sameBitDepthTypeChange(ds, imp, isBinaryImp);
 		}
 		if (typeChanged) {
 			rebuildDatasetData(ds, imp, isBinaryImp);
@@ -373,16 +371,13 @@ public class Harmonizer {
 	}
 	
 	/** Detect type changes when bit depth matches but sign or content incompatible */
-	private Tuple2<Boolean, Boolean> sameBitDepthTypeChange(Dataset ds, ImagePlus imp) {
+	private boolean sameBitDepthTypeChange(Dataset ds, ImagePlus imp, boolean isBinaryImp) {
 		boolean typeChanged = false;
-		boolean isBinaryImp = false;
 		if (imp.getBitDepth() == 8) {
 			if (ds.getType() instanceof BitType) {
-				isBinaryImp = LegacyUtils.isBinary(imp);
 				typeChanged = !isBinaryImp;
 			}
 			else if (ds.getType() instanceof UnsignedByteType) {
-				isBinaryImp = LegacyUtils.isBinary(imp);
 				typeChanged = isBinaryImp;
 			}
 		}
@@ -395,11 +390,7 @@ public class Harmonizer {
 				typeChanged = isSigned16Imp;
 			}
 		}
-		else { // some other bit depth : can't detect any change
-			isBinaryImp = false;
-			typeChanged = false;
-		}
 		
-		return new Tuple2<Boolean,Boolean>(typeChanged, isBinaryImp);
+		return typeChanged;
 	}
 }
