@@ -80,14 +80,14 @@ public class PixelProbe extends AbstractTool {
 		ChannelCollection values = recorder.getValues();
 		StringBuilder builder = new StringBuilder();
 		builder.append("x=");
-		if (xcal != 1.0) {
+		if (!Double.isNaN(xcal) && xcal != 1.0) {
 			String calibratedVal = String.format("%.2f", (xcal * cx));
 			builder.append(calibratedVal);
 		}
 		else
 			builder.append(cx);
 		builder.append(", y=");
-		if (ycal != 1.0) {
+		if (!Double.isNaN(ycal) && ycal != 1.0) {
 			String calibratedVal = String.format("%.2f", (ycal * cy));
 			builder.append(calibratedVal);
 		}
