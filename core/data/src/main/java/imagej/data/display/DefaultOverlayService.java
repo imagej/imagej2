@@ -191,55 +191,48 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 	
 	/**
-	 * Gets the bounding box for the selected overlays in the given
+	 * Gets the bounding box for the selected data objects in the given
 	 * {@link ImageDisplay}.
 	 * 
 	 * @param display the {@link ImageDisplay} from which the bounding box should
 	 *          be computed
-	 * @return the smallest bounding box encompassing all selected overlays
+	 * @return the smallest bounding box encompassing all selected data objects
 	 */
 	@Override
 	public RealRect getSelectionBounds(final ImageDisplay display) {
-		// get total XY extents of the display by checking all datasets
-		double width = 0, height = 0;
-		for (final DataView view : display) {
-			final Data data = view.getData();
-			if (!(data instanceof Dataset)) continue;
-			final Dataset dataset = (Dataset) data;
-			final Extents extents = dataset.getExtents();
-			final double w = extents.dimension(0);
-			final double h = extents.dimension(1);
-			if (w > width) width = w;
-			if (h > height) height = h;
-		}
-
 		// TODO - Compute bounds over N dimensions, not just two.
-		// TODO - Update this method when ticket #660 is done.
-		// For example, why don't all Data objects have Extents?
 
-		// determine XY bounding box by checking all overlays
-		List<Overlay> overlays = getOverlays(display, true);
+		// determine XY bounding box by checking all data objects
 		double xMin = Double.POSITIVE_INFINITY;
 		double xMax = Double.NEGATIVE_INFINITY;
 		double yMin = Double.POSITIVE_INFINITY;
 		double yMax = Double.NEGATIVE_INFINITY;
-		for (Overlay overlay : overlays) {
-			final RegionOfInterest roi = overlay.getRegionOfInterest();
-			final double min0 = roi.realMin(0);
-			final double max0 = roi.realMax(0);
-			final double min1 = roi.realMin(1);
-			final double max1 = roi.realMax(1);
+		for (final DataView view : display) {
+			if (!view.isSelected()) continue;
+			final Data data = view.getData();
+			final Extents e = data.getExtents();
+			final double min0 = e.realMin(0);
+			final double max0 = e.realMax(0);
+			final double min1 = e.realMin(1);
+			final double max1 = e.realMax(1);
 			if (min0 < xMin) xMin = min0;
 			if (max0 > xMax) xMax = max0;
 			if (min1 < yMin) yMin = min1;
 			if (max1 > yMax) yMax = max1;
 		}
 
+		// get total XY extents of the display
+		final Extents totalExtents = display.getExtents();
+		final double totalMinX = totalExtents.min(0);
+		final double totalMaxX = totalExtents.max(0);
+		final double totalMinY = totalExtents.min(1);
+		final double totalMaxY = totalExtents.max(1);
+
 		// use entire XY extents if values are out of bounds
-		if (xMin < 0 || xMin > width) xMin = 0;
-		if (xMax < 0 || xMax > width) xMax = width;
-		if (yMin < 0 || yMin > height) yMin = 0;
-		if (yMax < 0 || yMax > height) yMax = height;
+		if (xMin < totalMinX || xMin > totalMaxX) xMin = totalMinX;
+		if (xMax < totalMinX || xMax > totalMaxX) xMax = totalMaxX;
+		if (yMin < totalMinY || yMin > totalMaxY) yMin = totalMinY;
+		if (yMax < totalMinY || yMax > totalMaxY) yMax = totalMaxY;
 
 		// swap reversed bounds
 		if (xMin > xMax) {
