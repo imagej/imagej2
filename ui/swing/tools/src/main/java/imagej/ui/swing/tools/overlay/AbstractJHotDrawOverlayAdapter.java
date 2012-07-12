@@ -117,8 +117,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 			// Render a "NONE" line style as alpha = transparent.
 			figure.set(AttributeKeys.STROKE_COLOR, new Color(0, 0, 0, 0));
 		}
-		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor,
-			overlay.getAlpha()));
+		final ColorRGB fillColor = overlay.getFillColor();
+		final int alpha = overlay.getAlpha();
+		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor, alpha));
 		switch (overlay.getLineStartArrowStyle()) {
 			case ARROW:
 				figure.set(AttributeKeys.START_DECORATION, new ArrowTip());
@@ -148,9 +149,8 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		// conceivably be 0.
 		overlay.setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
 		final Color fillColor = figure.get(AttributeKeys.FILL_COLOR);
-		final ColorRGBA imageJColor = AWTColors.getColorRGBA(fillColor);
-		overlay.setFillColor(imageJColor);
-		overlay.setAlpha(imageJColor.getAlpha());
+		overlay.setFillColor(AWTColors.getColorRGB(fillColor));
+		overlay.setAlpha(fillColor.getAlpha());
 	}
 
 	// -- Internal methods --
