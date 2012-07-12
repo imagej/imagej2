@@ -392,8 +392,23 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	}
 
 	@Override
+	public void calibration(float[] cal) {
+		combinedInterval.calibration(cal);
+	}
+
+	@Override
 	public void setCalibration(final double cal, final int d) {
 		combinedInterval.setCalibration(cal, d);
+	}
+
+	@Override
+	public void setCalibration(double[] cal) {
+		combinedInterval.setCalibration(cal);
+	}
+
+	@Override
+	public void setCalibration(float[] cal) {
+		combinedInterval.setCalibration(cal);
 	}
 
 	// -- PositionableByAxis methods --

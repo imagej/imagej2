@@ -395,10 +395,25 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
+	public void calibration(float[] cal) {
+		imgPlus.calibration(cal);
+	}
+
+	@Override
 	public void setCalibration(final double cal, final int d) {
 		if (imgPlus.calibration(d) == cal) return;
 		imgPlus.setCalibration(cal, d);
 		update(true);
+	}
+
+	@Override
+	public void setCalibration(double[] cal) {
+		imgPlus.setCalibration(cal);
+	}
+
+	@Override
+	public void setCalibration(float[] cal) {
+		imgPlus.setCalibration(cal);
 	}
 
 	// -- EuclideanSpace methods --
@@ -725,4 +740,5 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		setDirty(true);
 		publish(new DatasetUpdatedEvent(this, metadataOnly));
 	}
+
 }

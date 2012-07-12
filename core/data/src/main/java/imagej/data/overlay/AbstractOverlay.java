@@ -266,8 +266,26 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 	}
 
 	@Override
+	public void calibration(float[] target) {
+		for (int i = 0; i < target.length; i++)
+			target[i] = (float) calibration(i);
+	}
+
+	@Override
 	public void setCalibration(final double value, final int d) {
 		cal.set(d, value);
+	}
+
+	@Override
+	public void setCalibration(double[] cal) {
+		for (int i = 0; i < cal.length; i++)
+			setCalibration(cal[i], i);
+	}
+
+	@Override
+	public void setCalibration(float[] cal) {
+		for (int i = 0; i < cal.length; i++)
+			setCalibration(cal[i], i);
 	}
 
 	// -- EuclideanSpace methods --

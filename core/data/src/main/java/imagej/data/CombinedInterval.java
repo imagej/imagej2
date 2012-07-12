@@ -194,7 +194,23 @@ public class CombinedInterval extends ArrayList<CalibratedInterval> implements
 	}
 
 	@Override
+	public void calibration(float[] cal) {
+		for (int i = 0; i < cal.length; i++)
+			cal[i] = (float) calibration(i);
+	}
+
+	@Override
 	public void setCalibration(final double cal, final int d) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setCalibration(double[] cal) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setCalibration(float[] cal) {
 		throw new UnsupportedOperationException();
 	}
 
