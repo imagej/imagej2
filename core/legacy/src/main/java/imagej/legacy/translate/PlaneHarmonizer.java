@@ -132,7 +132,11 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 		// copy planes by reference
 
-		if (imp.getStackSize() == 1) imp.getProcessor().setPixels(ds.getPlane(0));
+		if (imp.getStackSize() == 1) {
+			Object plane = ds.getPlane(0);
+			imp.getProcessor().setPixels(plane);
+			imp.getStack().setPixels(plane, 1);
+		}
 		else {
 			int stackPosition = 1;
 			for (int t = 0; t < tCount; t++) {
