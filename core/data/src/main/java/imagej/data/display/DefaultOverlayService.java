@@ -254,13 +254,11 @@ public final class DefaultOverlayService extends AbstractService implements
 		return defaultSettings;
 	}
 
-	@SuppressWarnings("synthetic-access")
 	@Override
 	public void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
 		draw(o, display, channels, new OverlayOutliner());
 	}
 
-	@SuppressWarnings("synthetic-access")
 	@Override
 	public void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
 		draw(o, display, channels, new OverlayFiller());
