@@ -153,7 +153,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		overlay.getData().setAlpha(imageJColor.getAlpha());
 	}
 
-	public Color getDefaultStrokeColor() {
+	// -- Internal methods --
+
+	protected void initDefaultSettings(final Figure figure) {
 		// TODO - eliminate deprecated use. Note that simply using getContext() is
 		// not sufficient. The figure adapters do not initialize their ImageJ
 		// context. So its possible getContext() would return null here and a NPE
@@ -161,6 +163,20 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		// here.
 		final OverlaySettings settings =
 			ImageJ.get(OverlayService.class).getDefaultSettings();
+		figure.set(AttributeKeys.STROKE_WIDTH, getDefaultLineWidth(settings));
+		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor(settings));
+		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor(settings));
+		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
+		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
+	}
+
+	// -- Helper methods --
+
+	private double getDefaultLineWidth(final OverlaySettings settings) {
+		return settings.getLineWidth();
+	}
+
+	private Color getDefaultStrokeColor(final OverlaySettings settings) {
 		final ColorRGB color = settings.getLineColor();
 		final int r = color.getRed();
 		final int g = color.getGreen();
@@ -168,14 +184,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		return new Color(r, g, b, 255);
 	}
 
-	public Color getDefaultFillColor() {
-		// TODO - eliminate deprecated use. Note that simply using getContext() is
-		// not sufficient. The figure adapters do not initialize their ImageJ
-		// context. So its possible getContext() would return null here and a NPE
-		// can get thrown. Happens when you run a legacy plugin if getContext() used
-		// here.
-		final OverlaySettings settings =
-			ImageJ.get(OverlayService.class).getDefaultSettings();
+	private Color getDefaultFillColor(final OverlaySettings settings) {
 		final ColorRGB color = settings.getFillColor();
 		final int r = color.getRed();
 		final int g = color.getGreen();
@@ -183,4 +192,5 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		final int a = settings.getAlpha();
 		return new Color(r, g, b, a);
 	}
+
 }

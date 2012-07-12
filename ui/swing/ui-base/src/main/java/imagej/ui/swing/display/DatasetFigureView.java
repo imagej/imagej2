@@ -42,10 +42,9 @@ import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.util.Log;
+import imagej.log.LogService;
 import imagej.util.awt.AWTImageTools;
 
-import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -66,8 +65,6 @@ public class DatasetFigureView implements FigureView {
 
 	private final DatasetView datasetView;
 	private final ImageFigure figure;
-	private boolean needsUpdate;
-	private boolean disposeScheduled;
 
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
@@ -76,7 +73,6 @@ public class DatasetFigureView implements FigureView {
 		final DatasetView datasetView)
 	{
 		this.datasetView = datasetView;
-		needsUpdate = false;
 		final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		figure = new ImageFigure();
@@ -101,32 +97,15 @@ public class DatasetFigureView implements FigureView {
 	}
 
 	@Override
-	@SuppressWarnings("synthetic-access")
-	public synchronized void update() {
-		if ((!needsUpdate) && (!disposeScheduled)) {
-			needsUpdate = true;
-			EventQueue.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					DatasetFigureView.this.doUpdate();
-				}
-			});
-		}
-	}
-
-	private synchronized void doUpdate() {
-		try {
-			Log.debug("Updating image figure: " + this);
-			final Image image = datasetView.getScreenImage().image();
-			final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
-			figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
-				bufImage.getHeight()));
-			figure.setBufferedImage(bufImage);
-		}
-		finally {
-			needsUpdate = false;
-		}
+	public void update() {
+		final LogService log =
+			datasetView.getData().getContext().getService(LogService.class);
+		log.debug("Updating image figure: " + this);
+		final Image image = datasetView.getScreenImage().image();
+		final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
+		figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
+			bufImage.getHeight()));
+		figure.setBufferedImage(bufImage);
 	}
 
 	// -- FigureView methods --
@@ -143,20 +122,7 @@ public class DatasetFigureView implements FigureView {
 
 	@Override
 	public void dispose() {
-		synchronized (this) {
-			if (!disposeScheduled) {
-				EventQueue.invokeLater(new Runnable() {
-
-					@Override
-					public void run() {
-						synchronized (DatasetFigureView.this) {
-							getFigure().requestRemove();
-						}
-					}
-				});
-				disposeScheduled = true;
-			}
-		}
+		getFigure().requestRemove();
 	}
 
 }

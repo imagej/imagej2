@@ -46,10 +46,8 @@ import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.LineFigure;
 import org.jhotdraw.geom.BezierPath.Node;
@@ -81,20 +79,8 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 
 	@Override
 	public Figure createDefaultFigure() {
-		@SuppressWarnings("serial")
-		final LineFigure figure = new LineFigure() {
-
-			// Make sure that the lines are always drawn 1 pixel wide
-			@Override
-			public void draw(final Graphics2D g) {
-				set(AttributeKeys.STROKE_WIDTH, new Double(1 / g.getTransform()
-					.getScaleX()));
-				super.draw(g);
-			}
-		};
-		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
-		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
-		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
+		final LineFigure figure = new LineFigure();
+		initDefaultSettings(figure);
 		return figure;
 	}
 

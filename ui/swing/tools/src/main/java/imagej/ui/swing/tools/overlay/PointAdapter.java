@@ -95,9 +95,7 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 	@Override
 	public Figure createDefaultFigure() {
 		final PointFigure figure = new PointFigure();
-		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor());
-		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
-		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
+		initDefaultSettings(figure);
 		return figure;
 	}
 

@@ -56,7 +56,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -206,13 +205,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
 		view.getProjector().map();
-		EventQueue.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				displayViewer.getCanvas().update();
-			}
-		});
+		displayViewer.getCanvas().update();
 	}
 
 	// -- Event handlers --

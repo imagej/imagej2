@@ -53,7 +53,7 @@ import java.util.List;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(label = "Overlay Properties...", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
