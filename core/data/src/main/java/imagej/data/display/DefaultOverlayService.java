@@ -42,10 +42,13 @@ import imagej.data.Dataset;
 import imagej.data.DrawingTool;
 import imagej.data.Extents;
 import imagej.data.Position;
+import imagej.data.display.event.PanZoomEvent;
 import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
+import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.object.ObjectService;
@@ -90,7 +93,8 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	public DefaultOverlayService(final ImageJ context,
-		final ObjectService objectService, final DisplayService displayService,
+		final EventService eventService, final ObjectService objectService,
+		final DisplayService displayService,
 		final ImageDisplayService imageDisplayService,
 		final OptionsService optionsService)
 	{
@@ -104,6 +108,8 @@ public final class DefaultOverlayService extends AbstractService implements
 			optionsService.getOptions(OptionsOverlay.class);
 		overlayOptions.updateSettings(defaultSettings);
 		overlayInfo = new OverlayInfoList();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- OverlayService methods --
@@ -333,6 +339,15 @@ public final class DefaultOverlayService extends AbstractService implements
 		// delete the composite overlay
 		removeOverlay(overlay);
 	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final PanZoomEvent evt) {
+		// CTR START HERE - on zoom change, reset line width
+//		evt.getDisplay();
+	}
+
 	// -- helpers --
 
 	private interface Drawer {
