@@ -181,4 +181,5 @@ public class AngleOverlay extends AbstractROIOverlay<AngleRegionOfInterest> {
 	public void move(double[] deltas) {
 		getRegionOfInterest().move(deltas);
 	}
+
 }
