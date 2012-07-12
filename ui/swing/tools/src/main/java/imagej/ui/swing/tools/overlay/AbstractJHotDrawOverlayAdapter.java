@@ -43,7 +43,6 @@ import imagej.data.overlay.OverlaySettings;
 import imagej.ext.tool.AbstractTool;
 import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.util.ColorRGB;
-import imagej.util.ColorRGBA;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -85,16 +84,17 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final Figure figure) {
-		final ColorRGB lineColor = overlay.getData().getLineColor();
-		if (overlay.getData().getLineStyle() != Overlay.LineStyle.NONE) {
+	public void updateFigure(final OverlayView overlayView, final Figure figure) {
+		final Overlay overlay = overlayView.getData();
+		final ColorRGB lineColor = overlay.getLineColor();
+		if (overlay.getLineStyle() != Overlay.LineStyle.NONE) {
 			figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
 
 			// FIXME - is this next line dangerous for drawing attributes? width could
 			// conceivably need to always stay 0.
-			figure.set(AttributeKeys.STROKE_WIDTH, overlay.getData().getLineWidth());
+			figure.set(AttributeKeys.STROKE_WIDTH, overlay.getLineWidth());
 			double[] dash_pattern;
-			switch (overlay.getData().getLineStyle()) {
+			switch (overlay.getLineStyle()) {
 				case SOLID:
 					dash_pattern = null;
 					break;
@@ -109,7 +109,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 					break;
 				default:
 					throw new UnsupportedOperationException("Unsupported line style: " +
-						overlay.getData().getLineStyle().toString());
+						overlay.getLineStyle());
 			}
 			figure.set(AttributeKeys.STROKE_DASHES, dash_pattern);
 		}
@@ -117,17 +117,16 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 			// Render a "NONE" line style as alpha = transparent.
 			figure.set(AttributeKeys.STROKE_COLOR, new Color(0, 0, 0, 0));
 		}
-		final ColorRGB fillColor = overlay.getData().getFillColor();
-		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor, overlay
-			.getData().getAlpha()));
-		switch (overlay.getData().getLineStartArrowStyle()) {
+		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor,
+			overlay.getAlpha()));
+		switch (overlay.getLineStartArrowStyle()) {
 			case ARROW:
 				figure.set(AttributeKeys.START_DECORATION, new ArrowTip());
 				break;
 			case NONE:
 				figure.set(AttributeKeys.START_DECORATION, null);
 		}
-		switch (overlay.getData().getLineEndArrowStyle()) {
+		switch (overlay.getLineEndArrowStyle()) {
 			case ARROW:
 				figure.set(AttributeKeys.END_DECORATION, new ArrowTip());
 				break;
@@ -138,19 +137,20 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlay) {
+	public void updateOverlay(final Figure figure, final OverlayView overlayView) {
 		final Color strokeColor = figure.get(AttributeKeys.STROKE_COLOR);
-		overlay.getData().setLineColor(AWTColors.getColorRGB(strokeColor));
+		final Overlay overlay = overlayView.getData();
+		overlay.setLineColor(AWTColors.getColorRGB(strokeColor));
 		// The line style is intentionally omitted here because it is ambiguous and
 		// because there is no UI for setting it by the JHotDraw UI.
 
 		// FIXME - is this next line dangerous for drawing attributes? width could
 		// conceivably be 0.
-		overlay.getData().setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
+		overlay.setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
 		final Color fillColor = figure.get(AttributeKeys.FILL_COLOR);
 		final ColorRGBA imageJColor = AWTColors.getColorRGBA(fillColor);
-		overlay.getData().setFillColor(imageJColor);
-		overlay.getData().setAlpha(imageJColor.getAlpha());
+		overlay.setFillColor(imageJColor);
+		overlay.setAlpha(imageJColor.getAlpha());
 	}
 
 	// -- Internal methods --

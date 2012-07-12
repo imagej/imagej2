@@ -88,18 +88,18 @@ public interface IJHotDrawOverlayAdapter {
 	 * Update the overlay to match the appearance of the figure
 	 * 
 	 * @param figure the figure that holds the current correct appearance
-	 * @param overlay the overlay that needs to be changed to bring it in-sync
-	 *          with the figure.
+	 * @param overlayView view of the overlay that needs to be changed to bring it
+	 *          in-sync with the figure.
 	 */
-	void updateOverlay(Figure figure, OverlayView overlay);
+	void updateOverlay(Figure figure, OverlayView overlayView);
 
 	/**
 	 * Update the appearance of the figure to match the overlay
 	 * 
-	 * @param overlay the overlay to be represented by the figure
+	 * @param overlayView view of the overlay to be represented by the figure
 	 * @param figure the figure that is to be made to look like the overlay
 	 */
-	void updateFigure(OverlayView overlay, Figure figure);
+	void updateFigure(OverlayView overlayView, Figure figure);
 
 	JHotDrawTool getCreationTool(ImageDisplay display,
 		OverlayCreatedListener listener);
