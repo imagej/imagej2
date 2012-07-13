@@ -64,12 +64,8 @@ public class ImageJ {
 	public static ImageJ createContext() {
 		try {
 			if (!CheckSezpoz.check(false)) {
-				// unfortunately, we *have* to restart. Sezpoz uses
-				// ClassLoader.getResources() which is already initialized by the time
-				// we come here
-				Log.error("Sezpoz generated annotations. "
-					+ "You need to restart for ImageJ2 to work properly!");
-				System.exit(1);
+				// SezPoz uses ClassLoader.getResources() which will now pick up the apt-generated annotations.
+				Log.info("SezPoz generated annotations.");
 			}
 		}
 		catch (final IOException e) {
