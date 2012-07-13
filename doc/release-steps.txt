@@ -1,0 +1,103 @@
+Releasing a new version of ImageJ2 involves three broad steps:
+
+-------------------------------------------------------------------------------
+I. BUILD IMGLIB2 RELEASE BINARIES:
+
+1) In ImgLib repository, create a temporary release branch:
+       git co -b release
+
+2) Create a commit that updates the version numbers for the release.
+   This should be modeled after the previous release; e.g.:
+       git show v2.0.0-beta3
+
+   Typically this consists of the following steps
+   (where "2.x.x" is the desired release version):
+       # update project version to 2.x.x
+       mvn versions:set
+       # add needed properties block to toplevel POM
+       vi pom.xml
+       # replace any remaining SNAPSHOT versions (esp. in broken subtree)
+       git grep SNAPSHOT | xargs sed -i '' -e 's/SNAPSHOT/2.x.x/'
+       # commit the result, with message modeled after previous releases
+       git ci -a
+
+3) Tag the release:
+       git tag v2.x.x
+
+4) Make sure everything builds successfully:
+       mvn clean install
+
+5) If all is well (i.e., "BUILD SUCCESSFUL") then deploy the result:
+       mvn -DskipTests deploy
+
+6) Push the tag:
+       git ps origin v2.x.x
+
+7) Delete the no-longer-needed release branch:
+       git branch -D release
+
+-------------------------------------------------------------------------------
+II. BUILD IMAGEJ2 RELEASE BINARIES:
+
+1) In ImageJ2 repository, create a temporary release branch:
+       git co -b release
+
+2) Create a commit that updates the version numbers for the release.
+   This should be modeled after the previous release; e.g.:
+       git show v2.0.0-beta3
+
+   Typically this consists of the following steps
+   (where "2.x.x" is the desired release version):
+       # update project version to 2.x.x
+       mvn versions:set
+       # add needed properties block to toplevel POM
+       vi pom.xml
+       # verify that no SNAPSHOT versions remain
+       git grep SNAPSHOT
+       # commit the result, with message modeled after previous releases
+       git ci -a
+
+3) Tag the release:
+       git tag v2.x.x
+
+4) Push the tag:
+       git ps origin v2.x.x
+
+5) Delete the no-longer-needed release branch:
+       git branch -D release
+
+6) Tell Jenkins to build and deploy the launcher for the just-pushed tag:
+       http://jenkins.imagej.net/job/ImageJ-launcher/build?delay=0sec
+
+7) Tell Jenkins to build and deploy ImageJ2 itself for the just-pushed tag:
+       http://jenkins.imagej.net/job/ImageJ/build?delay=0sec
+
+-------------------------------------------------------------------------------
+III. UPDATE ONLINE RESOURCES:
+
+1) Download the new application ZIP from the Jenkins build:
+       http://jenkins.imagej.net/job/ImageJ/lastSuccessfulBuild/artifact/app/target/imagej-2.0.0-beta3-application.zip
+
+   Rename the ZIP to delete the "-application" suffix.
+
+2) Upload the new JARs to the ImageJ2 update site.
+
+3) Upload the ZIP to GitHub's Downloads section:
+       https://github.com/imagej/imagej/downloads
+
+4) Create a blog post on developer.imagej.net:
+       http://developer.imagej.net/node/add/blog
+
+   It should be modeled after previous blog entries; e.g.:
+       http://developer.imagej.net/2012/07/13/imagej-v200-beta3
+
+   Make sure to add the ZIP file as an attachment to the post.
+
+5) Update the Downloads page at:
+       http://developer.imagej.net/downloads
+
+6) Send a release announcement to the mailing lists (ImageJ and imagej-devel).
+
+   It should be an abbreviated version of the blog post, modeled after
+   previous release announcements; e.g.:
+       http://imagej.net/pipermail/imagej-devel/2012-May/000975.html
