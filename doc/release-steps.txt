@@ -3,8 +3,8 @@ Releasing a new version of ImageJ2 involves three broad steps:
 -------------------------------------------------------------------------------
 I. BUILD IMGLIB2 RELEASE BINARIES:
 
-1) In ImgLib repository, create a temporary release branch:
-       git co -b release
+1) In ImgLib repository, create a temporary branch:
+       git checkout HEAD^0
 
 2) Create a commit that updates the version numbers for the release.
    This should be modeled after the previous release; e.g.:
@@ -17,12 +17,12 @@ I. BUILD IMGLIB2 RELEASE BINARIES:
        # add needed properties block to toplevel POM
        vi pom.xml
        # replace any remaining SNAPSHOT versions (esp. in broken subtree)
-       git grep SNAPSHOT | xargs sed -i '' -e 's/SNAPSHOT/2.x.x/'
+       git grep -z SNAPSHOT | xargs -0r sed -i '' -e 's/SNAPSHOT/2.x.x/'
        # commit the result, with message modeled after previous releases
-       git ci -a
+       git commit .
 
 3) Tag the release:
-       git tag v2.x.x
+       git tag -a v2.x.x
 
 4) Make sure everything builds successfully:
        mvn clean install
@@ -31,16 +31,13 @@ I. BUILD IMGLIB2 RELEASE BINARIES:
        mvn -DskipTests deploy
 
 6) Push the tag:
-       git ps origin v2.x.x
-
-7) Delete the no-longer-needed release branch:
-       git branch -D release
+       git push origin v2.x.x
 
 -------------------------------------------------------------------------------
 II. BUILD IMAGEJ2 RELEASE BINARIES:
 
-1) In ImageJ2 repository, create a temporary release branch:
-       git co -b release
+1) In ImageJ2 repository, create a temporary branch:
+       git checkout HEAD^0
 
 2) Create a commit that updates the version numbers for the release.
    This should be modeled after the previous release; e.g.:
@@ -55,22 +52,21 @@ II. BUILD IMAGEJ2 RELEASE BINARIES:
        # verify that no SNAPSHOT versions remain
        git grep SNAPSHOT
        # commit the result, with message modeled after previous releases
-       git ci -a
+       git commit .
 
 3) Tag the release:
-       git tag v2.x.x
+       git tag -a v2.x.x
 
 4) Push the tag:
-       git ps origin v2.x.x
+       git push origin v2.x.x
 
-5) Delete the no-longer-needed release branch:
-       git branch -D release
+5) Tell Jenkins to build and deploy the launcher for the just-pushed tag (the
+   TOKEN is here: http://jenkins.imagej.net/job/ImageJ-launcher/configure):
+       bin/trigger-jenkins-deploy.sh launcher <TOKEN> <TAG>
 
-6) Tell Jenkins to build and deploy the launcher for the just-pushed tag:
-       http://jenkins.imagej.net/job/ImageJ-launcher/build?delay=0sec
-
-7) Tell Jenkins to build and deploy ImageJ2 itself for the just-pushed tag:
-       http://jenkins.imagej.net/job/ImageJ/build?delay=0sec
+6) Tell Jenkins to build and deploy ImageJ2 itself for the just-pushed tag (the
+   TOKEN is here: http://jenkins.imagej.net/job/ImageJ/configure):
+       bin/trigger-jenkins-deploy.sh app <TOKEN> <TAG>
 
 -------------------------------------------------------------------------------
 III. UPDATE ONLINE RESOURCES:
