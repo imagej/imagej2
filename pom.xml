@@ -284,13 +284,4 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 		</repository>
 	</repositories>
 
-	<profiles>
-		<profile>
-			<id>all</id>
-			<modules>
-				<module>extra</module>
-			</modules>
-		</profile>
-	</profiles>
-
 </project>
