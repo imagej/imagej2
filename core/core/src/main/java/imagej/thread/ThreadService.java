@@ -63,6 +63,18 @@ public interface ThreadService extends IService, ThreadFactory {
 	<V> Future<V> run(Callable<V> code);
 
 	/**
+	 * Asynchronously executes the given code in a new thread, as decided by the
+	 * thread service. Typically this means that the service allocates a thread
+	 * from its pool, but ultimately the behavior is implementation-dependent.
+	 * This method returns immediately.
+	 * 
+	 * @param code The code to execute.
+	 * @return A {@link Future} that can be used to block until the execution has
+	 *         finished. Call {@link Future#get()} to do so.
+	 */
+	Future<?> run(Runnable code);
+
+	/**
 	 * Gets whether the current thread is a dispatch thread for use with
 	 * {@link #invoke} and {@link #queue}.
 	 * <p>

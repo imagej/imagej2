@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -195,7 +196,8 @@ public class DefaultModuleService extends AbstractService implements
 		final ModuleRunner runner =
 			new ModuleRunner(getContext(), module, pre, post);
 		@SuppressWarnings("unchecked")
-		final Future<M> future = (Future<M>) threadService.run(runner);
+		final Callable<M> callable = (Callable<M>) runner;
+		final Future<M> future = threadService.run(callable);
 		return future;
 	}
 

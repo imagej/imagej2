@@ -82,6 +82,11 @@ public final class DefaultThreadService extends AbstractService implements
 	}
 
 	@Override
+	public Future<?> run(final Runnable code) {
+		return executor.submit(code);
+	}
+
+	@Override
 	public boolean isDispatchThread() {
 		return EventQueue.isDispatchThread();
 	}
