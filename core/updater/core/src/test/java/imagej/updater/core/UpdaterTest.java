@@ -849,6 +849,42 @@ public class UpdaterTest {
 		return file;
 	}
 
+	@Test
+	public void testHandlingOfObsoleteChecksums() throws Exception {
+		FilesCollection files = new FilesCollection(ijRoot);
+
+		final String newContents = "blub = true\n"
+				+ "#Tue Jun 17 09:47:43 CST 2012\n"
+				+ "narf.egads = pinkie\n";
+			final String fileName =
+				"META-INF/maven/net.imagej/updater-test/pom.properties";
+		assertTrue(new File(ijRoot, "jars").mkdirs());
+		final File jar =
+				writeJarWithDatedFile("jars/new.jar", 2012, 6, 17, fileName, newContents);
+
+		final String checksumOld = Util.getJarDigest(jar, false, false);
+		final String checksumNew = Util.getJarDigest(jar, true, true);
+
+		assertNotEqual(checksumOld, checksumNew);
+		FileObject file = new FileObject(null, "jars/new.jar", jar.length(), checksumOld, Util.getTimestamp(jar), Status.NOT_INSTALLED);
+		files.add(file);
+
+		assertEquals(checksumOld, files.get("jars/new.jar").getChecksum());
+
+		new Checksummer(files, progress).updateFromLocal();
+		assertEquals(checksumNew, files.get("jars/new.jar").getChecksum());
+
+		files.clear();
+
+		file = new FileObject(null, "jars/new.jar", jar.length(), "current-checksum", Util.getTimestamp(jar), Status.NOT_INSTALLED);
+		file.addPreviousVersion(checksumOld, Util.getTimestamp(jar), null);
+		files.add(file);
+
+		new Checksummer(files, progress).updateFromLocal();
+		assertTrue(files.get("jars/new.jar").hasPreviousVersion(checksumNew));
+		assertNotEqual(files.get("jars/new.jar").current.checksum, checksumNew);
+	}
+
 	//
 	// Debug functions
 	//

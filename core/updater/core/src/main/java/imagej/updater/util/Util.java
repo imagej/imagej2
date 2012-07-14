@@ -196,9 +196,11 @@ public class Util {
 		return new String(buffer);
 	}
 
-	public static String getJarDigest(final File file)
-		throws FileNotFoundException, IOException
-	{
+	public static String getJarDigest(final File file) throws FileNotFoundException, IOException {
+		return getJarDigest(file, true, true);
+	}
+
+	public static String getJarDigest(final File file, boolean treatPropertiesSpecially, boolean treatManifestsSpecially) throws FileNotFoundException, IOException {
 		MessageDigest digest = null;
 		try {
 			digest = getDigest();
@@ -217,11 +219,11 @@ public class Util {
 				InputStream inputStream = jar.getInputStream(entry);
 				// .properties files have a date in a comment; let's ignore this for the checksum
 				// For backwards-compatibility, activate the .properties mangling only from June 15th, 2012
-				if (entry.getTime() >= 1342328400000l && entry.getName().endsWith(".properties")) {
+				if (treatPropertiesSpecially && entry.getTime() >= 1342328400000l && entry.getName().endsWith(".properties")) {
 					inputStream = new SkipHashedLines(inputStream);
 				}
 				// same for manifests, but with July 6th, 2012
-				if (entry.getTime() >= 1344229200000l && entry.getName().equals("META-INF/MANIFEST.MF")) {
+				if (treatManifestsSpecially && entry.getTime() >= 1344229200000l && entry.getName().equals("META-INF/MANIFEST.MF")) {
 					inputStream = new FilterManifest(inputStream);
 				}
 				updateDigest(inputStream, digest);

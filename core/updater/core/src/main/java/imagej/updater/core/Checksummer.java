@@ -174,6 +174,7 @@ public class Checksummer extends Progressable {
 				files.add(object);
 			}
 			else if (checksum != null) {
+				object.handleObsoleteChecksum(file, checksum);
 				object.setLocalVersion(pair.path, checksum, timestamp);
 				if (object.getStatus() == Status.OBSOLETE_UNINSTALLED) object
 					.setStatus(Status.OBSOLETE);

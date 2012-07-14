@@ -213,7 +213,6 @@ public class Installer extends Downloader {
 				" (expected " + size + ")");
 
 		final FileObject file = download.file;
-		final String digest = download.file.getChecksum();
 		String actualDigest;
 		try {
 			actualDigest = Util.getDigest(file.getFilename(), destination);
@@ -223,6 +222,8 @@ public class Installer extends Downloader {
 			throw new RuntimeException("Could not verify checksum " + "for " +
 				destination);
 		}
+		file.handleObsoleteChecksum(destination, actualDigest);
+		final String digest = download.file.getChecksum();
 
 		if (!digest.equals(actualDigest)) throw new RuntimeException(
 			"Incorrect checksum " + "for " + destination + ":\n" + actualDigest +
