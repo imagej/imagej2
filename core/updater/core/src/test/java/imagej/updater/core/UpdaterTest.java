@@ -601,6 +601,47 @@ public class UpdaterTest {
 	}
 
 	@Test
+	public void testOverriddenObsolete() throws Exception {
+		final String db = "<pluginRecords>"
+				+ " <plugin filename=\"ImageJ-linux64\">"
+				+ "  <previous-version timestamp=\"1\" checksum=\"a\" />"
+				+ " </plugin>"
+				+ "</pluginRecords>";
+		writeGZippedFile(webRoot, "db.xml.gz", db);
+		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
+		final String db2 = "<pluginRecords>"
+				+ " <plugin filename=\"ImageJ-linux64\">"
+				+ "  <version checksum=\"c\" timestamp=\"3\" filesize=\"10\" />"
+				+ "  <previous-version timestamp=\"2\" checksum=\"b\" />"
+				+ " </plugin>"
+				+ "</pluginRecords>";
+		writeGZippedFile(webRoot2, "db.xml.gz", db2);
+
+		FilesCollection files = new FilesCollection(ijRoot);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
+		files.addUpdateSite("Fiji", webRoot2.toURI().toURL().toString(), null, null, 0);
+		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
+		new XMLFileReader(files).read("Fiji");
+
+		FileObject file = files.get("ImageJ-linux64");
+		assertNotNull(file);
+		assertCount(2, file.previous);
+		assertStatus(Status.NEW, files, "ImageJ-linux64");
+
+		files = new FilesCollection(ijRoot);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot2.toURI().toURL().toString();
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).timestamp = 0;
+		files.addUpdateSite("Fiji", webRoot.toURI().toURL().toString(), null, null, 0);
+		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
+		new XMLFileReader(files).read("Fiji");
+
+		file = files.get("ImageJ-linux64");
+		assertNotNull(file);
+		assertCount(2, file.previous);
+		assertStatus(Status.NEW, files, "ImageJ-linux64");
+	}
+
+	@Test
 	public void testConflictingVersionsToUpload() throws Exception {
 		initializeUpdateSite("macros/macro.ijm");
 

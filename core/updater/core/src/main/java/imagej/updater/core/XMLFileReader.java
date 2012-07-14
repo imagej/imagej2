@@ -155,15 +155,6 @@ public class XMLFileReader extends DefaultHandler {
 			current =
 				new FileObject(updateSite, atts.getValue("filename"), -1, null, 0,
 					Status.NOT_INSTALLED);
-			if (this.updateSite != null &&
-				!this.updateSite.equals(FilesCollection.DEFAULT_UPDATE_SITE))
-			{
-				final FileObject already = files.get(current.filename);
-				if (already != null && !this.updateSite.equals(already.updateSite)) warnings
-					.append("Warning: '" + current.filename + "' from update site '" +
-						this.updateSite + "' shadows the one from update site '" +
-						already.updateSite + "'\n");
-			}
 			final String executable = atts.getValue("executable");
 			if ("true".equalsIgnoreCase(executable)) current.executable = true;
 		}
@@ -228,6 +219,17 @@ public class XMLFileReader extends DefaultHandler {
 						if (version.filename == null) version.filename = current.filename;
 						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
 					}
+				} else if (file.isObsolete()) {
+					for (final FileObject.Version version : file.previous) {
+						if (version.filename == null) version.filename = file.filename;
+						current.addPreviousVersion(version.checksum, version.timestamp, version.filename);
+					}
+					files.add(current);
+				} else if (current.isObsolete()) {
+					for (final FileObject.Version version : current.previous) {
+						if (version.filename == null) version.filename = current.filename;
+						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
+					}
 				} else if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
 					current.overriddenUpdateSites.addAll(file.overriddenUpdateSites);
 					if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
@@ -239,9 +241,20 @@ public class XMLFileReader extends DefaultHandler {
 					// do not forget metadata
 					current.completeMetadataFrom(file);
 					files.add(current);
+					if (this.updateSite != null && file.updateSite != null && getRank(files, this.updateSite) > getRank(files, file.updateSite))
+						warnings.append("Warning: '" + current.filename
+								+ "' from update site '" + current.updateSite
+								+ "' shadows the one from update site '"
+								+ file.updateSite + "'\n");
 				}
-				else
+				else {
 					file.overriddenUpdateSites.add(updateSite);
+					if (this.updateSite != null && file.updateSite != null && getRank(files, file.updateSite) > getRank(files, this.updateSite))
+						warnings.append("Warning: '" + file.filename
+								+ "' from update site '" + file.updateSite
+								+ "' shadows the one from update site '"
+								+ current.updateSite + "'\n");
+				}
 			}
 			current = null;
 		}
