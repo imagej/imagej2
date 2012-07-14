@@ -160,7 +160,8 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	protected void addUpdateSite(final String name, final UpdateSite updateSite) {
-		updateSite.rank = updateSites.size();
+		UpdateSite already = updateSites.get(name);
+		updateSite.rank = already != null ? already.rank : updateSites.size();
 		updateSites.put(name,  updateSite);
 	}
 
