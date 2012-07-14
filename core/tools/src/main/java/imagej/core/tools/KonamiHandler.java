@@ -42,6 +42,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;
+import imagej.thread.ThreadService;
 
 /**
  * Oh, the nostalgia!
@@ -50,7 +51,7 @@ import imagej.ext.tool.Tool;
  */
 @Plugin(type = Tool.class, name = "Konami", alwaysActive = true,
 	priority = Priority.FIRST_PRIORITY)
-public class KonamiHandler extends AbstractTool {
+public class KonamiHandler extends AbstractTool implements Runnable {
 
 	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,
 		KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
@@ -70,13 +71,20 @@ public class KonamiHandler extends AbstractTool {
 			if (index > CODE.length - 2) evt.consume();
 			if (index == CODE.length) {
 				index = 0;
-				new TunePlayer().play(JINGLE);
+				final ThreadService threadService =
+					getContext().getService(ThreadService.class);
+				threadService.run(this);
 				final PluginService pluginService =
 					getContext().getService(PluginService.class);
 				pluginService.run(PLUGIN);
 			}
 		}
 		else index = 0;
+	}
+
+	@Override
+	public void run() {
+		new TunePlayer().play(JINGLE);
 	}
 
 }
