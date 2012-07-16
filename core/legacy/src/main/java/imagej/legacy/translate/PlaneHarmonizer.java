@@ -132,29 +132,26 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 		// copy planes by reference
 
-		if (imp.getStackSize() == 1) {
-			Object plane = ds.getPlane(0);
-			imp.getProcessor().setPixels(plane);
-			imp.getStack().setPixels(plane, 1);
-		}
-		else {
-			int stackPosition = 1;
-			for (int t = 0; t < tCount; t++) {
-				if (tIndex >= 0) planePos.setPosition(t, tIndex - 2);
-				for (int z = 0; z < zCount; z++) {
-					if (zIndex >= 0) planePos.setPosition(z, zIndex - 2);
-					for (int c = 0; c < cCount; c++) {
-						if (cIndex >= 0) planePos.setPosition(c, cIndex - 2);
-						final int planeNum = (int) planePos.getIndex();
-						final Object plane = ds.getPlane(planeNum, false);
-						if (plane == null) {
-							Log.error(message("Can't extract plane from Dataset ", c, z, t));
-						}
-						stack.setPixels(plane, stackPosition++);
+		Object plane = null;
+		int stackPosition = 1;
+		for (int t = 0; t < tCount; t++) {
+			if (tIndex >= 0) planePos.setPosition(t, tIndex - 2);
+			for (int z = 0; z < zCount; z++) {
+				if (zIndex >= 0) planePos.setPosition(z, zIndex - 2);
+				for (int c = 0; c < cCount; c++) {
+					if (cIndex >= 0) planePos.setPosition(c, cIndex - 2);
+					final int planeNum = (int) planePos.getIndex();
+					plane = ds.getPlane(planeNum, false);
+					if (plane == null) {
+						Log.error(message("Can't extract plane from Dataset ", c, z, t));
 					}
+					stack.setPixels(plane, stackPosition++);
 				}
 			}
 		}
+		// NB - this kind of behavior came from an old bugfix that went
+		// undocumented. Since this seems safe will leave for now.
+		if (imp.getStackSize() == 1) imp.getProcessor().setPixels(plane);
 	}
 
 	// -- private interface --
