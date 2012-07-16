@@ -265,19 +265,27 @@ public final class FileUtils {
 			// NB: We assume that the JAR resides one level below <BASEDIR>.
 			if (slash > 0) slash = path.lastIndexOf('/', slash - 1);
 			if (slash > 0) path = path.substring(0, slash + 1);
-		}
-		else if (path.endsWith("/target/classes/")) {
-			// NB: Class is in a Maven build directory. We look for
-			// pom.xml files in parent directories up to <BASEDIR>.
-			File up = new File(path).getParentFile().getParentFile();
-			for (;;) {
-				final File parent = up.getParentFile();
-				if (parent == null || !new File(parent, "pom.xml").exists()) break;
-				up = parent;
+			if (path.endsWith("/core/core/")) {
+				return findPomXml(new File(path), 2);
 			}
-			path = up.getAbsolutePath();
+		}
+		else if (path.endsWith("/core/core/target/classes/")) {
+			return findPomXml(new File(path), 4);
 		}
 		return path;
 	}
 
+	protected static String findPomXml(File directory, int cdUp) {
+		while (cdUp-- > 0) {
+			File up = directory.getParentFile();
+			if (up == null) return null;
+			directory = up;
+		}
+		for (;;) {
+			final File parent = directory.getParentFile();
+			if (parent == null || !new File(parent, "pom.xml").exists()) break;
+			directory = parent;
+		}
+		return directory.getAbsolutePath();
+	}
 }
