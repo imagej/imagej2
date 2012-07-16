@@ -266,40 +266,6 @@ public class FileObject {
 		current.filename = filename;
 	}
 
-	/**
-	 * Handle previous methods to calculate the checksums gracefully
-	 * 
-	 * Earlier, we simply checksummed all the contents in .jar files. But that leads to files
-	 * marked as modified all the time when Maven rebuilds them. So we changed the way they are
-	 * checksummed.
-	 * 
-	 * Let's handle old checksums, too, though, by simply adding them to the previous versions.
-	 * @param checksum
-	 */
-	public void handleObsoleteChecksum(final File file, final String checksum) {
-		if (hasPreviousVersion(checksum) || !filename.endsWith(".jar")) return;
-		for (boolean handlePropertiesSpecially : new boolean[] { true, false }) try {
-			String checksum2 = Util.getJarDigest(file, handlePropertiesSpecially, false);
-			if (checksum2.equals(checksum)) continue;
-			if (current != null && checksum2.equals(current.checksum)) {
-				addPreviousVersion(checksum2, current.timestamp, filename);
-				current.checksum = checksum;
-				System.err.println("true : " + hasPreviousVersion(checksum));
-				return;
-			}
-			else {
-				for (final Version version : previous) {
-					if (version.checksum.equals(checksum2)) {
-						addPreviousVersion(checksum, version.timestamp, version.filename);
-						return;
-					}
-				}
-			}
-		} catch (IOException e) {
-			// ignore
-		}
-	}
-
 	public void setLocalVersion(final String filename, final String checksum, final long timestamp) {
 		localFilename = filename;
 		if (current != null && checksum.equals(current.checksum)) {

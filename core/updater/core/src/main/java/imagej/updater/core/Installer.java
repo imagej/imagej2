@@ -213,17 +213,24 @@ public class Installer extends Downloader {
 				" (expected " + size + ")");
 
 		final FileObject file = download.file;
+		final String digest = download.file.getChecksum();
 		String actualDigest;
 		try {
 			actualDigest = Util.getDigest(file.getFilename(), destination);
+			if (!digest.equals(actualDigest)) {
+				List<String> obsoletes = Util.getObsoleteDigests(file.getFilename(), destination);
+				if (obsoletes != null) {
+					for (final String obsolete : obsoletes) {
+						if (digest.equals(obsolete)) actualDigest = obsolete;
+					}
+				}
+			}
 		}
 		catch (final Exception e) {
 			Log.error(e);
 			throw new RuntimeException("Could not verify checksum " + "for " +
 				destination);
 		}
-		file.handleObsoleteChecksum(destination, actualDigest);
-		final String digest = download.file.getChecksum();
 
 		if (!digest.equals(actualDigest)) throw new RuntimeException(
 			"Incorrect checksum " + "for " + destination + ":\n" + actualDigest +

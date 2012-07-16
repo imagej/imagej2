@@ -174,7 +174,18 @@ public class Checksummer extends Progressable {
 				files.add(object);
 			}
 			else if (checksum != null) {
-				object.handleObsoleteChecksum(file, checksum);
+				if (!object.hasPreviousVersion(checksum)) {
+					final FileObject.Version obsoletes =
+						cachedChecksums.get(":" + checksum);
+					if (obsoletes != null) {
+						for (final String obsolete : obsoletes.checksum.split(":")) {
+							if (object.hasPreviousVersion(obsolete)) {
+								checksum = obsolete;
+								break;
+							}
+						}
+					}
+				}
 				object.setLocalVersion(pair.path, checksum, timestamp);
 				if (object.getStatus() == Status.OBSOLETE_UNINSTALLED) object
 					.setStatus(Status.OBSOLETE);
@@ -359,7 +370,7 @@ public class Checksummer extends Progressable {
 		try {
 			final Writer writer = new FileWriter(file);
 			for (final String filename : cachedChecksums.keySet())
-				if (files.prefix(filename).exists()) {
+				if (filename.startsWith(":") || files.prefix(filename).exists()) {
 					final FileObject.Version version = cachedChecksums.get(filename);
 					writer.write(version.checksum + " " + version.timestamp + " " +
 						filename + "\n");
@@ -376,10 +387,24 @@ public class Checksummer extends Progressable {
 		ZipException
 	{
 		if (cachedChecksums == null) readCachedChecksums();
-		final FileObject.Version version = cachedChecksums.get(path);
-		if (version != null && timestamp == version.timestamp) return version.checksum;
-		final String checksum = Util.getDigest(path, file);
-		cachedChecksums.put(path, new FileObject.Version(checksum, timestamp));
-		return checksum;
+		FileObject.Version version = cachedChecksums.get(path);
+		if (version == null || timestamp != version.timestamp) {
+			final String checksum = Util.getDigest(path, file);
+			version = new FileObject.Version(checksum, timestamp);
+			cachedChecksums.put(path, version);
+		}
+		if (!cachedChecksums.containsKey(":" + version.checksum)) {
+			final List<String> obsoletes = Util.getObsoleteDigests(path, file);
+			if (obsoletes != null) {
+				final StringBuilder builder = new StringBuilder();
+				for (final String obsolete : obsoletes) {
+					if (builder.length() > 0) builder.append(':');
+					builder.append(obsolete);
+				}
+				cachedChecksums.put(":" + version.checksum, new FileObject.Version(
+					builder.toString(), timestamp));
+			}
+		}
+		return version.checksum;
 	}
 }

@@ -53,6 +53,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -173,6 +174,28 @@ public class Util {
 
 	public static MessageDigest getDigest() throws NoSuchAlgorithmException {
 		return MessageDigest.getInstance("SHA-1");
+	}
+
+	/**
+	 * Handle previous methods to calculate the checksums gracefully Earlier, we
+	 * simply checksummed all the contents in .jar files. But that leads to files
+	 * marked as modified all the time when Maven rebuilds them. So we changed the
+	 * way they are checksummed. Let's handle old checksums, too, though, by
+	 * simply adding them to the previous versions.
+	 * 
+	 * @param path the path relative to the ImageJ directory
+	 * @param file the file
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public static List<String> getObsoleteDigests(final String path,
+		final File file) throws FileNotFoundException, IOException
+	{
+		if (!path.endsWith(".jar")) return null;
+		final List<String> result = new ArrayList<String>();
+		result.add(getJarDigest(file, true, false));
+		result.add(getJarDigest(file, false, false));
+		return result;
 	}
 
 	public static void updateDigest(final InputStream input,

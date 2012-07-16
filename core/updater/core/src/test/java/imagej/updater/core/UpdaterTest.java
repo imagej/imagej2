@@ -851,38 +851,59 @@ public class UpdaterTest {
 
 	@Test
 	public void testHandlingOfObsoleteChecksums() throws Exception {
-		FilesCollection files = new FilesCollection(ijRoot);
-
-		final String newContents = "blub = true\n"
-				+ "#Tue Jun 17 09:47:43 CST 2012\n"
+		final String newContents =
+			"blub = true\n" + "#Tue Jun 17 09:47:43 CST 2012\n"
 				+ "narf.egads = pinkie\n";
-			final String fileName =
-				"META-INF/maven/net.imagej/updater-test/pom.properties";
+		final String fileName =
+			"META-INF/maven/net.imagej/updater-test/pom.properties";
 		assertTrue(new File(ijRoot, "jars").mkdirs());
-		final File jar =
-				writeJarWithDatedFile("jars/new.jar", 2012, 6, 17, fileName, newContents);
+		File jar =
+			writeJarWithDatedFile("jars/new.jar", 2012, 6, 17, fileName, newContents);
 
 		final String checksumOld = Util.getJarDigest(jar, false, false);
 		final String checksumNew = Util.getJarDigest(jar, true, true);
-
 		assertNotEqual(checksumOld, checksumNew);
-		FileObject file = new FileObject(null, "jars/new.jar", jar.length(), checksumOld, Util.getTimestamp(jar), Status.NOT_INSTALLED);
+
+		final String[][] data =
+			{
+				// previous current expect
+				{ "invalid", checksumOld, checksumOld },
+				{ checksumOld, checksumNew, checksumNew },
+				{ checksumOld, "something else", checksumOld },
+				{ checksumNew, "something else", checksumNew } };
+		for (final String[] triplet : data) {
+			final FilesCollection files = new FilesCollection(ijRoot);
+			final FileObject file =
+				new FileObject(null, "jars/new.jar", jar.length(), triplet[1], Util
+					.getTimestamp(jar), Status.NOT_INSTALLED);
+			file.addPreviousVersion(triplet[0], 1, null);
+			files.add(file);
+			new Checksummer(files, progress).updateFromLocal();
+			final FileObject file2 = files.get("jars/new.jar");
+			assertTrue(file == file2);
+			assertEquals(triplet[1], file.getChecksum());
+			assertEquals(triplet[2], file.localChecksum != null ? file.localChecksum
+				: file.current.checksum);
+		}
+
+		FilesCollection files = new FilesCollection(ijRoot);
+		final FileObject file =
+			new FileObject(FilesCollection.DEFAULT_UPDATE_SITE, "jars/new.jar", jar.length(), checksumOld, Util
+				.getTimestamp(jar), Status.INSTALLED);
 		files.add(file);
 
+		new File(webRoot, "jars").mkdirs();
+		assertTrue(jar.renameTo(new File(webRoot, "jars/new.jar-" +
+			file.current.timestamp)));
+		new XMLFileWriter(files).write(new GZIPOutputStream(new FileOutputStream(
+			new File(webRoot, "db.xml.gz"))), false);
+
+		files = readDb(false, true);
+		new Installer(files, progress).start();
+		jar = new File(ijRoot, "update/jars/new.jar");
+		assertTrue(jar.exists());
+		assertEquals(checksumNew, Util.getJarDigest(jar));
 		assertEquals(checksumOld, files.get("jars/new.jar").getChecksum());
-
-		new Checksummer(files, progress).updateFromLocal();
-		assertEquals(checksumNew, files.get("jars/new.jar").getChecksum());
-
-		files.clear();
-
-		file = new FileObject(null, "jars/new.jar", jar.length(), "current-checksum", Util.getTimestamp(jar), Status.NOT_INSTALLED);
-		file.addPreviousVersion(checksumOld, Util.getTimestamp(jar), null);
-		files.add(file);
-
-		new Checksummer(files, progress).updateFromLocal();
-		assertTrue(files.get("jars/new.jar").hasPreviousVersion(checksumNew));
-		assertNotEqual(files.get("jars/new.jar").current.checksum, checksumNew);
 	}
 
 	//
