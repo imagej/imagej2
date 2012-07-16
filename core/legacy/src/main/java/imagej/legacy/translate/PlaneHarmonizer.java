@@ -149,8 +149,11 @@ public class PlaneHarmonizer implements DataHarmonizer {
 				}
 			}
 		}
-		// NB - this kind of behavior came from an old bugfix that went
-		// undocumented. Since this seems safe will leave for now.
+		// NB - in the original code this next line was all that happened for single
+		// plane images since they might have a null stack. But testing showed that
+		// the stack.setPixels() call was always needed. Thus this proc.setPixels()
+		// call may no longer be necessary. But it may avoid some other undocumented
+		// bug. So since this seems safe will leave for now.
 		if (imp.getStackSize() == 1) imp.getProcessor().setPixels(plane);
 	}
 
