@@ -463,7 +463,7 @@ public class FileObject {
 		return getFilename(false);
 	}
 
-	protected final static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+)+[a-z]?(-[A-Za-z0-9.]+)*)(\\.jar)");
+	protected final static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+)+[a-z]?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar)");
 
 	protected static Matcher matchVersion(String filename) {
 		if (!filename.endsWith(".jar")) return null;

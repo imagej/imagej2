@@ -500,6 +500,7 @@ public class UpdaterTest {
 		assertEquals("jars/bio-formats.jar", FileObject.getFilename("jars/bio-formats-4.4-imagej-2.0.0-beta1.jar", true));
 		assertEquals(FileObject.getFilename("jars/ij-data-2.0.0-beta1.jar", true), FileObject.getFilename("jars/ij-data-2.0.0-SNAPSHOT.jar", true));
 		assertEquals(FileObject.getFilename("jars/ij-1.44.jar", true), FileObject.getFilename("jars/ij-1.46b.jar", true));
+		assertEquals(FileObject.getFilename("jars/javassist.jar", true), FileObject.getFilename("jars/javassist-3.9.0.GA.jar", true));
 	}
 
 	@Test
