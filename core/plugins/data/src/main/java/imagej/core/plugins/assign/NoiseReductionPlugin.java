@@ -100,41 +100,41 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	// -- Parameters --
 	
 	@Parameter
-	ImageJ context;
+	private ImageJ context;
 	
 	@Parameter
-	StatusService statusService;
+	private StatusService statusService;
 	
 	@Parameter
-	Dataset dataset;
+	private Dataset dataset;
 	
 	@Parameter(label = "Method: ", choices = { MEDIAN, MEAN, MIN, MAX, MIDPOINT,
 		ADAPTIVE, CONTRAHARMONIC, GEOMETRIC, HARMONIC, TRIMMED } )
-	String functionName = MEDIAN;
+	private String functionName = MEDIAN;
 
 	@Parameter(label="Neighborhood: negative width", min="0")
-	int windowNegWidthSpan = 1;
+	private int windowNegWidthSpan = 1;
 	
 	@Parameter(label="Neighborhood: negative height", min="0")
-	int windowNegHeightSpan = 1;
+	private int windowNegHeightSpan = 1;
 	
 	@Parameter(label="Neighborhood: positive width", min="0")
-	int windowPosWidthSpan = 1;
+	private int windowPosWidthSpan = 1;
 	
 	@Parameter(label="Neighborhood: positive height", min="0")
-	int windowPosHeightSpan = 1;
+	private int windowPosHeightSpan = 1;
 	
 	@Parameter(label="Adaptive median: expansion count",min="1")
-	int windowExpansions = 1;
+	private int windowExpansions = 1;
 	
 	@Parameter(label="Contraharmonic mean: order")
-	double order = 1;
+	private double order = 1;
 	
 	@Parameter(label="Trimmed mean: trim count (single end)", min="1")
-	int halfTrimCount = 1;
+	private int halfTrimCount = 1;
 
 	@Parameter(type=ItemIO.OUTPUT)
-	Dataset output = null;
+	private Dataset output = null;
 
 	private int numDims;
 	
@@ -228,14 +228,16 @@ public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
 	private void notifyUserAtStart() {
 		int w = 1 + windowNegWidthSpan + windowPosWidthSpan;
 		int h = 1 + windowNegHeightSpan + windowPosHeightSpan;
-		String message = functionName + " of "+ w + " X " + h + " neighborhood ... beginning processing";
+		String message = functionName + " of "+ w + " X " + h +
+				" neighborhood ... beginning processing";
 		statusService.showStatus(message);
 	}
 	
 	private void notifyUserAtEnd() {
 		int w = 1 + windowNegWidthSpan + windowPosWidthSpan;
 		int h = 1 + windowNegHeightSpan + windowPosHeightSpan;
-		String message = functionName + " of "+ w + " X " + h + " neighborhood ... complete";
+		String message = functionName + " of "+ w + " X " + h +
+				" neighborhood ... complete";
 		statusService.showStatus(message);
 	}
 	
