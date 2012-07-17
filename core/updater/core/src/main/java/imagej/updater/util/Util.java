@@ -193,8 +193,9 @@ public class Util {
 	{
 		if (!path.endsWith(".jar")) return null;
 		final List<String> result = new ArrayList<String>();
-		result.add(getJarDigest(file, true, false));
-		result.add(getJarDigest(file, false, false));
+		result.add(getJarDigest(file, true, true, false));
+		result.add(getJarDigest(file, true, false, false));
+		result.add(getJarDigest(file, false, false, false));
 		return result;
 	}
 
@@ -220,10 +221,14 @@ public class Util {
 	}
 
 	public static String getJarDigest(final File file) throws FileNotFoundException, IOException {
-		return getJarDigest(file, true, true);
+		return getJarDigest(file, true, true, true);
 	}
 
 	public static String getJarDigest(final File file, boolean treatPropertiesSpecially, boolean treatManifestsSpecially) throws FileNotFoundException, IOException {
+		return getJarDigest(file, treatPropertiesSpecially, treatManifestsSpecially, false);
+	}
+
+	public static String getJarDigest(final File file, boolean treatPropertiesSpecially, boolean treatManifestsSpecially, boolean keepOnlyMainClassInManifest) throws FileNotFoundException, IOException {
 		MessageDigest digest = null;
 		try {
 			digest = getDigest();
@@ -247,7 +252,7 @@ public class Util {
 				}
 				// same for manifests, but with July 6th, 2012
 				if (treatManifestsSpecially && entry.getTime() >= 1344229200000l && entry.getName().equals("META-INF/MANIFEST.MF")) {
-					inputStream = new FilterManifest(inputStream);
+					inputStream = new FilterManifest(inputStream, keepOnlyMainClassInManifest);
 				}
 				updateDigest(inputStream, digest);
 			}

@@ -72,19 +72,27 @@ public class FilterManifest extends ByteArrayInputStream {
 	}
 
 	public FilterManifest(final InputStream in) throws IOException {
-		super(filter(in));
+		this(in, true);
 	}
 
-	protected static byte[] filter(final InputStream in) throws IOException {
-		return filter(new BufferedReader(new InputStreamReader(in)));
+	public FilterManifest(final InputStream in, boolean keepOnlyMainClass) throws IOException {
+		super(filter(in, keepOnlyMainClass));
 	}
 
-	protected static byte[] filter(final BufferedReader reader) throws IOException {
+	protected static byte[] filter(final InputStream in, boolean keepOnlyMainClass) throws IOException {
+		return filter(new BufferedReader(new InputStreamReader(in)), keepOnlyMainClass);
+	}
+
+	protected static byte[] filter(final BufferedReader reader, boolean keepOnlyMainClass) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (;;) {
 			String line = reader.readLine();
 			if (line == null) {
 				break;
+			}
+			if (keepOnlyMainClass) {
+				if (line.toUpperCase().startsWith("Main-Class:")) builder.append(line).append('\n');
+				continue;
 			}
 			int colon = line.indexOf(':');
 			if (colon > 0 && skip.contains(line.substring(0, colon).toUpperCase())) {
