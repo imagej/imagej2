@@ -252,4 +252,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 		return file.renameTo(backup);
 	}
 
+	public static void main(String[] args) {
+		new ImageJUpdater().run();
+	}
 }
