@@ -389,7 +389,9 @@ public class Checksummer extends Progressable {
 		if (cachedChecksums == null) readCachedChecksums();
 		FileObject.Version version = cachedChecksums.get(path);
 		if (version == null || timestamp != version.timestamp) {
-			final String checksum = Util.getDigest(path, file);
+			final String checksum = path.equals("plugins/Fiji_Updater.jar") ?
+				Util.getJarDigest(file, false, false) :
+				Util.getDigest(path, file);
 			version = new FileObject.Version(checksum, timestamp);
 			cachedChecksums.put(path, version);
 		}
