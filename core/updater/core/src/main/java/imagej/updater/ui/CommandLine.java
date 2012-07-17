@@ -44,6 +44,7 @@ import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.Filter;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.FilesUploader;
+import imagej.updater.core.Installer;
 import imagej.updater.core.XMLFileDownloader;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
@@ -93,16 +94,9 @@ public class CommandLine {
 		final XMLFileDownloader downloader = new XMLFileDownloader(files);
 		downloader.addProgress(progress);
 		downloader.start();
-	}
-
-	public void checksum() {
-		checksum(null);
-	}
-
-	public void checksum(final List<String> list) {
-		final Checksummer checksummer = new Checksummer(files, progress);
-		if (list != null && list.size() > 0) checksummer.updateFromLocal(list);
-		else checksummer.updateFromLocal();
+		String warnings = downloader.getWarnings();
+		if (!warnings.equals("")) System.err.println(warnings);
+		new Checksummer(files, progress).updateFromLocal();
 	}
 
 	protected class FileFilter implements Filter {
@@ -131,7 +125,6 @@ public class CommandLine {
 	}
 
 	public void list(final List<String> list, Filter filter) {
-		checksum(list);
 		if (filter == null) filter = new FileFilter(list);
 		else filter = files.and(new FileFilter(list), filter);
 		files.sort();
@@ -244,42 +237,47 @@ public class CommandLine {
 		final Set<FileObject> all = new HashSet<FileObject>();
 		for (final FileObject file : files.filter(new FileFilter(list)))
 			addDependencies(file, all);
-		files.clear();
 		for (final FileObject file : all)
 			list.add(file.filename);
-		checksum(list);
-		for (final FileObject file : all)
-			switch (file.getStatus()) {
+		try {
+			for (final FileObject file : all) {
+				switch (file.getStatus()) {
 				case MODIFIED:
 					if (!force) {
-						System.err.println("Skipping locally-modified " + file.filename);
+						System.err.println("Skipping locally-modified "
+								+ file.filename);
 						break;
 					}
 				case UPDATEABLE:
 				case NEW:
 				case NOT_INSTALLED:
-					download(file);
+					file.setFirstValidAction(files, new Action[] {
+							Action.UPDATE, Action.INSTALL });
 					break;
 				case LOCAL_ONLY:
 					if (!pristine) {
-						System.err.println("Keeping local-only " + file.filename);
+						System.err.println("Keeping local-only "
+								+ file.filename);
 						break;
 					}
 				case OBSOLETE_MODIFIED:
 					if (!force) {
-						System.err
-							.println("Keeping modified but obsolete " + file.filename);
+						System.err.println("Keeping modified but obsolete "
+								+ file.filename);
 						break;
 					}
 				case OBSOLETE:
-					delete(file);
+					file.stageForUninstall(files);
 					break;
 				default:
-					if (files != null && files.size() > 0) System.err
-						.println("Not updating " + file.filename + " (" + file.getStatus() +
-							")");
+					if (files != null && files.size() > 0)
+						System.err.println("Not updating " + file.filename
+								+ " (" + file.getStatus() + ")");
+				}
 			}
-		try {
+			Installer installer = new Installer(files, progress);
+			installer.start();
+			installer.moveUpdatedIntoPlace();
 			files.write();
 		}
 		catch (final Exception e) {
@@ -290,8 +288,6 @@ public class CommandLine {
 
 	public void upload(final List<String> list) {
 		if (list == null || list.size() == 0) die("Which files do you mean to upload?");
-
-		checksum(list);
 
 		String updateSite = null;
 		for (final String name : list) {
@@ -336,6 +332,8 @@ public class CommandLine {
 
 		try {
 			final FilesUploader uploader = new FilesUploader(files, updateSite);
+			if (!uploader.login())
+				die("Login failed!");
 			uploader.upload(progress);
 			files.write();
 		}
