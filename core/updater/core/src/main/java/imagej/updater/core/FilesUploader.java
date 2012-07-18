@@ -106,6 +106,8 @@ public class FilesUploader {
 
 	public String getUploadProtocol() {
 		final String host = site.sshHost;
+		if (site.sshHost == null)
+			throw new RuntimeException("Missing upload information for site " + site.url);
 		final int at = host.indexOf('@');
 		final int colon = host.indexOf(':');
 		if (colon > 0 && (at < 0 || colon < at)) return host.substring(0, colon);
