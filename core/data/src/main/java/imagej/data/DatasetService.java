@@ -108,7 +108,7 @@ public interface DatasetService extends IService {
 	 * @param axes The dataset's dimensional axis labels.
 	 * @return The newly created dataset.
 	 */
-	<T extends RealType<T> & NativeType<T>> Dataset create(
+	<T extends RealType<T>> Dataset create(
 		ImgFactory<T> factory, T type, long[] dims, String name, AxisType[] axes);
 
 	/**
@@ -117,6 +117,6 @@ public interface DatasetService extends IService {
 	 * @param imgPlus The {@link ImgPlus} backing the dataset.
 	 * @return The newly created dataset.
 	 */
-	<T extends RealType<T> & NativeType<T>> Dataset create(ImgPlus<T> imgPlus);
+	<T extends RealType<T>> Dataset create(ImgPlus<T> imgPlus);
 
 }

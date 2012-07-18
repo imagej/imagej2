@@ -45,7 +45,6 @@ import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -65,7 +64,7 @@ public abstract class TypeChanger implements ImageJPlugin {
 	@Parameter(type = ItemIO.BOTH)
 	protected Dataset input;
 
-	protected <T extends RealType<T> & NativeType<T>> void changeType(
+	protected <T extends RealType<T>> void changeType(
 		final T newType)
 	{
 		changeType(input, newType);
@@ -76,7 +75,7 @@ public abstract class TypeChanger implements ImageJPlugin {
 	 * Changes the given {@link Dataset}'s underlying {@link Img} data to the
 	 * specified type.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> void changeType(
+	public static <T extends RealType<T>> void changeType(
 		final Dataset dataset, final T newType)
 	{
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
@@ -97,7 +96,7 @@ public abstract class TypeChanger implements ImageJPlugin {
 	 * output {@link Img}'s data from the input {@link Img} (which is likely of a
 	 * different data type). Output data is range clamped.
 	 */
-	public static <T extends RealType<T> & NativeType<T>>
+	public static <T extends RealType<T>>
 		ImgPlus<? extends RealType<?>> copyToType(
 			final ImgPlus<? extends RealType<?>> inputImg, final T newType)
 	{
@@ -113,7 +112,7 @@ public abstract class TypeChanger implements ImageJPlugin {
 	 * input {@link Img} (which is likely of a different data type). Output data
 	 * is range clamped.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> copyToType(
+	public static <T extends RealType<T>> ImgPlus<T> copyToType(
 		final ImgPlus<? extends RealType<?>> inputImg, final T newType,
 		final ImgFactory<T> imgFactory)
 	{

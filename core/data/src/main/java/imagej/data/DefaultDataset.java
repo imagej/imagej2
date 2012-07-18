@@ -66,6 +66,7 @@ import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
 
@@ -666,10 +667,14 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final long w = dimensions[0];
 		final long h = dimensions[1];
 		if (w * h > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("cannot create a plane of " +
-				(w * h) + " entities (MAX = " + Integer.MAX_VALUE + ")");
+			throw new IllegalArgumentException(
+				"Can't create an in memory plane of " + (w * h) +
+					" entities (MAX = " + Integer.MAX_VALUE + ")");
 		}
-		final NativeType<?> nativeType = (NativeType<?>) getType();
+		final Type<?> type = getType();
+		// might not be able to get a copy of native data
+		if (!(type instanceof NativeType<?>)) return null;
+		final NativeType<?> nativeType = (NativeType<?>) type;
 		@SuppressWarnings("rawtypes")
 		final NativeImgFactory storageFactory = new ArrayImgFactory();
 		@SuppressWarnings("unchecked")

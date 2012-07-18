@@ -166,7 +166,7 @@ public final class DefaultDatasetService extends AbstractService implements
 	}
 
 	@Override
-	public <T extends RealType<T> & NativeType<T>> Dataset create(
+	public <T extends RealType<T>> Dataset create(
 		final ImgFactory<T> factory, final T type, final long[] dims,
 		final String name, final AxisType[] axes)
 	{
@@ -176,8 +176,7 @@ public final class DefaultDatasetService extends AbstractService implements
 	}
 
 	@Override
-	public <T extends RealType<T> & NativeType<T>> Dataset create(
-		final ImgPlus<T> imgPlus)
+	public <T extends RealType<T>> Dataset create(final ImgPlus<T> imgPlus)
 	{
 		return new DefaultDataset(getContext(), imgPlus);
 	}

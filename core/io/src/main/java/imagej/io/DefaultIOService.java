@@ -48,7 +48,6 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgOpener;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -57,7 +56,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Service
-public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
+public final class DefaultIOService<T extends RealType<T>> 
 	extends AbstractService implements IOService
 {
 	
@@ -115,7 +114,11 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 		if (source == null) return null;
 		final ImgOpener imageOpener = new ImgOpener();
 		imageOpener.addStatusListener(new StatusDispatcher(statusService));
-		final ImgPlus<T> imgPlus = imageOpener.openImg(source);
+		// TODO BDZ 7-17-12 Lowering reliance on NativeType. This cast is safe but
+		// necessary in the short term to get code to compile. But
+		// imageOpener.openImg() is being modified to have no reference to
+		// NativeType. Later, when that has been accomplished remove this cast.
+		final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
 		final Dataset dataset = datasetService.create(imgPlus);
 		eventService.publish(new FileOpenedEvent(source));
 		return dataset;
