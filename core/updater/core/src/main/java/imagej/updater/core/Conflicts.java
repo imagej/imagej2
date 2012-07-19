@@ -158,8 +158,9 @@ public class Conflicts {
 			conflicts
 				.add(new Conflict(
 					null,
-					"There are files which need to be updated/installed since other files depend on them",
-					actionResolution("Install " + Util.join(", ", automatic), automatic,
+					"There are files which need to be updated/installed since other files depend on them:\n"
+					+ Util.join(", ", automatic),
+					actionResolution("Install them all", automatic,
 						Action.INSTALL, Action.UPDATE)));
 		}
 	}
