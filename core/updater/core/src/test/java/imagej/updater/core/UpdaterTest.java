@@ -49,12 +49,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import imagej.log.LogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
+import imagej.updater.util.StderrLogService;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
 
@@ -934,8 +936,8 @@ public class UpdaterTest {
 			final Class<?> clazz =
 				loader.loadClass("imagej.updater.gui.UpdaterFrame");
 			final java.lang.reflect.Constructor<?> ctor =
-				clazz.getConstructor(FilesCollection.class);
-			final Object updaterFrame = ctor.newInstance(files);
+				clazz.getConstructor(LogService.class, FilesCollection.class);
+			final Object updaterFrame = ctor.newInstance(new StderrLogService(), files);
 			final java.lang.reflect.Method setVisible =
 				clazz.getMethod("setVisible", boolean.class);
 			setVisible.invoke(updaterFrame, true);

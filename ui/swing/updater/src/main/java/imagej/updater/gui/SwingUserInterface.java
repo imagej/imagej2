@@ -36,8 +36,8 @@
 package imagej.updater.gui;
 
 import imagej.event.StatusService;
+import imagej.log.LogService;
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.util.Log;
 import imagej.util.Prefs;
 
 import java.awt.Frame;
@@ -59,16 +59,18 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingUserInterface extends UpdaterUserInterface {
 
+	protected final LogService log;
 	protected final StatusService statusService;
 
-	public SwingUserInterface(final StatusService statusService) {
+	public SwingUserInterface(final LogService log, final StatusService statusService) {
+		this.log = log;
 		this.statusService = statusService;
 	}
 
 	@Override
 	public void error(final String message) {
 
-		Log.error(message);
+		log.error(message);
 		JOptionPane.showMessageDialog(null, message, "ImageJ Updater",
 			JOptionPane.ERROR_MESSAGE);
 
@@ -77,7 +79,7 @@ public class SwingUserInterface extends UpdaterUserInterface {
 	@Override
 	public void info(final String message, final String title) {
 
-		Log.info(message);
+		log.info(message);
 		JOptionPane.showMessageDialog(null, message, "ImageJ Updater",
 			JOptionPane.INFORMATION_MESSAGE);
 
@@ -86,14 +88,14 @@ public class SwingUserInterface extends UpdaterUserInterface {
 	@Override
 	public void log(final String message) {
 
-		Log.info(message);
+		log.info(message);
 
 	}
 
 	@Override
 	public void debug(final String message) {
 
-		Log.debug(message);
+		log.debug(message);
 
 	}
 
@@ -115,7 +117,7 @@ public class SwingUserInterface extends UpdaterUserInterface {
 	@Override
 	public void handleException(final Throwable exception) {
 
-		Log.error(exception);
+		log.error(exception);
 
 	}
 

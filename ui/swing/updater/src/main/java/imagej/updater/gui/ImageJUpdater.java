@@ -39,6 +39,7 @@ import imagej.event.StatusService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.log.LogService;
 import imagej.updater.core.Checksummer;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
@@ -48,10 +49,10 @@ import imagej.updater.core.XMLFileDownloader;
 import imagej.updater.gui.ViewOptions.Option;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
+import imagej.updater.util.StderrLogService;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 import imagej.util.FileUtils;
-import imagej.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -89,10 +90,17 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 	@Parameter
 	private StatusService statusService;
 
+	@Parameter
+	private LogService log;
+
 	@Override
 	public void run() {
 
-		UpdaterUserInterface.set(new SwingUserInterface(statusService));
+		if (log == null) {
+			log = new StderrLogService();
+		}
+
+		UpdaterUserInterface.set(new SwingUserInterface(log, statusService));
 
 		if (errorIfDebian()) return;
 
@@ -110,7 +118,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 		}
 		catch (final FileNotFoundException e) { /* ignore */}
 		catch (final Exception e) {
-			Log.error(e);
+			log.error(e);
 			UpdaterUserInterface.get().error(
 				"There was an error reading the cached metadata: " + e);
 			return;
@@ -118,7 +126,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 		Authenticator.setDefault(new SwingAuthenticator());
 
-		final UpdaterFrame main = new UpdaterFrame(files);
+		final UpdaterFrame main = new UpdaterFrame(log, files);
 		main.setEasyMode(true);
 
 		Progress progress = main.getProgress("Starting up...");
@@ -133,7 +141,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			return;
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			log.error(e);
 			downloader.done();
 			String message;
 			if (e instanceof UnknownHostException) message =

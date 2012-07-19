@@ -41,10 +41,10 @@ import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
+import imagej.log.LogService;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,7 +70,7 @@ final class SSHSessionCreator {
 	 * @throws JSchException if authentication or connection fails.
 	 */
 	protected static Session connect(String username, String sshHost,
-		final UserInfo userInfo) throws JSchException
+		final UserInfo userInfo, final LogService log) throws JSchException
 	{
 
 		int port = 22;
@@ -87,7 +87,7 @@ final class SSHSessionCreator {
 			new File(new File(System.getProperty("user.home"), ".ssh"), "known_hosts");
 		jsch.setKnownHosts(knownHosts.getAbsolutePath());
 
-		final ConfigInfo configInfo = getIdentity(username, sshHost);
+		final ConfigInfo configInfo = getIdentity(username, sshHost, log);
 		if (configInfo != null) {
 			if (configInfo.username != null) {
 				username = configInfo.username;
@@ -112,7 +112,7 @@ final class SSHSessionCreator {
 	}
 
 	private static ConfigInfo getIdentity(final String username,
-		final String sshHost)
+		final String sshHost, final LogService log)
 	{
 		final File config =
 			new File(new File(System.getProperty("user.home"), ".ssh"), "config");
@@ -155,7 +155,7 @@ final class SSHSessionCreator {
 			return result;
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			log.error(e);
 			return null;
 		}
 	}
@@ -226,14 +226,14 @@ final class SSHSessionCreator {
 
 			final UserInfo userInfo = getUserInfo(password);
 			try {
-				final Session session = connect(username, sshHost, userInfo);
+				final Session session = connect(username, sshHost, userInfo, uploader.getLog());
 				if (session != null) {
 					UpdaterUserInterface.get().setPref(Util.PREFS_USER, username);
 					return session;
 				}
 			}
 			catch (final JSchException e) {
-				Log.error(e);
+				uploader.getLog().error(e);
 				return null;
 			}
 		}

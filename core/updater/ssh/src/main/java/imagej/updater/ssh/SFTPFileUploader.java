@@ -44,7 +44,6 @@ import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -74,7 +73,7 @@ public final class SFTPFileUploader extends AbstractUploader {
 			return true;
 		}
 		catch (final JSchException e) {
-			Log.error(e);
+			uploader.getLog().error(e);
 			return false;
 		}
 	}

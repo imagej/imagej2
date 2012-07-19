@@ -40,9 +40,10 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
 import imagej.updater.core.UpToDate;
 import imagej.updater.core.UpdaterUIPlugin;
-import imagej.util.Log;
+import imagej.updater.util.StderrLogService;
 
 import java.util.List;
 
@@ -60,6 +61,9 @@ public class UpdatesAvailable implements ImageJPlugin {
 	@Parameter
 	public PluginService pluginService;
 
+	@Parameter
+	public LogService log;
+
 	@Parameter(label = "Do you want to start the Updater now?", choices = { YES,
 		NEVER, LATER })
 	public String updateAction = YES;
@@ -73,7 +77,10 @@ public class UpdatesAvailable implements ImageJPlugin {
 				pluginService.run(updaters.get(0));
 			}
 			else {
-				Log.error("No updater plugins found!");
+				if (log == null) {
+					log = new StderrLogService();
+				}
+				log.error("No updater plugins found!");
 			}
 		}
 		else if (updateAction.equals(NEVER)) UpToDate.setLatestNag(Long.MAX_VALUE);

@@ -35,7 +35,7 @@
 
 package imagej.updater.util;
 
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.awt.Frame;
 import java.io.IOException;
@@ -100,26 +100,30 @@ public abstract class UpdaterUserInterface {
 	// The default implementation
 	protected static class StderrInterface extends UpdaterUserInterface {
 
-		private final boolean debug = false;
+		protected LogService log;
+
+		public StderrInterface() {
+			log = new StderrLogService();
+		}
 
 		@Override
 		public void error(final String message) {
-			System.err.println(message);
+			log.error(message);
 		}
 
 		@Override
 		public void info(final String message, final String title) {
-			System.err.println(title + ": " + message);
+			log.info(title + ": " + message);
 		}
 
 		@Override
 		public void log(final String message) {
-			System.err.println(message);
+			log.info(message);
 		}
 
 		@Override
 		public void debug(final String message) {
-			if (debug) System.err.println(message);
+			log.debug(message);
 		}
 
 		@Override
@@ -129,12 +133,12 @@ public abstract class UpdaterUserInterface {
 
 		@Override
 		public void showStatus(final String message) {
-			System.err.println(message);
+			log.info(message);
 		}
 
 		@Override
 		public void handleException(final Throwable exception) {
-			Log.error(exception);
+			log.error(exception);
 		}
 
 		@Override
@@ -166,7 +170,7 @@ public abstract class UpdaterUserInterface {
 
 		@Override
 		public void openURL(final String url) {
-			System.err.println("Open URL " + url);
+			log.info("Open URL " + url);
 		}
 
 		@Override

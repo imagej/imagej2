@@ -39,7 +39,6 @@ import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
-import imagej.util.Log;
 
 import java.awt.Container;
 import java.awt.Dimension;
@@ -190,7 +189,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 		try {
 			files.removeUpdateSite(name);
 		} catch (IOException e) {
-			Log.error(e);
+			updaterFrame.log.error(e);
 			error("Could not re-read update sites (restart might be necessary):\n" + e);
 		}
 		names.remove(row);
@@ -377,7 +376,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 						validURL(url);
 			}
 			catch (final InstantiationException e) {
-				Log.error(e);
+				updaterFrame.log.error(e);
 				result = false;
 			}
 			if (result) info("Initialized update site '" + siteName + "'");

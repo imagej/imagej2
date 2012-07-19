@@ -35,6 +35,7 @@
 
 package imagej.updater.ui;
 
+import imagej.log.LogService;
 import imagej.updater.core.Checksummer;
 import imagej.updater.core.Dependency;
 import imagej.updater.core.FileObject;
@@ -49,11 +50,11 @@ import imagej.updater.core.XMLFileDownloader;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
+import imagej.updater.util.StderrLogService;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 import imagej.util.FileUtils;
-import imagej.util.Log;
 
 import java.awt.Frame;
 import java.io.Console;
@@ -79,6 +80,7 @@ import org.xml.sax.SAXException;
  */
 public class CommandLine {
 
+	protected static LogService log = new StderrLogService();
 	protected FilesCollection files;
 	protected Progress progress;
 
@@ -512,22 +514,22 @@ public class CommandLine {
 
 		@Override
 		public void error(final String message) {
-			Log.error(message);
+			log.error(message);
 		}
 
 		@Override
 		public void info(final String message, final String title) {
-			Log.info(title + ": " + message);
+			log.info(title + ": " + message);
 		}
 
 		@Override
 		public void log(final String message) {
-			Log.info(message);
+			log.info(message);
 		}
 
 		@Override
 		public void debug(final String message) {
-			Log.debug(message);
+			log.debug(message);
 		}
 
 		@Override

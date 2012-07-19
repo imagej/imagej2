@@ -39,7 +39,6 @@ import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Progress;
 import imagej.updater.util.Progressable;
 import imagej.updater.util.Util;
-import imagej.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -100,7 +99,7 @@ public class Checksummer extends Progressable {
 			return file.getCanonicalFile().exists();
 		}
 		catch (final IOException e) {
-			Log.error(e);
+			files.log.error(e);
 		}
 		return false;
 	}
@@ -169,7 +168,7 @@ public class Checksummer extends Progressable {
 				if (path.endsWith((".jar"))) try {
 					POMParser.fillMetadataFromJar(object, file);
 				} catch (Exception e) {
-					Log.error("Could not read pom.xml from " + path);
+					files.log.error("Could not read pom.xml from " + path);
 				}
 				files.add(object);
 			}
@@ -192,10 +191,10 @@ public class Checksummer extends Progressable {
 			}
 		}
 		catch (final ZipException e) {
-			Log.error("Problem digesting " + file);
+			files.log.error("Problem digesting " + file);
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			files.log.error(e);
 		}
 		else {
 			final FileObject object = files.get(path);
@@ -319,7 +318,7 @@ public class Checksummer extends Progressable {
 		for (final StringAndFile pair : queue) {
 			String pathWithoutVersion = FileObject.getFilename(pair.path, true);
 			if (alreadyQueued.contains(pathWithoutVersion)) {
-				Log.warn("Multiple versions found for " + pathWithoutVersion);
+				files.log.warn("Multiple versions found for " + pathWithoutVersion);
 			} else {
 				alreadyQueued.add(pathWithoutVersion);
 			}

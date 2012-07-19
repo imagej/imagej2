@@ -40,6 +40,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import imagej.log.LogService;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploadable;
@@ -47,7 +48,6 @@ import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.InputStream2OutputStream;
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,6 +69,7 @@ public class SSHFileUploader extends AbstractUploader {
 	private OutputStream out;
 	protected OutputStream err;
 	private InputStream in;
+	private LogService log;
 
 	public SSHFileUploader() throws JSchException {
 		err = UpdaterUserInterface.get().getOutputStream();
@@ -77,6 +78,7 @@ public class SSHFileUploader extends AbstractUploader {
 	@Override
 	public boolean login(final FilesUploader uploader) {
 		if (!super.login(uploader)) return false;
+		log = uploader.getLog();
 		session = SSHSessionCreator.getSession(uploader);
 		return session != null;
 	}
@@ -218,7 +220,7 @@ public class SSHFileUploader extends AbstractUploader {
 			channel.connect();
 		}
 		catch (final JSchException e) {
-			Log.error(e);
+			log.error(e);
 			throw new IOException(e.getMessage());
 		}
 	}

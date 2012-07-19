@@ -38,7 +38,6 @@ package imagej.updater.core;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progressable;
 import imagej.updater.util.Util;
-import imagej.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -99,7 +98,7 @@ public class XMLFileDownloader extends Progressable {
 					// it was deleted
 					updateSite.setLastModified(0);
 				}
-				Log.error(e);
+				files.log.error(e);
 				warnings += "Could not update from site '" + name + "': " + e;
 			}
 			itemDone(title);

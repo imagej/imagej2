@@ -37,6 +37,7 @@ package imagej.updater;
 
 import imagej.updater.gui.ProgressDialog;
 import imagej.updater.gui.SwingUserInterface;
+import imagej.updater.util.StderrLogService;
 import imagej.util.MersenneTwisterFast;
 
 /**
@@ -102,7 +103,7 @@ public class UpdaterGUITest {
 	}
 
 	protected static void testPassword() {
-		SwingUserInterface ui = new SwingUserInterface(null);
+		SwingUserInterface ui = new SwingUserInterface(new StderrLogService(), null);
 		System.err.println(ui.getPassword("Enter password"));
 	}
 }

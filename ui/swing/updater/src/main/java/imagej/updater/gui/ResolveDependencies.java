@@ -39,7 +39,6 @@ import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FilesCollection;
-import imagej.util.Log;
 
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -165,10 +164,10 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 			});
 		}
 		catch (final InterruptedException e) {
-			Log.error(e);
+			updaterFrame.log.error(e);
 		}
 		catch (final InvocationTargetException e) {
-			Log.error(e);
+			updaterFrame.log.error(e);
 		}
 	}
 
@@ -247,7 +246,7 @@ public class ResolveDependencies extends JDialog implements ActionListener {
 			panel.getStyledDocument().insertString(end, message, style);
 		}
 		catch (final BadLocationException e) {
-			Log.error(e);
+			updaterFrame.log.error(e);
 		}
 	}
 

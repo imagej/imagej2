@@ -35,6 +35,7 @@
 
 package imagej.updater.gui;
 
+import imagej.log.LogService;
 import imagej.updater.core.Checksummer;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
@@ -46,7 +47,6 @@ import imagej.updater.core.Installer;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.util.Log;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -97,6 +97,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	ListSelectionListener
 {
 
+	protected LogService log;
 	protected FilesCollection files;
 
 	protected JTextField searchTerm;
@@ -116,10 +117,11 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	protected JButton upload, showChanges, rebuildButton;
 	boolean canUpload;
 
-	public UpdaterFrame(final FilesCollection files) {
+	public UpdaterFrame(final LogService log, final FilesCollection files) {
 		super("ImageJ Updater");
 		setPreferredSize(new Dimension(780, 560));
 
+		this.log = log;
 		this.files = files;
 
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -307,7 +309,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 									upload();
 								}
 								catch (final InstantiationException e) {
-									Log.error(e);
+									log.error(e);
 									error("Could not upload (possibly unknown protocol)");
 								}
 							}
@@ -626,7 +628,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			installer.done();
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			log.error(e);
 			// TODO: remove "update/" directory
 			error("Installer failed: " + e);
 			installer.done();

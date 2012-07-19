@@ -42,7 +42,6 @@ import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,7 +107,7 @@ public class Installer extends Downloader {
 				file.stageForUninstall(files);
 			}
 			catch (final IOException e) {
-				Log.error(e);
+				files.log.error(e);
 				throw new RuntimeException("Could not mark '" + file + "' for removal");
 			}
 
@@ -227,7 +226,7 @@ public class Installer extends Downloader {
 			}
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			files.log.error(e);
 			throw new RuntimeException("Could not verify checksum " + "for " +
 				destination);
 		}
@@ -246,7 +245,7 @@ public class Installer extends Downloader {
 						download.destination.getAbsolutePath() });
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			files.log.error(e);
 			throw new RuntimeException("Could not mark " + destination +
 				" as executable");
 		}

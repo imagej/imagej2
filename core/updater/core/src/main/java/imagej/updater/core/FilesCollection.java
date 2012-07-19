@@ -35,12 +35,13 @@
 
 package imagej.updater.core;
 
+import imagej.log.LogService;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
+import imagej.updater.util.StderrLogService;
 import imagej.updater.util.Util;
-import imagej.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,6 +78,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
 	protected File imagejRoot;
+	public LogService log;
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 
 	public static class UpdateSite implements Cloneable, Comparable<UpdateSite> {
@@ -146,6 +148,16 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	 * @param imagejRoot the ImageJ directory
 	 */
 	public FilesCollection(final File imagejRoot) {
+		this(new StderrLogService(), imagejRoot);
+	}
+
+	/**
+	 * This constructor takes the imagejRoot primarily for testing purposes.
+	 * 
+	 * @param imagejRoot the ImageJ directory
+	 */
+	public FilesCollection(final LogService log, final File imagejRoot) {
+		this.log = log;
 		this.imagejRoot = imagejRoot;
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, null, null,
@@ -660,7 +672,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			return dependencyAnalyzer.getDependencies(imagejRoot, file.getFilename());
 		}
 		catch (final IOException e) {
-			Log.error(e);
+			log.error(e);
 			return null;
 		}
 	}
