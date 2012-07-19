@@ -172,8 +172,16 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			if (SwingTools.showQuestion(main, "Update the updater",
 				"There is an update available for the Updater. Install now?"))
 			{
-				// download just the updater
-				main.updateTheUpdater();
+				try {
+					// download just the updater
+					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."));
+				}
+				catch (final Canceled e) {
+					main.error("Canceled");
+				}
+				catch (final IOException e) {
+					main.error("Installer failed: " + e);
+				}
 
 				main
 					.info("Please restart ImageJ and call Help>Update to continue with the update");

@@ -59,7 +59,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -632,18 +631,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			// TODO: remove "update/" directory
 			error("Installer failed: " + e);
 			installer.done();
-		}
-	}
-
-	public void updateTheUpdater() {
-		try {
-			Installer.updateTheUpdater(files, getProgress("Installing the updater..."));
-		}
-		catch (final Canceled e) {
-			error("Canceled");
-		}
-		catch (final IOException e) {
-			error("Installer failed: " + e);
 		}
 	}
 
