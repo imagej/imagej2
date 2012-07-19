@@ -38,6 +38,7 @@ package imagej.updater.core;
 import imagej.log.LogService;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
+import imagej.updater.util.Canceled;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
@@ -45,6 +46,7 @@ import imagej.updater.util.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -916,5 +918,22 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			}
 
 		};
+	}
+
+	public String downloadIndexAndChecksum(final Progress progress) throws IOException, ParserConfigurationException, SAXException {
+		try {
+			read();
+		}
+		catch (final FileNotFoundException e) { /* ignore */}
+		final XMLFileDownloader downloader = new XMLFileDownloader(this);
+		downloader.addProgress(progress);
+		try {
+			downloader.start();
+		} catch (final Canceled e) {
+				downloader.done();
+				throw e;
+		}
+		new Checksummer(this, progress).updateFromLocal();
+		return downloader.getWarnings();
 	}
 }

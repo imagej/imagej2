@@ -70,7 +70,12 @@ public class XMLFileDownloader extends Progressable {
 		this.updateSites = updateSites;
 	}
 
-	public void start() throws IOException {
+	public void start() {
+		start(true);
+	}
+
+
+	public void start(boolean closeProgressAtEnd) {
 		if (updateSites == null || updateSites.size() == 0) return;
 		setTitle("Updating the index of available files");
 		final XMLFileReader reader = new XMLFileReader(files);
@@ -103,7 +108,9 @@ public class XMLFileDownloader extends Progressable {
 			}
 			itemDone(title);
 		}
-		done();
+		if (closeProgressAtEnd) {
+			done();
+		}
 		warnings += reader.getWarnings();
 	}
 
