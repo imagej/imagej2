@@ -98,14 +98,14 @@ public class CommandLine {
 			if (files != null && files.size() > 0) {
 				fileNames = new HashSet<String>();
 				for (final String file : files)
-					fileNames.add(Util.stripPrefix(file, ""));
+					fileNames.add(FileObject.getFilename(file, true));
 			}
 		}
 
 		@Override
 		public boolean matches(final FileObject file) {
 			if (!file.isUpdateablePlatform()) return false;
-			if (fileNames != null && !fileNames.contains(file.filename)) return false;
+			if (fileNames != null && !fileNames.contains(file.getFilename(true))) return false;
 			return file.getStatus() != Status.OBSOLETE_UNINSTALLED;
 		}
 	}
