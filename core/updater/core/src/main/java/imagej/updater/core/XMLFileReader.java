@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,6 +69,7 @@ public class XMLFileReader extends DefaultHandler {
 	// this is the name of the update site (null means we read the local
 	// db.xml.gz)
 	protected String updateSite;
+	protected Set<FileObject> filesFromThisSite = new HashSet<FileObject>();
 
 	// every file newer than this was not seen by the user yet
 	protected long newTimestamp;
@@ -201,19 +204,23 @@ public class XMLFileReader extends DefaultHandler {
 			FileObject file = files.get(current.filename);
 			if (updateSite == null && current.updateSite != null &&
 				files.getUpdateSite(current.updateSite) == null) ; // ignore file with invalid update site
-			else if (file == null) files.add(current);
+			else if (file == null) {
+				files.add(current);
+				filesFromThisSite.add(current);
+			}
 			else {
 				// Be nice to old-style update sites where Jama-1.0.2.jar and Jama.jar were different file objects
-				if ((updateSite != null && updateSite.equals(file.updateSite)) || (updateSite == null && file.updateSite == null)) {
+				if (filesFromThisSite.contains(file)) {
 					if (file.isObsolete()) {
 						files.remove(file.filename);
 						final FileObject swap = file;
 						file = current;
 						current = swap;
 						files.add(file);
+						filesFromThisSite.add(file);
 					}
 					if (current.current != null) {
-						current.addPreviousVersion(current.current.checksum, current.current.timestamp, current.filename);
+						current.addPreviousVersion(file.current.checksum, file.current.timestamp, file.filename);
 					}
 					for (final FileObject.Version version : current.previous) {
 						if (version.filename == null) version.filename = current.filename;
@@ -225,15 +232,20 @@ public class XMLFileReader extends DefaultHandler {
 						current.addPreviousVersion(version.checksum, version.timestamp, version.filename);
 					}
 					files.add(current);
+					filesFromThisSite.add(current);
 				} else if (current.isObsolete()) {
 					for (final FileObject.Version version : current.previous) {
 						if (version.filename == null) version.filename = current.filename;
 						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
 					}
 				} else if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
-					current.overriddenUpdateSites.addAll(file.overriddenUpdateSites);
-					if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
-						current.overriddenUpdateSites.add(file.updateSite);
+					if ((updateSite != null && updateSite.equals(file.updateSite)) || (updateSite == null && file.updateSite == null)) {
+						; // simply update the object
+					} else {
+						current.overriddenUpdateSites.addAll(file.overriddenUpdateSites);
+						if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
+							current.overriddenUpdateSites.add(file.updateSite);
+						}
 					}
 					if (file.localFilename != null) {
 						current.localFilename = file.localFilename;
@@ -241,6 +253,7 @@ public class XMLFileReader extends DefaultHandler {
 					// do not forget metadata
 					current.completeMetadataFrom(file);
 					files.add(current);
+					filesFromThisSite.add(current);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, this.updateSite) > getRank(files, file.updateSite))
 						warnings.append("Warning: '" + current.filename
 								+ "' from update site '" + current.updateSite

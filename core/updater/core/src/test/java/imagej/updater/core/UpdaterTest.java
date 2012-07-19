@@ -704,6 +704,59 @@ public class UpdaterTest {
 	}
 
 	@Test
+	public void testUpdateable() throws Exception {
+		initializeUpdateSite("jars/hello.jar");
+		FilesCollection files = readDb(true, true);
+		assertStatus(Status.INSTALLED, files.get("jars/hello.jar"));
+		String origChecksum = files.get("jars/hello.jar").getChecksum();
+		assertEquals(origChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello.jar")));
+
+		assertTrue(new File(ijRoot, ".checksums").delete());
+		assertTrue(new File(ijRoot, "jars/hello.jar").delete());
+		writeJar("jars/hello-2.0.jar", "new-file", "empty");
+		new Checksummer(files, progress).updateFromLocal();
+		String newChecksum = files.get("jars/hello.jar").localChecksum;
+		assertEquals(newChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello-2.0.jar")));
+
+		assertNotEqual(origChecksum, newChecksum);
+
+		// upload that version
+		files.get("jars/hello.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		assertEquals(newChecksum, files.get("jars/hello.jar").localChecksum);
+		upload(files);
+
+		FilesCollection files2 = new FilesCollection(new File(ijRoot, "invalid"));
+		files2.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
+		XMLFileDownloader xmlLoader = new XMLFileDownloader(files2);
+		xmlLoader.start();
+		String newChecksum2 = files2.get("jars/hello.jar").current.checksum;
+		assertEquals(newChecksum, newChecksum2);
+
+		// re-write the original version
+		assertTrue(new File(ijRoot, ".checksums").delete());
+		writeFile("jars/hello.jar");
+		assertTrue(new File(ijRoot, "jars/hello-2.0.jar").delete());
+		files = readDb(true, true);
+		String origChecksum2 = files.get("jars/hello.jar").localChecksum;
+		assertEquals(origChecksum, origChecksum2);
+		assertEquals(origChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello.jar")));
+
+		assertTrue(new File(ijRoot, "db.xml.gz").delete());
+		files = readDb(false, true);
+		assertEquals(newChecksum, files.get("jars/hello.jar").current.checksum);
+
+		assertStatus(Status.UPDATEABLE, files.get("jars/hello.jar"));
+		files.get("jars/hello.jar").setAction(files, Action.UPDATE);
+		Installer installer = new Installer(files, progress);
+		installer.start();
+		assertEquals(newChecksum, Util.getJarDigest(new File(ijRoot, "update/jars/hello-2.0.jar")));
+		installer.moveUpdatedIntoPlace();
+
+		assertStatus(Status.INSTALLED, files.get("jars/hello.jar"));
+		assertEquals(newChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello-2.0.jar")));
+	}
+
+	@Test
 	public void testReReadFiles() throws Exception {
 		initializeUpdateSite("macros/macro.ijm");
 		FilesCollection files = readDb(true, true);
