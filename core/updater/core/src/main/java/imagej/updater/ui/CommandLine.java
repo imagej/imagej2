@@ -281,6 +281,7 @@ public class CommandLine {
 		if (list == null || list.size() == 0) die("Which files do you mean to upload?");
 
 		String updateSite = null;
+		int count = 0;
 		for (final String name : list) {
 			final FileObject file = files.get(name);
 			if (file == null) die("No file '" + name + "' found!");
@@ -318,6 +319,11 @@ public class CommandLine {
 				" to " +
 				file.updateSite + ")");
 			file.setAction(files, Action.UPLOAD);
+			count++;
+		}
+		if (count == 0) {
+			System.err.println("Nothing to upload");
+			return;
 		}
 		System.err.println("Uploading to " + getLongUpdateSiteName(updateSite));
 
