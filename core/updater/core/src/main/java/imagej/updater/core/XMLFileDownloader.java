@@ -84,7 +84,7 @@ public class XMLFileDownloader extends Progressable {
 		for (final String name : updateSites) {
 			final UpdateSite updateSite = files.getUpdateSite(name);
 			final String title =
-				"Updating from " + (name.equals("") ? "main" : name) + " site";
+				"Updating from " + (name.equals("") ? "main" : name) + " site: " + updateSite.url;
 			addItem(title);
 			setCount(current, total);
 			try {
