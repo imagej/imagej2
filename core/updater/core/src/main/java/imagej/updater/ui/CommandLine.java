@@ -36,7 +36,6 @@
 package imagej.updater.ui;
 
 import imagej.log.LogService;
-import imagej.updater.core.Checksummer;
 import imagej.updater.core.Dependency;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
@@ -46,7 +45,6 @@ import imagej.updater.core.FilesCollection.Filter;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
-import imagej.updater.core.XMLFileDownloader;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
@@ -59,7 +57,6 @@ import imagej.util.FileUtils;
 import java.awt.Frame;
 import java.io.Console;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Authenticator;
@@ -87,18 +84,10 @@ public class CommandLine {
 	public CommandLine() throws IOException, ParserConfigurationException,
 		SAXException
 	{
-		files = new FilesCollection(FileUtils.getBaseDirectory());
-		try {
-			files.read();
-		}
-		catch (final FileNotFoundException e) { /* ignore */}
 		progress = new StderrProgress(80);
-		final XMLFileDownloader downloader = new XMLFileDownloader(files);
-		downloader.addProgress(progress);
-		downloader.start();
-		String warnings = downloader.getWarnings();
+		files = new FilesCollection(log, FileUtils.getBaseDirectory());
+		String warnings = files.downloadIndexAndChecksum(progress);
 		if (!warnings.equals("")) System.err.println(warnings);
-		new Checksummer(files, progress).updateFromLocal();
 	}
 
 	protected class FileFilter implements Filter {
