@@ -927,7 +927,7 @@ public class UpdaterTest {
 			assertTrue(url.endsWith(suffix));
 			url =
 				url.substring(0, url.length() - suffix.length()) +
-					"/ui/awt-swing/swing/updater/target/classes/";
+					"/ui/swing/updater/target/classes/";
 			final ClassLoader loader =
 				new java.net.URLClassLoader(
 					new java.net.URL[] { new java.net.URL(url) });
