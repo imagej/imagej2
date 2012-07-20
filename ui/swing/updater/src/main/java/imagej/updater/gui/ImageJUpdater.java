@@ -55,7 +55,12 @@ import imagej.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Updater. As plugin.
@@ -134,9 +139,6 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			return;
 		}
 
-		// TODO: find .jar name from this class' resource
-		// TODO: mark all dependencies for update
-		// TODO: we may get away with a custom class loader... but probably not!
 		if (Installer.isTheUpdaterUpdateable(files)) {
 			if (SwingTools.showQuestion(main, "Update the updater",
 				"There is an update available for the Updater. Install now?"))
@@ -152,8 +154,31 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 					main.error("Installer failed: " + e);
 				}
 
-				main
-					.info("Please restart ImageJ and call Help>Update to continue with the update");
+				// make a class path using the updated files
+				final List<URL> classPath = new ArrayList<URL>();
+				final FileObject guiJar = files.get("jars/ij-updater-core.jar");
+				for (final FileObject component : guiJar.getFileDependencies(files, true)) {
+					final String name = component.getLocalFilename();
+					File file = files.prefix(name);
+					try {
+						classPath.add(file.toURI().toURL());
+					} catch (MalformedURLException e) {
+						log.error(e);
+					}
+				}
+				try {
+					log.info("Trying to install and execute the new updater");
+					new Installer(files, null).moveUpdatedIntoPlace();
+					URLClassLoader remoteClassLoader = new URLClassLoader(classPath.toArray(new URL[classPath.size()]), ClassLoader.getSystemClassLoader());
+					System.setProperty("imagej.update.updater", "true");
+					Class<?> runnable = remoteClassLoader.loadClass(ImageJUpdater.class.getName());
+					new Thread((Runnable)runnable.newInstance()).start();
+					return;
+				} catch (Throwable t) {
+					log.error(t);
+				}
+
+				main.info("Please restart ImageJ and call Help>Update to continue with the update");
 			}
 			// we do not save the files to prevent the mtime from changing
 			return;
