@@ -255,7 +255,7 @@ public class XMLFileReader extends DefaultHandler {
 					files.add(current);
 					filesFromThisSite.add(current);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, this.updateSite) > getRank(files, file.updateSite))
-						warnings.append("Warning: '" + current.filename
+						files.log.warn("'" + current.filename
 								+ "' from update site '" + current.updateSite
 								+ "' shadows the one from update site '"
 								+ file.updateSite + "'\n");
@@ -263,7 +263,7 @@ public class XMLFileReader extends DefaultHandler {
 				else {
 					file.overriddenUpdateSites.add(updateSite);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, file.updateSite) > getRank(files, this.updateSite))
-						warnings.append("Warning: '" + file.filename
+						files.log.warn("'" + file.filename
 								+ "' from update site '" + file.updateSite
 								+ "' shadows the one from update site '"
 								+ current.updateSite + "'\n");
