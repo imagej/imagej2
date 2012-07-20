@@ -101,21 +101,27 @@ public class FileObject {
 
 	public static enum Action {
 		// no changes
-			LOCAL_ONLY("Local-only"), NOT_INSTALLED("Not installed"), INSTALLED(
+		LOCAL_ONLY("Local-only"), NOT_INSTALLED("Not installed"), INSTALLED(
 				"Up-to-date"), UPDATEABLE("Update available"), MODIFIED(
 				"Locally modified"), NEW("New file"), OBSOLETE("Obsolete"),
 
-			// changes
-			UNINSTALL("Uninstall it"), INSTALL("Install it"), UPDATE("Update it"),
-			// TODO: FORCE_UPDATE
+		// changes
+		UNINSTALL("Uninstall it"), INSTALL("Install it"), UPDATE("Update it"),
+		// TODO: FORCE_UPDATE
 
-			// developer-only changes
-			UPLOAD("Upload it"), REMOVE("Remove it");
+		// developer-only changes
+		UPLOAD("Upload it", true), REMOVE("Remove it", true);
 
 		private String label;
+		private boolean uploadersOnly;
 
 		Action(final String label) {
+			this(label, false);
+		}
+
+		Action(final String label, final boolean uploadersOnly) {
 			this.label = label;
+			this.uploadersOnly = uploadersOnly;
 		}
 
 		@Override
@@ -125,32 +131,27 @@ public class FileObject {
 	}
 
 	public static enum Status {
-		NOT_INSTALLED(new Action[] { Action.NOT_INSTALLED, Action.INSTALL },
-			Action.REMOVE), INSTALLED(new Action[] { Action.INSTALLED,
-			Action.UNINSTALL }), UPDATEABLE(new Action[] { Action.UPDATEABLE,
-			Action.UNINSTALL, Action.UPDATE }, Action.UPLOAD), MODIFIED(new Action[] {
-			Action.MODIFIED, Action.UNINSTALL, Action.UPDATE }, Action.UPLOAD),
-			LOCAL_ONLY(new Action[] { Action.LOCAL_ONLY, Action.UNINSTALL },
-				Action.UPLOAD), NEW(new Action[] { Action.NEW, Action.INSTALL,
-				Action.REMOVE }), OBSOLETE_UNINSTALLED(
-				new Action[] { Action.NOT_INSTALLED }), OBSOLETE(new Action[] {
-				Action.OBSOLETE, Action.UNINSTALL }, Action.UPLOAD), OBSOLETE_MODIFIED(
-				new Action[] { Action.MODIFIED, Action.UNINSTALL }, Action.UPLOAD);
+		NOT_INSTALLED(Action.NOT_INSTALLED, Action.INSTALL, Action.REMOVE),
+		INSTALLED(Action.INSTALLED, Action.UNINSTALL),
+		UPDATEABLE(Action.UPDATEABLE, Action.UNINSTALL, Action.UPDATE, Action.UPLOAD),
+		MODIFIED(Action.MODIFIED, Action.UNINSTALL, Action.UPDATE, Action.UPLOAD),
+		LOCAL_ONLY(Action.LOCAL_ONLY, Action.UNINSTALL, Action.UPLOAD),
+		NEW(Action.NEW, Action.INSTALL, Action.REMOVE),
+		OBSOLETE_UNINSTALLED( Action.NOT_INSTALLED),
+		OBSOLETE(Action.OBSOLETE, Action.UNINSTALL, Action.UPLOAD),
+		OBSOLETE_MODIFIED( Action.MODIFIED, Action.UNINSTALL, Action.UPLOAD);
 
 		private Action[] actions, developerActions;
 
-		Status(final Action[] actions) {
-			this(actions, null);
-		}
-
-		Status(final Action[] actions, final Action developerAction) {
-			if (developerAction != null) {
-				developerActions = new Action[actions.length + 1];
-				System.arraycopy(actions, 0, developerActions, 0, actions.length);
-				developerActions[actions.length] = developerAction;
+		Status(final Action... actions) {
+			developerActions = actions;
+			if (!actions[actions.length - 1].uploadersOnly)
+				this.actions = actions;
+			else {
+				this.actions = new Action[actions.length - 1];
+				System.arraycopy(actions, 0, this.actions, 0,
+						this.actions.length);
 			}
-			else developerActions = actions;
-			this.actions = actions;
 		}
 
 		public Action[] getActions() {
@@ -348,7 +349,7 @@ public class FileObject {
 		categories.put(category, (Object) null);
 	}
 
-	public void replaceList(final String tag, final String[] list) {
+	public void replaceList(final String tag, final String... list) {
 		if (tag.equals("Dependency")) {
 			final long now = Long.parseLong(Util.timestamp(new Date().getTime()));
 			final Dependency[] newList = new Dependency[list.length];
@@ -415,8 +416,7 @@ public class FileObject {
 	}
 
 	public boolean setFirstValidAction(final FilesCollection files,
-		final Action[] actions)
-	{
+			final Action... actions) {
 		for (final Action action : actions)
 			if (status.isValid(action)) {
 				setAction(files, action);

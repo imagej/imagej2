@@ -375,7 +375,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public Iterable<FileObject> toInstallOrUpdate() {
-		return filter(oneOf(new Action[] { Action.INSTALL, Action.UPDATE }));
+		return filter(oneOf(Action.INSTALL, Action.UPDATE));
 	}
 
 	public Iterable<FileObject> notHidden() {
@@ -387,13 +387,13 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public Iterable<FileObject> installed() {
-		return filter(not(oneOf(new Status[] { Status.LOCAL_ONLY,
-			Status.NOT_INSTALLED })));
+		return filter(not(oneOf(Status.LOCAL_ONLY,
+			Status.NOT_INSTALLED)));
 	}
 
 	public Iterable<FileObject> locallyModified() {
-		return filter(oneOf(new Status[] { Status.MODIFIED,
-			Status.OBSOLETE_MODIFIED }));
+		return filter(oneOf(Status.MODIFIED,
+			Status.OBSOLETE_MODIFIED));
 	}
 
 	public Iterable<FileObject> forUpdateSite(final String name) {
@@ -545,7 +545,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		};
 	}
 
-	public Filter oneOf(final Action[] actions) {
+	public Filter oneOf(final Action... actions) {
 		final Set<Action> oneOf = new HashSet<Action>();
 		for (final Action action : actions)
 			oneOf.add(action);
@@ -579,7 +579,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		};
 	}
 
-	public Filter oneOf(final Status[] states) {
+	public Filter oneOf(final Status... states) {
 		final Set<Status> oneOf = new HashSet<Status>();
 		for (final Status status : states)
 			oneOf.add(status);
@@ -602,7 +602,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		};
 	}
 
-	public Filter startsWith(final String[] prefixes) {
+	public Filter startsWith(final String... prefixes) {
 		return new Filter() {
 
 			@Override
@@ -697,7 +697,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public boolean hasUploadOrRemove() {
-		return has(oneOf(new Action[] { Action.UPLOAD, Action.REMOVE }));
+		return has(oneOf(Action.UPLOAD, Action.REMOVE));
 	}
 
 	public boolean hasForcableUpdates() {
@@ -718,8 +718,8 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	public void markForUpdate(final boolean evenForcedUpdates) {
 		for (final FileObject file : updateable(evenForcedUpdates)) {
-			file.setFirstValidAction(this, new Action[] { Action.UPDATE,
-				Action.UNINSTALL, Action.INSTALL });
+			file.setFirstValidAction(this, Action.UPDATE,
+				Action.UNINSTALL, Action.INSTALL);
 		}
 	}
 
@@ -928,7 +928,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		final XMLFileDownloader downloader = new XMLFileDownloader(this);
 		downloader.addProgress(progress);
 		try {
-			downloader.start();
+			downloader.start(false);
 		} catch (final Canceled e) {
 				downloader.done();
 				throw e;
