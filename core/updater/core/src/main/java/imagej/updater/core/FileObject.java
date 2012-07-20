@@ -47,6 +47,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -509,6 +510,26 @@ public class FileObject {
 
 	public Iterable<Dependency> getDependencies() {
 		return dependencies.values();
+	}
+
+	public Iterable<FileObject> getFileDependencies(
+			final FilesCollection files, final boolean recursive) {
+		final Set<FileObject> result = new LinkedHashSet<FileObject>();
+		if (recursive) result.add(this);
+		final Stack<FileObject> stack = new Stack<FileObject>();
+		stack.push(this);
+		while (!stack.empty()) {
+			final FileObject file = stack.pop();
+			for (final Dependency dependency : file.getDependencies()) {
+				final FileObject file2 = files.get(dependency.filename);
+				if (file2 == null)
+					continue;
+				if (recursive && !result.contains(file2))
+					stack.push(file2);
+				result.add(file2);
+			}
+		}
+		return result;
 	}
 
 	public Status getStatus() {
