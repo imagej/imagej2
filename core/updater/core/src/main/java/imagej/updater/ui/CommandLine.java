@@ -225,55 +225,16 @@ public class CommandLine {
 		final boolean pristine)
 	{
 		// Include all dependencies
-		final Set<FileObject> all = new HashSet<FileObject>();
-		for (final FileObject file : files.filter(new FileFilter(list)))
-			addDependencies(file, all);
-		for (final FileObject file : all)
-			list.add(file.filename);
-		try {
-			for (final FileObject file : all) {
-				switch (file.getStatus()) {
-				case MODIFIED:
-					if (!force) {
-						System.err.println("Skipping locally-modified "
-								+ file.filename);
-						break;
-					}
-				case UPDATEABLE:
-				case NEW:
-				case NOT_INSTALLED:
-					file.setFirstValidAction(files, new Action[] {
-							Action.UPDATE, Action.INSTALL });
-					break;
-				case LOCAL_ONLY:
-					if (!pristine) {
-						System.err.println("Keeping local-only "
-								+ file.filename);
-						break;
-					}
-				case OBSOLETE_MODIFIED:
-					if (!force) {
-						System.err.println("Keeping modified but obsolete "
-								+ file.filename);
-						break;
-					}
-				case OBSOLETE:
-					file.stageForUninstall(files);
-					break;
-				default:
-					if (files != null && files.size() > 0)
-						System.err.println("Not updating " + file.filename
-								+ " (" + file.getStatus() + ")");
-				}
-			}
+		for (final FileObject file : files.filter(new FileFilter(list))) try {
+			if (!file.stageForUpdate(files))
+				log.warn("Skipping " + file.filename);
 			Installer installer = new Installer(files, progress);
 			installer.start();
 			installer.moveUpdatedIntoPlace();
 			files.write();
 		}
 		catch (final Exception e) {
-			System.err.println("Could not write db.xml.gz:");
-			e.printStackTrace();
+			log.error("Error updating", e);
 		}
 	}
 

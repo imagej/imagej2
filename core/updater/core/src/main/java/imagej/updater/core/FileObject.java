@@ -652,6 +652,15 @@ public class FileObject {
 			(evenForcedUpdates && (status.isValid(Action.UPDATE) || status == Status.OBSOLETE_MODIFIED));
 	}
 
+	public boolean stageForUpdate(final FilesCollection files) {
+		if (!setFirstValidAction(files, Action.UPDATE, Action.INSTALL))
+			return false;
+		for (final FileObject file : getFileDependencies(files, true)) {
+			file.setFirstValidAction(files, Action.UPDATE, Action.INSTALL);
+		}
+		return true;
+	}
+
 	public void stageForUpload(final FilesCollection files,
 		final String updateSite)
 	{
