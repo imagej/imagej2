@@ -673,10 +673,13 @@ public class FileObject {
 			(evenForcedUpdates && (status.isValid(Action.UPDATE) || status == Status.OBSOLETE_MODIFIED));
 	}
 
-	public boolean stageForUpdate(final FilesCollection files) {
+	public boolean stageForUpdate(final FilesCollection files, boolean evenForcedOnes) {
+		if (!evenForcedOnes && status == Status.MODIFIED)
+			return false;
 		if (!setFirstValidAction(files, Action.UPDATE, Action.INSTALL))
 			return false;
 		for (final FileObject file : getFileDependencies(files, true)) {
+			if (!evenForcedOnes && (file.status == Status.MODIFIED || file.status == Status.OBSOLETE_MODIFIED)) continue;
 			file.setFirstValidAction(files, Action.UPDATE, Action.INSTALL);
 		}
 		return true;
