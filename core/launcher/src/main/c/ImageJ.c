@@ -2385,7 +2385,7 @@ static void add_subcommand(const char *line)
 }
 
 const char *default_subcommands[] = {
-	"--update --ij-jar=plugins/Fiji_Updater.jar --ij-jar=jars/jsch.jar --main-class=fiji.updater.Main",
+	"--update --full-classpath --main-class=imagej.updater.ui.CommandLine",
 	" start the command-line version of the ImageJ updater",
 	"--jython --ij-jar=jars/jython.jar --full-classpath --main-class=org.python.util.jython",
 	".py",
