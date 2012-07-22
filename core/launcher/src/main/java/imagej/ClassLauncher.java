@@ -131,7 +131,9 @@ public class ClassLauncher {
 				patchIJ1(classLoader);
 			}
 			catch (final Exception e) {
-				e.printStackTrace();
+				if (!"fiji.IJ1Patcher".equals(e.getMessage())) {
+					e.printStackTrace();
+				}
 			}
 		}
 
