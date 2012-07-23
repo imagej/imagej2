@@ -165,11 +165,6 @@ public class Checksummer extends Progressable {
 				if ((!isWindows && Util.canExecute(file)) || path.endsWith(".exe")) object.executable =
 					true;
 				tryToGuessPlatform(object);
-				if (path.endsWith((".jar"))) try {
-					POMParser.fillMetadataFromJar(object, file);
-				} catch (Exception e) {
-					files.log.error("Could not read pom.xml from " + path);
-				}
 				files.add(object);
 			}
 			else if (checksum != null) {
@@ -188,6 +183,11 @@ public class Checksummer extends Progressable {
 				object.setLocalVersion(pair.path, checksum, timestamp);
 				if (object.getStatus() == Status.OBSOLETE_UNINSTALLED) object
 					.setStatus(Status.OBSOLETE);
+			}
+			if (path.endsWith((".jar"))) try {
+				POMParser.fillMetadataFromJar(object, file);
+			} catch (Exception e) {
+				files.log.error("Could not read pom.xml from " + path);
 			}
 		}
 		catch (final ZipException e) {
