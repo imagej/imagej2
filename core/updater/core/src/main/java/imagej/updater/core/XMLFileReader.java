@@ -248,7 +248,7 @@ public class XMLFileReader extends DefaultHandler {
 						files.log.warn("'" + current.filename
 								+ "' from update site '" + current.updateSite
 								+ "' shadows the one from update site '"
-								+ file.updateSite + "'\n");
+								+ file.updateSite + "'");
 				}
 				else {
 					addPreviousVersions(current, file);
@@ -257,7 +257,7 @@ public class XMLFileReader extends DefaultHandler {
 						files.log.warn("'" + file.filename
 								+ "' from update site '" + file.updateSite
 								+ "' shadows the one from update site '"
-								+ current.updateSite + "'\n");
+								+ current.updateSite + "'");
 				}
 			}
 			current = null;
