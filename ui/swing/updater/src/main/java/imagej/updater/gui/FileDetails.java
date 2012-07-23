@@ -273,6 +273,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 	}
 
 	public void showFileDetails(final FileObject file) {
+		setCaretPosition(getDocument().getLength());
 		if (!getText().equals("")) blankLine();
 		title(file.getLocalFilename());
 		if (file.isUpdateable()) italic("\n(Update available)");
@@ -306,6 +307,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 
 		// scroll to top
 		scrollRectToVisible(new Rectangle(0, 0, 1, 1));
+		setCaretPosition(0);
 	}
 
 	class EditableRegion implements Comparable<EditableRegion> {
