@@ -117,6 +117,7 @@ public class XMLFileReader extends DefaultHandler {
 		SAXException
 	{
 		this.updateSite = updateSite;
+		filesFromThisSite.clear();
 		newTimestamp = timestamp;
 
 		final InputSource inputSource = new InputSource(in);
