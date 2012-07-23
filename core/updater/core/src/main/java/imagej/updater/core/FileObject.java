@@ -183,6 +183,7 @@ public class FileObject {
 	public Set<Version> previous;
 	public long filesize;
 	public boolean metadataChanged;
+	public boolean descriptionFromPOM;
 
 	public String localFilename, localChecksum;
 	public long localTimestamp;

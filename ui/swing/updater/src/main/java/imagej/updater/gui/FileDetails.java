@@ -208,10 +208,11 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 		if (!updaterFrame.files.hasUploadableSites() &&
 			(description == null || description.trim().equals(""))) return;
 		blankLine();
-		bold("Description:\n");
+		bold("Description " + (file.descriptionFromPOM ? " (from pom.xml) " : "") + ":\n");
 		final int offset = getCaretPosition();
 		normal(description);
-		addEditableRegion(offset, "Description", file);
+		if (!file.descriptionFromPOM)
+			addEditableRegion(offset, "Description", file);
 	}
 
 	public void executable(final FileObject file) {
