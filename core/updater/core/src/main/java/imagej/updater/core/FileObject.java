@@ -189,7 +189,7 @@ public class FileObject {
 
 	// These are LinkedHashMaps to retain the order of the entries
 	protected Map<String, Dependency> dependencies;
-	protected Map<String, Object> links, authors, platforms, categories;
+	protected Set<String> links, authors, platforms, categories;
 
 	public FileObject(final String updateSite, final String filename,
 		final long filesize, final String checksum, final long timestamp,
@@ -201,10 +201,10 @@ public class FileObject {
 		previous = new LinkedHashSet<Version>();
 		this.status = status;
 		dependencies = new LinkedHashMap<String, Dependency>();
-		authors = new LinkedHashMap<String, Object>();
-		platforms = new LinkedHashMap<String, Object>();
-		categories = new LinkedHashMap<String, Object>();
-		links = new LinkedHashMap<String, Object>();
+		authors = new LinkedHashSet<String>();
+		platforms = new LinkedHashSet<String>();
+		categories = new LinkedHashSet<String>();
+		links = new LinkedHashSet<String>();
 		this.filesize = filesize;
 		setNoAction();
 	}
@@ -321,33 +321,33 @@ public class FileObject {
 	}
 
 	public void addLink(final String link) {
-		links.put(link, (Object) null);
+		links.add(link);
 	}
 
 	public Iterable<String> getLinks() {
-		return links.keySet();
+		return links;
 	}
 
 	public void addAuthor(final String author) {
-		authors.put(author, (Object) null);
+		authors.add(author);
 	}
 
 	public Iterable<String> getAuthors() {
-		return authors.keySet();
+		return authors;
 	}
 
 	public void addPlatform(String platform) {
 		if (platform.equals("linux")) platform = "linux32";
-		if (platform != null && !platform.trim().equals("")) platforms.put(platform
-			.trim(), (Object) null);
+		if (platform != null && !platform.trim().equals("")) platforms.add(platform
+			.trim());
 	}
 
 	public Iterable<String> getPlatforms() {
-		return platforms.keySet();
+		return platforms;
 	}
 
 	public void addCategory(final String category) {
-		categories.put(category, (Object) null);
+		categories.add(category);
 	}
 
 	public void replaceList(final String tag, final String... list) {
@@ -375,17 +375,17 @@ public class FileObject {
 			return;
 		}
 
-		final Map<String, Object> map =
+		final Set<String> map =
 			tag.equals("Link") ? links : tag.equals("Author") ? authors : tag
 				.equals("Platform") ? platforms : tag.equals("Category") ? categories
 				: null;
 		map.clear();
 		for (final String string : list)
-			map.put(string.trim(), (Object) null);
+			map.add(string.trim());
 	}
 
 	public Iterable<String> getCategories() {
-		return categories.keySet();
+		return categories;
 	}
 
 	public Iterable<Version> getPrevious() {
@@ -602,7 +602,7 @@ public class FileObject {
 	}
 
 	public boolean isForPlatform(final String platform) {
-		return platforms.containsKey(platform);
+		return platforms.contains(platform);
 	}
 
 	public boolean isForThisPlatform() {
@@ -611,7 +611,7 @@ public class FileObject {
 
 	public boolean isUpdateablePlatform() {
 		if (platforms.size() == 0) return true;
-		for (final String platform : platforms.keySet())
+		for (final String platform : platforms)
 			if (Util.isUpdateablePlatform(platform)) return true;
 		return false;
 	}

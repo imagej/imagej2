@@ -825,10 +825,10 @@ public class UpdaterTest {
 		final FileObject object = files.get("jars/hello.jar");
 		assertNotNull(object);
 		assertEquals(object.description, "Take over the world!");
-		assertCount(2, object.authors.keySet());
+		assertCount(2, object.authors);
 		final String[] authors = new String[2];
 		int counter = 0;
-		for (final String author : object.authors.keySet()) {
+		for (final String author : object.authors) {
 			authors[counter++] = author;
 		}
 		Arrays.sort(authors);
