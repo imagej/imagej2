@@ -36,6 +36,7 @@
 package imagej;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -46,6 +47,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A classloader whose classpath can be augmented after instantiation.
@@ -66,7 +69,7 @@ public class ClassLoaderPlus extends URLClassLoader {
 			final File directory = new File(getImageJDir());
 			final URL[] urls = new URL[relativePaths.length];
 			for (int i = 0; i < urls.length; i++) {
-				urls[i] = new File(directory, relativePaths[i]).toURI().toURL();
+				urls[i] = getPossiblyVersionedFile(new File(directory, relativePaths[i])).toURI().toURL();
 			}
 			return get(classLoader, urls);
 		}
@@ -264,6 +267,42 @@ public class ClassLoaderPlus extends URLClassLoader {
 			t.printStackTrace();
 			return null;
 		}
+	}
+
+	// keep this synchronized with imagej.updater.core.FileObject
+	private static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+)+[a-z]?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar)");
+
+	public static File getPossiblyVersionedFile(final File file) {
+		if (file.exists()) return file;
+
+		final String baseName;
+		final Matcher matcher = versionPattern.matcher(file.getName());
+		if (matcher.matches())
+			baseName = matcher.group(1);
+		else if (file.getName().endsWith(".jar"))
+			baseName = file.getName().substring(0, file.getName().length() - 4);
+		else
+			return file;
+
+		File[] list = file.getParentFile().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				if (!name.startsWith(baseName)) return false; // quicker than regex matching
+				final Matcher matcher = versionPattern.matcher(name);
+				return matcher.matches() && matcher.group(1).equals(baseName);
+			}
+		});
+		if (list.length < 1) return file;
+		if (list.length == 1) return list[0];
+
+		int newest = 0;
+		System.err.println("Warning: " + file.getName() + " matched multiple versions:");
+		for (int i = 0; i < list.length; i++) {
+			System.err.println("\t" + list[i].getName());
+			if (i > 0 && list[newest].lastModified() < list[i].lastModified()) newest = i;
+		}
+		System.err.println("Picking " + list[newest]);
+		return list[newest];
 	}
 
 }
