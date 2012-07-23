@@ -147,7 +147,8 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 
 	@Override
 	public Extents getExtents() {
-		if (!isDiscrete()) throw new UnsupportedOperationException();
+		// TODO - commenting this out fixes bug #1335
+		//if (!isDiscrete()) throw new UnsupportedOperationException();
 		final long[] min = new long[numDimensions()];
 		final long[] max = new long[numDimensions()];
 		min(min);
