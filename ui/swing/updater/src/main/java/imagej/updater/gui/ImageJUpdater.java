@@ -123,6 +123,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 		try {
 			String warnings = files.downloadIndexAndChecksum(progress);
+			main.addCustomViewOptions();
 			if (!warnings.equals("")) main.warn(warnings);
 		}
 		catch (final Canceled e) {

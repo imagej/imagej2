@@ -412,8 +412,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		SwingTools.addAccelerator(cancel, (JComponent) getContentPane(), cancel
 			.getActionListeners()[0], KeyEvent.VK_ESCAPE, 0);
-
-		addCustomViewOptions();
 	}
 
 	protected static class IJ1Plugin {
