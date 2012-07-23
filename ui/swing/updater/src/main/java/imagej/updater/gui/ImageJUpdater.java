@@ -108,16 +108,24 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 		if (errorIfDebian()) return;
 
 		final File imagejRoot = FileUtils.getBaseDirectory();
+		final FilesCollection files = new FilesCollection(imagejRoot);
+		final UpdaterFrame main = new UpdaterFrame(log, files);
 		if (new File(imagejRoot, "update").exists()) {
-			UpdaterUserInterface.get().error(
-				"ImageJ restart required to finalize previous update");
-			return;
+			if (!UpdaterUserInterface.get().promptYesNo("ImageJ was not restarted after the previous update\n\n"
+					+ "Do you want to move the files into place without a restart (dangerous)?",
+					"Restart required to finalize update"))
+				return;
+			try {
+				new Installer(files, main.getProgress("Moving files into place")).moveUpdatedIntoPlace();
+			} catch (IOException e) {
+				log.debug(e);
+				UpdaterUserInterface.get().error("Could not move files into place: " + e);
+				return;
+			}
 		}
 		Util.useSystemProxies();
 		Authenticator.setDefault(new SwingAuthenticator());
 
-		final FilesCollection files = new FilesCollection(imagejRoot);
-		final UpdaterFrame main = new UpdaterFrame(log, files);
 		main.setEasyMode(true);
 		Progress progress = main.getProgress("Starting up...");
 
