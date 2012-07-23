@@ -220,25 +220,13 @@ public class XMLFileReader extends DefaultHandler {
 						files.add(file);
 						filesFromThisSite.add(file);
 					}
-					if (current.current != null) {
-						current.addPreviousVersion(file.current.checksum, file.current.timestamp, file.filename);
-					}
-					for (final FileObject.Version version : current.previous) {
-						if (version.filename == null) version.filename = current.filename;
-						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
-					}
+					addPreviousVersions(current, file);
 				} else if (file.isObsolete()) {
-					for (final FileObject.Version version : file.previous) {
-						if (version.filename == null) version.filename = file.filename;
-						current.addPreviousVersion(version.checksum, version.timestamp, version.filename);
-					}
+					addPreviousVersions(file, current);
 					files.add(current);
 					filesFromThisSite.add(current);
 				} else if (current.isObsolete()) {
-					for (final FileObject.Version version : current.previous) {
-						if (version.filename == null) version.filename = current.filename;
-						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
-					}
+					addPreviousVersions(current, file);
 				} else if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
 					if ((updateSite != null && updateSite.equals(file.updateSite)) || (updateSite == null && file.updateSite == null)) {
 						; // simply update the object
@@ -253,6 +241,7 @@ public class XMLFileReader extends DefaultHandler {
 					}
 					// do not forget metadata
 					current.completeMetadataFrom(file);
+					addPreviousVersions(file, current);
 					files.add(current);
 					filesFromThisSite.add(current);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, this.updateSite) > getRank(files, file.updateSite))
@@ -262,6 +251,7 @@ public class XMLFileReader extends DefaultHandler {
 								+ file.updateSite + "'\n");
 				}
 				else {
+					addPreviousVersions(current, file);
 					file.overriddenUpdateSites.add(updateSite);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, file.updateSite) > getRank(files, this.updateSite))
 						files.log.warn("'" + file.filename
@@ -273,6 +263,15 @@ public class XMLFileReader extends DefaultHandler {
 			current = null;
 		}
 		body = "";
+	}
+
+	private static void addPreviousVersions(FileObject from, FileObject to) {
+		if (from.current != null) {
+			to.addPreviousVersion(from.current.checksum, from.current.timestamp, from.getLocalFilename());
+		}
+		for (final FileObject.Version version : from.previous) {
+			to.addPreviousVersion(version.checksum, version.timestamp, version.filename);
+		}
 	}
 
 	@Override
