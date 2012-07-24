@@ -276,6 +276,7 @@ public class DiffFile extends JFrame {
 				final String suffix = path.substring(0, path.lastIndexOf('/') + 1) + sourceFile;
 				try {
 					path = FileUtils.exec(gitWorkingDirectory, null, null, "git", "ls-files", "*/" + suffix);
+					if (path.length() <= suffix.length()) continue;
 					if (path.endsWith("\n")) path = path.substring(0, path.length() - 1);
 				} catch (RuntimeException e) {
 					/* ignore */
