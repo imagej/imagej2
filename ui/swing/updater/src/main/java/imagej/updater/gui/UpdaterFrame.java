@@ -302,6 +302,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					}
 				}, bottomPanel2);
 
+		final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 		// TODO: unify upload & apply changes (probably apply changes first, then
 		// upload)
 		// includes button to upload to server if is a Developer using
@@ -317,6 +318,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 							@Override
 							public void run() {
 								try {
+									if (contextClassLoader != null)
+										Thread.currentThread().setContextClassLoader(contextClassLoader);
 									upload();
 								}
 								catch (final InstantiationException e) {
