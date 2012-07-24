@@ -116,9 +116,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 		});
 
 		reset();
-		// TODO: enable depending on the update site
-		if (updaterFrame.files.hasUploadableSites()) getDocument()
-			.addUndoableEditListener(this);
+		getDocument().addUndoableEditListener(this);
 	}
 
 	public void reset() {
@@ -383,6 +381,8 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 		catch (final BadLocationException e) {
 			return false;
 		}
+		if (!editable.file.isUploadable(updaterFrame.files))
+			return false;
 
 		final int start = editable.start.getOffset() + 1;
 		final int end = editable.end.getOffset();
