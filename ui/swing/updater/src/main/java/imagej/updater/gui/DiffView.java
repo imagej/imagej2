@@ -201,6 +201,17 @@ public class DiffView extends JScrollPane {
 	}
 
 	/**
+	 * Add some warnings.
+	 * 
+	 * @param text
+	 *            the text to add
+	 */
+	public void warn(String warning) {
+		red("Warning: ");
+		styled(warning, italic);
+	}
+
+	/**
 	 * Add some red text.
 	 * 
 	 * @param text

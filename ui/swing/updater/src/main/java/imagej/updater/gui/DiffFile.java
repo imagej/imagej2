@@ -6,6 +6,7 @@ import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.util.ByteCodeAnalyzer;
+import imagej.updater.util.Util;
 import imagej.util.FileUtils;
 
 import java.awt.Cursor;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -179,10 +181,9 @@ public class DiffFile extends JFrame {
 	 */
 	private void addGitLogLink(final FilesCollection files, final FileObject fileObject) {
 		// first, we need to find Implementation-Build entries in the respective manifests
-		final String commitLocal = getCommit(local);
-		if (commitLocal == null) return;
-		final String commitRemote = getCommit(remote);
-		if (commitRemote == null) return;
+		String commitLocal = getCommit(local);
+		if (commitLocal == null || "".equals(commitLocal)) commitLocal = "HEAD";
+		String commitRemote = getCommit(remote);
 
 		// now, let's find the .git/ directory.
 		File directory = files.prefix(".");
@@ -196,6 +197,20 @@ public class DiffFile extends JFrame {
 		final String relativePath = findSourceDirectory(gitWorkingDirectory, local);
 		if (relativePath == null) return;
 
+		final String commitRange, since, warning;
+		if (commitRemote != null && !"".equals(commitRemote)) {
+			commitRange = commitRemote + ".." + commitLocal;
+			since = "-p";
+			warning = null;
+		}
+		else {
+			commitRange = commitLocal;
+			long millis = Util.timestamp2millis(fileObject.current.timestamp);
+			since = "--since=" + (millis / 1000l - 5 * 60);
+			warning = "No precise commit information in the remote .jar;\n"
+					+ "\tUsing timestamp from Updater instead: " + new Date(millis) + " - 5 minutes";
+		}
+
 		if (diffView.getDocument().getLength() > 0)
 			diffView.normal(" ");
 		diffView.link("Git log", new ActionListener() {
@@ -205,8 +220,9 @@ public class DiffFile extends JFrame {
 					@Override
 					public void run() {
 						final PrintStream out = diffView.getPrintStream();
-						out.println();
-						FileUtils.exec(gitWorkingDirectory,  out, out, "git", "log", "-p", commitRemote + ".." + commitLocal, "--", relativePath);
+						out.println("\n");
+						if (warning != null) diffView.warn(warning + "\n\n");
+						FileUtils.exec(gitWorkingDirectory,  out, out, "git", "log", "-M", "-p", since, commitRange, "--", relativePath);
 					}
 				});
 			}
