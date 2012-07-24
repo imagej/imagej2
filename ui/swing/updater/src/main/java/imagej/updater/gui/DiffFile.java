@@ -129,8 +129,10 @@ public class DiffFile extends JFrame {
 				} catch (RuntimeException e) {
 					if (!(e.getCause() instanceof InterruptedException))
 						log.error(e);
+					worker.interrupt();
 				} catch (Error e) {
 					log.error(e);
+					worker.interrupt();
 				}
 				diffView.setCursor(normalCursor);
 				synchronized(DiffFile.this) {
