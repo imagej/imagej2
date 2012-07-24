@@ -38,11 +38,13 @@ import imagej.util.FileUtils;
 import imagej.util.LineOutputStream;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.OutputStream;
@@ -74,8 +76,10 @@ import javax.swing.text.StyledDocument;
 public class DiffView extends JScrollPane {
 	private static final long serialVersionUID = 1L;
 	protected JPanel panel;
+	protected JTextPane textPane;
+	protected Cursor normalCursor, handCursor;
 	protected SimpleAttributeSet normal, bigBold, bold, italic, red, green;
-	protected Document document;
+	protected StyledDocument document;
 	protected int adds, removes;
 	protected boolean inHeader = true;
 	protected final static String ACTION_ATTRIBUTE = "ACTION";
@@ -99,22 +103,34 @@ public class DiffView extends JScrollPane {
 		red = getStyle(Color.red, false, false, font, fontSize);
 		green = getStyle(new Color(0, 128, 32), false, false, font, fontSize);
 
-		final JTextPane current = new JTextPane();
-		current.setEditable(false);
-		document = current.getDocument();
-		panel.add(current);
+		textPane = new JTextPane();
+		normalCursor = textPane.getCursor();
+		handCursor = new Cursor(Cursor.HAND_CURSOR);
+		textPane.setEditable(false);
+		document = textPane.getStyledDocument();
+		panel.add(textPane);
 
 		getVerticalScrollBar().setUnitIncrement(10);
 
-		current.addMouseListener(new MouseAdapter() {
+		textPane.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
-				StyledDocument document = current.getStyledDocument();
-				Element e = document.getCharacterElement(current.viewToModel(event.getPoint()));
-				ActionListener action = (ActionListener)e.getAttributes().getAttribute(ACTION_ATTRIBUTE);
+				ActionListener action = getAction(event);
 				if (action != null)
 					action.actionPerformed(new ActionEvent(DiffView.this, 0, "action"));
 			}
 		});
+		textPane.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(final MouseEvent e) {
+				setCursor(getAction(e) == null ? normalCursor : handCursor);
+			}
+		});
+	}
+
+	private ActionListener getAction(final MouseEvent event) {
+		Element e = document.getCharacterElement(textPane.viewToModel(event.getPoint()));
+		ActionListener action = (ActionListener)e.getAttributes().getAttribute(ACTION_ATTRIBUTE);
+		return action;
 	}
 
 	/**
