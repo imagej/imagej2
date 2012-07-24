@@ -41,6 +41,7 @@ import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
+import imagej.data.display.event.DelayedPositionEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -215,6 +216,9 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		if (event.getDisplay() != getDisplay()) return;
 		final AxisType axis = event.getAxis();
 		updateAxis(axis);
+		final EventService eventService =
+				display.getContext().getService(EventService.class);
+		eventService.publish(new DelayedPositionEvent(display, axis));
 	}
 
 	// -- Helper methods --

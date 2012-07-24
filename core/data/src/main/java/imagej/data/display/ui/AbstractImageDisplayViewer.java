@@ -41,7 +41,7 @@ import imagej.data.Position;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.data.display.event.AxisPositionEvent;
+import imagej.data.display.event.DelayedPositionEvent;
 import imagej.data.display.event.PanZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
@@ -315,8 +315,9 @@ public abstract class AbstractImageDisplayViewer extends
 	}
 
 	@EventHandler
-	protected void onEvent(final AxisPositionEvent event) {
-		if (event.getDisplay() == getDisplay()) updateLabel();
+	protected void onEvent(final DelayedPositionEvent event) {
+		if (event.getDisplay() != getDisplay()) return;
+		updateLabel();
 	}
-
+	
 }

@@ -33,62 +33,44 @@
  * #L%
  */
 
-package imagej.ext.display.ui;
+package imagej.data.display.event;
 
-import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.DisplayUpdatedEvent;
-import imagej.ext.plugin.IPlugin;
+import imagej.data.display.ImageDisplay;
+import imagej.ext.display.event.DisplayEvent;
+import net.imglib2.meta.AxisType;
 
 /**
- * A display viewer is a UI widget that shows a display to a user.
+ * An event indicating that a display's dimensional position has changed. A 2nd
+ * step event that follows an AxisPositionEvent. Used to correctly sequence
+ * axis position event handling.
  * 
- * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
-public interface DisplayViewer<T> extends IPlugin {
+public class DelayedPositionEvent extends DisplayEvent {
 
-	/**
-	 * Returns true if an instance of this display viewer can view the given
-	 * display.
-	 */
-	boolean canView(Display<?> d);
+	private final AxisType axis;
 
-	/**
-	 * Begins viewing the given display.
-	 * 
-	 * @param w The frame / window that will contain the GUI elements
-	 * @param d the model for the display to show.
-	 */
-	void view(DisplayWindow w, Display<?> d);
+	public DelayedPositionEvent(final ImageDisplay display) {
+		this(display, display.getActiveAxis());
+	}
 
-	/** Gets the display being viewed. */
-	Display<T> getDisplay();
+	public DelayedPositionEvent(final ImageDisplay display, final AxisType axis) {
+		super(display);
+		if (display.getAxisIndex(axis) < 0) {
+			throw new IllegalArgumentException("Invalid axis: " + axis);
+		}
+		this.axis = axis;
+	}
 
-	/** Gets the window in which the view is displayed. */
-	DisplayWindow getWindow();
+	public AxisType getAxis() {
+		return axis;
+	}
 
-	/**
-	 * Installs the display panel.
-	 * 
-	 * @param panel the panel used to host the gui
-	 */
-	void setPanel(DisplayPanel panel);
+	// -- Object methods --
 
-	/** Gets the display panel that hosts the gui elements. */
-	DisplayPanel getPanel();
+	@Override
+	public String toString() {
+		return super.toString() + "\n\taxis = " + axis;
+	}
 
-	/** Synchronizes the user interface appearance with the display model. */
-	void onDisplayUpdatedEvent(DisplayUpdatedEvent e);
-
-	/** Removes the user interface when the display is deleted. */
-	void onDisplayDeletedEvent(DisplayDeletedEvent e);
-
-	/**
-	 * Handles a display activated event directed at this viewer's display. Note
-	 * that the event's display may not be the viewer's display, but the active
-	 * display will always be the viewer's display.
-	 */
-	void onDisplayActivatedEvent(DisplayActivatedEvent e);
-	
 }
