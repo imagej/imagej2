@@ -261,6 +261,8 @@ public class Diff {
 					"--src-prefix=remote/" + name + "/", "--dst-prefix=local/" + name + "/",
 					remoteFile.getAbsolutePath(), localFile.getAbsolutePath());
 		} catch (RuntimeException e) {
+			if (e.getCause() != null && e.getCause() instanceof InterruptedException)
+				throw e;
 			// we expect the diff to return 1 if there were differences
 			if (!e.getMessage().startsWith("exit status 1")) {
 				e.printStackTrace(out);
@@ -350,6 +352,8 @@ public class Diff {
 			final String result = FileUtils.exec(null, out, null, "javap", "-classpath", jarFile.getAbsolutePath(), "-c", className);
 			copy(new ByteArrayInputStream(result.getBytes()), new FileOutputStream(file), true, true);
 		} catch (RuntimeException e) {
+			if (e.getCause() != null && e.getCause() instanceof InterruptedException)
+				throw e;
 			e.printStackTrace();
 			out.println("class " + className + " misses dependencies");
 		}
