@@ -264,12 +264,14 @@ public class DiffFile extends JFrame {
 	 */
 	private static String findSourceDirectory(final File gitWorkingDirectory, final URL jarURL) {
 		try {
+			int maxCount = 3;
 			final JarInputStream in = new JarInputStream(jarURL.openStream());
 			for (;;) {
 				final JarEntry entry = in.getNextJarEntry();
 				if (entry == null) break;
 				String path = entry.getName();
 				if (!path.endsWith(".class")) continue;
+				if (--maxCount <= 0) break;
 				final ByteCodeAnalyzer analyzer = Diff.analyzeByteCode(in, false);
 				final String sourceFile = analyzer.getSourceFile();
 				if (sourceFile == null) continue;
