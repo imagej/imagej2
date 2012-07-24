@@ -116,7 +116,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 					"Restart required to finalize update"))
 				return;
 			try {
-				new Installer(files, main.getProgress("Moving files into place")).moveUpdatedIntoPlace();
+				new Installer(files, null).moveUpdatedIntoPlace();
 			} catch (IOException e) {
 				log.debug(e);
 				UpdaterUserInterface.get().error("Could not move files into place: " + e);

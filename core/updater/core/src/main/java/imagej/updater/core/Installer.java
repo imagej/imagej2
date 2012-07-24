@@ -59,7 +59,8 @@ public class Installer extends Downloader {
 
 	public Installer(final FilesCollection files, final Progress progress) {
 		this.files = files;
-		addProgress(progress);
+		if (progress != null)
+			addProgress(progress);
 		addProgress(new VerifyFiles());
 	}
 
