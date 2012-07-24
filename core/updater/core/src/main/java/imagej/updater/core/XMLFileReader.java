@@ -36,6 +36,7 @@
 package imagej.updater.core;
 
 import imagej.updater.core.FileObject.Status;
+import imagej.updater.core.FileObject.Version;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
@@ -43,7 +44,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
@@ -117,6 +122,7 @@ public class XMLFileReader extends DefaultHandler {
 		SAXException
 	{
 		this.updateSite = updateSite;
+		filesFromThisSite.clear();
 		newTimestamp = timestamp;
 
 		final InputSource inputSource = new InputSource(in);
@@ -194,6 +200,8 @@ public class XMLFileReader extends DefaultHandler {
 		else if (tagName.equals("category")) current.addCategory(body);
 		else if (tagName.equals("link")) current.addLink(body);
 		else if (tagName.equals("plugin")) {
+			fillPreviousFilenames(current);
+
 			if (current.current == null) current
 				.setStatus(Status.OBSOLETE_UNINSTALLED);
 			else if (current.isNewerThan(newTimestamp)) {
@@ -219,25 +227,13 @@ public class XMLFileReader extends DefaultHandler {
 						files.add(file);
 						filesFromThisSite.add(file);
 					}
-					if (current.current != null) {
-						current.addPreviousVersion(file.current.checksum, file.current.timestamp, file.filename);
-					}
-					for (final FileObject.Version version : current.previous) {
-						if (version.filename == null) version.filename = current.filename;
-						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
-					}
+					addPreviousVersions(current, file);
 				} else if (file.isObsolete()) {
-					for (final FileObject.Version version : file.previous) {
-						if (version.filename == null) version.filename = file.filename;
-						current.addPreviousVersion(version.checksum, version.timestamp, version.filename);
-					}
+					addPreviousVersions(file, current);
 					files.add(current);
 					filesFromThisSite.add(current);
 				} else if (current.isObsolete()) {
-					for (final FileObject.Version version : current.previous) {
-						if (version.filename == null) version.filename = current.filename;
-						file.addPreviousVersion(version.checksum, version.timestamp, version.filename);
-					}
+					addPreviousVersions(current, file);
 				} else if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
 					if ((updateSite != null && updateSite.equals(file.updateSite)) || (updateSite == null && file.updateSite == null)) {
 						; // simply update the object
@@ -252,26 +248,64 @@ public class XMLFileReader extends DefaultHandler {
 					}
 					// do not forget metadata
 					current.completeMetadataFrom(file);
+					addPreviousVersions(file, current);
 					files.add(current);
 					filesFromThisSite.add(current);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, this.updateSite) > getRank(files, file.updateSite))
 						files.log.warn("'" + current.filename
 								+ "' from update site '" + current.updateSite
 								+ "' shadows the one from update site '"
-								+ file.updateSite + "'\n");
+								+ file.updateSite + "'");
 				}
 				else {
+					addPreviousVersions(current, file);
 					file.overriddenUpdateSites.add(updateSite);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, file.updateSite) > getRank(files, this.updateSite))
 						files.log.warn("'" + file.filename
 								+ "' from update site '" + file.updateSite
 								+ "' shadows the one from update site '"
-								+ current.updateSite + "'\n");
+								+ current.updateSite + "'");
 				}
 			}
 			current = null;
 		}
 		body = "";
+	}
+
+	/**
+	 * Make sure that all previous versions have their file name set.
+	 * 
+	 * @param file the component
+	 */
+	private static void fillPreviousFilenames(final FileObject file) {
+		List<FileObject.Version> versions = new ArrayList<FileObject.Version>();
+		if (file.current != null)
+			versions.add(file.current);
+		for (final FileObject.Version version : file.previous)
+			versions.add(version);
+		Collections.sort(versions, new Comparator<FileObject.Version>() {
+			@Override
+			public int compare(Version v1, Version v2) {
+				long diff = v1.timestamp - v2.timestamp;
+				return diff > 0 ? -1 : (diff < 0 ? +1 : 0);
+			}
+		});
+		String filename = file.filename;
+		for (final FileObject.Version version : versions) {
+			if (version.filename != null)
+				filename = version.filename;
+			else
+				version.filename = filename;
+		}
+	}
+
+	private static void addPreviousVersions(FileObject from, FileObject to) {
+		if (from.current != null) {
+			to.addPreviousVersion(from.current.checksum, from.current.timestamp, from.getLocalFilename(false));
+		}
+		for (final FileObject.Version version : from.previous) {
+			to.addPreviousVersion(version.checksum, version.timestamp, version.filename);
+		}
 	}
 
 	@Override

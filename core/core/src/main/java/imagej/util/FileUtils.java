@@ -39,6 +39,9 @@
 package imagej.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Arrays;
 
 /**
  * Useful methods for working with file paths.
@@ -287,5 +290,58 @@ public final class FileUtils {
 			directory = parent;
 		}
 		return directory.getAbsolutePath();
+	}
+
+	/**
+	 * Execute a program.
+	 * 
+	 * This is a convenience method mainly to be able to catch the output of
+	 * programs as shell scripts can do by wrapping calls in $(...).
+	 * 
+	 * @throws RuntimeException
+	 *             if interrupted or the program failed to execute successfully.
+	 * @param workingDirectory
+	 *            the directory in which to execute the program
+	 * @param err
+	 *            the {@link PrintStream} to print the program's error stream
+	 *            to; if null is passed, the error goes straight to Nirvana (not
+	 *            the band, though).
+	 * @param out
+	 *            the {@link PrintStream} to print the program's output to; if
+	 *            null is passed, the output will be accumulated into a
+	 *            {@link String} and returned upon exit.
+	 * @param args
+	 *            the command-line to execute, split into components
+	 * @return the output of the program if {@code out} is null, otherwise an
+	 *         empty {@link String}
+	 */
+	public static String exec(File workingDirectory, PrintStream err, PrintStream out, String... args) {
+		try {
+			Process process = Runtime.getRuntime().exec(args, null, workingDirectory);
+			process.getOutputStream().close();
+			ReadInto errThread = new ReadInto(process.getErrorStream(), err);
+			ReadInto outThread = new ReadInto(process.getInputStream(), out);
+			try {
+				process.waitFor();
+				errThread.done();
+				errThread.join();
+				outThread.done();
+				outThread.join();
+			}
+			catch (InterruptedException e) {
+				process.destroy();
+				errThread.interrupt();
+				outThread.interrupt();
+				err.println("Interrupted!");
+				throw new RuntimeException(e);
+			}
+			if (process.exitValue() != 0) {
+				throw new RuntimeException("exit status " + process.exitValue() + ": " + Arrays.toString(args) + "\n" + err);
+			}
+			return outThread.toString();
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

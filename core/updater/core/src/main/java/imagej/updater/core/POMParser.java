@@ -115,6 +115,7 @@ public class POMParser extends DefaultHandler {
 		if (prefix.equals(">project>description")) {
 			if (!"".equals(body)) {
 				file.description = body;
+				file.descriptionFromPOM = true;
 			}
 		}
 		else if (prefix.equals(">project>developers>developer>name")) {

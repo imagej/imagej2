@@ -87,12 +87,13 @@ public class CheckSezpoz {
 	/**
 	 * Check the annotations of all CLASSPATH components. Optionally, it only
 	 * checks the non-.jar components of the CLASSPATH. This is for Eclipse.
-	 * Eclipse fails to run the annotation processor at each incremental build. In
-	 * contrast to Maven, Eclipse usually does not build .jar files, though, so we
-	 * can have a very quick check at startup if the annotation processor was not
-	 * run correctly and undo the damage.
+	 * Eclipse fails to run the annotation processor at each incremental build.
+	 * In contrast to Maven, Eclipse usually does not build .jar files, though,
+	 * so we can have a very quick check at startup if the annotation processor
+	 * was not run correctly and undo the damage.
 	 * 
-	 * @param checkJars whether to inspect .jar components of the CLASSPATH
+	 * @param checkJars
+	 *            whether to inspect .jar components of the CLASSPATH
 	 * @return false, when the annotation processor had to be run
 	 * @throws IOException
 	 */
@@ -110,7 +111,8 @@ public class CheckSezpoz {
 	/**
 	 * Check the annotations of a CLASSPATH component.
 	 * 
-	 * @param file the CLASSPATH component (.jar file or directory)
+	 * @param file
+	 *            the CLASSPATH component (.jar file or directory)
 	 * @return false, when the annotation processor had to be run
 	 * @throws IOException
 	 */
@@ -125,7 +127,8 @@ public class CheckSezpoz {
 	/**
 	 * Check the annotations of a directory in the CLASSPATH.
 	 * 
-	 * @param classes the CLASSPATH component directory
+	 * @param classes
+	 *            the CLASSPATH component directory
 	 * @return false, when the annotation processor had to be run
 	 * @throws IOException
 	 */
@@ -149,6 +152,13 @@ public class CheckSezpoz {
 		return true;
 	}
 
+	/**
+	 * Determine when we checked whether sezpoz ran alright last time.
+	 * 
+	 * @param targetDirectory
+	 *            the <i>target/</i> directory Maven writes into
+	 * @return the timestamp of our last check
+	 */
 	protected static long getLatestCheck(final File targetDirectory) {
 		try {
 			final File file = new File(targetDirectory, FILE_NAME);
@@ -169,6 +179,12 @@ public class CheckSezpoz {
 		}
 	}
 
+	/**
+	 * Fake the check for <i>.jar</i> files a la {@link @getLatestCheck(File)}.
+	 * 
+	 * @param jar the <i>.jar</i> file
+	 * @return -1 since we cannot really tell
+	 */
 	protected static long getLatestCheck(final JarFile jar) {
 		return -1;
 	}
@@ -191,8 +207,24 @@ public class CheckSezpoz {
 		}
 	}
 
+	/**
+	 * Check whether the annotations are possibly out-of-date.
+	 * 
+	 * This method looks whether there are any <i>.class</i> files older than
+	 * their corresponding <i>.java</i> files, or whether there are
+	 * <i>.class</i> files that were generated since last time we checked.
+	 * 
+	 * @param classes
+	 *            the <i>classes/</i> directory where Maven puts the
+	 *            <i>.class</i> files
+	 * @param source
+	 *            the <i>src/main/java/<i> directory where Maven expects the
+	 *            <i>.java</i> files
+	 * @param youngerThan
+	 *            the date/time when we last checked
+	 */
 	public static boolean checkDirectory(final File classes, final File source,
-		final long olderThan) throws IOException
+		final long youngerThan) throws IOException
 	{
 		if (classes.getName().equals("META-INF") || !source.isDirectory()) return true;
 
@@ -201,10 +233,10 @@ public class CheckSezpoz {
 		for (final File file : list) {
 			final String name = file.getName();
 			if (file.isDirectory()) {
-				if (!checkDirectory(file, new File(source, name), olderThan)) return false;
+				if (!checkDirectory(file, new File(source, name), youngerThan)) return false;
 			}
 			else if (file.isFile() &&
-				file.lastModified() > olderThan &&
+				file.lastModified() > youngerThan &&
 				name.endsWith(".class") &&
 				hasAnnotation(new File(source, name.substring(0, name.length() - 5) +
 					"java")))
@@ -215,6 +247,15 @@ public class CheckSezpoz {
 		return true;
 	}
 
+	/**
+	 * Check a <i>.jar</i> file for stale annotations.
+	 * 
+	 * This method is broken at the moment since there is no good way to verify
+	 * that sezpoz ran before the <i>.jar</i> file was packaged.
+	 * 
+	 * @param file
+	 *            the <i>.jar</i> file
+	 */
 	public static void checkJar(final File file) throws IOException {
 		final JarFile jar = new JarFile(file);
 		final long mtime = getLatestCheck(jar);
@@ -223,7 +264,7 @@ public class CheckSezpoz {
 			// Assume everything is alright
 			return;
 		}
-		for (final JarEntry entry : iterate(jar.entries())) {
+		for (final JarEntry entry : new IteratorPlus<JarEntry>(jar.entries())) {
 			if (entry.getTime() > mtime) {
 				throw new IOException("Annotations for " + entry + " in " + file +
 					" are out-of-date!");
@@ -231,6 +272,17 @@ public class CheckSezpoz {
 		}
 	}
 
+	/**
+	 * Determine whether the class defined in a file has at least one
+	 * annotation.
+	 * 
+	 * This method simply parses everything before the first occurrence of the
+	 * word {@code class}, skipping comments, for things looking like
+	 * annotations.
+	 * 
+	 * @param file
+	 *            the <i>.java</i> file to check
+	 */
 	protected static boolean hasAnnotation(final File file) {
 		if (!file.getName().endsWith(".java")) return false;
 		try {
@@ -302,8 +354,10 @@ public class CheckSezpoz {
 	 * Run sezpoz on the sources, writing the annotations into the classes'
 	 * META-INF/annotations/ directory
 	 * 
-	 * @param classes the output directory
-	 * @param source the directory containing the source files
+	 * @param classes
+	 *            the output directory
+	 * @param sources
+	 *            the directory containing the source files
 	 * @return whether anything in META-INF/annotations/* changed
 	 */
 	public static boolean fix(final File classes, final File sources) {
@@ -381,6 +435,16 @@ public class CheckSezpoz {
 
 	private static MessageDigest digest;
 
+	/**
+	 * Calculate checksums of a list of files.
+	 * 
+	 * This method is used to determine whether annotation files have been
+	 * changed by sezpoz rather than re-generated identically.
+	 * 
+	 * @param files
+	 *            the files to process
+	 * @return a map containing (filename, checksum) mappings
+	 */
 	protected static Map<String, byte[]> checksum(final File[] files) {
 		final Map<String, byte[]> result = new HashMap<String, byte[]>();
 		if (files != null && files.length != 0) {
@@ -390,6 +454,13 @@ public class CheckSezpoz {
 		return result;
 	}
 
+	/**
+	 * Calculate the checksum of one file.
+	 * 
+	 * @param file
+	 *            the file to process
+	 * @return the checksum
+	 */
 	protected synchronized static byte[] checksum(final File file) {
 		try {
 			if (digest == null) digest = MessageDigest.getInstance("SHA-1");
@@ -409,6 +480,12 @@ public class CheckSezpoz {
 		}
 	}
 
+	/**
+	 * Build a list of <i>.java</i> files in a directory including all its sub-directories.
+	 *  
+	 * @param list the list of filenames to append to
+	 * @param directory the directory
+	 */
 	protected static void addJavaPathsRecursively(final List<String> list,
 		final File directory)
 	{
@@ -421,10 +498,27 @@ public class CheckSezpoz {
 		}
 	}
 
+	/**
+	 * Adjust the mtime of a file to "now".
+	 * 
+	 * @param file
+	 *            the file to touch
+	 * @throws IOException
+	 */
 	protected static void touch(final File file) throws IOException {
 		new FileOutputStream(file, true).close();
 	}
 
+	/**
+	 * Make sure that the given Eclipse project is set up correctly to run
+	 * sezpoz.
+	 * 
+	 * If the {@code directory} does not point to an Eclipse project, the method
+	 * will simply return.
+	 * 
+	 * @param directory
+	 *            the directory in which the project lives
+	 */
 	protected static void fixEclipseConfiguration(final File directory) {
 		// is this an Eclipse project at all?
 		if (!new File(directory, ".settings").isDirectory()) return;
@@ -432,6 +526,13 @@ public class CheckSezpoz {
 		fixAnnotationProcessingSettings(directory);
 	}
 
+	/**
+	 * Make sure that the given Eclipse project has a <i>.factorypath</i>
+	 * pointing to sezpoz in the current user's Maven repository.
+	 * 
+	 * @param directory
+	 *            the Eclipse project to fix
+	 */
 	protected static void fixFactoryPath(final File directory) {
 		final File factoryPath = new File(directory, ".factorypath");
 		try {
@@ -461,6 +562,14 @@ public class CheckSezpoz {
 		}
 	}
 
+	/**
+	 * Determine whether a parsed Eclipse configuration file contains a sezpoz
+	 * entry already.
+	 * 
+	 * @param elements
+	 *            the parsed Eclipse configuration
+	 * @return whether sezpoz is configured already
+	 */
 	private static boolean containsSezpozId(final NodeList elements) {
 		if (elements == null) return false;
 		for (int i = 0; i < elements.getLength(); i++) {
@@ -474,6 +583,16 @@ public class CheckSezpoz {
 		return false;
 	}
 
+	/**
+	 * Parse an <i>.xml</i> file into a DOM.
+	 * 
+	 * @param file
+	 *            the <i>.xml</i> file to parse
+	 * @return the DOM
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	protected static Document readXMLFile(final File file)
 		throws ParserConfigurationException, SAXException, IOException
 	{
@@ -484,6 +603,15 @@ public class CheckSezpoz {
 		return builder.parse(file);
 	}
 
+	/**
+	 * Write out a DOM as <i>.xml</i> file.
+	 * 
+	 * @param xml
+	 *            the DOM
+	 * @param file
+	 *            the file to write
+	 * @throws TransformerException
+	 */
 	public static void writeXMLFile(final Document xml, final File file)
 		throws TransformerException
 	{
@@ -497,6 +625,13 @@ public class CheckSezpoz {
 		transformer.transform(source, result);
 	}
 
+	/**
+	 * Make sure that the given Eclipse project has annotation processing
+	 * switched on.
+	 * 
+	 * @param directory
+	 *            the Eclipse project to fix
+	 */
 	protected static void fixAnnotationProcessingSettings(final File directory) {
 		final File jdtSettings =
 			new File(directory, ".settings/org.eclipse.jdt.apt.core.prefs");
@@ -522,39 +657,21 @@ public class CheckSezpoz {
 		}
 	}
 
+	/**
+	 * Write plain text into a plain file.
+	 * 
+	 * @param file
+	 *            the plain file
+	 * @param contents
+	 *            the plain text
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 */
 	protected static void write(final File file, final String contents)
 		throws IOException, UnsupportedEncodingException
 	{
 		final OutputStream out = new FileOutputStream(file);
 		out.write(contents.getBytes("UTF-8"));
 		out.close();
-	}
-
-	public static <T> Iterable<T> iterate(final Enumeration<T> en) {
-		final Iterator<T> iterator = new Iterator<T>() {
-
-			@Override
-			public boolean hasNext() {
-				return en.hasMoreElements();
-			}
-
-			@Override
-			public T next() {
-				return en.nextElement();
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
-
-		return new Iterable<T>() {
-
-			@Override
-			public Iterator<T> iterator() {
-				return iterator;
-			}
-		};
 	}
 }

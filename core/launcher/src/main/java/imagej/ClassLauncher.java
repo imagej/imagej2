@@ -165,6 +165,7 @@ public class ClassLauncher {
 		throws ClassNotFoundException, IllegalAccessException,
 		InstantiationException
 	{
+		@SuppressWarnings("unchecked")
 		final Class<Runnable> clazz =
 			(Class<Runnable>) classLoader.loadClass("fiji.IJ1Patcher");
 		final Runnable ij1Patcher = clazz.newInstance();

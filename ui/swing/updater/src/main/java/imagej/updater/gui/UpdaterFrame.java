@@ -37,6 +37,7 @@ package imagej.updater.gui;
 
 import imagej.log.LogService;
 import imagej.updater.core.Checksummer;
+import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -47,6 +48,7 @@ import imagej.updater.core.Installer;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
+import imagej.util.FileUtils;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -60,6 +62,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -114,7 +117,16 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	// For developers
 	protected JButton upload, showChanges, rebuildButton;
-	boolean canUpload;
+	protected boolean canUpload;
+	protected final static String gitVersion;
+
+	static {
+		String version = null;
+		try {
+			version = FileUtils.exec(null,  null, null, "git", "--version");
+		} catch (Throwable t) { /* ignore */ }
+		gitVersion = version;
+	}
 
 	public UpdaterFrame(final LogService log, final FilesCollection files) {
 		super("ImageJ Updater");
@@ -318,13 +330,11 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		upload.setVisible(files.hasUploadableSites());
 		enableUploadOrNot();
 
-		final IJ1Plugin fileChanges =
-			IJ1Plugin.discover("fiji.scripting.ShowPluginChanges");
-		if (fileChanges != null && files.prefix(".git").isDirectory()) {
+		if (gitVersion != null) {
 			bottomPanel2.add(Box.createRigidArea(new Dimension(15, 0)));
 			showChanges =
 				SwingTools.button("Show changes",
-					"Show the changes in Git since the last upload", new ActionListener()
+					"Show the differences to the uploaded version", new ActionListener()
 					{
 
 						@Override
@@ -333,8 +343,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 								@Override
 								public void run() {
-									for (final FileObject file : table.getSelectedFiles())
-										fileChanges.run(file.filename);
+									for (final FileObject file : table.getSelectedFiles()) try {
+										final DiffFile diff = new DiffFile(files, file, Mode.LIST_FILES);
+										diff.setLocationRelativeTo(UpdaterFrame.this);
+										diff.setVisible(true);
+									} catch (MalformedURLException e) {
+										files.log.error(e);
+										UpdaterUserInterface.get().error("There was a problem obtaining the remote version of " + file.getLocalFilename(true));
+									}
 								}
 							}.start();
 						}
@@ -412,8 +428,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		SwingTools.addAccelerator(cancel, (JComponent) getContentPane(), cancel
 			.getActionListeners()[0], KeyEvent.VK_ESCAPE, 0);
-
-		addCustomViewOptions();
 	}
 
 	protected static class IJ1Plugin {
@@ -600,7 +614,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		final boolean uploadable = !easyMode && files.hasUploadableSites();
 		upload.setVisible(uploadable);
-		if (showChanges != null) showChanges.setVisible(uploadable);
+		if (showChanges != null) showChanges.setVisible(!easyMode && gitVersion != null);
 		if (rebuildButton != null) rebuildButton.setVisible(uploadable);
 
 		easy.setText(easyMode ? "Advanced mode" : "Easy mode");
@@ -663,6 +677,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		for (final FileAction button : fileActions)
 			button.enableIfValid();
+
+		if (showChanges != null) showChanges.setEnabled(table.getSelectedFiles().iterator().hasNext());
 
 		apply.setEnabled(files.hasChanges());
 		cancel.setText(files.hasChanges() ? "Cancel" : "Close");

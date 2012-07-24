@@ -503,6 +503,7 @@ public class UpdaterTest {
 		assertEquals(FileObject.getFilename("jars/ij-data-2.0.0-beta1.jar", true), FileObject.getFilename("jars/ij-data-2.0.0-SNAPSHOT.jar", true));
 		assertEquals(FileObject.getFilename("jars/ij-1.44.jar", true), FileObject.getFilename("jars/ij-1.46b.jar", true));
 		assertEquals(FileObject.getFilename("jars/javassist.jar", true), FileObject.getFilename("jars/javassist-3.9.0.GA.jar", true));
+		assertEquals(FileObject.getFilename("jars/javassist.jar", true), FileObject.getFilename("jars/javassist-3.16.1-GA.jar", true));
 	}
 
 	@Test
@@ -596,11 +597,11 @@ public class UpdaterTest {
 			previous[(int)(version.timestamp - 1)] = version;
 		}
 		assertTrue("a".equals(previous[0].checksum));
-		assertEquals(previous[0].filename, "jars/Jama-1.0.2.jar");
+		assertEquals("jars/Jama-1.0.2.jar", previous[0].filename);
 		assertTrue("b".equals(previous[1].checksum));
-		assertEquals(previous[1].filename, "jars/Jama-1.0.2.jar");
+		assertEquals("jars/Jama-1.0.2.jar", previous[1].filename);
 		assertTrue("c".equals(previous[2].checksum));
-		assertSame(previous[2].filename, null);
+		assertEquals("jars/Jama.jar", previous[2].filename);
 	}
 
 	@Test
@@ -824,10 +825,10 @@ public class UpdaterTest {
 		final FileObject object = files.get("jars/hello.jar");
 		assertNotNull(object);
 		assertEquals(object.description, "Take over the world!");
-		assertCount(2, object.authors.keySet());
+		assertCount(2, object.authors);
 		final String[] authors = new String[2];
 		int counter = 0;
-		for (final String author : object.authors.keySet()) {
+		for (final String author : object.authors) {
 			authors[counter++] = author;
 		}
 		Arrays.sort(authors);
@@ -960,6 +961,60 @@ public class UpdaterTest {
 		assertTrue(jar.exists());
 		assertEquals(checksumNew, Util.getJarDigest(jar));
 		assertEquals(checksumOld, files.get("jars/new.jar").getChecksum());
+	}
+
+	@Test
+	public void testUpdateToDifferentVersion() throws Exception {
+		initializeUpdateSite("jars/egads-1.0.jar");
+		FilesCollection files = readDb(true, true);
+
+		// upload a newer version
+		assertTrue(files.prefix("jars/egads-1.0.jar").delete());
+		writeJar("jars/egads-2.1.jar");
+		files = readDb(true, true);
+		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		upload(files);
+
+		assertTrue(files.prefix("jars/egads-2.1.jar").exists());
+		assertFalse(files.prefix("jars/egads-1.0.jar").exists());
+
+		// downgrade locally
+		assertTrue(files.prefix("jars/egads-2.1.jar").delete());
+		writeJar("jars/egads-1.0.jar");
+		files = readDb(true, true);
+
+		// update again
+		assertTrue(files.get("jars/egads.jar").stageForUpdate(files,  false));
+		Installer installer = new Installer(files, progress);
+		installer.start();
+		assertTrue(files.prefixUpdate("jars/egads-2.1.jar").length() > 0);
+		assertTrue(files.prefixUpdate("jars/egads-1.0.jar").length() == 0);
+		installer.moveUpdatedIntoPlace();
+
+		assertTrue(files.prefix("jars/egads-2.1.jar").exists());
+		assertFalse(files.prefix("jars/egads-1.0.jar").exists());
+
+		// remove the file from the update site
+		assertTrue(files.prefix("jars/egads-2.1.jar").delete());
+		files = readDb(true, true);
+		files.get("jars/egads.jar").setAction(files, Action.REMOVE);
+		upload(files);
+
+		// re-instate an old version with a different name
+		writeJar("jars/egads-1.0.jar");
+		files = readDb(true, true);
+		assertStatus(Status.OBSOLETE, files, "jars/egads.jar");
+
+		// uninstall it
+		files.get("jars/egads.jar").stageForUninstall(files);
+		installer = new Installer(files, progress);
+		installer.start();
+		assertFalse(files.prefixUpdate("jars/egads-2.1.jar").exists());
+		assertTrue(files.prefixUpdate("jars/egads-1.0.jar").exists());
+		assertTrue(files.prefixUpdate("jars/egads-1.0.jar").length() == 0);
+		installer.moveUpdatedIntoPlace();
+		assertFalse(files.prefixUpdate("jars/egads-1.0.jar").exists());
+		assertStatus(Status.OBSOLETE_UNINSTALLED, files, "jars/egads.jar");
 	}
 
 	//

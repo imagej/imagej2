@@ -224,10 +224,14 @@ public class CommandLine {
 	public void update(final List<String> list, final boolean force,
 		final boolean pristine)
 	{
-		// Include all dependencies
-		for (final FileObject file : files.filter(new FileFilter(list))) try {
-			if (!file.stageForUpdate(files))
-				log.warn("Skipping " + file.filename);
+		try {
+			for (final FileObject file : files.filter(new FileFilter(list))) {
+				if (file.getStatus() == Status.LOCAL_ONLY) {
+					if (pristine)
+						file.setAction(files, Action.UNINSTALL);
+				} else if (!file.stageForUpdate(files, force))
+					log.warn("Skipping " + file.filename);
+			}
 			Installer installer = new Installer(files, progress);
 			installer.start();
 			installer.moveUpdatedIntoPlace();

@@ -54,9 +54,9 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javassist</groupId>
+			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.9.0.GA</version>
+			<version>3.16.1-GA</version>
 		</dependency>
 
 		<dependency>

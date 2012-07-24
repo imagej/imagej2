@@ -208,10 +208,11 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 		if (!updaterFrame.files.hasUploadableSites() &&
 			(description == null || description.trim().equals(""))) return;
 		blankLine();
-		bold("Description:\n");
+		bold("Description " + (file.descriptionFromPOM ? " (from pom.xml) " : "") + ":\n");
 		final int offset = getCaretPosition();
 		normal(description);
-		addEditableRegion(offset, "Description", file);
+		if (!file.descriptionFromPOM)
+			addEditableRegion(offset, "Description", file);
 	}
 
 	public void executable(final FileObject file) {
@@ -272,8 +273,9 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 	}
 
 	public void showFileDetails(final FileObject file) {
+		setCaretPosition(getDocument().getLength());
 		if (!getText().equals("")) blankLine();
-		title(file.getLocalFilename());
+		title(file.getLocalFilename(true));
 		if (file.isUpdateable()) italic("\n(Update available)");
 		else if (file.isLocalOnly()) italic("(Local-only)");
 		if (file.isLocallyModified()) {
@@ -305,6 +307,7 @@ public class FileDetails extends JTextPane implements UndoableEditListener {
 
 		// scroll to top
 		scrollRectToVisible(new Rectangle(0, 0, 1, 1));
+		setCaretPosition(0);
 	}
 
 	class EditableRegion implements Comparable<EditableRegion> {

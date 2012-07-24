@@ -210,8 +210,11 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 	@Override
 	public void itemStateChanged(final ItemEvent e) {
+		int selectedColumn = table.getSelectedColumn();
+		int selectedRow = table.getSelectedRow();
 		tableModel.fireTableStructureChanged();
 		tableModel.setColumnWidths();
+		if (selectedRow >= 0) table.changeSelection(selectedRow, selectedColumn, false, false);
 	}
 
 	protected class DataModel extends AbstractTableModel {
