@@ -247,11 +247,11 @@ public class Util {
 				InputStream inputStream = jar.getInputStream(entry);
 				// .properties files have a date in a comment; let's ignore this for the checksum
 				// For backwards-compatibility, activate the .properties mangling only from June 15th, 2012
-				if (treatPropertiesSpecially && entry.getTime() >= 1342328400000l && entry.getName().endsWith(".properties")) {
+				if (treatPropertiesSpecially && entry.getName().endsWith(".properties")) {
 					inputStream = new SkipHashedLines(inputStream);
 				}
 				// same for manifests, but with July 6th, 2012
-				if (treatManifestsSpecially && entry.getTime() >= 1344229200000l && entry.getName().equals("META-INF/MANIFEST.MF")) {
+				if (treatManifestsSpecially && entry.getName().equals("META-INF/MANIFEST.MF")) {
 					inputStream = new FilterManifest(inputStream, keepOnlyMainClassInManifest);
 				}
 				updateDigest(inputStream, digest);

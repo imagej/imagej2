@@ -856,12 +856,11 @@ public class UpdaterTest {
 			writeJarWithDatedFile("new2.jar", 2012, 6, 17, fileName, newContents);
 
 		// before June 15th, they were considered different
-		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(oldNewJar));
+		assertNotEqual(Util.getJarDigest(oldOldJar, false, false, false), Util.getJarDigest(oldNewJar, false, false, false));
 		// after June 15th, they are considered unchanged
-		assertEquals(Util.getJarDigest(newOldJar), Util.getJarDigest(newNewJar));
-		// checksums must be different if contents are the same but the timestamps
-		// are on opposite sides of the cutoff
-		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(newOldJar));
+		assertEquals(Util.getJarDigest(newOldJar, true, false, false), Util.getJarDigest(newNewJar, true, false, false));
+		// checksums must be different between the old and new way to calculate them
+		assertNotEqual(Util.getJarDigest(oldOldJar, false, false, false), Util.getJarDigest(newOldJar));
 	}
 
 	@Test
@@ -883,12 +882,12 @@ public class UpdaterTest {
 			writeJarWithDatedFile("new2.jar", 2012, 7, 8, fileName, newContents);
 
 		// before June 15th, they were considered different
-		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(oldNewJar));
+		assertNotEqual(Util.getJarDigest(oldOldJar, false, false, false), Util.getJarDigest(oldNewJar, false, false, false));
 		// after June 15th, they are considered unchanged
-		assertEquals(Util.getJarDigest(newOldJar), Util.getJarDigest(newNewJar));
-		// checksums must be different if contents are the same but the timestamps
-		// are on opposite sides of the cutoff
-		assertNotEqual(Util.getJarDigest(oldOldJar), Util.getJarDigest(newOldJar));
+		assertEquals(Util.getJarDigest(newOldJar, false, true, true), Util.getJarDigest(newNewJar, false, true, true));
+		// checksums must be different between the old and new way to calculate them
+		assertNotEqual(Util.getJarDigest(oldOldJar, false, false, false), Util.getJarDigest(newOldJar));
+		assertNotEqual(Util.getJarDigest(oldOldJar, false, true, false), Util.getJarDigest(newOldJar, false, true, true));
 	}
 
 	private File writeJarWithDatedFile(final String jarFileName, final int year,
