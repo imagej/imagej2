@@ -6,6 +6,7 @@ import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -30,6 +31,7 @@ public class DiffFile extends JFrame {
 	protected String filename;
 	protected URL remote, local;
 	protected DiffView diffView;
+	protected Cursor normalCursor, waitCursor;
 	protected Diff diff;
 	protected int diffOffset;
 	protected Thread worker;
@@ -55,6 +57,8 @@ public class DiffFile extends JFrame {
 		local = files.prefix(file.getLocalFilename()).toURI().toURL();
 
 		diffView = new DiffView();
+		normalCursor = diffView.getCursor();
+		waitCursor = new Cursor(Cursor.WAIT_CURSOR);
 		addModeLinks();
 		diffOffset = diffView.getDocument().getLength();
 		diff = new Diff(diffView.getPrintStream());
@@ -81,6 +85,8 @@ public class DiffFile extends JFrame {
 	protected synchronized void show(final Mode mode) {
 		if (worker != null)
 			worker.interrupt();
+		else
+			diffView.setCursor(waitCursor);
 		worker = new Thread() {
 			@Override
 			public void run() {
@@ -102,6 +108,7 @@ public class DiffFile extends JFrame {
 				} catch (Error e) {
 					log.error(e);
 				}
+				diffView.setCursor(normalCursor);
 				synchronized(DiffFile.this) {
 					worker = null;
 				}
