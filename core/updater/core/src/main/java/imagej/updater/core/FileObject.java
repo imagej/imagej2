@@ -724,8 +724,9 @@ public class FileObject {
 
 	public void stageForUninstall(final FilesCollection files) throws IOException
 	{
-		if (action != Action.UNINSTALL) throw new RuntimeException(filename +
-			" was not marked " + "for uninstall");
+		final String filename = getLocalFilename(false);
+		if (action != Action.UNINSTALL)
+			setAction(files, Action.UNINSTALL);
 		if (filename.endsWith(".jar")) touch(files.prefixUpdate(filename));
 		else {
 			String old = filename + ".old";
