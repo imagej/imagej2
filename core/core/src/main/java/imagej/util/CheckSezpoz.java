@@ -264,7 +264,7 @@ public class CheckSezpoz {
 			// Assume everything is alright
 			return;
 		}
-		for (final JarEntry entry : iterate(jar.entries())) {
+		for (final JarEntry entry : new IteratorPlus<JarEntry>(jar.entries())) {
 			if (entry.getTime() > mtime) {
 				throw new IOException("Annotations for " + entry + " in " + file +
 					" are out-of-date!");
@@ -673,39 +673,5 @@ public class CheckSezpoz {
 		final OutputStream out = new FileOutputStream(file);
 		out.write(contents.getBytes("UTF-8"));
 		out.close();
-	}
-
-	/**
-	 * Pretend that an {@link Enumeration} is actually an {@link Iterable} for <i>for(... : ...)</i> goodness.
-	 * 
-	 * @param en the enumeration
-	 * @return the iterable
-	 */
-	public static <T> Iterable<T> iterate(final Enumeration<T> en) {
-		final Iterator<T> iterator = new Iterator<T>() {
-
-			@Override
-			public boolean hasNext() {
-				return en.hasMoreElements();
-			}
-
-			@Override
-			public T next() {
-				return en.nextElement();
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
-
-		return new Iterable<T>() {
-
-			@Override
-			public Iterator<T> iterator() {
-				return iterator;
-			}
-		};
 	}
 }
