@@ -36,6 +36,7 @@
 package imagej.updater.core;
 
 import imagej.updater.core.FileObject.Status;
+import imagej.updater.core.FileObject.Version;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
@@ -43,7 +44,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
@@ -195,6 +200,8 @@ public class XMLFileReader extends DefaultHandler {
 		else if (tagName.equals("category")) current.addCategory(body);
 		else if (tagName.equals("link")) current.addLink(body);
 		else if (tagName.equals("plugin")) {
+			fillPreviousFilenames(current);
+
 			if (current.current == null) current
 				.setStatus(Status.OBSOLETE_UNINSTALLED);
 			else if (current.isNewerThan(newTimestamp)) {
@@ -263,6 +270,33 @@ public class XMLFileReader extends DefaultHandler {
 			current = null;
 		}
 		body = "";
+	}
+
+	/**
+	 * Make sure that all previous versions have their file name set.
+	 * 
+	 * @param file the component
+	 */
+	private static void fillPreviousFilenames(final FileObject file) {
+		List<FileObject.Version> versions = new ArrayList<FileObject.Version>();
+		if (file.current != null)
+			versions.add(file.current);
+		for (final FileObject.Version version : file.previous)
+			versions.add(version);
+		Collections.sort(versions, new Comparator<FileObject.Version>() {
+			@Override
+			public int compare(Version v1, Version v2) {
+				long diff = v1.timestamp - v2.timestamp;
+				return diff > 0 ? -1 : (diff < 0 ? +1 : 0);
+			}
+		});
+		String filename = file.filename;
+		for (final FileObject.Version version : versions) {
+			if (version.filename != null)
+				filename = version.filename;
+			else
+				version.filename = filename;
+		}
 	}
 
 	private static void addPreviousVersions(FileObject from, FileObject to) {

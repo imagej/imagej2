@@ -597,11 +597,11 @@ public class UpdaterTest {
 			previous[(int)(version.timestamp - 1)] = version;
 		}
 		assertTrue("a".equals(previous[0].checksum));
-		assertEquals(previous[0].filename, "jars/Jama-1.0.2.jar");
+		assertEquals("jars/Jama-1.0.2.jar", previous[0].filename);
 		assertTrue("b".equals(previous[1].checksum));
-		assertEquals(previous[1].filename, "jars/Jama-1.0.2.jar");
+		assertEquals("jars/Jama-1.0.2.jar", previous[1].filename);
 		assertTrue("c".equals(previous[2].checksum));
-		assertSame(previous[2].filename, null);
+		assertEquals("jars/Jama.jar", previous[2].filename);
 	}
 
 	@Test
