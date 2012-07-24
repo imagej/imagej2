@@ -44,13 +44,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -117,12 +117,6 @@ public class DiffView extends JScrollPane {
 				ActionListener action = getAction(event);
 				if (action != null)
 					action.actionPerformed(new ActionEvent(DiffView.this, 0, "action"));
-			}
-		});
-		textPane.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(final MouseEvent e) {
-				setCursor(getAction(e) == null ? normalCursor : handCursor);
 			}
 		});
 	}
@@ -277,7 +271,10 @@ public class DiffView extends JScrollPane {
 	 *            the action to perform when the link is clicked
 	 */
 	public void link(String text, ActionListener action) {
-		styled(text, getActionStyle(action));
+		final JButton button = new JButton(text);
+		button.addActionListener(action);
+		textPane.insertComponent(button);
+		button.setCursor(handCursor);
 	}
 
 	/**

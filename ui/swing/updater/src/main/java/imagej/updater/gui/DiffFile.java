@@ -213,7 +213,7 @@ public class DiffFile extends JFrame {
 
 		if (diffView.getDocument().getLength() > 0)
 			diffView.normal(" ");
-		diffView.link("Git log", new ActionListener() {
+		diffView.link("Git Log", new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				show(new Runnable() {

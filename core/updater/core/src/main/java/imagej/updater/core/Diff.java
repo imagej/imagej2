@@ -75,6 +75,24 @@ import java.util.jar.JarFile;
 public class Diff {
 	public static enum Mode {
 		LIST_FILES, JAVAP, CLASS_FILE_DIFF, HEX_DIFF;
+
+		@Override
+		public String toString() {
+			final StringBuilder builder = new StringBuilder();
+			boolean upperCase = true;
+			for (char c : name().toCharArray())
+				switch (c) {
+				case '_':
+					builder.append(' ');
+					upperCase = true;
+					break;
+				default:
+					builder.append(upperCase ? Character.toUpperCase(c) : Character.toLowerCase(c));
+					upperCase = false;
+					break;
+				}
+			return builder.toString();
+		}
 	}
 
 	protected final PrintStream out;
