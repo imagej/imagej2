@@ -344,7 +344,9 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 								@Override
 								public void run() {
 									for (final FileObject file : table.getSelectedFiles()) try {
-										new DiffFile(files, file, Mode.LIST_FILES).setVisible(true);
+										final DiffFile diff = new DiffFile(files, file, Mode.LIST_FILES);
+										diff.setLocationRelativeTo(UpdaterFrame.this);
+										diff.setVisible(true);
 									} catch (MalformedURLException e) {
 										files.log.error(e);
 										UpdaterUserInterface.get().error("There was a problem obtaining the remote version of " + file.getLocalFilename());
