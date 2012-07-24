@@ -37,6 +37,7 @@ import javax.swing.text.Document;
  */
 public class DiffFile extends JFrame {
 	private static final long serialVersionUID = 1L;
+	protected String title;
 	protected LogService log;
 	protected String filename;
 	protected URL remote, local;
@@ -59,8 +60,7 @@ public class DiffFile extends JFrame {
 	 * @throws MalformedURLException
 	 */
 	public DiffFile(final FilesCollection files, final FileObject file, final Mode mode) throws MalformedURLException {
-		super(file.getLocalFilename() + " differences");
-
+		title = file.getLocalFilename() + " differences";
 		log = files.log;
 		filename = file.getLocalFilename();
 		remote = new URL(files.getURL(file));
@@ -98,6 +98,7 @@ public class DiffFile extends JFrame {
 			@Override
 			public void run() {
 				try {
+					setTitle(title + " (" + mode + ")");
 					diff.showDiff(filename, remote, local, mode);
 				} catch (MalformedURLException e) {
 					log.error(e);
@@ -219,6 +220,7 @@ public class DiffFile extends JFrame {
 				show(new Runnable() {
 					@Override
 					public void run() {
+						setTitle(title + " (Git Log)");
 						final PrintStream out = diffView.getPrintStream();
 						out.println("\n");
 						if (warning != null) diffView.warn(warning + "\n\n");
