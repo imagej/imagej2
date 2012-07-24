@@ -963,6 +963,60 @@ public class UpdaterTest {
 		assertEquals(checksumOld, files.get("jars/new.jar").getChecksum());
 	}
 
+	@Test
+	public void testUpdateToDifferentVersion() throws Exception {
+		initializeUpdateSite("jars/egads-1.0.jar");
+		FilesCollection files = readDb(true, true);
+
+		// upload a newer version
+		assertTrue(files.prefix("jars/egads-1.0.jar").delete());
+		writeJar("jars/egads-2.1.jar");
+		files = readDb(true, true);
+		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		upload(files);
+
+		assertTrue(files.prefix("jars/egads-2.1.jar").exists());
+		assertFalse(files.prefix("jars/egads-1.0.jar").exists());
+
+		// downgrade locally
+		assertTrue(files.prefix("jars/egads-2.1.jar").delete());
+		writeJar("jars/egads-1.0.jar");
+		files = readDb(true, true);
+
+		// update again
+		assertTrue(files.get("jars/egads.jar").stageForUpdate(files,  false));
+		Installer installer = new Installer(files, progress);
+		installer.start();
+		assertTrue(files.prefixUpdate("jars/egads-2.1.jar").length() > 0);
+		assertTrue(files.prefixUpdate("jars/egads-1.0.jar").length() == 0);
+		installer.moveUpdatedIntoPlace();
+
+		assertTrue(files.prefix("jars/egads-2.1.jar").exists());
+		assertFalse(files.prefix("jars/egads-1.0.jar").exists());
+
+		// remove the file from the update site
+		assertTrue(files.prefix("jars/egads-2.1.jar").delete());
+		files = readDb(true, true);
+		files.get("jars/egads.jar").setAction(files, Action.REMOVE);
+		upload(files);
+
+		// re-instate an old version with a different name
+		writeJar("jars/egads-1.0.jar");
+		files = readDb(true, true);
+		assertStatus(Status.OBSOLETE, files, "jars/egads.jar");
+
+		// uninstall it
+		files.get("jars/egads.jar").stageForUninstall(files);
+		installer = new Installer(files, progress);
+		installer.start();
+		assertFalse(files.prefixUpdate("jars/egads-2.1.jar").exists());
+		assertTrue(files.prefixUpdate("jars/egads-1.0.jar").exists());
+		assertTrue(files.prefixUpdate("jars/egads-1.0.jar").length() == 0);
+		installer.moveUpdatedIntoPlace();
+		assertFalse(files.prefixUpdate("jars/egads-1.0.jar").exists());
+		assertStatus(Status.OBSOLETE_UNINSTALLED, files, "jars/egads.jar");
+	}
+
 	//
 	// Debug functions
 	//

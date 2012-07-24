@@ -349,7 +349,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 										diff.setVisible(true);
 									} catch (MalformedURLException e) {
 										files.log.error(e);
-										UpdaterUserInterface.get().error("There was a problem obtaining the remote version of " + file.getLocalFilename());
+										UpdaterUserInterface.get().error("There was a problem obtaining the remote version of " + file.getLocalFilename(true));
 									}
 								}
 							}.start();

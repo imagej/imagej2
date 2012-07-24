@@ -60,11 +60,11 @@ public class DiffFile extends JFrame {
 	 * @throws MalformedURLException
 	 */
 	public DiffFile(final FilesCollection files, final FileObject file, final Mode mode) throws MalformedURLException {
-		title = file.getLocalFilename() + " differences";
+		title = file.getLocalFilename(true) + " differences";
 		log = files.log;
-		filename = file.getLocalFilename();
+		filename = file.getLocalFilename(false);
 		remote = new URL(files.getURL(file));
-		local = files.prefix(file.getLocalFilename()).toURI().toURL();
+		local = files.prefix(filename).toURI().toURL();
 
 		diffView = new DiffView();
 		normalCursor = diffView.getCursor();

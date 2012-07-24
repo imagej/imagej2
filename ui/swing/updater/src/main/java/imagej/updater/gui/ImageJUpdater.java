@@ -167,7 +167,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 				final List<URL> classPath = new ArrayList<URL>();
 				final FileObject guiJar = files.get("jars/ij-updater-core.jar");
 				for (final FileObject component : guiJar.getFileDependencies(files, true)) {
-					final String name = component.getLocalFilename();
+					final String name = component.getLocalFilename(false);
 					File file = files.prefix(name);
 					try {
 						classPath.add(file.toURI().toURL());

@@ -301,7 +301,7 @@ public class XMLFileReader extends DefaultHandler {
 
 	private static void addPreviousVersions(FileObject from, FileObject to) {
 		if (from.current != null) {
-			to.addPreviousVersion(from.current.checksum, from.current.timestamp, from.getLocalFilename());
+			to.addPreviousVersion(from.current.checksum, from.current.timestamp, from.getLocalFilename(false));
 		}
 		for (final FileObject.Version version : from.previous) {
 			to.addPreviousVersion(version.checksum, version.timestamp, version.filename);
