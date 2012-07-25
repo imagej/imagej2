@@ -194,6 +194,18 @@ public class DiffFile extends JFrame {
 			directory = directory.getParentFile();
 			if (directory == null) return;
 		}
+		final String baseName = fileObject.filename.substring(fileObject.filename.lastIndexOf('/') + 1);
+		for (String pair : new String[] { "ij-[1-9].* ImageJA", "ij-[a-z].* imagej2", "imglib.* imglib", "TrakEM2.* TrakEM2", "mpicbg.* mpicbg" }) {
+			final int space = pair.indexOf(' ');
+			final String pattern = pair.substring(0, space);
+			if (baseName.matches(pattern)) {
+				final File submodule = new File(directory, "modules/" + pair.substring(space + 1));
+				if (new File(submodule, ".git").isDirectory()) {
+					directory = submodule;
+					break;
+				}
+			}
+		}
 		final File gitWorkingDirectory = directory;
 
 		// now, let's find the directory where the first source of the local .jar is stored
