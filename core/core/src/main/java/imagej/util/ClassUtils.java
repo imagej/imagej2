@@ -111,36 +111,44 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Checks whether the given object can be converted to the specified type.
+	 * Checks whether objects of the given class can be converted to the specified
+	 * type.
 	 * 
 	 * @see #convert(Object, Class)
 	 */
-	public static <T> boolean canConvert(final Object value, final Class<T> type)
-	{
-		if (value == null) return true;
-
+	public static boolean canConvert(final Class<?> c, final Class<?> type) {
 		// ensure type is well-behaved, rather than a primitive type
-		final Class<T> saneType = getNonprimitiveType(type);
+		final Class<?> saneType = getNonprimitiveType(type);
 
 		// OK if the existing object can be casted
-		if (canCast(value, saneType)) return true;
+		if (canCast(c, saneType)) return true;
 
 		// OK if string
 		if (saneType == String.class) return true;
 
 		// OK if appropriate wrapper constructor exists
 		try {
-			saneType.getConstructor(value.getClass());
+			saneType.getConstructor(c);
 			return true;
 		}
 		catch (final Exception exc) {
 			// NB: Multiple types of exceptions; simpler to handle them all the same.
 			Log.debug("No such constructor: " + saneType.getName() + "(" +
-				value.getClass().getName() + ")", exc);
+				c.getName() + ")", exc);
 		}
 
 		// no known way to convert
 		return false;
+	}
+
+	/**
+	 * Checks whether the given object can be converted to the specified type.
+	 * 
+	 * @see #convert(Object, Class)
+	 */
+	public static boolean canConvert(final Object value, final Class<?> type) {
+		if (value == null) return true;
+		return canConvert(value.getClass(), type);
 	}
 
 	/**
@@ -155,11 +163,22 @@ public final class ClassUtils {
 	}
 
 	/**
+	 * Checks whether objects of the given class can be cast to the specified
+	 * type.
+	 * 
+	 * @see #cast(Object, Class)
+	 */
+	public static boolean canCast(final Class<?> c, final Class<?> type) {
+		return type.isAssignableFrom(c);
+	}
+
+	/**
 	 * Checks whether the given object can be cast to the specified type.
+	 * 
 	 * @see #cast(Object, Class)
 	 */
 	public static boolean canCast(final Object obj, final Class<?> type) {
-		return (type.isAssignableFrom(obj.getClass()));
+		return canCast(obj.getClass(), type);
 	}
 
 	/**
