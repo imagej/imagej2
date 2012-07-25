@@ -107,6 +107,8 @@ public final class ClassUtils {
 			// NB: Multiple types of exceptions; simpler to handle them all the same.
 			Log.warn("Cannot convert '" + value + "' to " + type.getName(), exc);
 		}
+
+		// no known way to convert
 		return null;
 	}
 
@@ -224,7 +226,7 @@ public final class ClassUtils {
 		if (type == boolean.class) defaultValue = false;
 		else if (type == byte.class) defaultValue = (byte) 0;
 		else if (type == char.class) defaultValue = '\0';
-		else if (type == double.class) defaultValue = 0.0;
+		else if (type == double.class) defaultValue = 0d;
 		else if (type == float.class) defaultValue = 0f;
 		else if (type == int.class) defaultValue = 0;
 		else if (type == long.class) defaultValue = 0L;
