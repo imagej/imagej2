@@ -70,6 +70,11 @@ public class AWTObjectWidget extends AWTInputWidget<Object>
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return true;
+	}
+
+	@Override
 	public Object getValue() {
 		return items[choice.getSelectedIndex()];
 	}

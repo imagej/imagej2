@@ -52,7 +52,7 @@ public abstract class SwingInputWidget<T> extends JPanel implements
 	InputWidget<T>
 {
 
-	private final WidgetModel model;
+	private WidgetModel model;
 
 	public SwingInputWidget(final WidgetModel model) {
 		this.model = model;
@@ -60,6 +60,11 @@ public abstract class SwingInputWidget<T> extends JPanel implements
 	}
 
 	// -- InputWidget methods --
+
+	@Override
+	public void setModel(final WidgetModel model) {
+		this.model = model;
+	}
 
 	@Override
 	public WidgetModel getModel() {

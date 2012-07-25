@@ -62,6 +62,11 @@ public class PivotTextFieldWidget extends PivotInputWidget<String>
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(String.class);
+	}
+
+	@Override
 	public String getValue() {
 		return textInput.getText();
 	}

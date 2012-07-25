@@ -119,6 +119,11 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(Number.class);
+	}
+
+	@Override
 	public Number getValue() {
 		return (Number) spinner.getValue();
 	}

@@ -76,6 +76,11 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(File.class);
+	}
+
+	@Override
 	public File getValue() {
 		return new File(path.getText());
 	}

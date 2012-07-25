@@ -63,6 +63,11 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(Boolean.class);
+	}
+
+	@Override
 	public Boolean getValue() {
 		return checkbox.isSelected();
 	}

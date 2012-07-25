@@ -113,6 +113,11 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(ColorRGB.class);
+	}
+
+	@Override
 	public ColorRGB getValue() {
 		return AWTColors.getColorRGB(color);
 	}

@@ -58,6 +58,11 @@ public abstract class PivotInputWidget<T> extends BoxPane implements
 	// -- InputWidget methods --
 
 	@Override
+	public void setModel(final WidgetModel model) {
+		this.model = model;
+	}
+
+	@Override
 	public WidgetModel getModel() {
 		return model;
 	}

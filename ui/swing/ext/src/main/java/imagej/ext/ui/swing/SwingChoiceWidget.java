@@ -82,6 +82,11 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getItem().getChoices() != null;
+	}
+
+	@Override
 	public String getValue() {
 		return comboBox.getSelectedItem().toString();
 	}

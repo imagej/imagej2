@@ -72,6 +72,11 @@ public class PivotChoiceWidget extends PivotInputWidget<String>
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getItem().getChoices() != null;
+	}
+
+	@Override
 	public String getValue() {
 		return listButton.getSelectedItem().toString();
 	}

@@ -83,6 +83,11 @@ public class SwingFileWidget extends SwingInputWidget<File> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(File.class);
+	}
+
+	@Override
 	public File getValue() {
 		final String text = path.getText();
 		return text.isEmpty() ? null : new File(text);

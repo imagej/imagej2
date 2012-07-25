@@ -39,6 +39,8 @@ import imagej.ext.display.Display;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModulePostprocessor;
 import imagej.ext.module.ModulePreprocessor;
+import imagej.ext.module.ui.InputHarvester;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.tool.Tool;
 import imagej.platform.Platform;
 import imagej.service.Service;
@@ -59,6 +61,8 @@ import imagej.service.Service;
  * toolbar.</li>
  * <li>{@link Display} - plugins that visualize objects, often used to display
  * module outputs.</li>
+ * <li>{@link InputWidget} - plugins that render UI widgets for the
+ * {@link InputHarvester} preprocessor.</li>
  * <li>{@link PreprocessorPlugin} - plugins that perform preprocessing on
  * modules. A {@link PreprocessorPlugin} is a discoverable
  * {@link ModulePreprocessor}.</li>

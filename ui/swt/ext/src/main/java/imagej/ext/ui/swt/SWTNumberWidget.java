@@ -68,6 +68,11 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(Number.class);
+	}
+
+	@Override
 	public Number getValue() {
 		return slider.getSelection();
 	}

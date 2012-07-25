@@ -37,6 +37,7 @@ package imagej.ext.module.ui;
 
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
+import imagej.util.ClassUtils;
 
 /**
  * The backing data model for a particular {@link InputWidget}.
@@ -88,6 +89,10 @@ public class WidgetModel {
 			inputPanel.refresh();
 			module.preview();
 		}
+	}
+
+	public boolean isCompatibleWith(final Class<?> type) {
+		return ClassUtils.canConvert(getItem().getType(), type);
 	}
 
 	public void setInitialized(final boolean initialized) {

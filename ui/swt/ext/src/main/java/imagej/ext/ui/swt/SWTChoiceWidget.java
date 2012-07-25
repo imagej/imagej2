@@ -74,6 +74,11 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getItem().getChoices() != null;
+	}
+
+	@Override
 	public String getValue() {
 		return combo.getItem(combo.getSelectionIndex());
 	}

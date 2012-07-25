@@ -36,6 +36,7 @@
 package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetStyle;
 import imagej.util.NumberUtils;
 
 import org.apache.pivot.wtk.Label;
@@ -72,6 +73,13 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 	}
 
 	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		final WidgetStyle style = model.getItem().getWidgetStyle();
+		if (style != WidgetStyle.NUMBER_SCROLL_BAR) return false;
+		return super.isCompatible(model);
+	}
 
 	@Override
 	public Number getValue() {

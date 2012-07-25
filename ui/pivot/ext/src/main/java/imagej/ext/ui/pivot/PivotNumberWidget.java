@@ -69,4 +69,11 @@ public abstract class PivotNumberWidget extends PivotInputWidget<Number>
 		return new PivotNumberSpinnerWidget(model, min, max, stepSize);
 	}
 
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(Number.class);
+	}
+
 }

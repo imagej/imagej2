@@ -64,6 +64,11 @@ public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(Boolean.class);
+	}
+
+	@Override
 	public Boolean getValue() {
 		return checkbox.getState();
 	}

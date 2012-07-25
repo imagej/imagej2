@@ -81,6 +81,11 @@ public class AWTFileWidget extends AWTInputWidget<File> implements FileWidget,
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(File.class);
+	}
+
+	@Override
 	public File getValue() {
 		return new File(path.getText());
 	}

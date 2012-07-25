@@ -90,6 +90,11 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(String.class);
+	}
+
+	@Override
 	public String getValue() {
 		return textField.getText();
 	}

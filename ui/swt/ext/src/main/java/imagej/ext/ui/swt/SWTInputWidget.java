@@ -59,6 +59,11 @@ public abstract class SWTInputWidget<T> extends Composite implements
 	// -- InputWidget methods --
 
 	@Override
+	public void setModel(WidgetModel model) {
+		this.model = model;
+	}
+
+	@Override
 	public WidgetModel getModel() {
 		return model;
 	}

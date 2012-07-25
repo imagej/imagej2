@@ -35,12 +35,25 @@
 
 package imagej.ext.module.ui;
 
+import imagej.ext.module.ModuleItem;
+import imagej.ext.plugin.IPlugin;
+
 /**
- * Top-level widget interface.
+ * An input widget is a particular type of {@link IPlugin} intended to harvest
+ * user input for a particular {@link ModuleItem}. They are used by the
+ * {@link InputHarvester} preprocessor to collect module input values.
  * 
  * @author Curtis Rueden
+ * @see InputHarvester
+ * @see InputPanel
  */
-public interface InputWidget<T> {
+public interface InputWidget<T> extends IPlugin {
+
+	/** Gets whether this widget would be appropriate for the given model. */
+	boolean isCompatible(WidgetModel model);
+
+	/** Assigns the given widget model to this widget. */
+	void setModel(WidgetModel model);
 
 	/** Gets the model object backing this widget. */
 	WidgetModel getModel();
