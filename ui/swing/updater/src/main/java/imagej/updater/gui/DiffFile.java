@@ -188,6 +188,11 @@ public class DiffFile extends JFrame {
 		if (commitLocal == null || "".equals(commitLocal)) commitLocal = "HEAD";
 		String commitRemote = getCommit(remote);
 
+		if (commitLocal.equals(commitRemote)) {
+			diffView.warn("The remote and local versions were built from the same commit!");
+			return;
+		}
+
 		// now, let's find the .git/ directory.
 		File directory = files.prefix(".");
 		while (!new File(directory, ".git").exists()) {
