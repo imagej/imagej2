@@ -38,6 +38,7 @@ package imagej.updater.ssh;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import imagej.log.LogService;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploadable;
@@ -62,9 +63,11 @@ import java.util.List;
 public final class SFTPFileUploader extends AbstractUploader {
 
 	private SFTPOperations sftp;
+	protected LogService log;
 
 	@Override
 	public boolean login(final FilesUploader uploader) {
+		log = uploader.getLog();
 		if (!super.login(uploader)) return false;
 		final Session session = SSHSessionCreator.getSession(uploader);
 		if (session == null) return false;
@@ -73,8 +76,17 @@ public final class SFTPFileUploader extends AbstractUploader {
 			return true;
 		}
 		catch (final JSchException e) {
-			uploader.getLog().error(e);
+			log.error(e);
 			return false;
+		}
+	}
+
+	@Override
+	public void logout() {
+		try {
+			disconnectSession();
+		} catch (IOException e) {
+			log.error(e);
 		}
 	}
 

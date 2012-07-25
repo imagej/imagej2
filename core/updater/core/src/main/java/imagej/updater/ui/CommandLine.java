@@ -292,16 +292,18 @@ public class CommandLine {
 		}
 		System.err.println("Uploading to " + getLongUpdateSiteName(updateSite));
 
+		FilesUploader uploader = null;
 		try {
-			final FilesUploader uploader = new FilesUploader(files, updateSite);
+			uploader = new FilesUploader(files, updateSite);
 			if (!uploader.login())
 				die("Login failed!");
 			uploader.upload(progress);
 			files.write();
 		}
 		catch (final Throwable e) {
-			e.printStackTrace();
-			die("Error during upload: " + e);
+			log.error("Error during upload: ", e);
+			if (uploader != null)
+				uploader.logout();
 		}
 	}
 

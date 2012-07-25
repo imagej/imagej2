@@ -69,4 +69,5 @@ public abstract class AbstractUploader extends Progressable {
 		return true; // no login required; override this if login _is_ required!
 	}
 
+	public void logout() {}
 }

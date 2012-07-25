@@ -341,6 +341,11 @@ public class FilesUploader {
 		return loggedIn;
 	}
 
+	public void logout() {
+		if (uploader != null)
+			uploader.logout();
+	}
+
 	public static FilesUploader initialUpload(final String url,
 		final String sshHost, final String uploadDirectory)
 		throws InstantiationException

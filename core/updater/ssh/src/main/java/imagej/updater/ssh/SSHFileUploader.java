@@ -83,6 +83,15 @@ public class SSHFileUploader extends AbstractUploader {
 		return session != null;
 	}
 
+	@Override
+	public void logout() {
+		try {
+			disconnectSession();
+		} catch (IOException e) {
+			log.error(e);
+		}
+	}
+
 	// Steps to accomplish entire upload task
 	@Override
 	public synchronized void upload(final List<Uploadable> sources,
@@ -230,26 +239,33 @@ public class SSHFileUploader extends AbstractUploader {
 	}
 
 	public void disconnectSession() throws IOException {
-		new InputStream2OutputStream(in, UpdaterUserInterface.get().getOutputStream());
+		if (in != null)
+			new InputStream2OutputStream(in, UpdaterUserInterface.get().getOutputStream());
 		try {
 			Thread.sleep(100);
 		}
 		catch (final InterruptedException e) {
 			/* ignore */
 		}
-		out.close();
+		if (out != null)
+			out.close();
 		try {
 			Thread.sleep(1000);
 		}
 		catch (final InterruptedException e) {
 			/* ignore */
 		}
-		final int exitStatus = channel.getExitStatus();
-		UpdaterUserInterface.get().debug(
-			"disconnect session; exit status is " + exitStatus);
-		channel.disconnect();
-		session.disconnect();
-		err.close();
+		int exitStatus = 0;
+		if (channel != null) {
+			exitStatus = channel.getExitStatus();
+			UpdaterUserInterface.get().debug(
+				"disconnect session; exit status is " + exitStatus);
+			channel.disconnect();
+		}
+		if (session != null)
+			session.disconnect();
+		if (err != null)
+			err.close();
 		if (exitStatus != 0) throw new IOException("Command failed with status " +
 			exitStatus + " (see Log)!");
 	}
