@@ -528,10 +528,10 @@ public class UpdaterTest {
 		plugin.addDependency(files, tooOld);
 
 		assertTrue(plugin.dependencies.containsKey("jars/without.jar"));
-		assertTrue(plugin.dependencies.containsKey("jars/with-2.0.jar"));
-		assertFalse(plugin.dependencies.containsKey("jars/with.jar"));
-		assertTrue(plugin.dependencies.containsKey("jars/too-old-3.11.jar"));
-		assertFalse(plugin.dependencies.containsKey("jars/too-old.jar"));
+		assertTrue(plugin.dependencies.containsKey("jars/with.jar"));
+		assertEquals("jars/with-2.0.jar", plugin.dependencies.get("jars/with.jar").filename);
+		assertTrue(plugin.dependencies.containsKey("jars/too-old.jar"));
+		assertEquals("jars/too-old-3.11.jar", plugin.dependencies.get("jars/too-old.jar").filename);
 
 		assertTrue(files.containsKey("jars/without.jar"));
 		assertTrue(files.containsKey("jars/with.jar"));
@@ -570,7 +570,8 @@ public class UpdaterTest {
 
 		files = readDb(true, true);
 		plugin = files.get("plugins/plugin.jar");
-		assertTrue(plugin.dependencies.containsKey("jars/too-old-3.12.jar"));
+		assertTrue(plugin.dependencies.containsKey("jars/too-old.jar"));
+		assertEquals("jars/too-old-3.12.jar", plugin.dependencies.get("jars/too-old.jar").filename);
 	}
 
 	@Test
