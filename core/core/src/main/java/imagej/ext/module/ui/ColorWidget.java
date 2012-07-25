@@ -42,9 +42,6 @@ import imagej.util.ColorRGB;
  * 
  * @author Curtis Rueden
  */
-public interface ColorWidget extends InputWidget {
-
-	@Override
-	ColorRGB getValue();
-
+public interface ColorWidget extends InputWidget<ColorRGB> {
+	// NB: No changes to interface.
 }

@@ -55,8 +55,8 @@ import java.io.File;
  *
  * @author Curtis Rueden
  */
-public class AWTFileWidget extends AWTInputWidget
-	implements FileWidget, ActionListener, TextListener
+public class AWTFileWidget extends AWTInputWidget<File> implements FileWidget,
+	ActionListener, TextListener
 {
 
 	private TextField path;
@@ -78,14 +78,12 @@ public class AWTFileWidget extends AWTInputWidget
 		refreshWidget();
 	}
 
-	// -- FileWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public File getValue() {
 		return new File(path.getText());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

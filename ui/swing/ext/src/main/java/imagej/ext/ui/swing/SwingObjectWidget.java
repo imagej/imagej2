@@ -48,7 +48,7 @@ import javax.swing.JComboBox;
  * 
  * @author Curtis Rueden
  */
-public class SwingObjectWidget extends SwingInputWidget implements
+public class SwingObjectWidget extends SwingInputWidget<Object> implements
 	ActionListener, ObjectWidget
 {
 

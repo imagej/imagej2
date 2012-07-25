@@ -46,8 +46,8 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @author Curtis Rueden
  */
-public class SWTTextFieldWidget extends SWTInputWidget
-	implements TextFieldWidget
+public class SWTTextFieldWidget extends SWTInputWidget<String> implements
+	TextFieldWidget
 {
 
 	private final Text text;
@@ -63,14 +63,12 @@ public class SWTTextFieldWidget extends SWTInputWidget
 		refreshWidget();
 	}
 
-	// -- TextFieldWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public String getValue() {
 		return text.getText();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

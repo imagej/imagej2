@@ -47,7 +47,7 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingToggleWidget extends SwingInputWidget implements
+public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 	ChangeListener, ToggleWidget
 {
 
@@ -71,14 +71,12 @@ public class SwingToggleWidget extends SwingInputWidget implements
 		updateModel();
 	}
 
-	// -- ToggleWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Boolean getValue() {
 		return checkBox.isSelected();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

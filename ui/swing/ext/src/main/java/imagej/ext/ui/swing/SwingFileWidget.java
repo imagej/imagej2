@@ -55,8 +55,8 @@ import javax.swing.event.DocumentListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingFileWidget extends SwingInputWidget implements FileWidget,
-	ActionListener, DocumentListener
+public class SwingFileWidget extends SwingInputWidget<File> implements
+	FileWidget, ActionListener, DocumentListener
 {
 
 	private final JTextField path;
@@ -80,15 +80,13 @@ public class SwingFileWidget extends SwingInputWidget implements FileWidget,
 		refreshWidget();
 	}
 
-	// -- FileWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public File getValue() {
 		final String text = path.getText();
 		return text.isEmpty() ? null : new File(text);
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

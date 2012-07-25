@@ -40,11 +40,8 @@ package imagej.ext.module.ui;
  * 
  * @author Curtis Rueden
  */
-public interface ChoiceWidget extends InputWidget {
+public interface ChoiceWidget extends InputWidget<String> {
 
 	int getIndex();
-
-	@Override
-	String getValue();
 
 }

@@ -45,7 +45,9 @@ import java.awt.Panel;
  *
  * @author Curtis Rueden
  */
-public abstract class AWTInputWidget extends Panel implements InputWidget {
+public abstract class AWTInputWidget<T> extends Panel implements
+	InputWidget<T>
+{
 
 	private WidgetModel model;
 

@@ -47,7 +47,9 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTObjectWidget extends SWTInputWidget implements ObjectWidget {
+public class SWTObjectWidget extends SWTInputWidget<Object> implements
+	ObjectWidget
+{
 
 	private final Combo combo;
 	private final Object[] items;

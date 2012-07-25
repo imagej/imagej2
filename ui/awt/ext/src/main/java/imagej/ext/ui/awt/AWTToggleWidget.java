@@ -46,7 +46,9 @@ import java.awt.Checkbox;
  *
  * @author Curtis Rueden
  */
-public class AWTToggleWidget extends AWTInputWidget implements ToggleWidget {
+public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
+	ToggleWidget
+{
 
 	private Checkbox checkbox;
 
@@ -59,14 +61,12 @@ public class AWTToggleWidget extends AWTInputWidget implements ToggleWidget {
 		refreshWidget();
 	}
 
-	// -- ToggleWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Boolean getValue() {
 		return checkbox.getState();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

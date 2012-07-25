@@ -45,7 +45,8 @@ import org.apache.pivot.wtk.Checkbox;
  * 
  * @author Curtis Rueden
  */
-public class PivotToggleWidget extends PivotInputWidget implements ToggleWidget
+public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
+	ToggleWidget
 {
 
 	private final Checkbox checkbox;
@@ -59,14 +60,12 @@ public class PivotToggleWidget extends PivotInputWidget implements ToggleWidget
 		refreshWidget();
 	}
 
-	// -- ToggleWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Boolean getValue() {
 		return checkbox.isSelected();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

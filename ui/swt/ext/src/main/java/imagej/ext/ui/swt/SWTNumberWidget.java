@@ -47,7 +47,9 @@ import org.eclipse.swt.widgets.Slider;
  * 
  * @author Curtis Rueden
  */
-public class SWTNumberWidget extends SWTInputWidget implements NumberWidget {
+public class SWTNumberWidget extends SWTInputWidget<Number> implements
+	NumberWidget
+{
 
 	private final Slider slider;
 
@@ -63,14 +65,12 @@ public class SWTNumberWidget extends SWTInputWidget implements NumberWidget {
 		refreshWidget();
 	}
 
-	// -- NumberWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
 		return slider.getSelection();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

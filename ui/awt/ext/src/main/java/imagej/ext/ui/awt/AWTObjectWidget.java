@@ -48,7 +48,7 @@ import java.awt.event.ItemListener;
  * 
  * @author Curtis Rueden
  */
-public class AWTObjectWidget extends AWTInputWidget
+public class AWTObjectWidget extends AWTInputWidget<Object>
 	implements ItemListener, ObjectWidget
 {
 

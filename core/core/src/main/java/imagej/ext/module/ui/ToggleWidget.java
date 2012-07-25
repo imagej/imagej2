@@ -40,9 +40,6 @@ package imagej.ext.module.ui;
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget extends InputWidget {
-
-	@Override
-	Boolean getValue();
-
+public interface ToggleWidget extends InputWidget<Boolean> {
+	// NB: No changes to interface.
 }

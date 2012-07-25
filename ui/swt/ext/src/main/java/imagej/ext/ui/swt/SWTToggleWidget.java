@@ -47,7 +47,9 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTToggleWidget extends SWTInputWidget implements ToggleWidget {
+public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
+	ToggleWidget
+{
 
 	private final Button checkbox;
 
@@ -59,14 +61,12 @@ public class SWTToggleWidget extends SWTInputWidget implements ToggleWidget {
 		refreshWidget();
 	}
 
-	// -- ToggleWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Boolean getValue() {
 		return checkbox.getSelection();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

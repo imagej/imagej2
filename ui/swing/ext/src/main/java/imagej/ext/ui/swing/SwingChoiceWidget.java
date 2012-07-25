@@ -48,7 +48,7 @@ import javax.swing.JComboBox;
  * 
  * @author Curtis Rueden
  */
-public class SwingChoiceWidget extends SwingInputWidget implements
+public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	ActionListener, ChoiceWidget
 {
 
@@ -75,16 +75,16 @@ public class SwingChoiceWidget extends SwingInputWidget implements
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getValue() {
-		return comboBox.getSelectedItem().toString();
-	}
-
-	@Override
 	public int getIndex() {
 		return comboBox.getSelectedIndex();
 	}
 
 	// -- InputWidget methods --
+
+	@Override
+	public String getValue() {
+		return comboBox.getSelectedItem().toString();
+	}
 
 	@Override
 	public void refreshWidget() {

@@ -46,7 +46,7 @@ import org.apache.pivot.wtk.ListButton;
  * 
  * @author Curtis Rueden
  */
-public class PivotChoiceWidget extends PivotInputWidget
+public class PivotChoiceWidget extends PivotInputWidget<String>
 	implements ChoiceWidget
 {
 
@@ -65,16 +65,16 @@ public class PivotChoiceWidget extends PivotInputWidget
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getValue() {
-		return listButton.getSelectedItem().toString();
-	}
-
-	@Override
 	public int getIndex() {
 		return listButton.getSelectedIndex();
 	}
 
 	// -- InputWidget methods --
+
+	@Override
+	public String getValue() {
+		return listButton.getSelectedItem().toString();
+	}
 
 	@Override
 	public void refreshWidget() {

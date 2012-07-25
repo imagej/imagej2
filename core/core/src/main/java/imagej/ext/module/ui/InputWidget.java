@@ -40,7 +40,7 @@ package imagej.ext.module.ui;
  * 
  * @author Curtis Rueden
  */
-public interface InputWidget {
+public interface InputWidget<T> {
 
 	/** Gets the model object backing this widget. */
 	WidgetModel getModel();
@@ -49,7 +49,7 @@ public interface InputWidget {
 	void updateModel();
 
 	/** Gets the current widget value. */
-	Object getValue();
+	T getValue();
 
 	/** Refreshes the widget to reflect the latest model value(s). */
 	void refreshWidget();

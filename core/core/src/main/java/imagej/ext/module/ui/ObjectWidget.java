@@ -40,6 +40,6 @@ package imagej.ext.module.ui;
  * 
  * @author Curtis Rueden
  */
-public interface ObjectWidget extends InputWidget {
+public interface ObjectWidget extends InputWidget<Object> {
 	// NB: No changes to interface.
 }

@@ -45,7 +45,7 @@ import org.apache.pivot.wtk.TextInput;
  * 
  * @author Curtis Rueden
  */
-public class PivotTextFieldWidget extends PivotInputWidget
+public class PivotTextFieldWidget extends PivotInputWidget<String>
 	implements TextFieldWidget
 {
 
@@ -59,14 +59,12 @@ public class PivotTextFieldWidget extends PivotInputWidget
 		add(textInput);
 	}
 
-	// -- TextFieldWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public String getValue() {
 		return textInput.getText();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

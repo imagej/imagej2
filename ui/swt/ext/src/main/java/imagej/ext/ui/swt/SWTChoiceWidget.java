@@ -47,7 +47,9 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTChoiceWidget extends SWTInputWidget implements ChoiceWidget {
+public class SWTChoiceWidget extends SWTInputWidget<String> implements
+	ChoiceWidget
+{
 
 	private final Combo combo;
 
@@ -65,16 +67,16 @@ public class SWTChoiceWidget extends SWTInputWidget implements ChoiceWidget {
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getValue() {
-		return combo.getItem(combo.getSelectionIndex());
-	}
-
-	@Override
 	public int getIndex() {
 		return combo.getSelectionIndex();
 	}
 
 	// -- InputWidget methods --
+
+	@Override
+	public String getValue() {
+		return combo.getItem(combo.getSelectionIndex());
+	}
 
 	@Override
 	public void refreshWidget() {

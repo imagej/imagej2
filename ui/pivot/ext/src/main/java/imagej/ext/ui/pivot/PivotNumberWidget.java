@@ -45,8 +45,8 @@ import imagej.util.Log;
  *
  * @author Curtis Rueden
  */
-public abstract class PivotNumberWidget
-	extends PivotInputWidget implements NumberWidget
+public abstract class PivotNumberWidget extends PivotInputWidget<Number>
+	implements NumberWidget
 {
 
 	public PivotNumberWidget(final WidgetModel model) {

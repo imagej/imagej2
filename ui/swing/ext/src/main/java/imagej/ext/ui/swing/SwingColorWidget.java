@@ -63,7 +63,7 @@ import javax.swing.colorchooser.AbstractColorChooserPanel;
  * 
  * @author Curtis Rueden
  */
-public class SwingColorWidget extends SwingInputWidget implements
+public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 	ActionListener, ColorWidget
 {
 
@@ -110,14 +110,12 @@ public class SwingColorWidget extends SwingInputWidget implements
 		refreshWidget();
 	}
 
-	// -- ColorWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public ColorRGB getValue() {
 		return AWTColors.getColorRGB(color);
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

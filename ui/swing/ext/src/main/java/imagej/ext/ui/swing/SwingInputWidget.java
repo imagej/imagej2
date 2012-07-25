@@ -48,7 +48,9 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  */
-public abstract class SwingInputWidget extends JPanel implements InputWidget {
+public abstract class SwingInputWidget<T> extends JPanel implements
+	InputWidget<T>
+{
 
 	private final WidgetModel model;
 

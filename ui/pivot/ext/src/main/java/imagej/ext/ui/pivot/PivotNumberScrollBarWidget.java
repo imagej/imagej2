@@ -47,8 +47,8 @@ import org.apache.pivot.wtk.ScrollBarValueListener;
  * 
  * @author Curtis Rueden
  */
-public class PivotNumberScrollBarWidget extends PivotNumberWidget
-	implements ScrollBarValueListener
+public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
+	ScrollBarValueListener
 {
 
 	private final ScrollBar scrollBar;
@@ -71,15 +71,13 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget
 		refreshWidget();
 	}
 
-	// -- NumberWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
 		final String value = "" + scrollBar.getValue();
 		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

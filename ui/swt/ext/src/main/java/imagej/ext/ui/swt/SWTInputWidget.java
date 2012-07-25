@@ -45,7 +45,9 @@ import org.eclipse.swt.widgets.Composite;
  *
  * @author Curtis Rueden
  */
-public abstract class SWTInputWidget extends Composite implements InputWidget {
+public abstract class SWTInputWidget<T> extends Composite implements
+	InputWidget<T>
+{
 
 	private WidgetModel model;
 

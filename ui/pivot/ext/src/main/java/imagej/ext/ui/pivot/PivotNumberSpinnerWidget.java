@@ -64,15 +64,13 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		refreshWidget();
 	}
 
-	// -- NumberWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
 		final String value = spinner.getSelectedItem().toString();
 		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

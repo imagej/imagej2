@@ -62,7 +62,7 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingNumberWidget extends SwingInputWidget implements
+public class SwingNumberWidget extends SwingInputWidget<Number> implements
 	NumberWidget, AdjustmentListener, ChangeListener
 {
 
@@ -116,14 +116,12 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		syncSliders();
 	}
 
-	// -- NumberWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
 		return (Number) spinner.getValue();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

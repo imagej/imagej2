@@ -70,15 +70,13 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 		refreshWidget();
 	}
 
-	// -- NumberWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
 		final String value = "" + slider.getValue();
 		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

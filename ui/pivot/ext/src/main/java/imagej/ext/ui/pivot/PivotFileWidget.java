@@ -53,8 +53,8 @@ import org.apache.pivot.wtk.TextInput;
  * 
  * @author Curtis Rueden
  */
-public class PivotFileWidget extends PivotInputWidget
-	implements FileWidget, ButtonPressListener
+public class PivotFileWidget extends PivotInputWidget<File> implements
+	FileWidget, ButtonPressListener
 {
 
 	private final TextInput path;
@@ -73,14 +73,12 @@ public class PivotFileWidget extends PivotInputWidget
 		refreshWidget();
 	}
 
-	// -- FileWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public File getValue() {
 		return new File(path.getText());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

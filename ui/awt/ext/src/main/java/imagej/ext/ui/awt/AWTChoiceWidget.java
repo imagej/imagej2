@@ -48,8 +48,8 @@ import java.awt.event.ItemListener;
  *
  * @author Curtis Rueden
  */
-public class AWTChoiceWidget extends AWTInputWidget
-	implements ChoiceWidget, ItemListener
+public class AWTChoiceWidget extends AWTInputWidget<String> implements
+	ChoiceWidget, ItemListener
 {
 
 	private Choice choice;
@@ -68,16 +68,16 @@ public class AWTChoiceWidget extends AWTInputWidget
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getValue() {
-		return choice.getSelectedItem();
-	}
-
-	@Override
 	public int getIndex() {
 		return choice.getSelectedIndex();
 	}
 
 	// -- InputWidget methods --
+
+	@Override
+	public String getValue() {
+		return choice.getSelectedItem();
+	}
 
 	@Override
 	public void refreshWidget() {

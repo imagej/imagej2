@@ -52,8 +52,8 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
-public class AWTNumberWidget extends AWTInputWidget
-	implements NumberWidget, AdjustmentListener, TextListener
+public class AWTNumberWidget extends AWTInputWidget<Number> implements
+	NumberWidget, AdjustmentListener, TextListener
 {
 
 	// CTR FIXME - Update the model properly, and handle non-integer values.
@@ -79,14 +79,12 @@ public class AWTNumberWidget extends AWTInputWidget
 		refreshWidget();
 	}
 
-	// -- NumberWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {
 		return scrollBar.getValue();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

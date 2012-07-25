@@ -48,7 +48,7 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
-public class AWTTextFieldWidget extends AWTInputWidget
+public class AWTTextFieldWidget extends AWTInputWidget<String>
 	implements TextFieldWidget, TextListener
 {
 
@@ -64,14 +64,12 @@ public class AWTTextFieldWidget extends AWTInputWidget
 		refreshWidget();
 	}
 
-	// -- TextFieldWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public String getValue() {
 		return textField.getText();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

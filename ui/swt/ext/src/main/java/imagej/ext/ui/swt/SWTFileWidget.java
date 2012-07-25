@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.Text;
  *
  * @author Curtis Rueden
  */
-public class SWTFileWidget extends SWTInputWidget implements FileWidget {
+public class SWTFileWidget extends SWTInputWidget<File> implements FileWidget {
 
 	private Text path;
 	private Button browse;
@@ -70,14 +70,12 @@ public class SWTFileWidget extends SWTInputWidget implements FileWidget {
 		refreshWidget();
 	}
 
-	// -- FileWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public File getValue() {
 		return new File(path.getText());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

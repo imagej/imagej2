@@ -45,7 +45,9 @@ import org.apache.pivot.wtk.BoxPane;
  *
  * @author Curtis Rueden
  */
-public abstract class PivotInputWidget extends BoxPane implements InputWidget {
+public abstract class PivotInputWidget<T> extends BoxPane implements
+	InputWidget<T>
+{
 
 	private WidgetModel model;
 

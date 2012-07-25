@@ -52,7 +52,7 @@ import javax.swing.text.DocumentFilter;
  * 
  * @author Curtis Rueden
  */
-public class SwingTextFieldWidget extends SwingInputWidget implements
+public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 	DocumentListener, TextFieldWidget
 {
 
@@ -87,14 +87,12 @@ public class SwingTextFieldWidget extends SwingInputWidget implements
 		updateModel();
 	}
 
-	// -- TextFieldWidget methods --
+	// -- InputWidget methods --
 
 	@Override
 	public String getValue() {
 		return textField.getText();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {
