@@ -307,10 +307,16 @@ public class FileObject {
 	}
 
 	public void addDependency(final Dependency dependency) {
+		if (dependency.filename == null || "".equals(dependency.filename.trim())) return;
 		// the timestamp should not be changed unnecessarily
-		if (dependency.filename == null || "".equals(dependency.filename.trim()) ||
-			dependencies.containsKey(dependency.filename)) return;
-		dependencies.put(dependency.filename, dependency);
+		final String key = getFilename(dependency.filename, true);
+		if (dependencies.containsKey(key)) {
+			final Dependency other = dependencies.get(key);
+			if (other.filename.equals(dependency.filename)
+					|| other.timestamp >= dependency.timestamp)
+				return;
+		}
+		dependencies.put(key, dependency);
 	}
 
 	public void removeDependency(final String other) {
