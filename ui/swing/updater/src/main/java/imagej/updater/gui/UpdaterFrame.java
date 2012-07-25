@@ -61,6 +61,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -277,6 +278,22 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		bottomPanel.add(Box.createHorizontalGlue());
 
+		// make sure that sezpoz finds the classes when triggered from the EDT
+		final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					if (contextClassLoader != null)
+						Thread.currentThread().setContextClassLoader(contextClassLoader);
+				}
+			});
+		} catch (InterruptedException e1) {
+			log.error(e1);
+		} catch (InvocationTargetException e1) {
+			log.error(e1);
+		}
+
 		// Button to start actions
 		apply =
 			SwingTools.button("Apply changes", "Start installing/uninstalling files",
@@ -302,7 +319,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					}
 				}, bottomPanel2);
 
-		final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 		// TODO: unify upload & apply changes (probably apply changes first, then
 		// upload)
 		// includes button to upload to server if is a Developer using
@@ -318,8 +334,6 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 							@Override
 							public void run() {
 								try {
-									if (contextClassLoader != null)
-										Thread.currentThread().setContextClassLoader(contextClassLoader);
 									upload();
 								}
 								catch (final InstantiationException e) {
