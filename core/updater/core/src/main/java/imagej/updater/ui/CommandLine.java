@@ -36,6 +36,8 @@
 package imagej.updater.ui;
 
 import imagej.log.LogService;
+import imagej.updater.core.Conflicts;
+import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Dependency;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
@@ -238,7 +240,13 @@ public class CommandLine {
 			files.write();
 		}
 		catch (final Exception e) {
-			log.error("Error updating", e);
+			if (e.getMessage().indexOf("conflicts") >= 0) {
+				log.error("Could not update due to conflicts:");
+				for (Conflict conflict : new Conflicts(files).getConflicts(false))
+					log.error(conflict.getFilename() + ": " + conflict.getConflict());
+			}
+			else
+				log.error("Error updating", e);
 		}
 	}
 
@@ -301,7 +309,13 @@ public class CommandLine {
 			files.write();
 		}
 		catch (final Throwable e) {
-			log.error("Error during upload: ", e);
+			if (e.getMessage().indexOf("conflicts") >= 0) {
+				log.error("Could not upload due to conflicts:");
+				for (Conflict conflict : new Conflicts(files).getConflicts(true))
+					log.error(conflict.getFilename() + ": " + conflict.getConflict());
+			}
+			else
+				log.error("Error during upload: ", e);
 			if (uploader != null)
 				uploader.logout();
 		}
