@@ -150,19 +150,19 @@ public class ToolDelegator extends AbstractTool {
 	}
 
 	@Override
-	public void activate(final DrawingEditor editor) {
-		super.activate(editor);
+	public void activate(final DrawingEditor editer) {
+		super.activate(editer);
 		if (activeTool != null) {
-			activeTool.activate(editor);
+			activeTool.activate(editer);
 		}
 	}
 
 	@Override
-	public void deactivate(final DrawingEditor editor) {
+	public void deactivate(final DrawingEditor editer) {
 		if (activeTool != null) {
-			activeTool.deactivate(editor);
+			activeTool.deactivate(editer);
 		}
-		super.deactivate(editor);
+		super.deactivate(editer);
 	}
 
 	@Override
@@ -247,9 +247,9 @@ public class ToolDelegator extends AbstractTool {
 				activeTool.deactivate(getEditor());
 			}
 			if (tool != null) {
-				tool.activate(editor);
+				tool.activate(getEditor());
 				if (!isActive()) {
-					tool.deactivate(editor);
+					tool.deactivate(getEditor());
 				}
 			}
 			activeTool = tool;
