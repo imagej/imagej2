@@ -254,7 +254,16 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			ci.setC(origC);
 		}
 		else { // regular ImagePlus
+			// NB - for color data imp.setDisplayRange() will reset pixel data from
+			// the snapshot buffer!! So handle snapshot buffer to avoid this.
+			Object snapshot = imp.getProcessor().getSnapshotPixels();
+			if (imp.getType() == ImagePlus.COLOR_RGB) {
+				imp.getProcessor().setSnapshotPixels(null);
+			}
 			imp.setDisplayRange(overallMin, overallMax);
+			if (imp.getType() == ImagePlus.COLOR_RGB) {
+				imp.getProcessor().setSnapshotPixels(snapshot);
+			}
 		}
 	}
 
