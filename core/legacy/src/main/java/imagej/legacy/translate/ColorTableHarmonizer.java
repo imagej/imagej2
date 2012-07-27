@@ -38,6 +38,7 @@ package imagej.legacy.translate;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
 import ij.process.LUT;
 import imagej.ImageJ;
 import imagej.data.Dataset;
@@ -254,16 +255,23 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			ci.setC(origC);
 		}
 		else { // regular ImagePlus
+			
 			// NB - for color data imp.setDisplayRange() will reset pixel data from
-			// the snapshot buffer!! So handle snapshot buffer to avoid this.
-			Object snapshot = imp.getProcessor().getSnapshotPixels();
-			if (imp.getType() == ImagePlus.COLOR_RGB) {
-				imp.getProcessor().setSnapshotPixels(null);
-			}
+			// the snapshot buffer!! So manipulate snapshot buffer to avoid this.
+			// BDZ reported the behavior of ColorProcessor::setDisplayRange() to Wayne
+			// as a possible bug on 7-27-12. If he removes reset() call from that
+			// method then the manipulation of snapshot pixels can be removed.
+
+			// save info
+			ImageProcessor proc = imp.getProcessor();
+			Object snapshot = proc.getSnapshotPixels();
+			proc.setSnapshotPixels(null);
+			
+			// Actually set the display range here
 			imp.setDisplayRange(overallMin, overallMax);
-			if (imp.getType() == ImagePlus.COLOR_RGB) {
-				imp.getProcessor().setSnapshotPixels(snapshot);
-			}
+			
+			// restore info
+			proc.setSnapshotPixels(snapshot);
 		}
 	}
 
