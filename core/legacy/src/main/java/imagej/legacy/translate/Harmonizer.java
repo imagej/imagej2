@@ -287,6 +287,9 @@ public class Harmonizer {
 		final Img<?> img = factory.create(newDims, ds.getType());
 		final ImgPlus<?> imgPlus =
 			new ImgPlus(img, ds.getName(), ds.getAxes(), cal);
+		if ((ds.getCompositeChannelCount() > 1) && (cIndex >= 0)) {
+			imgPlus.setCompositeChannelCount((int) newDims[cIndex]);
+		}
 		ds.setImgPlus((ImgPlus<? extends RealType<?>>) imgPlus);
 	}
 
