@@ -81,9 +81,8 @@ public class FilesUploader {
 	public static AbstractUploader getUploader(String protocol)
 		throws InstantiationException
 	{
-		if (protocol == null || protocol.equals("")) protocol = "ssh";
 		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
-			Uploader.class, AbstractUploader.class))
+				Uploader.class, AbstractUploader.class))
 			if (item.annotation().protocol().equals(protocol)) return item.instance();
 		throw new InstantiationException("No uploader found for protocol " +
 			protocol);
@@ -97,21 +96,11 @@ public class FilesUploader {
 		siteName = updateSite;
 		site = files.getUpdateSite(updateSite);
 		compressed = Util.XML_COMPRESSED;
-		uploader = getUploader(getUploadProtocol());
+		uploader = getUploader(site.getUploadProtocol());
 	}
 
 	public boolean hasUploader() {
 		return uploader != null;
-	}
-
-	public String getUploadProtocol() {
-		final String host = site.sshHost;
-		if (site.sshHost == null)
-			throw new RuntimeException("Missing upload information for site " + site.url);
-		final int at = host.indexOf('@');
-		final int colon = host.indexOf(':');
-		if (colon > 0 && (at < 0 || colon < at)) return host.substring(0, colon);
-		return null;
 	}
 
 	public String getDefaultUsername() {

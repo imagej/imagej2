@@ -140,6 +140,15 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		public int hashCode() {
 			return rank;
 		}
+
+		public String getUploadProtocol() {
+			if (sshHost == null)
+				throw new RuntimeException("Missing upload information for site " + url);
+			final int at = sshHost.indexOf('@');
+			final int colon = sshHost.indexOf(':');
+			if (colon > 0 && (at < 0 || colon < at)) return sshHost.substring(0, colon);
+			return "ssh";
+		}
 	}
 
 	private Map<String, UpdateSite> updateSites;
