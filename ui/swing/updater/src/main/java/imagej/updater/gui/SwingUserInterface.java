@@ -191,8 +191,9 @@ public class SwingUserInterface extends UpdaterUserInterface {
 		password.setColumns(20);
 		panel.add(password);
 
-		if (JOptionPane.showConfirmDialog(null, panel, title,
-			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
+		int option = JOptionPane.showConfirmDialog(null, panel, title,
+				JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.CANCEL_OPTION || option < 0) return null;
 		return new String(password.getPassword());
 
 	}
