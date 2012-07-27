@@ -41,6 +41,7 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.core.Installer;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 
@@ -53,6 +54,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -206,6 +211,8 @@ public class FileTable extends JTable {
 				public void actionPerformed(final ActionEvent e) {
 					if (action == Action.UPLOAD) {
 						String missing = protocolsMissingUploaders(selected);
+						if (missing != null && missing.equals("ssh") && getSSHUploader())
+							missing = null;
 						if (missing != null) {
 							UpdaterUserInterface.get().error("Missing uploaders: " + missing);
 							return;
@@ -246,6 +253,39 @@ public class FileTable extends JTable {
 					result = result + ", " + protocol;
 			}
 		return result;
+	}
+
+	protected boolean getSSHUploader() {
+		final FileObject sshUploader = files.get("jars/ij-updater-ssh.jar");
+		if (sshUploader.getStatus() != Status.NOT_INSTALLED)
+			return false;
+		final Set<URL> urls = new LinkedHashSet<URL>();
+		final FilesCollection toInstall = new FilesCollection(files.prefix(""));
+		for (final FileObject file : sshUploader.getFileDependencies(files, true))
+			switch (file.getStatus()) {
+			case NOT_INSTALLED:
+				toInstall.add(file);
+				file.setAction(toInstall, Action.INSTALL);
+			case INSTALLED:
+				try {
+					urls.add(toInstall.prefix(file.filename).toURI().toURL());
+				} catch (MalformedURLException e) {
+					return false;
+				}
+				break;
+			default:
+				return false;
+			}
+		final Installer installer = new Installer(toInstall, updaterFrame.getProgress("Installing ssh uploader"));
+		try {
+			installer.start();
+			installer.moveUpdatedIntoPlace();
+			URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), Thread.currentThread().getContextClassLoader());
+			Thread.currentThread().setContextClassLoader(loader);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	public FileObject getFile(final int row) {
@@ -330,7 +370,7 @@ public class FileTable extends JTable {
 			if (sitesWithUploads.length == 0) {
 				if (isNew && !chooseUpdateSite(updaterFrame.files, file)) return;
 				String protocol = updaterFrame.files.getUpdateSite(file.updateSite).getUploadProtocol();
-				if (!FilesUploader.hasUploader(protocol)) {
+				if (!FilesUploader.hasUploader(protocol) && (!protocol.equals("ssh") || !getSSHUploader())) {
 					UpdaterUserInterface.get().error("Missing uploader for protocol " + protocol);
 					return;
 				}
