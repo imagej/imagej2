@@ -205,7 +205,13 @@ public final class LegacyService extends AbstractService {
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
-		WindowManager.setTempCurrentImage(activeImagePlus);
+		// NB - old way - caused probs with 3d Project
+		//WindowManager.setTempCurrentImage(activeImagePlus);
+		// NB - new way - test thoroughly
+		if (activeImagePlus == null)
+			WindowManager.setCurrentWindow(null);
+		else
+			WindowManager.setCurrentWindow(activeImagePlus.getWindow());
 	}
 
 	public boolean isInitialized() {
