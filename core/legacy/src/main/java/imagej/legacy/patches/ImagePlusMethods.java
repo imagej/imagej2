@@ -36,6 +36,7 @@
 package imagej.legacy.patches;
 
 import ij.ImagePlus;
+import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
@@ -58,6 +59,8 @@ public final class ImagePlusMethods {
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
+		// TODO - add here too?
+		//WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
 	/** Appends {@link ImagePlus#repaintWindow()}. */
@@ -65,6 +68,8 @@ public final class ImagePlusMethods {
 		Log.debug("ImagePlus.repaintWindow(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
+		// TODO - add here too?
+		//WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
 	/** Appends {@link ImagePlus#show(String message)}. */
@@ -74,6 +79,7 @@ public final class ImagePlusMethods {
 		Log.debug("ImagePlus.show(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
+		WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
 	/** Appends {@link ImagePlus#hide()}. */

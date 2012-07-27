@@ -36,6 +36,7 @@
 package imagej.legacy.patches;
 
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.gui.ImageWindow;
 import imagej.ImageJ;
 import imagej.legacy.LegacyOutputTracker;
@@ -60,6 +61,10 @@ public final class ImageWindowMethods {
 		if (!visible) return;
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj.getImagePlus());
+		// TODO - not sure this is correct. Does setVisible(true) imply that it
+		// becomes the current window? This arose in fixing a bug with 3d Project
+		// support.
+		WindowManager.setCurrentWindow(obj);
 	}
 
 	/** Replaces {@link ImageWindow#show()}. */
@@ -70,7 +75,8 @@ public final class ImageWindowMethods {
 	/** Appends {@link ImageWindow#close()}. */
 	public static void close(final ImageWindow obj) {
 		final ImagePlus imp = obj.getImagePlus();
-		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp))) LegacyOutputTracker
-			.getClosedImps().add(imp);
+		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp))) {
+			LegacyOutputTracker.getClosedImps().add(imp);
+		}
 	}
 }
