@@ -36,10 +36,12 @@
 package imagej.updater.gui;
 
 import imagej.updater.core.FileObject;
+import imagej.updater.core.FilesUploader;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 
 import java.awt.Color;
@@ -55,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -201,6 +204,13 @@ public class FileTable extends JTable {
 
 				@Override
 				public void actionPerformed(final ActionEvent e) {
+					if (action == Action.UPLOAD) {
+						String missing = protocolsMissingUploaders(selected);
+						if (missing != null) {
+							UpdaterUserInterface.get().error("Missing uploaders: " + missing);
+							return;
+						}
+					}
 					for (final FileObject file : selected)
 						setFileAction(file, action);
 				}
@@ -214,6 +224,28 @@ public class FileTable extends JTable {
 			menu.add(noActions);
 		}
 		menu.show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	protected String protocolsMissingUploaders(final Iterable<FileObject> selected) {
+		Set<String> protocols = new LinkedHashSet<String>();
+		for (final FileObject file : selected) {
+			final UpdateSite site = files.getUpdateSite(file.updateSite);
+			if (site != null) {
+				if (site.sshHost == null)
+					protocols.add("unknown(" + file.filename + ")");
+				else
+					protocols.add(site.getUploadProtocol());
+			}
+		}
+		String result = null;
+		for (String protocol : protocols)
+			if (!FilesUploader.hasUploader(protocol)) {
+				if (result == null)
+					result = protocol;
+				else
+					result = result + ", " + protocol;
+			}
+		return result;
 	}
 
 	public FileObject getFile(final int row) {
@@ -297,6 +329,11 @@ public class FileTable extends JTable {
 			final boolean isNew = file.getStatus() == Status.LOCAL_ONLY;
 			if (sitesWithUploads.length == 0) {
 				if (isNew && !chooseUpdateSite(updaterFrame.files, file)) return;
+				String protocol = updaterFrame.files.getUpdateSite(file.updateSite).getUploadProtocol();
+				if (!FilesUploader.hasUploader(protocol)) {
+					UpdaterUserInterface.get().error("Missing uploader for protocol " + protocol);
+					return;
+				}
 			}
 			else {
 				final String siteName = sitesWithUploads[0];

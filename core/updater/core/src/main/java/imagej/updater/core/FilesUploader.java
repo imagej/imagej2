@@ -78,6 +78,13 @@ public class FilesUploader {
 	protected String compressed;
 	protected boolean loggedIn;
 
+	public static boolean hasUploader(String protocol) {
+		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
+				Uploader.class, AbstractUploader.class))
+			if (item.annotation().protocol().equals(protocol)) return true;
+		return false;
+	}
+
 	public static AbstractUploader getUploader(String protocol)
 		throws InstantiationException
 	{
