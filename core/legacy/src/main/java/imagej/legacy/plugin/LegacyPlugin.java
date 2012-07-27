@@ -178,6 +178,8 @@ public class LegacyPlugin implements ImageJPlugin {
 
 			updateImagePlusesFromDisplays();
 
+			//reportStackIssues("Before IJ1 plugin run");
+			
 			// must happen after updateImagePlusesFromDisplays()
 			outputSet.clear();
 			closedSet.clear();
@@ -214,6 +216,7 @@ public class LegacyPlugin implements ImageJPlugin {
 				// reflect any changes to globals in IJ2 options/prefs
 				legacyService.updateIJ2Settings();
 
+				//reportStackIssues("After IJ1 plugin run");
 			}
 			catch (final Exception e) {
 				final String msg = "ImageJ 1.x plugin threw exception";
@@ -442,6 +445,34 @@ public class LegacyPlugin implements ImageJPlugin {
 			roi.endPaste();
 		}
 
+		/* save for debugging if null pixel array exception every reported
+		 * 
+		private void reportStackIssues(String contextMsg) {
+			System.out.println("Stack issue report: "+contextMsg);
+			final List<ImageDisplay> imageDisplays =
+					imageDisplayService.getImageDisplays();
+			System.out.println("  num displays == "+imageDisplays.size());
+			int numDisp = imageDisplays.size();
+			for (int i = 0; i < numDisp; i++) {
+				ImageDisplay disp1 = imageDisplays.get(i);
+				for (int j = i+1; j < numDisp; j++) {
+					ImageDisplay disp2 = imageDisplays.get(j);
+					ImagePlus imp1 = map.lookupImagePlus(disp1);
+					ImagePlus imp2 = map.lookupImagePlus(disp2);
+					if (imp1 == imp2) {
+						System.out.println("  Two displays map to same ImagePlus!!!");
+						System.out.println("    "+imp1.getTitle());
+						System.out.println("    "+imp2.getTitle());
+					}
+					else if (imp1.getStack() == imp2.getStack()) {
+						System.out.println("  Two displays share same ImageStack!!!");
+						System.out.println("    "+imp1.getTitle());
+						System.out.println("    "+imp2.getTitle());
+					}
+				}
+			}
+		}
+		*/
 	}
 
 }
