@@ -179,24 +179,14 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	{
 		final ModuleItem<?> item = model.getItem();
 		final Class<?> type = item.getType();
-		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
 
-		final Object itemMin = item.getMinimumValue();
-		Number min = NumberUtils.toNumber(itemMin, saneType);
-		if (min == null) min = NumberUtils.getMinimumNumber(type);
-
-		final Object itemMax = item.getMaximumValue();
-		Number max = NumberUtils.toNumber(itemMax, saneType);
-		if (max == null) max = NumberUtils.getMaximumNumber(type);
-
-		final Object itemStep = item.getStepSize();
-		Number stepSize = NumberUtils.toNumber(itemStep, saneType);
-		if (stepSize == null) stepSize = NumberUtils.toNumber("1", type);
+		final Number min = model.getMin();
+		final Number max = model.getMax();
 
 		final Number iValue =
 			NumberUtils.clampToRange(type, initialValue, min, max);
 		model.setValue(iValue);
-		inputPanel.addNumber(model, min, max, stepSize);
+		inputPanel.addNumber(model);
 	}
 
 	private void addTextField(final InputPanel inputPanel,
@@ -211,13 +201,12 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		if (choices.length > 0) {
 			final String iValue = initialValue == null ? choices[0] : initialValue;
 			model.setValue(iValue);
-			inputPanel.addChoice(model, choices);
+			inputPanel.addChoice(model);
 		}
 		else {
 			final String iValue = initialValue == null ? "" : initialValue;
-			final int columns = item.getColumnCount();
 			model.setValue(iValue);
-			inputPanel.addTextField(model, columns);
+			inputPanel.addTextField(model);
 		}
 	}
 

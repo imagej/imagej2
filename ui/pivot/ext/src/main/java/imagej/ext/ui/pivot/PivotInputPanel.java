@@ -69,13 +69,9 @@ public class PivotInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
+	public void addNumber(final WidgetModel model) {
 		final ModuleItem<?> item = model.getItem();
-		final PivotNumberWidget numberWidget =
-			PivotNumberWidget.create(model, min, max, stepSize,
-				item.getWidgetStyle());
+		final PivotNumberWidget numberWidget = PivotNumberWidget.create(model);
 		addField(model.getWidgetLabel(), numberWidget);
 		numberWidgets.put(item.getName(), numberWidget);
 	}
@@ -88,7 +84,7 @@ public class PivotInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addTextField(final WidgetModel model, final int columns) {
+	public void addTextField(final WidgetModel model) {
 		final PivotTextFieldWidget textFieldWidget =
 			new PivotTextFieldWidget(model);
 		addField(model.getWidgetLabel(), textFieldWidget);
@@ -96,9 +92,8 @@ public class PivotInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addChoice(final WidgetModel model, final String[] items) {
-		final PivotChoiceWidget choiceWidget =
-			new PivotChoiceWidget(model, items);
+	public void addChoice(final WidgetModel model) {
+		final PivotChoiceWidget choiceWidget = new PivotChoiceWidget(model);
 		addField(model.getWidgetLabel(), choiceWidget);
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}

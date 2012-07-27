@@ -53,10 +53,12 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 
 	private final Slider slider;
 
-	public SWTNumberWidget(final Composite parent, final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
+	public SWTNumberWidget(final Composite parent, final WidgetModel model) {
 		super(parent, model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
 		slider = new Slider(this, SWT.HORIZONTAL);
 		slider.setValues(min.intValue(), min.intValue(), max.intValue(),

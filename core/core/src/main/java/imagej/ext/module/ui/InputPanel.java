@@ -57,11 +57,8 @@ public interface InputPanel {
 	 * Adds a numeric field.
 	 * 
 	 * @param model backing data model containing parameter details
-	 * @param min minimum allowed value
-	 * @param max maximum allowed value
-	 * @param stepSize distance between steps when operating widget
 	 */
-	void addNumber(WidgetModel model, Number min, Number max, Number stepSize);
+	void addNumber(WidgetModel model);
 
 	/**
 	 * Adds a checkbox field.
@@ -74,17 +71,15 @@ public interface InputPanel {
 	 * Adds a text field.
 	 * 
 	 * @param model backing data model containing parameter details
-	 * @param columns width of field in characters
 	 */
-	void addTextField(WidgetModel model, int columns);
+	void addTextField(WidgetModel model);
 
 	/**
 	 * Adds a multiple choice text field.
 	 * 
 	 * @param model backing data model containing parameter details
-	 * @param items the choices
 	 */
-	void addChoice(WidgetModel model, String[] items);
+	void addChoice(WidgetModel model);
 
 	/**
 	 * Adds a file selector.

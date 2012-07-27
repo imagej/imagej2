@@ -54,8 +54,10 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 
 	private final JComboBox comboBox;
 
-	public SwingChoiceWidget(final WidgetModel model, final String[] items) {
+	public SwingChoiceWidget(final WidgetModel model) {
 		super(model);
+
+		final String[] items = model.getChoices();
 
 		comboBox = new JComboBox(items);
 		setToolTip(comboBox);

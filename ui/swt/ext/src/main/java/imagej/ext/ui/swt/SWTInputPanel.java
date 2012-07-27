@@ -74,12 +74,9 @@ public class SWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final WidgetModel model, final Number min,
-		final Number max, final Number stepSize)
-	{
+	public void addNumber(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
-		final SWTNumberWidget numberWidget =
-			new SWTNumberWidget(panel, model, min, max, stepSize);
+		final SWTNumberWidget numberWidget = new SWTNumberWidget(panel, model);
 		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
 
@@ -91,18 +88,17 @@ public class SWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addTextField(final WidgetModel model, final int columns) {
+	public void addTextField(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
 		final SWTTextFieldWidget textFieldWidget =
-			new SWTTextFieldWidget(panel, model, columns);
+			new SWTTextFieldWidget(panel, model);
 		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final WidgetModel model, final String[] items) {
+	public void addChoice(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
-		final SWTChoiceWidget choiceWidget =
-			new SWTChoiceWidget(panel, model, items);
+		final SWTChoiceWidget choiceWidget = new SWTChoiceWidget(panel, model);
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}
 

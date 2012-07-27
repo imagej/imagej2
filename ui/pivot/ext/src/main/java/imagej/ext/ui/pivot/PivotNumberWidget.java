@@ -53,10 +53,12 @@ public abstract class PivotNumberWidget extends PivotInputWidget<Number>
 		super(model);
 	}
 
-	public static PivotNumberWidget create(final WidgetModel model,
-		final Number min, final Number max, final Number stepSize,
-		final WidgetStyle style)
-	{
+	public static PivotNumberWidget create(final WidgetModel model) {
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
+
+		final WidgetStyle style = model.getItem().getWidgetStyle();
 		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
 			return new PivotNumberScrollBarWidget(model, min, max, stepSize);
 		}

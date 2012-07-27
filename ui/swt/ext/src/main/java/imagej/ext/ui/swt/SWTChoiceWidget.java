@@ -53,10 +53,10 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 
 	private final Combo combo;
 
-	public SWTChoiceWidget(final Composite parent, final WidgetModel model,
-		final String[] items)
-	{
+	public SWTChoiceWidget(final Composite parent, final WidgetModel model) {
 		super(parent, model);
+
+		final String[] items = model.getChoices();
 
 		combo = new Combo(this, SWT.DROP_DOWN);
 		combo.setItems(items);

@@ -54,9 +54,10 @@ public class AWTTextFieldWidget extends AWTInputWidget<String>
 
 	private TextField textField;
 
-	public AWTTextFieldWidget(final WidgetModel model, final int columns) {
+	public AWTTextFieldWidget(final WidgetModel model) {
 		super(model);
 
+		final int columns = model.getItem().getColumnCount();
 		textField = new TextField("", columns);
 		textField.addTextListener(this);
 		add(textField, BorderLayout.CENTER);

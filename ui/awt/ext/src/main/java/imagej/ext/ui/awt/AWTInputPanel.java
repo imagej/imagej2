@@ -73,11 +73,8 @@ public class AWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final WidgetModel model, final Number min,
-		final Number max, final Number stepSize)
-	{
-		final AWTNumberWidget numberWidget =
-			new AWTNumberWidget(model, min, max, stepSize);
+	public void addNumber(final WidgetModel model) {
+		final AWTNumberWidget numberWidget = new AWTNumberWidget(model);
 		addField(model.getWidgetLabel(), numberWidget);
 		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
@@ -90,16 +87,15 @@ public class AWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addTextField(final WidgetModel model, final int columns) {
-		final AWTTextFieldWidget textFieldWidget =
-			new AWTTextFieldWidget(model, columns);
+	public void addTextField(final WidgetModel model) {
+		final AWTTextFieldWidget textFieldWidget = new AWTTextFieldWidget(model);
 		addField(model.getWidgetLabel(), textFieldWidget);
 		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final WidgetModel model, final String[] items) {
-		final AWTChoiceWidget choiceWidget = new AWTChoiceWidget(model, items);
+	public void addChoice(final WidgetModel model) {
+		final AWTChoiceWidget choiceWidget = new AWTChoiceWidget(model);
 		addField(model.getWidgetLabel(), choiceWidget);
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}

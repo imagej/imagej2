@@ -61,10 +61,12 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 	private Scrollbar scrollBar;
 	private TextField textField;
 
-	public AWTNumberWidget(final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
+	public AWTNumberWidget(final WidgetModel model) {
 		super(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
 		scrollBar = new Scrollbar(Adjustable.HORIZONTAL,
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);

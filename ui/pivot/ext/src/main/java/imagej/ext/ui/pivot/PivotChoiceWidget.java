@@ -52,8 +52,10 @@ public class PivotChoiceWidget extends PivotInputWidget<String>
 
 	private final ListButton listButton;
 
-	public PivotChoiceWidget(final WidgetModel model, final String[] items) {
+	public PivotChoiceWidget(final WidgetModel model) {
 		super(model);
+
+		final String[] items = model.getChoices();
 
 		listButton = new ListButton();
 		listButton.setListData(new ArrayList<String>(items));

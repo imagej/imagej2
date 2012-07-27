@@ -73,11 +73,8 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final WidgetModel model, final Number min,
-		final Number max, final Number stepSize)
-	{
-		final SwingNumberWidget numberWidget =
-			new SwingNumberWidget(model, min, max, stepSize);
+	public void addNumber(final WidgetModel model) {
+		final SwingNumberWidget numberWidget = new SwingNumberWidget(model);
 		addField(model, numberWidget);
 		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
@@ -90,16 +87,16 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addTextField(final WidgetModel model, final int columns) {
+	public void addTextField(final WidgetModel model) {
 		final SwingTextFieldWidget textFieldWidget =
-			new SwingTextFieldWidget(model, columns);
+			new SwingTextFieldWidget(model);
 		addField(model, textFieldWidget);
 		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final WidgetModel model, final String[] items) {
-		final SwingChoiceWidget choiceWidget = new SwingChoiceWidget(model, items);
+	public void addChoice(final WidgetModel model) {
+		final SwingChoiceWidget choiceWidget = new SwingChoiceWidget(model);
 		addField(model, choiceWidget);
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}

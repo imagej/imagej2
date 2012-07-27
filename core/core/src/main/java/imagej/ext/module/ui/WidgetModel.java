@@ -38,6 +38,9 @@ package imagej.ext.module.ui;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.util.ClassUtils;
+import imagej.util.NumberUtils;
+
+import java.util.List;
 
 /**
  * The backing data model for a particular {@link InputWidget}.
@@ -93,6 +96,42 @@ public class WidgetModel {
 
 	public boolean isCompatibleWith(final Class<?> type) {
 		return ClassUtils.canConvert(getItem().getType(), type);
+	}
+
+	public Number getMin() {
+		final Class<?> type = item.getType();
+		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
+		final Object itemMin = item.getMinimumValue();
+		final Number min = NumberUtils.toNumber(itemMin, saneType);
+		if (min != null) return min;
+		return NumberUtils.getMinimumNumber(type);
+	}
+
+	public Number getMax() {
+		final Class<?> type = item.getType();
+		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
+		final Object itemMax = item.getMaximumValue();
+		final Number max = NumberUtils.toNumber(itemMax, saneType);
+		if (max != null) return max;
+		return NumberUtils.getMaximumNumber(type);
+	}
+
+	public Number getStepSize() {
+		final Class<?> type = item.getType();
+		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
+		final Object itemStep = item.getStepSize();
+		final Number stepSize = NumberUtils.toNumber(itemStep, saneType);
+		if (stepSize != null) return stepSize;
+		return NumberUtils.toNumber("1", type);
+	}
+
+	public String[] getChoices() {
+		final List<?> choicesList = item.getChoices();
+		final String[] choices = new String[choicesList.size()];
+		for (int i = 0; i < choices.length; i++) {
+			choices[i] = choicesList.get(i).toString();
+		}
+		return choices;
 	}
 
 	public void setInitialized(final boolean initialized) {

@@ -58,9 +58,10 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 
 	private final JTextField textField;
 
-	public SwingTextFieldWidget(final WidgetModel model, final int columns) {
+	public SwingTextFieldWidget(final WidgetModel model) {
 		super(model);
 
+		final int columns = model.getItem().getColumnCount();
 		textField = new JTextField("", columns);
 		setToolTip(textField);
 		add(textField);

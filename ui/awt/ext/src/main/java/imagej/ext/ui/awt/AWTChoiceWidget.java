@@ -54,8 +54,10 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 
 	private Choice choice;
 
-	public AWTChoiceWidget(final WidgetModel model, final String[] items) {
+	public AWTChoiceWidget(final WidgetModel model) {
 		super(model);
+
+		final String[] items = model.getChoices();
 
 		choice = new Choice();
 		for (final String item : items) choice.add(item);

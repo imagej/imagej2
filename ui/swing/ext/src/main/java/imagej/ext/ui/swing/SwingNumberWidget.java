@@ -70,10 +70,12 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 	private JSlider slider;
 	private final JSpinner spinner;
 
-	public SwingNumberWidget(final WidgetModel model, final Number min,
-		final Number max, final Number stepSize)
-	{
+	public SwingNumberWidget(final WidgetModel model) {
 		super(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
 		// add optional widgets, if specified
 		final WidgetStyle style = model.getItem().getWidgetStyle();
