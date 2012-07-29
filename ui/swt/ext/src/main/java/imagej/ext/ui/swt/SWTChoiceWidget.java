@@ -64,13 +64,6 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 		refreshWidget();
 	}
 
-	// -- ChoiceWidget methods --
-
-	@Override
-	public int getIndex() {
-		return combo.getSelectionIndex();
-	}
-
 	// -- InputWidget methods --
 
 	@Override

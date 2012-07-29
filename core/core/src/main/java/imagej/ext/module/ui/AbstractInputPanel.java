@@ -103,11 +103,6 @@ public abstract class AbstractInputPanel implements InputPanel {
 	}
 
 	@Override
-	public int getChoiceIndex(final String name) {
-		return choiceWidgets.get(name).getIndex();
-	}
-
-	@Override
 	public File getFile(final String name) {
 		return fileWidgets.get(name).getValue();
 	}

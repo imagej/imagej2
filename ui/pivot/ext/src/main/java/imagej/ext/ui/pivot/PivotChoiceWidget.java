@@ -64,13 +64,6 @@ public class PivotChoiceWidget extends PivotInputWidget<String>
 		refreshWidget();
 	}
 
-	// -- ChoiceWidget methods --
-
-	@Override
-	public int getIndex() {
-		return listButton.getSelectedIndex();
-	}
-
 	// -- InputWidget methods --
 
 	@Override

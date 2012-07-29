@@ -67,13 +67,6 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 		refreshWidget();
 	}
 
-	// -- ChoiceWidget methods --
-
-	@Override
-	public int getIndex() {
-		return choice.getSelectedIndex();
-	}
-
 	// -- InputWidget methods --
 
 	@Override

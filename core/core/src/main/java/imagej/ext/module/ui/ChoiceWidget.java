@@ -41,7 +41,5 @@ package imagej.ext.module.ui;
  * @author Curtis Rueden
  */
 public interface ChoiceWidget extends InputWidget<String> {
-
-	int getIndex();
-
+	// NB: No changes to interface.
 }

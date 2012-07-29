@@ -132,13 +132,6 @@ public interface InputPanel {
 	String getChoice(String name);
 
 	/**
-	 * Returns the index of the selected item in the given choice text field.
-	 * 
-	 * @param name unique name identifying this field
-	 */
-	int getChoiceIndex(String name);
-
-	/**
 	 * Returns the value of the given file selector.
 	 * 
 	 * @param name unique name identifying this field

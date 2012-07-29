@@ -74,13 +74,6 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 		updateModel();
 	}
 
-	// -- ChoiceWidget methods --
-
-	@Override
-	public int getIndex() {
-		return comboBox.getSelectedIndex();
-	}
-
 	// -- InputWidget methods --
 
 	@Override
