@@ -75,11 +75,13 @@ public class NewImage implements ImageJPlugin {
 	public static final String RAMP = "Ramp";
 	public static final String ZERO = "Zero";
 
+	private static final String DEFAULT_NAME = "Untitled";
+	
 	@Parameter
 	private DatasetService datasetService;
 
 	@Parameter
-	private String name = "Untitled";
+	private String name = DEFAULT_NAME;
 
 	@Parameter(label = "Bit Depth", callback = "bitDepthChanged", choices = {
 		DEPTH1, DEPTH8, DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
@@ -168,6 +170,7 @@ public class NewImage implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		if ((name == null) || (name.trim().length() == 0)) name = DEFAULT_NAME;
 		// create the dataset
 		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = { width, height };
