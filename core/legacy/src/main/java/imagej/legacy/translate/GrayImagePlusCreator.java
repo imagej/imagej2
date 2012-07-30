@@ -94,6 +94,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		}
 		colorTableHarmonizer.updateLegacyImage(display, imp);
 		positionHarmonizer.updateLegacyImage(display, imp);
+		imp.setTitle(display.getName());
 		return imp;
 	}
 

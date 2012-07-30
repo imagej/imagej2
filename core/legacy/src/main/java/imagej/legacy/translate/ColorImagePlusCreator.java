@@ -81,6 +81,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 		pixelHarmonizer.updateLegacyImage(ds, imp);
 		metadataHarmonizer.updateLegacyImage(ds, imp);
 		positionHarmonizer.updateLegacyImage(display, imp);
+		imp.setTitle(display.getName());
 		return imp;
 	}
 
