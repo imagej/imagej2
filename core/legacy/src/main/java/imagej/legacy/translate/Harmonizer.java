@@ -179,13 +179,10 @@ public class Harmonizer {
 		if (!typeChanged) {
 			typeChanged = sameBitDepthTypeChange(ds, imp, isBinaryImp);
 		}
-		if (typeChanged) {
+		if ((typeChanged) || (!dimensionsCompatible(ds, imp))) {
 			rebuildDatasetData(ds, imp, isBinaryImp);
 		}
-		else { // ImagePlus type unchanged
-			if (!dimensionsCompatible(ds, imp)) {
-				reshapeDataset(ds, imp);
-			}
+		else { // ImagePlus type and shape unchanged
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
 				colorPixelHarmonizer.updateDataset(ds, imp);
 			}
@@ -257,11 +254,17 @@ public class Harmonizer {
 		return impType == ImagePlus.GRAY32;
 	}
 
-	/**
-	 * Changes the shape of an existing {@link Dataset} to match that of an
-	 * {@link ImagePlus}. Assumes that the Dataset type is correct. Does not set
-	 * the data values or change the metadata.
-	 */
+	///**
+	// * Changes the shape of an existing {@link Dataset} to match that of an
+	// * {@link ImagePlus}. Assumes that the Dataset type is correct. Does not set
+	// * the data values or change the metadata.
+	// */
+	/* NB - this had some use at one time. But it is kind of broken in that it
+	 * assumes new number of dims == original Dataset dim count. Similarly for
+	 * axes and calibration. So this is wrong as it is. We could put code in place
+	 * to figure new dims, axes, and calibration from existing dataset and
+	 * imageplus but then we already have rebuildDatasetData() and might as well
+	 * just use it.
 	// assumes the data type of the given Dataset is fine as is
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void reshapeDataset(final Dataset ds, final ImagePlus imp) {
@@ -292,7 +295,8 @@ public class Harmonizer {
 		}
 		ds.setImgPlus((ImgPlus<? extends RealType<?>>) imgPlus);
 	}
-
+	*/
+	
 	/**
 	 * Determines whether a {@link Dataset} and an {@link ImagePlus} have
 	 * compatible dimensionality.
