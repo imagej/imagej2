@@ -83,11 +83,6 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
-// TODO - FIXME
-//
-//   There are a number of places that cast coordinates to (int). This
-//   interferes with IJ1's new subpixel resolution support.
-
 /**
  * OverlayTranslator moves regions of interest back and forth between
  * {@link Overlay}s and {@link ImagePlus} {@link Roi}s.
@@ -260,8 +255,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final double[] extent = new double[dims];
 		region.getOrigin(origin);
 		region.getExtent(extent);
-		final int x = (int) origin[0], y = (int) origin[1];
-		final int w = (int) extent[0], h = (int) extent[1];
+		final double x = origin[0], y = origin[1];
+		final double w = extent[0], h = extent[1];
 		final Roi roi = new Roi(x, y, w, h);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
@@ -274,9 +269,9 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		final double[] radii = new double[dims];
 		region.getOrigin(origin);
 		region.getRadii(radii);
-		final int x = (int) (origin[0] - radii[0]);
-		final int y = (int) (origin[1] - radii[1]);
-		final int w = (int) radii[0] * 2, h = (int) radii[1] * 2;
+		final double x = origin[0] - radii[0];
+		final double y = origin[1] - radii[1];
+		final double w = radii[0] * 2, h = radii[1] * 2;
 		final Roi roi = new OvalRoi(x, y, w, h);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
@@ -317,8 +312,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 
 	// helper to support other createPointRoi() methods
 	private Roi createPointRoi(final Overlay overlay, double ptX, double ptY) {
-		final int x = (int) ptX;
-		final int y = (int) ptY;
+		final double x = ptX;
+		final double y = ptY;
 		final PointRoi point = new PointRoi(x,y);
 		assignPropertiesToRoi(point, overlay);
 		return point;
@@ -328,16 +323,16 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	private Roi createAngleRoi(final AngleOverlay overlay) {
 		double[] pt = new double[overlay.numDimensions()];
 		overlay.getPoint1(pt);
-		int xb = (int) pt[0];
-		int yb = (int) pt[1];
+		float xb = (float) pt[0];
+		float yb = (float) pt[1];
 		overlay.getCenter(pt);
-		int xc = (int) pt[0];
-		int yc = (int) pt[1];
+		float xc = (float) pt[0];
+		float yc = (float) pt[1];
 		overlay.getPoint2(pt);
-		int xe = (int) pt[0];
-		int ye = (int) pt[1];
-		int[] xpoints = new int[]{xb,xc,xe};
-		int[] ypoints = new int[]{yb,yc,ye};
+		float xe = (float) pt[0];
+		float ye = (float) pt[1];
+		float[] xpoints = new float[]{xb,xc,xe};
+		float[] ypoints = new float[]{yb,yc,ye};
 		return new PolygonRoi(xpoints, ypoints, 3, Roi.ANGLE);
 	}
 	
@@ -347,6 +342,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		roi.realMin(min);
 		final double[] max = new double[roi.numDimensions()];
 		roi.realMax(max);
+		// TODO - is there some way to have subpixel resolution with mask rois?
 		final int x = (int) Math.ceil(min[0]);
 		final int y = (int) Math.ceil(min[1]);
 		final int width = (int) Math.ceil(max[0]) - x + 1;
@@ -417,7 +413,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	*/
 
 	private void createOverlays(final Roi roi,
-		final ArrayList<Overlay> overlays, final int xOff, final int yOff)
+		final ArrayList<Overlay> overlays, final double xOff, final double yOff)
 	{
 		if (roi == null) return;
 
@@ -467,8 +463,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
 				final Roi[] rois = shapeRoi.getRois();
-				final int xO = xOff + xOff + shapeRoi.getBounds().x;
-				final int yO = yOff + shapeRoi.getBounds().y;
+				final double xO = xOff + xOff + shapeRoi.getBounds().x;
+				final double yO = yOff + shapeRoi.getBounds().y;
 				final ArrayList<Overlay> subOverlays = new ArrayList<Overlay>();
 				for (final Roi r : rois)
 					createOverlays(r, subOverlays, xO, yO);
@@ -497,25 +493,25 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 
 	@SuppressWarnings("unused")
-	private Overlay createAngleOverlay(final Roi roi, final int xOff,
-		final int yOff)
+	private Overlay createAngleOverlay(final Roi roi, final double xOff,
+		final double yOff)
 	{
 		assert roi instanceof PolygonRoi;
 		PolygonRoi pRoi = (PolygonRoi) roi;
 		FloatPolygon poly = pRoi.getFloatPolygon();
 		double[] pt;
 		AngleOverlay angleOverlay = new AngleOverlay(context);
-		pt = new double[]{(double)poly.xpoints[0], (double)poly.ypoints[0]};
+		pt = new double[]{poly.xpoints[0], poly.ypoints[0]};
 		angleOverlay.setPoint1(pt);
-		pt = new double[]{(double)poly.xpoints[1], (double)poly.ypoints[1]};
+		pt = new double[]{poly.xpoints[1], poly.ypoints[1]};
 		angleOverlay.setCenter(pt);
-		pt = new double[]{(double)poly.xpoints[2], (double)poly.ypoints[2]};
+		pt = new double[]{poly.xpoints[2], poly.ypoints[2]};
 		angleOverlay.setPoint2(pt);
 		return angleOverlay;
 	}
 	
-	private Overlay createLineOverlay(final Roi roi, final int xOff,
-		final int yOff)
+	private Overlay createLineOverlay(final Roi roi, final double xOff,
+		final double yOff)
 	{
 		assert roi instanceof Line;
 		final Line line = (Line) roi;
@@ -527,7 +523,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 
 	private RectangleOverlay createRectangleOverlay(final Roi roi,
-		final int xOff, final int yOff)
+		final double xOff, final double yOff)
 	{
 		final RectangleOverlay overlay = new RectangleOverlay(context);
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
@@ -540,14 +536,14 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return overlay;
 	}
 
-	private EllipseOverlay createEllipseOverlay(final Roi roi, final int xOff,
-		final int yOff)
+	private EllipseOverlay createEllipseOverlay(final Roi roi, final double xOff,
+		final double yOff)
 	{
 		final EllipseOverlay overlay = new EllipseOverlay(context);
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
-		final double radiusX = ((bounds.width)) / 2.0;
-		final double radiusY = ((bounds.height)) / 2.0;
+		final double radiusX = bounds.width / 2.0;
+		final double radiusY = bounds.height / 2.0;
 		region.setOrigin(bounds.x + radiusX + xOff, 0);
 		region.setOrigin(bounds.y + radiusY + yOff, 1);
 		region.setRadius(radiusX, 0);
@@ -556,9 +552,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		return overlay;
 	}
 
+	// TODO - subpixel resolution
+	
 	@SuppressWarnings("unused")
-	private PolygonOverlay createPolygonOverlay(final Roi roi, final int xOff,
-		final int yOff)
+	private PolygonOverlay createPolygonOverlay(final Roi roi, final double xOff,
+		final double yOff)
 	{
 		assert roi instanceof PolygonRoi;
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
@@ -578,7 +576,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 
 	@SuppressWarnings("unused")
 	private List<PointOverlay> createPointOverlays(
-			final Roi roi, final int xOff, final int yOff)
+			final Roi roi, final double xOff, final double yOff)
 	{
 		assert roi instanceof PointRoi;
 		final PointRoi ptRoi = (PointRoi) roi;
@@ -595,8 +593,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	}
 
 	@SuppressWarnings("unused")
-	private Overlay createDefaultOverlay(final Roi roi, final int xO,
-		final int yO)
+	private Overlay createDefaultOverlay(final Roi roi, final double xO,
+		final double yO)
 	{
 		final Rectangle bounds = roi.getBounds();
 		final ArrayImg<BitType, BitArray> arrayImg =
