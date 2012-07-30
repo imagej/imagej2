@@ -57,6 +57,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 	private final ColorPixelHarmonizer pixelHarmonizer;
 	private final MetadataHarmonizer metadataHarmonizer;
 	private final PositionHarmonizer positionHarmonizer;
+	private final NameHarmonizer nameHarmonizer;
 
 	// -- public interface --
 
@@ -65,6 +66,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 		pixelHarmonizer = new ColorPixelHarmonizer();
 		metadataHarmonizer = new MetadataHarmonizer();
 		positionHarmonizer = new PositionHarmonizer();
+		nameHarmonizer = new NameHarmonizer();
 	}
 	
 	/**
@@ -81,7 +83,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 		pixelHarmonizer.updateLegacyImage(ds, imp);
 		metadataHarmonizer.updateLegacyImage(ds, imp);
 		positionHarmonizer.updateLegacyImage(display, imp);
-		imp.setTitle(display.getName());
+		nameHarmonizer.updateLegacyImage(display, imp);
 		return imp;
 	}
 

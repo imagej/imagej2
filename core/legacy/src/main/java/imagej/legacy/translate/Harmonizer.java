@@ -76,6 +76,7 @@ public class Harmonizer {
 	private final PlaneHarmonizer planeHarmonizer;
 	private final OverlayHarmonizer overlayHarmonizer;
 	private final PositionHarmonizer positionHarmonizer;
+	private final NameHarmonizer nameHarmonizer;
 
 	// -- constructor --
 
@@ -91,6 +92,7 @@ public class Harmonizer {
 		planeHarmonizer = new PlaneHarmonizer();
 		overlayHarmonizer = new OverlayHarmonizer(context);
 		positionHarmonizer = new PositionHarmonizer();
+		nameHarmonizer = new NameHarmonizer();
 	}
 
 	// -- public interface --
@@ -136,8 +138,7 @@ public class Harmonizer {
 		overlayHarmonizer.updateLegacyImage(display, imp);
 		colorTableHarmonizer.updateLegacyImage(display, imp);
 		positionHarmonizer.updateLegacyImage(display, imp);
-		
-		imp.setTitle(display.getName());
+		nameHarmonizer.updateLegacyImage(display, imp);
 	}
 
 	/**
@@ -194,9 +195,8 @@ public class Harmonizer {
 		overlayHarmonizer.updateDisplay(display, imp);
 		colorTableHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
+		nameHarmonizer.updateDisplay(display, imp);
 
-		display.setName(imp.getTitle());
-		
 		// TODO - this should not be necessary but Blobs will not display inverted
 		// without this. When we change the update mechanism so that drawing only
 		// happens in the display code after it has collected all info about updates

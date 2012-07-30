@@ -60,6 +60,7 @@ public class ColorDisplayCreator implements DisplayCreator {
 	private final CompositeHarmonizer compositeHarmonizer;
 	private final OverlayHarmonizer overlayHarmonizer;
 	private final PositionHarmonizer positionHarmonizer;
+	private final NameHarmonizer nameHarmonizer;
 	
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
 	// while avoiding the Harmonizer. Not required in the Display->ImagePlus
@@ -75,6 +76,7 @@ public class ColorDisplayCreator implements DisplayCreator {
 		compositeHarmonizer = new CompositeHarmonizer();
 		overlayHarmonizer = new OverlayHarmonizer(context);
 		positionHarmonizer = new PositionHarmonizer();
+		nameHarmonizer = new NameHarmonizer();
 	}
 
 	// -- public interface --
@@ -105,8 +107,7 @@ public class ColorDisplayCreator implements DisplayCreator {
 		colorTableHarmonizer.updateDisplay(display, imp);
 		overlayHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
-
-		display.setName(imp.getTitle());
+		nameHarmonizer.updateDisplay(display, imp);
 		
 		return display;
 	}
