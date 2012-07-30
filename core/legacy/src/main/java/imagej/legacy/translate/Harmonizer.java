@@ -45,8 +45,6 @@ import imagej.data.display.ImageDisplayService;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.logic.BitType;
