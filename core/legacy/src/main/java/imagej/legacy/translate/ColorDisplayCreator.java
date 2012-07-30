@@ -106,6 +106,8 @@ public class ColorDisplayCreator implements DisplayCreator {
 		overlayHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
 
+		display.setName(imp.getTitle());
+		
 		return display;
 	}
 

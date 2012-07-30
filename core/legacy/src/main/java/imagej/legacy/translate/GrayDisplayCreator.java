@@ -120,6 +120,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		overlayHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
 
+		display.setName(imp.getTitle());
+
 		return display;
 	}
 
@@ -151,6 +153,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		colorTableHarmonizer.updateDisplay(display, imp);
 		overlayHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
+
+		display.setName(imp.getTitle());
 
 		return display;
 	}
