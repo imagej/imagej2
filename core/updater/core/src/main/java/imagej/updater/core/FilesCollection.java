@@ -45,6 +45,7 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
 import imagej.updater.util.Util;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -936,6 +937,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			read();
 		}
 		catch (final FileNotFoundException e) { /* ignore */}
+		catch (final IOException e) { /* ignore */ }
 		final XMLFileDownloader downloader = new XMLFileDownloader(this);
 		downloader.addProgress(progress);
 		try {
