@@ -146,10 +146,10 @@ public class DefaultEventBus extends ThreadSafeEventService {
 		// any other pending operations on the EDT happen first. If one such
 		// operation meanwhile calls e.g.
 		// ThreadSafeEventService#getSubscribers(Class<T>), it will deadlock because
-		// those getter methods also synchronized on the listenerLock object.
+		// those getter methods are also synchronized on the listenerLock object.
 
 		// Hence, our hack workaround is to instead use publishLater for the
-		// CleanupEvents, since on one really cares about them anyway. ;-)
+		// CleanupEvents, since no one really cares about them anyway. ;-)
 
 		if (event instanceof CleanupEvent) {
 			publishLater(event);
