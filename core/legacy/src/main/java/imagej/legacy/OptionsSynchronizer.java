@@ -204,15 +204,18 @@ public class OptionsSynchronizer {
 		final OptionsConversions optionsConversions =
 			optionsService.getOptions(OptionsConversions.class);
 
+		final double third = 1d / 3d;
 		final double[] weights = ColorProcessor.getWeightingFactors();
 		final boolean weighted =
-			!(weights[0] == 1d / 3d && weights[1] == 1d / 3d && weights[2] == 1d / 3d);
+			!(weights[0] == third && weights[1] == third && weights[2] == third);
 		ImageConverter.setDoScaling(optionsConversions.isScaleWhenConverting());
 		Prefs.weightedColor = optionsConversions.isWeightedRgbConversions();
-		if (!Prefs.weightedColor) ColorProcessor.setWeightingFactors(1d / 3d,
-			1d / 3d, 1d / 3d);
-		else if (Prefs.weightedColor && !weighted) ColorProcessor
-			.setWeightingFactors(0.299, 0.587, 0.114);
+		if (!Prefs.weightedColor) {
+			ColorProcessor.setWeightingFactors(third, third, third);
+		}
+		else if (Prefs.weightedColor && !weighted) {
+			ColorProcessor.setWeightingFactors(0.299, 0.587, 0.114);
+		}
 	}
 
 	private void dicomOptions() {
@@ -447,10 +450,10 @@ public class OptionsSynchronizer {
 		/* retired
 		final OptionsChannels optionsColors =
 			optionsService.getOptions(OptionsChannels.class);
-		optionsColors.setFgColor(AWTColors.getColorRGB(Toolbar
-			.getForegroundColor()));
-		optionsColors.setBgColor(AWTColors.getColorRGB(Toolbar
-			.getBackgroundColor()));
+		optionsColors.setFgColor(
+			AWTColors.getColorRGB(Toolbar.getForegroundColor()));
+		optionsColors.setBgColor(
+			AWTColors.getColorRGB(Toolbar.getBackgroundColor()));
 		optionsColors.save();
 		*/
 		
