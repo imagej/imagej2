@@ -40,6 +40,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
+import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.Installer;
@@ -133,6 +134,17 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			String warnings = files.downloadIndexAndChecksum(progress);
 			main.addCustomViewOptions();
 			if (!warnings.equals("")) main.warn(warnings);
+			final List<Conflict> conflicts = files.getConflicts();
+			if (conflicts != null && conflicts.size() > 0 &&
+					!new ConflictDialog(main, "Conflicting versions") {
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						protected void updateConflictList() {
+							conflictList = conflicts;
+						}
+					}.resolve())
+				return;
 		}
 		catch (final Canceled e) {
 			main.error("Canceled");
