@@ -938,6 +938,10 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 		catch (final FileNotFoundException e) { /* ignore */}
 		catch (final IOException e) { /* ignore */ }
+
+		// clear the files
+		clear();
+
 		final XMLFileDownloader downloader = new XMLFileDownloader(this);
 		downloader.addProgress(progress);
 		try {
