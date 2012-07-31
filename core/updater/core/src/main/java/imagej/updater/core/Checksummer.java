@@ -35,6 +35,8 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.Conflicts.Conflict;
+import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Progress;
 import imagej.updater.util.Progressable;
@@ -48,8 +50,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,6 +86,8 @@ public class Checksummer extends Progressable {
 
 		protected String path;
 		protected File file;
+		public long timestamp;
+		public String checksum;
 
 		StringAndFile(final String path, final File file) {
 			this.path = path;
@@ -91,7 +99,7 @@ public class Checksummer extends Progressable {
 		return cachedChecksums;
 	}
 
-	protected List<StringAndFile> queue;
+	protected Map<String, List<StringAndFile>> queue;
 
 	/* follows symlinks */
 	protected boolean exists(final File file) {
@@ -141,63 +149,189 @@ public class Checksummer extends Progressable {
 	}
 
 	protected void queue(final String path, final File file) {
-		queue.add(new StringAndFile(path, file));
+		String unversioned = FileObject.getFilename(path, true);
+		if (!queue.containsKey(unversioned))
+			queue.put(unversioned, new ArrayList<StringAndFile>());
+		queue.get(unversioned).add(new StringAndFile(path, file));
+	}
+
+	/**
+	 * Handle a single component, adding conflicts if there are multiple
+	 * versions.
+	 *
+	 * @param unversioned
+	 *            the unversioned name of the component
+	 */
+	protected void handle(final String unversioned) {
+		final List<StringAndFile> pairs = queue.get(unversioned);
+		for (final StringAndFile pair : pairs) {
+			addItem(pair.path);
+
+			if (pair.file.exists()) try {
+				pair.timestamp = Util.getTimestamp(pair.file);
+				pair.checksum = getDigest(pair.path, pair.file, pair.timestamp);
+			}
+			catch (final ZipException e) {
+				files.log.error("Problem digesting " + pair.file);
+			}
+			catch (final Exception e) {
+				files.log.error(e);
+			}
+
+			counter += (int) pair.file.length();
+			itemDone(pair.path);
+			setCount(counter, total);
+		}
+
+		if (pairs.size() == 1) {
+			handle(pairs.get(0));
+			return;
+		}
+
+		// there are multiple versions of the same component;
+		StringAndFile pair = null;
+		FileObject object = files.get(unversioned);
+		if (object == null || object.isObsolete()) {
+			// the component is local-only; fall back to using the newest one
+			for (StringAndFile p : pairs)
+				if (pair == null || (p.file.lastModified() > pair.file.lastModified()
+						&& pair.path.equals(FileObject.getFilename(pair.path, true))))
+					pair = p;
+			final List<File> obsoletes = new ArrayList<File>();
+			for (StringAndFile p : pairs)
+				if (p != pair)
+					obsoletes.add(p.file);
+			addConflict(pair.path, "", false, obsoletes);
+		} else {
+			// let's find out whether there are obsoletes or locally-modified versions
+			final List<StringAndFile> upToDates = new ArrayList<StringAndFile>();
+			final List<StringAndFile> obsoletes = new ArrayList<StringAndFile>();
+			final List<StringAndFile> locallyModifieds = new ArrayList<StringAndFile>();
+			for (final StringAndFile p : pairs) {
+				if (object.current.checksum.equals(p.checksum))
+					upToDates.add(p);
+				else if (object.hasPreviousVersion(p.checksum))
+					obsoletes.add(p);
+				else
+					locallyModifieds.add(p);
+			}
+			Comparator<StringAndFile> comparator = new Comparator<StringAndFile>() {
+				@Override
+				public int compare(StringAndFile a, StringAndFile b) {
+					long diff = a.file.lastModified() - b.file.lastModified();
+					return diff < 0 ? +1 : diff > 0 ? -1 : 0;
+				}
+			};
+			Collections.sort(upToDates, comparator);
+			Collections.sort(obsoletes, comparator);
+			Collections.sort(locallyModifieds, comparator);
+			if (upToDates.size() > 0)
+				pair = pickNewest(upToDates);
+			else if (obsoletes.size() > 0)
+				pair = pickNewest(obsoletes);
+			else
+				pair = pickNewest(locallyModifieds);
+			if (locallyModifieds.size() > 0)
+				addConflict(pair.path, "locally-modified", true, convert(locallyModifieds));
+			if (obsoletes.size() > 0)
+				addConflict(pair.path, "obsolete", false, convert(obsoletes));
+			if (upToDates.size() > 0)
+				addConflict(pair.path, "up-to-date", false, convert(upToDates));
+		}
+		handle(pair);
+	}
+
+	protected static StringAndFile pickNewest(final List<StringAndFile> list) {
+		int index = 0;
+		if (list.size() > 1) {
+			final String filename = list.get(0).path;
+			if (filename.equals(FileObject.getFilename(filename, true)))
+				index++;
+		}
+
+		final StringAndFile result = list.get(index);
+		list.remove(index);
+		return result;
+	}
+
+	protected static List<File> convert(final List<StringAndFile> pairs) {
+		final List<File> result = new ArrayList<File>();
+		for (final StringAndFile pair : pairs)
+			result.add(pair.file);
+		return result;
+	}
+
+	protected void addConflict(final String filename, String adjective, boolean isCritical, final List<File> toDelete) {
+		if (!adjective.equals("") && !adjective.endsWith(" "))
+			adjective += " ";
+		String conflictMessage = "Multiple " + adjective + "versions of " + filename + " exist: " + Util.join(", ", toDelete);
+		Resolution ignore = new Resolution("Ignore for now") {
+			@Override
+			public void resolve() {
+				removeConflict(filename);
+			}
+		};
+		Resolution delete = new Resolution("Delete!") {
+			@Override
+			public void resolve() {
+				for (final File file : toDelete)
+					file.delete();
+				removeConflict(filename);
+			}
+		};
+		files.conflicts.add(new Conflict(true, isCritical, filename, conflictMessage, ignore, delete));
+	}
+
+	protected void removeConflict(final String filename) {
+		if (files.conflicts == null)
+			return;
+		Iterator<Conflict> iterator = files.conflicts.iterator();
+		while (iterator.hasNext()) {
+			Conflict conflict = iterator.next();
+			if (conflict.filename.equals(filename)) {
+				iterator.remove();
+				return;
+			}
+		}
 	}
 
 	protected void handle(final StringAndFile pair) {
-		final String path = pair.path;
-		final File file = pair.file;
-		addItem(path);
-
-		String checksum = null;
-		long timestamp = 0;
-		if (file.exists()) try {
-			timestamp = Util.getTimestamp(file);
-			checksum = getDigest(path, file, timestamp);
-
-			FileObject object = files.get(path);
+		if (pair.checksum != null) {
+			FileObject object = files.get(pair.path);
 			if (object == null) {
-				if (checksum == null) throw new RuntimeException("Tried to remove " +
-					path + ", which is not known to the Updater");
 				object =
-					new FileObject(null, path, file.length(), checksum, timestamp,
+					new FileObject(null, pair.path, pair.file.length(), pair.checksum, pair.timestamp,
 						Status.LOCAL_ONLY);
-				if ((!isWindows && Util.canExecute(file)) || path.endsWith(".exe")) object.executable =
+				if ((!isWindows && Util.canExecute(pair.file)) || pair.path.endsWith(".exe")) object.executable =
 					true;
 				tryToGuessPlatform(object);
 				files.add(object);
 			}
-			else if (checksum != null) {
-				if (!object.hasPreviousVersion(checksum)) {
+			else {
+				if (!object.hasPreviousVersion(pair.checksum)) {
 					final FileObject.Version obsoletes =
-						cachedChecksums.get(":" + checksum);
+						cachedChecksums.get(":" + pair.checksum);
 					if (obsoletes != null) {
 						for (final String obsolete : obsoletes.checksum.split(":")) {
 							if (object.hasPreviousVersion(obsolete)) {
-								checksum = obsolete;
+								pair.checksum = obsolete;
 								break;
 							}
 						}
 					}
 				}
-				object.setLocalVersion(pair.path, checksum, timestamp);
+				object.setLocalVersion(pair.path, pair.checksum, pair.timestamp);
 				if (object.getStatus() == Status.OBSOLETE_UNINSTALLED) object
 					.setStatus(Status.OBSOLETE);
 			}
-			if (path.endsWith((".jar"))) try {
-				POMParser.fillMetadataFromJar(object, file);
+			if (pair.path.endsWith((".jar"))) try {
+				POMParser.fillMetadataFromJar(object, pair.file);
 			} catch (Exception e) {
-				files.log.error("Could not read pom.xml from " + path);
+				files.log.error("Could not read pom.xml from " + pair.path);
 			}
 		}
-		catch (final ZipException e) {
-			files.log.error("Problem digesting " + file);
-		}
-		catch (final Exception e) {
-			files.log.error(e);
-		}
 		else {
-			final FileObject object = files.get(path);
+			final FileObject object = files.get(pair.path);
 			if (object != null) {
 				switch (object.getStatus()) {
 					case OBSOLETE:
@@ -210,7 +344,7 @@ public class Checksummer extends Progressable {
 						object.setStatus(Status.NOT_INSTALLED);
 						break;
 					case LOCAL_ONLY:
-						files.remove(path);
+						files.remove(pair.path);
 						break;
 					case NEW:
 					case NOT_INSTALLED:
@@ -222,25 +356,22 @@ public class Checksummer extends Progressable {
 				}
 			}
 		}
-
-		counter += (int) file.length();
-		itemDone(path);
-		setCount(counter, total);
 	}
 
 	protected void handleQueue() {
 		total = 0;
-		for (final StringAndFile pair : queue)
-			total += (int) pair.file.length();
+		for (final String unversioned : queue.keySet())
+			for (final StringAndFile pair : queue.get(unversioned))
+				total += (int) pair.file.length();
 		counter = 0;
-		for (final StringAndFile pair : queue)
-			handle(pair);
+		for (final String unversioned : queue.keySet())
+			handle(unversioned);
 		done();
 		writeCachedChecksums();
 	}
 
 	public void updateFromLocal(final List<String> files) {
-		queue = new ArrayList<StringAndFile>();
+		queue = new LinkedHashMap<String, List<StringAndFile>>();
 		for (final String file : files)
 			queue(file);
 		handleQueue();
@@ -306,7 +437,7 @@ public class Checksummer extends Progressable {
 	}
 
 	protected void initializeQueue() {
-		queue = new ArrayList<StringAndFile>();
+		queue = new LinkedHashMap<String, List<StringAndFile>>();
 
 		for (final String launcher : Util.launchers)
 			queueIfExists(launcher);
@@ -314,17 +445,9 @@ public class Checksummer extends Progressable {
 		for (int i = 0; i < directories.length; i += 2)
 			queueDir(directories[i], directories[i + 1]);
 
-		final Set<String> alreadyQueued = new HashSet<String>();
-		for (final StringAndFile pair : queue) {
-			String pathWithoutVersion = FileObject.getFilename(pair.path, true);
-			if (alreadyQueued.contains(pathWithoutVersion)) {
-				files.log.warn("Multiple versions found for " + pathWithoutVersion);
-			} else {
-				alreadyQueued.add(pathWithoutVersion);
-			}
-		}
 		for (final FileObject file : files)
-			if (!alreadyQueued.contains(file.getFilename(true))) queue(file.getFilename());
+			if (!queue.containsKey(file.getFilename(true)))
+				queue(file.getFilename());
 	}
 
 	public void updateFromLocal() {

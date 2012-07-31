@@ -36,6 +36,7 @@
 package imagej.updater.core;
 
 import imagej.log.LogService;
+import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Canceled;
@@ -69,7 +70,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * TODO
+ * This class represents the database of available {@link FileObject}s.
  * 
  * @author Johannes Schindelin
  */
@@ -82,6 +83,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	protected File imagejRoot;
 	public LogService log;
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
+	protected List<Conflict> conflicts = new ArrayList<Conflict>();
 
 	public static class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 
@@ -944,5 +946,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 		new Checksummer(this, progress).updateFromLocal();
 		return downloader.getWarnings();
+	}
+
+	public List<Conflict> getConflicts() {
+		return conflicts;
 	}
 }

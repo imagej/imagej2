@@ -79,9 +79,16 @@ public class Conflicts {
 			final FileObject file, final String conflict,
 			final Resolution... resolutions)
 		{
+			this(isError, isCritical, file == null ? null : file.getFilename(), conflict, resolutions);
+		}
+
+		public Conflict(final boolean isError, final boolean isCritical,
+			final String filename, final String conflict,
+			final Resolution... resolutions)
+		{
 			this.isError = isError;
 			this.isCritical = isCritical;
-			this.filename = file == null ? null : file.getFilename();
+			this.filename = filename;
 			this.conflict = conflict;
 			this.resolutions = resolutions;
 		}

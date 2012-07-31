@@ -1017,6 +1017,34 @@ public class UpdaterTest {
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, "jars/egads.jar");
 	}
 
+	@Test
+	public void reconcileMultipleVersions() throws Exception {
+		initializeUpdateSite();
+		writeJar(ijRoot, "jars/egads-0.1.jar", "hello", "world");
+		FilesCollection files = readDb(false,  true);
+		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		upload(files);
+
+		assertTrue(new File(ijRoot, "jars/egads-0.1.jar").delete());
+		writeJar(ijRoot, "jars/egads-0.2.jar", "hello", "world2");
+		new Checksummer(files, progress).updateFromLocal();
+		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		upload(files);
+
+		writeJar(ijRoot, "jars/egads-0.1.jar", "hello", "world");
+		writeJar(ijRoot, "jars/egads.jar", "hello", "world");
+		touch(new File(ijRoot, "jars/egads-0.2.jar"), 19800101000001l);
+		files = readDb(true, true);
+		List<Conflict> conflicts = files.getConflicts();
+		assertEquals(1, conflicts.size());
+		Conflict conflict = conflicts.get(0);
+		assertEquals(conflict.filename, "jars/egads-0.2.jar");
+		conflict.resolutions[1].resolve();
+		assertFalse(new File(ijRoot, "jars/egads.jar").exists());
+		assertFalse(new File(ijRoot, "jars/egads-0.1.jar").exists());
+		assertTrue(new File(ijRoot, "jars/egads-0.2.jar").exists());
+	}
+
 	//
 	// Debug functions
 	//
