@@ -35,8 +35,10 @@
 
 package imagej.data.display;
 
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.ext.display.Display;
+import imagej.util.ColorRGB;
 
 import java.util.List;
 
@@ -64,7 +66,7 @@ public interface DatasetView extends DataView {
 	List<RealLUTConverter<? extends RealType<?>>> getConverters();
 
 	void setComposite(boolean composite);
-
+	
 	List<ColorTable8> getColorTables();
 
 	void setColorTable(ColorTable8 colorTable, int channel);
@@ -77,5 +79,7 @@ public interface DatasetView extends DataView {
 
 	@Override
 	Dataset getData();
+	
+	ColorRGB getColor(ChannelCollection channels);
 
 }

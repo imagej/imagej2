@@ -35,6 +35,7 @@
 
 package imagej.data.display;
 
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.event.DataViewUpdatedEvent;
@@ -44,6 +45,7 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -181,6 +183,62 @@ public class DefaultDatasetView extends AbstractDataView implements
 		projector.map();
 	}
 
+	// TODO - add this kind of mapping code to the Imglib Projector classes. Here
+	// it is just a workaround to make IJ2/IJ1 sync happy.
+	
+	/** Reason from a channel collection and internal state what the closest
+	 * color is. This is needed for color synchronization with IJ1.
+	 */
+	@Override
+	public ColorRGB getColor(ChannelCollection channels) {
+		final int r,g,b;
+		long channelCount = getChannelCount();
+		if (getColorMode() == ColorMode.COMPOSITE) {
+			double rSum = 0, gSum = 0, bSum = 0;
+			for (int c = 0; c < channelCount; c++) {
+				double value = channels.getChannelValue(c);
+				RealLUTConverter<? extends RealType<?>> converter = converters.get(c);
+				double min = converter.getMin();
+				double max = converter.getMax();
+				double relativeValue = (value - min) / (max - min);
+				if (relativeValue < 0) relativeValue = 0;
+				if (relativeValue > 1) relativeValue = 1;
+				int grayValue = (int) (relativeValue * 255);
+				ColorTable8 colorTable = converter.getLUT();
+				rSum += colorTable.get(0, grayValue);
+				gSum += colorTable.get(1, grayValue);
+				bSum += colorTable.get(2, grayValue);
+			}
+			r = (rSum > 255) ? 255 : (int) Math.round(rSum);
+			g = (gSum > 255) ? 255 : (int) Math.round(gSum);
+			b = (bSum > 255) ? 255 : (int) Math.round(bSum);
+		}
+		else { // grayscale or color
+			long currChannel = getLongPosition(Axes.CHANNEL);
+			double value = channels.getChannelValue(currChannel);
+			RealLUTConverter<? extends RealType<?>> converter =
+					converters.get((int) currChannel);
+			double min = converter.getMin();
+			double max = converter.getMax();
+			double relativeValue = (value - min) / (max - min);
+			if (relativeValue < 0) relativeValue = 0;
+			if (relativeValue > 1) relativeValue = 1;
+			int grayValue = (int) Math.round(relativeValue * 255);
+			if (getColorMode() == ColorMode.COLOR) {
+				ColorTable8 colorTable = converter.getLUT();
+				r = colorTable.get(0, grayValue);
+				g = colorTable.get(1, grayValue);
+				b = colorTable.get(2, grayValue);
+			}
+			else {
+				r = grayValue;
+				g = grayValue;
+				b = grayValue;
+			}
+		}
+		return new ColorRGB(r, g, b);
+	}
+	
 	// -- DataView methods --
 
 	@Override
@@ -264,12 +322,12 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	// -- Helper methods --
 
-	private boolean isComposite() {
-		return dataset.getCompositeChannelCount() > 1 || dataset.isRGBMerged();
-	}
-
 	private int getChannelDimIndex() {
 		return dataset.getAxisIndex(Axes.CHANNEL);
+	}
+
+	private boolean isComposite() {
+		return dataset.getCompositeChannelCount() > 1 || dataset.isRGBMerged();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -279,13 +337,15 @@ public class DefaultDatasetView extends AbstractDataView implements
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
-			converters
-				.add(new RealLUTConverter(dataset.getImgPlus().getChannelMinimum(c),
-					dataset.getImgPlus().getChannelMaximum(c), null));
+			RealLUTConverter converter =
+				new RealLUTConverter(
+					dataset.getImgPlus().getChannelMinimum(c),
+					dataset.getImgPlus().getChannelMaximum(c), null); 
+			converters.add(converter);
 		}
 		projector =
-			new CompositeXYProjector(dataset.getImgPlus(), screenImage, converters,
-				channelDimIndex);
+			new CompositeXYProjector(
+				dataset.getImgPlus(), screenImage, converters, channelDimIndex);
 		projector.setComposite(composite);
 	}
 

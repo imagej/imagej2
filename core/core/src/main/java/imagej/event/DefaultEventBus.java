@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bushe.swing.event.CleanupEvent;
 import org.bushe.swing.event.ThreadSafeEventService;
 
 /**
@@ -69,8 +70,7 @@ public class DefaultEventBus extends ThreadSafeEventService {
 	// processed.
 	// See ticket #719: http://trac.imagej.net/ticket/719
 
-	public DefaultEventBus(final ThreadService threadService,
-		final LogService log)
+	public DefaultEventBus(final ThreadService threadService, final LogService log)
 	{
 		super(200L, false, null, null, null);
 		this.threadService = threadService;
@@ -129,6 +129,33 @@ public class DefaultEventBus extends ThreadSafeEventService {
 
 	@Override
 	public void publish(final Object event) {
+		// HACK: Work around a deadlock problem caused by ThreadSafeEventService:
+
+		// 1) The ThreadSafeEventService superclass has a special cleanup thread
+		// that takes care of cleaning up stale references. Every time it runs, it
+		// publishes some CleanupEvents using publish(Object) to announce that this
+		// is occurring. Normally, such publication delegates to
+		// publishNow, which calls ThreadService#invoke, which calls
+		// EventQueue.invokeAndWait, which queues the publication for execution on
+		// the EDT and then blocks until publication is complete.
+
+		// 2) When the ThreadSafeEventService publishes the CleanupEvents, it does
+		// so inside a synchronized block that locks on a "listenerLock" object.
+
+		// 3) Unfortunately, since the CleanupEvent publication is merely *queued*,
+		// any other pending operations on the EDT happen first. If one such
+		// operation meanwhile calls e.g.
+		// ThreadSafeEventService#getSubscribers(Class<T>), it will deadlock because
+		// those getter methods are also synchronized on the listenerLock object.
+
+		// Hence, our hack workaround is to instead use publishLater for the
+		// CleanupEvents, since no one really cares about them anyway. ;-)
+
+		if (event instanceof CleanupEvent) {
+			publishLater(event);
+			return;
+		}
+
 		publishNow(event);
 	}
 

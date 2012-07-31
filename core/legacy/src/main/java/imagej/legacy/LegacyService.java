@@ -40,8 +40,10 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.options.OptionsChannels;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.KeyCode;
@@ -59,10 +61,16 @@ import imagej.options.event.OptionsEvent;
 import imagej.options.plugins.OptionsMisc;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import net.imglib2.display.CompositeXYProjector;
+import net.imglib2.display.RealLUTConverter;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Service for working with legacy ImageJ 1.x.
@@ -228,6 +236,15 @@ public final class LegacyService extends AbstractService {
 		optionsSynchronizer.updateIJ2SettingsFromIJ1();
 	}
 
+	public void syncColors() {
+		DatasetView view = imageDisplayService.getActiveDatasetView();
+		if (view == null) return;
+		OptionsChannels channels = getChannels();
+		ColorRGB fgColor = view.getColor(channels.getFgValues());
+		ColorRGB bgColor = view.getColor(channels.getBgValues());
+		optionsSynchronizer.colorOptions(fgColor, bgColor);
+	}
+	
 	// -- Event handlers --
 
 	/**
@@ -275,6 +292,13 @@ public final class LegacyService extends AbstractService {
 	}
 
 	// -- helpers --
+
+	private OptionsChannels getChannels() {
+		final OptionsService service =
+			getContext().getService(OptionsService.class);
+
+		return service.getOptions(OptionsChannels.class);
+	}
 
 	private void updateMenus(final OptionsMisc optsMisc) {
 		pluginService.reloadPlugins();
