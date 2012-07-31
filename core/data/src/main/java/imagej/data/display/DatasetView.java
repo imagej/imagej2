@@ -64,6 +64,8 @@ public interface DatasetView extends DataView {
 	List<RealLUTConverter<? extends RealType<?>>> getConverters();
 
 	void setComposite(boolean composite);
+	
+	boolean isComposite();
 
 	List<ColorTable8> getColorTables();
 

@@ -262,11 +262,12 @@ public class DefaultDatasetView extends AbstractDataView implements
 		super.setPosition(position, axis);
 	}
 
-	// -- Helper methods --
-
-	private boolean isComposite() {
+	@Override
+	public boolean isComposite() {
 		return dataset.getCompositeChannelCount() > 1 || dataset.isRGBMerged();
 	}
+
+	// -- Helper methods --
 
 	private int getChannelDimIndex() {
 		return dataset.getAxisIndex(Axes.CHANNEL);
@@ -279,13 +280,15 @@ public class DefaultDatasetView extends AbstractDataView implements
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
-			converters
-				.add(new RealLUTConverter(dataset.getImgPlus().getChannelMinimum(c),
-					dataset.getImgPlus().getChannelMaximum(c), null));
+			RealLUTConverter converter =
+				new RealLUTConverter(
+					dataset.getImgPlus().getChannelMinimum(c),
+					dataset.getImgPlus().getChannelMaximum(c), null); 
+			converters.add(converter);
 		}
 		projector =
-			new CompositeXYProjector(dataset.getImgPlus(), screenImage, converters,
-				channelDimIndex);
+			new CompositeXYProjector(
+				dataset.getImgPlus(), screenImage, converters, channelDimIndex);
 		projector.setComposite(composite);
 	}
 
