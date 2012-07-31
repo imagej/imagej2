@@ -123,17 +123,25 @@ public class OptionsChannels extends OptionsPlugin {
 	}
 
 	public void setLastFgColor(final ColorRGB c) {
+		setLastFgColor(c, true);
+	}
+
+	public void setLastFgColor(final ColorRGB c, boolean notifyIJ1) {
 		lastFgColor = c;
 		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
-		if (eventService != null) eventService.publish(new OptionsEvent(this));
+		if (notifyIJ1) eventService.publish(new OptionsEvent(this));
 	}
-
+	
 	public void setLastBgColor(final ColorRGB c) {
+		setLastBgColor(c, true);
+	}
+	
+	public void setLastBgColor(final ColorRGB c, boolean notifyIJ1) {
 		lastBgColor = c;
 		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
-		if (eventService != null) eventService.publish(new OptionsEvent(this));
+		if (notifyIJ1) eventService.publish(new OptionsEvent(this));
 	}
 
 	// -- OptionsPlugin methods --

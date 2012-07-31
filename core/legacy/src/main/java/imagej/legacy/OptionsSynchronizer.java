@@ -181,10 +181,17 @@ public class OptionsSynchronizer {
 		final ColorRGB lastFgColor = options.getLastFgColor();
 		final ColorRGB lastBgColor = options.getLastBgColor();
 		
-		Toolbar.setForegroundColor(AWTColors.getColor(lastFgColor));
-		Toolbar.setBackgroundColor(AWTColors.getColor(lastBgColor));
+		colorOptions(lastFgColor, lastBgColor);
 	}
 
+	public void colorOptions(ColorRGB fgColor, ColorRGB bgColor) {
+		Toolbar.setForegroundColor(AWTColors.getColor(fgColor));
+		Toolbar.setBackgroundColor(AWTColors.getColor(bgColor));
+		OptionsChannels options = optionsService.getOptions(OptionsChannels.class);
+		options.setLastFgColor(fgColor, false);
+		options.setLastBgColor(bgColor, false);
+	}
+	
 	private void compilerOptions() {
 		final OptionsCompiler optionsCompiler =
 			optionsService.getOptions(OptionsCompiler.class);

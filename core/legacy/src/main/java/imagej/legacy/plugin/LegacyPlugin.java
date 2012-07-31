@@ -186,7 +186,10 @@ public class LegacyPlugin implements ImageJPlugin {
 
 			// set ImageJ1's active image
 			legacyService.syncActiveImage();
-
+			
+			// set ImageJ1's colors
+			legacyService.syncColors();
+			
 			try {
 				// execute the legacy plugin
 				IJ.runPlugIn(className, arg);
