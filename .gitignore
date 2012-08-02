@@ -6,3 +6,4 @@ target
 *.swp
 /.idea
 *.iml
+/app/ImageJ.app/
