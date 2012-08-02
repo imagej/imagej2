@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-platform</artifactId>
+		<artifactId>pom-ij-core</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-platform-macosx</artifactId>
+	<artifactId>ij-platforms</artifactId>
 
-	<name>ImageJ Platform: Mac OS X</name>
-	<description>Platform-specific code for Mac OS X.</description>
+	<name>ImageJ Core Platforms</name>
+	<description>The core platforms component contains the platform-specific code for dealing with common desktop platforms, including Mac OS X and Windows.</description>
 
 	<dependencies>
 		<dependency>
@@ -47,7 +47,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.platform.macosx</packageName>
+							<packageName>imagej.core.platforms</packageName>
 						</manifest>
 					</archive>
 				</configuration>

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.platform.windows;
+package imagej.core.platforms.windows;
 
 import imagej.ext.plugin.Plugin;
 import imagej.platform.AbstractPlatform;
