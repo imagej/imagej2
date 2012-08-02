@@ -33,14 +33,13 @@
  * #L%
  */
 
-package imagej.core.plugins.app;
+package imagej.platform;
 
 import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
-import imagej.platform.AppService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
