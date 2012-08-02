@@ -60,9 +60,9 @@ public interface PlatformService extends IService {
 	List<Platform> getTargetPlatforms();
 
 	/**
-	 * Opens a URL in a platform-dependent way. Typically the URL is opened
-	 * external web browser instance, but the behavior is ultimately defined the
-	 * available platform handler implementations.
+	 * Opens a URL in a platform-dependent way. Typically the URL is opened in an
+	 * external web browser instance, but the behavior is ultimately defined by
+	 * the available platform handler implementations.
 	 */
 	void open(URL url) throws IOException;
 
