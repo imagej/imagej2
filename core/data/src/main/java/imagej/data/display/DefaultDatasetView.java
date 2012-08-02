@@ -184,16 +184,18 @@ public class DefaultDatasetView extends AbstractDataView implements
 	}
 
 	// TODO - add this kind of mapping code to the Imglib Projector classes. Here
-	// it is just a workaround to make IJ2/IJ1 sync happy.
+	// it is just a workaround to make IJ2/IJ1 color syncing happy. BDZ
 	
 	/** Reason from a channel collection and internal state what the closest
 	 * color is. This is needed for color synchronization with IJ1.
+	 * @author Barry DeZonia
 	 */
 	@Override
 	public ColorRGB getColor(ChannelCollection channels) {
 		final int r,g,b;
 		long channelCount = getChannelCount();
-		if (getColorMode() == ColorMode.COMPOSITE) {
+		ColorMode mode = getColorMode();
+		if (mode == ColorMode.COMPOSITE) {
 			double rSum = 0, gSum = 0, bSum = 0;
 			for (int c = 0; c < channelCount; c++) {
 				double value = channels.getChannelValue(c);
@@ -224,13 +226,13 @@ public class DefaultDatasetView extends AbstractDataView implements
 			if (relativeValue < 0) relativeValue = 0;
 			if (relativeValue > 1) relativeValue = 1;
 			int grayValue = (int) Math.round(relativeValue * 255);
-			if (getColorMode() == ColorMode.COLOR) {
+			if (mode == ColorMode.COLOR) {
 				ColorTable8 colorTable = converter.getLUT();
 				r = colorTable.get(0, grayValue);
 				g = colorTable.get(1, grayValue);
 				b = colorTable.get(2, grayValue);
 			}
-			else {
+			else { // mode == grayscale
 				r = grayValue;
 				g = grayValue;
 				b = grayValue;
