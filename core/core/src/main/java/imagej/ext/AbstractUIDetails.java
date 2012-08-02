@@ -35,6 +35,7 @@
 
 package imagej.ext;
 
+import imagej.Priority;
 import imagej.util.StringMaker;
 
 /**

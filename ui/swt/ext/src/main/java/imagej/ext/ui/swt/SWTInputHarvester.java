@@ -35,7 +35,7 @@
 
 package imagej.ext.ui.swt;
 
-import imagej.ext.Priority;
+import imagej.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ui.InputHarvester;
 import imagej.ext.module.ui.InputPanel;

@@ -35,7 +35,7 @@
 
 package imagej.ext.plugin.debug;
 
-import imagej.ext.Priority;
+import imagej.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PostprocessorPlugin;

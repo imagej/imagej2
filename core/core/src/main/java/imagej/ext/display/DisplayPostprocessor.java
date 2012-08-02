@@ -36,7 +36,7 @@
 package imagej.ext.display;
 
 import imagej.ImageJ;
-import imagej.ext.Priority;
+import imagej.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.Plugin;

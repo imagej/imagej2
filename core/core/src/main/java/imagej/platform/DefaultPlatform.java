@@ -35,7 +35,7 @@
 
 package imagej.platform;
 
-import imagej.ext.Priority;
+import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 
 import java.io.IOException;

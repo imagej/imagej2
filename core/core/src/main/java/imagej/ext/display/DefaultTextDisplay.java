@@ -35,7 +35,7 @@
 
 package imagej.ext.display;
 
-import imagej.ext.Priority;
+import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 
 /**
