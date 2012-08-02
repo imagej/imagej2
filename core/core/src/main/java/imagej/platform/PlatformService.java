@@ -44,7 +44,8 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Interface for service that handles platform-specific deployment issues.
+ * Interface for service that handles platform-specific deployment issues. A
+ * "platform" can be an operating system, CPU architecture, or version of Java.
  * 
  * @author Curtis Rueden
  */
