@@ -32,12 +32,23 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.updater.util;
 
 import imagej.ImageJ;
 import imagej.log.LogService;
+import imagej.service.AbstractService;
 
-public class StderrLogService implements LogService {
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
+public class StderrLogService extends AbstractService implements LogService {
+
+	public StderrLogService() {
+		super(null);
+	}
 
 	@Override
 	public ImageJ getContext() {
