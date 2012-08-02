@@ -51,7 +51,7 @@ import net.java.sezpoz.Indexable;
  * 
  * @author Curtis Rueden
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Indexable(type = IService.class)
 public @interface Service {

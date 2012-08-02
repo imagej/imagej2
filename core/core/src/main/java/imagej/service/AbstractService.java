@@ -36,6 +36,8 @@
 package imagej.service;
 
 import imagej.ImageJ;
+import imagej.Prioritized;
+import imagej.Priority;
 import imagej.event.EventService;
 
 /**
@@ -61,6 +63,20 @@ public abstract class AbstractService implements IService {
 	@Override
 	public ImageJ getContext() {
 		return context;
+	}
+
+	// -- Prioritized methods --
+
+	@Override
+	public double getPriority() {
+		return ServiceHelper.getPriority(getClass());
+	}
+
+	// -- Comparable methods --
+
+	@Override
+	public int compareTo(final Prioritized p) {
+		return Priority.compare(this, p);
 	}
 
 	// -- Internal methods --
