@@ -48,13 +48,13 @@ import java.util.List;
 public interface AppService extends IService {
 
 	/** Displays an About ImageJ dialog. */
-	public void about();
+	void about();
 
 	/** Displays ImageJ preferences. */
-	public void showPrefs();
+	void showPrefs();
 
 	/** Quits ImageJ. */
-	public void quit();
+	void quit();
 
 	/** Gets the list of plugins handled by this service. */
 	List<PluginModuleInfo<?>> getHandledPlugins();
