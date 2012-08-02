@@ -1047,6 +1047,35 @@ public class UpdaterTest {
 		assertTrue(new File(ijRoot, "jars/egads-0.2.jar").exists());
 	}
 
+	@Test
+	public void uninstallRemoved() throws Exception {
+		initializeUpdateSite("jars/to-be-removed.jar");
+		FilesCollection files = readDb(true,  true);
+		files.write();
+
+		File ijRoot2 = createTempDirectory("testUpdaterIJRoot2");
+		writeGZippedFile(ijRoot2, "db.xml.gz", "<pluginRecords><update-site name=\""
+				+ FilesCollection.DEFAULT_UPDATE_SITE + "\" timestamp=\"0\" url=\""
+				+ webRoot.toURI().toURL().toString() + "\" ssh-host=\"file:localhost\" "
+				+ "upload-directory=\"" + webRoot.getAbsolutePath() + "\"/></pluginRecords>");
+
+		files = new FilesCollection(ijRoot2);
+		files.downloadIndexAndChecksum(progress);
+		files.get("jars/to-be-removed.jar").setAction(files, Action.REMOVE);
+		upload(files);
+
+		// make sure that the timestamp of the update site is "new"
+		files = new FilesCollection(ijRoot);
+		files.read();
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).timestamp = 0;
+		files.write();
+
+		files = readDb(true, true);
+		FileObject obsolete = files.get("jars/to-be-removed.jar");
+		assertStatus(Status.OBSOLETE, obsolete);
+		assertAction(Action.OBSOLETE, obsolete);
+	}
+
 	//
 	// Debug functions
 	//
@@ -1237,9 +1266,14 @@ public class UpdaterTest {
 	protected static void assertAction(final Action action,
 		final FilesCollection files, final String filename)
 	{
-		final FileObject file = files.get(filename);
-		assertNotNull("Object " + filename, file);
-		assertEquals("Status of " + filename, action, file.getAction());
+		assertAction(action, files.get(filename));
+	}
+
+	protected static void assertAction(final Action action,
+		final FileObject file)
+	{
+		assertNotNull("Object " + file.filename, file);
+		assertEquals("Action of " + file.filename, action, file.getAction());
 	}
 
 	protected static void assertNotEqual(final Object object1,
