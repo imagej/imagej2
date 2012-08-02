@@ -222,6 +222,7 @@ public class UpdaterTest {
 		writeFile("macros/World.txt", "not enough");
 		writeFile("jars/hello.jar");
 		new File(ijRoot, "macros/Comma.txt").delete();
+		assertTrue(new File(ijRoot, ".checksums").delete());
 
 		// Chronological order must be preserved
 
@@ -764,6 +765,7 @@ public class UpdaterTest {
 		FilesCollection files = readDb(true, true);
 		files.get("macros/macro.ijm").description = "Narf";
 		files.write();
+		upload(files);
 
 		files = readDb(true, true);
 		assertEquals("Narf", files.get("macros/macro.ijm").description);
@@ -1167,6 +1169,10 @@ public class UpdaterTest {
 			ParserConfigurationException, SAXException {
 		final FilesCollection files = new FilesCollection(ijRoot);
 		final File localDb = new File(ijRoot, "db.xml.gz");
+		if (readLocalDb && runChecksummer) {
+			files.downloadIndexAndChecksum(progress);
+			return files;
+		}
 		if (readLocalDb) files.read(localDb);
 		else {
 			assertFalse(localDb.exists());
