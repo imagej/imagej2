@@ -248,7 +248,8 @@ public class Conflicts {
 				}
 				else {
 					if (dependencyObject == null ||
-						dependencyObject.getStatus() == Status.LOCAL_ONLY) conflicts
+						(dependencyObject.getStatus() == Status.LOCAL_ONLY &&
+						 dependencyObject.getAction() != Action.UPLOAD)) conflicts
 						.add(dependencyNotUploaded(file, dependency.filename));
 					else if (dependencyObject.isObsolete() ||
 						dependencyObject.getAction() == Action.REMOVE) conflicts
