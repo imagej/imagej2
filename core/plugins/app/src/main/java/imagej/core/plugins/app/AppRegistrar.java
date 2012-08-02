@@ -33,39 +33,34 @@
  * #L%
  */
 
-package imagej.platform;
+package imagej.core.plugins.app;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.service.IService;
-
-import java.util.List;
+import imagej.ImageJ;
+import imagej.platform.AppService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 /**
- * Interface for service that provides application-level functionality.
+ * Service that registers application plugins with the {@link AppService}.
  * 
  * @author Curtis Rueden
  */
-public interface AppService extends IService {
+@Service
+public final class AppRegistrar extends AbstractService {
 
-	/** Displays an About ImageJ dialog. */
-	void about();
+	// -- Constructors --
 
-	/** Displays ImageJ preferences. */
-	void showPrefs();
+	public AppRegistrar() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
 
-	/** Quits ImageJ. */
-	void quit();
-
-	/** Sets the plugin invoked when {@link #about()} is called. */
-	void setAboutHandler(Class<? extends RunnablePlugin> aboutPlugin);
-
-	/** Sets the plugin invoked when {@link #showPrefs()} is called. */
-	void setPrefsHandler(Class<? extends RunnablePlugin> prefsPlugin);
-
-	/** Sets the plugin invoked when {@link #quit()} is called. */
-	void setQuitHandler(Class<? extends RunnablePlugin> quitPlugin);
-
-	/** Gets the plugins associated with this service. */
-	List<Class<? extends RunnablePlugin>> getHandlers();
+	public AppRegistrar(final ImageJ context, final AppService appService) {
+		super(context);
+		appService.setAboutHandler(AboutImageJ.class);
+		appService.setPrefsHandler(ShowPrefs.class);
+		appService.setQuitHandler(QuitProgram.class);
+	}
 
 }

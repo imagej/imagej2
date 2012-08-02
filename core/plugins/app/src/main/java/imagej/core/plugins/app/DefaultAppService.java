@@ -38,8 +38,8 @@ package imagej.core.plugins.app;
 import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.platform.AppService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
@@ -64,6 +64,10 @@ public final class DefaultAppService extends AbstractService implements
 
 	private final PluginService pluginService;
 
+	private Class<? extends RunnablePlugin> aboutPlugin;
+	private Class<? extends RunnablePlugin> prefsPlugin;
+	private Class<? extends RunnablePlugin> quitPlugin;
+
 	// -- Constructors --
 
 	public DefaultAppService() {
@@ -85,26 +89,48 @@ public final class DefaultAppService extends AbstractService implements
 
 	@Override
 	public void about() {
-		pluginService.run(AboutImageJ.class);
+		if (aboutPlugin == null) return;
+		pluginService.run(aboutPlugin);
 	}
 
 	@Override
 	public void showPrefs() {
-		pluginService.run(ShowPrefs.class);
+		if (prefsPlugin == null) return;
+		pluginService.run(prefsPlugin);
 	}
 
 	@Override
 	public void quit() {
-		pluginService.run(QuitProgram.class);
+		if (quitPlugin == null) return;
+		pluginService.run(quitPlugin);
 	}
 
 	@Override
-	public List<PluginModuleInfo<?>> getHandledPlugins() {
-		final ArrayList<PluginModuleInfo<?>> handledPlugins =
-			new ArrayList<PluginModuleInfo<?>>();
-		handledPlugins.add(pluginService.getRunnablePlugin(AboutImageJ.class));
-		handledPlugins.add(pluginService.getRunnablePlugin(ShowPrefs.class));
-		handledPlugins.add(pluginService.getRunnablePlugin(QuitProgram.class));
+	public void
+		setAboutHandler(final Class<? extends RunnablePlugin> aboutPlugin)
+	{
+		this.aboutPlugin = aboutPlugin;
+	}
+
+	@Override
+	public void
+		setPrefsHandler(final Class<? extends RunnablePlugin> prefsPlugin)
+	{
+		this.prefsPlugin = prefsPlugin;
+	}
+
+	@Override
+	public void setQuitHandler(final Class<? extends RunnablePlugin> quitPlugin) {
+		this.quitPlugin = quitPlugin;
+	}
+
+	@Override
+	public List<Class<? extends RunnablePlugin>> getHandlers() {
+		final ArrayList<Class<? extends RunnablePlugin>> handledPlugins =
+			new ArrayList<Class<? extends RunnablePlugin>>();
+		if (aboutPlugin != null) handledPlugins.add(aboutPlugin);
+		if (prefsPlugin != null) handledPlugins.add(prefsPlugin);
+		if (quitPlugin != null) handledPlugins.add(quitPlugin);
 		return handledPlugins;
 	}
 
