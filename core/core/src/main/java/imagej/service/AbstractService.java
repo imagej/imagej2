@@ -58,6 +58,13 @@ public abstract class AbstractService implements IService {
 		this.context = context;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return getClass().getName() + " [priority = " + getPriority() + "]";
+	}
+
 	// -- IContext methods --
 
 	@Override
