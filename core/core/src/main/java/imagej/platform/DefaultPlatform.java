@@ -33,51 +33,47 @@
  * #L%
  */
 
-package imagej.ext.display;
+package imagej.platform;
 
-import imagej.ImageJ;
 import imagej.Priority;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
-import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.AbstractPreprocessorPlugin;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreprocessorPlugin;
+
+import java.io.IOException;
+import java.net.URL;
 
 /**
- * Assigns the active {@link Display} when there is one single unresolved
- * {@link Display} parameter. Hence, rather than a dialog prompting the user to
- * choose a {@link Display}, the active {@link Display} is used automatically.
- * <p>
- * In the case of more than one {@link Display} parameter, the active
- * {@link Display} is not used and instead the user must select. This behavior
- * is consistent with ImageJ v1.x.
- * </p>
+ * A platform implementation for default handling of platform issues.
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
-public class ActiveDisplayPreprocessor extends AbstractPreprocessorPlugin {
+@Plugin(type = Platform.class, name = "Default",
+	priority = Priority.VERY_LOW_PRIORITY)
+public class DefaultPlatform extends AbstractPlatform {
 
-	// -- ModuleProcessor methods --
+	// -- PlatformHandler methods --
 
+	/**
+	 * Falls back to calling known browsers.
+	 * <p>
+	 * Based on <a
+	 * href="http://www.centerkey.com/java/browser/">BareBonesBrowserLaunch</a>.
+	 * </p>
+	 * <p>
+	 * The utility 'xdg-open' launches the URL in the user's preferred browser,
+	 * therefore we try to use it first, before trying to discover other browsers.
+	 * </p>
+	 */
 	@Override
-	public void process(final Module module) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		if (displayService == null) return;
-		final Display<?> activeDisplay = displayService.getActiveDisplay();
-		if (activeDisplay == null) return;
-
-		final ModuleService moduleService = ImageJ.get(ModuleService.class);
-		if (moduleService == null) return;
-
-		// assign active display to single Display input
-		final ModuleItem<?> displayInput =
-			moduleService.getSingleInput(module, Display.class);
-		if (displayInput != null && displayInput.isAutoFill()) {
-			final String name = displayInput.getName();
-			module.setInput(name, activeDisplay);
-			module.setResolved(name, true);
+	public void open(final URL url) throws IOException {
+		if (!platformService.exec("open", url.toString())) {
+			throw new IOException("Could not open " + url);
+		}
+		final String[] browsers =
+			{ "xdg-open", "netscape", "firefox", "konqueror", "mozilla", "opera",
+				"epiphany", "lynx" };
+		for (final String browser : browsers) {
+			if (platformService.exec(browser, url.toString())) return;
 		}
 	}
 

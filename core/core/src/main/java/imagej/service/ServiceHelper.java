@@ -36,6 +36,7 @@
 package imagej.service;
 
 import imagej.ImageJ;
+import imagej.Priority;
 import imagej.event.EventService;
 import imagej.service.event.ServicesLoadedEvent;
 import imagej.util.Log;
@@ -45,10 +46,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
@@ -64,7 +64,7 @@ public class ServiceHelper {
 	private final ImageJ context;
 
 	/** Classes to scan when searching for dependencies. */
-	private final Set<Class<? extends IService>> classPool;
+	private final List<Class<? extends IService>> classPool;
 
 	/** Classes to instantiate as services. */
 	private final List<Class<? extends IService>> serviceClasses;
@@ -163,6 +163,17 @@ public class ServiceHelper {
 		return null;
 	}
 
+	// -- Utility methods --
+
+	/** Gets the annotated priority of the given {@link IService} class. */
+	public static double
+		getPriority(final Class<? extends IService> serviceClass)
+	{
+		final Service ann = serviceClass.getAnnotation(Service.class);
+		if (ann == null) return Priority.NORMAL_PRIORITY;
+		return ann.priority();
+	}
+
 	// -- Helper methods --
 
 	/** Instantiates a service using the given constructor. */
@@ -243,9 +254,9 @@ public class ServiceHelper {
 	 * Discovers service implementations that are present on the classpath and
 	 * marked with the @{@link Service} annotation.
 	 */
-	private HashSet<Class<? extends IService>> findServiceClasses() {
-		final HashSet<Class<? extends IService>> serviceSet =
-			new HashSet<Class<? extends IService>>();
+	private ArrayList<Class<? extends IService>> findServiceClasses() {
+		final ArrayList<Class<? extends IService>> serviceList =
+			new ArrayList<Class<? extends IService>>();
 
 		// use SezPoz to discover available services
 		for (final IndexItem<Service, IService> item : Index.load(Service.class,
@@ -255,14 +266,31 @@ public class ServiceHelper {
 				@SuppressWarnings("unchecked")
 				final Class<? extends IService> c =
 					(Class<? extends IService>) item.element();
-				serviceSet.add(c);
+				serviceList.add(c);
 			}
 			catch (final InstantiationException e) {
 				Log.error("Invalid service: " + item, e);
 			}
 		}
 
-		return serviceSet;
+		// sort list of discovered services based on annotated priority
+		Collections.sort(serviceList,
+			new Comparator<Class<? extends IService>>() {
+
+				@Override
+				public int compare(final Class<? extends IService> c1,
+					final Class<? extends IService> c2)
+				{
+					final double p1 = getPriority(c1);
+					final double p2 = getPriority(c2);
+					if (p1 == p2) return 0;
+					// NB: We invert the ordering here, so that large values come first,
+					// rather than the typical natural ordering of smaller values first.
+					return p1 > p2 ? -1 : 1;
+				}
+			});
+
+		return serviceList;
 	}
 
 }

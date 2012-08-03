@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.platform.macosx;
+package imagej.core.platforms.macosx;
 
 import com.apple.eawt.AboutHandler;
 import com.apple.eawt.AppEvent.AboutEvent;

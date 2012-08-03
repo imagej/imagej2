@@ -35,46 +35,51 @@
 
 package imagej.platform;
 
-import imagej.ext.Priority;
-import imagej.ext.plugin.Plugin;
+import imagej.event.EventService;
+import imagej.ext.plugin.PluginService;
+import imagej.service.IService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 /**
- * A platform implementation for default handling of platform issues.
+ * Interface for service that handles platform-specific deployment issues. A
+ * "platform" can be an operating system, CPU architecture, or version of Java.
  * 
  * @author Curtis Rueden
- * @author Johannes Schindelin
  */
-@Plugin(type = Platform.class, name = "Default",
-	priority = Priority.VERY_LOW_PRIORITY)
-public class DefaultPlatform extends AbstractPlatform {
+public interface PlatformService extends IService {
 
-	// -- PlatformHandler methods --
+	EventService getEventService();
+
+	PluginService getPluginService();
+
+	AppService getAppService();
+
+	/** Gets the platform handlers applicable to this platform. */
+	List<Platform> getTargetPlatforms();
 
 	/**
-	 * Falls back to calling known browsers.
-	 * <p>
-	 * Based on <a
-	 * href="http://www.centerkey.com/java/browser/">BareBonesBrowserLaunch</a>.
-	 * </p>
-	 * <p>
-	 * The utility 'xdg-open' launches the URL in the user's preferred browser,
-	 * therefore we try to use it first, before trying to discover other browsers.
-	 * </p>
+	 * Opens a URL in a platform-dependent way. Typically the URL is opened in an
+	 * external web browser instance, but the behavior is ultimately defined by
+	 * the available platform handler implementations.
 	 */
-	@Override
-	public void open(final URL url) throws IOException {
-		if (!platformService.exec("open", url.toString())) {
-			throw new IOException("Could not open " + url);
-		}
-		final String[] browsers =
-			{ "xdg-open", "netscape", "firefox", "konqueror", "mozilla", "opera",
-				"epiphany", "lynx" };
-		for (final String browser : browsers) {
-			if (platformService.exec(browser, url.toString())) return;
-		}
-	}
+	void open(URL url) throws IOException;
+
+	/** Executes a native program and waits for it to return. */
+	boolean exec(String... args) throws IOException;
+
+	/**
+	 * Informs the active platform handlers of a UI's newly created application
+	 * menu structure. Each active platform handler may choose to do something
+	 * platform-specific with the menus.
+	 * 
+	 * @param menus The UI's newly created menu structure
+	 * @return true iff the menus should not be added to the UI as normal because
+	 *         a platform handler did something platform-specific with them
+	 *         instead.
+	 */
+	boolean registerAppMenus(Object menus);
 
 }

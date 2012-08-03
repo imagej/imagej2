@@ -33,52 +33,40 @@
  * #L%
  */
 
-package imagej.platform;
+package imagej.core.platforms.windows;
 
-import imagej.event.EventService;
-import imagej.ext.plugin.PluginService;
-import imagej.service.IService;
+import imagej.ext.plugin.Plugin;
+import imagej.platform.AbstractPlatform;
+import imagej.platform.Platform;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 /**
- * Interface for service that handles platform-specific deployment issues.
+ * A platform implementation for handling Windows platform issues.
  * 
- * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-public interface PlatformService extends IService {
+@Plugin(type = Platform.class, name = "Windows")
+public class WindowsPlatform extends AbstractPlatform {
 
-	EventService getEventService();
+	// -- Platform methods --
 
-	PluginService getPluginService();
+	@Override
+	public String osName() {
+		return "Windows";
+	}
 
-	AppService getAppService();
-
-	/** Gets the platform handlers applicable to this platform. */
-	List<Platform> getTargetPlatforms();
-
-	/**
-	 * Opens a URL in a platform-dependent way. Typically the URL is opened
-	 * external web browser instance, but the behavior is ultimately defined the
-	 * available platform handler implementations.
-	 */
-	void open(URL url) throws IOException;
-
-	/** Executes a native program and waits for it to return. */
-	boolean exec(String... args) throws IOException;
-
-	/**
-	 * Informs the active platform handlers of a UI's newly created application
-	 * menu structure. Each active platform handler may choose to do something
-	 * platform-specific with the menus.
-	 * 
-	 * @param menus The UI's newly created menu structure
-	 * @return true iff the menus should not be added to the UI as normal because
-	 *         a platform handler did something platform-specific with them
-	 *         instead.
-	 */
-	boolean registerAppMenus(Object menus);
+	@Override
+	public void open(final URL url) throws IOException {
+		final String cmd;
+		if (System.getProperty("os.name").startsWith("Windows 2000")) {
+			cmd = "rundll32 shell32.dll,ShellExec_RunDLL";
+		}
+		else cmd = "rundll32 url.dll,FileProtocolHandler";
+		if (!platformService.exec(cmd, url.toString())) {
+			throw new IOException("Could not open " + url);
+		}
+	}
 
 }

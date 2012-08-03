@@ -35,7 +35,7 @@
 
 package imagej.service;
 
-import imagej.object.ObjectIndex;
+import imagej.object.SortedObjectIndex;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public class ServiceIndex extends ObjectIndex<IService> {
+public class ServiceIndex extends SortedObjectIndex<IService> {
 
 	public ServiceIndex() {
 		super(IService.class);

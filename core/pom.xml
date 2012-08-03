@@ -24,6 +24,7 @@
 		<module>legacy</module>
 		<module>options</module>
 		<module>platform</module>
+		<module>platforms</module>
 		<module>plugins</module>
 		<module>tools</module>
 		<module>ui</module>

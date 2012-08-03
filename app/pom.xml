@@ -60,7 +60,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-platform-macosx</artifactId>
+			<artifactId>ij-platforms</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>

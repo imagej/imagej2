@@ -35,13 +35,15 @@
 
 package imagej.ext;
 
+import imagej.Prioritized;
+
 /**
  * An interface defining details useful for generating relevant user interface
  * elements.
  * 
  * @author Curtis Rueden
  */
-public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
+public interface UIDetails extends BasicDetails, Prioritized {
 
 	/**
 	 * Gets an appropriate title for the object, for use in a user interface. The
@@ -63,9 +65,6 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 
 	/** Gets the resource path to an icon representing the object. */
 	String getIconPath();
-
-	/** Gets the sort priority of the object. */
-	double getPriority();
 
 	/**
 	 * Gets whether the object can be selected (e.g., checking and unchecking its

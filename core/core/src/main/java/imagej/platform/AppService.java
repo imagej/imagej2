@@ -33,40 +33,39 @@
  * #L%
  */
 
-package imagej.platform.windows;
+package imagej.platform;
 
-import imagej.ext.plugin.Plugin;
-import imagej.platform.AbstractPlatform;
-import imagej.platform.Platform;
+import imagej.ext.plugin.RunnablePlugin;
+import imagej.service.IService;
 
-import java.io.IOException;
-import java.net.URL;
+import java.util.List;
 
 /**
- * A platform implementation for handling Windows platform issues.
+ * Interface for service that provides application-level functionality.
  * 
- * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-@Plugin(type = Platform.class, name = "Windows")
-public class WindowsPlatform extends AbstractPlatform {
+public interface AppService extends IService {
 
-	// -- Platform methods --
+	/** Displays an About ImageJ dialog. */
+	void about();
 
-	@Override
-	public String osName() {
-		return "Windows";
-	}
+	/** Displays ImageJ preferences. */
+	void showPrefs();
 
-	@Override
-	public void open(final URL url) throws IOException {
-		final String cmd;
-		if (System.getProperty("os.name").startsWith("Windows 2000")) {
-			cmd = "rundll32 shell32.dll,ShellExec_RunDLL";
-		}
-		else cmd = "rundll32 url.dll,FileProtocolHandler";
-		if (!platformService.exec(cmd, url.toString())) {
-			throw new IOException("Could not open " + url);
-		}
-	}
+	/** Quits ImageJ. */
+	void quit();
+
+	/** Sets the plugin invoked when {@link #about()} is called. */
+	void setAboutHandler(Class<? extends RunnablePlugin> aboutPlugin);
+
+	/** Sets the plugin invoked when {@link #showPrefs()} is called. */
+	void setPrefsHandler(Class<? extends RunnablePlugin> prefsPlugin);
+
+	/** Sets the plugin invoked when {@link #quit()} is called. */
+	void setQuitHandler(Class<? extends RunnablePlugin> quitPlugin);
+
+	/** Gets the plugins associated with this service. */
+	List<Class<? extends RunnablePlugin>> getHandlers();
 
 }

@@ -33,59 +33,62 @@
  * #L%
  */
 
-package imagej.ext;
-
-import imagej.ext.display.ActiveDisplayPreprocessor;
-import imagej.ext.display.DisplayPostprocessor;
-import imagej.ext.plugin.AbstractInputHarvesterPlugin;
-import imagej.ext.plugin.InitPreprocessor;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.ServicePreprocessor;
-import imagej.ext.plugin.debug.DebugPostprocessor;
-import imagej.ext.plugin.debug.DebugPreprocessor;
+package imagej;
 
 /**
  * Constants for specifying an item's priority.
  * 
  * @author Johannes Schindelin
  * @author Curtis Rueden
- * @see Plugin#priority()
+ * @see imagej.ext.plugin.Plugin#priority()
+ * @see imagej.service.Service#priority()
  */
 public class Priority {
 
 	/**
-	 * Priority for processors that must go first in the processor chain.
-	 * Examples: {@link DebugPreprocessor}, {@link DebugPostprocessor}
+	 * Priority for items that must go first in the chain. Examples:
+	 * {@link imagej.ext.plugin.debug.DebugPreprocessor},
+	 * {@link imagej.ext.plugin.debug.DebugPostprocessor}
 	 */
 	public static final double FIRST_PRIORITY = Double.POSITIVE_INFINITY;
 
 	/**
-	 * Priority for processors that strongly prefer to be early in the processor
-	 * chain. Examples: {@link ActiveDisplayPreprocessor},
-	 * {@link ServicePreprocessor}
+	 * Priority for items that strongly prefer to be early in the chain. Examples:
+	 * {@link imagej.ext.display.ActiveDisplayPreprocessor},
+	 * {@link imagej.ext.plugin.ServicePreprocessor}
 	 */
 	public static final double VERY_HIGH_PRIORITY = +10000;
 
 	/**
-	 * Priority for processors that prefer to be earlier in the processor chain.
-	 * Example: {@link InitPreprocessor}
+	 * Priority for items that prefer to be earlier in the chain. Example:
+	 * {@link imagej.ext.plugin.InitPreprocessor}
 	 */
 	public static final double HIGH_PRIORITY = +100;
 
-	/** Default priority for processors. */
+	/** Default priority for items. */
 	public static final double NORMAL_PRIORITY = 0;
 
-	/** Priority for processors that prefer to be later in the processor chain. */
+	/** Priority for items that prefer to be later in the chain. */
 	public static final double LOW_PRIORITY = -100;
 
 	/**
-	 * Priority for processors that strongly prefer to be late in the processor
-	 * chain. Examples: {@link DisplayPostprocessor}, UI-specific subclasses of
-	 * {@link AbstractInputHarvesterPlugin}.
+	 * Priority for items that strongly prefer to be late in the * chain.
+	 * Examples: {@link imagej.ext.display.DisplayPostprocessor}, UI-specific
+	 * subclasses of {@link imagej.ext.plugin.AbstractInputHarvesterPlugin}.
 	 */
 	public static final double VERY_LOW_PRIORITY = -10000;
 
-	/** Priority for processors that must go at the end of the processor chain. */
+	/** Priority for items that must go at the end of the chain. */
 	public static final double LAST_PRIORITY = Double.NEGATIVE_INFINITY;
+
+	/** Compares the two {@link Prioritized} objects. */
+	public static int compare(final Prioritized p1, final Prioritized p2) {
+		final double priority1 = p1.getPriority();
+		final double priority2 = p2.getPriority();
+		if (priority1 == priority2) return 0;
+		// NB: We invert the ordering here, so that large values come first,
+		// rather than the typical natural ordering of smaller values first.
+		return priority1 > priority2 ? -1 : 1;
+	}
 
 }

@@ -35,6 +35,8 @@
 
 package imagej.service;
 
+import imagej.Priority;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -49,9 +51,30 @@ import net.java.sezpoz.Indexable;
  * 
  * @author Curtis Rueden
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Indexable(type = IService.class)
 public @interface Service {
-	// marker interface for discovery via SezPoz
+
+	/**
+	 * Services are selected for instantiation based on priority. This is useful
+	 * to control which service implementation is chosen when multiple
+	 * implementations are present in the classpath, as well as to force
+	 * instantiation of one service over another when the dependency hierarchy
+	 * does not dictate otherwise.
+	 * <p>
+	 * Any double value is allowed, but for convenience, there are some presets:
+	 * </p>
+	 * <ul>
+	 * <li>{@link Priority#FIRST_PRIORITY}</li>
+	 * <li>{@link Priority#VERY_HIGH_PRIORITY}</li>
+	 * <li>{@link Priority#HIGH_PRIORITY}</li>
+	 * <li>{@link Priority#NORMAL_PRIORITY}</li>
+	 * <li>{@link Priority#LOW_PRIORITY}</li>
+	 * <li>{@link Priority#VERY_LOW_PRIORITY}</li>
+	 * <li>{@link Priority#LAST_PRIORITY}</li>
+	 * </ul>
+	 */
+	double priority() default Priority.NORMAL_PRIORITY;
+
 }

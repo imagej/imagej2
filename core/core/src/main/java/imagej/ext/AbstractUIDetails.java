@@ -35,6 +35,8 @@
 
 package imagej.ext;
 
+import imagej.Prioritized;
+import imagej.Priority;
 import imagej.util.StringMaker;
 
 /**
@@ -96,14 +98,6 @@ public abstract class AbstractUIDetails implements UIDetails {
 		return sm.toString();
 	}
 
-	// -- Comparable methods --
-
-	@Override
-	public int compareTo(final UIDetails obj) {
-		if (priority == obj.getPriority()) return 0;
-		return priority > obj.getPriority() ? -1 : 1;
-	}
-
 	// -- UIDetails methods --
 
 	@Override
@@ -138,11 +132,6 @@ public abstract class AbstractUIDetails implements UIDetails {
 	@Override
 	public String getIconPath() {
 		return iconPath;
-	}
-
-	@Override
-	public double getPriority() {
-		return priority;
 	}
 
 	@Override
@@ -240,6 +229,20 @@ public abstract class AbstractUIDetails implements UIDetails {
 	@Override
 	public void setDescription(final String description) {
 		this.description = description;
+	}
+
+	// -- Prioritized methods --
+
+	@Override
+	public double getPriority() {
+		return priority;
+	}
+
+	// -- Comparable methods --
+
+	@Override
+	public int compareTo(final Prioritized p) {
+		return Priority.compare(this, p);
 	}
 
 }
