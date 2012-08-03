@@ -98,12 +98,7 @@ public class CheckSezpozTest {
 			+ "\tpublic ImageJ getContext() { return null; }\n" + "}\n");
 		writer.close();
 
-		final Process process =
-			Runtime.getRuntime().exec(
-				new String[] { "javac", "-classpath",
-					System.getProperty("java.class.path"), "Annotated.java" }, null,
-				sources);
-		assertEquals(process.waitFor(), 0);
+		FileUtils.exec(sources, System.err, System.out, "javac", "-classpath", System.getProperty("java.class.path"), "Annotated.java");
 
 		// to make sure the annotation processor "has not run", we need to copy the
 		// .class file
