@@ -81,4 +81,14 @@ public class Priority {
 	/** Priority for items that must go at the end of the chain. */
 	public static final double LAST_PRIORITY = Double.NEGATIVE_INFINITY;
 
+	/** Compares the two {@link Prioritized} objects. */
+	public static int compare(final Prioritized p1, final Prioritized p2) {
+		final double priority1 = p1.getPriority();
+		final double priority2 = p2.getPriority();
+		if (priority1 == priority2) return 0;
+		// NB: We invert the ordering here, so that large values come first,
+		// rather than the typical natural ordering of smaller values first.
+		return priority1 > priority2 ? -1 : 1;
+	}
+
 }
