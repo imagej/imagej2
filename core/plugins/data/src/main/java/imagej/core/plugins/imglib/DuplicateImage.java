@@ -38,7 +38,6 @@ package imagej.core.plugins.imglib;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
@@ -53,7 +52,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -115,12 +113,12 @@ public class DuplicateImage extends DynamicPlugin {
 	@Parameter(type = ItemIO.OUTPUT)
 	private ImageDisplay outputDisplay;
 
-	@Parameter(label="Duplicate multiple planes")
-	private boolean duplicatePlanes;
+	@Parameter(label = "Current plane only")
+	private boolean currentPlaneOnly;
 	
 	// -- instance variables that are not parameters --
 	
-	private AxisType[] nonXyAxes;
+	private AxisType[] theAxes;
 
 	// -- DuplicateImage methods --
 
@@ -158,6 +156,12 @@ public class DuplicateImage extends DynamicPlugin {
 	@Override
 	public void run() {
 		
+		SamplingService samplingService =
+				new SamplingService(displayService, datasetService, overlayService);
+		SamplingDefinition samplingDefinition = createSamplingDefinition();
+				SamplingDefinition.sampleAllPlanes(inputDisplay);
+		outputDisplay = samplingService.createSampledImage(samplingDefinition);
+		/*
 		final List<List<Long>> planeIndices;
 		
 		// user has specified some ranges for the axes
@@ -187,12 +191,13 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 		outputDisplay = createDisplay(newDataset);
 		attachOverlays(outputDisplay, overlayService.getOverlays(inputDisplay));
+		*/
 	}
 
 	
 	protected void initializer() {
-		nonXyAxes = getNonXyAxes(inputDataset);
-		for (AxisType axis : nonXyAxes) {
+		theAxes = inputDataset.getAxes();
+		for (AxisType axis : theAxes) {
 			final DefaultModuleItem<String> axisItem =
 				new DefaultModuleItem<String>(this, name(axis), String.class);
 			axisItem.setPersisted(false);
@@ -206,6 +211,16 @@ public class DuplicateImage extends DynamicPlugin {
 		return "1-" + ds.dimension(axisIndex);
 	}
 
+	private SamplingDefinition createSamplingDefinition() {
+		if (currentPlaneOnly) {
+			return SamplingDefinition.sampleCompositeXYPlane(inputDisplay);
+		}
+		return SamplingDefinition.sampleAllPlanes(inputDisplay);
+	}
+
+	// TODO - further constrain an axis subrange by the selection
+
+	/*
 	private List<List<Long>> calcPlaneIndices(ImageDisplay display, Dataset dataset) {
 		List<List<Long>> indices = new ArrayList<List<Long>>();
 		for (int i = 0; i < nonXyAxes.length; i++) {
@@ -226,6 +241,7 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 		return indices;
 	}
+	*/
 	
 	// make sure every field can be parsed (spaces between terms optional)
 	// legal entries:
@@ -235,6 +251,7 @@ public class DuplicateImage extends DynamicPlugin {
 	//  "1-4-2"
 	//  "1-4 , 7-10"
 	//  "1-10-2,4-22-3"
+	/*
 	private Tuple2<List<List<Long>>,String> parsePlaneIndices() {
 		List<List<Long>> indices = new ArrayList<List<Long>>();
 		for (int i = 0; i < nonXyAxes.length; i++)
@@ -242,12 +259,13 @@ public class DuplicateImage extends DynamicPlugin {
 		for (int i = 0; i < nonXyAxes.length; i++) {
 			AxisType axis = nonXyAxes[i];
 			String fieldVal = (String) getInput(name(axis));
-			String err = parseAxisDefinition(i, axis, fieldVal, indices);
+			String err = null; //parseAxisDefinition(i, axis, fieldVal, indices);
 			if (err != null) return new Tuple2<List<List<Long>>,String>(null,err);
 		}
 		return new Tuple2<List<List<Long>>,String>(indices,null);
 	}
-
+	*/
+	
 	private AxisType[] getNonXyAxes(Dataset ds) {
 		AxisType[] axes = ds.getAxes();
 		List<AxisType> nonXy = new ArrayList<AxisType>();
@@ -508,17 +526,55 @@ public class DuplicateImage extends DynamicPlugin {
 			return Collections.unmodifiableList(indices);
 		}
 
-		public static AxisSubrange parse(ImageDisplay display, AxisType axis, String definition) {
-			AxisSubrange subrange = new AxisSubrange(display);
-			if (!subrange.parseAxisDefinition(axis, definition))
-				throw new IllegalArgumentException(subrange.getError());
-			return subrange; 
+		public AxisSubrange(ImageDisplay display, long pos) {
+			this(display);
+			indices.add(pos);
 		}
 		
-		private boolean parseAxisDefinition(AxisType axis, String fieldValue)
-		{
+		public AxisSubrange(ImageDisplay display, long startPos, long endPos) {
+			this(display);
+			if (endPos < startPos)
+				throw new IllegalArgumentException("endPos < startPos");
+			if (endPos - startPos + 1 > Integer.MAX_VALUE)
+				throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
+			for (long l = startPos; l <= endPos; l++) {
+				indices.add(l);
+			}
+		}
+		
+		public AxisSubrange(ImageDisplay display, long startPos, long endPos, long by) {
+			this(display);
+			if (endPos < startPos)
+				throw new IllegalArgumentException("endPos < startPos");
+			if (by <= 0)
+				throw new IllegalArgumentException("increment must be > 0");
+			if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
+				throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
+			for (long l = startPos; l <= endPos; l += by) {
+				indices.add(l);
+			}
+		}
+		
+		public AxisSubrange(ImageDisplay display, AxisType axis, String definition, boolean originOne) {
+			this(display);
 			int axisIndex = display.getAxisIndex(axis);
-			long maxDim = display.dimension(axisIndex);
+			long min, max;
+			if (originOne) {
+				min = 1;
+				max = display.dimension(axisIndex);
+			}
+			else { // origin zero
+				min = 0;
+				max = display.dimension(axisIndex) - 1;
+			}
+			if (!parseAxisDefinition(min, max, definition))
+				throw new IllegalArgumentException(getError());
+		}
+
+		// min = origin (like 0 or 1)
+		// max = 
+		private boolean parseAxisDefinition(long min, long max, String fieldValue)
+		{
 			String[] terms = fieldValue.split(",");
 			for (int i = 0; i < terms.length; i++) {
 				terms[i] = terms[i].trim();
@@ -528,38 +584,29 @@ public class DuplicateImage extends DynamicPlugin {
 				Tuple2<Long, Long> numDashNum = numberDashNumber(term);
 				Tuple3<Long, Long, Long> numDashNumDashNum =
 						numberDashNumberDashNumber(term);
+				AxisSubrange subrange;
 				if (num != null) {
-					if (num >= 1 && num <= maxDim) {
-						if (!indices.contains(num-1)) indices.add(num-1);
-					}
+					subrange = new AxisSubrange(display, num-min);
 				}
 				else if (numDashNum != null) {
 					long start = numDashNum.get1();
 					long end = numDashNum.get2();
-					if (start < 1) start = 1;
-					if (start > maxDim) start = maxDim;
-					if (end < 1) end = 1;
-					if (end > maxDim) end = maxDim;
-					
-					for (long i = start; i <= end; i++) {
-						if (!indices.contains(i-1)) indices.add(i-1);
-					}
+					subrange = new AxisSubrange(display, start-min, end-min);
 				}
 				else if (numDashNumDashNum != null) {
 					long start = numDashNumDashNum.get1();
 					long end = numDashNumDashNum.get2();
 					long by = numDashNumDashNum.get3();
-					if (start < 1) start = 1;
-					if (start > maxDim) start = maxDim;
-					if (end < 1) end = 1;
-					if (end > maxDim) end = maxDim;
-					for (long i = start; i <= end; i += by) {
-						if (!indices.contains(i-1)) indices.add(i-1);
-					}
+					subrange = new AxisSubrange(display, start-min, end-min, by);
 				}
 				else {
 					err = "Illegal axis subrange definition : "+fieldValue;
 					return false;
+				}
+				for (long l : subrange.getIndices()) {
+					if (l > max-min) continue;
+					if (indices.contains(l)) continue;
+					indices.add(l);
 				}
 			}
 			Collections.sort(indices);
@@ -617,7 +664,7 @@ public class DuplicateImage extends DynamicPlugin {
 		// - add simple calls in SamplingService to define snapshots that include
 		//     the current selection. Maybe a way to further constrain an axis
 		//     definition to fit within the selection
-		
+		// - define some simple AxisRange constructors: take 1, 2, or 3 longs
 		public AxisType[] getInputAxes() {
 			return display.getAxes();
 		}
@@ -634,11 +681,33 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 		
 		public AxisType[] getOutputAxes() {
-			
+			AxisType[] inputAxes = getInputAxes();
+			List<List<Long>> inputRanges = getInputRanges();
+			int dimCount = 0;
+			for (int i = 0; i < inputRanges.size(); i++) {
+				if (inputRanges.get(i).size() > 1) dimCount++;
+			}
+			AxisType[] outputAxes = new AxisType[dimCount];
+			int d =  0;
+			for (int i = 0; i < inputRanges.size(); i++) {
+				if (inputRanges.get(i).size() > 1) outputAxes[d++] = inputAxes[i];
+			}
+			return outputAxes;
 		}
 		
 		public long[] getOutputDims() {
-			
+			List<List<Long>> inputRanges = getInputRanges();
+			int dimCount = 0;
+			for (int i = 0; i < inputRanges.size(); i++) {
+				if (inputRanges.get(i).size() > 1) dimCount++;
+			}
+			long[] outputDims = new long[dimCount];
+			int d =  0;
+			for (int i = 0; i < inputRanges.size(); i++) {
+				int dimSize = inputRanges.get(i).size();
+				if (dimSize > 1) outputDims[d++] = dimSize;
+			}
+			return outputDims;
 		}
 		
 		public static SamplingDefinition sampleUVPlane(
@@ -651,14 +720,12 @@ public class DuplicateImage extends DynamicPlugin {
 				if ((axis == uAxis) || (axis == vAxis)) {
 					int axisIndex = display.getAxisIndex(axis);
 					long size = display.getExtents().dimension(axisIndex);
-					String axisString = "1-"+size;
-					AxisSubrange subrange = AxisSubrange.parse(display, axis, axisString);
+					AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
 					definition.constrain(axis, subrange);
 				}
 				else { // other axis
 					long pos = display.getLongPosition(axis);
-					String axisString = ""+pos;
-					AxisSubrange subrange = AxisSubrange.parse(display, axis, axisString);
+					AxisSubrange subrange = new AxisSubrange(display, pos);
 					definition.constrain(axis, subrange);
 				}
 			}
@@ -680,14 +747,12 @@ public class DuplicateImage extends DynamicPlugin {
 				if ((axis == uAxis) || (axis == vAxis) || (axis == Axes.CHANNEL)) {
 					int axisIndex = display.getAxisIndex(axis);
 					long size = display.getExtents().dimension(axisIndex);
-					String axisString = "1-"+size;
-					AxisSubrange subrange = AxisSubrange.parse(display, axis, axisString);
+					AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
 					definition.constrain(axis, subrange);
 				}
 				else { // other axis
 					long pos = display.getLongPosition(axis);
-					String axisString = ""+pos;
-					AxisSubrange subrange = AxisSubrange.parse(display, axis, axisString);
+					AxisSubrange subrange = new AxisSubrange(display, pos);
 					definition.constrain(axis, subrange);
 				}
 			}
@@ -704,8 +769,7 @@ public class DuplicateImage extends DynamicPlugin {
 			for (int i = 0; i < axes.length; i++) {
 				AxisType axis = axes[i];
 				long size = display.dimension(i);
-				String axisRangeDef = "1-"+size;
-				AxisSubrange subrange = AxisSubrange.parse(display, axis, axisRangeDef);
+				AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
 				definition.constrain(axis, subrange);
 			}
 			return definition;
@@ -736,9 +800,22 @@ public class DuplicateImage extends DynamicPlugin {
 		long[] next();
 	}
 	
+	private long numElements(List<List<Long>> values) {
+		if (values.size() == 0) return 0;
+		long num = 1;
+		for (int i = 0; i < values.size(); i++) {
+			num *= values.get(i).size();
+		}
+		return num;
+	}
+	
+	// TODO:
+	// -- for speed eliminate reliance on Longs. Make primitive arrays.
+	// -- make a EnormousList that can store more than 2 gig of longs
+	
 	private class SparsePositionIterator implements PositionIterator {
 		private int[] maxIndexes;
-		private List<Integer> indexes;
+		private int[] indexes;
 		private List<List<Long>> actualValues;
 		private long[] currPos;
 		
@@ -748,49 +825,45 @@ public class DuplicateImage extends DynamicPlugin {
 			currPos = new long[maxIndexes.length];
 			for (int i = 0; i < currPos.length; i++)
 				currPos[i] = actualValues.get(i).get(0);
-			currPos[0]--;
-			indexes = new ArrayList<Integer>();
-			int firstValidIndex = 0;
-			indexes.add(firstValidIndex-1);
-			for (int i = 1; i < maxIndexes.length; i++)
-				indexes.add(0);
+			indexes = new int[maxIndexes.length];
+			indexes[0] = -1;
 		}
 
 		@Override
 		public boolean hasNext() {
 			for (int i = 0; i < currPos.length; i++) {
-				if (indexes.get(i) < maxIndexes[i]) return true;
+				if (indexes[i] < maxIndexes[i]) return true;
 			}
 			return false;
 		}
 
 		@Override
 		public long[] next() {
-			for (int i = 0; i < indexes.size(); i++) {
-				int nextPos = indexes.get(i) + 1;
+			for (int i = 0; i < indexes.length; i++) {
+				int nextPos = indexes[i] + 1;
 				if (nextPos <= maxIndexes[i]) {
-					indexes.set(i, nextPos);
+					indexes[i] = nextPos;
 					currPos[i] = actualValues.get(i).get(nextPos);
 					return currPos;
 				}
-				indexes.set(i, 0);
+				indexes[i] = 0;
 				currPos[i] = actualValues.get(i).get(0);
 			}
 			throw new IllegalArgumentException("Can't position iterator beyond end");
 		}
 		
 		private int[] calcMaxes(SamplingDefinition def) {
-			int[] mn = new int[actualValues.size()];
-			for (int i = 0; i < mn.length; i++) {
-				mn[i] = actualValues.get(i).size() - 1;
+			int[] mx = new int[actualValues.size()];
+			for (int i = 0; i < mx.length; i++) {
+				mx[i] = actualValues.get(i).size() - 1;
 			}
-			return mn;
+			return mx;
 		}
 	}
 	
 	private class DensePositionIterator implements PositionIterator {
 		private int[] maxIndexes;
-		private List<Integer> indexes;
+		private int[] indexes;
 		private long[] currPos;
 		
 		public DensePositionIterator(SamplingDefinition def) {
@@ -798,32 +871,32 @@ public class DuplicateImage extends DynamicPlugin {
 			currPos = new long[maxIndexes.length];
 			for (int i = 0; i < currPos.length; i++)
 				currPos[i] = 0;
-			currPos[0]--;
-			indexes = new ArrayList<Integer>();
-			int firstValidIndex = 0;
-			indexes.add(firstValidIndex-1);
-			for (int i = 1; i < maxIndexes.length; i++)
-				indexes.add(0);
+			indexes = new int[maxIndexes.length];
+			indexes[0] = -1;
+			long numElements = 1;
+			for (int i = 0; i < maxIndexes.length; i++) {
+				numElements *= maxIndexes[i] + 1;
+			}
 		}
 
 		@Override
 		public boolean hasNext() {
 			for (int i = 0; i < currPos.length; i++) {
-				if (indexes.get(i) < maxIndexes[i]) return true;
+				if (indexes[i] < maxIndexes[i]) return true;
 			}
 			return false;
 		}
 
 		@Override
 		public long[] next() {
-			for (int i = 0; i < indexes.size(); i++) {
-				int nextPos = indexes.get(i) + 1;
+			for (int i = 0; i < indexes.length; i++) {
+				int nextPos = indexes[i] + 1;
 				if (nextPos <= maxIndexes[i]) {
-					indexes.set(i, nextPos);
+					indexes[i] = nextPos;
 					currPos[i] = nextPos;
 					return currPos;
 				}
-				indexes.set(i, 0);
+				indexes[i] = 0;
 				currPos[i] = 0;
 			}
 			throw new IllegalArgumentException("Can't position iterator beyond end");
@@ -831,13 +904,13 @@ public class DuplicateImage extends DynamicPlugin {
 		
 		private int[] calcMaxes(SamplingDefinition def) {
 			long[] dims = def.getOutputDims();
-			int[] mn = new int[dims.length];
+			int[] mx = new int[dims.length];
 			for (int i = 0; i < dims.length; i++) {
 				if (dims[i] > Integer.MAX_VALUE)
 					throw new IllegalArgumentException("Can only iterate <= 2 gig per dimension");
-				mn[i] = (int) (dims[i] - 1);
+				mx[i] = (int) (dims[i] - 1);
 			}
-			return mn;
+			return mx;
 		}
 	}
 	
@@ -875,14 +948,20 @@ public class DuplicateImage extends DynamicPlugin {
 				double value = inputAccessor.get().getRealDouble();
 				outputAccessor.get().setReal(value);
 			}
+			setCompositeChannelCount(input, output);
+			// TODO - for Organ of Corti the display ranges are all messed up
 			/* TODO
-			setCompositeChannelCount();
 			setColorTables();
 			setOtherMetadata();
 			attachOverlays();
 			*/
 			outputImage.update();
 			return outputImage;
+		}
+		
+		public ImageDisplay duplicate(ImageDisplay display) {
+			SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
+			return createSampledImage(copyDef);
 		}
 		
 		private ImageDisplay createOutputImage(SamplingDefinition def) {
@@ -901,5 +980,11 @@ public class DuplicateImage extends DynamicPlugin {
 			return (ImageDisplay) displayService.createDisplay(name, output);
 		}
 		
+		private void setCompositeChannelCount(Dataset input, Dataset output) {
+			if (input.getCompositeChannelCount() == 1) return;
+			int index = output.getAxisIndex(Axes.CHANNEL);
+			long numChannels = (index < 0) ? 1 : output.dimension(index);
+			output.setCompositeChannelCount((int)numChannels);
+		}
 	}
 }
