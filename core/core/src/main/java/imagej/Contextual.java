@@ -36,12 +36,11 @@
 package imagej;
 
 /**
- * This interface lets an object communicate the ImageJ instance
- * that was used to create it.
+ * An object that belongs to an ImageJ application context.
  * 
  * @author Lee Kamentsky
  */
-public interface IContext {
+public interface Contextual {
 
 	/** Gets the instance of ImageJ in which the object lives. */
 	ImageJ getContext();

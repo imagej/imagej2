@@ -35,7 +35,7 @@
 
 package imagej.service;
 
-import imagej.IContext;
+import imagej.Contextual;
 import imagej.Prioritized;
 
 /**
@@ -46,6 +46,6 @@ import imagej.Prioritized;
  * @author Curtis Rueden
  * @see Service
  */
-public interface IService extends IContext, Prioritized {
+public interface IService extends Contextual, Prioritized {
 	// top-level marker interface for discovery via SezPoz
 }

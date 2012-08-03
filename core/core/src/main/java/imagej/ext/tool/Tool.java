@@ -35,7 +35,7 @@
 
 package imagej.ext.tool;
 
-import imagej.IContext;
+import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
@@ -62,7 +62,7 @@ import imagej.ext.plugin.PluginInfo;
  * @author Curtis Rueden
  * @see ToolService
  */
-public interface Tool extends IPlugin, IContext {
+public interface Tool extends IPlugin, Contextual {
 
 	/** Gets the info describing the tool. */
 	PluginInfo<? extends Tool> getInfo();

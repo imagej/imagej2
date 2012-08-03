@@ -35,7 +35,7 @@
 
 package imagej.ext.display;
 
-import imagej.IContext;
+import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.ext.plugin.IPlugin;
 
@@ -52,7 +52,7 @@ import java.util.List;
  * @author Grant Harris
  * @see TextDisplay
  */
-public interface Display<T> extends List<T>, IPlugin, IContext {
+public interface Display<T> extends List<T>, IPlugin, Contextual {
 
 	/**
 	 * Set the ImageJ service context for the display. This should only be done

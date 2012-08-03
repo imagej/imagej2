@@ -65,7 +65,7 @@ public abstract class AbstractService implements IService {
 		return getClass().getName() + " [priority = " + getPriority() + "]";
 	}
 
-	// -- IContext methods --
+	// -- Contextual methods --
 
 	@Override
 	public ImageJ getContext() {

@@ -35,7 +35,7 @@
 
 package imagej.ext.menu;
 
-import imagej.IContext;
+import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.MenuEntry;
@@ -81,7 +81,7 @@ import java.util.Map;
  * @see MenuEntry
  */
 public class ShadowMenu implements Comparable<ShadowMenu>,
-	Collection<ModuleInfo>, Runnable, IContext
+	Collection<ModuleInfo>, Runnable, Contextual
 {
 
 	/** Icon to use for leaf entries by default, if no icon is specified. */
@@ -459,7 +459,7 @@ public class ShadowMenu implements Comparable<ShadowMenu>,
 		return result;
 	}
 
-	// -- IContext methods --
+	// -- Contextual methods --
 
 	@Override
 	public ImageJ getContext() {
