@@ -43,7 +43,11 @@ package imagej;
  * @see imagej.ext.plugin.Plugin#priority()
  * @see imagej.service.Service#priority()
  */
-public class Priority {
+public final class Priority {
+
+	private Priority() {
+		// prevent instantiation of utility class
+	}
 
 	/**
 	 * Priority for items that must go first in the chain. Examples:
