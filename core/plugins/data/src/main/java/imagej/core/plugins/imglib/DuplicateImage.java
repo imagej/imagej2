@@ -71,18 +71,25 @@ import net.imglib2.type.numeric.RealType;
 //   2) maintain overlays: does an overlay in Z == 7 show up on correct slice
 //      in output data?
 //   3) report parse error string somehow
-//   4) attach duplicate planes bool at runtime. if its an XY only image it
-//      should not get attached. and the harvester shouldn't then show an empty
-//      dialog but just run.
 //   5) test the contains(num) code works
-//   6) eliminate restriction of X and Y axes as being constrained by user
-//   7) duplicate a single plane creates Z etc. axis of size 1. Eliminate.
 //   8) finish headless user API
+// TODO - further constrain an axis subrange by the selection
+// TODO - multiple places I'm relying on a Display's axes rather than a
+// Dataset's axes. See if there are problems with this
+// TODO :
+// - add simple calls in SamplingService to define snapshots that include
+//     the current selection. Maybe a way to further constrain an axis
+//     definition to fit within the selection
+// TODO - the iterators work with Lists which can only hold 2 gig or fewer
+// elements. Thus data cannot be copied > 2 gig per dimension.
+// TODO:
+// -- for speed eliminate reliance on Longs. Make primitive arrays.
+// -- make a EnormousList that can store more than 2 gig of longs
 
 /**
  * Duplicates data from one input display to an output display. The planes to
- * be duplicated can be specified via dialog parameters. The XY coordinates of
- * the planes are determined by the current selection bounds.
+ * be duplicated can be specified via dialog parameters. The XY coordinates can
+ * be further constrained to be a subset of the current selection bounds.
  * 
  * @author Barry DeZonia
  */
@@ -107,26 +114,44 @@ public class DuplicateImage extends DynamicPlugin {
 	@Parameter
 	private ImageDisplay inputDisplay;
 
-	@Parameter
-	private Dataset inputDataset;
-
 	@Parameter(type = ItemIO.OUTPUT)
 	private ImageDisplay outputDisplay;
 
 	@Parameter(label = "Current plane only")
-	private boolean currentPlaneOnly;
+	private boolean currentPlaneOnly = true;
 	
 	// -- instance variables that are not parameters --
-	
+
+	private SamplingDefinition samples;
 	private AxisType[] theAxes;
 
 	// -- DuplicateImage methods --
 
+	Finish up initializing "samples" and "currentPlane" when user changes them
+	and when they default to dialog parsed values.
+	I was not yet done making this bulletproof for both headless and gui usage
+	
+	public void setCurrentPlaneOnly(boolean value) {
+		if (currentPlaneOnly != value) samples = null;
+		currentPlaneOnly = value;
+	}
+	
+	public boolean isCurrentPlaneOnly() { return currentPlaneOnly; }
 
+	public void setInputDisplay(ImageDisplay disp) {
+		inputDisplay = disp;
+		samples = null;
+	}
+	
+	public ImageDisplay getInputDisplay() { return inputDisplay; }
+	
+	public ImageDisplay getOutputDisplay() { return outputDisplay; }
+	
+	
 	/**
 	 * Sets the range of values to copy from the input display for the given axis.
 	 * The definition is a textual language that allows one or more planes to be
-	 * defined by 1 or more comma separated values. Some examples:
+	 * defined by one or more comma separated values. Some examples:
 	 * <p>
 	 * <ul>
 	 * <li>"1" : plane 1</li>
@@ -134,33 +159,36 @@ public class DuplicateImage extends DynamicPlugin {
 	 * <li>"1-10" : planes 1 through 10</li>
 	 * <li>"1-10,20-30" : planes 1 through 10 and 20 through 30</li>
 	 * <li>"1-10-2,20-30-3" : planes 1 through 10 by 2 and planes 20 through 30 by 3</li>
-	 * <li>"1,3-5,12-60-6" : each type of specification can be combined </li>
+	 * <li>"1,3-5,12-60-6" : this shows each type of specification can be combined </li>
 	 * </ul>
 	 * 
 	 * @param axis
-	 * @param definition
+	 * @param axisDefinition
+	 * @param originIsOne
 	 * @return null if successful else a message describing input error
 	 */
-	public String setAxisRange(AxisType axis, String definition) {
-		if (Axes.isXY(axis)) {
-			return "X and Y axes cannot be constrained";
+	public String setAxisRange(AxisType axis, String axisDefinition, boolean originIsOne) {
+		if (samples == null) { 
+			if (currentPlaneOnly)
+				samples = SamplingDefinition.sampleCompositeXYPlane(inputDisplay);
+			else
+				samples = SamplingDefinition.sampleAllPlanes(inputDisplay);
 		}
-		if (inputDisplay.getAxisIndex(axis) < 0) {
-			return "Axis "+axis+" not present in input data";
+		AxisSubrange subrange = new AxisSubrange(inputDisplay, axis, axisDefinition, originIsOne);
+		if (subrange.getError() == null) {
+			samples.constrain(axis, subrange);
 		}
-		return null;
+		return subrange.getError();
 	}
 	
 	// -- RunnablePlugin methods --
 
 	@Override
 	public void run() {
-		
 		SamplingService samplingService =
 				new SamplingService(displayService, datasetService, overlayService);
-		SamplingDefinition samplingDefinition = createSamplingDefinition();
-				SamplingDefinition.sampleAllPlanes(inputDisplay);
-		outputDisplay = samplingService.createSampledImage(samplingDefinition);
+		if (samples == null) samples = determineSamples();
+		outputDisplay = samplingService.createSampledImage(samples);
 		/*
 		final List<List<Long>> planeIndices;
 		
@@ -196,29 +224,40 @@ public class DuplicateImage extends DynamicPlugin {
 
 	
 	protected void initializer() {
-		theAxes = inputDataset.getAxes();
+		theAxes = inputDisplay.getAxes();
 		for (AxisType axis : theAxes) {
 			final DefaultModuleItem<String> axisItem =
 				new DefaultModuleItem<String>(this, name(axis), String.class);
 			axisItem.setPersisted(false);
-			axisItem.setValue(this, fullRangeString(inputDataset, axis));
+			axisItem.setValue(this, fullRangeString(inputDisplay, axis));
 			addInput(axisItem);
 		}
 	}
 
-	private String fullRangeString(Dataset ds, AxisType axis) {
-		int axisIndex = ds.getAxisIndex(axis);
-		return "1-" + ds.dimension(axisIndex);
+	private String fullRangeString(ImageDisplay disp, AxisType axis) {
+		int axisIndex = disp.getAxisIndex(axis);
+		return "1-" + disp.dimension(axisIndex);
 	}
 
-	private SamplingDefinition createSamplingDefinition() {
+	private SamplingDefinition determineSamples() {
 		if (currentPlaneOnly) {
 			return SamplingDefinition.sampleCompositeXYPlane(inputDisplay);
 		}
-		return SamplingDefinition.sampleAllPlanes(inputDisplay);
+		return parsedDefinition();
 	}
 
-	// TODO - further constrain an axis subrange by the selection
+	private SamplingDefinition parsedDefinition() {
+		SamplingDefinition sampleDef = SamplingDefinition.sampleAllPlanes(inputDisplay);
+		for (AxisType axis : theAxes) {
+			String definition = (String) getInput(name(axis));
+			AxisSubrange subrange = new AxisSubrange(inputDisplay, axis, definition, true);
+			if (subrange.getError() != null)
+				return SamplingDefinition.sampleAllPlanes(inputDisplay);
+			sampleDef.constrain(axis, subrange);
+		}
+		return sampleDef;
+	}
+	
 
 	/*
 	private List<List<Long>> calcPlaneIndices(ImageDisplay display, Dataset dataset) {
@@ -266,6 +305,7 @@ public class DuplicateImage extends DynamicPlugin {
 	}
 	*/
 	
+	/*
 	private AxisType[] getNonXyAxes(Dataset ds) {
 		AxisType[] axes = ds.getAxes();
 		List<AxisType> nonXy = new ArrayList<AxisType>();
@@ -348,6 +388,9 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 	}
 
+	*/
+
+	/*
 	private class DualPlaneIterator {
 
 		private long[] srcPos;
@@ -478,6 +521,8 @@ public class DuplicateImage extends DynamicPlugin {
 		return true;
 	}
 	
+	*/
+
 	private String name(AxisType axis) {
 		return axis.getLabel() + " axis range";
 	}
@@ -505,9 +550,10 @@ public class DuplicateImage extends DynamicPlugin {
 	 *       in M-space. M is less or equal (in size and/or num dims) to N space.
 	 */
 	
-	// TODO - multiple places I'm relying on a Display's axes rather than a
-	// Dataset's axes. See if there are problems with this
 	
+	/**
+	 * @author Barry DeZonia
+	 */
 	private static class AxisSubrange {
 
 		private ImageDisplay display;
@@ -643,6 +689,9 @@ public class DuplicateImage extends DynamicPlugin {
 		
 	}
 	
+	/**
+	 * @author Barry DeZonia
+	 */
 	private static class SamplingDefinition {
 		private ImageDisplay display;
 		private Map<AxisType,AxisSubrange> axisSubranges;
@@ -658,13 +707,7 @@ public class DuplicateImage extends DynamicPlugin {
 		
 		public String getError() { return err; }
 
-		// TODO :
-		// - make a simple duplicate call in SamplingService
-		// - make 0 vs. 1 based axis definition parsing
-		// - add simple calls in SamplingService to define snapshots that include
-		//     the current selection. Maybe a way to further constrain an axis
-		//     definition to fit within the selection
-		// - define some simple AxisRange constructors: take 1, 2, or 3 longs
+
 		public AxisType[] getInputAxes() {
 			return display.getAxes();
 		}
@@ -792,27 +835,18 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 	}
 
-	// TODO - the iterators work with Lists which can only hold 2 gig or fewer
-	// elements. Thus data cannot be copied > 2 gig per dimension.
-	
+	/**
+	 * @author Barry DeZonia
+	 */
 	private interface PositionIterator {
 		boolean hasNext();
 		long[] next();
 	}
 	
-	private long numElements(List<List<Long>> values) {
-		if (values.size() == 0) return 0;
-		long num = 1;
-		for (int i = 0; i < values.size(); i++) {
-			num *= values.get(i).size();
-		}
-		return num;
-	}
 	
-	// TODO:
-	// -- for speed eliminate reliance on Longs. Make primitive arrays.
-	// -- make a EnormousList that can store more than 2 gig of longs
-	
+	/**
+	 * @author Barry DeZonia
+	 */
 	private class SparsePositionIterator implements PositionIterator {
 		private int[] maxIndexes;
 		private int[] indexes;
@@ -861,6 +895,9 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 	}
 	
+	/**
+	 * @author Barry DeZonia
+	 */
 	private class DensePositionIterator implements PositionIterator {
 		private int[] maxIndexes;
 		private int[] indexes;
@@ -913,7 +950,10 @@ public class DuplicateImage extends DynamicPlugin {
 			return mx;
 		}
 	}
-	
+
+	/**
+	 * @author Barry DeZonia
+	 */
 	private class SamplingService {
 
 		private final DisplayService displayService;
@@ -949,8 +989,9 @@ public class DuplicateImage extends DynamicPlugin {
 				outputAccessor.get().setReal(value);
 			}
 			setCompositeChannelCount(input, output);
-			// TODO - for Organ of Corti the display ranges are all messed up
+			// TODO - for 16 bit images the display ranges are all messed up
 			/* TODO
+			set display ranges from input?
 			setColorTables();
 			setOtherMetadata();
 			attachOverlays();
