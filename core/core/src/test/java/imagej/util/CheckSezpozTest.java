@@ -92,10 +92,16 @@ public class CheckSezpozTest {
 		final File source = new File(sources, "Annotated.java");
 		final FileWriter writer = new FileWriter(source);
 		writer.append("import imagej.ImageJ;\n"
+			+ "import imagej.Prioritized;\n"
+			+ "import imagej.service.IService;\n"
 			+ "import imagej.service.Service;\n"
-			+ "import imagej.service.IService;\n" + "\n" + "@Service\n"
+			+ "\n"
+			+ "@Service\n"
 			+ "public class Annotated implements IService {\n"
-			+ "\tpublic ImageJ getContext() { return null; }\n" + "}\n");
+			+ "\tpublic double getPriority() { return 0; }\n"
+			+ "\tpublic int compareTo(final Prioritized other) { return 0; }\n"
+			+ "\tpublic ImageJ getContext() { return null; }\n"
+			+ "}\n");
 		writer.close();
 
 		FileUtils.exec(sources, System.err, System.out, "javac", "-classpath", System.getProperty("java.class.path"), "Annotated.java");
