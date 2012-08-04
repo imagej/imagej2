@@ -13,8 +13,8 @@
 
 	<artifactId>ij-options</artifactId>
 
-	<name>ImageJ Core: Options</name>
-	<description>The options component provides some shared preferences between areas of ImageJ.</description>
+	<name>ImageJ Core Options</name>
+	<description>The core options component contains some built-in shared preferences for ImageJ. These options appear in the Edit > Options menu.</description>
 
 	<dependencies>
 		<dependency>
