@@ -41,14 +41,12 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
-
 /**
  * Dummy helper plugin that turns a Dataset into a Display by passing it through
  * the plugin service. The plugin service runs pre and post processors which
  * helps avoid otherwise finicky initialization paths.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(headless = true)
 public class LoadDataset implements ImageJPlugin {

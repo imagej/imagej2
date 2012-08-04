@@ -35,7 +35,6 @@
 
 package imagej.ext.module;
 
-
 /**
  * A module processor defines some sort of processing that occurs on a module
  * instance, typically immediately preceding (see {@link ModulePreprocessor}) or

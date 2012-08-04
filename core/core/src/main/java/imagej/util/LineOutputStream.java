@@ -32,12 +32,13 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.util;
 
 import java.io.OutputStream;
 
 /**
- * This class hide a line-based output behind an {@link OutputStream}
+ * This class hides a line-based output behind an {@link OutputStream}.
  * 
  * Only the abstract method {@link #println(String)} needs to be overridden; the other
  * methods in {@link OutputStream} are overridden in this class already to buffer

@@ -42,11 +42,10 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
 
-
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(iconPath = "/icons/bricks.png", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,

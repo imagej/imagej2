@@ -45,7 +45,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
 
-
 // TODO - write code that captures part of the screen as a merged color Dataset.
 // Then use it for Capture Screen, Capture Image, and Flatten. Can get rid of
 // the capture logic in the ImageDisplayViewer hierarchy. And can get rid of
@@ -58,7 +57,6 @@ import imagej.ui.UIService;
  * plugin includes window frame graphics in the captured image.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(iconPath = "/icons/bricks.png", menu = {
 	@Menu(label = MenuConstants.PLUGINS_LABEL, weight = MenuConstants.PLUGINS_WEIGHT,

@@ -48,6 +48,8 @@ import javax.swing.JPanel;
  * Thanks to Jason S of StackOverflow for <a
  * href="http://stackoverflow.com/a/1224207">his example code</a>.
  * </p>
+ * 
+ * @author Curtis Rueden
  */
 public class CheckBoxNodePanel extends JPanel {
 

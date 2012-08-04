@@ -32,6 +32,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.util;
 
 import java.io.BufferedReader;

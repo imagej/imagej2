@@ -57,6 +57,11 @@ import net.java.sezpoz.IndexItem;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link CheckSezpoz}.
+ * 
+ * @author Johannes Schindelin
+ */
 public class CheckSezpozTest {
 
 	@Test

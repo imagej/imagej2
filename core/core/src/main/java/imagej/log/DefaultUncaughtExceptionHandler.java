@@ -35,7 +35,6 @@
 
 package imagej.log;
 
-
 import java.lang.Thread.UncaughtExceptionHandler;
 
 /**

@@ -43,13 +43,11 @@ import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
-
 /**
  * An {@link ImageGrabber} creates a merged color {@link Dataset} from a
  * {@link DatasetView}. Note that it does not include overlay graphics.
  * 
  * @author Barry DeZonia
- *
  */
 public class ImageGrabber {
 	private final DatasetService service;

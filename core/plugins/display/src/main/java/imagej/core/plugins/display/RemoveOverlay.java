@@ -48,12 +48,10 @@ import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
-
 /**
  * Removes the currently selected overlay from all displays
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,

@@ -78,6 +78,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class CheckSezpoz {
 
 	public static boolean verbose;

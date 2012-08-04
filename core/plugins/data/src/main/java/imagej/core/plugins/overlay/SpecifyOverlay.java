@@ -54,9 +54,9 @@ import imagej.ext.plugin.Plugin;
 // selected ROI rather than hatch a new one (which we might not want).
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
