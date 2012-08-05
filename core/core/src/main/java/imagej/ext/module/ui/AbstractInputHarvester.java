@@ -43,7 +43,6 @@ import imagej.ext.module.ModuleItem;
 import imagej.util.ClassUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
-import imagej.util.NumberUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -104,7 +103,6 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		for (final ModuleItem<?> item : inputs) {
 			final String name = item.getName();
 			module.setResolved(name, true);
-			saveValue(module, item);
 		}
 	}
 
@@ -126,30 +124,24 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 			return model;
 		}
 
-		final T defaultValue = item.getValue(module);
-		final T prefValue = item.loadValue();
-		final T initialValue = getInitialValue(prefValue, defaultValue, type);
-
 		if (ClassUtils.isNumber(type)) {
-			addNumber(inputPanel, model, (Number) initialValue);
+			addNumber(inputPanel, model);
 		}
 		else if (ClassUtils.isText(type)) {
-			final String sInitialValue =
-				ClassUtils.convert(initialValue, String.class);
-			addTextField(inputPanel, model, sInitialValue);
+			addTextField(inputPanel, model);
 		}
 		else if (ClassUtils.isBoolean(type)) {
-			addToggle(inputPanel, model, (Boolean) initialValue);
+			addToggle(inputPanel, model);
 		}
 		else if (File.class.isAssignableFrom(type)) {
-			addFile(inputPanel, model, (File) initialValue);
+			addFile(inputPanel, model);
 		}
 		else if (ColorRGB.class.isAssignableFrom(type)) {
-			addColor(inputPanel, model, (ColorRGB) initialValue);
+			addColor(inputPanel, model);
 		}
 		else {
 			try {
-				addObject(inputPanel, model, initialValue);
+				addObject(inputPanel, model);
 			}
 			catch (final ModuleException e) {
 				if (item.isRequired()) {
@@ -170,23 +162,13 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		inputPanel.addMessage(message);
 	}
 
-	private void addNumber(final InputPanel inputPanel, final WidgetModel model,
-		final Number initialValue)
-	{
-		final ModuleItem<?> item = model.getItem();
-		final Class<?> type = item.getType();
-
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-
-		final Number iValue =
-			NumberUtils.clampToRange(type, initialValue, min, max);
-		model.setValue(iValue);
+	private void addNumber(final InputPanel inputPanel, final WidgetModel model) {
+		// CTR FIXME: ensure initial value is clamped to min/max range
 		inputPanel.addNumber(model);
 	}
 
 	private void addTextField(final InputPanel inputPanel,
-		final WidgetModel model, final String initialValue)
+		final WidgetModel model)
 	{
 		final ModuleItem<?> item = model.getItem();
 		final List<?> itemChoices = item.getChoices();
@@ -195,66 +177,32 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 			choices[i] = itemChoices.get(i).toString();
 		}
 		if (choices.length > 0) {
-			final String iValue = initialValue == null ? choices[0] : initialValue;
-			model.setValue(iValue);
+			// CTR FIXME: ensure initial null value becomes choices[0] instead
 			inputPanel.addChoice(model);
 		}
 		else {
-			final String iValue = initialValue == null ? "" : initialValue;
-			model.setValue(iValue);
+			// CTR FIXME: ensure initial null value becomes "" instead
 			inputPanel.addTextField(model);
 		}
 	}
 
-	private void addToggle(final InputPanel inputPanel, final WidgetModel model,
-		final Boolean initialValue)
-	{
-		model.setValue(initialValue == null ? Boolean.FALSE : initialValue);
+	private void addToggle(final InputPanel inputPanel, final WidgetModel model) {
+		// CTR FIXME: ensure initial null value becomes Boolean.FALSE instead
 		inputPanel.addToggle(model);
 	}
 
-	private void addFile(final InputPanel inputPanel, final WidgetModel model,
-		final File initialValue)
-	{
-		model.setValue(initialValue);
+	private void addFile(final InputPanel inputPanel, final WidgetModel model) {
 		inputPanel.addFile(model);
 	}
 
-	private void addColor(final InputPanel inputPanel, final WidgetModel model,
-		final ColorRGB initialValue)
-	{
-		model.setValue(initialValue);
+	private void addColor(final InputPanel inputPanel, final WidgetModel model) {
 		inputPanel.addColor(model);
 	}
 
-	private void addObject(final InputPanel inputPanel, final WidgetModel model,
-		final Object initialValue) throws ModuleException
-	{
-		model.setValue(initialValue);
-		inputPanel.addObject(model);
-	}
-
-	// -- Helper methods - initial value computation --
-
-	private <T> T getInitialValue(final Object prefValue,
-		final Object defaultValue, final Class<T> type)
-	{
-		if (prefValue != null) return ClassUtils.convert(prefValue, type);
-		if (defaultValue != null) return ClassUtils.convert(defaultValue, type);
-		return ClassUtils.getNullValue(type);
-	}
-
-	// -- Helper methods - other --
-
-	/** Saves the value of the given module item to persistent storage. */
-	private <T> void saveValue(final Module module, final ModuleItem<T> item)
+	private void addObject(final InputPanel inputPanel, final WidgetModel model)
 		throws ModuleException
 	{
-		final T value = item.getValue(module);
-		if (value == null) {
-			if (item.isRequired()) throw new ModuleCanceledException();
-		}
-		item.saveValue(value);
+		inputPanel.addObject(model);
 	}
 
 }
