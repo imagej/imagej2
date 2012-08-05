@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
@@ -42,46 +42,35 @@ import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Wand Tool dialog.
+ * Runs the Plugins::Script::Options dialog.
  * 
- * @author Barry DeZonia
+ * @author Grant Harris
  */
 @Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
-		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Wand Tool...", weight = 8) })
-public class OptionsWandTool extends OptionsPlugin {
+	@Menu(label = MenuConstants.PLUGINS_LABEL,
+		weight = MenuConstants.PLUGINS_WEIGHT,
+		mnemonic = MenuConstants.PLUGINS_MNEMONIC),
+	@Menu(label = "Script", mnemonic = 's'),
+	@Menu(label = "Options...", weight = 3) })
+public class OptionsScript extends OptionsPlugin {
 
-	// TODO - use an enum for mode
+	/** Scripting language to use when recording macros. */
+	// TODO - initial value faked for now
+	@Parameter(label = "Scripting Language")
+	private String scriptingLang = "javascript";
 
-	@Parameter(label = "Mode",
-		choices = { "Legacy", "4-connected", "8-connected" })
-	private String mode = "Legacy";
+	// -- OptionsScript methods --
 
-	@Parameter(label = "Tolerance")
-	private double tolerance = 0;
-
-	// -- OptionsWandTool methods --
-
-	public OptionsWandTool() {
+	public OptionsScript() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public String getMode() {
-		return mode;
+	public String getScriptingLang() {
+		return scriptingLang;
 	}
 
-	public double getTolerance() {
-		return tolerance;
-	}
-
-	public void setMode(final String mode) {
-		this.mode = mode;
-	}
-
-	public void setTolerance(final double tolerance) {
-		this.tolerance = tolerance;
+	public void setScriptingLang(final String scriptingLang) {
+		this.scriptingLang = scriptingLang;
 	}
 
 }

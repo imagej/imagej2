@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
@@ -42,7 +42,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Proxy Settings dialog.
+ * Runs the Edit::Options::Wand Tool dialog.
  * 
  * @author Barry DeZonia
  */
@@ -50,46 +50,38 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Proxy Settings...", weight = 13) })
-public class OptionsProxy extends OptionsPlugin {
+	@Menu(label = "Wand Tool...", weight = 8) })
+public class OptionsWandTool extends OptionsPlugin {
 
-	@Parameter(label = "Proxy Server")
-	private String proxyServer = "";
+	// TODO - use an enum for mode
 
-	@Parameter(label = "Port")
-	private int port = 8080;
+	@Parameter(label = "Mode",
+		choices = { "Legacy", "4-connected", "8-connected" })
+	private String mode = "Legacy";
 
-	@Parameter(label = "Or, use system proxy settings")
-	private boolean useSystemProxy = false;
+	@Parameter(label = "Tolerance")
+	private double tolerance = 0;
 
-	// -- OptionsProxy methods --
+	// -- OptionsWandTool methods --
 
-	public OptionsProxy() {
+	public OptionsWandTool() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public String getProxyServer() {
-		return proxyServer;
+	public String getMode() {
+		return mode;
 	}
 
-	public int getPort() {
-		return port;
+	public double getTolerance() {
+		return tolerance;
 	}
 
-	public boolean isUseSystemProxy() {
-		return useSystemProxy;
+	public void setMode(final String mode) {
+		this.mode = mode;
 	}
 
-	public void setProxyServer(final String proxyServer) {
-		this.proxyServer = proxyServer;
-	}
-
-	public void setPort(final int port) {
-		this.port = port;
-	}
-
-	public void setUseSystemProxy(final boolean useSystemProxy) {
-		this.useSystemProxy = useSystemProxy;
+	public void setTolerance(final double tolerance) {
+		this.tolerance = tolerance;
 	}
 
 }

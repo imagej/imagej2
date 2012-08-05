@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
@@ -42,7 +42,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Point Tool dialog.
+ * Runs the Edit::Options::DICOM dialog.
  * 
  * @author Barry DeZonia
  */
@@ -50,68 +50,46 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Point Tool...", weight = 7) })
-public class OptionsPointTool extends OptionsPlugin {
+	@Menu(label = "DICOM...", weight = 15) })
+public class OptionsDicom extends OptionsPlugin {
 
-	@Parameter(label = "Mark Width (pixels)")
-	private int markWidth = 0;
+	@Parameter(label = "Open as 32-bit float")
+	private boolean openAs32bitFloat = false;
 
-	@Parameter(label = "Auto-Measure")
-	private boolean autoMeasure = false;
+	@Parameter(label = "Orthogonal Views: Rotate YZ")
+	private boolean rotateYZ = false;
 
-	@Parameter(label = "Auto-Next Slice")
-	private boolean autoNextSlice = false;
+	@Parameter(label = "Orthogonal Views: Rotate XZ")
+	private boolean rotateXZ = false;
 
-	@Parameter(label = "Add to ROI Manager")
-	private boolean addToRoiMgr = false;
+	// -- OptionsDicom methods --
 
-	@Parameter(label = "Label Points")
-	private boolean labelPoints = true;
-
-	// -- OptionsPointTool methods --
-
-	public OptionsPointTool() {
+	public OptionsDicom() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public int getMarkWidth() {
-		return markWidth;
+	public boolean isOpenAs32bitFloat() {
+		return openAs32bitFloat;
 	}
 
-	public boolean isAutoMeasure() {
-		return autoMeasure;
+	public boolean isRotateYZ() {
+		return rotateYZ;
 	}
 
-	public boolean isAutoNextSlice() {
-		return autoNextSlice;
+	public boolean isRotateXZ() {
+		return rotateXZ;
 	}
 
-	public boolean isAddToRoiMgr() {
-		return addToRoiMgr;
+	public void setOpenAs32bitFloat(final boolean openAs32bitFloat) {
+		this.openAs32bitFloat = openAs32bitFloat;
 	}
 
-	public boolean isLabelPoints() {
-		return labelPoints;
+	public void setRotateYZ(final boolean rotateYZ) {
+		this.rotateYZ = rotateYZ;
 	}
 
-	public void setMarkWidth(final int markWidth) {
-		this.markWidth = markWidth;
-	}
-
-	public void setAutoMeasure(final boolean autoMeasure) {
-		this.autoMeasure = autoMeasure;
-	}
-
-	public void setAutoNextSlice(final boolean autoNextSlice) {
-		this.autoNextSlice = autoNextSlice;
-	}
-
-	public void setAddToRoiMgr(final boolean addToRoiMgr) {
-		this.addToRoiMgr = addToRoiMgr;
-	}
-
-	public void setLabelPoints(final boolean labelPoints) {
-		this.labelPoints = labelPoints;
+	public void setRotateXZ(final boolean rotateXZ) {
+		this.rotateXZ = rotateXZ;
 	}
 
 }

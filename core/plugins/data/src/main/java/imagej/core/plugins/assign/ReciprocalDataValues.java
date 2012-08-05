@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.core.options.OptionsMisc;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
@@ -48,7 +49,6 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsService;
-import imagej.options.plugins.OptionsMisc;
 import net.imglib2.ops.operation.unary.real.RealReciprocal;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;

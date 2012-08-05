@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.config.ConfigFileParameters;
 import imagej.ext.menu.MenuConstants;

@@ -36,10 +36,10 @@
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.core.options.OptionsMemoryAndThreads;
 import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
-import imagej.options.plugins.OptionsMemoryAndThreads;
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
 

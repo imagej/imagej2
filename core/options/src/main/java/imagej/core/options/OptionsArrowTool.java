@@ -33,16 +33,18 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
+import imagej.util.ColorRGB;
+import imagej.util.Colors;
 
 /**
- * Runs the Edit::Options::Compiler dialog.
+ * Runs the Edit::Options::Arrow Tool dialog.
  * 
  * @author Barry DeZonia
  */
@@ -50,37 +52,82 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Compiler...", weight = 14) })
-public class OptionsCompiler extends OptionsPlugin {
+	@Menu(label = "Arrow Tool...", weight = 6) })
+public class OptionsArrowTool extends OptionsPlugin {
 
-	// TODO - use enum for targetJavaVersion?
+	@Parameter(label = "Width", min = "1", max = "50")
+	private int arrowWidth = 2;
 
-	@Parameter(label = "Target", choices = { "1.4", "1.5", "1.6", "1.7" })
-	private String targetJavaVersion = "1.5";
+	@Parameter(label = "Size", min = "0", max = "30")
+	private int arrowSize = 10;
 
-	@Parameter(label = "Generate debugging ino (javac -g)")
-	private boolean generateDebugInfo = false;
+	@Parameter(label = "Color")
+	private ColorRGB arrowColor = Colors.BLACK;
 
-	// -- OptionsCompiler methods --
+	// TODO - use enum for arrowStyle
 
-	public OptionsCompiler() {
+	@Parameter(label = "Style", choices = { "Filled", "Notched", "Open",
+		"Headless" })
+	private String arrowStyle = "Filled";
+
+	@Parameter(label = "Outline")
+	private boolean arrowOutline = false;
+
+	@Parameter(label = "Double headed")
+	private boolean arrowDoubleHeaded = false;
+
+	// -- OptionsArrowTool methods --
+
+	public OptionsArrowTool() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public String getTargetJavaVersion() {
-		return targetJavaVersion;
+	public int getArrowWidth() {
+		return arrowWidth;
 	}
 
-	public boolean isGenerateDebugInfo() {
-		return generateDebugInfo;
+	public int getArrowSize() {
+		return arrowSize;
 	}
 
-	public void setTargetJavaVersion(final String targetJavaVersion) {
-		this.targetJavaVersion = targetJavaVersion;
+	public ColorRGB getArrowColor() {
+		return arrowColor;
 	}
 
-	public void setGenerateDebugInfo(final boolean generateDebugInfo) {
-		this.generateDebugInfo = generateDebugInfo;
+	public String getArrowStyle() {
+		return arrowStyle;
+	}
+
+	public boolean isArrowOutline() {
+		return arrowOutline;
+	}
+
+	public boolean isArrowDoubleHeaded() {
+		return arrowDoubleHeaded;
+	}
+
+	public void setArrowWidth(final int arrowWidth) {
+		this.arrowWidth = arrowWidth;
+	}
+
+	public void setArrowSize(final int arrowSize) {
+		this.arrowSize = arrowSize;
+	}
+
+	public void setArrowColor(final ColorRGB arrowColor) {
+		this.arrowColor = arrowColor;
+	}
+
+	public void setArrowStyle(final String arrowStyle) {
+		this.arrowStyle = arrowStyle;
+	}
+
+	public void setArrowOutline(final boolean arrowOutline) {
+		this.arrowOutline = arrowOutline;
+	}
+
+	public void setArrowDoubleHeaded(final boolean arrowDoubleHeaded) {
+		this.arrowDoubleHeaded = arrowDoubleHeaded;
 	}
 
 }

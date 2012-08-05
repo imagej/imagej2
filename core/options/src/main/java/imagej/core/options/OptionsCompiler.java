@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
@@ -42,7 +42,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Conversions dialog.
+ * Runs the Edit::Options::Compiler dialog.
  * 
  * @author Barry DeZonia
  */
@@ -50,34 +50,37 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Conversions...", weight = 11) })
-public class OptionsConversions extends OptionsPlugin {
+	@Menu(label = "Compiler...", weight = 14) })
+public class OptionsCompiler extends OptionsPlugin {
 
-	@Parameter(label = "Scale When Converting")
-	private boolean scaleWhenConverting = true;
+	// TODO - use enum for targetJavaVersion?
 
-	@Parameter(label = "Weighted RGB Conversions")
-	private boolean weightedRgbConversions = false;
+	@Parameter(label = "Target", choices = { "1.4", "1.5", "1.6", "1.7" })
+	private String targetJavaVersion = "1.5";
 
-	// -- OptionsConversions methods --
+	@Parameter(label = "Generate debugging ino (javac -g)")
+	private boolean generateDebugInfo = false;
 
-	public OptionsConversions() {
+	// -- OptionsCompiler methods --
+
+	public OptionsCompiler() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public boolean isScaleWhenConverting() {
-		return scaleWhenConverting;
+	public String getTargetJavaVersion() {
+		return targetJavaVersion;
 	}
 
-	public boolean isWeightedRgbConversions() {
-		return weightedRgbConversions;
+	public boolean isGenerateDebugInfo() {
+		return generateDebugInfo;
 	}
 
-	public void setScaleWhenConverting(final boolean scaleWhenConverting) {
-		this.scaleWhenConverting = scaleWhenConverting;
+	public void setTargetJavaVersion(final String targetJavaVersion) {
+		this.targetJavaVersion = targetJavaVersion;
 	}
 
-	public void setWeightedRgbConversions(final boolean weightedRgbConversions) {
-		this.weightedRgbConversions = weightedRgbConversions;
+	public void setGenerateDebugInfo(final boolean generateDebugInfo) {
+		this.generateDebugInfo = generateDebugInfo;
 	}
+
 }

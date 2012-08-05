@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
@@ -42,7 +42,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Fonts dialog.
+ * Runs the Edit::Options::Conversions dialog.
  * 
  * @author Barry DeZonia
  */
@@ -50,62 +50,34 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Fonts...", weight = 3) })
-public class OptionsFont extends OptionsPlugin {
+	@Menu(label = "Conversions...", weight = 11) })
+public class OptionsConversions extends OptionsPlugin {
 
-	// TODO populate font choices from system fonts? Nonportable here?
+	@Parameter(label = "Scale When Converting")
+	private boolean scaleWhenConverting = true;
 
-	@Parameter(label = "Font")
-	private String font = "SansSerif";
+	@Parameter(label = "Weighted RGB Conversions")
+	private boolean weightedRgbConversions = false;
 
-	@Parameter(label = "Size", min = "8", max = "72")
-	private int fontSize = 18;
+	// -- OptionsConversions methods --
 
-	// TODO - use enum for fontStyle
-
-	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
-		"Bold + Italic" })
-	private String fontStyle = "Plain";
-
-	@Parameter(label = "Smooth")
-	private boolean fontSmooth = true;
-
-	// -- OptionsFont methods --
-
-	public OptionsFont() {
+	public OptionsConversions() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public String getFont() {
-		return font;
+	public boolean isScaleWhenConverting() {
+		return scaleWhenConverting;
 	}
 
-	public int getFontSize() {
-		return fontSize;
+	public boolean isWeightedRgbConversions() {
+		return weightedRgbConversions;
 	}
 
-	public String getFontStyle() {
-		return fontStyle;
+	public void setScaleWhenConverting(final boolean scaleWhenConverting) {
+		this.scaleWhenConverting = scaleWhenConverting;
 	}
 
-	public boolean isFontSmooth() {
-		return fontSmooth;
+	public void setWeightedRgbConversions(final boolean weightedRgbConversions) {
+		this.weightedRgbConversions = weightedRgbConversions;
 	}
-
-	public void setFont(final String font) {
-		this.font = font;
-	}
-
-	public void setFontSize(final int fontSize) {
-		this.fontSize = fontSize;
-	}
-
-	public void setFontStyle(final String fontStyle) {
-		this.fontStyle = fontStyle;
-	}
-
-	public void setFontSmooth(final boolean fontSmooth) {
-		this.fontSmooth = fontSmooth;
-	}
-
 }

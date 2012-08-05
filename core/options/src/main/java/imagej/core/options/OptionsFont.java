@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
@@ -42,35 +42,70 @@ import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Plugins::Script::Options dialog.
+ * Runs the Edit::Options::Fonts dialog.
  * 
- * @author Grant Harris
+ * @author Barry DeZonia
  */
 @Plugin(type = OptionsPlugin.class, menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC),
-	@Menu(label = "Script", mnemonic = 's'),
-	@Menu(label = "Options...", weight = 3) })
-public class OptionsScript extends OptionsPlugin {
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC),
+	@Menu(label = "Options", mnemonic = 'o'),
+	@Menu(label = "Fonts...", weight = 3) })
+public class OptionsFont extends OptionsPlugin {
 
-	/** Scripting language to use when recording macros. */
-	// TODO - initial value faked for now
-	@Parameter(label = "Scripting Language")
-	private String scriptingLang = "javascript";
+	// TODO populate font choices from system fonts? Nonportable here?
 
-	// -- OptionsScript methods --
+	@Parameter(label = "Font")
+	private String font = "SansSerif";
 
-	public OptionsScript() {
+	@Parameter(label = "Size", min = "8", max = "72")
+	private int fontSize = 18;
+
+	// TODO - use enum for fontStyle
+
+	@Parameter(label = "Style", choices = { "Plain", "Bold", "Italic",
+		"Bold + Italic" })
+	private String fontStyle = "Plain";
+
+	@Parameter(label = "Smooth")
+	private boolean fontSmooth = true;
+
+	// -- OptionsFont methods --
+
+	public OptionsFont() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public String getScriptingLang() {
-		return scriptingLang;
+	public String getFont() {
+		return font;
 	}
 
-	public void setScriptingLang(final String scriptingLang) {
-		this.scriptingLang = scriptingLang;
+	public int getFontSize() {
+		return fontSize;
+	}
+
+	public String getFontStyle() {
+		return fontStyle;
+	}
+
+	public boolean isFontSmooth() {
+		return fontSmooth;
+	}
+
+	public void setFont(final String font) {
+		this.font = font;
+	}
+
+	public void setFontSize(final int fontSize) {
+		this.fontSize = fontSize;
+	}
+
+	public void setFontStyle(final String fontStyle) {
+		this.fontStyle = fontStyle;
+	}
+
+	public void setFontSmooth(final boolean fontSmooth) {
+		this.fontSmooth = fontSmooth;
 	}
 
 }

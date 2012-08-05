@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
@@ -42,7 +42,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 
 /**
- * Runs the Edit::Options::Misc dialog.
+ * Runs the Edit::Options::Proxy Settings dialog.
  * 
  * @author Barry DeZonia
  */
@@ -50,93 +50,46 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Misc...", weight = 17) })
-public class OptionsMisc extends OptionsPlugin {
+	@Menu(label = "Proxy Settings...", weight = 13) })
+public class OptionsProxy extends OptionsPlugin {
 
-	// TODO - use double instead of string for divide by zero value?
-	@Parameter(label = "Divide by zero value")
-	private String divByZeroVal = "Infinity";
+	@Parameter(label = "Proxy Server")
+	private String proxyServer = "";
 
-	@Parameter(label = "Use pointer cursor")
-	private boolean usePtrCursor = false;
+	@Parameter(label = "Port")
+	private int port = 8080;
 
-	@Parameter(label = "Hide \"Process Stack?\" dialog")
-	private boolean hideProcessStackDialog = false;
+	@Parameter(label = "Or, use system proxy settings")
+	private boolean useSystemProxy = false;
 
-	@Parameter(label = "Require command key for shortcuts")
-	private boolean requireCommandKey = false;
+	// -- OptionsProxy methods --
 
-	@Parameter(label = "Move isolated plugins to Misc. menu")
-	private boolean moveIsolatedPlugins = false;
-
-	@Parameter(label = "Run single instance listener")
-	private boolean runSingleInstanceListener = false;
-
-	@Parameter(label = "Debug mode")
-	private boolean debugMode = false;
-
-	// -- OptionsMisc methods --
-
-	public OptionsMisc() {
+	public OptionsProxy() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public String getDivByZeroVal() {
-		return divByZeroVal;
+	public String getProxyServer() {
+		return proxyServer;
 	}
 
-	public boolean isUsePtrCursor() {
-		return usePtrCursor;
+	public int getPort() {
+		return port;
 	}
 
-	public boolean isHideProcessStackDialog() {
-		return hideProcessStackDialog;
+	public boolean isUseSystemProxy() {
+		return useSystemProxy;
 	}
 
-	public boolean isRequireCommandKey() {
-		return requireCommandKey;
+	public void setProxyServer(final String proxyServer) {
+		this.proxyServer = proxyServer;
 	}
 
-	public boolean isMoveIsolatedPlugins() {
-		return moveIsolatedPlugins;
+	public void setPort(final int port) {
+		this.port = port;
 	}
 
-	public boolean isRunSingleInstanceListener() {
-		return runSingleInstanceListener;
-	}
-
-	public boolean isDebugMode() {
-		return debugMode;
-	}
-
-	public void setDivByZeroVal(final String divByZeroVal) {
-		this.divByZeroVal = divByZeroVal;
-	}
-
-	public void setUsePtrCursor(final boolean usePtrCursor) {
-		this.usePtrCursor = usePtrCursor;
-	}
-
-	public void setHideProcessStackDialog(final boolean hideProcessStackDialog) {
-		this.hideProcessStackDialog = hideProcessStackDialog;
-	}
-
-	public void setRequireCommandKey(final boolean requireCommandKey) {
-		this.requireCommandKey = requireCommandKey;
-	}
-
-	public void setMoveIsolatedPlugins(final boolean moveIsolatedPlugins) {
-		this.moveIsolatedPlugins = moveIsolatedPlugins;
-	}
-
-	public void setRunSingleInstanceListener(
-		final boolean runSingleInstanceListener)
-	{
-		this.runSingleInstanceListener = runSingleInstanceListener;
-	}
-
-	public void setDebugMode(final boolean debugMode) {
-		this.debugMode = debugMode;
+	public void setUseSystemProxy(final boolean useSystemProxy) {
+		this.useSystemProxy = useSystemProxy;
 	}
 
 }

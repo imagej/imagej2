@@ -33,26 +33,16 @@
  * #L%
  */
 
-package imagej.options.plugins;
+package imagej.core.options;
 
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-
-// TODO - FIXME?
-//
-//   fill color and fill opacity not exactly same as IJ1. IJ1 had a few colors
-//   and a "none" choice. I broke into two things to simplify persistence. Note
-//   that the idea of a fill color and fill opacity can just be taken from the
-//   defined OptionsOverlay plugin so maybe it should go away here.
 
 /**
- * Runs the Edit::Options::Rounded Rectangle Tool dialog.
+ * Runs the Edit::Options::Misc dialog.
  * 
  * @author Barry DeZonia
  */
@@ -60,71 +50,93 @@ import imagej.util.Colors;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Rounded Rect Tool...", weight = 5) })
-public class OptionsRoundedRectangleTool extends OptionsPlugin {
+	@Menu(label = "Misc...", weight = 17) })
+public class OptionsMisc extends OptionsPlugin {
 
-	@Parameter(label = "Stroke Width", min = "1", max = "25")
-	private int strokeWidth = 2;
+	// TODO - use double instead of string for divide by zero value?
+	@Parameter(label = "Divide by zero value")
+	private String divByZeroVal = "Infinity";
 
-	@Parameter(label = "Corner Diameter", min = "0", max = "200")
-	private int cornerDiameter = 20;
+	@Parameter(label = "Use pointer cursor")
+	private boolean usePtrCursor = false;
 
-	@Parameter(label = "Stroke Color")
-	private ColorRGB strokeColor = Colors.BLACK;
+	@Parameter(label = "Hide \"Process Stack?\" dialog")
+	private boolean hideProcessStackDialog = false;
 
-	@Parameter(label = "Fill Color")
-	private ColorRGB fillColor = Colors.WHITE;
+	@Parameter(label = "Require command key for shortcuts")
+	private boolean requireCommandKey = false;
 
-	@Parameter(label = "Fill Opacity",
-		description = "The opacity or alpha of the "
-			+ "interior of the rounded rectangle (0=transparent, 255=opaque)",
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-	private int alpha = 0;
+	@Parameter(label = "Move isolated plugins to Misc. menu")
+	private boolean moveIsolatedPlugins = false;
 
-	// -- OptionsRoundedRectangle methods --
+	@Parameter(label = "Run single instance listener")
+	private boolean runSingleInstanceListener = false;
 
-	public OptionsRoundedRectangleTool() {
+	@Parameter(label = "Debug mode")
+	private boolean debugMode = false;
+
+	// -- OptionsMisc methods --
+
+	public OptionsMisc() {
 		load(); // NB: Load persisted values *after* field initialization.
 	}
 
-	public int getStrokeWidth() {
-		return strokeWidth;
+	public String getDivByZeroVal() {
+		return divByZeroVal;
 	}
 
-	public int getCornerDiameter() {
-		return cornerDiameter;
+	public boolean isUsePtrCursor() {
+		return usePtrCursor;
 	}
 
-	public ColorRGB getStrokeColor() {
-		return strokeColor;
+	public boolean isHideProcessStackDialog() {
+		return hideProcessStackDialog;
 	}
 
-	public ColorRGB getFillColor() {
-		return fillColor;
+	public boolean isRequireCommandKey() {
+		return requireCommandKey;
 	}
 
-	public int getFillOpacity() {
-		return alpha;
+	public boolean isMoveIsolatedPlugins() {
+		return moveIsolatedPlugins;
 	}
 
-	public void setStrokeWidth(final int strokeWidth) {
-		this.strokeWidth = strokeWidth;
+	public boolean isRunSingleInstanceListener() {
+		return runSingleInstanceListener;
 	}
 
-	public void setCornerDiameter(final int cornerDiameter) {
-		this.cornerDiameter = cornerDiameter;
+	public boolean isDebugMode() {
+		return debugMode;
 	}
 
-	public void setStrokeColor(final ColorRGB strokeColor) {
-		this.strokeColor = strokeColor;
+	public void setDivByZeroVal(final String divByZeroVal) {
+		this.divByZeroVal = divByZeroVal;
 	}
 
-	public void setFillColor(final ColorRGB fillColor) {
-		this.fillColor = fillColor;
+	public void setUsePtrCursor(final boolean usePtrCursor) {
+		this.usePtrCursor = usePtrCursor;
 	}
 
-	public void setFillOpacity(final int alpha) {
-		this.alpha = alpha;
+	public void setHideProcessStackDialog(final boolean hideProcessStackDialog) {
+		this.hideProcessStackDialog = hideProcessStackDialog;
+	}
+
+	public void setRequireCommandKey(final boolean requireCommandKey) {
+		this.requireCommandKey = requireCommandKey;
+	}
+
+	public void setMoveIsolatedPlugins(final boolean moveIsolatedPlugins) {
+		this.moveIsolatedPlugins = moveIsolatedPlugins;
+	}
+
+	public void setRunSingleInstanceListener(
+		final boolean runSingleInstanceListener)
+	{
+		this.runSingleInstanceListener = runSingleInstanceListener;
+	}
+
+	public void setDebugMode(final boolean debugMode) {
+		this.debugMode = debugMode;
 	}
 
 }
