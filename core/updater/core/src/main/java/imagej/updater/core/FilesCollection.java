@@ -45,7 +45,6 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
 import imagej.updater.util.Util;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
