@@ -35,6 +35,8 @@
 
 package imagej.updater.util;
 
+import imagej.updater.util.ByteCodeAnalyzer.Mode;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +87,7 @@ public class DependencyAnalyzer {
 
 			final InputStream input = jar.getInputStream(entry);
 			final byte[] code = Util.readStreamAsBytes(input);
-			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code);
+			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code, Mode.INTERFACES);
 
 			final Set<String> allClassNames = new HashSet<String>();
 			for (final String name : analyzer)
@@ -131,7 +133,7 @@ public class DependencyAnalyzer {
 		try {
 			final byte[] buffer =
 				Util.readStreamAsBytes(getClass().getResourceAsStream(resourceName));
-			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(buffer);
+			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(buffer, Mode.INTERFACES);
 			addClassAndInterfaces(allClassNames, handled, analyzer.getSuperclass());
 			for (final String iface : analyzer.getInterfaces())
 				addClassAndInterfaces(allClassNames, handled, iface);
@@ -150,7 +152,7 @@ public class DependencyAnalyzer {
 
 			final InputStream input = jar.getInputStream(file);
 			final byte[] code = Util.readStreamAsBytes(input);
-			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code, true);
+			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code, Mode.METHODS);
 			if (analyzer.containsDebugInfo()) return true;
 		}
 		return false;

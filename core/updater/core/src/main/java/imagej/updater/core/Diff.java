@@ -334,7 +334,7 @@ public class Diff {
 	public static ByteCodeAnalyzer analyzeByteCode(final InputStream in, boolean closeStream) throws IOException {
 		final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		copy(in, outStream, closeStream, true);
-		return new ByteCodeAnalyzer(outStream.toByteArray(), true);
+		return new ByteCodeAnalyzer(outStream.toByteArray(), ByteCodeAnalyzer.Mode.ALL);
 	}
 
 	/**
@@ -370,7 +370,7 @@ public class Diff {
 	 */
 	protected void javap(final File file) throws IOException {
 		final byte[] buffer = Util.readStreamAsBytes(new FileInputStream(file));
-		final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(buffer);
+		final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(buffer, ByteCodeAnalyzer.Mode.CONSTANTS);
 		final String path = analyzer.getPathForClass();
 		file.delete();
 		File classFile = new File(file, path);

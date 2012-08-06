@@ -53,20 +53,28 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 	Method[] methods;
 	Attribute[] attributes;
 
+	public enum Mode { CONSTANTS, INTERFACES, FIELDS, METHODS, ALL };
+
 	public ByteCodeAnalyzer(final byte[] buffer) {
 		this(buffer, false);
 	}
 
 	public ByteCodeAnalyzer(final byte[] buffer, final boolean readAll) {
+		this(buffer, readAll ? Mode.ALL : Mode.CONSTANTS);
+	}
+
+	public ByteCodeAnalyzer(final byte[] buffer, final Mode mode) {
 		this.buffer = buffer;
 		if ((int) getU4(0) != 0xcafebabe) throw new RuntimeException("No class");
 		getConstantPoolOffsets();
-		if (readAll) {
+		if (mode.ordinal() >= Mode.INTERFACES.ordinal())
 			getAllInterfaces();
+		if (mode.ordinal() >= Mode.FIELDS.ordinal())
 			getAllFields();
+		if (mode.ordinal() >= Mode.METHODS.ordinal())
 			getAllMethods();
+		if (mode.ordinal() >= Mode.ALL.ordinal())
 			getAllAttributes();
-		}
 	}
 
 	public String getPathForClass() {
