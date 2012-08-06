@@ -1076,6 +1076,25 @@ public class UpdaterTest {
 		assertAction(Action.OBSOLETE, obsolete);
 	}
 
+	@Test
+	public void removeDependencies() throws Exception {
+		initializeUpdateSite("jars/plugin.jar", "jars/dependency.jar");
+		writeJar("jars/not-uploaded-0.11.jar");
+		FilesCollection files = readDb(true, true);
+		FileObject plugin = files.get("jars/plugin.jar");
+		plugin.addDependency(files, files.get("jars/dependency.jar"));
+		plugin.addDependency(files, files.get("jars/not-uploaded.jar"));
+		List<Conflict> conflicts = new ArrayList<Conflict>();
+		for (Conflict conflict : new Conflicts(files).getConflicts(true))
+			conflicts.add(conflict);
+		assertCount(1, conflicts);
+		Conflict conflict = conflicts.get(0);
+		assertEquals(1, conflict.getResolutions().length);
+		assertTrue(conflict.getResolutions()[0].getDescription().startsWith("Break"));
+		conflict.getResolutions()[0].resolve();
+		assertCount(0, new Conflicts(files).getConflicts(true));
+	}
+
 	//
 	// Debug functions
 	//

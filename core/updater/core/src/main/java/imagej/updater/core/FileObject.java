@@ -320,7 +320,7 @@ public class FileObject {
 	}
 
 	public void removeDependency(final String other) {
-		dependencies.remove(other);
+		dependencies.remove(getFilename(other, true));
 	}
 
 	public boolean hasDependency(final String filename) {
