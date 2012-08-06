@@ -33,60 +33,68 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ext.module.ui;
 
-import imagej.Priority;
-import imagej.ext.module.ui.ChoiceWidget;
-import imagej.ext.module.ui.InputWidget;
-import imagej.ext.module.ui.WidgetModel;
+import imagej.ImageJ;
+import imagej.ext.InstantiableException;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
-import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.ListButton;
+import java.util.List;
 
 /**
- * Pivot implementation of multiple choice selector widget.
+ * Service for managing available input widgets.
  * 
  * @author Curtis Rueden
+ * @see InputWidget
  */
-@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
-public class PivotChoiceWidget extends PivotInputWidget<String>
-	implements ChoiceWidget<BoxPane>
-{
+@Plugin(type = Service.class)
+public class WidgetService extends AbstractService {
 
-	private ListButton listButton;
+	private final PluginService pluginService;
+	private final LogService log;
 
-	// -- InputWidget methods --
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.getItem().getChoices() != null;
+	public WidgetService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final String[] items = model.getChoices();
-
-		listButton = new ListButton();
-		listButton.setListData(new ArrayList<String>(items));
-		getPane().add(listButton);
-
-		refreshWidget();
+	public WidgetService(final ImageJ context, final PluginService pluginService,
+		final LogService log)
+	{
+		super(context);
+		this.pluginService = pluginService;
+		this.log = log;
 	}
 
-	@Override
-	public String getValue() {
-		return listButton.getSelectedItem().toString();
-	}
-
-	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		if (value.equals(listButton.getSelectedItem())) return; // no change
-		listButton.setSelectedItem(value);
+	/** Creates a widget that represents the given widget model. */
+	public InputWidget<?, ?> createWidget(final WidgetModel model) {
+		@SuppressWarnings("rawtypes")
+		final List<PluginInfo<? extends InputWidget>> infos =
+			pluginService.getPluginsOfType(InputWidget.class);
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<? extends InputWidget> info : infos)
+		{
+			final InputWidget<?, ?> widget;
+			try {
+				widget = info.createInstance();
+			}
+			catch (final InstantiableException e) {
+				log.error("Invalid widget: " + info.getClassName(), e);
+				continue;
+			}
+			if (widget.isCompatible(model)) {
+				widget.initialize(model);
+				return widget;
+			}
+		}
+		log.warn("No widget found for input: " + model.getItem().getName());
+		return null;
 	}
 
 }

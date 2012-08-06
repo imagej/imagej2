@@ -37,13 +37,23 @@ package imagej.ext.module.ui;
 
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 
 /**
- * An input widget is a particular type of {@link IPlugin} intended to harvest
- * user input for a particular {@link ModuleItem}. They are used by the
+ * Interface for input widgets. An input widget is intended to harvest user
+ * input for a particular {@link ModuleItem}. They are used by the
  * {@link InputHarvester} preprocessor to collect module input values.
+ * <p>
+ * Widgets discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link InputWidget}.class. While it possible to create an upload mechanism
+ * merely by implementing this interface, it is encouraged to instead extend
+ * {@link AbstractInputWidget}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see Plugin
+ * @see WidgetService
  * @see InputHarvester
  * @see InputPanel
  */

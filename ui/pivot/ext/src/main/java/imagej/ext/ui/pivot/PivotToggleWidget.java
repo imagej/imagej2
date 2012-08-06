@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.pivot;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Checkbox;
@@ -46,6 +48,7 @@ import org.apache.pivot.wtk.Checkbox;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 	ToggleWidget<BoxPane>
 {

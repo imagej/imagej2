@@ -35,18 +35,13 @@
 
 package imagej.ext.module.ui;
 
-import imagej.ext.module.ItemVisibility;
+import imagej.ImageJ;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleCanceledException;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleItem;
-import imagej.util.ClassUtils;
-import imagej.util.ColorRGB;
-import imagej.util.Log;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Abstract superclass for {@link InputHarvester}s.
@@ -107,7 +102,7 @@ public abstract class AbstractInputHarvester<U> implements InputHarvester<U> {
 		}
 	}
 
-	// -- Helper methods - input panel population --
+	// -- Helper methods --
 
 	private <T> WidgetModel addInput(final InputPanel<U> inputPanel,
 		final Module module, final ModuleItem<T> item) throws ModuleException
@@ -119,99 +114,20 @@ public abstract class AbstractInputHarvester<U> implements InputHarvester<U> {
 		final Class<T> type = item.getType();
 		final WidgetModel model = new WidgetModel(inputPanel, module, item);
 
-		final boolean message = item.getVisibility() == ItemVisibility.MESSAGE;
-		if (message) {
-			addMessage(inputPanel, model);
+		final WidgetService widgetService = ImageJ.get(WidgetService.class);
+		final InputWidget<?, ?> widget = widgetService.createWidget(model);
+		if (widget != null) {
+			inputPanel.addWidget(widget);
 			return model;
 		}
 
-		if (ClassUtils.isNumber(type)) {
-			addNumber(inputPanel, model);
-		}
-		else if (ClassUtils.isText(type)) {
-			addTextField(inputPanel, model);
-		}
-		else if (ClassUtils.isBoolean(type)) {
-			addToggle(inputPanel, model);
-		}
-		else if (File.class.isAssignableFrom(type)) {
-			addFile(inputPanel, model);
-		}
-		else if (ColorRGB.class.isAssignableFrom(type)) {
-			addColor(inputPanel, model);
-		}
-		else {
-			try {
-				addObject(inputPanel, model);
-			}
-			catch (final ModuleException e) {
-				if (item.isRequired()) {
-					throw new ModuleException("A " + type.getSimpleName() +
-						" is required but none exist.", e);
-				}
-				Log.debug(e);
-			}
+		if (item.isRequired()) {
+			throw new ModuleException("A " + type.getSimpleName() +
+				" is required but none exist.");
 		}
 
-		return model;
-	}
-
-	private void addMessage(final InputPanel<U> inputPanel,
-		final WidgetModel model)
-	{
-		final String message = model.getValue().toString();
-		inputPanel.addMessage(message);
-	}
-
-	private void
-		addNumber(final InputPanel<U> inputPanel, final WidgetModel model)
-	{
-		// CTR FIXME: ensure initial value is clamped to min/max range
-		inputPanel.addNumber(model);
-	}
-
-	private void addTextField(final InputPanel<U> inputPanel,
-		final WidgetModel model)
-	{
-		final ModuleItem<?> item = model.getItem();
-		final List<?> itemChoices = item.getChoices();
-		final String[] choices = new String[itemChoices.size()];
-		for (int i = 0; i < choices.length; i++) {
-			choices[i] = itemChoices.get(i).toString();
-		}
-		if (choices.length > 0) {
-			// CTR FIXME: ensure initial null value becomes choices[0] instead
-			inputPanel.addChoice(model);
-		}
-		else {
-			// CTR FIXME: ensure initial null value becomes "" instead
-			inputPanel.addTextField(model);
-		}
-	}
-
-	private void
-		addToggle(final InputPanel<U> inputPanel, final WidgetModel model)
-	{
-		// CTR FIXME: ensure initial null value becomes Boolean.FALSE instead
-		inputPanel.addToggle(model);
-	}
-
-	private void addFile(final InputPanel<U> inputPanel, final WidgetModel model)
-	{
-		inputPanel.addFile(model);
-	}
-
-	private void
-		addColor(final InputPanel<U> inputPanel, final WidgetModel model)
-	{
-		inputPanel.addColor(model);
-	}
-
-	private void
-		addObject(final InputPanel<U> inputPanel, final WidgetModel model)
-			throws ModuleException
-	{
-		inputPanel.addObject(model);
+		// item is not required; we can skip it
+		return null;
 	}
 
 }

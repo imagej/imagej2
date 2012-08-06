@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.pivot;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.TextInput;
@@ -46,6 +48,7 @@ import org.apache.pivot.wtk.TextInput;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class PivotTextFieldWidget extends PivotInputWidget<String>
 	implements TextFieldWidget<BoxPane>
 {

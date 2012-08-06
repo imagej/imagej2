@@ -38,9 +38,7 @@ package imagej.ext.module.ui;
 import imagej.ImageJ;
 import imagej.ext.module.ModuleException;
 import imagej.object.ObjectService;
-import imagej.util.ColorRGB;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,72 +52,28 @@ public abstract class AbstractInputPanel<U> implements InputPanel<U> {
 	/** Number of messages in the panel. */
 	protected int messageCount = 0;
 
-	/** Widget table for numbers. */
-	protected Map<String, NumberWidget<?>> numberWidgets =
-		new HashMap<String, NumberWidget<?>>();
-
-	/** Widget table for toggles. */
-	protected Map<String, ToggleWidget<?>> toggleWidgets =
-		new HashMap<String, ToggleWidget<?>>();
-
-	/** Widget table for text fields. */
-	protected Map<String, TextFieldWidget<?>> textFieldWidgets =
-		new HashMap<String, TextFieldWidget<?>>();
-
-	/** Widget table for choices. */
-	protected Map<String, ChoiceWidget<?>> choiceWidgets =
-		new HashMap<String, ChoiceWidget<?>>();
-
-	/** Widget table for files. */
-	protected Map<String, FileWidget<?>> fileWidgets =
-		new HashMap<String, FileWidget<?>>();
-
-	/** Widget table for colors. */
-	protected Map<String, ColorWidget<?>> colorWidgets =
-		new HashMap<String, ColorWidget<?>>();
-
-	/** Widget table for objects. */
-	protected Map<String, ObjectWidget<?>> objectWidgets =
-		new HashMap<String, ObjectWidget<?>>();
+	/** Table of widgets. */
+	protected Map<String, InputWidget<?, ?>> widgets =
+		new HashMap<String, InputWidget<?, ?>>();
 
 	@Override
-	public Number getNumber(final String name) {
-		return numberWidgets.get(name).getValue();
+	public void addWidget(final InputWidget<?, ?> widget) {
+		widgets.put(widget.getModel().getItem().getName(), widget);
 	}
 
 	@Override
-	public boolean getToggle(final String name) {
-		return toggleWidgets.get(name).getValue();
+	public Object getValue(final String name) {
+		return widgets.get(name).getValue();
 	}
 
 	@Override
-	public String getTextField(final String name) {
-		return textFieldWidgets.get(name).getValue();
-	}
-
-	@Override
-	public String getChoice(final String name) {
-		return choiceWidgets.get(name).getValue();
-	}
-
-	@Override
-	public File getFile(final String name) {
-		return fileWidgets.get(name).getValue();
-	}
-
-	@Override
-	public ColorRGB getColor(final String name) {
-		return colorWidgets.get(name).getValue();
-	}
-
-	@Override
-	public Object getObject(final String name) {
-		return objectWidgets.get(name).getValue();
+	public int getWidgetCount() {
+		return widgets.size();
 	}
 
 	@Override
 	public boolean hasWidgets() {
-		return getWidgetCount() > 0;
+		return widgets.size() > 0;
 	}
 
 	@Override
@@ -129,20 +83,9 @@ public abstract class AbstractInputPanel<U> implements InputPanel<U> {
 
 	@Override
 	public void refresh() {
-		for (final InputWidget<?, ?> w : numberWidgets.values())
+		for (final InputWidget<?, ?> w : widgets.values()) {
 			w.refreshWidget();
-		for (final InputWidget<?, ?> w : toggleWidgets.values())
-			w.refreshWidget();
-		for (final InputWidget<?, ?> w : textFieldWidgets.values())
-			w.refreshWidget();
-		for (final InputWidget<?, ?> w : choiceWidgets.values())
-			w.refreshWidget();
-		for (final InputWidget<?, ?> w : fileWidgets.values())
-			w.refreshWidget();
-		for (final InputWidget<?, ?> w : colorWidgets.values())
-			w.refreshWidget();
-		for (final InputWidget<?, ?> w : objectWidgets.values())
-			w.refreshWidget();
+		}
 	}
 
 	// -- Internal methods --

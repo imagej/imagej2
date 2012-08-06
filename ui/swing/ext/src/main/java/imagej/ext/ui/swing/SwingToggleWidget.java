@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -48,6 +50,7 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 	ChangeListener, ToggleWidget<JPanel>
 {

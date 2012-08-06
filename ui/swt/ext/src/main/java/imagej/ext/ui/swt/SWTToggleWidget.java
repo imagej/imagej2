@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -47,6 +49,7 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
 	ToggleWidget<Composite>
 {

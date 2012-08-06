@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -53,6 +55,7 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class AWTNumberWidget extends AWTInputWidget<Number> implements
 	NumberWidget<Panel>, AdjustmentListener, TextListener
 {

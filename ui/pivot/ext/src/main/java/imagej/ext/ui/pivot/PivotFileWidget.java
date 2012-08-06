@@ -36,8 +36,10 @@
 package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 
 import java.io.File;
 
@@ -54,6 +56,7 @@ import org.apache.pivot.wtk.TextInput;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class PivotFileWidget extends PivotInputWidget<File> implements
 	FileWidget<BoxPane>, ButtonPressListener
 {

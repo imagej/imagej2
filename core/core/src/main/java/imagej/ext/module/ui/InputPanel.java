@@ -35,11 +35,6 @@
 
 package imagej.ext.module.ui;
 
-import imagej.ext.module.ModuleException;
-import imagej.util.ColorRGB;
-
-import java.io.File;
-
 /**
  * Flexible panel-building interface, for use with UIs that prompt for input
  * values of various types.
@@ -50,107 +45,15 @@ public interface InputPanel<U> {
 
 	// TODO - groups of fields
 
-	/** Adds a message consisting of one or more lines of text. */
-	void addMessage(String text);
+	/** Adds a widget to the panel. */
+	void addWidget(InputWidget<?, ?> widget);
 
 	/**
-	 * Adds a numeric field.
-	 * 
-	 * @param model backing data model containing parameter details
-	 */
-	void addNumber(WidgetModel model);
-
-	/**
-	 * Adds a checkbox field.
-	 * 
-	 * @param model backing data model containing parameter details
-	 */
-	void addToggle(WidgetModel model);
-
-	/**
-	 * Adds a text field.
-	 * 
-	 * @param model backing data model containing parameter details
-	 */
-	void addTextField(WidgetModel model);
-
-	/**
-	 * Adds a multiple choice text field.
-	 * 
-	 * @param model backing data model containing parameter details
-	 */
-	void addChoice(WidgetModel model);
-
-	/**
-	 * Adds a file selector.
-	 * 
-	 * @param model backing data model containing parameter details
-	 */
-	void addFile(WidgetModel model);
-
-	/**
-	 * Adds a color chooser.
-	 * 
-	 * @param model backing data model containing parameter details
-	 */
-	void addColor(WidgetModel model);
-
-	/**
-	 * Adds an object selector.
-	 * 
-	 * @param model backing data model containing parameter details
-	 * @throws ModuleException if the object cannot be added to the panel
-	 */
-	void addObject(WidgetModel model) throws ModuleException;
-
-	/**
-	 * Returns the contents of the given numeric field.
+	 * Returns the value of the given widget's input.
 	 * 
 	 * @param name unique name identifying this field
 	 */
-	Number getNumber(String name);
-
-	/**
-	 * Returns the state of the given checkbox.
-	 * 
-	 * @param name unique name identifying this field
-	 */
-	boolean getToggle(String name);
-
-	/**
-	 * Returns the contents of the given text field.
-	 * 
-	 * @param name unique name identifying this field
-	 */
-	String getTextField(String name);
-
-	/**
-	 * Returns the selected item in the given choice text field.
-	 * 
-	 * @param name unique name identifying this field
-	 */
-	String getChoice(String name);
-
-	/**
-	 * Returns the value of the given file selector.
-	 * 
-	 * @param name unique name identifying this field
-	 */
-	File getFile(String name);
-
-	/**
-	 * Returns the value of the given color chooser.
-	 * 
-	 * @param name unique name identifying this field
-	 */
-	ColorRGB getColor(String name);
-
-	/**
-	 * Returns the value of the given object selector.
-	 * 
-	 * @param name unique name identifying this field
-	 */
-	Object getObject(String name);
+	Object getValue(String name);
 
 	/** Gets the number of active widgets in the input panel. */
 	int getWidgetCount();

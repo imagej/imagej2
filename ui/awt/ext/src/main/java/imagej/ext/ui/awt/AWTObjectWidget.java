@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ObjectWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
@@ -49,6 +51,7 @@ import java.awt.event.ItemListener;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class AWTObjectWidget extends AWTInputWidget<Object>
 	implements ItemListener, ObjectWidget<Panel>
 {

@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
@@ -53,6 +55,7 @@ import javax.swing.text.DocumentFilter;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 	DocumentListener, TextFieldWidget<JPanel>
 {

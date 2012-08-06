@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -46,6 +48,7 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class SWTTextFieldWidget extends SWTInputWidget<String> implements
 	TextFieldWidget<Composite>
 {

@@ -35,9 +35,11 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
 
 import java.awt.Adjustable;
@@ -63,6 +65,7 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class SwingNumberWidget extends SwingInputWidget<Number> implements
 	NumberWidget<JPanel>, AdjustmentListener, ChangeListener
 {

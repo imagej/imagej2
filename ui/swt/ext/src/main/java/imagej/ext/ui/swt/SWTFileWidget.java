@@ -36,7 +36,9 @@
 package imagej.ext.ui.swt;
 
 import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.io.File;
 
@@ -51,7 +53,10 @@ import org.eclipse.swt.widgets.Text;
  *
  * @author Curtis Rueden
  */
-public class SWTFileWidget extends SWTInputWidget<File> implements FileWidget<Composite> {
+@Plugin(type = InputWidget.class)
+public class SWTFileWidget extends SWTInputWidget<File> implements
+	FileWidget<Composite>
+{
 
 	private Text path;
 	private Button browse;

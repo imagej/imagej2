@@ -35,8 +35,11 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.Priority;
 import imagej.ext.module.ui.ChoiceWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
@@ -49,6 +52,7 @@ import java.awt.event.ItemListener;
  *
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
 public class AWTChoiceWidget extends AWTInputWidget<String> implements
 	ChoiceWidget<Panel>, ItemListener
 {

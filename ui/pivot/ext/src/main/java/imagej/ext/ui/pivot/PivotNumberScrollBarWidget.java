@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.pivot;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
 
 import org.apache.pivot.wtk.Label;
@@ -48,6 +50,7 @@ import org.apache.pivot.wtk.ScrollBarValueListener;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 	ScrollBarValueListener
 {

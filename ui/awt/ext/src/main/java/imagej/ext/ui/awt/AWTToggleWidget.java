@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
@@ -47,6 +49,7 @@ import java.awt.Panel;
  *
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
 	ToggleWidget<Panel>
 {

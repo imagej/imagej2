@@ -36,8 +36,10 @@
 package imagej.ext.ui.awt;
 
 import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -56,6 +58,7 @@ import java.io.File;
  *
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class AWTFileWidget extends AWTInputWidget<File> implements
 	FileWidget<Panel>, ActionListener, TextListener
 {

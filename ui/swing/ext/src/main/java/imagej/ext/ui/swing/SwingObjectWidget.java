@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ObjectWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,6 +51,7 @@ import javax.swing.JPanel;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class SwingObjectWidget extends SwingInputWidget<Object> implements
 	ActionListener, ObjectWidget<JPanel>
 {

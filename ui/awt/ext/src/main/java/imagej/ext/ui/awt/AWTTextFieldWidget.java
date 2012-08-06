@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Panel;
@@ -49,6 +51,7 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class AWTTextFieldWidget extends AWTInputWidget<String>
 	implements TextFieldWidget<Panel>, TextListener
 {

@@ -35,7 +35,9 @@
 
 package imagej.ext.ui.pivot;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
 
 import org.apache.pivot.wtk.Spinner;
@@ -46,6 +48,7 @@ import org.apache.pivot.wtk.content.NumericSpinnerData;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 
 	private Spinner spinner;
