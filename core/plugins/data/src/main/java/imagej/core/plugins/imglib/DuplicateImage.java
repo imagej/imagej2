@@ -35,13 +35,10 @@
 
 package imagej.core.plugins.imglib;
 
-import imagej.data.Data;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
-import imagej.ext.display.DisplayService;
+import imagej.data.sampler.AxisSubrange;
+import imagej.data.sampler.SamplerService;
+import imagej.data.sampler.SamplingDefinition;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.module.ItemIO;
@@ -49,42 +46,27 @@ import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.RealRect;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import net.imglib2.RandomAccess;
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.ops.Tuple2;
-import net.imglib2.ops.Tuple3;
-import net.imglib2.type.numeric.RealType;
 
 // TODO
-//   1) Maintain color tables and metadata
+//   1) Maintain metadata
 //   2) maintain overlays: does an overlay in Z == 7 show up on correct slice
 //      in output data?
 //   3) report parse error string somehow
 //   5) test the contains(num) code works
-// TODO - further constrain an axis subrange by the selection
 // TODO - multiple places I'm relying on a Display's axes rather than a
 // Dataset's axes. See if there are problems with this
-// TODO :
-// - add simple calls in SamplingService to define snapshots that include
-//     the current selection. Maybe a way to further constrain an axis
-//     definition to fit within the selection
 // TODO - the iterators work with Lists which can only hold 2 gig or fewer
 // elements. Thus data cannot be copied > 2 gig per dimension.
 // TODO:
 // -- for speed eliminate reliance on Longs. Make primitive arrays.
 // -- make a EnormousList that can store more than 2 gig of longs
-// Replace RestructureUtils calls with these in other plugins
+// In other plugins replace RestructureUtils calls with methods from here
+// TODO display ranges are all messed up
 
 /**
  * Duplicates data from one input display to an output display. The planes to
@@ -103,14 +85,8 @@ public class DuplicateImage extends DynamicPlugin {
 	// -- Plugin parameters --
 
 	@Parameter
-	private DatasetService datasetService;
-	
-	@Parameter
-	private OverlayService overlayService;
-	
-	@Parameter
-	private DisplayService displayService;
-	
+	private SamplerService samplerService;
+
 	@Parameter
 	private ImageDisplay inputDisplay;
 
@@ -197,14 +173,12 @@ public class DuplicateImage extends DynamicPlugin {
 
 	@Override
 	public void run() {
-		SamplingService samplingService =
-				new SamplingService(displayService, datasetService, overlayService);
 		if (specialBehavior) {
 			SamplingDefinition samples = determineSamples();
-			outputDisplay = samplingService.createSampledImage(samples);
+			outputDisplay = samplerService.createSampledImage(samples);
 		}
 		else { // snapshot the existing composite selection
-			outputDisplay = samplingService.duplicateSelectedCompositePlane(inputDisplay);
+			outputDisplay = samplerService.duplicateSelectedCompositePlane(inputDisplay);
 		}
 		/*
 		final List<List<Long>> planeIndices;
@@ -282,6 +256,11 @@ public class DuplicateImage extends DynamicPlugin {
 	}
 	
 
+
+	private String name(AxisType axis) {
+		return axis.getLabel() + " axis range";
+	}
+	
 	/*
 	private List<List<Long>> calcPlaneIndices(ImageDisplay display, Dataset dataset) {
 		List<List<Long>> indices = new ArrayList<List<Long>>();
@@ -545,586 +524,4 @@ public class DuplicateImage extends DynamicPlugin {
 	}
 	
 	*/
-
-	private String name(AxisType axis) {
-		return axis.getLabel() + " axis range";
-	}
-	
-	/*
-	 * Nicer design
-	 *   External API
-	 *     constructor
-	 *       default initialization: set to single plane
-	 *     setInput()
-	 *     wantCurrentPlaneOnly()
-	 *     wantValues(AxisType axis, String definition)
-	 *     run()
-	 *     getOutput()
-	 *   UI
-	 *     all axes appear
-	 *     radio buttons
-	 *       single plane vs. multiple planes
-	 *       selecting button resets the field value defaults to their original
-	 *         state. so one plane fills in curr indices. multiple planes defaults
-	 *         to full ranges
-	 *   internally
-	 *     somehow want this to be dynamic and headless. possible?
-	 *     copy from some multidim point in N-space to different multidim point
-	 *       in M-space. M is less or equal (in size and/or num dims) to N space.
-	 */
-	
-	/**
-	 * @author Barry DeZonia
-	 */
-	private static class AxisSubrange {
-
-		private ImageDisplay display;
-		private String err;
-		private List<Long> indices;
-		
-		private AxisSubrange(ImageDisplay display) {
-			this.err = null;
-			this.indices = new ArrayList<Long>();
-			this.display = display;
-		}
-		
-		public String getError() { return err; }
-		
-		public List<Long> getIndices() {
-			return Collections.unmodifiableList(indices);
-		}
-
-		public AxisSubrange(ImageDisplay display, long pos) {
-			this(display);
-			indices.add(pos);
-		}
-		
-		public AxisSubrange(ImageDisplay display, long pos1, long pos2) {
-			this(display);
-			long startPos, endPos;
-			if (pos1 < pos2) {
-				startPos = pos1;
-				endPos = pos2;
-			}
-			else {
-				startPos = pos2;
-				endPos = pos1;
-			}
-			if (endPos - startPos + 1 > Integer.MAX_VALUE)
-				throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
-			for (long l = startPos; l <= endPos; l++) {
-				indices.add(l);
-			}
-		}
-		
-		public AxisSubrange(ImageDisplay display, long pos1, long pos2, long by) {
-			this(display);
-			long startPos, endPos;
-			if (by == 0) {
-				if (pos1 == pos2) {
-					indices.add(pos1);
-					return;
-				}
-				throw new IllegalArgumentException("increment must not be 0");
-			}
-			else if (by < 0) {
-				startPos = Math.max(pos1, pos2);
-				endPos = Math.min(pos1, pos2);
-				if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
-					throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
-				for (long l = startPos; l >= endPos; l += by) {
-					indices.add(l);
-				}
-			}
-			else { // by > 0
-				startPos = Math.min(pos1, pos2);
-				endPos = Math.max(pos1, pos2);
-				if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
-					throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
-				for (long l = startPos; l <= endPos; l += by) {
-					indices.add(l);
-				}
-			}
-		}
-		
-		public AxisSubrange(ImageDisplay display, AxisType axis, String definition, boolean originOne) {
-			this(display);
-			int axisIndex = display.getAxisIndex(axis);
-			long min, max;
-			if (originOne) {
-				min = 1;
-				max = display.dimension(axisIndex);
-			}
-			else { // origin zero
-				min = 0;
-				max = display.dimension(axisIndex) - 1;
-			}
-			if (!parseAxisDefinition(min, max, definition))
-				throw new IllegalArgumentException(getError());
-		}
-
-		// min = origin (like 0 or 1)
-		// max = 
-		private boolean parseAxisDefinition(long min, long max, String fieldValue)
-		{
-			String[] terms = fieldValue.split(",");
-			for (int i = 0; i < terms.length; i++) {
-				terms[i] = terms[i].trim();
-			}
-			for (String term : terms) {
-				Long num = number(term);
-				Tuple2<Long, Long> numDashNum = numberDashNumber(term);
-				Tuple3<Long, Long, Long> numDashNumDashNum =
-						numberDashNumberDashNumber(term);
-				AxisSubrange subrange;
-				if (num != null) {
-					subrange = new AxisSubrange(display, num-min);
-				}
-				else if (numDashNum != null) {
-					long start = numDashNum.get1();
-					long end = numDashNum.get2();
-					subrange = new AxisSubrange(display, start-min, end-min);
-				}
-				else if (numDashNumDashNum != null) {
-					long start = numDashNumDashNum.get1();
-					long end = numDashNumDashNum.get2();
-					long by = numDashNumDashNum.get3();
-					subrange = new AxisSubrange(display, start-min, end-min, by);
-				}
-				else {
-					err = "Illegal axis subrange definition : "+fieldValue;
-					return false;
-				}
-				for (long l : subrange.getIndices()) {
-					if (l > max-min) continue;
-					if (indices.contains(l)) continue;
-					indices.add(l);
-				}
-			}
-			Collections.sort(indices);
-			return true;
-		}
-
-		private Long number(String term) {
-			Matcher matcher = Pattern.compile("\\d+").matcher(term);
-			if (!matcher.matches()) return null;
-			return Long.parseLong(term);
-		}
-		
-		private Tuple2<Long,Long> numberDashNumber(String term) {
-			Matcher matcher = Pattern.compile("\\d+-\\d+").matcher(term);
-			if (!matcher.matches()) return null;
-			String[] values = term.split("-");
-			Long start = Long.parseLong(values[0]);
-			Long end = Long.parseLong(values[1]);
-			if (end < start) return null;
-			return new Tuple2<Long,Long>(start, end);
-		}
-		
-		private Tuple3<Long,Long,Long> numberDashNumberDashNumber(String term) {
-			Matcher matcher = Pattern.compile("\\d+-\\d+-\\d+").matcher(term);
-			if (!matcher.matches()) return null;
-			String[] values = term.split("-");
-			Long start = Long.parseLong(values[0]);
-			Long end = Long.parseLong(values[1]);
-			Long by = Long.parseLong(values[2]);
-			if (end < start) return null;
-			if (by <= 0) return null;
-			return new Tuple3<Long,Long,Long>(start, end, by);
-		}
-		
-	}
-	
-	/**
-	 * @author Barry DeZonia
-	 */
-	private static class SamplingDefinition {
-		private ImageDisplay display;
-		private Map<AxisType,AxisSubrange> axisSubranges;
-		private String err;
-		
-		private SamplingDefinition(ImageDisplay display) {
-			this.display = display;
-			this.axisSubranges = new HashMap<AxisType,AxisSubrange>();
-			this.err = null;
-		}
-		
-		public ImageDisplay getDisplay() { return display; }
-		
-		public String getError() { return err; }
-
-
-		public AxisType[] getInputAxes() {
-			return display.getAxes();
-		}
-		
-		public List<List<Long>> getInputRanges() {
-			AxisType[] axes = display.getAxes();
-			List<List<Long>> axesDefs = new ArrayList<List<Long>>();
-			for (AxisType axis : axes) {
-				AxisSubrange subrange = axisSubranges.get(axis);
-				List<Long> axisValues = subrange.getIndices();
-				axesDefs.add(axisValues);
-			}
-			return Collections.unmodifiableList(axesDefs);
-		}
-		
-		public AxisType[] getOutputAxes() {
-			AxisType[] inputAxes = getInputAxes();
-			List<List<Long>> inputRanges = getInputRanges();
-			int dimCount = 0;
-			for (int i = 0; i < inputRanges.size(); i++) {
-				if (inputRanges.get(i).size() > 1) dimCount++;
-			}
-			AxisType[] outputAxes = new AxisType[dimCount];
-			int d =  0;
-			for (int i = 0; i < inputRanges.size(); i++) {
-				if (inputRanges.get(i).size() > 1) outputAxes[d++] = inputAxes[i];
-			}
-			return outputAxes;
-		}
-		
-		public long[] getOutputDims() {
-			List<List<Long>> inputRanges = getInputRanges();
-			int dimCount = 0;
-			for (int i = 0; i < inputRanges.size(); i++) {
-				if (inputRanges.get(i).size() > 1) dimCount++;
-			}
-			long[] outputDims = new long[dimCount];
-			int d =  0;
-			for (int i = 0; i < inputRanges.size(); i++) {
-				int dimSize = inputRanges.get(i).size();
-				if (dimSize > 1) outputDims[d++] = dimSize;
-			}
-			return outputDims;
-		}
-		
-		public static SamplingDefinition sampleUVPlane(
-			ImageDisplay display,	AxisType uAxis, AxisType vAxis)
-		{
-			SamplingDefinition definition = new SamplingDefinition(display);
-			Data data = display.getActiveView().getData();
-			AxisType[] axes = data.getAxes();
-			for (AxisType axis : axes) {
-				if ((axis == uAxis) || (axis == vAxis)) {
-					int axisIndex = display.getAxisIndex(axis);
-					long size = display.getExtents().dimension(axisIndex);
-					AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
-					definition.constrain(axis, subrange);
-				}
-				else { // other axis
-					long pos = display.getLongPosition(axis);
-					AxisSubrange subrange = new AxisSubrange(display, pos);
-					definition.constrain(axis, subrange);
-				}
-			}
-			return definition;
-		}
-		
-		public static SamplingDefinition sampleXYPlane(ImageDisplay display) {
-			return sampleUVPlane(display, Axes.X, Axes.Y);
-		}
-		
-		public static SamplingDefinition sampleCompositeUVPlane(ImageDisplay display, AxisType uAxis, AxisType vAxis) {
-			if ((uAxis == Axes.CHANNEL) || (vAxis == Axes.CHANNEL))
-				throw new IllegalArgumentException(
-					"UV composite plane - cannot specify channels as one of the axes");
-			SamplingDefinition definition = new SamplingDefinition(display);
-			Data data = display.getActiveView().getData();
-			AxisType[] axes = data.getAxes();
-			for (AxisType axis : axes) {
-				if ((axis == uAxis) || (axis == vAxis) || (axis == Axes.CHANNEL)) {
-					int axisIndex = display.getAxisIndex(axis);
-					long size = display.getExtents().dimension(axisIndex);
-					AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
-					definition.constrain(axis, subrange);
-				}
-				else { // other axis
-					long pos = display.getLongPosition(axis);
-					AxisSubrange subrange = new AxisSubrange(display, pos);
-					definition.constrain(axis, subrange);
-				}
-			}
-			return definition;
-		}
-
-		public static SamplingDefinition sampleCompositeXYPlane(ImageDisplay display) {
-			return sampleCompositeUVPlane(display, Axes.X, Axes.Y);
-		}
-		
-		public static SamplingDefinition sampleAllPlanes(ImageDisplay display) {
-			SamplingDefinition definition = new SamplingDefinition(display);
-			AxisType[] axes = display.getAxes();
-			for (int i = 0; i < axes.length; i++) {
-				AxisType axis = axes[i];
-				long size = display.dimension(i);
-				AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
-				definition.constrain(axis, subrange);
-			}
-			return definition;
-		}
-		
-		public boolean constrain(AxisType axis, AxisSubrange subrange) {
-			if (subrange.getError() != null) {
-				err = subrange.getError();
-				return false;
-			}
-			Data data = display.getActiveView().getData();
-			int axisIndex = data.getAxisIndex(axis);
-			if (axisIndex < 0) {
-				err = "Undefined axis " + axis + " for display " + display.getName();
-				return false;
-			}
-			List<Long> indices = subrange.getIndices();
-			if (data.dimension(axisIndex) < indices.get(0)) {
-				err = "Axis range fully beyond dimensions of display " + display.getName() + " for axis " + axis;
-				return false;
-			}
-			axisSubranges.put(axis,  subrange);
-			return true;
-		}
-	}
-
-	/**
-	 * @author Barry DeZonia
-	 */
-	private interface PositionIterator {
-		boolean hasNext();
-		long[] next();
-	}
-	
-	
-	/**
-	 * @author Barry DeZonia
-	 */
-	private class SparsePositionIterator implements PositionIterator {
-		private int[] maxIndexes;
-		private int[] indexes;
-		private List<List<Long>> actualValues;
-		private long[] currPos;
-		
-		public SparsePositionIterator(SamplingDefinition def) {
-			actualValues = def.getInputRanges();
-			maxIndexes = calcMaxes(def);
-			currPos = new long[maxIndexes.length];
-			for (int i = 0; i < currPos.length; i++)
-				currPos[i] = actualValues.get(i).get(0);
-			indexes = new int[maxIndexes.length];
-			indexes[0] = -1;
-		}
-
-		@Override
-		public boolean hasNext() {
-			for (int i = 0; i < currPos.length; i++) {
-				if (indexes[i] < maxIndexes[i]) return true;
-			}
-			return false;
-		}
-
-		@Override
-		public long[] next() {
-			for (int i = 0; i < indexes.length; i++) {
-				int nextPos = indexes[i] + 1;
-				if (nextPos <= maxIndexes[i]) {
-					indexes[i] = nextPos;
-					currPos[i] = actualValues.get(i).get(nextPos);
-					return currPos;
-				}
-				indexes[i] = 0;
-				currPos[i] = actualValues.get(i).get(0);
-			}
-			throw new IllegalArgumentException("Can't position iterator beyond end");
-		}
-		
-		private int[] calcMaxes(SamplingDefinition def) {
-			int[] mx = new int[actualValues.size()];
-			for (int i = 0; i < mx.length; i++) {
-				mx[i] = actualValues.get(i).size() - 1;
-			}
-			return mx;
-		}
-	}
-	
-	/**
-	 * @author Barry DeZonia
-	 */
-	private class DensePositionIterator implements PositionIterator {
-		private int[] maxIndexes;
-		private int[] indexes;
-		private long[] currPos;
-		
-		public DensePositionIterator(SamplingDefinition def) {
-			maxIndexes = calcMaxes(def);
-			currPos = new long[maxIndexes.length];
-			for (int i = 0; i < currPos.length; i++)
-				currPos[i] = 0;
-			indexes = new int[maxIndexes.length];
-			indexes[0] = -1;
-			long numElements = 1;
-			for (int i = 0; i < maxIndexes.length; i++) {
-				numElements *= maxIndexes[i] + 1;
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			for (int i = 0; i < currPos.length; i++) {
-				if (indexes[i] < maxIndexes[i]) return true;
-			}
-			return false;
-		}
-
-		@Override
-		public long[] next() {
-			for (int i = 0; i < indexes.length; i++) {
-				int nextPos = indexes[i] + 1;
-				if (nextPos <= maxIndexes[i]) {
-					indexes[i] = nextPos;
-					currPos[i] = nextPos;
-					return currPos;
-				}
-				indexes[i] = 0;
-				currPos[i] = 0;
-			}
-			throw new IllegalArgumentException("Can't position iterator beyond end");
-		}
-		
-		private int[] calcMaxes(SamplingDefinition def) {
-			long[] dims = def.getOutputDims();
-			int[] mx = new int[dims.length];
-			for (int i = 0; i < dims.length; i++) {
-				if (dims[i] > Integer.MAX_VALUE)
-					throw new IllegalArgumentException("Can only iterate <= 2 gig per dimension");
-				mx[i] = (int) (dims[i] - 1);
-			}
-			return mx;
-		}
-	}
-
-	/**
-	 * @author Barry DeZonia
-	 */
-	private class SamplingService {
-
-		private final DisplayService displayService;
-		private final DatasetService datasetService;
-		private final OverlayService overlayService;
-		
-		public SamplingService(DisplayService dspSrv, DatasetService datSrv,
-			OverlayService ovrSrv)
-		{
-			this.displayService = dspSrv;
-			this.datasetService = datSrv;
-			this.overlayService = ovrSrv;
-		}
-
-		// this will create an output display
-		// then it will define two iterators and walk them in sync setting values
-		// finally it will handle compos cnt, metadata, overlays, colortables, 
-		public ImageDisplay createSampledImage(SamplingDefinition def) {
-			ImageDisplay outputImage = createOutputImage(def);
-			copyData(def, outputImage);
-			return outputImage;
-		}
-		
-		public ImageDisplay duplicate(ImageDisplay display) {
-			SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
-			return createSampledImage(copyDef);
-		}
-		
-		public ImageDisplay duplicateSelectedPlane(ImageDisplay display) {
-			SamplingDefinition copyDef = SamplingDefinition.sampleXYPlane(display);
-			RealRect selection = overlayService.getSelectionBounds(display);
-			long minX = (long) selection.x;
-			long minY = (long) selection.y;
-			long maxX = (long) (selection.x + selection.width);
-			long maxY = (long) (selection.y + selection.height);
-			AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
-			AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
-			copyDef.constrain(Axes.X, xSubrange);
-			copyDef.constrain(Axes.Y, ySubrange);
-			return createSampledImage(copyDef);
-		}
-	
-
-		public ImageDisplay duplicateSelectedCompositePlane(ImageDisplay display) {
-			SamplingDefinition copyDef = SamplingDefinition.sampleCompositeXYPlane(display);
-			RealRect selection = overlayService.getSelectionBounds(display);
-			long minX = (long) selection.x;
-			long minY = (long) selection.y;
-			long maxX = (long) (selection.x + selection.width);
-			long maxY = (long) (selection.y + selection.height);
-			AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
-			AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
-			copyDef.constrain(Axes.X, xSubrange);
-			copyDef.constrain(Axes.Y, ySubrange);
-			return createSampledImage(copyDef);
-		}
-		
-		public ImageDisplay duplicateSelectedPlanes(ImageDisplay display) {
-			SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
-			RealRect selection = overlayService.getSelectionBounds(display);
-			long minX = (long) selection.x;
-			long minY = (long) selection.y;
-			long maxX = (long) (selection.x + selection.width);
-			long maxY = (long) (selection.y + selection.height);
-			AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
-			AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
-			copyDef.constrain(Axes.X, xSubrange);
-			copyDef.constrain(Axes.Y, ySubrange);
-			return createSampledImage(copyDef);
-		}
-		
-		private ImageDisplay createOutputImage(SamplingDefinition def) {
-			ImageDisplay origDisp = def.getDisplay();
-			// TODO - remove evil cast
-			Dataset origDs = (Dataset) origDisp.getActiveView().getData();
-			long[] dims = def.getOutputDims();
-			String name = origDisp.getName();
-			AxisType[] axes = def.getOutputAxes();
-			int bitsPerPixel = origDs.getType().getBitsPerPixel();
-			boolean signed = origDs.isSigned();
-			boolean floating = !origDs.isInteger();
-			Dataset output =
-				datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
-			// TODO - remove evil cast
-			return (ImageDisplay) displayService.createDisplay(name, output);
-		}
-
-		private void copyData(SamplingDefinition def, ImageDisplay outputImage) {
-			PositionIterator iter1 = new SparsePositionIterator(def);
-			PositionIterator iter2 = new DensePositionIterator(def);
-			// TODO - remove evil casts
-			Dataset input = (Dataset) def.getDisplay().getActiveView().getData();
-			Dataset output = (Dataset) outputImage.getActiveView().getData();
-			RandomAccess<? extends RealType<?>> inputAccessor =
-					input.getImgPlus().randomAccess();
-			RandomAccess<? extends RealType<?>> outputAccessor =
-					output.getImgPlus().randomAccess();
-			while (iter1.hasNext() && iter2.hasNext()) {
-				long[] inputPos = iter1.next();
-				long[] outputPos = iter2.next();
-				inputAccessor.setPosition(inputPos);
-				outputAccessor.setPosition(outputPos);
-				double value = inputAccessor.get().getRealDouble();
-				outputAccessor.get().setReal(value);
-			}
-			setCompositeChannelCount(input, output);
-			// TODO - for 16 bit images the display ranges are all messed up
-			/* TODO
-			set display ranges from input?
-			setColorTables();
-			setOtherMetadata();
-			attachOverlays();
-			*/
-			output.rebuild();
-		}
-		
-		private void setCompositeChannelCount(Dataset input, Dataset output) {
-			if (input.getCompositeChannelCount() == 1) return;
-			int index = output.getAxisIndex(Axes.CHANNEL);
-			long numChannels = (index < 0) ? 1 : output.dimension(index);
-			output.setCompositeChannelCount((int)numChannels);
-		}
-	}
 }
