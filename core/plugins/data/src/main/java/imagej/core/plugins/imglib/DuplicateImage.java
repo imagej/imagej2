@@ -72,7 +72,6 @@ import net.imglib2.type.numeric.RealType;
 //      in output data?
 //   3) report parse error string somehow
 //   5) test the contains(num) code works
-//   8) finish headless user API
 // TODO - further constrain an axis subrange by the selection
 // TODO - multiple places I'm relying on a Display's axes rather than a
 // Dataset's axes. See if there are problems with this
@@ -85,6 +84,7 @@ import net.imglib2.type.numeric.RealType;
 // TODO:
 // -- for speed eliminate reliance on Longs. Make primitive arrays.
 // -- make a EnormousList that can store more than 2 gig of longs
+// Replace RestructureUtils calls with these in other plugins
 
 /**
  * Duplicates data from one input display to an output display. The planes to
@@ -117,37 +117,54 @@ public class DuplicateImage extends DynamicPlugin {
 	@Parameter(type = ItemIO.OUTPUT)
 	private ImageDisplay outputDisplay;
 
-	@Parameter(label = "Current plane only")
-	private boolean currentPlaneOnly = true;
+	@Parameter(label = "Constrain axes as below:")
+	private boolean specialBehavior = false;
 	
 	// -- instance variables that are not parameters --
 
-	private SamplingDefinition samples;
+	private Map<AxisType,AxisSubrange> definitions;
 	private AxisType[] theAxes;
 
 	// -- DuplicateImage methods --
 
-	Finish up initializing "samples" and "currentPlane" when user changes them
-	and when they default to dialog parsed values.
-	I was not yet done making this bulletproof for both headless and gui usage
-	
-	public void setCurrentPlaneOnly(boolean value) {
-		if (currentPlaneOnly != value) samples = null;
-		currentPlaneOnly = value;
+	/**
+	 * Specifies whether to use default behavior or special behavior. Default
+	 * behavior copies the current composite XY plane. Special behavior is set
+	 * when user defined axis definitions are to follow. If no axis definitions
+	 * follow then all planes within the selected region will be copied.
+	 */
+	public void setDefaultBehavior(boolean value) {
+		specialBehavior = !value;
 	}
-	
-	public boolean isCurrentPlaneOnly() { return currentPlaneOnly; }
 
+	/**
+	 * Returns ture if current behavior is default. Otherwise current behavior is
+	 * special. Default behavior copies the current composite XY plane. When
+	 * special behavior is set then user defined axis definitions may have been
+	 * specifed and if so those definitions are used during copying. Otherwise if
+	 * no user defined axis definitions were specified then all planes within the
+	 * selected region will be copied.
+	 */
+	public boolean isDefaultBehavior() { return !specialBehavior; }
+
+	/**
+	 * Sets the the input image to be sampled.
+	 */
 	public void setInputDisplay(ImageDisplay disp) {
 		inputDisplay = disp;
-		samples = null;
 	}
 	
+	/**
+	 * Returns the the input image to be sampled.
+	 */
 	public ImageDisplay getInputDisplay() { return inputDisplay; }
-	
+
+	/**
+	 * The output image resulting after executing the run() method. This method
+	 * returns null if the run() method has not yet been called. 
+	 */
 	public ImageDisplay getOutputDisplay() { return outputDisplay; }
-	
-	
+
 	/**
 	 * Sets the range of values to copy from the input display for the given axis.
 	 * The definition is a textual language that allows one or more planes to be
@@ -168,15 +185,10 @@ public class DuplicateImage extends DynamicPlugin {
 	 * @return null if successful else a message describing input error
 	 */
 	public String setAxisRange(AxisType axis, String axisDefinition, boolean originIsOne) {
-		if (samples == null) { 
-			if (currentPlaneOnly)
-				samples = SamplingDefinition.sampleCompositeXYPlane(inputDisplay);
-			else
-				samples = SamplingDefinition.sampleAllPlanes(inputDisplay);
-		}
+		specialBehavior = true;
 		AxisSubrange subrange = new AxisSubrange(inputDisplay, axis, axisDefinition, originIsOne);
 		if (subrange.getError() == null) {
-			samples.constrain(axis, subrange);
+			definitions.put(axis, subrange);
 		}
 		return subrange.getError();
 	}
@@ -187,8 +199,13 @@ public class DuplicateImage extends DynamicPlugin {
 	public void run() {
 		SamplingService samplingService =
 				new SamplingService(displayService, datasetService, overlayService);
-		if (samples == null) samples = determineSamples();
-		outputDisplay = samplingService.createSampledImage(samples);
+		if (specialBehavior) {
+			SamplingDefinition samples = determineSamples();
+			outputDisplay = samplingService.createSampledImage(samples);
+		}
+		else { // snapshot the existing composite selection
+			outputDisplay = samplingService.duplicateSelectedCompositePlane(inputDisplay);
+		}
 		/*
 		final List<List<Long>> planeIndices;
 		
@@ -224,6 +241,7 @@ public class DuplicateImage extends DynamicPlugin {
 
 	
 	protected void initializer() {
+		definitions = new HashMap<AxisType, AxisSubrange>();
 		theAxes = inputDisplay.getAxes();
 		for (AxisType axis : theAxes) {
 			final DefaultModuleItem<String> axisItem =
@@ -239,9 +257,14 @@ public class DuplicateImage extends DynamicPlugin {
 		return "1-" + disp.dimension(axisIndex);
 	}
 
+	/** takes definitions and applies them */
 	private SamplingDefinition determineSamples() {
-		if (currentPlaneOnly) {
-			return SamplingDefinition.sampleCompositeXYPlane(inputDisplay);
+		if (definitions.size() > 0) {
+			SamplingDefinition def = SamplingDefinition.sampleAllPlanes(inputDisplay);
+			for (AxisType axis : definitions.keySet()) {
+				def.constrain(axis, definitions.get(axis));
+			}
+			return def;
 		}
 		return parsedDefinition();
 	}
@@ -550,7 +573,6 @@ public class DuplicateImage extends DynamicPlugin {
 	 *       in M-space. M is less or equal (in size and/or num dims) to N space.
 	 */
 	
-	
 	/**
 	 * @author Barry DeZonia
 	 */
@@ -577,10 +599,17 @@ public class DuplicateImage extends DynamicPlugin {
 			indices.add(pos);
 		}
 		
-		public AxisSubrange(ImageDisplay display, long startPos, long endPos) {
+		public AxisSubrange(ImageDisplay display, long pos1, long pos2) {
 			this(display);
-			if (endPos < startPos)
-				throw new IllegalArgumentException("endPos < startPos");
+			long startPos, endPos;
+			if (pos1 < pos2) {
+				startPos = pos1;
+				endPos = pos2;
+			}
+			else {
+				startPos = pos2;
+				endPos = pos1;
+			}
 			if (endPos - startPos + 1 > Integer.MAX_VALUE)
 				throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
 			for (long l = startPos; l <= endPos; l++) {
@@ -588,16 +617,33 @@ public class DuplicateImage extends DynamicPlugin {
 			}
 		}
 		
-		public AxisSubrange(ImageDisplay display, long startPos, long endPos, long by) {
+		public AxisSubrange(ImageDisplay display, long pos1, long pos2, long by) {
 			this(display);
-			if (endPos < startPos)
-				throw new IllegalArgumentException("endPos < startPos");
-			if (by <= 0)
-				throw new IllegalArgumentException("increment must be > 0");
-			if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
-				throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
-			for (long l = startPos; l <= endPos; l += by) {
-				indices.add(l);
+			long startPos, endPos;
+			if (by == 0) {
+				if (pos1 == pos2) {
+					indices.add(pos1);
+					return;
+				}
+				throw new IllegalArgumentException("increment must not be 0");
+			}
+			else if (by < 0) {
+				startPos = Math.max(pos1, pos2);
+				endPos = Math.min(pos1, pos2);
+				if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
+					throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
+				for (long l = startPos; l >= endPos; l += by) {
+					indices.add(l);
+				}
+			}
+			else { // by > 0
+				startPos = Math.min(pos1, pos2);
+				endPos = Math.max(pos1, pos2);
+				if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
+					throw new IllegalArgumentException("the number of axis elements cannot exceed "+Integer.MAX_VALUE);
+				for (long l = startPos; l <= endPos; l += by) {
+					indices.add(l);
+				}
 			}
 		}
 		
@@ -819,6 +865,10 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 		
 		public boolean constrain(AxisType axis, AxisSubrange subrange) {
+			if (subrange.getError() != null) {
+				err = subrange.getError();
+				return false;
+			}
 			Data data = display.getActiveView().getData();
 			int axisIndex = data.getAxisIndex(axis);
 			if (axisIndex < 0) {
@@ -960,7 +1010,9 @@ public class DuplicateImage extends DynamicPlugin {
 		private final DatasetService datasetService;
 		private final OverlayService overlayService;
 		
-		public SamplingService(DisplayService dspSrv, DatasetService datSrv, OverlayService ovrSrv) {
+		public SamplingService(DisplayService dspSrv, DatasetService datSrv,
+			OverlayService ovrSrv)
+		{
 			this.displayService = dspSrv;
 			this.datasetService = datSrv;
 			this.overlayService = ovrSrv;
@@ -971,6 +1023,75 @@ public class DuplicateImage extends DynamicPlugin {
 		// finally it will handle compos cnt, metadata, overlays, colortables, 
 		public ImageDisplay createSampledImage(SamplingDefinition def) {
 			ImageDisplay outputImage = createOutputImage(def);
+			copyData(def, outputImage);
+			return outputImage;
+		}
+		
+		public ImageDisplay duplicate(ImageDisplay display) {
+			SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
+			return createSampledImage(copyDef);
+		}
+		
+		public ImageDisplay duplicateSelectedPlane(ImageDisplay display) {
+			SamplingDefinition copyDef = SamplingDefinition.sampleXYPlane(display);
+			RealRect selection = overlayService.getSelectionBounds(display);
+			long minX = (long) selection.x;
+			long minY = (long) selection.y;
+			long maxX = (long) (selection.x + selection.width);
+			long maxY = (long) (selection.y + selection.height);
+			AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
+			AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
+			copyDef.constrain(Axes.X, xSubrange);
+			copyDef.constrain(Axes.Y, ySubrange);
+			return createSampledImage(copyDef);
+		}
+	
+
+		public ImageDisplay duplicateSelectedCompositePlane(ImageDisplay display) {
+			SamplingDefinition copyDef = SamplingDefinition.sampleCompositeXYPlane(display);
+			RealRect selection = overlayService.getSelectionBounds(display);
+			long minX = (long) selection.x;
+			long minY = (long) selection.y;
+			long maxX = (long) (selection.x + selection.width);
+			long maxY = (long) (selection.y + selection.height);
+			AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
+			AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
+			copyDef.constrain(Axes.X, xSubrange);
+			copyDef.constrain(Axes.Y, ySubrange);
+			return createSampledImage(copyDef);
+		}
+		
+		public ImageDisplay duplicateSelectedPlanes(ImageDisplay display) {
+			SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
+			RealRect selection = overlayService.getSelectionBounds(display);
+			long minX = (long) selection.x;
+			long minY = (long) selection.y;
+			long maxX = (long) (selection.x + selection.width);
+			long maxY = (long) (selection.y + selection.height);
+			AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
+			AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
+			copyDef.constrain(Axes.X, xSubrange);
+			copyDef.constrain(Axes.Y, ySubrange);
+			return createSampledImage(copyDef);
+		}
+		
+		private ImageDisplay createOutputImage(SamplingDefinition def) {
+			ImageDisplay origDisp = def.getDisplay();
+			// TODO - remove evil cast
+			Dataset origDs = (Dataset) origDisp.getActiveView().getData();
+			long[] dims = def.getOutputDims();
+			String name = origDisp.getName();
+			AxisType[] axes = def.getOutputAxes();
+			int bitsPerPixel = origDs.getType().getBitsPerPixel();
+			boolean signed = origDs.isSigned();
+			boolean floating = !origDs.isInteger();
+			Dataset output =
+				datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
+			// TODO - remove evil cast
+			return (ImageDisplay) displayService.createDisplay(name, output);
+		}
+
+		private void copyData(SamplingDefinition def, ImageDisplay outputImage) {
 			PositionIterator iter1 = new SparsePositionIterator(def);
 			PositionIterator iter2 = new DensePositionIterator(def);
 			// TODO - remove evil casts
@@ -996,29 +1117,7 @@ public class DuplicateImage extends DynamicPlugin {
 			setOtherMetadata();
 			attachOverlays();
 			*/
-			outputImage.update();
-			return outputImage;
-		}
-		
-		public ImageDisplay duplicate(ImageDisplay display) {
-			SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
-			return createSampledImage(copyDef);
-		}
-		
-		private ImageDisplay createOutputImage(SamplingDefinition def) {
-			ImageDisplay origDisp = def.getDisplay();
-			// TODO - remove evil cast
-			Dataset origDs = (Dataset) origDisp.getActiveView().getData();
-			long[] dims = def.getOutputDims();
-			String name = origDisp.getName();
-			AxisType[] axes = def.getOutputAxes();
-			int bitsPerPixel = origDs.getType().getBitsPerPixel();
-			boolean signed = origDs.isSigned();
-			boolean floating = !origDs.isInteger();
-			Dataset output =
-				datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
-			// TODO - remove evil cast
-			return (ImageDisplay) displayService.createDisplay(name, output);
+			output.rebuild();
 		}
 		
 		private void setCompositeChannelCount(Dataset input, Dataset output) {
