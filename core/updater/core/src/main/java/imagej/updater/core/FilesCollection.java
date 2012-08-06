@@ -327,7 +327,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			prefix(Util.XML_COMPRESSED))), true);
 	}
 
-	protected static DependencyAnalyzer dependencyAnalyzer;
+	protected DependencyAnalyzer dependencyAnalyzer;
 
 	public interface Filter {
 
@@ -683,7 +683,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		try {
 			if (dependencyAnalyzer == null) dependencyAnalyzer =
 				new DependencyAnalyzer(imagejRoot);
-			return dependencyAnalyzer.getDependencies(imagejRoot, file.getFilename());
+			return dependencyAnalyzer.getDependencies(imagejRoot, file);
 		}
 		catch (final IOException e) {
 			log.error(e);

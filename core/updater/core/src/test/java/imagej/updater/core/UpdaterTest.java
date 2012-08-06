@@ -55,6 +55,7 @@ import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
 import imagej.updater.util.StderrProgress;
@@ -1095,6 +1096,29 @@ public class UpdaterTest {
 		assertCount(0, new Conflicts(files).getConflicts(true));
 	}
 
+	@Test
+	public void byteCodeAnalyzer() throws Exception {
+		writeJar("jars/dependencee.jar", imagej.updater.test.Dependencee.class);
+		writeJar("jars/dependency.jar", imagej.updater.test.Dependency.class);
+		FilesCollection files = new FilesCollection(ijRoot);
+		new Checksummer(files, progress).updateFromLocal();
+
+		FileObject dependencee = files.get("jars/dependencee.jar");
+		assertCount(0, dependencee.getDependencies());
+		files.updateDependencies(dependencee);
+		assertCount(1, dependencee.getDependencies());
+		assertEquals("jars/dependency.jar", dependencee.getDependencies().iterator().next().filename);
+
+		writeJar("jars/bogus.jar", imagej.updater.test.Dependency.class, imagej.updater.test.Dependencee.class);
+		files = new FilesCollection(ijRoot); // force a new dependency analyzer
+		new Checksummer(files, progress).updateFromLocal();
+		dependencee = files.get("jars/dependencee.jar");
+		dependencee.addDependency(files, files.get("jars/dependency.jar"));
+		files.updateDependencies(dependencee);
+		assertCount(1, dependencee.getDependencies());
+		assertEquals("jars/dependency.jar", dependencee.getDependencies().iterator().next().filename);
+	}
+
 	//
 	// Debug functions
 	//
@@ -1444,6 +1468,32 @@ public class UpdaterTest {
 			final JarEntry entry = new JarEntry(args[i]);
 			jar.putNextEntry(entry);
 			jar.write(args[i + 1].getBytes());
+			jar.closeEntry();
+		}
+		jar.close();
+		return file;
+	}
+
+	protected File writeJar(final String path, Class<?>... classes) throws FileNotFoundException, IOException {
+		return writeJar(new File(ijRoot, path), classes);
+	}
+
+	protected File writeJar(final File file, Class<?>... classes) throws FileNotFoundException, IOException {
+		file.getParentFile().mkdirs();
+		final byte[] buffer = new byte[32768];
+		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
+		for (int i = 0; i < classes.length; i++) {
+			final String path = classes[i].getName().replace('.', '/') + ".class";
+			final JarEntry entry = new JarEntry(path);
+			jar.putNextEntry(entry);
+			final InputStream in = classes[i].getResourceAsStream("/" + path);
+			for (;;) {
+				int count = in.read(buffer);
+				if (count < 0)
+					break;
+				jar.write(buffer, 0, count);
+			}
+			in.close();
 			jar.closeEntry();
 		}
 		jar.close();

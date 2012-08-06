@@ -35,6 +35,8 @@
 
 package imagej.updater.util;
 
+import imagej.updater.core.FileObject;
+import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.ByteCodeAnalyzer.Mode;
 
 import java.io.File;
@@ -73,6 +75,13 @@ public class DependencyAnalyzer {
 	public Iterable<String> getDependencies(final File imagejRoot,
 		final String path) throws IOException
 	{
+		return getDependencies(imagejRoot, new FileObject(null, path, 0l, "", 20000000000000l, Status.INSTALLED));
+	}
+
+	public Iterable<String> getDependencies(final File imagejRoot,
+			final FileObject fileObject) throws IOException
+	{
+		final String path = fileObject.getFilename();
 		if (!path.endsWith(".jar")) return null;
 
 		final File file = new File(imagejRoot, path);
@@ -93,6 +102,7 @@ public class DependencyAnalyzer {
 			for (final String name : analyzer)
 				addClassAndInterfaces(allClassNames, handled, name);
 
+			classNameLoop:
 			for (final String name : allClassNames) {
 				UpdaterUserInterface.get().debug(
 					"Considering name from analyzer: " + name);
@@ -100,7 +110,12 @@ public class DependencyAnalyzer {
 				if (jars == null) continue;
 				final List<String> dependencies = new ArrayList<String>();
 				for (final String dependency : jars) {
-					if (!exclude(path, dependency)) dependencies.add(dependency);
+					if (!exclude(path, dependency)) {
+						// already accounted for?
+						if (fileObject.hasDependency(dependency))
+							break classNameLoop;
+						dependencies.add(dependency);
+					}
 				}
 				if (dependencies.size() > 1) {
 					UpdaterUserInterface.get().log(
