@@ -324,7 +324,7 @@ public class FileObject {
 	}
 
 	public boolean hasDependency(final String filename) {
-		return dependencies.containsKey(filename);
+		return dependencies.containsKey(getFilename(filename, true));
 	}
 
 	public void addLink(final String link) {
