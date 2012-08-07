@@ -38,6 +38,7 @@ package imagej.platform;
 import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.platform.event.AppAboutEvent;
@@ -54,7 +55,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public final class DefaultAppService extends AbstractService implements
 	AppService
 {

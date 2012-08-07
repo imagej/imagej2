@@ -35,14 +35,14 @@
 
 package imagej.event;
 
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Interface for the status notification service.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends IService {
+public interface StatusService extends Service {
 
 	/** Updates ImageJ's progress bar. */
 	void showProgress(int value, int maximum);

@@ -44,17 +44,17 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public class ServiceIndex extends SortedObjectIndex<IService> {
+public class ServiceIndex extends SortedObjectIndex<Service> {
 
 	public ServiceIndex() {
-		super(IService.class);
+		super(Service.class);
 	}
 
 	// -- ServiceIndex methods --
 
 	/** Gets the first available service compatible with the given class. */
-	public <S extends IService> S getService(final Class<S> c) {
-		final List<IService> list = get(c);
+	public <S extends Service> S getService(final Class<S> c) {
+		final List<Service> list = get(c);
 		if (list.isEmpty()) return null;
 		@SuppressWarnings("unchecked")
 		final S service = (S) list.get(0);

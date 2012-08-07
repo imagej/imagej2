@@ -59,7 +59,7 @@ import java.util.concurrent.Future;
  * @see IPlugin
  * @see Plugin
  */
-@Service
+@Plugin(type = Service.class)
 public class DefaultPluginService extends AbstractService implements
 	PluginService
 {
@@ -68,7 +68,7 @@ public class DefaultPluginService extends AbstractService implements
 	private final ModuleService moduleService;
 
 	/** Index of registered plugins. */
-	private final PluginIndex pluginIndex = new PluginIndex();
+	private final PluginIndex pluginIndex;
 
 	// -- Constructors --
 
@@ -84,8 +84,10 @@ public class DefaultPluginService extends AbstractService implements
 		super(context);
 		this.log = log;
 		this.moduleService = moduleService;
+		this.pluginIndex = context.getPluginIndex();
 
-		reloadPlugins();
+		// inform the module service of available runnable plugins
+		moduleService.addModules(getRunnablePlugins());
 	}
 
 	// -- PluginService methods --
@@ -106,9 +108,7 @@ public class DefaultPluginService extends AbstractService implements
 		moduleService.removeModules(getRunnablePlugins());
 
 		pluginIndex.clear();
-		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		new PluginFinder().findPlugins(plugins);
-		pluginIndex.addAll(plugins);
+		pluginIndex.discover();
 
 		// add new runnable plugins to module service
 		moduleService.addModules(getRunnablePlugins());
@@ -183,10 +183,7 @@ public class DefaultPluginService extends AbstractService implements
 	public <P extends IPlugin> List<PluginInfo<? extends P>> getPluginsOfType(
 		final Class<P> type)
 	{
-		final List<PluginInfo<?>> list = pluginIndex.get(type);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<? extends P>> result = (List) list;
-		return result;
+		return pluginIndex.getPlugins(type);
 	}
 
 	@Override

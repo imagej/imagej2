@@ -37,6 +37,7 @@ package imagej.core.plugins.app;
 
 import imagej.ImageJ;
 import imagej.Priority;
+import imagej.ext.plugin.Plugin;
 import imagej.platform.AppService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -46,7 +47,7 @@ import imagej.service.Service;
  * 
  * @author Curtis Rueden
  */
-@Service(priority = Priority.HIGH_PRIORITY)
+@Plugin(type = Service.class, priority = Priority.HIGH_PRIORITY)
 public final class AppRegistrar extends AbstractService {
 
 	// -- Constructors --

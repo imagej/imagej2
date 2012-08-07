@@ -38,7 +38,7 @@ package imagej.options;
 import imagej.event.EventService;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +50,7 @@ import java.util.Map;
  * @author Barry DeZonia
  * @see OptionsPlugin
  */
-public interface OptionsService extends IService {
+public interface OptionsService extends Service {
 
 	EventService getEventService();
 

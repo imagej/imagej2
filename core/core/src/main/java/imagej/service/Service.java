@@ -35,46 +35,18 @@
 
 package imagej.service;
 
-import imagej.Priority;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
+import imagej.Contextual;
+import imagej.Prioritized;
+import imagej.ext.plugin.IPlugin;
 
 /**
- * Annotation indicating a discoverable service. ImageJ discovers available
- * services at runtime by looking for classes that implement the
- * {@link IService} interface and are annotated with this annotation.
+ * An ImageJ service, for a particular area of functionality. ImageJ discovers
+ * available services at runtime by looking for classes that implement this
+ * interface and are annotated with <code>Plugin(type = Service.class)</code>.
  * 
  * @author Curtis Rueden
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Indexable(type = IService.class)
-public @interface Service {
-
-	/**
-	 * Services are selected for instantiation based on priority. This is useful
-	 * to control which service implementation is chosen when multiple
-	 * implementations are present in the classpath, as well as to force
-	 * instantiation of one service over another when the dependency hierarchy
-	 * does not dictate otherwise.
-	 * <p>
-	 * Any double value is allowed, but for convenience, there are some presets:
-	 * </p>
-	 * <ul>
-	 * <li>{@link Priority#FIRST_PRIORITY}</li>
-	 * <li>{@link Priority#VERY_HIGH_PRIORITY}</li>
-	 * <li>{@link Priority#HIGH_PRIORITY}</li>
-	 * <li>{@link Priority#NORMAL_PRIORITY}</li>
-	 * <li>{@link Priority#LOW_PRIORITY}</li>
-	 * <li>{@link Priority#VERY_LOW_PRIORITY}</li>
-	 * <li>{@link Priority#LAST_PRIORITY}</li>
-	 * </ul>
-	 */
-	double priority() default Priority.NORMAL_PRIORITY;
-
+public interface Service extends IPlugin, Contextual, Prioritized {
+	// A service is a plugin that provides additional API for ImageJ,
+	// discoverable via the plugin discovery mechanism.
 }

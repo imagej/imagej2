@@ -42,6 +42,7 @@ import imagej.data.event.DataRestructuredEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.display.event.DisplayActivatedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
@@ -53,7 +54,7 @@ import net.imglib2.meta.Axes;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public class SplitChannelsContextMonitor extends AbstractService {
 
 	private final EventService eventService;

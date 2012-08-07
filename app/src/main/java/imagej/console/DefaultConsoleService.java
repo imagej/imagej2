@@ -38,6 +38,7 @@ package imagej.console;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.io.IOService;
 import imagej.log.LogService;
@@ -52,7 +53,7 @@ import net.imglib2.io.ImgIOException;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public class DefaultConsoleService extends AbstractService implements
 	ConsoleService
 {

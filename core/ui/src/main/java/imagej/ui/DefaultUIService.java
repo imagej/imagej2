@@ -51,6 +51,7 @@ import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.menu.MenuService;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
@@ -72,7 +73,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public final class DefaultUIService extends AbstractService implements
 	UIService
 {

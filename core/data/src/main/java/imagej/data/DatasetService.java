@@ -37,7 +37,7 @@ package imagej.data;
 
 import imagej.data.display.ImageDisplay;
 import imagej.object.ObjectService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-public interface DatasetService extends IService {
+public interface DatasetService extends Service {
 
 	ObjectService getObjectService();
 

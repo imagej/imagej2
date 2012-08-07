@@ -39,7 +39,7 @@ import imagej.event.EventService;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.object.ObjectService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface DisplayService extends IService {
+public interface DisplayService extends Service {
 
 	EventService getEventService();
 

@@ -36,6 +36,7 @@
 package imagej.thread;
 
 import imagej.ImageJ;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -51,7 +52,7 @@ import java.util.concurrent.Future;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public final class DefaultThreadService extends AbstractService implements
 	ThreadService
 {

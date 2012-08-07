@@ -48,6 +48,7 @@ import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.event.ToolActivatedEvent;
@@ -70,7 +71,7 @@ import java.util.Map;
  * @see Tool
  * @see Tool
  */
-@Service
+@Plugin(type = Service.class)
 public class DefaultToolService extends AbstractService implements ToolService {
 
 	private static final double SEPARATOR_DISTANCE = 10;

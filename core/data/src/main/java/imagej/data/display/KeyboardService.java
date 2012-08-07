@@ -36,14 +36,14 @@
 package imagej.data.display;
 
 import imagej.event.EventService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Interface for service that tracks the current keyboard status.
  * 
  * @author Barry DeZonia
  */
-public interface KeyboardService extends IService {
+public interface KeyboardService extends Service {
 
 	EventService getEventService();
 

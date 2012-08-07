@@ -35,7 +35,7 @@
 
 package imagej.log;
 
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Interface for the logging service.
@@ -47,7 +47,7 @@ import imagej.service.IService;
  * 
  * @author Curtis Rueden
  */
-public interface LogService extends IService {
+public interface LogService extends Service {
 
 	void debug(Object msg);
 

@@ -40,6 +40,7 @@ import imagej.data.Dataset;
 import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -52,7 +53,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Service
+@Plugin(type = Service.class)
 public final class DefaultImageDisplayService extends AbstractService
 	implements ImageDisplayService
 {

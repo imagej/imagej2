@@ -36,7 +36,8 @@
 package imagej;
 
 import imagej.event.ImageJEvent;
-import imagej.service.IService;
+import imagej.ext.plugin.PluginIndex;
+import imagej.service.Service;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
 import imagej.util.CheckSezpoz;
@@ -53,7 +54,7 @@ import java.util.List;
  * list of services.
  * 
  * @author Curtis Rueden
- * @see IService
+ * @see Service
  */
 public class ImageJ {
 
@@ -71,12 +72,12 @@ public class ImageJ {
 		catch (final IOException e) {
 			Log.error(e);
 		}
-		return createContext((List<Class<? extends IService>>) null);
+		return createContext((List<Class<? extends Service>>) null);
 	}
 
 	/** Creates a new ImageJ application context with no services. */
 	public static ImageJ createEmptyContext() {
-		return createContext(new ArrayList<Class<? extends IService>>());
+		return createContext(new ArrayList<Class<? extends Service>>());
 	}
 
 	/**
@@ -84,14 +85,14 @@ public class ImageJ {
 	 * any required service dependencies).
 	 */
 	public static ImageJ createContext(
-		final Class<? extends IService> serviceClass)
+		final Class<? extends Service> serviceClass)
 	{
-		// NB: Although the createContext(Class<? extends IService>...) method
+		// NB: Although the createContext(Class<? extends Service>...) method
 		// covers a superset of this case, it results in a warning in client code.
 		// Needing a single service (e.g., for unit testing) is common enough to
 		// warrant this extra method to avoid the problem for this special case.
-		final List<Class<? extends IService>> serviceClassList =
-			new ArrayList<Class<? extends IService>>();
+		final List<Class<? extends Service>> serviceClassList =
+			new ArrayList<Class<? extends Service>>();
 		serviceClassList.add(serviceClass);
 		return createContext(serviceClassList);
 	}
@@ -101,9 +102,9 @@ public class ImageJ {
 	 * any required service dependencies).
 	 */
 	public static ImageJ createContext(
-		final Class<? extends IService>... serviceClasses)
+		final Class<? extends Service>... serviceClasses)
 	{
-		final List<Class<? extends IService>> serviceClassList;
+		final List<Class<? extends Service>> serviceClassList;
 		if (serviceClasses == null || serviceClasses.length == 0) {
 			serviceClassList = null;
 		}
@@ -121,7 +122,7 @@ public class ImageJ {
 	 * any required service dependencies).
 	 */
 	public static ImageJ createContext(
-		final Collection<Class<? extends IService>> serviceClasses)
+		final Collection<Class<? extends Service>> serviceClasses)
 	{
 		final ImageJ context = new ImageJ();
 		staticContext = context; // TEMP
@@ -135,11 +136,11 @@ public class ImageJ {
 	 * Gets the static ImageJ application context.
 	 * 
 	 * @deprecated Avoid using this method. If you are writing a plugin, you can
-	 *             declare the {@link ImageJ} or {@link IService} you want as a
+	 *             declare the {@link ImageJ} or {@link Service} you want as a
 	 *             parameter, with required=true and persist=false. If you are
 	 *             writing a tool, you can obtain the {@link ImageJ} context by
 	 *             calling {@link ImageJEvent#getContext()}, and then asking that
-	 *             context for needed {@link IService} instances by calling
+	 *             context for needed {@link Service} instances by calling
 	 *             {@link ImageJ#getService(Class)}. See the classes in
 	 *             core/plugins and core/tools for many examples.
 	 */
@@ -153,16 +154,16 @@ public class ImageJ {
 	 * context.
 	 * 
 	 * @deprecated Avoid using this method. If you are writing a plugin, you can
-	 *             annotate the {@link ImageJ} or {@link IService} you want as a
+	 *             annotate the {@link ImageJ} or {@link Service} you want as a
 	 *             parameter, with required=true and persist=false. If you are
 	 *             writing a tool, you can obtain the {@link ImageJ} context by
 	 *             calling {@link ImageJEvent#getContext()}, and then asking that
-	 *             context for needed {@link IService} instances by calling
+	 *             context for needed {@link Service} instances by calling
 	 *             {@link ImageJ#getService(Class)}. See the classes in
 	 *             core/plugins and core/tools for many examples.
 	 */
 	@Deprecated
-	public static <S extends IService> S get(final Class<S> serviceClass) {
+	public static <S extends Service> S get(final Class<S> serviceClass) {
 		final ImageJ context = getContext();
 		if (context == null) return null; // no context
 		return context.getService(serviceClass);
@@ -172,9 +173,14 @@ public class ImageJ {
 
 	private final ServiceIndex serviceIndex;
 
+	private final PluginIndex pluginIndex;
+
 	/** Creates a new ImageJ context. */
 	public ImageJ() {
 		serviceIndex = new ServiceIndex();
+
+		pluginIndex = new PluginIndex();
+		pluginIndex.discover();
 	}
 
 	// -- ImageJ methods --
@@ -183,8 +189,12 @@ public class ImageJ {
 		return serviceIndex;
 	}
 
+	public PluginIndex getPluginIndex() {
+		return pluginIndex;
+	}
+
 	/** Gets the service of the given class. */
-	public <S extends IService> S getService(final Class<S> c) {
+	public <S extends Service> S getService(final Class<S> c) {
 		return serviceIndex.getService(c);
 	}
 

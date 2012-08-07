@@ -37,7 +37,7 @@ package imagej.platform;
 
 import imagej.event.EventService;
 import imagej.ext.plugin.PluginService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.io.IOException;
 import java.net.URL;
@@ -49,7 +49,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public interface PlatformService extends IService {
+public interface PlatformService extends Service {
 
 	EventService getEventService();
 

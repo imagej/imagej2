@@ -60,7 +60,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @see ShadowMenu
  */
-@Service
+@Plugin(type = Service.class)
 public class DefaultMenuService extends AbstractService implements MenuService {
 
 	private final EventService eventService;

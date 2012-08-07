@@ -36,7 +36,7 @@
 package imagej.ext.module;
 
 import imagej.ext.Accelerator;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.Collection;
 import java.util.List;
@@ -68,7 +68,7 @@ import java.util.concurrent.Future;
  * @see Module
  * @see imagej.ext.plugin.PluginService
  */
-public interface ModuleService extends IService {
+public interface ModuleService extends Service {
 
 	/** Gets the index of available modules. */
 	ModuleIndex getIndex();

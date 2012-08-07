@@ -36,7 +36,7 @@
 package imagej.object;
 
 import imagej.event.EventService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public interface ObjectService extends IService {
+public interface ObjectService extends Service {
 
 	EventService getEventService();
 

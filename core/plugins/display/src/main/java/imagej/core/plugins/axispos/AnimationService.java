@@ -46,6 +46,7 @@ import imagej.ext.KeyCode;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -57,7 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public class AnimationService extends AbstractService {
 
 	private static final String STARTED_STATUS =

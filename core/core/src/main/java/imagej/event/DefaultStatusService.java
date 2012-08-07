@@ -36,6 +36,7 @@
 package imagej.event;
 
 import imagej.ImageJ;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -44,7 +45,7 @@ import imagej.service.Service;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public class DefaultStatusService extends AbstractService implements
 	StatusService
 {

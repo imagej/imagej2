@@ -40,8 +40,8 @@ package imagej;
  * 
  * @author Johannes Schindelin
  * @author Curtis Rueden
+ * @see imagej.Prioritized#getPriority()
  * @see imagej.ext.plugin.Plugin#priority()
- * @see imagej.service.Service#priority()
  */
 public final class Priority {
 

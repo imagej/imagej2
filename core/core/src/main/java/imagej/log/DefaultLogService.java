@@ -36,6 +36,7 @@
 package imagej.log;
 
 import imagej.ImageJ;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = Service.class)
 public final class DefaultLogService extends AbstractService implements
 	LogService
 {

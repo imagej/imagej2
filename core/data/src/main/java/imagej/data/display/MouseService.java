@@ -38,14 +38,14 @@ package imagej.data.display;
 import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.input.MsButtonEvent;
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Interface for service that tracks the current mouse status.
  * 
  * @author Curtis Rueden
  */
-public interface MouseService extends IService {
+public interface MouseService extends Service {
 
 	EventService getEventService();
 
