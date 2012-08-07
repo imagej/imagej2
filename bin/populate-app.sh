@@ -7,8 +7,9 @@ cd app &&
 ZIP=target/imagej-$VERSION-application.zip &&
 unzip -o $ZIP &&
 contents="$(unzip -l $ZIP | sed -n 's/^.*\(ImageJ.app\/.*[^\/]\)$/\1/p')" &&
-possibly_obsoletes="$(printf "ImageJ.app/.checksums\nImageJ.app/.checksums\n%s\n%s\n%s" \
+possibly_obsoletes="$(printf "%s\n%s\n%s" \
 		"$contents" "$contents" "$(find ImageJ.app -type f)" |
+	grep -ve /.checksums$ -e /db.xml.gz$ |
 	sort | uniq -u)" &&
 if test -n "$possibly_obsoletes"
 then
