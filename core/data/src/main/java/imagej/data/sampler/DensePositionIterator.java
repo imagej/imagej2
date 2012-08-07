@@ -37,13 +37,25 @@ package imagej.data.sampler;
 
 
 /**
+ * This class is a PositionIterator that iterates the contiguous region of space
+ * present in the results of a sampling of an image. It has package level
+ * sharing and access.
+ * 
  * @author Barry DeZonia
  */
 class DensePositionIterator implements PositionIterator {
+	
+	// -- instance variables --
+	
 	private int[] maxIndexes;
 	private int[] indexes;
 	private long[] currPos;
+
+	// -- constructor --
 	
+	/** Creates a DensePositionIterator from a SamplingDefinition. The space to
+	 * be iterated is the output space of a sampling.
+	 */
 	DensePositionIterator(SamplingDefinition def) {
 		maxIndexes = calcMaxes(def);
 		currPos = new long[maxIndexes.length];
@@ -52,7 +64,10 @@ class DensePositionIterator implements PositionIterator {
 		indexes = new int[maxIndexes.length];
 		indexes[0] = -1;
 	}
+	
+	// -- public interface --
 
+	/** Returns true if the iterator has a next position in the output space. */ 
 	@Override
 	public boolean hasNext() {
 		for (int i = 0; i < currPos.length; i++) {
@@ -61,6 +76,7 @@ class DensePositionIterator implements PositionIterator {
 		return false;
 	}
 
+	/** Returns the next position of the output space. */ 
 	@Override
 	public long[] next() {
 		for (int i = 0; i < indexes.length; i++) {
@@ -75,7 +91,10 @@ class DensePositionIterator implements PositionIterator {
 		}
 		throw new IllegalArgumentException("Can't position iterator beyond end");
 	}
-	
+
+	// -- private helpers --
+
+	/** Determines the maximum values that each axis can take. */
 	private int[] calcMaxes(SamplingDefinition def) {
 		long[] dims = def.getOutputDims();
 		int[] mx = new int[dims.length];

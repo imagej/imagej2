@@ -37,6 +37,9 @@ package imagej.data.sampler;
 
 
 /**
+ * A simple iteration interface for pulling long[] positions out of a region of
+ * n-dim space. Has package level sharing and access.
+ * 
  * @author Barry DeZonia
  */
 interface PositionIterator {
