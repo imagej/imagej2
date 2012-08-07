@@ -97,6 +97,7 @@ final class SSHSessionCreator {
 		final String sshHost, final LogService log)
 	{
 		final ConfigInfo result = new ConfigInfo();
+		result.username = username;
 		result.port = 22;
 		final int colon = sshHost.indexOf(':');
 		if (colon < 0)
