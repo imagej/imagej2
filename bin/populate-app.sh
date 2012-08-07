@@ -2,11 +2,14 @@
 
 cd "$(dirname "$0")/.." &&
 mvn "$@" &&
-VERSION="$(sed -n 's/^\t<version>\(.*\)<\/version>.*/\1/p' < pom.xml)" &&
+VERSION="$(sed -n 's/^.<version>\(.*\)<\/version>.*/\1/p' < pom.xml)" &&
 cd app &&
-unzip -o target/imagej-$VERSION-application.zip &&
-possibly_obsoletes="$(find ImageJ.app/ ! -cnewer target/imagej-$VERSION-application.zip |
-	grep -ve /\\.checksums$ -e /db.xml.gz$)" &&
+ZIP=target/imagej-$VERSION-application.zip &&
+unzip -o $ZIP &&
+contents="$(unzip -l $ZIP | sed -n 's/^.*\(ImageJ.app\/.*[^\/]\)$/\1/p')" &&
+possibly_obsoletes="$(printf "ImageJ.app/.checksums\nImageJ.app/.checksums\n%s\n%s\n%s" \
+		"$contents" "$contents" "$(find ImageJ.app -type f)" |
+	sort | uniq -u)" &&
 if test -n "$possibly_obsoletes"
 then
 	printf "The following files might be outdated:\n\n%s\nDo you want to delete them? " \
