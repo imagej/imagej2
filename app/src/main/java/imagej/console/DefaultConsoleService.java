@@ -36,9 +36,16 @@
 package imagej.console;
 
 import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.PluginService;
+import imagej.io.IOService;
 import imagej.log.LogService;
+import imagej.options.OptionsService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.io.ImgIOException;
 
 /**
  * Default service for managing interaction with the console.
@@ -51,6 +58,10 @@ public class DefaultConsoleService extends AbstractService implements
 {
 
 	private final LogService log;
+	private final OptionsService optionsService;
+	private final PluginService pluginService;
+	private final IOService ioService;
+	private final DisplayService displayService;
 
 	// -- Constructors --
 
@@ -60,20 +71,55 @@ public class DefaultConsoleService extends AbstractService implements
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultConsoleService(final ImageJ context, final LogService log) {
+	public DefaultConsoleService(final ImageJ context, final LogService log,
+		final OptionsService optionsService, final PluginService pluginService,
+		final IOService ioService, final DisplayService displayService)
+	{
 		super(context);
 		this.log = log;
+		this.optionsService = optionsService;
+		this.pluginService = pluginService;
+		this.ioService = ioService;
+		this.displayService = displayService;
 	}
 
 	// -- ConsoleService methods --
 
 	@Override
 	public void processArgs(final String... args) {
-		// TODO: Implement handling of command line arguments.
-		log.info("Received command line arguments:");
-		for (final String arg : args) {
-			log.info("\t" + arg);
+		// TODO: Implement handling of more command line arguments.
+		log.debug("Received command line arguments:");
+		for (int i = 0; i < args.length; i++) {
+			final String arg = args[i];
+			log.debug("\t" + arg);
+			if (arg.equals("--open")) {
+				open(args[i + 1]);
+			}
+			else if (arg.equals("--run")) {
+				run(args[i + 1]);
+			}
 		}
+	}
+
+	// -- Helper methods --
+
+	/** Implements the "--open" command line argument. */
+	private void open(final String source) {
+		try {
+			final Dataset dataset = ioService.loadDataset(source);
+			displayService.createDisplay(dataset.getName(), dataset);
+		}
+		catch (final ImgIOException exc) {
+			log.error("Error loading dataset '" + source + "'", exc);
+		}
+		catch (final IncompatibleTypeException exc) {
+			log.error("Error loading dataset '" + source + "'", exc);
+		}
+	}
+
+	/** Implements the "--run" command line argument. */
+	private void run(final String className) {
+		pluginService.run(className);
 	}
 
 }
