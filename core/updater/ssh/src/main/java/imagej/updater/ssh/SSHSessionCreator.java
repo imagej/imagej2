@@ -51,7 +51,7 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- * TODO
+ * Start an SSH connection.
  * 
  * @author Jarek Sacha
  * @author Johannes Schindelin
@@ -69,16 +69,8 @@ final class SSHSessionCreator {
 	 * @return connected session.
 	 * @throws JSchException if authentication or connection fails.
 	 */
-	protected static Session connect(String username, String sshHost,
-		final UserInfo userInfo, final LogService log) throws JSchException
+	protected static Session connect(ConfigInfo config, final UserInfo userInfo) throws JSchException
 	{
-
-		int port = 22;
-		final int colon = sshHost.indexOf(':');
-		if (colon > 0) {
-			port = Integer.parseInt(sshHost.substring(colon + 1));
-			sshHost = sshHost.substring(0, colon);
-		}
 
 		final JSch jsch = new JSch();
 
@@ -87,20 +79,10 @@ final class SSHSessionCreator {
 			new File(new File(System.getProperty("user.home"), ".ssh"), "known_hosts");
 		jsch.setKnownHosts(knownHosts.getAbsolutePath());
 
-		final ConfigInfo configInfo = getIdentity(username, sshHost, log);
-		if (configInfo != null) {
-			if (configInfo.username != null) {
-				username = configInfo.username;
-			}
-			if (configInfo.sshHost != null) {
-				sshHost = configInfo.sshHost;
-			}
-			if (configInfo.identity != null) {
-				jsch.addIdentity(configInfo.identity);
-			}
+		final Session session = jsch.getSession(config.username, config.sshHost, config.port);
+		if (config != null && config.identity != null) {
+			jsch.addIdentity(config.identity);
 		}
-
-		final Session session = jsch.getSession(username, sshHost, port);
 		String proxyHost = System.getProperty("http.proxyHost");
 		String proxyPort = System.getProperty("http.proxyPort");
 		if (proxyHost != null && proxyPort != null)
@@ -114,14 +96,23 @@ final class SSHSessionCreator {
 	private static ConfigInfo getIdentity(final String username,
 		final String sshHost, final LogService log)
 	{
+		final ConfigInfo result = new ConfigInfo();
+		result.port = 22;
+		final int colon = sshHost.indexOf(':');
+		if (colon < 0)
+			result.sshHost = sshHost;
+		else {
+			result.port = Integer.parseInt(sshHost.substring(colon + 1));
+			result.sshHost = sshHost.substring(0, colon);
+		}
+
 		final File config =
 			new File(new File(System.getProperty("user.home"), ".ssh"), "config");
 		if (!config.exists()) {
-			return null;
+			return result;
 		}
 
 		try {
-			final ConfigInfo result = new ConfigInfo();
 			final BufferedReader reader = new BufferedReader(new FileReader(config));
 			boolean hostMatches = false;
 			for (;;) {
@@ -134,7 +125,7 @@ final class SSHSessionCreator {
 				}
 				final String key = line.substring(0, space).toLowerCase();
 				if (key.equals("host")) {
-					hostMatches = line.substring(5).trim().equals(sshHost);
+					hostMatches = line.substring(5).trim().equals(result.sshHost);
 				}
 				else if (hostMatches) {
 					if (key.equals("user")) {
@@ -148,7 +139,6 @@ final class SSHSessionCreator {
 					else if (key.equals("identityfile")) {
 						result.identity = line.substring(13).trim();
 					}
-					// TODO what if condition do match any here?
 				}
 			}
 			reader.close();
@@ -161,16 +151,16 @@ final class SSHSessionCreator {
 	}
 
 	private static class ConfigInfo {
-
-		String username;
-		String sshHost;
-		String identity;
+		protected String username;
+		protected String sshHost;
+		protected String identity;
+		protected int port;
 	}
 
-	protected static UserInfo getUserInfo(final String password) {
+	protected static UserInfo getUserInfo(final String initialPrompt, final String password) {
 		return new UserInfo() {
 
-			protected String prompt;
+			protected String prompt = initialPrompt;
 			protected int count = 0;
 
 			@Override
@@ -180,7 +170,7 @@ final class SSHSessionCreator {
 
 			@Override
 			public String getPassword() {
-				if (count == 1) return password;
+				if (count == 0 && password != null) return password;
 				return UpdaterUserInterface.get().getPassword(prompt);
 			}
 
@@ -209,26 +199,23 @@ final class SSHSessionCreator {
 	}
 
 	public static Session getSession(final FilesUploader uploader) {
-		String username = uploader.getDefaultUsername();
-		final String sshHost = uploader.getUploadHost();
+		final ConfigInfo configInfo = getIdentity(uploader.getDefaultUsername(), uploader.getUploadHost(), uploader.getLog());
+
 		for (;;) {
 			// Dialog to enter user name and password
-			if (username == null) {
-				username =
-					UpdaterUserInterface.get()
-						.getString("Login for " + uploader.getUploadHost());
-				if (username == null || username.equals("")) return null;
+			if (configInfo.username == null) {
+				configInfo.username = UpdaterUserInterface.get().getString("Login for " + uploader.getUploadHost());
+				if (configInfo.username == null || configInfo.username.equals("")) {
+					return null;
+				}
 			}
-			final String password =
-				UpdaterUserInterface.get().getPassword(
-					"Password for " + username + "@" + uploader.getUploadHost());
-			if (password == null) return null; // return back to user interface
-
-			final UserInfo userInfo = getUserInfo(password);
+			final String prompt = "Password for " + configInfo.username + "@" + uploader.getUploadHost();
+			final String password = configInfo.identity != null ? null : UpdaterUserInterface.get().getPassword(prompt);
+			final UserInfo userInfo = getUserInfo(prompt, password);
 			try {
-				final Session session = connect(username, sshHost, userInfo, uploader.getLog());
+				final Session session = connect(configInfo, userInfo);
 				if (session != null) {
-					UpdaterUserInterface.get().setPref(Util.PREFS_USER, username);
+					UpdaterUserInterface.get().setPref(Util.PREFS_USER, configInfo.username);
 					return session;
 				}
 			}
