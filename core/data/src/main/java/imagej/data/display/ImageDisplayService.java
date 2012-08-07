@@ -38,7 +38,7 @@ package imagej.data.display;
 import imagej.data.Dataset;
 import imagej.event.EventService;
 import imagej.ext.display.DisplayService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface ImageDisplayService extends IService {
+public interface ImageDisplayService extends Service {
 
 	EventService getEventService();
 

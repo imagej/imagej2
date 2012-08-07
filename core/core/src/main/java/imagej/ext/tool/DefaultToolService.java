@@ -55,7 +55,7 @@ import imagej.ext.tool.event.ToolActivatedEvent;
 import imagej.ext.tool.event.ToolDeactivatedEvent;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +71,7 @@ import java.util.Map;
  * @see Tool
  * @see Tool
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class DefaultToolService extends AbstractService implements ToolService {
 
 	private static final double SEPARATOR_DISTANCE = 10;

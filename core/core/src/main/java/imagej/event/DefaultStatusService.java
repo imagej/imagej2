@@ -38,14 +38,14 @@ package imagej.event;
 import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Default service for status notifications.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class DefaultStatusService extends AbstractService implements
 	StatusService
 {

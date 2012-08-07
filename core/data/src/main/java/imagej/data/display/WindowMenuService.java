@@ -52,7 +52,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +66,7 @@ import java.util.Map;
  * 
  * @author Grant Harris
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class WindowMenuService extends AbstractService {
 
 	public static final int MAX_FILES_SHOWN = 10;

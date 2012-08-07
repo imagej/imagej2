@@ -108,7 +108,7 @@ public @interface Plugin {
 	/**
 	 * The plugin index returns plugins sorted by priority. This is useful for
 	 * {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s to control the
-	 * order of their execution, as well as for {@link imagej.service.IService}s:
+	 * order of their execution, as well as for {@link imagej.service.Service}s:
 	 * it controls which service implementation is chosen when multiple
 	 * implementations are present in the classpath, as well as to force
 	 * instantiation of one service over another when the dependency hierarchy

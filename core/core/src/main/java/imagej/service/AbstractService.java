@@ -41,11 +41,11 @@ import imagej.Priority;
 import imagej.event.EventService;
 
 /**
- * Abstract superclass of {@link IService} implementations.
+ * Abstract superclass of {@link Service} implementations.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractService implements IService {
+public abstract class AbstractService implements Service {
 
 	/** Application context of this service. */
 	private final ImageJ context;

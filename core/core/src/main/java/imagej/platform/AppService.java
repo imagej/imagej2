@@ -36,7 +36,7 @@
 package imagej.platform;
 
 import imagej.ext.plugin.RunnablePlugin;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public interface AppService extends IService {
+public interface AppService extends Service {
 
 	/** Displays an About ImageJ dialog. */
 	void about();

@@ -42,11 +42,11 @@ import imagej.ext.plugin.IPlugin;
 /**
  * An ImageJ service, for a particular area of functionality. ImageJ discovers
  * available services at runtime by looking for classes that implement this
- * interface and are annotated with <code>Plugin(type = IService.class)</code>.
+ * interface and are annotated with <code>Plugin(type = Service.class)</code>.
  * 
  * @author Curtis Rueden
  */
-public interface IService extends IPlugin, Contextual, Prioritized {
+public interface Service extends IPlugin, Contextual, Prioritized {
 	// A service is a plugin that provides additional API for ImageJ,
 	// discoverable via the plugin discovery mechanism.
 }

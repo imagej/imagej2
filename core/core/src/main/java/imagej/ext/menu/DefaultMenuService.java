@@ -47,7 +47,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +60,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @see ShadowMenu
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class DefaultMenuService extends AbstractService implements MenuService {
 
 	private final EventService eventService;

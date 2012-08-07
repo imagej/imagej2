@@ -40,7 +40,7 @@ import imagej.data.DatasetService;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.module.ModuleService;
-import imagej.service.IService;
+import imagej.service.Service;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
@@ -49,7 +49,7 @@ import net.imglib2.io.ImgIOException;
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends IService {
+public interface IOService extends Service {
 
 	EventService getEventService();
 

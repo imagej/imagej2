@@ -51,7 +51,7 @@ import imagej.io.event.FileOpenedEvent;
 import imagej.io.event.FileSavedEvent;
 import imagej.io.plugins.OpenImage;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 import imagej.util.FileUtils;
 import imagej.util.Prefs;
 
@@ -76,7 +76,7 @@ import java.util.Map;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class RecentFileService extends AbstractService {
 
 	// -- Constants --

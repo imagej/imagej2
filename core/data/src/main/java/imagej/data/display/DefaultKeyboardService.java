@@ -42,14 +42,14 @@ import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Default implementation of {@link KeyboardService}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class DefaultKeyboardService extends AbstractService implements
 	KeyboardService
 {

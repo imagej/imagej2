@@ -61,7 +61,7 @@ import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class LegacyService extends AbstractService {
 
 	static {

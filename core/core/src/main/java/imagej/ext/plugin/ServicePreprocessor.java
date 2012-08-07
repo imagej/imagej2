@@ -39,11 +39,11 @@ import imagej.ImageJ;
 import imagej.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * The service preprocessor automatically populates module inputs that implement
- * {@link IService}.
+ * {@link Service}.
  * <p>
  * Service objects are obtained from the ImageJ context associated with the
  * current thread.
@@ -73,11 +73,11 @@ public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 		for (final ModuleItem<?> input : module.getInfo().inputs()) {
 			if (!input.isAutoFill()) continue; // cannot auto-fill this input
 			final Class<?> type = input.getType();
-			if (IService.class.isAssignableFrom(type)) {
+			if (Service.class.isAssignableFrom(type)) {
 				// input is a service
 				@SuppressWarnings("unchecked")
-				final ModuleItem<? extends IService> serviceInput =
-					(ModuleItem<? extends IService>) input;
+				final ModuleItem<? extends Service> serviceInput =
+					(ModuleItem<? extends Service>) input;
 				setServiceValue(context, module, serviceInput);
 			}
 			if (context.getClass().isAssignableFrom(type)) {
@@ -91,7 +91,7 @@ public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- Helper methods --
 
-	private <S extends IService> void setServiceValue(final ImageJ context,
+	private <S extends Service> void setServiceValue(final ImageJ context,
 		final Module module, final ModuleItem<S> input)
 	{
 		final S service = context.getService(input.getType());

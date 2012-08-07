@@ -49,7 +49,7 @@ import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.object.ObjectService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class DefaultDisplayService extends AbstractService implements
 	DisplayService
 {

@@ -37,7 +37,7 @@ package imagej.ext.tool;
 
 import imagej.event.EventService;
 import imagej.ext.plugin.PluginService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ import java.util.List;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public interface ToolService extends IService {
+public interface ToolService extends Service {
 
 	EventService getEventService();
 

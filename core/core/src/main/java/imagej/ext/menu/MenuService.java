@@ -40,14 +40,14 @@ import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Interface for service that tracks the application's menu structure.
  * 
  * @author Curtis Rueden
  */
-public interface MenuService extends IService {
+public interface MenuService extends Service {
 
 	EventService getEventService();
 

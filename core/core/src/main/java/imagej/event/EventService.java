@@ -35,7 +35,7 @@
 
 package imagej.event;
 
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +46,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface EventService extends IService {
+public interface EventService extends Service {
 
 	/**
 	 * Publishes the given event immediately, reporting it to all subscribers.

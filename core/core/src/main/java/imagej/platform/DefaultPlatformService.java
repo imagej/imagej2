@@ -45,7 +45,7 @@ import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,7 +58,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class DefaultPlatformService extends AbstractService implements
 	PlatformService
 {

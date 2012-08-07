@@ -61,7 +61,7 @@ import imagej.platform.AppService;
 import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 import imagej.thread.ThreadService;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class DefaultUIService extends AbstractService implements
 	UIService
 {

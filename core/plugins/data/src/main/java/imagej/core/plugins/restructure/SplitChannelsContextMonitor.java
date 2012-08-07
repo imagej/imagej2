@@ -46,7 +46,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 import net.imglib2.meta.Axes;
 
 /**
@@ -54,7 +54,7 @@ import net.imglib2.meta.Axes;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class SplitChannelsContextMonitor extends AbstractService {
 
 	private final EventService eventService;

@@ -38,7 +38,7 @@ package imagej.ext.plugin;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.Collection;
 import java.util.List;
@@ -70,7 +70,7 @@ import java.util.concurrent.Future;
  * @see IPlugin
  * @see imagej.ext.module.ModuleService
  */
-public interface PluginService extends IService {
+public interface PluginService extends Service {
 
 	ModuleService getModuleService();
 

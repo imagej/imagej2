@@ -48,7 +48,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -57,7 +57,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class TypeChangeService extends AbstractService {
 
 	private final EventService eventService;

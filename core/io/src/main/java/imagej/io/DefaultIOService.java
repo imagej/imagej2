@@ -44,7 +44,7 @@ import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.Plugin;
 import imagej.io.event.FileOpenedEvent;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class DefaultIOService<T extends RealType<T> & NativeType<T>> 
 	extends AbstractService implements IOService
 {

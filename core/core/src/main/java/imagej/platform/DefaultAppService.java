@@ -45,7 +45,7 @@ import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class DefaultAppService extends AbstractService implements
 	AppService
 {

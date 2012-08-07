@@ -50,7 +50,7 @@ import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
-import imagej.service.IService;
+import imagej.service.Service;
 import imagej.thread.ThreadService;
 
 import java.util.List;
@@ -60,7 +60,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public interface UIService extends IService {
+public interface UIService extends Service {
 
 	LogService getLog();
 

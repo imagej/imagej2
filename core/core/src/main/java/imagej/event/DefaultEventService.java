@@ -39,7 +39,7 @@ import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 import imagej.thread.ThreadService;
 
 import java.lang.reflect.InvocationTargetException;
@@ -58,7 +58,7 @@ import org.bushe.swing.event.annotation.ReferenceStrength;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class DefaultEventService extends AbstractService implements
 	EventService
 {

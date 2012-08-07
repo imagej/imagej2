@@ -35,7 +35,7 @@
 
 package imagej.console;
 
-import imagej.service.IService;
+import imagej.service.Service;
 
 /**
  * Interface for service that manages interaction with the console.
@@ -46,7 +46,7 @@ import imagej.service.IService;
  * 
  * @author Curtis Rueden
  */
-public interface ConsoleService extends IService {
+public interface ConsoleService extends Service {
 
 	/**
 	 * Handles arguments to ImageJ coming from an external source such as the

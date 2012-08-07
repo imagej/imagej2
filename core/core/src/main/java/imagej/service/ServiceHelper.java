@@ -64,10 +64,10 @@ public class ServiceHelper {
 	private final ImageJ context;
 
 	/** Classes to scan when searching for dependencies. */
-	private final List<Class<? extends IService>> classPool;
+	private final List<Class<? extends Service>> classPool;
 
 	/** Classes to instantiate as services. */
-	private final List<Class<? extends IService>> serviceClasses;
+	private final List<Class<? extends Service>> serviceClasses;
 
 	/**
 	 * Creates a new service helper for discovering and instantiating services.
@@ -86,11 +86,11 @@ public class ServiceHelper {
 	 * @param serviceClasses The service classes to instantiate.
 	 */
 	public ServiceHelper(final ImageJ context,
-		final Collection<Class<? extends IService>> serviceClasses)
+		final Collection<Class<? extends Service>> serviceClasses)
 	{
 		this.context = context;
 		classPool = findServiceClasses();
-		this.serviceClasses = new ArrayList<Class<? extends IService>>();
+		this.serviceClasses = new ArrayList<Class<? extends Service>>();
 		if (serviceClasses == null) {
 			// load all discovered services
 			this.serviceClasses.addAll(classPool);
@@ -108,7 +108,7 @@ public class ServiceHelper {
 	 * and instantiating compatible services as needed.
 	 */
 	public void loadServices() {
-		for (final Class<? extends IService> serviceClass : serviceClasses) {
+		for (final Class<? extends Service> serviceClass : serviceClasses) {
 			loadService(serviceClass);
 		}
 		EventService eventService = context.getService(EventService.class);
@@ -124,13 +124,13 @@ public class ServiceHelper {
 	 *         newly created service, or null if none can be instantiated
 	 * @throws IllegalArgumentException if no suitable service class is found
 	 */
-	public <S extends IService> S loadService(final Class<S> c) {
+	public <S extends Service> S loadService(final Class<S> c) {
 		// if a compatible service already exists, return it
 		final S service = context.getServiceIndex().getService(c);
 		if (service != null) return service;
 
 		// scan the class pool for a suitable match
-		for (final Class<? extends IService> serviceClass : classPool) {
+		for (final Class<? extends Service> serviceClass : classPool) {
 			if (c.isAssignableFrom(serviceClass)) {
 				// found a match; now instantiate it
 				@SuppressWarnings("unchecked")
@@ -148,7 +148,7 @@ public class ServiceHelper {
 	 * @return the newly created service, or null if the given class cannot be
 	 *         instantiated
 	 */
-	public <S extends IService> S createExactService(final Class<S> c) {
+	public <S extends Service> S createExactService(final Class<S> c) {
 		Log.debug("Creating service: " + c.getName());
 		try {
 			final Constructor<S> ctor = getConstructor(c);
@@ -165,9 +165,9 @@ public class ServiceHelper {
 
 	// -- Utility methods --
 
-	/** Gets the annotated priority of the given {@link IService} class. */
+	/** Gets the annotated priority of the given {@link Service} class. */
 	public static double
-		getPriority(final Class<? extends IService> serviceClass)
+		getPriority(final Class<? extends Service> serviceClass)
 	{
 		final Plugin ann = serviceClass.getAnnotation(Plugin.class);
 		if (ann == null) return Priority.NORMAL_PRIORITY;
@@ -177,7 +177,7 @@ public class ServiceHelper {
 	// -- Helper methods --
 
 	/** Instantiates a service using the given constructor. */
-	private <S extends IService> S createService(final Constructor<S> ctor)
+	private <S extends Service> S createService(final Constructor<S> ctor)
 		throws InstantiationException, IllegalAccessException,
 		InvocationTargetException
 	{
@@ -185,9 +185,9 @@ public class ServiceHelper {
 		final Object[] args = new Object[types.length];
 		for (int i = 0; i < types.length; i++) {
 			final Class<?> type = types[i];
-			if (IService.class.isAssignableFrom(type)) {
+			if (Service.class.isAssignableFrom(type)) {
 				@SuppressWarnings("unchecked")
-				final Class<IService> c = (Class<IService>) type;
+				final Class<Service> c = (Class<Service>) type;
 				args[i] = context.getServiceIndex().getService(c);
 				if (args[i] == null) {
 					// recursively obtain needed services
@@ -205,14 +205,14 @@ public class ServiceHelper {
 	/**
 	 * Gets a compatible constructor for creating a service of the given type. A
 	 * constructor is compatible if all its arguments are assignable to
-	 * {@link ImageJ} and {@link IService}. The method uses a greedy approach to
+	 * {@link ImageJ} and {@link Service}. The method uses a greedy approach to
 	 * choosing the best constructor, preferring constructors with a larger number
 	 * of arguments, to populate the maximum number of services.
 	 * 
 	 * @return the best constructor to use for instantiating the service
 	 * @throws IllegalArgumentException if no compatible constructors exist
 	 */
-	private <S extends IService> Constructor<S> getConstructor(
+	private <S extends Service> Constructor<S> getConstructor(
 		final Class<S> serviceClass)
 	{
 		final Constructor<?>[] ctors = serviceClass.getConstructors();
@@ -234,7 +234,7 @@ public class ServiceHelper {
 			final Class<?>[] types = ctor.getParameterTypes();
 			for (final Class<?> type : types) {
 				if (!ImageJ.class.isAssignableFrom(type) &&
-					!IService.class.isAssignableFrom(type))
+					!Service.class.isAssignableFrom(type))
 				{
 					// constructor has an argument of unknown type
 					continue;
@@ -249,19 +249,19 @@ public class ServiceHelper {
 
 	/**
 	 * Discovers service implementations that are present on the classpath and
-	 * marked with the @{@link IService} annotation.
+	 * marked with the @{@link Service} annotation.
 	 */
-	private ArrayList<Class<? extends IService>> findServiceClasses() {
-		final ArrayList<Class<? extends IService>> serviceList =
-			new ArrayList<Class<? extends IService>>();
+	private ArrayList<Class<? extends Service>> findServiceClasses() {
+		final ArrayList<Class<? extends Service>> serviceList =
+			new ArrayList<Class<? extends Service>>();
 
 		// ask the plugin index for the list of available services
-		final List<PluginInfo<? extends IService>> services =
-				context.getPluginIndex().getPlugins(IService.class);
+		final List<PluginInfo<? extends Service>> services =
+				context.getPluginIndex().getPlugins(Service.class);
 
-		for (final PluginInfo<? extends IService> info : services) {
+		for (final PluginInfo<? extends Service> info : services) {
 			try {
-				final Class<? extends IService> c = info.loadClass();
+				final Class<? extends Service> c = info.loadClass();
 				serviceList.add(c);
 			}
 			catch (final InstantiableException e) {
@@ -271,11 +271,11 @@ public class ServiceHelper {
 
 		// sort list of discovered services based on annotated priority
 		Collections.sort(serviceList,
-			new Comparator<Class<? extends IService>>() {
+			new Comparator<Class<? extends Service>>() {
 
 				@Override
-				public int compare(final Class<? extends IService> c1,
-					final Class<? extends IService> c2)
+				public int compare(final Class<? extends Service> c1,
+					final Class<? extends Service> c2)
 				{
 					final double p1 = getPriority(c1);
 					final double p2 = getPriority(c2);

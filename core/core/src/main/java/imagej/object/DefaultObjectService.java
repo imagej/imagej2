@@ -44,7 +44,7 @@ import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsAddedEvent;
 import imagej.object.event.ObjectsRemovedEvent;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.List;
 
@@ -60,7 +60,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class DefaultObjectService extends AbstractService implements
 	ObjectService
 {

@@ -35,7 +35,7 @@
 
 package imagej.thread;
 
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
@@ -47,7 +47,7 @@ import java.util.concurrent.ThreadFactory;
  * 
  * @author Curtis Rueden
  */
-public interface ThreadService extends IService, ThreadFactory {
+public interface ThreadService extends Service, ThreadFactory {
 
 	/**
 	 * Asynchronously executes the given code in a new thread, as decided by the

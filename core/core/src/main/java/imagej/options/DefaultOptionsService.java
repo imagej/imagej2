@@ -51,7 +51,7 @@ import imagej.ext.plugin.ServicePreprocessor;
 import imagej.ext.plugin.ValidityPreprocessor;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 import imagej.util.ClassUtils;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ import java.util.Map;
  * @author Barry DeZonia
  * @see OptionsPlugin
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class DefaultOptionsService extends AbstractService implements
 	OptionsService
 {

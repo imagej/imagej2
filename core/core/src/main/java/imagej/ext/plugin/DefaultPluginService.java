@@ -42,7 +42,7 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +59,7 @@ import java.util.concurrent.Future;
  * @see IPlugin
  * @see Plugin
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public class DefaultPluginService extends AbstractService implements
 	PluginService
 {

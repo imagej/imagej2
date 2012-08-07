@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.service.AbstractService;
-import imagej.service.IService;
+import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +70,7 @@ import net.imglib2.type.numeric.real.FloatType;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IService.class)
+@Plugin(type = Service.class)
 public final class DefaultDatasetService extends AbstractService implements
 	DatasetService
 {
