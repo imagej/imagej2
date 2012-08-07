@@ -52,6 +52,29 @@ import java.util.Map;
 
 import net.imglib2.meta.AxisType;
 
+/*
+ * Nicer design
+ *   External API
+ *     constructor
+ *       default initialization: set to single plane
+ *     setInput()
+ *     wantCurrentPlaneOnly()
+ *     wantValues(AxisType axis, String definition)
+ *     run()
+ *     getOutput()
+ *   UI
+ *     all axes appear
+ *     radio buttons
+ *       single plane vs. multiple planes
+ *       selecting button resets the field value defaults to their original
+ *         state. so one plane fills in curr indices. multiple planes defaults
+ *         to full ranges
+ *   internally
+ *     somehow want this to be dynamic and headless. possible?
+ *     copy from some multidim point in N-space to different multidim point
+ *       in M-space. M is less or equal (in size and/or num dims) to N space.
+ */
+
 // TODO
 //   1) Maintain metadata
 //   2) maintain overlays: does an overlay in Z == 7 show up on correct slice

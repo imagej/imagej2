@@ -58,39 +58,22 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 
-/*
- * Nicer design
- *   External API
- *     constructor
- *       default initialization: set to single plane
- *     setInput()
- *     wantCurrentPlaneOnly()
- *     wantValues(AxisType axis, String definition)
- *     run()
- *     getOutput()
- *   UI
- *     all axes appear
- *     radio buttons
- *       single plane vs. multiple planes
- *       selecting button resets the field value defaults to their original
- *         state. so one plane fills in curr indices. multiple planes defaults
- *         to full ranges
- *   internally
- *     somehow want this to be dynamic and headless. possible?
- *     copy from some multidim point in N-space to different multidim point
- *       in M-space. M is less or equal (in size and/or num dims) to N space.
- */
-
 /**
+ * The SamplerService provides methods for duplicating ImageDisplay data.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Service.class)
 public class SamplerService extends AbstractService {
 
+	// -- instance variables --
+	
 	private final DisplayService displayService;
 	private final DatasetService datasetService;
 	private final OverlayService overlayService;
 	private final ImageDisplayService imgDispService;
+	
+	// -- default constructor that doesn't really do anything --
 	
 	public SamplerService() {
 		// NB: Required by SezPoz.
@@ -98,6 +81,9 @@ public class SamplerService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
+	// -- constructor --
+	
+	/** Creates a SamplerService using references to other services */
 	public SamplerService(ImageJ context, DisplayService dspSrv,
 		DatasetService datSrv, OverlayService ovrSrv,
 		ImageDisplayService imgDispSrv)
@@ -109,20 +95,29 @@ public class SamplerService extends AbstractService {
 		this.imgDispService = imgDispSrv;
 	}
 
-	// this will create an output display
-	// then it will define two iterators and walk them in sync setting values
-	// finally it will handle compos cnt, metadata, overlays, colortables, 
+	// -- public interface --
+
+	/** Creates an output ImageDisplay containing data from an input
+	 * SamplingDefinition. This is the most general and custom way to sample
+	 * existing image data. The SamplingDefinition class has some static
+	 * construction utilities for creating common definitions.
+	 *  
+	 * @param def The prespecified SamplingDefinition to use
+	 * @return The display containing the sampled data
+	 */
 	public ImageDisplay createSampledImage(SamplingDefinition def) {
 		ImageDisplay outputImage = createOutputImage(def);
 		copyData(def, outputImage);
 		return outputImage;
 	}
-	
+
+	/** Creates a copy of an existing ImageDisplay */
 	public ImageDisplay duplicate(ImageDisplay display) {
 		SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
 		return createSampledImage(copyDef);
 	}
-	
+
+	/** Creates a copy of the currently selected 2d region of an ImageDisplay */
 	public ImageDisplay duplicateSelectedPlane(ImageDisplay display) {
 		SamplingDefinition copyDef = SamplingDefinition.sampleXYPlane(display);
 		RealRect selection = overlayService.getSelectionBounds(display);
@@ -138,6 +133,8 @@ public class SamplerService extends AbstractService {
 	}
 
 
+	/** Creates a multichannel copy of the currently selected 2d region of an
+	 *  ImageDisplay */
 	public ImageDisplay duplicateSelectedCompositePlane(ImageDisplay display) {
 		SamplingDefinition copyDef =
 				SamplingDefinition.sampleCompositeXYPlane(display);
@@ -153,6 +150,8 @@ public class SamplerService extends AbstractService {
 		return createSampledImage(copyDef);
 	}
 	
+	/** Creates a copy of all the planes bounded by the currently selected 2d
+	 *  region of an ImageDisplay */
 	public ImageDisplay duplicateSelectedPlanes(ImageDisplay display) {
 		SamplingDefinition copyDef = SamplingDefinition.sampleAllPlanes(display);
 		RealRect selection = overlayService.getSelectionBounds(display);
@@ -167,6 +166,11 @@ public class SamplerService extends AbstractService {
 		return createSampledImage(copyDef);
 	}
 	
+	// -- private helpers --
+	
+	/** Creates an output image from a sampling definition. All data initialized
+	 * to zero.
+	 */
 	private ImageDisplay createOutputImage(SamplingDefinition def) {
 		ImageDisplay origDisp = def.getDisplay();
 		// TODO - remove evil cast
@@ -186,6 +190,8 @@ public class SamplerService extends AbstractService {
 		return (ImageDisplay) displayService.createDisplay(name, output);
 	}
 
+
+	/** Copies all associated data from a SamplingDefinition to an output image */
 	private void copyData(SamplingDefinition def, ImageDisplay outputImage) {
 		PositionIterator iter1 = new SparsePositionIterator(def);
 		PositionIterator iter2 = new DensePositionIterator(def);
@@ -243,6 +249,7 @@ public class SamplerService extends AbstractService {
 		// Great.
 	}
 
+	/** Calculates a plane number from a position within a dimensionsal space. */
 	private int planeNum(long[] dims, long[] pos) {
 		int plane = 0;
 		int inc = 1;
@@ -253,13 +260,19 @@ public class SamplerService extends AbstractService {
 		return plane;
 	}
 	
+	/** Sets an output Dataset's composite channel count based upon an input
+	 * Dataset's composite channel characteristics.  
+	 */
 	private void setCompositeChannelCount(Dataset input, Dataset output) {
 		if (input.getCompositeChannelCount() == 1) return;
 		int index = output.getAxisIndex(Axes.CHANNEL);
 		long numChannels = (index < 0) ? 1 : output.dimension(index);
 		output.setCompositeChannelCount((int)numChannels);
 	}
-	
+
+	/** Copies the appropriate color tables from the input ImageDisplay to the
+	 * output ImageDiosplay. 
+	 */
 	private void updateDisplayColorTables(ImageDisplay input, ImageDisplay output){
 		int chAxisIn = input.getAxisIndex(Axes.CHANNEL);
 		int chAxisOut = output.getAxisIndex(Axes.CHANNEL);
