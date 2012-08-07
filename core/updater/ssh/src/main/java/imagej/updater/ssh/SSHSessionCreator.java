@@ -171,7 +171,7 @@ final class SSHSessionCreator {
 
 			@Override
 			public String getPassword() {
-				if (count == 0 && password != null) return password;
+				if (count == 1 && password != null) return password;
 				return UpdaterUserInterface.get().getPassword(prompt);
 			}
 
