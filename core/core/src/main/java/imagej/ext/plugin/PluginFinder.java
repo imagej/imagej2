@@ -35,92 +35,16 @@
 
 package imagej.ext.plugin;
 
-import imagej.util.Log;
-
 import java.util.List;
 
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
-
 /**
- * Discovers ImageJ plugins.
- * <p>
- * To accomplish this, SezPoz scans the classpath for {@link Plugin}
- * annotations.
- * </p>
+ * Interface for mechanisms that define how ImageJ plugins are discovered.
  * 
  * @author Curtis Rueden
  */
-public class PluginFinder {
+public interface PluginFinder {
 
-	/** Class loader to use when querying SezPoz. */
-	private final ClassLoader classLoader;
-
-	// -- Constructors --
-
-	public PluginFinder() {
-		this(null);
-	}
-
-	public PluginFinder(final ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
-
-	// -- PluginFinder methods --
-
-	public void findPlugins(final List<PluginInfo<?>> plugins) {
-		final Index<Plugin, IPlugin> pluginIndex;
-		if (classLoader == null) {
-			pluginIndex = Index.load(Plugin.class, IPlugin.class);
-		}
-		else {
-			pluginIndex = Index.load(Plugin.class, IPlugin.class, classLoader);
-		}
-
-		final int oldSize = plugins.size();
-		for (final IndexItem<Plugin, IPlugin> item : pluginIndex) {
-			final PluginInfo<?> info = createInfo(item);
-			plugins.add(info);
-		}
-		final int newSize = plugins.size();
-
-		Log.info("Found " + (newSize - oldSize) + " plugins.");
-		if (Log.isDebug()) {
-			for (int i = oldSize; i < newSize; i++) {
-				Log.debug("- " + plugins.get(i));
-			}
-		}
-	}
-
-	// -- Helper methods --
-
-	private <P extends IPlugin> PluginInfo<P> createInfo(
-		final IndexItem<Plugin, IPlugin> item)
-	{
-		final String className = item.className();
-		final Plugin plugin = item.annotation();
-
-		@SuppressWarnings("unchecked")
-		final Class<P> pluginType = (Class<P>) plugin.type();
-
-		if (RunnablePlugin.class.isAssignableFrom(pluginType)) {
-			// TODO - Investigate a simpler way to handle this.
-			final PluginModuleInfo<? extends RunnablePlugin> moduleInfo =
-				createModuleInfo(className, plugin);
-			@SuppressWarnings("unchecked")
-			final PluginInfo<P> result = (PluginInfo<P>) moduleInfo;
-			return result;
-		}
-		return new PluginInfo<P>(className, pluginType, plugin);
-	}
-
-	private <R extends RunnablePlugin> PluginModuleInfo<R> createModuleInfo(
-		final String className, final Plugin plugin)
-	{
-		@SuppressWarnings("unchecked")
-		final Class<R> pluginType = (Class<R>) plugin.type();
-
-		return new PluginModuleInfo<R>(className, pluginType, plugin);
-	}
+	/** Populates the given list with all available ImageJ plugins. */
+	void findPlugins(List<PluginInfo<?>> plugins);
 
 }

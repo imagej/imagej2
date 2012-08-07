@@ -57,7 +57,7 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 
 	/** Discovers plugins available on the classpath. */
 	public void discover() {
-		discover(new PluginFinder());
+		discover(new DefaultPluginFinder());
 	}
 
 	/**
