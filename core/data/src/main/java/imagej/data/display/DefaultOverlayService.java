@@ -48,10 +48,11 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.options.OptionsService;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ import net.imglib2.type.logic.BitType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Service
+@Plugin(type = IService.class)
 public final class DefaultOverlayService extends AbstractService implements
 	OverlayService
 {

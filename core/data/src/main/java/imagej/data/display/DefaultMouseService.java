@@ -44,8 +44,9 @@ import imagej.ext.display.event.input.MsExitedEvent;
 import imagej.ext.display.event.input.MsMovedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 
 import java.util.HashSet;
 
@@ -54,7 +55,7 @@ import java.util.HashSet;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = IService.class)
 public class DefaultMouseService extends AbstractService implements
 	MouseService
 {

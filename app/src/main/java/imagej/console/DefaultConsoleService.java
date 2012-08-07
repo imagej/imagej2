@@ -38,12 +38,13 @@ package imagej.console;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
@@ -52,7 +53,7 @@ import net.imglib2.io.ImgIOException;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = IService.class)
 public class DefaultConsoleService extends AbstractService implements
 	ConsoleService
 {

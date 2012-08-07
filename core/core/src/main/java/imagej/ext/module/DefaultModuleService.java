@@ -41,9 +41,10 @@ import imagej.ext.Accelerator;
 import imagej.ext.MenuPath;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import imagej.thread.ThreadService;
 import imagej.util.ClassUtils;
 
@@ -62,7 +63,7 @@ import java.util.concurrent.Future;
  * @see Module
  * @see ModuleInfo
  */
-@Service
+@Plugin(type = IService.class)
 public class DefaultModuleService extends AbstractService implements
 	ModuleService
 {

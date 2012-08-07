@@ -43,8 +43,9 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import imagej.util.RealRect;
 
 import java.util.List;
@@ -83,7 +84,7 @@ import net.imglib2.type.numeric.RealType;
 /**
  * @author Barry DeZonia
  */
-@Service
+@Plugin(type = IService.class)
 public class SamplerService extends AbstractService {
 
 	private final DisplayService displayService;

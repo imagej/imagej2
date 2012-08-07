@@ -37,15 +37,16 @@ package imagej.service;
 
 import imagej.Contextual;
 import imagej.Prioritized;
+import imagej.ext.plugin.IPlugin;
 
 /**
  * An ImageJ service, for a particular area of functionality. ImageJ discovers
  * available services at runtime by looking for classes that implement this
- * interface and are annotated with the @{@link Service} annotation.
+ * interface and are annotated with <code>Plugin(type = IService.class)</code>.
  * 
  * @author Curtis Rueden
- * @see Service
  */
-public interface IService extends Contextual, Prioritized {
-	// top-level marker interface for discovery via SezPoz
+public interface IService extends IPlugin, Contextual, Prioritized {
+	// A service is a plugin that provides additional API for ImageJ,
+	// discoverable via the plugin discovery mechanism.
 }

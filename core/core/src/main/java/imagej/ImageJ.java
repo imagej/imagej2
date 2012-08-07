@@ -36,6 +36,7 @@
 package imagej;
 
 import imagej.event.ImageJEvent;
+import imagej.ext.plugin.PluginIndex;
 import imagej.service.IService;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
@@ -172,15 +173,24 @@ public class ImageJ {
 
 	private final ServiceIndex serviceIndex;
 
+	private final PluginIndex pluginIndex;
+
 	/** Creates a new ImageJ context. */
 	public ImageJ() {
 		serviceIndex = new ServiceIndex();
+
+		pluginIndex = new PluginIndex();
+		pluginIndex.discover();
 	}
 
 	// -- ImageJ methods --
 
 	public ServiceIndex getServiceIndex() {
 		return serviceIndex;
+	}
+
+	public PluginIndex getPluginIndex() {
+		return pluginIndex;
 	}
 
 	/** Gets the service of the given class. */

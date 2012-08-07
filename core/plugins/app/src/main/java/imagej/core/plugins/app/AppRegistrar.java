@@ -37,16 +37,17 @@ package imagej.core.plugins.app;
 
 import imagej.ImageJ;
 import imagej.Priority;
+import imagej.ext.plugin.Plugin;
 import imagej.platform.AppService;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 
 /**
  * Service that registers application plugins with the {@link AppService}.
  * 
  * @author Curtis Rueden
  */
-@Service(priority = Priority.HIGH_PRIORITY)
+@Plugin(type = IService.class, priority = Priority.HIGH_PRIORITY)
 public final class AppRegistrar extends AbstractService {
 
 	// -- Constructors --

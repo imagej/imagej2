@@ -54,7 +54,7 @@ import net.java.sezpoz.Indexable;
  * @see IPlugin
  * @see PluginService
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Indexable(type = IPlugin.class)
 public @interface Plugin {
@@ -108,7 +108,11 @@ public @interface Plugin {
 	/**
 	 * The plugin index returns plugins sorted by priority. This is useful for
 	 * {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s to control the
-	 * order of their execution.
+	 * order of their execution, as well as for {@link imagej.service.IService}s:
+	 * it controls which service implementation is chosen when multiple
+	 * implementations are present in the classpath, as well as to force
+	 * instantiation of one service over another when the dependency hierarchy
+	 * does not dictate otherwise.
 	 * <p>
 	 * Any double value is allowed, but for convenience, there are some presets:
 	 * </p>

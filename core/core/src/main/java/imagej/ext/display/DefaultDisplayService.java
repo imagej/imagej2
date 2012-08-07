@@ -43,12 +43,13 @@ import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayCreatedEvent;
 import imagej.ext.display.event.window.WinActivatedEvent;
 import imagej.ext.display.event.window.WinClosedEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.object.ObjectService;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Service
+@Plugin(type = IService.class)
 public final class DefaultDisplayService extends AbstractService implements
 	DisplayService
 {

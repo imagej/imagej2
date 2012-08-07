@@ -42,6 +42,7 @@ import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleRunner;
 import imagej.ext.plugin.InitPreprocessor;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
@@ -50,7 +51,7 @@ import imagej.ext.plugin.ServicePreprocessor;
 import imagej.ext.plugin.ValidityPreprocessor;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import imagej.util.ClassUtils;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ import java.util.Map;
  * @author Barry DeZonia
  * @see OptionsPlugin
  */
-@Service
+@Plugin(type = IService.class)
 public class DefaultOptionsService extends AbstractService implements
 	OptionsService
 {

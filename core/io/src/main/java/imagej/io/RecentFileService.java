@@ -44,13 +44,14 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.io.event.FileSavedEvent;
 import imagej.io.plugins.OpenImage;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import imagej.util.FileUtils;
 import imagej.util.Prefs;
 
@@ -75,7 +76,7 @@ import java.util.Map;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = IService.class)
 public final class RecentFileService extends AbstractService {
 
 	// -- Constants --

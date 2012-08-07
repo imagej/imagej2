@@ -36,7 +36,7 @@
 package imagej.event;
 
 import imagej.log.LogService;
-import imagej.service.Service;
+import imagej.service.IService;
 import imagej.thread.ThreadService;
 
 import java.lang.reflect.InvocationTargetException;
@@ -53,7 +53,7 @@ import org.bushe.swing.event.ThreadSafeEventService;
  * It is called "DefaultEventBus" rather than "DefaultEventService" to avoid a
  * name clash with {@link DefaultEventService}, which is not an
  * {@link org.bushe.swing.event.EventService} but rather an ImageJ
- * {@link Service} implementation.
+ * {@link IService} implementation.
  * </p>
  * 
  * @author Curtis Rueden

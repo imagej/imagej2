@@ -36,8 +36,9 @@
 package imagej.thread;
 
 import imagej.ImageJ;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 
 import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
@@ -51,7 +52,7 @@ import java.util.concurrent.Future;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = IService.class)
 public final class DefaultThreadService extends AbstractService implements
 	ThreadService
 {

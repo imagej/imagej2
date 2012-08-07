@@ -42,7 +42,7 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +59,7 @@ import java.util.concurrent.Future;
  * @see IPlugin
  * @see Plugin
  */
-@Service
+@Plugin(type = IService.class)
 public class DefaultPluginService extends AbstractService implements
 	PluginService
 {
@@ -68,7 +68,7 @@ public class DefaultPluginService extends AbstractService implements
 	private final ModuleService moduleService;
 
 	/** Index of registered plugins. */
-	private final PluginIndex pluginIndex = new PluginIndex();
+	private final PluginIndex pluginIndex;
 
 	// -- Constructors --
 
@@ -84,8 +84,10 @@ public class DefaultPluginService extends AbstractService implements
 		super(context);
 		this.log = log;
 		this.moduleService = moduleService;
+		this.pluginIndex = context.getPluginIndex();
 
-		reloadPlugins();
+		// inform the module service of available runnable plugins
+		moduleService.addModules(getRunnablePlugins());
 	}
 
 	// -- PluginService methods --

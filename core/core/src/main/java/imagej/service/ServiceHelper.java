@@ -38,6 +38,9 @@ package imagej.service;
 import imagej.ImageJ;
 import imagej.Priority;
 import imagej.event.EventService;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
 import imagej.service.event.ServicesLoadedEvent;
 import imagej.util.Log;
 
@@ -49,9 +52,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
 /**
  * Helper class for discovering and instantiating available services.
@@ -169,7 +169,7 @@ public class ServiceHelper {
 	public static double
 		getPriority(final Class<? extends IService> serviceClass)
 	{
-		final Service ann = serviceClass.getAnnotation(Service.class);
+		final Plugin ann = serviceClass.getAnnotation(Plugin.class);
 		if (ann == null) return Priority.NORMAL_PRIORITY;
 		return ann.priority();
 	}
@@ -247,29 +247,25 @@ public class ServiceHelper {
 				serviceClass.getName());
 	}
 
-	// CTR TODO - Add a level of indirection for usage of SezPoz.
-	// That way we can later include additional discovery methods.
-
 	/**
 	 * Discovers service implementations that are present on the classpath and
-	 * marked with the @{@link Service} annotation.
+	 * marked with the @{@link IService} annotation.
 	 */
 	private ArrayList<Class<? extends IService>> findServiceClasses() {
 		final ArrayList<Class<? extends IService>> serviceList =
 			new ArrayList<Class<? extends IService>>();
 
-		// use SezPoz to discover available services
-		for (final IndexItem<Service, IService> item : Index.load(Service.class,
-			IService.class))
-		{
+		// ask the plugin index for the list of available services
+		final List<PluginInfo<? extends IService>> services =
+				context.getPluginIndex().getPlugins(IService.class);
+
+		for (final PluginInfo<? extends IService> info : services) {
 			try {
-				@SuppressWarnings("unchecked")
-				final Class<? extends IService> c =
-					(Class<? extends IService>) item.element();
+				final Class<? extends IService> c = info.loadClass();
 				serviceList.add(c);
 			}
-			catch (final InstantiationException e) {
-				Log.error("Invalid service: " + item, e);
+			catch (final InstantiableException e) {
+				Log.error("Invalid service: " + info.getClassName(), e);
 			}
 		}
 

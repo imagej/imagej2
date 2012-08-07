@@ -39,8 +39,9 @@ import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -50,7 +51,7 @@ import java.util.Set;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = IService.class)
 public class EventHistory extends AbstractService {
 
 	/** Event details that have been recorded. */

@@ -52,6 +52,7 @@ import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
 import imagej.ext.menu.MenuService;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.legacy.plugin.LegacyPlugin;
@@ -60,17 +61,12 @@ import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.service.AbstractService;
-import imagej.service.Service;
+import imagej.service.IService;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import net.imglib2.display.CompositeXYProjector;
-import net.imglib2.display.RealLUTConverter;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * Service for working with legacy ImageJ 1.x.
@@ -90,7 +86,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-@Service
+@Plugin(type = IService.class)
 public final class LegacyService extends AbstractService {
 
 	static {
