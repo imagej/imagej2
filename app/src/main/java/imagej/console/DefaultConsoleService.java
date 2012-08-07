@@ -33,30 +33,47 @@
  * #L%
  */
 
-package imagej;
+package imagej.console;
 
-import imagej.console.ConsoleService;
-import imagej.ui.UIService;
+import imagej.ImageJ;
+import imagej.log.LogService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
 /**
- * Launches ImageJ.
+ * Default service for managing interaction with the console.
  * 
  * @author Curtis Rueden
  */
-public final class Main {
+@Service
+public class DefaultConsoleService extends AbstractService implements
+	ConsoleService
+{
 
-	private Main() {
-		// prevent instantiation of utility class
+	private final LogService log;
+
+	// -- Constructors --
+
+	public DefaultConsoleService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
 	}
 
-	public static void main(final String... args) {
-		final ImageJ context = ImageJ.createContext();
+	public DefaultConsoleService(final ImageJ context, final LogService log) {
+		super(context);
+		this.log = log;
+	}
 
-		// parse command line arguments
-		context.getService(ConsoleService.class).processArgs(args);
+	// -- ConsoleService methods --
 
-		// display the user interface
-		context.getService(UIService.class).createUI();
+	@Override
+	public void processArgs(final String... args) {
+		// TODO: Implement handling of command line arguments.
+		log.info("Received command line arguments:");
+		for (final String arg : args) {
+			log.info("\t" + arg);
+		}
 	}
 
 }

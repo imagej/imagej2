@@ -33,30 +33,25 @@
  * #L%
  */
 
-package imagej;
+package imagej.console;
 
-import imagej.console.ConsoleService;
-import imagej.ui.UIService;
+import imagej.service.IService;
 
 /**
- * Launches ImageJ.
+ * Interface for service that manages interaction with the console.
+ * <p>
+ * In particular, this is the service that defines how command line arguments
+ * are handled.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public final class Main {
+public interface ConsoleService extends IService {
 
-	private Main() {
-		// prevent instantiation of utility class
-	}
-
-	public static void main(final String... args) {
-		final ImageJ context = ImageJ.createContext();
-
-		// parse command line arguments
-		context.getService(ConsoleService.class).processArgs(args);
-
-		// display the user interface
-		context.getService(UIService.class).createUI();
-	}
+	/**
+	 * Handles arguments to ImageJ coming from an external source such as the
+	 * command line.
+	 */
+	void processArgs(String... args);
 
 }

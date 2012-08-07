@@ -84,9 +84,6 @@ public interface UIService extends IService {
 
 	void createUI();
 
-	/** Processes the given command line arguments. */
-	void processArgs(String[] args);
-
 	/** Gets the active user interface. */
 	UserInterface getUI();
 

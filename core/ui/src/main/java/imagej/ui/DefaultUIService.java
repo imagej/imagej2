@@ -194,16 +194,6 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public void processArgs(final String[] args) {
-		log.info("Received command line arguments:");
-		for (final String arg : args) {
-			log.info("\t" + arg);
-		}
-		if (userInterface == null) return;
-		userInterface.processArgs(args);
-	}
-
-	@Override
 	public UserInterface getUI() {
 		return userInterface;
 	}

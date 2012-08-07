@@ -92,11 +92,6 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 		new Thread(this, "SWT-Dispatch").start();
 	}
 
-	@Override
-	public void processArgs(final String[] args) {
-		// TODO
-	}
-
 	protected void createMenus() {
 		final MenuService menuService = getUIService().getMenuService();
 		final Menu menuBar =

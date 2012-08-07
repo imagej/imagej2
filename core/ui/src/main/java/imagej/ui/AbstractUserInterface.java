@@ -75,11 +75,6 @@ public abstract class AbstractUserInterface implements UserInterface {
 	}
 
 	@Override
-	public void processArgs(final String[] args) {
-		// TODO
-	}
-
-	@Override
 	public Desktop getDesktop() {
 		return null;
 	}

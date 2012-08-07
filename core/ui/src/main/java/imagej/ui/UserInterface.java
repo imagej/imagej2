@@ -57,8 +57,6 @@ public interface UserInterface extends IPlugin {
 
 	void create();
 
-	void processArgs(String[] args);
-
 	/** Desktop for use with multi-document interfaces (MDI). */
 	Desktop getDesktop();
 

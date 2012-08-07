@@ -68,11 +68,6 @@ public class PivotUI extends AbstractUserInterface implements Callable<Object>
 		getUIService().getThreadService().run(this);
 	}
 
-	@Override
-	public void processArgs(final String[] args) {
-		// TODO
-	}
-
 	protected void createMenus() {
 		//
 	}

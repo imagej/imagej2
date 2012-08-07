@@ -98,11 +98,6 @@ public class AWTUI extends AbstractUserInterface {
 		frame.setVisible(true);
 	}
 
-	@Override
-	public void processArgs(final String[] args) {
-		// TODO
-	}
-
 	protected void createMenus() {
 		final MenuService menuService = getUIService().getMenuService();
 		final MenuBar menuBar =
