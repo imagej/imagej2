@@ -49,19 +49,26 @@ import net.imglib2.ops.Tuple3;
 
 
 /**
+ * An AxisSubrange defines a set of position indices using various constructors.
+ * A set of position indices might look like this: 1, 3, 6, 7, 8, 25, 44.
+ * 
  * @author Barry DeZonia
  */
 public class AxisSubrange {
 
-	private ImageDisplay display;
+	// -- instance variables --
+	
 	private String err;
 	private List<Long> indices;
+
+	// -- private base constructor --
 	
-	private AxisSubrange(ImageDisplay display) {
+	private AxisSubrange() {
 		this.err = null;
 		this.indices = new ArrayList<Long>();
-		this.display = display;
 	}
+	
+	// -- public interface --
 	
 	public String getError() { return err; }
 	
@@ -69,13 +76,15 @@ public class AxisSubrange {
 		return Collections.unmodifiableList(indices);
 	}
 
-	public AxisSubrange(ImageDisplay display, long pos) {
-		this(display);
+	// -- public constructors --
+	
+	public AxisSubrange(long pos) {
+		this();
 		indices.add(pos);
 	}
 	
-	public AxisSubrange(ImageDisplay display, long pos1, long pos2) {
-		this(display);
+	public AxisSubrange(long pos1, long pos2) {
+		this();
 		long startPos, endPos;
 		if (pos1 < pos2) {
 			startPos = pos1;
@@ -93,8 +102,8 @@ public class AxisSubrange {
 		}
 	}
 	
-	public AxisSubrange(ImageDisplay display, long pos1, long pos2, long by) {
-		this(display);
+	public AxisSubrange(long pos1, long pos2, long by) {
+		this();
 		long startPos, endPos;
 		if (by == 0) {
 			if (pos1 == pos2) {
@@ -128,7 +137,7 @@ public class AxisSubrange {
 	public AxisSubrange(ImageDisplay display, AxisType axis, String definition,
 			boolean originOne)
 	{
-		this(display);
+		this();
 		int axisIndex = display.getAxisIndex(axis);
 		long min, max;
 		if (originOne) {
@@ -143,8 +152,10 @@ public class AxisSubrange {
 			throw new IllegalArgumentException(getError());
 	}
 
+	// -- private helpers --
+	
 	// min = origin (like 0 or 1)
-	// max = 
+	// max = largest legal dim (like size-1 or size)
 	private boolean parseAxisDefinition(long min, long max, String fieldValue)
 	{
 		String[] terms = fieldValue.split(",");
@@ -156,27 +167,48 @@ public class AxisSubrange {
 			Tuple2<Long, Long> numDashNum = numberDashNumber(term);
 			Tuple3<Long, Long, Long> numDashNumDashNum =
 					numberDashNumberDashNumber(term);
-			AxisSubrange subrange;
+			AxisSubrange subrange = null;
 			if (num != null) {
-				subrange = new AxisSubrange(display, num-min);
+				long pos = num - min;
+				if ((pos < min) && (pos > max))
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos+" in "+fieldValue;
+				else
+					subrange = new AxisSubrange(num-min);
 			}
 			else if (numDashNum != null) {
 				long start = numDashNum.get1();
 				long end = numDashNum.get2();
-				subrange = new AxisSubrange(display, start-min, end-min);
+				long pos1 = start - min;
+				long pos2 = end - min;
+				if ((pos1 < min) && (pos1 > max))
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos1+" in "+fieldValue;
+				else if ((pos2 < min) && (pos2 > max))
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos2+" in "+fieldValue;
+				else
+					subrange = new AxisSubrange(pos1, pos2);
 			}
 			else if (numDashNumDashNum != null) {
 				long start = numDashNumDashNum.get1();
 				long end = numDashNumDashNum.get2();
 				long by = numDashNumDashNum.get3();
-				subrange = new AxisSubrange(display, start-min, end-min, by);
+				long pos1 = start - min;
+				long pos2 = end - min;
+				if ((pos1 < min) && (pos1 > max))
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos1+" in "+fieldValue;
+				else if ((pos2 < min) && (pos2 > max))
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos2+" in "+fieldValue;
+				else if ((by == 0) && (pos1 != pos2))
+					err = "Step by value cannot be 0 in "+fieldValue;
+				else
+					subrange = new AxisSubrange(pos1, pos2, by);
 			}
 			else {
-				err = "Illegal axis subrange definition : "+fieldValue;
+				err = "Could not parse definition: "+fieldValue;
+			}
+			if (err != null) {
 				return false;
 			}
-			for (long l : subrange.getIndices()) {
-				if (l > max-min) continue;
+			for (long l : subrange.getIndices()) { // invalid warning here
 				if (indices.contains(l)) continue;
 				indices.add(l);
 			}

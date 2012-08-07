@@ -130,8 +130,8 @@ public class SamplerService extends AbstractService {
 		long minY = (long) selection.y;
 		long maxX = (long) (selection.x + selection.width);
 		long maxY = (long) (selection.y + selection.height);
-		AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
-		AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
+		AxisSubrange xSubrange = new AxisSubrange(minX, maxX);
+		AxisSubrange ySubrange = new AxisSubrange(minY, maxY);
 		copyDef.constrain(Axes.X, xSubrange);
 		copyDef.constrain(Axes.Y, ySubrange);
 		return createSampledImage(copyDef);
@@ -146,8 +146,8 @@ public class SamplerService extends AbstractService {
 		long minY = (long) selection.y;
 		long maxX = (long) (selection.x + selection.width);
 		long maxY = (long) (selection.y + selection.height);
-		AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
-		AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
+		AxisSubrange xSubrange = new AxisSubrange(minX, maxX);
+		AxisSubrange ySubrange = new AxisSubrange(minY, maxY);
 		copyDef.constrain(Axes.X, xSubrange);
 		copyDef.constrain(Axes.Y, ySubrange);
 		return createSampledImage(copyDef);
@@ -160,8 +160,8 @@ public class SamplerService extends AbstractService {
 		long minY = (long) selection.y;
 		long maxX = (long) (selection.x + selection.width);
 		long maxY = (long) (selection.y + selection.height);
-		AxisSubrange xSubrange = new AxisSubrange(display, minX, maxX);
-		AxisSubrange ySubrange = new AxisSubrange(display, minY, maxY);
+		AxisSubrange xSubrange = new AxisSubrange(minX, maxX);
+		AxisSubrange ySubrange = new AxisSubrange(minY, maxY);
 		copyDef.constrain(Axes.X, xSubrange);
 		copyDef.constrain(Axes.Y, ySubrange);
 		return createSampledImage(copyDef);
@@ -274,8 +274,7 @@ public class SamplerService extends AbstractService {
 		// otherwise if here the two displays have channel axes of the same size
 		
 		// TODO - cannot assume 1 color table per channel, right? if so then no
-		// idea how to copy color tables
-		// For now will assume 1 per channel
+		// idea how to copy color tables. For now will assume 1 per channel
 		DatasetView inView = imgDispService.getActiveDatasetView(input);
 		DatasetView outView = imgDispService.getActiveDatasetView(output);
 		List<ColorTable8> colorTables = inView.getColorTables();

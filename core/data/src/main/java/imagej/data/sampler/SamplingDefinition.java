@@ -122,12 +122,12 @@ public class SamplingDefinition {
 			if ((axis == uAxis) || (axis == vAxis)) {
 				int axisIndex = display.getAxisIndex(axis);
 				long size = display.getExtents().dimension(axisIndex);
-				AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
+				AxisSubrange subrange = new AxisSubrange(0, size-1);
 				definition.constrain(axis, subrange);
 			}
 			else { // other axis
 				long pos = display.getLongPosition(axis);
-				AxisSubrange subrange = new AxisSubrange(display, pos);
+				AxisSubrange subrange = new AxisSubrange(pos);
 				definition.constrain(axis, subrange);
 			}
 		}
@@ -151,12 +151,12 @@ public class SamplingDefinition {
 			if ((axis == uAxis) || (axis == vAxis) || (axis == Axes.CHANNEL)) {
 				int axisIndex = display.getAxisIndex(axis);
 				long size = display.getExtents().dimension(axisIndex);
-				AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
+				AxisSubrange subrange = new AxisSubrange(0, size-1);
 				definition.constrain(axis, subrange);
 			}
 			else { // other axis
 				long pos = display.getLongPosition(axis);
-				AxisSubrange subrange = new AxisSubrange(display, pos);
+				AxisSubrange subrange = new AxisSubrange(pos);
 				definition.constrain(axis, subrange);
 			}
 		}
@@ -173,7 +173,7 @@ public class SamplingDefinition {
 		for (int i = 0; i < axes.length; i++) {
 			AxisType axis = axes[i];
 			long size = display.dimension(i);
-			AxisSubrange subrange = new AxisSubrange(display, 0, size-1);
+			AxisSubrange subrange = new AxisSubrange(0, size-1);
 			definition.constrain(axis, subrange);
 		}
 		return definition;
