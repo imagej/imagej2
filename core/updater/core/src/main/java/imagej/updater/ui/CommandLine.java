@@ -310,7 +310,8 @@ public class CommandLine {
 			files.write();
 		}
 		catch (final Throwable e) {
-			if (e.getMessage().indexOf("conflicts") >= 0) {
+			final String message = e.getMessage();
+			if (message != null && message.indexOf("conflicts") >= 0) {
 				log.error("Could not upload due to conflicts:");
 				for (Conflict conflict : new Conflicts(files).getConflicts(true))
 					log.error(conflict.getFilename() + ": " + conflict.getConflict());
