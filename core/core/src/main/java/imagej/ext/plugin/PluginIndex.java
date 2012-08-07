@@ -37,6 +37,9 @@ package imagej.ext.plugin;
 
 import imagej.object.SortedObjectIndex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Data structure for managing registered plugins.
  * 
@@ -48,6 +51,43 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 	public PluginIndex() {
 		// NB: See: http://stackoverflow.com/questions/4765520/
 		super((Class) PluginInfo.class);
+	}
+
+	// -- PluginIndex methods --
+
+	/** Discovers plugins available on the classpath. */
+	public void discover() {
+		discover(new PluginFinder());
+	}
+
+	/**
+	 * Discovers available plugins, using the given {@link PluginFinder} instance.
+	 */
+	public void discover(final PluginFinder pluginFinder) {
+		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
+		pluginFinder.findPlugins(plugins);
+		addAll(plugins);
+	}
+
+	/**
+	 * Gets a list of registered plugins compatible with the given type.
+	 * <p>
+	 * This method is more specific than {@link #get(Class)} since that method
+	 * returns only a <code>List&lt;PluginInfo&lt;?&gt;&gt;</code>, whereas this
+	 * one is guaranteed to return a
+	 * <code>List&lt;PluginInfo&lt;? extends P&gt;&gt;</code>.
+	 * </p>
+	 * 
+	 * @return Read-only list of registered objects of the given type, or an empty
+	 *         list if no such objects exist (this method never returns null).
+	 */
+	public <P extends IPlugin> List<PluginInfo<? extends P>> getPlugins(
+		final Class<P> type)
+	{
+		final List<PluginInfo<?>> list = get(type);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<PluginInfo<? extends P>> result = (List) list;
+		return result;
 	}
 
 	// -- Internal methods --
