@@ -24,6 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-io</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -40,12 +45,6 @@
 			-->
 		</dependency>
 
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-io</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-legacy</artifactId>
