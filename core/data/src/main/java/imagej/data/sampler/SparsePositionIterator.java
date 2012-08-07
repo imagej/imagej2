@@ -39,14 +39,26 @@ import java.util.List;
 
 
 /**
+ * This class is a PositionIterator that iterates the potentially noncontiguous
+ * region of space present in the input of a sampling of an image. It has
+ * package level sharing and access.
+ * 
  * @author Barry DeZonia
  */
 class SparsePositionIterator implements PositionIterator {
+
+	// -- instance variables --
+	
 	private int[] maxIndexes;
 	private int[] indexes;
 	private List<List<Long>> actualValues;
 	private long[] currPos;
+
+	// -- constructor --
 	
+	/** Creates a SparsePositionIterator from a SamplingDefinition. The space to
+	 * be iterated is the input space of a sampling. It may not be contiguous.
+	 */
 	SparsePositionIterator(SamplingDefinition def) {
 		actualValues = def.getInputRanges();
 		maxIndexes = calcMaxes(def);
@@ -57,6 +69,9 @@ class SparsePositionIterator implements PositionIterator {
 		indexes[0] = -1;
 	}
 
+	// -- public interface --
+
+	/** Returns true if the iterator has a next position in the input space. */ 
 	@Override
 	public boolean hasNext() {
 		for (int i = 0; i < currPos.length; i++) {
@@ -65,6 +80,7 @@ class SparsePositionIterator implements PositionIterator {
 		return false;
 	}
 
+	/** Returns the next position of the input space. */ 
 	@Override
 	public long[] next() {
 		for (int i = 0; i < indexes.length; i++) {
@@ -79,7 +95,10 @@ class SparsePositionIterator implements PositionIterator {
 		}
 		throw new IllegalArgumentException("Can't position iterator beyond end");
 	}
+
+	// -- private helpers --
 	
+	/** Determines the maximum values that each axis can take. */
 	private int[] calcMaxes(@SuppressWarnings("unused")SamplingDefinition def) {
 		int[] mx = new int[actualValues.size()];
 		for (int i = 0; i < mx.length; i++) {
