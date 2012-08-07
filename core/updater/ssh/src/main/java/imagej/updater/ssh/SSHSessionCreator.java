@@ -211,7 +211,12 @@ final class SSHSessionCreator {
 				}
 			}
 			final String prompt = "Password for " + configInfo.username + "@" + uploader.getUploadHost();
-			final String password = configInfo.identity != null ? null : UpdaterUserInterface.get().getPassword(prompt);
+			String password = null;
+			if (configInfo.identity == null) {
+				password = UpdaterUserInterface.get().getPassword(prompt);
+				if (password == null)
+					return null;
+			}
 			final UserInfo userInfo = getUserInfo(prompt, password);
 			try {
 				final Session session = connect(configInfo, userInfo);
