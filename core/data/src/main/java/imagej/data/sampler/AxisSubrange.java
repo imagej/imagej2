@@ -50,7 +50,8 @@ import net.imglib2.ops.Tuple3;
 
 /**
  * An AxisSubrange defines a set of position indices using various constructors.
- * A set of position indices might look like this: 1, 3, 6, 7, 8, 25, 44.
+ * A set of position indices might look like this: 1, 3, 6, 7, 8, 25, 44. These
+ * indices are used to iterate over a subset of an image.
  * 
  * @author Barry DeZonia
  */
@@ -77,63 +78,85 @@ public class AxisSubrange {
 	}
 
 	// -- public constructors --
-	
+
+	/**
+	 * Create an AxisSubrange from a single value.
+	 * 
+	 * @param pos The single index position
+	 */
 	public AxisSubrange(long pos) {
 		this();
 		indices.add(pos);
 	}
 	
+	/**
+	 * Create an AxisSubrange from one position to another position and everything
+	 * in between. Whether position 1 is less or greater than position 2 does not
+	 * matter.
+	 * 
+	 * @param pos1 The first index position of the range
+	 * @param pos2 The second index position of the range
+	 */
 	public AxisSubrange(long pos1, long pos2) {
 		this();
-		long startPos, endPos;
-		if (pos1 < pos2) {
-			startPos = pos1;
-			endPos = pos2;
-		}
-		else {
-			startPos = pos2;
-			endPos = pos1;
-		}
-		if (endPos - startPos + 1 > Integer.MAX_VALUE)
+		int numElements = (int) (Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1);
+		if (numElements > Integer.MAX_VALUE)
 			throw new IllegalArgumentException(
 				"the number of axis elements cannot exceed "+Integer.MAX_VALUE);
-		for (long l = startPos; l <= endPos; l++) {
+		int inc;
+		if (pos1 <= pos2)
+			inc = 1; 
+		else 
+			inc = -1;
+		for (long l = pos1; l <= pos2; l += inc) {
 			indices.add(l);
 		}
 	}
 	
+	/**
+	 * Create an AxisSubrange from one position to another position stepping by a
+	 * given value. The order of the two positions does matter. The "by" step
+	 * must not be 0 but can be negative.
+	 *  
+	 * 
+	 * @param pos1 The first index position
+	 * @param pos2 The second index position
+	 * @param by The amount to step by between positions
+	 */
 	public AxisSubrange(long pos1, long pos2, long by) {
 		this();
-		long startPos, endPos;
-		if (by == 0) {
-			if (pos1 == pos2) {
-				indices.add(pos1);
-				return;
-			}
+		if (by == 0)
 			throw new IllegalArgumentException("increment must not be 0");
-		}
-		else if (by < 0) {
-			startPos = Math.max(pos1, pos2);
-			endPos = Math.min(pos1, pos2);
-			if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
-				throw new IllegalArgumentException(
-					"the number of axis elements cannot exceed "+Integer.MAX_VALUE);
-			for (long l = startPos; l >= endPos; l += by) {
-				indices.add(l);
-			}
-		}
-		else { // by > 0
-			startPos = Math.min(pos1, pos2);
-			endPos = Math.max(pos1, pos2);
-			if ((endPos - startPos + 1) / by > Integer.MAX_VALUE)
-				throw new IllegalArgumentException(
-					"the number of axis elements cannot exceed "+Integer.MAX_VALUE);
-			for (long l = startPos; l <= endPos; l += by) {
-				indices.add(l);
-			}
+		int numElements = (int) ((Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1) / Math.abs(by));
+		if (numElements > Integer.MAX_VALUE)
+			throw new IllegalArgumentException(
+				"the number of axis elements cannot exceed "+Integer.MAX_VALUE);
+		long startPos = pos1, endPos = pos2;
+		for (long l = startPos; l >= endPos; l += by) {
+			indices.add(l);
 		}
 	}
-	
+
+	/**
+	 * Create an AxisSubrange from a String definition. The definition is a
+	 * textual language that allows one or more positions to be defined by one or
+	 * more comma separated values. Some examples:
+	 * <p>
+	 * <ul>
+	 * <li>"1" : plane 1</li>
+	 * <li>"3,5" : planes 3 and 5</li>
+	 * <li>"1-10" : planes 1 through 10</li>
+	 * <li>"1-10,20-30" : planes 1 through 10 and 20 through 30</li>
+	 * <li>"1-10-2,20-30-3" : planes 1 through 10 by 2 and planes 20 through 30 by 3</li>
+	 * <li>"1,3-5,12-60-6" : an example combining all three formats </li>
+	 * </ul>
+	 * 
+	 * @param display The ImageDisplay used to set legal bounds on dimension sizes
+	 * @param axis The AxisType within the ImageDisplay that defines bounds
+	 * @param definition The textual description of the subrange (detailed elsewhere)
+	 * @param originOne A boolean specifying whether the origin within the String
+	 * 	language should be treated as 0 based or 1 based.
+	 */
 	public AxisSubrange(ImageDisplay display, AxisType axis, String definition,
 			boolean originOne)
 	{
@@ -154,11 +177,18 @@ public class AxisSubrange {
 
 	// -- private helpers --
 	
-	// min = origin (like 0 or 1)
-	// max = largest legal dim (like size-1 or size)
-	private boolean parseAxisDefinition(long min, long max, String fieldValue)
+	/**
+	 * Parses a textual description of an axis definition
+	 * 
+	 * @param min The min value of the language (0 or 1)
+	 * @param max The max value of an axis (dim-1 or dim)
+	 * @param description The textual description of the axis subrange
+	 * @return True if parsed successfully. Otherwise returns false and sets the
+	 * error state of the AxisSubrange.
+	 */
+	private boolean parseAxisDefinition(long min, long max, String description)
 	{
-		String[] terms = fieldValue.split(",");
+		String[] terms = description.split(",");
 		for (int i = 0; i < terms.length; i++) {
 			terms[i] = terms[i].trim();
 		}
@@ -171,7 +201,7 @@ public class AxisSubrange {
 			if (num != null) {
 				long pos = num - min;
 				if ((pos < min) && (pos > max))
-					err = "Dimension out of bounds ("+min+","+max+") : "+pos+" in "+fieldValue;
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos+" in "+description;
 				else
 					subrange = new AxisSubrange(num-min);
 			}
@@ -181,9 +211,9 @@ public class AxisSubrange {
 				long pos1 = start - min;
 				long pos2 = end - min;
 				if ((pos1 < min) && (pos1 > max))
-					err = "Dimension out of bounds ("+min+","+max+") : "+pos1+" in "+fieldValue;
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos1+" in "+description;
 				else if ((pos2 < min) && (pos2 > max))
-					err = "Dimension out of bounds ("+min+","+max+") : "+pos2+" in "+fieldValue;
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos2+" in "+description;
 				else
 					subrange = new AxisSubrange(pos1, pos2);
 			}
@@ -194,16 +224,16 @@ public class AxisSubrange {
 				long pos1 = start - min;
 				long pos2 = end - min;
 				if ((pos1 < min) && (pos1 > max))
-					err = "Dimension out of bounds ("+min+","+max+") : "+pos1+" in "+fieldValue;
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos1+" in "+description;
 				else if ((pos2 < min) && (pos2 > max))
-					err = "Dimension out of bounds ("+min+","+max+") : "+pos2+" in "+fieldValue;
+					err = "Dimension out of bounds ("+min+","+max+") : "+pos2+" in "+description;
 				else if ((by == 0) && (pos1 != pos2))
-					err = "Step by value cannot be 0 in "+fieldValue;
+					err = "Step by value cannot be 0 in "+description;
 				else
 					subrange = new AxisSubrange(pos1, pos2, by);
 			}
 			else {
-				err = "Could not parse definition: "+fieldValue;
+				err = "Could not parse definition: "+description;
 			}
 			if (err != null) {
 				return false;
@@ -217,12 +247,20 @@ public class AxisSubrange {
 		return true;
 	}
 
+	/**
+	 * Tries to match a single number from the input term. Returns a Long of that
+	 * value if successful otherwise returns null.
+	 */
 	private Long number(String term) {
 		Matcher matcher = Pattern.compile("\\d+").matcher(term);
 		if (!matcher.matches()) return null;
 		return Long.parseLong(term);
 	}
 	
+	/**
+	 * Tries to match number-number from the input term. Returns a Tuple of Longs
+	 * that contain the two values if successful otherwise returns null.
+	 */
 	private Tuple2<Long,Long> numberDashNumber(String term) {
 		Matcher matcher = Pattern.compile("\\d+-\\d+").matcher(term);
 		if (!matcher.matches()) return null;
@@ -233,6 +271,10 @@ public class AxisSubrange {
 		return new Tuple2<Long,Long>(start, end);
 	}
 	
+	/**
+	 * Tries to match number-number-number from the input term. Returns a Tuple of
+	 * Longs that contain the three values if successful otherwise returns null.
+	 */
 	private Tuple3<Long,Long,Long> numberDashNumberDashNumber(String term) {
 		Matcher matcher = Pattern.compile("\\d+-\\d+-\\d+").matcher(term);
 		if (!matcher.matches()) return null;
