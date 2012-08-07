@@ -99,7 +99,9 @@ public class SamplerService extends AbstractService {
 
 	/** Creates an output ImageDisplay containing data from an input
 	 * SamplingDefinition. This is the most general and custom way to sample
-	 * existing image data.
+	 * existing image data. The SamplingDefinition class has some static
+	 * construction utilities for creating common definitions.
+	 *  
 	 * @param def The prespecified SamplingDefinition to use
 	 * @return The display containing the sampled data
 	 */
@@ -189,7 +191,7 @@ public class SamplerService extends AbstractService {
 	}
 
 
-	/** copies all associated data from a SamplingDefinition to an output image */
+	/** Copies all associated data from a SamplingDefinition to an output image */
 	private void copyData(SamplingDefinition def, ImageDisplay outputImage) {
 		PositionIterator iter1 = new SparsePositionIterator(def);
 		PositionIterator iter2 = new DensePositionIterator(def);
