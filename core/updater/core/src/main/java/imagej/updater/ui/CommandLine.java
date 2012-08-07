@@ -64,6 +64,7 @@ import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -349,6 +350,47 @@ public class CommandLine {
 			site.uploadDirectory + ")";
 	}
 
+	public void listUpdateSites(Collection<String> args) {
+		if (args == null || args.size() == 0)
+			args = files.getUpdateSiteNames();
+		for (final String name : args) {
+			final UpdateSite site = files.getUpdateSite(name);
+			System.out.print(name + ": " + site.url);
+			if (site.uploadDirectory == null)
+				System.out.println();
+			else
+				System.out.println(" (upload host: " + site.sshHost + ", upload directory: " + site.uploadDirectory);
+		}
+	}
+
+	public void addOrEditUploadSite(final List<String> args, boolean add) {
+		if (args.size() != 2 && args.size() != 4)
+			die("Usage: " + (add ? "add" : "edit") + "-update-site <name> <url> [<host> <upload-directory>]");
+		addOrEditUploadSite(args.get(0), args.get(1), args.size() > 2 ? args.get(2) : null, args.size() > 3 ? args.get(3) : null, add);
+	}
+
+	public void addOrEditUploadSite(final String name, final String url, final String sshHost, final String uploadDirectory, boolean add) {
+		UpdateSite site = files.getUpdateSite(name);
+		if (add) {
+			if (site != null)
+				die("Site '" + name + "' was already added!");
+			files.addUpdateSite(name, url, sshHost, uploadDirectory, 0l);
+		}
+		else {
+			if (site == null)
+				die("Site '" + name + "' was not yet added!");
+			site.url = url;
+			site.sshHost = sshHost;
+			site.uploadDirectory = uploadDirectory;
+		}
+		try {
+			files.write();
+		} catch (Exception e) {
+			UpdaterUserInterface.get().handleException(e);
+			die("Could not write local file database");
+		}
+	}
+
 	public static CommandLine getInstance() {
 		try {
 			return new CommandLine();
@@ -379,7 +421,10 @@ public class CommandLine {
 			+ "\tlist-updateable [<files>]\n" + "\tlist-modified [<files>]\n"
 			+ "\tlist-current [<files>]\n" + "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n" + "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [<files>]");
+			+ "\tupload [<files>]\n"
+			+ "\tlist-update-sites [<nick>...]\n"
+			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
+			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
 	}
 
 	public static void main(final String[] args) {
@@ -426,6 +471,12 @@ public class CommandLine {
 		else if (command.equals("update-force-pristine")) getInstance().update(
 			makeList(args, 1), true, true);
 		else if (command.equals("upload")) getInstance().upload(makeList(args, 1));
+		else if (command.equals("list-update-sites"))
+			getInstance().listUpdateSites(makeList(args, 1));
+		else if (command.equals("add-update-site"))
+			getInstance().addOrEditUploadSite(makeList(args, 1), true);
+		else if (command.equals("edit-update-site"))
+			getInstance().addOrEditUploadSite(makeList(args, 1), false);
 		else usage();
 	}
 
