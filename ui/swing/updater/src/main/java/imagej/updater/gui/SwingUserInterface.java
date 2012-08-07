@@ -174,6 +174,8 @@ public class SwingUserInterface extends UpdaterUserInterface {
 
 		panel.add(new JLabel("User"));
 		final JTextField user = new JTextField();
+		user.setColumns(20);
+		panel.add(user);
 
 		if (JOptionPane.showConfirmDialog(null, panel, title,
 			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;

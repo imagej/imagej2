@@ -72,6 +72,7 @@ import imagej.util.MersenneTwisterFast;
 public class UpdaterGUITest {
 	public static void main(String[] args) throws Exception {
 		//testProgressDialog();
+		testStringDialog();
 		//testPassword();
 		testUpdateTheUpdater();
 	}
@@ -119,6 +120,11 @@ public class UpdaterGUITest {
 			progress.itemDone(item);
 		}
 		progress.done();
+	}
+
+	protected static void testStringDialog() {
+		SwingUserInterface ui = new SwingUserInterface(new StderrLogService(), null);
+		System.err.println(ui.getString("Login for blub"));
 	}
 
 	protected static void testPassword() {
