@@ -36,31 +36,36 @@
 package imagej.ext.plugin;
 
 import imagej.ext.display.Display;
+import imagej.ext.module.Module;
 import imagej.ext.module.ModulePostprocessor;
 import imagej.ext.module.ModulePreprocessor;
 import imagej.ext.tool.Tool;
+import imagej.platform.Platform;
+import imagej.service.Service;
 
 /**
  * Top-level interface for plugins. Plugins discoverable at runtime must
  * implement this interface and be annotated with @{@link Plugin}.
  * <p>
- * There are several different kinds of plugins:
+ * The core types of plugins are as follows:
  * </p>
  * <ul>
- * <li>{@link RunnablePlugin} - plugins that are executable as modules.</li>
- * <li>{@link ImageJPlugin} - executable plugins that perform a discrete
- * operation, accessible via the ImageJ menus.</li>
+ * <li>{@link RunnablePlugin} - plugins that are executable as {@link Module}s.
+ * These plugins typically perform a discrete operation, and are accessible via
+ * the ImageJ menus.</li>
+ * <li>{@link Service} - plugins that define new API in a particular area.</li>
  * <li>{@link Tool} - plugins that map user input (e.g., keyboard and mouse
  * actions) to behavior. They are usually rendered as icons in the ImageJ
  * toolbar.</li>
  * <li>{@link Display} - plugins that visualize objects, often used to display
  * module outputs.</li>
- * <li>{@link PreprocessorPlugin} - plugins that perform pre-processing on
+ * <li>{@link PreprocessorPlugin} - plugins that perform preprocessing on
  * modules. A {@link PreprocessorPlugin} is a discoverable
  * {@link ModulePreprocessor}.</li>
- * <li>{@link PostprocessorPlugin} - plugins that perform post-processing on
+ * <li>{@link PostprocessorPlugin} - plugins that perform postprocessing on
  * modules. A {@link PostprocessorPlugin} is a discoverable
  * {@link ModulePostprocessor}.</li>
+ * <li>{@link Platform} - plugins for defining platform-specific behavior.</li>
  * </ul>
  * <p>
  * What all plugins have in common is that they are declared using an annotation
