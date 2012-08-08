@@ -33,38 +33,28 @@
  * #L%
  */
 
-package imagej.event;
-
-import imagej.AbstractContextual;
+package imagej;
 
 /**
- * Base class for all ImageJ events.
+ * Abstract base class for {@link Contextual} objects.
  * 
  * @author Curtis Rueden
  */
-public abstract class ImageJEvent extends AbstractContextual {
+public abstract class AbstractContextual implements Contextual {
 
-	private boolean consumed;
-
-	// -- ImageJEvent methods --
-
-	public boolean isConsumed() {
-		return consumed;
-	}
-
-	public void setConsumed(final boolean consumed) {
-		this.consumed = consumed;
-	}
-
-	public void consume() {
-		setConsumed(true);
-	}
-
-	// Object methods --
+	private ImageJ context;
 
 	@Override
-	public String toString() {
-		return "\n\tcontext = " + getContext() + "\n\tconsumed = " + consumed;
+	public ImageJ getContext() {
+		return context;
+	}
+
+	@Override
+	public void setContext(final ImageJ context) {
+		if (this.context != null) {
+			throw new IllegalStateException("Context already set");
+		}
+		this.context = context;
 	}
 
 }

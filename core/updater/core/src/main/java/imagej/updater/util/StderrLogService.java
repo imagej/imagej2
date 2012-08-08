@@ -35,7 +35,6 @@
 
 package imagej.updater.util;
 
-import imagej.ImageJ;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
 
@@ -48,11 +47,6 @@ public class StderrLogService extends AbstractService implements LogService {
 
 	public StderrLogService() {
 		super(null);
-	}
-
-	@Override
-	public ImageJ getContext() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

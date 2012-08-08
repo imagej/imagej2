@@ -35,7 +35,6 @@
 
 package imagej.service.event;
 
-import imagej.ImageJ;
 import imagej.event.ImageJEvent;
 
 /**
@@ -44,8 +43,5 @@ import imagej.event.ImageJEvent;
  * @author Barry DeZonia
  */
 public class ServicesLoadedEvent extends ImageJEvent {
-
-	public ServicesLoadedEvent(ImageJ context) {
-		setContext(context);
-	}
+	// NB: no implementation needed
 }

@@ -45,6 +45,7 @@ import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
 import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.AbstractDisplay;
 import imagej.ext.display.DisplayService;
@@ -119,7 +120,11 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	public void setContext(final ImageJ context) {
 		super.setContext(context);
 		assert subscribers == null;
-		subscribers = eventService.subscribe(this);
+		final EventService eventService =
+			getContext().getService(EventService.class);
+		if (eventService != null) {
+			subscribers = eventService.subscribe(this);
+		}
 	}
 
 	@Override
@@ -445,6 +450,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		// update position and notify interested parties of the change
 		pos.put(axis, value);
 		// NB: DataView.setPosition is called only in update method.
+		final EventService eventService =
+			getContext().getService(EventService.class);
 		if (eventService != null) {
 			// NB: BDZ changed from publish() to publishLater(). This fixes bug #1234.
 			// We may want to change order of events to allow publish() instead.
@@ -638,7 +645,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		combinedInterval.clear();
 		// NB - this is necessary to make sure resources get returned via GC.
 		// Else there is a memory leak.
-		eventService.unsubscribe(subscribers);
+		final EventService eventService =
+			getContext().getService(EventService.class);
+		if (eventService != null) eventService.unsubscribe(subscribers);
 	}
 
 	protected Dataset getDataset(final DataView view) {

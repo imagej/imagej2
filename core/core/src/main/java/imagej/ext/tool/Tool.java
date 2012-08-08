@@ -36,7 +36,6 @@
 package imagej.ext.tool;
 
 import imagej.Contextual;
-import imagej.ImageJ;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
@@ -72,9 +71,6 @@ public interface Tool extends IPlugin, Contextual {
 
 	/** Sets the info describing the tool. */
 	void setInfo(PluginInfo<? extends Tool> info);
-
-	/** Sets the application context of the tool. */
-	void setContext(ImageJ context);
 
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();

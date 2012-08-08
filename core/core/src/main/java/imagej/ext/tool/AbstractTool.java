@@ -35,7 +35,7 @@
 
 package imagej.ext.tool;
 
-import imagej.ImageJ;
+import imagej.AbstractContextual;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
@@ -60,11 +60,9 @@ import imagej.ext.plugin.PluginInfo;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public abstract class AbstractTool implements Tool {
+public abstract class AbstractTool extends AbstractContextual implements Tool {
 
 	private PluginInfo<? extends Tool> info;
-
-	private ImageJ context;
 
 	@Override
 	public PluginInfo<? extends Tool> getInfo() {
@@ -74,16 +72,6 @@ public abstract class AbstractTool implements Tool {
 	@Override
 	public void setInfo(final PluginInfo<? extends Tool> info) {
 		this.info = info;
-	}
-
-	@Override
-	public ImageJ getContext() {
-		return context;
-	}
-
-	@Override
-	public void setContext(final ImageJ context) {
-		this.context = context;
 	}
 
 	@Override

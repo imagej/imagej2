@@ -35,7 +35,7 @@
 
 package imagej.ext.display;
 
-import imagej.ImageJ;
+import imagej.AbstractContextual;
 import imagej.event.EventService;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
@@ -52,7 +52,9 @@ import java.util.ListIterator;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDisplay<T> implements Display<T> {
+public abstract class AbstractDisplay<T> extends AbstractContextual implements
+	Display<T>
+{
 
 	/** The type of object the display can visualize. */
 	private final Class<T> type;
@@ -66,32 +68,11 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 	/** The name of the display. */
 	private String name;
 
-	protected EventService eventService;
-
-	protected ImageJ context;
-
 	protected boolean isClosed = false;
 
 	public AbstractDisplay(final Class<T> type) {
 		this.type = type;
 		objects = new ArrayList<T>();
-	}
-
-	@Override
-	public void setContext(final ImageJ context) {
-		assert this.context == null;
-		this.context = context;
-		eventService = context.getService(EventService.class);
-	}
-
-	@Override
-	public ImageJ getContext() {
-		return context;
-	}
-
-	@Override
-	public boolean isDisplaying(final Object o) {
-		return contains(o);
 	}
 
 	// -- AbstractDisplay methods --
@@ -122,7 +103,14 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 	}
 
 	@Override
+	public boolean isDisplaying(final Object o) {
+		return contains(o);
+	}
+
+	@Override
 	public void update() {
+		final EventService eventService =
+			getContext().getService(EventService.class);
 		if (eventService != null && !isClosed) {
 			eventService.publish(new DisplayUpdatedEvent(this, structureChanged
 				? DisplayUpdateLevel.REBUILD : DisplayUpdateLevel.UPDATE));
@@ -139,6 +127,8 @@ public abstract class AbstractDisplay<T> implements Display<T> {
 			displayService.setActiveDisplay(null);
 		}
 
+		final EventService eventService =
+			getContext().getService(EventService.class);
 		if (eventService != null) {
 			eventService.publish(new DisplayDeletedEvent(this));
 		}

@@ -35,6 +35,7 @@
 
 package imagej.service;
 
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.Prioritized;
 import imagej.Priority;
@@ -45,17 +46,16 @@ import imagej.event.EventService;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractService implements Service {
-
-	/** Application context of this service. */
-	private final ImageJ context;
+public abstract class AbstractService extends AbstractContextual implements
+	Service
+{
 
 	/** Maintain list of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")
 	private Object eventSubscribers;
 
 	public AbstractService(final ImageJ context) {
-		this.context = context;
+		setContext(context);
 	}
 
 	// -- Object methods --
@@ -63,13 +63,6 @@ public abstract class AbstractService implements Service {
 	@Override
 	public String toString() {
 		return getClass().getName() + " [priority = " + getPriority() + "]";
-	}
-
-	// -- Contextual methods --
-
-	@Override
-	public ImageJ getContext() {
-		return context;
 	}
 
 	// -- Prioritized methods --

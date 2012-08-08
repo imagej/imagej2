@@ -106,6 +106,7 @@ public class CheckSezpozTest {
 			+ "\tpublic double getPriority() { return 0; }\n"
 			+ "\tpublic int compareTo(final Prioritized other) { return 0; }\n"
 			+ "\tpublic ImageJ getContext() { return null; }\n"
+			+ "\tpublic void setContext(final ImageJ context) { }\n"
 			+ "}\n");
 		writer.close();
 

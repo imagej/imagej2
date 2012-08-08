@@ -46,6 +46,7 @@ import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
@@ -91,12 +92,12 @@ import net.imglib2.type.logic.BitType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class OverlayHarmonizer implements DisplayHarmonizer {
-
-	private ImageJ context;
+public class OverlayHarmonizer extends AbstractContextual implements
+	DisplayHarmonizer
+{
 
 	public OverlayHarmonizer(final ImageJ context) {
-		this.context = context;
+		setContext(context);
 	}
 
 	/**
@@ -106,7 +107,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	@Override
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
 		final OverlayService overlayService =
-			context.getService(OverlayService.class);
+			getContext().getService(OverlayService.class);
 		final Roi oldRoi = createRoi(overlayService.getOverlays(display));
 		if (oldRoi instanceof ShapeRoi) {
 			final float[] oldPath = ((ShapeRoi) oldRoi).getShapeAsArray();
@@ -154,7 +155,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
 		final OverlayService overlayService =
-			context.getService(OverlayService.class);
+			getContext().getService(OverlayService.class);
 		final List<Overlay> overlays = overlayService.getOverlays(display);
 		setOverlays(overlays, imp);
 	}
@@ -475,7 +476,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 					overlays.add(subOverlays.get(0));
 					return;
 				}
-				final CompositeOverlay coverlay = new CompositeOverlay(context);
+				final CompositeOverlay coverlay = new CompositeOverlay(getContext());
 				for (Overlay subOverlay : subOverlays) {
 					coverlay.xor(subOverlay);
 				}
@@ -500,7 +501,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		PolygonRoi pRoi = (PolygonRoi) roi;
 		FloatPolygon poly = pRoi.getFloatPolygon();
 		double[] pt;
-		AngleOverlay angleOverlay = new AngleOverlay(context);
+		AngleOverlay angleOverlay = new AngleOverlay(getContext());
 		pt = new double[]{poly.xpoints[0], poly.ypoints[0]};
 		angleOverlay.setPoint1(pt);
 		pt = new double[]{poly.xpoints[1], poly.ypoints[1]};
@@ -516,8 +517,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		assert roi instanceof Line;
 		final Line line = (Line) roi;
 		final LineOverlay lineOverlay =
-			new LineOverlay(context, new double[]{line.x1d + xOff, line.y1d + yOff},
-				new double[]{line.x2d + xOff, line.y2d + yOff});
+			new LineOverlay(getContext(), new double[] { line.x1d + xOff,
+				line.y1d + yOff }, new double[] { line.x2d + xOff, line.y2d + yOff });
 		assignPropertiesToOverlay(lineOverlay, roi);
 		return lineOverlay;
 	}
@@ -525,7 +526,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	private RectangleOverlay createRectangleOverlay(final Roi roi,
 		final double xOff, final double yOff)
 	{
-		final RectangleOverlay overlay = new RectangleOverlay(context);
+		final RectangleOverlay overlay = new RectangleOverlay(getContext());
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
 		region.setOrigin(bounds.x + xOff, 0);
@@ -539,7 +540,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	private EllipseOverlay createEllipseOverlay(final Roi roi, final double xOff,
 		final double yOff)
 	{
-		final EllipseOverlay overlay = new EllipseOverlay(context);
+		final EllipseOverlay overlay = new EllipseOverlay(getContext());
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
 		final double radiusX = bounds.width / 2.0;
@@ -560,7 +561,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 	{
 		assert roi instanceof PolygonRoi;
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
-		final PolygonOverlay overlay = new PolygonOverlay(context);
+		final PolygonOverlay overlay = new PolygonOverlay(getContext());
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final int[] xCoords = polygonRoi.getXCoordinates();
 		final int[] yCoords = polygonRoi.getYCoordinates();
@@ -585,7 +586,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 			final double x = ptRoi.getXCoordinates()[i] + roi.getBounds().x;
 			final double y = ptRoi.getYCoordinates()[i] + roi.getBounds().y;
 			final double[] pt = new double[]{x,y};
-			final PointOverlay pointOverlay = new PointOverlay(context, pt);
+			final PointOverlay pointOverlay = new PointOverlay(getContext(), pt);
 			assignPropertiesToOverlay(pointOverlay, roi);
 			overlays.add(pointOverlay);
 		}
@@ -618,7 +619,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer {
 		}
 		final BinaryMaskRegionOfInterest<BitType, Img<BitType>> broi =
 			new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
-		return new BinaryMaskOverlay(context, broi);
+		return new BinaryMaskOverlay(getContext(), broi);
 	}
 
 	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi)

@@ -64,14 +64,6 @@ import java.util.List;
 public interface Display<T> extends List<T>, IPlugin, Contextual {
 
 	/**
-	 * Set the ImageJ service context for the display. This should only be done
-	 * once if at all as part of initialization.
-	 * 
-	 * @param context
-	 */
-	void setContext(ImageJ context);
-
-	/**
 	 * Tests whether the display is capable of visualizing objects of the given
 	 * class.
 	 * 

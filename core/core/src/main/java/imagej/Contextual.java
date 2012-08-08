@@ -39,10 +39,23 @@ package imagej;
  * An object that belongs to an ImageJ application context.
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
 public interface Contextual {
 
-	/** Gets the instance of ImageJ in which the object lives. */
+	/** Gets the application context to which the object belongs. */
 	ImageJ getContext();
+
+	/**
+	 * Sets the application context to which the object belongs.
+	 * <p>
+	 * Typically this method is called only once to populate the context. Many
+	 * contextual objects do not support later alteration of the context, and
+	 * throw {@link IllegalStateException} if this method is invoked again.
+	 * </p>
+	 * 
+	 * @throws IllegalStateException if the context has already been set.
+	 */
+	void setContext(ImageJ context);
 
 }

@@ -35,6 +35,7 @@
 
 package imagej.service;
 
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.Priority;
 import imagej.event.EventService;
@@ -49,7 +50,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -58,10 +58,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public class ServiceHelper {
-
-	/** Associated application context. */
-	private final ImageJ context;
+public class ServiceHelper extends AbstractContextual {
 
 	/** Classes to scan when searching for dependencies. */
 	private final List<Class<? extends Service>> classPool;
@@ -88,7 +85,7 @@ public class ServiceHelper {
 	public ServiceHelper(final ImageJ context,
 		final Collection<Class<? extends Service>> serviceClasses)
 	{
-		this.context = context;
+		setContext(context);
 		classPool = findServiceClasses();
 		this.serviceClasses = new ArrayList<Class<? extends Service>>();
 		if (serviceClasses == null) {
@@ -111,9 +108,9 @@ public class ServiceHelper {
 		for (final Class<? extends Service> serviceClass : serviceClasses) {
 			loadService(serviceClass);
 		}
-		EventService eventService = context.getService(EventService.class);
+		EventService eventService = getContext().getService(EventService.class);
 		if (eventService != null)
-			eventService.publish(new ServicesLoadedEvent(context));
+			eventService.publish(new ServicesLoadedEvent());
 	}
 
 	/**
@@ -126,7 +123,7 @@ public class ServiceHelper {
 	 */
 	public <S extends Service> S loadService(final Class<S> c) {
 		// if a compatible service already exists, return it
-		final S service = context.getServiceIndex().getService(c);
+		final S service = getContext().getServiceIndex().getService(c);
 		if (service != null) return service;
 
 		// scan the class pool for a suitable match
@@ -153,7 +150,7 @@ public class ServiceHelper {
 		try {
 			final Constructor<S> ctor = getConstructor(c);
 			final S service = createService(ctor);
-			context.getServiceIndex().add(service);
+			getContext().getServiceIndex().add(service);
 			Log.info("Created service: " + c.getName());
 			return service;
 		}
@@ -188,14 +185,14 @@ public class ServiceHelper {
 			if (Service.class.isAssignableFrom(type)) {
 				@SuppressWarnings("unchecked")
 				final Class<Service> c = (Class<Service>) type;
-				args[i] = context.getServiceIndex().getService(c);
+				args[i] = getContext().getServiceIndex().getService(c);
 				if (args[i] == null) {
 					// recursively obtain needed services
 					args[i] = loadService(c);
 				}
 			}
 			else if (ImageJ.class.isAssignableFrom(type)) {
-				args[i] = context;
+				args[i] = getContext();
 			}
 			else throw new IllegalArgumentException("Invalid constructor: " + ctor);
 		}
@@ -247,17 +244,14 @@ public class ServiceHelper {
 				serviceClass.getName());
 	}
 
-	/**
-	 * Discovers service implementations that are present on the classpath and
-	 * marked with the @{@link Service} annotation.
-	 */
+	/** Asks the plugin index for all available service implementations. */
 	private ArrayList<Class<? extends Service>> findServiceClasses() {
 		final ArrayList<Class<? extends Service>> serviceList =
 			new ArrayList<Class<? extends Service>>();
 
-		// ask the plugin index for the list of available services
+		// ask the plugin index for the (sorted) list of available services
 		final List<PluginInfo<? extends Service>> services =
-				context.getPluginIndex().getPlugins(Service.class);
+			getContext().getPluginIndex().getPlugins(Service.class);
 
 		for (final PluginInfo<? extends Service> info : services) {
 			try {
@@ -268,23 +262,6 @@ public class ServiceHelper {
 				Log.error("Invalid service: " + info.getClassName(), e);
 			}
 		}
-
-		// sort list of discovered services based on annotated priority
-		Collections.sort(serviceList,
-			new Comparator<Class<? extends Service>>() {
-
-				@Override
-				public int compare(final Class<? extends Service> c1,
-					final Class<? extends Service> c2)
-				{
-					final double p1 = getPriority(c1);
-					final double p2 = getPriority(c2);
-					if (p1 == p2) return 0;
-					// NB: We invert the ordering here, so that large values come first,
-					// rather than the typical natural ordering of smaller values first.
-					return p1 > p2 ? -1 : 1;
-				}
-			});
 
 		return serviceList;
 	}

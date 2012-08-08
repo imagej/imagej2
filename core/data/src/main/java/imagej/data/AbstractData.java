@@ -35,6 +35,7 @@
 
 package imagej.data;
 
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
@@ -57,12 +58,9 @@ import net.imglib2.meta.AxisType;
  * @see Dataset
  * @see Overlay
  */
-public abstract class AbstractData implements Data, Comparable<Data>,
-	Externalizable
+public abstract class AbstractData extends AbstractContextual implements Data,
+	Comparable<Data>, Externalizable
 {
-
-	/** Application context to which the data object belongs. */
-	private ImageJ context;
 
 	private String name;
 
@@ -74,19 +72,7 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 	}
 	
 	public AbstractData(final ImageJ context) {
-		this.context = context;
-	}
-
-	// -- Data methods --
-
-	@Override
-	public ImageJ getContext() {
-		return context;
-	}
-
-	@Override
-	public void setContext(final ImageJ context) {
-		this.context = context;
+		setContext(context);
 	}
 
 	// -- AbstractData methods --
@@ -226,6 +212,7 @@ public abstract class AbstractData implements Data, Comparable<Data>,
 	// -- Internal methods --
 
 	protected void publish(final ImageJEvent event) {
+		final ImageJ context = getContext();
 		if (context == null) return;
 		final EventService eventService = context.getService(EventService.class);
 		if (eventService == null) return;
