@@ -49,4 +49,11 @@ public interface Prioritized extends Comparable<Prioritized> {
 	 */
 	double getPriority();
 
+	/**
+	 * Sets the sort priority of the object.
+	 * 
+	 * @see Priority
+	 */
+	void setPriority(double priority);
+
 }

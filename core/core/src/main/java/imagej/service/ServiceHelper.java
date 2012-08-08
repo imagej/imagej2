@@ -37,10 +37,8 @@ package imagej.service;
 
 import imagej.AbstractContextual;
 import imagej.ImageJ;
-import imagej.Priority;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
-import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.log.LogService;
 import imagej.service.event.ServicesLoadedEvent;
@@ -51,7 +49,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class for discovering and instantiating available services.
@@ -60,8 +60,14 @@ import java.util.List;
  */
 public class ServiceHelper extends AbstractContextual {
 
-	/** Classes to scan when searching for dependencies. */
-	private final List<Class<? extends Service>> classPool;
+	/**
+	 * Classes to scan when searching for dependencies. Data structure is a map
+	 * with keys being relevant classes, and values being associated priorities.
+	 */
+	private final Map<Class<? extends Service>, Double> classPoolMap;
+
+	/** Classes to scan when searching for dependencies, sorted by priority. */
+	private final List<Class<? extends Service>> classPoolList;
 
 	/** Classes to instantiate as services. */
 	private final List<Class<? extends Service>> serviceClasses;
@@ -86,11 +92,13 @@ public class ServiceHelper extends AbstractContextual {
 		final Collection<Class<? extends Service>> serviceClasses)
 	{
 		setContext(context);
-		classPool = findServiceClasses();
+		classPoolMap = new HashMap<Class<? extends Service>, Double>();
+		classPoolList = new ArrayList<Class<? extends Service>>();
+		findServiceClasses(classPoolMap, classPoolList);
 		this.serviceClasses = new ArrayList<Class<? extends Service>>();
 		if (serviceClasses == null) {
 			// load all discovered services
-			this.serviceClasses.addAll(classPool);
+			this.serviceClasses.addAll(classPoolList);
 		}
 		else {
 			// load only the services that were explicitly specified
@@ -127,7 +135,7 @@ public class ServiceHelper extends AbstractContextual {
 		if (service != null) return service;
 
 		// scan the class pool for a suitable match
-		for (final Class<? extends Service> serviceClass : classPool) {
+		for (final Class<? extends Service> serviceClass : classPoolList) {
 			if (c.isAssignableFrom(serviceClass)) {
 				// found a match; now instantiate it
 				@SuppressWarnings("unchecked")
@@ -161,17 +169,6 @@ public class ServiceHelper extends AbstractContextual {
 		return null;
 	}
 
-	// -- Utility methods --
-
-	/** Gets the annotated priority of the given {@link Service} class. */
-	public static double
-		getPriority(final Class<? extends Service> serviceClass)
-	{
-		final Plugin ann = serviceClass.getAnnotation(Plugin.class);
-		if (ann == null) return Priority.NORMAL_PRIORITY;
-		return ann.priority();
-	}
-
 	// -- Helper methods --
 
 	/** Instantiates a service using the given constructor. */
@@ -197,7 +194,13 @@ public class ServiceHelper extends AbstractContextual {
 			}
 			else throw new IllegalArgumentException("Invalid constructor: " + ctor);
 		}
-		return ctor.newInstance(args);
+		final S service = ctor.newInstance(args);
+
+		// propagate priority if known
+		final Double priority = classPoolMap.get(ctor.getDeclaringClass());
+		if (priority != null) service.setPriority(priority);
+
+		return service;
 	}
 
 	/**
@@ -246,10 +249,10 @@ public class ServiceHelper extends AbstractContextual {
 	}
 
 	/** Asks the plugin index for all available service implementations. */
-	private ArrayList<Class<? extends Service>> findServiceClasses() {
-		final ArrayList<Class<? extends Service>> serviceList =
-			new ArrayList<Class<? extends Service>>();
-
+	private void findServiceClasses(
+		final Map<Class<? extends Service>, Double> serviceMap,
+		final List<Class<? extends Service>> serviceList)
+	{
 		// ask the plugin index for the (sorted) list of available services
 		final List<PluginInfo<? extends Service>> services =
 			getContext().getPluginIndex().getPlugins(Service.class);
@@ -257,6 +260,8 @@ public class ServiceHelper extends AbstractContextual {
 		for (final PluginInfo<? extends Service> info : services) {
 			try {
 				final Class<? extends Service> c = info.loadClass();
+				final double priority = info.getPriority();
+				serviceMap.put(c, priority);
 				serviceList.add(c);
 			}
 			catch (final InstantiableException e) {
@@ -266,8 +271,6 @@ public class ServiceHelper extends AbstractContextual {
 				}
 			}
 		}
-
-		return serviceList;
 	}
 
 }

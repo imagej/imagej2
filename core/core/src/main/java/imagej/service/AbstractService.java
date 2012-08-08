@@ -50,6 +50,8 @@ public abstract class AbstractService extends AbstractContextual implements
 	Service
 {
 
+	private double priority;
+
 	/** Maintain list of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")
 	private Object eventSubscribers;
@@ -69,7 +71,12 @@ public abstract class AbstractService extends AbstractContextual implements
 
 	@Override
 	public double getPriority() {
-		return ServiceHelper.getPriority(getClass());
+		return priority;
+	}
+
+	@Override
+	public void setPriority(final double priority) {
+		this.priority = priority;
 	}
 
 	// -- Comparable methods --

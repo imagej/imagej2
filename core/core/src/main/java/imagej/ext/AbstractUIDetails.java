@@ -175,11 +175,6 @@ public abstract class AbstractUIDetails implements UIDetails {
 	}
 
 	@Override
-	public void setPriority(final double priority) {
-		this.priority = priority;
-	}
-
-	@Override
 	public void setEnabled(final boolean enabled) {
 		this.enabled = enabled;
 	}
@@ -236,6 +231,11 @@ public abstract class AbstractUIDetails implements UIDetails {
 	@Override
 	public double getPriority() {
 		return priority;
+	}
+
+	@Override
+	public void setPriority(final double priority) {
+		this.priority = priority;
 	}
 
 	// -- Comparable methods --

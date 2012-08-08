@@ -96,9 +96,6 @@ public interface UIDetails extends BasicDetails, Prioritized {
 	/** Sets the resource path to an icon representing the object. */
 	void setIconPath(String iconPath);
 
-	/** Sets the sort priority of the object. */
-	void setPriority(double priority);
-
 	/** Sets whether the object should be enabled in the user interface. */
 	void setEnabled(boolean enabled);
 
