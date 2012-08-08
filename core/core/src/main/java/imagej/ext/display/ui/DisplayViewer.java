@@ -40,11 +40,20 @@ import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 
 /**
  * A display viewer is a UI widget that shows a display to a user.
+ * <p>
+ * Display viewers discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link DisplayViewer}.class. While it possible to create a display viewer
+ * merely by implementing this interface, it is encouraged to instead extend
+ * {@link AbstractDisplayViewer}, for convenience.
+ * </p>
  * 
  * @author Lee Kamentsky
+ * @see Plugin
  */
 public interface DisplayViewer<T> extends IPlugin {
 

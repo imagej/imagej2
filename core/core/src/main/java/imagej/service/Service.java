@@ -38,13 +38,20 @@ package imagej.service;
 import imagej.Contextual;
 import imagej.Prioritized;
 import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 
 /**
- * An ImageJ service, for a particular area of functionality. ImageJ discovers
- * available services at runtime by looking for classes that implement this
- * interface and are annotated with <code>Plugin(type = Service.class)</code>.
+ * An ImageJ service, for a particular area of functionality.
+ * <p>
+ * Services discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link Service}.class. While it possible to create a service merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link AbstractService}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see Plugin
  */
 public interface Service extends IPlugin, Contextual, Prioritized {
 	// A service is a plugin that provides additional API for ImageJ,

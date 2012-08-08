@@ -42,9 +42,15 @@ import imagej.ext.module.ModulePreprocessor;
  * execution of a plugin. Typically, a preprocessor prepares the plugin for
  * execution in some way, such as populating plugin inputs or checking
  * prerequisites.
+ * <p>
+ * Plugin preprocessors discoverable at runtime must implement this interface
+ * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link PreprocessorPlugin}.class.
+ * </p>
  * 
  * @author Curtis Rueden
  */
 public interface PreprocessorPlugin extends IPlugin, ModulePreprocessor {
-	// marker interface for discovery via SezPoz
+	// PreprocessorPlugin is a plugin preprocessor,
+	// discoverable via the plugin discovery mechanism.
 }

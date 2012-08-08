@@ -41,9 +41,15 @@ import imagej.ext.module.ModulePostprocessor;
  * A plugin postprocessor defines a step that occurs immediately following the
  * actual execution of a plugin. Typically, a postprocessor does something with
  * the results of a plugin, such as displaying its outputs on screen.
+ * <p>
+ * Plugin postprocessors discoverable at runtime must implement this interface
+ * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link PostprocessorPlugin}.class.
+ * </p>
  * 
  * @author Curtis Rueden
  */
 public interface PostprocessorPlugin extends IPlugin, ModulePostprocessor {
-	// marker interface for discovery via SezPoz
+	// PostprocessorPlugin is a plugin postprocessor,
+	// discoverable via the plugin discovery mechanism.
 }

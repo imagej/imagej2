@@ -41,9 +41,14 @@ import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
 
 /**
- * An end-user ImageJ application user interface. UIs discoverable at runtime
- * must implement this interface and be annotated with
- * <code>@{@link Plugin}(type = UserInterface.class)</code>.
+ * An end-user ImageJ application user interface.
+ * <p>
+ * UIs discoverable at runtime must implement this interface and be annotated
+ * with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link UserInterface}.class. While it possible to create a UI merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link AbstractUserInterface}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
  * @see Plugin

@@ -51,15 +51,18 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 
 /**
- * Interface for ImageJ tools. Tools discoverable at runtime must implement this
- * interface and be annotated with @{@link Plugin} with {@link Plugin#type()} =
- * {@link Tool}.class. While it possible to create a tool merely by
- * implementing this interface, it is encouraged to instead extend
- * {@link AbstractTool}, for convenience.
+ * Interface for ImageJ tools.
+ * <p>
+ * Tools discoverable at runtime must implement this interface and be annotated
+ * with @{@link Plugin} with {@link Plugin#type()} = {@link Tool}.class. While
+ * it possible to create a tool merely by implementing this interface, it is
+ * encouraged to instead extend {@link AbstractTool}, for convenience.
+ * </p>
  * 
  * @author Rick Lentz
  * @author Grant Harris
  * @author Curtis Rueden
+ * @see Plugin
  * @see ToolService
  */
 public interface Tool extends IPlugin, Contextual {

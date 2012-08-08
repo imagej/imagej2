@@ -38,6 +38,7 @@ package imagej.ext.display;
 import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 
 import java.util.List;
 
@@ -47,10 +48,18 @@ import java.util.List;
  * <code>imagej.data.display.ImageDisplay</code>, which displays images.
  * However, in principle there are no limits to the sorts of objects that can be
  * handled.
+ * <p>
+ * Displays discoverable at runtime must implement this
+ * interface and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link Display}.class. While it possible to create a display merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link AbstractDisplay}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
  * @author Grant Harris
- * @see TextDisplay
+ * @see Plugin
+ * @see DisplayService
  */
 public interface Display<T> extends List<T>, IPlugin, Contextual {
 
