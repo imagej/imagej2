@@ -44,7 +44,7 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.module.event.ModuleEvent;
 import imagej.ext.module.event.ModuleExecutedEvent;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -81,7 +81,7 @@ import javax.swing.WindowConstants;
  */
 @Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Macros"),
 	@Menu(label = "Record...", weight = 4) })
-public class SwingScriptRecorder implements ImageJPlugin {
+public class SwingScriptRecorder implements RunnablePlugin {
 
 	@Parameter
 	private EventService eventService;

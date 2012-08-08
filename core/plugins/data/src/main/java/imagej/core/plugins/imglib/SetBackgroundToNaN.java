@@ -38,7 +38,7 @@ package imagej.core.plugins.imglib;
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -60,7 +60,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "NaN Background", weight = 18) }, headless = true)
-public class SetBackgroundToNaN implements ImageJPlugin {
+public class SetBackgroundToNaN implements RunnablePlugin {
 
 	// -- instance variables --
 

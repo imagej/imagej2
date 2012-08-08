@@ -36,7 +36,7 @@
 package imagej.core.plugins.debug;
 
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
@@ -46,7 +46,7 @@ import imagej.ext.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest", headless = true)
-public class TextDisplayTest implements ImageJPlugin {
+public class TextDisplayTest implements RunnablePlugin {
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private String output;

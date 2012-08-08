@@ -38,7 +38,7 @@ package imagej.core.plugins.typechange;
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuService;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public abstract class TypeChanger implements ImageJPlugin {
+public abstract class TypeChanger implements RunnablePlugin {
 
 	@Parameter
 	protected MenuService menuService;

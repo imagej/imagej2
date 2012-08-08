@@ -48,7 +48,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -71,7 +71,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Shadows", mnemonic = 's'),
 	@Menu(label = "Shadows Demo", weight = 200) }, headless = true)
-public class ShadowsDemo implements ImageJPlugin {
+public class ShadowsDemo implements RunnablePlugin {
 
 	private static final double[][] KERNELS = new double[][] {
 		ShadowsNorth.KERNEL, ShadowsNortheast.KERNEL, ShadowsEast.KERNEL,

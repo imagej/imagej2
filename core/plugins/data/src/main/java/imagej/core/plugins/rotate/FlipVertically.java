@@ -43,7 +43,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -64,7 +64,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Flip Vertically", weight = 2) }, headless = true)
-public class FlipVertically implements ImageJPlugin {
+public class FlipVertically implements RunnablePlugin {
 
 	// -- instance variables that are Parameters --
 

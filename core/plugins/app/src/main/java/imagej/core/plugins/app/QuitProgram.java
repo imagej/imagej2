@@ -38,7 +38,7 @@ package imagej.core.plugins.app;
 import imagej.data.display.WindowMenuService;
 import imagej.event.StatusService;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -57,7 +57,7 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
 		accelerator = "^Q") }, headless = true)
-public class QuitProgram implements ImageJPlugin {
+public class QuitProgram implements RunnablePlugin {
 
 	public static final String MESSAGE = "Quit ImageJ?";
 

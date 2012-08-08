@@ -36,7 +36,7 @@
 package imagej.core.plugins.overlay;
 
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -52,7 +52,7 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
-public class OverlayLabelSettings implements ImageJPlugin {
+public class OverlayLabelSettings implements RunnablePlugin {
 
 	@Parameter
 	private UIService uiService;

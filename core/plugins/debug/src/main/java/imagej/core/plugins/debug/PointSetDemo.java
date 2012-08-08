@@ -39,7 +39,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
@@ -55,7 +55,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menuPath = "Plugins>Sandbox>PointSet Demo")
-public class PointSetDemo implements ImageJPlugin {
+public class PointSetDemo implements RunnablePlugin {
 
 	@Parameter(label="PointSet specification", type = ItemIO.INPUT)
 	private String specification;

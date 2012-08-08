@@ -37,7 +37,7 @@ package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -56,7 +56,7 @@ import imagej.ext.plugin.Plugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),
 	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
-public class Animator implements ImageJPlugin {
+public class Animator implements RunnablePlugin {
 
 	// -- Plugin parameters --
 

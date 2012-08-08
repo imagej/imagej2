@@ -46,7 +46,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
@@ -64,7 +64,7 @@ import net.imglib2.roi.RectangleRegionOfInterest;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Overlays")
-public class WatchOverlays implements ImageJPlugin {
+public class WatchOverlays implements RunnablePlugin {
 
 	@Parameter
 	private EventService eventService;

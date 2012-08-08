@@ -38,7 +38,7 @@ package imagej.core.plugins.zoom;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -54,7 +54,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "Original Scale", accelerator = "control 4", weight = 3) },
 	headless = true)
-public class ZoomOriginalScale implements ImageJPlugin {
+public class ZoomOriginalScale implements RunnablePlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;

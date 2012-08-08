@@ -40,7 +40,7 @@ import imagej.data.display.OverlayInfoList;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -59,7 +59,7 @@ import java.util.List;
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "From Overlay Manager", weight = 1, mnemonic = 'f') },
 	headless = true)
-public class ReferenceOverlays implements ImageJPlugin {
+public class ReferenceOverlays implements RunnablePlugin {
 
 	// -- Parameters --
 	
@@ -69,7 +69,7 @@ public class ReferenceOverlays implements ImageJPlugin {
 	@Parameter
 	private OverlayService ovrSrv;
 	
-	// -- ImageJPlugin methods --
+	// -- RunnablePlugin methods --
 	
 	@Override
 	public void run() {

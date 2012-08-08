@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -61,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 		@Menu(label = "New", mnemonic = 'n'),
 		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
 			accelerator = "control N") })
-public class NewImage implements ImageJPlugin {
+public class NewImage implements RunnablePlugin {
 
 	public static final String DEPTH1 = "1-bit";
 	public static final String DEPTH8 = "8-bit";

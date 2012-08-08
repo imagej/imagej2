@@ -41,7 +41,7 @@ import imagej.event.ImageJEvent;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectCreatedEvent;
@@ -57,7 +57,7 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Subscribers", headless = true)
-public class ShowSubscribers implements ImageJPlugin {
+public class ShowSubscribers implements RunnablePlugin {
 
 	@Parameter
 	private EventService eventService;

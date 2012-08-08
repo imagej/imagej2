@@ -40,7 +40,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.ext.module.ui.WidgetStyle;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.options.OptionsService;
@@ -57,7 +57,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
+public class OverlayProperties implements RunnablePlugin, PreviewPlugin {
 
 	static final protected String solidLineStyle = "Solid";
 	static final protected String dashLineStyle = "Dash";

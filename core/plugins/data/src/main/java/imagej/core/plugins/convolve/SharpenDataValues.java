@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -57,7 +57,7 @@ import imagej.util.RealRect;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Sharpen", weight = 2) }, headless = true)
-public class SharpenDataValues implements ImageJPlugin {
+public class SharpenDataValues implements RunnablePlugin {
 
 	// -- instance variables that are Parameters --
 

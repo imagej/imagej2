@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.util.RealRect;
 
@@ -49,7 +49,7 @@ import imagej.util.RealRect;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractShadows implements ImageJPlugin {
+public abstract class AbstractShadows implements RunnablePlugin {
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;

@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.KeyboardService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -61,7 +61,7 @@ import net.imglib2.meta.AxisType;
 	@Menu(label = "Axes", mnemonic = 'a'),
 	@Menu(label = "Axis Position Forward", accelerator = "GREATER") },
 	headless = true)
-public class AxisPositionForward implements ImageJPlugin {
+public class AxisPositionForward implements RunnablePlugin {
 
 	@Parameter
 	private AnimationService animationService;

@@ -39,7 +39,7 @@ import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -55,7 +55,7 @@ import imagej.ext.plugin.PreviewPlugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Channels Tool...", weight = -5) },
 	iconPath = "/icons/plugins/color_wheel.png", headless = true)
-public class ChannelsTool implements ImageJPlugin, PreviewPlugin {
+public class ChannelsTool implements RunnablePlugin, PreviewPlugin {
 
 	public static final String GRAYSCALE = "Grayscale";
 	public static final String COLOR = "Color";

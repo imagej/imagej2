@@ -42,7 +42,7 @@ import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
 import imagej.data.DrawingTool.TextJustification;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
@@ -59,7 +59,7 @@ import net.imglib2.meta.AxisType;
  * @author Barry DeZonia
  */
 @Plugin(menuPath = "Plugins>Sandbox>Multidimensional Test Image")
-public class MultidimImage implements ImageJPlugin {
+public class MultidimImage implements RunnablePlugin {
 
 	@Parameter
 	private ImageJ context;

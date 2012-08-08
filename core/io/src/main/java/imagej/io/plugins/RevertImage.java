@@ -38,7 +38,7 @@ package imagej.io.plugins;
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -60,7 +60,7 @@ import net.imglib2.io.ImgIOException;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
 		accelerator = "control R") })
-public class RevertImage implements ImageJPlugin {
+public class RevertImage implements RunnablePlugin {
 
 	@Parameter
 	private LogService log;

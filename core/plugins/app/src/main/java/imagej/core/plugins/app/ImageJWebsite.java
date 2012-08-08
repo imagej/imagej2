@@ -36,7 +36,7 @@
 package imagej.core.plugins.app;
 
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -55,7 +55,7 @@ import java.net.URL;
 	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
 		mnemonic = MenuConstants.HELP_MNEMONIC),
 	@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)
-public class ImageJWebsite implements ImageJPlugin {
+public class ImageJWebsite implements RunnablePlugin {
 
 	@Parameter
 	private LogService log;

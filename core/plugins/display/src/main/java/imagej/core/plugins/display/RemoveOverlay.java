@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -58,7 +58,7 @@ import java.util.ArrayList;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay"),
 	@Menu(label = "Remove Overlay", weight = 3) })
-public class RemoveOverlay implements ImageJPlugin {
+public class RemoveOverlay implements RunnablePlugin {
 
 	// -- Parameters --
 	

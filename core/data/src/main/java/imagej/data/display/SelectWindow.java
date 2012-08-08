@@ -37,7 +37,7 @@ package imagej.data.display;
 
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
@@ -48,7 +48,7 @@ import imagej.ext.plugin.Plugin;
  * @author Grant Harris
  */
 @Plugin(label = "Select Window...")
-public class SelectWindow implements ImageJPlugin {
+public class SelectWindow implements RunnablePlugin {
 
 	@Parameter(autoFill = false)
 	private Display<?> display;

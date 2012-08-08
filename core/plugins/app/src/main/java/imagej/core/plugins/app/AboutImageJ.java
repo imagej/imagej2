@@ -45,7 +45,7 @@ import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -92,7 +92,7 @@ import net.imglib2.meta.AxisType;
 			weight = MenuConstants.HELP_WEIGHT,
 			mnemonic = MenuConstants.HELP_MNEMONIC),
 		@Menu(label = "About ImageJ...", weight = 43) }, headless = true)
-public class AboutImageJ implements ImageJPlugin {
+public class AboutImageJ implements RunnablePlugin {
 
 	// -- constants --
 

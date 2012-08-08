@@ -44,7 +44,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyOutputTracker;
@@ -69,7 +69,7 @@ import java.util.Set;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class LegacyPlugin implements ImageJPlugin {
+public class LegacyPlugin implements RunnablePlugin {
 
 	@Parameter
 	private String className;

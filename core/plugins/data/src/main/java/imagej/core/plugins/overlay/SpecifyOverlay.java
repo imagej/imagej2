@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -64,7 +64,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Specify...", mnemonic = 's') },
 	headless = true)
-public class SpecifyOverlay implements ImageJPlugin {
+public class SpecifyOverlay implements RunnablePlugin {
 
 	// -- Parameters --
 
@@ -93,7 +93,7 @@ public class SpecifyOverlay implements ImageJPlugin {
 	private boolean oval;
 	
 	
-	// -- ImageJPlugin methods --
+	// -- RunnablePlugin methods --
 	
 	@Override
 	public void run() {

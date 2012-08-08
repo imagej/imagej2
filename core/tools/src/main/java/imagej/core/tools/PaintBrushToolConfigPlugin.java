@@ -36,7 +36,7 @@
 package imagej.core.tools;
 
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
@@ -46,7 +46,7 @@ import imagej.ext.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(label = "Paintbrush Tool")
-public class PaintBrushToolConfigPlugin implements ImageJPlugin {
+public class PaintBrushToolConfigPlugin implements RunnablePlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private PaintBrushTool tool;

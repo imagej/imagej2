@@ -37,7 +37,7 @@ package imagej.core.plugins.display.interactive;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -53,7 +53,7 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.ANALYZE_MNEMONIC),
 	@Menu(label = "Tools"),
 	@Menu(label = "Synchronize Windows") })
-public class SynchronizeWindows implements ImageJPlugin {
+public class SynchronizeWindows implements RunnablePlugin {
 
 	// -- Parameters --
 	

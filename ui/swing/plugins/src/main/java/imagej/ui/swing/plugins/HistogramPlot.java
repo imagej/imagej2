@@ -40,7 +40,7 @@ import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -96,7 +96,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot implements ImageJPlugin {
+public class HistogramPlot implements RunnablePlugin {
 
 //	@Parameter(label = "Value (binary)")
 //	private long value;

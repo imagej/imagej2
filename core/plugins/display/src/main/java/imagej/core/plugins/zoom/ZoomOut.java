@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.MouseService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -56,7 +56,7 @@ import imagej.util.IntCoords;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "Out", weight = 2, accelerator = "MINUS") }, headless = true)
-public class ZoomOut implements ImageJPlugin {
+public class ZoomOut implements RunnablePlugin {
 
 	@Parameter
 	private MouseService mouseService;

@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.event.StatusService;
 import imagej.ext.module.ItemIO;
 import imagej.ext.module.ui.WidgetStyle;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
@@ -56,7 +56,7 @@ import java.math.BigInteger;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Parameter Tester", headless = true)
-public class ParameterTester implements ImageJPlugin, PreviewPlugin {
+public class ParameterTester implements RunnablePlugin, PreviewPlugin {
 
 	@Parameter
 	private LogService log;

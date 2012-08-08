@@ -38,7 +38,7 @@ package imagej.io.plugins;
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -63,7 +63,7 @@ import net.imglib2.io.ImgIOException;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
-public class OpenImage implements ImageJPlugin {
+public class OpenImage implements RunnablePlugin {
 
 	@Parameter
 	private LogService log;

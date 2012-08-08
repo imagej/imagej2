@@ -43,7 +43,7 @@ import imagej.ext.MenuPath;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
@@ -204,9 +204,9 @@ public final class RecentFileService extends AbstractService {
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String path) {
-		final PluginModuleInfo<ImageJPlugin> info =
-			new PluginModuleInfo<ImageJPlugin>("imagej.io.plugins.OpenImage",
-				ImageJPlugin.class);
+		final PluginModuleInfo<RunnablePlugin> info =
+			new PluginModuleInfo<RunnablePlugin>("imagej.io.plugins.OpenImage",
+				RunnablePlugin.class);
 
 		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();

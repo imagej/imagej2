@@ -41,7 +41,7 @@ import imagej.data.DefaultDataset;
 import imagej.event.StatusService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -82,7 +82,7 @@ import net.imglib2.type.numeric.RealType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Noise", mnemonic = 'n'),
 		@Menu(label = "Noise Reduction", weight = 4) })
-public class NoiseReductionPlugin<T extends RealType<T>> implements ImageJPlugin
+public class NoiseReductionPlugin<T extends RealType<T>> implements RunnablePlugin
 {
 	// -- constants --
 	

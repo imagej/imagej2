@@ -36,7 +36,7 @@
 package imagej.core.plugins.app;
 
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -51,7 +51,7 @@ import imagej.util.Prefs;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Preferences", weight = 30) }, headless = true)
-public class ShowPrefs implements ImageJPlugin {
+public class ShowPrefs implements RunnablePlugin {
 
 	@Parameter(label = "Clear all preferences")
 	private boolean clearAll = false;

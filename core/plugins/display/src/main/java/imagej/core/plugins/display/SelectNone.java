@@ -39,7 +39,7 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -55,7 +55,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Select None", mnemonic = 'n', accelerator = "control shift a",
 		weight = 4) }, headless = true)
-public class SelectNone implements ImageJPlugin {
+public class SelectNone implements RunnablePlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;

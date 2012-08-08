@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -57,7 +57,7 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay"),
 	@Menu(label = "Flatten", weight = 4) })
-public class Flatten implements ImageJPlugin {
+public class Flatten implements RunnablePlugin {
 
 	// -- Parameters --
 	

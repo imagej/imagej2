@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.plugins.debug;
 
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
@@ -49,7 +49,7 @@ import java.awt.event.WindowEvent;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
-public class WatchEvents implements ImageJPlugin, EventHistoryListener {
+public class WatchEvents implements RunnablePlugin, EventHistoryListener {
 
 	// -- Parameters --
 

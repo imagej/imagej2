@@ -42,7 +42,7 @@ import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.module.ui.WidgetStyle;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -69,7 +69,7 @@ import net.imglib2.io.ImgSaver;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save As...", weight = 21) })
-public class SaveAsImage implements ImageJPlugin {
+public class SaveAsImage implements RunnablePlugin {
 
 	@Parameter
 	private LogService log;

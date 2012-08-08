@@ -48,7 +48,7 @@ import imagej.ext.menu.MenuConstants;
 import imagej.ext.menu.MenuService;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.service.AbstractService;
@@ -184,9 +184,9 @@ public final class WindowMenuService extends AbstractService {
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String displayName) {
-		final PluginModuleInfo<ImageJPlugin> info =
-			new PluginModuleInfo<ImageJPlugin>(SelectWindow.class.getName(),
-				ImageJPlugin.class);
+		final PluginModuleInfo<RunnablePlugin> info =
+			new PluginModuleInfo<RunnablePlugin>(SelectWindow.class.getName(),
+				RunnablePlugin.class);
 
 		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();

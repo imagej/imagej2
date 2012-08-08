@@ -37,7 +37,7 @@ package imagej.core.plugins.display.interactive;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -53,7 +53,7 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks"),
 	@Menu(label = "Orthogonal Views", weight=5, accelerator="control shift H")})
-public class OrthogonalViews implements ImageJPlugin {
+public class OrthogonalViews implements RunnablePlugin {
 
 	// -- Parameters --
 	

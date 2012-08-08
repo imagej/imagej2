@@ -37,7 +37,7 @@ package imagej.core.plugins.dataset;
 
 import imagej.data.Dataset;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
@@ -49,7 +49,7 @@ import imagej.ext.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(headless = true)
-public class LoadDataset implements ImageJPlugin {
+public class LoadDataset implements RunnablePlugin {
 
 	@Parameter(type=ItemIO.BOTH)
 	private Dataset dataset;

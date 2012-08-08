@@ -35,7 +35,7 @@
 
 package imagej.ext.script;
 
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.FileUtils;
@@ -56,7 +56,7 @@ import javax.script.ScriptException;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Script>Run Script")
-public class ScriptPlugin implements ImageJPlugin {
+public class ScriptPlugin implements RunnablePlugin {
 
 	@Parameter
 	protected File path;

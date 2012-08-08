@@ -43,7 +43,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Exp...", weight = 14) },
 	headless = true)
-public class ExpDataValues<T extends RealType<T>> implements ImageJPlugin {
+public class ExpDataValues<T extends RealType<T>> implements RunnablePlugin {
 
 	// -- instance variables that are Parameters --
 

@@ -38,6 +38,7 @@ package imagej.ext.plugin;
 import imagej.Priority;
 import imagej.ext.display.Display;
 import imagej.ext.module.ModuleItem;
+import imagej.service.Service;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -63,10 +64,10 @@ public @interface Plugin {
 	String CONTEXT_MENU_ROOT = "context";
 
 	/**
-	 * The type of plugin; e.g., {@link ImageJPlugin}, {@link PreprocessorPlugin},
+	 * The type of plugin; e.g., {@link Service}, {@link PreprocessorPlugin},
 	 * {@link PostprocessorPlugin} or {@link Display}.
 	 */
-	Class<?> type() default ImageJPlugin.class;
+	Class<?> type() default RunnablePlugin.class;
 
 	/** The name of the plugin. */
 	String name() default "";

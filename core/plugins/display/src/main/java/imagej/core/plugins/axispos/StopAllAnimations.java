@@ -37,7 +37,7 @@ package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -53,7 +53,7 @@ import imagej.ext.plugin.Plugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),
 	@Menu(label = "Stop All Animations", weight = 3) }, headless = true)
-public class StopAllAnimations implements ImageJPlugin {
+public class StopAllAnimations implements RunnablePlugin {
 
 	@Parameter
 	private AnimationService animationService;

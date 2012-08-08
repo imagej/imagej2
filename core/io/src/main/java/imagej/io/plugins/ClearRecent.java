@@ -37,7 +37,7 @@ package imagej.io.plugins;
 
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -54,7 +54,7 @@ import imagej.io.RecentFileService;
 	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),
 	@Menu(label = "Clear List", weight = RecentFileService.MAX_FILES_SHOWN + 10,
 		mnemonic = 'c') })
-public class ClearRecent implements ImageJPlugin {
+public class ClearRecent implements RunnablePlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private RecentFileService recentFileService;

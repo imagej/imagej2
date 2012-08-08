@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleService;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
@@ -60,7 +60,7 @@ import java.util.concurrent.Future;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Sandbox>Invoke Plugin Test", headless = true)
-public class InvokePluginTest implements ImageJPlugin {
+public class InvokePluginTest implements RunnablePlugin {
 
 	@Parameter
 	private LogService log;

@@ -35,7 +35,7 @@
 
 package imagej.core.plugins.imglib;
 
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -49,7 +49,7 @@ import imagej.ext.plugin.PluginService;
 @Plugin(menu = { @Menu(label = "Duplicate...", mnemonic = 'd',
 	accelerator = "shift control D") }, menuRoot = Plugin.CONTEXT_MENU_ROOT,
 	headless = true)
-public class DuplicateImageContext implements ImageJPlugin {
+public class DuplicateImageContext implements RunnablePlugin {
 
 	// -- Plugin parameters --
 

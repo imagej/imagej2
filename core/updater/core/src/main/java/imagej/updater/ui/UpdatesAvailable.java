@@ -35,7 +35,7 @@
 
 package imagej.updater.ui;
 
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -53,7 +53,7 @@ import java.util.List;
  * @author Johannes Schindelin
  */
 @Plugin(label = "There are updates available")
-public class UpdatesAvailable implements ImageJPlugin {
+public class UpdatesAvailable implements RunnablePlugin {
 
 	private final static String YES = "Yes, please", NEVER = "Never",
 			LATER = "Remind me later";

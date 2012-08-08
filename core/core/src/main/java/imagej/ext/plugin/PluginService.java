@@ -107,7 +107,7 @@ public interface PluginService extends Service {
 	PluginInfo<IPlugin> getPlugin(String className);
 
 	/**
-	 * Gets the list of plugins of the given type (e.g., {@link ImageJPlugin}).
+	 * Gets the list of plugins of the given type (e.g., {@link RunnablePlugin}).
 	 */
 	<P extends IPlugin> List<PluginInfo<? extends P>> getPluginsOfType(
 		Class<P> type);

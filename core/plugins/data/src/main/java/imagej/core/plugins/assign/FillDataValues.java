@@ -41,7 +41,7 @@ import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -59,7 +59,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Fill", weight = 28, accelerator = "control F") },
 	headless = true)
-public class FillDataValues<T extends RealType<T>> implements ImageJPlugin {
+public class FillDataValues<T extends RealType<T>> implements RunnablePlugin {
 
 	// -- instance variables that are Parameters --
 

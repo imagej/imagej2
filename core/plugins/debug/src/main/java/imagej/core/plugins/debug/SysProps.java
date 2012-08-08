@@ -36,7 +36,7 @@
 package imagej.core.plugins.debug;
 
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
@@ -52,7 +52,7 @@ import java.util.regex.Pattern;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>System Properties", headless = true)
-public class SysProps implements ImageJPlugin {
+public class SysProps implements RunnablePlugin {
 
 	// -- Parameters --
 

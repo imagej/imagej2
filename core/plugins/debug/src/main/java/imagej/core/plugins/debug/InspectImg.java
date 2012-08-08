@@ -38,7 +38,7 @@ package imagej.core.plugins.debug;
 import com.github.sbridges.objectinspector.Inspector;
 
 import imagej.data.display.DataView;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
@@ -48,7 +48,7 @@ import imagej.ext.plugin.Plugin;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Image", headless = true)
-public class InspectImg implements ImageJPlugin {
+public class InspectImg implements RunnablePlugin {
 
 	@Parameter
 	private DataView view;
