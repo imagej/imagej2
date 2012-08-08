@@ -42,8 +42,8 @@ import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
+import imagej.log.LogService;
 import imagej.service.event.ServicesLoadedEvent;
-import imagej.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -146,16 +146,17 @@ public class ServiceHelper extends AbstractContextual {
 	 *         instantiated
 	 */
 	public <S extends Service> S createExactService(final Class<S> c) {
-		Log.debug("Creating service: " + c.getName());
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) log.debug("Creating service: " + c.getName());
 		try {
 			final Constructor<S> ctor = getConstructor(c);
 			final S service = createService(ctor);
 			getContext().getServiceIndex().add(service);
-			Log.info("Created service: " + c.getName());
+			if (log != null) log.info("Created service: " + c.getName());
 			return service;
 		}
 		catch (final Exception e) {
-			Log.error("Invalid service: " + c.getName(), e);
+			if (log != null) log.error("Invalid service: " + c.getName(), e);
 		}
 		return null;
 	}
@@ -259,7 +260,10 @@ public class ServiceHelper extends AbstractContextual {
 				serviceList.add(c);
 			}
 			catch (final InstantiableException e) {
-				Log.error("Invalid service: " + info.getClassName(), e);
+				final LogService log = getContext().getService(LogService.class);
+				if (log != null) {
+					log.error("Invalid service: " + info.getClassName(), e);
+				}
 			}
 		}
 
