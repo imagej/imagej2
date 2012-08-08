@@ -40,10 +40,10 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 
 // TODO - this needs to be an interactive plugin. Currently making it a regular
 // plugin as a placeholder. Crated because we need our own version callable from
@@ -62,8 +62,7 @@ import imagej.ext.plugin.Plugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
-	@Menu(label = "Specify...", mnemonic = 's') },
-	headless = true)
+	@Menu(label = "Specify...", mnemonic = 's') }, headless = true)
 public class SpecifyOverlay implements RunnablePlugin {
 
 	// -- Parameters --
@@ -73,150 +72,110 @@ public class SpecifyOverlay implements RunnablePlugin {
 
 	@Parameter
 	private ImageDisplay display;
-	
-	@Parameter(label="X")
+
+	@Parameter(label = "X")
 	private long px;
-	
-	@Parameter(label="Y")
+
+	@Parameter(label = "Y")
 	private long py;
-	
-	@Parameter(label="Width")
+
+	@Parameter(label = "Width")
 	private long w;
-	
-	@Parameter(label="Height")
+
+	@Parameter(label = "Height")
 	private long h;
-	
-	@Parameter(label="Centered")
+
+	@Parameter(label = "Centered")
 	private boolean centered;
-	
-	@Parameter(label="Oval")
+
+	@Parameter(label = "Oval")
 	private boolean oval;
-	
-	
+
 	// -- RunnablePlugin methods --
-	
+
 	@Override
 	public void run() {
 		long x = px;
 		long y = py;
 		if (centered) {
-			x -= w/2;
-			y -= h/2;
+			x -= w / 2;
+			y -= h / 2;
 		}
 		if (oval) {
-			EllipseOverlay overlay = new EllipseOverlay(context);
+			final EllipseOverlay overlay = new EllipseOverlay(context);
 			overlay.setOrigin(x, 0);
 			overlay.setOrigin(y, 1);
-			overlay.setRadius(w/2, 0);
-			overlay.setRadius(h/2, 1);
+			overlay.setRadius(w / 2, 0);
+			overlay.setRadius(h / 2, 1);
 			display.display(overlay);
 		}
 		else { // rectangle
-			RectangleOverlay overlay = new RectangleOverlay(context);
+			final RectangleOverlay overlay = new RectangleOverlay(context);
 			overlay.setOrigin(x, 0);
 			overlay.setOrigin(y, 1);
-			overlay.setExtent(w/2, 0);
-			overlay.setExtent(h/2, 1);
+			overlay.setExtent(w / 2, 0);
+			overlay.setExtent(h / 2, 1);
 			display.display(overlay);
 		}
 		display.update();
 	}
 
 	// -- accessors --
-	
+
 	public long getPointX() {
 		return px;
 	}
 
-
-	
-	public void setPointX(long px) {
+	public void setPointX(final long px) {
 		this.px = px;
 	}
 
-
-	
 	public long getPointY() {
 		return py;
 	}
 
-
-	
-	public void setPointY(long py) {
+	public void setPointY(final long py) {
 		this.py = py;
 	}
 
-
-	
 	public long getWidth() {
 		return w;
 	}
 
-
-	
-	public void setWidth(long w) {
+	public void setWidth(final long w) {
 		this.w = w;
 	}
 
-
-	
 	public long getHeight() {
 		return h;
 	}
 
-
-	
-	public void setHeight(long h) {
+	public void setHeight(final long h) {
 		this.h = h;
 	}
 
-
-	
 	public boolean isCentered() {
 		return centered;
 	}
 
-
-	
-	public void setCentered(boolean centered) {
+	public void setCentered(final boolean centered) {
 		this.centered = centered;
 	}
 
-
-	
 	public boolean isOval() {
 		return oval;
 	}
 
-
-	
-	public void setOval(boolean oval) {
+	public void setOval(final boolean oval) {
 		this.oval = oval;
 	}
 
-
-	
 	public ImageDisplay getDisplay() {
 		return display;
 	}
 
-
-	
-	public void setDisplay(ImageDisplay display) {
+	public void setDisplay(final ImageDisplay display) {
 		this.display = display;
 	}
-
-
-	
-	public ImageJ getContext() {
-		return context;
-	}
-
-
-	
-	public void setContext(ImageJ context) {
-		this.context = context;
-	}
-
 
 }
