@@ -168,13 +168,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 	// -- Internal methods --
 
 	protected void initDefaultSettings(final Figure figure) {
-		// TODO - eliminate deprecated use. Note that simply using getContext() is
-		// not sufficient. The figure adapters do not initialize their ImageJ
-		// context. So its possible getContext() would return null here and a NPE
-		// can get thrown. Happens when you run a legacy plugin if getContext() used
-		// here.
-		final OverlaySettings settings =
-			ImageJ.get(OverlayService.class).getDefaultSettings();
+		final OverlayService overlayService =
+			getContext().getService(OverlayService.class);
+		final OverlaySettings settings = overlayService.getDefaultSettings();
 		figure.set(AttributeKeys.STROKE_WIDTH, getDefaultLineWidth(settings));
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor(settings));
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor(settings));
