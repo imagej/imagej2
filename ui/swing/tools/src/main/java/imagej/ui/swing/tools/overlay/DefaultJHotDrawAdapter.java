@@ -73,8 +73,8 @@ import org.jhotdraw.draw.ImageFigure;
  * @author Lee Kamentsky
  */
 @Plugin(type = JHotDrawAdapter.class,
-	priority = DefaultAdapter.PRIORITY, alwaysActive = true)
-public class DefaultAdapter extends AbstractJHotDrawAdapter<Overlay> {
+	priority = DefaultJHotDrawAdapter.PRIORITY, alwaysActive = true)
+public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay> {
 
 	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
 
