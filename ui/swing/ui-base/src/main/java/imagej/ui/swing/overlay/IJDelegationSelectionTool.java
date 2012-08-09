@@ -42,7 +42,6 @@ import org.jhotdraw.draw.tool.DelegationSelectionTool;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("serial")
 public class IJDelegationSelectionTool extends DelegationSelectionTool
 	implements JHotDrawTool
 {

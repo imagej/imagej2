@@ -55,7 +55,6 @@ import org.jhotdraw.draw.tool.BezierTool;
  */
 public class IJBezierTool extends BezierTool implements JHotDrawTool {
 
-	private static final long serialVersionUID = 1L;
 	private final ImageDisplay display;
 	private final JHotDrawAdapter adapter;
 	private final EventListenerList listeners = new EventListenerList();
