@@ -280,14 +280,12 @@ public class DeleteAxis extends DynamicPlugin {
 			this.srcPlanePos = new long[origPlaneDims.length];
 		}
 
-		@SuppressWarnings("synthetic-access")
 		@Override
 		public boolean isValidSourcePlane(final long i) {
 			ColorTableRemapper.toND(origPlaneDims, i, srcPlanePos);
 			return srcPlanePos[axisIndex - 2] == position - 1;
 		}
 
-		@SuppressWarnings("synthetic-access")
 		@Override
 		public void remapPlanePosition(final long[] planeDims,
 			final long[] origPlanePos, final long[] newPlanePos)

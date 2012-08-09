@@ -146,7 +146,6 @@ public class LegacyPlugin implements RunnablePlugin {
 
 	// -- helper class --
 
-	@SuppressWarnings("synthetic-access")
 	private class LegacyPluginThread extends Thread {
 
 		final ThreadGroup group;

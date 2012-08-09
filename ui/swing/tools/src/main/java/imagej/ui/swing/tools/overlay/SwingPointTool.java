@@ -279,7 +279,6 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 			return that;
 		}
 
-		@SuppressWarnings("synthetic-access")
 		@Override
 		public List<Handle> createHandles(final int detailLevel) {
 			final Handle handle = new PointHandle(this);

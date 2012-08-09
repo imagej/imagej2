@@ -55,7 +55,6 @@ import org.jhotdraw.draw.event.FigureEvent;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-@SuppressWarnings("synthetic-access")
 public class OverlayFigureView implements FigureView {
 
 	private final SwingImageDisplayViewer displayViewer;

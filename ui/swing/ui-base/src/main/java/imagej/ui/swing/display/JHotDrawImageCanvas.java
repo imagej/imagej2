@@ -321,7 +321,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 			// overlay/figure combo to a SwingOverlayView.
 			final OverlayCreatedListener listener = new OverlayCreatedListener() {
 
-				@SuppressWarnings("synthetic-access")
 				@Override
 				public void overlayCreated(final FigureCreatedEvent e) {
 					final OverlayView overlay = e.getOverlay();

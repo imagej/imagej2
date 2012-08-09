@@ -152,7 +152,6 @@ public class DeleteData extends DynamicPlugin {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
-			@SuppressWarnings("synthetic-access")
 			final ColorTableRemapper remapper =
 				new ColorTableRemapper(new RemapAlgorithm());
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
@@ -241,7 +240,6 @@ public class DeleteData extends DynamicPlugin {
 
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
 
-		@SuppressWarnings("synthetic-access")
 		@Override
 		public boolean isValidSourcePlane(final long i) {
 			if (i < position - 1) return true;
@@ -249,7 +247,6 @@ public class DeleteData extends DynamicPlugin {
 			return false;
 		}
 
-		@SuppressWarnings("synthetic-access")
 		@Override
 		public void remapPlanePosition(final long[] origPlaneDims,
 			final long[] origPlanePos, final long[] newPlanePos)

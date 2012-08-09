@@ -775,7 +775,6 @@ public class SwingOverlayManager
 		//KeyListener listener = new AWTKeyEventDispatcher(fakeDisplay, eventService);
 		final KeyListener listener = new KeyListener() {
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void keyPressed(KeyEvent e) {
 				altDown = e.isAltDown() || e.isAltGraphDown();
 				shiftDown = e.isShiftDown();
@@ -786,7 +785,6 @@ public class SwingOverlayManager
 				if (e.getKeyCode() == KeyEvent.VK_DELETE) delete();
 			}
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void keyReleased(KeyEvent e) {
 				altDown = e.isAltDown() || e.isAltGraphDown();
 				shiftDown = e.isShiftDown();
@@ -826,7 +824,6 @@ public class SwingOverlayManager
 	private void setupCloseListener() {
 		addWindowListener(new WindowAdapter() {
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void windowClosing(WindowEvent e) {
 				// Remember screen location of window for next time
 				saveLocation();
@@ -840,7 +837,6 @@ public class SwingOverlayManager
 		final ListSelectionListener
 			listSelectionListener =	new ListSelectionListener() {
 				@Override
-				@SuppressWarnings("synthetic-access")
 				public void valueChanged(final ListSelectionEvent listSelectionEvent) {
 					if (selecting) return;
 					selecting = true;
@@ -1078,7 +1074,6 @@ public class SwingOverlayManager
 		final JButton button = new JButton("More "+'\u00bb');
 		button.addMouseListener(new MouseListener() {
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void mouseClicked(MouseEvent e) {
 				getPopupMenu().show(e.getComponent(), e.getX(), e.getY());
 			}

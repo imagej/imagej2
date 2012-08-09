@@ -319,7 +319,6 @@ public final class LegacyService extends AbstractService {
 
 		@Override
 		public void eventOccurred(final int eventID) {
-			@SuppressWarnings("synthetic-access")
 			final OptionsChannels colorOpts =
 				optionsService.getOptions(OptionsChannels.class);
 			ColorRGB color;

@@ -175,7 +175,6 @@ public abstract class AbstractImageDisplayViewer extends
 		return UnitUtils.getAbbreviatedByteLabel(byteCount);
 	}
 
-	@SuppressWarnings("synthetic-access")
 	private ScaleConverter getScaleConverter() {
 
 		if (getZoomScaleOption().equals(ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE)) {
