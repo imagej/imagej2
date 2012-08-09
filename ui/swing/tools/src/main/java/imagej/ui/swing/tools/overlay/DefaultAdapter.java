@@ -40,8 +40,9 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.ColorRGB;
@@ -71,9 +72,9 @@ import org.jhotdraw.draw.ImageFigure;
  * 
  * @author Lee Kamentsky
  */
-@Plugin(type = IJHotDrawOverlayAdapter.class,
+@Plugin(type = JHotDrawAdapter.class,
 	priority = DefaultAdapter.PRIORITY, alwaysActive = true)
-public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
+public class DefaultAdapter extends AbstractJHotDrawAdapter<Overlay> {
 
 	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
 

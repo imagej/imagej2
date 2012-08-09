@@ -40,8 +40,9 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 
@@ -57,11 +58,11 @@ import org.jhotdraw.draw.Figure;
  * @author Lee Kamentsky
  * @author Barry DeZonia
  */
-@Plugin(type = IJHotDrawOverlayAdapter.class, name = "Oval",
+@Plugin(type = JHotDrawAdapter.class, name = "Oval",
 	description = "Oval selections", iconPath = "/icons/tools/oval.png",
 	priority = EllipseAdapter.PRIORITY, enabled = true)
 public class EllipseAdapter extends
-	AbstractJHotDrawOverlayAdapter<EllipseOverlay>
+	AbstractJHotDrawAdapter<EllipseOverlay>
 {
 
 	public static final double PRIORITY = RectangleAdapter.PRIORITY - 1;

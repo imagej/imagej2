@@ -62,7 +62,7 @@ import org.jhotdraw.draw.Figure;
 @Plugin(type = Service.class)
 public class JHotDrawService extends AbstractService {
 
-	private final ArrayList<IJHotDrawOverlayAdapter> adapters;
+	private final ArrayList<JHotDrawAdapter> adapters;
 
 	public JHotDrawService(final ImageJ context,
 		final PluginService pluginService, final LogService log)
@@ -70,13 +70,13 @@ public class JHotDrawService extends AbstractService {
 		super(context);
 
 		// ask the plugin service for the list of available JHotDraw adapters
-		adapters = new ArrayList<IJHotDrawOverlayAdapter>();
-		final List<PluginInfo<? extends IJHotDrawOverlayAdapter>> infos =
-			pluginService.getPluginsOfType(IJHotDrawOverlayAdapter.class);
-		for (final PluginInfo<? extends IJHotDrawOverlayAdapter> info : infos) {
+		adapters = new ArrayList<JHotDrawAdapter>();
+		final List<PluginInfo<? extends JHotDrawAdapter>> infos =
+			pluginService.getPluginsOfType(JHotDrawAdapter.class);
+		for (final PluginInfo<? extends JHotDrawAdapter> info : infos) {
 			// instantiate the adapter and add it to the list
 			try {
-				final IJHotDrawOverlayAdapter adapter = info.createInstance();
+				final JHotDrawAdapter adapter = info.createInstance();
 				adapter.setContext(context);
 				adapter.setPriority(info.getPriority());
 				adapters.add(adapter);
@@ -96,7 +96,7 @@ public class JHotDrawService extends AbstractService {
 	 * @param overlay the overlay to adapt
 	 * @return the highest-priority adapter that supports the overlay
 	 */
-	public IJHotDrawOverlayAdapter getAdapter(final Overlay overlay) {
+	public JHotDrawAdapter getAdapter(final Overlay overlay) {
 		return getAdapter(overlay, null);
 	}
 
@@ -108,10 +108,10 @@ public class JHotDrawService extends AbstractService {
 	 * @return the highest-priority adapter that supports the overlay adapted to
 	 *         the figure
 	 */
-	public IJHotDrawOverlayAdapter getAdapter(final Overlay overlay,
+	public JHotDrawAdapter getAdapter(final Overlay overlay,
 		final Figure figure)
 	{
-		for (final IJHotDrawOverlayAdapter adapter : adapters) {
+		for (final JHotDrawAdapter adapter : adapters) {
 			if (adapter.supports(overlay, figure)) return adapter;
 		}
 		return null;
@@ -123,7 +123,7 @@ public class JHotDrawService extends AbstractService {
 	 * @param overlay the overlay to adapt
 	 * @return a collection of all adapters capable of handling the overlay
 	 */
-	public Collection<IJHotDrawOverlayAdapter> getAdapters(final Overlay overlay)
+	public Collection<JHotDrawAdapter> getAdapters(final Overlay overlay)
 	{
 		return getAdapters(overlay, null);
 	}
@@ -135,19 +135,19 @@ public class JHotDrawService extends AbstractService {
 	 * @param figure the figure to be associated with the overlay
 	 * @return collection of valid adapters
 	 */
-	public Collection<IJHotDrawOverlayAdapter> getAdapters(final Overlay overlay,
+	public Collection<JHotDrawAdapter> getAdapters(final Overlay overlay,
 		final Figure figure)
 	{
-		final ArrayList<IJHotDrawOverlayAdapter> result =
-			new ArrayList<IJHotDrawOverlayAdapter>();
-		for (final IJHotDrawOverlayAdapter adapter : adapters) {
+		final ArrayList<JHotDrawAdapter> result =
+			new ArrayList<JHotDrawAdapter>();
+		for (final JHotDrawAdapter adapter : adapters) {
 			if (adapter.supports(overlay, figure)) result.add(adapter);
 		}
 		return result;
 	}
 
 	/** Gets all of the discovered adapters. */
-	public Collection<IJHotDrawOverlayAdapter> getAllAdapters() {
+	public Collection<JHotDrawAdapter> getAllAdapters() {
 		return Collections.unmodifiableCollection(adapters);
 	}
 

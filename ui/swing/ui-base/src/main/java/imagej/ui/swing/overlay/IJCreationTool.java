@@ -59,11 +59,11 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 	 */
 	private static final long serialVersionUID = 1L;
 	private final ImageDisplay display;
-	private final IJHotDrawOverlayAdapter adapter;
+	private final JHotDrawAdapter adapter;
 	private final EventListenerList listeners = new EventListenerList();
 
 	public IJCreationTool(final ImageDisplay display,
-		final IJHotDrawOverlayAdapter adapter,
+		final JHotDrawAdapter adapter,
 		final OverlayCreatedListener... listeners)
 	{
 		super(adapter.createDefaultFigure());

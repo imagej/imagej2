@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ext.display.Display;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawService;
 
 import org.jhotdraw.draw.Drawing;
@@ -64,7 +64,7 @@ public class OverlayFigureView implements FigureView {
 	/** JHotDraw {@link Figure} linked to the associated {@link Overlay}. */
 	private final Figure figure;
 
-	private final IJHotDrawOverlayAdapter adapter;
+	private final JHotDrawAdapter adapter;
 
 	private boolean updatingFigure = false;
 

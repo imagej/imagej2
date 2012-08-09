@@ -61,7 +61,7 @@ import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.overlay.FigureCreatedEvent;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.overlay.ToolDelegator;
@@ -314,8 +314,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	}
 
 	protected void activateTool(final Tool iTool) {
-		if (iTool instanceof IJHotDrawOverlayAdapter) {
-			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter) iTool;
+		if (iTool instanceof JHotDrawAdapter) {
+			final JHotDrawAdapter adapter = (JHotDrawAdapter) iTool;
 
 			// When the tool creates an overlay, add the
 			// overlay/figure combo to a SwingOverlayView.

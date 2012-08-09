@@ -39,17 +39,26 @@ import imagej.Prioritized;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.Tool;
 
 import org.jhotdraw.draw.Figure;
 
 /**
- * Implement the IJHotDrawOverlayAdapter to create an adapter that lets JHotDraw
- * edit ImageJ ROIs.
+ * Interface for JHotDraw-based tools. These adapters maintain a bidirectional
+ * link between an ImageJ {@link Overlay} and a JHotDraw {@link Figure}.
+ * <p>
+ * JHotDraw adapters discoverable at runtime must implement this interface and
+ * be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link JHotDrawAdapter}.class. While it possible to create a JHotDraw adapter
+ * merely by implementing this interface, it is encouraged to instead extend
+ * {@link AbstractJHotDrawAdapter}, for convenience.
+ * </p>
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
-public interface IJHotDrawOverlayAdapter extends Tool, Prioritized {
+public interface JHotDrawAdapter extends Tool, Prioritized {
 
 	/**
 	 * Determines whether the adapter can handle a particular overlay, or overlay

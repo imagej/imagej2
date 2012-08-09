@@ -40,8 +40,9 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.Log;
@@ -69,11 +70,11 @@ import org.jhotdraw.geom.BezierPath.Node;
  * @author Lee Kamentsky
  * @author Barry DeZonia
  */
-@Plugin(type = IJHotDrawOverlayAdapter.class, name = "Polygon",
+@Plugin(type = JHotDrawAdapter.class, name = "Polygon",
 	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
 	priority = PolygonAdapter.PRIORITY, enabled = true)
 public class PolygonAdapter extends
-	AbstractJHotDrawOverlayAdapter<PolygonOverlay>
+	AbstractJHotDrawAdapter<PolygonOverlay>
 {
 
 	public static final double PRIORITY = EllipseAdapter.PRIORITY - 1;

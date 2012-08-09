@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.tools.overlay;
+package imagej.ui.swing.overlay;
 
 import imagej.Prioritized;
 import imagej.Priority;
@@ -42,7 +42,6 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.ext.tool.AbstractTool;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
@@ -53,13 +52,13 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
 
 /**
- * An abstract class that gives default behavior for the IJHotDrawOverlayAdapter
+ * An abstract class that gives default behavior for the {@link JHotDrawAdapter}
  * interface.
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
-	AbstractTool implements IJHotDrawOverlayAdapter
+public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
+	AbstractTool implements JHotDrawAdapter
 {
 
 	// NB: The line styles here are taken from
@@ -74,7 +73,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 
 	private double priority = Priority.NORMAL_PRIORITY;
 
-	// -- IJHotDrawOverlayAdapter methods --
+	// -- JHotDrawAdapter methods --
 
 	@Override
 	public void updateFigure(final OverlayView overlayView, final Figure figure) {

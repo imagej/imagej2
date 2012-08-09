@@ -45,8 +45,9 @@ import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.ext.display.event.input.MsDraggedEvent;
 import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.IntCoords;
@@ -66,12 +67,12 @@ import org.jhotdraw.draw.RectangleFigure;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-@Plugin(type = IJHotDrawOverlayAdapter.class, name = "Rectangle",
+@Plugin(type = JHotDrawAdapter.class, name = "Rectangle",
 	description = "Rectangular overlays",
 	iconPath = "/icons/tools/rectangle.png",
 	priority = RectangleAdapter.PRIORITY, enabled = true)
 public class RectangleAdapter extends
-	AbstractJHotDrawOverlayAdapter<RectangleOverlay>
+	AbstractJHotDrawAdapter<RectangleOverlay>
 {
 
 	public static final double PRIORITY = 100;
