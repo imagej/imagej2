@@ -79,7 +79,7 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		return ((figure == null) || (figure instanceof ImageFigure));
+		return figure == null || figure instanceof ImageFigure;
 	}
 
 	@Override
