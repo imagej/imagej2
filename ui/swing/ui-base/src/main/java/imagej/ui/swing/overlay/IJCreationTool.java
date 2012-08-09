@@ -48,7 +48,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.CreationTool;
 
 /**
- * TODO
+ * A JHotDraw {@link CreationTool} for ImageJ's Swing UI.
  * 
  * @author Lee Kamentsky
  */

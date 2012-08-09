@@ -48,7 +48,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.BezierTool;
 
 /**
- * TODO
+ * A JHotDraw {@link BezierTool} for ImageJ's Swing UI.
  * 
  * @author Lee Kamentsky
  * @author Johannes Schindelin
