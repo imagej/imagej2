@@ -43,9 +43,8 @@ import imagej.data.overlay.OverlaySettings;
 import imagej.data.overlay.PointOverlay;
 import imagej.ext.MouseCursor;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.ColorRGB;
@@ -73,10 +72,9 @@ import org.jhotdraw.geom.Geom;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Point", description = "Point overlays",
-	iconPath = "/icons/tools/point.png", priority = PointAdapter.PRIORITY,
-	enabled = true)
-@JHotDrawOverlayAdapter(priority = PointAdapter.PRIORITY)
+@Plugin(type = IJHotDrawOverlayAdapter.class, name = "Point",
+	description = "Point overlays", iconPath = "/icons/tools/point.png",
+	priority = PointAdapter.PRIORITY, enabled = true)
 public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
 	public static final int PRIORITY = AngleAdapter.PRIORITY - 1;

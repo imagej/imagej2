@@ -40,9 +40,8 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.Tool;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 
@@ -58,10 +57,9 @@ import org.jhotdraw.geom.BezierPath.Node;
  * @author Lee Kamentsky
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Line",
+@Plugin(type = IJHotDrawOverlayAdapter.class, name = "Line",
 	description = "Straight line overlays", iconPath = "/icons/tools/line.png",
 	priority = LineAdapter.PRIORITY, enabled = true)
-@JHotDrawOverlayAdapter(priority = LineAdapter.PRIORITY)
 public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 
 	public static final int PRIORITY = PolygonAdapter.PRIORITY - 1;

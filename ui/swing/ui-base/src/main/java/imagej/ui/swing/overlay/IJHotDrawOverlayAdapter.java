@@ -35,9 +35,11 @@
 
 package imagej.ui.swing.overlay;
 
+import imagej.Prioritized;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.ext.tool.Tool;
 
 import org.jhotdraw.draw.Figure;
 
@@ -47,20 +49,7 @@ import org.jhotdraw.draw.Figure;
  * 
  * @author Lee Kamentsky
  */
-public interface IJHotDrawOverlayAdapter {
-
-	/**
-	 * @return the priority of this adapter: higher priority adapters will be
-	 *         chosen over lower
-	 */
-	public int getPriority();
-
-	/**
-	 * Set the adapter's priority
-	 * 
-	 * @param priority
-	 */
-	public void setPriority(int priority);
+public interface IJHotDrawOverlayAdapter extends Tool, Prioritized {
 
 	/**
 	 * Determines whether the adapter can handle a particular overlay, or overlay
