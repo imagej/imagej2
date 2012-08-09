@@ -232,6 +232,19 @@ public class CommandLine {
 				if (file.getStatus() == Status.LOCAL_ONLY) {
 					if (pristine)
 						file.setAction(files, Action.UNINSTALL);
+				} else if (file.isObsolete()) {
+					if (file.getStatus() == Status.OBSOLETE) {
+						log.info("Removing " + file.filename);
+						file.stageForUninstall(files);
+					}
+					else if (file.getStatus() == Status.OBSOLETE_MODIFIED) {
+						if (force || pristine) {
+							file.stageForUninstall(files);
+							log.info("Removing " + file.filename);
+						}
+						else
+							log.warn("Skipping obsolete, but modified " + file.filename);
+					}
 				} else if (!file.stageForUpdate(files, force))
 					log.warn("Skipping " + file.filename);
 			}
