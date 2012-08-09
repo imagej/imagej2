@@ -75,10 +75,10 @@ import org.jhotdraw.geom.Geom;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Point",
 	description = "Point overlays", iconPath = "/icons/tools/point.png",
-	priority = PointAdapter.PRIORITY, enabled = true)
-public class PointAdapter extends AbstractJHotDrawAdapter<PointOverlay> {
+	priority = SwingPointTool.PRIORITY, enabled = true)
+public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 
-	public static final double PRIORITY = AngleAdapter.PRIORITY - 1;
+	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
