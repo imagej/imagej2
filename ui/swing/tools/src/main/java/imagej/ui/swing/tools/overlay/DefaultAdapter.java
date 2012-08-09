@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.tools.overlay;
 
+import imagej.Priority;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -74,7 +75,7 @@ import org.jhotdraw.draw.ImageFigure;
 	priority = DefaultAdapter.PRIORITY, alwaysActive = true)
 public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 
-	public static final double PRIORITY = 0;
+	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
