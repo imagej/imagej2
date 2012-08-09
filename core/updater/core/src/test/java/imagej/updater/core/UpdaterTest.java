@@ -55,7 +55,6 @@ import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
-import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
 import imagej.updater.util.StderrProgress;
@@ -1117,6 +1116,21 @@ public class UpdaterTest {
 		files.updateDependencies(dependencee);
 		assertCount(1, dependencee.getDependencies());
 		assertEquals("jars/dependency.jar", dependencee.getDependencies().iterator().next().filename);
+	}
+
+	@Test
+	public void keepObsoleteRecords() throws Exception {
+		initializeUpdateSite("jars/obsolete.jar");
+		assertTrue(new File(ijRoot, "jars/obsolete.jar").delete());
+		FilesCollection files = readDb(true, true);
+		files.get("jars/obsolete.jar").setAction(files, Action.REMOVE);
+		upload(files);
+		writeFile("jars/new.jar");
+		files = readDb(true, true);
+		files.get("jars/new.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		upload(files);
+		String db = readGzippedStream(new FileInputStream(new File(webRoot, "db.xml.gz")));
+		assertTrue(db.indexOf("<plugin filename=\"jars/obsolete.jar\"") > 0);
 	}
 
 	//

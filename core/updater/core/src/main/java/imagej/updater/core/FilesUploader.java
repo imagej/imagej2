@@ -243,7 +243,7 @@ public class FilesUploader {
 		}
 
 		final XMLFileWriter writer =
-			new XMLFileWriter(files.clone(files.forUpdateSite(siteName)));
+			new XMLFileWriter(files.clone(files.forUpdateSite(siteName, true)));
 		if (files.size() > 0) writer.validate(false);
 		((DbXmlFile) uploadables.get(0)).bytes =
 			writer.toCompressedByteArray(false);

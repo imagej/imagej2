@@ -408,7 +408,15 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public Iterable<FileObject> forUpdateSite(final String name) {
-		return filter(and(not(is(Status.OBSOLETE_UNINSTALLED)), and(doesPlatformMatch(), isUpdateSite(name))));
+		return forUpdateSite(name, false);
+	}
+
+	public Iterable<FileObject> forUpdateSite(final String name, boolean includeObsoletes) {
+		Filter filter = and(doesPlatformMatch(), isUpdateSite(name));
+		if (!includeObsoletes) {
+			filter = and(not(is(Status.OBSOLETE_UNINSTALLED)), filter);
+		}
+		return filter(filter);
 	}
 
 	public Iterable<FileObject> managedFiles() {
