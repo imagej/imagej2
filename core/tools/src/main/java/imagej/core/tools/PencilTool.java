@@ -48,7 +48,7 @@ import imagej.ext.tool.Tool;
 	iconPath = "/icons/tools/pencil.png", priority = PencilTool.PRIORITY)
 public class PencilTool extends AbstractLineTool {
 
-	public static final int PRIORITY = -301;
+	public static final double PRIORITY = -301;
 
 	public PencilTool() {
 		setLineWidth(1);

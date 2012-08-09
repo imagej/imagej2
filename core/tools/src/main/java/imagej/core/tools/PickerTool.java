@@ -61,7 +61,7 @@ public class PickerTool extends AbstractTool {
 
 	// -- constants --
 
-	public static final int PRIORITY = -299;
+	public static final double PRIORITY = -299;
 
 	// -- instance variables --
 

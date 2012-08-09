@@ -74,7 +74,7 @@ import org.jhotdraw.draw.ImageFigure;
 	priority = DefaultAdapter.PRIORITY, alwaysActive = true)
 public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 
-	static public final int PRIORITY = 0;
+	public static final double PRIORITY = 0;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {

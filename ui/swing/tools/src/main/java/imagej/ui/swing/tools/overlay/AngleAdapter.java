@@ -62,7 +62,7 @@ import org.jhotdraw.geom.BezierPath;
 	priority = AngleAdapter.PRIORITY, enabled = true)
 public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
 
-	public static final int PRIORITY = LineAdapter.PRIORITY - 1;
+	public static final double PRIORITY = LineAdapter.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {

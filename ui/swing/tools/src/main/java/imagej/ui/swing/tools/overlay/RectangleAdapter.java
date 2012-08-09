@@ -74,7 +74,7 @@ public class RectangleAdapter extends
 	AbstractJHotDrawOverlayAdapter<RectangleOverlay>
 {
 
-	public static final int PRIORITY = 100;
+	public static final double PRIORITY = 100;
 
 	// initial mouse down point is recorded for status bar updates
 	private final Point anchor = new Point();

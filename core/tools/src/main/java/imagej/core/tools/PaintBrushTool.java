@@ -49,7 +49,7 @@ import imagej.ext.tool.Tool;
 	priority = PaintBrushTool.PRIORITY)
 public class PaintBrushTool extends AbstractLineTool {
 
-	public static final int PRIORITY = -300;
+	public static final double PRIORITY = -300;
 
 	public PaintBrushTool() {
 		setLineWidth(10);

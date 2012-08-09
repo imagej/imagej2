@@ -62,7 +62,7 @@ import org.jhotdraw.geom.BezierPath.Node;
 	priority = LineAdapter.PRIORITY, enabled = true)
 public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 
-	public static final int PRIORITY = PolygonAdapter.PRIORITY - 1;
+	public static final double PRIORITY = PolygonAdapter.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {

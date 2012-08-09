@@ -61,7 +61,7 @@ public class FloodFillTool extends AbstractTool {
 
 	// -- instance variables --
 
-	public static final int PRIORITY = -304;
+	public static final double PRIORITY = -304;
 
 	enum Connectivity {
 		EIGHT, FOUR

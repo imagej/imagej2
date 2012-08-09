@@ -60,7 +60,7 @@ import imagej.util.IntCoords;
 	iconPath = "/icons/tools/pan.png", priority = PanTool.PRIORITY)
 public class PanTool extends AbstractTool {
 
-	public static final int PRIORITY = ZoomTool.PRIORITY - 1;
+	public static final double PRIORITY = ZoomTool.PRIORITY - 1;
 
 	private static final int PAN_AMOUNT = 10;
 

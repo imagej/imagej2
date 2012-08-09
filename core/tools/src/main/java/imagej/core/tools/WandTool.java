@@ -49,7 +49,7 @@ import imagej.ext.tool.Tool;
 	enabled = false)
 public class WandTool extends AbstractTool {
 
-	public static final int PRIORITY = -110;
+	public static final double PRIORITY = -110;
 
 	// TODO
 

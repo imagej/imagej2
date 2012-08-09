@@ -77,7 +77,7 @@ import org.jhotdraw.geom.Geom;
 	priority = PointAdapter.PRIORITY, enabled = true)
 public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 
-	public static final int PRIORITY = AngleAdapter.PRIORITY - 1;
+	public static final double PRIORITY = AngleAdapter.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
