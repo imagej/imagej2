@@ -245,7 +245,7 @@ public class CommandLine {
 						else
 							log.warn("Skipping obsolete, but modified " + file.filename);
 					}
-				} else if (!file.stageForUpdate(files, force))
+				} else if (file.getStatus() != Status.INSTALLED && !file.stageForUpdate(files, force))
 					log.warn("Skipping " + file.filename);
 			}
 			Installer installer = new Installer(files, progress);
