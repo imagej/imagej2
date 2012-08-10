@@ -36,7 +36,7 @@
 package imagej.updater.core;
 
 import imagej.updater.core.FilesCollection.UpdateSite;
-import imagej.updater.util.Progressable;
+import imagej.updater.util.AbstractProgressable;
 import imagej.updater.util.Util;
 
 import java.io.FileNotFoundException;
@@ -53,7 +53,7 @@ import java.util.zip.GZIPInputStream;
  * 
  * @author Johannes Schindelin
  */
-public class XMLFileDownloader extends Progressable {
+public class XMLFileDownloader extends AbstractProgressable {
 
 	protected FilesCollection files;
 	protected Collection<String> updateSites;

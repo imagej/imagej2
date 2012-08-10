@@ -44,11 +44,11 @@ import java.util.List;
  * 
  * @author Johannes Schindelin
  */
-public class Progressable implements Progress {
+public abstract class AbstractProgressable implements Progress {
 
 	protected List<Progress> progress;
 
-	public Progressable() {
+	public AbstractProgressable() {
 		progress = new ArrayList<Progress>();
 	}
 

@@ -51,7 +51,7 @@ import java.util.Collections;
  * 
  * @author Johannes Schindelin
  */
-public class Downloader extends Progressable {
+public class Downloader extends AbstractProgressable {
 
 	protected int count, total, itemCount, itemTotal;
 	protected long lastModified;

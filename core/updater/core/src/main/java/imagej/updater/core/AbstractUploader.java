@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.updater.util.Progressable;
+import imagej.updater.util.AbstractProgressable;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +45,7 @@ import java.util.List;
  * 
  * @author Johannes Schindelin
  */
-public abstract class AbstractUploader extends Progressable {
+public abstract class AbstractUploader extends AbstractProgressable {
 
 	// TODO: Convert this class to use a subinterface of IPlugin.
 	// The Uploader annotation interface methods will need to migrate here.
