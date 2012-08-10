@@ -2946,6 +2946,19 @@ static struct string buffer, buffer2, arg, plugin_path, ext_option;
 static int jdb, advanced_gc = 1, debug_gc;
 static int allow_multiple, skip_class_launcher, full_class_path;
 
+static void parse_memory_from_java_options(int require)
+{
+	if (!megabytes) {
+		const char *option = has_memory_option(&options.java_options);
+		if (!option || prefixcmp(option, "-Xm") || !option[3]) {
+			if (require)
+				die ("Out of memory, could not determine heap size!");
+			return;
+		}
+		megabytes = parse_memory(option + 4);
+	}
+}
+
 static int handle_one_option2(int *i, int argc, const char **argv)
 {
 	if (!strcmp(argv[*i], "--dry-run"))
@@ -3298,6 +3311,12 @@ static void parse_command_line(void)
 		if (sizeof(void *) == 4 && megabytes > MAX_32BIT_HEAP)
 			megabytes = MAX_32BIT_HEAP;
 	}
+	if (sizeof(void *) < 8) {
+		if (!megabytes)
+			parse_memory_from_java_options(0);
+		if (megabytes && megabytes > MAX_32BIT_HEAP)
+			megabytes = MAX_32BIT_HEAP;
+	}
 
 	if (megabytes > 0)
 		add_option(&options, make_memory_option(megabytes)->buffer, 0);
@@ -3526,12 +3545,7 @@ static int start_ij(void)
 	else {
 		int result = create_java_vm(&vm, (void **)&env, &args);
 		if (result == JNI_ENOMEM) {
-			if (!megabytes) {
-				const char *option = has_memory_option(&options.java_options);
-				if (!option || prefixcmp(option, "-Xm") || !option[3])
-					die ("Out of memory, could not determine heap size!");
-				megabytes = parse_memory(option + 4);
-			}
+			parse_memory_from_java_options(1);
 			try_with_less_memory(megabytes);
 			die("Out of memory!");
 		}
