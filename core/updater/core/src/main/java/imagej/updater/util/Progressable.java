@@ -35,65 +35,17 @@
 
 package imagej.updater.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Abstract superclass for {@link Progressable} implementations.
+ * Base interface for serving {@link Progress} instances. For this reason, it
+ * implements the same interface.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-public abstract class AbstractProgressable implements Progressable {
+public interface Progressable extends Progress {
 
-	protected List<Progress> progress;
+	void addProgress(Progress progress);
 
-	public AbstractProgressable() {
-		progress = new ArrayList<Progress>();
-	}
+	void removeProgress(Progress progress);
 
-	@Override
-	public void addProgress(final Progress progress) {
-		this.progress.add(progress);
-	}
-
-	@Override
-	public void removeProgress(final Progress progress) {
-		this.progress.remove(progress);
-	}
-
-	@Override
-	public void setTitle(final String title) {
-		for (final Progress progress : this.progress)
-			progress.setTitle(title);
-	}
-
-	@Override
-	public void setCount(final int count, final int total) {
-		for (final Progress progress : this.progress)
-			progress.setCount(count, total);
-	}
-
-	@Override
-	public void addItem(final Object item) {
-		for (final Progress progress : this.progress)
-			progress.addItem(item);
-	}
-
-	@Override
-	public void setItemCount(final int count, final int total) {
-		for (final Progress progress : this.progress)
-			progress.setItemCount(count, total);
-	}
-
-	@Override
-	public void itemDone(final Object item) {
-		for (final Progress progress : this.progress)
-			progress.itemDone(item);
-	}
-
-	@Override
-	public void done() {
-		for (final Progress progress : this.progress)
-			progress.done();
-	}
 }
