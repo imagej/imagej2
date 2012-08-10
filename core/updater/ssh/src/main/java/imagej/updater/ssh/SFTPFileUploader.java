@@ -213,4 +213,10 @@ public final class SFTPFileUploader extends AbstractUploader {
 
 		return timestamp;
 	}
+
+	@Override
+	public String getProtocol() {
+		return "sftp";
+	}
+
 }

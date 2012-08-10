@@ -302,4 +302,10 @@ public class SSHFileUploader extends AbstractUploader {
 		}
 		return b;
 	}
+
+	@Override
+	public String getProtocol() {
+		return "ssh";
+	}
+
 }

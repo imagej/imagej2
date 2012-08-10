@@ -57,4 +57,6 @@ public interface IUploader extends Progressable {
 
 	long getTimestamp();
 
+	String getProtocol();
+
 }

@@ -111,4 +111,10 @@ public class FileUploader extends AbstractUploader {
 
 		done();
 	}
+
+	@Override
+	public String getProtocol() {
+		return "file";
+	}
+
 }
