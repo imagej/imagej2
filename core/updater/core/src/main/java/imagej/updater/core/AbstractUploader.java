@@ -75,7 +75,9 @@ public abstract class AbstractUploader extends AbstractProgressable implements
 	}
 
 	@Override
-	public void logout() {}
+	public void logout() {
+		// no logout required; override this if logout _is_ required!
+	}
 
 	@Override
 	public long getTimestamp() {
