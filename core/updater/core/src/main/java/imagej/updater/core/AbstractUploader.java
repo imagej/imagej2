@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * TODO
+ * Abstract base class for ImageJ upload mechanisms.
  * 
  * @author Johannes Schindelin
  */
