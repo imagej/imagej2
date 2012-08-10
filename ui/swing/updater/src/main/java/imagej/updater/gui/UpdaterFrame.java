@@ -45,6 +45,7 @@ import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.DependencyMap;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
+import imagej.updater.core.UploaderService;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
@@ -101,6 +102,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 {
 
 	protected LogService log;
+	protected UploaderService uploaderService;
 	protected FilesCollection files;
 
 	protected JTextField searchTerm;
@@ -129,11 +131,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		gitVersion = version;
 	}
 
-	public UpdaterFrame(final LogService log, final FilesCollection files) {
+	public UpdaterFrame(final LogService log,
+		final UploaderService uploaderService, final FilesCollection files)
+	{
 		super("ImageJ Updater");
 		setPreferredSize(new Dimension(780, 560));
 
 		this.log = log;
+		this.uploaderService = uploaderService;
 		this.files = files;
 
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -494,6 +499,11 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	public Progress getProgress(final String title) {
 		return new ProgressDialog(this, title);
+	}
+
+	/** Gets the uploader service associated with this updater frame. */
+	public UploaderService getUploaderService() {
+		return uploaderService;
 	}
 
 	@Override

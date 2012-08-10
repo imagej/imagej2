@@ -38,11 +38,12 @@ package imagej.updater.ssh;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
+import imagej.updater.core.IUploader;
 import imagej.updater.core.Uploadable;
-import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.UpdaterUserInterface;
 
@@ -59,7 +60,7 @@ import java.util.List;
  * 
  * @author Jarek Sacha
  */
-@Uploader(protocol = "sftp")
+@Plugin(type = IUploader.class)
 public final class SFTPFileUploader extends AbstractUploader {
 
 	private SFTPOperations sftp;

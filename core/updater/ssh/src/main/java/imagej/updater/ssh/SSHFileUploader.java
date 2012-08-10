@@ -40,11 +40,12 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
+import imagej.updater.core.IUploader;
 import imagej.updater.core.Uploadable;
-import imagej.updater.core.Uploader;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.InputStream2OutputStream;
 import imagej.updater.util.UpdaterUserInterface;
@@ -61,7 +62,7 @@ import java.util.List;
  * @author Johannes Schindelin
  * @author Yap Chin Kiet
  */
-@Uploader(protocol = "ssh")
+@Plugin(type = IUploader.class)
 public class SSHFileUploader extends AbstractUploader {
 
 	private Session session;

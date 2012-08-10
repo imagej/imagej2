@@ -35,23 +35,66 @@
 
 package imagej.updater.core;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import imagej.ImageJ;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
 
-import net.java.sezpoz.Indexable;
+import java.util.HashMap;
+import java.util.List;
 
 /**
- * Annotation identifying an uploader for ImageJ's Updater.
+ * Service for managing available ImageJ upload mechanisms.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = IUploader.class)
-public @interface Uploader {
+@Plugin(type = Service.class)
+public class UploaderService extends AbstractService {
 
-	String protocol();
+	private final HashMap<String, IUploader> uploaderMap;
+
+	public UploaderService(final ImageJ context,
+		final PluginService pluginService, final LogService log)
+	{
+		super(context);
+
+		// ask the plugin service for the list of available upload mechanisms
+		uploaderMap = new HashMap<String, IUploader>();
+		final List<PluginInfo<? extends IUploader>> infos =
+			pluginService.getPluginsOfType(IUploader.class);
+		for (final PluginInfo<? extends IUploader> info : infos) {
+			// instantiate the adapter and add it to the list
+			try {
+				final IUploader uploader = info.createInstance();
+				uploaderMap.put(uploader.getProtocol(), uploader);
+			}
+			catch (final InstantiableException exc) {
+				if (log != null) log.warn("Failed to load " + info.getClassName(), exc);
+			}
+		}
+		if (log != null) {
+			log.info("Found " + uploaderMap.size() + " upload mechanisms.");
+		}
+	}
+
+	public boolean hasUploader(final String protocol) {
+		return uploaderMap.containsKey(protocol);
+	}
+
+	public IUploader getUploader(String protocol)
+		throws IllegalArgumentException
+	{
+		final IUploader uploader = uploaderMap.get(protocol);
+		if (uploader == null) {
+			throw new IllegalArgumentException("No uploader found for protocol " +
+				protocol);
+		}
+		return uploader;
+	}
 
 }

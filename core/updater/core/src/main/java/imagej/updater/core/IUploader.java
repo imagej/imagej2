@@ -35,6 +35,8 @@
 
 package imagej.updater.core;
 
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 import imagej.updater.util.Progressable;
 
 import java.io.IOException;
@@ -42,10 +44,20 @@ import java.util.List;
 
 /**
  * Interface for ImageJ upload mechanisms.
+ * <p>
+ * Upload mechanisms discoverable at runtime must implement this interface and
+ * be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link IUploader}.class. While it possible to create an upload mechanism
+ * merely by implementing this interface, it is encouraged to instead extend
+ * {@link AbstractUploader}, for convenience.
+ * </p>
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
+ * @see Plugin
+ * @see UploaderService
  */
-public interface IUploader extends Progressable {
+public interface IUploader extends IPlugin, Progressable {
 
 	void upload(List<Uploadable> files, List<String> locks) throws IOException;
 
