@@ -35,23 +35,26 @@
 
 package imagej.updater.core;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import imagej.updater.util.Progressable;
 
-import net.java.sezpoz.Indexable;
+import java.io.IOException;
+import java.util.List;
 
 /**
- * Annotation identifying an uploader for ImageJ's Updater.
+ * Interface for ImageJ upload mechanisms.
  * 
  * @author Johannes Schindelin
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = IUploader.class)
-public @interface Uploader {
+public interface IUploader extends Progressable {
 
-	String protocol();
+	void upload(List<Uploadable> files, List<String> locks) throws IOException;
+
+	void calculateTotalSize(List<Uploadable> sources);
+
+	boolean login(FilesUploader uploader);
+
+	void logout();
+
+	long getTimestamp();
 
 }

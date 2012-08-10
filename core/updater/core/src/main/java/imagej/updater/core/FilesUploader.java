@@ -70,7 +70,7 @@ import net.java.sezpoz.IndexItem;
 public class FilesUploader {
 
 	protected FilesCollection files;
-	protected AbstractUploader uploader;
+	protected IUploader uploader;
 
 	protected String siteName;
 	protected UpdateSite site;
@@ -79,17 +79,17 @@ public class FilesUploader {
 	protected boolean loggedIn;
 
 	public static boolean hasUploader(String protocol) {
-		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
-				Uploader.class, AbstractUploader.class))
+		for (final IndexItem<Uploader, IUploader> item : Index.load(
+				Uploader.class, IUploader.class))
 			if (item.annotation().protocol().equals(protocol)) return true;
 		return false;
 	}
 
-	public static AbstractUploader getUploader(String protocol)
+	public static IUploader getUploader(String protocol)
 		throws InstantiationException
 	{
-		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
-				Uploader.class, AbstractUploader.class))
+		for (final IndexItem<Uploader, IUploader> item : Index.load(
+				Uploader.class, IUploader.class))
 			if (item.annotation().protocol().equals(protocol)) return item.instance();
 		throw new InstantiationException("No uploader found for protocol " +
 			protocol);
@@ -272,7 +272,7 @@ public class FilesUploader {
 		@Override
 		public void setTitle(final String string) {
 			try {
-				updateUploadTimestamp(uploader.timestamp);
+				updateUploadTimestamp(uploader.getTimestamp());
 			}
 			catch (final Exception e) {
 				files.log.error(e);
