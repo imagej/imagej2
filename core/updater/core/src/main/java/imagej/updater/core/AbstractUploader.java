@@ -46,7 +46,7 @@ import java.util.List;
  * @author Johannes Schindelin
  */
 public abstract class AbstractUploader extends AbstractProgressable implements
-	IUploader
+	Uploader
 {
 
 	protected String uploadDir;

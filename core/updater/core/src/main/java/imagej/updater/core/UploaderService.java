@@ -56,7 +56,7 @@ import java.util.List;
 @Plugin(type = Service.class)
 public class UploaderService extends AbstractService {
 
-	private final HashMap<String, IUploader> uploaderMap;
+	private final HashMap<String, Uploader> uploaderMap;
 
 	public UploaderService(final ImageJ context,
 		final PluginService pluginService, final LogService log)
@@ -64,13 +64,13 @@ public class UploaderService extends AbstractService {
 		super(context);
 
 		// ask the plugin service for the list of available upload mechanisms
-		uploaderMap = new HashMap<String, IUploader>();
-		final List<PluginInfo<? extends IUploader>> infos =
-			pluginService.getPluginsOfType(IUploader.class);
-		for (final PluginInfo<? extends IUploader> info : infos) {
+		uploaderMap = new HashMap<String, Uploader>();
+		final List<PluginInfo<? extends Uploader>> infos =
+			pluginService.getPluginsOfType(Uploader.class);
+		for (final PluginInfo<? extends Uploader> info : infos) {
 			// instantiate the adapter and add it to the list
 			try {
-				final IUploader uploader = info.createInstance();
+				final Uploader uploader = info.createInstance();
 				uploaderMap.put(uploader.getProtocol(), uploader);
 			}
 			catch (final InstantiableException exc) {
@@ -86,10 +86,10 @@ public class UploaderService extends AbstractService {
 		return uploaderMap.containsKey(protocol);
 	}
 
-	public IUploader getUploader(String protocol)
+	public Uploader getUploader(String protocol)
 		throws IllegalArgumentException
 	{
-		final IUploader uploader = uploaderMap.get(protocol);
+		final Uploader uploader = uploaderMap.get(protocol);
 		if (uploader == null) {
 			throw new IllegalArgumentException("No uploader found for protocol " +
 				protocol);

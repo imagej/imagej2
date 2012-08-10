@@ -47,7 +47,7 @@ import java.util.List;
  * <p>
  * Upload mechanisms discoverable at runtime must implement this interface and
  * be annotated with @{@link Plugin} with {@link Plugin#type()} =
- * {@link IUploader}.class. While it possible to create an upload mechanism
+ * {@link Uploader}.class. While it possible to create an upload mechanism
  * merely by implementing this interface, it is encouraged to instead extend
  * {@link AbstractUploader}, for convenience.
  * </p>
@@ -57,7 +57,7 @@ import java.util.List;
  * @see Plugin
  * @see UploaderService
  */
-public interface IUploader extends IPlugin, Progressable {
+public interface Uploader extends IPlugin, Progressable {
 
 	void upload(List<Uploadable> files, List<String> locks) throws IOException;
 

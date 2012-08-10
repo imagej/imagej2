@@ -44,7 +44,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
-import imagej.updater.core.IUploader;
+import imagej.updater.core.Uploader;
 import imagej.updater.core.Uploadable;
 import imagej.updater.util.Canceled;
 import imagej.updater.util.InputStream2OutputStream;
@@ -62,7 +62,7 @@ import java.util.List;
  * @author Johannes Schindelin
  * @author Yap Chin Kiet
  */
-@Plugin(type = IUploader.class)
+@Plugin(type = Uploader.class)
 public class SSHFileUploader extends AbstractUploader {
 
 	private Session session;

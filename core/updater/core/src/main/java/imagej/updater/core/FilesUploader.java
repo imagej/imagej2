@@ -68,7 +68,7 @@ import java.util.List;
 public class FilesUploader {
 
 	protected FilesCollection files;
-	protected IUploader uploader;
+	protected Uploader uploader;
 
 	protected String siteName;
 	protected UpdateSite site;

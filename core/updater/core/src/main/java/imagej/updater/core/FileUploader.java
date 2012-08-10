@@ -58,7 +58,7 @@ import java.util.List;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(type = IUploader.class)
+@Plugin(type = Uploader.class)
 public class FileUploader extends AbstractUploader {
 
 	// Steps to accomplish entire upload task
