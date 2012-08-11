@@ -46,7 +46,7 @@ import imagej.updater.core.FilesCollection.DependencyMap;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
 import imagej.updater.core.UploaderService;
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.FileUtils;
@@ -662,7 +662,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			info("Updated successfully.  Please restart ImageJ!");
 			dispose();
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			// TODO: remove "update/" directory
 			error("Canceled");
 			installer.done();
@@ -838,7 +838,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			enableUploadOrNot();
 			dispose();
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			// TODO: teach uploader to remove the lock file
 			error("Canceled");
 			if (progress != null) progress.done();
@@ -868,7 +868,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			catch (final InterruptedException e) { /* ignore */}
 			return true;
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			if (progress != null) progress.done();
 		}
 		catch (final Throwable e) {

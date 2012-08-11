@@ -44,7 +44,7 @@ import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploader;
 import imagej.updater.core.Uploadable;
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
 
 import java.io.ByteArrayInputStream;
@@ -107,7 +107,7 @@ public final class SFTPFileUploader extends AbstractUploader {
 		try {
 			uploadFiles(sources);
 		}
-		catch (final Canceled cancel) {
+		catch (final UpdateCanceledException cancel) {
 			// Delete locks
 			for (final String lock : locks) {
 				final String path = uploadDir + lock + ".lock";

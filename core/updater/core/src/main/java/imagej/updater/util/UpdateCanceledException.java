@@ -36,9 +36,10 @@
 package imagej.updater.util;
 
 /**
- * TODO
+ * An exception thrown when an operation of the Updater is canceled.
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("serial")
-public class Canceled extends RuntimeException {}
+public class UpdateCanceledException extends RuntimeException {
+	// no implementation needed
+}

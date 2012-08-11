@@ -47,7 +47,7 @@ import imagej.updater.core.Installer;
 import imagej.updater.core.UpdaterUIPlugin;
 import imagej.updater.core.UploaderService;
 import imagej.updater.gui.ViewOptions.Option;
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
 import imagej.updater.util.UpdaterUserInterface;
@@ -150,7 +150,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 					}.resolve())
 				return;
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			main.error("Canceled");
 			return;
 		}
@@ -172,7 +172,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 					// download just the updater
 					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."));
 				}
-				catch (final Canceled e) {
+				catch (final UpdateCanceledException e) {
 					main.error("Canceled");
 				}
 				catch (final IOException e) {

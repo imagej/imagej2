@@ -46,7 +46,7 @@ import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploader;
 import imagej.updater.core.Uploadable;
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.InputStream2OutputStream;
 import imagej.updater.util.UpdaterUserInterface;
 
@@ -112,7 +112,7 @@ public class SSHFileUploader extends AbstractUploader {
 		try {
 			uploadFiles(sources);
 		}
-		catch (final Canceled cancel) {
+		catch (final UpdateCanceledException cancel) {
 			for (final String lock : locks)
 				setCommand("rm " + uploadDir + lock + ".lock");
 			out.close();

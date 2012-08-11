@@ -39,7 +39,7 @@ import imagej.log.LogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
@@ -945,7 +945,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		downloader.addProgress(progress);
 		try {
 			downloader.start(false);
-		} catch (final Canceled e) {
+		} catch (final UpdateCanceledException e) {
 				downloader.done();
 				throw e;
 		}
