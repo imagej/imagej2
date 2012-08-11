@@ -55,9 +55,9 @@ import java.util.zip.GZIPInputStream;
  */
 public class XMLFileDownloader extends AbstractProgressable {
 
-	protected FilesCollection files;
-	protected Collection<String> updateSites;
-	protected String warnings;
+	private FilesCollection files;
+	private Collection<String> updateSites;
+	private String warnings;
 
 	public XMLFileDownloader(final FilesCollection files) {
 		this(files, files.getUpdateSiteNames());

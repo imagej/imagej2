@@ -96,7 +96,7 @@ public class Diff {
 		}
 	}
 
-	protected final PrintStream out;
+	private final PrintStream out;
 
 	/**
 	 * Construct a Diff object.

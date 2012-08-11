@@ -67,14 +67,14 @@ import java.util.List;
  */
 public class FilesUploader {
 
-	protected FilesCollection files;
-	protected Uploader uploader;
+	private FilesCollection files;
+	private Uploader uploader;
 
-	protected String siteName;
-	protected UpdateSite site;
-	protected List<Uploadable> uploadables;
-	protected String compressed;
-	protected boolean loggedIn;
+	private String siteName;
+	private UpdateSite site;
+	private List<Uploadable> uploadables;
+	private String compressed;
+	private boolean loggedIn;
 
 	private static UploaderService createUploaderService() {
 		final ImageJ context = ImageJ.createContext(UploaderService.class);

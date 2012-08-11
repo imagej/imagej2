@@ -74,14 +74,14 @@ public class XMLFileReader extends DefaultHandler {
 
 	// this is the name of the update site (null means we read the local
 	// db.xml.gz)
-	protected String updateSite;
-	protected Set<FileObject> filesFromThisSite = new HashSet<FileObject>();
+	private String updateSite;
+	private Set<FileObject> filesFromThisSite = new HashSet<FileObject>();
 
 	// every file newer than this was not seen by the user yet
-	protected long newTimestamp;
+	private long newTimestamp;
 
 	// There might have been warnings
-	protected StringBuffer warnings = new StringBuffer();
+	private StringBuffer warnings = new StringBuffer();
 
 	// currently parsed
 	private FileObject current;

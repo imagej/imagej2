@@ -190,7 +190,10 @@ public class FileObject {
 
 	// These are LinkedHashMaps to retain the order of the entries
 	protected Map<String, Dependency> dependencies;
-	protected Set<String> links, authors, platforms, categories;
+	private Set<String> links;
+	protected Set<String> authors;
+	private Set<String> platforms;
+	private Set<String> categories;
 
 	public FileObject(final String updateSite, final String filename,
 		final long filesize, final String checksum, final long timestamp,
@@ -472,7 +475,7 @@ public class FileObject {
 		return getFilename(false);
 	}
 
-	protected final static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+)+[a-z]?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar)");
+	private final static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+)+[a-z]?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar)");
 
 	protected static Matcher matchVersion(String filename) {
 		if (!filename.endsWith(".jar")) return null;

@@ -51,7 +51,8 @@ import java.io.InputStream;
 public class UploadableFile implements Uploadable {
 
 	protected FileObject file;
-	protected String permissions, filename;
+	private String permissions;
+	protected String filename;
 	protected File source;
 	protected long filesize;
 
