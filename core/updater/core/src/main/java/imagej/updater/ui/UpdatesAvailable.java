@@ -48,7 +48,8 @@ import imagej.updater.util.StderrLogService;
 import java.util.List;
 
 /**
- * TODO
+ * This plugin checks whether updates are available, and prompts the user to
+ * launch the updater if so. It typically runs when ImageJ first starts up.
  * 
  * @author Johannes Schindelin
  */

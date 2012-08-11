@@ -36,7 +36,7 @@
 package imagej.updater.core;
 
 /**
- * TODO
+ * A simple data structure for storing information about a dependency.
  * 
  * @author Johannes Schindelin
  */

@@ -63,7 +63,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * XML File Reader reads an locally-cached index of the available file versions.
+ * The XML File Reader reads a locally-cached index of the available file
+ * versions.
  * 
  * @author Johannes Schindelin
  */
