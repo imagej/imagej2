@@ -40,13 +40,11 @@ my $sourcePrefix = "$githubURL/tree/master";
 {
   section('App', 'app');
   section('Core', 'core');
-  section('Platform', 'platform');
   section('UI: AWT &amp; Swing', 'ui/awt-swing');
   section('UI: AWT', 'ui/awt');
   section('UI: Pivot', 'ui/pivot');
   section('UI: SWT', 'ui/swt');
   section('UI: Swing', 'ui/swing');
-  section('Extra', 'extra');
 }
 
 # -- Subroutines --
