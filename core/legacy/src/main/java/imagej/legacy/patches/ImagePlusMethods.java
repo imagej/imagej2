@@ -56,6 +56,7 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#updateAndDraw()}. */
 	public static void updateAndDraw(final ImagePlus obj) {
+		if ((obj == null) || (!obj.isProcessor())) return;
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -65,6 +66,7 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#repaintWindow()}. */
 	public static void repaintWindow(final ImagePlus obj) {
+		if ((obj == null) || (obj.getWindow() == null)) return;
 		Log.debug("ImagePlus.repaintWindow(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -91,7 +93,8 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#close()}. */
 	public static void close(final ImagePlus obj) {
-		if ((obj != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(obj))) LegacyOutputTracker
-			.getClosedImps().add(obj);
+		if ((obj != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(obj))) {
+			LegacyOutputTracker.getClosedImps().add(obj);
+		}
 	}
 }
