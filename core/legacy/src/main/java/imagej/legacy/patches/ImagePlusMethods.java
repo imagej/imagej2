@@ -93,7 +93,8 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#close()}. */
 	public static void close(final ImagePlus obj) {
-		if ((obj != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(obj))) {
+		if ((obj == null) || (obj.getWindow() == null)) return;
+		if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
 			LegacyOutputTracker.getClosedImps().add(obj);
 		}
 	}
