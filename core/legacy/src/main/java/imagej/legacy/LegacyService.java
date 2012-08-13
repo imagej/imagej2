@@ -85,6 +85,7 @@ import java.util.Map;
  * </p>
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(type = Service.class)
 public final class LegacyService extends AbstractService {
@@ -110,12 +111,16 @@ public final class LegacyService extends AbstractService {
 
 	// -- Constructors --
 
+	/** Default contructor (will not run to completion). Provided only to fulfill
+	 * an API contract elsewhere. Do not use.
+	 */
 	public LegacyService() {
 		// NB: Required by SezPoz.
 		super(null);
 		throw new UnsupportedOperationException();
 	}
 
+	/** Preferred constructor. */
 	public LegacyService(final ImageJ context, final LogService log,
 		final EventService eventService, final PluginService pluginService,
 		final OptionsService optionsService,
@@ -155,26 +160,37 @@ public final class LegacyService extends AbstractService {
 
 	// -- LegacyService methods --
 
+	/** Returns the EventService associated with this LegacyService */
 	public EventService getEventService() {
 		return eventService;
 	}
 
+	/** Returns the PluginService associated with this LegacyService */
 	public PluginService getPluginService() {
 		return pluginService;
 	}
 
+	/** Returns the OptionsService associated with this LegacyService */
 	public OptionsService getOptionsService() {
 		return optionsService;
 	}
 
+	/** Returns the ImageDisplayService associated with this LegacyService */
 	public ImageDisplayService getImageDisplayService() {
 		return imageDisplayService;
 	}
 
+	/** Returns the LegacyImageMap associated with this LegacyService */
 	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
 
+	/** Runs a legacy plugin programmaticaly
+	 * 
+	 * @param ij1ClassName The name of the plugin class you want to run e.g.
+	 *          "ij.plugin.Clipboard"
+	 * @param argument The argument string to pass to the plugin e.g. "copy"
+	 */
 	public void runLegacyPlugin(final String ij1ClassName, final String argument)
 	{
 		final String arg = (argument == null) ? "" : argument;
@@ -218,20 +234,30 @@ public final class LegacyService extends AbstractService {
 			WindowManager.setCurrentWindow(activeImagePlus.getWindow());
 	}
 
+	/** Returns true if this LegacyService has been initialized already and false
+	 * if not.
+	 */
 	public boolean isInitialized() {
 		return initialized;
 	}
 
 	// TODO - make private only???
 
+	/** Updates ImageJ 1.x option settings from ImageJ 2.x options values. */
 	public void updateIJ1Settings() {
 		optionsSynchronizer.updateIJ1SettingsFromIJ2();
 	}
 
+	// TODO - make private only???
+
+	/** Updates ImageJ 2.x option settings from ImageJ 1.x options values. */
 	public void updateIJ2Settings() {
 		optionsSynchronizer.updateIJ2SettingsFromIJ1();
 	}
 
+	/** Sets the foreground and background colors in ImageJ 1.x from the current
+	 * view using the current channel values.
+	 */
 	public void syncColors() {
 		DatasetView view = imageDisplayService.getActiveDatasetView();
 		if (view == null) return;
