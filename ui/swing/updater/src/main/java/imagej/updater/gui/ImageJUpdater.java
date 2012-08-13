@@ -45,8 +45,9 @@ import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.Installer;
 import imagej.updater.core.UpdaterUIPlugin;
+import imagej.updater.core.UploaderService;
 import imagej.updater.gui.ViewOptions.Option;
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
 import imagej.updater.util.UpdaterUserInterface;
@@ -97,6 +98,9 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 	@Parameter
 	private LogService log;
 
+	@Parameter
+	private UploaderService uploaderService;
+
 	@Override
 	public void run() {
 
@@ -110,7 +114,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 		final File imagejRoot = FileUtils.getBaseDirectory();
 		final FilesCollection files = new FilesCollection(imagejRoot);
-		final UpdaterFrame main = new UpdaterFrame(log, files);
+		final UpdaterFrame main = new UpdaterFrame(log, uploaderService, files);
 		if (new File(imagejRoot, "update").exists()) {
 			if (!UpdaterUserInterface.get().promptYesNo("ImageJ was not restarted after the previous update\n\n"
 					+ "Do you want to move the files into place without a restart (dangerous)?",
@@ -146,7 +150,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 					}.resolve())
 				return;
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			main.error("Canceled");
 			return;
 		}
@@ -168,7 +172,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 					// download just the updater
 					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."));
 				}
-				catch (final Canceled e) {
+				catch (final UpdateCanceledException e) {
 					main.error("Canceled");
 				}
 				catch (final IOException e) {

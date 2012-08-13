@@ -54,13 +54,14 @@ import java.util.Set;
  */
 public class Conflicts {
 
-	protected final FilesCollection files;
+	private final FilesCollection files;
 	protected List<Conflict> conflicts;
 
 	public static class Conflict {
 
-		protected final boolean isError, isCritical;
-		protected final String filename, conflict;
+		private final boolean isError, isCritical;
+		protected final String filename;
+		private final String conflict;
 		protected final Resolution[] resolutions;
 
 		public Conflict(final FileObject file, final String conflict,
@@ -116,7 +117,7 @@ public class Conflicts {
 
 	public abstract static class Resolution {
 
-		protected final String description;
+		private final String description;
 
 		public Resolution(final String description) {
 			this.description = description;

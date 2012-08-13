@@ -33,12 +33,68 @@
  * #L%
  */
 
-package imagej.updater.util;
+package imagej.updater.core;
+
+import imagej.ImageJ;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
- * TODO
+ * Service for managing available ImageJ upload mechanisms.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-@SuppressWarnings("serial")
-public class Canceled extends RuntimeException {}
+@Plugin(type = Service.class)
+public class UploaderService extends AbstractService {
+
+	private final HashMap<String, Uploader> uploaderMap;
+
+	public UploaderService(final ImageJ context,
+		final PluginService pluginService, final LogService log)
+	{
+		super(context);
+
+		// ask the plugin service for the list of available upload mechanisms
+		uploaderMap = new HashMap<String, Uploader>();
+		final List<PluginInfo<? extends Uploader>> infos =
+			pluginService.getPluginsOfType(Uploader.class);
+		for (final PluginInfo<? extends Uploader> info : infos) {
+			// instantiate the adapter and add it to the list
+			try {
+				final Uploader uploader = info.createInstance();
+				uploaderMap.put(uploader.getProtocol(), uploader);
+			}
+			catch (final InstantiableException exc) {
+				if (log != null) log.warn("Failed to load " + info.getClassName(), exc);
+			}
+		}
+		if (log != null) {
+			log.info("Found " + uploaderMap.size() + " upload mechanisms.");
+		}
+	}
+
+	public boolean hasUploader(final String protocol) {
+		return uploaderMap.containsKey(protocol);
+	}
+
+	public Uploader getUploader(String protocol)
+		throws IllegalArgumentException
+	{
+		final Uploader uploader = uploaderMap.get(protocol);
+		if (uploader == null) {
+			throw new IllegalArgumentException("No uploader found for protocol " +
+				protocol);
+		}
+		return uploader;
+	}
+
+}

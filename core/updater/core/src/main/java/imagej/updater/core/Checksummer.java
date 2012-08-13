@@ -39,7 +39,7 @@ import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Progress;
-import imagej.updater.util.Progressable;
+import imagej.updater.util.AbstractProgressable;
 import imagej.updater.util.Util;
 
 import java.io.BufferedReader;
@@ -68,12 +68,13 @@ import java.util.zip.ZipException;
  * @author Johannes Schindelin
  * @author Yap Chin Kiet
  */
-public class Checksummer extends Progressable {
+public class Checksummer extends AbstractProgressable {
 
-	protected FilesCollection files;
-	protected int counter, total;
-	protected Map<String, FileObject.Version> cachedChecksums;
-	protected boolean isWindows; // time tax for Redmont
+	private FilesCollection files;
+	private int counter, total;
+	private Map<String, FileObject.Version> cachedChecksums;
+	private boolean isWindows; // time tax for Redmont
+	private Map<String, List<StringAndFile>> queue;
 
 	public Checksummer(final FilesCollection files, final Progress progress) {
 		this.files = files;
@@ -84,8 +85,8 @@ public class Checksummer extends Progressable {
 
 	protected static class StringAndFile {
 
-		protected String path;
-		protected File file;
+		private String path;
+		private File file;
 		public long timestamp;
 		public String checksum;
 
@@ -98,8 +99,6 @@ public class Checksummer extends Progressable {
 	public Map<String, FileObject.Version> getCachedChecksums() {
 		return cachedChecksums;
 	}
-
-	protected Map<String, List<StringAndFile>> queue;
 
 	/* follows symlinks */
 	protected boolean exists(final File file) {

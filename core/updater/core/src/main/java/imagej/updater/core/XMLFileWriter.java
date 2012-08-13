@@ -67,11 +67,11 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class XMLFileWriter {
 
-	protected FilesCollection files;
-	protected TransformerHandler handler;
-	protected final String XALAN_INDENT_AMOUNT = "{http://xml.apache.org/xslt}"
+	private FilesCollection files;
+	private TransformerHandler handler;
+	private final String XALAN_INDENT_AMOUNT = "{http://xml.apache.org/xslt}"
 		+ "indent-amount";
-	protected final static String dtd = "<!DOCTYPE pluginRecords [\n"
+	private final static String dtd = "<!DOCTYPE pluginRecords [\n"
 		+ "<!ELEMENT pluginRecords (update-site*, plugin*)>\n"
 		+ "<!ELEMENT update-site EMPTY>\n"
 		+ "<!ELEMENT plugin (platform*, category*, version?, previous-version*)>\n"

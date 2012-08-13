@@ -35,39 +35,49 @@
 
 package imagej.updater.core;
 
-import imagej.updater.util.Progressable;
+import imagej.updater.util.AbstractProgressable;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * TODO
+ * Abstract base class for ImageJ upload mechanisms.
  * 
  * @author Johannes Schindelin
  */
-public abstract class AbstractUploader extends Progressable {
-
-	// TODO: Convert this class to use a subinterface of IPlugin.
-	// The Uploader annotation interface methods will need to migrate here.
-	// See ticket #993: http://trac.imagej.net/ticket/993
+public abstract class AbstractUploader extends AbstractProgressable implements
+	Uploader
+{
 
 	protected String uploadDir;
 	protected int total;
 	protected long timestamp;
 
+	@Override
 	public abstract void upload(List<Uploadable> files, List<String> locks)
 		throws IOException;
 
+	@Override
 	public void calculateTotalSize(final List<Uploadable> sources) {
 		total = 0;
 		for (final Uploadable source : sources)
 			total += (int) source.getFilesize();
 	}
 
+	@Override
 	public boolean login(final FilesUploader uploader) {
 		uploadDir = uploader.getUploadDirectory();
 		return true; // no login required; override this if login _is_ required!
 	}
 
-	public void logout() {}
+	@Override
+	public void logout() {
+		// no logout required; override this if logout _is_ required!
+	}
+
+	@Override
+	public long getTimestamp() {
+		return timestamp;
+	}
+
 }

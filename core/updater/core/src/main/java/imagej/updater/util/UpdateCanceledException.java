@@ -33,79 +33,13 @@
  * #L%
  */
 
-package imagej.updater.core;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+package imagej.updater.util;
 
 /**
- * A class used for uploading local files.
+ * An exception thrown when an operation of the Updater is canceled.
  * 
  * @author Johannes Schindelin
- * @author Yap Chin Kiet
  */
-public class UploadableFile implements Uploadable {
-
-	protected FileObject file;
-	private String permissions;
-	protected String filename;
-	protected File source;
-	protected long filesize;
-
-	public UploadableFile(final FilesCollection files, final FileObject file) {
-		this(files.prefix(file), file.getFilename() + "-" + file.getTimestamp());
-		this.file = file;
-	}
-
-	public UploadableFile(final File source, final String target) {
-		this(source, target, "C0644");
-	}
-
-	public UploadableFile(final File source, final String target,
-		final String permissions)
-	{
-		this.source = source;
-		this.filename = target;
-		this.permissions = permissions;
-		filesize = source.exists() ? source.length() : 0;
-	}
-
-	protected void updateFilesize() {
-		filesize = source.length();
-	}
-
-	// ********** Implemented methods for SourceFile **********
-	@Override
-	public long getFilesize() {
-		return filesize;
-	}
-
-	@Override
-	public String getFilename() {
-		return filename;
-	}
-
-	@Override
-	public String getPermissions() {
-		return permissions;
-	}
-
-	@Override
-	public InputStream getInputStream() throws IOException {
-		try {
-			return new FileInputStream(source);
-		}
-		catch (final FileNotFoundException e) {
-			return new ByteArrayInputStream(new byte[0]);
-		}
-	}
-
-	@Override
-	public String toString() {
-		return filename;
-	}
+public class UpdateCanceledException extends RuntimeException {
+	// no implementation needed
 }

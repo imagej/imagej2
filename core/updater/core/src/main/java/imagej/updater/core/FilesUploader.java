@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import imagej.ImageJ;
 import imagej.log.LogService;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
@@ -48,9 +49,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
 /**
  * This class is responsible for writing updates to server, upon given the
@@ -69,41 +67,33 @@ import net.java.sezpoz.IndexItem;
  */
 public class FilesUploader {
 
-	protected FilesCollection files;
-	protected AbstractUploader uploader;
+	private FilesCollection files;
+	private Uploader uploader;
 
-	protected String siteName;
-	protected UpdateSite site;
-	protected List<Uploadable> uploadables;
-	protected String compressed;
-	protected boolean loggedIn;
+	private String siteName;
+	private UpdateSite site;
+	private List<Uploadable> uploadables;
+	private String compressed;
+	private boolean loggedIn;
 
-	public static boolean hasUploader(String protocol) {
-		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
-				Uploader.class, AbstractUploader.class))
-			if (item.annotation().protocol().equals(protocol)) return true;
-		return false;
+	private static UploaderService createUploaderService() {
+		final ImageJ context = ImageJ.createContext(UploaderService.class);
+		return context.getService(UploaderService.class);
 	}
 
-	public static AbstractUploader getUploader(String protocol)
-		throws InstantiationException
-	{
-		for (final IndexItem<Uploader, AbstractUploader> item : Index.load(
-				Uploader.class, AbstractUploader.class))
-			if (item.annotation().protocol().equals(protocol)) return item.instance();
-		throw new InstantiationException("No uploader found for protocol " +
-			protocol);
+	public FilesUploader(final FilesCollection files, final String updateSite) {
+		this(createUploaderService(), files, updateSite);
 	}
 
 	// TODO: add a button to check for new db.xml.gz, and merge if necessary
-	public FilesUploader(final FilesCollection files, final String updateSite)
-		throws InstantiationException
+	public FilesUploader(final UploaderService uploaderService,
+		final FilesCollection files, final String updateSite)
 	{
 		this.files = files;
 		siteName = updateSite;
 		site = files.getUpdateSite(updateSite);
 		compressed = Util.XML_COMPRESSED;
-		uploader = getUploader(site.getUploadProtocol());
+		uploader = uploaderService.getUploader(site.getUploadProtocol());
 	}
 
 	public boolean hasUploader() {
@@ -272,7 +262,7 @@ public class FilesUploader {
 		@Override
 		public void setTitle(final String string) {
 			try {
-				updateUploadTimestamp(uploader.timestamp);
+				updateUploadTimestamp(uploader.getTimestamp());
 			}
 			catch (final Exception e) {
 				files.log.error(e);

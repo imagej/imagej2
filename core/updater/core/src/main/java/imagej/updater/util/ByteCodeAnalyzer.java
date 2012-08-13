@@ -44,14 +44,14 @@ import java.util.Iterator;
  */
 public class ByteCodeAnalyzer implements Iterable<String> {
 
-	byte[] buffer;
-	int[] poolOffsets;
-	int endOffset, interfacesOffset, fieldsOffset, methodsOffset,
+	private byte[] buffer;
+	private int[] poolOffsets;
+	private int endOffset, interfacesOffset, fieldsOffset, methodsOffset,
 			attributesOffset;
-	Interface[] interfaces;
-	Field[] fields;
-	Method[] methods;
-	Attribute[] attributes;
+	private Interface[] interfaces;
+	private Field[] fields;
+	private Method[] methods;
+	private Attribute[] attributes;
 
 	public enum Mode { CONSTANTS, INTERFACES, FIELDS, METHODS, ALL };
 

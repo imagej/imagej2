@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import imagej.ext.plugin.Plugin;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -57,7 +58,7 @@ import java.util.List;
  * 
  * @author Johannes Schindelin
  */
-@Uploader(protocol = "file")
+@Plugin(type = Uploader.class)
 public class FileUploader extends AbstractUploader {
 
 	// Steps to accomplish entire upload task
@@ -111,4 +112,10 @@ public class FileUploader extends AbstractUploader {
 
 		done();
 	}
+
+	@Override
+	public String getProtocol() {
+		return "file";
+	}
+
 }

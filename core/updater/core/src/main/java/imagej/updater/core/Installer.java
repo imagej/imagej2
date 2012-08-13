@@ -55,7 +55,7 @@ import java.util.List;
  */
 public class Installer extends Downloader {
 
-	protected FilesCollection files;
+	private FilesCollection files;
 
 	public Installer(final FilesCollection files, final Progress progress) {
 		this.files = files;

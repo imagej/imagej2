@@ -35,23 +35,46 @@
 
 package imagej.updater.core;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
+import imagej.updater.util.Progressable;
 
-import net.java.sezpoz.Indexable;
+import java.io.IOException;
+import java.util.List;
 
 /**
- * Annotation identifying an uploader for ImageJ's Updater.
+ * Interface for ImageJ upload mechanisms.
+ * <p>
+ * Upload mechanisms discoverable at runtime must implement this interface and
+ * be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link Uploader}.class. While it possible to create an upload mechanism
+ * merely by implementing this interface, it is encouraged to instead extend
+ * {@link AbstractUploader}, for convenience.
+ * </p>
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
+ * @see Plugin
+ * @see UploaderService
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = AbstractUploader.class)
-public @interface Uploader {
+public interface Uploader extends IPlugin, Progressable {
 
-	String protocol();
+	/** TODO */
+	void upload(List<Uploadable> files, List<String> locks) throws IOException;
+
+	/** TODO */
+	void calculateTotalSize(List<Uploadable> sources);
+
+	/** TODO */
+	boolean login(FilesUploader uploader);
+
+	/** TODO */
+	void logout();
+
+	/** TODO */
+	long getTimestamp();
+
+	/** TODO */
+	String getProtocol();
 
 }

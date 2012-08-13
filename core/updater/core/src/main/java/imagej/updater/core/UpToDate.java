@@ -70,9 +70,9 @@ public class UpToDate {
 			CHECK_TURNED_OFF, READ_ONLY, UPDATES_MANAGED_DIFFERENTLY /* e.g. Debian packaging */, DEVELOPER
 	}
 
-	protected final static String KEY = "latestNag";
-	protected final static long REMINDER_INTERVAL = 86400 * 7; // one week
-	protected final static long FOUR_O_SEVEN = -111381;
+	private final static String KEY = "latestNag";
+	private final static long REMINDER_INTERVAL = 86400 * 7; // one week
+	private final static long FOUR_O_SEVEN = -111381;
 
 	/**
 	 * Check the update status of the current ImageJ installation.

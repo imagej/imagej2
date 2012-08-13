@@ -33,79 +33,67 @@
  * #L%
  */
 
-package imagej.updater.core;
+package imagej.updater.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A class used for uploading local files.
+ * Abstract superclass for {@link Progressable} implementations.
  * 
  * @author Johannes Schindelin
- * @author Yap Chin Kiet
  */
-public class UploadableFile implements Uploadable {
+public abstract class AbstractProgressable implements Progressable {
 
-	protected FileObject file;
-	private String permissions;
-	protected String filename;
-	protected File source;
-	protected long filesize;
+	protected List<Progress> progress;
 
-	public UploadableFile(final FilesCollection files, final FileObject file) {
-		this(files.prefix(file), file.getFilename() + "-" + file.getTimestamp());
-		this.file = file;
-	}
-
-	public UploadableFile(final File source, final String target) {
-		this(source, target, "C0644");
-	}
-
-	public UploadableFile(final File source, final String target,
-		final String permissions)
-	{
-		this.source = source;
-		this.filename = target;
-		this.permissions = permissions;
-		filesize = source.exists() ? source.length() : 0;
-	}
-
-	protected void updateFilesize() {
-		filesize = source.length();
-	}
-
-	// ********** Implemented methods for SourceFile **********
-	@Override
-	public long getFilesize() {
-		return filesize;
+	public AbstractProgressable() {
+		progress = new ArrayList<Progress>();
 	}
 
 	@Override
-	public String getFilename() {
-		return filename;
+	public void addProgress(final Progress progress) {
+		this.progress.add(progress);
 	}
 
 	@Override
-	public String getPermissions() {
-		return permissions;
+	public void removeProgress(final Progress progress) {
+		this.progress.remove(progress);
 	}
 
 	@Override
-	public InputStream getInputStream() throws IOException {
-		try {
-			return new FileInputStream(source);
-		}
-		catch (final FileNotFoundException e) {
-			return new ByteArrayInputStream(new byte[0]);
-		}
+	public void setTitle(final String title) {
+		for (final Progress progress : this.progress)
+			progress.setTitle(title);
 	}
 
 	@Override
-	public String toString() {
-		return filename;
+	public void setCount(final int count, final int total) {
+		for (final Progress progress : this.progress)
+			progress.setCount(count, total);
+	}
+
+	@Override
+	public void addItem(final Object item) {
+		for (final Progress progress : this.progress)
+			progress.addItem(item);
+	}
+
+	@Override
+	public void setItemCount(final int count, final int total) {
+		for (final Progress progress : this.progress)
+			progress.setItemCount(count, total);
+	}
+
+	@Override
+	public void itemDone(final Object item) {
+		for (final Progress progress : this.progress)
+			progress.itemDone(item);
+	}
+
+	@Override
+	public void done() {
+		for (final Progress progress : this.progress)
+			progress.done();
 	}
 }

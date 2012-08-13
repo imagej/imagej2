@@ -59,8 +59,8 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Johannes Schindelin
  */
 public class POMParser extends DefaultHandler {
-	protected FileObject file;
-	protected String body, prefix;
+	private FileObject file;
+	private String body, prefix;
 
 	public POMParser(final FileObject file) {
 		this.file = file;

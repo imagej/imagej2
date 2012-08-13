@@ -45,7 +45,8 @@ import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.DependencyMap;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
-import imagej.updater.util.Canceled;
+import imagej.updater.core.UploaderService;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.FileUtils;
@@ -101,6 +102,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 {
 
 	protected LogService log;
+	protected UploaderService uploaderService;
 	protected FilesCollection files;
 
 	protected JTextField searchTerm;
@@ -129,11 +131,14 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		gitVersion = version;
 	}
 
-	public UpdaterFrame(final LogService log, final FilesCollection files) {
+	public UpdaterFrame(final LogService log,
+		final UploaderService uploaderService, final FilesCollection files)
+	{
 		super("ImageJ Updater");
 		setPreferredSize(new Dimension(780, 560));
 
 		this.log = log;
+		this.uploaderService = uploaderService;
 		this.files = files;
 
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -496,6 +501,11 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		return new ProgressDialog(this, title);
 	}
 
+	/** Gets the uploader service associated with this updater frame. */
+	public UploaderService getUploaderService() {
+		return uploaderService;
+	}
+
 	@Override
 	public void valueChanged(final ListSelectionEvent event) {
 		filesChanged();
@@ -652,7 +662,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			info("Updated successfully.  Please restart ImageJ!");
 			dispose();
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			// TODO: remove "update/" directory
 			error("Canceled");
 			installer.done();
@@ -828,7 +838,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			enableUploadOrNot();
 			dispose();
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			// TODO: teach uploader to remove the lock file
 			error("Canceled");
 			if (progress != null) progress.done();
@@ -858,7 +868,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			catch (final InterruptedException e) { /* ignore */}
 			return true;
 		}
-		catch (final Canceled e) {
+		catch (final UpdateCanceledException e) {
 			if (progress != null) progress.done();
 		}
 		catch (final Throwable e) {

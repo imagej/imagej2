@@ -38,12 +38,13 @@ package imagej.updater.ssh;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
-import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
-import imagej.updater.util.Canceled;
+import imagej.updater.core.Uploadable;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
 
 import java.io.ByteArrayInputStream;
@@ -59,7 +60,7 @@ import java.util.List;
  * 
  * @author Jarek Sacha
  */
-@Uploader(protocol = "sftp")
+@Plugin(type = Uploader.class)
 public final class SFTPFileUploader extends AbstractUploader {
 
 	private SFTPOperations sftp;
@@ -106,7 +107,7 @@ public final class SFTPFileUploader extends AbstractUploader {
 		try {
 			uploadFiles(sources);
 		}
-		catch (final Canceled cancel) {
+		catch (final UpdateCanceledException cancel) {
 			// Delete locks
 			for (final String lock : locks) {
 				final String path = uploadDir + lock + ".lock";
@@ -213,4 +214,10 @@ public final class SFTPFileUploader extends AbstractUploader {
 
 		return timestamp;
 	}
+
+	@Override
+	public String getProtocol() {
+		return "sftp";
+	}
+
 }

@@ -35,7 +35,7 @@
 
 package imagej.updater.gui;
 
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
 
 import java.awt.Adjustable;
@@ -164,7 +164,7 @@ public class ProgressDialog extends JDialog implements Progress {
 	}
 
 	protected void checkIfCanceled() {
-		if (canceled) throw new Canceled();
+		if (canceled) throw new UpdateCanceledException();
 	}
 
 	@Override

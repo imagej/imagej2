@@ -40,12 +40,13 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
-import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
-import imagej.updater.util.Canceled;
+import imagej.updater.core.Uploadable;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.InputStream2OutputStream;
 import imagej.updater.util.UpdaterUserInterface;
 
@@ -61,7 +62,7 @@ import java.util.List;
  * @author Johannes Schindelin
  * @author Yap Chin Kiet
  */
-@Uploader(protocol = "ssh")
+@Plugin(type = Uploader.class)
 public class SSHFileUploader extends AbstractUploader {
 
 	private Session session;
@@ -111,7 +112,7 @@ public class SSHFileUploader extends AbstractUploader {
 		try {
 			uploadFiles(sources);
 		}
-		catch (final Canceled cancel) {
+		catch (final UpdateCanceledException cancel) {
 			for (final String lock : locks)
 				setCommand("rm " + uploadDir + lock + ".lock");
 			out.close();
@@ -302,4 +303,10 @@ public class SSHFileUploader extends AbstractUploader {
 		}
 		return b;
 	}
+
+	@Override
+	public String getProtocol() {
+		return "ssh";
+	}
+
 }

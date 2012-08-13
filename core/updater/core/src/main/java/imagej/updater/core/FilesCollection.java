@@ -39,7 +39,7 @@ import imagej.log.LogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
-import imagej.updater.util.Canceled;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrLogService;
@@ -80,7 +80,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 {
 
 	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
-	protected File imagejRoot;
+	private File imagejRoot;
 	public LogService log;
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 	protected List<Conflict> conflicts = new ArrayList<Conflict>();
@@ -154,6 +154,8 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	private Map<String, UpdateSite> updateSites;
+
+	private DependencyAnalyzer dependencyAnalyzer;
 
 	/**
 	 * This constructor takes the imagejRoot primarily for testing purposes.
@@ -325,8 +327,6 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		new XMLFileWriter(this).write(new GZIPOutputStream(new FileOutputStream(
 			prefix(Util.XML_COMPRESSED))), true);
 	}
-
-	protected DependencyAnalyzer dependencyAnalyzer;
 
 	public interface Filter {
 
@@ -953,7 +953,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		downloader.addProgress(progress);
 		try {
 			downloader.start(false);
-		} catch (final Canceled e) {
+		} catch (final UpdateCanceledException e) {
 				downloader.done();
 				throw e;
 		}
