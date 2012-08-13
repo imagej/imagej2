@@ -93,6 +93,9 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#close()}. */
 	public static void close(final ImagePlus obj) {
+		// TODO - is the getWindow()==null test safe. It might cause things to
+		// collect in memory and not get flushed. Not sure. If memory leaks become
+		// prevalent this is a good place to check.
 		if ((obj == null) || (obj.getWindow() == null)) return;
 		if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
 			LegacyOutputTracker.getClosedImps().add(obj);
