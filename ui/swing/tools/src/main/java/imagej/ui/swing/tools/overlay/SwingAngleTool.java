@@ -40,9 +40,9 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.AngleOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.Tool;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 
@@ -58,13 +58,12 @@ import org.jhotdraw.geom.BezierPath;
  * @author Lee Kamentsky
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Angle",
+@Plugin(type = JHotDrawAdapter.class, name = "Angle",
 	description = "Angle overlays", iconPath = "/icons/tools/angle.png",
-	priority = AngleAdapter.PRIORITY, enabled = true)
-@JHotDrawOverlayAdapter(priority = AngleAdapter.PRIORITY)
-public class AngleAdapter extends AbstractJHotDrawOverlayAdapter<AngleOverlay> {
+	priority = SwingAngleTool.PRIORITY, enabled = true)
+public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay> {
 
-	public static final int PRIORITY = LineAdapter.PRIORITY - 1;
+	public static final double PRIORITY = SwingLineTool.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {

@@ -59,7 +59,7 @@ import imagej.util.IntRect;
 	iconPath = "/icons/tools/zoom.png", priority = ZoomTool.PRIORITY)
 public class ZoomTool extends AbstractTool {
 
-	public static final int PRIORITY = -200;
+	public static final double PRIORITY = -200;
 
 	private static final int DRAG_THRESHOLD = 8;
 

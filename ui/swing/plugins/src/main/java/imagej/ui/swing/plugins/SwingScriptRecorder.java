@@ -124,7 +124,6 @@ public class SwingScriptRecorder implements RunnablePlugin {
 		button.addActionListener(new ActionListener() {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(final ActionEvent e) {
 				if (!isRecording()) {
 					startRecording();

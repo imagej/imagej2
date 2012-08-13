@@ -43,9 +43,9 @@ import imagej.data.overlay.OverlaySettings;
 import imagej.data.overlay.PointOverlay;
 import imagej.ext.MouseCursor;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.Tool;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.ColorRGB;
@@ -73,13 +73,12 @@ import org.jhotdraw.geom.Geom;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Point", description = "Point overlays",
-	iconPath = "/icons/tools/point.png", priority = PointAdapter.PRIORITY,
-	enabled = true)
-@JHotDrawOverlayAdapter(priority = PointAdapter.PRIORITY)
-public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
+@Plugin(type = JHotDrawAdapter.class, name = "Point",
+	description = "Point overlays", iconPath = "/icons/tools/point.png",
+	priority = SwingPointTool.PRIORITY, enabled = true)
+public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 
-	public static final int PRIORITY = AngleAdapter.PRIORITY - 1;
+	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
@@ -280,7 +279,6 @@ public class PointAdapter extends AbstractJHotDrawOverlayAdapter<PointOverlay> {
 			return that;
 		}
 
-		@SuppressWarnings("synthetic-access")
 		@Override
 		public List<Handle> createHandles(final int detailLevel) {
 			final Handle handle = new PointHandle(this);

@@ -33,15 +33,15 @@
  * #L%
  */
 
-package imagej.ui.swing.tools.overlay;
+package imagej.ui.swing.overlay;
 
-import imagej.ImageJ;
+import imagej.Prioritized;
+import imagej.Priority;
 import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.ext.tool.AbstractTool;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
@@ -52,13 +52,13 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
 
 /**
- * An abstract class that gives default behavior for the IJHotDrawOverlayAdapter
+ * An abstract class that gives default behavior for the {@link JHotDrawAdapter}
  * interface.
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
-	AbstractTool implements IJHotDrawOverlayAdapter
+public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
+	AbstractTool implements JHotDrawAdapter
 {
 
 	// NB: The line styles here are taken from
@@ -71,17 +71,9 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 	static final protected double[] dotLineStyle = { 1, 2 };
 	static final protected double[] dotDashLineStyle = { 6, 2, 1, 2 };
 
-	private int priority;
+	private double priority = Priority.NORMAL_PRIORITY;
 
-	@Override
-	public int getPriority() {
-		return priority;
-	}
-
-	@Override
-	public void setPriority(final int priority) {
-		this.priority = priority;
-	}
+	// -- JHotDrawAdapter methods --
 
 	@Override
 	public void updateFigure(final OverlayView overlayView, final Figure figure) {
@@ -153,16 +145,31 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends
 		overlay.setAlpha(fillColor.getAlpha());
 	}
 
+	// -- Prioritized methods --
+
+	@Override
+	public double getPriority() {
+		return priority;
+	}
+
+	@Override
+	public void setPriority(final double priority) {
+		this.priority = priority;
+	}
+
+	// -- Comparable methods --
+
+	@Override
+	public int compareTo(final Prioritized p) {
+		return Priority.compare(this, p);
+	}
+
 	// -- Internal methods --
 
 	protected void initDefaultSettings(final Figure figure) {
-		// TODO - eliminate deprecated use. Note that simply using getContext() is
-		// not sufficient. The figure adapters do not initialize their ImageJ
-		// context. So its possible getContext() would return null here and a NPE
-		// can get thrown. Happens when you run a legacy plugin if getContext() used
-		// here.
-		final OverlaySettings settings =
-			ImageJ.get(OverlayService.class).getDefaultSettings();
+		final OverlayService overlayService =
+			getContext().getService(OverlayService.class);
+		final OverlaySettings settings = overlayService.getDefaultSettings();
 		figure.set(AttributeKeys.STROKE_WIDTH, getDefaultLineWidth(settings));
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor(settings));
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor(settings));

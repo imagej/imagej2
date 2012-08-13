@@ -38,11 +38,10 @@ package imagej.ui.swing.overlay;
 import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 /**
- * TODO
+ * A JHotDraw {@link DelegationSelectionTool} for ImageJ's Swing UI.
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("serial")
 public class IJDelegationSelectionTool extends DelegationSelectionTool
 	implements JHotDrawTool
 {

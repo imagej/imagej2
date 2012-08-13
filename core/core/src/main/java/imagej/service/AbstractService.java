@@ -50,7 +50,7 @@ public abstract class AbstractService extends AbstractContextual implements
 	Service
 {
 
-	private double priority;
+	private double priority = Priority.NORMAL_PRIORITY;
 
 	/** Maintain list of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")

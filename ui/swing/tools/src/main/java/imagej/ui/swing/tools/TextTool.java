@@ -50,7 +50,7 @@ import imagej.ext.tool.Tool;
 	enabled = false)
 public class TextTool extends AbstractTool {
 
-	public static final int PRIORITY = -115;
+	public static final double PRIORITY = -115;
 
 	@Override
 	public MouseCursor getCursor() {

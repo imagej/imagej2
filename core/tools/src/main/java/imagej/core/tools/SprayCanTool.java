@@ -70,7 +70,7 @@ import net.imglib2.meta.Axes;
 	priority = SprayCanTool.PRIORITY)
 public class SprayCanTool extends AbstractTool {
 
-	public static final int PRIORITY = -303;
+	public static final double PRIORITY = -303;
 
 	private DrawingTool drawingTool;
 	private int width=100, rate=6, dotSize=1;

@@ -35,13 +35,14 @@
 
 package imagej.ui.swing.display;
 
+import imagej.ImageJ;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ext.display.Display;
-import imagej.ui.swing.overlay.IJHotDrawOverlayAdapter;
-import imagej.ui.swing.overlay.JHotDrawAdapterFinder;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
+import imagej.ui.swing.overlay.JHotDrawService;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
@@ -54,7 +55,6 @@ import org.jhotdraw.draw.event.FigureEvent;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-@SuppressWarnings("synthetic-access")
 public class OverlayFigureView implements FigureView {
 
 	private final SwingImageDisplayViewer displayViewer;
@@ -63,7 +63,7 @@ public class OverlayFigureView implements FigureView {
 	/** JHotDraw {@link Figure} linked to the associated {@link Overlay}. */
 	private final Figure figure;
 
-	private final IJHotDrawOverlayAdapter adapter;
+	private final JHotDrawAdapter adapter;
 
 	private boolean updatingFigure = false;
 
@@ -94,8 +94,10 @@ public class OverlayFigureView implements FigureView {
 	{
 		this.displayViewer = display;
 		this.overlayView = overlayView;
-		adapter =
-			JHotDrawAdapterFinder.getAdapterForOverlay(overlayView.getData(), figure);
+		final ImageJ context = display.getDisplay().getContext();
+		final JHotDrawService jHotDrawService =
+			context.getService(JHotDrawService.class);
+		adapter = jHotDrawService.getAdapter(overlayView.getData(), figure);
 		if (figure == null) {
 			this.figure = adapter.createDefaultFigure();
 			adapter.updateFigure(overlayView, this.figure);

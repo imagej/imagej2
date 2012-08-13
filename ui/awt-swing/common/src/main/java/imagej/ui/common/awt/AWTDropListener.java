@@ -127,7 +127,6 @@ public class AWTDropListener implements DropTargetListener {
 				final Object input = inputs.get(i);
 				final Thread thread = new Thread(new Runnable() {
 
-					@SuppressWarnings("synthetic-access")
 					@Override
 					public void run() {
 						dropHandler.handleInput(input);

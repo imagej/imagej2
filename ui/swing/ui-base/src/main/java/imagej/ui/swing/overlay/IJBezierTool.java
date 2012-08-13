@@ -48,20 +48,21 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.BezierTool;
 
 /**
- * TODO
+ * A JHotDraw {@link BezierTool} for ImageJ's Swing UI.
  * 
  * @author Lee Kamentsky
  * @author Johannes Schindelin
  */
 public class IJBezierTool extends BezierTool implements JHotDrawTool {
 
-	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private final ImageDisplay display;
-	private final IJHotDrawOverlayAdapter adapter;
+
+	private final JHotDrawAdapter adapter;
 	private final EventListenerList listeners = new EventListenerList();
 
 	public IJBezierTool(final ImageDisplay display,
-		final IJHotDrawOverlayAdapter adapter,
+		final JHotDrawAdapter adapter,
 		final OverlayCreatedListener... listeners)
 	{
 		super((BezierFigure) adapter.createDefaultFigure());

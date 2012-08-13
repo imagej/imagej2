@@ -40,9 +40,9 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.Tool;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
-import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.Log;
@@ -70,15 +70,14 @@ import org.jhotdraw.geom.BezierPath.Node;
  * @author Lee Kamentsky
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Polygon", description = "Polygon overlays",
-	iconPath = "/icons/tools/polygon.png", priority = PolygonAdapter.PRIORITY,
-	enabled = true)
-@JHotDrawOverlayAdapter(priority = PolygonAdapter.PRIORITY)
-public class PolygonAdapter extends
-	AbstractJHotDrawOverlayAdapter<PolygonOverlay>
+@Plugin(type = JHotDrawAdapter.class, name = "Polygon",
+	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
+	priority = SwingPolygonTool.PRIORITY, enabled = true)
+public class SwingPolygonTool extends
+	AbstractJHotDrawAdapter<PolygonOverlay>
 {
 
-	public static final int PRIORITY = EllipseAdapter.PRIORITY - 1;
+	public static final double PRIORITY = SwingEllipseTool.PRIORITY - 1;
 
 	static private BezierFigure downcastFigure(final Figure figure) {
 		assert figure instanceof BezierFigure;

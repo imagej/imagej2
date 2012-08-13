@@ -35,11 +35,14 @@
 
 package imagej.ui.swing.tools.overlay;
 
+import imagej.Priority;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.ext.plugin.Plugin;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.JHotDrawOverlayAdapter;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.ColorRGB;
@@ -69,14 +72,15 @@ import org.jhotdraw.draw.ImageFigure;
  * 
  * @author Lee Kamentsky
  */
-@JHotDrawOverlayAdapter(priority = DefaultAdapter.PRIORITY)
-public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
+@Plugin(type = JHotDrawAdapter.class,
+	priority = DefaultJHotDrawAdapter.PRIORITY, alwaysActive = true)
+public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay> {
 
-	static public final int PRIORITY = 0;
+	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		return ((figure == null) || (figure instanceof ImageFigure));
+		return figure == null || figure instanceof ImageFigure;
 	}
 
 	@Override
