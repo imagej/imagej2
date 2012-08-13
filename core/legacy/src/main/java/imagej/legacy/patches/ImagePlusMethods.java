@@ -57,7 +57,9 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#updateAndDraw()}. */
 	public static void updateAndDraw(final ImagePlus obj) {
-		if ((obj == null) || (!obj.isProcessor())) return;
+		if (obj == null) return;
+		if (!obj.isProcessor()) return;
+		if (obj.getWindow() == null) return;
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -67,7 +69,8 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#repaintWindow()}. */
 	public static void repaintWindow(final ImagePlus obj) {
-		if ((obj == null) || (obj.getWindow() == null)) return;
+		if (obj == null) return;
+		if (obj.getWindow() == null) return;
 		Log.debug("ImagePlus.repaintWindow(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -79,6 +82,7 @@ public final class ImagePlusMethods {
 	public static void show(final ImagePlus obj,
 		@SuppressWarnings("unused") final String message)
 	{
+		if (obj == null) return;
 		Log.debug("ImagePlus.show(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -87,6 +91,7 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#hide()}. */
 	public static void hide(final ImagePlus obj) {
+		if (obj == null) return;
 		Log.debug("ImagePlus.hide(): " + obj);
 		LegacyOutputTracker.getOutputImps().remove(obj);
 		LegacyOutputTracker.getClosedImps().add(obj);
@@ -95,9 +100,11 @@ public final class ImagePlusMethods {
 	/** Appends {@link ImagePlus#close()}. */
 	public static void close(final ImagePlus obj) {
 		if (obj == null) return;
-		else if (obj.getWindow() == null)
-			LegacyUtils.deleteImagePlus(obj);
-		else if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
+		// TODO - what is correct here?????
+		//else if (obj.getWindow() == null)
+		//	LegacyUtils.deleteImagePlus(obj);
+		//else
+		if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
 			LegacyOutputTracker.getClosedImps().add(obj);
 		}
 	}
