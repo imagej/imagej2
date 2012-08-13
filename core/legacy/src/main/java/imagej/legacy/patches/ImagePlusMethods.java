@@ -40,6 +40,7 @@ import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
+import imagej.legacy.translate.LegacyUtils;
 import imagej.util.Log;
 
 /**
@@ -93,11 +94,10 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#close()}. */
 	public static void close(final ImagePlus obj) {
-		// TODO - is the getWindow()==null test safe. It might cause things to
-		// collect in memory and not get flushed. Not sure. If memory leaks become
-		// prevalent this is a good place to check.
-		if ((obj == null) || (obj.getWindow() == null)) return;
-		if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
+		if (obj == null) return;
+		else if (obj.getWindow() == null)
+			LegacyUtils.deleteImagePlus(obj);
+		else if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
 			LegacyOutputTracker.getClosedImps().add(obj);
 		}
 	}
