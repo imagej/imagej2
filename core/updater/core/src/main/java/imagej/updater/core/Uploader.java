@@ -59,16 +59,22 @@ import java.util.List;
  */
 public interface Uploader extends IPlugin, Progressable {
 
+	/** TODO */
 	void upload(List<Uploadable> files, List<String> locks) throws IOException;
 
+	/** TODO */
 	void calculateTotalSize(List<Uploadable> sources);
 
+	/** TODO */
 	boolean login(FilesUploader uploader);
 
+	/** TODO */
 	void logout();
 
+	/** TODO */
 	long getTimestamp();
 
+	/** TODO */
 	String getProtocol();
 
 }
