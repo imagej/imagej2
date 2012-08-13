@@ -64,6 +64,12 @@ public class JHotDrawService extends AbstractService {
 
 	private final ArrayList<JHotDrawAdapter> adapters;
 
+	public JHotDrawService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
 	public JHotDrawService(final ImageJ context,
 		final PluginService pluginService, final LogService log)
 	{

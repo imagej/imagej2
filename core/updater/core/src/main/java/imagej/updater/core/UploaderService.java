@@ -58,6 +58,12 @@ public class UploaderService extends AbstractService {
 
 	private final HashMap<String, Uploader> uploaderMap;
 
+	public UploaderService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
 	public UploaderService(final ImageJ context,
 		final PluginService pluginService, final LogService log)
 	{
