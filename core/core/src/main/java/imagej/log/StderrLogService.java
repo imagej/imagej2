@@ -40,7 +40,7 @@ import imagej.service.AbstractService;
 import imagej.service.Service;
 
 /**
- * TODO
+ * Implementation of {@link LogService} using the standard error stream.
  * 
  * @author Johannes Schindelin
  */
