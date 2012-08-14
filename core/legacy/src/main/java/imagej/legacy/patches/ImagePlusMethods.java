@@ -38,6 +38,7 @@ package imagej.legacy.patches;
 import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
+import imagej.data.display.ImageDisplay;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.util.Log;
@@ -93,7 +94,19 @@ public final class ImagePlusMethods {
 		if (obj == null) return;
 		Log.debug("ImagePlus.hide(): " + obj);
 		LegacyOutputTracker.getOutputImps().remove(obj);
-		LegacyOutputTracker.getClosedImps().add(obj);
+		// Original method
+		//LegacyOutputTracker.getClosedImps().add(obj);
+		// Alternate method
+		// begin alternate
+		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		ImageDisplay disp = legacyService.getImageMap().lookupDisplay(obj);
+		if (disp == null) {
+			legacyService.getImageMap().unregisterLegacyImage(obj);
+		}
+		else {
+			disp.close();
+		}
+		// end alternate
 	}
 
 	/** Appends {@link ImagePlus#close()}. */
