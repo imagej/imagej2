@@ -538,7 +538,7 @@ public class FileObject {
 			final FileObject file = stack.pop();
 			for (final Dependency dependency : file.getDependencies()) {
 				final FileObject file2 = files.get(dependency.filename);
-				if (file2 == null)
+				if (file2 == null || file2.isObsolete())
 					continue;
 				if (recursive && !result.contains(file2))
 					stack.push(file2);
