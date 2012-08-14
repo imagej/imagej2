@@ -36,7 +36,6 @@
 package imagej.updater.core;
 
 import imagej.log.LogService;
-import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -163,7 +162,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	 * @param imagejRoot the ImageJ directory
 	 */
 	public FilesCollection(final File imagejRoot) {
-		this(new StderrLogService(), imagejRoot);
+		this(Util.getLogService(), imagejRoot);
 	}
 
 	/**

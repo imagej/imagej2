@@ -33,60 +33,44 @@
  * #L%
  */
 
-package imagej.updater.ui;
+package imagej.updater.util;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
+import imagej.ImageJ;
+import imagej.Prioritized;
 import imagej.log.LogService;
-import imagej.updater.core.UpToDate;
-import imagej.updater.core.UpdaterUIPlugin;
-import imagej.updater.util.Util;
-
-import java.util.List;
 
 /**
- * This plugin checks whether updates are available, and prompts the user to
- * launch the updater if so. It typically runs when ImageJ first starts up.
+ * Deprecated; do not use.
  * 
- * @author Johannes Schindelin
+ * This class is here solely to keep the Updater process running even if only
+ * ij-updater-core is updated but not ij-ui-swing-updater.
+ * 
+ * @deprecated
  */
-@Plugin(label = "There are updates available")
-public class UpdatesAvailable implements RunnablePlugin {
-
-	private final static String YES = "Yes, please", NEVER = "Never",
-			LATER = "Remind me later";
-
-	@Parameter
-	public PluginService pluginService;
-
-	@Parameter
-	public LogService log;
-
-	@Parameter(label = "Do you want to start the Updater now?", choices = { YES,
-		NEVER, LATER })
-	public String updateAction = YES;
-
-	@Override
-	public void run() {
-		if (updateAction.equals(YES)) {
-			final List<PluginModuleInfo<UpdaterUIPlugin>> updaters =
-				pluginService.getRunnablePluginsOfType(UpdaterUIPlugin.class);
-			if (updaters.size() > 0) {
-				pluginService.run(updaters.get(0));
-			}
-			else {
-				if (log == null) {
-					log = Util.getLogService();
-				}
-				log.error("No updater plugins found!");
-			}
-		}
-		else if (updateAction.equals(NEVER)) UpToDate.setLatestNag(Long.MAX_VALUE);
-		else if (updateAction.equals(LATER)) UpToDate.setLatestNag();
-		else throw new RuntimeException("Unknown update action: " + updateAction);
-	}
-
+public class StderrLogService implements LogService {
+	@Override public ImageJ getContext() { return null; }
+	@Override public void setContext(ImageJ context) { }
+	@Override public double getPriority() { return 0; }
+	@Override public void setPriority(double priority) { }
+	@Override public int compareTo(Prioritized o) { return 0; }
+	@Override public void debug(Object msg) { System.err.println(msg); }
+	@Override public void debug(Throwable t) { t.printStackTrace(); }
+	@Override public void debug(Object msg, Throwable t) { debug(msg); debug(t); }
+	@Override public void error(Object msg) { debug(msg); }
+	@Override public void error(Throwable t) { debug(t); }
+	@Override public void error(Object msg, Throwable t) { debug(msg, t); }
+	@Override public void info(Object msg) { debug(msg); }
+	@Override public void info(Throwable t) { debug(t); }
+	@Override public void info(Object msg, Throwable t) { debug(msg, t); }
+	@Override public void trace(Object msg) { debug(msg); }
+	@Override public void trace(Throwable t) { debug(t); }
+	@Override public void trace(Object msg, Throwable t) { debug(msg, t); }
+	@Override public void warn(Object msg) { debug(msg); }
+	@Override public void warn(Throwable t) { debug(t); }
+	@Override public void warn(Object msg, Throwable t) { debug(msg, t); }
+	@Override public boolean isDebug() { return true; }
+	@Override public boolean isError() { return true; }
+	@Override public boolean isInfo() { return true; }
+	@Override public boolean isTrace() { return true; }
+	@Override public boolean isWarn() { return true; }
 }

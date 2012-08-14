@@ -36,7 +36,6 @@
 package imagej.updater.util;
 
 import imagej.log.LogService;
-import imagej.log.StderrLogService;
 
 import java.awt.Frame;
 import java.io.IOException;
@@ -104,7 +103,7 @@ public abstract class UpdaterUserInterface {
 		protected LogService log;
 
 		public StderrInterface() {
-			log = new StderrLogService();
+			log = Util.getLogService();
 		}
 
 		@Override

@@ -35,6 +35,7 @@
 
 package imagej.updater.util;
 
+import imagej.log.LogService;
 import imagej.util.FileUtils;
 
 import java.io.BufferedReader;
@@ -444,6 +445,18 @@ public class Util {
                     return iterator;
             }
 	    };
+	}
+
+	/**
+	 * Get a log service.
+	 *
+	 * This works around an earlier updater bug where it failed to update ij-core
+	 * properly, so the StderrLogService class was not found.
+	 * 
+	 * @return the log service
+	 */
+	public static LogService getLogService() {
+		return new StderrLogService();
 	}
 
 }

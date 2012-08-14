@@ -40,7 +40,6 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
-import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
@@ -105,7 +104,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 	public void run() {
 
 		if (log == null) {
-			log = new StderrLogService();
+			log = Util.getLogService();
 		}
 
 		UpdaterUserInterface.set(new SwingUserInterface(log, statusService));

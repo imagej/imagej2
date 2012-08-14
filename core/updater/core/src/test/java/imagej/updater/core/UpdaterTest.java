@@ -50,7 +50,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import imagej.log.LogService;
-import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
@@ -1209,7 +1208,7 @@ public class UpdaterTest {
 				loader.loadClass("imagej.updater.gui.UpdaterFrame");
 			final java.lang.reflect.Constructor<?> ctor =
 				clazz.getConstructor(LogService.class, FilesCollection.class);
-			final Object updaterFrame = ctor.newInstance(new StderrLogService(), files);
+			final Object updaterFrame = ctor.newInstance(Util.getLogService(), files);
 			final java.lang.reflect.Method setVisible =
 				clazz.getMethod("setVisible", boolean.class);
 			setVisible.invoke(updaterFrame, true);

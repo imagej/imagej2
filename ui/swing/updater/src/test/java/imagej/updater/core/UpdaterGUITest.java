@@ -50,12 +50,12 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.GZIPOutputStream;
 
-import imagej.log.StderrLogService;
 import imagej.updater.gui.ImageJUpdater;
 import imagej.updater.gui.ProgressDialog;
 import imagej.updater.gui.SwingUserInterface;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
+import imagej.updater.util.Util;
 import imagej.util.MersenneTwisterFast;
 
 /**
@@ -123,12 +123,12 @@ public class UpdaterGUITest {
 	}
 
 	protected static void testStringDialog() {
-		SwingUserInterface ui = new SwingUserInterface(new StderrLogService(), null);
+		SwingUserInterface ui = new SwingUserInterface(Util.getLogService(), null);
 		System.err.println(ui.getString("Login for blub"));
 	}
 
 	protected static void testPassword() {
-		SwingUserInterface ui = new SwingUserInterface(new StderrLogService(), null);
+		SwingUserInterface ui = new SwingUserInterface(Util.getLogService(), null);
 		System.err.println(ui.getPassword("Enter password"));
 	}
 

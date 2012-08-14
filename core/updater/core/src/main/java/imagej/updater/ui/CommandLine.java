@@ -80,7 +80,7 @@ import org.xml.sax.SAXException;
  */
 public class CommandLine {
 
-	protected static LogService log = new StderrLogService();
+	protected static LogService log = Util.getLogService();
 	protected FilesCollection files;
 	protected Progress progress;
 
