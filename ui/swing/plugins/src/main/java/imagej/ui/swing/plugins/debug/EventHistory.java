@@ -75,7 +75,7 @@ public class EventHistory extends AbstractService {
 		subscribeToEvents(eventService);
 	}
 
-	// -- EventWatchService methods --
+	// -- EventHistory methods --
 
 	public void setActive(final boolean active) {
 		this.active = active;
