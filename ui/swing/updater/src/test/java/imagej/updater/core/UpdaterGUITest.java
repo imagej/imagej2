@@ -50,11 +50,11 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.GZIPOutputStream;
 
+import imagej.log.StderrLogService;
 import imagej.updater.gui.ImageJUpdater;
 import imagej.updater.gui.ProgressDialog;
 import imagej.updater.gui.SwingUserInterface;
 import imagej.updater.util.Progress;
-import imagej.updater.util.StderrLogService;
 import imagej.updater.util.StderrProgress;
 import imagej.util.MersenneTwisterFast;
 

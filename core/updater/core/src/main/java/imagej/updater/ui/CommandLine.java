@@ -36,6 +36,7 @@
 package imagej.updater.ui;
 
 import imagej.log.LogService;
+import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Dependency;
@@ -50,7 +51,6 @@ import imagej.updater.core.Installer;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
-import imagej.updater.util.StderrLogService;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;

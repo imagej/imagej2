@@ -33,16 +33,19 @@
  * #L%
  */
 
-package imagej.updater.util;
+package imagej.log;
 
-import imagej.log.LogService;
+import imagej.Priority;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
+import imagej.service.Service;
 
 /**
- * TODO
+ * Implementation of {@link LogService} using the standard error stream.
  * 
  * @author Johannes Schindelin
  */
+@Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class StderrLogService extends AbstractService implements LogService {
 
 	public StderrLogService() {
@@ -51,21 +54,21 @@ public class StderrLogService extends AbstractService implements LogService {
 
 	@Override
 	public void debug(Object msg) {
-		if (System.getenv("DEBUG") != null) {
+		if (isDebug()) {
 			System.err.println(msg.toString());
 		}
 	}
 
 	@Override
 	public void debug(Throwable t) {
-		if (System.getenv("DEBUG") != null) {
+		if (isDebug()) {
 			t.printStackTrace();
 		}
 	}
 
 	@Override
 	public void debug(Object msg, Throwable t) {
-		if (System.getenv("DEBUG") != null) {
+		if (isDebug()) {
 			System.err.println(msg.toString());
 			t.printStackTrace();
 		}

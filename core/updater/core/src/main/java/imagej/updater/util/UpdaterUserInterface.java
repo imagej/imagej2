@@ -36,6 +36,7 @@
 package imagej.updater.util;
 
 import imagej.log.LogService;
+import imagej.log.StderrLogService;
 
 import java.awt.Frame;
 import java.io.IOException;

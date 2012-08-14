@@ -50,13 +50,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import imagej.log.LogService;
+import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
-import imagej.updater.util.StderrLogService;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
 

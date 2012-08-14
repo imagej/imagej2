@@ -35,6 +35,8 @@
 
 package imagej.ui.swing.plugins.debug;
 
+import imagej.event.EventDetails;
+import imagej.event.EventHistory;
 import imagej.event.ImageJEvent;
 import imagej.log.LogService;
 import imagej.util.IteratorPlus;

@@ -36,13 +36,10 @@
 package imagej.util;
 
 import imagej.log.LogService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import imagej.log.StderrLogService;
 
 /**
- * Simple logging utility class that uses <a
- * href="http://www.slf4j.org/">SLF4J</a>.
+ * Simple logging utility class.
  * <p>
  * The class supports five common logging levels: error, warn, info, trace and
  * debug. It provides methods for logging messages, exception stack traces
@@ -55,22 +52,14 @@ import org.slf4j.LoggerFactory;
 @Deprecated
 public final class Log {
 
+	private static LogService log = new StderrLogService();
+
 	private Log() {
 		// prevent instantiation of utility class
 	}
 
-	private static Logger logger = LoggerFactory.getLogger(Log.class);
-
-	public static Logger getLogger() {
-		return logger;
-	}
-
-	public static void setLogger(final Logger logger) {
-		Log.logger = logger;
-	}
-
 	public static void debug(final Object msg) {
-		logger.debug(s(msg));
+		getLog().debug(s(msg));
 	}
 
 	public static void debug(final Throwable t) {
@@ -78,11 +67,11 @@ public final class Log {
 	}
 
 	public static void debug(final Object msg, final Throwable t) {
-		logger.debug(s(msg), t);
+		getLog().debug(s(msg), t);
 	}
 
 	public static void error(final Object msg) {
-		logger.error(s(msg));
+		getLog().error(s(msg));
 	}
 
 	public static void error(final Throwable t) {
@@ -90,11 +79,11 @@ public final class Log {
 	}
 
 	public static void error(final Object msg, final Throwable t) {
-		logger.error(s(msg), t);
+		getLog().error(s(msg), t);
 	}
 
 	public static void info(final Object msg) {
-		logger.info(s(msg));
+		getLog().info(s(msg));
 	}
 
 	public static void info(final Throwable t) {
@@ -102,11 +91,11 @@ public final class Log {
 	}
 
 	public static void info(final Object msg, final Throwable t) {
-		logger.info(s(msg), t);
+		getLog().info(s(msg), t);
 	}
 
 	public static void trace(final Object msg) {
-		logger.trace(s(msg));
+		getLog().trace(s(msg));
 	}
 
 	public static void trace(final Throwable t) {
@@ -114,11 +103,11 @@ public final class Log {
 	}
 
 	public static void trace(final Object msg, final Throwable t) {
-		logger.trace(s(msg), t);
+		getLog().trace(s(msg), t);
 	}
 
 	public static void warn(final Object msg) {
-		logger.warn(s(msg));
+		getLog().warn(s(msg));
 	}
 
 	public static void warn(final Throwable t) {
@@ -126,30 +115,34 @@ public final class Log {
 	}
 
 	public static void warn(final Object msg, final Throwable t) {
-		logger.warn(s(msg), t);
+		getLog().warn(s(msg), t);
 	}
 
 	public static boolean isDebug() {
-		return logger.isDebugEnabled();
+		return getLog().isDebug();
 	}
 
 	public static boolean isError() {
-		return logger.isErrorEnabled();
+		return getLog().isError();
 	}
 
 	public static boolean isInfo() {
-		return logger.isInfoEnabled();
+		return getLog().isInfo();
 	}
 
 	public static boolean isTrace() {
-		return logger.isTraceEnabled();
+		return getLog().isTrace();
 	}
 
 	public static boolean isWarn() {
-		return logger.isWarnEnabled();
+		return getLog().isWarn();
 	}
 
 	// -- Helper methods --
+
+	private static LogService getLog() {
+		return log;
+	}
 
 	private static String s(final Object o) {
 		return o == null ? null : o.toString();
