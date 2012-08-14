@@ -35,6 +35,7 @@
 
 package imagej.log;
 
+import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -44,7 +45,7 @@ import imagej.service.Service;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(type = Service.class)
+@Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class StderrLogService extends AbstractService implements LogService {
 
 	public StderrLogService() {
