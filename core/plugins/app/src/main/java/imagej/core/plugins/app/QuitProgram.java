@@ -84,7 +84,9 @@ public class QuitProgram implements RunnablePlugin {
 		}
 		// TODO - call ImageJ.getContext().shutdown() or some such, rather than
 		// using System.exit(0), which kills the entire JVM.
-		statusService.showStatus("Quitting...");
+		if (statusService != null) {
+			statusService.showStatus("Quitting...");
+		}
 		System.exit(0);
 	}
 
