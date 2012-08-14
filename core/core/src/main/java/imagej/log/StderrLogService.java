@@ -53,21 +53,21 @@ public class StderrLogService extends AbstractService implements LogService {
 
 	@Override
 	public void debug(Object msg) {
-		if (System.getenv("DEBUG") != null) {
+		if (isDebug()) {
 			System.err.println(msg.toString());
 		}
 	}
 
 	@Override
 	public void debug(Throwable t) {
-		if (System.getenv("DEBUG") != null) {
+		if (isDebug()) {
 			t.printStackTrace();
 		}
 	}
 
 	@Override
 	public void debug(Object msg, Throwable t) {
-		if (System.getenv("DEBUG") != null) {
+		if (isDebug()) {
 			System.err.println(msg.toString());
 			t.printStackTrace();
 		}
