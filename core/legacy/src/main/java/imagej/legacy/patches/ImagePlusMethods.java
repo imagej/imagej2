@@ -40,7 +40,6 @@ import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
-import imagej.legacy.translate.LegacyUtils;
 import imagej.util.Log;
 
 /**
