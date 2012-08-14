@@ -33,10 +33,12 @@
  * #L%
  */
 
-package imagej.log;
+package imagej.log.slf4j;
 
 import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
+import imagej.log.DefaultUncaughtExceptionHandler;
+import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -44,13 +46,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default service for logging, implemented using <a
- * href="http://www.slf4j.org/">SLF4J</a>.
+ * Logging service implemented using <a href="http://www.slf4j.org/">SLF4J</a>.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public final class DefaultLogService extends AbstractService implements
+public final class SLF4JLogService extends AbstractService implements
 	LogService
 {
 
@@ -58,20 +59,20 @@ public final class DefaultLogService extends AbstractService implements
 
 	// -- Constructors --
 
-	public DefaultLogService() {
+	public SLF4JLogService() {
 		// NB: Required by SezPoz.
 		super(null);
 		throw new UnsupportedOperationException();
 	}
 
-	public DefaultLogService(final ImageJ context) {
+	public SLF4JLogService(final ImageJ context) {
 		super(context);
 
 		// HACK: Dirty, because every time a new ImageJ context is created with a
 		// DefaultLogService, it will "steal" the default exception handling.
 		DefaultUncaughtExceptionHandler.install(this);
 
-		logger = LoggerFactory.getLogger(DefaultLogService.class);
+		logger = LoggerFactory.getLogger(SLF4JLogService.class);
 	}
 
 	// -- DefaultLogService methods --

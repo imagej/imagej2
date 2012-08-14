@@ -36,13 +36,13 @@
 package imagej.updater.core;
 
 import imagej.log.LogService;
+import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
-import imagej.updater.util.StderrLogService;
 import imagej.updater.util.Util;
 
 import java.io.File;

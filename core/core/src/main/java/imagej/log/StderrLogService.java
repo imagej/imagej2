@@ -33,16 +33,18 @@
  * #L%
  */
 
-package imagej.updater.util;
+package imagej.log;
 
-import imagej.log.LogService;
+import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
+import imagej.service.Service;
 
 /**
  * TODO
  * 
  * @author Johannes Schindelin
  */
+@Plugin(type = Service.class)
 public class StderrLogService extends AbstractService implements LogService {
 
 	public StderrLogService() {

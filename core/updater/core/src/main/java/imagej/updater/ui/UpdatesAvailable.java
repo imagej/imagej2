@@ -41,9 +41,9 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
+import imagej.log.StderrLogService;
 import imagej.updater.core.UpToDate;
 import imagej.updater.core.UpdaterUIPlugin;
-import imagej.updater.util.StderrLogService;
 
 import java.util.List;
 
