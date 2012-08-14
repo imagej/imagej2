@@ -230,18 +230,26 @@ public class XMLFileReader extends DefaultHandler {
 					}
 					addPreviousVersions(current, file);
 				} else if (file.isObsolete()) {
-					addPreviousVersions(file, current);
+					if (file.updateSite != null) {
+						for (String site : file.overriddenUpdateSites.keySet())
+							current.overriddenUpdateSites.put(site,  file.overriddenUpdateSites.get(site));
+						file.overriddenUpdateSites.clear();
+						current.overriddenUpdateSites.put(file.updateSite, file);
+					}
 					files.add(current);
 					filesFromThisSite.add(current);
 				} else if (current.isObsolete()) {
-					addPreviousVersions(current, file);
+					if (current.updateSite != null)
+						file.overriddenUpdateSites.put(current.updateSite, current);
 				} else if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
 					if ((updateSite != null && updateSite.equals(file.updateSite)) || (updateSite == null && file.updateSite == null)) {
 						; // simply update the object
 					} else {
-						current.overriddenUpdateSites.addAll(file.overriddenUpdateSites);
+						for (String site : file.overriddenUpdateSites.keySet())
+							current.overriddenUpdateSites.put(site, file.overriddenUpdateSites.get(site));
+						file.overriddenUpdateSites.clear();
 						if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
-							current.overriddenUpdateSites.add(file.updateSite);
+							current.overriddenUpdateSites.put(file.updateSite, file);
 						}
 					}
 					if (file.localFilename != null) {
@@ -249,7 +257,6 @@ public class XMLFileReader extends DefaultHandler {
 					}
 					// do not forget metadata
 					current.completeMetadataFrom(file);
-					addPreviousVersions(file, current);
 					files.add(current);
 					filesFromThisSite.add(current);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, this.updateSite) > getRank(files, file.updateSite))
@@ -259,8 +266,7 @@ public class XMLFileReader extends DefaultHandler {
 								+ file.updateSite + "'");
 				}
 				else {
-					addPreviousVersions(current, file);
-					file.overriddenUpdateSites.add(updateSite);
+					file.overriddenUpdateSites.put(updateSite, current);
 					if (this.updateSite != null && file.updateSite != null && getRank(files, file.updateSite) > getRank(files, this.updateSite))
 						files.log.warn("'" + file.filename
 								+ "' from update site '" + file.updateSite

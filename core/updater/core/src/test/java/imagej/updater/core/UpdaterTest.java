@@ -631,7 +631,9 @@ public class UpdaterTest {
 
 		FileObject file = files.get("ImageJ-linux64");
 		assertNotNull(file);
-		assertCount(2, file.previous);
+		assertTrue(file.hasPreviousVersion("a"));
+		assertTrue(file.hasPreviousVersion("b"));
+		assertTrue(file.hasPreviousVersion("c"));
 		assertStatus(Status.NEW, files, "ImageJ-linux64");
 
 		files = new FilesCollection(ijRoot);
@@ -643,7 +645,9 @@ public class UpdaterTest {
 
 		file = files.get("ImageJ-linux64");
 		assertNotNull(file);
-		assertCount(2, file.previous);
+		assertTrue(file.hasPreviousVersion("a"));
+		assertTrue(file.hasPreviousVersion("b"));
+		assertTrue(file.hasPreviousVersion("c"));
 		assertStatus(Status.NEW, files, "ImageJ-linux64");
 	}
 
@@ -1133,6 +1137,50 @@ public class UpdaterTest {
 		assertTrue(db.indexOf("<plugin filename=\"jars/obsolete.jar\"") > 0);
 	}
 
+	@Test
+	public void keepOverriddenObsoleteRecords() throws Exception {
+		initializeUpdateSite();
+
+		// upload to secondary
+		writeFile("jars/overridden.jar");
+		FilesCollection files = readDb(false, true);
+		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
+		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
+		files.get("jars/overridden.jar").stageForUpload(files, "Second");
+		upload(files, "Second");
+		files.write();
+		String obsoleteChecksum = files.get("jars/overridden.jar").getChecksum();
+
+		// delete from secondary
+		assertTrue(new File(ijRoot, "jars/overridden.jar").delete());
+		files = readDb(true, true);
+		files.get("jars/overridden.jar").setAction(files, Action.REMOVE);
+		upload(files, "Second");
+		files.write();
+
+		// upload to primary
+		assertTrue(new File(ijRoot, "db.xml.gz").delete());
+		writeJar("jars/overridden.jar", "Jola", "Theo");
+		files = readDb(false, true);
+		files.get("jars/overridden.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+		upload(files);
+
+		// re-add secondary
+		files = readDb(true, true);
+		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
+		files.write();
+
+		// upload sumpin' else to secondary
+		writeJar("jars/new.jar");
+		files = readDb(true, true);
+		files.get("jars/new.jar").stageForUpload(files, "Second");
+		upload(files, "Second");
+
+		String db = readGzippedStream(new FileInputStream(new File(webRoot2, "db.xml.gz")));
+		assertTrue(db.indexOf("<plugin filename=\"jars/overridden.jar\"") > 0);
+		assertTrue(db.indexOf(obsoleteChecksum) > 0);
+	}
+
 	//
 	// Debug functions
 	//
@@ -1292,8 +1340,12 @@ public class UpdaterTest {
 	}
 
 	protected void upload(final FilesCollection files) throws Exception {
+		upload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+	}
+
+	protected void upload(final FilesCollection files, final String updateSite) throws Exception {
 		final FilesUploader uploader =
-			new FilesUploader(files, FilesCollection.DEFAULT_UPDATE_SITE);
+			new FilesUploader(files, updateSite);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		files.write();

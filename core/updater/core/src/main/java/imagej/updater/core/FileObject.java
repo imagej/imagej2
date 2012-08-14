@@ -42,10 +42,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -174,7 +176,7 @@ public class FileObject {
 		}
 	}
 
-	protected List<String> overriddenUpdateSites = new ArrayList<String>();
+	protected Map<String, FileObject> overriddenUpdateSites = new HashMap<String, FileObject>();
 	private Status status;
 	private Action action;
 	public String updateSite, filename, description;
@@ -256,6 +258,9 @@ public class FileObject {
 		if (current != null && current.checksum.equals(checksum)) return true;
 		for (final Version version : previous)
 			if (version.checksum.equals(checksum)) return true;
+		for (Entry<String, FileObject> overridden : overriddenUpdateSites.entrySet())
+			if (overridden.getValue().hasPreviousVersion(checksum))
+				return true;
 		return false;
 	}
 

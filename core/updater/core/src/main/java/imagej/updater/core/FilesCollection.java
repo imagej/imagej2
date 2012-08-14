@@ -211,10 +211,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public void removeUpdateSite(final String name) throws IOException {
-		// TODO: remove NOT_INSTALLED files, mark others LOCAL_ONLY
 		Set<String> toReRead = new HashSet<String>();
 		for (final FileObject file : forUpdateSite(name)) {
-			toReRead.addAll(file.overriddenUpdateSites);
+			toReRead.addAll(file.overriddenUpdateSites.keySet());
 			if (file.getStatus() == Status.NOT_INSTALLED) {
 				remove(file);
 			}
@@ -415,8 +414,20 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		Filter filter = and(doesPlatformMatch(), isUpdateSite(name));
 		if (!includeObsoletes) {
 			filter = and(not(is(Status.OBSOLETE_UNINSTALLED)), filter);
+			return filter(filter);
 		}
-		return filter(filter);
+		// make sure that overridden records are kept
+		List<FileObject> result = new ArrayList<FileObject>();
+		for (FileObject file : this) {
+			if (filter.matches(file))
+				result.add(file);
+			else {
+				FileObject overridden = file.overriddenUpdateSites.get(name);
+				if (overridden != null)
+					result.add(overridden);
+			}
+		}
+		return result;
 	}
 
 	public Iterable<FileObject> managedFiles() {
