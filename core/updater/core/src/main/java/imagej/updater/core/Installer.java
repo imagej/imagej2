@@ -46,7 +46,9 @@ import imagej.updater.util.Util;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * TODO
@@ -158,16 +160,19 @@ public class Installer extends Downloader {
 	}
 
 	public static void updateTheUpdater(final FilesCollection files, final Progress progress) throws IOException {
-		final FileObject updater = files.get(UPDATER_JAR_NAME);
+		final Set<FileObject> dependencies = new HashSet<FileObject>();
+		int counter = 0;
+		for (final FileObject file : files.get(UPDATER_JAR_NAME).getFileDependencies(files, true)) {
+			dependencies.add(file);
+			if (file.setFirstValidAction(files, Action.UPDATE, Action.INSTALL))
+				counter++;
+		}
+		if (counter == 0) return; // nothing to be done
 		final FilesCollection.Filter filter = new FilesCollection.Filter() {
 
 			@Override
 			public boolean matches(final FileObject file) {
-				if (file == updater) {
-					file.setAction(files, Action.UPDATE);
-					return true;
-				}
-				return false;
+				return dependencies.contains(file);
 			}
 		};
 		final FilesCollection justTheUpdater = files.clone(files.filter(filter));
