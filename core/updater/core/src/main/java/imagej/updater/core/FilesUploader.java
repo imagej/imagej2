@@ -315,6 +315,7 @@ public class FilesUploader {
 	}
 
 	protected void verifyTimestamp() {
+		if (site.timestamp == 0) return;
 		final long lastModified = getCurrentLastModified();
 		if (!site.isLastModified(lastModified)) throw new RuntimeException(
 			"db.xml.gz was " + "changed in the meantime (was " + site.timestamp +
