@@ -321,8 +321,9 @@ public class XMLFileWriter {
 			final int len) throws IOException
 		{
 			if (dtdInserted) return false;
-			final int found =
-				off + new String(b, off, len).indexOf("<pluginRecords>");
+			int found = off + new String(b, off, len).indexOf("<pluginRecords>");
+			if (found < 0)
+				found = off + new String(b, off, len).indexOf("<pluginRecords/>");
 			if (found < 0) return false;
 
 			if (found > off) out.write(b, off, found - off);
