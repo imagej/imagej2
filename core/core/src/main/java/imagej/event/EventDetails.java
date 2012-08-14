@@ -33,9 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins.debug;
-
-import imagej.event.ImageJEvent;
+package imagej.event;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

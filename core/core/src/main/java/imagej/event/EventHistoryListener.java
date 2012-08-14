@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins.debug;
+package imagej.event;
 
 /**
  * Listener for event history changes.

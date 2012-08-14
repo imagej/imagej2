@@ -33,12 +33,9 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins.debug;
+package imagej.event;
 
 import imagej.ImageJ;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.ImageJEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
