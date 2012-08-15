@@ -160,8 +160,8 @@ public abstract class TypeChanger implements RunnablePlugin {
 
 	// TODO - make public?
 	
-	/** Creates an output ImgPlus of specified type by averaging the channel
-	 * values of an input ImgPlus */
+	/** Creates an output {@link ImgPlus} of specified type by averaging the channel
+	 * values of an input {@link ImgPlus}. */
 	private static
 		<I extends RealType<I>, O extends RealType<O>>
 		ImgPlus<O> colorToGrayscale(
@@ -212,7 +212,6 @@ public abstract class TypeChanger implements RunnablePlugin {
 				inputFactory.createInputIterator(allOtherDims);
 
 		// build averaging function
-		//@SuppressWarnings("unchecked")
 		Function<long[], DoubleType> valFunc =
 				new RealImageFunction<I, DoubleType>(inputImg, new DoubleType());
 		Function<PointSet, DoubleType> avgFunc =
@@ -236,7 +235,7 @@ public abstract class TypeChanger implements RunnablePlugin {
 		return new ImgPlus<O>(outputImg, name, axes, cal);
 	}
 	
-	/** determines the axes of the output image ignoring channels if necessary */
+	/** Determines the axes of the output image ignoring channels if necessary. */
 	private static AxisType[] outputAxes(ImgPlus<?> inputImg) {
 		int inputAxisCount = inputImg.numDimensions();
 		int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
@@ -251,7 +250,7 @@ public abstract class TypeChanger implements RunnablePlugin {
 		return outputAxes;
 	}
 
-	/** determines the dims of the output image ignoring channels if necessary */
+	/** Determines the dims of the output image ignoring channels if necessary. */
 	private static long[] outputDims(ImgPlus<?> inputImg) {
 		int inputDimCount = inputImg.numDimensions();
 		int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
@@ -266,8 +265,10 @@ public abstract class TypeChanger implements RunnablePlugin {
 		return outputDims;
 	}
 
-	/** determines the calibration of the output image ignoring channels if
-	 * necessary */
+	/**
+	 * Determines the calibration of the output image ignoring channels if
+	 * necessary.
+	 */
 	private static double[] outputCalibration(ImgPlus<?> inputImg) {
 		int inputDimCount = inputImg.numDimensions();
 		int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
@@ -282,8 +283,10 @@ public abstract class TypeChanger implements RunnablePlugin {
 		return outputCal;
 	}
 	
-	/** computes an output point from an input point ignoring the channel axis
-	 * if necessary. */
+	/**
+	 * Computes an output point from an input point ignoring the channel axis
+	 * if necessary.
+	 */
 	private static void computeOutputPoint(
 		int chIndex, long[] inputPt, long[] outputPt)
 	{
