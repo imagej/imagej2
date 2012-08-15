@@ -156,7 +156,11 @@ public class Installer extends Downloader {
 
 	public static boolean isTheUpdaterUpdateable(final FilesCollection files) {
 		final FileObject updater = files.get(UPDATER_JAR_NAME);
-		return updater != null && updater.getStatus() == FileObject.Status.UPDATEABLE;
+		if (updater == null) return false;
+		for (final FileObject file : files.get(UPDATER_JAR_NAME).getFileDependencies(files, true)) {
+			if (!file.isObsolete() && file.getStatus() == FileObject.Status.UPDATEABLE) return true;
+		}
+		return false;
 	}
 
 	public static void updateTheUpdater(final FilesCollection files, final Progress progress) throws IOException {
