@@ -35,6 +35,7 @@
 
 package imagej.ext.module.ui;
 
+import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleCanceledException;
@@ -52,7 +53,26 @@ import java.util.ArrayList;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractInputHarvester<U> implements InputHarvester<U> {
+public abstract class AbstractInputHarvester<U> implements Contextual,
+	InputHarvester<U>
+{
+
+	private ImageJ context;
+
+	// -- Contextual methods --
+
+	@Override
+	public ImageJ getContext() {
+		return context;
+	}
+
+	@Override
+	public void setContext(final ImageJ context) {
+		if (this.context != null) {
+			throw new IllegalStateException("Context already set");
+		}
+		this.context = context;
+	}
 
 	// -- InputHarvester methods --
 
@@ -114,7 +134,8 @@ public abstract class AbstractInputHarvester<U> implements InputHarvester<U> {
 		final Class<T> type = item.getType();
 		final WidgetModel model = new WidgetModel(inputPanel, module, item);
 
-		final WidgetService widgetService = ImageJ.get(WidgetService.class);
+		final WidgetService widgetService =
+			getContext().getService(WidgetService.class);
 		final InputWidget<?, ?> widget = widgetService.createWidget(model);
 		if (widget != null) {
 			inputPanel.addWidget(widget);

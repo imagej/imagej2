@@ -35,7 +35,6 @@
 
 package imagej.ext.plugin;
 
-import imagej.ImageJ;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ui.AbstractInputHarvester;
@@ -53,25 +52,8 @@ public abstract class AbstractInputHarvesterPlugin<U> extends
 	AbstractInputHarvester<U> implements PreprocessorPlugin
 {
 
-	private ImageJ context;
-
 	private boolean canceled;
 	private String cancelReason;
-
-	// -- Contextual methods --
-
-	@Override
-	public ImageJ getContext() {
-		return context;
-	}
-
-	@Override
-	public void setContext(final ImageJ context) {
-		if (this.context != null) {
-			throw new IllegalStateException("Context already set");
-		}
-		this.context = context;
-	}
 
 	// -- ModuleProcessor methods --
 
