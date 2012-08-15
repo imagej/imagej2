@@ -111,8 +111,10 @@ public class LegacyOutputTracker {
 		beingClosedByIJ2.get().remove(imp);
 	}
 
-	/** Informs API user whether a given ImagePlus is currently being closed by
-	 * ImageJ2. */
+	/**
+	 * Informs API user whether a given ImagePlus is currently being closed by
+	 * ImageJ2.
+	 */
 	public static boolean isBeingClosedbyIJ2(final ImagePlus imp) {
 		return beingClosedByIJ2.get().contains(imp);
 	}
