@@ -40,6 +40,7 @@ import imagej.event.StatusService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
@@ -100,6 +101,9 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 	@Parameter
 	private UploaderService uploaderService;
+
+	@Parameter
+	private PluginService pluginService;
 
 	@Override
 	public void run() {
@@ -169,13 +173,13 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			return;
 		}
 
-		if (Installer.isTheUpdaterUpdateable(files)) {
+		if (Installer.isTheUpdaterUpdateable(files, pluginService)) {
 			if (SwingTools.showQuestion(main, "Update the updater",
 				"There is an update available for the Updater. Install now?"))
 			{
 				try {
 					// download just the updater
-					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."));
+					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."), pluginService);
 				}
 				catch (final UpdateCanceledException e) {
 					main.error("Canceled");
@@ -186,8 +190,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 				// make a class path using the updated files
 				final List<URL> classPath = new ArrayList<URL>();
-				final FileObject guiJar = files.get("jars/ij-updater-core.jar");
-				for (final FileObject component : guiJar.getFileDependencies(files, true)) {
+				for (FileObject component : Installer.getUpdaterFiles(files, pluginService, false)) {
 					final String name = component.getLocalFilename(false);
 					File file = files.prefix(name);
 					try {
@@ -199,7 +202,8 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 				try {
 					log.info("Trying to install and execute the new updater");
 					new Installer(files, null).moveUpdatedIntoPlace();
-					URLClassLoader remoteClassLoader = new URLClassLoader(classPath.toArray(new URL[classPath.size()]), ClassLoader.getSystemClassLoader());
+					final URL[] urls = classPath.toArray(new URL[classPath.size()]);
+					URLClassLoader remoteClassLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
 					System.setProperty("imagej.update.updater", "true");
 					Class<?> runnable = remoteClassLoader.loadClass(ImageJUpdater.class.getName());
 					new Thread((Runnable)runnable.newInstance()).start();

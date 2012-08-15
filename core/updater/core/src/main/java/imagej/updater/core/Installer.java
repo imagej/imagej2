@@ -35,6 +35,8 @@
 
 package imagej.updater.core;
 
+import imagej.ext.plugin.PluginModuleInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Downloadable;
@@ -153,27 +155,72 @@ public class Installer extends Downloader {
 
 	protected final static String UPDATER_JAR_NAME = "jars/ij-updater-core.jar";
 
-	private static Set<FileObject> getUpdaterFiles(final FilesCollection files) {
+	public static Set<FileObject> getUpdaterFiles(final FilesCollection files, final PluginService pluginService, final boolean onlyUpdateable) {
 		final Set<FileObject> result = new HashSet<FileObject>();
 		final FileObject updater = files.get(UPDATER_JAR_NAME);
 		if (updater == null) return result;
-		for (final FileObject file : updater.getFileDependencies(files, true)) {
-			if (!file.isObsolete()) {
-				result.add(file);
+		final Set<FileObject> topLevel = new HashSet<FileObject>();
+		topLevel.add(updater);
+		if (pluginService != null) {
+			for (final PluginModuleInfo<UpdaterUIPlugin> plugin : pluginService.getRunnablePluginsOfType(UpdaterUIPlugin.class)) {
+				final FileObject file = getFileObject(files, plugin.getClassName());
+				if (file != null) {
+					topLevel.add(file);
+				}
+			}
+		}
+		for (final FileObject file : topLevel) {
+			for (final FileObject file2 : file.getFileDependencies(files, true)) {
+				if (!onlyUpdateable) {
+					result.add(file2);
+				} else switch (file.getStatus()) {
+				case NEW: case NOT_INSTALLED: case UPDATEABLE:
+					result.add(file2);
+				}
 			}
 		}
 		return result;
 	}
 
+	/**
+	 * Gets the file object for the .jar file containing the given class.
+	 * 
+	 * Unfortunately, at the time of writing, we could not rely on ij-core being updated properly when ij-updater-core was updated,
+	 * so we had to invent this method which logically belongs into imagej.util.FileUtils.
+	 * 
+	 * @param files the database of available files
+	 * @param className the name of the class we seek the .jar file for
+	 * @return the file object, or null if the class could not be found in any file of the collection
+	 */
+	private static FileObject getFileObject(final FilesCollection files, final String className) {
+		try {
+			final String path = "/" + className.replace('.', '/') + ".class";
+			String jar = Installer.class.getClassLoader().loadClass(className).getResource(path).toString();
+			if (!jar.endsWith(".jar!" + path)) return null;
+			jar = jar.substring(0, jar.length() - path.length() - 1);
+			String prefix = "jar:file:" + System.getProperty("ij.dir");
+			if (!prefix.endsWith("/")) prefix += "/";
+			if (!jar.startsWith(prefix)) return null;
+			jar = jar.substring(prefix.length());
+			return files.get(jar);
+		} catch (ClassNotFoundException e) { /* ignore */ }
+		return null;
+	}
+
 	public static boolean isTheUpdaterUpdateable(final FilesCollection files) {
-		for (final FileObject file : getUpdaterFiles(files)) {
-			if (file.getStatus().isValid(Action.UPDATE) || file.getStatus().isValid(Action.INSTALL)) return true;
-		}
-		return false;
+		return isTheUpdaterUpdateable(files, null);
+	}
+
+	public static boolean isTheUpdaterUpdateable(final FilesCollection files, final PluginService pluginService) {
+		return getUpdaterFiles(files, pluginService, true).size() > 0;
 	}
 
 	public static void updateTheUpdater(final FilesCollection files, final Progress progress) throws IOException {
-		final Set<FileObject> all = getUpdaterFiles(files);
+		updateTheUpdater(files, progress, null);
+	}
+
+	public static void updateTheUpdater(final FilesCollection files, final Progress progress, final PluginService pluginService) throws IOException {
+		final Set<FileObject> all = getUpdaterFiles(files, pluginService, true);
 		int counter = 0;
 		for (final FileObject file : all) {
 			if (file.setFirstValidAction(files, Action.UPDATE, Action.INSTALL))
