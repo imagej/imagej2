@@ -151,23 +151,31 @@ public class Installer extends Downloader {
 				: Status.NOT_INSTALLED);
 	}
 
-	// TODO: find all updater-related files
 	protected final static String UPDATER_JAR_NAME = "jars/ij-updater-core.jar";
 
-	public static boolean isTheUpdaterUpdateable(final FilesCollection files) {
+	private static Set<FileObject> getUpdaterFiles(final FilesCollection files) {
+		final Set<FileObject> result = new HashSet<FileObject>();
 		final FileObject updater = files.get(UPDATER_JAR_NAME);
-		if (updater == null) return false;
-		for (final FileObject file : files.get(UPDATER_JAR_NAME).getFileDependencies(files, true)) {
-			if (!file.isObsolete() && file.getStatus() == FileObject.Status.UPDATEABLE) return true;
+		if (updater == null) return result;
+		for (final FileObject file : updater.getFileDependencies(files, true)) {
+			if (!file.isObsolete()) {
+				result.add(file);
+			}
+		}
+		return result;
+	}
+
+	public static boolean isTheUpdaterUpdateable(final FilesCollection files) {
+		for (final FileObject file : getUpdaterFiles(files)) {
+			if (file.getStatus().isValid(Action.UPDATE) || file.getStatus().isValid(Action.INSTALL)) return true;
 		}
 		return false;
 	}
 
 	public static void updateTheUpdater(final FilesCollection files, final Progress progress) throws IOException {
-		final Set<FileObject> dependencies = new HashSet<FileObject>();
+		final Set<FileObject> all = getUpdaterFiles(files);
 		int counter = 0;
-		for (final FileObject file : files.get(UPDATER_JAR_NAME).getFileDependencies(files, true)) {
-			dependencies.add(file);
+		for (final FileObject file : all) {
 			if (file.setFirstValidAction(files, Action.UPDATE, Action.INSTALL))
 				counter++;
 		}
@@ -176,7 +184,7 @@ public class Installer extends Downloader {
 
 			@Override
 			public boolean matches(final FileObject file) {
-				return dependencies.contains(file);
+				return all.contains(file);
 			}
 		};
 		final FilesCollection justTheUpdater = files.clone(files.filter(filter));
