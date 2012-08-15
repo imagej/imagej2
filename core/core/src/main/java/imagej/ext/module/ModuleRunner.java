@@ -35,6 +35,7 @@
 
 package imagej.ext.module;
 
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusService;
@@ -62,9 +63,10 @@ import java.util.concurrent.Callable;
  * 
  * @author Curtis Rueden
  */
-public class ModuleRunner implements Callable<Module>, Runnable {
+public class ModuleRunner extends AbstractContextual implements
+	Callable<Module>, Runnable
+{
 
-	private final ImageJ context;
 	private final Module module;
 	private final List<? extends ModulePreprocessor> pre;
 	private final List<? extends ModulePostprocessor> post;
@@ -73,7 +75,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post)
 	{
-		this.context = context;
+		setContext(context);
 		this.module = module;
 		this.pre = pre;
 		this.post = post;
@@ -90,7 +92,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	public ModulePreprocessor preProcess() {
 		if (pre == null) return null; // no preprocessors
 
-		final EventService es = context.getService(EventService.class);
+		final EventService es = getContext().getService(EventService.class);
 
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
@@ -103,7 +105,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	/** Feeds the module through the {@link ModulePostprocessor}s. */
 	public void postProcess() {
 		if (post == null) return; // no postprocessors
-		final EventService es = context.getService(EventService.class);
+		final EventService es = getContext().getService(EventService.class);
 
 		for (final ModulePostprocessor p : post) {
 			p.process(module);
@@ -119,7 +121,7 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 			run();
 		}
 		catch (final RuntimeException e) {
-			final LogService log = context.getService(LogService.class);
+			final LogService log = getContext().getService(LogService.class);
 			if (log != null) log.error("Module threw exception", e);
 			throw e;
 		}
@@ -136,8 +138,8 @@ public class ModuleRunner implements Callable<Module>, Runnable {
 	public void run() {
 		if (module == null) return;
 
-		final EventService es = context.getService(EventService.class);
-		final StatusService ss = context.getService(StatusService.class);
+		final EventService es = getContext().getService(EventService.class);
+		final StatusService ss = getContext().getService(StatusService.class);
 		final String title = module.getInfo().getTitle();
 
 		// announce start of execution process
