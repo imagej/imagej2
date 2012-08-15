@@ -40,7 +40,7 @@ import imagej.ext.module.Module;
 import imagej.ext.plugin.AbstractPreprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 /**
  * A preprocessor plugin that dumps information to the log.
@@ -54,7 +54,10 @@ public class DebugPreprocessor extends AbstractPreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		Log.debug("Executing module: " + module.getDelegateObject());
+		final LogService log = getContext().getService(LogService.class);
+		if (log == null) return;
+
+		log.debug("Executing module: " + module.getDelegateObject());
 	}
 
 }

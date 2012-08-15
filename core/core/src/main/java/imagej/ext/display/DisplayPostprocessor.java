@@ -35,14 +35,13 @@
 
 package imagej.ext.display;
 
-import imagej.ImageJ;
 import imagej.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.AbstractPostprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PostprocessorPlugin;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,18 +59,24 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
+		final DisplayService displayService =
+			getContext().getService(DisplayService.class);
+		if (displayService == null) return;
+
 		for (final ModuleItem<?> outputItem : module.getInfo().outputs()) {
 			final String name = outputItem.getName();
 			final String label = outputItem.getLabel();
 			final String displayName =
 				label == null || label.isEmpty() ? name : label;
 			final Object value = outputItem.getValue(module);
-			handleOutput(displayName, value);
+			handleOutput(displayService, displayName, value);
 		}
 	}
 
 	/** Displays output objects. */
-	public void handleOutput(final String name, final Object output) {
+	public void handleOutput(final DisplayService displayService,
+		final String name, final Object output)
+	{
 		if (output instanceof Display) {
 			// output is itself a display; just update it
 			final Display<?> display = (Display<?>) output;
@@ -79,7 +84,6 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 			return;
 		}
 
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final boolean addToExisting = addToExisting(output);
 		final ArrayList<Display<?>> displays = new ArrayList<Display<?>>();
 
@@ -118,7 +122,7 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 			for (final Object key : map.keySet()) {
 				final String itemName = key.toString();
 				final Object itemValue = map.get(key);
-				handleOutput(itemName, itemValue);
+				handleOutput(displayService, itemName, itemValue);
 			}
 			return;
 		}
@@ -127,15 +131,18 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 			// handle each item of the collection separately
 			final Collection<?> collection = (Collection<?>) output;
 			for (final Object item : collection) {
-				handleOutput(name, item);
+				handleOutput(displayService, name, item);
 			}
 			return;
 		}
 
 		// no available displays for this type of output
-		final String valueClass =
-			output == null ? "null" : output.getClass().getName();
-		Log.warn("Ignoring unsupported output: " + valueClass);
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) {
+			final String valueClass =
+				output == null ? "null" : output.getClass().getName();
+			log.warn("Ignoring unsupported output: " + valueClass);
+		}
 	}
 
 	// -- Helper methods --
