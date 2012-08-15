@@ -38,27 +38,12 @@ package imagej.ext.plugin;
 import imagej.AbstractContextual;
 
 /**
- * Abstract base class for plugin preprocessors.
+ * Abstract base class for plugin postprocessors.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractPreprocessorPlugin extends AbstractContextual
-	implements PreprocessorPlugin
+public abstract class AbstractPostprocessorPlugin extends AbstractContextual
+	implements PostprocessorPlugin
 {
-
-	protected boolean canceled;
-	protected String cancelReason;
-
-	// -- Cancelable methods --
-
-	@Override
-	public boolean isCanceled() {
-		return canceled;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return cancelReason;
-	}
-
+	// NB: No implementation needed.
 }

@@ -39,6 +39,7 @@ import imagej.ImageJ;
 import imagej.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
+import imagej.ext.plugin.AbstractPostprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PostprocessorPlugin;
 import imagej.util.Log;
@@ -55,7 +56,7 @@ import java.util.Map;
  * @author Lee Kamentsky
  */
 @Plugin(type = PostprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class DisplayPostprocessor implements PostprocessorPlugin {
+public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {

@@ -35,6 +35,7 @@
 
 package imagej.ext.plugin;
 
+import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
@@ -266,7 +267,12 @@ public class DefaultPluginService extends AbstractService implements
 		final ArrayList<P> list = new ArrayList<P>();
 		for (final PluginInfo<? extends P> info : infos) {
 			try {
-				list.add(info.createInstance());
+				final P p = info.createInstance();
+				list.add(p);
+				// inject ImageJ context, where applicable
+				if (p instanceof Contextual) {
+					((Contextual) p).setContext(getContext());
+				}
 			}
 			catch (final InstantiableException e) {
 				log.error("Cannot create plugin: " + info.getClassName());
