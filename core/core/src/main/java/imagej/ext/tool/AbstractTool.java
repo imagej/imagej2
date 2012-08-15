@@ -48,14 +48,7 @@ import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.ext.plugin.PluginInfo;
 
 /**
- * Abstract base class for ImageJ tools. A tool is a collection of rules binding
- * user input (e.g., keyboard and mouse events) to display and data manipulation
- * in a coherent way.
- * <p>
- * For example, a <code>PanTool</code> might pan a display when the mouse is
- * dragged or arrow key is pressed, while a <code>PencilTool</code> could draw
- * hard lines on the data within a display.
- * </p>
+ * Abstract base class for ImageJ tools.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
