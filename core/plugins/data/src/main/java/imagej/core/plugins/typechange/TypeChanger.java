@@ -38,8 +38,8 @@ package imagej.core.plugins.typechange;
 import imagej.data.Dataset;
 import imagej.ext.menu.MenuService;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.RunnablePlugin;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -74,9 +74,7 @@ public abstract class TypeChanger implements RunnablePlugin {
 	@Parameter(type = ItemIO.BOTH)
 	protected Dataset input;
 
-	protected <T extends RealType<T>> void changeType(
-		final T newType)
-	{
+	protected <T extends RealType<T>> void changeType(final T newType) {
 		changeType(input, newType);
 		menuService.setSelected(this, true);
 	}
@@ -85,21 +83,19 @@ public abstract class TypeChanger implements RunnablePlugin {
 	 * Changes the given {@link Dataset}'s underlying {@link Img} data to the
 	 * specified type.
 	 */
-	public static <T extends RealType<T>> void changeType(
-		final Dataset dataset, final T newType)
+	public static <T extends RealType<T>> void changeType(final Dataset dataset,
+		final T newType)
 	{
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
 		final Class<?> currTypeClass = dataset.getType().getClass();
 		final Class<?> newTypeClass = newType.getClass();
-		int chanIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		long numChannels = (chanIndex < 0) ? 1 : dataset.dimension(chanIndex);
+		final int chanIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		final long numChannels = (chanIndex < 0) ? 1 : dataset.dimension(chanIndex);
 		final boolean isColor = dataset.getCompositeChannelCount() == numChannels;
 		if ((currTypeClass != newTypeClass) || isColor) {
 			ImgPlus<? extends RealType<?>> imgPlus;
-			if (isColor)
-				imgPlus = colorToGrayscale((ImgPlus)inputImg, newType);
-			else
-				imgPlus = copyToType(inputImg, newType);
+			if (isColor) imgPlus = colorToGrayscale((ImgPlus) inputImg, newType);
+			else imgPlus = copyToType(inputImg, newType);
 			dataset.setImgPlus(imgPlus);
 			dataset.setRGBMerged(false);
 			dataset.setCompositeChannelCount(1);
@@ -111,9 +107,8 @@ public abstract class TypeChanger implements RunnablePlugin {
 	 * output {@link Img}'s data from the input {@link Img} (which is likely of a
 	 * different data type). Output data is range clamped.
 	 */
-	public static <T extends RealType<T>>
-		ImgPlus<? extends RealType<?>> copyToType(
-			final ImgPlus<? extends RealType<?>> inputImg, final T newType)
+	public static <T extends RealType<T>> ImgPlus<? extends RealType<?>>
+		copyToType(final ImgPlus<? extends RealType<?>> inputImg, final T newType)
 	{
 		final ImgFactory<? extends RealType<?>> factory = inputImg.factory();
 		@SuppressWarnings("unchecked")
@@ -159,70 +154,71 @@ public abstract class TypeChanger implements RunnablePlugin {
 	}
 
 	// TODO - make public?
-	
-	/** Creates an output {@link ImgPlus} of specified type by averaging the channel
-	 * values of an input {@link ImgPlus}. */
-	private static
-		<I extends RealType<I>, O extends RealType<O>>
-		ImgPlus<O> colorToGrayscale(
-				ImgPlus<I> inputImg, final O newType)
+
+	/**
+	 * Creates an output {@link ImgPlus} of specified type by averaging the
+	 * channel values of an input {@link ImgPlus}.
+	 */
+	private static <I extends RealType<I>, O extends RealType<O>> ImgPlus<O>
+		colorToGrayscale(final ImgPlus<I> inputImg, final O newType)
 	{
 		// determine the attributes of the output image
-		String name = inputImg.getName();
-		long[] dims = outputDims(inputImg);
-		AxisType[] axes = outputAxes(inputImg);
-		double[] cal = outputCalibration(inputImg);
+		final String name = inputImg.getName();
+		final long[] dims = outputDims(inputImg);
+		final AxisType[] axes = outputAxes(inputImg);
+		final double[] cal = outputCalibration(inputImg);
 
 		// create the output image
-		ImgFactory<? extends RealType<?>> factory = inputImg.factory();
+		final ImgFactory<? extends RealType<?>> factory = inputImg.factory();
 		@SuppressWarnings("unchecked")
-		ImgFactory<O> typedFactory = (ImgFactory<O>) factory;
-		Img<O> outputImg = typedFactory.create(dims, newType);
-		
+		final ImgFactory<O> typedFactory = (ImgFactory<O>) factory;
+		final Img<O> outputImg = typedFactory.create(dims, newType);
+
 		// for each set of channels in the image
-		//   figure out what color it is
-		//   turn that into an intensity value from 0 to 255
-		//   set the output pixel to that value
+		// figure out what color it is
+		// turn that into an intensity value from 0 to 255
+		// set the output pixel to that value
 
 		// problems though: we don't have color table info except for view
-		
+
 		// so instead of color just average the channel intensities
-		//   and could do a special case for rgb that uses formula
+		// and could do a special case for rgb that uses formula
 
 		// determine channel space
-		int chIndex = inputImg.getAxisIndex(Axes.CHANNEL);
-		int numInputDims = inputImg.numDimensions();
-		long[] minChanPt = new long[numInputDims];
-		long[] maxChanPt = new long[numInputDims];
+		final int chIndex = inputImg.getAxisIndex(Axes.CHANNEL);
+		final int numInputDims = inputImg.numDimensions();
+		final long[] minChanPt = new long[numInputDims];
+		final long[] maxChanPt = new long[numInputDims];
 		if (chIndex >= 0) maxChanPt[chIndex] = inputImg.dimension(chIndex) - 1;
-		PointSet channelColumn = new HyperVolumePointSet(minChanPt, maxChanPt);
-		
+		final PointSet channelColumn =
+			new HyperVolumePointSet(minChanPt, maxChanPt);
+
 		// determine data space without channels
-		long[] minDimPt = new long[numInputDims];
-		long[] maxDimPt = new long[numInputDims];
+		final long[] minDimPt = new long[numInputDims];
+		final long[] maxDimPt = new long[numInputDims];
 		for (int i = 0; i < numInputDims; i++) {
-			if (i != chIndex) maxDimPt[i] = inputImg.dimension(i)-1;
+			if (i != chIndex) maxDimPt[i] = inputImg.dimension(i) - 1;
 		}
-		PointSet allOtherDims = new HyperVolumePointSet(minDimPt, maxDimPt);
-		
+		final PointSet allOtherDims = new HyperVolumePointSet(minDimPt, maxDimPt);
+
 		// setup neighborhood iterator
-		PointSetInputIteratorFactory inputFactory =
-				new PointSetInputIteratorFactory(channelColumn);
-		InputIterator<PointSet> iter =
-				inputFactory.createInputIterator(allOtherDims);
+		final PointSetInputIteratorFactory inputFactory =
+			new PointSetInputIteratorFactory(channelColumn);
+		final InputIterator<PointSet> iter =
+			inputFactory.createInputIterator(allOtherDims);
 
 		// build averaging function
-		Function<long[], DoubleType> valFunc =
-				new RealImageFunction<I, DoubleType>(inputImg, new DoubleType());
-		Function<PointSet, DoubleType> avgFunc =
-				new RealArithmeticMeanFunction<DoubleType>(valFunc);
-		
+		final Function<long[], DoubleType> valFunc =
+			new RealImageFunction<I, DoubleType>(inputImg, new DoubleType());
+		final Function<PointSet, DoubleType> avgFunc =
+			new RealArithmeticMeanFunction<DoubleType>(valFunc);
+
 		// do the iteration and copy the data
-		RandomAccess<? extends RealType<?>> outputAccessor =
-				outputImg.randomAccess();
+		final RandomAccess<? extends RealType<?>> outputAccessor =
+			outputImg.randomAccess();
 		PointSet inputPointset = null;
-		long[] outputPt = new long[outputImg.numDimensions()];
-		DoubleType avg = new DoubleType();
+		final long[] outputPt = new long[outputImg.numDimensions()];
+		final DoubleType avg = new DoubleType();
 		while (iter.hasNext()) {
 			inputPointset = iter.next(inputPointset);
 			avgFunc.compute(inputPointset, avg);
@@ -230,19 +226,20 @@ public abstract class TypeChanger implements RunnablePlugin {
 			outputAccessor.setPosition(outputPt);
 			outputAccessor.get().setReal(avg.getRealDouble());
 		}
-		
+
 		// return the result
 		return new ImgPlus<O>(outputImg, name, axes, cal);
 	}
-	
+
 	/** Determines the axes of the output image ignoring channels if necessary. */
-	private static AxisType[] outputAxes(ImgPlus<?> inputImg) {
-		int inputAxisCount = inputImg.numDimensions();
-		int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
-		int outputAxisCount = (chanIndex < 0) ? inputAxisCount : inputAxisCount - 1;
-		AxisType[] inputAxes = new AxisType[inputAxisCount];
+	private static AxisType[] outputAxes(final ImgPlus<?> inputImg) {
+		final int inputAxisCount = inputImg.numDimensions();
+		final int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
+		final int outputAxisCount =
+			(chanIndex < 0) ? inputAxisCount : inputAxisCount - 1;
+		final AxisType[] inputAxes = new AxisType[inputAxisCount];
 		inputImg.axes(inputAxes);
-		AxisType[] outputAxes = new AxisType[outputAxisCount];
+		final AxisType[] outputAxes = new AxisType[outputAxisCount];
 		int o = 0;
 		for (int i = 0; i < inputAxisCount; i++) {
 			if (i != chanIndex) outputAxes[o++] = inputAxes[i];
@@ -251,13 +248,14 @@ public abstract class TypeChanger implements RunnablePlugin {
 	}
 
 	/** Determines the dims of the output image ignoring channels if necessary. */
-	private static long[] outputDims(ImgPlus<?> inputImg) {
-		int inputDimCount = inputImg.numDimensions();
-		int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
-		int outputDimCount = (chanIndex < 0) ? inputDimCount : inputDimCount - 1;
-		long[] inputDims = new long[inputDimCount];
+	private static long[] outputDims(final ImgPlus<?> inputImg) {
+		final int inputDimCount = inputImg.numDimensions();
+		final int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
+		final int outputDimCount =
+			(chanIndex < 0) ? inputDimCount : inputDimCount - 1;
+		final long[] inputDims = new long[inputDimCount];
 		inputImg.dimensions(inputDims);
-		long[] outputDims = new long[outputDimCount];
+		final long[] outputDims = new long[outputDimCount];
 		int o = 0;
 		for (int i = 0; i < inputDimCount; i++) {
 			if (i != chanIndex) outputDims[o++] = inputDims[i];
@@ -269,26 +267,27 @@ public abstract class TypeChanger implements RunnablePlugin {
 	 * Determines the calibration of the output image ignoring channels if
 	 * necessary.
 	 */
-	private static double[] outputCalibration(ImgPlus<?> inputImg) {
-		int inputDimCount = inputImg.numDimensions();
-		int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
-		int outputDimCount = (chanIndex < 0) ? inputDimCount : inputDimCount - 1;
-		double[] inputCal = new double[inputDimCount];
+	private static double[] outputCalibration(final ImgPlus<?> inputImg) {
+		final int inputDimCount = inputImg.numDimensions();
+		final int chanIndex = inputImg.getAxisIndex(Axes.CHANNEL);
+		final int outputDimCount =
+			(chanIndex < 0) ? inputDimCount : inputDimCount - 1;
+		final double[] inputCal = new double[inputDimCount];
 		inputImg.calibration(inputCal);
-		double[] outputCal = new double[outputDimCount];
+		final double[] outputCal = new double[outputDimCount];
 		int o = 0;
 		for (int i = 0; i < inputDimCount; i++) {
 			if (i != chanIndex) outputCal[o++] = inputCal[i];
 		}
 		return outputCal;
 	}
-	
+
 	/**
-	 * Computes an output point from an input point ignoring the channel axis
-	 * if necessary.
+	 * Computes an output point from an input point ignoring the channel axis if
+	 * necessary.
 	 */
-	private static void computeOutputPoint(
-		int chIndex, long[] inputPt, long[] outputPt)
+	private static void computeOutputPoint(final int chIndex,
+		final long[] inputPt, final long[] outputPt)
 	{
 		int p = 0;
 		for (int i = 0; i < inputPt.length; i++) {
