@@ -1607,35 +1607,46 @@ static int mkdir_p(const char *path)
 	return result;
 }
 
-static void initialize_ij_launcher_jar_path(void)
+static char *find_jar(const char *jars_directory, const char *prefix)
 {
-	const char *jars_directory = ij_path("jars/");
+	int prefix_length = strlen(prefix);
 	struct string *buffer = string_initf("%s", jars_directory);
 	int length;
 	time_t mtime = 0;
 	DIR *directory = opendir(jars_directory);
 	struct dirent *entry;
 	struct stat st;
+	char *result = NULL;
 
 	length = buffer->length;
+	if (length == 0 || buffer->buffer[length - 1] != '/') {
+		string_add_char(buffer, '/');
+		length++;
+	}
 	while ((entry = readdir(directory))) {
 		const char *name = entry->d_name;
-		if (prefixcmp(name, "ij-launcher") ||
-			(strcmp(name + 11, ".jar") &&
-			 (name[11] != '-' ||
-			  !isdigit(name[12]) ||
-			  suffixcmp(name + 13, -1, ".jar"))))
+		if (prefixcmp(name, prefix) ||
+			(strcmp(name + prefix_length, ".jar") &&
+			 (name[prefix_length] != '-' ||
+			  !isdigit(name[prefix_length + 1]) ||
+			  suffixcmp(name + prefix_length + 2, -1, ".jar"))))
 			continue;
 		string_set_length(buffer, length);
 		string_append(buffer, name);
 		if (!stat(buffer->buffer, &st) && st.st_mtime > mtime) {
-			free(ij_launcher_jar);
-			ij_launcher_jar = strdup(buffer->buffer);
+			free(result);
+			result = strdup(buffer->buffer);
 			mtime = st.st_mtime;
 		}
 	}
 	closedir(directory);
 	string_release(buffer);
+	return result;
+}
+
+static void initialize_ij_launcher_jar_path(void)
+{
+	ij_launcher_jar = find_jar(ij_path("jars/"), "ij-launcher");
 }
 
 static MAYBE_UNUSED int find_file(struct string *search_root, int max_depth, const char *file, struct string *result)
@@ -4368,8 +4379,13 @@ int main(int argc, char **argv, char **e)
 	main_argc_backup = argc;
 
 	/* For now, launch Fiji1 when fiji-compat.jar was found */
-	if (file_exists(ij_path("jars/fiji-compat.jar")))
-		legacy_mode = 1;
+	{
+		char *fiji_compat_jar = find_jar(ij_path("jars/"), "fiji-compat");
+		if (fiji_compat_jar) {
+			free(fiji_compat_jar);
+			legacy_mode = 1;
+		}
+	}
 
 	initialize_ij_launcher_jar_path();
 	parse_command_line();
