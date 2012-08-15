@@ -214,17 +214,23 @@ public abstract class TypeChanger implements RunnablePlugin {
 			new RealArithmeticMeanFunction<DoubleType>(valFunc);
 
 		// do the iteration and copy the data
-		final RandomAccess<? extends RealType<?>> outputAccessor =
-			outputImg.randomAccess();
+		final RandomAccess<? extends RealType<?>> out = outputImg.randomAccess();
+		final boolean inputIs1Bit = inputImg.cursor().get().getBitsPerPixel() == 1;
+		final double outTypeMin = out.get().getMinValue();
+		final double outTypeMax = out.get().getMaxValue();
 		PointSet inputPointset = null;
 		final long[] outputPt = new long[outputImg.numDimensions()];
 		final DoubleType avg = new DoubleType();
 		while (iter.hasNext()) {
 			inputPointset = iter.next(inputPointset);
 			avgFunc.compute(inputPointset, avg);
+			double value = avg.getRealDouble();
+			if (value < outTypeMin) value = outTypeMin;
+			if (value > outTypeMax) value = outTypeMax;
+			if (inputIs1Bit && value > 0) value = outTypeMax;
 			computeOutputPoint(chIndex, inputPointset.getAnchor(), outputPt);
-			outputAccessor.setPosition(outputPt);
-			outputAccessor.get().setReal(avg.getRealDouble());
+			out.setPosition(outputPt);
+			out.get().setReal(value);
 		}
 
 		// return the result
