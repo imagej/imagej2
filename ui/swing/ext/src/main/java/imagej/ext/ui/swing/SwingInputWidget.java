@@ -35,7 +35,7 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.AbstractInputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import javax.swing.JComponent;
@@ -48,39 +48,31 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  */
-public abstract class SwingInputWidget<T> extends JPanel implements
-	InputWidget<T>
+public abstract class SwingInputWidget<T> extends
+	AbstractInputWidget<T, JPanel>
 {
 
-	private WidgetModel model;
-
-	public SwingInputWidget(final WidgetModel model) {
-		this.model = model;
-		setLayout(new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]"));
-	}
+	private JPanel pane;
 
 	// -- InputWidget methods --
 
 	@Override
-	public void setModel(final WidgetModel model) {
-		this.model = model;
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+		pane = new JPanel();
+		pane.setLayout(new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]"));
 	}
 
 	@Override
-	public WidgetModel getModel() {
-		return model;
-	}
-
-	@Override
-	public void updateModel() {
-		model.setValue(getValue());
+	public JPanel getPane() {
+		return pane;
 	}
 
 	// -- Helper methods --
 
 	/** Assigns the model's description as the given component's tool tip. */
 	protected void setToolTip(final JComponent c) {
-		final String desc = model.getItem().getDescription();
+		final String desc = getModel().getItem().getDescription();
 		if (desc == null || desc.isEmpty()) return;
 		c.setToolTipText(desc);
 	}

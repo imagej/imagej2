@@ -57,13 +57,13 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractInputHarvester implements InputHarvester {
+public abstract class AbstractInputHarvester<U> implements InputHarvester<U> {
 
 	// -- InputHarvester methods --
 
 	@Override
 	public void harvest(final Module module) throws ModuleException {
-		final InputPanel inputPanel = createInputPanel();
+		final InputPanel<U> inputPanel = createInputPanel();
 		buildPanel(inputPanel, module);
 		if (!inputPanel.hasWidgets()) return; // no inputs left to harvest
 
@@ -74,7 +74,7 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	}
 
 	@Override
-	public void buildPanel(final InputPanel inputPanel, final Module module)
+	public void buildPanel(final InputPanel<U> inputPanel, final Module module)
 		throws ModuleException
 	{
 		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
@@ -95,8 +95,9 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	}
 
 	@Override
-	public void processResults(final InputPanel inputPanel, final Module module)
-		throws ModuleException
+	public void
+		processResults(final InputPanel<U> inputPanel, final Module module)
+			throws ModuleException
 	{
 		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
 
@@ -108,7 +109,7 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 
 	// -- Helper methods - input panel population --
 
-	private <T> WidgetModel addInput(final InputPanel inputPanel,
+	private <T> WidgetModel addInput(final InputPanel<U> inputPanel,
 		final Module module, final ModuleItem<T> item) throws ModuleException
 	{
 		final String name = item.getName();
@@ -155,19 +156,21 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		return model;
 	}
 
-	private void
-		addMessage(final InputPanel inputPanel, final WidgetModel model)
+	private void addMessage(final InputPanel<U> inputPanel,
+		final WidgetModel model)
 	{
-		String message = model.getValue().toString();
+		final String message = model.getValue().toString();
 		inputPanel.addMessage(message);
 	}
 
-	private void addNumber(final InputPanel inputPanel, final WidgetModel model) {
+	private void
+		addNumber(final InputPanel<U> inputPanel, final WidgetModel model)
+	{
 		// CTR FIXME: ensure initial value is clamped to min/max range
 		inputPanel.addNumber(model);
 	}
 
-	private void addTextField(final InputPanel inputPanel,
+	private void addTextField(final InputPanel<U> inputPanel,
 		final WidgetModel model)
 	{
 		final ModuleItem<?> item = model.getItem();
@@ -186,21 +189,27 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		}
 	}
 
-	private void addToggle(final InputPanel inputPanel, final WidgetModel model) {
+	private void
+		addToggle(final InputPanel<U> inputPanel, final WidgetModel model)
+	{
 		// CTR FIXME: ensure initial null value becomes Boolean.FALSE instead
 		inputPanel.addToggle(model);
 	}
 
-	private void addFile(final InputPanel inputPanel, final WidgetModel model) {
+	private void addFile(final InputPanel<U> inputPanel, final WidgetModel model)
+	{
 		inputPanel.addFile(model);
 	}
 
-	private void addColor(final InputPanel inputPanel, final WidgetModel model) {
+	private void
+		addColor(final InputPanel<U> inputPanel, final WidgetModel model)
+	{
 		inputPanel.addColor(model);
 	}
 
-	private void addObject(final InputPanel inputPanel, final WidgetModel model)
-		throws ModuleException
+	private void
+		addObject(final InputPanel<U> inputPanel, final WidgetModel model)
+			throws ModuleException
 	{
 		inputPanel.addObject(model);
 	}

@@ -37,8 +37,8 @@ package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
-import imagej.ext.module.ui.WidgetStyle;
-import imagej.util.Log;
+
+import org.apache.pivot.wtk.BoxPane;
 
 /**
  * Pivot implementation of number chooser widget.
@@ -46,30 +46,8 @@ import imagej.util.Log;
  * @author Curtis Rueden
  */
 public abstract class PivotNumberWidget extends PivotInputWidget<Number>
-	implements NumberWidget
+	implements NumberWidget<BoxPane>
 {
-
-	public PivotNumberWidget(final WidgetModel model) {
-		super(model);
-	}
-
-	public static PivotNumberWidget create(final WidgetModel model) {
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
-
-		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
-			return new PivotNumberScrollBarWidget(model, min, max, stepSize);
-		}
-		if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new PivotNumberSliderWidget(model, min, max);
-		}
-		if (style != WidgetStyle.DEFAULT && style != WidgetStyle.NUMBER_SPINNER) {
-			Log.warn("Ignoring unsupported widget style: " + style);
-		}
-		return new PivotNumberSpinnerWidget(model, min, max, stepSize);
-	}
 
 	// -- InputWidget methods --
 

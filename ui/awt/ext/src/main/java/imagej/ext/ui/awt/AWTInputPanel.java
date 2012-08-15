@@ -51,7 +51,7 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  */
-public class AWTInputPanel extends AbstractInputPanel {
+public class AWTInputPanel extends AbstractInputPanel<Panel> {
 
 	private final Panel panel;
 
@@ -74,36 +74,41 @@ public class AWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addNumber(final WidgetModel model) {
-		final AWTNumberWidget numberWidget = new AWTNumberWidget(model);
-		addField(model.getWidgetLabel(), numberWidget);
+		final AWTNumberWidget numberWidget = new AWTNumberWidget();
+		numberWidget.initialize(model);
+		addField(model.getWidgetLabel(), numberWidget.getPane());
 		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
 
 	@Override
 	public void addToggle(final WidgetModel model) {
-		final AWTToggleWidget toggleWidget = new AWTToggleWidget(model);
-		addField(model.getWidgetLabel(), toggleWidget);
+		final AWTToggleWidget toggleWidget = new AWTToggleWidget();
+		toggleWidget.initialize(model);
+		addField(model.getWidgetLabel(), toggleWidget.getPane());
 		toggleWidgets.put(model.getItem().getName(), toggleWidget);
 	}
 
 	@Override
 	public void addTextField(final WidgetModel model) {
-		final AWTTextFieldWidget textFieldWidget = new AWTTextFieldWidget(model);
-		addField(model.getWidgetLabel(), textFieldWidget);
+		final AWTTextFieldWidget textFieldWidget = new AWTTextFieldWidget();
+		textFieldWidget.initialize(model);
+		addField(model.getWidgetLabel(), textFieldWidget.getPane());
 		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
 	public void addChoice(final WidgetModel model) {
-		final AWTChoiceWidget choiceWidget = new AWTChoiceWidget(model);
-		addField(model.getWidgetLabel(), choiceWidget);
+		final AWTChoiceWidget choiceWidget = new AWTChoiceWidget();
+		choiceWidget.initialize(model);
+		addField(model.getWidgetLabel(), choiceWidget.getPane());
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}
 
 	@Override
 	public void addFile(final WidgetModel model) {
-		final AWTFileWidget fileWidget = new AWTFileWidget(model);
-		addField(model.getWidgetLabel(), fileWidget);
+		final AWTFileWidget fileWidget = new AWTFileWidget();
+		fileWidget.initialize(model);
+		addField(model.getWidgetLabel(), fileWidget.getPane());
 		fileWidgets.put(model.getItem().getName(), fileWidget);
 	}
 
@@ -115,8 +120,10 @@ public class AWTInputPanel extends AbstractInputPanel {
 	@Override
 	public void addObject(final WidgetModel model) throws ModuleException {
 		final Object[] items = getObjects(model);
-		final AWTObjectWidget objectWidget = new AWTObjectWidget(model, items);
-		addField(model.getWidgetLabel(), objectWidget);
+		final AWTObjectWidget objectWidget = new AWTObjectWidget();
+		objectWidget.setItems(items);
+		objectWidget.initialize(model);
+		addField(model.getWidgetLabel(), objectWidget.getPane());
 		objectWidgets.put(model.getItem().getName(), objectWidget);
 	}
 

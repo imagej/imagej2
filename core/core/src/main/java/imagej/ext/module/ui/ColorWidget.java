@@ -42,6 +42,6 @@ import imagej.util.ColorRGB;
  * 
  * @author Curtis Rueden
  */
-public interface ColorWidget extends InputWidget<ColorRGB> {
+public interface ColorWidget<U> extends InputWidget<ColorRGB, U> {
 	// NB: No changes to interface.
 }

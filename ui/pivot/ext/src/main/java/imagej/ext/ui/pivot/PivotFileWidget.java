@@ -41,6 +41,7 @@ import imagej.ext.module.ui.WidgetStyle;
 
 import java.io.File;
 
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.FileBrowserSheet;
@@ -54,30 +55,31 @@ import org.apache.pivot.wtk.TextInput;
  * @author Curtis Rueden
  */
 public class PivotFileWidget extends PivotInputWidget<File> implements
-	FileWidget, ButtonPressListener
+	FileWidget<BoxPane>, ButtonPressListener
 {
 
-	private final TextInput path;
-	private final PushButton browse;
-
-	public PivotFileWidget(final WidgetModel model) {
-		super(model);
-
-		path = new TextInput();
-		add(path);
-
-		browse = new PushButton("Browse");
-		browse.getButtonPressListeners().add(this);
-		add(browse);
-
-		refreshWidget();
-	}
+	private TextInput path;
+	private PushButton browse;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(File.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		path = new TextInput();
+		getPane().add(path);
+
+		browse = new PushButton("Browse");
+		browse.getButtonPressListeners().add(this);
+		getPane().add(browse);
+
+		refreshWidget();
 	}
 
 	@Override

@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.Label;
  * 
  * @author Curtis Rueden
  */
-public class SWTInputPanel extends AbstractInputPanel {
+public class SWTInputPanel extends AbstractInputPanel<Composite> {
 
 	private final Composite panel;
 
@@ -76,36 +76,45 @@ public class SWTInputPanel extends AbstractInputPanel {
 	@Override
 	public void addNumber(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
-		final SWTNumberWidget numberWidget = new SWTNumberWidget(panel, model);
+		final SWTNumberWidget numberWidget = new SWTNumberWidget();
+		numberWidget.setParent(panel);
+		numberWidget.initialize(model);
 		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
 
 	@Override
 	public void addToggle(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
-		final SWTToggleWidget toggleWidget = new SWTToggleWidget(panel, model);
+		final SWTToggleWidget toggleWidget = new SWTToggleWidget();
+		toggleWidget.setParent(panel);
+		toggleWidget.initialize(model);
 		toggleWidgets.put(model.getItem().getName(), toggleWidget);
 	}
 
 	@Override
 	public void addTextField(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
-		final SWTTextFieldWidget textFieldWidget =
-			new SWTTextFieldWidget(panel, model);
+		final SWTTextFieldWidget textFieldWidget = new SWTTextFieldWidget();
+		textFieldWidget.setParent(panel);
+		textFieldWidget.initialize(model);
 		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
 	public void addChoice(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
-		final SWTChoiceWidget choiceWidget = new SWTChoiceWidget(panel, model);
+		final SWTChoiceWidget choiceWidget = new SWTChoiceWidget();
+		choiceWidget.setParent(panel);
+		choiceWidget.initialize(model);
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}
 
 	@Override
 	public void addFile(final WidgetModel model) {
 		addLabel(model.getWidgetLabel());
-		final SWTFileWidget fileWidget = new SWTFileWidget(panel, model);
+		final SWTFileWidget fileWidget = new SWTFileWidget();
+		fileWidget.setParent(panel);
+		fileWidget.initialize(model);
 		fileWidgets.put(model.getItem().getName(), fileWidget);
 	}
 
@@ -118,8 +127,10 @@ public class SWTInputPanel extends AbstractInputPanel {
 	public void addObject(final WidgetModel model) throws ModuleException {
 		addLabel(model.getWidgetLabel());
 		final Object[] items = getObjects(model);
-		final SWTObjectWidget objectWidget =
-			new SWTObjectWidget(panel, model, items);
+		final SWTObjectWidget objectWidget = new SWTObjectWidget();
+		objectWidget.setParent(panel);
+		objectWidget.setItems(items);
+		objectWidget.initialize(model);
 		objectWidgets.put(model.getItem().getName(), objectWidget);
 	}
 

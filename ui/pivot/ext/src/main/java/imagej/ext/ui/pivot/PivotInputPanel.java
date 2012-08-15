@@ -39,6 +39,7 @@ import imagej.ext.module.ModuleItem;
 import imagej.ext.module.ui.AbstractInputPanel;
 import imagej.ext.module.ui.WidgetModel;
 
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Container;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.TablePane;
@@ -48,7 +49,7 @@ import org.apache.pivot.wtk.TablePane;
  * 
  * @author Curtis Rueden
  */
-public class PivotInputPanel extends AbstractInputPanel {
+public class PivotInputPanel extends AbstractInputPanel<BoxPane> {
 
 	private final TablePane pane;
 
@@ -71,37 +72,57 @@ public class PivotInputPanel extends AbstractInputPanel {
 	@Override
 	public void addNumber(final WidgetModel model) {
 		final ModuleItem<?> item = model.getItem();
-		final PivotNumberWidget numberWidget = PivotNumberWidget.create(model);
-		addField(model.getWidgetLabel(), numberWidget);
+
+		final PivotNumberScrollBarWidget scrollBarWidget =
+			new PivotNumberScrollBarWidget();
+		final PivotNumberSliderWidget sliderWidget = new PivotNumberSliderWidget();
+		final PivotNumberSpinnerWidget spinnerWidget =
+			new PivotNumberSpinnerWidget();
+
+		final PivotNumberWidget numberWidget;
+		if (scrollBarWidget.isCompatible(model)) {
+			numberWidget = scrollBarWidget;
+		}
+		else if (sliderWidget.isCompatible(model)) {
+			numberWidget = sliderWidget;
+		}
+		else {
+			numberWidget = spinnerWidget;
+		}
+		numberWidget.initialize(model);
+		addField(model.getWidgetLabel(), numberWidget.getPane());
 		numberWidgets.put(item.getName(), numberWidget);
 	}
 
 	@Override
 	public void addToggle(final WidgetModel model) {
-		final PivotToggleWidget toggleWidget = new PivotToggleWidget(model);
-		addField(model.getWidgetLabel(), toggleWidget);
+		final PivotToggleWidget toggleWidget = new PivotToggleWidget();
+		toggleWidget.initialize(model);
+		addField(model.getWidgetLabel(), toggleWidget.getPane());
 		toggleWidgets.put(model.getItem().getName(), toggleWidget);
 	}
 
 	@Override
 	public void addTextField(final WidgetModel model) {
-		final PivotTextFieldWidget textFieldWidget =
-			new PivotTextFieldWidget(model);
-		addField(model.getWidgetLabel(), textFieldWidget);
+		final PivotTextFieldWidget textFieldWidget = new PivotTextFieldWidget();
+		textFieldWidget.initialize(model);
+		addField(model.getWidgetLabel(), textFieldWidget.getPane());
 		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
 	public void addChoice(final WidgetModel model) {
-		final PivotChoiceWidget choiceWidget = new PivotChoiceWidget(model);
-		addField(model.getWidgetLabel(), choiceWidget);
+		final PivotChoiceWidget choiceWidget = new PivotChoiceWidget();
+		choiceWidget.initialize(model);
+		addField(model.getWidgetLabel(), choiceWidget.getPane());
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}
 
 	@Override
 	public void addFile(final WidgetModel model) {
-		final PivotFileWidget fileWidget = new PivotFileWidget(model);
-		addField(model.getWidgetLabel(), fileWidget);
+		final PivotFileWidget fileWidget = new PivotFileWidget();
+		fileWidget.initialize(model);
+		addField(model.getWidgetLabel(), fileWidget.getPane());
 		fileWidgets.put(model.getItem().getName(), fileWidget);
 	}
 

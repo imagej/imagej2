@@ -40,6 +40,7 @@ import imagej.ext.module.ui.WidgetModel;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -53,23 +54,10 @@ import javax.swing.text.DocumentFilter;
  * @author Curtis Rueden
  */
 public class SwingTextFieldWidget extends SwingInputWidget<String> implements
-	DocumentListener, TextFieldWidget
+	DocumentListener, TextFieldWidget<JPanel>
 {
 
-	private final JTextField textField;
-
-	public SwingTextFieldWidget(final WidgetModel model) {
-		super(model);
-
-		final int columns = model.getItem().getColumnCount();
-		textField = new JTextField("", columns);
-		setToolTip(textField);
-		add(textField);
-		limitLength();
-		textField.getDocument().addDocumentListener(this);
-
-		refreshWidget();
-	}
+	private JTextField textField;
 
 	// -- DocumentListener methods --
 
@@ -93,6 +81,20 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(String.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final int columns = model.getItem().getColumnCount();
+		textField = new JTextField("", columns);
+		setToolTip(textField);
+		getPane().add(textField);
+		limitLength();
+		textField.getDocument().addDocumentListener(this);
+
+		refreshWidget();
 	}
 
 	@Override

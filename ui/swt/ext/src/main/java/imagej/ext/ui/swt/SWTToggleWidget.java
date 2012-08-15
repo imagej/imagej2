@@ -48,24 +48,25 @@ import org.eclipse.swt.widgets.Composite;
  * @author Curtis Rueden
  */
 public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
-	ToggleWidget
+	ToggleWidget<Composite>
 {
 
-	private final Button checkbox;
-
-	public SWTToggleWidget(final Composite parent, final WidgetModel model) {
-		super(parent, model);
-
-		checkbox = new Button(this, SWT.CHECK);
-
-		refreshWidget();
-	}
+	private Button checkbox;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(Boolean.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		checkbox = new Button(getPane(), SWT.CHECK);
+
+		refreshWidget();
 	}
 
 	@Override

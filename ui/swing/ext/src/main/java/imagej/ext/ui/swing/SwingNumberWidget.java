@@ -50,6 +50,7 @@ import java.text.DecimalFormat;
 import java.text.ParsePosition;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -63,15 +64,23 @@ import javax.swing.event.ChangeListener;
  * @author Curtis Rueden
  */
 public class SwingNumberWidget extends SwingInputWidget<Number> implements
-	NumberWidget, AdjustmentListener, ChangeListener
+	NumberWidget<JPanel>, AdjustmentListener, ChangeListener
 {
 
 	private JScrollBar scrollBar;
 	private JSlider slider;
-	private final JSpinner spinner;
+	private JSpinner spinner;
 
-	public SwingNumberWidget(final WidgetModel model) {
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(Number.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
@@ -85,7 +94,7 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 					min.intValue(), max.intValue() + 1);
 			scrollBar.setUnitIncrement(stepSize.intValue());
 			setToolTip(scrollBar);
-			add(scrollBar);
+			getPane().add(scrollBar);
 			scrollBar.addAdjustmentListener(this);
 		}
 		else if (style == WidgetStyle.NUMBER_SLIDER) {
@@ -95,7 +104,7 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 			slider.setPaintLabels(true);
 			slider.setPaintTicks(true);
 			setToolTip(slider);
-			add(slider);
+			getPane().add(slider);
 			slider.addChangeListener(this);
 		}
 
@@ -111,18 +120,11 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 		spinner = new JSpinner(spinnerModel);
 		fixSpinner(type);
 		setToolTip(spinner);
-		add(spinner);
+		getPane().add(spinner);
 		limitWidth(200);
 		spinner.addChangeListener(this);
 		refreshWidget();
 		syncSliders();
-	}
-
-	// -- InputWidget methods --
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isCompatibleWith(Number.class);
 	}
 
 	@Override

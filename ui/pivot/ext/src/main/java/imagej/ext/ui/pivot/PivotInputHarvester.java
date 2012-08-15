@@ -43,6 +43,7 @@ import imagej.ext.plugin.AbstractInputHarvesterPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
 
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Sheet;
 
@@ -54,7 +55,7 @@ import org.apache.pivot.wtk.Sheet;
  * @author Barry DeZonia
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class PivotInputHarvester extends AbstractInputHarvesterPlugin {
+public class PivotInputHarvester extends AbstractInputHarvesterPlugin<BoxPane> {
 
 	@Override
 	public PivotInputPanel createInputPanel() {
@@ -63,7 +64,7 @@ public class PivotInputHarvester extends AbstractInputHarvesterPlugin {
 
 	@Override
 	public boolean
-		harvestInputs(final InputPanel inputPanel, final Module module)
+		harvestInputs(final InputPanel<BoxPane> inputPanel, final Module module)
 	{
 		final Sheet dialog = new Sheet();
 		dialog.setTitle(module.getInfo().getLabel());

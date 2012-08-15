@@ -39,6 +39,7 @@ import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -48,21 +49,10 @@ import javax.swing.event.ChangeListener;
  * @author Curtis Rueden
  */
 public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
-	ChangeListener, ToggleWidget
+	ChangeListener, ToggleWidget<JPanel>
 {
 
-	private final JCheckBox checkBox;
-
-	public SwingToggleWidget(final WidgetModel model) {
-		super(model);
-
-		checkBox = new JCheckBox("");
-		setToolTip(checkBox);
-		add(checkBox);
-		checkBox.addChangeListener(this);
-
-		refreshWidget();
-	}
+	private JCheckBox checkBox;
 
 	// -- ChangeListener methods --
 
@@ -76,6 +66,18 @@ public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(Boolean.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		checkBox = new JCheckBox("");
+		setToolTip(checkBox);
+		getPane().add(checkBox);
+		checkBox.addChangeListener(this);
+
+		refreshWidget();
 	}
 
 	@Override

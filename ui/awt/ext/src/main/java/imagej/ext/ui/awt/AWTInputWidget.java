@@ -35,7 +35,7 @@
 
 package imagej.ext.ui.awt;
 
-import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.AbstractInputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import java.awt.Panel;
@@ -45,31 +45,21 @@ import java.awt.Panel;
  *
  * @author Curtis Rueden
  */
-public abstract class AWTInputWidget<T> extends Panel implements
-	InputWidget<T>
-{
+public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
 
-	private WidgetModel model;
-
-	public AWTInputWidget(final WidgetModel model) {
-		this.model = model;
-	}
+	private Panel pane;
 
 	// -- InputWidget methods --
 
 	@Override
-	public void setModel(final WidgetModel model) {
-		this.model = model;
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+		pane = new Panel();
 	}
 
 	@Override
-	public WidgetModel getModel() {
-		return model;
-	}
-
-	@Override
-	public void updateModel() {
-		model.setValue(getValue());
+	public Panel getPane() {
+		return pane;
 	}
 
 }

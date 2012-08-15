@@ -36,10 +36,32 @@
 package imagej.ext.module.ui;
 
 /**
- * Widget interface for boolean toggles.
- * 
+ * Base class for input widgets.
+ *
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+public abstract class AbstractInputWidget<T, U> implements InputWidget<T, U> {
+
+	private WidgetModel widgetModel;
+
+	// -- InputWidget methods --
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		if (widgetModel != null) {
+			throw new IllegalStateException("Widget already initialized");
+		}
+		widgetModel = model;
+	}
+
+	@Override
+	public WidgetModel getModel() {
+		return widgetModel;
+	}
+
+	@Override
+	public void updateModel() {
+		widgetModel.setValue(getValue());
+	}
+
 }

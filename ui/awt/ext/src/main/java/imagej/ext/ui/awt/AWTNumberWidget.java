@@ -40,6 +40,7 @@ import imagej.ext.module.ui.WidgetModel;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
+import java.awt.Panel;
 import java.awt.Scrollbar;
 import java.awt.TextField;
 import java.awt.event.AdjustmentEvent;
@@ -53,7 +54,7 @@ import java.awt.event.TextListener;
  * @author Curtis Rueden
  */
 public class AWTNumberWidget extends AWTInputWidget<Number> implements
-	NumberWidget, AdjustmentListener, TextListener
+	NumberWidget<Panel>, AdjustmentListener, TextListener
 {
 
 	// CTR FIXME - Update the model properly, and handle non-integer values.
@@ -61,8 +62,16 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 	private Scrollbar scrollBar;
 	private TextField textField;
 
-	public AWTNumberWidget(final WidgetModel model) {
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isCompatibleWith(Number.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
@@ -72,20 +81,13 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
 		scrollBar.addAdjustmentListener(this);
-		add(scrollBar, BorderLayout.CENTER);
+		getPane().add(scrollBar, BorderLayout.CENTER);
 
 		textField = new TextField(6);
 		textField.addTextListener(this);
-		add(textField, BorderLayout.EAST);
+		getPane().add(textField, BorderLayout.EAST);
 
 		refreshWidget();
-	}
-
-	// -- InputWidget methods --
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isCompatibleWith(Number.class);
 	}
 
 	@Override

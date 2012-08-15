@@ -38,6 +38,7 @@ package imagej.ext.ui.pivot;
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
 
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.TextInput;
 
 /**
@@ -46,24 +47,24 @@ import org.apache.pivot.wtk.TextInput;
  * @author Curtis Rueden
  */
 public class PivotTextFieldWidget extends PivotInputWidget<String>
-	implements TextFieldWidget
+	implements TextFieldWidget<BoxPane>
 {
 
-	private final TextInput textInput;
-
-	public PivotTextFieldWidget(final WidgetModel model) {
-		super(model);
-
-		textInput = new TextInput();
-
-		add(textInput);
-	}
+	private TextInput textInput;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(String.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		textInput = new TextInput();
+		getPane().add(textInput);
 	}
 
 	@Override

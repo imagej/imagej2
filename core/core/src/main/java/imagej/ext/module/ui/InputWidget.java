@@ -47,13 +47,16 @@ import imagej.ext.plugin.IPlugin;
  * @see InputHarvester
  * @see InputPanel
  */
-public interface InputWidget<T> extends IPlugin {
+public interface InputWidget<T, U> extends IPlugin {
 
 	/** Gets whether this widget would be appropriate for the given model. */
 	boolean isCompatible(WidgetModel model);
 
-	/** Assigns the given widget model to this widget. */
-	void setModel(WidgetModel model);
+	/**
+	 * Initializes the widget to use the given widget model. Once initialized, the
+	 * widget's UI pane will be accessible via {@link #getPane()}.
+	 */
+	void initialize(WidgetModel model);
 
 	/** Gets the model object backing this widget. */
 	WidgetModel getModel();
@@ -66,5 +69,12 @@ public interface InputWidget<T> extends IPlugin {
 
 	/** Refreshes the widget to reflect the latest model value(s). */
 	void refreshWidget();
+
+	/**
+	 * Gets the user interface pane housing this widget.
+	 * 
+	 * @return the pane, or null if the widget has not yet been initialized.
+	 */
+	U getPane();
 
 }

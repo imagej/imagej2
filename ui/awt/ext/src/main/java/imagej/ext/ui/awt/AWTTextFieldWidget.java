@@ -39,6 +39,7 @@ import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import java.awt.BorderLayout;
+import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
@@ -49,27 +50,28 @@ import java.awt.event.TextListener;
  * @author Curtis Rueden
  */
 public class AWTTextFieldWidget extends AWTInputWidget<String>
-	implements TextFieldWidget, TextListener
+	implements TextFieldWidget<Panel>, TextListener
 {
 
 	private TextField textField;
-
-	public AWTTextFieldWidget(final WidgetModel model) {
-		super(model);
-
-		final int columns = model.getItem().getColumnCount();
-		textField = new TextField("", columns);
-		textField.addTextListener(this);
-		add(textField, BorderLayout.CENTER);
-
-		refreshWidget();
-	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(String.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final int columns = model.getItem().getColumnCount();
+		textField = new TextField("", columns);
+		textField.addTextListener(this);
+		getPane().add(textField, BorderLayout.CENTER);
+
+		refreshWidget();
 	}
 
 	@Override

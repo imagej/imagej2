@@ -48,22 +48,15 @@ import org.eclipse.swt.widgets.Composite;
  * @author Curtis Rueden
  */
 public class SWTObjectWidget extends SWTInputWidget<Object> implements
-	ObjectWidget
+	ObjectWidget<Composite>
 {
 
-	private final Combo combo;
-	private final Object[] items;
+	private Combo combo;
+	private Object[] items;
 
-	public SWTObjectWidget(final Composite parent, final WidgetModel model,
-		final Object[] items)
-	{
-		super(parent, model);
+	public void setItems(Object[] items) {
+		// CTR FIXME: Temporary hack to inject available objects.
 		this.items = items;
-
-		combo = new Combo(this, SWT.DROP_DOWN);
-		for (final Object item : items) combo.add(item.toString());
-
-		refreshWidget();
 	}
 
 	// -- InputWidget methods --
@@ -71,6 +64,16 @@ public class SWTObjectWidget extends SWTInputWidget<Object> implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return true;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		combo = new Combo(getPane(), SWT.DROP_DOWN);
+		for (final Object item : items) combo.add(item.toString());
+
+		refreshWidget();
 	}
 
 	@Override

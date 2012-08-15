@@ -46,7 +46,7 @@ import java.io.File;
  * 
  * @author Curtis Rueden
  */
-public interface InputPanel {
+public interface InputPanel<U> {
 
 	// TODO - groups of fields
 

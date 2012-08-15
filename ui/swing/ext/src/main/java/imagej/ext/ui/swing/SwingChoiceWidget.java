@@ -42,6 +42,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 /**
  * Swing implementation of multiple choice selector widget.
@@ -49,23 +50,10 @@ import javax.swing.JComboBox;
  * @author Curtis Rueden
  */
 public class SwingChoiceWidget extends SwingInputWidget<String> implements
-	ActionListener, ChoiceWidget
+	ActionListener, ChoiceWidget<JPanel>
 {
 
-	private final JComboBox comboBox;
-
-	public SwingChoiceWidget(final WidgetModel model) {
-		super(model);
-
-		final String[] items = model.getChoices();
-
-		comboBox = new JComboBox(items);
-		setToolTip(comboBox);
-		add(comboBox);
-		comboBox.addActionListener(this);
-
-		refreshWidget();
-	}
+	private JComboBox comboBox;
 
 	// -- ActionListener methods --
 
@@ -79,6 +67,20 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.getItem().getChoices() != null;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String[] items = model.getChoices();
+
+		comboBox = new JComboBox(items);
+		setToolTip(comboBox);
+		getPane().add(comboBox);
+		comboBox.addActionListener(this);
+
+		refreshWidget();
 	}
 
 	@Override

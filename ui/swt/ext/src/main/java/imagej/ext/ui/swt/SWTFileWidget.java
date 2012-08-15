@@ -51,30 +51,31 @@ import org.eclipse.swt.widgets.Text;
  *
  * @author Curtis Rueden
  */
-public class SWTFileWidget extends SWTInputWidget<File> implements FileWidget {
+public class SWTFileWidget extends SWTInputWidget<File> implements FileWidget<Composite> {
 
 	private Text path;
 	private Button browse;
-
-	public SWTFileWidget(final Composite parent, final WidgetModel model) {
-		super(parent, model);
-
-		setLayout(new MigLayout());
-
-		path = new Text(this, 0);
-		path.setTextLimit(20);
-
-		browse = new Button(this, 0);
-		browse.setText("Browse");
-
-		refreshWidget();
-	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(File.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		getPane().setLayout(new MigLayout());
+
+		path = new Text(getPane(), 0);
+		path.setTextLimit(20);
+
+		browse = new Button(getPane(), 0);
+		browse.setText("Browse");
+
+		refreshWidget();
 	}
 
 	@Override

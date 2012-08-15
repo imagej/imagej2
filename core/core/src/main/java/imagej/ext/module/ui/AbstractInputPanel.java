@@ -49,38 +49,38 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractInputPanel implements InputPanel {
+public abstract class AbstractInputPanel<U> implements InputPanel<U> {
 
 	/** Number of messages in the panel. */
 	protected int messageCount = 0;
 
 	/** Widget table for numbers. */
-	protected Map<String, NumberWidget> numberWidgets =
-		new HashMap<String, NumberWidget>();
+	protected Map<String, NumberWidget<?>> numberWidgets =
+		new HashMap<String, NumberWidget<?>>();
 
 	/** Widget table for toggles. */
-	protected Map<String, ToggleWidget> toggleWidgets =
-		new HashMap<String, ToggleWidget>();
+	protected Map<String, ToggleWidget<?>> toggleWidgets =
+		new HashMap<String, ToggleWidget<?>>();
 
 	/** Widget table for text fields. */
-	protected Map<String, TextFieldWidget> textFieldWidgets =
-		new HashMap<String, TextFieldWidget>();
+	protected Map<String, TextFieldWidget<?>> textFieldWidgets =
+		new HashMap<String, TextFieldWidget<?>>();
 
 	/** Widget table for choices. */
-	protected Map<String, ChoiceWidget> choiceWidgets =
-		new HashMap<String, ChoiceWidget>();
+	protected Map<String, ChoiceWidget<?>> choiceWidgets =
+		new HashMap<String, ChoiceWidget<?>>();
 
 	/** Widget table for files. */
-	protected Map<String, FileWidget> fileWidgets =
-		new HashMap<String, FileWidget>();
+	protected Map<String, FileWidget<?>> fileWidgets =
+		new HashMap<String, FileWidget<?>>();
 
 	/** Widget table for colors. */
-	protected Map<String, ColorWidget> colorWidgets =
-		new HashMap<String, ColorWidget>();
+	protected Map<String, ColorWidget<?>> colorWidgets =
+		new HashMap<String, ColorWidget<?>>();
 
 	/** Widget table for objects. */
-	protected Map<String, ObjectWidget> objectWidgets =
-		new HashMap<String, ObjectWidget>();
+	protected Map<String, ObjectWidget<?>> objectWidgets =
+		new HashMap<String, ObjectWidget<?>>();
 
 	@Override
 	public Number getNumber(final String name) {
@@ -129,19 +129,19 @@ public abstract class AbstractInputPanel implements InputPanel {
 
 	@Override
 	public void refresh() {
-		for (final InputWidget w : numberWidgets.values())
+		for (final InputWidget<?, ?> w : numberWidgets.values())
 			w.refreshWidget();
-		for (final InputWidget w : toggleWidgets.values())
+		for (final InputWidget<?, ?> w : toggleWidgets.values())
 			w.refreshWidget();
-		for (final InputWidget w : textFieldWidgets.values())
+		for (final InputWidget<?, ?> w : textFieldWidgets.values())
 			w.refreshWidget();
-		for (final InputWidget w : choiceWidgets.values())
+		for (final InputWidget<?, ?> w : choiceWidgets.values())
 			w.refreshWidget();
-		for (final InputWidget w : fileWidgets.values())
+		for (final InputWidget<?, ?> w : fileWidgets.values())
 			w.refreshWidget();
-		for (final InputWidget w : colorWidgets.values())
+		for (final InputWidget<?, ?> w : colorWidgets.values())
 			w.refreshWidget();
-		for (final InputWidget w : objectWidgets.values())
+		for (final InputWidget<?, ?> w : objectWidgets.values())
 			w.refreshWidget();
 	}
 

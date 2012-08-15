@@ -53,7 +53,7 @@ import imagej.ext.module.ModuleException;
  * 
  * @author Curtis Rueden
  */
-public interface InputHarvester {
+public interface InputHarvester<U> {
 
 	/**
 	 * Performs the harvesting process.
@@ -67,7 +67,7 @@ public interface InputHarvester {
 	 * Constructs an empty {@link InputPanel}. Widgets are added later using the
 	 * {@link #buildPanel} method.
 	 */
-	InputPanel createInputPanel();
+	InputPanel<U> createInputPanel();
 
 	/**
 	 * Populates the given {@link InputPanel} with widgets corresponding to the
@@ -78,16 +78,17 @@ public interface InputHarvester {
 	 * @throws ModuleException if the panel cannot be populated for some reason.
 	 *           This may occur due to an input of unsupported type.
 	 */
-	void buildPanel(InputPanel inputPanel, Module module) throws ModuleException;
+	void buildPanel(InputPanel<U> inputPanel, Module module)
+		throws ModuleException;
 
 	/**
 	 * Gathers input values from the user or other source. For example, a
 	 * graphical user interface could present a dialog box.
 	 */
-	boolean harvestInputs(InputPanel inputPanel, Module module);
+	boolean harvestInputs(InputPanel<U> inputPanel, Module module);
 
 	/** Does any needed processing, after input values have been harvested. */
-	void processResults(InputPanel inputPanel, Module module)
+	void processResults(InputPanel<U> inputPanel, Module module)
 		throws ModuleException;
 
 }

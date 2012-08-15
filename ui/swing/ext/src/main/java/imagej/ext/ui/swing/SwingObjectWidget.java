@@ -42,6 +42,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 /**
  * Swing implementation of object selector widget.
@@ -49,20 +50,15 @@ import javax.swing.JComboBox;
  * @author Curtis Rueden
  */
 public class SwingObjectWidget extends SwingInputWidget<Object> implements
-	ActionListener, ObjectWidget
+	ActionListener, ObjectWidget<JPanel>
 {
 
-	private final JComboBox comboBox;
+	private JComboBox comboBox;
+	private Object[] items;
 
-	public SwingObjectWidget(final WidgetModel model, final Object[] items) {
-		super(model);
-
-		comboBox = new JComboBox(items);
-		setToolTip(comboBox);
-		add(comboBox);
-		comboBox.addActionListener(this);
-
-		refreshWidget();
+	public void setItems(final Object[] items) {
+		// CTR FIXME: Temporary hack to inject available objects.
+		this.items = items;
 	}
 
 	// -- ActionListener methods --
@@ -77,6 +73,18 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return true;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		comboBox = new JComboBox(items);
+		setToolTip(comboBox);
+		getPane().add(comboBox);
+		comboBox.addActionListener(this);
+
+		refreshWidget();
 	}
 
 	@Override

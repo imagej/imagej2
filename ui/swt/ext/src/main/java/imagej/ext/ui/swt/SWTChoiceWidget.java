@@ -48,27 +48,27 @@ import org.eclipse.swt.widgets.Composite;
  * @author Curtis Rueden
  */
 public class SWTChoiceWidget extends SWTInputWidget<String> implements
-	ChoiceWidget
+	ChoiceWidget<Composite>
 {
 
-	private final Combo combo;
-
-	public SWTChoiceWidget(final Composite parent, final WidgetModel model) {
-		super(parent, model);
-
-		final String[] items = model.getChoices();
-
-		combo = new Combo(this, SWT.DROP_DOWN);
-		combo.setItems(items);
-
-		refreshWidget();
-	}
+	private Combo combo;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.getItem().getChoices() != null;
+	}
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String[] items = model.getChoices();
+
+		combo = new Combo(getPane(), SWT.DROP_DOWN);
+		combo.setItems(items);
+
+		refreshWidget();
 	}
 
 	@Override

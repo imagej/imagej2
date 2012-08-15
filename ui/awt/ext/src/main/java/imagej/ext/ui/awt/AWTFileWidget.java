@@ -43,6 +43,7 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,34 +56,35 @@ import java.io.File;
  *
  * @author Curtis Rueden
  */
-public class AWTFileWidget extends AWTInputWidget<File> implements FileWidget,
-	ActionListener, TextListener
+public class AWTFileWidget extends AWTInputWidget<File> implements
+	FileWidget<Panel>, ActionListener, TextListener
 {
 
 	private TextField path;
 	private Button browse;
-
-	public AWTFileWidget(final WidgetModel model) {
-		super(model);
-
-		setLayout(new BorderLayout());
-
-		path = new TextField(20);
-		path.addTextListener(this);
-		add(path, BorderLayout.CENTER);
-
-		browse = new Button("Browse");
-		browse.addActionListener(this);
-		add(browse, BorderLayout.EAST);
-
-		refreshWidget();
-	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(File.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		getPane().setLayout(new BorderLayout());
+
+		path = new TextField(20);
+		path.addTextListener(this);
+		getPane().add(path, BorderLayout.CENTER);
+
+		browse = new Button("Browse");
+		browse.addActionListener(this);
+		getPane().add(browse, BorderLayout.EAST);
+
+		refreshWidget();
 	}
 
 	@Override

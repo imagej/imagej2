@@ -47,26 +47,27 @@ import org.eclipse.swt.widgets.Text;
  * @author Curtis Rueden
  */
 public class SWTTextFieldWidget extends SWTInputWidget<String> implements
-	TextFieldWidget
+	TextFieldWidget<Composite>
 {
 
-	private final Text text;
-
-	public SWTTextFieldWidget(final Composite parent, final WidgetModel model) {
-		super(parent, model);
-
-		text = new Text(this, 0);
-		final int columns = model.getItem().getColumnCount();
-		text.setTextLimit(columns);
-
-		refreshWidget();
-	}
+	private Text text;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(String.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		text = new Text(getPane(), 0);
+		final int columns = model.getItem().getColumnCount();
+		text.setTextLimit(columns);
+
+		refreshWidget();
 	}
 
 	@Override

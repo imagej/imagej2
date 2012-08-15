@@ -52,24 +52,8 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 	implements SliderValueListener
 {
 
-	private final Slider slider;
-	private final Label label;
-
-	public PivotNumberSliderWidget(final WidgetModel model,
-		final Number min, final Number max)
-	{
-		super(model);
-
-		slider = new Slider();
-		slider.setRange(min.intValue(), max.intValue());
-		add(slider);
-		slider.getSliderValueListeners().add(this);
-
-		label = new Label();
-		add(label);
-
-		refreshWidget();
-	}
+	private Slider slider;
+	private Label label;
 
 	// -- InputWidget methods --
 
@@ -78,6 +62,24 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 		final WidgetStyle style = model.getItem().getWidgetStyle();
 		if (style != WidgetStyle.NUMBER_SPINNER) return false;
 		return super.isCompatible(model);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+
+		slider = new Slider();
+		slider.setRange(min.intValue(), max.intValue());
+		getPane().add(slider);
+		slider.getSliderValueListeners().add(this);
+
+		label = new Label();
+		getPane().add(label);
+
+		refreshWidget();
 	}
 
 	@Override

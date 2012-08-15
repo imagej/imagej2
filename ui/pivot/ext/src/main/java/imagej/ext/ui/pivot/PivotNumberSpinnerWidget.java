@@ -48,23 +48,26 @@ import org.apache.pivot.wtk.content.NumericSpinnerData;
  */
 public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 
-	private final Spinner spinner;
+	private Spinner spinner;
 
-	public PivotNumberSpinnerWidget(final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
 		spinner = new Spinner();
 		spinner.setPreferredWidth(100);
 		spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
 			max.intValue(), stepSize.intValue()));
-		add(spinner);
+		getPane().add(spinner);
 
 		refreshWidget();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public Number getValue() {

@@ -48,30 +48,31 @@ import org.eclipse.swt.widgets.Slider;
  * @author Curtis Rueden
  */
 public class SWTNumberWidget extends SWTInputWidget<Number> implements
-	NumberWidget
+	NumberWidget<Composite>
 {
 
-	private final Slider slider;
-
-	public SWTNumberWidget(final Composite parent, final WidgetModel model) {
-		super(parent, model);
-
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
-
-		slider = new Slider(this, SWT.HORIZONTAL);
-		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
-			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
-
-		refreshWidget();
-	}
+	private Slider slider;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(Number.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
+
+		slider = new Slider(getPane(), SWT.HORIZONTAL);
+		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
+			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
+
+		refreshWidget();
 	}
 
 	@Override

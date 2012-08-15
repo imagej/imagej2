@@ -51,7 +51,7 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  */
-public class SwingInputPanel extends AbstractInputPanel {
+public class SwingInputPanel extends AbstractInputPanel<JPanel> {
 
 	private final JPanel panel;
 
@@ -74,52 +74,59 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addNumber(final WidgetModel model) {
-		final SwingNumberWidget numberWidget = new SwingNumberWidget(model);
-		addField(model, numberWidget);
+		final SwingNumberWidget numberWidget = new SwingNumberWidget();
+		numberWidget.initialize(model);
+		addField(model, numberWidget.getPane());
 		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
 
 	@Override
 	public void addToggle(final WidgetModel model) {
-		final SwingToggleWidget toggleWidget = new SwingToggleWidget(model);
-		addField(model, toggleWidget);
+		final SwingToggleWidget toggleWidget = new SwingToggleWidget();
+		toggleWidget.initialize(model);
+		addField(model, toggleWidget.getPane());
 		toggleWidgets.put(model.getItem().getName(), toggleWidget);
 	}
 
 	@Override
 	public void addTextField(final WidgetModel model) {
-		final SwingTextFieldWidget textFieldWidget =
-			new SwingTextFieldWidget(model);
-		addField(model, textFieldWidget);
+		final SwingTextFieldWidget textFieldWidget = new SwingTextFieldWidget();
+		textFieldWidget.initialize(model);
+		addField(model, textFieldWidget.getPane());
 		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
 	public void addChoice(final WidgetModel model) {
-		final SwingChoiceWidget choiceWidget = new SwingChoiceWidget(model);
-		addField(model, choiceWidget);
+		final SwingChoiceWidget choiceWidget = new SwingChoiceWidget();
+		choiceWidget.initialize(model);
+		addField(model, choiceWidget.getPane());
 		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}
 
 	@Override
 	public void addFile(final WidgetModel model) {
-		final SwingFileWidget fileWidget = new SwingFileWidget(model);
-		addField(model, fileWidget);
+		final SwingFileWidget fileWidget = new SwingFileWidget();
+		fileWidget.initialize(model);
+		addField(model, fileWidget.getPane());
 		fileWidgets.put(model.getItem().getName(), fileWidget);
 	}
 
 	@Override
 	public void addColor(final WidgetModel model) {
-		final SwingColorWidget colorWidget = new SwingColorWidget(model);
-		addField(model, colorWidget);
+		final SwingColorWidget colorWidget = new SwingColorWidget();
+		colorWidget.initialize(model);
+		addField(model, colorWidget.getPane());
 		colorWidgets.put(model.getItem().getName(), colorWidget);
 	}
 
 	@Override
 	public void addObject(final WidgetModel model) throws ModuleException {
 		final Object[] items = getObjects(model);
-		final SwingObjectWidget objectWidget = new SwingObjectWidget(model, items);
-		addField(model, objectWidget);
+		final SwingObjectWidget objectWidget = new SwingObjectWidget();
+		objectWidget.setItems(items);
+		objectWidget.initialize(model);
+		addField(model, objectWidget.getPane());
 		objectWidgets.put(model.getItem().getName(), objectWidget);
 	}
 

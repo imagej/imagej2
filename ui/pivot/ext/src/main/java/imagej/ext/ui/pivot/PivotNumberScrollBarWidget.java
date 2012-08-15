@@ -52,25 +52,8 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 	ScrollBarValueListener
 {
 
-	private final ScrollBar scrollBar;
-	private final Label label;
-
-	public PivotNumberScrollBarWidget(final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
-		super(model);
-
-		scrollBar = new ScrollBar();
-		scrollBar.setRange(min.intValue(), max.intValue());
-		scrollBar.setBlockIncrement(stepSize.intValue());
-		add(scrollBar);
-		scrollBar.getScrollBarValueListeners().add(this);
-
-		label = new Label();
-		add(label);
-
-		refreshWidget();
-	}
+	private ScrollBar scrollBar;
+	private Label label;
 
 	// -- InputWidget methods --
 
@@ -79,6 +62,26 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 		final WidgetStyle style = model.getItem().getWidgetStyle();
 		if (style != WidgetStyle.NUMBER_SCROLL_BAR) return false;
 		return super.isCompatible(model);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
+
+		scrollBar = new ScrollBar();
+		scrollBar.setRange(min.intValue(), max.intValue());
+		scrollBar.setBlockIncrement(stepSize.intValue());
+		getPane().add(scrollBar);
+		scrollBar.getScrollBarValueListeners().add(this);
+
+		label = new Label();
+		getPane().add(label);
+
+		refreshWidget();
 	}
 
 	@Override

@@ -56,6 +56,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /**
@@ -64,7 +65,7 @@ import javax.swing.colorchooser.AbstractColorChooserPanel;
  * @author Curtis Rueden
  */
 public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
-	ActionListener, ColorWidget
+	ActionListener, ColorWidget<JPanel>
 {
 
 	private static final int SWATCH_WIDTH = 64, SWATCH_HEIGHT = 16;
@@ -78,26 +79,8 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 	protected static final String SWATCHES_CLASS_NAME =
 		"javax.swing.colorchooser.DefaultSwatchChooserPanel";
 
-	private final JButton choose;
+	private JButton choose;
 	private Color color;
-
-	public SwingColorWidget(final WidgetModel model) {
-		super(model);
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-
-		choose = new JButton() {
-
-			@Override
-			public Dimension getMaximumSize() {
-				return getPreferredSize();
-			}
-		};
-		setToolTip(choose);
-		add(choose);
-		choose.addActionListener(this);
-
-		refreshWidget();
-	}
 
 	// -- ActionListener methods --
 
@@ -115,6 +98,26 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(ColorRGB.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		getPane().setLayout(new BoxLayout(getPane(), BoxLayout.X_AXIS));
+
+		choose = new JButton() {
+
+			@Override
+			public Dimension getMaximumSize() {
+				return getPreferredSize();
+			}
+		};
+		setToolTip(choose);
+		getPane().add(choose);
+		choose.addActionListener(this);
+
+		refreshWidget();
 	}
 
 	@Override

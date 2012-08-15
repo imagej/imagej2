@@ -39,6 +39,7 @@ import imagej.ext.module.ui.ChoiceWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.ListButton;
 
 /**
@@ -47,28 +48,29 @@ import org.apache.pivot.wtk.ListButton;
  * @author Curtis Rueden
  */
 public class PivotChoiceWidget extends PivotInputWidget<String>
-	implements ChoiceWidget
+	implements ChoiceWidget<BoxPane>
 {
 
-	private final ListButton listButton;
-
-	public PivotChoiceWidget(final WidgetModel model) {
-		super(model);
-
-		final String[] items = model.getChoices();
-
-		listButton = new ListButton();
-		listButton.setListData(new ArrayList<String>(items));
-		add(listButton);
-
-		refreshWidget();
-	}
+	private ListButton listButton;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.getItem().getChoices() != null;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String[] items = model.getChoices();
+
+		listButton = new ListButton();
+		listButton.setListData(new ArrayList<String>(items));
+		getPane().add(listButton);
+
+		refreshWidget();
 	}
 
 	@Override

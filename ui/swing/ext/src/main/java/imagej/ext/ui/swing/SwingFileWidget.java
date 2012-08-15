@@ -46,6 +46,7 @@ import java.io.File;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -56,35 +57,36 @@ import javax.swing.event.DocumentListener;
  * @author Curtis Rueden
  */
 public class SwingFileWidget extends SwingInputWidget<File> implements
-	FileWidget, ActionListener, DocumentListener
+	FileWidget<JPanel>, ActionListener, DocumentListener
 {
 
-	private final JTextField path;
-	private final JButton browse;
-
-	public SwingFileWidget(final WidgetModel model) {
-		super(model);
-
-		path = new JTextField(16);
-		setToolTip(path);
-		add(path);
-		path.getDocument().addDocumentListener(this);
-
-		add(Box.createHorizontalStrut(3));
-
-		browse = new JButton("Browse");
-		setToolTip(browse);
-		add(browse);
-		browse.addActionListener(this);
-
-		refreshWidget();
-	}
+	private JTextField path;
+	private JButton browse;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.isCompatibleWith(File.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		path = new JTextField(16);
+		setToolTip(path);
+		getPane().add(path);
+		path.getDocument().addDocumentListener(this);
+
+		getPane().add(Box.createHorizontalStrut(3));
+
+		browse = new JButton("Browse");
+		setToolTip(browse);
+		getPane().add(browse);
+		browse.addActionListener(this);
+
+		refreshWidget();
 	}
 
 	@Override
@@ -119,10 +121,10 @@ public class SwingFileWidget extends SwingInputWidget<File> implements
 		}
 		final int rval;
 		if (style == WidgetStyle.FILE_SAVE) {
-			rval = chooser.showSaveDialog(this);
+			rval = chooser.showSaveDialog(getPane());
 		}
 		else { // default behavior
-			rval = chooser.showOpenDialog(this);
+			rval = chooser.showOpenDialog(getPane());
 		}
 		if (rval != JFileChooser.APPROVE_OPTION) return;
 		file = chooser.getSelectedFile();

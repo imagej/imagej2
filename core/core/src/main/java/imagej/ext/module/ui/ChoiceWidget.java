@@ -40,6 +40,6 @@ package imagej.ext.module.ui;
  * 
  * @author Curtis Rueden
  */
-public interface ChoiceWidget extends InputWidget<String> {
+public interface ChoiceWidget<U> extends InputWidget<String, U> {
 	// NB: No changes to interface.
 }

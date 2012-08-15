@@ -40,6 +40,7 @@ import imagej.ext.module.ui.WidgetModel;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
+import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -49,29 +50,28 @@ import java.awt.event.ItemListener;
  * @author Curtis Rueden
  */
 public class AWTChoiceWidget extends AWTInputWidget<String> implements
-	ChoiceWidget, ItemListener
+	ChoiceWidget<Panel>, ItemListener
 {
 
 	private Choice choice;
-
-	public AWTChoiceWidget(final WidgetModel model) {
-		super(model);
-
-		final String[] items = model.getChoices();
-
-		choice = new Choice();
-		for (final String item : items) choice.add(item);
-		choice.addItemListener(this);
-		add(choice, BorderLayout.CENTER);
-
-		refreshWidget();
-	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return model.getItem().getChoices() != null;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		final String[] items = model.getChoices();
+
+		choice = new Choice();
+		for (final String item : items) choice.add(item);
+		choice.addItemListener(this);
+		getPane().add(choice, BorderLayout.CENTER);
+
+		refreshWidget();
 	}
 
 	@Override
