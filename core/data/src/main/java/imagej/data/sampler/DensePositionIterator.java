@@ -35,7 +35,6 @@
 
 package imagej.data.sampler;
 
-
 /**
  * This class is a PositionIterator that iterates the contiguous region of space
  * present in the results of a sampling of an image. It has package level
@@ -44,19 +43,20 @@ package imagej.data.sampler;
  * @author Barry DeZonia
  */
 class DensePositionIterator implements PositionIterator {
-	
+
 	// -- instance variables --
-	
-	private int[] maxIndexes;
-	private int[] indexes;
-	private long[] currPos;
+
+	private final int[] maxIndexes;
+	private final int[] indexes;
+	private final long[] currPos;
 
 	// -- constructor --
-	
-	/** Creates a DensePositionIterator from a SamplingDefinition. The space to
-	 * be iterated is the output space of a sampling.
+
+	/**
+	 * Creates a DensePositionIterator from a SamplingDefinition. The space to be
+	 * iterated is the output space of a sampling.
 	 */
-	DensePositionIterator(SamplingDefinition def) {
+	DensePositionIterator(final SamplingDefinition def) {
 		maxIndexes = calcMaxes(def);
 		currPos = new long[maxIndexes.length];
 		for (int i = 0; i < currPos.length; i++)
@@ -64,10 +64,10 @@ class DensePositionIterator implements PositionIterator {
 		indexes = new int[maxIndexes.length];
 		indexes[0] = -1;
 	}
-	
+
 	// -- public interface --
 
-	/** Returns true if the iterator has a next position in the output space. */ 
+	/** Returns true if the iterator has a next position in the output space. */
 	@Override
 	public boolean hasNext() {
 		for (int i = 0; i < currPos.length; i++) {
@@ -76,11 +76,11 @@ class DensePositionIterator implements PositionIterator {
 		return false;
 	}
 
-	/** Returns the next position of the output space. */ 
+	/** Returns the next position of the output space. */
 	@Override
 	public long[] next() {
 		for (int i = 0; i < indexes.length; i++) {
-			int nextPos = indexes[i] + 1;
+			final int nextPos = indexes[i] + 1;
 			if (nextPos <= maxIndexes[i]) {
 				indexes[i] = nextPos;
 				currPos[i] = nextPos;
@@ -95,16 +95,14 @@ class DensePositionIterator implements PositionIterator {
 	// -- private helpers --
 
 	/** Determines the maximum values that each axis can take. */
-	private int[] calcMaxes(SamplingDefinition def) {
-		long[] dims = def.getOutputDims();
-		int[] mx = new int[dims.length];
+	private int[] calcMaxes(final SamplingDefinition def) {
+		final long[] dims = def.getOutputDims();
+		final int[] mx = new int[dims.length];
 		for (int i = 0; i < dims.length; i++) {
-			if (dims[i] > Integer.MAX_VALUE)
-				throw new IllegalArgumentException(
-					"Can only iterate <= 2 gig per dimension");
+			if (dims[i] > Integer.MAX_VALUE) throw new IllegalArgumentException(
+				"Can only iterate <= 2 gig per dimension");
 			mx[i] = (int) (dims[i] - 1);
 		}
 		return mx;
 	}
 }
-

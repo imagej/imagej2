@@ -37,7 +37,6 @@ package imagej.data.sampler;
 
 import java.util.List;
 
-
 /**
  * This class is a PositionIterator that iterates the potentially noncontiguous
  * region of space present in the input of a sampling of an image. It has
@@ -48,18 +47,19 @@ import java.util.List;
 class SparsePositionIterator implements PositionIterator {
 
 	// -- instance variables --
-	
-	private int[] maxIndexes;
-	private int[] indexes;
-	private List<List<Long>> actualValues;
-	private long[] currPos;
+
+	private final int[] maxIndexes;
+	private final int[] indexes;
+	private final List<List<Long>> actualValues;
+	private final long[] currPos;
 
 	// -- constructor --
-	
-	/** Creates a SparsePositionIterator from a SamplingDefinition. The space to
-	 * be iterated is the input space of a sampling. It may not be contiguous.
+
+	/**
+	 * Creates a SparsePositionIterator from a SamplingDefinition. The space to be
+	 * iterated is the input space of a sampling. It may not be contiguous.
 	 */
-	SparsePositionIterator(SamplingDefinition def) {
+	SparsePositionIterator(final SamplingDefinition def) {
 		actualValues = def.getInputRanges();
 		maxIndexes = calcMaxes(def);
 		currPos = new long[maxIndexes.length];
@@ -71,7 +71,7 @@ class SparsePositionIterator implements PositionIterator {
 
 	// -- public interface --
 
-	/** Returns true if the iterator has a next position in the input space. */ 
+	/** Returns true if the iterator has a next position in the input space. */
 	@Override
 	public boolean hasNext() {
 		for (int i = 0; i < currPos.length; i++) {
@@ -80,11 +80,11 @@ class SparsePositionIterator implements PositionIterator {
 		return false;
 	}
 
-	/** Returns the next position of the input space. */ 
+	/** Returns the next position of the input space. */
 	@Override
 	public long[] next() {
 		for (int i = 0; i < indexes.length; i++) {
-			int nextPos = indexes[i] + 1;
+			final int nextPos = indexes[i] + 1;
 			if (nextPos <= maxIndexes[i]) {
 				indexes[i] = nextPos;
 				currPos[i] = actualValues.get(i).get(nextPos);
@@ -97,14 +97,15 @@ class SparsePositionIterator implements PositionIterator {
 	}
 
 	// -- private helpers --
-	
+
 	/** Determines the maximum values that each axis can take. */
-	private int[] calcMaxes(@SuppressWarnings("unused")SamplingDefinition def) {
-		int[] mx = new int[actualValues.size()];
+	private int[] calcMaxes(
+		@SuppressWarnings("unused") final SamplingDefinition def)
+	{
+		final int[] mx = new int[actualValues.size()];
 		for (int i = 0; i < mx.length; i++) {
 			mx[i] = actualValues.get(i).size() - 1;
 		}
 		return mx;
 	}
 }
-

@@ -92,9 +92,9 @@ import net.imglib2.meta.AxisType;
 // TODO display ranges are all messed up
 
 /**
- * Duplicates data from one input display to an output display. The planes to
- * be duplicated can be specified via dialog parameters. The XY coordinates can
- * be further constrained to be a subset of the current selection bounds.
+ * Duplicates data from one input display to an output display. The planes to be
+ * duplicated can be specified via dialog parameters. The XY coordinates can be
+ * further constrained to be a subset of the current selection bounds.
  * 
  * @author Barry DeZonia
  */
@@ -118,10 +118,10 @@ public class DuplicateImage extends DynamicPlugin {
 
 	@Parameter(label = "Constrain axes as below:")
 	private boolean specialBehavior = false;
-	
+
 	// -- instance variables that are not parameters --
 
-	private Map<AxisType,AxisSubrange> definitions;
+	private Map<AxisType, AxisSubrange> definitions;
 	private AxisType[] theAxes;
 
 	// -- DuplicateImage methods --
@@ -132,7 +132,7 @@ public class DuplicateImage extends DynamicPlugin {
 	 * when user defined axis definitions are to follow. If no axis definitions
 	 * follow then all planes within the selected region will be copied.
 	 */
-	public void setDefaultBehavior(boolean value) {
+	public void setDefaultBehavior(final boolean value) {
 		specialBehavior = !value;
 	}
 
@@ -144,25 +144,31 @@ public class DuplicateImage extends DynamicPlugin {
 	 * no user defined axis definitions were specified then all planes within the
 	 * selected region will be copied.
 	 */
-	public boolean isDefaultBehavior() { return !specialBehavior; }
+	public boolean isDefaultBehavior() {
+		return !specialBehavior;
+	}
 
 	/**
 	 * Sets the the input image to be sampled.
 	 */
-	public void setInputDisplay(ImageDisplay disp) {
+	public void setInputDisplay(final ImageDisplay disp) {
 		inputDisplay = disp;
 	}
-	
+
 	/**
 	 * Returns the the input image to be sampled.
 	 */
-	public ImageDisplay getInputDisplay() { return inputDisplay; }
+	public ImageDisplay getInputDisplay() {
+		return inputDisplay;
+	}
 
 	/**
 	 * The output image resulting after executing the run() method. This method
-	 * returns null if the run() method has not yet been called. 
+	 * returns null if the run() method has not yet been called.
 	 */
-	public ImageDisplay getOutputDisplay() { return outputDisplay; }
+	public ImageDisplay getOutputDisplay() {
+		return outputDisplay;
+	}
 
 	/**
 	 * Sets the range of values to copy from the input display for the given axis.
@@ -174,8 +180,10 @@ public class DuplicateImage extends DynamicPlugin {
 	 * <li>"3,5" : planes 3 and 5</li>
 	 * <li>"1-10" : planes 1 through 10</li>
 	 * <li>"1-10,20-30" : planes 1 through 10 and 20 through 30</li>
-	 * <li>"1-10-2,20-30-3" : planes 1 through 10 by 2 and planes 20 through 30 by 3</li>
-	 * <li>"1,3-5,12-60-6" : this shows each type of specification can be combined </li>
+	 * <li>"1-10-2,20-30-3" : planes 1 through 10 by 2 and planes 20 through 30 by
+	 * 3</li>
+	 * <li>"1,3-5,12-60-6" : this shows each type of specification can be combined
+	 * </li>
 	 * </ul>
 	 * 
 	 * @param axis
@@ -183,25 +191,29 @@ public class DuplicateImage extends DynamicPlugin {
 	 * @param originIsOne
 	 * @return null if successful else a message describing input error
 	 */
-	public String setAxisRange(AxisType axis, String axisDefinition, boolean originIsOne) {
+	public String setAxisRange(final AxisType axis, final String axisDefinition,
+		final boolean originIsOne)
+	{
 		specialBehavior = true;
-		AxisSubrange subrange = new AxisSubrange(inputDisplay, axis, axisDefinition, originIsOne);
+		final AxisSubrange subrange =
+			new AxisSubrange(inputDisplay, axis, axisDefinition, originIsOne);
 		if (subrange.getError() == null) {
 			definitions.put(axis, subrange);
 		}
 		return subrange.getError();
 	}
-	
+
 	// -- RunnablePlugin methods --
 
 	@Override
 	public void run() {
 		if (specialBehavior) {
-			SamplingDefinition samples = determineSamples();
+			final SamplingDefinition samples = determineSamples();
 			outputDisplay = samplerService.createSampledImage(samples);
 		}
 		else { // snapshot the existing composite selection
-			outputDisplay = samplerService.duplicateSelectedCompositePlane(inputDisplay);
+			outputDisplay =
+				samplerService.duplicateSelectedCompositePlane(inputDisplay);
 		}
 		/*
 		final List<List<Long>> planeIndices;
@@ -237,11 +249,11 @@ public class DuplicateImage extends DynamicPlugin {
 	}
 
 	// -- plugin parameter initializer --
-	
+
 	protected void initializer() {
 		definitions = new HashMap<AxisType, AxisSubrange>();
 		theAxes = inputDisplay.getAxes();
-		for (AxisType axis : theAxes) {
+		for (final AxisType axis : theAxes) {
 			final DefaultModuleItem<String> axisItem =
 				new DefaultModuleItem<String>(this, name(axis), String.class);
 			axisItem.setPersisted(false);
@@ -251,17 +263,18 @@ public class DuplicateImage extends DynamicPlugin {
 	}
 
 	// -- private helpers --
-	
-	private String fullRangeString(ImageDisplay disp, AxisType axis) {
-		int axisIndex = disp.getAxisIndex(axis);
+
+	private String fullRangeString(final ImageDisplay disp, final AxisType axis) {
+		final int axisIndex = disp.getAxisIndex(axis);
 		return "1-" + disp.dimension(axisIndex);
 	}
 
 	/** takes definitions and applies them */
 	private SamplingDefinition determineSamples() {
 		if (definitions.size() > 0) {
-			SamplingDefinition def = SamplingDefinition.sampleAllPlanes(inputDisplay);
-			for (AxisType axis : definitions.keySet()) {
+			final SamplingDefinition def =
+				SamplingDefinition.sampleAllPlanes(inputDisplay);
+			for (final AxisType axis : definitions.keySet()) {
 				def.constrain(axis, definitions.get(axis));
 			}
 			return def;
@@ -270,23 +283,23 @@ public class DuplicateImage extends DynamicPlugin {
 	}
 
 	private SamplingDefinition parsedDefinition() {
-		SamplingDefinition sampleDef = SamplingDefinition.sampleAllPlanes(inputDisplay);
-		for (AxisType axis : theAxes) {
-			String definition = (String) getInput(name(axis));
-			AxisSubrange subrange = new AxisSubrange(inputDisplay, axis, definition, true);
-			if (subrange.getError() != null)
-				return SamplingDefinition.sampleAllPlanes(inputDisplay);
+		final SamplingDefinition sampleDef =
+			SamplingDefinition.sampleAllPlanes(inputDisplay);
+		for (final AxisType axis : theAxes) {
+			final String definition = (String) getInput(name(axis));
+			final AxisSubrange subrange =
+				new AxisSubrange(inputDisplay, axis, definition, true);
+			if (subrange.getError() != null) return SamplingDefinition
+				.sampleAllPlanes(inputDisplay);
 			sampleDef.constrain(axis, subrange);
 		}
 		return sampleDef;
 	}
-	
 
-
-	private String name(AxisType axis) {
+	private String name(final AxisType axis) {
 		return axis.getLabel() + " axis range";
 	}
-	
+
 	/*
 	private List<List<Long>> calcPlaneIndices(ImageDisplay display, Dataset dataset) {
 		List<List<Long>> indices = new ArrayList<List<Long>>();
@@ -309,15 +322,15 @@ public class DuplicateImage extends DynamicPlugin {
 		return indices;
 	}
 	*/
-	
+
 	// make sure every field can be parsed (spaces between terms optional)
 	// legal entries:
-	//  "1"
-	//  "1 , 12, 44"
-	//  "1-4"
-	//  "1-4-2"
-	//  "1-4 , 7-10"
-	//  "1-10-2,4-22-3"
+	// "1"
+	// "1 , 12, 44"
+	// "1-4"
+	// "1-4-2"
+	// "1-4 , 7-10"
+	// "1-10-2,4-22-3"
 	/*
 	private Tuple2<List<List<Long>>,String> parsePlaneIndices() {
 		List<List<Long>> indices = new ArrayList<List<Long>>();
@@ -332,7 +345,7 @@ public class DuplicateImage extends DynamicPlugin {
 		return new Tuple2<List<List<Long>>,String>(indices,null);
 	}
 	*/
-	
+
 	/*
 	private AxisType[] getNonXyAxes(Dataset ds) {
 		AxisType[] axes = ds.getAxes();
