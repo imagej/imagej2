@@ -180,8 +180,8 @@ public class BrightnessContrast implements RunnablePlugin, PreviewPlugin {
 		final Img img = dataset.getImgPlus();
 		computeDataMinMax(img);
 		computeInitialMinMax();
-		if (min != min) min = initialMin;
-		if (max != max) max = initialMax;
+		if (Double.isNaN(min)) min = initialMin;
+		if (Double.isNaN(max)) max = initialMax;
 		computeBrightnessContrast();
 	}
 
