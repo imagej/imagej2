@@ -55,6 +55,7 @@ import java.util.List;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
+import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
@@ -231,6 +232,8 @@ public class SamplerService extends AbstractService {
 			input.getImgPlus().randomAccess();
 		final RandomAccess<? extends RealType<?>> outputAccessor =
 			output.getImgPlus().randomAccess();
+		double min = Double.MAX_VALUE;
+		double max = -Double.MAX_VALUE;
 		while (iter1.hasNext() && iter2.hasNext()) {
 
 			// determine data positions within datasets
@@ -241,6 +244,8 @@ public class SamplerService extends AbstractService {
 
 			// copy value
 			final double value = inputAccessor.get().getRealDouble();
+			min = Math.min(value, min);
+			max = Math.max(value, max);
 			outputAccessor.get().setReal(value);
 
 			// keep dataset color tables in sync
@@ -252,38 +257,30 @@ public class SamplerService extends AbstractService {
 			output.setColorTable(lut16, outputPlaneNumber);
 		}
 
+		// TODO - enable this code
+		// List<Overlay> overlays = overlayService.getOverlays(def.getDisplay());
+		// attachOverlays(def.getDisplay(), outputImage, overlays);
+
+		/* TODO
+		setOtherMetadata();  // user defined info that has been added to orig data
+		*/
+
 		// keep composite status in sync
 		setCompositeChannelCount(input, output);
 
 		// keep display color tables in sync
 		updateDisplayColorTables(def.getDisplay(), outputImage);
 
-		// TODO - enable this code
-		// List<Overlay> overlays = overlayService.getOverlays(def.getDisplay());
-		// attachOverlays(def.getDisplay(), outputImage, overlays);
-
-		/* TODO
-		set display ranges from input?
-		setOtherMetadata();
-		*/
-
-		// code elsewhere needs to know composite channel count may have changed
-		output.rebuild(); // removing has no effect on organ of corti not appearing
-		// Alternative that doesn't really work either
-		// evtService.publish/publishLater(new DatasetRestructuredEvent(output));
-
-		// TODO
-		// I can get color tables and compos chan count working. But with Organ of
-		// Corti nothing appears after running. However when running from within
-		// the debugger and no breakpoints set it works. A timing bug is apparent.
-		// Great.
+		// set the display range from actual data values
+		// TODO - could just reuse input image's display ranges for valid channels
+		setDisplayRange(outputImage, min, max);
 	}
 
-	/** Calculates a plane number from a position within a dimensionsal space. */
+	/** Calculates a plane number from a position within a dimensional space. */
 	private int planeNum(final long[] dims, final long[] pos) {
 		int plane = 0;
 		int inc = 1;
-		for (int i = 2; i < dims.length; i++) {
+		for (int i = 2; i < dims.length; i++) { // TODO - assumes X & Y are 1st two dims
 			plane += pos[i] * inc;
 			inc *= dims[i];
 		}
@@ -301,6 +298,8 @@ public class SamplerService extends AbstractService {
 		final int index = output.getAxisIndex(Axes.CHANNEL);
 		final long numChannels = (index < 0) ? 1 : output.dimension(index);
 		output.setCompositeChannelCount((int) numChannels);
+		// outside viewers need to know composite channel count changed
+		output.rebuild();
 	}
 
 	/**
@@ -373,5 +372,19 @@ public class SamplerService extends AbstractService {
 			num *= dims[i];
 		}
 		return num;
+	}
+	
+	private void setDisplayRange(ImageDisplay output, double min, double max) {
+		// TODO - remove evil cast
+		DatasetView view = (DatasetView) output.getActiveView();
+		List<RealLUTConverter<? extends RealType<?>>> converters =
+				view.getConverters();
+		for (RealLUTConverter<? extends RealType<?>> conv : converters) {
+			conv.setMin(min);
+			conv.setMax(max);
+		}
+		// NB - no need to do this here
+		//view.getProjector().map();
+		//view.update();
 	}
 }
