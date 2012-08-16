@@ -35,6 +35,7 @@
 
 package imagej.updater.gui;
 
+import imagej.ImageJ;
 import imagej.event.StatusService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -105,6 +106,11 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 		if (log == null) {
 			log = Util.getLogService();
+		}
+
+		if (uploaderService == null) {
+			final ImageJ context = ImageJ.createContext(UploaderService.class);
+			uploaderService = context.getService(UploaderService.class);
 		}
 
 		UpdaterUserInterface.set(new SwingUserInterface(log, statusService));
