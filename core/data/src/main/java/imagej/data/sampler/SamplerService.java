@@ -204,8 +204,11 @@ public class SamplerService extends AbstractService {
 		output.getImgPlus().initializeColorTables((int) numPlanes);
 		if (origDs.isRGBMerged()) {
 			final int chanAxis = output.getAxisIndex(Axes.CHANNEL);
-			if (chanAxis >= 0) if (output.dimension(chanAxis) == 3) output
-				.setRGBMerged(true);
+			if (chanAxis >= 0) {
+				if (output.dimension(chanAxis) == 3) {
+					output.setRGBMerged(true);
+				}
+			}
 		}
 		// TODO - remove evil cast
 		return (ImageDisplay) displayService.createDisplay(name, output);
