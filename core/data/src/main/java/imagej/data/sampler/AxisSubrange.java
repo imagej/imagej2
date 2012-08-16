@@ -200,23 +200,33 @@ public class AxisSubrange {
 			AxisSubrange subrange = null;
 			if (num != null) {
 				final long pos = num - min;
-				if ((pos < min) && (pos > max)) err =
-					"Dimension out of bounds (" + min + "," + max + ") : " + pos +
-						" in " + description;
-				else subrange = new AxisSubrange(num - min);
+				if ((pos < min) && (pos > max)) {
+					err =
+							"Dimension out of bounds (" + min + "," + max + ") : " + pos +
+							" in " + description;
+				}
+				else {
+					subrange = new AxisSubrange(num - min);
+				}
 			}
 			else if (numDashNum != null) {
 				final long start = numDashNum.get1();
 				final long end = numDashNum.get2();
 				final long pos1 = start - min;
 				final long pos2 = end - min;
-				if ((pos1 < min) && (pos1 > max)) err =
-					"Dimension out of bounds (" + min + "," + max + ") : " + pos1 +
-						" in " + description;
-				else if ((pos2 < min) && (pos2 > max)) err =
-					"Dimension out of bounds (" + min + "," + max + ") : " + pos2 +
-						" in " + description;
-				else subrange = new AxisSubrange(pos1, pos2);
+				if ((pos1 < min) && (pos1 > max)) {
+					err =
+							"Dimension out of bounds (" + min + "," + max + ") : " + pos1 +
+							" in " + description;
+				}
+				else if ((pos2 < min) && (pos2 > max)) {
+					err =
+							"Dimension out of bounds (" + min + "," + max + ") : " + pos2 +
+							" in " + description;
+				}
+				else {
+					subrange = new AxisSubrange(pos1, pos2);
+				}
 			}
 			else if (numDashNumDashNum != null) {
 				final long start = numDashNumDashNum.get1();
@@ -224,17 +234,24 @@ public class AxisSubrange {
 				final long by = numDashNumDashNum.get3();
 				final long pos1 = start - min;
 				final long pos2 = end - min;
-				if ((pos1 < min) && (pos1 > max)) err =
-					"Dimension out of bounds (" + min + "," + max + ") : " + pos1 +
-						" in " + description;
-				else if ((pos2 < min) && (pos2 > max)) err =
-					"Dimension out of bounds (" + min + "," + max + ") : " + pos2 +
-						" in " + description;
-				else if ((by == 0) && (pos1 != pos2)) err =
-					"Step by value cannot be 0 in " + description;
-				else subrange = new AxisSubrange(pos1, pos2, by);
+				if ((pos1 < min) && (pos1 > max)) {
+					err =
+							"Dimension out of bounds (" + min + "," + max + ") : " + pos1 +
+							" in " + description;
+				}
+				else if ((pos2 < min) && (pos2 > max)) {
+					err =
+							"Dimension out of bounds (" + min + "," + max + ") : " + pos2 +
+							" in " + description;
+				}
+				else if ((by == 0) && (pos1 != pos2)) {
+					err = "Step by value cannot be 0 in " + description;
+				}
+				else {
+					subrange = new AxisSubrange(pos1, pos2, by);
+				}
 			}
-			else {
+			else { // not num or numDashNum or numDashNumDashNum
 				err = "Could not parse definition: " + description;
 			}
 			if (err != null) {
