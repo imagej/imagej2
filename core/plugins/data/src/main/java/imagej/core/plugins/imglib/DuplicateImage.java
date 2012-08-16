@@ -220,8 +220,9 @@ public class DuplicateImage extends DynamicPlugin {
 			final String definition = (String) getInput(name(axis));
 			final AxisSubrange subrange =
 				new AxisSubrange(inputDisplay, axis, definition, true);
-			if (subrange.getError() != null) return SamplingDefinition
-				.sampleAllPlanes(inputDisplay);
+			if (subrange.getError() != null) {
+				return SamplingDefinition.sampleAllPlanes(inputDisplay);
+			}
 			sampleDef.constrain(axis, subrange);
 		}
 		return sampleDef;
