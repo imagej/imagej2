@@ -137,7 +137,7 @@ public class DuplicateImage extends DynamicPlugin {
 	}
 
 	/**
-	 * Returns ture if current behavior is default. Otherwise current behavior is
+	 * Returns true if current behavior is default. Otherwise current behavior is
 	 * special. Default behavior copies the current composite XY plane. When
 	 * special behavior is set then user defined axis definitions may have been
 	 * specifed and if so those definitions are used during copying. Otherwise if
@@ -236,6 +236,7 @@ public class DuplicateImage extends DynamicPlugin {
 		*/
 	}
 
+	// -- plugin parameter initializer --
 	
 	protected void initializer() {
 		definitions = new HashMap<AxisType, AxisSubrange>();
@@ -249,6 +250,8 @@ public class DuplicateImage extends DynamicPlugin {
 		}
 	}
 
+	// -- private helpers --
+	
 	private String fullRangeString(ImageDisplay disp, AxisType axis) {
 		int axisIndex = disp.getAxisIndex(axis);
 		return "1-" + disp.dimension(axisIndex);

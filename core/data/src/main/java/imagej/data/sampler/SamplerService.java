@@ -42,12 +42,14 @@ import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.RealRect;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RandomAccess;
@@ -178,14 +180,22 @@ public class SamplerService extends AbstractService {
 		long[] dims = def.getOutputDims();
 		String name = origDisp.getName();
 		AxisType[] axes = def.getOutputAxes();
+		double[] cal = def.getOutputCalibration(axes);
 		int bitsPerPixel = origDs.getType().getBitsPerPixel();
 		boolean signed = origDs.isSigned();
 		boolean floating = !origDs.isInteger();
 		Dataset output =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
+		output.setCalibration(cal);
 		long numPlanes = 1;
 		for (long dim : dims) numPlanes *= dim;
 		output.getImgPlus().initializeColorTables((int)numPlanes);
+		if (origDs.isRGBMerged()) {
+			int chanAxis = output.getAxisIndex(Axes.CHANNEL);
+			if (chanAxis >= 0)
+				if (output.dimension(chanAxis) == 3)
+					output.setRGBMerged(true);
+		}
 		// TODO - remove evil cast
 		return (ImageDisplay) displayService.createDisplay(name, output);
 	}
@@ -230,10 +240,13 @@ public class SamplerService extends AbstractService {
 		
 		// keep display color tables in sync
 		updateDisplayColorTables(def.getDisplay(), outputImage);
+
+		// TODO - enable this code
+		//List<Overlay> overlays = overlayService.getOverlays(def.getDisplay());
+		//attachOverlays(def.getDisplay(), outputImage, overlays);
 		
 		/* TODO
 		set display ranges from input?
-		attachOverlays();
 		setOtherMetadata();
 		*/
 		
@@ -296,4 +309,35 @@ public class SamplerService extends AbstractService {
 			outView.setColorTable(table, c);
 		}
 	}
+
+	private void attachOverlays(ImageDisplay inputDisp, ImageDisplay outputDisp, List<Overlay> overlays) {
+		RealRect bounds = overlayService.getSelectionBounds(inputDisp);
+		double[] toOrigin = new double[2];
+		toOrigin[0] = -bounds.x;
+		toOrigin[1] = -bounds.y;
+		List<Overlay> newOverlays = new ArrayList<Overlay>();
+		for (Overlay overlay : overlays) {
+			if (overlayWithinBounds(overlay, bounds)) {
+				// add a reference to existing overlay?
+				if (toOrigin[0] == 0 && toOrigin[1] == 0) {
+					newOverlays.add(overlay);
+				}
+				else { // different origins means must create new overlays
+					Overlay newOverlay = overlay.duplicate();
+					newOverlay.move(toOrigin);
+					newOverlays.add(newOverlay);
+				}
+			}
+		}
+		overlayService.addOverlays(outputDisp, newOverlays);
+	}
+	
+	private boolean overlayWithinBounds(Overlay overlay, RealRect bounds) {
+		if (overlay.min(0) < bounds.x) return false;
+		if (overlay.min(1) < bounds.y) return false;
+		if (overlay.max(0) > bounds.x + bounds.width) return false;
+		if (overlay.max(1) > bounds.y + bounds.height) return false;
+		return true;
+	}
+	
 }

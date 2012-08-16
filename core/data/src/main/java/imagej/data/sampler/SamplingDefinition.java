@@ -72,10 +72,10 @@ public class SamplingDefinition {
 	
 	// -- public interface --
 
-	/** Returns the input ImageDisplay of the SamplingDefinition */ 
+	/** Returns the input ImageDisplay of the SamplingDefinition. */ 
 	public ImageDisplay getDisplay() { return display; }
 	
-	/** Returns the current value of the error string of the SamplingDefinition */ 
+	/** Returns the current value of the error string of the SamplingDefinition.*/ 
 	public String getError() { return err; }
 
 
@@ -103,8 +103,10 @@ public class SamplingDefinition {
 		return Collections.unmodifiableList(axesDefs);
 	}
 	
-	/** Returns the axes that will be present in the output data. Those input axes
-	 * whose size is 1 are automatically collapsed. */
+	/**
+	 * Returns the axes that will be present in the output data. Those input axes
+	 * whose size is 1 are automatically collapsed.
+	 */
 	public AxisType[] getOutputAxes() {
 		AxisType[] inputAxes = getInputAxes();
 		List<List<Long>> inputRanges = getInputRanges();
@@ -120,8 +122,10 @@ public class SamplingDefinition {
 		return outputAxes;
 	}
 	
-	/** Returns the dimensions that will be present in the output data. Those
-	 * input dimensions whose size is 1 are automatically collapsed. */
+	/**
+	 * Returns the dimensions that will be present in the output data. Those
+	 * input dimensions whose size is 1 are automatically collapsed.
+	 */
 	public long[] getOutputDims() {
 		List<List<Long>> inputRanges = getInputRanges();
 		int dimCount = 0;
@@ -135,6 +139,19 @@ public class SamplingDefinition {
 			if (dimSize > 1) outputDims[d++] = dimSize;
 		}
 		return outputDims;
+	}
+
+	/**
+	 * Returns the calibration values that will be present in the output data.
+	 */
+	public double[] getOutputCalibration(AxisType[] outputAxes) {
+		double[] cal = new double[outputAxes.length];
+		int a = 0;
+		for (int i = 0; i < outputAxes.length; i++) {
+			int axisIndex = display.getAxisIndex(outputAxes[i]);
+			if (axisIndex >= 0) cal[a++] = display.calibration(i);
+		}
+		return cal;
 	}
 	
 	/**
@@ -169,7 +186,8 @@ public class SamplingDefinition {
 
 	// -- public static construction methods --
 	
-	/** A convenience method for defining a SamplingDefinition that returns a
+	/**
+	 * A convenience method for defining a SamplingDefinition that returns a
 	 * single UV plane of an ImageDisplay. U and V are defined by the user.
 	 *  
 	 * @param display The ImageDisplay to sample
@@ -199,7 +217,8 @@ public class SamplingDefinition {
 		return definition;
 	}
 	
-	/** A convenience method for defining a SamplingDefinition that returns a
+	/**
+	 * A convenience method for defining a SamplingDefinition that returns a
 	 * single XY plane of an ImageDisplay.
 	 *  
 	 * @param display The ImageDisplay to sample
@@ -209,7 +228,8 @@ public class SamplingDefinition {
 		return sampleUVPlane(display, Axes.X, Axes.Y);
 	}
 	
-	/** A convenience method for defining a SamplingDefinition that returns a
+	/**
+	 * A convenience method for defining a SamplingDefinition that returns a
 	 * composite (multichannel) UV plane of an ImageDisplay. U and V are defined
 	 * by the user.
 	 *  
@@ -243,7 +263,8 @@ public class SamplingDefinition {
 		return definition;
 	}
 
-	/** A convenience method for defining a SamplingDefinition that returns a
+	/**
+	 * A convenience method for defining a SamplingDefinition that returns a
 	 * composite (multichannel) XY plane of an ImageDisplay.
 	 *  
 	 * @param display The ImageDisplay to sample
@@ -253,7 +274,8 @@ public class SamplingDefinition {
 		return sampleCompositeUVPlane(display, Axes.X, Axes.Y);
 	}
 	
-	/** A convenience method for defining a SamplingDefinition that returns a
+	/**
+	 * A convenience method for defining a SamplingDefinition that returns a
 	 * complete copy of an ImageDisplay.
 	 *  
 	 * @param display The ImageDisplay to sample
