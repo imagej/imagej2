@@ -74,6 +74,9 @@ import net.imglib2.type.numeric.RealType;
 //-- for speed eliminate reliance on Longs. Make primitive arrays.
 //-- make a EnormousList that can store more than 2 gig of longs
 //In other plugins replace RestructureUtils calls with methods from here
+//Note when user specifies 1-1000 I am storing them all consecutively (i.e.
+// 1,2,3,4,5...1000. For small amounts this is fine but might want something
+// more sophisticated for large dimensional ranges.
 
 /**
  * The SamplerService provides methods for duplicating ImageDisplay data.
