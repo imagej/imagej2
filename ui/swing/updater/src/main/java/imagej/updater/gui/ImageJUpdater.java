@@ -183,9 +183,11 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 				}
 				catch (final UpdateCanceledException e) {
 					main.error("Canceled");
+					return;
 				}
 				catch (final IOException e) {
 					main.error("Installer failed: " + e);
+					return;
 				}
 
 				// make a class path using the updated files
