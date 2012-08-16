@@ -60,6 +60,21 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
+//TODO
+//1) Maintain metadata
+//2) maintain overlays: does an overlay in Z == 7 show up on correct slice
+// in output data?
+//3) report parse error string somehow
+//5) test the contains(num) code works
+//TODO - multiple places I'm relying on a Display's axes rather than a
+//Dataset's axes. See if there are problems with this
+//TODO - the iterators work with Lists which can only hold 2 gig or fewer
+//elements. Thus data cannot be copied > 2 gig per dimension.
+//TODO:
+//-- for speed eliminate reliance on Longs. Make primitive arrays.
+//-- make a EnormousList that can store more than 2 gig of longs
+//In other plugins replace RestructureUtils calls with methods from here
+
 /**
  * The SamplerService provides methods for duplicating ImageDisplay data.
  * 
