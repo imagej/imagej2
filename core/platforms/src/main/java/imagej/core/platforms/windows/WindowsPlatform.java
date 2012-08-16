@@ -64,7 +64,7 @@ public class WindowsPlatform extends AbstractPlatform {
 			cmd = "rundll32 shell32.dll,ShellExec_RunDLL";
 		}
 		else cmd = "rundll32 url.dll,FileProtocolHandler";
-		if (!platformService.exec(cmd, url.toString())) {
+		if (platformService.exec(cmd, url.toString()) != 0) {
 			throw new IOException("Could not open " + url);
 		}
 	}

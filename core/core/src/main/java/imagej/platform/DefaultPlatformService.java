@@ -142,11 +142,11 @@ public final class DefaultPlatformService extends AbstractService implements
 	}
 
 	@Override
-	public boolean exec(final String... args) throws IOException {
+	public int exec(final String... args) throws IOException {
 		final Process process = Runtime.getRuntime().exec(args);
 		try {
 			process.waitFor();
-			return process.exitValue() == 0;
+			return process.exitValue();
 		}
 		catch (final InterruptedException ie) {
 			throw new IOException("InterruptedException during execution: " +

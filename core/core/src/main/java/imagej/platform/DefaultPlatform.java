@@ -66,15 +66,19 @@ public class DefaultPlatform extends AbstractPlatform {
 	 */
 	@Override
 	public void open(final URL url) throws IOException {
-		if (!platformService.exec("open", url.toString())) {
-			throw new IOException("Could not open " + url);
-		}
 		final String[] browsers =
 			{ "xdg-open", "netscape", "firefox", "konqueror", "mozilla", "opera",
 				"epiphany", "lynx" };
 		for (final String browser : browsers) {
-			if (platformService.exec(browser, url.toString())) return;
+			try {
+				final int exitCode = platformService.exec(browser, url.toString());
+				if (exitCode == 0) return;
+			}
+			catch (IOException e) {
+				// browser executable was invalid; try the next one
+			}
 		}
+		throw new IOException("Could not open " + url);
 	}
 
 }
