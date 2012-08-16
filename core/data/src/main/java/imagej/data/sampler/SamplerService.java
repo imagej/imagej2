@@ -198,10 +198,12 @@ public class SamplerService extends AbstractService {
 		final Dataset output =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 		output.setCalibration(cal);
-		long numPlanes = 1;
-		for (final long dim : dims)
-			numPlanes *= dim;
-		output.getImgPlus().initializeColorTables((int) numPlanes);
+		long numPlanes = calcNumPlanes(dims, axes);
+		if (numPlanes > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(
+				"output image has more planes than "+Integer.MAX_VALUE);
+		}
+		output.getImgPlus().initializeColorTables((int)numPlanes);
 		if (origDs.isRGBMerged()) {
 			final int chanAxis = output.getAxisIndex(Axes.CHANNEL);
 			if (chanAxis >= 0) {
@@ -364,4 +366,12 @@ public class SamplerService extends AbstractService {
 		return true;
 	}
 
+	private long calcNumPlanes(long[] dims, AxisType[] axes) {
+		long num = 1;
+		for (int i = 0; i < dims.length; i++) {
+			if (Axes.isXY(axes[i])) continue;
+			num *= dims[i];
+		}
+		return num;
+	}
 }
