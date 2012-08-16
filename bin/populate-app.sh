@@ -9,7 +9,7 @@ unzip -o $ZIP &&
 contents="$(unzip -l $ZIP | sed -n 's/^.*\(ImageJ.app\/.*[^\/]\)$/\1/p')" &&
 possibly_obsoletes="$(printf "%s\n%s\n%s" \
 		"$contents" "$contents" "$(find ImageJ.app -type f)" |
-	grep -ve /.checksums$ -e /db.xml.gz$ |
+	grep -ve /.checksums$ -e /db.xml.gz |
 	sort | uniq -u)" &&
 if test -n "$possibly_obsoletes"
 then
