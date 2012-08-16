@@ -248,6 +248,11 @@ public class SamplerService extends AbstractService {
 			max = Math.max(value, max);
 			outputAccessor.get().setReal(value);
 
+			// TODO - notice there is a lot of inefficiency following here.
+			// We are setting color tables once per pixel in image and do a lot of
+			// calculation to figure out what table. This should be done once per
+			// plane.
+			
 			// keep dataset color tables in sync
 			final int inputPlaneNumber = planeNum(inputDims, inputPos);
 			final ColorTable8 lut8 = input.getColorTable8(inputPlaneNumber);
