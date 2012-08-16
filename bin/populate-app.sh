@@ -23,7 +23,7 @@ then
 		xargs -0 rm
 		;;
 	esac
-fi
+fi &&
 for jar in ImageJ.app/jars/*.jar
 do
 	if test -n "$(unzip -p $jar \*pom.properties 2> /dev/null |
