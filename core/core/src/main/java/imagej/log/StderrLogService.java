@@ -50,6 +50,10 @@ public class StderrLogService extends AbstractService implements LogService {
 
 	public StderrLogService() {
 		super(null);
+
+		// HACK: Dirty, because every time a new ImageJ context is created with a
+		// StderrLogService, it will "steal" the default exception handling.
+		DefaultUncaughtExceptionHandler.install(this);
 	}
 
 	@Override

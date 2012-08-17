@@ -68,8 +68,8 @@ public final class SLF4JLogService extends AbstractService implements
 	public SLF4JLogService(final ImageJ context) {
 		super(context);
 
-		// HACK: Dirty, because every time a new ImageJ context is created with a
-		// DefaultLogService, it will "steal" the default exception handling.
+		// HACK: Dirty, because every time a new ImageJ context is created with an
+		// SLF4JLogService, it will "steal" the default exception handling.
 		DefaultUncaughtExceptionHandler.install(this);
 
 		logger = LoggerFactory.getLogger(SLF4JLogService.class);
