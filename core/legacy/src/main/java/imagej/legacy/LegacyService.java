@@ -120,4 +120,9 @@ public interface LegacyService extends Service {
 	 */
 	public boolean isLegacyMode();
 
+	/**
+	 * Switch to/from running legacy ImageJ 1.x mode.
+	 */
+	void toggleLegacyMode(boolean toggle);
+
 }

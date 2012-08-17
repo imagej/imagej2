@@ -38,6 +38,7 @@ package imagej.legacy;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.gui.ImageWindow;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
 import imagej.data.Dataset;
@@ -63,6 +64,10 @@ import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.ui.ApplicationFrame;
+import imagej.ui.UIService;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 import imagej.util.ColorRGB;
 
 import java.awt.GraphicsEnvironment;
@@ -249,6 +254,44 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Override
 	public boolean isLegacyMode() {
 		return legacyIJ1Mode;
+	}
+
+	/**
+	 * Switch to/from running legacy ImageJ 1.x mode.
+	 */
+	@Override
+	public synchronized void toggleLegacyMode(boolean toggle) {
+		legacyIJ1Mode = toggle;
+
+		final UIService uiService = imageDisplayService.getContext().getService(UIService.class);
+		if (uiService != null) {
+			// hide or show the IJ2 main window
+			ApplicationFrame appFrame = uiService.getDefaultUI().getApplicationFrame();
+			appFrame.setVisible(!toggle);
+
+			// hide or show the IJ2 datasets corresponding to legacy ImagePlus instances
+			for (final ImageDisplay display : imageMap.getImageDisplays()) {
+				final ImageDisplayViewer viewer = (ImageDisplayViewer)uiService.getDisplayViewer(display);
+				if (viewer == null) continue;
+				final DisplayWindow window = viewer.getWindow();
+				if (window != null) window.showDisplay(!toggle);
+			}
+		}
+
+		final ij.ImageJ ij = IJ.getInstance();
+		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
+
+		// show or hide IJ1 main window
+		if (toggle) {
+			ij.pack();
+		}
+		ij.setVisible(toggle);
+
+		// show or hide the legacy ImagePlus instances
+		for (final ImagePlus imp : imageMap.getImagePlusInstances()) {
+			final ImageWindow window = imp.getWindow();
+			if (window != null) window.setVisible(toggle);
+		}
 	}
 
 	// -- Service methods --
