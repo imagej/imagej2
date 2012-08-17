@@ -107,7 +107,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 	@Override
 	public void open(final URL url) throws IOException {
-		if (!platformService.exec("open", url.toString())) {
+		if (platformService.exec("open", url.toString()) != 0) {
 			throw new IOException("Could not open " + url);
 		}
 	}

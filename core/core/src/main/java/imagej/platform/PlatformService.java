@@ -67,8 +67,12 @@ public interface PlatformService extends Service {
 	 */
 	void open(URL url) throws IOException;
 
-	/** Executes a native program and waits for it to return. */
-	boolean exec(String... args) throws IOException;
+	/**
+	 * Executes a native program and waits for it to return.
+	 * 
+	 * @return the exit code of the execution.
+	 */
+	int exec(String... args) throws IOException;
 
 	/**
 	 * Informs the active platform handlers of a UI's newly created application
