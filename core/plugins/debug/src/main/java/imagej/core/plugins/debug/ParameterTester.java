@@ -38,6 +38,7 @@ package imagej.core.plugins.debug;
 import imagej.data.Dataset;
 import imagej.event.StatusService;
 import imagej.ext.module.ItemIO;
+import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
@@ -63,6 +64,10 @@ public class ParameterTester implements RunnablePlugin, PreviewPlugin {
 
 	@Parameter
 	private StatusService statusService;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private final String label =
+		"The parameter tester demonstrates the various widgets in action!";
 
 	@Parameter(label = "boolean")
 	private boolean pBoolean;
