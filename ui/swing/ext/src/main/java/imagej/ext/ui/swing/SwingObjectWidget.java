@@ -57,12 +57,6 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 {
 
 	private JComboBox comboBox;
-	private Object[] items;
-
-	public void setItems(final Object[] items) {
-		// CTR FIXME: Temporary hack to inject available objects.
-		this.items = items;
-	}
 
 	// -- ActionListener methods --
 
@@ -75,14 +69,14 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return true;
+		return model.getObjectPool().size() > 0;
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		comboBox = new JComboBox(items);
+		comboBox = new JComboBox(model.getObjectPool().toArray());
 		setToolTip(comboBox);
 		getPane().add(comboBox);
 		comboBox.addActionListener(this);

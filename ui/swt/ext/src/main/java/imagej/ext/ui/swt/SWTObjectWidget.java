@@ -55,18 +55,12 @@ public class SWTObjectWidget extends SWTInputWidget<Object> implements
 {
 
 	private Combo combo;
-	private Object[] items;
-
-	public void setItems(Object[] items) {
-		// CTR FIXME: Temporary hack to inject available objects.
-		this.items = items;
-	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return true;
+		return model.getObjectPool().size() > 0;
 	}
 
 	@Override
@@ -74,26 +68,23 @@ public class SWTObjectWidget extends SWTInputWidget<Object> implements
 		super.initialize(model);
 
 		combo = new Combo(getPane(), SWT.DROP_DOWN);
-		for (final Object item : items) combo.add(item.toString());
+		for (final Object item : model.getObjectPool()) {
+			combo.add(item.toString());
+		}
 
 		refreshWidget();
 	}
 
 	@Override
 	public Object getValue() {
-		return items[combo.getSelectionIndex()];
+		return getModel().getObjectPool().get(combo.getSelectionIndex());
 	}
 
 	@Override
 	public void refreshWidget() {
 		final Object value = getModel().getValue();
-		for (int i = 0; i < items.length; i++) {
-			final Object item = items[i];
-			if (item == value) {
-				combo.select(i);
-				break;
-			}
-		}
+		final int index = getModel().getObjectPool().indexOf(value);
+		if (index >= 0) combo.select(index);
 	}
 
 }

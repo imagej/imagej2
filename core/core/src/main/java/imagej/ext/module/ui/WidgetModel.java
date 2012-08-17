@@ -49,20 +49,22 @@ import java.util.List;
  */
 public class WidgetModel {
 
-	private final InputPanel inputPanel;
+	private final InputPanel<?> inputPanel;
 	private final Module module;
 	private final ModuleItem<?> item;
+	private final List<?> objectPool;
 
 	private final String widgetLabel;
 
 	private boolean initialized;
 
-	public WidgetModel(final InputPanel inputPanel, final Module module,
-		final ModuleItem<?> item)
+	public WidgetModel(final InputPanel<?> inputPanel, final Module module,
+		final ModuleItem<?> item, final List<?> objectPool)
 	{
 		this.inputPanel = inputPanel;
 		this.module = module;
 		this.item = item;
+		this.objectPool = objectPool;
 
 		widgetLabel = makeWidgetLabel(item.getLabel());
 	}
@@ -73,6 +75,20 @@ public class WidgetModel {
 
 	public ModuleItem<?> getItem() {
 		return item;
+	}
+
+	/**
+	 * Gets the available objects for use with the widget. For example,
+	 * {@link ObjectWidget}s typically display a dropdown combo box providing
+	 * multiple choice selection between these objects.
+	 * <p>
+	 * Note that this list does not represent a constraint in allowed widget
+	 * values, but rather provides a list of possibilities in cases where the
+	 * realm of values is not defined by the type in some other way.
+	 * </p>
+	 */
+	public List<?> getObjectPool() {
+		return objectPool;
 	}
 
 	public String getWidgetLabel() {

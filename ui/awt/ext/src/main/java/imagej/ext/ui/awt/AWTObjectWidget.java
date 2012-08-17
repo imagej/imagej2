@@ -57,18 +57,12 @@ public class AWTObjectWidget extends AWTInputWidget<Object>
 {
 
 	private Choice choice;
-	private Object[] items;
-
-	public void setItems(Object[] items) {
-		// CTR FIXME: Temporary hack to inject available objects.
-		this.items = items;
-	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return true;
+		return model.getObjectPool().size() > 0;
 	}
 
 	@Override
@@ -76,7 +70,9 @@ public class AWTObjectWidget extends AWTInputWidget<Object>
 		super.initialize(model);
 
 		choice = new Choice();
-		for (final Object item : items) choice.add(item.toString());
+		for (final Object item : model.getObjectPool()) {
+			choice.add(item.toString());
+		}
 		getPane().add(choice, BorderLayout.CENTER);
 		choice.addItemListener(this);
 
@@ -85,7 +81,7 @@ public class AWTObjectWidget extends AWTInputWidget<Object>
 
 	@Override
 	public Object getValue() {
-		return items[choice.getSelectedIndex()];
+		return getModel().getObjectPool().get(choice.getSelectedIndex());
 	}
 
 	@Override

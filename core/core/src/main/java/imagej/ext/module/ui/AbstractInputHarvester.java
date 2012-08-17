@@ -41,8 +41,10 @@ import imagej.ext.module.Module;
 import imagej.ext.module.ModuleCanceledException;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleItem;
+import imagej.object.ObjectService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract superclass for {@link InputHarvester}s.
@@ -132,7 +134,8 @@ public abstract class AbstractInputHarvester<U> implements Contextual,
 		if (resolved) return null; // skip resolved inputs
 
 		final Class<T> type = item.getType();
-		final WidgetModel model = new WidgetModel(inputPanel, module, item);
+		final WidgetModel model =
+			new WidgetModel(inputPanel, module, item, getObjects(type));
 
 		final WidgetService widgetService =
 			getContext().getService(WidgetService.class);
@@ -149,6 +152,13 @@ public abstract class AbstractInputHarvester<U> implements Contextual,
 
 		// item is not required; we can skip it
 		return null;
+	}
+
+	/** Asks the object service for valid choices */
+	private <T> List<T> getObjects(final Class<T> type) {
+		final ObjectService objectService =
+			getContext().getService(ObjectService.class);
+		return objectService.getObjects(type);
 	}
 
 }
