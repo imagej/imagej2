@@ -37,16 +37,19 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.data.display.DatasetView;
+import imagej.data.display.DefaultDatasetView;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
  * Creates a new {@link Dataset}.
@@ -73,7 +76,6 @@ public class NewImage implements RunnablePlugin {
 	public static final String WHITE = "White";
 	public static final String BLACK = "Black";
 	public static final String RAMP = "Ramp";
-	public static final String ZERO = "Zero";
 
 	private static final String DEFAULT_NAME = "Untitled";
 	
@@ -93,7 +95,7 @@ public class NewImage implements RunnablePlugin {
 	@Parameter(callback = "floatingChanged")
 	private boolean floating = false;
 
-	@Parameter(label = "Fill With", choices = { WHITE, BLACK, RAMP, ZERO })
+	@Parameter(label = "Fill With", choices = { WHITE, BLACK, RAMP })
 	private String fillType = WHITE;
 
 	@Parameter(min = "1")
@@ -105,7 +107,7 @@ public class NewImage implements RunnablePlugin {
 	// TODO: allow creation of multidimensional datasets
 
 	@Parameter(type = ItemIO.OUTPUT)
-	private Dataset dataset;
+	private DatasetView datasetView;
 
 	// -- NewImage methods --
 
@@ -170,17 +172,25 @@ public class NewImage implements RunnablePlugin {
 
 	@Override
 	public void run() {
-		if ((name == null) || (name.trim().length() == 0)) name = DEFAULT_NAME;
+		if (name == null || name.trim().length() == 0) name = DEFAULT_NAME;
 		// create the dataset
 		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = { width, height };
 		final AxisType[] axes = { Axes.X, Axes.Y };
-		dataset =
+		final Dataset dataset =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		final boolean isWhite = fillType.equals(WHITE);
 		final boolean isBlack = fillType.equals(BLACK);
-		final boolean isZero = fillType.equals(ZERO);
+		final boolean isRamp = fillType.equals(RAMP);
+		
+		// HACK: Special case for unsigned 8-bit integer data.
+		// This hack is only here to mimic ImageJ1's behavior.
+		// Otherwise, we use a data value of 0 for both WHITE and BLACK displays.
+		final Class<?> typeClass = dataset.getImgPlus().firstElement().getClass();
+		final boolean isUINT8 = UnsignedByteType.class.isAssignableFrom(typeClass);
+		final double constantValue = isUINT8 ? 255 : 0;
+		type
 
 		// fill in the diagonal gradient
 		final long[] pos = new long[2];
@@ -192,12 +202,22 @@ public class NewImage implements RunnablePlugin {
 			pos[1] = cursor.getLongPosition(1);
 			final RealType<?> type = cursor.get();
 			final double value;
-			if (isWhite) value = type.getMaxValue();
-			else if (isBlack) value = type.getMinValue();
-			else if (isZero) value = 0;
-			else value = rampedValue(pos, dims, type); // fillWith == RAMP
+			if (isRamp) value = rampedValue(pos, dims, type);
+			else {
+					value = 255;
+				}
+				else value = 0;
+			}
 			type.setReal(value);
 		}
+
+		// create dataset view and set display range appropriately
+		if (isWhite) {
+			min = -1;
+			max = 0;
+		}
+		datasetView = new DefaultDatasetView(dataset);
+		datasetView.setChannelRange(0, min, max);
 	}
 
 	// -- Parameter callback methods --
