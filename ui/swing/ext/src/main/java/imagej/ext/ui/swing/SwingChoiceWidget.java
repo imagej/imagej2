@@ -35,7 +35,6 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.Priority;
 import imagej.ext.module.ui.ChoiceWidget;
 import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
@@ -52,7 +51,7 @@ import javax.swing.JPanel;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
+@Plugin(type = InputWidget.class)
 public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	ActionListener, ChoiceWidget<JPanel>
 {
@@ -70,7 +69,7 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.getItem().getChoices() != null;
+		return model.isText() && model.isMultipleChoice();
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public class AWTTextFieldWidget extends AWTInputWidget<String>
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isCompatibleWith(String.class);
+		return model.isText() && !model.isMultipleChoice();
 	}
 
 	@Override

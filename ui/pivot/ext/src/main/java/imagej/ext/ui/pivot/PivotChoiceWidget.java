@@ -35,7 +35,6 @@
 
 package imagej.ext.ui.pivot;
 
-import imagej.Priority;
 import imagej.ext.module.ui.ChoiceWidget;
 import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
@@ -50,7 +49,7 @@ import org.apache.pivot.wtk.ListButton;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
+@Plugin(type = InputWidget.class)
 public class PivotChoiceWidget extends PivotInputWidget<String>
 	implements ChoiceWidget<BoxPane>
 {
@@ -61,7 +60,7 @@ public class PivotChoiceWidget extends PivotInputWidget<String>
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.getItem().getChoices() != null;
+		return model.isText() && model.isMultipleChoice();
 	}
 
 	@Override

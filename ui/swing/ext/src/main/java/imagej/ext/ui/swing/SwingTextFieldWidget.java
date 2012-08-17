@@ -83,7 +83,7 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isCompatibleWith(String.class);
+		return model.isText() && !model.isMultipleChoice();
 	}
 
 	@Override

@@ -35,7 +35,6 @@
 
 package imagej.ext.ui.swt;
 
-import imagej.Priority;
 import imagej.ext.module.ui.ChoiceWidget;
 import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
@@ -50,7 +49,7 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
+@Plugin(type = InputWidget.class)
 public class SWTChoiceWidget extends SWTInputWidget<String> implements
 	ChoiceWidget<Composite>
 {
@@ -61,8 +60,9 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.getItem().getChoices() != null;
+		return model.isText() && model.isMultipleChoice();
 	}
+
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);

@@ -94,10 +94,6 @@ public class WidgetModel {
 		}
 	}
 
-	public boolean isCompatibleWith(final Class<?> type) {
-		return ClassUtils.canConvert(getItem().getType(), type);
-	}
-
 	public Number getMin() {
 		final Class<?> type = item.getType();
 		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
@@ -134,6 +130,26 @@ public class WidgetModel {
 		return choices;
 	}
 
+	public boolean isText() {
+		return ClassUtils.isText(getItem().getType());
+	}
+
+	public boolean isNumber() {
+		return ClassUtils.isNumber(getItem().getType());
+	}
+
+	public boolean isBoolean() {
+		return ClassUtils.isBoolean(getItem().getType());
+	}
+
+	public boolean isMultipleChoice() {
+		return !item.getChoices().isEmpty();
+	}
+
+	public boolean isType(final Class<?> type) {
+		return type.isAssignableFrom(getItem().getType());
+	}
+
 	public void setInitialized(final boolean initialized) {
 		this.initialized = initialized;
 	}
@@ -156,4 +172,5 @@ public class WidgetModel {
 		if (obj1 == null) return obj2 == null;
 		return obj1.equals(obj2);
 	}
+
 }

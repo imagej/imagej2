@@ -53,7 +53,7 @@ public abstract class PivotNumberWidget extends PivotInputWidget<Number>
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isCompatibleWith(Number.class);
+		return model.isNumber();
 	}
 
 }

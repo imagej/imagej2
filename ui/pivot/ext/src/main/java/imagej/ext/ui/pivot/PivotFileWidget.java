@@ -68,7 +68,7 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isCompatibleWith(File.class);
+		return model.isType(File.class);
 	}
 
 	@Override

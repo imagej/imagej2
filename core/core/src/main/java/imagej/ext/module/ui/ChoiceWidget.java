@@ -36,7 +36,7 @@
 package imagej.ext.module.ui;
 
 /**
- * Which interface for multiple choice selectors.
+ * Widget interface for multiple choice selectors.
  * 
  * @author Curtis Rueden
  */
