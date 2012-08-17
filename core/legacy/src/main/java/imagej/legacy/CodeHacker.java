@@ -200,48 +200,11 @@ public class CodeHacker {
 	}
 
 	/**
-	 * Modifies a class by replacing the specified method.
-	 * <p>
-	 * The new code is defined in the imagej.legacy.patches package, as described
-	 * in the documentation for {@link #insertMethod(String, String)}.
-	 * </p>
-	 * 
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to replace; e.g.,
-	 *          "public void setVisible(boolean vis)"
-	 */
-	public void replaceMethod(final String fullClass, final String methodSig) {
-		replaceMethod(fullClass, methodSig, newCode(fullClass, methodSig));
-	}
-
-	/**
-	 * Modifies a class by replacing the specified method with the provided code
-	 * string.
-	 * 
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to replace; e.g.,
-	 *          "public void setVisible(boolean vis)"
-	 * @param newCode The string of code to add; e.g., System.out.println(\"Hello
-	 *          World!\");
-	 */
-	public void replaceMethod(final String fullClass, final String methodSig,
-		final String newCode)
-	{
-		try {
-			getMethod(fullClass, methodSig).setBody(newCode);
-		}
-		catch (final CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
-				e);
-		}
-	}
-
-	/**
 	 * Loads the given, possibly modified, class.
 	 * <p>
 	 * This method must be called to confirm any changes made with
 	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod},
-	 * {@link #insertMethod} or {@link #replaceMethod}.
+	 * or {@link #insertMethod}.
 	 * </p>
 	 * 
 	 * @param fullClass Fully qualified class name to load.
