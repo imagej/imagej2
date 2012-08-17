@@ -35,6 +35,8 @@
 
 package imagej.console;
 
+import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
@@ -86,7 +88,9 @@ public class DefaultConsoleService extends AbstractService implements
 				open(args[i + 1]);
 			}
 			else if (arg.equals("--run")) {
-				run(args[i + 1]);
+				if (!run(args[i + 1])) {
+					run(args[i + 1], args.length < i + 3 ? null : args[i + 2]);
+				}
 			}
 		}
 	}
@@ -108,8 +112,23 @@ public class DefaultConsoleService extends AbstractService implements
 	}
 
 	/** Implements the "--run" command line argument. */
-	private void run(final String className) {
-		commandService.run(className);
+	private boolean run(final String className) {
+		return commandService.run(className) != null;
+	}
+
+	/** Implements the "--run <label> <optionString>" legacy handling */
+	private boolean run(String menuLabel, @SuppressWarnings("unused") final String optionString) {
+		final String label = menuLabel.replace('_', ' ');
+		CommandInfo<Command> info = null;
+		for (final CommandInfo<Command> info2 : commandService.getCommands()) {
+			if (label.equals(info2.getTitle())) {
+				info = info2;
+				break;
+			}
+		}
+		if (info == null) return false;
+		// TODO: parse the optionString a la ImageJ1
+		return commandService.run(info.getClassName()) != null;
 	}
 
 }

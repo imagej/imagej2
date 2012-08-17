@@ -2995,6 +2995,14 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 	else if (handle_one_option(i, argv, "--plugins", &arg))
 		string_addf(&plugin_path, "-Dplugins.dir=%s", arg.buffer);
 	else if (handle_one_option(i, argv, "--run", &arg)) {
+		/* pass unparsed to ImageJ2 */
+		if (!legacy_mode) {
+			add_option(&options, strdup("--run"), 1);
+			add_option_string(&options, &arg, 1);
+			if (*i + 1 < argc)
+				add_option(&options, strdup(argv[++(*i)]), 1);
+			return 1;
+		}
 		string_replace(&arg, '_', ' ');
 		if (*i + 1 < argc && argv[*i + 1][0] != '-')
 			string_addf(&arg, "\", \"%s", argv[++(*i)]);
