@@ -36,6 +36,7 @@
 package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.AbstractInputPanel;
+import imagej.ext.module.ui.InputPanel;
 import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
@@ -45,20 +46,20 @@ import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.TablePane;
 
 /**
- * TODO
+ * Pivot implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
 public class PivotInputPanel extends AbstractInputPanel<BoxPane> {
 
-	private final TablePane pane;
+	private final TablePane panel;
 
 	public PivotInputPanel() {
-		pane = new TablePane();
+		panel = new TablePane();
 	}
 
 	public Container getPanel() {
-		return pane;
+		return panel;
 	}
 
 	// -- InputPanel methods --
@@ -67,15 +68,19 @@ public class PivotInputPanel extends AbstractInputPanel<BoxPane> {
 	public void addWidget(final InputWidget<?, ?> widget) {
 		super.addWidget(widget);
 		if (!(widget instanceof PivotInputWidget)) return;
-		final PivotInputWidget<?> swingWidget = (PivotInputWidget<?>) widget;
-		addField(widget.getModel(), swingWidget.getPane());
-	}
+		final BoxPane widgetPane = ((PivotInputWidget<?>) widget).getPane();
+		final WidgetModel model = widget.getModel();
 
-	// -- Helper methods --
-
-	private void addField(final WidgetModel model, final Container component) {
-		pane.add(new Label(model.getWidgetLabel()));
-		pane.add(component);
+		// add widget to panel
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			panel.add(new Label(model.getWidgetLabel()));
+			panel.add(widgetPane);
+		}
+		else {
+			// widget occupies entire row
+			panel.add(widgetPane);
+		}
 	}
 
 }

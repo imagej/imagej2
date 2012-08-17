@@ -49,8 +49,8 @@ import org.apache.pivot.wtk.TextInput;
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotTextFieldWidget extends PivotInputWidget<String>
-	implements TextFieldWidget<BoxPane>
+public class PivotTextFieldWidget extends PivotInputWidget<String> implements
+	TextFieldWidget<BoxPane>
 {
 
 	private TextInput textInput;
@@ -59,7 +59,7 @@ public class PivotTextFieldWidget extends PivotInputWidget<String>
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isText() && !model.isMultipleChoice();
+		return model.isText() && !model.isMultipleChoice() && !model.isMessage();
 	}
 
 	@Override

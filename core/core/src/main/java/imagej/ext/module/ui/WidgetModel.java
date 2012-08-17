@@ -35,6 +35,7 @@
 
 package imagej.ext.module.ui;
 
+import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
 import imagej.util.ClassUtils;
@@ -66,7 +67,7 @@ public class WidgetModel {
 		this.item = item;
 		this.objectPool = objectPool;
 
-		widgetLabel = makeWidgetLabel(item.getLabel());
+		widgetLabel = makeWidgetLabel();
 	}
 
 	public Module getModule() {
@@ -91,6 +92,12 @@ public class WidgetModel {
 		return objectPool;
 	}
 
+	/**
+	 * Gets the text to use when labeling this widget. The linked item's label
+	 * will be given if available (i.e., {@link ModuleItem#getLabel()}).
+	 * Otherwise, a capitalized version of the item's name is given (i.e.,
+	 * {@link ModuleItem#getName()}).
+	 */
 	public String getWidgetLabel() {
 		return widgetLabel;
 	}
@@ -146,6 +153,10 @@ public class WidgetModel {
 		return choices;
 	}
 
+	public boolean isMessage() {
+		return getItem().getVisibility() == ItemVisibility.MESSAGE;
+	}
+
 	public boolean isText() {
 		return ClassUtils.isText(getItem().getType());
 	}
@@ -176,12 +187,12 @@ public class WidgetModel {
 
 	// -- Helper methods --
 
-	private String makeWidgetLabel(final String s) {
-		if (s == null || s.isEmpty()) {
-			final String name = item.getName();
-			return name.substring(0, 1).toUpperCase() + name.substring(1);
-		}
-		return s;
+	private String makeWidgetLabel() {
+		final String label = item.getLabel();
+		if (label != null && !label.isEmpty()) return label;
+
+		final String name = item.getName();
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
 	private boolean objectsEqual(final Object obj1, final Object obj2) {

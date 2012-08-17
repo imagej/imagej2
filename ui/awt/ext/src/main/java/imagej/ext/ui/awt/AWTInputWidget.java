@@ -42,7 +42,7 @@ import java.awt.Panel;
 
 /**
  * Common superclass for AWT-based input widgets.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {

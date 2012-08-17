@@ -33,45 +33,62 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.ext.ui.awt;
+
+import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.MessageWidget;
+import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
+
+import java.awt.Label;
+import java.awt.Panel;
 
 /**
- * Base class for input widgets.
- *
+ * AWT implementation of message widget.
+ * 
  * @author Curtis Rueden
  */
-public abstract class AbstractInputWidget<T, U> implements InputWidget<T, U> {
-
-	private WidgetModel widgetModel;
+@Plugin(type = InputWidget.class)
+public class AWTMessageWidget extends AWTInputWidget<String> implements
+	MessageWidget<Panel>
+{
 
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
+	}
+
+	@Override
 	public void initialize(final WidgetModel model) {
-		if (widgetModel != null) {
-			throw new IllegalStateException("Widget already initialized");
-		}
-		widgetModel = model;
+		super.initialize(model);
+
+		final Object value = model.getValue();
+		final String text = value == null ? "" : value.toString();
+
+		final Label label = new Label(text);
+		getPane().add(label, "span");
 	}
 
 	@Override
-	public WidgetModel getModel() {
-		return widgetModel;
+	public String getValue() {
+		return null;
 	}
 
 	@Override
-	public void updateModel() {
-		widgetModel.setValue(getValue());
+	public void refreshWidget() {
+		// NB: No action needed.
 	}
 
 	@Override
 	public boolean isLabeled() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isMessage() {
-		return false;
+		return true;
 	}
 
 }

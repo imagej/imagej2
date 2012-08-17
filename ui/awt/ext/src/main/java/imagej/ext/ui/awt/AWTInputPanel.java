@@ -40,7 +40,6 @@ import imagej.ext.module.ui.InputPanel;
 import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
-import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
 
@@ -70,15 +69,19 @@ public class AWTInputPanel extends AbstractInputPanel<Panel> {
 	public void addWidget(final InputWidget<?, ?> widget) {
 		super.addWidget(widget);
 		if (!(widget instanceof AWTInputWidget)) return;
-		final AWTInputWidget<?> awtWidget = (AWTInputWidget<?>) widget;
-		addField(widget.getModel(), awtWidget.getPane());
-	}
+		final Panel widgetPane = ((AWTInputWidget<?>) widget).getPane();
+		final WidgetModel model = widget.getModel();
 
-	// -- Helper methods --
-
-	private void addField(final WidgetModel model, final Component component) {
-		panel.add(new Label(model.getWidgetLabel()));
-		panel.add(component);
+		// add widget to panel
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			panel.add(new Label(model.getWidgetLabel()));
+			panel.add(widgetPane);
+		}
+		else {
+			// widget occupies entire row
+			panel.add(widgetPane, "span");
+		}
 	}
 
 }

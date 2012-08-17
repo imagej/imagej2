@@ -87,4 +87,21 @@ public interface InputWidget<T, U> extends IPlugin {
 	 */
 	U getPane();
 
+	/**
+	 * Returns true iff the widget should be labeled with the parameter label.
+	 * Most widgets are labeled this way, though some may not be; e.g.,
+	 * {@link MessageWidget}s.
+	 * 
+	 * @see WidgetModel#getWidgetLabel()
+	 */
+	boolean isLabeled();
+
+	/**
+	 * Returns true iff the widget should be considered a read-only "message"
+	 * rather than a bidirectional input widget. The
+	 * {@link InputPanel#isMessageOnly()} method will return true iff this method
+	 * returns true for all of its widgets.
+	 */
+	boolean isMessage();
+
 }

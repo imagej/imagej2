@@ -40,7 +40,6 @@ import imagej.ext.module.ui.InputPanel;
 import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -70,18 +69,22 @@ public class SwingInputPanel extends AbstractInputPanel<JPanel> {
 	public void addWidget(final InputWidget<?, ?> widget) {
 		super.addWidget(widget);
 		if (!(widget instanceof SwingInputWidget)) return;
-		final SwingInputWidget<?> swingWidget = (SwingInputWidget<?>) widget;
-		addField(widget.getModel(), swingWidget.getPane());
-	}
+		final JPanel widgetPane = ((SwingInputWidget<?>) widget).getPane();
+		final WidgetModel model = widget.getModel();
 
-	// -- Helper methods --
-
-	private void addField(final WidgetModel model, final JComponent component) {
-		final JLabel l = new JLabel(model.getWidgetLabel());
-		final String desc = model.getItem().getDescription();
-		if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
-		panel.add(l);
-		panel.add(component);
+		// add widget to panel
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			final JLabel l = new JLabel(model.getWidgetLabel());
+			final String desc = model.getItem().getDescription();
+			if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
+			panel.add(l);
+			panel.add(widgetPane);
+		}
+		else {
+			// widget occupies entire row
+			panel.add(widgetPane, "span");
+		}
 	}
 
 }
