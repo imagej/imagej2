@@ -111,7 +111,8 @@ public final class LegacyService extends AbstractService {
 
 	// -- Constructors --
 
-	/** Default contructor (will not run to completion). Provided only to fulfill
+	/**
+	 * Default constructor (will not run to completion). Provided only to fulfill
 	 * an API contract elsewhere. Do not use.
 	 */
 	public LegacyService() {
