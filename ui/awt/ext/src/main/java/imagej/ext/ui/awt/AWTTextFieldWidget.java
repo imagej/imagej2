@@ -35,10 +35,13 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
+import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
@@ -48,30 +51,36 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
-public class AWTTextFieldWidget extends AWTInputWidget
-	implements TextFieldWidget, TextListener
+@Plugin(type = InputWidget.class)
+public class AWTTextFieldWidget extends AWTInputWidget<String>
+	implements TextFieldWidget<Panel>, TextListener
 {
 
 	private TextField textField;
 
-	public AWTTextFieldWidget(final WidgetModel model, final int columns) {
-		super(model);
+	// -- InputWidget methods --
 
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isText() && !model.isMultipleChoice() && !model.isMessage();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final int columns = model.getItem().getColumnCount();
 		textField = new TextField("", columns);
 		textField.addTextListener(this);
-		add(textField, BorderLayout.CENTER);
+		getPane().add(textField, BorderLayout.CENTER);
 
 		refreshWidget();
 	}
-
-	// -- TextFieldWidget methods --
 
 	@Override
 	public String getValue() {
 		return textField.getText();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

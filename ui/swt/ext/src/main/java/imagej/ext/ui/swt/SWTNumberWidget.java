@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -47,30 +49,39 @@ import org.eclipse.swt.widgets.Slider;
  * 
  * @author Curtis Rueden
  */
-public class SWTNumberWidget extends SWTInputWidget implements NumberWidget {
+@Plugin(type = InputWidget.class)
+public class SWTNumberWidget extends SWTInputWidget<Number> implements
+	NumberWidget<Composite>
+{
 
-	private final Slider slider;
+	private Slider slider;
 
-	public SWTNumberWidget(final Composite parent, final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
-		super(parent, model);
+	// -- InputWidget methods --
 
-		slider = new Slider(this, SWT.HORIZONTAL);
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isNumber();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
+
+		slider = new Slider(getPane(), SWT.HORIZONTAL);
 		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
 			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
 
 		refreshWidget();
 	}
 
-	// -- NumberWidget methods --
-
 	@Override
 	public Number getValue() {
 		return slider.getSelection();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

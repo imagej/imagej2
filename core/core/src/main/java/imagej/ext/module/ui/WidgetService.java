@@ -35,11 +35,66 @@
 
 package imagej.ext.module.ui;
 
+import imagej.ImageJ;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
+
+import java.util.List;
+
 /**
- * Widget interface for boolean toggles.
+ * Service for managing available input widgets.
  * 
  * @author Curtis Rueden
+ * @see InputWidget
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+@Plugin(type = Service.class)
+public class WidgetService extends AbstractService {
+
+	private final PluginService pluginService;
+	private final LogService log;
+
+	public WidgetService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public WidgetService(final ImageJ context, final PluginService pluginService,
+		final LogService log)
+	{
+		super(context);
+		this.pluginService = pluginService;
+		this.log = log;
+	}
+
+	/** Creates a widget that represents the given widget model. */
+	public InputWidget<?, ?> createWidget(final WidgetModel model) {
+		@SuppressWarnings("rawtypes")
+		final List<PluginInfo<? extends InputWidget>> infos =
+			pluginService.getPluginsOfType(InputWidget.class);
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<? extends InputWidget> info : infos)
+		{
+			final InputWidget<?, ?> widget;
+			try {
+				widget = info.createInstance();
+			}
+			catch (final InstantiableException e) {
+				log.error("Invalid widget: " + info.getClassName(), e);
+				continue;
+			}
+			if (widget.isCompatible(model)) {
+				widget.initialize(model);
+				return widget;
+			}
+		}
+		log.warn("No widget found for input: " + model.getItem().getName());
+		return null;
+	}
+
 }

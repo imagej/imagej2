@@ -35,11 +35,14 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
+import java.awt.Panel;
 import java.awt.Scrollbar;
 import java.awt.TextField;
 import java.awt.event.AdjustmentEvent;
@@ -52,8 +55,9 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
-public class AWTNumberWidget extends AWTInputWidget
-	implements NumberWidget, AdjustmentListener, TextListener
+@Plugin(type = InputWidget.class)
+public class AWTNumberWidget extends AWTInputWidget<Number> implements
+	NumberWidget<Panel>, AdjustmentListener, TextListener
 {
 
 	// CTR FIXME - Update the model properly, and handle non-integer values.
@@ -61,38 +65,44 @@ public class AWTNumberWidget extends AWTInputWidget
 	private Scrollbar scrollBar;
 	private TextField textField;
 
-	public AWTNumberWidget(final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isNumber();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
 		scrollBar = new Scrollbar(Adjustable.HORIZONTAL,
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
 		scrollBar.addAdjustmentListener(this);
-		add(scrollBar, BorderLayout.CENTER);
+		getPane().add(scrollBar, BorderLayout.CENTER);
 
 		textField = new TextField(6);
 		textField.addTextListener(this);
-		add(textField, BorderLayout.EAST);
+		getPane().add(textField, BorderLayout.EAST);
 
 		refreshWidget();
 	}
-
-	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
 		return scrollBar.getValue();
 	}
 
-	// -- InputWidget methods --
-
 	@Override
 	public void refreshWidget() {
- 		final String value = ((Number) getModel().getValue()).toString();
- 		if (textField.getText().equals(value)) return; // no change
- 		textField.setText(value);
+		final String value = getModel().getValue().toString();
+		if (textField.getText().equals(value)) return; // no change
+		textField.setText(value);
 	}
 
 	// -- AdjustmentListener methods --

@@ -36,15 +36,10 @@
 package imagej.ext.module.ui;
 
 /**
- * Which interface for multiple choice selectors.
+ * Widget interface for multiple choice selectors.
  * 
  * @author Curtis Rueden
  */
-public interface ChoiceWidget extends InputWidget {
-
-	int getIndex();
-
-	@Override
-	String getValue();
-
+public interface ChoiceWidget<U> extends InputWidget<String, U> {
+	// NB: No changes to interface.
 }

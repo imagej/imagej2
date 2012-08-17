@@ -35,9 +35,11 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.NumberWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
 
 import java.awt.Adjustable;
@@ -50,6 +52,7 @@ import java.text.DecimalFormat;
 import java.text.ParsePosition;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -62,18 +65,29 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingNumberWidget extends SwingInputWidget implements
-	NumberWidget, AdjustmentListener, ChangeListener
+@Plugin(type = InputWidget.class)
+public class SwingNumberWidget extends SwingInputWidget<Number> implements
+	NumberWidget<JPanel>, AdjustmentListener, ChangeListener
 {
 
 	private JScrollBar scrollBar;
 	private JSlider slider;
-	private final JSpinner spinner;
+	private JSpinner spinner;
 
-	public SwingNumberWidget(final WidgetModel model, final Number min,
-		final Number max, final Number stepSize)
-	{
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isNumber();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
 		// add optional widgets, if specified
 		final WidgetStyle style = model.getItem().getWidgetStyle();
@@ -83,7 +97,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 					min.intValue(), max.intValue() + 1);
 			scrollBar.setUnitIncrement(stepSize.intValue());
 			setToolTip(scrollBar);
-			add(scrollBar);
+			getPane().add(scrollBar);
 			scrollBar.addAdjustmentListener(this);
 		}
 		else if (style == WidgetStyle.NUMBER_SLIDER) {
@@ -93,7 +107,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 			slider.setPaintLabels(true);
 			slider.setPaintTicks(true);
 			setToolTip(slider);
-			add(slider);
+			getPane().add(slider);
 			slider.addChangeListener(this);
 		}
 
@@ -109,21 +123,17 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		spinner = new JSpinner(spinnerModel);
 		fixSpinner(type);
 		setToolTip(spinner);
-		add(spinner);
+		getPane().add(spinner);
 		limitWidth(200);
 		spinner.addChangeListener(this);
 		refreshWidget();
 		syncSliders();
 	}
 
-	// -- NumberWidget methods --
-
 	@Override
 	public Number getValue() {
 		return (Number) spinner.getValue();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

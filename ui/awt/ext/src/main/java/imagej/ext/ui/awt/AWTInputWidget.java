@@ -35,34 +35,31 @@
 
 package imagej.ext.ui.awt;
 
-import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.AbstractInputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import java.awt.Panel;
 
 /**
  * Common superclass for AWT-based input widgets.
- *
+ * 
  * @author Curtis Rueden
  */
-public abstract class AWTInputWidget extends Panel implements InputWidget {
+public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
 
-	private WidgetModel model;
-
-	public AWTInputWidget(final WidgetModel model) {
-		this.model = model;
-	}
+	private Panel pane;
 
 	// -- InputWidget methods --
 
 	@Override
-	public WidgetModel getModel() {
-		return model;
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+		pane = new Panel();
 	}
 
 	@Override
-	public void updateModel() {
-		model.setValue(getValue());
+	public Panel getPane() {
+		return pane;
 	}
 
 }

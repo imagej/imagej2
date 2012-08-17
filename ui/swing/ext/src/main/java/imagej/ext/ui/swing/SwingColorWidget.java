@@ -36,7 +36,9 @@
 package imagej.ext.ui.swing;
 
 import imagej.ext.module.ui.ColorWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
@@ -56,6 +58,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /**
@@ -63,8 +66,9 @@ import javax.swing.colorchooser.AbstractColorChooserPanel;
  * 
  * @author Curtis Rueden
  */
-public class SwingColorWidget extends SwingInputWidget implements
-	ActionListener, ColorWidget
+@Plugin(type = InputWidget.class)
+public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
+	ActionListener, ColorWidget<JPanel>
 {
 
 	private static final int SWATCH_WIDTH = 64, SWATCH_HEIGHT = 16;
@@ -78,26 +82,8 @@ public class SwingColorWidget extends SwingInputWidget implements
 	protected static final String SWATCHES_CLASS_NAME =
 		"javax.swing.colorchooser.DefaultSwatchChooserPanel";
 
-	private final JButton choose;
+	private JButton choose;
 	private Color color;
-
-	public SwingColorWidget(final WidgetModel model) {
-		super(model);
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-
-		choose = new JButton() {
-
-			@Override
-			public Dimension getMaximumSize() {
-				return getPreferredSize();
-			}
-		};
-		setToolTip(choose);
-		add(choose);
-		choose.addActionListener(this);
-
-		refreshWidget();
-	}
 
 	// -- ActionListener methods --
 
@@ -110,14 +96,37 @@ public class SwingColorWidget extends SwingInputWidget implements
 		refreshWidget();
 	}
 
-	// -- ColorWidget methods --
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isType(ColorRGB.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		getPane().setLayout(new BoxLayout(getPane(), BoxLayout.X_AXIS));
+
+		choose = new JButton() {
+
+			@Override
+			public Dimension getMaximumSize() {
+				return getPreferredSize();
+			}
+		};
+		setToolTip(choose);
+		getPane().add(choose);
+		choose.addActionListener(this);
+
+		refreshWidget();
+	}
 
 	@Override
 	public ColorRGB getValue() {
 		return AWTColors.getColorRGB(color);
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

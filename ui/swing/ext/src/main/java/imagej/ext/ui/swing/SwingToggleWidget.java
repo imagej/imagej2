@@ -35,10 +35,13 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -47,22 +50,12 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingToggleWidget extends SwingInputWidget implements
-	ChangeListener, ToggleWidget
+@Plugin(type = InputWidget.class)
+public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
+	ChangeListener, ToggleWidget<JPanel>
 {
 
-	private final JCheckBox checkBox;
-
-	public SwingToggleWidget(final WidgetModel model) {
-		super(model);
-
-		checkBox = new JCheckBox("");
-		setToolTip(checkBox);
-		add(checkBox);
-		checkBox.addChangeListener(this);
-
-		refreshWidget();
-	}
+	private JCheckBox checkBox;
 
 	// -- ChangeListener methods --
 
@@ -71,14 +64,29 @@ public class SwingToggleWidget extends SwingInputWidget implements
 		updateModel();
 	}
 
-	// -- ToggleWidget methods --
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isBoolean();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		checkBox = new JCheckBox("");
+		setToolTip(checkBox);
+		getPane().add(checkBox);
+		checkBox.addChangeListener(this);
+
+		refreshWidget();
+	}
 
 	@Override
 	public Boolean getValue() {
 		return checkBox.isSelected();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

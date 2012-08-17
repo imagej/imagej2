@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -47,26 +49,33 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTToggleWidget extends SWTInputWidget implements ToggleWidget {
+@Plugin(type = InputWidget.class)
+public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
+	ToggleWidget<Composite>
+{
 
-	private final Button checkbox;
+	private Button checkbox;
 
-	public SWTToggleWidget(final Composite parent, final WidgetModel model) {
-		super(parent, model);
+	// -- InputWidget methods --
 
-		checkbox = new Button(this, SWT.CHECK);
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isBoolean();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		checkbox = new Button(getPane(), SWT.CHECK);
 
 		refreshWidget();
 	}
-
-	// -- ToggleWidget methods --
 
 	@Override
 	public Boolean getValue() {
 		return checkbox.getSelection();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

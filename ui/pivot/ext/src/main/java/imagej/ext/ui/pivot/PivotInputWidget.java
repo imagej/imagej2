@@ -35,7 +35,7 @@
 
 package imagej.ext.ui.pivot;
 
-import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.AbstractInputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
@@ -45,24 +45,23 @@ import org.apache.pivot.wtk.BoxPane;
  *
  * @author Curtis Rueden
  */
-public abstract class PivotInputWidget extends BoxPane implements InputWidget {
+public abstract class PivotInputWidget<T> extends
+	AbstractInputWidget<T, BoxPane>
+{
 
-	private WidgetModel model;
-
-	public PivotInputWidget(final WidgetModel model) {
-		this.model = model;
-	}
+	private BoxPane pane;
 
 	// -- InputWidget methods --
 
 	@Override
-	public WidgetModel getModel() {
-		return model;
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+		pane = new BoxPane();
 	}
 
 	@Override
-	public void updateModel() {
-		model.setValue(getValue());
+	public BoxPane getPane() {
+		return pane;
 	}
 
 }

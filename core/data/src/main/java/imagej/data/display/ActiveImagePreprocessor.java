@@ -35,7 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.Priority;
 import imagej.data.Dataset;
 import imagej.ext.module.Module;
@@ -72,7 +71,7 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 	@Override
 	public void process(final Module module) {
 		final ImageDisplayService displayService =
-			ImageJ.get(ImageDisplayService.class);
+			getContext().getService(ImageDisplayService.class);
 		if (displayService == null) return;
 		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
 		if (activeDisplay == null) return;
@@ -113,7 +112,9 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 	// -- Helper methods --
 
 	private String getSingleInput(final Module module, final Class<?> type) {
-		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+		final ModuleService moduleService =
+			getContext().getService(ModuleService.class);
+		if (moduleService == null) return null;
 		final ModuleItem<?> item = moduleService.getSingleInput(module, type);
 		if (item == null || !item.isAutoFill()) return null;
 		return item.getName();

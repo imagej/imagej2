@@ -36,9 +36,12 @@
 package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.ChoiceWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.ListButton;
 
 /**
@@ -46,35 +49,37 @@ import org.apache.pivot.wtk.ListButton;
  * 
  * @author Curtis Rueden
  */
-public class PivotChoiceWidget extends PivotInputWidget
-	implements ChoiceWidget
+@Plugin(type = InputWidget.class)
+public class PivotChoiceWidget extends PivotInputWidget<String>
+	implements ChoiceWidget<BoxPane>
 {
 
-	private final ListButton listButton;
+	private ListButton listButton;
 
-	public PivotChoiceWidget(final WidgetModel model, final String[] items) {
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isText() && model.isMultipleChoice();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String[] items = model.getChoices();
 
 		listButton = new ListButton();
 		listButton.setListData(new ArrayList<String>(items));
-		add(listButton);
+		getPane().add(listButton);
 
 		refreshWidget();
 	}
-
-	// -- ChoiceWidget methods --
 
 	@Override
 	public String getValue() {
 		return listButton.getSelectedItem().toString();
 	}
-
-	@Override
-	public int getIndex() {
-		return listButton.getSelectedIndex();
-	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

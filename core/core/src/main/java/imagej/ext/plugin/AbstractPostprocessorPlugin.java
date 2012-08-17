@@ -33,13 +33,17 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.ext.plugin;
+
+import imagej.AbstractContextual;
 
 /**
- * Widget interface for boolean toggles.
+ * Abstract base class for plugin postprocessors.
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+public abstract class AbstractPostprocessorPlugin extends AbstractContextual
+	implements PostprocessorPlugin
+{
+	// NB: No implementation needed.
 }

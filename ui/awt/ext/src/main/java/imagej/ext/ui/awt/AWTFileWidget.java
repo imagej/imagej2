@@ -36,13 +36,16 @@
 package imagej.ext.ui.awt;
 
 import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,42 +58,47 @@ import java.io.File;
  *
  * @author Curtis Rueden
  */
-public class AWTFileWidget extends AWTInputWidget
-	implements FileWidget, ActionListener, TextListener
+@Plugin(type = InputWidget.class)
+public class AWTFileWidget extends AWTInputWidget<File> implements
+	FileWidget<Panel>, ActionListener, TextListener
 {
 
 	private TextField path;
 	private Button browse;
 
-	public AWTFileWidget(final WidgetModel model) {
-		super(model);
+	// -- InputWidget methods --
 
-		setLayout(new BorderLayout());
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isType(File.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		getPane().setLayout(new BorderLayout());
 
 		path = new TextField(20);
 		path.addTextListener(this);
-		add(path, BorderLayout.CENTER);
+		getPane().add(path, BorderLayout.CENTER);
 
 		browse = new Button("Browse");
 		browse.addActionListener(this);
-		add(browse, BorderLayout.EAST);
+		getPane().add(browse, BorderLayout.EAST);
 
 		refreshWidget();
 	}
 
-	// -- FileWidget methods --
-
 	@Override
 	public File getValue() {
-		return new File(path.getText());
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {
-		final File value = (File) getModel().getValue();
-		final String text = value == null ? "" : value.toString();
+		final String text = getModel().getText();
 		if (text.equals(path.getText())) return; // no change
 		path.setText(text);
 	}

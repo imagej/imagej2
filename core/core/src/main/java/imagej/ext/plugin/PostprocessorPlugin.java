@@ -35,6 +35,7 @@
 
 package imagej.ext.plugin;
 
+import imagej.Contextual;
 import imagej.ext.module.ModulePostprocessor;
 
 /**
@@ -44,12 +45,16 @@ import imagej.ext.module.ModulePostprocessor;
  * <p>
  * Plugin postprocessors discoverable at runtime must implement this interface
  * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
- * {@link PostprocessorPlugin}.class.
+ * {@link PostprocessorPlugin}.class. While it possible to create a plugin
+ * postprocessor merely by implementing this interface, it is encouraged to
+ * instead extend {@link AbstractPostprocessorPlugin}, for convenience.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public interface PostprocessorPlugin extends IPlugin, ModulePostprocessor {
+public interface PostprocessorPlugin extends IPlugin, Contextual,
+	ModulePostprocessor
+{
 	// PostprocessorPlugin is a plugin postprocessor,
 	// discoverable via the plugin discovery mechanism.
 }

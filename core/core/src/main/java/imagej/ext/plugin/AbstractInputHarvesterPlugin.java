@@ -48,8 +48,8 @@ import imagej.ext.module.ui.InputHarvester;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public abstract class AbstractInputHarvesterPlugin extends
-	AbstractInputHarvester implements PreprocessorPlugin
+public abstract class AbstractInputHarvesterPlugin<U> extends
+	AbstractInputHarvester<U> implements PreprocessorPlugin
 {
 
 	private boolean canceled;

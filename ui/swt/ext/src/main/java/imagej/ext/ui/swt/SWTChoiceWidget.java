@@ -36,7 +36,9 @@
 package imagej.ext.ui.swt;
 
 import imagej.ext.module.ui.ChoiceWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -47,34 +49,36 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTChoiceWidget extends SWTInputWidget implements ChoiceWidget {
+@Plugin(type = InputWidget.class)
+public class SWTChoiceWidget extends SWTInputWidget<String> implements
+	ChoiceWidget<Composite>
+{
 
-	private final Combo combo;
+	private Combo combo;
 
-	public SWTChoiceWidget(final Composite parent, final WidgetModel model,
-		final String[] items)
-	{
-		super(parent, model);
+	// -- InputWidget methods --
 
-		combo = new Combo(this, SWT.DROP_DOWN);
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isText() && model.isMultipleChoice();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String[] items = model.getChoices();
+
+		combo = new Combo(getPane(), SWT.DROP_DOWN);
 		combo.setItems(items);
 
 		refreshWidget();
 	}
 
-	// -- ChoiceWidget methods --
-
 	@Override
 	public String getValue() {
 		return combo.getItem(combo.getSelectionIndex());
 	}
-
-	@Override
-	public int getIndex() {
-		return combo.getSelectionIndex();
-	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

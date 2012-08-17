@@ -45,8 +45,7 @@ import imagej.service.Service;
  * The service preprocessor automatically populates module inputs that implement
  * {@link Service}.
  * <p>
- * Service objects are obtained from the ImageJ context associated with the
- * current thread.
+ * Services are obtained from this preprocessor instance's ImageJ context.
  * </p>
  * 
  * @author Curtis Rueden
@@ -55,21 +54,10 @@ import imagej.service.Service;
 	priority = Priority.VERY_HIGH_PRIORITY)
 public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 
-	private ImageJ theContext;
-
-	public ServicePreprocessor() {}
-
-	public ServicePreprocessor(final ImageJ context) {
-		theContext = context;
-	}
-
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final ImageJ context =
-			theContext == null ? ImageJ.getContext() : theContext;
-
 		for (final ModuleItem<?> input : module.getInfo().inputs()) {
 			if (!input.isAutoFill()) continue; // cannot auto-fill this input
 			final Class<?> type = input.getType();
@@ -78,12 +66,12 @@ public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 				@SuppressWarnings("unchecked")
 				final ModuleItem<? extends Service> serviceInput =
 					(ModuleItem<? extends Service>) input;
-				setServiceValue(context, module, serviceInput);
+				setServiceValue(getContext(), module, serviceInput);
 			}
-			if (context.getClass().isAssignableFrom(type)) {
+			if (getContext().getClass().isAssignableFrom(type)) {
 				// input is a compatible context
 				final String name = input.getName();
-				module.setInput(name, context);
+				module.setInput(name, getContext());
 				module.setResolved(name, true);
 			}
 		}

@@ -33,13 +33,44 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.ext.plugin;
+
+import imagej.Priority;
+import imagej.ext.module.Module;
+import imagej.ext.module.ModuleItem;
 
 /**
- * Widget interface for boolean toggles.
+ * A preprocessor for saving populated input values to persistent storage.
+ * <p>
+ * This preprocessor runs late in the chain, giving other preprocessors every
+ * chance to populate the inputs first. In particular, it executes after the
+ * {@link imagej.ext.module.ui.InputHarvester} has run, so that user-specified
+ * values are persisted for next time.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_LOW_PRIORITY - 1)
+public class SaveInputsPreprocessor extends AbstractPreprocessorPlugin {
+
+	// -- ModuleProcessor methods --
+
+	@Override
+	public void process(final Module module) {
+		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
+		for (final ModuleItem<?> item : inputs) {
+			saveValue(module, item);
+		}
+	}
+
+	// -- Helper methods --
+
+	/** Saves the value of the given module item to persistent storage. */
+	private <T> void saveValue(final Module module, final ModuleItem<T> item) {
+		final T value = item.getValue(module);
+		item.saveValue(value);
+	}
+
 }
+

@@ -37,9 +37,10 @@ package imagej.ext.plugin.debug;
 
 import imagej.Priority;
 import imagej.ext.module.Module;
+import imagej.ext.plugin.AbstractPostprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PostprocessorPlugin;
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.Map;
 
@@ -49,22 +50,25 @@ import java.util.Map;
  * @author Curtis Rueden
  */
 @Plugin(type = PostprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
-public class DebugPostprocessor implements PostprocessorPlugin {
+public class DebugPostprocessor extends AbstractPostprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
+		final LogService log = getContext().getService(LogService.class);
+		if (log == null) return;
+
 		// dump input values to log
-		Log.debug("INPUTS:");
+		log.debug("INPUTS:");
 		final Map<String, Object> inputs = module.getInputs();
 		for (final String key : inputs.keySet()) {
-			Log.debug("\t" + key + " = " + inputs.get(key));
+			log.debug("\t" + key + " = " + inputs.get(key));
 		}
 
 		// dump output values to log
-		Log.debug("OUTPUTS:");
+		log.debug("OUTPUTS:");
 		final Map<String, Object> outputs = module.getOutputs();
 		for (final String key : outputs.keySet()) {
-			Log.debug("\t" + key + " = " + outputs.get(key));
+			log.debug("\t" + key + " = " + outputs.get(key));
 		}
 	}
 

@@ -35,38 +35,48 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
+import java.awt.Panel;
 
 /**
  * AWT implementation of boolean toggle widget.
  *
  * @author Curtis Rueden
  */
-public class AWTToggleWidget extends AWTInputWidget implements ToggleWidget {
+@Plugin(type = InputWidget.class)
+public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
+	ToggleWidget<Panel>
+{
 
 	private Checkbox checkbox;
 
-	public AWTToggleWidget(final WidgetModel model) {
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isBoolean();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
 		checkbox = new Checkbox("");
-		add(checkbox, BorderLayout.CENTER);
+		getPane().add(checkbox, BorderLayout.CENTER);
 
 		refreshWidget();
 	}
-
-	// -- ToggleWidget methods --
 
 	@Override
 	public Boolean getValue() {
 		return checkbox.getState();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

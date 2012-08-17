@@ -33,13 +33,62 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.ext.ui.swt;
+
+import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.MessageWidget;
+import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
+
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 /**
- * Widget interface for boolean toggles.
+ * SWT implementation of message widget.
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+@Plugin(type = InputWidget.class)
+public class SWTMessageWidget extends SWTInputWidget<String> implements
+	MessageWidget<Composite>
+{
+
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String text = model.getText();
+
+		final Label label = new Label(getPane(), 0);
+		label.setText(text);
+		label.setLayoutData("span");
+	}
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// NB: No action needed.
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
+	}
+
 }

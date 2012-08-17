@@ -40,9 +40,6 @@ package imagej.ext.module.ui;
  * 
  * @author Curtis Rueden
  */
-public interface TextFieldWidget extends InputWidget {
-
-	@Override
-	String getValue();
-
+public interface TextFieldWidget<U> extends InputWidget<String, U> {
+	// NB: No changes to interface.
 }

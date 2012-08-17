@@ -36,8 +36,10 @@
 package imagej.ext.ui.swing;
 
 import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,6 +48,7 @@ import java.io.File;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -55,32 +58,39 @@ import javax.swing.event.DocumentListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingFileWidget extends SwingInputWidget implements FileWidget,
-	ActionListener, DocumentListener
+@Plugin(type = InputWidget.class)
+public class SwingFileWidget extends SwingInputWidget<File> implements
+	FileWidget<JPanel>, ActionListener, DocumentListener
 {
 
-	private final JTextField path;
-	private final JButton browse;
+	private JTextField path;
+	private JButton browse;
 
-	public SwingFileWidget(final WidgetModel model) {
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isType(File.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
 		path = new JTextField(16);
 		setToolTip(path);
-		add(path);
+		getPane().add(path);
 		path.getDocument().addDocumentListener(this);
 
-		add(Box.createHorizontalStrut(3));
+		getPane().add(Box.createHorizontalStrut(3));
 
 		browse = new JButton("Browse");
 		setToolTip(browse);
-		add(browse);
+		getPane().add(browse);
 		browse.addActionListener(this);
 
 		refreshWidget();
 	}
-
-	// -- FileWidget methods --
 
 	@Override
 	public File getValue() {
@@ -88,14 +98,10 @@ public class SwingFileWidget extends SwingInputWidget implements FileWidget,
 		return text.isEmpty() ? null : new File(text);
 	}
 
-	// -- InputWidget methods --
-
 	@Override
 	public void refreshWidget() {
-		final File value = (File) getModel().getValue();
-		final File widgetValue = new File(path.getText());
-		if (widgetValue.equals(value)) return; // no change
-		final String text = value == null ? "" : value.toString();
+		final String text = getModel().getText();
+		if (text.equals(path.getText())) return; // no change
 		path.setText(text);
 	}
 
@@ -116,10 +122,10 @@ public class SwingFileWidget extends SwingInputWidget implements FileWidget,
 		}
 		final int rval;
 		if (style == WidgetStyle.FILE_SAVE) {
-			rval = chooser.showSaveDialog(this);
+			rval = chooser.showSaveDialog(getPane());
 		}
 		else { // default behavior
-			rval = chooser.showOpenDialog(this);
+			rval = chooser.showOpenDialog(getPane());
 		}
 		if (rval != JFileChooser.APPROVE_OPTION) return;
 		file = chooser.getSelectedFile();

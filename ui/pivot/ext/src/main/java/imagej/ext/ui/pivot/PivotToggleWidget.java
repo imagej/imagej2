@@ -35,9 +35,12 @@
 
 package imagej.ext.ui.pivot;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ToggleWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Checkbox;
 
 /**
@@ -45,28 +48,34 @@ import org.apache.pivot.wtk.Checkbox;
  * 
  * @author Curtis Rueden
  */
-public class PivotToggleWidget extends PivotInputWidget implements ToggleWidget
+@Plugin(type = InputWidget.class)
+public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
+	ToggleWidget<BoxPane>
 {
 
-	private final Checkbox checkbox;
+	private Checkbox checkbox;
 
-	public PivotToggleWidget(final WidgetModel model) {
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isBoolean();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
 		checkbox = new Checkbox();
-		add(checkbox);
+		getPane().add(checkbox);
 
 		refreshWidget();
 	}
-
-	// -- ToggleWidget methods --
 
 	@Override
 	public Boolean getValue() {
 		return checkbox.isSelected();
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

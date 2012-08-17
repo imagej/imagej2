@@ -35,12 +35,38 @@
 
 package imagej.ext.module.ui;
 
+import imagej.ext.module.ModuleItem;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
+
 /**
- * Top-level widget interface.
+ * Interface for input widgets. An input widget is intended to harvest user
+ * input for a particular {@link ModuleItem}. They are used by the
+ * {@link InputHarvester} preprocessor to collect module input values.
+ * <p>
+ * Widgets discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link InputWidget}.class. While it possible to create an upload mechanism
+ * merely by implementing this interface, it is encouraged to instead extend
+ * {@link AbstractInputWidget}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see Plugin
+ * @see WidgetService
+ * @see InputHarvester
+ * @see InputPanel
  */
-public interface InputWidget {
+public interface InputWidget<T, U> extends IPlugin {
+
+	/** Gets whether this widget would be appropriate for the given model. */
+	boolean isCompatible(WidgetModel model);
+
+	/**
+	 * Initializes the widget to use the given widget model. Once initialized, the
+	 * widget's UI pane will be accessible via {@link #getPane()}.
+	 */
+	void initialize(WidgetModel model);
 
 	/** Gets the model object backing this widget. */
 	WidgetModel getModel();
@@ -49,9 +75,33 @@ public interface InputWidget {
 	void updateModel();
 
 	/** Gets the current widget value. */
-	Object getValue();
+	T getValue();
 
 	/** Refreshes the widget to reflect the latest model value(s). */
 	void refreshWidget();
+
+	/**
+	 * Gets the user interface pane housing this widget.
+	 * 
+	 * @return the pane, or null if the widget has not yet been initialized.
+	 */
+	U getPane();
+
+	/**
+	 * Returns true iff the widget should be labeled with the parameter label.
+	 * Most widgets are labeled this way, though some may not be; e.g.,
+	 * {@link MessageWidget}s.
+	 * 
+	 * @see WidgetModel#getWidgetLabel()
+	 */
+	boolean isLabeled();
+
+	/**
+	 * Returns true iff the widget should be considered a read-only "message"
+	 * rather than a bidirectional input widget. The
+	 * {@link InputPanel#isMessageOnly()} method will return true iff this method
+	 * returns true for all of its widgets.
+	 */
+	boolean isMessage();
 
 }

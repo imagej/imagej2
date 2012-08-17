@@ -35,11 +35,14 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -52,23 +55,12 @@ import javax.swing.text.DocumentFilter;
  * 
  * @author Curtis Rueden
  */
-public class SwingTextFieldWidget extends SwingInputWidget implements
-	DocumentListener, TextFieldWidget
+@Plugin(type = InputWidget.class)
+public class SwingTextFieldWidget extends SwingInputWidget<String> implements
+	DocumentListener, TextFieldWidget<JPanel>
 {
 
-	private final JTextField textField;
-
-	public SwingTextFieldWidget(final WidgetModel model, final int columns) {
-		super(model);
-
-		textField = new JTextField("", columns);
-		setToolTip(textField);
-		add(textField);
-		limitLength();
-		textField.getDocument().addDocumentListener(this);
-
-		refreshWidget();
-	}
+	private JTextField textField;
 
 	// -- DocumentListener methods --
 
@@ -87,20 +79,35 @@ public class SwingTextFieldWidget extends SwingInputWidget implements
 		updateModel();
 	}
 
-	// -- TextFieldWidget methods --
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isText() && !model.isMultipleChoice() && !model.isMessage();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final int columns = model.getItem().getColumnCount();
+		textField = new JTextField("", columns);
+		setToolTip(textField);
+		getPane().add(textField);
+		limitLength();
+		textField.getDocument().addDocumentListener(this);
+
+		refreshWidget();
+	}
 
 	@Override
 	public String getValue() {
 		return textField.getText();
 	}
 
-	// -- InputWidget methods --
-
 	@Override
 	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		String text = value == null ? "" : value.toString();
-		if (text.equals("\0")) text = ""; // render null character as empty
+		final String text = getModel().getText();
 		if (textField.getText().equals(text)) return; // no change
 		textField.setText(text);
 	}
@@ -109,7 +116,7 @@ public class SwingTextFieldWidget extends SwingInputWidget implements
 
 	private void limitLength() {
 		// only limit length for single-character inputs
-		if (!ClassUtils.isCharacter(getModel().getItem().getType())) return;
+		if (!getModel().isCharacter()) return;
 
 		// limit text field to a single character
 		final int maxChars = 1;

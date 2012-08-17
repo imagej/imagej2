@@ -35,7 +35,6 @@
 
 package imagej.ext.display;
 
-import imagej.ImageJ;
 import imagej.Priority;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleItem;
@@ -63,12 +62,14 @@ public class ActiveDisplayPreprocessor extends AbstractPreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final DisplayService displayService =
+			getContext().getService(DisplayService.class);
 		if (displayService == null) return;
 		final Display<?> activeDisplay = displayService.getActiveDisplay();
 		if (activeDisplay == null) return;
 
-		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+		final ModuleService moduleService =
+			getContext().getService(ModuleService.class);
 		if (moduleService == null) return;
 
 		// assign active display to single Display input

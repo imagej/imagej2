@@ -33,13 +33,61 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.ext.ui.swing;
+
+import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.MessageWidget;
+import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
- * Widget interface for boolean toggles.
+ * Swing implementation of message widget.
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+@Plugin(type = InputWidget.class)
+public class SwingMessageWidget extends SwingInputWidget<String> implements
+	MessageWidget<JPanel>
+{
+
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String text = model.getText();
+
+		final JLabel label = new JLabel(text);
+		getPane().add(label);
+	}
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// NB: No action needed.
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
+	}
+
 }

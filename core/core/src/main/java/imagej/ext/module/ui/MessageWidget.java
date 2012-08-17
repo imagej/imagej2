@@ -36,10 +36,10 @@
 package imagej.ext.module.ui;
 
 /**
- * Widget interface for boolean toggles.
+ * Widget interface for message labels.
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
+public interface MessageWidget<U> extends InputWidget<String, U> {
 	// NB: No changes to interface.
 }

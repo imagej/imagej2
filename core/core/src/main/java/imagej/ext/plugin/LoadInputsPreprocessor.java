@@ -33,13 +33,59 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.ext.plugin;
+
+import imagej.Priority;
+import imagej.ext.module.Module;
+import imagej.ext.module.ModuleItem;
+import imagej.util.ClassUtils;
 
 /**
- * Widget interface for boolean toggles.
+ * A preprocessor for loading populated input values from persistent storage.
+ * <p>
+ * This preprocessor runs late in the chain, to give other preprocessors a
+ * chance to populate the inputs first. However, its priority immediately
+ * precedes the {@link imagej.ext.module.ui.InputHarvester}'s, so that
+ * user-specified values are populated from next time in the user dialog.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_LOW_PRIORITY + 1)
+public class LoadInputsPreprocessor extends AbstractPreprocessorPlugin {
+
+	// -- ModuleProcessor methods --
+
+	@Override
+	public void process(final Module module) {
+		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
+		for (final ModuleItem<?> item : inputs) {
+			loadValue(module, item);
+		}
+	}
+
+	// -- Helper methods --
+
+	/** Loads the value of the given module item from persistent storage. */
+	private <T> void loadValue(final Module module, final ModuleItem<T> item) {
+		// skip input that has already been resolved
+		if (module.isResolved(item.getName())) return;
+
+		final Class<T> type = item.getType();
+		final T defaultValue = item.getValue(module);
+		final T prefValue = item.loadValue();
+		final T value = getBestValue(prefValue, defaultValue, type);
+		item.setValue(module, value);
+	}
+
+	private <T> T getBestValue(final Object prefValue,
+		final Object defaultValue, final Class<T> type)
+	{
+		if (prefValue != null) return ClassUtils.convert(prefValue, type);
+		if (defaultValue != null) return ClassUtils.convert(defaultValue, type);
+		return ClassUtils.getNullValue(type);
+	}
+
 }
+

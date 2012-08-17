@@ -36,11 +36,14 @@
 package imagej.ext.ui.pivot;
 
 import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 
 import java.io.File;
 
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.FileBrowserSheet;
@@ -53,39 +56,44 @@ import org.apache.pivot.wtk.TextInput;
  * 
  * @author Curtis Rueden
  */
-public class PivotFileWidget extends PivotInputWidget
-	implements FileWidget, ButtonPressListener
+@Plugin(type = InputWidget.class)
+public class PivotFileWidget extends PivotInputWidget<File> implements
+	FileWidget<BoxPane>, ButtonPressListener
 {
 
-	private final TextInput path;
-	private final PushButton browse;
-
-	public PivotFileWidget(final WidgetModel model) {
-		super(model);
-
-		path = new TextInput();
-		add(path);
-
-		browse = new PushButton("Browse");
-		browse.getButtonPressListeners().add(this);
-		add(browse);
-
-		refreshWidget();
-	}
-
-	// -- FileWidget methods --
-
-	@Override
-	public File getValue() {
-		return new File(path.getText());
-	}
+	private TextInput path;
+	private PushButton browse;
 
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isType(File.class);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		path = new TextInput();
+		getPane().add(path);
+
+		browse = new PushButton("Browse");
+		browse.getButtonPressListeners().add(this);
+		getPane().add(browse);
+
+		refreshWidget();
+	}
+
+	@Override
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
+	}
+
+	@Override
 	public void refreshWidget() {
-		final File value = (File) getModel().getValue();
-		final String text = value == null ? "" : value.toString();
+		final String text = getModel().getText();
 		if (text.equals(path.getText())) return; // no change
 		path.setText(text);
 	}

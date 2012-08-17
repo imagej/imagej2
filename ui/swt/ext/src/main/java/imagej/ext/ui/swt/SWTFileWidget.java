@@ -36,7 +36,9 @@
 package imagej.ext.ui.swt;
 
 import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.io.File;
 
@@ -51,38 +53,45 @@ import org.eclipse.swt.widgets.Text;
  *
  * @author Curtis Rueden
  */
-public class SWTFileWidget extends SWTInputWidget implements FileWidget {
+@Plugin(type = InputWidget.class)
+public class SWTFileWidget extends SWTInputWidget<File> implements
+	FileWidget<Composite>
+{
 
 	private Text path;
 	private Button browse;
 
-	public SWTFileWidget(final Composite parent, final WidgetModel model) {
-		super(parent, model);
+	// -- InputWidget methods --
 
-		setLayout(new MigLayout());
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isType(File.class);
+	}
 
-		path = new Text(this, 0);
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		getPane().setLayout(new MigLayout());
+
+		path = new Text(getPane(), 0);
 		path.setTextLimit(20);
 
-		browse = new Button(this, 0);
+		browse = new Button(getPane(), 0);
 		browse.setText("Browse");
 
 		refreshWidget();
 	}
 
-	// -- FileWidget methods --
-
 	@Override
 	public File getValue() {
-		return new File(path.getText());
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {
-		final File value = (File) getModel().getValue();
-		final String text = value == null ? "" : value.toString();
+		final String text = getModel().getText();
 		if (text.equals(path.getText())) return; // no change
 		path.setText(text);
 	}

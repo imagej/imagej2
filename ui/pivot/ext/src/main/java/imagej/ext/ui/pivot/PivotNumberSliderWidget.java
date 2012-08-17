@@ -35,7 +35,10 @@
 
 package imagej.ext.ui.pivot;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
 
 import org.apache.pivot.wtk.Label;
@@ -47,38 +50,46 @@ import org.apache.pivot.wtk.SliderValueListener;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = InputWidget.class)
 public class PivotNumberSliderWidget extends PivotNumberWidget
 	implements SliderValueListener
 {
 
-	private final Slider slider;
-	private final Label label;
+	private Slider slider;
+	private Label label;
 
-	public PivotNumberSliderWidget(final WidgetModel model,
-		final Number min, final Number max)
-	{
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		final WidgetStyle style = model.getItem().getWidgetStyle();
+		if (style != WidgetStyle.NUMBER_SPINNER) return false;
+		return super.isCompatible(model);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
 
 		slider = new Slider();
 		slider.setRange(min.intValue(), max.intValue());
-		add(slider);
+		getPane().add(slider);
 		slider.getSliderValueListeners().add(this);
 
 		label = new Label();
-		add(label);
+		getPane().add(label);
 
 		refreshWidget();
 	}
-
-	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
 		final String value = "" + slider.getValue();
 		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

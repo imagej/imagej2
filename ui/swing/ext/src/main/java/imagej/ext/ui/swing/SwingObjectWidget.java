@@ -35,35 +35,28 @@
 
 package imagej.ext.ui.swing;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ObjectWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 /**
  * Swing implementation of object selector widget.
  * 
  * @author Curtis Rueden
  */
-public class SwingObjectWidget extends SwingInputWidget implements
-	ActionListener, ObjectWidget
+@Plugin(type = InputWidget.class)
+public class SwingObjectWidget extends SwingInputWidget<Object> implements
+	ActionListener, ObjectWidget<JPanel>
 {
 
-	private final JComboBox comboBox;
-
-	public SwingObjectWidget(final WidgetModel model, final Object[] items) {
-		super(model);
-
-		comboBox = new JComboBox(items);
-		setToolTip(comboBox);
-		add(comboBox);
-		comboBox.addActionListener(this);
-
-		refreshWidget();
-	}
+	private JComboBox comboBox;
 
 	// -- ActionListener methods --
 
@@ -73,6 +66,23 @@ public class SwingObjectWidget extends SwingInputWidget implements
 	}
 
 	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getObjectPool().size() > 0;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		comboBox = new JComboBox(model.getObjectPool().toArray());
+		setToolTip(comboBox);
+		getPane().add(comboBox);
+		comboBox.addActionListener(this);
+
+		refreshWidget();
+	}
 
 	@Override
 	public Object getValue() {

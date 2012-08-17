@@ -36,34 +36,27 @@
 package imagej.ext.ui.swing;
 
 import imagej.ext.module.ui.ChoiceWidget;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 /**
  * Swing implementation of multiple choice selector widget.
  * 
  * @author Curtis Rueden
  */
-public class SwingChoiceWidget extends SwingInputWidget implements
-	ActionListener, ChoiceWidget
+@Plugin(type = InputWidget.class)
+public class SwingChoiceWidget extends SwingInputWidget<String> implements
+	ActionListener, ChoiceWidget<JPanel>
 {
 
-	private final JComboBox comboBox;
-
-	public SwingChoiceWidget(final WidgetModel model, final String[] items) {
-		super(model);
-
-		comboBox = new JComboBox(items);
-		setToolTip(comboBox);
-		add(comboBox);
-		comboBox.addActionListener(this);
-
-		refreshWidget();
-	}
+	private JComboBox comboBox;
 
 	// -- ActionListener methods --
 
@@ -72,19 +65,31 @@ public class SwingChoiceWidget extends SwingInputWidget implements
 		updateModel();
 	}
 
-	// -- ChoiceWidget methods --
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isText() && model.isMultipleChoice();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String[] items = model.getChoices();
+
+		comboBox = new JComboBox(items);
+		setToolTip(comboBox);
+		getPane().add(comboBox);
+		comboBox.addActionListener(this);
+
+		refreshWidget();
+	}
 
 	@Override
 	public String getValue() {
 		return comboBox.getSelectedItem().toString();
 	}
-
-	@Override
-	public int getIndex() {
-		return comboBox.getSelectedIndex();
-	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

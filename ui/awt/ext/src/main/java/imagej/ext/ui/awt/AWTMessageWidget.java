@@ -33,13 +33,61 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.ext.ui.awt;
+
+import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.MessageWidget;
+import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
+
+import java.awt.Label;
+import java.awt.Panel;
 
 /**
- * Widget interface for boolean toggles.
+ * AWT implementation of message widget.
  * 
  * @author Curtis Rueden
  */
-public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
-	// NB: No changes to interface.
+@Plugin(type = InputWidget.class)
+public class AWTMessageWidget extends AWTInputWidget<String> implements
+	MessageWidget<Panel>
+{
+
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String text = model.getText();
+
+		final Label label = new Label(text);
+		getPane().add(label, "span");
+	}
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// NB: No action needed.
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
+	}
+
 }

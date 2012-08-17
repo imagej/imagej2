@@ -35,11 +35,14 @@
 
 package imagej.ext.ui.awt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ObjectWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
+import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -48,30 +51,37 @@ import java.awt.event.ItemListener;
  * 
  * @author Curtis Rueden
  */
-public class AWTObjectWidget extends AWTInputWidget
-	implements ItemListener, ObjectWidget
+@Plugin(type = InputWidget.class)
+public class AWTObjectWidget extends AWTInputWidget<Object>
+	implements ItemListener, ObjectWidget<Panel>
 {
 
-	private final Choice choice;
-	private final Object[] items;
+	private Choice choice;
 
-	public AWTObjectWidget(final WidgetModel model, final Object[] items) {
-		super(model);
-		this.items = items;
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getObjectPool().size() > 0;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
 		choice = new Choice();
-		for (final Object item : items) choice.add(item.toString());
-		add(choice, BorderLayout.CENTER);
+		for (final Object item : model.getObjectPool()) {
+			choice.add(item.toString());
+		}
+		getPane().add(choice, BorderLayout.CENTER);
 		choice.addItemListener(this);
 
 		refreshWidget();
 	}
 
-	// -- InputWidget methods --
-
 	@Override
 	public Object getValue() {
-		return items[choice.getSelectedIndex()];
+		return getModel().getObjectPool().get(choice.getSelectedIndex());
 	}
 
 	@Override

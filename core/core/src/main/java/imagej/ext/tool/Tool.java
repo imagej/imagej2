@@ -50,7 +50,14 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 
 /**
- * Interface for ImageJ tools.
+ * Interface for ImageJ tools. A tool is a collection of rules binding
+ * user input (e.g., keyboard and mouse events) to display and data manipulation
+ * in a coherent way.
+ * <p>
+ * For example, a <code>PanTool</code> might pan a display when the mouse is
+ * dragged or arrow key is pressed, while a <code>PencilTool</code> could draw
+ * hard lines on the data within a display.
+ * </p>
  * <p>
  * Tools discoverable at runtime must implement this interface and be annotated
  * with @{@link Plugin} with {@link Plugin#type()} = {@link Tool}.class. While

@@ -79,36 +79,22 @@ public class EquationDataValues<T extends RealType<T>> implements RunnablePlugin
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	OverlayService overlayService;
+	private OverlayService overlayService;
 	
 	@Parameter
-	ImageDisplayService imgDispService;
+	private ImageDisplayService imgDispService;
 	
 	@Parameter
-	UIService uiService;
+	private UIService uiService;
 	
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
-	@SuppressWarnings("unused")
-	@Parameter(label = "Format examples", visibility=ItemVisibility.MESSAGE)
-	private String title = "";
-
-	@SuppressWarnings("unused")
-	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex1 = "img + 40";
-	
-	@SuppressWarnings("unused")
-	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex2 = "[x,y], x^2 + y^2";
-	
-	@SuppressWarnings("unused")
-	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex3 = "[u1,v1,w1] , -2.003*u1 + 8.41*w1 + E + PI";
-	
-	@SuppressWarnings("unused")
-	@Parameter(label = "", visibility=ItemVisibility.MESSAGE)
-	private String ex4 = "[x,y,c,z,t], cos(t*PI/7) + sin(z*PI/12)";
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private final String examples = "<html><b>Format examples:</b>" + "<ul>"
+		+ "<li>img + 40</li>" + "<li>[x,y], x^2 + y^2</li>"
+		+ "<li>[u1,v1,w1] , -2.003*u1 + 8.41*w1 + E + PI</li>"
+		+ "<li>[x,y,c,z,t], cos(t*PI/7) + sin(z*PI/12)</li>" + "</ul>";
 	
 	@Parameter(label = "Apply to all planes")
 	private boolean allPlanes;

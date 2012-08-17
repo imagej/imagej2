@@ -35,12 +35,16 @@
 
 package imagej.ext.plugin;
 
+import imagej.AbstractContextual;
+
 /**
- * Abstract superclass of {@link PreprocessorPlugin} implementations.
+ * Abstract base class for plugin preprocessors.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractPreprocessorPlugin implements PreprocessorPlugin {
+public abstract class AbstractPreprocessorPlugin extends AbstractContextual
+	implements PreprocessorPlugin
+{
 
 	protected boolean canceled;
 	protected String cancelReason;

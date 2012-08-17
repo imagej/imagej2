@@ -35,7 +35,7 @@
 
 package imagej.ext.ui.swt;
 
-import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.AbstractInputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
 import org.eclipse.swt.widgets.Composite;
@@ -45,25 +45,33 @@ import org.eclipse.swt.widgets.Composite;
  *
  * @author Curtis Rueden
  */
-public abstract class SWTInputWidget extends Composite implements InputWidget {
+public abstract class SWTInputWidget<T> extends
+	AbstractInputWidget<T, Composite>
+{
 
-	private WidgetModel model;
+	private Composite pane;
+	private Composite parent;
 
-	public SWTInputWidget(final Composite parent, final WidgetModel model) {
-		super(parent, 0);
-		this.model = model;
+	public void setParent(final Composite parent) {
+		// CTR FIXME: Temporary hack to inject parent component.
+		this.parent = parent;
+	}
+
+	public Composite getParent() {
+		return parent;
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public WidgetModel getModel() {
-		return model;
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+		pane = new Composite(parent, 0);
 	}
 
 	@Override
-	public void updateModel() {
-		model.setValue(getValue());
+	public Composite getPane() {
+		return pane;
 	}
 
 }

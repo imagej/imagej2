@@ -60,7 +60,7 @@ import org.eclipse.swt.widgets.Shell;
  * @author Barry DeZonia
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class SWTInputHarvester extends AbstractInputHarvesterPlugin {
+public class SWTInputHarvester extends AbstractInputHarvesterPlugin<Composite> {
 
 	private static final Display DISPLAY = new Display();
 
@@ -70,7 +70,7 @@ public class SWTInputHarvester extends AbstractInputHarvesterPlugin {
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel inputPanel,
+	public boolean harvestInputs(final InputPanel<Composite> inputPanel,
 		final Module module)
 	{
 		// TODO - obtain handle on parent SWTMainFrame somehow

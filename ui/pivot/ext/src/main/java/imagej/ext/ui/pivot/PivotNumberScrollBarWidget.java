@@ -35,7 +35,10 @@
 
 package imagej.ext.ui.pivot;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
 
 import org.apache.pivot.wtk.Label;
@@ -47,39 +50,48 @@ import org.apache.pivot.wtk.ScrollBarValueListener;
  * 
  * @author Curtis Rueden
  */
-public class PivotNumberScrollBarWidget extends PivotNumberWidget
-	implements ScrollBarValueListener
+@Plugin(type = InputWidget.class)
+public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
+	ScrollBarValueListener
 {
 
-	private final ScrollBar scrollBar;
-	private final Label label;
+	private ScrollBar scrollBar;
+	private Label label;
 
-	public PivotNumberScrollBarWidget(final WidgetModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
-		super(model);
+	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		final WidgetStyle style = model.getItem().getWidgetStyle();
+		if (style != WidgetStyle.NUMBER_SCROLL_BAR) return false;
+		return super.isCompatible(model);
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
 		scrollBar = new ScrollBar();
 		scrollBar.setRange(min.intValue(), max.intValue());
 		scrollBar.setBlockIncrement(stepSize.intValue());
-		add(scrollBar);
+		getPane().add(scrollBar);
 		scrollBar.getScrollBarValueListeners().add(this);
 
 		label = new Label();
-		add(label);
+		getPane().add(label);
 
 		refreshWidget();
 	}
-
-	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
 		final String value = "" + scrollBar.getValue();
 		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
-
-	// -- InputWidget methods --
 
 	@Override
 	public void refreshWidget() {

@@ -35,12 +35,11 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.ModuleException;
 import imagej.ext.module.ui.AbstractInputPanel;
 import imagej.ext.module.ui.InputPanel;
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.WidgetModel;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -51,7 +50,7 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  */
-public class SwingInputPanel extends AbstractInputPanel {
+public class SwingInputPanel extends AbstractInputPanel<JPanel> {
 
 	private final JPanel panel;
 
@@ -67,79 +66,25 @@ public class SwingInputPanel extends AbstractInputPanel {
 	// -- InputPanel methods --
 
 	@Override
-	public void addMessage(final String text) {
-		panel.add(new JLabel(text), "span");
-		messageCount++;
-	}
+	public void addWidget(final InputWidget<?, ?> widget) {
+		super.addWidget(widget);
+		if (!(widget instanceof SwingInputWidget)) return;
+		final JPanel widgetPane = ((SwingInputWidget<?>) widget).getPane();
+		final WidgetModel model = widget.getModel();
 
-	@Override
-	public void addNumber(final WidgetModel model, final Number min,
-		final Number max, final Number stepSize)
-	{
-		final SwingNumberWidget numberWidget =
-			new SwingNumberWidget(model, min, max, stepSize);
-		addField(model, numberWidget);
-		numberWidgets.put(model.getItem().getName(), numberWidget);
-	}
-
-	@Override
-	public void addToggle(final WidgetModel model) {
-		final SwingToggleWidget toggleWidget = new SwingToggleWidget(model);
-		addField(model, toggleWidget);
-		toggleWidgets.put(model.getItem().getName(), toggleWidget);
-	}
-
-	@Override
-	public void addTextField(final WidgetModel model, final int columns) {
-		final SwingTextFieldWidget textFieldWidget =
-			new SwingTextFieldWidget(model, columns);
-		addField(model, textFieldWidget);
-		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
-	}
-
-	@Override
-	public void addChoice(final WidgetModel model, final String[] items) {
-		final SwingChoiceWidget choiceWidget = new SwingChoiceWidget(model, items);
-		addField(model, choiceWidget);
-		choiceWidgets.put(model.getItem().getName(), choiceWidget);
-	}
-
-	@Override
-	public void addFile(final WidgetModel model) {
-		final SwingFileWidget fileWidget = new SwingFileWidget(model);
-		addField(model, fileWidget);
-		fileWidgets.put(model.getItem().getName(), fileWidget);
-	}
-
-	@Override
-	public void addColor(final WidgetModel model) {
-		final SwingColorWidget colorWidget = new SwingColorWidget(model);
-		addField(model, colorWidget);
-		colorWidgets.put(model.getItem().getName(), colorWidget);
-	}
-
-	@Override
-	public void addObject(final WidgetModel model) throws ModuleException {
-		final Object[] items = getObjects(model);
-		final SwingObjectWidget objectWidget = new SwingObjectWidget(model, items);
-		addField(model, objectWidget);
-		objectWidgets.put(model.getItem().getName(), objectWidget);
-	}
-
-	@Override
-	public int getWidgetCount() {
-		return panel.getComponentCount();
-	}
-
-	// -- Helper methods --
-
-	private void addField(final WidgetModel model, final JComponent component) {
-		final String label = model.getWidgetLabel();
-		final String desc = model.getItem().getDescription();
-		final JLabel l = new JLabel(label == null ? "" : label);
-		if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
-		panel.add(l);
-		panel.add(component);
+		// add widget to panel
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			final JLabel l = new JLabel(model.getWidgetLabel());
+			final String desc = model.getItem().getDescription();
+			if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
+			panel.add(l);
+			panel.add(widgetPane);
+		}
+		else {
+			// widget occupies entire row
+			panel.add(widgetPane, "span");
+		}
 	}
 
 }

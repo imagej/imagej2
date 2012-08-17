@@ -35,8 +35,10 @@
 
 package imagej.ext.ui.swt;
 
+import imagej.ext.module.ui.InputWidget;
 import imagej.ext.module.ui.ObjectWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.plugin.Plugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -47,40 +49,42 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTObjectWidget extends SWTInputWidget implements ObjectWidget {
+@Plugin(type = InputWidget.class)
+public class SWTObjectWidget extends SWTInputWidget<Object> implements
+	ObjectWidget<Composite>
+{
 
-	private final Combo combo;
-	private final Object[] items;
-
-	public SWTObjectWidget(final Composite parent, final WidgetModel model,
-		final Object[] items)
-	{
-		super(parent, model);
-		this.items = items;
-
-		combo = new Combo(this, SWT.DROP_DOWN);
-		for (final Object item : items) combo.add(item.toString());
-
-		refreshWidget();
-	}
+	private Combo combo;
 
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getObjectPool().size() > 0;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		combo = new Combo(getPane(), SWT.DROP_DOWN);
+		for (final Object item : model.getObjectPool()) {
+			combo.add(item.toString());
+		}
+
+		refreshWidget();
+	}
+
+	@Override
 	public Object getValue() {
-		return items[combo.getSelectionIndex()];
+		return getModel().getObjectPool().get(combo.getSelectionIndex());
 	}
 
 	@Override
 	public void refreshWidget() {
 		final Object value = getModel().getValue();
-		for (int i = 0; i < items.length; i++) {
-			final Object item = items[i];
-			if (item == value) {
-				combo.select(i);
-				break;
-			}
-		}
+		final int index = getModel().getObjectPool().indexOf(value);
+		if (index >= 0) combo.select(index);
 	}
 
 }

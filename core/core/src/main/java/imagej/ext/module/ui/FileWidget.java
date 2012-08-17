@@ -42,9 +42,6 @@ import java.io.File;
  * 
  * @author Curtis Rueden
  */
-public interface FileWidget extends InputWidget {
-
-	@Override
-	File getValue();
-
+public interface FileWidget<U> extends InputWidget<File, U> {
+	// NB: No changes to interface.
 }

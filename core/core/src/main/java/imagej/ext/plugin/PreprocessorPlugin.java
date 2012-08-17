@@ -35,6 +35,7 @@
 
 package imagej.ext.plugin;
 
+import imagej.Contextual;
 import imagej.ext.module.ModulePreprocessor;
 
 /**
@@ -45,12 +46,16 @@ import imagej.ext.module.ModulePreprocessor;
  * <p>
  * Plugin preprocessors discoverable at runtime must implement this interface
  * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
- * {@link PreprocessorPlugin}.class.
+ * {@link PreprocessorPlugin}.class. While it possible to create a plugin
+ * preprocessor merely by implementing this interface, it is encouraged to
+ * instead extend {@link AbstractPreprocessorPlugin}, for convenience.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public interface PreprocessorPlugin extends IPlugin, ModulePreprocessor {
+public interface PreprocessorPlugin extends IPlugin, Contextual,
+	ModulePreprocessor
+{
 	// PreprocessorPlugin is a plugin preprocessor,
 	// discoverable via the plugin discovery mechanism.
 }

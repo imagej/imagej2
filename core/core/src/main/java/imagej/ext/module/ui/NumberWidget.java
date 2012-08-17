@@ -40,9 +40,6 @@ package imagej.ext.module.ui;
  * 
  * @author Curtis Rueden
  */
-public interface NumberWidget extends InputWidget {
-
-	@Override
-	Number getValue();
-
+public interface NumberWidget<U> extends InputWidget<Number, U> {
+	// NB: No changes to interface.
 }
