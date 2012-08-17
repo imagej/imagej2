@@ -110,4 +110,14 @@ public interface LegacyService extends Service {
 	 */
 	void syncColors();
 
+	/**
+	 * States whether we're running in legacy ImageJ 1.x mode.
+	 * 
+	 * To support work flows which are incompatible with ImageJ2, we want to allow
+	 * users to run in legacy ImageJ 1.x mode, where the ImageJ2 GUI is hidden and
+	 * the ImageJ 1.x GUI is shown. During this time, no synchronization should take
+	 * place.
+	 */
+	public boolean isLegacyMode();
+
 }

@@ -59,8 +59,10 @@ public final class ImagePlusMethods {
 		if (obj == null) return;
 		if (!obj.isProcessor()) return;
 		if (obj.getWindow() == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		legacyService.getLogService().debug("ImagePlus.updateAndDraw(): " + obj);
+		if (!legacyService.isLegacyMode()) {
+			if (!Utils.isLegacyThread(Thread.currentThread())) return;
+			legacyService.getLogService().debug("ImagePlus.updateAndDraw(): " + obj);
+		}
 		legacyService.legacyImageChanged(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
@@ -70,8 +72,10 @@ public final class ImagePlusMethods {
 	public static void repaintWindow(final LegacyService legacyService, final ImagePlus obj) {
 		if (obj == null) return;
 		if (obj.getWindow() == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		legacyService.getLogService().debug("ImagePlus.repaintWindow(): " + obj);
+		if (!legacyService.isLegacyMode()) {
+			if (!Utils.isLegacyThread(Thread.currentThread())) return;
+			legacyService.getLogService().debug("ImagePlus.repaintWindow(): " + obj);
+		}
 		legacyService.legacyImageChanged(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
@@ -82,16 +86,19 @@ public final class ImagePlusMethods {
 		@SuppressWarnings("unused") final String message)
 	{
 		if (obj == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		legacyService.getLogService().debug("ImagePlus.show(): " + obj);
+		if (!legacyService.isLegacyMode()) {
+			if (!Utils.isLegacyThread(Thread.currentThread())) return;
+			legacyService.getLogService().debug("ImagePlus.show(): " + obj);
+		}
 		legacyService.legacyImageChanged(obj);
 		WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
 	/** Appends {@link ImagePlus#hide()}. */
 	public static void hide(final LegacyService legacyService, final ImagePlus obj) {
+		if (legacyService.isLegacyMode()) return;
 		if (obj == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
+		if (!legacyService.isLegacyMode() && !Utils.isLegacyThread(Thread.currentThread())) return;
 		legacyService.getLogService().debug("ImagePlus.hide(): " + obj);
 		LegacyOutputTracker.removeOutput(obj);
 		// Original method
@@ -110,9 +117,9 @@ public final class ImagePlusMethods {
 
 	/** Appends {@link ImagePlus#close()}. */
 	// TODO: LegacyOutputTracker should not be a singleton
-	public static void close(@SuppressWarnings("unused") final LegacyService legacyService, final ImagePlus obj) {
+	public static void close(final LegacyService legacyService, final ImagePlus obj) {
 		if (obj == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
+		if (!legacyService.isLegacyMode() && !Utils.isLegacyThread(Thread.currentThread())) return;
 		LegacyOutputTracker.addClosed(obj);
 	}
 }
