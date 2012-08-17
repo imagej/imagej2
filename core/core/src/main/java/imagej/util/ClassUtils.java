@@ -128,6 +128,12 @@ public final class ClassUtils {
 		// OK if string
 		if (saneType == String.class) return true;
 
+		// OK if source type is string and destination type is character
+		// (in this case, the first character of the string would be used)
+		if (String.class.isAssignableFrom(c) && saneType == Character.class) {
+			return true;
+		}
+
 		// OK if appropriate wrapper constructor exists
 		try {
 			saneType.getConstructor(c);
