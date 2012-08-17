@@ -64,8 +64,7 @@ public class SWTMessageWidget extends SWTInputWidget<String> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		final Object value = model.getValue();
-		final String text = value == null ? "" : value.toString();
+		final String text = model.getText();
 
 		final Label label = new Label(getPane(), 0);
 		label.setText(text);

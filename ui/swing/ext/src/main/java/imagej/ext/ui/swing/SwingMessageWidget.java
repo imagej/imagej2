@@ -64,8 +64,7 @@ public class SwingMessageWidget extends SwingInputWidget<String> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		final Object value = model.getValue();
-		final String text = value == null ? "" : value.toString();
+		final String text = model.getText();
 
 		final JLabel label = new JLabel(text);
 		getPane().add(label);

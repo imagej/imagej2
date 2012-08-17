@@ -100,9 +100,9 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 
 	@Override
 	public void refreshWidget() {
- 		final String value = ((Number) getModel().getValue()).toString();
- 		if (textField.getText().equals(value)) return; // no change
- 		textField.setText(value);
+		final String value = getModel().getValue().toString();
+		if (textField.getText().equals(value)) return; // no change
+		textField.setText(value);
 	}
 
 	// -- AdjustmentListener methods --

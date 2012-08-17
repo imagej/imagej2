@@ -107,9 +107,7 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 
 	@Override
 	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		String text = value == null ? "" : value.toString();
-		if (text.equals("\0")) text = ""; // render null character as empty
+		final String text = getModel().getText();
 		if (textField.getText().equals(text)) return; // no change
 		textField.setText(text);
 	}
@@ -118,7 +116,7 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 
 	private void limitLength() {
 		// only limit length for single-character inputs
-		if (!ClassUtils.isCharacter(getModel().getItem().getType())) return;
+		if (!getModel().isCharacter()) return;
 
 		// limit text field to a single character
 		final int maxChars = 1;

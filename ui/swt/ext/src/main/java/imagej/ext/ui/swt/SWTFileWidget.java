@@ -85,13 +85,13 @@ public class SWTFileWidget extends SWTInputWidget<File> implements
 
 	@Override
 	public File getValue() {
-		return new File(path.getText());
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	@Override
 	public void refreshWidget() {
-		final File value = (File) getModel().getValue();
-		final String text = value == null ? "" : value.toString();
+		final String text = getModel().getText();
 		if (text.equals(path.getText())) return; // no change
 		path.setText(text);
 	}

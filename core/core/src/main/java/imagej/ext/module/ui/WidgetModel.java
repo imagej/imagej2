@@ -153,12 +153,28 @@ public class WidgetModel {
 		return choices;
 	}
 
+	/**
+	 * Gets the value rendered as a string. If value is null, or the null
+	 * character ('\0'), returns the empty string.
+	 */
+	public String getText() {
+		final Object value = getValue();
+		if (value == null) return "";
+		final String text = value.toString();
+		if (text.equals("\0")) return ""; // render null character as empty
+		return text;
+	}
+
 	public boolean isMessage() {
 		return getItem().getVisibility() == ItemVisibility.MESSAGE;
 	}
 
 	public boolean isText() {
 		return ClassUtils.isText(getItem().getType());
+	}
+
+	public boolean isCharacter() {
+		return ClassUtils.isCharacter(getItem().getType());
 	}
 
 	public boolean isNumber() {
