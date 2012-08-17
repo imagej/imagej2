@@ -42,6 +42,7 @@ import imagej.util.ColorRGB;
 
 import java.util.List;
 
+import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.CompositeXYProjector;
@@ -65,8 +66,56 @@ public interface DatasetView extends DataView {
 
 	List<RealLUTConverter<? extends RealType<?>>> getConverters();
 
+	/**
+	 * Gets the minimum value in the <em>display</em> range, for the given
+	 * channel.
+	 * <p>
+	 * NB: This is a different value than that given by
+	 * {@link Dataset#getChannelMinimum(int)}; the latter is the minimum
+	 * <em>data</em> value for that channel, independent of any visualization.
+	 * </p>
+	 */
+	double getChannelMin(int c);
+
+	/**
+	 * Gets the maximum value in the <em>display</em> range, for the given
+	 * channel.
+	 * <p>
+	 * NB: This is a different value than that given by
+	 * {@link Dataset#getChannelMaximum(int)}; the latter is the maximum
+	 * <em>data</em> value for that channel, independent of any visualization.
+	 * </p>
+	 */
+	double getChannelMax(int c);
+
+	/**
+	 * Sets the minimum and maximum values of the <em>display</em> range, for the
+	 * given channel.
+	 * <p>
+	 * NB: This is a different range than that set by
+	 * {@link Dataset#setChannelMinimum(int, double)} and
+	 * {@link Dataset#setChannelMaximum(int, double)}; the latter methods set the
+	 * minimum and maximum <em>data</em> values for that channel, independent of
+	 * any visualization. They are typically kept synced with the actual data via
+	 * code such as {@link ComputeMinMax}.
+	 * </p>
+	 */
+	void setChannelRange(int c, double min, double max);
+
+	/**
+	 * Autoscales the <em>display</em> range to match the <em>data</em> range, for
+	 * the given channel.
+	 * <p>
+	 * NB: The <em>data</em> range is obtained first from
+	 * {@link Dataset#getChannelMinimum(int)} and
+	 * {@link Dataset#getChannelMaximum(int)}; if they are not set there, they are
+	 * computed and cached for later use.
+	 * </p>
+	 */
+	void autoscale(int c);
+
 	void setComposite(boolean composite);
-	
+
 	List<ColorTable8> getColorTables();
 
 	void setColorTable(ColorTable8 colorTable, int channel);
@@ -79,7 +128,7 @@ public interface DatasetView extends DataView {
 
 	@Override
 	Dataset getData();
-	
+
 	ColorRGB getColor(ChannelCollection channels);
 
 }

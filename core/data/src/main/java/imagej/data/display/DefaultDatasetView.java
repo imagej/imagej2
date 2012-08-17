@@ -122,6 +122,44 @@ public class DefaultDatasetView extends AbstractDataView implements
 	}
 
 	@Override
+	public double getChannelMin(int c) {
+		return converters.get(c).getMin();
+	}
+
+	@Override
+	public double getChannelMax(int c) {
+		return converters.get(c).getMax();
+	}
+
+	@Override
+	public void setChannelRange(int c, double min, double max) {
+		converters.get(c).setMin(min);
+		converters.get(c).setMax(max);
+	}
+
+	@Override
+	public void autoscale(final int c) {
+		// get the channel min/max from metadata
+		double min = dataset.getImgPlus().getChannelMinimum(c);
+		double max = dataset.getImgPlus().getChannelMaximum(c);
+		if (Double.isNaN(min) || Double.isNaN(max)) {
+			// not provided in metadata, so calculate the min/max
+			// FIXME: This currently applies the global min/max to all channels.
+			// We need to enhance ComputeMinMax to find the min/max per channel.
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final ComputeMinMax<? extends RealType<?>> cmm =
+				new ComputeMinMax(dataset.getImgPlus());
+			cmm.process();
+			min = cmm.getMin().getRealDouble();
+			max = cmm.getMax().getRealDouble();
+			// cache min/max in metadata for next time
+			dataset.getImgPlus().setChannelMinimum(c, min);
+			dataset.getImgPlus().setChannelMaximum(c, max);
+		}
+		setChannelRange(c, min, max);
+	}
+
+	@Override
 	public void setComposite(final boolean composite) {
 		projector.setComposite(composite);
 	}
@@ -349,32 +387,6 @@ public class DefaultDatasetView extends AbstractDataView implements
 			new CompositeXYProjector(
 				dataset.getImgPlus(), screenImage, converters, channelDimIndex);
 		projector.setComposite(composite);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void autoscale(final int c) {
-		// CTR FIXME - Autoscaling needs to be reworked.
-
-		// Get min/max from metadata
-		double min = dataset.getImgPlus().getChannelMinimum(c);
-		double max = dataset.getImgPlus().getChannelMaximum(c);
-		if (Double.isNaN(max) || Double.isNaN(min)) {
-			// not provided in metadata, so calculate the min/max
-			// TODO: this currently applies the global min/max to all channels...
-			// need to change ComputeMinMax to find min/max per channel
-			final ComputeMinMax<? extends RealType<?>> cmm =
-				new ComputeMinMax(dataset.getImgPlus());
-			cmm.process();
-			min = cmm.getMin().getRealDouble();
-			max = cmm.getMax().getRealDouble();
-			dataset.getImgPlus().setChannelMinimum(c, min);
-			dataset.getImgPlus().setChannelMaximum(c, max);
-		}
-		if (min == max) { // if all black or all white, use range for type
-			final RealType<?> type = dataset.getType();
-			dataset.getImgPlus().setChannelMinimum(c, type.getMinValue());
-			dataset.getImgPlus().setChannelMaximum(c, type.getMaxValue());
-		}
 	}
 
 	private void updateLUTs() {
