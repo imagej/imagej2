@@ -84,7 +84,7 @@ import imagej.util.IntCoords;
 			weight = MenuConstants.PLUGINS_WEIGHT,
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 	@Menu(label = "Utilities"),
-	@Menu(label = "Capture Image", weight = 20)})
+	@Menu(label = "Capture Image", weight = 21)})
 public class CaptureImage implements RunnablePlugin {
 
 	// -- Parameters --

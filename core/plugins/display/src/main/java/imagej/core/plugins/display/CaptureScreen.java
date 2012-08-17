@@ -55,7 +55,7 @@ import imagej.ext.plugin.Plugin;
 			weight = MenuConstants.PLUGINS_WEIGHT,
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 	@Menu(label = "Utilities"),
-	@Menu(label = "Capture Screen", weight = 19, 
+	@Menu(label = "Capture Screen", weight = 20, 
 				accelerator = "shift control G")})
 public class CaptureScreen implements RunnablePlugin {
 
