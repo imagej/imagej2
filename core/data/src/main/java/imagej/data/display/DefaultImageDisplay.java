@@ -143,8 +143,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	protected void rebuild() {
-		
-		super.rebuild(); // added by BDZ. helps fix bug #1219
+		// NB: Ensure display flags its structure as changed.
+		super.rebuild();
 		
 		// combine constituent views into a single aggregate spatial interval
 		combinedInterval.clear();

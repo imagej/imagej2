@@ -66,6 +66,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Grant Harris
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public class DefaultDatasetView extends AbstractDataView implements
 	DatasetView
@@ -224,9 +225,9 @@ public class DefaultDatasetView extends AbstractDataView implements
 	// TODO - add this kind of mapping code to the Imglib Projector classes. Here
 	// it is just a workaround to make IJ2/IJ1 color syncing happy. BDZ
 	
-	/** Reason from a channel collection and internal state what the closest
-	 * color is. This is needed for color synchronization with IJ1.
-	 * @author Barry DeZonia
+	/**
+	 * Reason from a channel collection and internal state what the closest color
+	 * is. This is needed for color synchronization with IJ1.
 	 */
 	@Override
 	public ColorRGB getColor(ChannelCollection channels) {
@@ -297,6 +298,11 @@ public class DefaultDatasetView extends AbstractDataView implements
 	}
 
 	@Override
+	public void update() {
+		publish(new DataViewUpdatedEvent(this));
+	}
+
+	@Override
 	public void rebuild() {
 		channelDimIndex = getChannelDimIndex();
 
@@ -360,6 +366,37 @@ public class DefaultDatasetView extends AbstractDataView implements
 		super.setPosition(position, axis);
 	}
 
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final DatasetTypeChangedEvent event) {
+		if (dataset == event.getObject()) {
+			rebuild();
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final DatasetRGBChangedEvent event) {
+		if (dataset == event.getObject()) {
+			rebuild();
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final DatasetUpdatedEvent event) {
+		// FIXME: eliminate hacky logic here
+		if (event instanceof DatasetTypeChangedEvent) {
+			return;
+		}
+		if (event instanceof DatasetRGBChangedEvent) {
+			return;
+		}
+		if (dataset == event.getObject()) {
+			if (event.isMetaDataOnly()) return;
+			projector.map();
+		}
+	}
+
 	// -- Helper methods --
 
 	private int getChannelDimIndex() {
@@ -416,42 +453,6 @@ public class DefaultDatasetView extends AbstractDataView implements
 	private long getChannelCount() {
 		if (channelDimIndex < 0) return 1;
 		return dataset.getExtents().dimension(channelDimIndex);
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(final DatasetTypeChangedEvent event) {
-		if (dataset == event.getObject()) {
-			rebuild();
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final DatasetRGBChangedEvent event) {
-		if (dataset == event.getObject()) {
-			rebuild();
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final DatasetUpdatedEvent event) {
-		// FIXME: eliminate hacky logic here
-		if (event instanceof DatasetTypeChangedEvent) {
-			return;
-		}
-		if (event instanceof DatasetRGBChangedEvent) {
-			return;
-		}
-		if (dataset == event.getObject()) {
-			if (event.isMetaDataOnly()) return;
-			projector.map();
-		}
-	}
-
-	@Override
-	public void update() {
-		publish(new DataViewUpdatedEvent(this));
 	}
 
 }
