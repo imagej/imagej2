@@ -35,9 +35,11 @@
 
 package imagej.data.display;
 
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.event.EventService;
 import imagej.ext.display.DisplayService;
+import imagej.ext.plugin.PluginService;
 import imagej.service.Service;
 
 import java.util.List;
@@ -53,7 +55,19 @@ public interface ImageDisplayService extends Service {
 
 	EventService getEventService();
 
+	PluginService getPluginService();
+
 	DisplayService getDisplayService();
+
+	/** Creates a new {@link DataView} wrapping the given data object. */
+	DataView createDataView(Data data);
+
+	/**
+	 * Gets the list of available {@link DataView}s. The list will contain one
+	 * uninitialized instance of each {@link DataView} implementation known to the
+	 * {@link PluginService}.
+	 */
+	List<? extends DataView> getDataViews();
 
 	/** Gets the currently active {@link ImageDisplay}. */
 	ImageDisplay getActiveImageDisplay();

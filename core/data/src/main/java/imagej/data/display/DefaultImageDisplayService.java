@@ -36,11 +36,14 @@
 package imagej.data.display;
 
 import imagej.ImageJ;
+import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.overlay.Overlay;
 import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -59,6 +62,7 @@ public final class DefaultImageDisplayService extends AbstractService
 {
 
 	private final EventService eventService;
+	private final PluginService pluginService;
 	private final DisplayService displayService;
 
 	public DefaultImageDisplayService() {
@@ -68,10 +72,12 @@ public final class DefaultImageDisplayService extends AbstractService
 	}
 
 	public DefaultImageDisplayService(final ImageJ context,
-		final EventService eventService, final DisplayService displayService)
+		final EventService eventService, final PluginService pluginService,
+		final DisplayService displayService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.pluginService = pluginService;
 		this.displayService = displayService;
 	}
 
@@ -83,11 +89,33 @@ public final class DefaultImageDisplayService extends AbstractService
 	}
 
 	@Override
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
+	@Override
 	public DisplayService getDisplayService() {
 		return displayService;
 	}
 
-	// -- DisplayService methods - display discovery --
+	@Override
+	public DataView createDataView(final Data data) {
+		// TODO: Eliminate case logic in favor of extensible discovery mechanism.
+		if (data instanceof Dataset) {
+			final Dataset dataset = (Dataset) data;
+			return new DefaultDatasetView(dataset);
+		}
+		else if (data instanceof Overlay) {
+			final Overlay overlay = (Overlay) data;
+			return new DefaultOverlayView(overlay);
+		}
+		throw new IllegalArgumentException("No data view found for data: " + data);
+	}
+
+	@Override
+	public List<? extends DataView> getDataViews() {
+		throw new UnsupportedOperationException("Unimplemented");
+	}
 
 	@Override
 	public ImageDisplay getActiveImageDisplay() {
