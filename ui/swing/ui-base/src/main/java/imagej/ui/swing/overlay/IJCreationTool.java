@@ -114,28 +114,24 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 
 	@Override
 	public void mouseClicked(MouseEvent evt) {
-		// ignore clicks other than left
-		if ((evt.getButton() == MouseEvent.BUTTON2) ||
-			(evt.getButton() == MouseEvent.BUTTON3))
-			return;
+		if (!isLeftClick(evt)) return;
 		super.mouseClicked(evt);
 	}
 	
 	@Override
 	public void mousePressed(MouseEvent evt) {
-		// ignore clicks other than left
-		if ((evt.getButton() == MouseEvent.BUTTON2) ||
-				(evt.getButton() == MouseEvent.BUTTON3))
-				return;
+		if (!isLeftClick(evt)) return;
 		super.mousePressed(evt);
 	}
 	
 	@Override
 	public void mouseReleased(MouseEvent evt) {
-		// ignore clicks other than left
-		if ((evt.getButton() == MouseEvent.BUTTON2) ||
-				(evt.getButton() == MouseEvent.BUTTON3))
-				return;
+		if (!isLeftClick(evt)) return;
 		super.mouseReleased(evt);
 	}
+
+	private boolean isLeftClick(final MouseEvent evt) {
+		return evt.getButton() == MouseEvent.BUTTON1;
+	}
+
 }
