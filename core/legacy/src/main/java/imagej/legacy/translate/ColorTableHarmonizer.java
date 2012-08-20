@@ -228,10 +228,17 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		double overallMax = Double.NEGATIVE_INFINITY;
 		for (int c = 0; c < channelCount; c++) {
 			final RealLUTConverter<? extends RealType<?>> conv = converters.get(c);
-			min[c] = conv.getMin();
-			max[c] = conv.getMax();
-			if (min[c] < overallMin) overallMin = min[c];
-			if (max[c] > overallMax) overallMax = max[c];
+			double lo = conv.getMin();
+			double hi = conv.getMax();
+			// ShortProcessor backed data cannot handle negative display range
+			if ((imp.getBitDepth() == 16) && (imp.getCalibration().isSigned16Bit())) {
+				lo += 32768;
+				hi += 32768;
+			}
+			min[c] = lo;
+			max[c] = hi;
+			overallMin = Math.min(overallMin,lo);
+			overallMax = Math.max(overallMax,hi);
 		}
 
 		if (imp instanceof CompositeImage) {
