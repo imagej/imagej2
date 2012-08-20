@@ -124,16 +124,22 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	@Override
 	public double getChannelMin(int c) {
+		if (!isInitialized()) return Double.NaN;
+
 		return converters.get(c).getMin();
 	}
 
 	@Override
 	public double getChannelMax(int c) {
+		if (!isInitialized()) return Double.NaN;
+
 		return converters.get(c).getMax();
 	}
 
 	@Override
 	public void setChannelRange(int c, double min, double max) {
+		if (!isInitialized()) return;
+
 		converters.get(c).setMin(min);
 		converters.get(c).setMax(max);
 	}
@@ -162,6 +168,8 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	@Override
 	public void setComposite(final boolean composite) {
+		if (!isInitialized()) return;
+
 		projector.setComposite(composite);
 	}
 
@@ -217,6 +225,8 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	@Override
 	public void setColorMode(final ColorMode colorMode) {
+		if (!isInitialized()) return;
+
 		resetColorTables(colorMode == ColorMode.GRAYSCALE);
 		projector.setComposite(colorMode == ColorMode.COMPOSITE);
 		projector.map();
@@ -231,6 +241,8 @@ public class DefaultDatasetView extends AbstractDataView implements
 	 */
 	@Override
 	public ColorRGB getColor(ChannelCollection channels) {
+		if (!isInitialized()) return null;
+
 		final int r,g,b;
 		long channelCount = getChannelCount();
 		ColorMode mode = getColorMode();
@@ -304,15 +316,15 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	@Override
 	public void rebuild() {
-		channelDimIndex = getChannelDimIndex();
-
-		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
-
-		// Make sure any calls to updateLUTs are ignored. If they happen before
+		// NB: Make sure any calls to updateLUTs are ignored. If they happen before
 		// the converters are correctly defined (in setupProjector) an exception
 		// can get thrown. Basically if you add a channel to an image the converter
 		// size() can be out of sync.
-		converters.clear();
+		uninitializeView();
+
+		channelDimIndex = getChannelDimIndex();
+
+		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
@@ -323,10 +335,8 @@ public class DefaultDatasetView extends AbstractDataView implements
 		final int height = (int) img.dimension(1);
 		screenImage = new ARGBScreenImage(width, height);
 
-		final boolean composite = isComposite();
-		setupProjector(composite);
-		// NB - it's imperative that instance variable "projector" is correctly
-		// setup before calling updateLUTs()
+		initializeView(isComposite());
+
 		updateLUTs();
 		projector.map();
 	}
@@ -335,10 +345,11 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	@Override
 	public long getLongPosition(final AxisType axis) {
+		if (!isInitialized()) return 0;
+
 		if (Axes.isXY(axis)) return 0;
 		final int dim = getData().getAxisIndex(axis);
 		if (dim < 0) return 0;
-		if (projector == null) return 0;
 		// It is possible that projector is out of sync with data or view. Choose a
 		// sensible default value to avoid exceptions.
 		if (dim >= projector.numDimensions()) return 0;
@@ -347,6 +358,8 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	@Override
 	public void setPosition(final long position, final AxisType axis) {
+		if (!isInitialized()) return;
+
 		if (Axes.isXY(axis)) return;
 		final int dim = getData().getAxisIndex(axis);
 		if (dim < 0) return;
@@ -407,9 +420,19 @@ public class DefaultDatasetView extends AbstractDataView implements
 		return dataset.getCompositeChannelCount() > 1 || dataset.isRGBMerged();
 	}
 
+	private boolean isInitialized() {
+		return projector != null;
+	}
+
+	/** Uninitializes the view. */
+	private void uninitializeView() {
+		converters.clear();
+		projector = null;
+	}
+
+	/** Initializes the view. */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void setupProjector(final boolean composite)
-	{
+	private void initializeView(final boolean composite) {
 		converters.clear();
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
@@ -427,9 +450,8 @@ public class DefaultDatasetView extends AbstractDataView implements
 	}
 
 	private void updateLUTs() {
-		if (converters.size() == 0) {
-			return; // converters not yet initialized
-		}
+		if (!isInitialized()) return;
+
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			final ColorTable8 lut = getCurrentLUT(c);
