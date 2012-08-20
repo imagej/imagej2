@@ -37,7 +37,6 @@ package imagej.legacy;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.Menus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import imagej.command.CommandService;
@@ -72,10 +71,6 @@ import imagej.ui.viewer.image.ImageDisplayViewer;
 import imagej.util.ColorRGB;
 
 import java.awt.GraphicsEnvironment;
-import java.awt.Menu;
-import java.awt.MenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -266,22 +261,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	 */
 	@Override
 	public synchronized void toggleLegacyMode(boolean toggle) {
-		legacyIJ1Mode = toggle;
+		if (toggle) legacyIJ1Mode = toggle;
 
 		final ij.ImageJ ij = IJ.getInstance();
 
-		// inject Help>Stop Legacy ImageJ 1.x Mode
-		final String menuLabel = "Stop Legacy ImageJ 1.x Mode";
-		final MenuItem item = new MenuItem(menuLabel);
-		final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
-		item.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				toggleLegacyMode(false);
-				helpMenu.remove(item);
-			}
-		});
-		helpMenu.add(item);
+		RestartIJ2Plugin.registerMenuItem(this);
 
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
@@ -311,6 +295,8 @@ public final class DefaultLegacyService extends AbstractService implements
 			final ImageWindow window = imp.getWindow();
 			if (window != null) window.setVisible(toggle);
 		}
+
+		if (!toggle) legacyIJ1Mode = toggle;
 	}
 
 	// -- Service methods --
