@@ -98,10 +98,10 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 						for (int y = 0; y < ySize; y++) {
 							if (yIndex >= 0) pos[yIndex] = y;
 							accessor.setPosition(pos);
-							float value = proc.getf(x, y);
+							double value = proc.getf(x, y);
 							if (signed16BitData) value -= 32768.0;
-							if (value < typeMin) value = (float) typeMin;
-							else if (value > typeMax) value = (float) typeMax;
+							if (value < typeMin) value = typeMin;
+							else if (value > typeMax) value = typeMax;
 							accessor.get().setReal(value);
 						}
 					}
@@ -152,10 +152,10 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 						for (int y = 0; y < ySize; y++) {
 							if (yIndex >= 0) pos[yIndex] = y;
 							accessor.setPosition(pos);
-							float value = accessor.get().getRealFloat();
+							double value = accessor.get().getRealDouble();
 							if (signed16BitData) value += 32768.0;
 							else if (bitData) if (value > 0) value = 255;
-							proc.setf(x, y, value);
+							proc.setf(x, y, (float)value);
 						}
 					}
 				}
