@@ -35,6 +35,7 @@
 
 package imagej.data.display;
 
+import imagej.Contextual;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -64,7 +65,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Curtis Rueden
  */
-public interface DataView extends PositionableByAxis {
+public interface DataView extends PositionableByAxis, Contextual {
 
 	/** Gets the {@link Data} represented by this view. */
 	Data getData();

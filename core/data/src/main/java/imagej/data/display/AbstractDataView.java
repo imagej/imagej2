@@ -35,6 +35,7 @@
 
 package imagej.data.display;
 
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Extents;
@@ -56,7 +57,9 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDataView implements DataView {
+public abstract class AbstractDataView extends AbstractContextual implements
+	DataView
+{
 
 	private final Data data;
 
@@ -79,6 +82,7 @@ public abstract class AbstractDataView implements DataView {
 	private boolean selected;
 
 	public AbstractDataView(final Data data) {
+		setContext(data.getContext());
 		this.data = data;
 		data.incrementReferences();
 	}
