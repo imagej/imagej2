@@ -297,6 +297,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		}
 
 		if (!toggle) legacyIJ1Mode = toggle;
+		imageMap.toggleLegacyMode(toggle);
 	}
 
 	// -- Service methods --
