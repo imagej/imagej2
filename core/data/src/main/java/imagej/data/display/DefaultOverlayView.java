@@ -53,7 +53,7 @@ public class DefaultOverlayView extends AbstractDataView implements
 		this.overlay = overlay;
 	}
 
-	// -- OverlayView methods --
+	// -- DataView methods --
 
 	@Override
 	public Overlay getData() {
@@ -62,26 +62,24 @@ public class DefaultOverlayView extends AbstractDataView implements
 
 	@Override
 	public int getPreferredWidth() {
-		// TODO Auto-generated method stub
+		// NB: No need to report preferred overlay width.
 		return 0;
 	}
 
 	@Override
 	public int getPreferredHeight() {
-		// TODO Auto-generated method stub
+		// NB: No need to report preferred overlay height.
 		return 0;
 	}
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-		
+		// NB: No action needed.
 	}
 
 	@Override
 	public void rebuild() {
-		// TODO Auto-generated method stub
-		
+		// NB: No action needed.
 	}
 
 }
