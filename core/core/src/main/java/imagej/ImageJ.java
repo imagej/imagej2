@@ -41,7 +41,6 @@ import imagej.service.Service;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
 import imagej.util.CheckSezpoz;
-import imagej.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,11 +65,11 @@ public class ImageJ {
 		try {
 			if (!CheckSezpoz.check(false)) {
 				// SezPoz uses ClassLoader.getResources() which will now pick up the apt-generated annotations.
-				Log.info("SezPoz generated annotations.");
+				System.err.println("SezPoz generated annotations."); // no log service yet
 			}
 		}
 		catch (final IOException e) {
-			Log.error(e);
+			e.printStackTrace();
 		}
 		return createContext((List<Class<? extends Service>>) null);
 	}

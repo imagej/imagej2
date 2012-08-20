@@ -123,7 +123,7 @@ public class CheckSezpoz {
 		if (!file.exists()) return true;
 		if (file.isDirectory()) return checkDirectory(file);
 		else if (file.isFile() && file.getName().endsWith(".jar")) checkJar(file);
-		else Log.warn("Skipping sezpoz check of " + file);
+		else System.err.println("WARN: Skipping sezpoz check of " + file);
 		return true;
 	}
 
@@ -137,13 +137,13 @@ public class CheckSezpoz {
 	 */
 	public static boolean checkDirectory(final File classes) throws IOException {
 		if (!classes.getPath().endsWith("target/classes")) {
-			Log.warn("Ignoring non-Maven build directory: " + classes.getPath());
+			System.err.println("WARN: Ignoring non-Maven build directory: " + classes.getPath());
 			return true;
 		}
 		final File projectRoot = classes.getParentFile().getParentFile();
 		final File source = new File(projectRoot, "src/main/java");
 		if (!source.isDirectory()) {
-			Log.warn("No src/main/java found for " + classes);
+			System.err.println("WARN: No src/main/java found for " + classes);
 			return true;
 		}
 		final long latestCheck = getLatestCheck(classes.getParentFile());
@@ -206,7 +206,7 @@ public class CheckSezpoz {
 		}
 		catch (final IOException e) {
 			e.printStackTrace();
-			Log.error("Failure updating the Sezpoz check timestamp", e);
+			System.err.println("ERROR: Failure updating the Sezpoz check timestamp");
 		}
 	}
 
@@ -372,11 +372,12 @@ public class CheckSezpoz {
 				aptClass.getMethod("process", new Class[] { String[].class });
 		}
 		catch (final Exception e) {
-			Log.error("Could not fix " + sources + ": apt not found", e);
+			e.printStackTrace();
+			System.err.println("ERROR: Could not fix " + sources + ": apt not found");
 			return false;
 		}
 		if (!sources.exists()) {
-			Log.error("Sources are not in the expected place: " + sources);
+			System.err.println("ERROR: Sources are not in the expected place: " + sources);
 			return false;
 		}
 
@@ -409,11 +410,12 @@ public class CheckSezpoz {
 
 		final String[] args = aptArgs.toArray(new String[aptArgs.size()]);
 		try {
-			Log.warn("Updating the annotation index in " + classes);
+			System.err.println("WARN: Updating the annotation index in " + classes);
 			aptProcess.invoke(null, new Object[] { args });
 		}
 		catch (final Exception e) {
-			Log.error("Could not fix " + sources + ": apt failed", e);
+			e.printStackTrace();
+			System.err.println("WARN: Could not fix " + sources + ": apt failed");
 			return false;
 		}
 
@@ -478,7 +480,7 @@ public class CheckSezpoz {
 			return digest.digest();
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
@@ -561,7 +563,8 @@ public class CheckSezpoz {
 			}
 		}
 		catch (final Exception e) {
-			Log.error("Could not modify " + factoryPath, e);
+			e.printStackTrace();
+			System.err.println("ERROR: Could not modify " + factoryPath);
 		}
 	}
 
@@ -656,7 +659,8 @@ public class CheckSezpoz {
 			if (changed) properties.store(new FileOutputStream(jdtSettings), null);
 		}
 		catch (final Exception e) {
-			Log.error("Could not edit " + jdtSettings, e);
+			e.printStackTrace();
+			System.err.println("ERROR: Could not edit " + jdtSettings);
 		}
 	}
 
