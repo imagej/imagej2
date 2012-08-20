@@ -50,6 +50,7 @@ import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -178,6 +179,24 @@ public class LegacyImageMap {
 	public void unregisterLegacyImage(final ImagePlus imp) {
 		final ImageDisplay display = lookupDisplay(imp);
 		removeMapping(display, imp);
+	}
+
+	/**
+	 * Gets a list of {@link ImageDisplay} instances known to this legacy service.
+	 * 
+	 * @return a collection of {@link ImageDisplay} instances linked to legacy {@link ImagePlus} instances.
+	 */
+	public Collection<ImageDisplay> getImageDisplays() {
+		return imagePlusTable.keySet();
+	}
+
+	/**
+	 * Gets a list of {@link ImagePlus} instances known to this legacy service.
+	 * 
+	 * @return a collection of legacy {@link ImagePlus} instances linked to {@link ImageDisplay} instances.
+	 */
+	public Collection<ImagePlus> getImagePlusInstances() {
+		return displayTable.keySet();
 	}
 
 	// -- Helper methods --
