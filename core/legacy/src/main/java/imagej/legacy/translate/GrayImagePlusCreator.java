@@ -235,8 +235,12 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		final boolean signed = ds.isSigned();
 		final boolean integer = ds.isInteger();
 		final int bitsPerPixel = ds.getType().getBitsPerPixel();
-		if (!signed && integer && bitsPerPixel <= 8) return new BytePlaneMaker();
-		if (integer && bitsPerPixel <= 16) return new ShortPlaneMaker();
+		if (bitsPerPixel <= 8) {
+			if (!signed && integer) return new BytePlaneMaker();
+		}
+		else if (bitsPerPixel <= 16) {
+			if (integer) return new ShortPlaneMaker();
+		}
 		return new FloatPlaneMaker();
 	}
 
