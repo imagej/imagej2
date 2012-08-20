@@ -60,5 +60,17 @@ public interface DisplayWindow {
 	void requestFocus();
 
 	void close();
+	
+	/**
+	 * Finds the x coordinate on the screen of the origin of the display window's
+	 * content.
+	 */
+	int findDisplayContentScreenX();
+
+	/**
+	 * Finds the y coordinate on the screen of the origin of the display window's
+	 * content.
+	 */
+	int findDisplayContentScreenY();
 
 }

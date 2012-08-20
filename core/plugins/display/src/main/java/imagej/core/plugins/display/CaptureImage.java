@@ -39,13 +39,15 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ScreenCaptureService;
+import imagej.ext.display.ui.DisplayViewer;
+import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.IntCoords;
+import imagej.ui.UIService;
 
 // NOTE: the following TODO may be invalid
 // TODO - write code that captures part of the screen as a merged color Dataset.
@@ -79,7 +81,7 @@ import imagej.util.IntCoords;
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/bricks.png", menu = {
+@Plugin(menu = {
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
 			weight = MenuConstants.PLUGINS_WEIGHT,
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),
@@ -93,16 +95,14 @@ public class CaptureImage implements RunnablePlugin {
 	private ScreenCaptureService captureService;
 	
 	@Parameter
+	private UIService uiService;
+	
+	@Parameter
 	private ImageDisplay display;
 	
 	@Parameter(type=ItemIO.OUTPUT)
 	private Dataset output;
 
-	// -- instance variables --
-	
-	private int foundOriginX;
-	private int foundOriginY;
-	
 	// -- accessors --
 	
 	public void setImageDisplay(ImageDisplay disp) {
@@ -121,41 +121,16 @@ public class CaptureImage implements RunnablePlugin {
 	
 	@Override
 	public void run() {
+		DisplayViewer<?> viewer = uiService.getDisplayViewer(display);
+		DisplayWindow window = viewer.getWindow();
 		ImageCanvas canvas = display.getCanvas();
-		// TEMP - hack until we make display code return screen coords of canvas
-		findPanelOriginInScreenSpace(canvas);
-		int x = foundOriginX;
-		int y = foundOriginY;
+		int x = window.findDisplayContentScreenX();
+		int y = window.findDisplayContentScreenY();
 		int width = canvas.getViewportWidth();
 		int height = canvas.getViewportHeight();
 		output = captureService.captureScreenRegion(x, y, width, height);
 		String name = display.getName();
 		output.setName(name);
-	}
-
-	// HACK
-	// Repeatedly take screen coords and ask panel if its in image. If search from
-	// top left we can find origin of panel. Its a slow hack. We should use screen
-	// dimensions in the for loops soon. And later make UI return screen coords
-	// of ImageCanvas origin.
-	
-	private void findPanelOriginInScreenSpace(ImageCanvas canvas) {
-		foundOriginX = 0;
-		foundOriginY = 0;
-		IntCoords point = new IntCoords(0, 0);
-		for (int x = 0; x < 3000; x++) {
-			point.x = x;
-			for (int y = 0; y < 3000; y++) {
-				point.y = y;
-				// THIS CAN"T WORK. THE CALL EXPECTS PANEL COORDS AND NOT SCREEN COORDS.
-				// SO RESULT IS ALWAYS (0,0).
-				if (canvas.isInImage(point)) {
-					foundOriginX = x;
-					foundOriginY = y;
-					return;
-				}
-			}
-		}
 	}
 
 }

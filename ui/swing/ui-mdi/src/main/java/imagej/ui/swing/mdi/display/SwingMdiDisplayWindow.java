@@ -112,4 +112,14 @@ public class SwingMdiDisplayWindow extends JInternalFrame implements
 		this.setVisible(false);
 		this.dispose();
 	}
+	
+	@Override
+	public int findDisplayContentScreenX() {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+	
+	@Override
+	public int findDisplayContentScreenY() {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
 }

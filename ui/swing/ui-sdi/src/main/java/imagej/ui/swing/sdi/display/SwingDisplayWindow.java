@@ -38,7 +38,10 @@ package imagej.ui.swing.sdi.display;
 import imagej.ext.display.ui.DisplayPanel;
 import imagej.ext.display.ui.DisplayWindow;
 import imagej.ui.swing.StaticSwingUtils;
+import imagej.ui.swing.display.JHotDrawImageCanvas;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.HeadlessException;
 
 import javax.swing.JComponent;
@@ -79,5 +82,41 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 		setVisible(false);
 		dispose();
 	}
+	
+	// TODO - this is a bit hacky and will fail if we go away from
+	//        JHotDrawImageCanvas
+	@Override
+	public int findDisplayContentScreenX() {
+		JHotDrawImageCanvas canvas = findCanvas(getContentPane());
+		if (canvas == null)
+			 throw new IllegalArgumentException("can't find jhot image canv");
+		return canvas.getLocationOnScreen().x;
+	}
 
+	// TODO - this is a bit hacky and will fail if we go away from
+	//        JHotDrawImageCanvas
+	@Override
+	public int findDisplayContentScreenY() {
+		JHotDrawImageCanvas canvas = findCanvas(getContentPane());
+		if (canvas == null)
+			 throw new IllegalArgumentException("can't find jhot image canv");
+		return canvas.getLocationOnScreen().y;
+	}
+
+	// -- private helpers --
+	
+	private JHotDrawImageCanvas findCanvas(Component c) {
+		if (c instanceof JHotDrawImageCanvas) {
+			return (JHotDrawImageCanvas) c;
+		}
+		if (c instanceof Container) {
+			Container container = (Container) c;
+			for (Component comp : container.getComponents()) {
+				JHotDrawImageCanvas canvas = findCanvas(comp);
+				if (canvas != null) return canvas;
+			}
+		}
+		return null;
+	}
+	
 }
