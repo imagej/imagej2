@@ -38,7 +38,6 @@ package imagej.data.display;
 import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
-import imagej.data.overlay.Overlay;
 import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
@@ -100,21 +99,18 @@ public final class DefaultImageDisplayService extends AbstractService
 
 	@Override
 	public DataView createDataView(final Data data) {
-		// TODO: Eliminate case logic in favor of extensible discovery mechanism.
-		if (data instanceof Dataset) {
-			final Dataset dataset = (Dataset) data;
-			return new DefaultDatasetView(dataset);
-		}
-		else if (data instanceof Overlay) {
-			final Overlay overlay = (Overlay) data;
-			return new DefaultOverlayView(overlay);
+		for (final DataView dataView : getDataViews()) {
+			if (dataView.isCompatible(data)) {
+				dataView.initialize(data);
+				return dataView;
+			}
 		}
 		throw new IllegalArgumentException("No data view found for data: " + data);
 	}
 
 	@Override
 	public List<? extends DataView> getDataViews() {
-		throw new UnsupportedOperationException("Unimplemented");
+		return pluginService.createInstancesOfType(DataView.class);
 	}
 
 	@Override

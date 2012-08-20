@@ -36,6 +36,7 @@
 package imagej.data.display;
 
 import imagej.data.ChannelCollection;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.event.DataViewUpdatedEvent;
@@ -43,8 +44,7 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
+import imagej.ext.plugin.Plugin;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
@@ -68,11 +68,10 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
+@Plugin(type = DataView.class)
 public class DefaultDatasetView extends AbstractDataView implements
 	DatasetView
 {
-
-	private final Dataset dataset;
 
 	/** The dimensional index representing channels, for compositing. */
 	private int channelDimIndex;
@@ -89,16 +88,6 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
-
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
-	public DefaultDatasetView(final Dataset dataset) {
-		super(dataset);
-		this.dataset = dataset;
-		final EventService eventService = getEventService();
-		subscribers = eventService == null ? null : eventService.subscribe(this);
-	}
 
 	// -- DatasetView methods --
 
@@ -295,8 +284,13 @@ public class DefaultDatasetView extends AbstractDataView implements
 	// -- DataView methods --
 
 	@Override
+	public boolean isCompatible(final Data data) {
+		return data != null && Dataset.class.isAssignableFrom(data.getClass());
+	}
+
+	@Override
 	public Dataset getData() {
-		return dataset;
+		return (Dataset) super.getData();
 	}
 
 	@Override

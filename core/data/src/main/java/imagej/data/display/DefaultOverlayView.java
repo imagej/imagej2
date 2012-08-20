@@ -35,29 +35,30 @@
 
 package imagej.data.display;
 
+import imagej.data.Data;
 import imagej.data.overlay.Overlay;
+import imagej.ext.plugin.Plugin;
 
 /**
  * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = DataView.class)
 public class DefaultOverlayView extends AbstractDataView implements
 	OverlayView
 {
 
-	private final Overlay overlay;
-
-	public DefaultOverlayView(final Overlay overlay) {
-		super(overlay);
-		this.overlay = overlay;
-	}
-
 	// -- DataView methods --
 
 	@Override
+	public boolean isCompatible(final Data data) {
+		return data != null && Overlay.class.isAssignableFrom(data.getClass());
+	}
+
+	@Override
 	public Overlay getData() {
-		return overlay;
+		return (Overlay) super.getData();
 	}
 
 	@Override
