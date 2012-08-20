@@ -44,7 +44,6 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.util.Log;
 
 import java.awt.Point;
@@ -218,10 +217,8 @@ public class SwingPolygonTool extends
 	}
 
 	@Override
-	public JHotDrawTool getCreationTool(final ImageDisplay display,
-		final OverlayCreatedListener listener)
-	{
-		return new IJBezierTool(display, this, listener);
+	public JHotDrawTool getCreationTool(final ImageDisplay display) {
+		return new IJBezierTool(display, this);
 	}
 
 }

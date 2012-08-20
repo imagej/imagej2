@@ -63,7 +63,6 @@ import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.overlay.FigureCreatedEvent;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.OverlayCreatedListener;
 import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -274,6 +273,31 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 			.getCursor()));
 	}
 
+	/**
+	 * When a tool creates an overlay, add the overlay/figure combo to an
+	 * {@link OverlayFigureView}.
+	 */
+	@EventHandler
+	protected void onEvent(final FigureCreatedEvent e) {
+		final OverlayView overlay = e.getOverlayView();
+		final ImageDisplay display = getDisplay();
+		for (int i = 0; i < display.numDimensions(); i++) {
+			final AxisType axis = display.axis(i);
+			if (Axes.isXY(axis)) continue;
+			if (overlay.getData().getAxisIndex(axis) < 0) {
+				overlay.setPosition(display.getLongPosition(axis), axis);
+			}
+		}
+		if (drawingView.getSelectedFigures().contains(e.getFigure())) {
+			overlay.setSelected(true);
+		}
+		final OverlayFigureView figureView =
+				new OverlayFigureView(displayViewer, overlay, e.getFigure());
+		figureViews.add(figureView);
+		display.add(overlay);
+		display.update();
+	}
+
 	void rebuild() {
 		for (final DataView dataView : getDisplay()) {
 			FigureView figureView = getFigureView(dataView);
@@ -316,36 +340,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	protected void activateTool(final Tool iTool) {
 		if (iTool instanceof JHotDrawAdapter) {
 			final JHotDrawAdapter adapter = (JHotDrawAdapter) iTool;
-
-			// When the tool creates an overlay, add the
-			// overlay/figure combo to a SwingOverlayView.
-			final OverlayCreatedListener listener = new OverlayCreatedListener() {
-
-				@Override
-				public void overlayCreated(final FigureCreatedEvent e) {
-					final OverlayView overlay = e.getOverlayView();
-					final ImageDisplay display = getDisplay();
-					for (int i = 0; i < display.numDimensions(); i++) {
-						final AxisType axis = display.axis(i);
-						if (Axes.isXY(axis)) continue;
-						if (overlay.getData().getAxisIndex(axis) < 0) {
-							overlay.setPosition(display.getLongPosition(axis), axis);
-						}
-					}
-					if (drawingView.getSelectedFigures().contains(e.getFigure())) {
-						overlay.setSelected(true);
-					}
-					final OverlayFigureView figureView =
-						new OverlayFigureView(displayViewer, overlay, e.getFigure());
-					figureViews.add(figureView);
-					display.add(overlay);
-					display.update();
-				}
-			};
-
-			final JHotDrawTool creationTool =
-				adapter.getCreationTool(getDisplay(), listener);
-
+			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay());
 			toolDelegator.setCreationTool(creationTool);
 		}
 		else {

@@ -44,7 +44,6 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.OverlayCreatedListener;
 
 import java.awt.geom.Point2D;
 
@@ -118,10 +117,8 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 	}
 
 	@Override
-	public JHotDrawTool getCreationTool(final ImageDisplay display,
-		final OverlayCreatedListener listener)
-	{
-		return new IJCreationTool(display, this, listener);
+	public JHotDrawTool getCreationTool(final ImageDisplay display) {
+		return new IJCreationTool(display, this);
 	}
 
 }

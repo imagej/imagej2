@@ -99,7 +99,6 @@ public interface JHotDrawAdapter extends Tool, Prioritized {
 	 */
 	void updateFigure(OverlayView overlayView, Figure figure);
 
-	JHotDrawTool getCreationTool(ImageDisplay display,
-		OverlayCreatedListener listener);
+	JHotDrawTool getCreationTool(ImageDisplay display);
 
 }
