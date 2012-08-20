@@ -56,7 +56,6 @@ import imagej.util.RealRect;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.imglib2.EuclideanSpace;
 import net.imglib2.Localizable;
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
@@ -64,9 +63,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 /**
- * TODO - better Javadoc. The abstract display handles axes resolution,
- * maintaining the dimensionality of the {@link EuclideanSpace} represented by
- * the display.
+ * Default implementation of {@link ImageDisplay}.
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden
@@ -100,43 +97,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	public DefaultImageDisplay() {
 		super(DataView.class);
 		canvas = new DefaultImageCanvas(this);
-	}
-
-	protected void initActiveAxis() {
-		if (activeAxis == null) {
-			final AxisType[] axes = getAxes();
-			for (final AxisType axis : axes) {
-				if (axis == Axes.X) continue;
-				if (axis == Axes.Y) continue;
-				setActiveAxis(axis);
-				return;
-			}
-		}
-	}
-
-	// -- Display methods --
-
-	@Override
-	public void setContext(final ImageJ context) {
-		super.setContext(context);
-		assert subscribers == null;
-		final EventService eventService =
-			getContext().getService(EventService.class);
-		if (eventService != null) {
-			subscribers = eventService.subscribe(this);
-		}
-	}
-
-	@Override
-	public boolean isDisplaying(final Object o) {
-		if (super.isDisplaying(o)) return true;
-
-		// check for wrapped Data objects
-		for (final DataView view : this) {
-			if (o == view.getData()) return true;
-		}
-
-		return false;
 	}
 
 	// -- AbstractDisplay methods --
@@ -225,6 +185,11 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		return true;
 	}
 
+	@Override
+	public ImageCanvas getCanvas() {
+		return canvas;
+	}
+
 	// -- Display methods --
 
 	@Override
@@ -246,6 +211,18 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		}
 		else super.display(o);
 		rebuild();
+	}
+
+	@Override
+	public boolean isDisplaying(final Object o) {
+		if (super.isDisplaying(o)) return true;
+
+		// check for wrapped Data objects
+		for (final DataView view : this) {
+			if (o == view.getData()) return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -575,6 +552,19 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		setPosition(position, axis(d));
 	}
 
+	// -- Contextual methods --
+
+	@Override
+	public void setContext(final ImageJ context) {
+		super.setContext(context);
+		assert subscribers == null;
+		final EventService eventService =
+			getContext().getService(EventService.class);
+		if (eventService != null) {
+			subscribers = eventService.subscribe(this);
+		}
+	}
+
 	// -- Event handlers --
 
 	// TODO - displays should not listen for Data events. Views should listen for
@@ -635,6 +625,18 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		return theName;
 	}
 
+	private void initActiveAxis() {
+		if (activeAxis == null) {
+			final AxisType[] axes = getAxes();
+			for (final AxisType axis : axes) {
+				if (axis == Axes.X) continue;
+				if (axis == Axes.Y) continue;
+				setActiveAxis(axis);
+				return;
+			}
+		}
+	}
+
 	/** Frees resources associated with the display. */
 	private void cleanup() {
 		// NB: Fixes bug #893.
@@ -648,16 +650,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		final EventService eventService =
 			getContext().getService(EventService.class);
 		if (eventService != null) eventService.unsubscribe(subscribers);
-	}
-
-	protected Dataset getDataset(final DataView view) {
-		final Data data = view.getData();
-		return data instanceof Dataset ? (Dataset) data : null;
-	}
-
-	@Override
-	public ImageCanvas getCanvas() {
-		return canvas;
 	}
 
 	@Override
