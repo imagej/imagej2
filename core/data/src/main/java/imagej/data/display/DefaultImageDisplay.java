@@ -105,7 +105,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	protected void rebuild() {
 		// NB: Ensure display flags its structure as changed.
 		super.rebuild();
-		
+
+		// set display name to match first available view
+		for (final DataView view : this) {
+			final String dataName = view.getData().getName();
+			if (dataName != null && !dataName.isEmpty()) {
+				setName(createName(dataName));
+				break;
+			}
+		}
+
 		// combine constituent views into a single aggregate spatial interval
 		combinedInterval.clear();
 		for (final DataView view : this) {
@@ -202,7 +211,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		// TODO: Eliminate case logic in favor of extensible discovery mechanism.
 		if (o instanceof Dataset) {
 			final Dataset dataset = (Dataset) o;
-			setName(createName(dataset.getName()));
 			add(new DefaultDatasetView(dataset));
 		}
 		else if (o instanceof Overlay) {
