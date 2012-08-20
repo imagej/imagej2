@@ -36,35 +36,34 @@
 package imagej.ui.swing.overlay;
 
 import imagej.data.display.OverlayView;
+import imagej.event.ImageJEvent;
 
 import org.jhotdraw.draw.Figure;
 
 /**
- * An event that tells the listener that an overlay has been created, associated
- * with a figure.
+ * An event that reports the creation of a JHotDraw {@link Figure} (linked to an
+ * ImageJ {@link OverlayView}).
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
-public class FigureCreatedEvent {
+public class FigureCreatedEvent extends ImageJEvent {
 
-	final protected OverlayView overlay;
-	final protected Figure figure;
+	private final OverlayView overlayView;
+	private final Figure figure;
 
-	FigureCreatedEvent(final OverlayView overlay, final Figure figure) {
-		this.overlay = overlay;
+	public FigureCreatedEvent(final OverlayView overlayView, final Figure figure)
+	{
+		this.overlayView = overlayView;
 		this.figure = figure;
 	}
 
-	/**
-	 * @return the overlay
-	 */
-	public OverlayView getOverlay() {
-		return overlay;
+	/** Gets the {@link OverlayView} linked to the newly created {@link Figure}. */
+	public OverlayView getOverlayView() {
+		return overlayView;
 	}
 
-	/**
-	 * @return the figure
-	 */
+	/** Gets the newly created {@link Figure}. */
 	public Figure getFigure() {
 		return figure;
 	}

@@ -323,7 +323,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 
 				@Override
 				public void overlayCreated(final FigureCreatedEvent e) {
-					final OverlayView overlay = e.getOverlay();
+					final OverlayView overlay = e.getOverlayView();
 					final ImageDisplay display = getDisplay();
 					for (int i = 0; i < display.numDimensions(); i++) {
 						final AxisType axis = display.axis(i);
