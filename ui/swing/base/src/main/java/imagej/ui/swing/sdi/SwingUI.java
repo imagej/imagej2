@@ -41,6 +41,7 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
+import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
@@ -64,6 +65,7 @@ public class SwingUI extends AbstractSwingUI {
 	@Override
 	public SwingDisplayWindow createDisplayWindow(final Display<?> display) {
 		final SwingDisplayWindow displayWindow = new SwingDisplayWindow();
+		new AWTInputEventDispatcher(display).register(displayWindow, true, false);
 		new AWTWindowEventDispatcher(display).register(displayWindow);
 		return displayWindow;
 	}

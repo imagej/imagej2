@@ -60,7 +60,7 @@ public class SwingApplicationFrame extends JFrame implements ApplicationFrame {
 	// -- SwingApplicationFrame methods --
 
 	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
-		dispatcher.register(this);
+		dispatcher.register(this, false, true);
 		addKeyDispatcher(dispatcher, getContentPane());
 	}
 

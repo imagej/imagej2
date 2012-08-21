@@ -153,7 +153,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	// -- SwingDisplayPanel methods --
 
 	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
-		dispatcher.register(this);
+		dispatcher.register(this, true, false);
 	}
 
 	// -- DisplayPanel methods --
