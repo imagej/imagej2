@@ -58,8 +58,6 @@ import imagej.ui.viewer.DisplayWindow;
  */
 public interface UserInterface extends IPlugin, Contextual, Prioritized {
 
-	void initialize(UIService uiService);
-
 	UIService getUIService();
 
 	void create();

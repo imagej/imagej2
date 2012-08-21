@@ -43,12 +43,11 @@ import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.swt.menu.SWTMenuCreator;
-import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.swt.menu.SWTMenuCreator;
+import imagej.ui.viewer.DisplayWindow;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Display;
@@ -71,34 +70,6 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 	private Display swtDisplay;
 
 	// -- UserInterface methods --
-
-	@Override
-	public void initialize(final UIService service) {
-		super.initialize(service);
-		eventService = getUIService().getEventService();
-
-		swtDisplay = new Display();
-
-		shell = new SWTApplicationFrame(swtDisplay);
-		shell.setLayout(new MigLayout("wrap 1"));
-		shell.setText("ImageJ");
-		toolBar = new SWTToolBar(swtDisplay, shell);
-		statusBar = new SWTStatusBar(shell, eventService);
-		createMenus();
-
-		shell.pack();
-		shell.open();
-
-		new Thread(this, "SWT-Dispatch").start();
-	}
-
-	protected void createMenus() {
-		final MenuService menuService = getUIService().getMenuService();
-		final Menu menuBar =
-			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
-		shell.setMenuBar(menuBar); // TODO - is this necessary?
-		eventService.publish(new AppMenusCreatedEvent(menuBar));
-	}
 
 	@Override
 	public SWTApplicationFrame getApplicationFrame() {
@@ -154,6 +125,37 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 			if (!swtDisplay.readAndDispatch()) swtDisplay.sleep();
 		}
 		swtDisplay.dispose();
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected void createUI() {
+		eventService = getUIService().getEventService();
+
+		swtDisplay = new Display();
+
+		shell = new SWTApplicationFrame(swtDisplay);
+		shell.setLayout(new MigLayout("wrap 1"));
+		shell.setText("ImageJ");
+		toolBar = new SWTToolBar(swtDisplay, shell);
+		statusBar = new SWTStatusBar(shell, eventService);
+		createMenus();
+
+		super.createUI();
+
+		shell.pack();
+		shell.open();
+
+		new Thread(this, "SWT-Dispatch").start();
+	}
+
+	protected void createMenus() {
+		final MenuService menuService = getUIService().getMenuService();
+		final Menu menuBar =
+			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
+		shell.setMenuBar(menuBar); // TODO - is this necessary?
+		eventService.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 }

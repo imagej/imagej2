@@ -190,13 +190,22 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public void createUI() {
-		if (userInterface == null) return;
+		if (userInterface == null) {
+			log.warn("Cannot launch user interface: no UIs available.");
+			return;
+		}
+		log.info("Launching user interface: " + userInterface.getClass().getName());
 		userInterface.create();
 	}
 
 	@Override
 	public UserInterface getUI() {
 		return userInterface;
+	}
+
+	@Override
+	public void setUI(final UserInterface ui) {
+		userInterface = ui;
 	}
 
 	@Override
@@ -371,16 +380,7 @@ public final class DefaultUIService extends AbstractService implements
 	private void launchUI() {
 		final List<UserInterface> uis = discoverUIs();
 		availableUIs = Collections.unmodifiableList(uis);
-		if (uis.size() > 0) {
-			final UserInterface ui = uis.get(0);
-			log.info("Launching user interface: " + ui.getClass().getName());
-			ui.initialize(this);
-			userInterface = ui;
-		}
-		else {
-			log.warn("No user interfaces found.");
-			userInterface = null;
-		}
+		userInterface = uis.size() > 0 ? uis.get(0) : null;
 	}
 
 	/** Discovers available user interfaces. */

@@ -46,7 +46,6 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.awt.menu.AWTMenuBarCreator;
 import imagej.ui.common.awt.AWTClipboard;
@@ -71,41 +70,6 @@ public class AWTUI extends AbstractUserInterface {
 	private AWTClipboard systemClipboard;
 
 	// -- UserInterface methods --
-
-	@Override
-	public void initialize(final UIService service) {
-		super.initialize(service);
-
-		frame = new AWTApplicationFrame("ImageJ");
-		toolBar = new AWTToolBar(getUIService());
-		statusBar = new AWTStatusBar(getUIService());
-		systemClipboard = new AWTClipboard();
-		createMenus();
-
-		frame.setLayout(new BorderLayout());
-		frame.addWindowListener(new WindowAdapter() {
-
-			@Override
-			public void windowClosing(final WindowEvent e) {
-				getUIService().getAppService().quit();
-			}
-		});
-
-		frame.add(toolBar, BorderLayout.NORTH);
-		frame.add(statusBar, BorderLayout.SOUTH);
-
-		frame.pack();
-		frame.setVisible(true);
-	}
-
-	protected void createMenus() {
-		final MenuService menuService = getUIService().getMenuService();
-		final MenuBar menuBar =
-			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
-		frame.setMenuBar(menuBar);
-		getUIService().getEventService()
-			.publish(new AppMenusCreatedEvent(menuBar));
-	}
 
 	@Override
 	public ApplicationFrame getApplicationFrame() {
@@ -149,6 +113,43 @@ public class AWTUI extends AbstractUserInterface {
 		final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected void createUI() {
+		frame = new AWTApplicationFrame("ImageJ");
+		toolBar = new AWTToolBar(getUIService());
+		statusBar = new AWTStatusBar(getUIService());
+		systemClipboard = new AWTClipboard();
+		createMenus();
+
+		frame.setLayout(new BorderLayout());
+		frame.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				getUIService().getAppService().quit();
+			}
+		});
+
+		frame.add(toolBar, BorderLayout.NORTH);
+		frame.add(statusBar, BorderLayout.SOUTH);
+
+		super.createUI();
+
+		frame.pack();
+		frame.setVisible(true);
+	}
+
+	protected void createMenus() {
+		final MenuService menuService = getUIService().getMenuService();
+		final MenuBar menuBar =
+			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
+		frame.setMenuBar(menuBar);
+		getUIService().getEventService()
+			.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 }

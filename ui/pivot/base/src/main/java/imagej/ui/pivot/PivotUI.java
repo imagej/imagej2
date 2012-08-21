@@ -41,11 +41,10 @@ import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.viewer.DisplayWindow;
 
 import java.util.concurrent.Callable;
 
@@ -57,20 +56,9 @@ import org.apache.pivot.wtk.DesktopApplicationContext;
  * @author Curtis Rueden
  */
 @Plugin(type = UserInterface.class)
-public class PivotUI extends AbstractUserInterface implements Callable<Object>
-{
+public class PivotUI extends AbstractUserInterface implements Callable<Object> {
 
-	// -- IUserInterface methods --
-
-	@Override
-	public void initialize(final UIService service) {
-		super.initialize(service);
-		getUIService().getThreadService().run(this);
-	}
-
-	protected void createMenus() {
-		//
-	}
+	// -- UserInterface methods --
 
 	@Override
 	public PivotApplicationFrame getApplicationFrame() {
@@ -126,6 +114,13 @@ public class PivotUI extends AbstractUserInterface implements Callable<Object>
 		final String[] args = { PivotApplication.class.getName() };
 		DesktopApplicationContext.main(args);
 		return null;
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected void createUI() {
+		getUIService().getThreadService().run(this);
 	}
 
 }

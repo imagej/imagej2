@@ -56,21 +56,11 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	private static final String LAST_X = "lastXLocation";
 	private static final String LAST_Y = "lastYLocation";
 
-	private UIService uiService;
-
 	// -- UserInterface methods --
 
 	@Override
-	public void initialize(final UIService service) {
-		if (getContext() != service.getContext()) {
-			throw new IllegalArgumentException("Mismatched context: " + service);
-		}
-		uiService = service;
-	}
-
-	@Override
 	public UIService getUIService() {
-		return uiService;
+		return getContext().getService(UIService.class);
 	}
 
 	@Override
@@ -133,11 +123,11 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	// -- Helper methods --
 
 	protected EventService getEventService() {
-		return uiService.getEventService();
+		return getUIService().getEventService();
 	}
 
 	protected StatusService getStatusService() {
-		return uiService.getStatusService();
+		return getUIService().getStatusService();
 	}
 
 	/** Shows the readme, if this is the first time ImageJ has run. */
@@ -145,11 +135,12 @@ public abstract class AbstractUserInterface extends SortablePlugin
 		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
 		if (firstRun != null) return;
 		Prefs.put(getClass(), PREF_FIRST_RUN, false);
-		uiService.getPluginService().run(ShowReadme.class);
+		getUIService().getPluginService().run(ShowReadme.class);
 	}
 
 	/** Tests whether updates are available */
 	private void updaterCheck() {
+		// TODO: Migrate this code to the ij-updater component.
 		try {
 			final UpToDate.Result result = UpToDate.check();
 			switch (result) {
@@ -161,7 +152,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 				case DEVELOPER:
 					return;
 				case UPDATEABLE:
-					uiService.getPluginService().run(UpdatesAvailable.class);
+					getUIService().getPluginService().run(UpdatesAvailable.class);
 					break;
 				case PROXY_NEEDS_AUTHENTICATION:
 					throw new RuntimeException(
@@ -169,15 +160,15 @@ public abstract class AbstractUserInterface extends SortablePlugin
 				case READ_ONLY:
 					final String message =
 						"Your ImageJ installation cannot be updated because it is read-only";
-					uiService.getLog().warn(message);
+					getUIService().getLog().warn(message);
 					getStatusService().showStatus(message);
 					break;
 				default:
-					uiService.getLog().error("Unhandled UpToDate case: " + result);
+					getUIService().getLog().error("Unhandled UpToDate case: " + result);
 			}
 		}
 		catch (final Exception e) {
-			uiService.getLog().error(e);
+			getUIService().getLog().error(e);
 			return;
 		}
 	}
