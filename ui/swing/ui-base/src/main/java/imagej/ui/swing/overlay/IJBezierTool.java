@@ -74,7 +74,7 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 		super.finishCreation(figure, drawingView);
 		final JHotDrawService jHotDrawService =
 			getDisplay().getContext().getService(JHotDrawService.class);
-		jHotDrawService.linkOverlay(figure, getAdapter());
+		jHotDrawService.linkOverlay(figure, getAdapter(), getDisplay());
 	}
 
 	// -- JHotDrawTool methods --

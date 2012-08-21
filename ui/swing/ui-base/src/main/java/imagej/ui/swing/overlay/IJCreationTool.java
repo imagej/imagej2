@@ -72,7 +72,7 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		super.creationFinished(figure);
 		final JHotDrawService jHotDrawService =
 			getDisplay().getContext().getService(JHotDrawService.class);
-		jHotDrawService.linkOverlay(figure, getAdapter());
+		jHotDrawService.linkOverlay(figure, getAdapter(), getDisplay());
 	}
 
 	// -- JHotDrawTool methods --
