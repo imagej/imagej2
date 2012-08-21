@@ -76,8 +76,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +108,9 @@ import org.jhotdraw.draw.event.FigureSelectionListener;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
+public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
+	ComponentListener, FigureSelectionListener
+{
 
 	private static final long serialVersionUID = 1L;
 
@@ -174,21 +176,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		final EventService eventService = context.getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 
-		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
-
-			@Override
-			public void selectionChanged(final FigureSelectionEvent event) {
-				onFigureSelectionChanged(event);
-			}
-		});
-		drawingView.addComponentListener(new ComponentAdapter() {
-
-			@Override
-			public void componentResized(final ComponentEvent e) {
-				syncCanvas();
-			}
-
-		});
+		drawingView.addFigureSelectionListener(this);
+		drawingView.addComponentListener(this);
 	}
 
 	// -- JHotDrawImageCanvas methods --
@@ -271,6 +260,54 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 	@Override
 	public void adjustmentValueChanged(final AdjustmentEvent e) {
 		syncCanvas();
+	}
+
+	// -- FigureSelectionListener methods --
+
+	/**
+	 * Responds to the JHotDraw figure selection event by selecting and
+	 * deselecting views whose state has changed.
+	 * 
+	 * @param event Event indicating that the figure selections have changed.
+	 */
+	@Override
+	public void selectionChanged(FigureSelectionEvent event) {
+		final Set<Figure> newSelection = event.getNewSelection();
+		final Set<Figure> oldSelection = event.getOldSelection();
+		for (final DataView view : getDisplay()) {
+			final FigureView figureView = getFigureView(view);
+			if (figureView != null) {
+				final Figure figure = figureView.getFigure();
+				if (newSelection.contains(figure)) {
+					view.setSelected(true);
+				}
+				else if (oldSelection.contains(figure)) {
+					view.setSelected(false);
+				}
+			}
+		}
+	}
+
+	// -- ComponentListener methods --
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		syncCanvas();
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// NB: No action needed.
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// NB: No action needed.
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		// NB: No action needed.
 	}
 
 	// -- Event handlers --
@@ -514,29 +551,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		}
 		else {
 			toolDelegator.setCreationTool(null);
-		}
-	}
-
-	/**
-	 * Responds to the JHotDraw figure selection event by selecting and
-	 * deselecting views whose state has changed.
-	 * 
-	 * @param event Event indicating that the figure selections have changed.
-	 */
-	private void onFigureSelectionChanged(final FigureSelectionEvent event) {
-		final Set<Figure> newSelection = event.getNewSelection();
-		final Set<Figure> oldSelection = event.getOldSelection();
-		for (final DataView view : getDisplay()) {
-			final FigureView figureView = getFigureView(view);
-			if (figureView != null) {
-				final Figure figure = figureView.getFigure();
-				if (newSelection.contains(figure)) {
-					view.setSelected(true);
-				}
-				else if (oldSelection.contains(figure)) {
-					view.setSelected(false);
-				}
-			}
 		}
 	}
 
