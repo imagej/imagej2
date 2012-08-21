@@ -16,6 +16,14 @@
 	<name>ImageJ Utility Classes: Swing</name>
 	<description>Swing utility classes for use with AWT and Swing user interfaces.</description>
 
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-util-awt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
 	<properties>
 		<project.rootdir>${basedir}/../../..</project.rootdir>
 	</properties>

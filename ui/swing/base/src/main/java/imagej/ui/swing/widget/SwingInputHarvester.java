@@ -40,6 +40,7 @@ import imagej.ext.module.Module;
 import imagej.ext.plugin.AbstractInputHarvesterPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
+import imagej.ui.swing.SwingUtils;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 

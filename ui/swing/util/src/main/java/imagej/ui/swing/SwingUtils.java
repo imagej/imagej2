@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.ui.swing;
 
 import imagej.util.awt.AWTWindows;
 
