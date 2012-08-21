@@ -201,7 +201,7 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public List<UserInterface> getAvailableUIs() {
-		return availableUIs;
+		return Collections.unmodifiableList(availableUIs);
 	}
 
 	@Override
