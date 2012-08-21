@@ -33,45 +33,55 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
-import imagej.Priority;
-import imagej.ext.module.Module;
-import imagej.ext.plugin.AbstractInputHarvesterPlugin;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreprocessorPlugin;
-import imagej.widget.InputHarvester;
-import imagej.widget.InputPanel;
+import imagej.util.NumberUtils;
+import imagej.widget.InputWidget;
+import imagej.widget.WidgetModel;
 
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.Sheet;
+import org.apache.pivot.wtk.Spinner;
+import org.apache.pivot.wtk.content.NumericSpinnerData;
 
 /**
- * PivotInputHarvester is an {@link InputHarvester} that collects input
- * parameter values from the user using a {@link PivotInputPanel} dialog box.
+ * Pivot implementation of number chooser widget, using a spinner.
  * 
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class PivotInputHarvester extends AbstractInputHarvesterPlugin<BoxPane> {
+@Plugin(type = InputWidget.class)
+public class PivotNumberSpinnerWidget extends PivotNumberWidget {
+
+	private Spinner spinner;
+
+	// -- InputWidget methods --
 
 	@Override
-	public PivotInputPanel createInputPanel() {
-		return new PivotInputPanel();
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
+
+		spinner = new Spinner();
+		spinner.setPreferredWidth(100);
+		spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
+			max.intValue(), stepSize.intValue()));
+		getPane().add(spinner);
+
+		refreshWidget();
 	}
 
 	@Override
-	public boolean
-		harvestInputs(final InputPanel<BoxPane> inputPanel, final Module module)
-	{
-		final Sheet dialog = new Sheet();
-		dialog.setTitle(module.getInfo().getLabel());
-		dialog.add(((PivotInputPanel) inputPanel).getPanel());
-		dialog.open((Display) null);// FIXME
-		final boolean success = dialog.getResult();
-		return success;
+	public Number getValue() {
+		final String value = spinner.getSelectedItem().toString();
+		return NumberUtils.toNumber(value, getModel().getItem().getType());
+	}
+
+	@Override
+	public void refreshWidget() {
+		final Number value = (Number) getModel().getValue();
+		spinner.setSelectedItem(value.intValue());
 	}
 
 }

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
 import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
@@ -42,20 +42,20 @@ import imagej.widget.WidgetModel;
 import imagej.widget.WidgetStyle;
 
 import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.ScrollBar;
-import org.apache.pivot.wtk.ScrollBarValueListener;
+import org.apache.pivot.wtk.Slider;
+import org.apache.pivot.wtk.SliderValueListener;
 
 /**
- * Pivot implementation of number chooser widget, using a scroll bar.
+ * Pivot implementation of number chooser widget, using a slider.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
-	ScrollBarValueListener
+public class PivotNumberSliderWidget extends PivotNumberWidget
+	implements SliderValueListener
 {
 
-	private ScrollBar scrollBar;
+	private Slider slider;
 	private Label label;
 
 	// -- InputWidget methods --
@@ -63,7 +63,7 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style != WidgetStyle.NUMBER_SCROLL_BAR) return false;
+		if (style != WidgetStyle.NUMBER_SPINNER) return false;
 		return super.isCompatible(model);
 	}
 
@@ -73,13 +73,11 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
 
-		scrollBar = new ScrollBar();
-		scrollBar.setRange(min.intValue(), max.intValue());
-		scrollBar.setBlockIncrement(stepSize.intValue());
-		getPane().add(scrollBar);
-		scrollBar.getScrollBarValueListeners().add(this);
+		slider = new Slider();
+		slider.setRange(min.intValue(), max.intValue());
+		getPane().add(slider);
+		slider.getSliderValueListeners().add(this);
 
 		label = new Label();
 		getPane().add(label);
@@ -89,22 +87,22 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 
 	@Override
 	public Number getValue() {
-		final String value = "" + scrollBar.getValue();
+		final String value = "" + slider.getValue();
 		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
 
 	@Override
 	public void refreshWidget() {
 		final Number value = (Number) getModel().getValue();
-		scrollBar.setValue(value.intValue());
+		slider.setValue(value.intValue());
 		label.setText(value.toString());
 	}
 
-	// -- ScrollBarValueListener methods --
+	// -- SliderValueListener methods --
 
 	@Override
-	public void valueChanged(final ScrollBar s, final int previousValue) {
-		label.setText("" + scrollBar.getValue());
+	public void valueChanged(final Slider s, final int previousValue) {
+		label.setText("" + s.getValue());
 	}
 
 }

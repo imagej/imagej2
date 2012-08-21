@@ -33,90 +33,45 @@
  * #L%
  */
 
-package imagej.ui.pivot;
+package imagej.ui.pivot.widget;
 
-import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.ext.menu.MenuService;
-import imagej.ext.ui.pivot.PivotMenuCreator;
-import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.Priority;
+import imagej.ext.module.Module;
+import imagej.ext.plugin.AbstractInputHarvesterPlugin;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PreprocessorPlugin;
+import imagej.widget.InputHarvester;
+import imagej.widget.InputPanel;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.Orientation;
+import org.apache.pivot.wtk.Sheet;
 
 /**
- * Pivot {@link Application} implementation for ImageJ.
+ * PivotInputHarvester is an {@link InputHarvester} that collects input
+ * parameter values from the user using a {@link PivotInputPanel} dialog box.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public class PivotApplication implements Application {
-
-	private ImageJ context;
-	private EventService eventService;
-	private MenuService menuService;
-
-	private PivotApplicationFrame frame;
-	private PivotToolBar toolBar;
-	private PivotStatusBar statusBar;
-
-	private BoxPane contentPane;
-
-	// -- Constructor --
-
-	public PivotApplication() {
-		// get the current ImageJ context
-		context = ImageJ.getContext();
-		eventService = context.getService(EventService.class);
-		menuService = context.getService(MenuService.class);
-	}
-
-	// -- Application methods --
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
+public class PivotInputHarvester extends AbstractInputHarvesterPlugin<BoxPane> {
 
 	@Override
-	public void startup(final Display display,
-		final Map<String, String> properties)
+	public PivotInputPanel createInputPanel() {
+		return new PivotInputPanel();
+	}
+
+	@Override
+	public boolean
+		harvestInputs(final InputPanel<BoxPane> inputPanel, final Module module)
 	{
-		frame = new PivotApplicationFrame();
-		toolBar = new PivotToolBar();
-		System.out.println("PivotUI: " + this);
-		System.out.println("PivotUI.startup: event service = " + eventService);
-		statusBar = new PivotStatusBar(eventService);
-
-		contentPane = new BoxPane();
-		contentPane.setOrientation(Orientation.VERTICAL);
-		frame.setContent(contentPane);
-
-		// create menus
-		final BoxPane menuPane =
-			menuService.createMenus(new PivotMenuCreator(), new BoxPane());
-		contentPane.add(menuPane);
-		eventService.publish(new AppMenusCreatedEvent(menuPane));
-
-		contentPane.add(toolBar);
-		contentPane.add(statusBar);
-
-		frame.setTitle("ImageJ");
-		frame.setMaximized(true);
-		frame.open(display);
-	}
-
-	@Override
-	public boolean shutdown(final boolean optional) {
-		if (frame != null) frame.close();
-		return false;
-	}
-
-	@Override
-	public void suspend() {
-		// NB: no action needed.
-	}
-
-	@Override
-	public void resume() {
-		// NB: no action needed.
+		final Sheet dialog = new Sheet();
+		dialog.setTitle(module.getInfo().getLabel());
+		dialog.add(((PivotInputPanel) inputPanel).getPanel());
+		dialog.open((Display) null);// FIXME
+		final boolean success = dialog.getResult();
+		return success;
 	}
 
 }

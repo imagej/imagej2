@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.menu;
 
 import imagej.ImageJ;
 import imagej.ext.menu.AbstractMenuCreator;

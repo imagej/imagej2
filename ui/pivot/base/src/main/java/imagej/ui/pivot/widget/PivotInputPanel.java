@@ -33,35 +33,54 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
-import imagej.widget.AbstractInputWidget;
+import imagej.widget.AbstractInputPanel;
+import imagej.widget.InputPanel;
+import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Container;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.TablePane;
 
 /**
- * Common superclass for Pivot-based input widgets.
- *
+ * Pivot implementation of {@link InputPanel}.
+ * 
  * @author Curtis Rueden
  */
-public abstract class PivotInputWidget<T> extends
-	AbstractInputWidget<T, BoxPane>
-{
+public class PivotInputPanel extends AbstractInputPanel<BoxPane> {
 
-	private BoxPane pane;
+	private final TablePane panel;
 
-	// -- InputWidget methods --
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-		pane = new BoxPane();
+	public PivotInputPanel() {
+		panel = new TablePane();
 	}
 
+	public Container getPanel() {
+		return panel;
+	}
+
+	// -- InputPanel methods --
+
 	@Override
-	public BoxPane getPane() {
-		return pane;
+	public void addWidget(final InputWidget<?, ?> widget) {
+		super.addWidget(widget);
+		if (!(widget instanceof PivotInputWidget)) return;
+		final BoxPane widgetPane = ((PivotInputWidget<?>) widget).getPane();
+		final WidgetModel model = widget.getModel();
+
+		// add widget to panel
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			panel.add(new Label(model.getWidgetLabel()));
+			panel.add(widgetPane);
+		}
+		else {
+			// widget occupies entire row
+			panel.add(widgetPane);
+		}
 	}
 
 }

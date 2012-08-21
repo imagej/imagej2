@@ -33,59 +33,35 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
-import imagej.ext.plugin.Plugin;
-import imagej.widget.ChoiceWidget;
-import imagej.widget.InputWidget;
+import imagej.widget.AbstractInputWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.ListButton;
 
 /**
- * Pivot implementation of multiple choice selector widget.
- * 
+ * Common superclass for Pivot-based input widgets.
+ *
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotChoiceWidget extends PivotInputWidget<String>
-	implements ChoiceWidget<BoxPane>
+public abstract class PivotInputWidget<T> extends
+	AbstractInputWidget<T, BoxPane>
 {
 
-	private ListButton listButton;
+	private BoxPane pane;
 
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isText() && model.isMultipleChoice();
-	}
-
-	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
-
-		final String[] items = model.getChoices();
-
-		listButton = new ListButton();
-		listButton.setListData(new ArrayList<String>(items));
-		getPane().add(listButton);
-
-		refreshWidget();
+		pane = new BoxPane();
 	}
 
 	@Override
-	public String getValue() {
-		return listButton.getSelectedItem().toString();
-	}
-
-	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		if (value.equals(listButton.getSelectedItem())) return; // no change
-		listButton.setSelectedItem(value);
+	public BoxPane getPane() {
+		return pane;
 	}
 
 }

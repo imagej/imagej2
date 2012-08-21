@@ -33,76 +33,27 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
-import imagej.ext.plugin.Plugin;
-import imagej.util.NumberUtils;
-import imagej.widget.InputWidget;
+import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Slider;
-import org.apache.pivot.wtk.SliderValueListener;
+import org.apache.pivot.wtk.BoxPane;
 
 /**
- * Pivot implementation of number chooser widget, using a slider.
- * 
+ * Pivot implementation of number chooser widget.
+ *
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class PivotNumberSliderWidget extends PivotNumberWidget
-	implements SliderValueListener
+public abstract class PivotNumberWidget extends PivotInputWidget<Number>
+	implements NumberWidget<BoxPane>
 {
-
-	private Slider slider;
-	private Label label;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style != WidgetStyle.NUMBER_SPINNER) return false;
-		return super.isCompatible(model);
-	}
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-
-		slider = new Slider();
-		slider.setRange(min.intValue(), max.intValue());
-		getPane().add(slider);
-		slider.getSliderValueListeners().add(this);
-
-		label = new Label();
-		getPane().add(label);
-
-		refreshWidget();
-	}
-
-	@Override
-	public Number getValue() {
-		final String value = "" + slider.getValue();
-		return NumberUtils.toNumber(value, getModel().getItem().getType());
-	}
-
-	@Override
-	public void refreshWidget() {
-		final Number value = (Number) getModel().getValue();
-		slider.setValue(value.intValue());
-		label.setText(value.toString());
-	}
-
-	// -- SliderValueListener methods --
-
-	@Override
-	public void valueChanged(final Slider s, final int previousValue) {
-		label.setText("" + s.getValue());
+		return model.isNumber();
 	}
 
 }

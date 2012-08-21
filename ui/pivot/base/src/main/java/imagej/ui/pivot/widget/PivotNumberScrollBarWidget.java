@@ -33,61 +33,78 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
 import imagej.ext.plugin.Plugin;
+import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
-import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
+import imagej.widget.WidgetStyle;
 
-import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.ScrollBar;
+import org.apache.pivot.wtk.ScrollBarValueListener;
 
 /**
- * Pivot implementation of message widget.
+ * Pivot implementation of number chooser widget, using a scroll bar.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotMessageWidget extends PivotInputWidget<String> implements
-	MessageWidget<BoxPane>
+public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
+	ScrollBarValueListener
 {
+
+	private ScrollBar scrollBar;
+	private Label label;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isMessage();
+		final WidgetStyle style = model.getItem().getWidgetStyle();
+		if (style != WidgetStyle.NUMBER_SCROLL_BAR) return false;
+		return super.isCompatible(model);
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		final String text = model.getText();
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
-		final Label label = new Label(text);
+		scrollBar = new ScrollBar();
+		scrollBar.setRange(min.intValue(), max.intValue());
+		scrollBar.setBlockIncrement(stepSize.intValue());
+		getPane().add(scrollBar);
+		scrollBar.getScrollBarValueListeners().add(this);
+
+		label = new Label();
 		getPane().add(label);
+
+		refreshWidget();
 	}
 
 	@Override
-	public String getValue() {
-		return null;
+	public Number getValue() {
+		final String value = "" + scrollBar.getValue();
+		return NumberUtils.toNumber(value, getModel().getItem().getType());
 	}
 
 	@Override
 	public void refreshWidget() {
-		// NB: No action needed.
+		final Number value = (Number) getModel().getValue();
+		scrollBar.setValue(value.intValue());
+		label.setText(value.toString());
 	}
 
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
+	// -- ScrollBarValueListener methods --
 
 	@Override
-	public boolean isMessage() {
-		return true;
+	public void valueChanged(final ScrollBar s, final int previousValue) {
+		label.setText("" + scrollBar.getValue());
 	}
 
 }

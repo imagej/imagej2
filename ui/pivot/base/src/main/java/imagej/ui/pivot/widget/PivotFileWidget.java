@@ -33,53 +33,97 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
 import imagej.ext.plugin.Plugin;
+import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
-import imagej.widget.ToggleWidget;
 import imagej.widget.WidgetModel;
+import imagej.widget.WidgetStyle;
+
+import java.io.File;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Checkbox;
+import org.apache.pivot.wtk.Button;
+import org.apache.pivot.wtk.ButtonPressListener;
+import org.apache.pivot.wtk.FileBrowserSheet;
+import org.apache.pivot.wtk.FileBrowserSheet.Mode;
+import org.apache.pivot.wtk.PushButton;
+import org.apache.pivot.wtk.TextInput;
 
 /**
- * Pivot implementation of boolean toggle widget.
+ * Pivot implementation of file selector widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
-	ToggleWidget<BoxPane>
+public class PivotFileWidget extends PivotInputWidget<File> implements
+	FileWidget<BoxPane>, ButtonPressListener
 {
 
-	private Checkbox checkbox;
+	private TextInput path;
+	private PushButton browse;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isBoolean();
+		return model.isType(File.class);
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		checkbox = new Checkbox();
-		getPane().add(checkbox);
+		path = new TextInput();
+		getPane().add(path);
+
+		browse = new PushButton("Browse");
+		browse.getButtonPressListeners().add(this);
+		getPane().add(browse);
 
 		refreshWidget();
 	}
 
 	@Override
-	public Boolean getValue() {
-		return checkbox.isSelected();
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	@Override
 	public void refreshWidget() {
-		checkbox.setSelected((Boolean) getModel().getValue());
+		final String text = getModel().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
+	}
+
+	// -- ButtonPressListener methods --
+
+	@Override
+	public void buttonPressed(final Button b) {
+		File file = new File(path.getText());
+		if (!file.isDirectory()) {
+			file = file.getParentFile();
+		}
+
+		// display file chooser in appropriate mode
+		final WidgetStyle style = getModel().getItem().getWidgetStyle();
+		final FileBrowserSheet browser;
+		if (style == WidgetStyle.FILE_SAVE) {
+			browser = new FileBrowserSheet(Mode.SAVE_AS);
+		}
+		else { // default behavior
+			browser = new FileBrowserSheet(Mode.OPEN);
+		}
+		browser.setSelectedFile(file);
+		browser.open(path.getWindow());
+		final boolean success = browser.getResult();
+		if (!success) return;
+		file = browser.getSelectedFile();
+		if (file == null) return;
+
+		path.setText(file.getAbsolutePath());
 	}
 
 }

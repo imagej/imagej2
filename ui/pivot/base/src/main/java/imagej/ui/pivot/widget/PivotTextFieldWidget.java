@@ -33,54 +33,51 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
-import imagej.widget.AbstractInputPanel;
-import imagej.widget.InputPanel;
+import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
+import imagej.widget.TextFieldWidget;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Container;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.TablePane;
+import org.apache.pivot.wtk.TextInput;
 
 /**
- * Pivot implementation of {@link InputPanel}.
+ * Pivot implementation of text field widget.
  * 
  * @author Curtis Rueden
  */
-public class PivotInputPanel extends AbstractInputPanel<BoxPane> {
+@Plugin(type = InputWidget.class)
+public class PivotTextFieldWidget extends PivotInputWidget<String> implements
+	TextFieldWidget<BoxPane>
+{
 
-	private final TablePane panel;
+	private TextInput textInput;
 
-	public PivotInputPanel() {
-		panel = new TablePane();
-	}
-
-	public Container getPanel() {
-		return panel;
-	}
-
-	// -- InputPanel methods --
+	// -- InputWidget methods --
 
 	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
-		super.addWidget(widget);
-		if (!(widget instanceof PivotInputWidget)) return;
-		final BoxPane widgetPane = ((PivotInputWidget<?>) widget).getPane();
-		final WidgetModel model = widget.getModel();
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isText() && !model.isMultipleChoice() && !model.isMessage();
+	}
 
-		// add widget to panel
-		if (widget.isLabeled()) {
-			// widget is prefixed by a label
-			panel.add(new Label(model.getWidgetLabel()));
-			panel.add(widgetPane);
-		}
-		else {
-			// widget occupies entire row
-			panel.add(widgetPane);
-		}
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		textInput = new TextInput();
+		getPane().add(textInput);
+	}
+
+	@Override
+	public String getValue() {
+		return textInput.getText();
+	}
+
+	@Override
+	public void refreshWidget() {
+		textInput.setText(getModel().getValue().toString());
 	}
 
 }

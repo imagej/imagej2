@@ -33,97 +33,53 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
 import imagej.ext.plugin.Plugin;
-import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
+import imagej.widget.ToggleWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
-
-import java.io.File;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
-import org.apache.pivot.wtk.FileBrowserSheet;
-import org.apache.pivot.wtk.FileBrowserSheet.Mode;
-import org.apache.pivot.wtk.PushButton;
-import org.apache.pivot.wtk.TextInput;
+import org.apache.pivot.wtk.Checkbox;
 
 /**
- * Pivot implementation of file selector widget.
+ * Pivot implementation of boolean toggle widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotFileWidget extends PivotInputWidget<File> implements
-	FileWidget<BoxPane>, ButtonPressListener
+public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
+	ToggleWidget<BoxPane>
 {
 
-	private TextInput path;
-	private PushButton browse;
+	private Checkbox checkbox;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(File.class);
+		return model.isBoolean();
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		path = new TextInput();
-		getPane().add(path);
-
-		browse = new PushButton("Browse");
-		browse.getButtonPressListeners().add(this);
-		getPane().add(browse);
+		checkbox = new Checkbox();
+		getPane().add(checkbox);
 
 		refreshWidget();
 	}
 
 	@Override
-	public File getValue() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
+	public Boolean getValue() {
+		return checkbox.isSelected();
 	}
 
 	@Override
 	public void refreshWidget() {
-		final String text = getModel().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
-	}
-
-	// -- ButtonPressListener methods --
-
-	@Override
-	public void buttonPressed(final Button b) {
-		File file = new File(path.getText());
-		if (!file.isDirectory()) {
-			file = file.getParentFile();
-		}
-
-		// display file chooser in appropriate mode
-		final WidgetStyle style = getModel().getItem().getWidgetStyle();
-		final FileBrowserSheet browser;
-		if (style == WidgetStyle.FILE_SAVE) {
-			browser = new FileBrowserSheet(Mode.SAVE_AS);
-		}
-		else { // default behavior
-			browser = new FileBrowserSheet(Mode.OPEN);
-		}
-		browser.setSelectedFile(file);
-		browser.open(path.getWindow());
-		final boolean success = browser.getResult();
-		if (!success) return;
-		file = browser.getSelectedFile();
-		if (file == null) return;
-
-		path.setText(file.getAbsolutePath());
+		checkbox.setSelected((Boolean) getModel().getValue());
 	}
 
 }

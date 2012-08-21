@@ -33,27 +33,59 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
-import imagej.widget.NumberWidget;
+import imagej.ext.plugin.Plugin;
+import imagej.widget.ChoiceWidget;
+import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
+import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.ListButton;
 
 /**
- * Pivot implementation of number chooser widget.
- *
+ * Pivot implementation of multiple choice selector widget.
+ * 
  * @author Curtis Rueden
  */
-public abstract class PivotNumberWidget extends PivotInputWidget<Number>
-	implements NumberWidget<BoxPane>
+@Plugin(type = InputWidget.class)
+public class PivotChoiceWidget extends PivotInputWidget<String>
+	implements ChoiceWidget<BoxPane>
 {
+
+	private ListButton listButton;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isNumber();
+		return model.isText() && model.isMultipleChoice();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String[] items = model.getChoices();
+
+		listButton = new ListButton();
+		listButton.setListData(new ArrayList<String>(items));
+		getPane().add(listButton);
+
+		refreshWidget();
+	}
+
+	@Override
+	public String getValue() {
+		return listButton.getSelectedItem().toString();
+	}
+
+	@Override
+	public void refreshWidget() {
+		final Object value = getModel().getValue();
+		if (value.equals(listButton.getSelectedItem())) return; // no change
+		listButton.setSelectedItem(value);
 	}
 
 }

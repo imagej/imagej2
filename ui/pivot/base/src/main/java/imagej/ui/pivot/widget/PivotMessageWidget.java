@@ -33,55 +33,61 @@
  * #L%
  */
 
-package imagej.ext.ui.pivot;
+package imagej.ui.pivot.widget;
 
 import imagej.ext.plugin.Plugin;
-import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
+import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.wtk.Spinner;
-import org.apache.pivot.wtk.content.NumericSpinnerData;
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Label;
 
 /**
- * Pivot implementation of number chooser widget, using a spinner.
+ * Pivot implementation of message widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberSpinnerWidget extends PivotNumberWidget {
-
-	private Spinner spinner;
+public class PivotMessageWidget extends PivotInputWidget<String> implements
+	MessageWidget<BoxPane>
+{
 
 	// -- InputWidget methods --
+
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
+	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
+		final String text = model.getText();
 
-		spinner = new Spinner();
-		spinner.setPreferredWidth(100);
-		spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
-			max.intValue(), stepSize.intValue()));
-		getPane().add(spinner);
-
-		refreshWidget();
+		final Label label = new Label(text);
+		getPane().add(label);
 	}
 
 	@Override
-	public Number getValue() {
-		final String value = spinner.getSelectedItem().toString();
-		return NumberUtils.toNumber(value, getModel().getItem().getType());
+	public String getValue() {
+		return null;
 	}
 
 	@Override
 	public void refreshWidget() {
-		final Number value = (Number) getModel().getValue();
-		spinner.setSelectedItem(value.intValue());
+		// NB: No action needed.
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
 	}
 
 }

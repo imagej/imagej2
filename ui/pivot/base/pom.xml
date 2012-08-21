@@ -11,15 +11,25 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ext-pivot</artifactId>
+	<artifactId>ij-ui-pivot</artifactId>
 
-	<name>ImageJ Extensibility Framework: Pivot</name>
-	<description>The ext-pivot component provides Apache Pivot-based user interface components for use with the ImageJ extensibility framework--i.e., a collection of Pivot UI classes for working with modules. It includes facilities for harvesting input parameters from a user dialog, as well as building a Pivot BoxPane of MenuButtons containing available modules.</description>
+	<name>ImageJ UI: Pivot</name>
+	<description>An Apache Pivot-based ImageJ user interface. Not yet fully functional.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-data</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -32,6 +42,13 @@
 			<groupId>org.apache.pivot</groupId>
 			<artifactId>pivot-wtk</artifactId>
 			<version>${pivot.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-wtk-terra</artifactId>
+			<version>${pivot.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
@@ -46,7 +63,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ext.ui.pivot</packageName>
+							<packageName>imagej.ui.pivot</packageName>
 						</manifest>
 					</archive>
 				</configuration>
