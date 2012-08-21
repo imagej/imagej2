@@ -107,7 +107,7 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 		final Object value = getModel().getValue();
 		for (int i = 0; i < itemCount; i++) {
 			final Object item = comboBox.getItemAt(i);
-			if (value.equals(item)) return value;
+			if (item.equals(value)) return value;
 		}
 
 		// value was invalid; reset to first choice on the list
