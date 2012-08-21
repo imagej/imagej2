@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.mdi;
 
+import imagej.Priority;
 import imagej.ext.display.Display;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.Desktop;
@@ -57,7 +58,7 @@ import javax.swing.JScrollPane;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(type = UserInterface.class)
+@Plugin(type = UserInterface.class, priority = Priority.LOW_PRIORITY)
 public class SwingMdiUI extends AbstractSwingUI {
 
 	private JMDIDesktopPane desktopPane;
