@@ -45,7 +45,6 @@ import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.UIService;
 
 import java.util.HashMap;
 
@@ -75,6 +74,9 @@ import net.imglib2.ops.operation.binary.real.RealXor;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+// TODO - pull code from OPS' ImageCreator class. This class should shrink
+//   considerably.
+
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
  * combination is specified by the user (such as Add, Min, Average, etc.).
@@ -94,9 +96,6 @@ public class RealImageCalculator<T extends RealType<T>> implements
 
 	@Parameter
 	private DatasetService datasetService;
-
-	@Parameter
-	private UIService uiService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset input1;
