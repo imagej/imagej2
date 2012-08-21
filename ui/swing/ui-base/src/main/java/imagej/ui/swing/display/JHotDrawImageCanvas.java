@@ -112,8 +112,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	ComponentListener, FigureSelectionListener
 {
 
-	private static final long serialVersionUID = 1L;
-
 	private final SwingImageDisplayViewer displayViewer;
 	private final LogService log;
 
