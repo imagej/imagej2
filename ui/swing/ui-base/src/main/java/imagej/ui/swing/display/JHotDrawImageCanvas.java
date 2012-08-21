@@ -133,6 +133,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
 
 		drawingView = new DefaultDrawingView() {
+
 			@Override
 			public Dimension getPreferredSize() {
 				final Dimension drawViewSize = super.getPreferredSize();
@@ -346,7 +347,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 			overlay.setSelected(true);
 		}
 		final OverlayFigureView figureView =
-				new OverlayFigureView(displayViewer, overlay, e.getFigure());
+			new OverlayFigureView(displayViewer, overlay, e.getFigure());
 		figureViews.add(figureView);
 		display.add(overlay);
 		display.update();
@@ -449,12 +450,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		if (log.isDebug()) {
 			log.debug(getClass().getSimpleName() + " " +
 				(updateCanvas ? "syncCanvas: " : "syncUI: ") + "\n\tUI size = " +
-				uiSize.width + " x " + uiSize.height + "\n\tUI offset = " +
-				uiOffset.x + ", " + uiOffset.y + "\n\tUI zoom = " + uiZoom +
-				"\n\tCanvas size = " + canvasWidth + " x " + canvasHeight +
-				"\n\tCanvas offset = " + canvasOffset.x + ", " + canvasOffset.y +
-				"\n\tCanvas zoom = " + canvasZoom + "\n\t" +
-				(sizeChanged ? "sizeChanged " : "") +
+				uiSize.width + " x " + uiSize.height + "\n\tUI offset = " + uiOffset.x +
+				", " + uiOffset.y + "\n\tUI zoom = " + uiZoom + "\n\tCanvas size = " +
+				canvasWidth + " x " + canvasHeight + "\n\tCanvas offset = " +
+				canvasOffset.x + ", " + canvasOffset.y + "\n\tCanvas zoom = " +
+				canvasZoom + "\n\t" + (sizeChanged ? "sizeChanged " : "") +
 				(offsetChanged ? "offsetChanged " : "") +
 				(zoomChanged ? "zoomChanged " : ""));
 		}
@@ -498,8 +498,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		final IntCoords topLeft =
 			canvas.dataToPanelCoords(new RealCoords(imageBounds.x, imageBounds.y));
 		final IntCoords bottomRight =
-			canvas.dataToPanelCoords(new RealCoords(imageBounds.x +
-				imageBounds.width, imageBounds.y + imageBounds.height));
+			canvas.dataToPanelCoords(new RealCoords(
+				imageBounds.x + imageBounds.width, imageBounds.y + imageBounds.height));
 		if (bottomRight.x - topLeft.x > bounds.width) return;
 		if (bottomRight.y - topLeft.y > bounds.height) return;
 
