@@ -39,8 +39,6 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ScreenCaptureService;
-import imagej.ext.display.ui.DisplayViewer;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
@@ -48,6 +46,8 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
+import imagej.ui.viewer.DisplayViewer;
+import imagej.ui.viewer.DisplayWindow;
 
 // NOTE: the following TODO may be invalid
 // TODO - write code that captures part of the screen as a merged color Dataset.

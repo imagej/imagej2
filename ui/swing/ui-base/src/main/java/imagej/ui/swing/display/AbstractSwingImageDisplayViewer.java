@@ -38,13 +38,13 @@ package imagej.ui.swing.display;
 import imagej.ImageJ;
 import imagej.core.options.OptionsAppearance;
 import imagej.data.Dataset;
-import imagej.data.display.ui.AbstractImageDisplayViewer;
 import imagej.event.EventHandler;
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
+import imagej.ui.viewer.AbstractImageDisplayViewer;
+import imagej.ui.viewer.DisplayWindow;
 
 /**
  * A Swing image display viewer, which displays 2D planes in grayscale or

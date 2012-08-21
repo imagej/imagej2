@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.display.ui;
+package imagej.ui.viewer;
 
 /**
  * This is a panel that can go inside a display window.

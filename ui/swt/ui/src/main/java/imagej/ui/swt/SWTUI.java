@@ -36,7 +36,6 @@
 package imagej.ui.swt;
 
 import imagej.event.EventService;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.ui.swt.SWTMenuCreator;
@@ -45,6 +44,7 @@ import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
+import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
 import imagej.ui.UIService;

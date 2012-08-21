@@ -35,10 +35,10 @@
 
 package imagej.ui.swing.sdi.display;
 
-import imagej.ext.display.ui.DisplayPanel;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.display.JHotDrawImageCanvas;
+import imagej.ui.viewer.DisplayPanel;
+import imagej.ui.viewer.DisplayWindow;
 
 import java.awt.Component;
 import java.awt.Container;

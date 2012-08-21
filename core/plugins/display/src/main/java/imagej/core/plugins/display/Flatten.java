@@ -37,7 +37,6 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
@@ -45,6 +44,7 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
+import imagej.ui.viewer.ImageDisplayViewer;
 
 /**
  * Captures the current view of an {@link ImageDisplay} to a color merged

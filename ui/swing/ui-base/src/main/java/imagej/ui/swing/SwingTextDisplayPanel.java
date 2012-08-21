@@ -36,8 +36,8 @@
 package imagej.ui.swing;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayWindow;
-import imagej.ext.display.ui.TextDisplayPanel;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.TextDisplayPanel;
 
 import java.awt.Font;
 

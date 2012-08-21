@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.display.ui;
+package imagej.ui.viewer;
 
 /**
  * A display viewer for a display of strings.
