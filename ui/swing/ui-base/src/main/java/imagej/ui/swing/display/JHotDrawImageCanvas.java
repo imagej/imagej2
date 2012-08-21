@@ -51,6 +51,7 @@ import imagej.data.display.event.PanZoomEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.ext.MouseCursor;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.tool.Tool;
 import imagej.ext.tool.ToolService;
@@ -69,6 +70,7 @@ import imagej.util.RealCoords;
 import imagej.util.RealRect;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -314,11 +316,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	protected void onEvent(final DataViewSelectedEvent event) {
 		final DataView view = event.getView();
 		final FigureView figureView = getFigureView(view);
-		if (figureView != null) {
-			final Figure figure = figureView.getFigure();
-			if (!drawingView.getSelectedFigures().contains(figure)) {
-				drawingView.addToSelection(figure);
-			}
+		if (figureView == null) return; // not one of this canvas's views
+
+		final Figure figure = figureView.getFigure();
+		if (!drawingView.getSelectedFigures().contains(figure)) {
+			drawingView.addToSelection(figure);
 		}
 	}
 
@@ -326,11 +328,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	protected void onEvent(final DataViewDeselectedEvent event) {
 		final DataView view = event.getView();
 		final FigureView figureView = getFigureView(view);
-		if (figureView != null) {
-			final Figure figure = figureView.getFigure();
-			if (drawingView.getSelectedFigures().contains(figure)) {
-				drawingView.removeFromSelection(figure);
-			}
+		if (figureView == null) return; // not one of this canvas's views
+
+		final Figure figure = figureView.getFigure();
+		if (drawingView.getSelectedFigures().contains(figure)) {
+			drawingView.removeFromSelection(figure);
 		}
 	}
 
@@ -342,25 +344,29 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
-		if (event.getObject() == getDisplay()) {
-			final EventService eventService =
+		if (event.getObject() != getDisplay()) return; // not this canvas's display
+
+		final EventService eventService =
 				event.getContext().getService(EventService.class);
-			eventService.unsubscribe(subscribers);
-		}
+		eventService.unsubscribe(subscribers);
 	}
 
 	@EventHandler
 	protected void onEvent(final PanZoomEvent event) {
-		if (event.getCanvas() != getDisplay().getCanvas()) return;
+		final ImageCanvas canvas = event.getCanvas();
+		if (canvas != getDisplay().getCanvas()) return; // not this canvas
+
 		syncUI();
 	}
 
 	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final MouseCursorEvent event)
-	{
-		drawingView.setCursor(AWTCursors.getCursor(getDisplay().getCanvas()
-			.getCursor()));
+	protected void onEvent(final MouseCursorEvent event) {
+		final ImageCanvas canvas = event.getCanvas();
+		if (canvas != getDisplay().getCanvas()) return; // not this canvas
+
+		final MouseCursor cursor = canvas.getCursor();
+		final Cursor awtCursor = AWTCursors.getCursor(cursor);
+		drawingView.setCursor(awtCursor);
 	}
 
 	/**
@@ -368,8 +374,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	 * {@link OverlayFigureView}.
 	 */
 	@EventHandler
-	protected void onEvent(final FigureCreatedEvent e) {
-		final OverlayView overlay = e.getView();
+	protected void onEvent(final FigureCreatedEvent event) {
+		final OverlayView overlay = event.getView();
 		final ImageDisplay display = getDisplay();
 		for (int i = 0; i < display.numDimensions(); i++) {
 			final AxisType axis = display.axis(i);
@@ -378,11 +384,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 				overlay.setPosition(display.getLongPosition(axis), axis);
 			}
 		}
-		if (drawingView.getSelectedFigures().contains(e.getFigure())) {
+		if (drawingView.getSelectedFigures().contains(event.getFigure())) {
 			overlay.setSelected(true);
 		}
 		final OverlayFigureView figureView =
-			new OverlayFigureView(displayViewer, overlay, e.getFigure());
+			new OverlayFigureView(displayViewer, overlay, event.getFigure());
 		figureViews.add(figureView);
 		display.add(overlay);
 		display.update();
