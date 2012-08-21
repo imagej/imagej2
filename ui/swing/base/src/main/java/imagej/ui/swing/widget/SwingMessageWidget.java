@@ -33,49 +33,61 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.widget;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.swing.widget.SwingUtils;
+import imagej.widget.InputWidget;
+import imagej.widget.MessageWidget;
+import imagej.widget.WidgetModel;
 
-import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Swing implementation of message widget.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder implements RunnablePlugin {
+@Plugin(type = InputWidget.class)
+public class SwingMessageWidget extends SwingInputWidget<String> implements
+	MessageWidget<JPanel>
+{
 
-	@Parameter
-	private PluginService pluginService;
+	// -- InputWidget methods --
 
 	@Override
-	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
+	}
 
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
-		// execute selected command
-		pluginService.run(info);
+		final String text = model.getText();
+
+		final JLabel label = new JLabel(text);
+		getPane().add(label);
+	}
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// NB: No action needed.
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
 	}
 
 }

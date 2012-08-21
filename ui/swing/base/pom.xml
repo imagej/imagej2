@@ -11,10 +11,10 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-swing-plugins</artifactId>
+	<artifactId>ij-ui-swing-base</artifactId>
 
-	<name>ImageJ UI: Swing Plugins</name>
-	<description>Plugins for Swing-based ImageJ user interfaces.</description>
+	<name>ImageJ UI: Swing (base classes)</name>
+	<description>Base classes for Swing-based ImageJ user interfaces.</description>
 
 	<dependencies>
 		<dependency>
@@ -34,17 +34,27 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-data</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-display</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-base</artifactId>
+			<artifactId>ij-ui-common-awt</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util-swing</artifactId>
+			<artifactId>ij-util-awt</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -54,25 +64,20 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-algorithms</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.sbridges.object-inspector</groupId>
-			<artifactId>object-inspector</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
 			<version>${miglayout.version}</version>
 			<classifier>swing</classifier>
 		</dependency>
 		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.14</version>
+			<groupId>net.java.sezpoz</groupId>
+			<artifactId>sezpoz</artifactId>
+			<version>${sezpoz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jhotdraw</groupId>
+			<artifactId>jhotdraw</artifactId>
+			<version>7.6.0</version>
 		</dependency>
 	</dependencies>
 
@@ -87,7 +92,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.swing.plugins</packageName>
+							<packageName>imagej.ui.swing</packageName>
 						</manifest>
 					</archive>
 				</configuration>

@@ -33,49 +33,84 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.widget;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.swing.widget.SwingUtils;
+import imagej.widget.InputWidget;
+import imagej.widget.ObjectWidget;
+import imagej.widget.WidgetModel;
 
-import javax.swing.JOptionPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Swing implementation of object selector widget.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder implements RunnablePlugin {
+@Plugin(type = InputWidget.class)
+public class SwingObjectWidget extends SwingInputWidget<Object> implements
+	ActionListener, ObjectWidget<JPanel>
+{
 
-	@Parameter
-	private PluginService pluginService;
+	private JComboBox comboBox;
+
+	// -- ActionListener methods --
 
 	@Override
-	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
+	public void actionPerformed(final ActionEvent e) {
+		updateModel();
+	}
 
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
+	// -- InputWidget methods --
 
-		// execute selected command
-		pluginService.run(info);
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getObjectPool().size() > 0;
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		comboBox = new JComboBox(model.getObjectPool().toArray());
+		setToolTip(comboBox);
+		getPane().add(comboBox);
+		comboBox.addActionListener(this);
+
+		refreshWidget();
+	}
+
+	@Override
+	public Object getValue() {
+		return comboBox.getSelectedItem();
+	}
+
+	@Override
+	public void refreshWidget() {
+		comboBox.setSelectedItem(getValidValue());
+	}
+
+	// -- Helper methods --
+
+	private Object getValidValue() {
+		final int itemCount = comboBox.getItemCount();
+		if (itemCount == 0) return null; // no valid values exist
+
+		final Object value = getModel().getValue();
+		for (int i = 0; i < itemCount; i++) {
+			final Object item = comboBox.getItemAt(i);
+			if (value == item) return value;
+		}
+
+		// value was invalid; reset to first choice on the list
+		final Object validValue = comboBox.getItemAt(0);
+		// CTR FIXME should not update model in getter!
+		getModel().setValue(validValue);
+		return validValue;
 	}
 
 }

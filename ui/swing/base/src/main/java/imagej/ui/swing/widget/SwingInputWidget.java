@@ -33,49 +33,48 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.widget;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.swing.widget.SwingUtils;
+import imagej.widget.AbstractInputWidget;
+import imagej.widget.WidgetModel;
 
-import javax.swing.JOptionPane;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Common superclass for Swing-based input widgets.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder implements RunnablePlugin {
+public abstract class SwingInputWidget<T> extends
+	AbstractInputWidget<T, JPanel>
+{
 
-	@Parameter
-	private PluginService pluginService;
+	private JPanel pane;
+
+	// -- InputWidget methods --
 
 	@Override
-	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+		pane = new JPanel();
+		pane.setLayout(new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]"));
+	}
 
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
+	@Override
+	public JPanel getPane() {
+		return pane;
+	}
 
-		// execute selected command
-		pluginService.run(info);
+	// -- Helper methods --
+
+	/** Assigns the model's description as the given component's tool tip. */
+	protected void setToolTip(final JComponent c) {
+		final String desc = getModel().getItem().getDescription();
+		if (desc == null || desc.isEmpty()) return;
+		c.setToolTipText(desc);
 	}
 
 }

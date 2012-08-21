@@ -33,49 +33,65 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.widget;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.swing.widget.SwingUtils;
+import imagej.widget.InputWidget;
+import imagej.widget.ToggleWidget;
+import imagej.widget.WidgetModel;
 
-import javax.swing.JOptionPane;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Swing implementation of boolean toggle widget.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder implements RunnablePlugin {
+@Plugin(type = InputWidget.class)
+public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
+	ChangeListener, ToggleWidget<JPanel>
+{
 
-	@Parameter
-	private PluginService pluginService;
+	private JCheckBox checkBox;
+
+	// -- ChangeListener methods --
 
 	@Override
-	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
+	public void stateChanged(final ChangeEvent e) {
+		updateModel();
+	}
 
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
+	// -- InputWidget methods --
 
-		// execute selected command
-		pluginService.run(info);
+	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isBoolean();
+	}
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		checkBox = new JCheckBox("");
+		setToolTip(checkBox);
+		getPane().add(checkBox);
+		checkBox.addChangeListener(this);
+
+		refreshWidget();
+	}
+
+	@Override
+	public Boolean getValue() {
+		return checkBox.isSelected();
+	}
+
+	@Override
+	public void refreshWidget() {
+		final boolean value = (Boolean) getModel().getValue();
+		if (value != checkBox.isSelected()) checkBox.setSelected(value);
 	}
 
 }

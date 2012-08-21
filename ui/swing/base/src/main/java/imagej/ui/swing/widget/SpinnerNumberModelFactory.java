@@ -33,49 +33,53 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.widget;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.swing.widget.SwingUtils;
+import imagej.util.NumberUtils;
 
-import javax.swing.JOptionPane;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+import javax.swing.SpinnerNumberModel;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Factory for producing the correct {@link SpinnerNumberModel} subclass based
+ * on the type of {@link Number}.
  * 
  * @author Curtis Rueden
+ * @see SpinnerNumberModel
+ * @see SpinnerBigDecimalModel
+ * @see SpinnerBigIntegerModel
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder implements RunnablePlugin {
+public class SpinnerNumberModelFactory {
 
-	@Parameter
-	private PluginService pluginService;
+	public SpinnerNumberModel createModel(final Number value, final Number min,
+		final Number max, final Number stepSize)
+	{
+		final Class<?> c = value.getClass();
+		if (BigInteger.class.isAssignableFrom(c)) {
+			final BigInteger biValue = (BigInteger) value;
+			final BigInteger biMin = (BigInteger) min;
+			final BigInteger biMax = (BigInteger) max;
+			final BigInteger biStepSize = (BigInteger) stepSize;
+			return new SpinnerBigIntegerModel(biValue, biMin, biMax, biStepSize);
+		}
+		if (BigDecimal.class.isAssignableFrom(c)) {
+			final BigDecimal bdValue = (BigDecimal) value;
+			final BigDecimal bdMin = (BigDecimal) min;
+			final BigDecimal bdMax = (BigDecimal) max;
+			final BigDecimal bdStepSize = (BigDecimal) stepSize;
+			return new SpinnerBigDecimalModel(bdValue, bdMin, bdMax, bdStepSize);
+		}
 
-	@Override
-	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
+		@SuppressWarnings("unchecked")
+		final Comparable<Number> cMin = (Comparable<Number>) min;
+		@SuppressWarnings("unchecked")
+		final Comparable<Number> cMax = (Comparable<Number>) max;
 
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
-
-		// execute selected command
-		pluginService.run(info);
+		final Number clampedValue =
+			NumberUtils.clampToRange(value.getClass(), value, min, max);
+		return new SpinnerNumberModel(clampedValue, cMin, cMax, stepSize);
 	}
 
 }

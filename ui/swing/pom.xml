@@ -18,10 +18,9 @@
 	<description>ImageJ user interface projects for Swing.</description>
 
 	<modules>
-		<module>ext</module>
+		<module>base</module>
 		<module>plugins</module>
 		<module>tools</module>
-		<module>ui-base</module>
 		<module>updater</module>
 		<module>util</module>
 	</modules>

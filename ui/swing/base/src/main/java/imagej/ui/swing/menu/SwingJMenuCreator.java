@@ -33,49 +33,46 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.menu;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.swing.widget.SwingUtils;
+import imagej.ext.menu.ShadowMenu;
 
-import javax.swing.JOptionPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Populates a {@link JMenu} with menu items from a {@link ShadowMenu}.
+ * <p>
+ * Unfortunately, the {@link SwingJMenuBarCreator}, {@link SwingJMenuCreator}
+ * and {@link SwingJPopupMenuCreator} classes must all exist and replicate some
+ * code, because {@link JMenuBar}, {@link JMenuItem} and {@link JPopupMenu} do
+ * not share a common interface for operations such as {@link JMenu#add}.
+ * </p>
+ * <p>
+ * This class is called <code>SwingJMenuCreator</code> rather than simply
+ * <code>JMenuCreator</code> for consistency with other UI implementations such
+ * as <code>imagej.ext.ui.awt.AWTMenuCreator</code>.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder implements RunnablePlugin {
-
-	@Parameter
-	private PluginService pluginService;
+public class SwingJMenuCreator extends AbstractSwingMenuCreator<JMenu> {
 
 	@Override
-	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
+	protected void addLeafToTop(final ShadowMenu shadow, final JMenu target) {
+		addLeafToMenu(shadow, target);
+	}
 
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
+	@Override
+	protected JMenu addNonLeafToTop(final ShadowMenu shadow, final JMenu target) {
+		return addNonLeafToMenu(shadow, target);
+	}
 
-		// execute selected command
-		pluginService.run(info);
+	@Override
+	protected void addSeparatorToTop(final JMenu target) {
+		addSeparatorToMenu(target);
 	}
 
 }

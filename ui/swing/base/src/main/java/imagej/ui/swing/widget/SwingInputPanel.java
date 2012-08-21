@@ -33,49 +33,58 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.widget;
 
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ui.swing.widget.SwingUtils;
+import imagej.widget.AbstractInputPanel;
+import imagej.widget.InputPanel;
+import imagej.widget.InputWidget;
+import imagej.widget.WidgetModel;
 
-import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Swing implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder implements RunnablePlugin {
+public class SwingInputPanel extends AbstractInputPanel<JPanel> {
 
-	@Parameter
-	private PluginService pluginService;
+	private final JPanel panel;
+
+	public SwingInputPanel() {
+		panel = new JPanel();
+		panel.setLayout(new MigLayout("fillx,wrap 2", "[right]10[fill,grow]"));
+	}
+
+	public JPanel getPanel() {
+		return panel;
+	}
+
+	// -- InputPanel methods --
 
 	@Override
-	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
+	public void addWidget(final InputWidget<?, ?> widget) {
+		super.addWidget(widget);
+		if (!(widget instanceof SwingInputWidget)) return;
+		final JPanel widgetPane = ((SwingInputWidget<?>) widget).getPane();
+		final WidgetModel model = widget.getModel();
 
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
-
-		// execute selected command
-		pluginService.run(info);
+		// add widget to panel
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			final JLabel l = new JLabel(model.getWidgetLabel());
+			final String desc = model.getItem().getDescription();
+			if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
+			panel.add(l);
+			panel.add(widgetPane);
+		}
+		else {
+			// widget occupies entire row
+			panel.add(widgetPane, "span");
+		}
 	}
 
 }
