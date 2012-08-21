@@ -47,9 +47,9 @@ import imagej.ext.plugin.SortablePlugin;
 import java.util.List;
 
 /**
- * The AbstractDisplayViewer provides some basic generic implementations
- * for a DisplayViewer such as storing and providing the display, window
- * and panel for a DisplayViewer.
+ * The AbstractDisplayViewer provides some basic generic implementations for a
+ * DisplayViewer such as storing and providing the display, window and panel for
+ * a DisplayViewer.
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden
@@ -65,7 +65,7 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 	private List<EventSubscriber<?>> subscribers;
 
 	@Override
-	public void view(DisplayWindow w, Display<?> d) {
+	public void view(final DisplayWindow w, final Display<?> d) {
 		if (!canView(d)) {
 			throw new IllegalArgumentException("Incompatible display: " + d);
 		}
@@ -89,7 +89,7 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 	}
 
 	@Override
-	public void setPanel(DisplayPanel panel) {
+	public void setPanel(final DisplayPanel panel) {
 		this.panel = panel;
 	}
 
@@ -97,22 +97,22 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 	public DisplayPanel getPanel() {
 		return panel;
 	}
-	
+
 	@Override
-	public void onDisplayDeletedEvent(DisplayDeletedEvent e) {
+	public void onDisplayDeletedEvent(final DisplayDeletedEvent e) {
 		getPanel().getWindow().close();
 	}
 
 	@Override
-	public void onDisplayUpdatedEvent(DisplayUpdatedEvent e) {
+	public void onDisplayUpdatedEvent(final DisplayUpdatedEvent e) {
 		if (e.getLevel() == DisplayUpdateLevel.REBUILD) {
 			getPanel().redoLayout();
 		}
 		getPanel().redraw();
 	}
-	
+
 	@Override
-	public void onDisplayActivatedEvent(DisplayActivatedEvent e) {
+	public void onDisplayActivatedEvent(final DisplayActivatedEvent e) {
 		getPanel().getWindow().requestFocus();
 	}
 
@@ -126,5 +126,5 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 		if (display == null) return null;
 		return display.getContext().getService(EventService.class);
 	}
-	
+
 }
