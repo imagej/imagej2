@@ -35,7 +35,6 @@
 
 package imagej.core.plugins.assign;
 
-import imagej.core.plugins.restructure.RestructureUtils;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.ext.Cancelable;
@@ -48,15 +47,11 @@ import imagej.ext.plugin.Plugin;
 
 import java.util.HashMap;
 
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.BinaryOperation;
-import net.imglib2.ops.Function;
-import net.imglib2.ops.InputIteratorFactory;
-import net.imglib2.ops.function.general.GeneralBinaryFunction;
-import net.imglib2.ops.function.real.RealImageFunction;
-import net.imglib2.ops.image.ImageAssignment;
-import net.imglib2.ops.input.PointInputIteratorFactory;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.ops.PointSetIterator;
+import net.imglib2.ops.image.ImageCombiner;
 import net.imglib2.ops.operation.binary.real.RealAdd;
 import net.imglib2.ops.operation.binary.real.RealAnd;
 import net.imglib2.ops.operation.binary.real.RealAvg;
@@ -71,6 +66,7 @@ import net.imglib2.ops.operation.binary.real.RealMultiply;
 import net.imglib2.ops.operation.binary.real.RealOr;
 import net.imglib2.ops.operation.binary.real.RealSubtract;
 import net.imglib2.ops.operation.binary.real.RealXor;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
@@ -115,11 +111,11 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	private boolean newWindow = true;
 
 	@Parameter(label = "Floating point result")
-	private boolean overrideType;
+	private boolean wantDoubles = false;
 
 	// -- other instance variables --
 
-	private final HashMap<String, RealBinaryOperation<DoubleType, DoubleType, DoubleType>> operators;
+	private final HashMap<String, RealBinaryOperation<T, T, DoubleType>> operators;
 
 	private String cancelReason;
 
@@ -131,27 +127,27 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	 */
 	public RealImageCalculator() {
 		operators =
-			new HashMap<String, RealBinaryOperation<DoubleType, DoubleType, DoubleType>>();
+			new HashMap<String, RealBinaryOperation<T, T, DoubleType>>();
 
-		operators.put("Add", new RealAdd<DoubleType, DoubleType, DoubleType>());
+		operators.put("Add", new RealAdd<T, T, DoubleType>());
 		operators.put("Subtract",
-			new RealSubtract<DoubleType, DoubleType, DoubleType>());
+			new RealSubtract<T, T, DoubleType>());
 		operators.put("Multiply",
-			new RealMultiply<DoubleType, DoubleType, DoubleType>());
+			new RealMultiply<T, T, DoubleType>());
 		operators.put("Divide",
-			new RealDivide<DoubleType, DoubleType, DoubleType>());
-		operators.put("AND", new RealAnd<DoubleType, DoubleType, DoubleType>());
-		operators.put("OR", new RealOr<DoubleType, DoubleType, DoubleType>());
-		operators.put("XOR", new RealXor<DoubleType, DoubleType, DoubleType>());
-		operators.put("Min", new RealMin<DoubleType, DoubleType, DoubleType>());
-		operators.put("Max", new RealMax<DoubleType, DoubleType, DoubleType>());
-		operators.put("Average", new RealAvg<DoubleType, DoubleType, DoubleType>());
+			new RealDivide<T, T, DoubleType>());
+		operators.put("AND", new RealAnd<T, T, DoubleType>());
+		operators.put("OR", new RealOr<T, T, DoubleType>());
+		operators.put("XOR", new RealXor<T, T, DoubleType>());
+		operators.put("Min", new RealMin<T, T, DoubleType>());
+		operators.put("Max", new RealMax<T, T, DoubleType>());
+		operators.put("Average", new RealAvg<T, T, DoubleType>());
 		operators.put("Difference",
-			new RealDifference<DoubleType, DoubleType, DoubleType>());
+			new RealDifference<T, T, DoubleType>());
 		operators.put("Copy",
-			new RealCopyRight<DoubleType, DoubleType, DoubleType>());
+			new RealCopyRight<T, T, DoubleType>());
 		operators.put("Transparent-zero",
-			new RealCopyZeroTransparent<DoubleType, DoubleType, DoubleType>());
+			new RealCopyZeroTransparent<T, T, DoubleType>());
 	}
 
 	// -- public interface --
@@ -162,33 +158,37 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	 */
 	@Override
 	public void run() {
-		final long[] span = calcOverlappedSpan(input1.getDims(), input2.getDims());
-		if (span == null) {
-			cancelReason = "Input images have different number of dimensions";
-			return;
-		}
-		int bits = input1.getType().getBitsPerPixel();
-		boolean floating = !input1.isInteger();
-		boolean signed = input1.isSigned();
-		if (overrideType) {
-			bits = 64;
-			floating = true;
-			signed = true;
-		}
-		// TODO : HACK - this next line works but always creates a PlanarImg
-		output =
-			datasetService.create(span, "Result of operation", input1.getAxes(),
-				bits, signed, floating);
-		// This is what I'd like to do
-		// output = datasetService.create(input1.getType(), span,
-		// "Result of operation", input1.getAxes());
-
-		assignPixelValues(span);
+		ImageCombiner computer = new ImageCombiner();
+		Img<T> img1 = (Img<T>) input1.getImgPlus();
+		Img<T> img2 = (Img<T>) input2.getImgPlus();
+		// TODO - limited by ArrayImg size constraints
+		Img<DoubleType> img =
+				computer.applyOp(operators.get(opName), img1, img2, 
+													new ArrayImgFactory<DoubleType>(), new DoubleType());
+		long[] span = new long[img.numDimensions()];
+		img.dimensions(span);
 
 		// replace original data if desired by user
-		if (!overrideType && !newWindow) {
-			copyDataIntoInput1(span);
+		if (!wantDoubles && !newWindow) {
 			output = null;
+			copyDataInto(img, input1.getImgPlus(), span);
+			input1.update();
+		}
+		else { // write into output
+			int bits = input1.getType().getBitsPerPixel();
+			boolean floating = !input1.isInteger();
+			boolean signed = input1.isSigned();
+			if (wantDoubles) {
+				bits = 64;
+				floating = true;
+				signed = true;
+			}
+			// TODO : HACK - this next line works but always creates a PlanarImg
+			output =
+				datasetService.create(span, "Result of operation", input1.getAxes(),
+					bits, signed, floating);
+			copyDataInto(img, output.getImgPlus(), span);
+			output.update(); // TODO - probably unecessary
 		}
 	}
 
@@ -238,54 +238,38 @@ public class RealImageCalculator<T extends RealType<T>> implements
 		this.newWindow = newWindow;
 	}
 
-	public boolean isOverrideType() {
-		return overrideType;
+	public boolean isDoubleOutput() {
+		return wantDoubles;
 	}
 
-	public void setOverrideType(final boolean overrideType) {
-		this.overrideType = overrideType;
+	public void setDoubleOutput(final boolean wantDoubles) {
+		this.wantDoubles = wantDoubles;
 	}
 
 	// -- private helpers --
 
-	private long[] calcOverlappedSpan(final long[] dimsA, final long[] dimsB) {
-		if (dimsA.length != dimsB.length) return null;
-
-		final long[] overlap = new long[dimsA.length];
-
-		for (int i = 0; i < overlap.length; i++)
-			overlap[i] = Math.min(dimsA[i], dimsB[i]);
-
-		return overlap;
+	private void copyDataInto(
+		Img<? extends RealType<?>> in, Img<? extends RealType<?>> out, long[] span)
+	{
+		RandomAccess<? extends RealType<?>> src = in.randomAccess();
+		RandomAccess<? extends RealType<?>> dst = out.randomAccess();
+		HyperVolumePointSet ps = new HyperVolumePointSet(new long[span.length], lastPoint(span));
+		PointSetIterator iter = ps.createIterator();
+		long[] pos = null;
+		while (iter.hasNext()) {
+			pos = iter.next();
+			src.setPosition(pos);
+			dst.setPosition(pos);
+			double value = src.get().getRealDouble();
+			dst.get().setReal(value);
+		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void assignPixelValues(final long[] span) {
-		final long[] origin = new long[span.length];
-		final BinaryOperation<DoubleType, DoubleType, DoubleType> binOp =
-			operators.get(opName);
-		final Function<long[], DoubleType> f1 =
-			new RealImageFunction<T, DoubleType>((Img<T>) input1.getImgPlus(),
-				new DoubleType());
-		final Function<long[], DoubleType> f2 =
-			new RealImageFunction<T, DoubleType>((Img<T>) input2.getImgPlus(),
-				new DoubleType());
-		final GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType> binFunc =
-			new GeneralBinaryFunction<long[], DoubleType, DoubleType, DoubleType>(f1,
-				f2, binOp, new DoubleType());
-		final InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
-		final ImageAssignment<T, DoubleType, long[]> assigner =
-			new ImageAssignment<T, DoubleType, long[]>((Img<T>) output.getImgPlus(), origin,
-				span, binFunc, null, factory);
-		assigner.assign();
+	private long[] lastPoint(long[] span) {
+		long[] lastPoint = new long[span.length];
+		for (int i = 0; i < span.length; i++) {
+			lastPoint[i] = span[i] - 1;
+		}
+		return lastPoint;
 	}
-
-	private void copyDataIntoInput1(final long[] span) {
-		final ImgPlus<? extends RealType<?>> srcImgPlus = output.getImgPlus();
-		final ImgPlus<? extends RealType<?>> dstImgPlus = input1.getImgPlus();
-		RestructureUtils.copyHyperVolume(srcImgPlus, new long[span.length], span,
-			dstImgPlus, new long[span.length], span);
-		input1.update();
-	}
-
 }
