@@ -342,7 +342,7 @@ public final class DefaultUIService extends AbstractService implements
 	 * <p>
 	 * The goal here is to eventually synchronize the window activation state with
 	 * the display activation state if the display activation state changed
-	 * programatically. We queue a call on the UI thread to activate the display
+	 * programmatically. We queue a call on the UI thread to activate the display
 	 * viewer of the currently active window.
 	 * </p>
 	 */
