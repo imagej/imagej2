@@ -35,6 +35,7 @@
 
 package imagej.ui;
 
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusService;
@@ -47,7 +48,9 @@ import imagej.util.Prefs;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractUserInterface implements UserInterface {
+public abstract class AbstractUserInterface extends AbstractContextual
+	implements UserInterface
+{
 
 	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
 	private static final String LAST_X = "lastXLocation";
@@ -59,6 +62,7 @@ public abstract class AbstractUserInterface implements UserInterface {
 
 	@Override
 	public void initialize(final UIService service) {
+		setContext(service.getContext());
 		uiService = service;
 	}
 

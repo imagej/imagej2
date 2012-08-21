@@ -35,6 +35,8 @@
 
 package imagej.ui;
 
+import imagej.Contextual;
+import imagej.Prioritized;
 import imagej.ext.display.Display;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
@@ -54,7 +56,7 @@ import imagej.ui.viewer.DisplayWindow;
  * @see Plugin
  * @see UIService
  */
-public interface UserInterface extends IPlugin {
+public interface UserInterface extends IPlugin, Contextual {
 
 	void initialize(UIService uiService);
 
