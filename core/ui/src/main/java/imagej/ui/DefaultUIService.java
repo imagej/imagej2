@@ -389,6 +389,8 @@ public final class DefaultUIService extends AbstractService implements
 		{
 			try {
 				final UserInterface ui = info.createInstance();
+				ui.setContext(getContext());
+				ui.setPriority(info.getPriority());
 				log.info("Discovered user interface: " + ui.getClass().getName());
 				uis.add(ui);
 			}

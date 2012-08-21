@@ -56,7 +56,7 @@ import imagej.ui.viewer.DisplayWindow;
  * @see Plugin
  * @see UIService
  */
-public interface UserInterface extends IPlugin, Contextual {
+public interface UserInterface extends IPlugin, Contextual, Prioritized {
 
 	void initialize(UIService uiService);
 

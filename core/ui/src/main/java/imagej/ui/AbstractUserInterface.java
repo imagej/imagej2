@@ -35,10 +35,10 @@
 
 package imagej.ui;
 
-import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusService;
+import imagej.ext.plugin.SortablePlugin;
 import imagej.updater.core.UpToDate;
 import imagej.updater.ui.UpdatesAvailable;
 import imagej.util.Prefs;
@@ -48,7 +48,7 @@ import imagej.util.Prefs;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractUserInterface extends AbstractContextual
+public abstract class AbstractUserInterface extends SortablePlugin
 	implements UserInterface
 {
 
@@ -62,7 +62,9 @@ public abstract class AbstractUserInterface extends AbstractContextual
 
 	@Override
 	public void initialize(final UIService service) {
-		setContext(service.getContext());
+		if (getContext() != service.getContext()) {
+			throw new IllegalArgumentException("Mismatched context: " + service);
+		}
 		uiService = service;
 	}
 
