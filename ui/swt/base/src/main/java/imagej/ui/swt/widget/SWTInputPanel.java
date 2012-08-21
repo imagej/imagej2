@@ -33,64 +33,51 @@
  * #L%
  */
 
-package imagej.ext.ui.swt;
+package imagej.ui.swt.widget;
 
-import imagej.ext.plugin.Plugin;
-import imagej.widget.ChoiceWidget;
+import imagej.widget.AbstractInputPanel;
+import imagej.widget.InputPanel;
 import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
+import net.miginfocom.swt.MigLayout;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 /**
- * SWT implementation of multiple choice selector widget.
+ * SWT implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class SWTChoiceWidget extends SWTInputWidget<String> implements
-	ChoiceWidget<Composite>
-{
+public class SWTInputPanel extends AbstractInputPanel<Composite> {
 
-	private Combo combo;
+	private final Composite panel;
 
-	// -- InputWidget methods --
+	public SWTInputPanel(final Composite parent) {
+		panel = new Composite(parent, 0);
+		panel.setLayout(new MigLayout("wrap 2"));
+	}
+	
+	// -- SWTInputPanel methods --
 
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isText() && model.isMultipleChoice();
+	public Composite getPanel() {
+		return panel;
 	}
 
+	// -- InputPanel methods --
+
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final String[] items = model.getChoices();
-
-		combo = new Combo(getPane(), SWT.DROP_DOWN);
-		combo.setItems(items);
-
-		refreshWidget();
+	public void addWidget(final InputWidget<?, ?> widget) {
+		super.addWidget(widget);
+		// CTR FIXME: Find a way to put the label first.
+		addLabel(widget.getModel().getWidgetLabel());
 	}
 
-	@Override
-	public String getValue() {
-		return combo.getItem(combo.getSelectionIndex());
-	}
+	// -- Helper methods --
 
-	@Override
-	public void refreshWidget() {
-		final String value = getModel().getValue().toString();
-		if (value.equals(getValue())) return; // no change
-		for (int i = 0; i < combo.getItemCount(); i++) {
-			final String item = combo.getItem(i);
-			if (item.equals(value)) {
-				combo.select(i);
-				break;
-			}
-		}
+	private Label addLabel(final String text) {
+		final Label label = new Label(panel, 0);
+		label.setText(text);
+		return label;
 	}
 
 }

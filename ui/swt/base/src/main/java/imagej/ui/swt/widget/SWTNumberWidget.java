@@ -33,67 +33,61 @@
  * #L%
  */
 
-package imagej.ext.ui.swt;
+package imagej.ui.swt.widget;
 
 import imagej.ext.plugin.Plugin;
-import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
+import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
 
-import java.io.File;
-
-import net.miginfocom.swt.MigLayout;
-
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Slider;
 
 /**
- * SWT implementation of file selector widget.
- *
+ * SWT implementation of number chooser widget.
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class SWTFileWidget extends SWTInputWidget<File> implements
-	FileWidget<Composite>
+public class SWTNumberWidget extends SWTInputWidget<Number> implements
+	NumberWidget<Composite>
 {
 
-	private Text path;
-	private Button browse;
+	private Slider slider;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(File.class);
+		return model.isNumber();
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		getPane().setLayout(new MigLayout());
+		final Number min = model.getMin();
+		final Number max = model.getMax();
+		final Number stepSize = model.getStepSize();
 
-		path = new Text(getPane(), 0);
-		path.setTextLimit(20);
-
-		browse = new Button(getPane(), 0);
-		browse.setText("Browse");
+		slider = new Slider(getPane(), SWT.HORIZONTAL);
+		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
+			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
 
 		refreshWidget();
 	}
 
 	@Override
-	public File getValue() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
+	public Number getValue() {
+		return slider.getSelection();
 	}
 
 	@Override
 	public void refreshWidget() {
-		final String text = getModel().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
+		final int value = ((Number) getModel().getValue()).intValue();
+		if (slider.getSelection() == value) return; // no change
+		slider.setSelection(value);
 	}
 
 }

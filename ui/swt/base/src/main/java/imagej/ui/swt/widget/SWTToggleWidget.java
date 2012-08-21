@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.ui.swt;
+package imagej.ui.swt.widget;
 
 import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;

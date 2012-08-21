@@ -33,45 +33,62 @@
  * #L%
  */
 
-package imagej.ext.ui.swt;
+package imagej.ui.swt.widget;
 
-import imagej.widget.AbstractInputWidget;
+import imagej.ext.plugin.Plugin;
+import imagej.widget.InputWidget;
+import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 /**
- * Common superclass for SWT-based input widgets.
- *
+ * SWT implementation of message widget.
+ * 
  * @author Curtis Rueden
  */
-public abstract class SWTInputWidget<T> extends
-	AbstractInputWidget<T, Composite>
+@Plugin(type = InputWidget.class)
+public class SWTMessageWidget extends SWTInputWidget<String> implements
+	MessageWidget<Composite>
 {
-
-	private Composite pane;
-	private Composite parent;
-
-	public void setParent(final Composite parent) {
-		// CTR FIXME: Temporary hack to inject parent component.
-		this.parent = parent;
-	}
-
-	public Composite getParent() {
-		return parent;
-	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-		pane = new Composite(parent, 0);
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
 	}
 
 	@Override
-	public Composite getPane() {
-		return pane;
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String text = model.getText();
+
+		final Label label = new Label(getPane(), 0);
+		label.setText(text);
+		label.setLayoutData("span");
+	}
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// NB: No action needed.
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
 	}
 
 }

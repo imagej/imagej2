@@ -33,62 +33,73 @@
  * #L%
  */
 
-package imagej.ext.ui.swt;
+package imagej.ui.swt.menu;
 
-import imagej.ext.plugin.Plugin;
-import imagej.widget.InputWidget;
-import imagej.widget.MessageWidget;
-import imagej.widget.WidgetModel;
+import imagej.ImageJ;
+import imagej.ext.menu.AbstractMenuCreator;
+import imagej.ext.menu.ShadowMenu;
+import imagej.ext.module.ModuleInfo;
+import imagej.ext.plugin.PluginService;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 /**
- * SWT implementation of message widget.
+ * Populates an SWT {@link Menu} with menu items from a {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class SWTMessageWidget extends SWTInputWidget<String> implements
-	MessageWidget<Composite>
-{
-
-	// -- InputWidget methods --
+public class SWTMenuCreator extends AbstractMenuCreator<Menu, Menu> {
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isMessage();
+	protected void addLeafToMenu(final ShadowMenu shadow, final Menu target) {
+		final MenuItem menuItem = new MenuItem(target, 0);
+		menuItem.setText(shadow.getMenuEntry().getName());
+		linkAction(shadow.getModuleInfo(), menuItem);
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final String text = model.getText();
-
-		final Label label = new Label(getPane(), 0);
-		label.setText(text);
-		label.setLayoutData("span");
+	protected void addLeafToTop(final ShadowMenu shadow, final Menu target) {
+		addLeafToMenu(shadow, target);
 	}
 
 	@Override
-	public String getValue() {
-		return null;
+	protected Menu addNonLeafToMenu(final ShadowMenu shadow, final Menu target) {
+		final Menu menu = new Menu(target);
+		final MenuItem menuItem = new MenuItem(target, SWT.CASCADE);
+		menuItem.setText(shadow.getMenuEntry().getName());
+		menuItem.setMenu(menu);
+		return menu;
 	}
 
 	@Override
-	public void refreshWidget() {
-		// NB: No action needed.
+	protected Menu addNonLeafToTop(final ShadowMenu shadow, final Menu target) {
+		return addNonLeafToMenu(shadow, target);
 	}
 
 	@Override
-	public boolean isLabeled() {
-		return false;
+	protected void addSeparatorToMenu(final Menu target) {
+		new MenuItem(target, SWT.SEPARATOR);
 	}
 
 	@Override
-	public boolean isMessage() {
-		return true;
+	protected void addSeparatorToTop(final Menu target) {
+		addSeparatorToMenu(target);
+	}
+
+	// -- Helper methods --
+
+	private void linkAction(final ModuleInfo info, final MenuItem menuItem) {
+		menuItem.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				ImageJ.get(PluginService.class).run(info);
+			}
+		});
 	}
 
 }

@@ -33,51 +33,58 @@
  * #L%
  */
 
-package imagej.ext.ui.swt;
+package imagej.ui.swt.widget;
 
-import imagej.widget.AbstractInputPanel;
-import imagej.widget.InputPanel;
+import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
-import net.miginfocom.swt.MigLayout;
+import imagej.widget.ObjectWidget;
+import imagej.widget.WidgetModel;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 /**
- * SWT implementation of {@link InputPanel}.
+ * SWT implementation of multiple choice selector widget.
  * 
  * @author Curtis Rueden
  */
-public class SWTInputPanel extends AbstractInputPanel<Composite> {
+@Plugin(type = InputWidget.class)
+public class SWTObjectWidget extends SWTInputWidget<Object> implements
+	ObjectWidget<Composite>
+{
 
-	private final Composite panel;
+	private Combo combo;
 
-	public SWTInputPanel(final Composite parent) {
-		panel = new Composite(parent, 0);
-		panel.setLayout(new MigLayout("wrap 2"));
-	}
-	
-	// -- SWTInputPanel methods --
-
-	public Composite getPanel() {
-		return panel;
-	}
-
-	// -- InputPanel methods --
+	// -- InputWidget methods --
 
 	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
-		super.addWidget(widget);
-		// CTR FIXME: Find a way to put the label first.
-		addLabel(widget.getModel().getWidgetLabel());
+	public boolean isCompatible(final WidgetModel model) {
+		return model.getObjectPool().size() > 0;
 	}
 
-	// -- Helper methods --
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
 
-	private Label addLabel(final String text) {
-		final Label label = new Label(panel, 0);
-		label.setText(text);
-		return label;
+		combo = new Combo(getPane(), SWT.DROP_DOWN);
+		for (final Object item : model.getObjectPool()) {
+			combo.add(item.toString());
+		}
+
+		refreshWidget();
+	}
+
+	@Override
+	public Object getValue() {
+		return getModel().getObjectPool().get(combo.getSelectionIndex());
+	}
+
+	@Override
+	public void refreshWidget() {
+		final Object value = getModel().getValue();
+		final int index = getModel().getObjectPool().indexOf(value);
+		if (index >= 0) combo.select(index);
 	}
 
 }

@@ -33,61 +33,67 @@
  * #L%
  */
 
-package imagej.ext.ui.swt;
+package imagej.ui.swt.widget;
 
 import imagej.ext.plugin.Plugin;
+import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
-import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
 
-import org.eclipse.swt.SWT;
+import java.io.File;
+
+import net.miginfocom.swt.MigLayout;
+
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.Text;
 
 /**
- * SWT implementation of number chooser widget.
- * 
+ * SWT implementation of file selector widget.
+ *
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class SWTNumberWidget extends SWTInputWidget<Number> implements
-	NumberWidget<Composite>
+public class SWTFileWidget extends SWTInputWidget<File> implements
+	FileWidget<Composite>
 {
 
-	private Slider slider;
+	private Text path;
+	private Button browse;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isNumber();
+		return model.isType(File.class);
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		final Number min = model.getMin();
-		final Number max = model.getMax();
-		final Number stepSize = model.getStepSize();
+		getPane().setLayout(new MigLayout());
 
-		slider = new Slider(getPane(), SWT.HORIZONTAL);
-		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
-			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
+		path = new Text(getPane(), 0);
+		path.setTextLimit(20);
+
+		browse = new Button(getPane(), 0);
+		browse.setText("Browse");
 
 		refreshWidget();
 	}
 
 	@Override
-	public Number getValue() {
-		return slider.getSelection();
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	@Override
 	public void refreshWidget() {
-		final int value = ((Number) getModel().getValue()).intValue();
-		if (slider.getSelection() == value) return; // no change
-		slider.setSelection(value);
+		final String text = getModel().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
 	}
 
 }
