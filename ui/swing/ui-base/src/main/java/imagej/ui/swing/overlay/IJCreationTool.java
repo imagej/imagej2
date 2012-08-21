@@ -50,7 +50,6 @@ import org.jhotdraw.draw.tool.CreationTool;
 public class IJCreationTool extends CreationTool implements JHotDrawTool {
 
 	private final ImageDisplay display;
-
 	private final JHotDrawAdapter adapter;
 
 	public IJCreationTool(final ImageDisplay display,
@@ -65,15 +64,15 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 
 	@Override
 	protected Figure createFigure() {
-		return adapter.createDefaultFigure();
+		return getAdapter().createDefaultFigure();
 	}
 
 	@Override
 	protected void creationFinished(final Figure figure) {
 		super.creationFinished(figure);
 		final JHotDrawService jHotDrawService =
-			display.getContext().getService(JHotDrawService.class);
-		jHotDrawService.linkOverlay(figure, adapter);
+			getDisplay().getContext().getService(JHotDrawService.class);
+		jHotDrawService.linkOverlay(figure, getAdapter());
 	}
 
 	// -- JHotDrawTool methods --

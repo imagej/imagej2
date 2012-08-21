@@ -50,7 +50,6 @@ import org.jhotdraw.draw.tool.BezierTool;
 public class IJBezierTool extends BezierTool implements JHotDrawTool {
 
 	private final ImageDisplay display;
-
 	private final JHotDrawAdapter adapter;
 
 	public IJBezierTool(final ImageDisplay display,
@@ -65,7 +64,7 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 
 	@Override
 	protected BezierFigure createFigure() {
-		return (BezierFigure) adapter.createDefaultFigure();
+		return (BezierFigure) getAdapter().createDefaultFigure();
 	}
 
 	@Override
@@ -74,8 +73,8 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 	{
 		super.finishCreation(figure, drawingView);
 		final JHotDrawService jHotDrawService =
-			display.getContext().getService(JHotDrawService.class);
-		jHotDrawService.linkOverlay(figure, adapter);
+			getDisplay().getContext().getService(JHotDrawService.class);
+		jHotDrawService.linkOverlay(figure, getAdapter());
 	}
 
 	// -- JHotDrawTool methods --
