@@ -45,7 +45,6 @@ import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.UIService;
 
 import java.util.HashMap;
 
@@ -97,9 +96,6 @@ public class RealImageCalculator<T extends RealType<T>> implements
 
 	@Parameter
 	private DatasetService datasetService;
-
-	@Parameter
-	private UIService uiService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset input1;
