@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.overlay;
 
-import imagej.Prioritized;
-import imagej.Priority;
 import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -70,8 +68,6 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 	static final protected double[] dashLineStyle = { 4, 4 };
 	static final protected double[] dotLineStyle = { 1, 2 };
 	static final protected double[] dotDashLineStyle = { 6, 2, 1, 2 };
-
-	private double priority = Priority.NORMAL_PRIORITY;
 
 	// -- JHotDrawAdapter methods --
 
@@ -143,25 +139,6 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 		final Color fillColor = figure.get(AttributeKeys.FILL_COLOR);
 		overlay.setFillColor(AWTColors.getColorRGB(fillColor));
 		overlay.setAlpha(fillColor.getAlpha());
-	}
-
-	// -- Prioritized methods --
-
-	@Override
-	public double getPriority() {
-		return priority;
-	}
-
-	@Override
-	public void setPriority(final double priority) {
-		this.priority = priority;
-	}
-
-	// -- Comparable methods --
-
-	@Override
-	public int compareTo(final Prioritized p) {
-		return Priority.compare(this, p);
 	}
 
 	// -- Internal methods --

@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.overlay;
 
-import imagej.Prioritized;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -58,7 +57,7 @@ import org.jhotdraw.draw.Figure;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public interface JHotDrawAdapter extends Tool, Prioritized {
+public interface JHotDrawAdapter extends Tool {
 
 	/**
 	 * Determines whether the adapter can handle a particular overlay, or overlay

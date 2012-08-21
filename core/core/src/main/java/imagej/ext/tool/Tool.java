@@ -36,6 +36,7 @@
 package imagej.ext.tool;
 
 import imagej.Contextual;
+import imagej.Prioritized;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
@@ -71,7 +72,7 @@ import imagej.ext.plugin.PluginInfo;
  * @see Plugin
  * @see ToolService
  */
-public interface Tool extends IPlugin, Contextual {
+public interface Tool extends IPlugin, Contextual, Prioritized {
 
 	/** Gets the info describing the tool. */
 	PluginInfo<? extends Tool> getInfo();
