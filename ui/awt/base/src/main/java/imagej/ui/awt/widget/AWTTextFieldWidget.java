@@ -33,86 +33,65 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.widget;
 
 import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
-import imagej.widget.ObjectWidget;
+import imagej.widget.TextFieldWidget;
 import imagej.widget.WidgetModel;
 
 import java.awt.BorderLayout;
-import java.awt.Choice;
 import java.awt.Panel;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.TextField;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 /**
- * AWT implementation of object selector widget.
- * 
+ * AWT implementation of text field widget.
+ *
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class AWTObjectWidget extends AWTInputWidget<Object>
-	implements ItemListener, ObjectWidget<Panel>
+public class AWTTextFieldWidget extends AWTInputWidget<String>
+	implements TextFieldWidget<Panel>, TextListener
 {
 
-	private Choice choice;
+	private TextField textField;
 
 	// -- InputWidget methods --
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.getObjectPool().size() > 0;
+		return model.isText() && !model.isMultipleChoice() && !model.isMessage();
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		choice = new Choice();
-		for (final Object item : model.getObjectPool()) {
-			choice.add(item.toString());
-		}
-		getPane().add(choice, BorderLayout.CENTER);
-		choice.addItemListener(this);
+		final int columns = model.getItem().getColumnCount();
+		textField = new TextField("", columns);
+		textField.addTextListener(this);
+		getPane().add(textField, BorderLayout.CENTER);
 
 		refreshWidget();
 	}
 
 	@Override
-	public Object getValue() {
-		return getModel().getObjectPool().get(choice.getSelectedIndex());
+	public String getValue() {
+		return textField.getText();
 	}
 
 	@Override
 	public void refreshWidget() {
-		choice.select(getValidValue());
+		textField.setText(getModel().getValue().toString());
 	}
 
-	// -- ItemListener methods --
+	// -- TextListener methods --
 
 	@Override
-	public void itemStateChanged(ItemEvent e) {
+	public void textValueChanged(final TextEvent e) {
 		updateModel();
-	}
-
-	// -- Helper methods --
-
-	private String getValidValue() {
-		final int itemCount = choice.getItemCount();
-		if (itemCount == 0) return null; // no valid values exist
-
-		final String value = getModel().getValue().toString();
-		for (int i = 0; i < itemCount; i++) {
-			final String item = choice.getItem(i);
-			if (value == item) return value;
-		}
-
-		// value was invalid; reset to first choice on the list
-		final String validValue = choice.getItem(0);
-		// CTR FIXME should not update model in getter!
-		getModel().setValue(validValue);
-		return validValue;
 	}
 
 }

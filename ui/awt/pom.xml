@@ -18,8 +18,7 @@
 	<description>ImageJ user interface projects for pure AWT (i.e., non-Swing).</description>
 
 	<modules>
-		<module>ext</module>
-		<module>ui</module>
+		<module>base</module>
 	</modules>
 
 	<properties>

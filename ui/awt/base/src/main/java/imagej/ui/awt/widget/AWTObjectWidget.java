@@ -33,11 +33,11 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.widget;
 
 import imagej.ext.plugin.Plugin;
-import imagej.widget.ChoiceWidget;
 import imagej.widget.InputWidget;
+import imagej.widget.ObjectWidget;
 import imagej.widget.WidgetModel;
 
 import java.awt.BorderLayout;
@@ -47,13 +47,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- * AWT implementation of multiple choice selector widget.
- *
+ * AWT implementation of object selector widget.
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class AWTChoiceWidget extends AWTInputWidget<String> implements
-	ChoiceWidget<Panel>, ItemListener
+public class AWTObjectWidget extends AWTInputWidget<Object>
+	implements ItemListener, ObjectWidget<Panel>
 {
 
 	private Choice choice;
@@ -62,31 +62,31 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isText() && model.isMultipleChoice();
+		return model.getObjectPool().size() > 0;
 	}
 
 	@Override
 	public void initialize(final WidgetModel model) {
-		final String[] items = model.getChoices();
+		super.initialize(model);
 
 		choice = new Choice();
-		for (final String item : items) choice.add(item);
-		choice.addItemListener(this);
+		for (final Object item : model.getObjectPool()) {
+			choice.add(item.toString());
+		}
 		getPane().add(choice, BorderLayout.CENTER);
+		choice.addItemListener(this);
 
 		refreshWidget();
 	}
 
 	@Override
-	public String getValue() {
-		return choice.getSelectedItem();
+	public Object getValue() {
+		return getModel().getObjectPool().get(choice.getSelectedIndex());
 	}
 
 	@Override
 	public void refreshWidget() {
-		final String value = getValidValue();
-		if (value.equals(choice.getSelectedItem())) return; // no change
-		choice.select(value);
+		choice.select(getValidValue());
 	}
 
 	// -- ItemListener methods --

@@ -33,55 +33,61 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.widget;
 
-import imagej.widget.AbstractInputPanel;
-import imagej.widget.InputPanel;
+import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
+import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import java.awt.Label;
 import java.awt.Panel;
 
-import net.miginfocom.swing.MigLayout;
-
 /**
- * AWT implementation of {@link InputPanel}.
+ * AWT implementation of message widget.
  * 
  * @author Curtis Rueden
  */
-public class AWTInputPanel extends AbstractInputPanel<Panel> {
+@Plugin(type = InputWidget.class)
+public class AWTMessageWidget extends AWTInputWidget<String> implements
+	MessageWidget<Panel>
+{
 
-	private final Panel panel;
-
-	public AWTInputPanel() {
-		panel = new Panel();
-		panel.setLayout(new MigLayout("wrap 2"));
-	}
-
-	public Panel getPanel() {
-		return panel;
-	}
-
-	// -- InputPanel methods --
+	// -- InputWidget methods --
 
 	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
-		super.addWidget(widget);
-		if (!(widget instanceof AWTInputWidget)) return;
-		final Panel widgetPane = ((AWTInputWidget<?>) widget).getPane();
-		final WidgetModel model = widget.getModel();
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isMessage();
+	}
 
-		// add widget to panel
-		if (widget.isLabeled()) {
-			// widget is prefixed by a label
-			panel.add(new Label(model.getWidgetLabel()));
-			panel.add(widgetPane);
-		}
-		else {
-			// widget occupies entire row
-			panel.add(widgetPane, "span");
-		}
+	@Override
+	public void initialize(final WidgetModel model) {
+		super.initialize(model);
+
+		final String text = model.getText();
+
+		final Label label = new Label(text);
+		getPane().add(label, "span");
+	}
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// NB: No action needed.
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return true;
 	}
 
 }

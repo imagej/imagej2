@@ -38,7 +38,6 @@ package imagej.ui.awt;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.ui.awt.AWTMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.ApplicationFrame;
@@ -49,6 +48,7 @@ import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.awt.menu.AWTMenuBarCreator;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.viewer.DisplayWindow;
 

@@ -33,33 +33,86 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.widget;
 
-import imagej.widget.AbstractInputWidget;
+import imagej.ext.plugin.Plugin;
+import imagej.widget.ChoiceWidget;
+import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
+import java.awt.BorderLayout;
+import java.awt.Choice;
 import java.awt.Panel;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
- * Common superclass for AWT-based input widgets.
- * 
+ * AWT implementation of multiple choice selector widget.
+ *
  * @author Curtis Rueden
  */
-public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
+@Plugin(type = InputWidget.class)
+public class AWTChoiceWidget extends AWTInputWidget<String> implements
+	ChoiceWidget<Panel>, ItemListener
+{
 
-	private Panel pane;
+	private Choice choice;
 
 	// -- InputWidget methods --
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-		pane = new Panel();
+	public boolean isCompatible(final WidgetModel model) {
+		return model.isText() && model.isMultipleChoice();
 	}
 
 	@Override
-	public Panel getPane() {
-		return pane;
+	public void initialize(final WidgetModel model) {
+		final String[] items = model.getChoices();
+
+		choice = new Choice();
+		for (final String item : items) choice.add(item);
+		choice.addItemListener(this);
+		getPane().add(choice, BorderLayout.CENTER);
+
+		refreshWidget();
+	}
+
+	@Override
+	public String getValue() {
+		return choice.getSelectedItem();
+	}
+
+	@Override
+	public void refreshWidget() {
+		final String value = getValidValue();
+		if (value.equals(choice.getSelectedItem())) return; // no change
+		choice.select(value);
+	}
+
+	// -- ItemListener methods --
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		updateModel();
+	}
+
+	// -- Helper methods --
+
+	private String getValidValue() {
+		final int itemCount = choice.getItemCount();
+		if (itemCount == 0) return null; // no valid values exist
+
+		final String value = getModel().getValue().toString();
+		for (int i = 0; i < itemCount; i++) {
+			final String item = choice.getItem(i);
+			if (value == item) return value;
+		}
+
+		// value was invalid; reset to first choice on the list
+		final String validValue = choice.getItem(0);
+		// CTR FIXME should not update model in getter!
+		getModel().setValue(validValue);
+		return validValue;
 	}
 
 }

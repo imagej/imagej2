@@ -33,65 +33,33 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.widget;
 
-import imagej.ext.plugin.Plugin;
-import imagej.widget.InputWidget;
-import imagej.widget.TextFieldWidget;
+import imagej.widget.AbstractInputWidget;
 import imagej.widget.WidgetModel;
 
-import java.awt.BorderLayout;
 import java.awt.Panel;
-import java.awt.TextField;
-import java.awt.event.TextEvent;
-import java.awt.event.TextListener;
 
 /**
- * AWT implementation of text field widget.
- *
+ * Common superclass for AWT-based input widgets.
+ * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class AWTTextFieldWidget extends AWTInputWidget<String>
-	implements TextFieldWidget<Panel>, TextListener
-{
+public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
 
-	private TextField textField;
+	private Panel pane;
 
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isText() && !model.isMultipleChoice() && !model.isMessage();
-	}
-
-	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
-
-		final int columns = model.getItem().getColumnCount();
-		textField = new TextField("", columns);
-		textField.addTextListener(this);
-		getPane().add(textField, BorderLayout.CENTER);
-
-		refreshWidget();
+		pane = new Panel();
 	}
 
 	@Override
-	public String getValue() {
-		return textField.getText();
-	}
-
-	@Override
-	public void refreshWidget() {
-		textField.setText(getModel().getValue().toString());
-	}
-
-	// -- TextListener methods --
-
-	@Override
-	public void textValueChanged(final TextEvent e) {
-		updateModel();
+	public Panel getPane() {
+		return pane;
 	}
 
 }

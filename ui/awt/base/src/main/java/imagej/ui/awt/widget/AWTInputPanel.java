@@ -33,61 +33,55 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.widget;
 
-import imagej.ext.plugin.Plugin;
+import imagej.widget.AbstractInputPanel;
+import imagej.widget.InputPanel;
 import imagej.widget.InputWidget;
-import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import java.awt.Label;
 import java.awt.Panel;
 
+import net.miginfocom.swing.MigLayout;
+
 /**
- * AWT implementation of message widget.
+ * AWT implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class AWTMessageWidget extends AWTInputWidget<String> implements
-	MessageWidget<Panel>
-{
+public class AWTInputPanel extends AbstractInputPanel<Panel> {
 
-	// -- InputWidget methods --
+	private final Panel panel;
 
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isMessage();
+	public AWTInputPanel() {
+		panel = new Panel();
+		panel.setLayout(new MigLayout("wrap 2"));
 	}
 
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final String text = model.getText();
-
-		final Label label = new Label(text);
-		getPane().add(label, "span");
+	public Panel getPanel() {
+		return panel;
 	}
 
-	@Override
-	public String getValue() {
-		return null;
-	}
+	// -- InputPanel methods --
 
 	@Override
-	public void refreshWidget() {
-		// NB: No action needed.
-	}
+	public void addWidget(final InputWidget<?, ?> widget) {
+		super.addWidget(widget);
+		if (!(widget instanceof AWTInputWidget)) return;
+		final Panel widgetPane = ((AWTInputWidget<?>) widget).getPane();
+		final WidgetModel model = widget.getModel();
 
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
-
-	@Override
-	public boolean isMessage() {
-		return true;
+		// add widget to panel
+		if (widget.isLabeled()) {
+			// widget is prefixed by a label
+			panel.add(new Label(model.getWidgetLabel()));
+			panel.add(widgetPane);
+		}
+		else {
+			// widget occupies entire row
+			panel.add(widgetPane, "span");
+		}
 	}
 
 }

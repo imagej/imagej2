@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.menu;
 
 import imagej.ImageJ;
 import imagej.ext.Accelerator;

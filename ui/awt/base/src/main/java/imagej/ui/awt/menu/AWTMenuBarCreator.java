@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.menu;
 
 import imagej.ext.menu.ShadowMenu;
 import imagej.util.Log;

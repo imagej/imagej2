@@ -33,9 +33,8 @@
  * #L%
  */
 
-package imagej.ext.ui.awt;
+package imagej.ui.awt.menu;
 
-import imagej.ext.menu.MenuCreator;
 import imagej.ext.menu.ShadowMenu;
 
 import java.awt.Menu;
@@ -44,35 +43,37 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 
 /**
- * Populates an AWT {@link Menu} with menu items from a {@link ShadowMenu}.
+ * Populates an AWT {@link PopupMenu} with menu items from a {@link ShadowMenu}.
  * <p>
- * Unfortunately, the {@link AWTMenuBarCreator}, {@link AWTMenuCreator} and
+ * Unfortunately, the {@link AWTMenuBarCreator}, {@link AWTPopupMenuCreator} and
  * {@link AWTPopupMenuCreator} classes must all exist and replicate some code,
  * because {@link MenuBar}, {@link MenuItem} and {@link PopupMenu} do not share
  * a common interface for operations such as {@link Menu#add}.
  * </p>
  * <p>
- * This class is called <code>AWTMenuCreator</code> rather than simply
- * <code>MenuCreator</code> to avoid a name clash with the toplevel
- * {@link MenuCreator} interface.
+ * This class is called <code>AWTPopupMenuCreator</code> rather than simply
+ * <code>PopupMenuCreator</code> for consistency with other UI implementations
+ * such as {@link AWTMenuCreator}</code>.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public class AWTMenuCreator extends AbstractAWTMenuCreator<Menu> {
+public class AWTPopupMenuCreator extends AbstractAWTMenuCreator<PopupMenu> {
 
 	@Override
-	protected void addLeafToTop(final ShadowMenu shadow, final Menu target) {
+	protected void addLeafToTop(final ShadowMenu shadow, final PopupMenu target) {
 		addLeafToMenu(shadow, target);
 	}
 
 	@Override
-	protected Menu addNonLeafToTop(final ShadowMenu shadow, final Menu target) {
+	protected Menu
+		addNonLeafToTop(final ShadowMenu shadow, final PopupMenu target)
+	{
 		return addNonLeafToMenu(shadow, target);
 	}
 
 	@Override
-	protected void addSeparatorToTop(final Menu target) {
+	protected void addSeparatorToTop(final PopupMenu target) {
 		addSeparatorToMenu(target);
 	}
 
