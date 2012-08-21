@@ -375,8 +375,10 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	 */
 	@EventHandler
 	protected void onEvent(final FigureCreatedEvent event) {
+		final ImageDisplay display = event.getDisplay();
+		if (display != getDisplay()) return; // not this canvas's display
+
 		final OverlayView overlay = event.getView();
-		final ImageDisplay display = getDisplay();
 		for (int i = 0; i < display.numDimensions(); i++) {
 			final AxisType axis = display.axis(i);
 			if (Axes.isXY(axis)) continue;
