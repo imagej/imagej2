@@ -14,7 +14,7 @@
 	<artifactId>ij-util-swing</artifactId>
 
 	<name>ImageJ Utility Classes: Swing</name>
-	<description>Swing utility classes for use with AWT and Swing user interfaces.</description>
+	<description>Swing utility classes for use with Swing user interfaces. These classes do not depend on ImageJ, and are considered general-purpose Swing utility classes, potentially useful outside the ImageJ framework.</description>
 
 	<dependencies>
 		<dependency>

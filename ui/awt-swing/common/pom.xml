@@ -14,7 +14,7 @@
 	<artifactId>ij-ui-common-awt</artifactId>
 
 	<name>ImageJ UI: Common AWT Classes</name>
-	<description>Common AWT classes for use with AWT and Swing user interfaces.</description>
+	<description>Common AWT classes for use with AWT and Swing user interfaces. These classes depend on several ImageJ components, and are intended only to share code between AWT- and Swing-based user interfaces of ImageJ.</description>
 
 	<dependencies>
 		<dependency>
