@@ -33,40 +33,42 @@
  * #L%
  */
 
-package imagej.service;
+package imagej.ext.plugin;
 
-import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.ext.plugin.SortablePlugin;
+import imagej.AbstractContextual;
+import imagej.Contextual;
+import imagej.Prioritized;
+import imagej.Priority;
 
 /**
- * Abstract superclass of {@link Service} implementations.
+ * Abstract base class for {@link Contextual}, {@link Prioritized} plugins.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractService extends SortablePlugin implements Service
+public abstract class SortablePlugin extends AbstractContextual
+	implements Prioritized, IPlugin
 {
 
-	/** Maintain list of event subscribers, to avoid garbage collection. */
-	@SuppressWarnings("unused")
-	private Object eventSubscribers;
+	/** The priority of the plugin. */
+	private double priority = Priority.NORMAL_PRIORITY;
 
-	public AbstractService(final ImageJ context) {
-		setContext(context);
-	}
-
-	// -- Object methods --
+	// -- Prioritized methods --
 
 	@Override
-	public String toString() {
-		return getClass().getName() + " [priority = " + getPriority() + "]";
+	public double getPriority() {
+		return priority;
 	}
 
-	// -- Internal methods --
+	@Override
+	public void setPriority(final double priority) {
+		this.priority = priority;
+	}
 
-	protected void subscribeToEvents(final EventService eventService) {
-		if (eventService == null) return;
-		eventSubscribers = eventService.subscribe(this);
+	// -- Comparable methods --
+
+	@Override
+	public int compareTo(final Prioritized that) {
+		return Priority.compare(this, that);
 	}
 
 }
