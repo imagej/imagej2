@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.display.ui;
+package imagej.ui.viewer;
 
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;

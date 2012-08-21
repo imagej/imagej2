@@ -37,6 +37,7 @@ package imagej.ui.swing.overlay;
 
 import imagej.ImageJ;
 import imagej.data.display.DataView;
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -168,10 +169,13 @@ public class JHotDrawService extends AbstractService {
 	}
 
 	/**
-	 * Links a new {@link Overlay}, created by the given {@link JHotDrawAdapter},
-	 * to the specified JHotDraw {@link Figure}.
+	 * Links a new {@link Overlay} and {@link OverlayView}, created by the given
+	 * {@link JHotDrawAdapter}, to the specified JHotDraw {@link Figure} of a
+	 * particular {@link ImageDisplay}.
 	 */
-	public void linkOverlay(final Figure figure, final JHotDrawAdapter adapter) {
+	public void linkOverlay(final Figure figure, final JHotDrawAdapter adapter,
+		final ImageDisplay display)
+	{
 		final Overlay overlay = adapter.createNewOverlay();
 		final DataView view = imageDisplayService.createDataView(overlay);
 		if (!(view instanceof OverlayView)) {
@@ -180,7 +184,7 @@ public class JHotDrawService extends AbstractService {
 		final OverlayView overlayView = (OverlayView) view;
 		adapter.updateOverlay(figure, overlayView);
 
-		eventService.publish(new FigureCreatedEvent(overlayView, figure));
+		eventService.publish(new FigureCreatedEvent(overlayView, figure, display));
 	}
 
 }

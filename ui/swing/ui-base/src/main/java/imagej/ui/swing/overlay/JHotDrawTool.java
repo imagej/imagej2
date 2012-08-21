@@ -35,6 +35,8 @@
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.display.ImageDisplay;
+
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.event.UndoableEditListener;
@@ -55,6 +57,12 @@ public interface JHotDrawTool extends Tool {
 	void setInputMap(InputMap map);
 
 	void setActionMap(ActionMap map);
+
+	/** Gets the {@link ImageDisplay} associated with this JHotDraw tool. */
+	ImageDisplay getDisplay();
+
+	/** Gets the {@link JHotDrawAdapter} associated with this JhotDraw tool. */
+	JHotDrawAdapter getAdapter();
 
 	boolean isConstructing();
 

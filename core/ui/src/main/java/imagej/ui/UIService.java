@@ -36,12 +36,10 @@
 package imagej.ui;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;
@@ -52,6 +50,8 @@ import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
+import imagej.ui.viewer.DisplayViewer;
+import imagej.ui.viewer.ImageDisplayViewer;
 
 import java.util.List;
 

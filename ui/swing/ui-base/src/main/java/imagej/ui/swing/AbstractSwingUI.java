@@ -36,7 +36,6 @@
 package imagej.ui.swing;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayViewer;
 import imagej.ext.menu.MenuService;
 import imagej.ext.menu.ShadowMenu;
 import imagej.ext.ui.swing.SwingJMenuBarCreator;
@@ -48,6 +47,7 @@ import imagej.ui.SystemClipboard;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropListener;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
+import imagej.ui.viewer.DisplayViewer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

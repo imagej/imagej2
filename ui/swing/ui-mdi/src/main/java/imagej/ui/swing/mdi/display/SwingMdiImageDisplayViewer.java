@@ -35,12 +35,12 @@
 
 package imagej.ui.swing.mdi.display;
 
-import imagej.data.display.ui.ImageDisplayViewer;
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.display.SwingImageDisplayViewer;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.ImageDisplayViewer;
 
 import javax.swing.JInternalFrame;
 

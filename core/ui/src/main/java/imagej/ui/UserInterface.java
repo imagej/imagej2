@@ -36,9 +36,9 @@
 package imagej.ui;
 
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
+import imagej.ui.viewer.DisplayWindow;
 
 /**
  * An end-user ImageJ application user interface.

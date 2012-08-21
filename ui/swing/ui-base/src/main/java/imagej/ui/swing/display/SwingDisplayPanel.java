@@ -46,11 +46,11 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ext.display.Display;
-import imagej.ext.display.ui.DisplayPanel;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingColorBar;
+import imagej.ui.viewer.DisplayPanel;
+import imagej.ui.viewer.DisplayWindow;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;

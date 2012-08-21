@@ -50,7 +50,6 @@ import org.jhotdraw.draw.tool.CreationTool;
 public class IJCreationTool extends CreationTool implements JHotDrawTool {
 
 	private final ImageDisplay display;
-
 	private final JHotDrawAdapter adapter;
 
 	public IJCreationTool(final ImageDisplay display,
@@ -61,23 +60,39 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		this.adapter = adapter;
 	}
 
+	// -- CreationTool methods --
+
 	@Override
 	protected Figure createFigure() {
-		return adapter.createDefaultFigure();
+		return getAdapter().createDefaultFigure();
 	}
 
 	@Override
 	protected void creationFinished(final Figure figure) {
 		super.creationFinished(figure);
 		final JHotDrawService jHotDrawService =
-			display.getContext().getService(JHotDrawService.class);
-		jHotDrawService.linkOverlay(figure, adapter);
+			getDisplay().getContext().getService(JHotDrawService.class);
+		jHotDrawService.linkOverlay(figure, getAdapter(), getDisplay());
+	}
+
+	// -- JHotDrawTool methods --
+
+	@Override
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
+	@Override
+	public JHotDrawAdapter getAdapter() {
+		return adapter;
 	}
 
 	@Override
 	public boolean isConstructing() {
 		return createdFigure != null;
 	}
+
+	// -- MouseListener methods --
 
 	@Override
 	public void mouseClicked(MouseEvent evt) {
@@ -96,6 +111,8 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		if (!isLeftClick(evt)) return;
 		super.mouseReleased(evt);
 	}
+
+	// -- Helper methods --
 
 	private boolean isLeftClick(final MouseEvent evt) {
 		return evt.getButton() == MouseEvent.BUTTON1;

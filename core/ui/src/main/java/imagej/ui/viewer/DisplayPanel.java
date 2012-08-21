@@ -33,44 +33,35 @@
  * #L%
  */
 
-package imagej.ext.display.ui;
+package imagej.ui.viewer;
+
+import imagej.ext.display.Display;
 
 /**
- * A user interface window associated with a Display, containing a
- * {@link DisplayPanel}.
+ * The panel housing a particular {@link Display}.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-public interface DisplayWindow {
+public interface DisplayPanel {
 
-	void setTitle(String s);
+	/** Gets the panel's associated display. */
+	Display<?> getDisplay();
 
-	void setContent(DisplayPanel panel);
-
-	void pack(); // or reformat, or (re)validate, or somesuch.
-
-	/**
-	 * Places this component into the desktop environment. It should do
-	 * appropriate size and locate the window. Different types of DisplayWindows
-	 * (e.g. Image, Text) can implement this differently; for instance, in a
-	 * tabbed enviroment, it is added to the appropriate set of tabs.
-	 */
-	void showDisplay(boolean visible);
-
-	void requestFocus();
-
-	void close();
-	
-	/**
-	 * Finds the x coordinate on the screen of the origin of the display window's
-	 * content.
-	 */
-	int findDisplayContentScreenX();
+	/** Gets the window housing this panel. */
+	DisplayWindow getWindow();
 
 	/**
-	 * Finds the y coordinate on the screen of the origin of the display window's
-	 * content.
+	 * Rebuilds the display window to reflect the display's current views,
+	 * dimensional lengths, etc. The window may change size, and hence may repack
+	 * itself.
 	 */
-	int findDisplayContentScreenY();
+	void redoLayout();
+
+	/** Sets the label at the top of the display panel. */
+	void setLabel(String s);
+
+	/** Redraws the contents of the panel. */
+	void redraw();
 
 }

@@ -33,12 +33,11 @@
  * #L%
  */
 
-package imagej.data.display.ui;
+package imagej.ui.viewer;
 
 import imagej.data.Dataset;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.display.ui.DisplayViewer;
 
 /**
  * A display viewer for DataViews.

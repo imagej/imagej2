@@ -35,11 +35,11 @@
 
 package imagej.ui.swing.mdi.display;
 
-import imagej.ext.display.ui.DisplayPanel;
-import imagej.ext.display.ui.DisplayWindow;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.display.SwingDisplayPanel;
 import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
+import imagej.ui.viewer.DisplayPanel;
+import imagej.ui.viewer.DisplayWindow;
 
 import java.awt.Dimension;
 import java.awt.HeadlessException;
