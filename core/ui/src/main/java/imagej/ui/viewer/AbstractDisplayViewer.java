@@ -42,6 +42,7 @@ import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
+import imagej.ext.plugin.SortablePlugin;
 
 import java.util.List;
 
@@ -53,7 +54,9 @@ import java.util.List;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public abstract class AbstractDisplayViewer<T> implements DisplayViewer<T> {
+public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
+	DisplayViewer<T>
+{
 
 	private Display<T> display;
 	private DisplayWindow window;

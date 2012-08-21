@@ -285,6 +285,8 @@ public final class DefaultUIService extends AbstractService implements
 		{
 			try {
 				final DisplayViewer<?> displayViewer = info.createInstance();
+				displayViewer.setContext(getContext());
+				displayViewer.setPriority(info.getPriority());
 				if (displayViewer.canView(display)) {
 					final DisplayWindow displayWindow =
 						getUI().createDisplayWindow(display);
