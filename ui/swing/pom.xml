@@ -41,37 +41,4 @@
 		</repository>
 	</repositories>
 
-	<profiles>
-		<profile>
-			<id>all</id>
-			<modules>
-				<module>ui-mdi</module>
-				<module>ui-sdi</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swing</id>
-			<activation>
-				<property>
-					<name>!ij.ui</name>
-				</property>
-			</activation>
-			<modules>
-				<module>ui-sdi</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swing-mdi</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>swing-mdi</value>
-				</property>
-			</activation>
-			<modules>
-				<module>ui-mdi</module>
-			</modules>
-		</profile>
-	</profiles>
-
 </project>

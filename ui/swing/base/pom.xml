@@ -11,10 +11,10 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-swing-base</artifactId>
+	<artifactId>ij-ui-swing</artifactId>
 
-	<name>ImageJ UI: Swing (base classes)</name>
-	<description>Base classes for Swing-based ImageJ user interfaces.</description>
+	<name>ImageJ UI: Swing</name>
+	<description>A Swing-based ImageJ user interface. Both SDI and MDI implementations are provided.</description>
 
 	<dependencies>
 		<dependency>
