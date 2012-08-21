@@ -35,11 +35,11 @@
 
 package imagej.ext.display;
 
-import imagej.AbstractContextual;
 import imagej.event.EventService;
 import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
+import imagej.ext.plugin.SortablePlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +52,7 @@ import java.util.ListIterator;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDisplay<T> extends AbstractContextual implements
+public abstract class AbstractDisplay<T> extends SortablePlugin implements
 	Display<T>
 {
 

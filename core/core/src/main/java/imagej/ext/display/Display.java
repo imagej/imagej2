@@ -36,7 +36,7 @@
 package imagej.ext.display;
 
 import imagej.Contextual;
-import imagej.ImageJ;
+import imagej.Prioritized;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
 
@@ -61,7 +61,7 @@ import java.util.List;
  * @see Plugin
  * @see DisplayService
  */
-public interface Display<T> extends List<T>, IPlugin, Contextual {
+public interface Display<T> extends List<T>, IPlugin, Contextual, Prioritized {
 
 	/**
 	 * Tests whether the display is capable of visualizing objects of the given
