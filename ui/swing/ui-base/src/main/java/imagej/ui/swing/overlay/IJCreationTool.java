@@ -61,6 +61,8 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		this.adapter = adapter;
 	}
 
+	// -- CreationTool methods --
+
 	@Override
 	protected Figure createFigure() {
 		return adapter.createDefaultFigure();
@@ -74,10 +76,14 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		jHotDrawService.linkOverlay(figure, adapter);
 	}
 
+	// -- JHotDrawTool methods --
+
 	@Override
 	public boolean isConstructing() {
 		return createdFigure != null;
 	}
+
+	// -- MouseListener methods --
 
 	@Override
 	public void mouseClicked(MouseEvent evt) {
@@ -96,6 +102,8 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 		if (!isLeftClick(evt)) return;
 		super.mouseReleased(evt);
 	}
+
+	// -- Helper methods --
 
 	private boolean isLeftClick(final MouseEvent evt) {
 		return evt.getButton() == MouseEvent.BUTTON1;

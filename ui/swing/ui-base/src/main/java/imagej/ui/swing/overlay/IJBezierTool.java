@@ -61,6 +61,8 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 		this.adapter = adapter;
 	}
 
+	// -- BezierTool methods --
+
 	@Override
 	protected BezierFigure createFigure() {
 		return (BezierFigure) adapter.createDefaultFigure();
@@ -75,6 +77,8 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 			display.getContext().getService(JHotDrawService.class);
 		jHotDrawService.linkOverlay(figure, adapter);
 	}
+
+	// -- JHotDrawTool methods --
 
 	@Override
 	public boolean isConstructing() {
