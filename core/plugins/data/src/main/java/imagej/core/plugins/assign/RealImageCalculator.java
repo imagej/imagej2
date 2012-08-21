@@ -158,7 +158,9 @@ public class RealImageCalculator<T extends RealType<T>> implements
 		Img<DoubleType> img = null;
 		try {
 			ImageCombiner computer = new ImageCombiner();
+			@SuppressWarnings("unchecked")
 			Img<T> img1 = (Img<T>) input1.getImgPlus();
+			@SuppressWarnings("unchecked")
 			Img<T> img2 = (Img<T>) input2.getImgPlus();
 			// TODO - limited by ArrayImg size constraints
 			img =
@@ -174,7 +176,7 @@ public class RealImageCalculator<T extends RealType<T>> implements
 		// replace original data if desired by user
 		if (!wantDoubles && !newWindow) {
 			output = null;
-			copyDataInto(img, input1.getImgPlus(), span);
+			copyDataInto(input1.getImgPlus(), img, span);
 			input1.update();
 		}
 		else { // write into output
@@ -190,7 +192,7 @@ public class RealImageCalculator<T extends RealType<T>> implements
 			output =
 				datasetService.create(span, "Result of operation", input1.getAxes(),
 					bits, signed, floating);
-			copyDataInto(img, output.getImgPlus(), span);
+			copyDataInto(output.getImgPlus(), img, span);
 			output.update(); // TODO - probably unecessary
 		}
 	}
@@ -252,7 +254,7 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	// -- private helpers --
 
 	private void copyDataInto(
-		Img<? extends RealType<?>> in, Img<? extends RealType<?>> out, long[] span)
+		Img<? extends RealType<?>> out, Img<? extends RealType<?>> in, long[] span)
 	{
 		RandomAccess<? extends RealType<?>> src = in.randomAccess();
 		RandomAccess<? extends RealType<?>> dst = out.randomAccess();
