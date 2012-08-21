@@ -96,6 +96,11 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	private int y = -1;
 
 	/** Creates an AWT input event dispatcher for the given display. */
+	public AWTInputEventDispatcher(final Display<?> display) {
+		this(display, display.getContext().getService(EventService.class));
+	}
+
+	/** Creates an AWT input event dispatcher for the given display. */
 	public AWTInputEventDispatcher(final Display<?> display,
 		final EventService eventService)
 	{
