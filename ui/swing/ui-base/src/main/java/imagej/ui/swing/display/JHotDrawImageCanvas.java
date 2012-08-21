@@ -190,164 +190,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		});
 	}
 
-	protected FigureView getFigureView(final DataView dataView) {
-		for (final FigureView figureView : figureViews) {
-			if (figureView.getDataView() == dataView) return figureView;
-		}
-		return null;
-	}
-
-	/**
-	 * Responds to the JHotDraw figure selection event by selecting and
-	 * deselecting views whose state has changed.
-	 * 
-	 * @param event Event indicating that the figure selections have changed.
-	 */
-	protected void onFigureSelectionChanged(final FigureSelectionEvent event) {
-		final Set<Figure> newSelection = event.getNewSelection();
-		final Set<Figure> oldSelection = event.getOldSelection();
-		for (final DataView view : getDisplay()) {
-			final FigureView figureView = getFigureView(view);
-			if (figureView != null) {
-				final Figure figure = figureView.getFigure();
-				if (newSelection.contains(figure)) {
-					view.setSelected(true);
-				}
-				else if (oldSelection.contains(figure)) {
-					view.setSelected(false);
-				}
-			}
-		}
-	}
-
-	@EventHandler
-	protected void onViewSelected(final DataViewSelectedEvent event) {
-		final DataView view = event.getView();
-		final FigureView figureView = getFigureView(view);
-		if (figureView != null) {
-			final Figure figure = figureView.getFigure();
-			if (!drawingView.getSelectedFigures().contains(figure)) {
-				drawingView.addToSelection(figure);
-			}
-		}
-	}
-
-	@EventHandler
-	protected void onViewDeselected(final DataViewDeselectedEvent event) {
-		final DataView view = event.getView();
-		final FigureView figureView = getFigureView(view);
-		if (figureView != null) {
-			final Figure figure = figureView.getFigure();
-			if (drawingView.getSelectedFigures().contains(figure)) {
-				drawingView.removeFromSelection(figure);
-			}
-		}
-	}
-
-	@EventHandler
-	protected void onToolActivatedEvent(final ToolActivatedEvent event) {
-		final Tool iTool = event.getTool();
-		activateTool(iTool);
-	}
-
-	@EventHandler
-	protected void onEvent(final DisplayDeletedEvent event) {
-		if (event.getObject() == getDisplay()) {
-			final EventService eventService =
-				event.getContext().getService(EventService.class);
-			eventService.unsubscribe(subscribers);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final PanZoomEvent event) {
-		if (event.getCanvas() != getDisplay().getCanvas()) return;
-		syncUI();
-	}
-
-	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final MouseCursorEvent event)
-	{
-		drawingView.setCursor(AWTCursors.getCursor(getDisplay().getCanvas()
-			.getCursor()));
-	}
-
-	/**
-	 * When a tool creates an overlay, add the overlay/figure combo to an
-	 * {@link OverlayFigureView}.
-	 */
-	@EventHandler
-	protected void onEvent(final FigureCreatedEvent e) {
-		final OverlayView overlay = e.getOverlayView();
-		final ImageDisplay display = getDisplay();
-		for (int i = 0; i < display.numDimensions(); i++) {
-			final AxisType axis = display.axis(i);
-			if (Axes.isXY(axis)) continue;
-			if (overlay.getData().getAxisIndex(axis) < 0) {
-				overlay.setPosition(display.getLongPosition(axis), axis);
-			}
-		}
-		if (drawingView.getSelectedFigures().contains(e.getFigure())) {
-			overlay.setSelected(true);
-		}
-		final OverlayFigureView figureView =
-				new OverlayFigureView(displayViewer, overlay, e.getFigure());
-		figureViews.add(figureView);
-		display.add(overlay);
-		display.update();
-	}
-
-	void rebuild() {
-		for (final DataView dataView : getDisplay()) {
-			FigureView figureView = getFigureView(dataView);
-			if (figureView == null) {
-				if (dataView instanceof DatasetView) {
-					figureView =
-						new DatasetFigureView(this.displayViewer, (DatasetView) dataView);
-				}
-				else if (dataView instanceof OverlayView) {
-					figureView =
-						new OverlayFigureView(this.displayViewer, (OverlayView) dataView);
-				}
-				else {
-					log.error("Don't know how to make a figure view for " +
-						dataView.getClass().getName());
-					continue;
-				}
-				figureViews.add(figureView);
-			}
-		}
-		int idx = 0;
-		while (idx < figureViews.size()) {
-			final FigureView figureView = figureViews.get(idx);
-			if (!getDisplay().contains(figureView.getDataView())) {
-				figureViews.remove(idx);
-				figureView.dispose();
-			}
-			else {
-				idx++;
-			}
-		}
-	}
-
-	void update() {
-		for (final FigureView figureView : figureViews) {
-			figureView.update();
-		}
-	}
-
-	protected void activateTool(final Tool iTool) {
-		if (iTool instanceof JHotDrawAdapter) {
-			final JHotDrawAdapter adapter = (JHotDrawAdapter) iTool;
-			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay());
-			toolDelegator.setCreationTool(creationTool);
-		}
-		else {
-			toolDelegator.setCreationTool(null);
-		}
-	}
-
 	// -- JHotDrawImageCanvas methods --
 
 	public Drawing getDrawing() {
@@ -430,10 +272,138 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		syncCanvas();
 	}
 
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final DataViewSelectedEvent event) {
+		final DataView view = event.getView();
+		final FigureView figureView = getFigureView(view);
+		if (figureView != null) {
+			final Figure figure = figureView.getFigure();
+			if (!drawingView.getSelectedFigures().contains(figure)) {
+				drawingView.addToSelection(figure);
+			}
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final DataViewDeselectedEvent event) {
+		final DataView view = event.getView();
+		final FigureView figureView = getFigureView(view);
+		if (figureView != null) {
+			final Figure figure = figureView.getFigure();
+			if (drawingView.getSelectedFigures().contains(figure)) {
+				drawingView.removeFromSelection(figure);
+			}
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final ToolActivatedEvent event) {
+		final Tool iTool = event.getTool();
+		activateTool(iTool);
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent event) {
+		if (event.getObject() == getDisplay()) {
+			final EventService eventService =
+				event.getContext().getService(EventService.class);
+			eventService.unsubscribe(subscribers);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final PanZoomEvent event) {
+		if (event.getCanvas() != getDisplay().getCanvas()) return;
+		syncUI();
+	}
+
+	@EventHandler
+	protected void onEvent(
+		@SuppressWarnings("unused") final MouseCursorEvent event)
+	{
+		drawingView.setCursor(AWTCursors.getCursor(getDisplay().getCanvas()
+			.getCursor()));
+	}
+
+	/**
+	 * When a tool creates an overlay, add the overlay/figure combo to an
+	 * {@link OverlayFigureView}.
+	 */
+	@EventHandler
+	protected void onEvent(final FigureCreatedEvent e) {
+		final OverlayView overlay = e.getOverlayView();
+		final ImageDisplay display = getDisplay();
+		for (int i = 0; i < display.numDimensions(); i++) {
+			final AxisType axis = display.axis(i);
+			if (Axes.isXY(axis)) continue;
+			if (overlay.getData().getAxisIndex(axis) < 0) {
+				overlay.setPosition(display.getLongPosition(axis), axis);
+			}
+		}
+		if (drawingView.getSelectedFigures().contains(e.getFigure())) {
+			overlay.setSelected(true);
+		}
+		final OverlayFigureView figureView =
+				new OverlayFigureView(displayViewer, overlay, e.getFigure());
+		figureViews.add(figureView);
+		display.add(overlay);
+		display.update();
+	}
+
+	// -- Internal methods --
+
+	void rebuild() {
+		for (final DataView dataView : getDisplay()) {
+			FigureView figureView = getFigureView(dataView);
+			if (figureView == null) {
+				if (dataView instanceof DatasetView) {
+					figureView =
+						new DatasetFigureView(this.displayViewer, (DatasetView) dataView);
+				}
+				else if (dataView instanceof OverlayView) {
+					figureView =
+						new OverlayFigureView(this.displayViewer, (OverlayView) dataView);
+				}
+				else {
+					log.error("Don't know how to make a figure view for " +
+						dataView.getClass().getName());
+					continue;
+				}
+				figureViews.add(figureView);
+			}
+		}
+		int idx = 0;
+		while (idx < figureViews.size()) {
+			final FigureView figureView = figureViews.get(idx);
+			if (!getDisplay().contains(figureView.getDataView())) {
+				figureViews.remove(idx);
+				figureView.dispose();
+			}
+			else {
+				idx++;
+			}
+		}
+	}
+
+	void update() {
+		for (final FigureView figureView : figureViews) {
+			figureView.update();
+		}
+	}
+
 	// -- Helper methods --
 
 	private ImageDisplay getDisplay() {
 		return displayViewer.getDisplay();
+	}
+
+	private FigureView getFigureView(final DataView dataView) {
+		for (final FigureView figureView : figureViews) {
+			if (figureView.getDataView() == dataView) return figureView;
+		}
+		return null;
 	}
 
 	/** Updates the {@link ImageCanvas} to match the UI. */
@@ -534,6 +504,40 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener {
 		if (bottomRight.y - topLeft.y > bounds.height) return;
 
 		displayViewer.getWindow().pack();
+	}
+
+	private void activateTool(final Tool iTool) {
+		if (iTool instanceof JHotDrawAdapter) {
+			final JHotDrawAdapter adapter = (JHotDrawAdapter) iTool;
+			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay());
+			toolDelegator.setCreationTool(creationTool);
+		}
+		else {
+			toolDelegator.setCreationTool(null);
+		}
+	}
+
+	/**
+	 * Responds to the JHotDraw figure selection event by selecting and
+	 * deselecting views whose state has changed.
+	 * 
+	 * @param event Event indicating that the figure selections have changed.
+	 */
+	private void onFigureSelectionChanged(final FigureSelectionEvent event) {
+		final Set<Figure> newSelection = event.getNewSelection();
+		final Set<Figure> oldSelection = event.getOldSelection();
+		for (final DataView view : getDisplay()) {
+			final FigureView figureView = getFigureView(view);
+			if (figureView != null) {
+				final Figure figure = figureView.getFigure();
+				if (newSelection.contains(figure)) {
+					view.setSelected(true);
+				}
+				else if (oldSelection.contains(figure)) {
+					view.setSelected(false);
+				}
+			}
+		}
 	}
 
 }
