@@ -37,11 +37,11 @@ package imagej.ext.ui.awt;
 
 import imagej.Priority;
 import imagej.ext.module.Module;
-import imagej.ext.module.ui.InputHarvester;
-import imagej.ext.module.ui.InputPanel;
 import imagej.ext.plugin.AbstractInputHarvesterPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
+import imagej.widget.InputHarvester;
+import imagej.widget.InputPanel;
 
 import java.awt.Dimension;
 import java.awt.Panel;

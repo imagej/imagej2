@@ -39,13 +39,13 @@ import imagej.data.Dataset;
 import imagej.event.StatusService;
 import imagej.ext.module.ItemIO;
 import imagej.ext.module.ItemVisibility;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.log.LogService;
 import imagej.util.ColorRGB;
+import imagej.widget.WidgetStyle;
 
 import java.io.File;
 import java.math.BigDecimal;

@@ -33,13 +33,45 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 /**
- * Widget interface for message labels.
- * 
+ * Base class for input widgets.
+ *
  * @author Curtis Rueden
  */
-public interface MessageWidget<U> extends InputWidget<String, U> {
-	// NB: No changes to interface.
+public abstract class AbstractInputWidget<T, U> implements InputWidget<T, U> {
+
+	private WidgetModel widgetModel;
+
+	// -- InputWidget methods --
+
+	@Override
+	public void initialize(final WidgetModel model) {
+		if (widgetModel != null) {
+			throw new IllegalStateException("Widget already initialized");
+		}
+		widgetModel = model;
+	}
+
+	@Override
+	public WidgetModel getModel() {
+		return widgetModel;
+	}
+
+	@Override
+	public void updateModel() {
+		widgetModel.setValue(getValue());
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return true;
+	}
+
+	@Override
+	public boolean isMessage() {
+		return false;
+	}
+
 }

@@ -35,10 +35,10 @@
 
 package imagej.ext.ui.pivot;
 
-import imagej.ext.module.ui.ChoiceWidget;
-import imagej.ext.module.ui.InputWidget;
-import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.plugin.Plugin;
+import imagej.widget.ChoiceWidget;
+import imagej.widget.InputWidget;
+import imagej.widget.WidgetModel;
 
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;

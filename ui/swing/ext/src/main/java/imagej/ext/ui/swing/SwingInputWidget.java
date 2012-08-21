@@ -35,8 +35,8 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.ui.AbstractInputWidget;
-import imagej.ext.module.ui.WidgetModel;
+import imagej.widget.AbstractInputWidget;
+import imagej.widget.WidgetModel;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;

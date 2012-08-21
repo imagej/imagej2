@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;

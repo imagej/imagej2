@@ -39,13 +39,13 @@ import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.log.LogService;
+import imagej.widget.WidgetStyle;
 
 import java.util.List;
 

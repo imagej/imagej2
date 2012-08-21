@@ -35,12 +35,12 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.ui.InputWidget;
-import imagej.ext.module.ui.TextFieldWidget;
-import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.plugin.Plugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
+import imagej.widget.InputWidget;
+import imagej.widget.TextFieldWidget;
+import imagej.widget.WidgetModel;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;

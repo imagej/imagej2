@@ -35,12 +35,12 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.ui.ColorWidget;
-import imagej.ext.module.ui.InputWidget;
-import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
+import imagej.widget.ColorWidget;
+import imagej.widget.InputWidget;
+import imagej.widget.WidgetModel;
 
 import java.awt.Color;
 import java.awt.Component;

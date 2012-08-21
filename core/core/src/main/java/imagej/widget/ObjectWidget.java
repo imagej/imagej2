@@ -33,15 +33,13 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
-
-import java.io.File;
+package imagej.widget;
 
 /**
- * Widget interface for file selectors.
+ * Widget interface for object selectors.
  * 
  * @author Curtis Rueden
  */
-public interface FileWidget<U> extends InputWidget<File, U> {
+public interface ObjectWidget<U> extends InputWidget<Object, U> {
 	// NB: No changes to interface.
 }

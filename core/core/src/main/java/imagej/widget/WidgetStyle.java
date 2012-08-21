@@ -33,13 +33,14 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 /**
- * Widget interface for object selectors.
+ * Preferred style to use when rendering widgets.
  * 
  * @author Curtis Rueden
  */
-public interface ObjectWidget<U> extends InputWidget<Object, U> {
-	// NB: No changes to interface.
+public enum WidgetStyle {
+	DEFAULT, NUMBER_SPINNER, NUMBER_SLIDER, NUMBER_SCROLL_BAR, FILE_OPEN,
+		FILE_SAVE, FILE_DIRECTORY
 }

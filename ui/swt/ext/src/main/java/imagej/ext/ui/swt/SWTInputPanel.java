@@ -35,9 +35,9 @@
 
 package imagej.ext.ui.swt;
 
-import imagej.ext.module.ui.AbstractInputPanel;
-import imagej.ext.module.ui.InputPanel;
-import imagej.ext.module.ui.InputWidget;
+import imagej.widget.AbstractInputPanel;
+import imagej.widget.InputPanel;
+import imagej.widget.InputWidget;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;

@@ -38,7 +38,7 @@ package imagej.ext.module.event;
 import imagej.ext.Cancelable;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModulePreprocessor;
-import imagej.ext.module.ui.InputHarvester;
+import imagej.widget.InputHarvester;
 
 /**
  * An event indicating a {@link Module} execution has been canceled.

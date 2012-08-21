@@ -33,15 +33,55 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
-import imagej.util.ColorRGB;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Widget interface for color choosers.
+ * Abstract superclass of UI-specific {@link InputPanel} implementations.
  * 
  * @author Curtis Rueden
  */
-public interface ColorWidget<U> extends InputWidget<ColorRGB, U> {
-	// NB: No changes to interface.
+public abstract class AbstractInputPanel<U> implements InputPanel<U> {
+
+	/** Number of messages in the panel. */
+	protected int messageCount = 0;
+
+	/** Table of widgets. */
+	protected Map<String, InputWidget<?, ?>> widgets =
+		new HashMap<String, InputWidget<?, ?>>();
+
+	@Override
+	public void addWidget(final InputWidget<?, ?> widget) {
+		widgets.put(widget.getModel().getItem().getName(), widget);
+	}
+
+	@Override
+	public Object getValue(final String name) {
+		return widgets.get(name).getValue();
+	}
+
+	@Override
+	public int getWidgetCount() {
+		return widgets.size();
+	}
+
+	@Override
+	public boolean hasWidgets() {
+		return widgets.size() > 0;
+	}
+
+	@Override
+	public boolean isMessageOnly() {
+		return messageCount == getWidgetCount();
+	}
+
+	@Override
+	public void refresh() {
+		for (final InputWidget<?, ?> w : widgets.values()) {
+			w.refreshWidget();
+		}
+	}
+
 }

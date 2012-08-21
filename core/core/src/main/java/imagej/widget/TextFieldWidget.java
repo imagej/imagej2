@@ -33,13 +33,13 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 /**
- * Widget interface for multiple choice selectors.
+ * Widget interface for text fields.
  * 
  * @author Curtis Rueden
  */
-public interface ChoiceWidget<U> extends InputWidget<String, U> {
+public interface TextFieldWidget<U> extends InputWidget<String, U> {
 	// NB: No changes to interface.
 }

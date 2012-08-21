@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 import imagej.Contextual;
 import imagej.ImageJ;

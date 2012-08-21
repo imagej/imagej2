@@ -35,10 +35,10 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.ui.InputWidget;
-import imagej.ext.module.ui.MessageWidget;
-import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.plugin.Plugin;
+import imagej.widget.InputWidget;
+import imagej.widget.MessageWidget;
+import imagej.widget.WidgetModel;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

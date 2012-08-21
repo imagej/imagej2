@@ -33,13 +33,13 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 /**
- * Widget interface for number choosers.
+ * Widget interface for message labels.
  * 
  * @author Curtis Rueden
  */
-public interface NumberWidget<U> extends InputWidget<Number, U> {
+public interface MessageWidget<U> extends InputWidget<String, U> {
 	// NB: No changes to interface.
 }

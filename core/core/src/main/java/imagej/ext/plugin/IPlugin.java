@@ -39,11 +39,11 @@ import imagej.ext.display.Display;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModulePostprocessor;
 import imagej.ext.module.ModulePreprocessor;
-import imagej.ext.module.ui.InputHarvester;
-import imagej.ext.module.ui.InputWidget;
 import imagej.ext.tool.Tool;
 import imagej.platform.Platform;
 import imagej.service.Service;
+import imagej.widget.InputHarvester;
+import imagej.widget.InputWidget;
 
 /**
  * Top-level interface for plugins. Plugins discoverable at runtime must

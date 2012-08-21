@@ -40,9 +40,9 @@ import imagej.ext.module.ItemIO;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.util.ClassUtils;
 import imagej.util.NumberUtils;
+import imagej.widget.WidgetStyle;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

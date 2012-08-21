@@ -35,8 +35,8 @@
 
 package imagej.ext.ui.swt;
 
-import imagej.ext.module.ui.AbstractInputWidget;
-import imagej.ext.module.ui.WidgetModel;
+import imagej.widget.AbstractInputWidget;
+import imagej.widget.WidgetModel;
 
 import org.eclipse.swt.widgets.Composite;
 

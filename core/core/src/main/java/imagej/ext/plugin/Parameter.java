@@ -38,7 +38,7 @@ package imagej.ext.plugin;
 import imagej.ext.module.ItemIO;
 import imagej.ext.module.ItemVisibility;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ui.WidgetStyle;
+import imagej.widget.WidgetStyle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -152,7 +152,7 @@ public @interface Parameter {
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
 	// See:
 	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	WidgetStyle style() default imagej.ext.module.ui.WidgetStyle.DEFAULT;
+	WidgetStyle style() default imagej.widget.WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";

@@ -33,55 +33,68 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
-import java.util.HashMap;
-import java.util.Map;
+import imagej.ImageJ;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
+import imagej.log.LogService;
+import imagej.service.AbstractService;
+import imagej.service.Service;
+
+import java.util.List;
 
 /**
- * Abstract superclass of UI-specific {@link InputPanel} implementations.
+ * Service for managing available input widgets.
  * 
  * @author Curtis Rueden
+ * @see InputWidget
  */
-public abstract class AbstractInputPanel<U> implements InputPanel<U> {
+@Plugin(type = Service.class)
+public class WidgetService extends AbstractService {
 
-	/** Number of messages in the panel. */
-	protected int messageCount = 0;
+	private final PluginService pluginService;
+	private final LogService log;
 
-	/** Table of widgets. */
-	protected Map<String, InputWidget<?, ?>> widgets =
-		new HashMap<String, InputWidget<?, ?>>();
-
-	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
-		widgets.put(widget.getModel().getItem().getName(), widget);
+	public WidgetService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public Object getValue(final String name) {
-		return widgets.get(name).getValue();
+	public WidgetService(final ImageJ context, final PluginService pluginService,
+		final LogService log)
+	{
+		super(context);
+		this.pluginService = pluginService;
+		this.log = log;
 	}
 
-	@Override
-	public int getWidgetCount() {
-		return widgets.size();
-	}
-
-	@Override
-	public boolean hasWidgets() {
-		return widgets.size() > 0;
-	}
-
-	@Override
-	public boolean isMessageOnly() {
-		return messageCount == getWidgetCount();
-	}
-
-	@Override
-	public void refresh() {
-		for (final InputWidget<?, ?> w : widgets.values()) {
-			w.refreshWidget();
+	/** Creates a widget that represents the given widget model. */
+	public InputWidget<?, ?> createWidget(final WidgetModel model) {
+		@SuppressWarnings("rawtypes")
+		final List<PluginInfo<? extends InputWidget>> infos =
+			pluginService.getPluginsOfType(InputWidget.class);
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<? extends InputWidget> info : infos)
+		{
+			final InputWidget<?, ?> widget;
+			try {
+				widget = info.createInstance();
+			}
+			catch (final InstantiableException e) {
+				log.error("Invalid widget: " + info.getClassName(), e);
+				continue;
+			}
+			if (widget.isCompatible(model)) {
+				widget.initialize(model);
+				return widget;
+			}
 		}
+		log.warn("No widget found for input: " + model.getItem().getName());
+		return null;
 	}
 
 }

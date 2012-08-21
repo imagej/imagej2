@@ -33,14 +33,38 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 /**
- * Preferred style to use when rendering widgets.
+ * Flexible panel-building interface, for use with UIs that prompt for input
+ * values of various types.
  * 
  * @author Curtis Rueden
  */
-public enum WidgetStyle {
-	DEFAULT, NUMBER_SPINNER, NUMBER_SLIDER, NUMBER_SCROLL_BAR, FILE_OPEN,
-		FILE_SAVE, FILE_DIRECTORY
+public interface InputPanel<U> {
+
+	// TODO - groups of fields
+
+	/** Adds a widget to the panel. */
+	void addWidget(InputWidget<?, ?> widget);
+
+	/**
+	 * Returns the value of the given widget's input.
+	 * 
+	 * @param name unique name identifying this field
+	 */
+	Object getValue(String name);
+
+	/** Gets the number of active widgets in the input panel. */
+	int getWidgetCount();
+
+	/** Gets whether the input panel has any active widgets. */
+	boolean hasWidgets();
+
+	/** Returns true if the input panel consists of only messages. */
+	boolean isMessageOnly();
+
+	/** Updates the widgets to reflect the most recent parameter value(s). */
+	void refresh();
+
 }

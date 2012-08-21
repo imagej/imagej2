@@ -44,7 +44,7 @@ import imagej.ext.module.ModuleItem;
  * <p>
  * This preprocessor runs late in the chain, giving other preprocessors every
  * chance to populate the inputs first. In particular, it executes after the
- * {@link imagej.ext.module.ui.InputHarvester} has run, so that user-specified
+ * {@link imagej.widget.InputHarvester} has run, so that user-specified
  * values are persisted for next time.
  * </p>
  * 

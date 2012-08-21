@@ -35,10 +35,10 @@
 
 package imagej.ext.ui.swt;
 
-import imagej.ext.module.ui.InputWidget;
-import imagej.ext.module.ui.NumberWidget;
-import imagej.ext.module.ui.WidgetModel;
 import imagej.ext.plugin.Plugin;
+import imagej.widget.InputWidget;
+import imagej.widget.NumberWidget;
+import imagej.widget.WidgetModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;

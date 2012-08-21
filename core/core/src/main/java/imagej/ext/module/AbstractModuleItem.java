@@ -35,11 +35,11 @@
 
 package imagej.ext.module;
 
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.util.ClassUtils;
 import imagej.util.NumberUtils;
 import imagej.util.Prefs;
 import imagej.util.StringMaker;
+import imagej.widget.WidgetStyle;
 
 import java.util.List;
 

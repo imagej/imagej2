@@ -35,12 +35,12 @@
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.ui.InputWidget;
-import imagej.ext.module.ui.NumberWidget;
-import imagej.ext.module.ui.WidgetModel;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.Plugin;
 import imagej.util.NumberUtils;
+import imagej.widget.InputWidget;
+import imagej.widget.NumberWidget;
+import imagej.widget.WidgetModel;
+import imagej.widget.WidgetStyle;
 
 import java.awt.Adjustable;
 import java.awt.Dimension;

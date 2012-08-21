@@ -35,8 +35,8 @@
 
 package imagej.ext.ui.pivot;
 
-import imagej.ext.module.ui.AbstractInputWidget;
-import imagej.ext.module.ui.WidgetModel;
+import imagej.widget.AbstractInputWidget;
+import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
 

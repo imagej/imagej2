@@ -33,13 +33,13 @@
  * #L%
  */
 
-package imagej.ext.module.ui;
+package imagej.widget;
 
 /**
- * Widget interface for text fields.
+ * Widget interface for boolean toggles.
  * 
  * @author Curtis Rueden
  */
-public interface TextFieldWidget<U> extends InputWidget<String, U> {
+public interface ToggleWidget<U> extends InputWidget<Boolean, U> {
 	// NB: No changes to interface.
 }
