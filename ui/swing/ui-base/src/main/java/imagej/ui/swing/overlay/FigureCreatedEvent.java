@@ -36,36 +36,38 @@
 package imagej.ui.swing.overlay;
 
 import imagej.data.display.OverlayView;
-import imagej.event.ImageJEvent;
+import imagej.data.display.event.DataViewEvent;
 
 import org.jhotdraw.draw.Figure;
 
 /**
- * An event that reports the creation of a JHotDraw {@link Figure} (linked to an
- * ImageJ {@link OverlayView}).
+ * An event that reports the creation of a JHotDraw {@link Figure}, linked to an
+ * ImageJ {@link OverlayView}.
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public class FigureCreatedEvent extends ImageJEvent {
+public class FigureCreatedEvent extends DataViewEvent {
 
-	private final OverlayView overlayView;
+	private final OverlayView view;
 	private final Figure figure;
 
-	public FigureCreatedEvent(final OverlayView overlayView, final Figure figure)
-	{
-		this.overlayView = overlayView;
+	public FigureCreatedEvent(final OverlayView view, final Figure figure) {
+		super(view);
+		this.view = view;
 		this.figure = figure;
-	}
-
-	/** Gets the {@link OverlayView} linked to the newly created {@link Figure}. */
-	public OverlayView getOverlayView() {
-		return overlayView;
 	}
 
 	/** Gets the newly created {@link Figure}. */
 	public Figure getFigure() {
 		return figure;
+	}
+
+	// -- DataViewEvent methods --
+
+	@Override
+	public OverlayView getView() {
+		return view;
 	}
 
 }
