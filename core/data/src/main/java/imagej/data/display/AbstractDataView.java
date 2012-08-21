@@ -44,9 +44,11 @@ import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.event.EventService;
+import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.imglib2.Localizable;
@@ -61,8 +63,6 @@ public abstract class AbstractDataView extends AbstractContextual implements
 	DataView
 {
 
-	private final Data data;
-
 	/**
 	 * View's position along each applicable dimensional axis.
 	 * <p>
@@ -73,7 +73,13 @@ public abstract class AbstractDataView extends AbstractContextual implements
 	 * By default, each axis is at position 0 unless otherwise specified.
 	 * </p>
 	 */
-	private final Map<AxisType, Long> pos = new HashMap<AxisType, Long>();
+	private Map<AxisType, Long> pos;
+
+	/** {@link Data} object linked to the view. */
+	private Data data;
+
+	@SuppressWarnings("unused")
+	private List<EventSubscriber<?>> subscribers;
 
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
@@ -81,13 +87,27 @@ public abstract class AbstractDataView extends AbstractContextual implements
 	/** True if view is selected, false if not. */
 	private boolean selected;
 
-	public AbstractDataView(final Data data) {
-		setContext(data.getContext());
-		this.data = data;
-		data.incrementReferences();
-	}
-
 	// -- DataView methods --
+
+	@Override
+	public void initialize(final Data d) {
+		if (data != null) {
+			throw new IllegalStateException("Data already set");
+		}
+		if (!isCompatible(d)) {
+			throw new IllegalArgumentException("Incompatible data object: " + d);
+		}
+		if (getContext() != d.getContext()) {
+			throw new IllegalArgumentException("Mismatched context: " + d);
+		}
+		data = d;
+
+		data.incrementReferences();
+		pos = new HashMap<AxisType, Long>();
+
+		final EventService eventService = getEventService();
+		subscribers = eventService == null ? null : eventService.subscribe(this);
+	}
 
 	@Override
 	public Data getData() {

@@ -38,12 +38,10 @@ package imagej.data.display;
 import imagej.ImageJ;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
-import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
-import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -105,7 +103,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	protected void rebuild() {
 		// NB: Ensure display flags its structure as changed.
 		super.rebuild();
-		
+
+		// set display name to match first available view
+		for (final DataView view : this) {
+			final String dataName = view.getData().getName();
+			if (dataName != null && !dataName.isEmpty()) {
+				setName(createName(dataName));
+				break;
+			}
+		}
+
 		// combine constituent views into a single aggregate spatial interval
 		combinedInterval.clear();
 		for (final DataView view : this) {
@@ -199,18 +206,29 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public void display(final Object o) {
-		// TODO: Eliminate case logic in favor of extensible discovery mechanism.
-		if (o instanceof Dataset) {
-			final Dataset dataset = (Dataset) o;
-			setName(createName(dataset.getName()));
-			add(new DefaultDatasetView(dataset));
+		if (o instanceof DataView) {
+			// object is a data view, natively compatible with this display
+			final DataView dataView = (DataView) o;
+			super.display(dataView);
+			rebuild();
 		}
-		else if (o instanceof Overlay) {
-			final Overlay overlay = (Overlay) o;
-			add(new DefaultOverlayView(overlay));
+		else if (o instanceof Data) {
+			// object is a data object, which we can wrap in a data view
+			final Data data = (Data) o;
+			final ImageDisplayService imageDisplayService =
+					getContext().getService(ImageDisplayService.class);
+			if (imageDisplayService == null) {
+				throw new IllegalStateException(
+						"An ImageDisplayService is required to display Data objects");
+			}
+			final DataView dataView = imageDisplayService.createDataView(data);
+			add(dataView);
+			rebuild();
 		}
-		else super.display(o);
-		rebuild();
+		else {
+			throw new IllegalArgumentException("Incompatible object: " + o + " [" +
+				o.getClass().getName() + "]");
+		}
 	}
 
 	@Override

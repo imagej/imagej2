@@ -35,16 +35,10 @@
 
 package imagej.ui.swing.overlay;
 
-import imagej.data.display.DefaultOverlayView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-
-import javax.swing.event.EventListenerList;
 
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.DrawingView;
-import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.BezierTool;
 
 /**
@@ -55,43 +49,16 @@ import org.jhotdraw.draw.tool.BezierTool;
  */
 public class IJBezierTool extends BezierTool implements JHotDrawTool {
 
-	@SuppressWarnings("unused")
 	private final ImageDisplay display;
 
 	private final JHotDrawAdapter adapter;
-	private final EventListenerList listeners = new EventListenerList();
 
 	public IJBezierTool(final ImageDisplay display,
-		final JHotDrawAdapter adapter,
-		final OverlayCreatedListener... listeners)
+		final JHotDrawAdapter adapter)
 	{
 		super((BezierFigure) adapter.createDefaultFigure());
 		this.display = display;
 		this.adapter = adapter;
-		for (final OverlayCreatedListener listener : listeners) {
-			addOverlayCreatedListener(listener);
-		}
-	}
-
-	public void addOverlayCreatedListener(final OverlayCreatedListener listener) {
-		listeners.add(OverlayCreatedListener.class, listener);
-	}
-
-	public void
-		removeOverlayCreatedListener(final OverlayCreatedListener listener)
-	{
-		listeners.remove(OverlayCreatedListener.class, listener);
-	}
-
-	protected void fireOverlayCreatedEvent(final OverlayView overlay,
-		final Figure figure)
-	{
-		final FigureCreatedEvent e = new FigureCreatedEvent(overlay, figure);
-		for (final OverlayCreatedListener listener : listeners
-			.getListeners(OverlayCreatedListener.class))
-		{
-			listener.overlayCreated(e);
-		}
 	}
 
 	@Override
@@ -104,10 +71,9 @@ public class IJBezierTool extends BezierTool implements JHotDrawTool {
 		final DrawingView drawingView)
 	{
 		super.finishCreation(figure, drawingView);
-		final Overlay overlay = adapter.createNewOverlay();
-		final DefaultOverlayView view = new DefaultOverlayView(overlay);
-		adapter.updateOverlay(figure, view);
-		fireOverlayCreatedEvent(view, figure);
+		final JHotDrawService jHotDrawService =
+			display.getContext().getService(JHotDrawService.class);
+		jHotDrawService.linkOverlay(figure, adapter);
 	}
 
 	@Override

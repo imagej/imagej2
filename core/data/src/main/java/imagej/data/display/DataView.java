@@ -41,14 +41,16 @@ import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
 import net.imglib2.meta.AxisType;
 
 /**
- * A view provides visualization settings for an associated {@link Data} object
- * (such as a {@link Dataset} or {@link Overlay}) for use with an
- * {@link ImageDisplay}. The view keeps track of the currently visualized
- * position within the N-dimensional data space (and beyond), as well as color
- * settings and other view-specific metadata.
+ * Interface for data views. A view provides visualization settings for an
+ * associated {@link Data} object (such as a {@link Dataset} or {@link Overlay})
+ * for use with an {@link ImageDisplay}. The view keeps track of the currently
+ * visualized position within the N-dimensional data space (and beyond), as well
+ * as color settings and other view-specific metadata.
  * <p>
  * For example, a typical 2D display may have a number of sliders enabling a
  * user to select a particular plane of a {@link Dataset} for display. The view
@@ -62,10 +64,26 @@ import net.imglib2.meta.AxisType;
  * that dimension, the view will only be visible when the display's position for
  * that dimension matches the view's value.
  * </p>
+ * <p>
+ * Data views discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with {@link Plugin#type()} = {@link DataView}
+ * .class. While it possible to create a data view merely by implementing this
+ * interface, it is encouraged to instead extend {@link AbstractDataView}, for
+ * convenience.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface DataView extends PositionableByAxis, Contextual {
+public interface DataView extends PositionableByAxis, IPlugin, Contextual {
+
+	/** Gets whether this view is compatible with the given {@link Data}. */
+	boolean isCompatible(Data data);
+
+	/**
+	 * Initializes the view with the given {@link Data}. This method should only
+	 * be called once.
+	 */
+	void initialize(Data data);
 
 	/** Gets the {@link Data} represented by this view. */
 	Data getData();

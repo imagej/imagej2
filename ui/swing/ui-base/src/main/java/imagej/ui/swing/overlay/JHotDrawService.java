@@ -36,7 +36,11 @@
 package imagej.ui.swing.overlay;
 
 import imagej.ImageJ;
+import imagej.data.display.DataView;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.event.EventService;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
@@ -62,6 +66,9 @@ import org.jhotdraw.draw.Figure;
 @Plugin(type = Service.class)
 public class JHotDrawService extends AbstractService {
 
+	private final EventService eventService;
+	private final ImageDisplayService imageDisplayService;
+
 	private final ArrayList<JHotDrawAdapter> adapters;
 
 	public JHotDrawService() {
@@ -71,9 +78,12 @@ public class JHotDrawService extends AbstractService {
 	}
 
 	public JHotDrawService(final ImageJ context,
-		final PluginService pluginService, final LogService log)
+		final PluginService pluginService, final EventService eventService,
+		final ImageDisplayService imageDisplayService, final LogService log)
 	{
 		super(context);
+		this.eventService = eventService;
+		this.imageDisplayService = imageDisplayService;
 
 		// ask the plugin service for the list of available JHotDraw adapters
 		adapters = new ArrayList<JHotDrawAdapter>();
@@ -155,6 +165,22 @@ public class JHotDrawService extends AbstractService {
 	/** Gets all of the discovered adapters. */
 	public Collection<JHotDrawAdapter> getAllAdapters() {
 		return Collections.unmodifiableCollection(adapters);
+	}
+
+	/**
+	 * Links a new {@link Overlay}, created by the given {@link JHotDrawAdapter},
+	 * to the specified JHotDraw {@link Figure}.
+	 */
+	public void linkOverlay(final Figure figure, final JHotDrawAdapter adapter) {
+		final Overlay overlay = adapter.createNewOverlay();
+		final DataView view = imageDisplayService.createDataView(overlay);
+		if (!(view instanceof OverlayView)) {
+			throw new IllegalStateException("Unexpected data view: " + view);
+		}
+		final OverlayView overlayView = (OverlayView) view;
+		adapter.updateOverlay(figure, overlayView);
+
+		eventService.publish(new FigureCreatedEvent(overlayView, figure));
 	}
 
 }

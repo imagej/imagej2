@@ -36,6 +36,7 @@
 package imagej.data.display;
 
 import imagej.data.ChannelCollection;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.event.DataViewUpdatedEvent;
@@ -43,8 +44,7 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
+import imagej.ext.plugin.Plugin;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
@@ -68,11 +68,10 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
+@Plugin(type = DataView.class)
 public class DefaultDatasetView extends AbstractDataView implements
 	DatasetView
 {
-
-	private final Dataset dataset;
 
 	/** The dimensional index representing channels, for compositing. */
 	private int channelDimIndex;
@@ -89,16 +88,6 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
-
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
-	public DefaultDatasetView(final Dataset dataset) {
-		super(dataset);
-		this.dataset = dataset;
-		final EventService eventService = getEventService();
-		subscribers = eventService == null ? null : eventService.subscribe(this);
-	}
 
 	// -- DatasetView methods --
 
@@ -147,21 +136,21 @@ public class DefaultDatasetView extends AbstractDataView implements
 	@Override
 	public void autoscale(final int c) {
 		// get the channel min/max from metadata
-		double min = dataset.getImgPlus().getChannelMinimum(c);
-		double max = dataset.getImgPlus().getChannelMaximum(c);
+		double min = getData().getImgPlus().getChannelMinimum(c);
+		double max = getData().getImgPlus().getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
 			// FIXME: This currently applies the global min/max to all channels.
 			// We need to enhance ComputeMinMax to find the min/max per channel.
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final ComputeMinMax<? extends RealType<?>> cmm =
-				new ComputeMinMax(dataset.getImgPlus());
+				new ComputeMinMax(getData().getImgPlus());
 			cmm.process();
 			min = cmm.getMin().getRealDouble();
 			max = cmm.getMax().getRealDouble();
 			// cache min/max in metadata for next time
-			dataset.getImgPlus().setChannelMinimum(c, min);
-			dataset.getImgPlus().setChannelMaximum(c, max);
+			getData().getImgPlus().setChannelMinimum(c, min);
+			getData().getImgPlus().setChannelMaximum(c, max);
 		}
 		setChannelRange(c, min, max);
 	}
@@ -295,8 +284,13 @@ public class DefaultDatasetView extends AbstractDataView implements
 	// -- DataView methods --
 
 	@Override
+	public boolean isCompatible(final Data data) {
+		return data != null && Dataset.class.isAssignableFrom(data.getClass());
+	}
+
+	@Override
 	public Dataset getData() {
-		return dataset;
+		return (Dataset) super.getData();
 	}
 
 	@Override
@@ -324,7 +318,7 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 		channelDimIndex = getChannelDimIndex();
 
-		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
+		final ImgPlus<? extends RealType<?>> img = getData().getImgPlus();
 
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
@@ -383,14 +377,14 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	@EventHandler
 	protected void onEvent(final DatasetTypeChangedEvent event) {
-		if (dataset == event.getObject()) {
+		if (getData() == event.getObject()) {
 			rebuild();
 		}
 	}
 
 	@EventHandler
 	protected void onEvent(final DatasetRGBChangedEvent event) {
-		if (dataset == event.getObject()) {
+		if (getData() == event.getObject()) {
 			rebuild();
 		}
 	}
@@ -404,7 +398,7 @@ public class DefaultDatasetView extends AbstractDataView implements
 		if (event instanceof DatasetRGBChangedEvent) {
 			return;
 		}
-		if (dataset == event.getObject()) {
+		if (getData() == event.getObject()) {
 			if (event.isMetaDataOnly()) return;
 			projector.map();
 		}
@@ -413,11 +407,11 @@ public class DefaultDatasetView extends AbstractDataView implements
 	// -- Helper methods --
 
 	private int getChannelDimIndex() {
-		return dataset.getAxisIndex(Axes.CHANNEL);
+		return getData().getAxisIndex(Axes.CHANNEL);
 	}
 
 	private boolean isComposite() {
-		return dataset.getCompositeChannelCount() > 1 || dataset.isRGBMerged();
+		return getData().getCompositeChannelCount() > 1 || getData().isRGBMerged();
 	}
 
 	private boolean isInitialized() {
@@ -439,13 +433,13 @@ public class DefaultDatasetView extends AbstractDataView implements
 			autoscale(c);
 			RealLUTConverter converter =
 				new RealLUTConverter(
-					dataset.getImgPlus().getChannelMinimum(c),
-					dataset.getImgPlus().getChannelMaximum(c), null); 
+					getData().getImgPlus().getChannelMinimum(c),
+					getData().getImgPlus().getChannelMaximum(c), null); 
 			converters.add(converter);
 		}
 		projector =
 			new CompositeXYProjector(
-				dataset.getImgPlus(), screenImage, converters, channelDimIndex);
+				getData().getImgPlus(), screenImage, converters, channelDimIndex);
 		projector.setComposite(composite);
 	}
 
@@ -465,7 +459,7 @@ public class DefaultDatasetView extends AbstractDataView implements
 			pos.setPosition(cPos, channelDimIndex - 2);
 		}
 		final int no = (int) pos.getIndex();
-		final ColorTable8 lut = dataset.getColorTable8(no);
+		final ColorTable8 lut = getData().getColorTable8(no);
 		if (lut != null) {
 			return lut; // return dataset-specific LUT
 		}
@@ -474,7 +468,7 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	private long getChannelCount() {
 		if (channelDimIndex < 0) return 1;
-		return dataset.getExtents().dimension(channelDimIndex);
+		return getData().getExtents().dimension(channelDimIndex);
 	}
 
 }

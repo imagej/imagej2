@@ -36,11 +36,13 @@
 package imagej.data.display;
 
 import imagej.ImageJ;
+import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.event.EventService;
 import imagej.ext.display.Display;
 import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -59,6 +61,7 @@ public final class DefaultImageDisplayService extends AbstractService
 {
 
 	private final EventService eventService;
+	private final PluginService pluginService;
 	private final DisplayService displayService;
 
 	public DefaultImageDisplayService() {
@@ -68,10 +71,12 @@ public final class DefaultImageDisplayService extends AbstractService
 	}
 
 	public DefaultImageDisplayService(final ImageJ context,
-		final EventService eventService, final DisplayService displayService)
+		final EventService eventService, final PluginService pluginService,
+		final DisplayService displayService)
 	{
 		super(context);
 		this.eventService = eventService;
+		this.pluginService = pluginService;
 		this.displayService = displayService;
 	}
 
@@ -83,11 +88,30 @@ public final class DefaultImageDisplayService extends AbstractService
 	}
 
 	@Override
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
+	@Override
 	public DisplayService getDisplayService() {
 		return displayService;
 	}
 
-	// -- DisplayService methods - display discovery --
+	@Override
+	public DataView createDataView(final Data data) {
+		for (final DataView dataView : getDataViews()) {
+			if (dataView.isCompatible(data)) {
+				dataView.initialize(data);
+				return dataView;
+			}
+		}
+		throw new IllegalArgumentException("No data view found for data: " + data);
+	}
+
+	@Override
+	public List<? extends DataView> getDataViews() {
+		return pluginService.createInstancesOfType(DataView.class);
+	}
 
 	@Override
 	public ImageDisplay getActiveImageDisplay() {

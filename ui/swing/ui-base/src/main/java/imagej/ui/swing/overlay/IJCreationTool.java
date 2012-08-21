@@ -35,14 +35,9 @@
 
 package imagej.ui.swing.overlay;
 
-import imagej.data.display.DefaultOverlayView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
 
 import java.awt.event.MouseEvent;
-
-import javax.swing.event.EventListenerList;
 
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.CreationTool;
@@ -54,43 +49,16 @@ import org.jhotdraw.draw.tool.CreationTool;
  */
 public class IJCreationTool extends CreationTool implements JHotDrawTool {
 
-	@SuppressWarnings("unused")
 	private final ImageDisplay display;
 
 	private final JHotDrawAdapter adapter;
-	private final EventListenerList listeners = new EventListenerList();
 
 	public IJCreationTool(final ImageDisplay display,
-		final JHotDrawAdapter adapter,
-		final OverlayCreatedListener... listeners)
+		final JHotDrawAdapter adapter)
 	{
 		super(adapter.createDefaultFigure());
 		this.display = display;
 		this.adapter = adapter;
-		for (final OverlayCreatedListener listener : listeners) {
-			addOverlayCreatedListener(listener);
-		}
-	}
-
-	public void addOverlayCreatedListener(final OverlayCreatedListener listener) {
-		listeners.add(OverlayCreatedListener.class, listener);
-	}
-
-	public void
-		removeOverlayCreatedListener(final OverlayCreatedListener listener)
-	{
-		listeners.remove(OverlayCreatedListener.class, listener);
-	}
-
-	protected void fireOverlayCreatedEvent(final OverlayView overlay,
-		final Figure figure)
-	{
-		final FigureCreatedEvent e = new FigureCreatedEvent(overlay, figure);
-		for (final OverlayCreatedListener listener : listeners
-			.getListeners(OverlayCreatedListener.class))
-		{
-			listener.overlayCreated(e);
-		}
 	}
 
 	@Override
@@ -101,10 +69,9 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 	@Override
 	protected void creationFinished(final Figure figure) {
 		super.creationFinished(figure);
-		final Overlay overlay = adapter.createNewOverlay();
-		final DefaultOverlayView view = new DefaultOverlayView(overlay);
-		adapter.updateOverlay(figure, view);
-		fireOverlayCreatedEvent(view, figure);
+		final JHotDrawService jHotDrawService =
+			display.getContext().getService(JHotDrawService.class);
+		jHotDrawService.linkOverlay(figure, adapter);
 	}
 
 	@Override
@@ -114,28 +81,24 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 
 	@Override
 	public void mouseClicked(MouseEvent evt) {
-		// ignore clicks other than left
-		if ((evt.getButton() == MouseEvent.BUTTON2) ||
-			(evt.getButton() == MouseEvent.BUTTON3))
-			return;
+		if (!isLeftClick(evt)) return;
 		super.mouseClicked(evt);
 	}
 	
 	@Override
 	public void mousePressed(MouseEvent evt) {
-		// ignore clicks other than left
-		if ((evt.getButton() == MouseEvent.BUTTON2) ||
-				(evt.getButton() == MouseEvent.BUTTON3))
-				return;
+		if (!isLeftClick(evt)) return;
 		super.mousePressed(evt);
 	}
 	
 	@Override
 	public void mouseReleased(MouseEvent evt) {
-		// ignore clicks other than left
-		if ((evt.getButton() == MouseEvent.BUTTON2) ||
-				(evt.getButton() == MouseEvent.BUTTON3))
-				return;
+		if (!isLeftClick(evt)) return;
 		super.mouseReleased(evt);
 	}
+
+	private boolean isLeftClick(final MouseEvent evt) {
+		return evt.getButton() == MouseEvent.BUTTON1;
+	}
+
 }
