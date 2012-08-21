@@ -52,13 +52,13 @@ import imagej.ext.plugin.Plugin;
 import imagej.ui.UIService;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.Function;
-import net.imglib2.ops.InputIteratorFactory;
-import net.imglib2.ops.Tuple2;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
+import net.imglib2.ops.function.Function;
 import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.input.InputIteratorFactory;
 import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.parse.RealEquationFunctionParser;
+import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 

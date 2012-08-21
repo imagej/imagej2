@@ -59,8 +59,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RealRandomAccess;
-import net.imglib2.ops.PointSetIterator;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 

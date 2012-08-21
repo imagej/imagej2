@@ -44,8 +44,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.imglib2.meta.AxisType;
-import net.imglib2.ops.Tuple2;
-import net.imglib2.ops.Tuple3;
+import net.imglib2.ops.util.Tuple2;
+import net.imglib2.ops.util.Tuple3;
 
 /**
  * An AxisSubrange defines a set of position indices using various constructors.

@@ -41,14 +41,14 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.Condition;
-import net.imglib2.ops.InputIteratorFactory;
+import net.imglib2.ops.condition.Condition;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
 import net.imglib2.ops.function.general.GeneralUnaryFunction;
 import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.input.InputIteratorFactory;
 import net.imglib2.ops.input.PointInputIteratorFactory;
-import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
+import net.imglib2.ops.operation.complex.unary.ComplexUnaryOperation;
 import net.imglib2.type.numeric.ComplexType;
 
 /**

@@ -51,8 +51,7 @@ import java.util.List;
 
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.Function;
-import net.imglib2.ops.PointSet;
+import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealAdaptiveMedianFunction;
 import net.imglib2.ops.function.real.RealAlphaTrimmedMeanFunction;
 import net.imglib2.ops.function.real.RealArithmeticMeanFunction;
@@ -67,6 +66,7 @@ import net.imglib2.ops.function.real.RealMinFunction;
 import net.imglib2.ops.image.ImageAssignment;
 import net.imglib2.ops.input.PointSetInputIteratorFactory;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;

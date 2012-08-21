@@ -38,7 +38,7 @@ package imagej.core.plugins.assign;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.overlay.Overlay;
-import net.imglib2.ops.operation.unary.real.RealAddNoise;
+import net.imglib2.ops.operation.real.unary.RealAddNoise;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 

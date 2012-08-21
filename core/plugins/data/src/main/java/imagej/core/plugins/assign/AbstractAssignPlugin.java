@@ -48,10 +48,10 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.PointSetIterator;
 import net.imglib2.ops.function.real.PrimitiveDoubleArray;
-import net.imglib2.ops.operation.unary.complex.ComplexUnaryOperation;
+import net.imglib2.ops.operation.complex.unary.ComplexUnaryOperation;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
 
