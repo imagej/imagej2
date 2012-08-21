@@ -79,6 +79,16 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 	// -- JHotDrawTool methods --
 
 	@Override
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
+	@Override
+	public JHotDrawAdapter getAdapter() {
+		return adapter;
+	}
+
+	@Override
 	public boolean isConstructing() {
 		return createdFigure != null;
 	}

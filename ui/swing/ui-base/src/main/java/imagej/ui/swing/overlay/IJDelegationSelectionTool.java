@@ -35,6 +35,8 @@
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.display.ImageDisplay;
+
 import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 /**
@@ -45,6 +47,16 @@ import org.jhotdraw.draw.tool.DelegationSelectionTool;
 public class IJDelegationSelectionTool extends DelegationSelectionTool
 	implements JHotDrawTool
 {
+
+	@Override
+	public ImageDisplay getDisplay() {
+		return null;
+	}
+
+	@Override
+	public JHotDrawAdapter getAdapter() {
+		return null;
+	}
 
 	@Override
 	public boolean isConstructing() {
