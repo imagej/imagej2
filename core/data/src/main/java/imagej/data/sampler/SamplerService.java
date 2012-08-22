@@ -127,6 +127,10 @@ public class SamplerService extends AbstractService {
 	 * @return The display containing the sampled data
 	 */
 	public ImageDisplay createSampledImage(final SamplingDefinition def) {
+		if (def.getError() != null) {
+			throw new IllegalArgumentException(
+				"SamplingDefinition error: "+def.getError());
+		}
 		final ImageDisplay outputImage = createOutputImage(def);
 		copyData(def, outputImage);
 		return outputImage;

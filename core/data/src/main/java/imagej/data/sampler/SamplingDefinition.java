@@ -177,9 +177,15 @@ public class SamplingDefinition {
 			return false;
 		}
 		final List<Long> indices = subrange.getIndices();
-		if (data.dimension(axisIndex) < indices.get(0)) {
+		if (indices.get(0) >= data.dimension(axisIndex)) {
 			err =
 				"Axis range fully beyond dimensions of display " + display.getName() +
+					" for axis " + axis;
+			return false;
+		}
+		if (indices.get(indices.size()-1) >= data.dimension(axisIndex)) {
+			err =
+				"Axis range partially beyond dimensions of display " + display.getName() +
 					" for axis " + axis;
 			return false;
 		}
@@ -244,8 +250,10 @@ public class SamplingDefinition {
 	public static SamplingDefinition sampleCompositeUVPlane(
 		final ImageDisplay display, final AxisType uAxis, final AxisType vAxis)
 	{
-		if ((uAxis == Axes.CHANNEL) || (vAxis == Axes.CHANNEL)) throw new IllegalArgumentException(
-			"UV composite plane - cannot specify channels as one of the axes");
+		if ((uAxis == Axes.CHANNEL) || (vAxis == Axes.CHANNEL)) {
+			throw new IllegalArgumentException(
+					"UV composite plane - cannot specify channels as one of the axes");
+		}
 		final SamplingDefinition definition = new SamplingDefinition(display);
 		final Data data = display.getActiveView().getData();
 		final AxisType[] axes = data.getAxes();

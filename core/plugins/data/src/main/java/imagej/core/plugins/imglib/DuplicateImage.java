@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.imglib;
 
+import imagej.Cancelable;
 import imagej.data.display.ImageDisplay;
 import imagej.data.sampler.AxisSubrange;
 import imagej.data.sampler.SamplerService;
@@ -65,7 +66,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Duplicate", accelerator = "shift control D") },
 	headless = true, initializer = "initializer")
-public class DuplicateImage extends DynamicPlugin {
+public class DuplicateImage extends DynamicPlugin implements Cancelable {
 
 	// -- Plugin parameters --
 
@@ -85,6 +86,7 @@ public class DuplicateImage extends DynamicPlugin {
 
 	private Map<AxisType, AxisSubrange> definitions;
 	private AxisType[] theAxes;
+	private String cancelReason;
 
 	// -- DuplicateImage methods --
 
@@ -169,16 +171,33 @@ public class DuplicateImage extends DynamicPlugin {
 
 	@Override
 	public void run() {
-		if (specialBehavior) {
-			final SamplingDefinition samples = determineSamples();
-			outputDisplay = samplerService.createSampledImage(samples);
-		}
-		else { // snapshot the existing composite selection
-			outputDisplay =
-				samplerService.duplicateSelectedCompositePlane(inputDisplay);
+		cancelReason = null;
+		try {
+			if (specialBehavior) {
+				final SamplingDefinition samples = determineSamples();
+				outputDisplay = samplerService.createSampledImage(samples);
+			}
+			else { // snapshot the existing composite selection
+				outputDisplay =
+					samplerService.duplicateSelectedCompositePlane(inputDisplay);
+			}
+		} catch (Exception e) {
+			cancelReason = e.getMessage();
 		}
 	}
 
+
+	@Override
+	public boolean isCanceled() {
+		return cancelReason != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	
 	// -- plugin parameter initializer --
 
 	protected void initializer() {
@@ -220,9 +239,6 @@ public class DuplicateImage extends DynamicPlugin {
 			final String definition = (String) getInput(name(axis));
 			final AxisSubrange subrange =
 				new AxisSubrange(inputDisplay, axis, definition, true);
-			if (subrange.getError() != null) {
-				return SamplingDefinition.sampleAllPlanes(inputDisplay);
-			}
 			sampleDef.constrain(axis, subrange);
 		}
 		return sampleDef;
@@ -231,5 +247,4 @@ public class DuplicateImage extends DynamicPlugin {
 	private String name(final AxisType axis) {
 		return axis.getLabel() + " axis range";
 	}
-
 }

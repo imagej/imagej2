@@ -102,8 +102,10 @@ public class AxisSubrange {
 		this();
 		final int numElements =
 			(int) (Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1);
-		if (numElements > Integer.MAX_VALUE) throw new IllegalArgumentException(
-			"the number of axis elements cannot exceed " + Integer.MAX_VALUE);
+		if (numElements > Integer.MAX_VALUE) {
+			err = "AxisSubrange: the number of axis elements cannot exceed " + Integer.MAX_VALUE;
+			return;
+		}
 		int inc;
 		if (pos1 <= pos2) inc = 1;
 		else inc = -1;
@@ -123,13 +125,18 @@ public class AxisSubrange {
 	 */
 	public AxisSubrange(final long pos1, final long pos2, final long by) {
 		this();
-		if (by == 0) throw new IllegalArgumentException("increment must not be 0");
+		if (by == 0) {
+			err = "AxisSubrange: increment by must not be 0";
+			return;
+		}
 		final int numElements =
 			(int) ((Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1) / Math.abs(by));
-		if (numElements > Integer.MAX_VALUE) throw new IllegalArgumentException(
-			"the number of axis elements cannot exceed " + Integer.MAX_VALUE);
+		if (numElements > Integer.MAX_VALUE) {
+			err = "AxisSubrange: the number of axis elements cannot exceed " + Integer.MAX_VALUE;
+			return;
+		}
 		final long startPos = pos1, endPos = pos2;
-		for (long l = startPos; l >= endPos; l += by) {
+		for (long l = startPos; l <= endPos; l += by) {
 			indices.add(l);
 		}
 	}
@@ -170,8 +177,7 @@ public class AxisSubrange {
 			min = 0;
 			max = display.dimension(axisIndex) - 1;
 		}
-		if (!parseAxisDefinition(min, max, definition)) throw new IllegalArgumentException(
-			getError());
+		parseAxisDefinition(min, max, definition);
 	}
 
 	// -- private helpers --
@@ -199,60 +205,63 @@ public class AxisSubrange {
 				numberDashNumberDashNumber(term);
 			AxisSubrange subrange = null;
 			if (num != null) {
-				final long pos = num - min;
-				if ((pos < min) && (pos > max)) {
+				if ((num < min) || (num > max)) {
 					err =
-							"Dimension out of bounds (" + min + "," + max + ") : " + pos +
-							" in " + description;
+							"AxisSubrange: dimension out of bounds (" + min + "," + max +
+							") : " + num + " in " + description;
 				}
 				else {
 					subrange = new AxisSubrange(num - min);
 				}
 			}
 			else if (numDashNum != null) {
-				final long start = numDashNum.get1();
-				final long end = numDashNum.get2();
-				final long pos1 = start - min;
-				final long pos2 = end - min;
-				if ((pos1 < min) && (pos1 > max)) {
-					err =
-							"Dimension out of bounds (" + min + "," + max + ") : " + pos1 +
-							" in " + description;
+				long start = numDashNum.get1();
+				long end = numDashNum.get2();
+				if (end < start) {  // allow them to be order reversed
+					long tmp = end;
+					end = start;
+					start = tmp;
 				}
-				else if ((pos2 < min) && (pos2 > max)) {
+				if ((start < min) || (start > max)) {
 					err =
-							"Dimension out of bounds (" + min + "," + max + ") : " + pos2 +
-							" in " + description;
+							"AxisSubrange: dimension out of bounds (" + min + "," + max +
+							") : " + start + " in " + description;
+				}
+				else if ((end < min) || (end > max)) {
+					err =
+							"AxisSubrange: dimension out of bounds (" + min + "," + max +
+							") : " + end + " in " + description;
 				}
 				else {
-					subrange = new AxisSubrange(pos1, pos2);
+					subrange = new AxisSubrange(start-min, end-min);
 				}
 			}
 			else if (numDashNumDashNum != null) {
 				final long start = numDashNumDashNum.get1();
 				final long end = numDashNumDashNum.get2();
 				final long by = numDashNumDashNum.get3();
-				final long pos1 = start - min;
-				final long pos2 = end - min;
-				if ((pos1 < min) && (pos1 > max)) {
+				if ((start < min) || (start > max)) {
 					err =
-							"Dimension out of bounds (" + min + "," + max + ") : " + pos1 +
-							" in " + description;
+							"AxisSubrange: dimension out of bounds (" + min + "," + max +
+							") : " + start + " in " + description;
 				}
-				else if ((pos2 < min) && (pos2 > max)) {
+				else if ((end < min) || (end > max)) {
 					err =
-							"Dimension out of bounds (" + min + "," + max + ") : " + pos2 +
-							" in " + description;
+							"AxisSubrange: dimension out of bounds (" + min + "," + max +
+							") : " + end + " in " + description;
 				}
-				else if ((by == 0) && (pos1 != pos2)) {
-					err = "Step by value cannot be 0 in " + description;
+				else if (by == 0) {
+					err = "AxisSubrange: step by value cannot be 0 in " + description;
+				}
+				else if ((by < 0 && start < end) || (by > 0 && end < start)) {
+					err = "AxisSubrange: empty interval specified in " + description;
 				}
 				else {
-					subrange = new AxisSubrange(pos1, pos2, by);
+					subrange = new AxisSubrange(start-min, end-min, by);
 				}
 			}
 			else { // not num or numDashNum or numDashNumDashNum
-				err = "Could not parse definition: " + description;
+				err = "AxisSubrange: could not parse definition: " + description;
 			}
 			if (err != null) {
 				return false;
@@ -286,7 +295,6 @@ public class AxisSubrange {
 		final String[] values = term.split("-");
 		final Long start = Long.parseLong(values[0]);
 		final Long end = Long.parseLong(values[1]);
-		if (end < start) return null;
 		return new Tuple2<Long, Long>(start, end);
 	}
 
@@ -303,8 +311,6 @@ public class AxisSubrange {
 		final Long start = Long.parseLong(values[0]);
 		final Long end = Long.parseLong(values[1]);
 		final Long by = Long.parseLong(values[2]);
-		if (end < start) return null;
-		if (by <= 0) return null;
 		return new Tuple3<Long, Long, Long>(start, end, by);
 	}
 
