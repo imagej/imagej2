@@ -55,7 +55,7 @@ import org.apache.pivot.wtk.DesktopApplicationContext;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = UserInterface.class)
+@Plugin(type = UserInterface.class, name = "pivot")
 public class PivotUI extends AbstractUserInterface implements Callable<Object> {
 
 	// -- UserInterface methods --

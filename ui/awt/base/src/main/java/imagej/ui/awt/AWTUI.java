@@ -61,7 +61,7 @@ import java.awt.event.WindowEvent;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = UserInterface.class)
+@Plugin(type = UserInterface.class, name = "awt")
 public class AWTUI extends AbstractUserInterface {
 
 	private AWTApplicationFrame frame;

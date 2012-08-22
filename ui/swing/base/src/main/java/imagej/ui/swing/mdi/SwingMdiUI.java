@@ -58,7 +58,8 @@ import javax.swing.JScrollPane;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(type = UserInterface.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = UserInterface.class, name = "swing-mdi",
+	priority = Priority.LOW_PRIORITY)
 public class SwingMdiUI extends AbstractSwingUI {
 
 	private JMDIDesktopPane desktopPane;

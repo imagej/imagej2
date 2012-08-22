@@ -57,7 +57,7 @@ import javax.swing.JPanel;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(type = UserInterface.class)
+@Plugin(type = UserInterface.class, name = "swing")
 public class SwingUI extends AbstractSwingUI {
 
 	// -- UserInterface methods --
