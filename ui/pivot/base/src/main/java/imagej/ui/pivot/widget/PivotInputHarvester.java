@@ -36,10 +36,10 @@
 package imagej.ui.pivot.widget;
 
 import imagej.Priority;
-import imagej.ext.plugin.AbstractInputHarvesterPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
 import imagej.module.Module;
+import imagej.widget.AbstractInputHarvesterPlugin;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 

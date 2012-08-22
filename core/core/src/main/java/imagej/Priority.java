@@ -78,7 +78,7 @@ public final class Priority {
 	/**
 	 * Priority for items that strongly prefer to be late in the * chain.
 	 * Examples: {@link imagej.display.DisplayPostprocessor}, UI-specific
-	 * subclasses of {@link imagej.ext.plugin.AbstractInputHarvesterPlugin}.
+	 * subclasses of {@link imagej.widget.AbstractInputHarvesterPlugin}.
 	 */
 	public static final double VERY_LOW_PRIORITY = -10000;
 

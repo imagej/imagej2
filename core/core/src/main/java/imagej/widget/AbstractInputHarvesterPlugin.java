@@ -33,12 +33,11 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.widget;
 
+import imagej.ext.plugin.PreprocessorPlugin;
 import imagej.module.Module;
 import imagej.module.ModuleException;
-import imagej.widget.AbstractInputHarvester;
-import imagej.widget.InputHarvester;
 
 /**
  * AbstractInputHarvesterPlugin is an {@link InputHarvester} that implements the
