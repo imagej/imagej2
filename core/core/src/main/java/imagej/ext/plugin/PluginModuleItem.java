@@ -35,11 +35,11 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.module.AbstractModuleItem;
-import imagej.ext.module.ItemIO;
-import imagej.ext.module.ItemVisibility;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleItem;
+import imagej.module.AbstractModuleItem;
+import imagej.module.ItemIO;
+import imagej.module.ItemVisibility;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleItem;
 import imagej.util.ClassUtils;
 import imagej.util.NumberUtils;
 import imagej.widget.WidgetStyle;

@@ -36,8 +36,8 @@
 package imagej.ext.plugin;
 
 import imagej.Priority;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
+import imagej.module.Module;
+import imagej.module.ModuleItem;
 
 /**
  * A preprocessor for saving populated input values to persistent storage.

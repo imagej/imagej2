@@ -35,9 +35,9 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.module.ItemIO;
-import imagej.ext.module.ItemVisibility;
-import imagej.ext.module.ModuleInfo;
+import imagej.module.ItemIO;
+import imagej.module.ItemVisibility;
+import imagej.module.ModuleInfo;
 import imagej.widget.WidgetStyle;
 
 import java.lang.annotation.ElementType;
@@ -82,7 +82,7 @@ public @interface Parameter {
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
 	// See:
 	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	ItemIO type() default imagej.ext.module.ItemIO.INPUT;
+	ItemIO type() default imagej.module.ItemIO.INPUT;
 
 	/**
 	 * Defines the "visibility" of the parameter.
@@ -106,7 +106,7 @@ public @interface Parameter {
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
 	// See:
 	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	ItemVisibility visibility() default imagej.ext.module.ItemVisibility.NORMAL;
+	ItemVisibility visibility() default imagej.module.ItemVisibility.NORMAL;
 
 	/**
 	 * Defines whether the parameter value should be auto-filled, if possible,

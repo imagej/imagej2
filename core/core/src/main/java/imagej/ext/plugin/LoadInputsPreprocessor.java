@@ -36,8 +36,8 @@
 package imagej.ext.plugin;
 
 import imagej.Priority;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
+import imagej.module.Module;
+import imagej.module.ModuleItem;
 import imagej.util.ClassUtils;
 
 /**

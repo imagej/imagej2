@@ -37,10 +37,10 @@ package imagej.ui.awt.menu;
 
 import imagej.ImageJ;
 import imagej.ext.Accelerator;
-import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
+import imagej.module.ModuleInfo;
 
 import java.awt.Menu;
 import java.awt.MenuItem;

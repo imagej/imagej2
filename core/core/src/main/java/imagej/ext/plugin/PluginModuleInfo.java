@@ -37,12 +37,12 @@ package imagej.ext.plugin;
 
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
-import imagej.ext.module.ItemVisibility;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleItem;
-import imagej.ext.module.event.ModulesUpdatedEvent;
+import imagej.module.ItemVisibility;
+import imagej.module.Module;
+import imagej.module.ModuleException;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleItem;
+import imagej.module.event.ModulesUpdatedEvent;
 import imagej.util.Log;
 import imagej.util.StringMaker;
 

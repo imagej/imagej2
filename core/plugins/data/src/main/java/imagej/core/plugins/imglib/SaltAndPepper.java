@@ -41,12 +41,12 @@ import imagej.data.Position;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
 import imagej.ui.UIService;
 import imagej.util.RealRect;
 

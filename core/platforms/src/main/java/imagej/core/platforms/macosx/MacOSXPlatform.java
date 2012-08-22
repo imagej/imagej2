@@ -38,12 +38,12 @@ package imagej.core.platforms.macosx;
 import com.apple.eawt.Application;
 
 import imagej.event.EventService;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.event.ModulesUpdatedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.module.ModuleInfo;
+import imagej.module.event.ModulesUpdatedEvent;
 import imagej.platform.AbstractPlatform;
 import imagej.platform.AppService;
 import imagej.platform.Platform;

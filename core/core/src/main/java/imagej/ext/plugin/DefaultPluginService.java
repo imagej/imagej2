@@ -38,10 +38,10 @@ package imagej.ext.plugin;
 import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.ext.InstantiableException;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleService;
 import imagej.log.LogService;
+import imagej.module.Module;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

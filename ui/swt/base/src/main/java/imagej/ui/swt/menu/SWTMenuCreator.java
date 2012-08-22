@@ -36,10 +36,10 @@
 package imagej.ui.swt.menu;
 
 import imagej.ImageJ;
-import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
+import imagej.module.ModuleInfo;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

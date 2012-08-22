@@ -37,7 +37,6 @@ package imagej.core.plugins.display.interactive;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -45,6 +44,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
 import imagej.widget.WidgetStyle;
 
 import java.util.List;

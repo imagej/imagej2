@@ -35,7 +35,7 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.module.DefaultModule;
+import imagej.module.DefaultModule;
 import imagej.util.ClassUtils;
 
 import java.lang.reflect.Field;

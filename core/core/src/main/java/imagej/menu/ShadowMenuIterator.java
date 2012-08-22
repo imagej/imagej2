@@ -35,7 +35,7 @@
 
 package imagej.menu;
 
-import imagej.ext.module.ModuleInfo;
+import imagej.module.ModuleInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -36,11 +36,11 @@
 package imagej.ext.plugin.debug;
 
 import imagej.Priority;
-import imagej.ext.module.Module;
 import imagej.ext.plugin.AbstractPostprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PostprocessorPlugin;
 import imagej.log.LogService;
+import imagej.module.Module;
 
 import java.util.Map;
 

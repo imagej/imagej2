@@ -35,10 +35,10 @@
 
 package imagej.core.plugins.debug;
 
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.module.ItemIO;
 
 import java.io.File;
 import java.util.ArrayList;

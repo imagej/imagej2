@@ -36,10 +36,10 @@
 package imagej.core.plugins.typechange;
 
 import imagej.data.Dataset;
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuService;
+import imagej.module.ItemIO;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;

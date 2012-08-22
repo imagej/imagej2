@@ -37,12 +37,12 @@ package imagej.data.display;
 
 import imagej.Priority;
 import imagej.data.Dataset;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
-import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.AbstractPreprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
+import imagej.module.Module;
+import imagej.module.ModuleItem;
+import imagej.module.ModuleService;
 
 /**
  * Assigns the active {@link ImageDisplay} when there is one single unresolved

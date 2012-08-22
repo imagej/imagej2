@@ -36,10 +36,10 @@
 package imagej.core.plugins.dataset;
 
 import imagej.data.Dataset;
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.module.ItemIO;
 
 /**
  * Dummy helper plugin that turns a Dataset into a Display by passing it through

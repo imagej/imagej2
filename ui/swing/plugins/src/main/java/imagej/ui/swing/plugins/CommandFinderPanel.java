@@ -36,8 +36,8 @@
 package imagej.ui.swing.plugins;
 
 import imagej.ext.MenuPath;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleService;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

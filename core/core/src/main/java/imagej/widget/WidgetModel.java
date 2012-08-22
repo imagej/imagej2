@@ -35,9 +35,9 @@
 
 package imagej.widget;
 
-import imagej.ext.module.ItemVisibility;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
+import imagej.module.ItemVisibility;
+import imagej.module.Module;
+import imagej.module.ModuleItem;
 import imagej.util.ClassUtils;
 import imagej.util.NumberUtils;
 

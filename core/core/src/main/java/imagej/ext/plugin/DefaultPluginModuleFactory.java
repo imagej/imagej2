@@ -36,8 +36,8 @@
 package imagej.ext.plugin;
 
 import imagej.ext.InstantiableException;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 
 /**
  * The default implementation of {@link PluginModuleFactory}, using a

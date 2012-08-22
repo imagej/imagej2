@@ -36,11 +36,11 @@
 package imagej.ext.plugin.debug;
 
 import imagej.Priority;
-import imagej.ext.module.Module;
 import imagej.ext.plugin.AbstractPreprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreprocessorPlugin;
 import imagej.log.LogService;
+import imagej.module.Module;
 
 /**
  * A preprocessor plugin that dumps information to the log.

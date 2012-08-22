@@ -37,13 +37,13 @@ package imagej.core.plugins.debug;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
+import imagej.module.Module;
+import imagej.module.ModuleService;
 
 import java.util.HashMap;
 import java.util.Map;

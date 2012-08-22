@@ -38,10 +38,10 @@ package imagej.ext.plugin;
 import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.UIDetails;
-import imagej.ext.module.DefaultModuleInfo;
-import imagej.ext.module.DefaultModuleItem;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleItem;
+import imagej.module.DefaultModuleInfo;
+import imagej.module.DefaultModuleItem;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleItem;
 
 import java.lang.reflect.Field;
 

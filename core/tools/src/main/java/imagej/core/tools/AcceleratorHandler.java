@@ -39,10 +39,10 @@ import imagej.display.event.input.KyPressedEvent;
 import imagej.ext.Accelerator;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 

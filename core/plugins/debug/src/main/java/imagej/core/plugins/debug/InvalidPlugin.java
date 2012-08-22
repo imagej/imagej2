@@ -35,9 +35,9 @@
 
 package imagej.core.plugins.debug;
 
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.module.ItemIO;
 
 /**
  * Test plugin for verifying that invalid module parameters are dealt with using

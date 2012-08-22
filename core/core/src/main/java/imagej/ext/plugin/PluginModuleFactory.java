@@ -35,8 +35,8 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 
 /**
  * A factory for instantiating a module from a {@link PluginModuleInfo}.

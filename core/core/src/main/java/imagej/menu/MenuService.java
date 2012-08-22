@@ -36,10 +36,10 @@
 package imagej.menu;
 
 import imagej.event.EventService;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.module.Module;
+import imagej.module.ModuleInfo;
 import imagej.service.Service;
 
 /**

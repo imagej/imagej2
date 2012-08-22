@@ -37,7 +37,7 @@ package imagej.ext.plugin;
 
 import imagej.Priority;
 import imagej.display.Display;
-import imagej.ext.module.ModuleItem;
+import imagej.module.ModuleItem;
 import imagej.service.Service;
 
 import java.lang.annotation.ElementType;

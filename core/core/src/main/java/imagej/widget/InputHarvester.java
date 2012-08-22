@@ -35,8 +35,8 @@
 
 package imagej.widget;
 
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 
 /**
  * An input harvester collects {@link Module} input values, according to the

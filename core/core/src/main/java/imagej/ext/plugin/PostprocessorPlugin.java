@@ -36,7 +36,7 @@
 package imagej.ext.plugin;
 
 import imagej.Contextual;
-import imagej.ext.module.ModulePostprocessor;
+import imagej.module.ModulePostprocessor;
 
 /**
  * A plugin postprocessor defines a step that occurs immediately following the

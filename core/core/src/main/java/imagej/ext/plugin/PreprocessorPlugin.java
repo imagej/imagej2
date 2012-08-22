@@ -36,7 +36,7 @@
 package imagej.ext.plugin;
 
 import imagej.Contextual;
-import imagej.ext.module.ModulePreprocessor;
+import imagej.module.ModulePreprocessor;
 
 /**
  * A plugin preprocessor defines a step that occurs just prior to the actual

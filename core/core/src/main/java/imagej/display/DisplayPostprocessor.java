@@ -36,12 +36,12 @@
 package imagej.display;
 
 import imagej.Priority;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleItem;
 import imagej.ext.plugin.AbstractPostprocessorPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PostprocessorPlugin;
 import imagej.log.LogService;
+import imagej.module.Module;
+import imagej.module.ModuleItem;
 
 import java.util.ArrayList;
 import java.util.Collection;

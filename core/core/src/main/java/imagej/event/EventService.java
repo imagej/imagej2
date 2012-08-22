@@ -57,13 +57,13 @@ public interface EventService extends Service {
 	 * of a stack. For example:
 	 * </p>
 	 * <ol>
-	 * <li>{@link imagej.ext.module.event.ModulesUpdatedEvent} is published with
+	 * <li>{@link imagej.module.event.ModulesUpdatedEvent} is published with
 	 * {@link #publish}.</li>
 	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and
 	 * handles it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in
 	 * response.</li>
 	 * <li>A third party that subscribes to both
-	 * {@link imagej.ext.module.event.ModulesUpdatedEvent} and
+	 * {@link imagej.module.event.ModulesUpdatedEvent} and
 	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the latter
 	 * before the former.</li>
 	 * </ol>
@@ -88,13 +88,13 @@ public interface EventService extends Service {
 	 * resemble that of a queue. For example:
 	 * </p>
 	 * <ol>
-	 * <li>{@link imagej.ext.module.event.ModulesUpdatedEvent} is published with
+	 * <li>{@link imagej.module.event.ModulesUpdatedEvent} is published with
 	 * {@link #publishLater}.</li>
 	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and
 	 * handles it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in
 	 * response.</li>
 	 * <li>A third party that subscribes to both
-	 * {@link imagej.ext.module.event.ModulesUpdatedEvent} and
+	 * {@link imagej.module.event.ModulesUpdatedEvent} and
 	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the former
 	 * first, since it was already queued by the time the latter was published.</li>
 	 * </ol>

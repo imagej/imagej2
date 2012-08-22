@@ -36,11 +36,11 @@
 package imagej.data.options;
 
 import imagej.data.ChannelCollection;
-import imagej.ext.module.ItemVisibility;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import imagej.module.ItemVisibility;
 import imagej.options.OptionsPlugin;
 import imagej.options.event.OptionsEvent;
 import imagej.util.ColorRGB;

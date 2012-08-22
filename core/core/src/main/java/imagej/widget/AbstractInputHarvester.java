@@ -37,10 +37,10 @@ package imagej.widget;
 
 import imagej.Contextual;
 import imagej.ImageJ;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleCanceledException;
-import imagej.ext.module.ModuleException;
-import imagej.ext.module.ModuleItem;
+import imagej.module.Module;
+import imagej.module.ModuleCanceledException;
+import imagej.module.ModuleException;
+import imagej.module.ModuleItem;
 import imagej.object.ObjectService;
 
 import java.util.ArrayList;

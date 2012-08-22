@@ -36,7 +36,6 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -44,6 +43,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 

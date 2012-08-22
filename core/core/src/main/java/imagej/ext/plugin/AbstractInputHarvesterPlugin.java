@@ -35,8 +35,8 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 import imagej.widget.AbstractInputHarvester;
 import imagej.widget.InputHarvester;
 

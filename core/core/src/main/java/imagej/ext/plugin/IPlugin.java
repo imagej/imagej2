@@ -36,9 +36,9 @@
 package imagej.ext.plugin;
 
 import imagej.display.Display;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModulePostprocessor;
-import imagej.ext.module.ModulePreprocessor;
+import imagej.module.Module;
+import imagej.module.ModulePostprocessor;
+import imagej.module.ModulePreprocessor;
 import imagej.platform.Platform;
 import imagej.service.Service;
 import imagej.tool.Tool;

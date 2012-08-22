@@ -42,10 +42,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import imagej.ImageJ;
 import imagej.ext.MenuPath;
-import imagej.ext.module.DefaultModuleInfo;
-import imagej.ext.module.ModuleInfo;
 import imagej.menu.ShadowMenu;
 import imagej.menu.ShadowMenuIterator;
+import imagej.module.DefaultModuleInfo;
+import imagej.module.ModuleInfo;
 
 import java.util.ArrayList;
 import java.util.List;

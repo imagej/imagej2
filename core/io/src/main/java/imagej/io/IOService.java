@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.module.ModuleService;
+import imagej.module.ModuleService;
 import imagej.service.Service;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;

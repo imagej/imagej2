@@ -35,13 +35,13 @@
 
 package imagej.ui.swing.plugins;
 
-import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.menu.MenuConstants;
+import imagej.module.ModuleInfo;
 import imagej.ui.swing.SwingUtils;
 
 import javax.swing.JOptionPane;

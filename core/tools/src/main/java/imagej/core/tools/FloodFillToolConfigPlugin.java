@@ -35,10 +35,10 @@
 
 package imagej.core.tools;
 
-import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.module.ItemIO;
 
 /**
  * Implements the configuration code for {@link FloodFillTool}.
