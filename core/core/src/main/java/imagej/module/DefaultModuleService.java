@@ -36,8 +36,8 @@
 package imagej.module;
 
 import imagej.ImageJ;
+import imagej.MenuPath;
 import imagej.event.EventService;
-import imagej.ext.MenuPath;
 import imagej.ext.plugin.Plugin;
 import imagej.input.Accelerator;
 import imagej.log.LogService;

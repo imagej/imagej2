@@ -37,8 +37,8 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.Menus;
-import imagej.ext.MenuEntry;
-import imagej.ext.MenuPath;
+import imagej.MenuEntry;
+import imagej.MenuPath;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;

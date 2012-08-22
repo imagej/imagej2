@@ -35,7 +35,7 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.Cancelable;
+import imagej.Cancelable;
 import imagej.ext.InstantiableException;
 import imagej.module.AbstractModule;
 import imagej.module.ModuleException;

@@ -35,7 +35,7 @@
 
 package imagej.module;
 
-import imagej.ext.Cancelable;
+import imagej.Cancelable;
 
 /**
  * A module preprocessor defines a step that occurs just prior to the actual

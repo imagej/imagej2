@@ -36,8 +36,8 @@
 package imagej.ext.plugin;
 
 import imagej.ImageJ;
-import imagej.ext.MenuPath;
-import imagej.ext.UIDetails;
+import imagej.MenuPath;
+import imagej.UIDetails;
 import imagej.module.DefaultModuleInfo;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ModuleInfo;

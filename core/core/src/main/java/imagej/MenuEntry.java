@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext;
+package imagej;
 
 import imagej.input.Accelerator;
 

@@ -35,8 +35,8 @@
 
 package imagej.module;
 
+import imagej.AbstractUIDetails;
 import imagej.event.EventService;
-import imagej.ext.AbstractUIDetails;
 import imagej.module.event.ModulesUpdatedEvent;
 
 import java.lang.reflect.Constructor;

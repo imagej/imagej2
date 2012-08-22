@@ -33,26 +33,24 @@
  * #L%
  */
 
-package imagej.ext;
+package imagej;
 
 /**
- * An interface declaring the ability to create objects.
+ * An operation that can be canceled.
  * 
- * @param <T> The type of objects that can be created.
  * @author Curtis Rueden
  */
-public interface Instantiable<T> {
+public interface Cancelable {
+
+	/** Gets whether the operation has been canceled. */
+	boolean isCanceled();
 
 	/**
-	 * Gets the fully qualified name of the {@link Class} of the objects that can
-	 * be created.
+	 * Gets a message describing why the operation was canceled.
+	 * 
+	 * @return The reason for cancelation, which may be null if no reason was
+	 *         given, or if the operation was not in fact canceled.
 	 */
-	String getClassName();
-
-	/** Loads the class corresponding to the objects that can be created. */
-	Class<T> loadClass() throws InstantiableException;
-
-	/** Creates an object. */
-	T createInstance() throws InstantiableException;
+	String getCancelReason();
 
 }

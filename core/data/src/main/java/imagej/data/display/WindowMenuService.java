@@ -36,14 +36,14 @@
 package imagej.data.display;
 
 import imagej.ImageJ;
+import imagej.MenuEntry;
+import imagej.MenuPath;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.MenuEntry;
-import imagej.ext.MenuPath;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;

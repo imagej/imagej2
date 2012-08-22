@@ -35,7 +35,7 @@
 
 package imagej.module.event;
 
-import imagej.ext.Cancelable;
+import imagej.Cancelable;
 import imagej.module.Module;
 import imagej.module.ModulePreprocessor;
 import imagej.widget.InputHarvester;

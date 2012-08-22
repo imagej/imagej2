@@ -36,10 +36,10 @@
 package imagej.module;
 
 import imagej.AbstractContextual;
+import imagej.Cancelable;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.Cancelable;
 import imagej.log.LogService;
 import imagej.module.event.ModuleCanceledEvent;
 import imagej.module.event.ModuleExecutedEvent;

@@ -33,9 +33,7 @@
  * #L%
  */
 
-package imagej.ext;
-
-import imagej.Prioritized;
+package imagej;
 
 /**
  * An interface defining details useful for generating relevant user interface

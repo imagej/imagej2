@@ -33,10 +33,8 @@
  * #L%
  */
 
-package imagej.ext;
+package imagej;
 
-import imagej.Prioritized;
-import imagej.Priority;
 import imagej.util.StringMaker;
 
 /**

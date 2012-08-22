@@ -33,32 +33,71 @@
  * #L%
  */
 
-package imagej.ext;
+package imagej;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * An interface defining the basic characteristics of name, label and
- * description.
+ * A path in a hierarchical menu structure, for use with {@link UIDetails}.
  * 
  * @author Curtis Rueden
  */
-public interface BasicDetails {
+public class MenuPath extends ArrayList<MenuEntry> {
 
-	/** Gets the unique name of the object. */
-	String getName();
+	/** The separator between elements of a menu path string. */
+	public static final String PATH_SEPARATOR = ">";
 
-	/** Gets the name to appear in a UI, if applicable. */
-	String getLabel();
+	/** Creates an empty menu path. */
+	public MenuPath() {
+		// default constructor
+	}
 
-	/** Gets a string describing the object. */
-	String getDescription();
+	/**
+	 * Creates a menu path with the given entries. Passing a {@link MenuPath} as
+	 * the argument will make a copy.
+	 */
+	public MenuPath(final Collection<? extends MenuEntry> menuEntries) {
+		addAll(menuEntries);
+	}
 
-	/** Sets the unique name of the object. */
-	void setName(String name);
+	/**
+	 * Creates a menu path with entries parsed from the given string. Assumes
+	 * "&gt;" as the separator (e.g., "File&gt;New&gt;Image").
+	 * 
+	 * @see #PATH_SEPARATOR
+	 */
+	public MenuPath(final String path) {
+		if (path != null && !path.isEmpty()) {
+			final String[] tokens = path.split(PATH_SEPARATOR);
+			for (final String token : tokens) {
+				add(new MenuEntry(token.trim()));
+			}
+		}
+	}
 
-	/** Sets the name to appear in a UI, if applicable. */
-	void setLabel(String label);
+	/** Gets the final element of the menu path. */
+	public MenuEntry getLeaf() {
+		if (size() == 0) return null;
+		return get(size() - 1);
+	}
 
-	/** Sets a string describing the object. */
-	void setDescription(String description);
+	/** Gets the menu path as a string. */
+	public String getMenuString() {
+		return getMenuString(true);
+	}
+
+	/** Gets the menu path as a string, with or without the final element. */
+	public String getMenuString(final boolean includeLeaf) {
+		final StringBuilder sb = new StringBuilder();
+		final int size = size();
+		final int last = includeLeaf ? size : size - 1;
+		for (int i = 0; i < last; i++) {
+			final MenuEntry menu = get(i);
+			if (i > 0) sb.append(" " + PATH_SEPARATOR + " ");
+			sb.append(menu);
+		}
+		return sb.toString();
+	}
 
 }

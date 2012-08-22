@@ -35,13 +35,18 @@
 
 package imagej.ext;
 
+import imagej.Instantiable;
+
+// TODO - Migrate this class to imagej base package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * An exception thrown when an {@link Instantiable} cannot create an object.
  * 
  * @author Curtis Rueden
  */
 public class InstantiableException extends Exception {
-
+	
 	public InstantiableException() {
 		super();
 	}

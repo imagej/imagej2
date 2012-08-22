@@ -37,9 +37,9 @@ package imagej.menu;
 
 import imagej.AbstractContextual;
 import imagej.ImageJ;
+import imagej.MenuEntry;
+import imagej.MenuPath;
 import imagej.event.EventService;
-import imagej.ext.MenuEntry;
-import imagej.ext.MenuPath;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.menu.event.MenusAddedEvent;

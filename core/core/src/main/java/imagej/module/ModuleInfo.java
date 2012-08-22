@@ -35,8 +35,8 @@
 
 package imagej.module;
 
+import imagej.UIDetails;
 import imagej.event.EventService;
-import imagej.ext.UIDetails;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.module.event.ModulesUpdatedEvent;
 

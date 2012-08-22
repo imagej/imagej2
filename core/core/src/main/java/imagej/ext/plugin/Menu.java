@@ -35,7 +35,7 @@
 
 package imagej.ext.plugin;
 
-import imagej.ext.MenuEntry;
+import imagej.MenuEntry;
 import imagej.input.Accelerator;
 
 import java.lang.annotation.Target;

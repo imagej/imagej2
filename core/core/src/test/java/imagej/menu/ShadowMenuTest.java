@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import imagej.ImageJ;
-import imagej.ext.MenuPath;
+import imagej.MenuPath;
 import imagej.menu.ShadowMenu;
 import imagej.menu.ShadowMenuIterator;
 import imagej.module.DefaultModuleInfo;
