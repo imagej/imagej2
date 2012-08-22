@@ -36,7 +36,6 @@
 package imagej.ui;
 
 import imagej.data.display.ImageDisplay;
-import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.display.Display;
@@ -47,7 +46,6 @@ import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
-import imagej.platform.event.AppQuitEvent;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
 import imagej.ui.viewer.DisplayViewer;
@@ -155,8 +153,5 @@ public interface UIService extends Service {
 	 * position.
 	 */
 	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
-
-	@EventHandler
-	void onEvent(AppQuitEvent event);
 
 }

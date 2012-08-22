@@ -368,9 +368,8 @@ public final class DefaultUIService extends AbstractService implements
 		});
 	}
 
-	@Override
 	@EventHandler
-	public void onEvent(final AppQuitEvent event) {
+	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
 		userInterface.saveLocation();
 	}
 
