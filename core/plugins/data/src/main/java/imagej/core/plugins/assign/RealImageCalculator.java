@@ -258,7 +258,7 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	{
 		RandomAccess<? extends RealType<?>> src = in.randomAccess();
 		RandomAccess<? extends RealType<?>> dst = out.randomAccess();
-		HyperVolumePointSet ps = new HyperVolumePointSet(new long[span.length], lastPoint(span));
+		HyperVolumePointSet ps = new HyperVolumePointSet(span);
 		PointSetIterator iter = ps.createIterator();
 		long[] pos = null;
 		while (iter.hasNext()) {
@@ -270,11 +270,4 @@ public class RealImageCalculator<T extends RealType<T>> implements
 		}
 	}
 
-	private long[] lastPoint(long[] span) {
-		long[] lastPoint = new long[span.length];
-		for (int i = 0; i < span.length; i++) {
-			lastPoint[i] = span[i] - 1;
-		}
-		return lastPoint;
-	}
 }
