@@ -41,6 +41,7 @@ import imagej.ext.Instantiable;
 import imagej.ext.InstantiableException;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
+import imagej.menu.ShadowMenu;
 import imagej.util.StringMaker;
 
 import java.net.URL;
@@ -112,9 +113,9 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 	 * Gets the URL corresponding to the icon resource path.
 	 * 
 	 * @see #getIconPath()
+	 * @see ShadowMenu#getIconURL()
 	 */
 	public URL getIconURL() throws InstantiableException {
-		// See also: imagej.ext.menu.ShadowMenu#getIconURL()
 		final String iconPath = getIconPath();
 		if (iconPath == null || iconPath.isEmpty()) return null;
 		return loadClass().getResource(iconPath);

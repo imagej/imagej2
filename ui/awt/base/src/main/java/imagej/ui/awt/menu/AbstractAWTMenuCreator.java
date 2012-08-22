@@ -54,8 +54,8 @@ import java.awt.event.ActionListener;
  * This class is called <code>AbstractAWTMenuCreator</code> rather than simply
  * <code>AbstractMenuCreator</code> to avoid having multiple classes with the
  * same name in different packages (e.g.,
- * <code>imagej.ext.menu.AbstractMenuCreator</code> and
- * <code>imagej.ext.ui.swing.AbstractSwingMenuCreator</code>).
+ * <code>imagej.menu.AbstractMenuCreator</code> and
+ * <code>imagej.ui.swing.menu.AbstractMenuCreator</code>).
  * </p>
  * 
  * @author Curtis Rueden
