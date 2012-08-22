@@ -37,11 +37,11 @@ package imagej.core.tools;
 
 import imagej.Priority;
 import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
+import imagej.display.event.input.KyPressedEvent;
+import imagej.display.event.input.MsWheelEvent;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;

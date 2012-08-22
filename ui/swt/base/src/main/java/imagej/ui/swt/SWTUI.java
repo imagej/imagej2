@@ -93,7 +93,7 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 
 	@Override
 	public DisplayWindow createDisplayWindow(
-		final imagej.ext.display.Display<?> display)
+		final imagej.display.Display<?> display)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -112,7 +112,7 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 
 	@Override
 	public void showContextMenu(final String menuRoot,
-		final imagej.ext.display.Display<?> display, final int x, final int y)
+		final imagej.display.Display<?> display, final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

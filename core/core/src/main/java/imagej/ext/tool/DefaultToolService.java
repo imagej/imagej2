@@ -36,18 +36,18 @@
 package imagej.ext.tool;
 
 import imagej.ImageJ;
+import imagej.display.event.DisplayEvent;
+import imagej.display.event.input.KyPressedEvent;
+import imagej.display.event.input.KyReleasedEvent;
+import imagej.display.event.input.MsClickedEvent;
+import imagej.display.event.input.MsDraggedEvent;
+import imagej.display.event.input.MsMovedEvent;
+import imagej.display.event.input.MsPressedEvent;
+import imagej.display.event.input.MsReleasedEvent;
+import imagej.display.event.input.MsWheelEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
-import imagej.ext.display.event.DisplayEvent;
-import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.display.event.input.KyReleasedEvent;
-import imagej.ext.display.event.input.MsClickedEvent;
-import imagej.ext.display.event.input.MsDraggedEvent;
-import imagej.ext.display.event.input.MsMovedEvent;
-import imagej.ext.display.event.input.MsPressedEvent;
-import imagej.ext.display.event.input.MsReleasedEvent;
-import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;

@@ -35,16 +35,16 @@
 
 package imagej.ui.swing.mdi;
 
+import imagej.display.Display;
+import imagej.display.event.window.WinActivatedEvent;
+import imagej.display.event.window.WinClosedEvent;
+import imagej.display.event.window.WinClosingEvent;
+import imagej.display.event.window.WinDeactivatedEvent;
+import imagej.display.event.window.WinDeiconifiedEvent;
+import imagej.display.event.window.WinIconifiedEvent;
+import imagej.display.event.window.WinOpenedEvent;
 import imagej.event.EventService;
 import imagej.event.ImageJEvent;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.window.WinActivatedEvent;
-import imagej.ext.display.event.window.WinClosedEvent;
-import imagej.ext.display.event.window.WinClosingEvent;
-import imagej.ext.display.event.window.WinDeactivatedEvent;
-import imagej.ext.display.event.window.WinDeiconifiedEvent;
-import imagej.ext.display.event.window.WinIconifiedEvent;
-import imagej.ext.display.event.window.WinOpenedEvent;
 
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;

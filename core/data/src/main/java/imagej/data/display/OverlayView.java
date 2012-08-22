@@ -36,7 +36,7 @@
 package imagej.data.display;
 
 import imagej.data.overlay.Overlay;
-import imagej.ext.display.Display;
+import imagej.display.Display;
 
 /**
  * A linkage between an {@link Overlay} and a {@link Display}.

@@ -40,7 +40,7 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
-import imagej.ext.display.Display;
+import imagej.display.Display;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawService;
 

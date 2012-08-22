@@ -36,14 +36,14 @@
 package imagej.data.display;
 
 import imagej.ImageJ;
+import imagej.display.Display;
+import imagej.display.event.DisplayDeletedEvent;
+import imagej.display.event.input.MsExitedEvent;
+import imagej.display.event.input.MsMovedEvent;
+import imagej.display.event.input.MsPressedEvent;
+import imagej.display.event.input.MsReleasedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.input.MsExitedEvent;
-import imagej.ext.display.event.input.MsMovedEvent;
-import imagej.ext.display.event.input.MsPressedEvent;
-import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;

@@ -37,7 +37,7 @@ package imagej.console;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.ext.display.DisplayService;
+import imagej.display.DisplayService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.io.IOService;

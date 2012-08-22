@@ -35,11 +35,11 @@
 
 package imagej.core.plugins.debug;
 
+import imagej.display.event.DisplayActivatedEvent;
+import imagej.display.event.DisplayUpdatedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
-import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.DisplayUpdatedEvent;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;

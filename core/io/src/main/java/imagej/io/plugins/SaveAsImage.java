@@ -36,9 +36,9 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
+import imagej.display.Display;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;

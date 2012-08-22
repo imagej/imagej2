@@ -36,9 +36,9 @@
 package imagej.ui;
 
 import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.display.Display;
 import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.ToolService;

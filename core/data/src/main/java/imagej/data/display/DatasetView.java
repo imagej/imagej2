@@ -37,7 +37,7 @@ package imagej.data.display;
 
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
-import imagej.ext.display.Display;
+import imagej.display.Display;
 import imagej.util.ColorRGB;
 
 import java.util.List;

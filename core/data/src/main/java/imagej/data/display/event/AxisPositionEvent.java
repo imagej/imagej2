@@ -36,7 +36,7 @@
 package imagej.data.display.event;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.display.event.DisplayEvent;
+import imagej.display.event.DisplayEvent;
 import net.imglib2.meta.AxisType;
 
 /**

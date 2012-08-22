@@ -35,7 +35,7 @@
 
 package imagej.ui.viewer;
 
-import imagej.ext.display.Display;
+import imagej.display.Display;
 
 /**
  * The panel housing a particular {@link Display}.

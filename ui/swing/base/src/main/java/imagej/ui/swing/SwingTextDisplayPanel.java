@@ -35,7 +35,7 @@
 
 package imagej.ui.swing;
 
-import imagej.ext.display.Display;
+import imagej.display.Display;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.TextDisplayPanel;
 

@@ -35,8 +35,8 @@
 
 package imagej.ui.viewer;
 
-import imagej.ext.display.Display;
-import imagej.ext.display.TextDisplay;
+import imagej.display.Display;
+import imagej.display.TextDisplay;
 
 /**
  * TODO

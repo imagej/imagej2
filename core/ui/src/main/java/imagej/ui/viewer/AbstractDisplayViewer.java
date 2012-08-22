@@ -35,13 +35,13 @@
 
 package imagej.ui.viewer;
 
+import imagej.display.Display;
+import imagej.display.event.DisplayActivatedEvent;
+import imagej.display.event.DisplayDeletedEvent;
+import imagej.display.event.DisplayUpdatedEvent;
+import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.DisplayUpdatedEvent;
-import imagej.ext.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import imagej.ext.plugin.SortablePlugin;
 
 import java.util.List;

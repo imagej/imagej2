@@ -35,8 +35,8 @@
 
 package imagej.data.display;
 
-import imagej.ext.display.Display;
-import imagej.ext.display.DisplayService;
+import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;

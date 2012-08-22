@@ -40,7 +40,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.display.DisplayService;
+import imagej.display.DisplayService;
 import net.imglib2.meta.AxisType;
 
 /**

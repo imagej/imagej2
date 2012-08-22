@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.sdi;
 
-import imagej.ext.display.Display;
+import imagej.display.Display;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;

@@ -36,12 +36,12 @@
 package imagej.core.tools;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.input.MsButtonEvent;
-import imagej.ext.display.event.input.MsMovedEvent;
-import imagej.ext.display.event.input.MsPressedEvent;
-import imagej.ext.display.event.input.MsReleasedEvent;
-import imagej.ext.display.event.input.MsWheelEvent;
+import imagej.display.Display;
+import imagej.display.event.input.MsButtonEvent;
+import imagej.display.event.input.MsMovedEvent;
+import imagej.display.event.input.MsPressedEvent;
+import imagej.display.event.input.MsReleasedEvent;
+import imagej.display.event.input.MsWheelEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.tool.AbstractTool;
 import imagej.ext.tool.Tool;

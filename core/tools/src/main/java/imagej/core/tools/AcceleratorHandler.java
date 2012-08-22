@@ -35,10 +35,10 @@
 
 package imagej.core.tools;
 
+import imagej.display.event.input.KyPressedEvent;
 import imagej.ext.Accelerator;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
-import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.Plugin;

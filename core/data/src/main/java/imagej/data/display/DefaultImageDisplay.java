@@ -42,12 +42,12 @@ import imagej.data.Extents;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
+import imagej.display.AbstractDisplay;
+import imagej.display.DisplayService;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.display.AbstractDisplay;
-import imagej.ext.display.DisplayService;
-import imagej.ext.display.event.DisplayDeletedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.util.RealRect;
 

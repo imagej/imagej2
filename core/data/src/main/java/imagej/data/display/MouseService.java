@@ -35,9 +35,9 @@
 
 package imagej.data.display;
 
+import imagej.display.Display;
+import imagej.display.event.input.MsButtonEvent;
 import imagej.event.EventService;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.input.MsButtonEvent;
 import imagej.service.Service;
 
 /**

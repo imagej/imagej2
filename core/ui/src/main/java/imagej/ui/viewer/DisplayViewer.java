@@ -37,10 +37,10 @@ package imagej.ui.viewer;
 
 import imagej.Contextual;
 import imagej.Prioritized;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.DisplayActivatedEvent;
-import imagej.ext.display.event.DisplayDeletedEvent;
-import imagej.ext.display.event.DisplayUpdatedEvent;
+import imagej.display.Display;
+import imagej.display.event.DisplayActivatedEvent;
+import imagej.display.event.DisplayDeletedEvent;
+import imagej.display.event.DisplayUpdatedEvent;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
 

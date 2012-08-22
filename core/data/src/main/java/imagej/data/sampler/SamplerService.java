@@ -43,7 +43,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.ext.display.DisplayService;
+import imagej.display.DisplayService;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;

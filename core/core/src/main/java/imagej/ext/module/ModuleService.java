@@ -61,7 +61,7 @@ import java.util.concurrent.Future;
  * always runnable code with typed inputs and outputs. There is a particular
  * type of plugin called a {@link imagej.ext.plugin.RunnablePlugin} which is
  * also a module, but many plugins (e.g., {@link imagej.ext.tool.Tool}s and
- * {@link imagej.ext.display.Display}s) are not modules.
+ * {@link imagej.display.Display}s) are not modules.
  * </p>
  * 
  * @author Curtis Rueden

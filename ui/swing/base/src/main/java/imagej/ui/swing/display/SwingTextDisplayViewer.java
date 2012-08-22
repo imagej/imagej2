@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.display;
 
-import imagej.ext.display.Display;
+import imagej.display.Display;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.SwingTextDisplayPanel;
 import imagej.ui.viewer.AbstractTextDisplayViewer;

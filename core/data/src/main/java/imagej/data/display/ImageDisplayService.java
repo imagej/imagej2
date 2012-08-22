@@ -37,8 +37,8 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.display.DisplayService;
 import imagej.event.EventService;
-import imagej.ext.display.DisplayService;
 import imagej.ext.plugin.PluginService;
 import imagej.service.Service;
 

@@ -36,7 +36,7 @@
 package imagej.data.display.event;
 
 import imagej.data.display.ImageCanvas;
-import imagej.ext.display.event.DisplayEvent;
+import imagej.display.event.DisplayEvent;
 
 /**
  * An event indicating something has happened to an {@link ImageCanvas}.

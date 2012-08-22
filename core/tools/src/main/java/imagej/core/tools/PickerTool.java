@@ -37,9 +37,9 @@ package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
 import imagej.data.options.OptionsChannels;
+import imagej.display.event.input.MsButtonEvent;
+import imagej.display.event.input.MsClickedEvent;
 import imagej.event.StatusService;
-import imagej.ext.display.event.input.MsButtonEvent;
-import imagej.ext.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.tool.AbstractTool;

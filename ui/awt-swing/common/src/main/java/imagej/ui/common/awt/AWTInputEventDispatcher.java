@@ -37,24 +37,24 @@ package imagej.ui.common.awt;
 
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
+import imagej.display.event.input.KyEvent;
+import imagej.display.event.input.KyPressedEvent;
+import imagej.display.event.input.KyReleasedEvent;
+import imagej.display.event.input.KyTypedEvent;
+import imagej.display.event.input.MsButtonEvent;
+import imagej.display.event.input.MsClickedEvent;
+import imagej.display.event.input.MsDraggedEvent;
+import imagej.display.event.input.MsEnteredEvent;
+import imagej.display.event.input.MsEvent;
+import imagej.display.event.input.MsExitedEvent;
+import imagej.display.event.input.MsMovedEvent;
+import imagej.display.event.input.MsPressedEvent;
+import imagej.display.event.input.MsReleasedEvent;
+import imagej.display.event.input.MsWheelEvent;
 import imagej.event.EventService;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
-import imagej.ext.display.Display;
-import imagej.ext.display.event.input.KyEvent;
-import imagej.ext.display.event.input.KyPressedEvent;
-import imagej.ext.display.event.input.KyReleasedEvent;
-import imagej.ext.display.event.input.KyTypedEvent;
-import imagej.ext.display.event.input.MsButtonEvent;
-import imagej.ext.display.event.input.MsClickedEvent;
-import imagej.ext.display.event.input.MsDraggedEvent;
-import imagej.ext.display.event.input.MsEnteredEvent;
-import imagej.ext.display.event.input.MsEvent;
-import imagej.ext.display.event.input.MsExitedEvent;
-import imagej.ext.display.event.input.MsMovedEvent;
-import imagej.ext.display.event.input.MsPressedEvent;
-import imagej.ext.display.event.input.MsReleasedEvent;
-import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.util.IntCoords;
 
 import java.awt.Component;
@@ -69,7 +69,7 @@ import java.awt.event.MouseWheelListener;
 
 /**
  * Rebroadcasts AWT {@link InputEvent}s as ImageJ
- * {@link imagej.ext.display.event.input.InputEvent}s, translating
+ * {@link imagej.display.event.input.InputEvent}s, translating
  * {@link KeyEvent}s into {@link KyEvent}s, and {@link MouseEvent}s into
  * {@link MsEvent}s.
  * 

@@ -36,7 +36,7 @@
 package imagej.ui.swing.mdi;
 
 import imagej.Priority;
-import imagej.ext.display.Display;
+import imagej.display.Display;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
