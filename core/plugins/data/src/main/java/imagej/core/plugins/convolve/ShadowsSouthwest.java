@@ -35,9 +35,9 @@
 
 package imagej.core.plugins.convolve;
 
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 
 /**
  * Implements IJ1's Shadows Southwest plugin functionality.

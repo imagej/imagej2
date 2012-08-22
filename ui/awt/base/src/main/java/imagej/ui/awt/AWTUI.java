@@ -36,8 +36,8 @@
 package imagej.ui.awt;
 
 import imagej.display.Display;
-import imagej.ext.menu.MenuService;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.ApplicationFrame;

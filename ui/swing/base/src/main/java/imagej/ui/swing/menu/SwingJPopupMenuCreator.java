@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.menu;
 
-import imagej.ext.menu.ShadowMenu;
+import imagej.menu.ShadowMenu;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;

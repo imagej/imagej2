@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.menu;
+package imagej.menu;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -44,6 +44,8 @@ import imagej.ImageJ;
 import imagej.ext.MenuPath;
 import imagej.ext.module.DefaultModuleInfo;
 import imagej.ext.module.ModuleInfo;
+import imagej.menu.ShadowMenu;
+import imagej.menu.ShadowMenuIterator;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -33,27 +33,49 @@
  * #L%
  */
 
-package imagej.ext.menu.event;
-
-import imagej.ext.menu.MenuService;
-import imagej.ext.menu.ShadowMenu;
-
-import java.util.Collection;
+package imagej.menu;
 
 /**
- * An event indicating one or more menu items have been adjusted in the
- * {@link MenuService}'s {@link ShadowMenu}.
+ * Useful constants when defining ImageJ menu entries.
  * 
  * @author Curtis Rueden
  */
-public class MenusUpdatedEvent extends MenuEvent {
+public final class MenuConstants {
 
-	public MenusUpdatedEvent(final ShadowMenu o) {
-		super(o);
+	private MenuConstants() {
+		// prevent instantiation of utility class
 	}
 
-	public MenusUpdatedEvent(final Collection<? extends ShadowMenu> c) {
-		super(c);
-	}
+	// TODO - Finalize the location of these constants. The potential confusion is
+	// that everything in imagej.ext is part of the general-purpose extensibility
+	// framework, which could be used by applications other than ImageJ, except
+	// for these constants, which are very specific to the ImageJ user interface.
+
+	public static final String FILE_LABEL = "File";
+	public static final String EDIT_LABEL = "Edit";
+	public static final String IMAGE_LABEL = "Image";
+	public static final String PROCESS_LABEL = "Process";
+	public static final String ANALYZE_LABEL = "Analyze";
+	public static final String PLUGINS_LABEL = "Plugins";
+	public static final String WINDOW_LABEL = "Window";
+	public static final String HELP_LABEL = "Help";
+
+	public static final double FILE_WEIGHT = 0;
+	public static final double EDIT_WEIGHT = 1;
+	public static final double IMAGE_WEIGHT = 2;
+	public static final double PROCESS_WEIGHT = 3;
+	public static final double ANALYZE_WEIGHT = 4;
+	public static final double PLUGINS_WEIGHT = 5;
+	public static final double WINDOW_WEIGHT = 6;
+	public static final double HELP_WEIGHT = 1e7;
+
+	public static final char FILE_MNEMONIC = 'f';
+	public static final char EDIT_MNEMONIC = 'e';
+	public static final char IMAGE_MNEMONIC = 'i';
+	public static final char PROCESS_MNEMONIC = 'p';
+	public static final char ANALYZE_MNEMONIC = 'a';
+	public static final char PLUGINS_MNEMONIC = 'u';
+	public static final char WINDOW_MNEMONIC = 'w';
+	public static final char HELP_MNEMONIC = 'h';
 
 }

@@ -33,57 +33,18 @@
  * #L%
  */
 
-package imagej.ext.menu;
-
-import imagej.ext.module.ModuleInfo;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+package imagej.menu;
 
 /**
- * Recursive iterator for {@link ShadowMenu} hierarchies.
+ * A menu builder responsible for translating a {@link ShadowMenu} structure
+ * into a menu for a particular user interface.
  * 
  * @author Curtis Rueden
+ * @param <T> Top-level menu class to populate (e.g.,
+ *          {@link javax.swing.JMenuBar} or {@link javax.swing.JMenu})
  */
-public class ShadowMenuIterator implements Iterator<ModuleInfo> {
+public interface MenuCreator<T> {
 
-	private final ShadowMenu node;
-	private final List<ShadowMenuIterator> childIterators;
-	private int index;
-
-	public ShadowMenuIterator(final ShadowMenu node) {
-		this.node = node;
-		final List<ShadowMenu> children = node.getChildren();
-		childIterators = new ArrayList<ShadowMenuIterator>();
-		for (final ShadowMenu child : children) {
-			childIterators.add(new ShadowMenuIterator(child));
-		}
-		index = node.getModuleInfo() == null ? 0 : -1;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return index < childIterators.size();
-	}
-
-	@Override
-	public ModuleInfo next() {
-		if (!hasNext()) throw new NoSuchElementException();
-		if (index < 0) {
-			index++;
-			return node.getModuleInfo();
-		}
-		final ShadowMenuIterator iter = childIterators.get(index);
-		final ModuleInfo next = iter.next();
-		if (!iter.hasNext()) index++;
-		return next;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
-	}
+	void createMenus(ShadowMenu root, T toplevel);
 
 }

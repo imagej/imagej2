@@ -36,12 +36,12 @@
 package imagej.core.plugins.zoom;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 
 /**
  * Zooms the currently displayed image to 100% resolution.

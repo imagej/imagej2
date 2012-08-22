@@ -33,19 +33,19 @@
  * #L%
  */
 
-package imagej.ext.menu;
+package imagej.menu;
 
 import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
-import imagej.ext.menu.event.MenusAddedEvent;
-import imagej.ext.menu.event.MenusRemovedEvent;
-import imagej.ext.menu.event.MenusUpdatedEvent;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
+import imagej.menu.event.MenusAddedEvent;
+import imagej.menu.event.MenusRemovedEvent;
+import imagej.menu.event.MenusUpdatedEvent;
 import imagej.util.ClassUtils;
 
 import java.lang.reflect.Array;

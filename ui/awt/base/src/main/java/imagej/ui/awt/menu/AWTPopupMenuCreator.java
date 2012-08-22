@@ -35,7 +35,7 @@
 
 package imagej.ui.awt.menu;
 
-import imagej.ext.menu.ShadowMenu;
+import imagej.menu.ShadowMenu;
 
 import java.awt.Menu;
 import java.awt.MenuBar;

@@ -33,18 +33,27 @@
  * #L%
  */
 
-package imagej.ext.menu;
+package imagej.menu.event;
+
+import imagej.menu.MenuService;
+import imagej.menu.ShadowMenu;
+
+import java.util.Collection;
 
 /**
- * A menu builder responsible for translating a {@link ShadowMenu} structure
- * into a menu for a particular user interface.
+ * An event indicating one or more menu items have been removed from the
+ * {@link MenuService}'s {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
- * @param <T> Top-level menu class to populate (e.g.,
- *          {@link javax.swing.JMenuBar} or {@link javax.swing.JMenu})
  */
-public interface MenuCreator<T> {
+public class MenusRemovedEvent extends MenuEvent {
 
-	void createMenus(ShadowMenu root, T toplevel);
+	public MenusRemovedEvent(final ShadowMenu o) {
+		super(o);
+	}
+
+	public MenusRemovedEvent(final Collection<? extends ShadowMenu> c) {
+		super(c);
+	}
 
 }

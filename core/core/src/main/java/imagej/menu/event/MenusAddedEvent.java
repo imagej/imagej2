@@ -33,10 +33,10 @@
  * #L%
  */
 
-package imagej.ext.menu.event;
+package imagej.menu.event;
 
-import imagej.ext.menu.MenuService;
-import imagej.ext.menu.ShadowMenu;
+import imagej.menu.MenuService;
+import imagej.menu.ShadowMenu;
 
 import java.util.Collection;
 

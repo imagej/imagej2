@@ -39,11 +39,11 @@ import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.RectangleOverlay;
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.RunnablePlugin;
+import imagej.menu.MenuConstants;
 
 // TODO - this needs to be an interactive plugin. Currently making it a regular
 // plugin as a placeholder. Crated because we need our own version callable from

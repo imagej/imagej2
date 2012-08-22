@@ -35,9 +35,9 @@
 
 package imagej.core.plugins.typechange;
 
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.integer.Unsigned12BitType;
 
 /**

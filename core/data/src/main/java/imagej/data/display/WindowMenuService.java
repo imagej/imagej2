@@ -44,13 +44,13 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
-import imagej.ext.menu.MenuConstants;
-import imagej.ext.menu.MenuService;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
+import imagej.menu.MenuConstants;
+import imagej.menu.MenuService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

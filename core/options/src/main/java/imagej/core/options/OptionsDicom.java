@@ -35,10 +35,10 @@
 
 package imagej.core.options;
 
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
 
 /**

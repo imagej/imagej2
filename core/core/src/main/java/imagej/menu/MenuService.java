@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.menu;
+package imagej.menu;
 
 import imagej.event.EventService;
 import imagej.ext.module.Module;

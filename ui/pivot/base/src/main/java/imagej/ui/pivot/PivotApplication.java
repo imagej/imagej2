@@ -37,7 +37,7 @@ package imagej.ui.pivot;
 
 import imagej.ImageJ;
 import imagej.event.EventService;
-import imagej.ext.menu.MenuService;
+import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.pivot.menu.PivotMenuCreator;
 

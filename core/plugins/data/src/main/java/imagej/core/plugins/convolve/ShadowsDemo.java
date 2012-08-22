@@ -47,12 +47,12 @@ import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusService;
 import imagej.ext.KeyCode;
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
+import imagej.menu.MenuConstants;
 import imagej.util.RealRect;
 
 import java.util.List;

@@ -59,12 +59,12 @@ public interface EventService extends Service {
 	 * <ol>
 	 * <li>{@link imagej.ext.module.event.ModulesUpdatedEvent} is published with
 	 * {@link #publish}.</li>
-	 * <li>{@link imagej.ext.menu.DefaultMenuService} receives the event and
-	 * handles it, publishing {@link imagej.ext.menu.event.MenusUpdatedEvent} in
+	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and
+	 * handles it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in
 	 * response.</li>
 	 * <li>A third party that subscribes to both
 	 * {@link imagej.ext.module.event.ModulesUpdatedEvent} and
-	 * {@link imagej.ext.menu.event.MenusUpdatedEvent} will receive the latter
+	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the latter
 	 * before the former.</li>
 	 * </ol>
 	 * That said, the behavior of {@link #publish} depends on the thread from
@@ -90,12 +90,12 @@ public interface EventService extends Service {
 	 * <ol>
 	 * <li>{@link imagej.ext.module.event.ModulesUpdatedEvent} is published with
 	 * {@link #publishLater}.</li>
-	 * <li>{@link imagej.ext.menu.DefaultMenuService} receives the event and
-	 * handles it, publishing {@link imagej.ext.menu.event.MenusUpdatedEvent} in
+	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and
+	 * handles it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in
 	 * response.</li>
 	 * <li>A third party that subscribes to both
 	 * {@link imagej.ext.module.event.ModulesUpdatedEvent} and
-	 * {@link imagej.ext.menu.event.MenusUpdatedEvent} will receive the former
+	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the former
 	 * first, since it was already queued by the time the latter was published.</li>
 	 * </ol>
 	 */

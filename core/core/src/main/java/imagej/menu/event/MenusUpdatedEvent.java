@@ -33,26 +33,26 @@
  * #L%
  */
 
-package imagej.ext.menu.event;
+package imagej.menu.event;
 
-import imagej.ext.menu.MenuService;
-import imagej.ext.menu.ShadowMenu;
+import imagej.menu.MenuService;
+import imagej.menu.ShadowMenu;
 
 import java.util.Collection;
 
 /**
- * An event indicating one or more menu items have been removed from the
+ * An event indicating one or more menu items have been adjusted in the
  * {@link MenuService}'s {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
  */
-public class MenusRemovedEvent extends MenuEvent {
+public class MenusUpdatedEvent extends MenuEvent {
 
-	public MenusRemovedEvent(final ShadowMenu o) {
+	public MenusUpdatedEvent(final ShadowMenu o) {
 		super(o);
 	}
 
-	public MenusRemovedEvent(final Collection<? extends ShadowMenu> c) {
+	public MenusUpdatedEvent(final Collection<? extends ShadowMenu> c) {
 		super(c);
 	}
 

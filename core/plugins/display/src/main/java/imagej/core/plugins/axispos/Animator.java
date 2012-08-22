@@ -36,11 +36,11 @@
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 
 /**
  * Plugin for toggling an {@link ImageDisplay}'s running animation. Animation

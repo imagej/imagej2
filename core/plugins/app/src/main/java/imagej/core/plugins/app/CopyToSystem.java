@@ -41,11 +41,11 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.event.StatusService;
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 import imagej.ui.UIService;
 import imagej.util.ARGBPlane;
 

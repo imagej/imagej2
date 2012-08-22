@@ -36,13 +36,13 @@
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.module.ItemIO;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 import net.imglib2.meta.AxisType;
 
 /**

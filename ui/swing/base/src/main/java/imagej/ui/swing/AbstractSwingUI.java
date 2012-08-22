@@ -36,8 +36,8 @@
 package imagej.ui.swing;
 
 import imagej.display.Display;
-import imagej.ext.menu.MenuService;
-import imagej.ext.menu.ShadowMenu;
+import imagej.menu.MenuService;
+import imagej.menu.ShadowMenu;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.OutputWindow;

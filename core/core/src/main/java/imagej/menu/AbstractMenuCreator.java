@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.menu;
+package imagej.menu;
 
 /**
  * Abstract helper class for generating a menu structure.
