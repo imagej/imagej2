@@ -54,7 +54,7 @@ import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
 import net.imglib2.ops.function.Function;
-import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.img.ImageAssignment;
 import net.imglib2.ops.input.InputIteratorFactory;
 import net.imglib2.ops.input.PointInputIteratorFactory;
 import net.imglib2.ops.parse.RealEquationFunctionParser;

@@ -63,7 +63,7 @@ import net.imglib2.ops.function.real.RealMaxFunction;
 import net.imglib2.ops.function.real.RealMedianFunction;
 import net.imglib2.ops.function.real.RealMidpointFunction;
 import net.imglib2.ops.function.real.RealMinFunction;
-import net.imglib2.ops.image.ImageAssignment;
+import net.imglib2.ops.img.ImageAssignment;
 import net.imglib2.ops.input.PointSetInputIteratorFactory;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
