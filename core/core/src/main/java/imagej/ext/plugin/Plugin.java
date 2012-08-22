@@ -38,6 +38,9 @@ package imagej.ext.plugin;
 import imagej.Priority;
 import imagej.display.Display;
 import imagej.module.ModuleItem;
+import imagej.plugin.InitPreprocessor;
+import imagej.plugin.PostprocessorPlugin;
+import imagej.plugin.PreprocessorPlugin;
 import imagej.service.Service;
 
 import java.lang.annotation.ElementType;

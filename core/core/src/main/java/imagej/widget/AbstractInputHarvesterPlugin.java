@@ -35,9 +35,9 @@
 
 package imagej.widget;
 
-import imagej.ext.plugin.PreprocessorPlugin;
 import imagej.module.Module;
 import imagej.module.ModuleException;
+import imagej.plugin.PreprocessorPlugin;
 
 /**
  * AbstractInputHarvesterPlugin is an {@link InputHarvester} that implements the

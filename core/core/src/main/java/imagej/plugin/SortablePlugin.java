@@ -33,58 +33,43 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.ImageJ;
+import imagej.AbstractContextual;
+import imagej.Contextual;
+import imagej.Prioritized;
 import imagej.Priority;
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-import imagej.service.Service;
+import imagej.ext.plugin.IPlugin;
 
 /**
- * The service preprocessor automatically populates module inputs that implement
- * {@link Service}.
- * <p>
- * Services are obtained from this preprocessor instance's ImageJ context.
- * </p>
+ * Abstract base class for {@link Contextual}, {@link Prioritized} plugins.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY)
-public class ServicePreprocessor extends AbstractPreprocessorPlugin {
+public abstract class SortablePlugin extends AbstractContextual
+	implements Prioritized, IPlugin
+{
 
-	// -- ModuleProcessor methods --
+	/** The priority of the plugin. */
+	private double priority = Priority.NORMAL_PRIORITY;
+
+	// -- Prioritized methods --
 
 	@Override
-	public void process(final Module module) {
-		for (final ModuleItem<?> input : module.getInfo().inputs()) {
-			if (!input.isAutoFill()) continue; // cannot auto-fill this input
-			final Class<?> type = input.getType();
-			if (Service.class.isAssignableFrom(type)) {
-				// input is a service
-				@SuppressWarnings("unchecked")
-				final ModuleItem<? extends Service> serviceInput =
-					(ModuleItem<? extends Service>) input;
-				setServiceValue(getContext(), module, serviceInput);
-			}
-			if (getContext().getClass().isAssignableFrom(type)) {
-				// input is a compatible context
-				final String name = input.getName();
-				module.setInput(name, getContext());
-				module.setResolved(name, true);
-			}
-		}
+	public double getPriority() {
+		return priority;
 	}
 
-	// -- Helper methods --
+	@Override
+	public void setPriority(final double priority) {
+		this.priority = priority;
+	}
 
-	private <S extends Service> void setServiceValue(final ImageJ context,
-		final Module module, final ModuleItem<S> input)
-	{
-		final S service = context.getService(input.getType());
-		input.setValue(module, service);
-		module.setResolved(input.getName(), true);
+	// -- Comparable methods --
+
+	@Override
+	public int compareTo(final Prioritized that) {
+		return Priority.compare(this, that);
 	}
 
 }

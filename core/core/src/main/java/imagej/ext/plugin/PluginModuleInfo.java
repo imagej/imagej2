@@ -43,6 +43,11 @@ import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModulesUpdatedEvent;
+import imagej.plugin.DefaultPluginModuleFactory;
+import imagej.plugin.PluginModule;
+import imagej.plugin.PluginModuleFactory;
+import imagej.plugin.PluginModuleItem;
+import imagej.plugin.PreviewPlugin;
 import imagej.util.Log;
 import imagej.util.StringMaker;
 

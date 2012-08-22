@@ -36,7 +36,6 @@
 package imagej.core.plugins.restructure;
 
 import imagej.data.Dataset;
-import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
@@ -44,6 +43,7 @@ import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
+import imagej.plugin.DynamicPlugin;
 
 import java.util.ArrayList;
 import java.util.Map;

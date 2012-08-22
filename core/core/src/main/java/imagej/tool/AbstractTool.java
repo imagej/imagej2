@@ -44,8 +44,8 @@ import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.SortablePlugin;
 import imagej.input.MouseCursor;
+import imagej.plugin.SortablePlugin;
 
 /**
  * Abstract base class for ImageJ tools.

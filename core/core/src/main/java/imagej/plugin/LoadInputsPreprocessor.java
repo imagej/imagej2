@@ -33,43 +33,60 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.ext.InstantiableException;
+import imagej.Priority;
+import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
-import imagej.module.ModuleException;
+import imagej.module.ModuleItem;
+import imagej.util.ClassUtils;
 
 /**
- * The default implementation of {@link PluginModuleFactory}, using a
- * {@link PluginModule}.
+ * A preprocessor for loading populated input values from persistent storage.
+ * <p>
+ * This preprocessor runs late in the chain, to give other preprocessors a
+ * chance to populate the inputs first. However, its priority immediately
+ * precedes the {@link imagej.widget.InputHarvester}'s, so that
+ * user-specified values are populated from next time in the user dialog.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public class DefaultPluginModuleFactory implements PluginModuleFactory {
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_LOW_PRIORITY + 1)
+public class LoadInputsPreprocessor extends AbstractPreprocessorPlugin {
+
+	// -- ModuleProcessor methods --
 
 	@Override
-	public <R extends RunnablePlugin> Module createModule(
-		final PluginModuleInfo<R> info) throws ModuleException
-	{
-		// if the plugin implements Module, return a new instance directly
-		try {
-			final Class<R> pluginClass = info.loadClass();
-			if (Module.class.isAssignableFrom(pluginClass)) {
-				return (Module) pluginClass.newInstance();
-			}
+	public void process(final Module module) {
+		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
+		for (final ModuleItem<?> item : inputs) {
+			loadValue(module, item);
 		}
-		catch (final InstantiableException e) {
-			throw new ModuleException(e);
-		}
-		catch (final InstantiationException e) {
-			throw new ModuleException(e);
-		}
-		catch (final IllegalAccessException e) {
-			throw new ModuleException(e);
-		}
+	}
 
-		// plugin does not implement Module; wrap it in a PluginModule instance
-		return new PluginModule<R>(info);
+	// -- Helper methods --
+
+	/** Loads the value of the given module item from persistent storage. */
+	private <T> void loadValue(final Module module, final ModuleItem<T> item) {
+		// skip input that has already been resolved
+		if (module.isResolved(item.getName())) return;
+
+		final Class<T> type = item.getType();
+		final T defaultValue = item.getValue(module);
+		final T prefValue = item.loadValue();
+		final T value = getBestValue(prefValue, defaultValue, type);
+		item.setValue(module, value);
+	}
+
+	private <T> T getBestValue(final Object prefValue,
+		final Object defaultValue, final Class<T> type)
+	{
+		if (prefValue != null) return ClassUtils.convert(prefValue, type);
+		if (defaultValue != null) return ClassUtils.convert(defaultValue, type);
+		return ClassUtils.getNullValue(type);
 	}
 
 }
+

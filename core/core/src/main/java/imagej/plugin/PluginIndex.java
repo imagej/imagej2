@@ -33,8 +33,10 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.PluginInfo;
 import imagej.object.SortedObjectIndex;
 
 import java.util.ArrayList;

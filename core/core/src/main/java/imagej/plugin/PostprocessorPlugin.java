@@ -33,18 +33,30 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import java.util.List;
+import imagej.Contextual;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
+import imagej.module.ModulePostprocessor;
 
 /**
- * Interface for mechanisms that define how ImageJ plugins are discovered.
+ * A plugin postprocessor defines a step that occurs immediately following the
+ * actual execution of a plugin. Typically, a postprocessor does something with
+ * the results of a plugin, such as displaying its outputs on screen.
+ * <p>
+ * Plugin postprocessors discoverable at runtime must implement this interface
+ * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link PostprocessorPlugin}.class. While it possible to create a plugin
+ * postprocessor merely by implementing this interface, it is encouraged to
+ * instead extend {@link AbstractPostprocessorPlugin}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface PluginFinder {
-
-	/** Populates the given list with all available ImageJ plugins. */
-	void findPlugins(List<PluginInfo<?>> plugins);
-
+public interface PostprocessorPlugin extends IPlugin, Contextual,
+	ModulePostprocessor
+{
+	// PostprocessorPlugin is a plugin postprocessor,
+	// discoverable via the plugin discovery mechanism.
 }

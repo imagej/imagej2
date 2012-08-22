@@ -38,6 +38,7 @@ package imagej.ext.plugin;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
 import imagej.module.ModuleInfo;
+import imagej.plugin.InitPreprocessor;
 import imagej.widget.WidgetStyle;
 
 import java.lang.annotation.ElementType;

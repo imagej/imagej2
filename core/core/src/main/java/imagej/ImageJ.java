@@ -36,7 +36,7 @@
 package imagej;
 
 import imagej.event.ImageJEvent;
-import imagej.ext.plugin.PluginIndex;
+import imagej.plugin.PluginIndex;
 import imagej.service.Service;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;

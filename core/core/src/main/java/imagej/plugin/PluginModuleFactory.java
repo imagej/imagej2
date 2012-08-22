@@ -33,29 +33,22 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.Contextual;
-import imagej.module.ModulePreprocessor;
+import imagej.ext.plugin.PluginModuleInfo;
+import imagej.ext.plugin.RunnablePlugin;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 
 /**
- * A plugin preprocessor defines a step that occurs just prior to the actual
- * execution of a plugin. Typically, a preprocessor prepares the plugin for
- * execution in some way, such as populating plugin inputs or checking
- * prerequisites.
- * <p>
- * Plugin preprocessors discoverable at runtime must implement this interface
- * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
- * {@link PreprocessorPlugin}.class. While it possible to create a plugin
- * preprocessor merely by implementing this interface, it is encouraged to
- * instead extend {@link AbstractPreprocessorPlugin}, for convenience.
- * </p>
+ * A factory for instantiating a module from a {@link PluginModuleInfo}.
  * 
  * @author Curtis Rueden
  */
-public interface PreprocessorPlugin extends IPlugin, Contextual,
-	ModulePreprocessor
-{
-	// PreprocessorPlugin is a plugin preprocessor,
-	// discoverable via the plugin discovery mechanism.
+public interface PluginModuleFactory {
+
+	/** Constructs a module to work with the given {@link PluginModuleInfo}. */
+	<R extends RunnablePlugin> Module createModule(PluginModuleInfo<R> info)
+		throws ModuleException;
+
 }

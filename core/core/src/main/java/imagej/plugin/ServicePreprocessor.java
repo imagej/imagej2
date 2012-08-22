@@ -33,39 +33,59 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
+import imagej.ImageJ;
 import imagej.Priority;
+import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
-import imagej.module.ModuleInfo;
+import imagej.module.ModuleItem;
+import imagej.service.Service;
 
 /**
- * A preprocessor plugin that verifies module validity. If the module is not
- * valid, the module execution is canceled.
+ * The service preprocessor automatically populates module inputs that implement
+ * {@link Service}.
+ * <p>
+ * Services are obtained from this preprocessor instance's ImageJ context.
+ * </p>
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY + 1)
-public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
+	priority = Priority.VERY_HIGH_PRIORITY)
+public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final ModuleInfo info = module.getInfo();
-
-		canceled = !info.isValid();
-		if (!canceled) return;
-
-		final StringBuilder sb =
-			new StringBuilder("The module \"" + info.getDelegateClassName() +
-				"\" is invalid:\n");
-		for (final String problem : info.getProblems()) {
-			sb.append("- " + problem);
-			sb.append("\n");
+		for (final ModuleItem<?> input : module.getInfo().inputs()) {
+			if (!input.isAutoFill()) continue; // cannot auto-fill this input
+			final Class<?> type = input.getType();
+			if (Service.class.isAssignableFrom(type)) {
+				// input is a service
+				@SuppressWarnings("unchecked")
+				final ModuleItem<? extends Service> serviceInput =
+					(ModuleItem<? extends Service>) input;
+				setServiceValue(getContext(), module, serviceInput);
+			}
+			if (getContext().getClass().isAssignableFrom(type)) {
+				// input is a compatible context
+				final String name = input.getName();
+				module.setInput(name, getContext());
+				module.setResolved(name, true);
+			}
 		}
-		cancelReason = sb.toString();
+	}
+
+	// -- Helper methods --
+
+	private <S extends Service> void setServiceValue(final ImageJ context,
+		final Module module, final ModuleItem<S> input)
+	{
+		final S service = context.getService(input.getType());
+		input.setValue(module, service);
+		module.setResolved(input.getName(), true);
 	}
 
 }

@@ -36,6 +36,7 @@
 package imagej.ext.plugin;
 
 import imagej.module.Module;
+import imagej.plugin.PluginModule;
 
 /**
  * <code>RunnablePlugin</code> is a plugin that is executable. A

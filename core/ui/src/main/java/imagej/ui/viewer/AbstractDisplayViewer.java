@@ -42,7 +42,7 @@ import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.plugin.SortablePlugin;
+import imagej.plugin.SortablePlugin;
 
 import java.util.List;
 

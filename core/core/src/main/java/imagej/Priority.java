@@ -51,21 +51,21 @@ public final class Priority {
 
 	/**
 	 * Priority for items that must go first in the chain. Examples:
-	 * {@link imagej.ext.plugin.debug.DebugPreprocessor},
-	 * {@link imagej.ext.plugin.debug.DebugPostprocessor}
+	 * {@link imagej.plugin.DebugPreprocessor},
+	 * {@link imagej.plugin.DebugPostprocessor}
 	 */
 	public static final double FIRST_PRIORITY = Double.POSITIVE_INFINITY;
 
 	/**
 	 * Priority for items that strongly prefer to be early in the chain. Examples:
 	 * {@link imagej.display.ActiveDisplayPreprocessor},
-	 * {@link imagej.ext.plugin.ServicePreprocessor}
+	 * {@link imagej.plugin.ServicePreprocessor}
 	 */
 	public static final double VERY_HIGH_PRIORITY = +10000;
 
 	/**
 	 * Priority for items that prefer to be earlier in the chain. Example:
-	 * {@link imagej.ext.plugin.InitPreprocessor}
+	 * {@link imagej.plugin.InitPreprocessor}
 	 */
 	public static final double HIGH_PRIORITY = +100;
 

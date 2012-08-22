@@ -33,28 +33,72 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.Contextual;
-import imagej.module.ModulePostprocessor;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.RunnablePlugin;
+import imagej.module.DefaultModule;
+import imagej.util.ClassUtils;
+
+import java.lang.reflect.Field;
 
 /**
- * A plugin postprocessor defines a step that occurs immediately following the
- * actual execution of a plugin. Typically, a postprocessor does something with
- * the results of a plugin, such as displaying its outputs on screen.
- * <p>
- * Plugin postprocessors discoverable at runtime must implement this interface
- * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
- * {@link PostprocessorPlugin}.class. While it possible to create a plugin
- * postprocessor merely by implementing this interface, it is encouraged to
- * instead extend {@link AbstractPostprocessorPlugin}, for convenience.
- * </p>
+ * A class which can be extended to provide an ImageJ plugin with a variable
+ * number of inputs and outputs. This class provides greater configurability,
+ * but also greater complexity, than implementing the {@link RunnablePlugin}
+ * interface and using only @{@link Parameter} annotations on instance fields.
  * 
  * @author Curtis Rueden
  */
-public interface PostprocessorPlugin extends IPlugin, Contextual,
-	ModulePostprocessor
+public abstract class DynamicPlugin extends DefaultModule implements
+	RunnablePlugin
 {
-	// PostprocessorPlugin is a plugin postprocessor,
-	// discoverable via the plugin discovery mechanism.
+
+	private final DynamicPluginInfo info;
+
+	public DynamicPlugin() {
+		this(new DynamicPluginInfo());
+	}
+
+	public DynamicPlugin(final DynamicPluginInfo info) {
+		super(info);
+		this.info = info;
+		info.setPluginClass(getClass());
+	}
+
+	// -- Module methods --
+
+	@Override
+	public DynamicPluginInfo getInfo() {
+		return info;
+	}
+
+	@Override
+	public Object getInput(final String name) {
+		final Field field = info.getInputField(name);
+		if (field == null) return super.getInput(name);
+		return ClassUtils.getValue(field, this);
+	}
+
+	@Override
+	public Object getOutput(final String name) {
+		final Field field = info.getOutputField(name);
+		if (field == null) return super.getInput(name);
+		return ClassUtils.getValue(field, this);
+	}
+
+	@Override
+	public void setInput(final String name, final Object value) {
+		final Field field = info.getInputField(name);
+		if (field == null) super.setInput(name, value);
+		else ClassUtils.setValue(field, this, value);
+	}
+
+	@Override
+	public void setOutput(final String name, final Object value) {
+		final Field field = info.getOutputField(name);
+		if (field == null) super.setOutput(name, value);
+		else ClassUtils.setValue(field, this, value);
+	}
+
 }

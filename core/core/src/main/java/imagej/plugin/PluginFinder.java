@@ -33,17 +33,20 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.AbstractContextual;
+import imagej.ext.plugin.PluginInfo;
+
+import java.util.List;
 
 /**
- * Abstract base class for plugin postprocessors.
+ * Interface for mechanisms that define how ImageJ plugins are discovered.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractPostprocessorPlugin extends AbstractContextual
-	implements PostprocessorPlugin
-{
-	// NB: No implementation needed.
+public interface PluginFinder {
+
+	/** Populates the given list with all available ImageJ plugins. */
+	void findPlugins(List<PluginInfo<?>> plugins);
+
 }

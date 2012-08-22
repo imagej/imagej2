@@ -40,10 +40,10 @@ import imagej.event.StatusService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreviewPlugin;
 import imagej.log.LogService;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
+import imagej.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetStyle;
 

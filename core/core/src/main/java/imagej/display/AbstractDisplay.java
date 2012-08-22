@@ -39,7 +39,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import imagej.event.EventService;
-import imagej.ext.plugin.SortablePlugin;
+import imagej.plugin.SortablePlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;

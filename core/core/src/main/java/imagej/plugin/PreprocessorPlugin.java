@@ -33,70 +33,31 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.module.DefaultModule;
-import imagej.util.ClassUtils;
-
-import java.lang.reflect.Field;
+import imagej.Contextual;
+import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Plugin;
+import imagej.module.ModulePreprocessor;
 
 /**
- * A class which can be extended to provide an ImageJ plugin with a variable
- * number of inputs and outputs. This class provides greater configurability,
- * but also greater complexity, than implementing the {@link RunnablePlugin}
- * interface and using only @{@link Parameter} annotations on instance fields.
+ * A plugin preprocessor defines a step that occurs just prior to the actual
+ * execution of a plugin. Typically, a preprocessor prepares the plugin for
+ * execution in some way, such as populating plugin inputs or checking
+ * prerequisites.
+ * <p>
+ * Plugin preprocessors discoverable at runtime must implement this interface
+ * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * {@link PreprocessorPlugin}.class. While it possible to create a plugin
+ * preprocessor merely by implementing this interface, it is encouraged to
+ * instead extend {@link AbstractPreprocessorPlugin}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public abstract class DynamicPlugin extends DefaultModule implements
-	RunnablePlugin
+public interface PreprocessorPlugin extends IPlugin, Contextual,
+	ModulePreprocessor
 {
-
-	private final DynamicPluginInfo info;
-
-	public DynamicPlugin() {
-		this(new DynamicPluginInfo());
-	}
-
-	public DynamicPlugin(final DynamicPluginInfo info) {
-		super(info);
-		this.info = info;
-		info.setPluginClass(getClass());
-	}
-
-	// -- Module methods --
-
-	@Override
-	public DynamicPluginInfo getInfo() {
-		return info;
-	}
-
-	@Override
-	public Object getInput(final String name) {
-		final Field field = info.getInputField(name);
-		if (field == null) return super.getInput(name);
-		return ClassUtils.getValue(field, this);
-	}
-
-	@Override
-	public Object getOutput(final String name) {
-		final Field field = info.getOutputField(name);
-		if (field == null) return super.getInput(name);
-		return ClassUtils.getValue(field, this);
-	}
-
-	@Override
-	public void setInput(final String name, final Object value) {
-		final Field field = info.getInputField(name);
-		if (field == null) super.setInput(name, value);
-		else ClassUtils.setValue(field, this, value);
-	}
-
-	@Override
-	public void setOutput(final String name, final Object value) {
-		final Field field = info.getOutputField(name);
-		if (field == null) super.setOutput(name, value);
-		else ClassUtils.setValue(field, this, value);
-	}
-
+	// PreprocessorPlugin is a plugin preprocessor,
+	// discoverable via the plugin discovery mechanism.
 }

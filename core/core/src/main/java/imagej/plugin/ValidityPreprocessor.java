@@ -33,32 +33,40 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.AbstractContextual;
+import imagej.Priority;
+import imagej.ext.plugin.Plugin;
+import imagej.module.Module;
+import imagej.module.ModuleInfo;
 
 /**
- * Abstract base class for plugin preprocessors.
+ * A preprocessor plugin that verifies module validity. If the module is not
+ * valid, the module execution is canceled.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractPreprocessorPlugin extends AbstractContextual
-	implements PreprocessorPlugin
-{
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_HIGH_PRIORITY + 1)
+public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
 
-	protected boolean canceled;
-	protected String cancelReason;
-
-	// -- Cancelable methods --
+	// -- ModuleProcessor methods --
 
 	@Override
-	public boolean isCanceled() {
-		return canceled;
-	}
+	public void process(final Module module) {
+		final ModuleInfo info = module.getInfo();
 
-	@Override
-	public String getCancelReason() {
-		return cancelReason;
+		canceled = !info.isValid();
+		if (!canceled) return;
+
+		final StringBuilder sb =
+			new StringBuilder("The module \"" + info.getDelegateClassName() +
+				"\" is invalid:\n");
+		for (final String problem : info.getProblems()) {
+			sb.append("- " + problem);
+			sb.append("\n");
+		}
+		cancelReason = sb.toString();
 	}
 
 }

@@ -40,6 +40,8 @@ import imagej.module.Module;
 import imagej.module.ModulePostprocessor;
 import imagej.module.ModulePreprocessor;
 import imagej.platform.Platform;
+import imagej.plugin.PostprocessorPlugin;
+import imagej.plugin.PreprocessorPlugin;
 import imagej.service.Service;
 import imagej.tool.Tool;
 import imagej.widget.InputHarvester;

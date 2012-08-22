@@ -37,8 +37,8 @@ package imagej.ui.swing.widget;
 
 import imagej.Priority;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreprocessorPlugin;
 import imagej.module.Module;
+import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.swing.SwingUtils;
 import imagej.widget.AbstractInputHarvesterPlugin;
 import imagej.widget.InputHarvester;

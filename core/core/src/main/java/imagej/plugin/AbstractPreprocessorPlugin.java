@@ -33,31 +33,32 @@
  * #L%
  */
 
-package imagej.ext.plugin.debug;
+package imagej.plugin;
 
-import imagej.Priority;
-import imagej.ext.plugin.AbstractPreprocessorPlugin;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreprocessorPlugin;
-import imagej.log.LogService;
-import imagej.module.Module;
+import imagej.AbstractContextual;
 
 /**
- * A preprocessor plugin that dumps information to the log.
+ * Abstract base class for plugin preprocessors.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
-public class DebugPreprocessor extends AbstractPreprocessorPlugin {
+public abstract class AbstractPreprocessorPlugin extends AbstractContextual
+	implements PreprocessorPlugin
+{
 
-	// -- ModuleProcessor methods --
+	protected boolean canceled;
+	protected String cancelReason;
+
+	// -- Cancelable methods --
 
 	@Override
-	public void process(final Module module) {
-		final LogService log = getContext().getService(LogService.class);
-		if (log == null) return;
+	public boolean isCanceled() {
+		return canceled;
+	}
 
-		log.debug("Executing module: " + module.getDelegateObject());
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
 	}
 
 }

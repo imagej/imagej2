@@ -38,7 +38,7 @@ package imagej.ui;
 import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.plugin.SortablePlugin;
+import imagej.plugin.SortablePlugin;
 import imagej.updater.core.UpToDate;
 import imagej.updater.ui.UpdatesAvailable;
 import imagej.util.Prefs;

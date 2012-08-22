@@ -37,7 +37,7 @@ package imagej.service;
 
 import imagej.ImageJ;
 import imagej.event.EventService;
-import imagej.ext.plugin.SortablePlugin;
+import imagej.plugin.SortablePlugin;
 
 /**
  * Abstract superclass of {@link Service} implementations.

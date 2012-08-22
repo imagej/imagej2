@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
 /**
  * An exception thrown when something goes wrong with a plugin.

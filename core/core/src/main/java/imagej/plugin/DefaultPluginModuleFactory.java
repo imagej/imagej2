@@ -33,42 +33,45 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.AbstractContextual;
-import imagej.Contextual;
-import imagej.Prioritized;
-import imagej.Priority;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.PluginModuleInfo;
+import imagej.ext.plugin.RunnablePlugin;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 
 /**
- * Abstract base class for {@link Contextual}, {@link Prioritized} plugins.
+ * The default implementation of {@link PluginModuleFactory}, using a
+ * {@link PluginModule}.
  * 
  * @author Curtis Rueden
  */
-public abstract class SortablePlugin extends AbstractContextual
-	implements Prioritized, IPlugin
-{
-
-	/** The priority of the plugin. */
-	private double priority = Priority.NORMAL_PRIORITY;
-
-	// -- Prioritized methods --
+public class DefaultPluginModuleFactory implements PluginModuleFactory {
 
 	@Override
-	public double getPriority() {
-		return priority;
-	}
+	public <R extends RunnablePlugin> Module createModule(
+		final PluginModuleInfo<R> info) throws ModuleException
+	{
+		// if the plugin implements Module, return a new instance directly
+		try {
+			final Class<R> pluginClass = info.loadClass();
+			if (Module.class.isAssignableFrom(pluginClass)) {
+				return (Module) pluginClass.newInstance();
+			}
+		}
+		catch (final InstantiableException e) {
+			throw new ModuleException(e);
+		}
+		catch (final InstantiationException e) {
+			throw new ModuleException(e);
+		}
+		catch (final IllegalAccessException e) {
+			throw new ModuleException(e);
+		}
 
-	@Override
-	public void setPriority(final double priority) {
-		this.priority = priority;
-	}
-
-	// -- Comparable methods --
-
-	@Override
-	public int compareTo(final Prioritized that) {
-		return Priority.compare(this, that);
+		// plugin does not implement Module; wrap it in a PluginModule instance
+		return new PluginModule<R>(info);
 	}
 
 }

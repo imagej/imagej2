@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
 /**
  * A plugin capable of generating previews of its results.

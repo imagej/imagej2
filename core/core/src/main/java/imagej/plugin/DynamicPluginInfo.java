@@ -33,11 +33,16 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
 import imagej.ImageJ;
 import imagej.MenuPath;
 import imagej.UIDetails;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginModuleInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.module.DefaultModuleInfo;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ModuleInfo;

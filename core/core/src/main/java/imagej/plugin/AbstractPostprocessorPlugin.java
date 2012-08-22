@@ -33,20 +33,17 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.module.Module;
-import imagej.module.ModuleException;
+import imagej.AbstractContextual;
 
 /**
- * A factory for instantiating a module from a {@link PluginModuleInfo}.
+ * Abstract base class for plugin postprocessors.
  * 
  * @author Curtis Rueden
  */
-public interface PluginModuleFactory {
-
-	/** Constructs a module to work with the given {@link PluginModuleInfo}. */
-	<R extends RunnablePlugin> Module createModule(PluginModuleInfo<R> info)
-		throws ModuleException;
-
+public abstract class AbstractPostprocessorPlugin extends AbstractContextual
+	implements PostprocessorPlugin
+{
+	// NB: No implementation needed.
 }

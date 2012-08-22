@@ -36,10 +36,10 @@
 package imagej.options;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
+import imagej.plugin.DynamicPlugin;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 

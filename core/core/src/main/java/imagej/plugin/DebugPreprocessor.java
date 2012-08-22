@@ -33,43 +33,29 @@
  * #L%
  */
 
-package imagej.ext.plugin.debug;
+package imagej.plugin;
 
 import imagej.Priority;
-import imagej.ext.plugin.AbstractPostprocessorPlugin;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PostprocessorPlugin;
 import imagej.log.LogService;
 import imagej.module.Module;
 
-import java.util.Map;
-
 /**
- * A postprocessor plugin that dumps parameter values to the log.
+ * A preprocessor plugin that dumps information to the log.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PostprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
-public class DebugPostprocessor extends AbstractPostprocessorPlugin {
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
+public class DebugPreprocessor extends AbstractPreprocessorPlugin {
+
+	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
 		final LogService log = getContext().getService(LogService.class);
 		if (log == null) return;
 
-		// dump input values to log
-		log.debug("INPUTS:");
-		final Map<String, Object> inputs = module.getInputs();
-		for (final String key : inputs.keySet()) {
-			log.debug("\t" + key + " = " + inputs.get(key));
-		}
-
-		// dump output values to log
-		log.debug("OUTPUTS:");
-		final Map<String, Object> outputs = module.getOutputs();
-		for (final String key : outputs.keySet()) {
-			log.debug("\t" + key + " = " + outputs.get(key));
-		}
+		log.debug("Executing module: " + module.getDelegateObject());
 	}
 
 }
