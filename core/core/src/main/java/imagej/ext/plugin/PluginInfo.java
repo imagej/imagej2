@@ -46,6 +46,9 @@ import imagej.util.StringMaker;
 
 import java.net.URL;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * A collection of metadata about a particular plugin. For performance reasons,
  * the metadata is populated without actually loading the plugin class, by

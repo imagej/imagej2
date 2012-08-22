@@ -50,6 +50,9 @@ import java.lang.annotation.Target;
 
 import net.java.sezpoz.Indexable;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * Annotation identifying a plugin, which gets loaded by ImageJ's dynamic
  * discovery mechanism.

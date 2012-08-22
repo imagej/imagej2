@@ -46,6 +46,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * An annotation for indicating a field is an input or output parameter. This
  * annotation is a useful way for plugins to declare their inputs and outputs

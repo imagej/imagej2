@@ -49,6 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * Interface for service that keeps track of available plugins.
  * <p>

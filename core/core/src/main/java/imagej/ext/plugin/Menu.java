@@ -40,6 +40,9 @@ import imagej.input.Accelerator;
 
 import java.lang.annotation.Target;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * One item of a {@link Plugin}'s menu path. It can be a top-level menu such as
  * File, a nested menu such as Open Recent, or a leaf item such as Exit. A

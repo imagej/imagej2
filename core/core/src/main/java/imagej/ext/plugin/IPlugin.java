@@ -47,6 +47,9 @@ import imagej.tool.Tool;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputWidget;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * Top-level interface for plugins. Plugins discoverable at runtime must
  * implement this interface and be annotated with @{@link Plugin}.

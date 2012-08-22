@@ -38,6 +38,9 @@ package imagej.ext.plugin;
 import imagej.module.Module;
 import imagej.plugin.PluginModule;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * <code>RunnablePlugin</code> is a plugin that is executable. A
  * <code>RunnablePlugin</code> can be executed as a {@link Module} by wrapping

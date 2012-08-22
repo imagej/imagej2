@@ -59,6 +59,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// TODO - Migrate this class to imagej.plugin package, after an amount of time
+// has passed such that doing so will not affect the ImageJ updater too badly.
+
 /**
  * A collection of metadata about a particular {@link RunnablePlugin}. Unlike
  * its more general superclass {@link PluginInfo}, a
