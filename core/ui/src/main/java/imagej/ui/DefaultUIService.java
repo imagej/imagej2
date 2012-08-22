@@ -131,7 +131,7 @@ public final class DefaultUIService extends AbstractService implements
 		this.optionsService = optionsService;
 		this.appService = appService;
 
-		launchUI();
+		discoverUIs();
 
 		subscribeToEvents(eventService);
 	}
@@ -376,19 +376,12 @@ public final class DefaultUIService extends AbstractService implements
 
 	// -- Helper methods --
 
-	/** Discovers and launches the user interface. */
-	private void launchUI() {
-		final List<UserInterface> uis = discoverUIs();
-		availableUIs = Collections.unmodifiableList(uis);
-		userInterface = uis.size() > 0 ? uis.get(0) : null;
-	}
-
 	/** Discovers available user interfaces. */
-	private List<UserInterface> discoverUIs() {
+	private void discoverUIs() {
 		final List<UserInterface> uis = new ArrayList<UserInterface>();
-		for (final PluginInfo<? extends UserInterface> info : pluginService
-			.getPluginsOfType(UserInterface.class))
-		{
+		final List<PluginInfo<? extends UserInterface>> infos =
+			pluginService.getPluginsOfType(UserInterface.class);
+		for (final PluginInfo<? extends UserInterface> info : infos) {
 			try {
 				final UserInterface ui = info.createInstance();
 				ui.setContext(getContext());
@@ -400,7 +393,8 @@ public final class DefaultUIService extends AbstractService implements
 				log.warn("Invalid user interface: " + info.getClassName(), e);
 			}
 		}
-		return uis;
+		availableUIs = Collections.unmodifiableList(uis);
+		userInterface = uis.size() > 0 ? uis.get(0) : null;
 	}
 
 }
