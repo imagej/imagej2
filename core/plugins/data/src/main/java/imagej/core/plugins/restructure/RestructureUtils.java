@@ -128,16 +128,16 @@ public class RestructureUtils {
 			srcImgPlus.randomAccess();
 		final RandomAccess<? extends RealType<?>> dstAccessor =
 			dstImgPlus.randomAccess();
-		final long[] srcOffsets = new long[srcOrigin.length];
-		for (int i = 0; i < srcOffsets.length; i++)
-			srcOffsets[i] = srcSpan[i] - 1;
-		final long[] dstOffsets = new long[dstOrigin.length];
-		for (int i = 0; i < dstOffsets.length; i++)
-			dstOffsets[i] = dstSpan[i] - 1;
+		final long[] srcMax = new long[srcOrigin.length];
+		for (int i = 0; i < srcMax.length; i++)
+			srcMax[i] = srcOrigin[i] + srcSpan[i] - 1;
+		final long[] dstMax = new long[dstOrigin.length];
+		for (int i = 0; i < dstMax.length; i++)
+			dstMax[i] = dstOrigin[i] + dstSpan[i] - 1;
 		final HyperVolumePointSet srcPointSet =
-				new HyperVolumePointSet(srcOrigin, new long[srcOrigin.length], srcOffsets);
+				new HyperVolumePointSet(srcOrigin, srcMax);
 		final HyperVolumePointSet dstPointSet =
-				new HyperVolumePointSet(dstOrigin, new long[dstOrigin.length], dstOffsets);
+				new HyperVolumePointSet(dstOrigin, dstMax);
 		final PointSetIterator iterS = srcPointSet.createIterator();
 		final PointSetIterator iterD = dstPointSet.createIterator();
 		long[] srcPos = null;

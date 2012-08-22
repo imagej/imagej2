@@ -242,14 +242,9 @@ public class ReorderData extends DynamicPlugin {
 	private ImgPlus<? extends RealType<?>> getReorganizedData() {
 		final RandomAccess<? extends RealType<?>> inputAccessor =
 			dataset.getImgPlus().randomAccess();
-		final long[] inputOrigin = new long[dataset.getImgPlus().numDimensions()];
-		final long[] inputOffsets = new long[inputOrigin.length];
-		dataset.getImgPlus().dimensions(inputOffsets);
-		for (int i = 0; i < inputOffsets.length; i++)
-			inputOffsets[i]--;
-		final HyperVolumePointSet volume =
-				new HyperVolumePointSet(
-					inputOrigin,  new long[inputOrigin.length], inputOffsets);
+		final long[] inputSpan = new long[dataset.getImgPlus().numDimensions()];
+		dataset.getImgPlus().dimensions(inputSpan);
+		final HyperVolumePointSet volume = new HyperVolumePointSet(inputSpan);
 		final PointSetIterator iter = volume.createIterator();
 		final long[] origDims = dataset.getDims();
 		final AxisType[] origAxes = dataset.getAxes();
@@ -260,7 +255,7 @@ public class ReorderData extends DynamicPlugin {
 		newImgPlus.setCompositeChannelCount(dataset.getCompositeChannelCount());
 		final RandomAccess<? extends RealType<?>> outputAccessor =
 			newImgPlus.randomAccess();
-		final long[] permutedPos = new long[inputOrigin.length];
+		final long[] permutedPos = new long[inputSpan.length];
 		long[] currPos;
 		while (iter.hasNext()) {
 			currPos = iter.next();
