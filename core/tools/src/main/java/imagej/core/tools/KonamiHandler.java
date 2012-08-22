@@ -40,9 +40,9 @@ import imagej.display.event.input.KyPressedEvent;
 import imagej.ext.KeyCode;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
 import imagej.thread.ThreadService;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
 /**
  * Oh, the nostalgia!

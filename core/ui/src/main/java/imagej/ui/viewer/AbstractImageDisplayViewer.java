@@ -48,7 +48,7 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventHandler;
-import imagej.ext.tool.ToolService;
+import imagej.tool.ToolService;
 import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

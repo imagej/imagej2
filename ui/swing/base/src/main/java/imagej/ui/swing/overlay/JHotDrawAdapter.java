@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.Tool;
+import imagej.tool.Tool;
 
 import org.jhotdraw.draw.Figure;
 

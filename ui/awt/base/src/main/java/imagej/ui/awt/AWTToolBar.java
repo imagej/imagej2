@@ -37,8 +37,8 @@ package imagej.ui.awt;
 
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.PluginInfo;
-import imagej.ext.tool.Tool;
-import imagej.ext.tool.ToolService;
+import imagej.tool.Tool;
+import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.ui.UIService;
 import imagej.util.Log;

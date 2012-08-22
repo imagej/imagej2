@@ -35,7 +35,7 @@
 
 package imagej.ui;
 
-import imagej.ext.tool.ToolService;
+import imagej.tool.ToolService;
 
 /**
  * Common interface for tool bars, which are button bars with selectable tools,

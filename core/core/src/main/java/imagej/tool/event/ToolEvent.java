@@ -33,19 +33,33 @@
  * #L%
  */
 
-package imagej.ext.tool.event;
+package imagej.tool.event;
 
-import imagej.ext.tool.Tool;
+import imagej.event.ImageJEvent;
+import imagej.tool.Tool;
 
 /**
- * An event indicating a tool has been deactivated.
+ * An event indicating something has happened to a tool.
  * 
  * @author Curtis Rueden
  */
-public class ToolDeactivatedEvent extends ToolEvent {
+public abstract class ToolEvent extends ImageJEvent {
 
-	public ToolDeactivatedEvent(final Tool tool) {
-		super(tool);
+	private final Tool tool;
+
+	public ToolEvent(final Tool tool) {
+		this.tool = tool;
+	}
+
+	public Tool getTool() {
+		return tool;
+	}
+
+	// Object methods --
+
+	@Override
+	public String toString() {
+		return "\n\ttool = " + tool;
 	}
 
 }

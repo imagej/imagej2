@@ -33,33 +33,13 @@
  * #L%
  */
 
-package imagej.ext.tool.event;
-
-import imagej.event.ImageJEvent;
-import imagej.ext.tool.Tool;
+package imagej.tool;
 
 /**
- * An event indicating something has happened to a tool.
+ * A tool that does nothing.
  * 
  * @author Curtis Rueden
  */
-public abstract class ToolEvent extends ImageJEvent {
-
-	private final Tool tool;
-
-	public ToolEvent(final Tool tool) {
-		this.tool = tool;
-	}
-
-	public Tool getTool() {
-		return tool;
-	}
-
-	// Object methods --
-
-	@Override
-	public String toString() {
-		return "\n\ttool = " + tool;
-	}
-
+public class DummyTool extends AbstractTool {
+	// An empty tool implementation, active by default, to avoid null references.
 }

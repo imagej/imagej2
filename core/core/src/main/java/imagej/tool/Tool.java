@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.tool;
+package imagej.tool;
 
 import imagej.Contextual;
 import imagej.Prioritized;

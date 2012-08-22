@@ -43,8 +43,8 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
 /**
  * Handles keyboard accelerator combinations that launch modules.

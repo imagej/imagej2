@@ -41,8 +41,8 @@ import imagej.display.event.input.MsClickedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 import imagej.ui.UIService;
 
 /**

@@ -36,7 +36,7 @@
 package imagej.ui.pivot;
 
 import imagej.ImageJ;
-import imagej.ext.tool.ToolService;
+import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
 
 import org.apache.pivot.wtk.BoxPane;

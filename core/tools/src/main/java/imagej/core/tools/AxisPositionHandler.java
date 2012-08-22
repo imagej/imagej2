@@ -43,8 +43,8 @@ import imagej.display.event.input.MsWheelEvent;
 import imagej.ext.InputModifiers;
 import imagej.ext.KeyCode;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 

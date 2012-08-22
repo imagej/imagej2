@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.tool;
+package imagej.tool;
 
 import imagej.ImageJ;
 import imagej.display.event.DisplayEvent;
@@ -51,11 +51,11 @@ import imagej.ext.InstantiableException;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.event.ToolActivatedEvent;
-import imagej.ext.tool.event.ToolDeactivatedEvent;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.tool.event.ToolActivatedEvent;
+import imagej.tool.event.ToolDeactivatedEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

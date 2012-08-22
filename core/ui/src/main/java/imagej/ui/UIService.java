@@ -40,7 +40,6 @@ import imagej.display.Display;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.ToolService;
 import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
@@ -48,6 +47,7 @@ import imagej.platform.AppService;
 import imagej.platform.PlatformService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
+import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.ImageDisplayViewer;
 

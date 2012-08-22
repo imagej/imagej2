@@ -39,7 +39,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
-import imagej.ext.tool.AbstractTool;
+import imagej.tool.AbstractTool;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 

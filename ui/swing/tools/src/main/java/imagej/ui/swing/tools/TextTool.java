@@ -37,8 +37,8 @@ package imagej.ui.swing.tools;
 
 import imagej.ext.MouseCursor;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
 /**
  * TODO

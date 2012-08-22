@@ -45,9 +45,9 @@ import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
 import imagej.options.OptionsService;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
 /**
  * Tool implementation for flood fill.

@@ -42,9 +42,9 @@ import imagej.display.event.input.MsClickedEvent;
 import imagej.event.StatusService;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.AbstractTool;
-import imagej.ext.tool.Tool;
 import imagej.options.OptionsService;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
 /**
  * Sets foreground and background values when tool is active and mouse clicked

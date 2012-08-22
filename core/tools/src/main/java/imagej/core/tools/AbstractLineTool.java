@@ -47,8 +47,8 @@ import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsDraggedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
-import imagej.ext.tool.AbstractTool;
 import imagej.options.OptionsService;
+import imagej.tool.AbstractTool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 

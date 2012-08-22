@@ -33,49 +33,19 @@
  * #L%
  */
 
-package imagej.ext.tool;
+package imagej.tool.event;
 
-import imagej.event.EventService;
-import imagej.ext.plugin.PluginService;
-import imagej.service.Service;
-
-import java.util.List;
+import imagej.tool.Tool;
 
 /**
- * Interface for service that tracks available tools.
+ * An event indicating a tool has been activated.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
  */
-public interface ToolService extends Service {
+public class ToolActivatedEvent extends ToolEvent {
 
-	EventService getEventService();
-
-	PluginService getPluginService();
-
-	Tool getTool(String name);
-
-	/**
-	 * Get a tool given its class.
-	 * 
-	 * @param <T> the tool's type
-	 * @param toolClass the class of the tool to fetch
-	 * @return the tool, or null if no such tool
-	 */
-	<T extends Tool> T getTool(Class<T> toolClass);
-
-	List<Tool> getTools();
-
-	List<Tool> getAlwaysActiveTools();
-
-	Tool getActiveTool();
-
-	void setActiveTool(Tool activeTool);
-
-	/**
-	 * Returns true if the two specified tools should have a separator between
-	 * them on the tool bar.
-	 */
-	boolean isSeparatorNeeded(Tool tool1, Tool tool2);
+	public ToolActivatedEvent(final Tool tool) {
+		super(tool);
+	}
 
 }

@@ -39,9 +39,9 @@ import imagej.display.Display;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModulePostprocessor;
 import imagej.ext.module.ModulePreprocessor;
-import imagej.ext.tool.Tool;
 import imagej.platform.Platform;
 import imagej.service.Service;
+import imagej.tool.Tool;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputWidget;
 

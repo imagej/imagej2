@@ -37,7 +37,7 @@ package imagej.core.tools;
 
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
-import imagej.ext.tool.Tool;
+import imagej.tool.Tool;
 
 /**
  * Tool implementation for paint brush.

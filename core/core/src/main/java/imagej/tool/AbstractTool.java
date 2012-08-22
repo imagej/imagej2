@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.tool;
+package imagej.tool;
 
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
