@@ -29,11 +29,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ext-swing</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -44,7 +39,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-base</artifactId>
+			<artifactId>ij-ui-swing</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

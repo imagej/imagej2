@@ -40,13 +40,13 @@ import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.data.overlay.OverlaySettings;
 import imagej.ext.menu.MenuConstants;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.options.OptionsPlugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+import imagej.widget.WidgetStyle;
 
 /**
  * Runs the Edit::Options::Overlay... dialog.

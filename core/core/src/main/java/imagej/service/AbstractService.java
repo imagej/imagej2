@@ -35,22 +35,17 @@
 
 package imagej.service;
 
-import imagej.AbstractContextual;
 import imagej.ImageJ;
-import imagej.Prioritized;
-import imagej.Priority;
 import imagej.event.EventService;
+import imagej.ext.plugin.SortablePlugin;
 
 /**
  * Abstract superclass of {@link Service} implementations.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractService extends AbstractContextual implements
-	Service
+public abstract class AbstractService extends SortablePlugin implements Service
 {
-
-	private double priority = Priority.NORMAL_PRIORITY;
 
 	/** Maintain list of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")
@@ -65,25 +60,6 @@ public abstract class AbstractService extends AbstractContextual implements
 	@Override
 	public String toString() {
 		return getClass().getName() + " [priority = " + getPriority() + "]";
-	}
-
-	// -- Prioritized methods --
-
-	@Override
-	public double getPriority() {
-		return priority;
-	}
-
-	@Override
-	public void setPriority(final double priority) {
-		this.priority = priority;
-	}
-
-	// -- Comparable methods --
-
-	@Override
-	public int compareTo(final Prioritized p) {
-		return Priority.compare(this, p);
 	}
 
 	// -- Internal methods --

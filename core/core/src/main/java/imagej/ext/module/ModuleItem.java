@@ -36,7 +36,7 @@
 package imagej.ext.module;
 
 import imagej.ext.BasicDetails;
-import imagej.ext.module.ui.WidgetStyle;
+import imagej.widget.WidgetStyle;
 
 import java.util.List;
 

@@ -35,6 +35,8 @@
 
 package imagej.ui.viewer;
 
+import imagej.Contextual;
+import imagej.Prioritized;
 import imagej.ext.display.Display;
 import imagej.ext.display.event.DisplayActivatedEvent;
 import imagej.ext.display.event.DisplayDeletedEvent;
@@ -55,7 +57,7 @@ import imagej.ext.plugin.Plugin;
  * @author Lee Kamentsky
  * @see Plugin
  */
-public interface DisplayViewer<T> extends IPlugin {
+public interface DisplayViewer<T> extends IPlugin, Contextual, Prioritized {
 
 	/**
 	 * Returns true if an instance of this display viewer can view the given

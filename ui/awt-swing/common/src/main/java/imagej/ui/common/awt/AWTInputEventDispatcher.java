@@ -96,6 +96,11 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	private int y = -1;
 
 	/** Creates an AWT input event dispatcher for the given display. */
+	public AWTInputEventDispatcher(final Display<?> display) {
+		this(display, display.getContext().getService(EventService.class));
+	}
+
+	/** Creates an AWT input event dispatcher for the given display. */
 	public AWTInputEventDispatcher(final Display<?> display,
 		final EventService eventService)
 	{
@@ -110,12 +115,30 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 
 	// -- AWTInputEventDispatcher methods --
 
-	/** Attaches the event dispatcher to the given component as a listener. */
+	/**
+	 * Attaches the event dispatcher to the given component as a listener,
+	 * rebroadcasting both key and mouse events.
+	 */
 	public void register(final Component c) {
-		c.addKeyListener(this);
-		c.addMouseListener(this);
-		c.addMouseMotionListener(this);
-		c.addMouseWheelListener(this);
+		register(c, true, true);
+	}
+
+	/**
+	 * Attaches the event dispatcher to the given component as a listener.
+	 * 
+	 * @param c The component from which to rebroadcast events.
+	 * @param keyEvents True if key events should be dispatched.
+	 * @param mouseEvents True if mouse events should be dispatched.
+	 */
+	public void register(final Component c, final boolean keyEvents,
+		final boolean mouseEvents)
+	{
+		if (keyEvents) c.addKeyListener(this);
+		if (mouseEvents) {
+			c.addMouseListener(this);
+			c.addMouseMotionListener(this);
+			c.addMouseWheelListener(this);
+		}
 	}
 
 	/** Gets the last known mouse X coordinate. */

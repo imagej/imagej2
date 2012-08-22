@@ -39,13 +39,13 @@ import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PreviewPlugin;
 import imagej.options.OptionsService;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+import imagej.widget.WidgetStyle;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -18,8 +18,7 @@
 	<description>ImageJ user interface projects for SWT.</description>
 
 	<modules>
-		<module>ext</module>
-		<module>ui</module>
+		<module>base</module>
 	</modules>
 
 	<properties>

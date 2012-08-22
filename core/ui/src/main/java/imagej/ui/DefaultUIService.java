@@ -190,7 +190,11 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public void createUI() {
-		if (userInterface == null) return;
+		if (userInterface == null) {
+			log.warn("Cannot launch user interface: no UIs available.");
+			return;
+		}
+		log.info("Launching user interface: " + userInterface.getClass().getName());
 		userInterface.create();
 	}
 
@@ -200,8 +204,13 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public void setUI(final UserInterface ui) {
+		userInterface = ui;
+	}
+
+	@Override
 	public List<UserInterface> getAvailableUIs() {
-		return availableUIs;
+		return Collections.unmodifiableList(availableUIs);
 	}
 
 	@Override
@@ -285,6 +294,8 @@ public final class DefaultUIService extends AbstractService implements
 		{
 			try {
 				final DisplayViewer<?> displayViewer = info.createInstance();
+				displayViewer.setContext(getContext());
+				displayViewer.setPriority(info.getPriority());
 				if (displayViewer.canView(display)) {
 					final DisplayWindow displayWindow =
 						getUI().createDisplayWindow(display);
@@ -331,7 +342,7 @@ public final class DefaultUIService extends AbstractService implements
 	 * <p>
 	 * The goal here is to eventually synchronize the window activation state with
 	 * the display activation state if the display activation state changed
-	 * programatically. We queue a call on the UI thread to activate the display
+	 * programmatically. We queue a call on the UI thread to activate the display
 	 * viewer of the currently active window.
 	 * </p>
 	 */
@@ -369,16 +380,7 @@ public final class DefaultUIService extends AbstractService implements
 	private void launchUI() {
 		final List<UserInterface> uis = discoverUIs();
 		availableUIs = Collections.unmodifiableList(uis);
-		if (uis.size() > 0) {
-			final UserInterface ui = uis.get(0);
-			log.info("Launching user interface: " + ui.getClass().getName());
-			ui.initialize(this);
-			userInterface = ui;
-		}
-		else {
-			log.warn("No user interfaces found.");
-			userInterface = null;
-		}
+		userInterface = uis.size() > 0 ? uis.get(0) : null;
 	}
 
 	/** Discovers available user interfaces. */
@@ -389,6 +391,8 @@ public final class DefaultUIService extends AbstractService implements
 		{
 			try {
 				final UserInterface ui = info.createInstance();
+				ui.setContext(getContext());
+				ui.setPriority(info.getPriority());
 				log.info("Discovered user interface: " + ui.getClass().getName());
 				uis.add(ui);
 			}

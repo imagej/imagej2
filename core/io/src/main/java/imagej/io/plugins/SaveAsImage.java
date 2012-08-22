@@ -41,7 +41,6 @@ import imagej.event.StatusService;
 import imagej.ext.display.Display;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.module.ui.WidgetStyle;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -52,6 +51,7 @@ import imagej.log.LogService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
+import imagej.widget.WidgetStyle;
 
 import java.io.File;
 

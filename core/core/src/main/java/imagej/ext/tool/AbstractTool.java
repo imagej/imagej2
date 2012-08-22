@@ -35,7 +35,6 @@
 
 package imagej.ext.tool;
 
-import imagej.AbstractContextual;
 import imagej.ext.MouseCursor;
 import imagej.ext.display.event.input.KyPressedEvent;
 import imagej.ext.display.event.input.KyReleasedEvent;
@@ -46,6 +45,7 @@ import imagej.ext.display.event.input.MsPressedEvent;
 import imagej.ext.display.event.input.MsReleasedEvent;
 import imagej.ext.display.event.input.MsWheelEvent;
 import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.SortablePlugin;
 
 /**
  * Abstract base class for ImageJ tools.
@@ -53,7 +53,7 @@ import imagej.ext.plugin.PluginInfo;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public abstract class AbstractTool extends AbstractContextual implements Tool {
+public abstract class AbstractTool extends SortablePlugin implements Tool {
 
 	private PluginInfo<? extends Tool> info;
 

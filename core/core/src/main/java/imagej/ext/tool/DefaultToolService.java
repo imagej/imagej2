@@ -288,6 +288,7 @@ public class DefaultToolService extends AbstractService implements ToolService {
 			try {
 				tool = info.createInstance();
 				tool.setContext(getContext());
+				tool.setPriority(info.getPriority());
 				tool.setInfo(info);
 			}
 			catch (final InstantiableException e) {

@@ -18,10 +18,9 @@
 	<description>ImageJ user interface projects for Swing.</description>
 
 	<modules>
-		<module>ext</module>
+		<module>base</module>
 		<module>plugins</module>
 		<module>tools</module>
-		<module>ui-base</module>
 		<module>updater</module>
 		<module>util</module>
 	</modules>
@@ -41,38 +40,5 @@
 			<url>http://maven.imagej.net/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
-
-	<profiles>
-		<profile>
-			<id>all</id>
-			<modules>
-				<module>ui-mdi</module>
-				<module>ui-sdi</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swing</id>
-			<activation>
-				<property>
-					<name>!ij.ui</name>
-				</property>
-			</activation>
-			<modules>
-				<module>ui-sdi</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swing-mdi</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>swing-mdi</value>
-				</property>
-			</activation>
-			<modules>
-				<module>ui-mdi</module>
-			</modules>
-		</profile>
-	</profiles>
 
 </project>
