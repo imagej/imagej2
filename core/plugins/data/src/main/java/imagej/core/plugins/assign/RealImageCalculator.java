@@ -35,13 +35,13 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.ext.Cancelable;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 
@@ -50,7 +50,6 @@ import java.util.HashMap;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.ops.operation.real.binary.RealAdd;
 import net.imglib2.ops.operation.real.binary.RealAnd;
@@ -67,6 +66,7 @@ import net.imglib2.ops.operation.real.binary.RealOr;
 import net.imglib2.ops.operation.real.binary.RealSubtract;
 import net.imglib2.ops.operation.real.binary.RealXor;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 

@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.plugins;
 
-import imagej.ext.MenuPath;
+import imagej.MenuPath;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 
