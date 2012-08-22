@@ -33,30 +33,67 @@
  * #L%
  */
 
-package imagej.ext.script;
-
-import java.util.ArrayList;
+package imagej.script;
 
 /**
- * Holds a module or plugin reference that was invoked in a macro recording, and
- * the parameters that were passed to it.
+ * {@link CodeGenerator} for Java.
  * 
  * @author Grant Harris
  */
-public class InvocationObject {
+public class CodeGeneratorJava implements CodeGenerator {
 
-	public String moduleCalled;
-	public ArrayList<ParameterObject> parameterObjects =
-		new ArrayList<ParameterObject>();
+	static final String lsep = System.getProperty("line.separator");
+	private final StringBuilder sb = new StringBuilder();
 
-	public InvocationObject(final String moduleCalled) {
-		this.moduleCalled = moduleCalled;
+	@Override
+	public String getResult() {
+		return sb.toString();
 	}
 
-	public void addParameter(final String param, final Class<?> type,
-		final Object value)
-	{
-		parameterObjects.add(new ParameterObject(param, type, value));
+	@Override
+	public void invokeStatementBegin() {
+		sb.append("invoke(");
+	}
+
+	@Override
+	public void addModuleCalled(final String moduleCalled) {
+		sb.append("\"");
+		sb.append(moduleCalled);
+		sb.append("\"");
+	}
+
+	@Override
+	public void addArgDelimiter() {
+		sb.append(", ");
+	}
+
+	@Override
+	public void addArgument(final ParameterObject parameterObject) {
+		final StringBuilder sb1 = new StringBuilder();
+		// Class<?> type = parameterObject.type;
+		// String name = parameterObject.param;
+		final Object value = parameterObject.value;
+		if (value instanceof String) {
+			sb1.append("\"");
+			sb1.append(parameterObject.value.toString());
+			sb1.append("\"");
+		}
+		else if (value instanceof Boolean) {
+			if ((Boolean) value) sb1.append("true");
+			else sb1.append("false");
+		}
+		else sb1.append(parameterObject.value.toString());
+		sb.append(sb1.toString());
+	}
+
+	@Override
+	public void statementTerminate() {
+		sb.append(lsep);
+	}
+
+	@Override
+	public void invokeStatementEnd() {
+		sb.append(")");
 	}
 
 }

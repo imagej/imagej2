@@ -33,28 +33,30 @@
  * #L%
  */
 
-package imagej.ext.script;
+package imagej.script;
+
+import java.util.ArrayList;
 
 /**
- * Code Generator Interface
+ * Holds a module or plugin reference that was invoked in a macro recording, and
+ * the parameters that were passed to it.
  * 
  * @author Grant Harris
  */
-public interface CodeGenerator {
+public class InvocationObject {
 
-	/** Adds delimiter character between arguments (typically a ','). */
-	void addArgDelimiter();
+	public String moduleCalled;
+	public ArrayList<ParameterObject> parameterObjects =
+		new ArrayList<ParameterObject>();
 
-	void addArgument(ParameterObject parameterObject);
+	public InvocationObject(final String moduleCalled) {
+		this.moduleCalled = moduleCalled;
+	}
 
-	void addModuleCalled(String moduleCalled);
-
-	String getResult();
-
-	void invokeStatementBegin();
-
-	void invokeStatementEnd();
-
-	void statementTerminate();
+	public void addParameter(final String param, final Class<?> type,
+		final Object value)
+	{
+		parameterObjects.add(new ParameterObject(param, type, value));
+	}
 
 }

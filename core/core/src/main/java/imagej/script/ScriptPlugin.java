@@ -33,67 +33,61 @@
  * #L%
  */
 
-package imagej.ext.script;
+package imagej.script;
+
+import imagej.ext.plugin.RunnablePlugin;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.util.FileUtils;
+import imagej.util.Log;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
- * {@link CodeGenerator} for Java.
+ * Executes a script, using the file extension to choose the appropriate engine.
  * 
+ * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class CodeGeneratorJava implements CodeGenerator {
+@Plugin(menuPath = "Plugins>Script>Run Script")
+public class ScriptPlugin implements RunnablePlugin {
 
-	static final String lsep = System.getProperty("line.separator");
-	private final StringBuilder sb = new StringBuilder();
-
-	@Override
-	public String getResult() {
-		return sb.toString();
-	}
+	@Parameter
+	protected File path;
 
 	@Override
-	public void invokeStatementBegin() {
-		sb.append("invoke(");
-	}
-
-	@Override
-	public void addModuleCalled(final String moduleCalled) {
-		sb.append("\"");
-		sb.append(moduleCalled);
-		sb.append("\"");
-	}
-
-	@Override
-	public void addArgDelimiter() {
-		sb.append(", ");
-	}
-
-	@Override
-	public void addArgument(final ParameterObject parameterObject) {
-		final StringBuilder sb1 = new StringBuilder();
-		// Class<?> type = parameterObject.type;
-		// String name = parameterObject.param;
-		final Object value = parameterObject.value;
-		if (value instanceof String) {
-			sb1.append("\"");
-			sb1.append(parameterObject.value.toString());
-			sb1.append("\"");
+	public void run() {
+		// TODO make a nice SezPoz-discoverable interface for scripting
+		// languages
+		final ScriptEngineManager scriptManager = new ScriptEngineManager();
+		// Could use a FileChooser to select script, then
+		final String fileExtension = FileUtils.getExtension(path);
+		final ScriptEngine engine =
+			scriptManager.getEngineByExtension(fileExtension);
+		try {
+			engine.put(ScriptEngine.FILENAME, path.getPath());
+			// TODO
+			// Bind java objects to script engine and for script access
+			// e.g. get current Display
+			// scriptEngine.put("currentDisplay", currentDisplay) ;
+			// same effect as: getBindings(ScriptContext.ENGINE_SCOPE).put.
+			final Object result = engine.eval(new FileReader(path));
+			if (result != null) {
+				System.out.println(result.toString());
+			}
 		}
-		else if (value instanceof Boolean) {
-			if ((Boolean) value) sb1.append("true");
-			else sb1.append("false");
+		catch (final ScriptException e) {
+			Log.error(e);
 		}
-		else sb1.append(parameterObject.value.toString());
-		sb.append(sb1.toString());
-	}
-
-	@Override
-	public void statementTerminate() {
-		sb.append(lsep);
-	}
-
-	@Override
-	public void invokeStatementEnd() {
-		sb.append(")");
+		catch (final IOException e) {
+			Log.error(e);
+		}
 	}
 
 }

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.script;
+package imagej.script;
 
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Plugin;

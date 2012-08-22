@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext.script;
+package imagej.script;
 
 /**
  * Holds a parameter, its type and value, for a recorded macro.
