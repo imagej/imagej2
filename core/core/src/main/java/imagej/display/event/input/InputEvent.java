@@ -37,7 +37,7 @@ package imagej.display.event.input;
 
 import imagej.display.Display;
 import imagej.display.event.DisplayEvent;
-import imagej.ext.InputModifiers;
+import imagej.input.InputModifiers;
 
 /**
  * An event indicating input device (e.g., keyboard or mouse) activity in a

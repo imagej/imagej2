@@ -53,8 +53,8 @@ import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.event.EventService;
-import imagej.ext.InputModifiers;
-import imagej.ext.KeyCode;
+import imagej.input.InputModifiers;
+import imagej.input.KeyCode;
 import imagej.util.IntCoords;
 
 import java.awt.Component;

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext;
+package imagej.input;
 
 /**
  * A UI-independent enumeration of mouse cursors.

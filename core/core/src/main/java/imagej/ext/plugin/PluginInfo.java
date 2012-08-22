@@ -36,11 +36,11 @@
 package imagej.ext.plugin;
 
 import imagej.ext.AbstractUIDetails;
-import imagej.ext.Accelerator;
 import imagej.ext.Instantiable;
 import imagej.ext.InstantiableException;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
+import imagej.input.Accelerator;
 import imagej.menu.ShadowMenu;
 import imagej.util.StringMaker;
 

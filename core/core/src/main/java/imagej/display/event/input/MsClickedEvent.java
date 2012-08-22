@@ -36,7 +36,7 @@
 package imagej.display.event.input;
 
 import imagej.display.Display;
-import imagej.ext.InputModifiers;
+import imagej.input.InputModifiers;
 
 /**
  * An event indicating a mouse button was clicked in a display.

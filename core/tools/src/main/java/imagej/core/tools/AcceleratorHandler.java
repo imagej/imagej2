@@ -36,11 +36,11 @@
 package imagej.core.tools;
 
 import imagej.display.event.input.KyPressedEvent;
-import imagej.ext.Accelerator;
-import imagej.ext.InputModifiers;
-import imagej.ext.KeyCode;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
+import imagej.input.Accelerator;
+import imagej.input.InputModifiers;
+import imagej.input.KeyCode;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.tool.AbstractTool;

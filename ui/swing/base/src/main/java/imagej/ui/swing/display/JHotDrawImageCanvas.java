@@ -52,7 +52,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.MouseCursor;
+import imagej.input.MouseCursor;
 import imagej.log.LogService;
 import imagej.thread.ThreadService;
 import imagej.tool.Tool;

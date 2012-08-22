@@ -35,7 +35,7 @@
 
 package imagej.module;
 
-import imagej.ext.Accelerator;
+import imagej.input.Accelerator;
 import imagej.service.Service;
 
 import java.util.Collection;

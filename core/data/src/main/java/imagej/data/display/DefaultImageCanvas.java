@@ -40,7 +40,7 @@ import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.PanZoomEvent;
 import imagej.data.display.event.ViewportResizeEvent;
 import imagej.event.EventService;
-import imagej.ext.MouseCursor;
+import imagej.input.MouseCursor;
 import imagej.log.LogService;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;

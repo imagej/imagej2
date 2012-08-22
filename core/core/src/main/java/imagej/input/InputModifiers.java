@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext;
+package imagej.input;
 
 /**
  * A UI-independent representation of keyboard modifier key states.

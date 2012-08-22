@@ -35,7 +35,7 @@
 
 package imagej.data.display;
 
-import imagej.ext.MouseCursor;
+import imagej.input.MouseCursor;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 

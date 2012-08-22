@@ -45,8 +45,8 @@ import imagej.display.event.input.KyPressedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.KeyCode;
 import imagej.ext.plugin.Plugin;
+import imagej.input.KeyCode;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

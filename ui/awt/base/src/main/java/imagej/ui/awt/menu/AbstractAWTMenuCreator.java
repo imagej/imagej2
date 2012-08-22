@@ -36,8 +36,8 @@
 package imagej.ui.awt.menu;
 
 import imagej.ImageJ;
-import imagej.ext.Accelerator;
 import imagej.ext.plugin.PluginService;
+import imagej.input.Accelerator;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
 import imagej.module.ModuleInfo;

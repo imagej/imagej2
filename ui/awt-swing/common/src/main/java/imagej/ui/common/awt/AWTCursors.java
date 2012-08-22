@@ -35,7 +35,7 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ext.MouseCursor;
+import imagej.input.MouseCursor;
 
 import java.awt.Cursor;
 

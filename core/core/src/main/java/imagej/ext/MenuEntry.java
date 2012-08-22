@@ -35,6 +35,8 @@
 
 package imagej.ext;
 
+import imagej.input.Accelerator;
+
 /**
  * One component of a menu path, for use with {@link MenuPath}.
  * 

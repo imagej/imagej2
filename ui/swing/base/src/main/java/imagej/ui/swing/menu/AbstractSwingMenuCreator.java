@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.menu;
 
-import imagej.ext.Accelerator;
+import imagej.input.Accelerator;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
 

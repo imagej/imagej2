@@ -37,14 +37,14 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.Menus;
-import imagej.ext.Accelerator;
-import imagej.ext.InputModifiers;
-import imagej.ext.KeyCode;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
+import imagej.input.Accelerator;
+import imagej.input.InputModifiers;
+import imagej.input.KeyCode;
 import imagej.log.LogService;
 import imagej.menu.ShadowMenu;
 

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ext;
+package imagej.input;
 
 import java.util.regex.Pattern;
 
