@@ -96,8 +96,8 @@ public abstract class TypeChanger implements RunnablePlugin {
 			ImgPlus<? extends RealType<?>> imgPlus;
 			if (isColor) imgPlus = colorToGrayscale((ImgPlus) inputImg, newType);
 			else imgPlus = copyToType(inputImg, newType);
+			dataset.setRGBMerged(false);  // event order requires this before setImgPlus()
 			dataset.setImgPlus(imgPlus);
-			dataset.setRGBMerged(false);
 			dataset.setCompositeChannelCount(1);
 		}
 	}

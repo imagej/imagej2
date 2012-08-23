@@ -224,7 +224,7 @@ public class SamplerService extends AbstractService {
 		long numPlanes = calcNumPlanes(dims, axes);
 		if (numPlanes > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(
-				"output image has more planes than "+Integer.MAX_VALUE);
+				"output image has more too many planes "+numPlanes+" (max = "+Integer.MAX_VALUE+")");
 		}
 		output.getImgPlus().initializeColorTables((int)numPlanes);
 		if (origDs.isRGBMerged()) {
@@ -296,7 +296,7 @@ public class SamplerService extends AbstractService {
 		setCompositeChannelCount(input, output);
 
 		// keep display color tables in sync
-		updateDisplayColorTables(def.getDisplay(), outputImage);
+		updateDisplayColorTables(def, outputImage);
 
 		// set the display range from actual data values
 		// TODO - could just reuse input image's display ranges for valid channels
@@ -331,11 +331,26 @@ public class SamplerService extends AbstractService {
 
 	/**
 	 * Copies the appropriate color tables from the input ImageDisplay to the
-	 * output ImageDiosplay.
+	 * output ImageDisplay.
 	 */
-	private void updateDisplayColorTables(final ImageDisplay input,
+	private void updateDisplayColorTables(
+		final SamplingDefinition def,
 		final ImageDisplay output)
 	{
+		final ImageDisplay input = def.getDisplay();
+		final DatasetView inView = imgDispService.getActiveDatasetView(input);
+		final DatasetView outView = imgDispService.getActiveDatasetView(output);
+		final List<ColorTable8> inputColorTables = inView.getColorTables();
+		final int inputChanAxis = input.getAxisIndex(Axes.CHANNEL); 
+		final List<List<Long>> inputRanges = def.getInputRanges();
+		for (int i = 0; i < inputColorTables.size(); i++) {
+			int outIndex = outputColorTableNumber(inputRanges, i, inputChanAxis);
+			if (outIndex >= 0) {
+				outView.setColorTable(inputColorTables.get(i), outIndex);
+			}
+		}
+		
+		/*
 		final int chAxisIn = input.getAxisIndex(Axes.CHANNEL);
 		final int chAxisOut = output.getAxisIndex(Axes.CHANNEL);
 		if (chAxisIn < 0 || chAxisOut < 0) {
@@ -349,15 +364,32 @@ public class SamplerService extends AbstractService {
 
 		// TODO - cannot assume 1 color table per channel, right? if so then no
 		// idea how to copy color tables. For now will assume 1 per channel
-		final DatasetView inView = imgDispService.getActiveDatasetView(input);
-		final DatasetView outView = imgDispService.getActiveDatasetView(output);
-		final List<ColorTable8> colorTables = inView.getColorTables();
 		for (int c = 0; c < colorTables.size(); c++) {
 			final ColorTable8 table = colorTables.get(c);
 			outView.setColorTable(table, c);
 		}
+		*/
+	}
+	
+	private int outputColorTableNumber(
+		List<List<Long>> inputRanges, int inputChannel, int inputChanAxis)
+	{
+		if (inputChanAxis < 0) {
+			if (inputChannel == 0) return 0;
+			return -1;
+		}
+		List<Long> channelRanges = inputRanges.get(inputChanAxis);
+		for (int pos = 0; pos < channelRanges.size(); pos++) {
+			if (channelRanges.get(pos) == inputChannel)
+				return pos;
+		}
+		return -1;
 	}
 
+	// TODO - utilize me? Maybe it doesn't make sense to duplicate overlays.
+	// Also its not really correct as written. Overlays all go in the 1st
+	// view plane rather than on each separate view plane from which they came.
+	
 	private void attachOverlays(final ImageDisplay inputDisp,
 		final ImageDisplay outputDisp, final List<Overlay> overlays)
 	{

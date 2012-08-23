@@ -150,11 +150,15 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
 
+		// set rgb merged status
 		if (wasRgbMerged) {
 			if ((isSigned()) || (!isInteger()) ||
 				(getType().getBitsPerPixel() != 8) ||
 				(imgPlus.getAxisIndex(Axes.CHANNEL) < 0) ||
-				(imgPlus.dimension(getAxisIndex(Axes.CHANNEL)) != 3)) setRGBMerged(false);
+				(imgPlus.dimension(getAxisIndex(Axes.CHANNEL)) != 3))
+			{
+				setRGBMerged(false);
+			}
 		}
 
 		rebuild();
