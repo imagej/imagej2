@@ -42,7 +42,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
-import imagej.ui.swing.SwingUtils;
+import imagej.util.swing.SwingUtils;
 
 import javax.swing.JOptionPane;
 
