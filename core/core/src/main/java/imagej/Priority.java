@@ -76,9 +76,8 @@ public final class Priority {
 	public static final double LOW_PRIORITY = -100;
 
 	/**
-	 * Priority for items that strongly prefer to be late in the * chain.
-	 * Examples: {@link imagej.display.DisplayPostprocessor}, UI-specific
-	 * subclasses of {@link imagej.widget.AbstractInputHarvesterPlugin}.
+	 * Priority for items that strongly prefer to be late in the chain.
+	 * Example: {@link imagej.display.DisplayPostprocessor}
 	 */
 	public static final double VERY_LOW_PRIORITY = -10000;
 
