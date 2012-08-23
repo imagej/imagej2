@@ -40,6 +40,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
+import imagej.ui.pivot.PivotUI;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 
@@ -74,6 +75,13 @@ public class PivotInputHarvester extends AbstractInputHarvesterPlugin<BoxPane> {
 		dialog.open((Display) null);// FIXME
 		final boolean success = dialog.getResult();
 		return success;
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected String getUI() {
+		return PivotUI.NAME;
 	}
 
 }

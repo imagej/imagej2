@@ -40,6 +40,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
+import imagej.ui.awt.AWTUI;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 
@@ -100,6 +101,13 @@ public class AWTInputHarvester extends AbstractInputHarvesterPlugin<Panel> {
 
 		// verify return value of dialog
 		return rval != null && rval == JOptionPane.OK_OPTION;
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected String getUI() {
+		return AWTUI.NAME;
 	}
 
 	// -- Helper methods --

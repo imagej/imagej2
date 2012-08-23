@@ -40,6 +40,7 @@ import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
+import imagej.ui.swt.SWTUI;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 
@@ -102,6 +103,13 @@ public class SWTInputHarvester extends AbstractInputHarvesterPlugin<Composite> {
 
 		// TODO - check whether OK or Cancel was pushed
 		return true;
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected String getUI() {
+		return SWTUI.NAME;
 	}
 
 }

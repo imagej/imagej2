@@ -45,6 +45,11 @@ import imagej.widget.InputHarvester;
  * AbstractInputHarvesterPlugin is an {@link InputHarvester} that implements the
  * {@link PreprocessorPlugin} interface. It is intended to be extended by
  * UI-specific implementations such as <code>SwingInputHarvester</code>.
+ * <p>
+ * The input harvester will first check whether the default UI matches that of
+ * its implementation; for example, the Swing-based input harvester plugin will
+ * only harvest inputs if the Swing UI is currently the default one.
+ * </p>
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -60,6 +65,13 @@ public abstract class AbstractInputHarvesterPlugin<U> extends
 
 	@Override
 	public void process(final Module module) {
+		final UIService uiService = getContext().getService(UIService.class);
+		if (uiService == null) return; // no UI service means no input harvesting!
+
+		// verify that the default UI is the correct one
+		if (!uiService.isDefaultUI(getUI())) return;
+
+		// proceed with input harvesting
 		try {
 			harvest(module);
 		}
@@ -80,5 +92,10 @@ public abstract class AbstractInputHarvesterPlugin<U> extends
 	public String getCancelReason() {
 		return cancelReason;
 	}
+
+	// -- Internal methods --
+
+	/** Gets the name (or class name) of the input harvester's affiliated UI. */
+	protected abstract String getUI();
 
 }

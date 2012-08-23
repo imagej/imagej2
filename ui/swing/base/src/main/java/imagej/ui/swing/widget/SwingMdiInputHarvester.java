@@ -37,66 +37,26 @@ package imagej.ui.swing.widget;
 
 import imagej.Priority;
 import imagej.ext.plugin.Plugin;
-import imagej.module.Module;
 import imagej.plugin.PreprocessorPlugin;
-import imagej.ui.AbstractInputHarvesterPlugin;
-import imagej.ui.swing.sdi.SwingUI;
-import imagej.util.swing.SwingUtils;
+import imagej.ui.swing.mdi.SwingMdiUI;
 import imagej.widget.InputHarvester;
-import imagej.widget.InputPanel;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 /**
  * SwingInputHarvester is an {@link InputHarvester} that collects input
  * parameter values from the user using a {@link SwingInputPanel} dialog box.
  * 
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class SwingInputHarvester extends AbstractInputHarvesterPlugin<JPanel> {
+public class SwingMdiInputHarvester extends SwingInputHarvester {
 
-	// -- InputHarvester methods --
-
-	@Override
-	public SwingInputPanel createInputPanel() {
-		return new SwingInputPanel();
-	}
-
-	@Override
-	public boolean
-		harvestInputs(final InputPanel<JPanel> inputPanel, final Module module)
-	{
-		// convert input panel to Swing component
-		final JPanel pane = ((SwingInputPanel) inputPanel).getPanel();
-
-		// display input panel in a dialog
-		final String title = module.getInfo().getTitle();
-		final boolean allowCancel = module.getInfo().canCancel();
-		final int optionType, messageType;
-		if (allowCancel) optionType = JOptionPane.OK_CANCEL_OPTION;
-		else optionType = JOptionPane.DEFAULT_OPTION;
-		if (inputPanel.isMessageOnly()) {
-			if (allowCancel) messageType = JOptionPane.QUESTION_MESSAGE;
-			else messageType = JOptionPane.INFORMATION_MESSAGE;
-		}
-		else messageType = JOptionPane.PLAIN_MESSAGE;
-		final boolean doScrollBars = messageType == JOptionPane.PLAIN_MESSAGE;
-		final int rval =
-			SwingUtils.showDialog(null, pane, title, optionType, messageType,
-				doScrollBars, null);
-
-		// verify return value of dialog
-		return rval == JOptionPane.OK_OPTION;
-	}
+	// TODO - Show an internal (MDI-style) dialog box.
 
 	// -- Internal methods --
-
+	
 	@Override
 	protected String getUI() {
-		return SwingUI.NAME;
+		return SwingMdiUI.NAME;
 	}
 
 }
