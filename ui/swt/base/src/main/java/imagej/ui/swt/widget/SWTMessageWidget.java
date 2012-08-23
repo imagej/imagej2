@@ -66,7 +66,7 @@ public class SWTMessageWidget extends SWTInputWidget<String> implements
 
 		final String text = model.getText();
 
-		final Label label = new Label(getPane(), 0);
+		final Label label = new Label(getComponent(), 0);
 		label.setText(text);
 		label.setLayoutData("span");
 	}

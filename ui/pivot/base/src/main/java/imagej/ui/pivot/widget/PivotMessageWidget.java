@@ -67,7 +67,7 @@ public class PivotMessageWidget extends PivotInputWidget<String> implements
 		final String text = model.getText();
 
 		final Label label = new Label(text);
-		getPane().add(label);
+		getComponent().add(label);
 	}
 
 	@Override

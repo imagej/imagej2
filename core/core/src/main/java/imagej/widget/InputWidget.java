@@ -59,14 +59,14 @@ import imagej.module.ModuleItem;
  * @see InputHarvester
  * @see InputPanel
  */
-public interface InputWidget<T, W> extends IPlugin {
+public interface InputWidget<T, W> extends IPlugin, UIComponent<W> {
 
 	/** Gets whether this widget would be appropriate for the given model. */
 	boolean isCompatible(WidgetModel model);
 
 	/**
 	 * Initializes the widget to use the given widget model. Once initialized, the
-	 * widget's UI pane will be accessible via {@link #getPane()}.
+	 * widget's UI pane will be accessible via {@link #getComponent()}.
 	 */
 	void initialize(WidgetModel model);
 
@@ -81,13 +81,6 @@ public interface InputWidget<T, W> extends IPlugin {
 
 	/** Refreshes the widget to reflect the latest model value(s). */
 	void refreshWidget();
-
-	/**
-	 * Gets the user interface component housing this widget.
-	 * 
-	 * @return the component, or null if the widget has not yet been initialized.
-	 */
-	W getPane();
 
 	/**
 	 * Returns true iff the widget should be labeled with the parameter label.
@@ -105,5 +98,15 @@ public interface InputWidget<T, W> extends IPlugin {
 	 * returns true for all of its widgets.
 	 */
 	boolean isMessage();
+
+	// -- UIComponent methods --
+
+	/**
+	 * Gets the user interface component housing this widget.
+	 * 
+	 * @return the component, or null if the widget has not yet been initialized.
+	 */
+	@Override
+	W getComponent();
 
 }

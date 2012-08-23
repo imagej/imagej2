@@ -78,11 +78,11 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 		scrollBar = new ScrollBar();
 		scrollBar.setRange(min.intValue(), max.intValue());
 		scrollBar.setBlockIncrement(stepSize.intValue());
-		getPane().add(scrollBar);
+		getComponent().add(scrollBar);
 		scrollBar.getScrollBarValueListeners().add(this);
 
 		label = new Label();
-		getPane().add(label);
+		getComponent().add(label);
 
 		refreshWidget();
 	}

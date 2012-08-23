@@ -71,7 +71,7 @@ public class PivotChoiceWidget extends PivotInputWidget<String>
 
 		listButton = new ListButton();
 		listButton.setListData(new ArrayList<String>(items));
-		getPane().add(listButton);
+		getComponent().add(listButton);
 
 		refreshWidget();
 	}

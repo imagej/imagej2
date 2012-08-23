@@ -76,11 +76,11 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 
 		slider = new Slider();
 		slider.setRange(min.intValue(), max.intValue());
-		getPane().add(slider);
+		getComponent().add(slider);
 		slider.getSliderValueListeners().add(this);
 
 		label = new Label();
-		getPane().add(label);
+		getComponent().add(label);
 
 		refreshWidget();
 	}

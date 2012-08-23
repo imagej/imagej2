@@ -80,7 +80,7 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 
 		comboBox = new JComboBox(items);
 		setToolTip(comboBox);
-		getPane().add(comboBox);
+		getComponent().add(comboBox);
 		comboBox.addActionListener(this);
 
 		refreshWidget();

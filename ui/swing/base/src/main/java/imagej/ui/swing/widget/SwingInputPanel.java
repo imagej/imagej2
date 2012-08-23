@@ -52,25 +52,21 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingInputPanel extends AbstractInputPanel<JPanel, JPanel> {
 
-	private final JPanel panel;
+	private final JPanel uiComponent;
 
 	public SwingInputPanel() {
-		panel = new JPanel();
-		panel.setLayout(new MigLayout("fillx,wrap 2", "[right]10[fill,grow]"));
+		uiComponent = new JPanel();
+		final MigLayout layout =
+			new MigLayout("fillx,wrap 2", "[right]10[fill,grow]");
+		uiComponent.setLayout(layout);
 	}
 
 	// -- InputPanel methods --
 
 	@Override
-	public JPanel getPanel() {
-		return panel;
-	}
-
-	@Override
 	public void addWidget(final InputWidget<?, JPanel> widget) {
 		super.addWidget(widget);
-		if (!(widget instanceof SwingInputWidget)) return;
-		final JPanel widgetPane = ((SwingInputWidget<?>) widget).getPane();
+		final JPanel widgetPane = widget.getComponent();
 		final WidgetModel model = widget.getModel();
 
 		// add widget to panel
@@ -79,13 +75,20 @@ public class SwingInputPanel extends AbstractInputPanel<JPanel, JPanel> {
 			final JLabel l = new JLabel(model.getWidgetLabel());
 			final String desc = model.getItem().getDescription();
 			if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
-			panel.add(l);
-			panel.add(widgetPane);
+			uiComponent.add(l);
+			uiComponent.add(widgetPane);
 		}
 		else {
 			// widget occupies entire row
-			panel.add(widgetPane, "span");
+			uiComponent.add(widgetPane, "span");
 		}
+	}
+
+	// -- UIComponent methods --
+
+	@Override
+	public JPanel getComponent() {
+		return uiComponent;
 	}
 
 }

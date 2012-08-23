@@ -72,12 +72,12 @@ public class SWTFileWidget extends SWTInputWidget<File> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		getPane().setLayout(new MigLayout());
+		getComponent().setLayout(new MigLayout());
 
-		path = new Text(getPane(), 0);
+		path = new Text(getComponent(), 0);
 		path.setTextLimit(20);
 
-		browse = new Button(getPane(), 0);
+		browse = new Button(getComponent(), 0);
 		browse.setText("Browse");
 
 		refreshWidget();

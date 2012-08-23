@@ -79,14 +79,14 @@ public class SwingFileWidget extends SwingInputWidget<File> implements
 
 		path = new JTextField(16);
 		setToolTip(path);
-		getPane().add(path);
+		getComponent().add(path);
 		path.getDocument().addDocumentListener(this);
 
-		getPane().add(Box.createHorizontalStrut(3));
+		getComponent().add(Box.createHorizontalStrut(3));
 
 		browse = new JButton("Browse");
 		setToolTip(browse);
-		getPane().add(browse);
+		getComponent().add(browse);
 		browse.addActionListener(this);
 
 		refreshWidget();
@@ -122,10 +122,10 @@ public class SwingFileWidget extends SwingInputWidget<File> implements
 		}
 		final int rval;
 		if (style == WidgetStyle.FILE_SAVE) {
-			rval = chooser.showSaveDialog(getPane());
+			rval = chooser.showSaveDialog(getComponent());
 		}
 		else { // default behavior
-			rval = chooser.showOpenDialog(getPane());
+			rval = chooser.showOpenDialog(getComponent());
 		}
 		if (rval != JFileChooser.APPROVE_OPTION) return;
 		file = chooser.getSelectedFile();

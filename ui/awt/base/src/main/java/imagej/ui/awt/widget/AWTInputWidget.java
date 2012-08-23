@@ -47,19 +47,21 @@ import java.awt.Panel;
  */
 public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
 
-	private Panel pane;
+	private Panel uiComponent;
 
 	// -- InputWidget methods --
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
-		pane = new Panel();
+		uiComponent = new Panel();
 	}
 
+	// -- UIComponent methods --
+
 	@Override
-	public Panel getPane() {
-		return pane;
+	public Panel getComponent() {
+		return uiComponent;
 	}
 
 }

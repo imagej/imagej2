@@ -74,7 +74,7 @@ public class AWTInputHarvester extends
 	public boolean harvestInputs(final InputPanel<Panel, Panel> inputPanel,
 		final Module module)
 	{
-		final Panel pane = inputPanel.getPanel();
+		final Panel pane = inputPanel.getComponent();
 
 		// TODO - use pure AWT instead of Swing here
 

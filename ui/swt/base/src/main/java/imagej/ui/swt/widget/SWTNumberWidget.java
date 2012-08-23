@@ -71,7 +71,7 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 		final Number max = model.getMax();
 		final Number stepSize = model.getStepSize();
 
-		slider = new Slider(getPane(), SWT.HORIZONTAL);
+		slider = new Slider(getComponent(), SWT.HORIZONTAL);
 		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
 			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
 

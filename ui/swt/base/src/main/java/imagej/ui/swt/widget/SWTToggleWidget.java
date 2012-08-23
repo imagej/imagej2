@@ -67,7 +67,7 @@ public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		checkbox = new Button(getPane(), SWT.CHECK);
+		checkbox = new Button(getComponent(), SWT.CHECK);
 
 		refreshWidget();
 	}

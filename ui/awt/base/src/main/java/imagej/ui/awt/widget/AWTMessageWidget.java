@@ -67,7 +67,7 @@ public class AWTMessageWidget extends AWTInputWidget<String> implements
 		final String text = model.getText();
 
 		final Label label = new Label(text);
-		getPane().add(label, "span");
+		getComponent().add(label, "span");
 	}
 
 	@Override

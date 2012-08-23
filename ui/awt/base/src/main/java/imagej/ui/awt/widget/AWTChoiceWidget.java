@@ -72,7 +72,7 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 		choice = new Choice();
 		for (final String item : items) choice.add(item);
 		choice.addItemListener(this);
-		getPane().add(choice, BorderLayout.CENTER);
+		getComponent().add(choice, BorderLayout.CENTER);
 
 		refreshWidget();
 	}

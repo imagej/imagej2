@@ -67,7 +67,7 @@ public class SWTObjectWidget extends SWTInputWidget<Object> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		combo = new Combo(getPane(), SWT.DROP_DOWN);
+		combo = new Combo(getComponent(), SWT.DROP_DOWN);
 		for (final Object item : model.getObjectPool()) {
 			combo.add(item.toString());
 		}

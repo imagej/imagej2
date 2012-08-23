@@ -78,7 +78,7 @@ public class SWTInputHarvester extends
 	public boolean harvestInputs(final InputPanel<Composite, Composite> inputPanel,
 		final Module module)
 	{
-		final Composite pane = inputPanel.getPanel();
+		final Composite pane = inputPanel.getComponent();
 
 		// TODO - obtain handle on parent SWTMainFrame somehow
 		final Shell dialog = new Shell(DISPLAY, SWT.DIALOG_TRIM);

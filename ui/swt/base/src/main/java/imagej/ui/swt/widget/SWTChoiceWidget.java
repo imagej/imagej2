@@ -69,7 +69,7 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 
 		final String[] items = model.getChoices();
 
-		combo = new Combo(getPane(), SWT.DROP_DOWN);
+		combo = new Combo(getComponent(), SWT.DROP_DOWN);
 		combo.setItems(items);
 
 		refreshWidget();

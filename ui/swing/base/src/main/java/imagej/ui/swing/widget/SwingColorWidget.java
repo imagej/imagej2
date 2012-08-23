@@ -107,7 +107,7 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		getPane().setLayout(new BoxLayout(getPane(), BoxLayout.X_AXIS));
+		getComponent().setLayout(new BoxLayout(getComponent(), BoxLayout.X_AXIS));
 
 		choose = new JButton() {
 
@@ -117,7 +117,7 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 			}
 		};
 		setToolTip(choose);
-		getPane().add(choose);
+		getComponent().add(choose);
 		choose.addActionListener(this);
 
 		refreshWidget();

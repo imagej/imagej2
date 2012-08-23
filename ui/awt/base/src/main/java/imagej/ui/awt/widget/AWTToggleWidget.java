@@ -68,7 +68,7 @@ public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
 		super.initialize(model);
 
 		checkbox = new Checkbox("");
-		getPane().add(checkbox, BorderLayout.CENTER);
+		getComponent().add(checkbox, BorderLayout.CENTER);
 
 		refreshWidget();
 	}

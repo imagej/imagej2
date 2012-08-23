@@ -67,7 +67,7 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		spinner.setPreferredWidth(100);
 		spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
 			max.intValue(), stepSize.intValue()));
-		getPane().add(spinner);
+		getComponent().add(spinner);
 
 		refreshWidget();
 	}

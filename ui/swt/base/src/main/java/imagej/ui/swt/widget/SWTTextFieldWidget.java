@@ -66,7 +66,7 @@ public class SWTTextFieldWidget extends SWTInputWidget<String> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		text = new Text(getPane(), 0);
+		text = new Text(getComponent(), 0);
 		final int columns = model.getItem().getColumnCount();
 		text.setTextLimit(columns);
 

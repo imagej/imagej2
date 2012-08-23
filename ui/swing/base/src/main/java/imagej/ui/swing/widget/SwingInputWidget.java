@@ -52,20 +52,24 @@ public abstract class SwingInputWidget<T> extends
 	AbstractInputWidget<T, JPanel>
 {
 
-	private JPanel pane;
+	private JPanel uiComponent;
 
 	// -- InputWidget methods --
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
-		pane = new JPanel();
-		pane.setLayout(new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]"));
+		uiComponent = new JPanel();
+		final MigLayout layout =
+			new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]");
+		uiComponent.setLayout(layout);
 	}
 
+	// -- UIComponent methods --
+
 	@Override
-	public JPanel getPane() {
-		return pane;
+	public JPanel getComponent() {
+		return uiComponent;
 	}
 
 	// -- Helper methods --

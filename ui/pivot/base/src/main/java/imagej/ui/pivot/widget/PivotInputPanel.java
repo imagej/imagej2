@@ -51,36 +51,37 @@ import org.apache.pivot.wtk.TablePane;
  */
 public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 
-	private final TablePane panel;
+	private final TablePane uiComponent;
 
 	public PivotInputPanel() {
-		panel = new TablePane();
+		uiComponent = new TablePane();
 	}
 
 	// -- InputPanel methods --
 
 	@Override
-	public TablePane getPanel() {
-		return panel;
-	}
-
-	@Override
 	public void addWidget(final InputWidget<?, BoxPane> widget) {
 		super.addWidget(widget);
-		if (!(widget instanceof PivotInputWidget)) return;
-		final BoxPane widgetPane = ((PivotInputWidget<?>) widget).getPane();
+		final BoxPane widgetPane = widget.getComponent();
 		final WidgetModel model = widget.getModel();
 
 		// add widget to panel
 		if (widget.isLabeled()) {
 			// widget is prefixed by a label
-			panel.add(new Label(model.getWidgetLabel()));
-			panel.add(widgetPane);
+			uiComponent.add(new Label(model.getWidgetLabel()));
+			uiComponent.add(widgetPane);
 		}
 		else {
 			// widget occupies entire row
-			panel.add(widgetPane);
+			uiComponent.add(widgetPane);
 		}
+	}
+
+	// -- UIComponent methods --
+
+	@Override
+	public TablePane getComponent() {
+		return uiComponent;
 	}
 
 }

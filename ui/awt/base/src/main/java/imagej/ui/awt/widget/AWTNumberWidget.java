@@ -84,11 +84,11 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
 		scrollBar.addAdjustmentListener(this);
-		getPane().add(scrollBar, BorderLayout.CENTER);
+		getComponent().add(scrollBar, BorderLayout.CENTER);
 
 		textField = new TextField(6);
 		textField.addTextListener(this);
-		getPane().add(textField, BorderLayout.EAST);
+		getComponent().add(textField, BorderLayout.EAST);
 
 		refreshWidget();
 	}

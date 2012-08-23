@@ -97,7 +97,7 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 					min.intValue(), max.intValue() + 1);
 			scrollBar.setUnitIncrement(stepSize.intValue());
 			setToolTip(scrollBar);
-			getPane().add(scrollBar);
+			getComponent().add(scrollBar);
 			scrollBar.addAdjustmentListener(this);
 		}
 		else if (style == WidgetStyle.NUMBER_SLIDER) {
@@ -107,7 +107,7 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 			slider.setPaintLabels(true);
 			slider.setPaintTicks(true);
 			setToolTip(slider);
-			getPane().add(slider);
+			getComponent().add(slider);
 			slider.addChangeListener(this);
 		}
 
@@ -123,7 +123,7 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 		spinner = new JSpinner(spinnerModel);
 		fixSpinner(type);
 		setToolTip(spinner);
-		getPane().add(spinner);
+		getComponent().add(spinner);
 		limitWidth(200);
 		spinner.addChangeListener(this);
 		refreshWidget();

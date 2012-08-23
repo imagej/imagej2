@@ -77,7 +77,7 @@ public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 
 		checkBox = new JCheckBox("");
 		setToolTip(checkBox);
-		getPane().add(checkBox);
+		getComponent().add(checkBox);
 		checkBox.addChangeListener(this);
 
 		refreshWidget();

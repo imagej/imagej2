@@ -72,7 +72,7 @@ public class AWTTextFieldWidget extends AWTInputWidget<String>
 		final int columns = model.getItem().getColumnCount();
 		textField = new TextField("", columns);
 		textField.addTextListener(this);
-		getPane().add(textField, BorderLayout.CENTER);
+		getComponent().add(textField, BorderLayout.CENTER);
 
 		refreshWidget();
 	}

@@ -67,7 +67,7 @@ public class PivotTextFieldWidget extends PivotInputWidget<String> implements
 		super.initialize(model);
 
 		textInput = new TextInput();
-		getPane().add(textInput);
+		getComponent().add(textInput);
 	}
 
 	@Override

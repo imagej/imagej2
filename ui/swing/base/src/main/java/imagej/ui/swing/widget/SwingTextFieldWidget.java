@@ -93,7 +93,7 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 		final int columns = model.getItem().getColumnCount();
 		textField = new JTextField("", columns);
 		setToolTip(textField);
-		getPane().add(textField);
+		getComponent().add(textField);
 		limitLength();
 		textField.getDocument().addDocumentListener(this);
 

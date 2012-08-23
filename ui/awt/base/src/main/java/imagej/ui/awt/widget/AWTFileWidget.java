@@ -77,15 +77,15 @@ public class AWTFileWidget extends AWTInputWidget<File> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		getPane().setLayout(new BorderLayout());
+		getComponent().setLayout(new BorderLayout());
 
 		path = new TextField(20);
 		path.addTextListener(this);
-		getPane().add(path, BorderLayout.CENTER);
+		getComponent().add(path, BorderLayout.CENTER);
 
 		browse = new Button("Browse");
 		browse.addActionListener(this);
-		getPane().add(browse, BorderLayout.EAST);
+		getComponent().add(browse, BorderLayout.EAST);
 
 		refreshWidget();
 	}

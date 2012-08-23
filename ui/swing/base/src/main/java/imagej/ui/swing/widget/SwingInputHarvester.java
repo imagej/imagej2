@@ -71,7 +71,7 @@ public class SwingInputHarvester extends
 	public boolean harvestInputs(final InputPanel<JPanel, JPanel> inputPanel,
 		final Module module)
 	{
-		final JPanel pane = inputPanel.getPanel();
+		final JPanel pane = inputPanel.getComponent();
 
 		// display input panel in a dialog
 		final String title = module.getInfo().getTitle();

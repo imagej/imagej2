@@ -76,11 +76,11 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 		super.initialize(model);
 
 		path = new TextInput();
-		getPane().add(path);
+		getComponent().add(path);
 
 		browse = new PushButton("Browse");
 		browse.getButtonPressListeners().add(this);
-		getPane().add(browse);
+		getComponent().add(browse);
 
 		refreshWidget();
 	}

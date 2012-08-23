@@ -49,19 +49,21 @@ public abstract class PivotInputWidget<T> extends
 	AbstractInputWidget<T, BoxPane>
 {
 
-	private BoxPane pane;
+	private BoxPane uiComponent;
 
 	// -- InputWidget methods --
 
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
-		pane = new BoxPane();
+		uiComponent = new BoxPane();
 	}
 
+	// -- UIComponent methods --
+
 	@Override
-	public BoxPane getPane() {
-		return pane;
+	public BoxPane getComponent() {
+		return uiComponent;
 	}
 
 }

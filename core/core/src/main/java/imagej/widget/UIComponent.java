@@ -33,53 +33,18 @@
  * #L%
  */
 
-package imagej.ui.pivot.widget;
-
-import imagej.ext.plugin.Plugin;
-import imagej.widget.InputWidget;
-import imagej.widget.ToggleWidget;
-import imagej.widget.WidgetModel;
-
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Checkbox;
+package imagej.widget;
 
 /**
- * Pivot implementation of boolean toggle widget.
+ * An interface identifying an object housed within a UI component.
  * 
  * @author Curtis Rueden
+ *
+ * @param <C> The type of UI component housing the object.
  */
-@Plugin(type = InputWidget.class)
-public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
-	ToggleWidget<BoxPane>
-{
+public interface UIComponent<C> {
 
-	private Checkbox checkbox;
-
-	// -- InputWidget methods --
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isBoolean();
-	}
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		checkbox = new Checkbox();
-		getComponent().add(checkbox);
-
-		refreshWidget();
-	}
-
-	@Override
-	public Boolean getValue() {
-		return checkbox.isSelected();
-	}
-
-	@Override
-	public void refreshWidget() {
-		checkbox.setSelected((Boolean) getModel().getValue());
-	}
+	/** Gets the user interface component housing this object. */
+	C getComponent();
 
 }

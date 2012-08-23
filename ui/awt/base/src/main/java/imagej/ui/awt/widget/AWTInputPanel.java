@@ -52,37 +52,38 @@ import net.miginfocom.swing.MigLayout;
  */
 public class AWTInputPanel extends AbstractInputPanel<Panel, Panel> {
 
-	private final Panel panel;
+	private final Panel uiComponent;
 
 	public AWTInputPanel() {
-		panel = new Panel();
-		panel.setLayout(new MigLayout("wrap 2"));
+		uiComponent = new Panel();
+		uiComponent.setLayout(new MigLayout("wrap 2"));
 	}
 
 	// -- InputPanel methods --
 
 	@Override
-	public Panel getPanel() {
-		return panel;
-	}
-
-	@Override
 	public void addWidget(final InputWidget<?, Panel> widget) {
 		super.addWidget(widget);
-		if (!(widget instanceof AWTInputWidget)) return;
-		final Panel widgetPane = ((AWTInputWidget<?>) widget).getPane();
+		final Panel widgetPane = widget.getComponent();
 		final WidgetModel model = widget.getModel();
 
 		// add widget to panel
 		if (widget.isLabeled()) {
 			// widget is prefixed by a label
-			panel.add(new Label(model.getWidgetLabel()));
-			panel.add(widgetPane);
+			uiComponent.add(new Label(model.getWidgetLabel()));
+			uiComponent.add(widgetPane);
 		}
 		else {
 			// widget occupies entire row
-			panel.add(widgetPane, "span");
+			uiComponent.add(widgetPane, "span");
 		}
+	}
+
+	// -- UIComponent methods --
+
+	@Override
+	public Panel getComponent() {
+		return uiComponent;
 	}
 
 }

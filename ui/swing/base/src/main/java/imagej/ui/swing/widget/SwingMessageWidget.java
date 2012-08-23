@@ -67,7 +67,7 @@ public class SwingMessageWidget extends SwingInputWidget<String> implements
 		final String text = model.getText();
 
 		final JLabel label = new JLabel(text);
-		getPane().add(label);
+		getComponent().add(label);
 	}
 
 	@Override

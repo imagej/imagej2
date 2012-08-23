@@ -49,7 +49,7 @@ public abstract class SWTInputWidget<T> extends
 	AbstractInputWidget<T, Composite>
 {
 
-	private Composite pane;
+	private Composite uiComponent;
 	private Composite parent;
 
 	public void setParent(final Composite parent) {
@@ -66,12 +66,14 @@ public abstract class SWTInputWidget<T> extends
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
-		pane = new Composite(parent, 0);
+		uiComponent = new Composite(parent, 0);
 	}
 
+	// -- UIComponent methods --
+
 	@Override
-	public Composite getPane() {
-		return pane;
+	public Composite getComponent() {
+		return uiComponent;
 	}
 
 }

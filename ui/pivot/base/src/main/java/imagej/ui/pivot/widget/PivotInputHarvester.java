@@ -72,7 +72,7 @@ public class PivotInputHarvester extends
 	public boolean harvestInputs(final InputPanel<TablePane, BoxPane> inputPanel,
 		final Module module)
 	{
-		final TablePane pane = inputPanel.getPanel();
+		final TablePane pane = inputPanel.getComponent();
 
 		final Sheet dialog = new Sheet();
 		dialog.setTitle(module.getInfo().getLabel());

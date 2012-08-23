@@ -73,7 +73,7 @@ public class AWTObjectWidget extends AWTInputWidget<Object>
 		for (final Object item : model.getObjectPool()) {
 			choice.add(item.toString());
 		}
-		getPane().add(choice, BorderLayout.CENTER);
+		getComponent().add(choice, BorderLayout.CENTER);
 		choice.addItemListener(this);
 
 		refreshWidget();

@@ -78,7 +78,7 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 
 		comboBox = new JComboBox(model.getObjectPool().toArray());
 		setToolTip(comboBox);
-		getPane().add(comboBox);
+		getComponent().add(comboBox);
 		comboBox.addActionListener(this);
 
 		refreshWidget();
