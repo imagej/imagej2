@@ -101,6 +101,30 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui-swing</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui-swing-plugins</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui-swing-tools</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui-swing-updater</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-ssh</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
@@ -305,12 +329,13 @@
 	</repositories>
 
 	<profiles>
+		<!-- This profile adds the alternative UI components to the
+		     runtime classpath if the ij.ui system property is set. -->
 		<profile>
-			<id>awt</id>
+			<id>alt-ui</id>
 			<activation>
 				<property>
 					<name>ij.ui</name>
-					<value>awt</value>
 				</property>
 			</activation>
 			<dependencies>
@@ -320,71 +345,12 @@
 					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>pivot</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>pivot</value>
-				</property>
-			</activation>
-			<dependencies>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-pivot</artifactId>
 					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>swing</id>
-			<activation>
-				<property>
-					<name>!ij.ui</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing-plugins</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing-tools</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing-updater</artifactId>
-					<version>${project.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>swt</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>swt</value>
-				</property>
-			</activation>
-			<dependencies>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-swt</artifactId>
@@ -392,6 +358,22 @@
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<configuration>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath/>
+								<argument>-Dij.ui=${ij.ui}</argument>
+								<argument>imagej.Main</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 
 		<profile>
