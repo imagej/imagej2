@@ -57,10 +57,12 @@ import javax.swing.JPanel;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(type = UserInterface.class, name = "swing")
+@Plugin(type = UserInterface.class, name = SwingUI.NAME)
 public class SwingUI extends AbstractSwingUI {
 
 	// -- UserInterface methods --
+
+	public static final String NAME = "swing";
 
 	@Override
 	public SwingDisplayWindow createDisplayWindow(final Display<?> display) {

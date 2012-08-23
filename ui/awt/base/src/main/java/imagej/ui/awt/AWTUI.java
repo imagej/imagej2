@@ -61,8 +61,10 @@ import java.awt.event.WindowEvent;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = UserInterface.class, name = "awt")
+@Plugin(type = UserInterface.class, name = AWTUI.NAME)
 public class AWTUI extends AbstractUserInterface {
+
+	public static final String NAME = "awt";
 
 	private AWTApplicationFrame frame;
 	private AWTToolBar toolBar;

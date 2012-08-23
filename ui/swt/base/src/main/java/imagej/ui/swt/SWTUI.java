@@ -58,8 +58,10 @@ import org.eclipse.swt.widgets.Menu;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = UserInterface.class, name = "swt")
+@Plugin(type = UserInterface.class, name = SWTUI.NAME)
 public class SWTUI extends AbstractUserInterface implements Runnable {
+
+	public static final String NAME = "swt";
 
 	private EventService eventService;
 
