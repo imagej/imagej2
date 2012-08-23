@@ -70,10 +70,12 @@ public class WidgetModel {
 		widgetLabel = makeWidgetLabel();
 	}
 
+	/** Gets the module's associated module instance. */
 	public Module getModule() {
 		return module;
 	}
 
+	/** Gets the module input's associated item descriptor. */
 	public ModuleItem<?> getItem() {
 		return item;
 	}
@@ -102,10 +104,12 @@ public class WidgetModel {
 		return widgetLabel;
 	}
 
+	/** Gets the current value of the module input. */
 	public Object getValue() {
 		return item.getValue(module);
 	}
 
+	/** Sets the current value of the module input. */
 	public void setValue(final Object value) {
 		final String name = item.getName();
 		if (objectsEqual(module.getInput(name), value)) return; // no change
@@ -117,6 +121,11 @@ public class WidgetModel {
 		}
 	}
 
+	/**
+	 * Gets the minimum value for the module input.
+	 * 
+	 * @return The minimum value, or null if none, or the type is unordered.
+	 */
 	public Number getMin() {
 		final Class<?> type = item.getType();
 		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
@@ -126,6 +135,11 @@ public class WidgetModel {
 		return NumberUtils.getMinimumNumber(type);
 	}
 
+	/**
+	 * Gets the maximum value for the module input.
+	 * 
+	 * @return The maximum value, or null if none, or the type is unordered.
+	 */
 	public Number getMax() {
 		final Class<?> type = item.getType();
 		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
@@ -135,6 +149,11 @@ public class WidgetModel {
 		return NumberUtils.getMaximumNumber(type);
 	}
 
+	/**
+	 * Gets the step size between values for the module input.
+	 * 
+	 * @return The step size, or 1 by default.
+	 */
 	public Number getStepSize() {
 		final Class<?> type = item.getType();
 		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
@@ -144,6 +163,11 @@ public class WidgetModel {
 		return NumberUtils.toNumber("1", type);
 	}
 
+	/**
+	 * Gets the multiple choice list for the module input.
+	 * 
+	 * @return The available choices, or an empty list if not multiple choice.
+	 */
 	public String[] getChoices() {
 		final List<?> choicesList = item.getChoices();
 		final String[] choices = new String[choicesList.size()];
@@ -154,8 +178,10 @@ public class WidgetModel {
 	}
 
 	/**
-	 * Gets the value rendered as a string. If value is null, or the null
-	 * character ('\0'), returns the empty string.
+	 * Gets the input's value rendered as a string.
+	 * 
+	 * @return String representation of the input value, or the empty string if
+	 *         the value is null or the null character ('\0').
 	 */
 	public String getText() {
 		final Object value = getValue();
@@ -165,38 +191,69 @@ public class WidgetModel {
 		return text;
 	}
 
+	/**
+	 * Gets whether the input is a message.
+	 * 
+	 * @see ItemVisibility#MESSAGE
+	 */
 	public boolean isMessage() {
 		return getItem().getVisibility() == ItemVisibility.MESSAGE;
 	}
 
+	/**
+	 * Gets whether the input is a text type (i.e., {@link String},
+	 * {@link Character} or <code>char</code>.
+	 */
 	public boolean isText() {
 		return ClassUtils.isText(getItem().getType());
 	}
 
+	/**
+	 * Gets whether the input is a character type (i.e., {@link Character} or
+	 * <code>char</code>).
+	 */
 	public boolean isCharacter() {
 		return ClassUtils.isCharacter(getItem().getType());
 	}
 
+	/**
+	 * Gets whether the input is a number type (e.g., <code>int</code>,
+	 * <code>float</code> or any {@link Number} implementation.
+	 */
 	public boolean isNumber() {
 		return ClassUtils.isNumber(getItem().getType());
 	}
 
+	/**
+	 * Gets whether the input is a boolean type (i.e., {@link Boolean} or
+	 * <code>boolean</code>).
+	 */
 	public boolean isBoolean() {
 		return ClassUtils.isBoolean(getItem().getType());
 	}
 
+	/** Gets whether the input provides a restricted set of choices. */
 	public boolean isMultipleChoice() {
 		return !item.getChoices().isEmpty();
 	}
 
+	/** Gets whether the input is compatible with the given type. */
 	public boolean isType(final Class<?> type) {
 		return type.isAssignableFrom(getItem().getType());
 	}
 
+	/**
+	 * Toggles the widget's initialization state. An initialized widget can be
+	 * assumed to be an active part of a container {@link InputPanel}.
+	 */
 	public void setInitialized(final boolean initialized) {
 		this.initialized = initialized;
 	}
 
+	/**
+	 * Gets the widget's initialization state. An initialized widget can be
+	 * assumed to be an active part of a container {@link InputPanel}.
+	 */
 	public boolean isInitialized() {
 		return initialized;
 	}
