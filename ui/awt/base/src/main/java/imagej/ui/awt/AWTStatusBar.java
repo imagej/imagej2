@@ -47,7 +47,7 @@ import java.util.List;
 
 /**
  * AWT implementation of {@link StatusBar}.
- *
+ * 
  * @author Curtis Rueden
  */
 public class AWTStatusBar extends Label implements StatusBar {
@@ -58,7 +58,7 @@ public class AWTStatusBar extends Label implements StatusBar {
 	private int maximum;
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	public AWTStatusBar(final UIService uiService) {
 		this.uiService = uiService;
@@ -68,7 +68,7 @@ public class AWTStatusBar extends Label implements StatusBar {
 	// -- Component methods --
 
 	@Override
-	public void paint(Graphics g) {
+	public void paint(final Graphics g) {
 		final int width = getWidth();
 		final int height = getHeight();
 		final int pix = maximum > 0 ? value * width / maximum : 0;

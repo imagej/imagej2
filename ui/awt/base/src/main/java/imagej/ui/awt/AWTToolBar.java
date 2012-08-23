@@ -105,9 +105,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 		}
 	}
 
-	private Button createButton(final Tool tool)
-		throws InstantiableException
-	{
+	private Button createButton(final Tool tool) throws InstantiableException {
 		final PluginInfo<? extends Tool> info = tool.getInfo();
 		final String name = info.getName();
 		final String label = info.getLabel();
@@ -142,7 +140,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 			public void mouseEntered(final MouseEvent evt) {
 				uiService.getStatusService().showStatus(tool.getDescription());
 			}
-			
+
 			@Override
 			public void mousePressed(final MouseEvent evt) {
 				if (evt.getButton() == MouseEvent.NOBUTTON) return;

@@ -51,7 +51,7 @@ public class AWTApplicationFrame extends Frame implements ApplicationFrame {
 	public AWTApplicationFrame(final String title) throws HeadlessException {
 		super(title);
 	}
-	
+
 	// -- ApplicationFrame methods --
 
 	@Override
@@ -67,6 +67,7 @@ public class AWTApplicationFrame extends Frame implements ApplicationFrame {
 	@Override
 	public void activate() {
 		EventQueue.invokeLater(new Runnable() {
+
 			@Override
 			public void run() {
 				// NB: You might think calling requestFocus() would work, but no.

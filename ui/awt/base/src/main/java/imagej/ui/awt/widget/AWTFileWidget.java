@@ -55,7 +55,7 @@ import java.io.File;
 
 /**
  * AWT implementation of file selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
@@ -106,7 +106,7 @@ public class AWTFileWidget extends AWTInputWidget<File> implements
 	// -- ActionListener methods --
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(final ActionEvent e) {
 		File file = new File(path.getText());
 		if (!file.isDirectory()) {
 			file = file.getParentFile();
@@ -133,7 +133,7 @@ public class AWTFileWidget extends AWTInputWidget<File> implements
 	// -- TextListener methods --
 
 	@Override
-	public void textValueChanged(TextEvent e) {
+	public void textValueChanged(final TextEvent e) {
 		updateModel();
 	}
 

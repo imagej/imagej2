@@ -48,7 +48,7 @@ import java.awt.event.ItemListener;
 
 /**
  * AWT implementation of multiple choice selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
@@ -70,7 +70,9 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 		final String[] items = model.getChoices();
 
 		choice = new Choice();
-		for (final String item : items) choice.add(item);
+		for (final String item : items) {
+			choice.add(item);
+		}
 		choice.addItemListener(this);
 		getComponent().add(choice, BorderLayout.CENTER);
 
@@ -92,7 +94,7 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 	// -- ItemListener methods --
 
 	@Override
-	public void itemStateChanged(ItemEvent e) {
+	public void itemStateChanged(final ItemEvent e) {
 		updateModel();
 	}
 

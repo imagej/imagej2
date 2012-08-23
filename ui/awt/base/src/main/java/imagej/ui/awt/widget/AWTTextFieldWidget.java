@@ -48,12 +48,12 @@ import java.awt.event.TextListener;
 
 /**
  * AWT implementation of text field widget.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class AWTTextFieldWidget extends AWTInputWidget<String>
-	implements TextFieldWidget<Panel>, TextListener
+public class AWTTextFieldWidget extends AWTInputWidget<String> implements
+	TextFieldWidget<Panel>, TextListener
 {
 
 	private TextField textField;

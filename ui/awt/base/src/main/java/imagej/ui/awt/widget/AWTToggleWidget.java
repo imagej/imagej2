@@ -46,7 +46,7 @@ import java.awt.Panel;
 
 /**
  * AWT implementation of boolean toggle widget.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)

@@ -52,7 +52,7 @@ import java.awt.event.TextListener;
 
 /**
  * AWT implementation of number chooser widget.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
@@ -80,8 +80,9 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 		final Number max = model.getMax();
 		final Number stepSize = model.getStepSize();
 
-		scrollBar = new Scrollbar(Adjustable.HORIZONTAL,
-			min.intValue(), 1, min.intValue(), max.intValue() + 1);
+		scrollBar =
+			new Scrollbar(Adjustable.HORIZONTAL, min.intValue(), 1, min.intValue(),
+				max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
 		scrollBar.addAdjustmentListener(this);
 		getComponent().add(scrollBar, BorderLayout.CENTER);
@@ -115,11 +116,11 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 	// -- TextListener methods --
 
 	@Override
-	public void textValueChanged(TextEvent e) {
+	public void textValueChanged(final TextEvent e) {
 		try {
 			scrollBar.setValue(Integer.parseInt(textField.getText()));
 		}
-		catch (NumberFormatException exc) {
+		catch (final NumberFormatException exc) {
 			// invalid number in text field; do not update scroll bar
 		}
 	}

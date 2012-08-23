@@ -150,8 +150,7 @@ public class AWTUI extends AbstractUserInterface {
 		final MenuBar menuBar =
 			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
 		frame.setMenuBar(menuBar);
-		getUIService().getEventService()
-			.publish(new AppMenusCreatedEvent(menuBar));
+		getUIService().getEventService().publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 }

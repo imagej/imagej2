@@ -52,8 +52,8 @@ import java.awt.event.ItemListener;
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class AWTObjectWidget extends AWTInputWidget<Object>
-	implements ItemListener, ObjectWidget<Panel>
+public class AWTObjectWidget extends AWTInputWidget<Object> implements
+	ItemListener, ObjectWidget<Panel>
 {
 
 	private Choice choice;
@@ -92,7 +92,7 @@ public class AWTObjectWidget extends AWTInputWidget<Object>
 	// -- ItemListener methods --
 
 	@Override
-	public void itemStateChanged(ItemEvent e) {
+	public void itemStateChanged(final ItemEvent e) {
 		updateModel();
 	}
 
