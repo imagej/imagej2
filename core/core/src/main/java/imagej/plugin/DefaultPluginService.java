@@ -37,6 +37,7 @@ package imagej.plugin;
 
 import imagej.Contextual;
 import imagej.ImageJ;
+import imagej.Prioritized;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
@@ -278,6 +279,10 @@ public class DefaultPluginService extends AbstractService implements
 				// inject ImageJ context, where applicable
 				if (p instanceof Contextual) {
 					((Contextual) p).setContext(getContext());
+				}
+				// inject priority, where applicable
+				if (p instanceof Prioritized) {
+					((Prioritized) p).setPriority(info.getPriority());
 				}
 			}
 			catch (final InstantiableException e) {
