@@ -38,13 +38,13 @@ package imagej.ui.swing.plugins;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.options.OptionsPlugin;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
-import imagej.util.Log;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;
@@ -74,6 +74,9 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 
 	@Parameter
 	private UIService uiService;
+
+	@Parameter
+	private LogService log;
 
 	@Parameter(label = "Look & Feel", persist = false,
 		initializer = "initLookAndFeel")
@@ -127,16 +130,16 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 					});
 				}
 				catch (final ClassNotFoundException e) {
-					Log.error(e);
+					log.error(e);
 				}
 				catch (final InstantiationException e) {
-					Log.error(e);
+					log.error(e);
 				}
 				catch (final IllegalAccessException e) {
-					Log.error(e);
+					log.error(e);
 				}
 				catch (final UnsupportedLookAndFeelException e) {
-					Log.error(e);
+					log.error(e);
 				}
 				break;
 			}
