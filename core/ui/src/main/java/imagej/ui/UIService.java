@@ -60,6 +60,8 @@ import java.util.List;
  */
 public interface UIService extends Service {
 
+	String UI_PROPERTY = "ij.ui";
+
 	LogService getLog();
 
 	ThreadService getThreadService();
@@ -80,8 +82,14 @@ public interface UIService extends Service {
 
 	AppService getAppService();
 
-	/** Creates and displays the actual UI for the default user interface. */
+	/** Creates and displays the UI for the default user interface. */
 	void createUI();
+
+	/** Creates and displays the UI with the given name or class name. */
+	void createUI(String name);
+
+	/** Creates and displays the given UI. */
+	void createUI(UserInterface ui);
 
 	/** Gets the default user interface. */
 	UserInterface getUI();

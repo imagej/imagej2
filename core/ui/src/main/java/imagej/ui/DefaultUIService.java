@@ -66,7 +66,9 @@ import imagej.ui.viewer.ImageDisplayViewer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Default service for handling ImageJ user interfaces.
@@ -96,11 +98,15 @@ public final class DefaultUIService extends AbstractService implements
 	protected final List<DisplayViewer<?>> displayViewers =
 		new ArrayList<DisplayViewer<?>>();
 
+	/** List of available user interfaces, ordered by priority. */
+	private final List<UserInterface> uiList = new ArrayList<UserInterface>();
+
+	/** Map of available user interfaces, keyed off their names. */
+	private final Map<String, UserInterface> uiMap =
+		new HashMap<String, UserInterface>();
+
 	/** The default user interface to use, if one is not explicitly specified. */
 	private UserInterface defaultUI;
-
-	/** Available user interfaces. */
-	private List<UserInterface> availableUIs;
 
 	private boolean activationInvocationPending = false;
 
@@ -194,8 +200,23 @@ public final class DefaultUIService extends AbstractService implements
 			log.warn("Cannot launch user interface: no UIs available.");
 			return;
 		}
-		log.info("Launching user interface: " + defaultUI.getClass().getName());
-		defaultUI.create();
+		createUI(defaultUI);
+	}
+
+	@Override
+	public void createUI(final String name) {
+		final UserInterface ui = uiMap.get(name);
+		if (ui == null) {
+			log.warn("No such user interface: " + name);
+			return;
+		}
+		createUI(ui);
+	}
+
+	@Override
+	public void createUI(final UserInterface ui) {
+		log.info("Launching user interface: " + ui.getClass().getName());
+		ui.create();
 	}
 
 	@Override
@@ -210,7 +231,7 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public List<UserInterface> getAvailableUIs() {
-		return Collections.unmodifiableList(availableUIs);
+		return Collections.unmodifiableList(uiList);
 	}
 
 	@Override
@@ -377,23 +398,37 @@ public final class DefaultUIService extends AbstractService implements
 
 	/** Discovers available user interfaces. */
 	private void discoverUIs() {
-		final List<UserInterface> uis = new ArrayList<UserInterface>();
 		final List<PluginInfo<? extends UserInterface>> infos =
 			pluginService.getPluginsOfType(UserInterface.class);
 		for (final PluginInfo<? extends UserInterface> info : infos) {
 			try {
+				// instantiate user interface
 				final UserInterface ui = info.createInstance();
 				ui.setContext(getContext());
 				ui.setPriority(info.getPriority());
 				log.info("Discovered user interface: " + ui.getClass().getName());
-				uis.add(ui);
+
+				// add to UI list
+				uiList.add(ui);
+
+				// add to UI map
+				uiMap.put(info.getClassName(), ui);
+				final String name = info.getName();
+				if (name != null && !name.isEmpty()) uiMap.put(name, ui);
 			}
 			catch (final InstantiableException e) {
 				log.warn("Invalid user interface: " + info.getClassName(), e);
 			}
 		}
-		availableUIs = Collections.unmodifiableList(uis);
-		defaultUI = uis.size() > 0 ? uis.get(0) : null;
+
+		// set the default UI to the one provided as a system property (if any)
+		final String preferredUI = System.getProperty(UI_PROPERTY);
+		defaultUI = uiMap.get(preferredUI);
+
+		if (defaultUI == null) {
+			// set the default UI to the one with the highest priority
+			defaultUI = uiList.size() > 0 ? uiList.get(0) : null;
+		}
 	}
 
 }
