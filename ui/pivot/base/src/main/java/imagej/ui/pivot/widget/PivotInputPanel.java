@@ -77,11 +77,21 @@ public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 		}
 	}
 
+	@Override
+	public Class<BoxPane> getWidgetComponentType() {
+		return BoxPane.class;
+	}
+
 	// -- UIComponent methods --
 
 	@Override
 	public TablePane getComponent() {
 		return uiComponent;
+	}
+
+	@Override
+	public Class<TablePane> getComponentType() {
+		return TablePane.class;
 	}
 
 }

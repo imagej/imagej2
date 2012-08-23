@@ -57,7 +57,7 @@ public class PivotMessageWidget extends PivotInputWidget<String> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isMessage();
+		return super.isCompatible(model) && model.isMessage();
 	}
 
 	@Override

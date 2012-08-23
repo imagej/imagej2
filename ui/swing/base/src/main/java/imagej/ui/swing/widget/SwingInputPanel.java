@@ -84,11 +84,21 @@ public class SwingInputPanel extends AbstractInputPanel<JPanel, JPanel> {
 		}
 	}
 
+	@Override
+	public Class<JPanel> getWidgetComponentType() {
+		return JPanel.class;
+	}
+
 	// -- UIComponent methods --
 
 	@Override
 	public JPanel getComponent() {
 		return uiComponent;
+	}
+
+	@Override
+	public Class<JPanel> getComponentType() {
+		return JPanel.class;
 	}
 
 }

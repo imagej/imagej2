@@ -60,7 +60,7 @@ public class SWTObjectWidget extends SWTInputWidget<Object> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.getObjectPool().size() > 0;
+		return super.isCompatible(model) && model.getObjectPool().size() > 0;
 	}
 
 	@Override

@@ -99,14 +99,4 @@ public interface InputWidget<T, W> extends IPlugin, UIComponent<W> {
 	 */
 	boolean isMessage();
 
-	// -- UIComponent methods --
-
-	/**
-	 * Gets the user interface component housing this widget.
-	 * 
-	 * @return the component, or null if the widget has not yet been initialized.
-	 */
-	@Override
-	W getComponent();
-
 }

@@ -78,7 +78,7 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isNumber();
+		return super.isCompatible(model) && model.isNumber();
 	}
 
 	@Override

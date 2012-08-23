@@ -68,7 +68,7 @@ public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isBoolean();
+		return super.isCompatible(model) && model.isBoolean();
 	}
 
 	@Override

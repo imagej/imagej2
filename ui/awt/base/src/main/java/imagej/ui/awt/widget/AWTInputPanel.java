@@ -79,11 +79,21 @@ public class AWTInputPanel extends AbstractInputPanel<Panel, Panel> {
 		}
 	}
 
+	@Override
+	public Class<Panel> getWidgetComponentType() {
+		return Panel.class;
+	}
+
 	// -- UIComponent methods --
 
 	@Override
 	public Panel getComponent() {
 		return uiComponent;
+	}
+
+	@Override
+	public Class<Panel> getComponentType() {
+		return Panel.class;
 	}
 
 }

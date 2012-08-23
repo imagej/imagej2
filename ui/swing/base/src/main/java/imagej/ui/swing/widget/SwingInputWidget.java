@@ -72,6 +72,11 @@ public abstract class SwingInputWidget<T> extends
 		return uiComponent;
 	}
 
+	@Override
+	public Class<JPanel> getComponentType() {
+		return JPanel.class;
+	}
+
 	// -- Helper methods --
 
 	/** Assigns the model's description as the given component's tool tip. */

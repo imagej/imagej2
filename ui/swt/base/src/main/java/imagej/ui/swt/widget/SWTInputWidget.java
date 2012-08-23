@@ -76,4 +76,9 @@ public abstract class SWTInputWidget<T> extends
 		return uiComponent;
 	}
 
+	@Override
+	public Class<Composite> getComponentType() {
+		return Composite.class;
+	}
+
 }

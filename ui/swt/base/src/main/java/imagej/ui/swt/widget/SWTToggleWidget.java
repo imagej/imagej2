@@ -60,7 +60,7 @@ public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isBoolean();
+		return super.isCompatible(model) && model.isBoolean();
 	}
 
 	@Override

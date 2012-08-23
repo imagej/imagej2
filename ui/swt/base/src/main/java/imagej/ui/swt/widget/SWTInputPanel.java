@@ -66,11 +66,21 @@ public class SWTInputPanel extends AbstractInputPanel<Composite, Composite> {
 		addLabel(widget.getModel().getWidgetLabel());
 	}
 
+	@Override
+	public Class<Composite> getWidgetComponentType() {
+		return Composite.class;
+	}
+
 	// -- UIComponent methods --
 
 	@Override
 	public Composite getComponent() {
 		return uiComponent;
+	}
+
+	@Override
+	public Class<Composite> getComponentType() {
+		return Composite.class;
 	}
 
 	// -- Helper methods --

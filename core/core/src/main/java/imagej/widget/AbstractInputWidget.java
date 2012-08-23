@@ -49,6 +49,12 @@ public abstract class AbstractInputWidget<T, W> implements InputWidget<T, W> {
 	// -- InputWidget methods --
 
 	@Override
+	public boolean isCompatible(final WidgetModel model) {
+		// check compatibility with the intended input panel
+		return model.getPanel().isCompatible(this);
+	}
+
+	@Override
 	public void initialize(final WidgetModel model) {
 		if (widgetModel != null) {
 			throw new IllegalStateException("Widget already initialized");

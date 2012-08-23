@@ -36,7 +36,6 @@
 package imagej.ui.swing.widget;
 
 import imagej.ext.plugin.Plugin;
-import imagej.util.ClassUtils;
 import imagej.util.Log;
 import imagej.widget.InputWidget;
 import imagej.widget.TextFieldWidget;
@@ -83,7 +82,8 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isText() && !model.isMultipleChoice() && !model.isMessage();
+		return super.isCompatible(model) && model.isText() &&
+			!model.isMultipleChoice() && !model.isMessage();
 	}
 
 	@Override

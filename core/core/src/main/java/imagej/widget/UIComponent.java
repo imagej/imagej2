@@ -47,4 +47,14 @@ public interface UIComponent<C> {
 	/** Gets the user interface component housing this object. */
 	C getComponent();
 
+	/**
+	 * Gets the type of the UI component housing the object.
+	 * <p>
+	 * This method is useful in case {@link #getComponent} returns null in some
+	 * circumstances. In this way, it is still possible to query the type of the
+	 * UI component without forcing the conditions that instantiate it.
+	 * </p>
+	 */
+	Class<C> getComponentType();
+
 }

@@ -66,4 +66,9 @@ public abstract class PivotInputWidget<T> extends
 		return uiComponent;
 	}
 
+	@Override
+	public Class<BoxPane> getComponentType() {
+		return BoxPane.class;
+	}
+
 }

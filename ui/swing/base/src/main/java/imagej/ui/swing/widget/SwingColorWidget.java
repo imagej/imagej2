@@ -100,7 +100,7 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(ColorRGB.class);
+		return super.isCompatible(model) && model.isType(ColorRGB.class);
 	}
 
 	@Override

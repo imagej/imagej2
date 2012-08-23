@@ -60,7 +60,7 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		return model.isNumber();
+		return super.isCompatible(model) && model.isNumber();
 	}
 
 	@Override

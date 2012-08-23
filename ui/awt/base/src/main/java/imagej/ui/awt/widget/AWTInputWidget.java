@@ -64,4 +64,9 @@ public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
 		return uiComponent;
 	}
 
+	@Override
+	public Class<Panel> getComponentType() {
+		return Panel.class;
+	}
+
 }
