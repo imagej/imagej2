@@ -80,13 +80,13 @@ public interface UIService extends Service {
 
 	AppService getAppService();
 
-	/** Creates and displays the actual UI for the active user interface. */
+	/** Creates and displays the actual UI for the default user interface. */
 	void createUI();
 
-	/** Gets the active user interface. */
+	/** Gets the default user interface. */
 	UserInterface getUI();
 
-	/** Sets the active user interface. */
+	/** Sets the default user interface. */
 	void setUI(UserInterface ui);
 
 	/** Gets the user interfaces available to the service. */

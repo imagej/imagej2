@@ -96,8 +96,8 @@ public final class DefaultUIService extends AbstractService implements
 	protected final List<DisplayViewer<?>> displayViewers =
 		new ArrayList<DisplayViewer<?>>();
 
-	/** The active user interface. */
-	private UserInterface userInterface;
+	/** The default user interface to use, if one is not explicitly specified. */
+	private UserInterface defaultUI;
 
 	/** Available user interfaces. */
 	private List<UserInterface> availableUIs;
@@ -190,22 +190,22 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public void createUI() {
-		if (userInterface == null) {
+		if (defaultUI == null) {
 			log.warn("Cannot launch user interface: no UIs available.");
 			return;
 		}
-		log.info("Launching user interface: " + userInterface.getClass().getName());
-		userInterface.create();
+		log.info("Launching user interface: " + defaultUI.getClass().getName());
+		defaultUI.create();
 	}
 
 	@Override
 	public UserInterface getUI() {
-		return userInterface;
+		return defaultUI;
 	}
 
 	@Override
 	public void setUI(final UserInterface ui) {
-		userInterface = ui;
+		defaultUI = ui;
 	}
 
 	@Override
@@ -235,8 +235,8 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public OutputWindow createOutputWindow(final String title) {
-		if (userInterface == null) return null;
-		return userInterface.newOutputWindow(title);
+		if (defaultUI == null) return null;
+		return defaultUI.newOutputWindow(title);
 	}
 
 	@Override
@@ -265,9 +265,9 @@ public final class DefaultUIService extends AbstractService implements
 		final String title, final DialogPrompt.MessageType messageType,
 		final DialogPrompt.OptionType optionType)
 	{
-		if (userInterface == null) return null;
+		if (defaultUI == null) return null;
 		final DialogPrompt dialogPrompt =
-			userInterface.dialogPrompt(message, title, messageType, optionType);
+			defaultUI.dialogPrompt(message, title, messageType, optionType);
 		return dialogPrompt.prompt();
 	}
 
@@ -275,8 +275,8 @@ public final class DefaultUIService extends AbstractService implements
 	public void showContextMenu(final String menuRoot, final Display<?> display,
 		final int x, final int y)
 	{
-		if (userInterface == null) return;
-		userInterface.showContextMenu(menuRoot, display, x, y);
+		if (defaultUI == null) return;
+		defaultUI.showContextMenu(menuRoot, display, x, y);
 	}
 
 	// -- Event handlers --
@@ -370,7 +370,7 @@ public final class DefaultUIService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
-		userInterface.saveLocation();
+		defaultUI.saveLocation();
 	}
 
 	// -- Helper methods --
@@ -393,7 +393,7 @@ public final class DefaultUIService extends AbstractService implements
 			}
 		}
 		availableUIs = Collections.unmodifiableList(uis);
-		userInterface = uis.size() > 0 ? uis.get(0) : null;
+		defaultUI = uis.size() > 0 ? uis.get(0) : null;
 	}
 
 }
