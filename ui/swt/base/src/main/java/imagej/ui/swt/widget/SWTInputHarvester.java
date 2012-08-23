@@ -40,6 +40,8 @@ import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import imagej.ui.swt.SWTUI;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
@@ -65,8 +67,6 @@ public class SWTInputHarvester extends
 	AbstractInputHarvesterPlugin<Composite, Composite>
 {
 
-	private static final Display DISPLAY = new Display();
-
 	// -- InputHarvester methods --
 
 	@Override
@@ -81,7 +81,7 @@ public class SWTInputHarvester extends
 		final Composite pane = inputPanel.getComponent();
 
 		// TODO - obtain handle on parent SWTMainFrame somehow
-		final Shell dialog = new Shell(DISPLAY, SWT.DIALOG_TRIM);
+		final Shell dialog = new Shell(getDisplay(), SWT.DIALOG_TRIM);
 		pane.setParent(dialog);
 		// TODO - use scroll bars in case there are many widgets
 		final Button okButton = new Button(dialog, SWT.PUSH);
@@ -113,6 +113,18 @@ public class SWTInputHarvester extends
 	@Override
 	protected String getUI() {
 		return SWTUI.NAME;
+	}
+
+	// -- Helper methods --
+
+	private Display getDisplay() {
+		final UIService uiService = getContext().getService(UIService.class);
+		final UserInterface ui = uiService.getDefaultUI();
+		if (!(ui instanceof SWTUI)) {
+			throw new IllegalStateException("Invalid UI: " + ui.getClass().getName());
+		}
+		final SWTUI swtUI = (SWTUI) ui;
+		return swtUI.getApplicationFrame().getDisplay();
 	}
 
 }
