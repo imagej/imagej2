@@ -71,17 +71,10 @@ public class UploaderService extends AbstractService {
 
 		// ask the plugin service for the list of available upload mechanisms
 		uploaderMap = new HashMap<String, Uploader>();
-		final List<PluginInfo<? extends Uploader>> infos =
-			pluginService.getPluginsOfType(Uploader.class);
-		for (final PluginInfo<? extends Uploader> info : infos) {
-			// instantiate the adapter and add it to the list
-			try {
-				final Uploader uploader = info.createInstance();
-				uploaderMap.put(uploader.getProtocol(), uploader);
-			}
-			catch (final InstantiableException exc) {
-				if (log != null) log.warn("Failed to load " + info.getClassName(), exc);
-			}
+		final List<? extends Uploader> uploaders =
+			pluginService.createInstancesOfType(Uploader.class);
+		for (final Uploader uploader : uploaders) {
+			uploaderMap.put(uploader.getProtocol(), uploader);
 		}
 		if (log != null) {
 			log.info("Found " + uploaderMap.size() + " upload mechanisms.");

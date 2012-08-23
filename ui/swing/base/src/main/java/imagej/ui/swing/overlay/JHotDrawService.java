@@ -42,9 +42,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
@@ -70,7 +68,7 @@ public class JHotDrawService extends AbstractService {
 	private final EventService eventService;
 	private final ImageDisplayService imageDisplayService;
 
-	private final ArrayList<JHotDrawAdapter> adapters;
+	private final List<? extends JHotDrawAdapter> adapters;
 
 	public JHotDrawService() {
 		// NB: Required by SezPoz.
@@ -87,21 +85,7 @@ public class JHotDrawService extends AbstractService {
 		this.imageDisplayService = imageDisplayService;
 
 		// ask the plugin service for the list of available JHotDraw adapters
-		adapters = new ArrayList<JHotDrawAdapter>();
-		final List<PluginInfo<? extends JHotDrawAdapter>> infos =
-			pluginService.getPluginsOfType(JHotDrawAdapter.class);
-		for (final PluginInfo<? extends JHotDrawAdapter> info : infos) {
-			// instantiate the adapter and add it to the list
-			try {
-				final JHotDrawAdapter adapter = info.createInstance();
-				adapter.setContext(context);
-				adapter.setPriority(info.getPriority());
-				adapters.add(adapter);
-			}
-			catch (final InstantiableException exc) {
-				if (log != null) log.warn("Failed to load " + info.getClassName(), exc);
-			}
-		}
+		adapters = pluginService.createInstancesOfType(JHotDrawAdapter.class);
 		if (log != null) {
 			log.info("Found " + adapters.size() + " JHotDraw adapters.");
 		}
