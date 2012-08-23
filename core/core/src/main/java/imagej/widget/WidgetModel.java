@@ -70,6 +70,11 @@ public class WidgetModel {
 		widgetLabel = makeWidgetLabel();
 	}
 
+	/** Gets the input panel intended to house the widget. */
+	public InputPanel<?, ?> getPanel() {
+		return inputPanel;
+	}
+
 	/** Gets the module's associated module instance. */
 	public Module getModule() {
 		return module;
