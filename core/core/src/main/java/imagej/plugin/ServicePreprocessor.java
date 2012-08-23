@@ -69,7 +69,7 @@ public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 					(ModuleItem<? extends Service>) input;
 				setServiceValue(getContext(), module, serviceInput);
 			}
-			if (getContext().getClass().isAssignableFrom(type)) {
+			if (type.isAssignableFrom(getContext().getClass())) {
 				// input is a compatible context
 				final String name = input.getName();
 				module.setInput(name, getContext());
