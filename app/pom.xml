@@ -329,8 +329,10 @@
 	</repositories>
 
 	<profiles>
-		<!-- This profile adds the alternative UI components to the
-		     runtime classpath if the ij.ui system property is set. -->
+		<!-- The alt-ui profile adds the alternative UI components to the
+		     runtime classpath if the ij.ui system property is set.
+		     This enables launching ImageJ with an alternative UI; see:
+		     http://developer.imagej.net/command-line -->
 		<profile>
 			<id>alt-ui</id>
 			<activation>
@@ -376,6 +378,10 @@
 			</build>
 		</profile>
 
+		<!-- The deps profile builds the imagej-x.y.z-all uber-jar, which is a
+		     bundle of ij-app with all dependencies. While we do not encourage
+		     its use, it can simplify deployment in some environments; see:
+		     http://developer.imagej.net/how-can-i-call-imagej-my-software -->
 		<profile>
 			<id>deps</id>
 			<build>
