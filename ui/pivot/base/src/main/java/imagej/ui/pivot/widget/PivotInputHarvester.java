@@ -57,6 +57,8 @@ import org.apache.pivot.wtk.Sheet;
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
 public class PivotInputHarvester extends AbstractInputHarvesterPlugin<BoxPane> {
 
+	// -- InputHarvester methods --
+
 	@Override
 	public PivotInputPanel createInputPanel() {
 		return new PivotInputPanel();

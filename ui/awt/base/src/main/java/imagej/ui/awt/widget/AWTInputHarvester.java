@@ -60,6 +60,8 @@ import javax.swing.JOptionPane;
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
 public class AWTInputHarvester extends AbstractInputHarvesterPlugin<Panel> {
 
+	// -- InputHarvester methods --
+
 	@Override
 	public AWTInputPanel createInputPanel() {
 		return new AWTInputPanel();
@@ -99,6 +101,8 @@ public class AWTInputHarvester extends AbstractInputHarvesterPlugin<Panel> {
 		// verify return value of dialog
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
+
+	// -- Helper methods --
 
 	private void ensureDialogSizeReasonable(final JDialog dialog) {
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

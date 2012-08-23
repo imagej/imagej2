@@ -64,6 +64,8 @@ public class SWTInputHarvester extends AbstractInputHarvesterPlugin<Composite> {
 
 	private static final Display DISPLAY = new Display();
 
+	// -- InputHarvester methods --
+
 	@Override
 	public SWTInputPanel createInputPanel() {
 		return new SWTInputPanel(null);
