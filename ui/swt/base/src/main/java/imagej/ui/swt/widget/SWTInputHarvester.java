@@ -56,8 +56,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * SWTInputHarvester is an {@link InputHarvester} that collects input
- * parameter values from the user using an {@link SWTInputPanel} dialog box.
+ * SWTInputHarvester is an {@link InputHarvester} that collects input parameter
+ * values from the user using an {@link SWTInputPanel} dialog box.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -75,8 +75,8 @@ public class SWTInputHarvester extends
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel<Composite, Composite> inputPanel,
-		final Module module)
+	public boolean harvestInputs(
+		final InputPanel<Composite, Composite> inputPanel, final Module module)
 	{
 		final Composite pane = inputPanel.getComponent();
 

@@ -118,7 +118,7 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
+
 	// -- Runnable methods --
 
 	@Override

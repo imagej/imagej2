@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTImageFrame extends Shell {

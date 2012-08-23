@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.ProgressBar;
 
 /**
  * SWT implementation of {@link StatusBar}.
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTStatusBar extends Composite implements StatusBar {
@@ -60,7 +60,7 @@ public class SWTStatusBar extends Composite implements StatusBar {
 	private final ProgressBar progressBar;
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	public SWTStatusBar(final Composite parent, final EventService eventService) {
 		super(parent, 0);

@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * Common superclass for SWT-based input widgets.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class SWTInputWidget<T> extends

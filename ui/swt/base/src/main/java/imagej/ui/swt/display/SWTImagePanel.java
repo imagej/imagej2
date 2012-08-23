@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTImagePanel extends Composite {

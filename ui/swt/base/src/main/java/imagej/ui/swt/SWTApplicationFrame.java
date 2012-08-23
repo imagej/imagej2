@@ -50,7 +50,7 @@ public class SWTApplicationFrame extends Shell implements ApplicationFrame {
 	public SWTApplicationFrame(final Display display) {
 		super(display, 0);
 	}
-	
+
 	// -- ApplicationFrame methods --
 
 	@Override

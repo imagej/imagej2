@@ -99,9 +99,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 		}
 	}
 
-	private Button createButton(final Tool tool)
-		throws InstantiableException
-	{
+	private Button createButton(final Tool tool) throws InstantiableException {
 		final PluginInfo<? extends Tool> info = tool.getInfo();
 		final String name = info.getName();
 		final URL iconURL = info.getIconURL();

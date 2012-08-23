@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * SWT implementation of file selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)

@@ -56,7 +56,7 @@ public class SWTInputPanel extends AbstractInputPanel<Composite, Composite> {
 		uiComponent = new Composite(parent, 0);
 		uiComponent.setLayout(new MigLayout("wrap 2"));
 	}
-	
+
 	// -- InputPanel methods --
 
 	@Override
