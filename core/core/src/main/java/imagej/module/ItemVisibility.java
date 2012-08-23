@@ -37,25 +37,36 @@ package imagej.module;
 
 /**
  * Defines the "visibility" of a {@link ModuleItem}.
- * <p>
- * Choices are:
- * </p>
- * <ul>
- * <li>NORMAL: item is included in the history for purposes of data provenance,
- * and included as a parameter when recording scripts.</li>
- * <li>TRANSIENT: item is excluded from the history for the purposes of data
- * provenance, but still included as a parameter when recording scripts.</li>
- * <li>INVISIBLE: item is excluded from the history for the purposes of data
- * provenance, and also excluded as a parameter when recording scripts. This
- * option should only be used for items with no effect on the final output, such
- * as a "verbose" flag.</li>
- * <li>MESSAGE: as INVISIBLE, and further indicating that the item's value is
- * intended as a message to the user (e.g., in the input harvester panel) rather
- * than an actual parameter to the module execution.</li>
- * </ul>
  * 
  * @author Curtis Rueden
  */
 public enum ItemVisibility {
-	NORMAL, TRANSIENT, INVISIBLE, MESSAGE
+
+	/**
+	 * Item is included in the history for purposes of data provenance, and
+	 * included as a parameter when recording scripts.
+	 */
+	NORMAL,
+
+	/**
+	 * Item is excluded from the history for the purposes of data provenance, but
+	 * still included as a parameter when recording scripts.
+	 */
+	TRANSIENT,
+
+	/**
+	 * Item is excluded from the history for the purposes of data provenance, and
+	 * also excluded as a parameter when recording scripts. This option should
+	 * only be used for items with no effect on the final output, such as a
+	 * "verbose" flag.
+	 */
+	INVISIBLE,
+
+	/**
+	 * As {@link #INVISIBLE}, and further indicating that the item's value is
+	 * intended as a message to the user (e.g., in the input harvester panel)
+	 * rather than an actual parameter to the module execution.
+	 */
+	MESSAGE
+
 }
