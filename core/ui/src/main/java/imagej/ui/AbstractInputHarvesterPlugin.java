@@ -53,9 +53,11 @@ import imagej.widget.InputHarvester;
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
+ * @param <P> The type of UI component housing the input panel itself.
+ * @param <W> The type of UI component housing each input widget.
  */
-public abstract class AbstractInputHarvesterPlugin<U> extends
-	AbstractInputHarvester<U> implements PreprocessorPlugin
+public abstract class AbstractInputHarvesterPlugin<P, W> extends
+	AbstractInputHarvester<P, W> implements PreprocessorPlugin
 {
 
 	private boolean canceled;

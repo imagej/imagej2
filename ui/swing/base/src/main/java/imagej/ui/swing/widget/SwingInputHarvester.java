@@ -56,7 +56,9 @@ import javax.swing.JPanel;
  * @author Barry DeZonia
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class SwingInputHarvester extends AbstractInputHarvesterPlugin<JPanel> {
+public class SwingInputHarvester extends
+	AbstractInputHarvesterPlugin<JPanel, JPanel>
+{
 
 	// -- InputHarvester methods --
 
@@ -66,11 +68,10 @@ public class SwingInputHarvester extends AbstractInputHarvesterPlugin<JPanel> {
 	}
 
 	@Override
-	public boolean
-		harvestInputs(final InputPanel<JPanel> inputPanel, final Module module)
+	public boolean harvestInputs(final InputPanel<JPanel, JPanel> inputPanel,
+		final Module module)
 	{
-		// convert input panel to Swing component
-		final JPanel pane = ((SwingInputPanel) inputPanel).getPanel();
+		final JPanel pane = inputPanel.getPanel();
 
 		// display input panel in a dialog
 		final String title = module.getInfo().getTitle();

@@ -61,7 +61,9 @@ import org.eclipse.swt.widgets.Shell;
  * @author Barry DeZonia
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class SWTInputHarvester extends AbstractInputHarvesterPlugin<Composite> {
+public class SWTInputHarvester extends
+	AbstractInputHarvesterPlugin<Composite, Composite>
+{
 
 	private static final Display DISPLAY = new Display();
 
@@ -73,13 +75,14 @@ public class SWTInputHarvester extends AbstractInputHarvesterPlugin<Composite> {
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel<Composite> inputPanel,
+	public boolean harvestInputs(final InputPanel<Composite, Composite> inputPanel,
 		final Module module)
 	{
+		final Composite pane = inputPanel.getPanel();
+
 		// TODO - obtain handle on parent SWTMainFrame somehow
 		final Shell dialog = new Shell(DISPLAY, SWT.DIALOG_TRIM);
-		final Composite swtInputPanel = ((SWTInputPanel) inputPanel).getPanel();
-		swtInputPanel.setParent(dialog);
+		pane.setParent(dialog);
 		// TODO - use scroll bars in case there are many widgets
 		final Button okButton = new Button(dialog, SWT.PUSH);
 		okButton.setText("&OK");
@@ -90,7 +93,7 @@ public class SWTInputHarvester extends AbstractInputHarvesterPlugin<Composite> {
 		form.marginWidth = form.marginHeight = 8;
 		dialog.setLayout(form);
 		final FormData okData = new FormData();
-		okData.top = new FormAttachment(swtInputPanel, 8);
+		okData.top = new FormAttachment(pane, 8);
 		okButton.setLayoutData(okData);
 		final FormData cancelData = new FormData();
 		cancelData.left = new FormAttachment(okButton, 8);

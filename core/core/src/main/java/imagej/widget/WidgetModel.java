@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class WidgetModel {
 
-	private final InputPanel<?> inputPanel;
+	private final InputPanel<?, ?> inputPanel;
 	private final Module module;
 	private final ModuleItem<?> item;
 	private final List<?> objectPool;
@@ -59,7 +59,7 @@ public class WidgetModel {
 
 	private boolean initialized;
 
-	public WidgetModel(final InputPanel<?> inputPanel, final Module module,
+	public WidgetModel(final InputPanel<?, ?> inputPanel, final Module module,
 		final ModuleItem<?> item, final List<?> objectPool)
 	{
 		this.inputPanel = inputPanel;

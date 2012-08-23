@@ -42,15 +42,19 @@ import java.util.Map;
  * Abstract superclass of UI-specific {@link InputPanel} implementations.
  * 
  * @author Curtis Rueden
+ * @param <P> The type of UI component housing the input panel itself.
+ * @param <W> The type of UI component housing each input widget.
  */
-public abstract class AbstractInputPanel<U> implements InputPanel<U> {
+public abstract class AbstractInputPanel<P, W> implements InputPanel<P, W> {
 
 	/** Table of widgets. */
-	protected Map<String, InputWidget<?, ?>> widgets =
-		new HashMap<String, InputWidget<?, ?>>();
+	protected Map<String, InputWidget<?, W>> widgets =
+		new HashMap<String, InputWidget<?, W>>();
+
+	// -- InputPanel methods --
 
 	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
+	public void addWidget(final InputWidget<?, W> widget) {
 		widgets.put(widget.getModel().getItem().getName(), widget);
 	}
 
@@ -72,7 +76,7 @@ public abstract class AbstractInputPanel<U> implements InputPanel<U> {
 	@Override
 	public boolean isMessageOnly() {
 		int messageCount = 0;
-		for (final InputWidget<?, ?> widget : widgets.values()) {
+		for (final InputWidget<?, W> widget : widgets.values()) {
 			if (widget.isMessage()) messageCount++;
 		}
 		return messageCount == getWidgetCount();
@@ -80,7 +84,7 @@ public abstract class AbstractInputPanel<U> implements InputPanel<U> {
 
 	@Override
 	public void refresh() {
-		for (final InputWidget<?, ?> w : widgets.values()) {
+		for (final InputWidget<?, W> w : widgets.values()) {
 			w.refreshWidget();
 		}
 	}

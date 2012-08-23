@@ -59,7 +59,9 @@ import javax.swing.JOptionPane;
  * @author Barry DeZonia
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
-public class AWTInputHarvester extends AbstractInputHarvesterPlugin<Panel> {
+public class AWTInputHarvester extends
+	AbstractInputHarvesterPlugin<Panel, Panel>
+{
 
 	// -- InputHarvester methods --
 
@@ -69,13 +71,12 @@ public class AWTInputHarvester extends AbstractInputHarvesterPlugin<Panel> {
 	}
 
 	@Override
-	public boolean
-		harvestInputs(final InputPanel<Panel> inputPanel, final Module module)
+	public boolean harvestInputs(final InputPanel<Panel, Panel> inputPanel,
+		final Module module)
 	{
-		// TODO - use pure AWT instead of Swing here
+		final Panel pane = inputPanel.getPanel();
 
-		// convert input panel to Swing component
-		final Panel pane = ((AWTInputPanel) inputPanel).getPanel();
+		// TODO - use pure AWT instead of Swing here
 
 		// display input panel in a dialog
 		final String title = module.getInfo().getTitle();

@@ -37,10 +37,12 @@ package imagej.widget;
 
 /**
  * Base class for input widgets.
- *
+ * 
  * @author Curtis Rueden
+ * @param <T> The input type of the widget.
+ * @param <W> The type of UI component housing the widget.
  */
-public abstract class AbstractInputWidget<T, U> implements InputWidget<T, U> {
+public abstract class AbstractInputWidget<T, W> implements InputWidget<T, W> {
 
 	private WidgetModel widgetModel;
 

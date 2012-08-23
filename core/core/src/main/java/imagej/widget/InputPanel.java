@@ -40,13 +40,18 @@ package imagej.widget;
  * values of various types.
  * 
  * @author Curtis Rueden
+ * @param <P> The type of UI component housing the input panel itself.
+ * @param <W> The type of UI component housing each input widget.
  */
-public interface InputPanel<U> {
+public interface InputPanel<P, W> {
 
 	// TODO - groups of fields
 
+	/** Gets the panel's UI component. */
+	P getPanel();
+
 	/** Adds a widget to the panel. */
-	void addWidget(InputWidget<?, ?> widget);
+	void addWidget(InputWidget<?, W> widget);
 
 	/**
 	 * Returns the value of the given widget's input.

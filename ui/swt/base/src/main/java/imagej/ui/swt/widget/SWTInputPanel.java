@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.Label;
  * 
  * @author Curtis Rueden
  */
-public class SWTInputPanel extends AbstractInputPanel<Composite> {
+public class SWTInputPanel extends AbstractInputPanel<Composite, Composite> {
 
 	private final Composite panel;
 
@@ -57,16 +57,15 @@ public class SWTInputPanel extends AbstractInputPanel<Composite> {
 		panel.setLayout(new MigLayout("wrap 2"));
 	}
 	
-	// -- SWTInputPanel methods --
+	// -- InputPanel methods --
 
+	@Override
 	public Composite getPanel() {
 		return panel;
 	}
 
-	// -- InputPanel methods --
-
 	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
+	public void addWidget(final InputWidget<?, Composite> widget) {
 		super.addWidget(widget);
 		// CTR FIXME: Find a way to put the label first.
 		addLabel(widget.getModel().getWidgetLabel());

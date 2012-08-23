@@ -54,9 +54,11 @@ import java.util.List;
  * </p>
  * 
  * @author Curtis Rueden
+ * @param <P> The type of UI component housing the input panel itself.
+ * @param <W> The type of UI component housing each input widget.
  */
-public abstract class AbstractInputHarvester<U> implements Contextual,
-	InputHarvester<U>
+public abstract class AbstractInputHarvester<P, W> implements Contextual,
+	InputHarvester<P, W>
 {
 
 	private ImageJ context;
@@ -80,7 +82,7 @@ public abstract class AbstractInputHarvester<U> implements Contextual,
 
 	@Override
 	public void harvest(final Module module) throws ModuleException {
-		final InputPanel<U> inputPanel = createInputPanel();
+		final InputPanel<P, W> inputPanel = createInputPanel();
 		buildPanel(inputPanel, module);
 		if (!inputPanel.hasWidgets()) return; // no inputs left to harvest
 
@@ -91,7 +93,7 @@ public abstract class AbstractInputHarvester<U> implements Contextual,
 	}
 
 	@Override
-	public void buildPanel(final InputPanel<U> inputPanel, final Module module)
+	public void buildPanel(final InputPanel<P, W> inputPanel, final Module module)
 		throws ModuleException
 	{
 		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
@@ -113,7 +115,7 @@ public abstract class AbstractInputHarvester<U> implements Contextual,
 
 	@Override
 	public void
-		processResults(final InputPanel<U> inputPanel, final Module module)
+		processResults(final InputPanel<P, W> inputPanel, final Module module)
 			throws ModuleException
 	{
 		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
@@ -126,7 +128,7 @@ public abstract class AbstractInputHarvester<U> implements Contextual,
 
 	// -- Helper methods --
 
-	private <T> WidgetModel addInput(final InputPanel<U> inputPanel,
+	private <T> WidgetModel addInput(final InputPanel<P, W> inputPanel,
 		final Module module, final ModuleItem<T> item) throws ModuleException
 	{
 		final String name = item.getName();
@@ -141,7 +143,11 @@ public abstract class AbstractInputHarvester<U> implements Contextual,
 			getContext().getService(WidgetService.class);
 		final InputWidget<?, ?> widget = widgetService.createWidget(model);
 		if (widget != null) {
-			inputPanel.addWidget(widget);
+			// FIXME: This cast is NOT safe! Multiple UIs in the
+			// classpath will have clashing widget implementations.
+			@SuppressWarnings("unchecked")
+			final InputWidget<?, W> typedWidget = (InputWidget<?, W>) widget;
+			inputPanel.addWidget(typedWidget);
 			return model;
 		}
 

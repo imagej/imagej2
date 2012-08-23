@@ -52,12 +52,14 @@ import imagej.module.ModuleItem;
  * </p>
  * 
  * @author Curtis Rueden
+ * @param <T> The input type of the widget.
+ * @param <W> The type of UI component housing the widget.
  * @see Plugin
  * @see WidgetService
  * @see InputHarvester
  * @see InputPanel
  */
-public interface InputWidget<T, U> extends IPlugin {
+public interface InputWidget<T, W> extends IPlugin {
 
 	/** Gets whether this widget would be appropriate for the given model. */
 	boolean isCompatible(WidgetModel model);
@@ -81,11 +83,11 @@ public interface InputWidget<T, U> extends IPlugin {
 	void refreshWidget();
 
 	/**
-	 * Gets the user interface pane housing this widget.
+	 * Gets the user interface component housing this widget.
 	 * 
-	 * @return the pane, or null if the widget has not yet been initialized.
+	 * @return the component, or null if the widget has not yet been initialized.
 	 */
-	U getPane();
+	W getPane();
 
 	/**
 	 * Returns true iff the widget should be labeled with the parameter label.

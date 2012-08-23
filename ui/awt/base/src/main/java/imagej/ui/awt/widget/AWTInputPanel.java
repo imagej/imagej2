@@ -50,7 +50,7 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  */
-public class AWTInputPanel extends AbstractInputPanel<Panel> {
+public class AWTInputPanel extends AbstractInputPanel<Panel, Panel> {
 
 	private final Panel panel;
 
@@ -59,14 +59,15 @@ public class AWTInputPanel extends AbstractInputPanel<Panel> {
 		panel.setLayout(new MigLayout("wrap 2"));
 	}
 
+	// -- InputPanel methods --
+
+	@Override
 	public Panel getPanel() {
 		return panel;
 	}
 
-	// -- InputPanel methods --
-
 	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
+	public void addWidget(final InputWidget<?, Panel> widget) {
 		super.addWidget(widget);
 		if (!(widget instanceof AWTInputWidget)) return;
 		final Panel widgetPane = ((AWTInputWidget<?>) widget).getPane();

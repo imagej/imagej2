@@ -41,7 +41,6 @@ import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Container;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.TablePane;
 
@@ -50,7 +49,7 @@ import org.apache.pivot.wtk.TablePane;
  * 
  * @author Curtis Rueden
  */
-public class PivotInputPanel extends AbstractInputPanel<BoxPane> {
+public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 
 	private final TablePane panel;
 
@@ -58,14 +57,15 @@ public class PivotInputPanel extends AbstractInputPanel<BoxPane> {
 		panel = new TablePane();
 	}
 
-	public Container getPanel() {
-		return panel;
-	}
-
 	// -- InputPanel methods --
 
 	@Override
-	public void addWidget(final InputWidget<?, ?> widget) {
+	public TablePane getPanel() {
+		return panel;
+	}
+
+	@Override
+	public void addWidget(final InputWidget<?, BoxPane> widget) {
 		super.addWidget(widget);
 		if (!(widget instanceof PivotInputWidget)) return;
 		final BoxPane widgetPane = ((PivotInputWidget<?>) widget).getPane();
