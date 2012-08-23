@@ -46,7 +46,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.util.ARGBPlane;
 
@@ -64,7 +63,7 @@ import imagej.util.ARGBPlane;
 public class CopyToSystem implements RunnablePlugin {
 
 	@Parameter
-	private UIService uiService;
+	private UserInterface ui;
 
 	@Parameter
 	private OverlayService overlayService;
@@ -82,7 +81,6 @@ public class CopyToSystem implements RunnablePlugin {
 	public void run() {
 		final ARGBPlane pixels = getARGBPixels();
 		if (pixels == null) return;
-		final UserInterface ui = uiService.getDefaultUI();
 		ui.getSystemClipboard().pixelsToSystemClipboard(pixels);
 		final String notice =
 				pixels.getWidth() + "x" + pixels.getHeight() +

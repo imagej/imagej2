@@ -42,7 +42,6 @@ import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.options.OptionsPlugin;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
 
@@ -73,7 +72,7 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 	// -- Parameters --
 
 	@Parameter
-	private UIService uiService;
+	private UserInterface ui;
 
 	@Parameter
 	private LogService log;
@@ -90,16 +89,16 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 
 	// -- OptionsLookAndFeel methods --
 
-	public UIService getUIService() {
-		return uiService;
+	public UserInterface getUI() {
+		return ui;
 	}
 
 	public String getLookAndFeel() {
 		return lookAndFeel;
 	}
 
-	public void setUIService(final UIService uiService) {
-		this.uiService = uiService;
+	public void setUI(final UserInterface ui) {
+		this.ui = ui;
 	}
 
 	public void setLookAndFeel(final String lookAndFeel) {
@@ -121,7 +120,6 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 						@Override
 						public void run() {
 							// FIXME: Get all windows from UIService rather than just app.
-							final UserInterface ui = getUIService().getDefaultUI();
 							final SwingApplicationFrame swingAppFrame =
 								(SwingApplicationFrame) ui.getApplicationFrame();
 							SwingUtilities.updateComponentTreeUI(swingAppFrame);

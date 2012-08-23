@@ -40,7 +40,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ui.Arrangeable.Arrangement;
 import imagej.ui.Desktop;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 
 /**
@@ -51,12 +50,11 @@ import imagej.ui.UserInterface;
 @Plugin(menuPath = "Window>Tile Vertical")
 public class WindowsTileVertical implements RunnablePlugin {
 
-	@Parameter(persist = false)
-	private UIService uiService;
+	@Parameter
+	private UserInterface ui;
 	
 	@Override
 	public void run() {
-		final UserInterface ui = uiService.getDefaultUI();
 		final Desktop desk = ui.getDesktop();
 		desk.setArrangement(Arrangement.VERTICAL);
 	}
