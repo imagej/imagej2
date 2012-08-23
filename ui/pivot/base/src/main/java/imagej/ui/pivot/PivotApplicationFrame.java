@@ -45,7 +45,7 @@ import org.apache.pivot.wtk.Frame;
  * @author Curtis Rueden
  */
 public class PivotApplicationFrame extends Frame implements ApplicationFrame {
-	
+
 	// -- ApplicationFrame methods --
 
 	@Override
@@ -62,5 +62,5 @@ public class PivotApplicationFrame extends Frame implements ApplicationFrame {
 	public void activate() {
 		requestActive();
 	}
-	
+
 }

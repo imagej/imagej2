@@ -50,8 +50,8 @@ import org.apache.pivot.wtk.ListButton;
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotChoiceWidget extends PivotInputWidget<String>
-	implements ChoiceWidget<BoxPane>
+public class PivotChoiceWidget extends PivotInputWidget<String> implements
+	ChoiceWidget<BoxPane>
 {
 
 	private ListButton listButton;

@@ -54,9 +54,9 @@ import org.apache.pivot.wtk.Orientation;
  */
 public class PivotApplication implements Application {
 
-	private ImageJ context;
-	private EventService eventService;
-	private MenuService menuService;
+	private final ImageJ context;
+	private final EventService eventService;
+	private final MenuService menuService;
 
 	private PivotApplicationFrame frame;
 	private PivotToolBar toolBar;

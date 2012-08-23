@@ -49,7 +49,7 @@ import org.apache.pivot.wtk.Meter;
 
 /**
  * Status bar with text area and progress bar, similar to ImageJ 1.x.
- *
+ * 
  * @author Curtis Rueden
  */
 public final class PivotStatusBar extends BoxPane implements StatusBar {
@@ -58,7 +58,7 @@ public final class PivotStatusBar extends BoxPane implements StatusBar {
 	private final Meter meter;
 
 	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
+	private final List<EventSubscriber<?>> subscribers;
 
 	public PivotStatusBar(final EventService eventService) {
 		label = new Label();
@@ -84,7 +84,7 @@ public final class PivotStatusBar extends BoxPane implements StatusBar {
 			meter.setPercentage(0);
 		}
 	}
-	
+
 	// -- Event handlers --
 
 	@EventHandler

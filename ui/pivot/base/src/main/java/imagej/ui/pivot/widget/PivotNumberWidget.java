@@ -42,7 +42,7 @@ import org.apache.pivot.wtk.BoxPane;
 
 /**
  * Pivot implementation of number chooser widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class PivotNumberWidget extends PivotInputWidget<Number>

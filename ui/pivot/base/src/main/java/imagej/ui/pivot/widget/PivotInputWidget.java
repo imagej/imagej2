@@ -42,7 +42,7 @@ import org.apache.pivot.wtk.BoxPane;
 
 /**
  * Common superclass for Pivot-based input widgets.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class PivotInputWidget<T> extends

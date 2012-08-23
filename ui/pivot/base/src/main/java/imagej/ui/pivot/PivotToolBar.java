@@ -43,12 +43,12 @@ import org.apache.pivot.wtk.BoxPane;
 
 /**
  * Pivot implementation of {@link ToolBar}.
- *
+ * 
  * @author Curtis Rueden
  */
 public class PivotToolBar extends BoxPane implements ToolBar {
 
-	private ToolService toolService;
+	private final ToolService toolService;
 
 	public PivotToolBar() {
 		toolService = ImageJ.get(ToolService.class);

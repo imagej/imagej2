@@ -57,8 +57,7 @@ import org.apache.pivot.wtk.PushButton;
  * 
  * @author Curtis Rueden
  */
-public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
-{
+public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
 
 	@Override
 	protected void

@@ -51,8 +51,8 @@ import org.apache.pivot.wtk.SliderValueListener;
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotNumberSliderWidget extends PivotNumberWidget
-	implements SliderValueListener
+public class PivotNumberSliderWidget extends PivotNumberWidget implements
+	SliderValueListener
 {
 
 	private Slider slider;
