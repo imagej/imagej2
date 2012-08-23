@@ -56,7 +56,7 @@ public class WindowsTileVertical implements RunnablePlugin {
 	
 	@Override
 	public void run() {
-		final UserInterface ui = uiService.getUI();
+		final UserInterface ui = uiService.getDefaultUI();
 		final Desktop desk = ui.getDesktop();
 		desk.setArrangement(Arrangement.VERTICAL);
 	}

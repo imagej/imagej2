@@ -46,7 +46,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.ui.UserInterface;
 import imagej.util.RealRect;
 
 import java.awt.BasicStroke;
@@ -239,12 +238,9 @@ public class HistogramPlot implements RunnablePlugin {
 	}
 
 	private void informUser() {
-		final UserInterface ui = uiService.getUI();
-		final DialogPrompt dialog =
-			ui.dialogPrompt("This plugin requires an integral dataset",
-				"Unsupported image type", DialogPrompt.MessageType.INFORMATION_MESSAGE,
-				DialogPrompt.OptionType.DEFAULT_OPTION);
-		dialog.prompt();
+		uiService.showDialog("This plugin requires an integral dataset",
+			"Unsupported image type", DialogPrompt.MessageType.INFORMATION_MESSAGE,
+			DialogPrompt.OptionType.DEFAULT_OPTION);
 	}
 
 	private JPanel makeValuePanel() {

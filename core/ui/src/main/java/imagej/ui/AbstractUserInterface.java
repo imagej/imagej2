@@ -56,6 +56,9 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	private static final String LAST_X = "lastXLocation";
 	private static final String LAST_Y = "lastYLocation";
 
+	/** Whether the UI is currently being displayed. */
+	private boolean visible = false;
+
 	// -- UserInterface methods --
 
 	@Override
@@ -64,10 +67,16 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	}
 
 	@Override
-	public void create() {
+	public void show() {
 		createUI();
 		displayReadme();
 		updaterCheck();
+		visible = true;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return visible;
 	}
 
 	@Override

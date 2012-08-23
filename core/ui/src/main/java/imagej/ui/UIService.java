@@ -60,6 +60,7 @@ import java.util.List;
  */
 public interface UIService extends Service {
 
+	/** System property to set for overriding the default UI. */
 	String UI_PROPERTY = "ij.ui";
 
 	LogService getLog();
@@ -82,20 +83,76 @@ public interface UIService extends Service {
 
 	AppService getAppService();
 
-	/** Creates and displays the UI for the default user interface. */
+	/**
+	 * Adds the given UI to those managed by the service.
+	 * <p>
+	 * Note that a UI added explicitly via this method will never be considered
+	 * the default UI unless {@link #setDefaultUI(UserInterface)} is also called.
+	 * </p>
+	 * 
+	 * @param ui The UI to add.
+	 */
+	void addUI(UserInterface ui);
+
+	/**
+	 * Adds the given UI to those managed by the service.
+	 * <p>
+	 * Note that a UI added explicitly via this method will never be considered
+	 * the default UI unless {@link #setDefaultUI(UserInterface)} is also called.
+	 * </p>
+	 * 
+	 * @param name The nickname for the UI.
+	 * @param ui The UI to add.
+	 */
+	void addUI(String name, UserInterface ui);
+
+	/**
+	 * Displays the UI for the default user interface.
+	 * 
+	 * @see #getDefaultUI()
+	 * @see #setDefaultUI(UserInterface)
+	 */
 	void createUI();
 
-	/** Creates and displays the UI with the given name or class name. */
+	/** Displays the UI with the given name (or class name). */
 	void createUI(String name);
 
-	/** Creates and displays the given UI. */
+	/** Displays the given UI. */
 	void createUI(UserInterface ui);
 
-	/** Gets the default user interface. */
-	UserInterface getUI();
+	/**
+	 * Gets whether the default UI is visible.
+	 * 
+	 * @see #getDefaultUI()
+	 * @see #setDefaultUI(UserInterface)
+	 */
+	boolean isVisible();
 
-	/** Sets the default user interface. */
-	void setUI(UserInterface ui);
+	/** Gets whether the UI with the given name or class name is visible. */
+	boolean isVisible(String name);
+
+	/**
+	 * Gets the default user interface.
+	 * 
+	 * @see #createUI()
+	 * @see #isVisible()
+	 */
+	UserInterface getDefaultUI();
+
+	/**
+	 * Sets the default user interface.
+	 * 
+	 * @see #createUI()
+	 */
+	void setDefaultUI(UserInterface ui);
+
+	/**
+	 * Gets whether the UI with the given name (or class name) is the default one.
+	 */
+	boolean isDefaultUI(String name);
+
+	/** Gets the UI with the given name (or class name). */
+	UserInterface getUI(String name);
 
 	/** Gets the user interfaces available to the service. */
 	List<UserInterface> getAvailableUIs();
@@ -103,14 +160,21 @@ public interface UIService extends Service {
 	/** Gets the UI widget being used to visualize the given {@link Display}. */
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
 
-	/** Gets the UI widget being used to visualize the given {@link ImageDisplay}. */
+	/**
+	 * Gets the UI widget being used to visualize the given {@link ImageDisplay}.
+	 */
 	ImageDisplayViewer getImageDisplayViewer(ImageDisplay display);
 
-	/** Creates a new output window. */
+	/**
+	 * Creates a new output window.
+	 * <p>
+	 * The output window is displayed in the default user interface.
+	 * </p>
+	 */
 	OutputWindow createOutputWindow(String title);
 
 	/**
-	 * Displays a dialog prompt.
+	 * Displays a dialog prompt in the default user interface.
 	 * 
 	 * @param message The message in the dialog itself.
 	 * @return The choice selected by the user when dismissing the dialog.
@@ -119,6 +183,9 @@ public interface UIService extends Service {
 
 	/**
 	 * Displays a dialog prompt.
+	 * <p>
+	 * The prompt is displayed in the default user interface.
+	 * </p>
 	 * 
 	 * @param message The message in the dialog itself.
 	 * @param title The title of the dialog.
@@ -128,6 +195,9 @@ public interface UIService extends Service {
 
 	/**
 	 * Displays a dialog prompt.
+	 * <p>
+	 * The prompt is displayed in the default user interface.
+	 * </p>
 	 * 
 	 * @param message The message in the dialog itself.
 	 * @param title The title of the dialog.
@@ -142,6 +212,9 @@ public interface UIService extends Service {
 
 	/**
 	 * Displays a dialog prompt.
+	 * <p>
+	 * The prompt is displayed in the default user interface.
+	 * </p>
 	 * 
 	 * @param message The message in the dialog itself.
 	 * @param title The title of the dialog.
@@ -159,6 +232,9 @@ public interface UIService extends Service {
 	/**
 	 * Displays a popup context menu for the given display at the specified
 	 * position.
+	 * <p>
+	 * The context menu is displayed in the default user interface.
+	 * </p>
 	 */
 	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
 

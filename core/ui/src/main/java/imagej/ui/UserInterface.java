@@ -58,23 +58,40 @@ import imagej.ui.viewer.DisplayWindow;
  */
 public interface UserInterface extends IPlugin, Contextual, Prioritized {
 
+	/** Gets the service responsible for managing this UI. */
 	UIService getUIService();
 
-	void create();
+	/**
+	 * Shows the UI.
+	 * <p>
+	 * Note that the actual UI components are created lazily when this method is
+	 * called, rather then upon the UI's initial construction.
+	 * </p>
+	 */
+	void show();
 
-	/** Desktop for use with multi-document interfaces (MDI). */
+	/** Whether this UI is visible onscreen. */
+	boolean isVisible();
+
+	/** Gets the desktop, for use with multi-document interfaces (MDI). */
 	Desktop getDesktop();
 
+	/** Gets the main ImageJ application frame, or null if not applicable. */
 	ApplicationFrame getApplicationFrame();
 
+	/** Gets the main ImageJ toolbar, or null if not applicable. */
 	ToolBar getToolBar();
 
+	/** Gets the main ImageJ status bar, or null if not applicable. */
 	StatusBar getStatusBar();
 
+	/** Gets the system clipboard associated with this UI. */
 	SystemClipboard getSystemClipboard();
 	
+	/** Creates a new display window housing the given display. */
 	DisplayWindow createDisplayWindow(Display<?> display);
 
+	/** Creates a new {@link OutputWindow} with the given title. */
 	OutputWindow newOutputWindow(String title);
 
 	/**

@@ -57,7 +57,7 @@ public class FocusHandler extends AbstractTool {
 		if (evt.getCode() != KeyCode.ENTER) return;
 		final UIService uiService = evt.getContext().getService(UIService.class);
 		if (uiService == null) return;
-		final UserInterface ui = uiService.getUI();
+		final UserInterface ui = uiService.getDefaultUI();
 		if (ui == null) return;
 		final ApplicationFrame appFrame = ui.getApplicationFrame();
 		if (appFrame == null) return;

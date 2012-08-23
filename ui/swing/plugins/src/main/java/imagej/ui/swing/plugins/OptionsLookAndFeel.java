@@ -118,7 +118,7 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 						@Override
 						public void run() {
 							// FIXME: Get all windows from UIService rather than just app.
-							final UserInterface ui = getUIService().getUI();
+							final UserInterface ui = getUIService().getDefaultUI();
 							final SwingApplicationFrame swingAppFrame =
 								(SwingApplicationFrame) ui.getApplicationFrame();
 							SwingUtilities.updateComponentTreeUI(swingAppFrame);

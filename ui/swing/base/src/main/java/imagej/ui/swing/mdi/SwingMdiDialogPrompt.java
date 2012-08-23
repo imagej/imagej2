@@ -60,7 +60,7 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 	public SwingMdiDialogPrompt(final String message, final String title,
 		final MessageType messageType, final OptionType optionType)
 	{
-		final UserInterface ui = ImageJ.get(UIService.class).getUI();
+		final UserInterface ui = ImageJ.get(UIService.class).getDefaultUI();
 		final SwingApplicationFrame appFrame =
 			(SwingApplicationFrame) ui.getApplicationFrame();
 		final JMDIDesktopPane desk = (JMDIDesktopPane) ui.getDesktop();

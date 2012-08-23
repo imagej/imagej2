@@ -195,20 +195,34 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public void addUI(final UserInterface ui) {
+		addUI(null, ui);
+	}
+
+	@Override
+	public void addUI(final String name, final UserInterface ui) {
+		// add to UI list
+		uiList.add(ui);
+
+		// add to UI map
+		uiMap.put(ui.getClass().getName(), ui);
+		if (name != null && !name.isEmpty()) uiMap.put(name, ui);
+	}
+
+	@Override
 	public void createUI() {
-		if (defaultUI == null) {
-			log.warn("Cannot launch user interface: no UIs available.");
-			return;
+		final UserInterface ui = getDefaultUI();
+		if (ui == null) {
+			throw new IllegalStateException("No UIs available.");
 		}
-		createUI(defaultUI);
+		createUI(ui);
 	}
 
 	@Override
 	public void createUI(final String name) {
 		final UserInterface ui = uiMap.get(name);
 		if (ui == null) {
-			log.warn("No such user interface: " + name);
-			return;
+			throw new IllegalArgumentException("No such user interface: " + name);
 		}
 		createUI(ui);
 	}
@@ -216,17 +230,40 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public void createUI(final UserInterface ui) {
 		log.info("Launching user interface: " + ui.getClass().getName());
-		ui.create();
+		ui.show();
 	}
 
 	@Override
-	public UserInterface getUI() {
+	public boolean isVisible() {
+		final UserInterface ui = getDefaultUI();
+		if (ui == null) {
+			throw new IllegalStateException("No UIs available.");
+		}
+		return ui.isVisible();
+	}
+
+	@Override
+	public boolean isVisible(final String name) {
+		final UserInterface ui = uiMap.get(name);
+		if (ui == null) {
+			throw new IllegalArgumentException("No such user interface: " + name);
+		}
+		return ui.isVisible();
+	}
+
+	@Override
+	public UserInterface getDefaultUI() {
 		return defaultUI;
 	}
 
 	@Override
-	public void setUI(final UserInterface ui) {
+	public void setDefaultUI(final UserInterface ui) {
 		defaultUI = ui;
+	}
+
+	@Override
+	public UserInterface getUI(final String name) {
+		return uiMap.get(name);
 	}
 
 	@Override
@@ -256,8 +293,9 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public OutputWindow createOutputWindow(final String title) {
-		if (defaultUI == null) return null;
-		return defaultUI.newOutputWindow(title);
+		final UserInterface ui = getDefaultUI();
+		if (ui == null) return null;
+		return ui.newOutputWindow(title);
 	}
 
 	@Override
@@ -286,9 +324,10 @@ public final class DefaultUIService extends AbstractService implements
 		final String title, final DialogPrompt.MessageType messageType,
 		final DialogPrompt.OptionType optionType)
 	{
-		if (defaultUI == null) return null;
+		final UserInterface ui = getDefaultUI();
+		if (ui == null) return null;
 		final DialogPrompt dialogPrompt =
-			defaultUI.dialogPrompt(message, title, messageType, optionType);
+			ui.dialogPrompt(message, title, messageType, optionType);
 		return dialogPrompt.prompt();
 	}
 
@@ -296,8 +335,9 @@ public final class DefaultUIService extends AbstractService implements
 	public void showContextMenu(final String menuRoot, final Display<?> display,
 		final int x, final int y)
 	{
-		if (defaultUI == null) return;
-		defaultUI.showContextMenu(menuRoot, display, x, y);
+		final UserInterface ui = getDefaultUI();
+		if (ui == null) return;
+		ui.showContextMenu(menuRoot, display, x, y);
 	}
 
 	// -- Event handlers --
@@ -319,7 +359,7 @@ public final class DefaultUIService extends AbstractService implements
 				displayViewer.setPriority(info.getPriority());
 				if (displayViewer.canView(display)) {
 					final DisplayWindow displayWindow =
-						getUI().createDisplayWindow(display);
+						getDefaultUI().createDisplayWindow(display);
 					displayViewer.view(displayWindow, display);
 					displayWindow.setTitle(display.getName());
 					displayViewers.add(displayViewer);
@@ -391,7 +431,8 @@ public final class DefaultUIService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
-		defaultUI.saveLocation();
+		final UserInterface ui = getDefaultUI();
+		ui.saveLocation();
 	}
 
 	// -- Helper methods --
@@ -408,27 +449,30 @@ public final class DefaultUIService extends AbstractService implements
 				ui.setPriority(info.getPriority());
 				log.info("Discovered user interface: " + ui.getClass().getName());
 
-				// add to UI list
-				uiList.add(ui);
-
-				// add to UI map
-				uiMap.put(info.getClassName(), ui);
-				final String name = info.getName();
-				if (name != null && !name.isEmpty()) uiMap.put(name, ui);
+				addUI(info.getName(), ui);
 			}
 			catch (final InstantiableException e) {
 				log.warn("Invalid user interface: " + info.getClassName(), e);
 			}
 		}
 
-		// set the default UI to the one provided as a system property (if any)
-		final String preferredUI = System.getProperty(UI_PROPERTY);
-		defaultUI = uiMap.get(preferredUI);
+		// check system property for explicit UI preference
+		final String uiProp = System.getProperty(UI_PROPERTY);
+		final UserInterface ui = uiMap.get(uiProp);
 
-		if (defaultUI == null) {
-			// set the default UI to the one with the highest priority
-			defaultUI = uiList.size() > 0 ? uiList.get(0) : null;
+		if (ui != null) {
+			// set the default UI to the one provided by the system property
+			setDefaultUI(ui);
 		}
+		else if (uiList.size() > 0) {
+			// set the default UI to the one with the highest priority
+			setDefaultUI(uiList.get(0));
+		}
+	}
+
+	@Override
+	public boolean isDefaultUI(final String name) {
+		return getDefaultUI() == getUI(name);
 	}
 
 }

@@ -47,6 +47,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import imagej.util.ARGBPlane;
 
 /**
@@ -81,7 +82,8 @@ public class CopyToSystem implements RunnablePlugin {
 	public void run() {
 		final ARGBPlane pixels = getARGBPixels();
 		if (pixels == null) return;
-		uiService.getUI().getSystemClipboard().pixelsToSystemClipboard(pixels);
+		final UserInterface ui = uiService.getDefaultUI();
+		ui.getSystemClipboard().pixelsToSystemClipboard(pixels);
 		final String notice =
 				pixels.getWidth() + "x" + pixels.getHeight() +
 				" image copied to system clipboard";
