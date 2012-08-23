@@ -45,9 +45,6 @@ import java.util.Map;
  */
 public abstract class AbstractInputPanel<U> implements InputPanel<U> {
 
-	/** Number of messages in the panel. */
-	protected int messageCount = 0;
-
 	/** Table of widgets. */
 	protected Map<String, InputWidget<?, ?>> widgets =
 		new HashMap<String, InputWidget<?, ?>>();
@@ -74,6 +71,10 @@ public abstract class AbstractInputPanel<U> implements InputPanel<U> {
 
 	@Override
 	public boolean isMessageOnly() {
+		int messageCount = 0;
+		for (final InputWidget<?, ?> widget : widgets.values()) {
+			if (widget.isMessage()) messageCount++;
+		}
 		return messageCount == getWidgetCount();
 	}
 
