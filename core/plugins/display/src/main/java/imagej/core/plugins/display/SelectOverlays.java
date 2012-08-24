@@ -54,9 +54,9 @@ import imagej.module.ItemIO;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
-	@Menu(label = "Select All", mnemonic = 'a', accelerator = "control a",
-		weight = 4) }, headless = true)
-public class SelectAll implements RunnablePlugin {
+	@Menu(label = "Select Overlays", mnemonic = 's', weight = 1,
+		accelerator = "control a") }, headless = true)
+public class SelectOverlays implements RunnablePlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;

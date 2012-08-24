@@ -52,6 +52,7 @@ import javax.swing.WindowConstants;
  * TODO
  * 
  * @author Grant Harris
+ * @author Barry DeZonia
  */
 public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 
@@ -83,23 +84,23 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 		dispose();
 	}
 	
-	// TODO - this is a bit hacky and will fail if we go away from
+	// TODO - BDZ - this is a bit hacky and will fail if we go away from
 	//        JHotDrawImageCanvas
 	@Override
 	public int findDisplayContentScreenX() {
 		JHotDrawImageCanvas canvas = findCanvas(getContentPane());
 		if (canvas == null)
-			 throw new IllegalArgumentException("can't find jhot image canv");
+			 throw new IllegalArgumentException("Cannot find JHotDrawImageCanvas");
 		return canvas.getLocationOnScreen().x;
 	}
 
-	// TODO - this is a bit hacky and will fail if we go away from
+	// TODO - BDZ - this is a bit hacky and will fail if we go away from
 	//        JHotDrawImageCanvas
 	@Override
 	public int findDisplayContentScreenY() {
 		JHotDrawImageCanvas canvas = findCanvas(getContentPane());
 		if (canvas == null)
-			 throw new IllegalArgumentException("can't find jhot image canv");
+			 throw new IllegalArgumentException("Cannot find JHotDrawImageCanvas");
 		return canvas.getLocationOnScreen().y;
 	}
 

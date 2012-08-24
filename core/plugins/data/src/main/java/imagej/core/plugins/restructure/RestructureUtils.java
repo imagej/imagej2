@@ -87,7 +87,7 @@ public class RestructureUtils {
 		final double[] calibration = new double[axes.length];
 		for (int i = 0; i < axes.length; i++) {
 			final int index = ds.getAxisIndex(axes[i]);
-			if (index >= 0) calibration[i] = ds.getImgPlus().calibration(index);
+			if (index >= 0) calibration[i] = ds.calibration(index);
 			else calibration[i] = Double.NaN;
 		}
 		return new ImgPlus(img, name, axes, calibration);
