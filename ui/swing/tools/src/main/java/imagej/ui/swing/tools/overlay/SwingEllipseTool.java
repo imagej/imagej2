@@ -52,7 +52,7 @@ import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of ellipse tool.
  * 
  * @author Lee Kamentsky
  * @author Barry DeZonia
@@ -60,27 +60,25 @@ import org.jhotdraw.draw.Figure;
 @Plugin(type = JHotDrawAdapter.class, name = "Oval",
 	description = "Oval selections", iconPath = "/icons/tools/oval.png",
 	priority = SwingEllipseTool.PRIORITY, enabled = true)
-public class SwingEllipseTool extends
-	AbstractJHotDrawAdapter<EllipseOverlay>
-{
+public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
 
 	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;
 
-	static protected EllipseOverlay downcastOverlay(final Overlay roi) {
-		assert (roi instanceof EllipseOverlay);
+	protected static EllipseOverlay downcastOverlay(final Overlay roi) {
+		assert roi instanceof EllipseOverlay;
 		return (EllipseOverlay) roi;
 	}
 
-	static protected EllipseFigure downcastFigure(final Figure figure) {
-		assert (figure instanceof EllipseFigure);
+	protected static EllipseFigure downcastFigure(final Figure figure) {
+		assert figure instanceof EllipseFigure;
 		return (EllipseFigure) figure;
 	}
 
+	// -- JHotDrawAdapter methods --
+
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if ((figure != null) && (!(figure instanceof EllipseFigure))) {
-			return false;
-		}
+		if (figure != null && !(figure instanceof EllipseFigure)) return false;
 		return overlay instanceof EllipseOverlay;
 	}
 
@@ -97,10 +95,9 @@ public class SwingEllipseTool extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView o, final Figure f) {
-		super.updateFigure(o, f);
-		final EllipseOverlay overlay = downcastOverlay(o.getData());
-		final EllipseFigure figure = downcastFigure(f);
+	public void updateFigure(final OverlayView view, final Figure figure) {
+		super.updateFigure(view, figure);
+		final EllipseOverlay overlay = downcastOverlay(view.getData());
 		final double centerX = overlay.getOrigin(0);
 		final double centerY = overlay.getOrigin(1);
 		final double radiusX = overlay.getRadius(0);
@@ -111,15 +108,18 @@ public class SwingEllipseTool extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView o) {
-		super.updateOverlay(figure, o);
-		final EllipseOverlay overlay = downcastOverlay(o.getData());
-		final EllipseFigure eFigure = downcastFigure(figure);
-		final Rectangle2D.Double r = eFigure.getBounds();
-		overlay.setOrigin(r.x + r.width / 2, 0);
-		overlay.setOrigin(r.y + r.height / 2, 1);
-		overlay.setRadius(r.width / 2, 0);
-		overlay.setRadius(r.height / 2, 1);
+	public void updateOverlay(final Figure figure, final OverlayView view) {
+		super.updateOverlay(figure, view);
+		final EllipseOverlay overlay = downcastOverlay(view.getData());
+		final Rectangle2D.Double bounds = figure.getBounds();
+		final double x = bounds.getMinX();
+		final double y = bounds.getMinY();
+		final double w = bounds.getWidth();
+		final double h = bounds.getHeight();
+		overlay.setOrigin(x + w / 2, 0);
+		overlay.setOrigin(y + h / 2, 1);
+		overlay.setRadius(w / 2, 0);
+		overlay.setRadius(h / 2, 1);
 		overlay.update();
 	}
 

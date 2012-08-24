@@ -64,16 +64,16 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 	// Copyright (c) 1996-2010 by the original authors of
 	// JHotDraw and all its contributors. All rights reserved.
 
-	static final protected double[] solidLineStyle = null;
-	static final protected double[] dashLineStyle = { 4, 4 };
-	static final protected double[] dotLineStyle = { 1, 2 };
-	static final protected double[] dotDashLineStyle = { 6, 2, 1, 2 };
+	protected static final double[] SOLID_LINE_STYLE = null;
+	protected static final double[] DASH_LINE_STYLE = { 4, 4 };
+	protected static final double[] DOT_LINE_STYLE = { 1, 2 };
+	protected static final double[] DOT_DASH_LINE_STYLE = { 6, 2, 1, 2 };
 
 	// -- JHotDrawAdapter methods --
 
 	@Override
-	public void updateFigure(final OverlayView overlayView, final Figure figure) {
-		final Overlay overlay = overlayView.getData();
+	public void updateFigure(final OverlayView view, final Figure figure) {
+		final Overlay overlay = view.getData();
 		final ColorRGB lineColor = overlay.getLineColor();
 		if (overlay.getLineStyle() != Overlay.LineStyle.NONE) {
 			figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
@@ -84,16 +84,16 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 			double[] dash_pattern;
 			switch (overlay.getLineStyle()) {
 				case SOLID:
-					dash_pattern = null;
+					dash_pattern = SOLID_LINE_STYLE;
 					break;
 				case DASH:
-					dash_pattern = dashLineStyle;
+					dash_pattern = DASH_LINE_STYLE;
 					break;
 				case DOT:
-					dash_pattern = dotLineStyle;
+					dash_pattern = DOT_LINE_STYLE;
 					break;
 				case DOT_DASH:
-					dash_pattern = dotDashLineStyle;
+					dash_pattern = DOT_DASH_LINE_STYLE;
 					break;
 				default:
 					throw new UnsupportedOperationException("Unsupported line style: " +
@@ -126,9 +126,9 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlayView) {
+	public void updateOverlay(final Figure figure, final OverlayView view) {
 		final Color strokeColor = figure.get(AttributeKeys.STROKE_COLOR);
-		final Overlay overlay = overlayView.getData();
+		final Overlay overlay = view.getData();
 		overlay.setLineColor(AWTColors.getColorRGB(strokeColor));
 		// The line style is intentionally omitted here because it is ambiguous and
 		// because there is no UI for setting it by the JHotDraw UI.

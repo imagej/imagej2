@@ -52,7 +52,7 @@ import org.jhotdraw.draw.LineFigure;
 import org.jhotdraw.geom.BezierPath.Node;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of line tool.
  * 
  * @author Lee Kamentsky
  * @author Barry DeZonia
@@ -64,10 +64,12 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 
 	public static final double PRIORITY = SwingPolygonTool.PRIORITY - 1;
 
+	// -- JHotDrawAdapter methods --
+
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if (!(overlay instanceof LineOverlay)) return false;
-		return (figure == null) || (figure instanceof LineFigure);
+		return figure == null || figure instanceof LineFigure;
 	}
 
 	@Override
@@ -83,11 +85,11 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlayView, final Figure figure) {
-		super.updateFigure(overlayView, figure);
+	public void updateFigure(final OverlayView view, final Figure figure) {
+		super.updateFigure(view, figure);
 		assert figure instanceof LineFigure;
-		final LineFigure lineFig = (LineFigure) figure;
-		final Overlay overlay = overlayView.getData();
+		final LineFigure lineFigure = (LineFigure) figure;
+		final Overlay overlay = view.getData();
 		assert overlay instanceof LineOverlay;
 		final LineOverlay lineOverlay = (LineOverlay) overlay;
 		double pt1X = lineOverlay.getLineStart(0);
@@ -99,20 +101,23 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlayView)
-	{
-		super.updateOverlay(figure, overlayView);
+	public void updateOverlay(final Figure figure, final OverlayView view) {
+		super.updateOverlay(figure, view);
 		assert figure instanceof LineFigure;
 		final LineFigure line = (LineFigure) figure;
-		final Overlay overlay = overlayView.getData();
+		final Overlay overlay = view.getData();
 		assert overlay instanceof LineOverlay;
 		final LineOverlay lineOverlay = (LineOverlay) overlay;
 		final Node startNode = line.getNode(0);
-		lineOverlay.setLineStart(startNode.getControlPoint(0).x, 0);
-		lineOverlay.setLineStart(startNode.getControlPoint(0).y, 1);
+		final double x1 = startNode.getControlPoint(0).x;
+		final double y1 = startNode.getControlPoint(0).y;
+		lineOverlay.setLineStart(x1, 0);
+		lineOverlay.setLineStart(y1, 1);
 		final Node endNode = line.getNode(1);
-		lineOverlay.setLineEnd(endNode.getControlPoint(0).x, 0);
-		lineOverlay.setLineEnd(endNode.getControlPoint(0).y, 1);
+		final double x2 = endNode.getControlPoint(0).x;
+		final double y2 = endNode.getControlPoint(0).y;
+		lineOverlay.setLineEnd(x2, 0);
+		lineOverlay.setLineEnd(y2, 1);
 		lineOverlay.update();
 	}
 

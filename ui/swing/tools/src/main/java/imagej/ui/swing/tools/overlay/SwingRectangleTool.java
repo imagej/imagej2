@@ -60,7 +60,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of rectangle tool.
  * 
  * @author Lee Kamentsky
  * @author Grant Harris
@@ -80,13 +80,15 @@ public class SwingRectangleTool extends
 	private final Point anchor = new Point();
 
 	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
-		assert (roi instanceof RectangleOverlay);
+		assert roi instanceof RectangleOverlay;
 		return (RectangleOverlay) roi;
 	}
 
+	// -- JHotDrawAdapter methods --
+
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if ((figure != null) && (!(figure instanceof RectangleFigure))) return false;
+		if (figure != null && !(figure instanceof RectangleFigure)) return false;
 		if (overlay instanceof RectangleOverlay) return true;
 		return false;
 	}
@@ -104,29 +106,28 @@ public class SwingRectangleTool extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final Figure f) {
-		super.updateFigure(overlay, f);
-		final RectangleOverlay rectOvr =
-			downcastOverlay(overlay.getData());
-		final double x0 = rectOvr.getOrigin(0);
-		final double y0 = rectOvr.getOrigin(1);
-		final double w = rectOvr.getExtent(0);
-		final double h = rectOvr.getExtent(1);
+	public void updateFigure(final OverlayView view, final Figure figure) {
+		super.updateFigure(view, figure);
+		final RectangleOverlay overlay = downcastOverlay(view.getData());
+		final double x0 = overlay.getOrigin(0);
+		final double y0 = overlay.getOrigin(1);
+		final double w = overlay.getExtent(0);
+		final double h = overlay.getExtent(1);
 		final Point2D.Double anch = new Point2D.Double(x0, y0);
 		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
-		f.setBounds(anch, lead);
+		figure.setBounds(anch, lead);
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlay) {
-		super.updateOverlay(figure, overlay);
-		final RectangleOverlay rectOvr = downcastOverlay(overlay.getData());
+	public void updateOverlay(final Figure figure, final OverlayView view) {
+		super.updateOverlay(figure, view);
+		final RectangleOverlay overlay = downcastOverlay(view.getData());
 		final Rectangle2D.Double bounds = figure.getBounds();
-		rectOvr.setOrigin(bounds.getMinX(), 0);
-		rectOvr.setOrigin(bounds.getMinY(), 1);
-		rectOvr.setExtent(bounds.getWidth(), 0);
-		rectOvr.setExtent(bounds.getHeight(), 1);
-		rectOvr.update();
+		overlay.setOrigin(bounds.getMinX(), 0);
+		overlay.setOrigin(bounds.getMinY(), 1);
+		overlay.setExtent(bounds.getWidth(), 0);
+		overlay.setExtent(bounds.getHeight(), 1);
+		overlay.update();
 	}
 
 	// NB - show x,y,w,h of rectangle in StatusBar on click-drag
