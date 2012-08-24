@@ -41,7 +41,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
 import imagej.ImageJ;
-import imagej.data.Position;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
