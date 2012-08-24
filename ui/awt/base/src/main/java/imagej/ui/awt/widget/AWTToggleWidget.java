@@ -80,8 +80,8 @@ public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
 
 	@Override
 	public void refreshWidget() {
-		final boolean value = (Boolean) getModel().getValue();
-		checkbox.setState(value);
+		final Boolean value = (Boolean) getModel().getValue();
+		if (value != getValue()) checkbox.setState(value != null && value);
 	}
 
 }

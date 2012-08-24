@@ -79,7 +79,8 @@ public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
 
 	@Override
 	public void refreshWidget() {
-		checkbox.setSelection((Boolean) getModel().getValue());
+		final Boolean value = (Boolean) getModel().getValue();
+		if (value != getValue()) checkbox.setSelection(value != null && value);
 	}
 
 }

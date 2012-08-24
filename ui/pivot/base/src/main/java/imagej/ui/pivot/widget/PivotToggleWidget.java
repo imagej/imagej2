@@ -79,7 +79,8 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 
 	@Override
 	public void refreshWidget() {
-		checkbox.setSelected((Boolean) getModel().getValue());
+		final Boolean value = (Boolean) getModel().getValue();
+		if (value != getValue()) checkbox.setSelected(value != null && value);
 	}
 
 }
