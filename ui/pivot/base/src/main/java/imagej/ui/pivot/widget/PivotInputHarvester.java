@@ -40,12 +40,13 @@ import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import imagej.ui.pivot.PivotUI;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.TablePane;
 
@@ -74,10 +75,11 @@ public class PivotInputHarvester extends
 	{
 		final TablePane pane = inputPanel.getComponent();
 
+		final PivotUI ui = getPivotUI();
 		final Sheet dialog = new Sheet();
 		dialog.setTitle(module.getInfo().getLabel());
 		dialog.add(pane);
-		dialog.open((Display) null);// FIXME
+		dialog.open(ui.getApplicationFrame());
 		final boolean success = dialog.getResult();
 		return success;
 	}
@@ -87,6 +89,14 @@ public class PivotInputHarvester extends
 	@Override
 	protected String getUI() {
 		return PivotUI.NAME;
+	}
+
+	// -- Helper methods --
+
+	private PivotUI getPivotUI() {
+		final UIService uiService = getContext().getService(UIService.class);
+		final UserInterface ui = uiService.getUI(getUI());
+		return (PivotUI) ui;
 	}
 
 }
