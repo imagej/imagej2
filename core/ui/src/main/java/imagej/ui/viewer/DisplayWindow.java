@@ -40,6 +40,7 @@ package imagej.ui.viewer;
  * {@link DisplayPanel}.
  * 
  * @author Grant Harris
+ * @author Barry DeZonia
  */
 public interface DisplayWindow {
 
