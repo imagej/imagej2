@@ -81,8 +81,6 @@ public class PivotApplication implements Application {
 	{
 		frame = new PivotApplicationFrame();
 		toolBar = new PivotToolBar();
-		System.out.println("PivotUI: " + this);
-		System.out.println("PivotUI.startup: event service = " + eventService);
 		statusBar = new PivotStatusBar(eventService);
 
 		contentPane = new BoxPane();
