@@ -124,14 +124,9 @@ public class SelectView implements RunnablePlugin {
 	
 	private boolean viewIsInCurrentDisplayedPlane(ImageDisplay disp, DataView view) {
 		AxisType[] axes = disp.getAxes();
-		Position planePos = disp.getActiveView().getPlanePosition();
 		for (AxisType axis : axes) {
 			if (Axes.isXY(axis)) continue;
-			int index = disp.getAxisIndex(axis);
-			// TODO - assumes display planes are in first two axis positions
-			if (disp.getLongPosition(index) != planePos.getLongPosition(index-2)) {
-				return false;
-			}
+			if (disp.getLongPosition(axis) != view.getLongPosition(axis)) return false;
 		}
 		return true;
 	}
