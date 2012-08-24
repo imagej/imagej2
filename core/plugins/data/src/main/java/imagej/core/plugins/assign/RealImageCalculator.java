@@ -157,14 +157,13 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	public void run() {
 		Img<DoubleType> img = null;
 		try {
-			ImageCombiner computer = new ImageCombiner();
 			@SuppressWarnings("unchecked")
 			Img<T> img1 = (Img<T>) input1.getImgPlus();
 			@SuppressWarnings("unchecked")
 			Img<T> img2 = (Img<T>) input2.getImgPlus();
 			// TODO - limited by ArrayImg size constraints
 			img =
-				computer.applyOp(operators.get(opName), img1, img2, 
+				ImageCombiner.applyOp(operators.get(opName), img1, img2, 
 													new ArrayImgFactory<DoubleType>(), new DoubleType());
 		} catch (IllegalArgumentException e) {
 			cancelReason = e.toString();
