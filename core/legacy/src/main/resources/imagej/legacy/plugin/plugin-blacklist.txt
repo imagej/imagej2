@@ -7,6 +7,8 @@ ij.plugin.Colors                           # Edit > Options > Colors
 ij.plugin.Options("display")               # Edit > Options > Appearance (old)
 ij.plugin.Options("reset")                 # Edit > Options > Reset...
 ij.plugin.Selection("add")                 # Edit > Selection > Add To Manager
+ij.plugin.Selection("all")                 # Edit > Selection > Select All
+ij.plugin.Selection("none")                # Edit > Selection > Select None
 ij.plugin.AboutBox                         # Help > About ImageJ...
 ij.plugin.Duplicator                       # Image > Duplicate
 ij.plugin.frame.ColorPicker                # Image > Color > Color Picker

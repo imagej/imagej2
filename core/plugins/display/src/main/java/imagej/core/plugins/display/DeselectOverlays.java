@@ -37,6 +37,7 @@ package imagej.core.plugins.display;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayView;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -45,7 +46,7 @@ import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 
 /**
- * Deselects all views.
+ * Deselects all the overlays linked to the given display.
  * 
  * @author Lee Kamentsky
  */
@@ -53,9 +54,9 @@ import imagej.module.ItemIO;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
-	@Menu(label = "Select None", mnemonic = 'n', accelerator = "control shift a",
-		weight = 4) }, headless = true)
-public class SelectNone implements RunnablePlugin {
+	@Menu(label = "Deselect Overlays", mnemonic = 'd', weight = 2,
+	accelerator = "control shift a") }, headless = true)
+public class DeselectOverlays implements RunnablePlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
@@ -63,7 +64,9 @@ public class SelectNone implements RunnablePlugin {
 	@Override
 	public void run() {
 		for (final DataView view : display) {
-			view.setSelected(false);
+			if (view instanceof OverlayView) {
+				view.setSelected(false);
+			}
 		}
 	}
 

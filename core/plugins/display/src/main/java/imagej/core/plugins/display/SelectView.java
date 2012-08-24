@@ -35,9 +35,18 @@
 
 package imagej.core.plugins.display;
 
+
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+
+import imagej.ImageJ;
+import imagej.data.Position;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.RectangleOverlay;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -46,28 +55,62 @@ import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 
 /**
- * Selects all of the overlays linked to the given display.
+ * Selects an overlay that encompasses the current view. If no such overlay
+ * currently exists one is created.
  * 
- * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
-	@Menu(label = "Select All", mnemonic = 'a', accelerator = "control a",
-		weight = 4) }, headless = true)
-public class SelectAll implements RunnablePlugin {
+	@Menu(label = "Select View", mnemonic = 'v', // TODO - accelerator
+		weight = 0) }, headless = true)
+public class SelectView implements RunnablePlugin {
 
+	@Parameter
+	private ImageJ context;
+	
+	@Parameter
+	private ImageDisplayService imgDispService;
+	
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
+
+		// first deselect all overlay views
+		
 		for (final DataView view : display) {
 			if (view instanceof OverlayView) {
-				view.setSelected(true);
+				view.setSelected(false);
 			}
 		}
+		
+		// then start searching the views
+		
+		for (final DataView view : display) {
+			
+			// skip all views other than overlay views
+			if (!(view instanceof OverlayView)) continue;
+			
+			// else we have an OverlayView
+			OverlayView oview = (OverlayView) view;
+			
+			if (viewIsInCurrentDisplayedPlane(display, view)) {
+				if (viewFillsDisplay(oview, display)) {
+					view.setSelected(true);
+					return;
+				}
+			}
+		}
+		
+		// if here no overlay was found on currently viewed plane that selects
+		//   everything. so create one that does.
+		Overlay newOverlay = makeOverlay(display);
+		DataView dataView = imgDispService.createDataView(newOverlay);
+		display.add(dataView);
 	}
 
 	public ImageDisplay getDisplay() {
@@ -78,4 +121,39 @@ public class SelectAll implements RunnablePlugin {
 		this.display = display;
 	}
 
+	// -- private helpers --
+	
+	private boolean viewIsInCurrentDisplayedPlane(ImageDisplay disp, DataView view) {
+		AxisType[] axes = disp.getAxes();
+		Position planePos = view.getPlanePosition();
+		for (AxisType axis : axes) {
+			if (Axes.isXY(axis)) continue;
+			int index = disp.getAxisIndex(axis);
+			// TODO - assumes display planes are in first two axis positions
+			if (disp.getLongPosition(index) != planePos.getLongPosition(index-2)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean viewFillsDisplay(OverlayView view, ImageDisplay disp) {
+		Overlay o = view.getData();
+		long[] oDims = o.getDims();
+		if (oDims[0] == disp.dimension(0)) {
+			if (oDims[1] == disp.dimension(1)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private Overlay makeOverlay(ImageDisplay disp) {
+		RectangleOverlay rect = new RectangleOverlay(context);
+		rect.setOrigin(0, 0);
+		rect.setOrigin(0, 1);
+		rect.setExtent(disp.dimension(0), 0);  // TODO - extent too big by 1?
+		rect.setExtent(disp.dimension(1), 1);
+		return rect;
+	}
 }
