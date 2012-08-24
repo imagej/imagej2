@@ -38,6 +38,7 @@ package imagej.core.plugins.display;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.roi.RegionOfInterest;
 
 import imagej.ImageJ;
 import imagej.data.Position;
@@ -81,7 +82,6 @@ public class SelectView implements RunnablePlugin {
 	public void run() {
 
 		// first deselect all overlay views
-		
 		for (final DataView view : display) {
 			if (view instanceof OverlayView) {
 				view.setSelected(false);
@@ -124,7 +124,7 @@ public class SelectView implements RunnablePlugin {
 	
 	private boolean viewIsInCurrentDisplayedPlane(ImageDisplay disp, DataView view) {
 		AxisType[] axes = disp.getAxes();
-		Position planePos = view.getPlanePosition();
+		Position planePos = disp.getActiveView().getPlanePosition();
 		for (AxisType axis : axes) {
 			if (Axes.isXY(axis)) continue;
 			int index = disp.getAxisIndex(axis);
@@ -138,13 +138,13 @@ public class SelectView implements RunnablePlugin {
 
 	private boolean viewFillsDisplay(OverlayView view, ImageDisplay disp) {
 		Overlay o = view.getData();
-		long[] oDims = o.getDims();
-		if (oDims[0] == disp.dimension(0)) {
-			if (oDims[1] == disp.dimension(1)) {
-				return true;
-			}
-		}
-		return false;
+		if (!(o instanceof RectangleOverlay)) return false;
+		RegionOfInterest region = o.getRegionOfInterest();
+		if (region.realMin(0) > 0) return false;
+		if (region.realMin(1) > 0) return false;
+		if (region.realMax(0) < disp.dimension(0)) return false;
+		if (region.realMax(1) < disp.dimension(1)) return false;
+		return true;
 	}
 	
 	private DataView makeOverlayView(ImageDisplay disp) {
