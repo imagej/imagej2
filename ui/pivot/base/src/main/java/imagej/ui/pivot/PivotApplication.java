@@ -35,7 +35,7 @@
 
 package imagej.ui.pivot;
 
-import imagej.ImageJ;
+import imagej.AbstractContextual;
 import imagej.event.EventService;
 import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -52,11 +52,13 @@ import org.apache.pivot.wtk.Orientation;
  * 
  * @author Curtis Rueden
  */
-public class PivotApplication implements Application {
+public class PivotApplication extends AbstractContextual implements Application
+{
 
-	private final ImageJ context;
-	private final EventService eventService;
-	private final MenuService menuService;
+	private Display display;
+
+	private EventService eventService;
+	private MenuService menuService;
 
 	private PivotApplicationFrame frame;
 	private PivotToolBar toolBar;
@@ -64,21 +66,12 @@ public class PivotApplication implements Application {
 
 	private BoxPane contentPane;
 
-	// -- Constructor --
+	// -- PivotApplication methods --
 
-	public PivotApplication() {
-		// get the current ImageJ context
-		context = ImageJ.getContext();
-		eventService = context.getService(EventService.class);
-		menuService = context.getService(MenuService.class);
-	}
+	public void initialize() {
+		eventService = getContext().getService(EventService.class);
+		menuService = getContext().getService(MenuService.class);
 
-	// -- Application methods --
-
-	@Override
-	public void startup(final Display display,
-		final Map<String, String> properties)
-	{
 		frame = new PivotApplicationFrame();
 		toolBar = new PivotToolBar();
 		statusBar = new PivotStatusBar(eventService);
@@ -99,6 +92,29 @@ public class PivotApplication implements Application {
 		frame.setTitle("ImageJ");
 		frame.setMaximized(true);
 		frame.open(display);
+	}
+
+	public Display getDisplay() {
+		return display;
+	}
+
+	public PivotApplicationFrame getApplicationFrame() {
+		return frame;
+	}
+
+	public PivotToolBar getToolBar() {
+		return toolBar;
+	}
+
+	public PivotStatusBar getStatusBar() {
+		return statusBar;
+	}
+
+	// -- Application methods --
+
+	@Override
+	public void startup(final Display d, final Map<String, String> props) {
+		display = d;
 	}
 
 	@Override

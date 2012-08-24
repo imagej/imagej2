@@ -37,6 +37,7 @@ package imagej.ui.pivot;
 
 import imagej.display.Display;
 import imagej.ext.plugin.Plugin;
+import imagej.log.LogService;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -46,7 +47,8 @@ import imagej.ui.SystemClipboard;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayWindow;
 
-import java.util.concurrent.Callable;
+import java.lang.reflect.Field;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.pivot.wtk.DesktopApplicationContext;
 
@@ -56,28 +58,28 @@ import org.apache.pivot.wtk.DesktopApplicationContext;
  * @author Curtis Rueden
  */
 @Plugin(type = UserInterface.class, name = PivotUI.NAME)
-public class PivotUI extends AbstractUserInterface implements Callable<Object> {
+public class PivotUI extends AbstractUserInterface implements Runnable {
 
 	public static final String NAME = "pivot";
+
+	/** The Pivot application context. */
+	private PivotApplication app;
 
 	// -- UserInterface methods --
 
 	@Override
 	public PivotApplicationFrame getApplicationFrame() {
-		// TODO
-		return null;
+		return app.getApplicationFrame();
 	}
 
 	@Override
 	public PivotToolBar getToolBar() {
-		// TODO
-		return null;
+		return app.getToolBar();
 	}
 
 	@Override
 	public PivotStatusBar getStatusBar() {
-		// TODO
-		return null;
+		return app.getStatusBar();
 	}
 
 	@Override
@@ -109,20 +111,59 @@ public class PivotUI extends AbstractUserInterface implements Callable<Object> {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	// -- Callable methods --
+	// -- Runnable methods --
 
 	@Override
-	public Object call() {
-		final String[] args = { PivotApplication.class.getName() };
-		DesktopApplicationContext.main(args);
-		return null;
+	public void run() {
+		DesktopApplicationContext.main(PivotApplication.class, new String[0]);
 	}
 
 	// -- Internal methods --
 
 	@Override
 	protected void createUI() {
-		getUIService().getThreadService().run(this);
+		final LogService log = getContext().getService(LogService.class);
+		try {
+			// call run() method in a separate thread, blocking until finished
+			getUIService().getThreadService().run(this).get();
+		}
+		catch (ExecutionException exc) {
+			if (log != null) log.error(exc);
+		}
+		catch (InterruptedException exc) {
+			if (log != null) log.error(exc);
+		}
+		app = getApplicationContext();
+		app.setContext(getContext());
+		app.initialize();
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * HACK: There does not seem to be a way (at least, not obvious to me) to
+	 * obtain the Application instance from the DesktopApplicationContext. The
+	 * static application field stores it, but it is private. Hence, we force our
+	 * way past accessibility restrictions to grab it anyway...
+	 */
+	private PivotApplication getApplicationContext() {
+		final LogService log = getContext().getService(LogService.class);
+		try {
+			final Field field =
+					DesktopApplicationContext.class.getDeclaredField("application");
+			field.setAccessible(true);
+			return (PivotApplication) field.get(null);
+		}
+		catch (NoSuchFieldException exc) {
+			if (log != null) log.error(exc);
+		}
+		catch (IllegalArgumentException exc) {
+			if (log != null) log.error(exc);
+		}
+		catch (IllegalAccessException exc) {
+			if (log != null) log.error(exc);
+		}
+		return null;
 	}
 
 }
