@@ -51,11 +51,7 @@ import org.apache.pivot.wtk.TablePane;
  */
 public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 
-	private final TablePane uiComponent;
-
-	public PivotInputPanel() {
-		uiComponent = new TablePane();
-	}
+	private TablePane uiComponent;
 
 	// -- InputPanel methods --
 
@@ -68,12 +64,12 @@ public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 		// add widget to panel
 		if (widget.isLabeled()) {
 			// widget is prefixed by a label
-			uiComponent.add(new Label(model.getWidgetLabel()));
-			uiComponent.add(widgetPane);
+			getComponent().add(new Label(model.getWidgetLabel()));
+			getComponent().add(widgetPane);
 		}
 		else {
 			// widget occupies entire row
-			uiComponent.add(widgetPane);
+			getComponent().add(widgetPane);
 		}
 	}
 
@@ -86,6 +82,9 @@ public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 
 	@Override
 	public TablePane getComponent() {
+		if (uiComponent == null) {
+			uiComponent = new TablePane();
+		}
 		return uiComponent;
 	}
 

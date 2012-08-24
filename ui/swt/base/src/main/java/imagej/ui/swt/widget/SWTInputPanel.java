@@ -50,11 +50,12 @@ import org.eclipse.swt.widgets.Label;
  */
 public class SWTInputPanel extends AbstractInputPanel<Composite, Composite> {
 
-	private final Composite uiComponent;
+	private final Composite parent;
+
+	private Composite uiComponent;
 
 	public SWTInputPanel(final Composite parent) {
-		uiComponent = new Composite(parent, 0);
-		uiComponent.setLayout(new MigLayout("wrap 2"));
+		this.parent = parent;
 	}
 
 	// -- InputPanel methods --
@@ -75,6 +76,10 @@ public class SWTInputPanel extends AbstractInputPanel<Composite, Composite> {
 
 	@Override
 	public Composite getComponent() {
+		if (uiComponent == null) {
+			uiComponent = new Composite(parent, 0);
+			uiComponent.setLayout(new MigLayout("wrap 2"));
+		}
 		return uiComponent;
 	}
 
@@ -86,7 +91,7 @@ public class SWTInputPanel extends AbstractInputPanel<Composite, Composite> {
 	// -- Helper methods --
 
 	private Label addLabel(final String text) {
-		final Label label = new Label(uiComponent, 0);
+		final Label label = new Label(getComponent(), 0);
 		label.setText(text);
 		return label;
 	}

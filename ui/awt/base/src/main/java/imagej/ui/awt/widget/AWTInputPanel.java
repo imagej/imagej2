@@ -52,12 +52,7 @@ import net.miginfocom.swing.MigLayout;
  */
 public class AWTInputPanel extends AbstractInputPanel<Panel, Panel> {
 
-	private final Panel uiComponent;
-
-	public AWTInputPanel() {
-		uiComponent = new Panel();
-		uiComponent.setLayout(new MigLayout("wrap 2"));
-	}
+	private Panel uiComponent;
 
 	// -- InputPanel methods --
 
@@ -70,12 +65,12 @@ public class AWTInputPanel extends AbstractInputPanel<Panel, Panel> {
 		// add widget to panel
 		if (widget.isLabeled()) {
 			// widget is prefixed by a label
-			uiComponent.add(new Label(model.getWidgetLabel()));
-			uiComponent.add(widgetPane);
+			getComponent().add(new Label(model.getWidgetLabel()));
+			getComponent().add(widgetPane);
 		}
 		else {
 			// widget occupies entire row
-			uiComponent.add(widgetPane, "span");
+			getComponent().add(widgetPane, "span");
 		}
 	}
 
@@ -88,6 +83,10 @@ public class AWTInputPanel extends AbstractInputPanel<Panel, Panel> {
 
 	@Override
 	public Panel getComponent() {
+		if (uiComponent == null) {
+			uiComponent = new Panel();
+			uiComponent.setLayout(new MigLayout("wrap 2"));
+		}
 		return uiComponent;
 	}
 

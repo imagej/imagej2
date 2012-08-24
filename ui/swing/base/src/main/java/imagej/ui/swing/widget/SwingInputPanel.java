@@ -52,14 +52,7 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingInputPanel extends AbstractInputPanel<JPanel, JPanel> {
 
-	private final JPanel uiComponent;
-
-	public SwingInputPanel() {
-		uiComponent = new JPanel();
-		final MigLayout layout =
-			new MigLayout("fillx,wrap 2", "[right]10[fill,grow]");
-		uiComponent.setLayout(layout);
-	}
+	private JPanel uiComponent;
 
 	// -- InputPanel methods --
 
@@ -75,12 +68,12 @@ public class SwingInputPanel extends AbstractInputPanel<JPanel, JPanel> {
 			final JLabel l = new JLabel(model.getWidgetLabel());
 			final String desc = model.getItem().getDescription();
 			if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
-			uiComponent.add(l);
-			uiComponent.add(widgetPane);
+			getComponent().add(l);
+			getComponent().add(widgetPane);
 		}
 		else {
 			// widget occupies entire row
-			uiComponent.add(widgetPane, "span");
+			getComponent().add(widgetPane, "span");
 		}
 	}
 
@@ -93,6 +86,12 @@ public class SwingInputPanel extends AbstractInputPanel<JPanel, JPanel> {
 
 	@Override
 	public JPanel getComponent() {
+		if (uiComponent == null) {
+			uiComponent = new JPanel();
+			final MigLayout layout =
+					new MigLayout("fillx,wrap 2", "[right]10[fill,grow]");
+			uiComponent.setLayout(layout);
+		}
 		return uiComponent;
 	}
 
