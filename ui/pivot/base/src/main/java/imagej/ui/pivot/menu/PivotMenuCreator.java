@@ -35,12 +35,10 @@
 
 package imagej.ui.pivot.menu;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.PluginService;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
 import imagej.module.ModuleInfo;
-import imagej.util.Log;
 
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.BoxPane;
@@ -64,16 +62,15 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
 		addLeafToMenu(final ShadowMenu shadow, final MenuButton target)
 	{
 		final Menu.Item item = new Menu.Item(shadow.getMenuEntry().getName());
-		linkAction(shadow.getModuleInfo(), item);
+		linkAction(shadow, item);
 		getLastSection(target).add(item);
 	}
 
 	@Override
 	protected void addLeafToTop(final ShadowMenu shadow, final BoxPane target) {
-		Log.debug("PivotMenuCreator: Adding leaf item: " + shadow);
 		final PushButton button = new PushButton();
 		button.setButtonData(shadow.getMenuEntry().getName());
-		linkAction(shadow.getModuleInfo(), button);
+		linkAction(shadow, button);
 		target.add(button);
 	}
 
@@ -91,7 +88,6 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
 	protected MenuButton addNonLeafToTop(final ShadowMenu shadow,
 		final BoxPane target)
 	{
-		Log.debug("PivotMenuCreator: Adding menu: " + shadow);
 		final MenuButton button = createMenuButton(shadow);
 		target.add(button);
 		return button;
@@ -104,7 +100,6 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
 
 	@Override
 	protected void addSeparatorToTop(final BoxPane target) {
-		Log.debug("PivotMenuCreator: Adding separator");
 		target.add(new Label("|"));
 	}
 
@@ -124,14 +119,19 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
 		return sections.get(sections.getLength() - 1);
 	}
 
-	private void linkAction(final ModuleInfo info, final Button button) {
-		button.setAction(new Action() {
+	private void linkAction(final ShadowMenu shadow, final Button button) {
+		final ModuleInfo info = shadow.getModuleInfo();
+		final PluginService pluginService =
+			shadow.getContext().getService(PluginService.class);
+		if (pluginService != null) {
+			button.setAction(new Action() {
 
-			@Override
-			public void perform(final Component c) {
-				ImageJ.get(PluginService.class).run(info);
-			}
-		});
+				@Override
+				public void perform(final Component c) {
+					pluginService.run(info);
+				}
+			});
+		}
 		button.setEnabled(info.isEnabled());
 	}
 
