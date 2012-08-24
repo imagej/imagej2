@@ -60,7 +60,7 @@ import net.imglib2.meta.AxisType;
  * Changes the values of the axes. For example they can go from [x,y,z] to
  * [c,t,frequency]. This is a convenience plugin that allows axis types to be
  * reassigned. Useful if imported data has the wrong axis designations. Pixel
- * data is NOT rearranged.
+ * data is NOT rearranged. Calibration values are maintained where possible.
  * 
  * @author Barry DeZonia
  */
@@ -112,6 +112,8 @@ public class EditAxes extends DynamicPlugin {
 			// error already logged
 			return;
 		}
+		double[] newCal = getNewCalibration(dataset,desiredAxes);
+		dataset.setCalibration(newCal);
 		dataset.setAxes(desiredAxes);
 	}
 
@@ -167,4 +169,21 @@ public class EditAxes extends DynamicPlugin {
 		return false;
 	}
 
+	/**
+	 * Copies already existing calibration values into new calibration when
+	 * possible. If new axis is not present in original Dataset sets that
+	 * calibration value to NaN.
+	 */
+	double[] getNewCalibration(Dataset origDs, AxisType[] newAxes) {
+		double[] newCal = new double[newAxes.length];
+		int a = 0;
+		for (AxisType axis : newAxes) {
+			int index = origDs.getAxisIndex(axis);
+			if (index < 0)
+				newCal[a++] = Double.NaN;
+			else
+				newCal[a++] = origDs.calibration(index);
+		}
+		return newCal;
+	}
 }
