@@ -96,10 +96,10 @@ public class SelectView implements RunnablePlugin {
 			if (!(view instanceof OverlayView)) continue;
 			
 			// else we have an OverlayView
-			OverlayView oview = (OverlayView) view;
+			OverlayView overlayView = (OverlayView) view;
 			
 			if (viewIsInCurrentDisplayedPlane(display, view)) {
-				if (viewFillsDisplay(oview, display)) {
+				if (viewFillsDisplay(overlayView, display)) {
 					view.setSelected(true);
 					return;
 				}
@@ -108,8 +108,7 @@ public class SelectView implements RunnablePlugin {
 		
 		// if here no overlay was found on currently viewed plane that selects
 		//   everything. so create one that does.
-		Overlay newOverlay = makeOverlay(display);
-		DataView dataView = imgDispService.createDataView(newOverlay);
+		DataView dataView = makeOverlayView(display);
 		display.add(dataView);
 	}
 
@@ -148,6 +147,19 @@ public class SelectView implements RunnablePlugin {
 		return false;
 	}
 	
+	private DataView makeOverlayView(ImageDisplay disp) {
+		Overlay newOverlay = makeOverlay(disp);
+		DataView dataView = imgDispService.createDataView(newOverlay);
+		for (int i = 0; i < disp.numDimensions(); i++) {
+			final AxisType axis = disp.axis(i);
+			if (Axes.isXY(axis)) continue;
+			if (dataView.getData().getAxisIndex(axis) < 0) {
+				dataView.setPosition(disp.getLongPosition(axis), axis);
+			}
+		}
+		return dataView;
+	}
+
 	private Overlay makeOverlay(ImageDisplay disp) {
 		RectangleOverlay rect = new RectangleOverlay(context);
 		rect.setOrigin(0, 0);
@@ -156,4 +168,5 @@ public class SelectView implements RunnablePlugin {
 		rect.setExtent(disp.dimension(1), 1);
 		return rect;
 	}
+	
 }
