@@ -44,6 +44,7 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.util.RealCoords;
 
 import java.awt.geom.Point2D;
 
@@ -96,8 +97,8 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 		double pt1Y = lineOverlay.getLineStart(1);
 		double pt2X = lineOverlay.getLineEnd(0);
 		double pt2Y = lineOverlay.getLineEnd(1);
-		lineFig.setStartPoint(new Point2D.Double(pt1X, pt1Y));
-		lineFig.setEndPoint(new Point2D.Double(pt2X, pt2Y));
+		lineFigure.setStartPoint(new Point2D.Double(pt1X, pt1Y));
+		lineFigure.setEndPoint(new Point2D.Double(pt2X, pt2Y));
 	}
 
 	@Override
@@ -119,11 +120,17 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 		lineOverlay.setLineEnd(x2, 0);
 		lineOverlay.setLineEnd(y2, 1);
 		lineOverlay.update();
+		reportLine(x1, y1, x2, y2);
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
 		return new IJCreationTool(display, this);
+	}
+
+	@Override
+	public void report(final RealCoords p1, final RealCoords p2) {
+		reportLine(p1, p2);
 	}
 
 }

@@ -104,12 +104,21 @@ public class IJCreationTool extends CreationTool implements JHotDrawTool {
 	public void mousePressed(MouseEvent evt) {
 		if (!isLeftClick(evt)) return;
 		super.mousePressed(evt);
+		adapter.mouseDown(getDisplay(), evt.getX(), evt.getY());
 	}
 	
 	@Override
 	public void mouseReleased(MouseEvent evt) {
 		if (!isLeftClick(evt)) return;
 		super.mouseReleased(evt);
+	}
+
+	// -- MouseMotionListener methods --
+
+	@Override
+	public void mouseDragged(MouseEvent evt) {
+		super.mouseDragged(evt);
+		adapter.mouseDrag(getDisplay(), evt.getX(), evt.getY());
 	}
 
 	// -- Helper methods --

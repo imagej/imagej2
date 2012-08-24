@@ -44,6 +44,7 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.util.RealCoords;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -121,11 +122,17 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
 		overlay.setRadius(w / 2, 0);
 		overlay.setRadius(h / 2, 1);
 		overlay.update();
+		reportRectangle(x, y, w, h);
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
 		return new IJCreationTool(display, this);
+	}
+
+	@Override
+	public void report(final RealCoords p1, final RealCoords p2) {
+		reportRectangle(p1, p2);
 	}
 
 }

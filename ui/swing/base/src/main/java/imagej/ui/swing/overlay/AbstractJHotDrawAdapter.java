@@ -35,12 +35,17 @@
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.display.ImageCanvas;
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
+import imagej.display.Display;
 import imagej.tool.AbstractTool;
 import imagej.util.ColorRGB;
+import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -68,6 +73,20 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 	protected static final double[] DASH_LINE_STYLE = { 4, 4 };
 	protected static final double[] DOT_LINE_STYLE = { 1, 2 };
 	protected static final double[] DOT_DASH_LINE_STYLE = { 6, 2, 1, 2 };
+
+	/**
+	 * Mouse position in <em>data</em> coordinates of the last mouse press
+	 * recorded by {@link #mouseDown(Display, int, int)}. This information is
+	 * recorded for potential status reporting by certain tools.
+	 */
+	private RealCoords down;
+
+	/**
+	 * Mouse position in <em>data</em> coordinates of the last mouse drag recorded
+	 * by {@link #mouseDrag(Display, int, int)}. This information is recorded for
+	 * potential status reporting by certain tools.
+	 */
+	private RealCoords drag;
 
 	// -- JHotDrawAdapter methods --
 
@@ -141,6 +160,22 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 		overlay.setAlpha(fillColor.getAlpha());
 	}
 
+	@Override
+	public void mouseDown(final Display<?> d, final int x, final int y) {
+		down = getDataCoords(d, x, y);
+	}
+
+	@Override
+	public void mouseDrag(final Display<?> d, final int x, final int y) {
+		drag = getDataCoords(d, x, y);
+		report(down, drag);
+	}
+
+	@Override
+	public void report(final RealCoords p1, final RealCoords p2) {
+		// NB: Subclasses can override to report something.
+	}
+
 	// -- Internal methods --
 
 	protected void initDefaultSettings(final Figure figure) {
@@ -152,6 +187,22 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor(settings));
 		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
 		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
+	}
+
+	// -- Internal methods --
+
+	/** Reports rectangle statistics to the status bar. */
+	protected void reportRectangle(final RealCoords p1, final RealCoords p2) {
+		final double x = Math.min(p1.x, p2.x);
+		final double y = Math.min(p1.y, p2.y);
+		final double w = Math.abs(p2.x - p1.x);
+		final double h = Math.abs(p2.y - p1.y);
+		reportRectangle(x, y, w, h);
+	}
+
+	/** Reports line statistics to the status bar. */
+	protected void reportLine(final RealCoords p1, final RealCoords p2) {
+		reportLine(p1.x, p1.y, p2.x, p2.y);
 	}
 
 	// -- Helper methods --
@@ -175,6 +226,19 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 		final int b = color.getBlue();
 		final int a = settings.getAlpha();
 		return new Color(r, g, b, a);
+	}
+
+	/**
+	 * Gets the coordinates in <em>data</em> space for the given (x, y) pixel
+	 * coordinates.
+	 */
+	private RealCoords getDataCoords(final Display<?> d, final int x,
+		final int y)
+	{
+		if (!(d instanceof ImageDisplay)) return null;
+		final ImageDisplay imageDisplay = (ImageDisplay) d;
+		final ImageCanvas canvas = imageDisplay.getCanvas();
+		return canvas.panelToDataCoords(new IntCoords(x, y));
 	}
 
 }

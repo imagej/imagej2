@@ -38,8 +38,10 @@ package imagej.ui.swing.overlay;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.display.Display;
 import imagej.ext.plugin.Plugin;
 import imagej.tool.Tool;
+import imagej.util.RealCoords;
 
 import org.jhotdraw.draw.Figure;
 
@@ -99,5 +101,11 @@ public interface JHotDrawAdapter extends Tool {
 	void updateFigure(OverlayView view, Figure figure);
 
 	JHotDrawTool getCreationTool(ImageDisplay display);
+
+	void mouseDown(Display<?> d, int x, int y);
+
+	void mouseDrag(Display<?> d, int x, int y);
+
+	void report(RealCoords p1, RealCoords p2);
 
 }

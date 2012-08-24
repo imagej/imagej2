@@ -36,23 +36,16 @@
 package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsDraggedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.event.StatusService;
 import imagej.ext.plugin.Plugin;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -75,9 +68,6 @@ public class SwingRectangleTool extends
 {
 
 	public static final double PRIORITY = 100;
-
-	// initial mouse down point is recorded for status bar updates
-	private final Point anchor = new Point();
 
 	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
 		assert roi instanceof RectangleOverlay;
@@ -123,54 +113,26 @@ public class SwingRectangleTool extends
 		super.updateOverlay(figure, view);
 		final RectangleOverlay overlay = downcastOverlay(view.getData());
 		final Rectangle2D.Double bounds = figure.getBounds();
-		overlay.setOrigin(bounds.getMinX(), 0);
-		overlay.setOrigin(bounds.getMinY(), 1);
-		overlay.setExtent(bounds.getWidth(), 0);
-		overlay.setExtent(bounds.getHeight(), 1);
+		final double x = bounds.getMinX();
+		final double y = bounds.getMinY();
+		final double w = bounds.getWidth();
+		final double h = bounds.getHeight();
+		overlay.setOrigin(x, 0);
+		overlay.setOrigin(y, 1);
+		overlay.setExtent(w, 0);
+		overlay.setExtent(h, 1);
 		overlay.update();
-	}
-
-	// NB - show x,y,w,h of rectangle in StatusBar on click-drag
-
-	// click - record start point
-	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
-		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		anchor.x = evt.getX();
-		anchor.y = evt.getY();
-		// NB: Prevent PixelProbe from overwriting the status bar.
-		evt.consume();
-	}
-
-	// drag - publish rectangle dimensions in status bar
-	@Override
-	public void onMouseDrag(final MsDraggedEvent evt) {
-		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		final StatusService statusService =
-			evt.getContext().getService(StatusService.class);
-		final ImageDisplayService imgService =
-			evt.getContext().getService(ImageDisplayService.class);
-		final ImageDisplay imgDisp = imgService.getActiveImageDisplay();
-		final IntCoords startPt = new IntCoords(anchor.x, anchor.y);
-		final IntCoords endPt =
-			new IntCoords(evt.getX() - anchor.x, evt.getY() - anchor.y);
-		final RealCoords startPtModelSpace =
-			imgDisp.getCanvas().panelToDataCoords(startPt);
-		final RealCoords endPtModelSpace =
-			imgDisp.getCanvas().panelToDataCoords(endPt);
-		final int x = (int) startPtModelSpace.x;
-		final int y = (int) startPtModelSpace.y;
-		final int w = (int) endPtModelSpace.x;
-		final int h = (int) endPtModelSpace.y;
-		final String message = String.format("x=%d, y=%d, w=%d, h=%d", x, y, w, h);
-		statusService.showStatus(message);
-		// NB: Prevent PixelProbe from overwriting the status bar.
-		evt.consume();
+		reportRectangle(x, y, w, h);
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
 		return new IJCreationTool(display, this);
+	}
+
+	@Override
+	public void report(final RealCoords p1, final RealCoords p2) {
+		reportRectangle(p1, p2);
 	}
 
 }
