@@ -431,6 +431,7 @@ public final class DefaultUIService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+		// FIXME: Why only the default one? Move to AbstractUserInterface!
 		final UserInterface ui = getDefaultUI();
 		ui.saveLocation();
 	}
