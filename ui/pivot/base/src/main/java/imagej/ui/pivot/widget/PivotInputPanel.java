@@ -61,16 +61,13 @@ public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 		final BoxPane widgetPane = widget.getComponent();
 		final WidgetModel model = widget.getModel();
 
-		// add widget to panel
+		final TablePane.Row row = new TablePane.Row();
 		if (widget.isLabeled()) {
 			// widget is prefixed by a label
-			getComponent().add(new Label(model.getWidgetLabel()));
-			getComponent().add(widgetPane);
+			row.add(new Label(model.getWidgetLabel()));
 		}
-		else {
-			// widget occupies entire row
-			getComponent().add(widgetPane);
-		}
+		row.add(widgetPane);
+		getComponent().getRows().add(row);
 	}
 
 	@Override
@@ -84,6 +81,12 @@ public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 	public TablePane getComponent() {
 		if (uiComponent == null) {
 			uiComponent = new TablePane();
+			final TablePane.Column labelColumn = new TablePane.Column();
+			labelColumn.setWidth("1*");
+			uiComponent.getColumns().add(labelColumn);
+			final TablePane.Column widgetColumn = new TablePane.Column();
+			labelColumn.setWidth("-1");
+			uiComponent.getColumns().add(widgetColumn);
 		}
 		return uiComponent;
 	}
