@@ -47,7 +47,7 @@ import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Sheet;
+import org.apache.pivot.wtk.Dialog;
 import org.apache.pivot.wtk.TablePane;
 
 /**
@@ -73,12 +73,9 @@ public class PivotInputHarvester extends
 	public boolean harvestInputs(final InputPanel<TablePane, BoxPane> inputPanel,
 		final Module module)
 	{
-		final TablePane pane = inputPanel.getComponent();
-
 		final PivotUI ui = getPivotUI();
-		final Sheet dialog = new Sheet();
-		dialog.setTitle(module.getInfo().getLabel());
-		dialog.add(pane);
+		final String title = module.getInfo().getTitle();
+		final Dialog dialog = new Dialog(title, inputPanel.getComponent());
 		dialog.open(ui.getApplicationFrame());
 		final boolean success = dialog.getResult();
 		return success;
