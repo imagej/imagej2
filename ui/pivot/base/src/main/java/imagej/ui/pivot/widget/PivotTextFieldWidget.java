@@ -69,6 +69,8 @@ public class PivotTextFieldWidget extends PivotInputWidget<String> implements
 
 		textInput = new TextInput();
 		getComponent().add(textInput);
+
+		refreshWidget();
 	}
 
 	@Override
@@ -78,7 +80,9 @@ public class PivotTextFieldWidget extends PivotInputWidget<String> implements
 
 	@Override
 	public void refreshWidget() {
-		textInput.setText(getModel().getValue().toString());
+		final String text = getModel().getText();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
 	}
 
 }
