@@ -57,8 +57,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 /**
  * Fills an output Dataset by applying an inversion to an input Dataset's data
  * values. The inversion is relative to the minimum and maximum data values
- * present in the input Dataset. However in IJ1 inversion for 8-bit data is
- * relative to 0 & 255 and that behavior is mirrored here as well.
+ * present in the input Dataset. However when legacy compatibility mode is
+ * enabled an unsigned 8-bit dataset is inverted relative to 0 & 255.
  * 
  * @author Barry DeZonia
  */
