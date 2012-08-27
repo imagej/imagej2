@@ -68,7 +68,7 @@ import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.Geom;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of point tool.
  * 
  * @author Barry DeZonia
  */
@@ -79,10 +79,12 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 
 	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
 
+	// -- JHotDrawAdapter methods --
+
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if (!(overlay instanceof PointOverlay)) return false;
-		return (figure == null) || (figure instanceof PointFigure);
+		return figure == null || figure instanceof PointFigure;
 	}
 
 	@Override
@@ -98,39 +100,38 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlayView, final Figure figure) {
-		super.updateFigure(overlayView, figure);
+	public void updateFigure(final OverlayView view, final Figure figure) {
+		super.updateFigure(view, figure);
 		assert figure instanceof PointFigure;
-		final PointFigure pointFig = (PointFigure) figure;
-		final Overlay overlay = overlayView.getData();
+		final PointFigure pointFigure = (PointFigure) figure;
+		final Overlay overlay = view.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
-		pointFig.setFillColor(pointOverlay.getFillColor());
-		pointFig.setLineColor(pointOverlay.getLineColor());
-		pointFig.setPoint(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
+		pointFigure.setFillColor(pointOverlay.getFillColor());
+		pointFigure.setLineColor(pointOverlay.getLineColor());
+		pointFigure.setPoint(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlayView)
-	{
+	public void updateOverlay(final Figure figure, final OverlayView view) {
 		assert figure instanceof PointFigure;
 		final PointFigure point = (PointFigure) figure;
-		final Overlay overlay = overlayView.getData();
+		final Overlay overlay = view.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
 		// do not let call to super.updateOverlay() mess with drawing attributes
 		// so save colors
-		ColorRGB fillColor = pointOverlay.getFillColor(); 
-		ColorRGB lineColor = pointOverlay.getLineColor();
+		final ColorRGB fillColor = overlay.getFillColor();
+		final ColorRGB lineColor = overlay.getLineColor();
 		// call super in case it initializes anything of importance
-		super.updateOverlay(figure, overlayView);
+		super.updateOverlay(figure, view);
 		// and restore colors to what we really want
-		pointOverlay.setFillColor(fillColor);
-		pointOverlay.setLineColor(lineColor);
+		overlay.setFillColor(fillColor);
+		overlay.setLineColor(lineColor);
 		// set location
 		pointOverlay.setPoint(point.getX(), 0);
 		pointOverlay.setPoint(point.getY(), 1);
-		pointOverlay.update();
+		overlay.update();
 	}
 
 	@Override
@@ -143,14 +144,15 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 		return new IJCreationTool(display, this);
 	}
 
-	@SuppressWarnings("serial")
+	// -- Helper classes --
+
 	private class PointFigure extends AbstractAttributedFigure {
 
 		protected Rectangle2D.Double bounds;
 		private final Rectangle2D.Double rect;
 		private Color fillColor = Color.yellow;
 		private Color lineColor = Color.white;
-		
+
 		/** Creates a new instance. */
 		public PointFigure() {
 			this(0, 0);
@@ -166,26 +168,26 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 			bounds.y = y;
 		}
 
-		public void setFillColor(ColorRGB c) {
+		public void setFillColor(final ColorRGB c) {
 			if (c == null) {
-				OverlayService srv = getContext().getService(OverlayService.class);
-				OverlaySettings settings = srv.getDefaultSettings();
+				final OverlayService srv =
+					getContext().getService(OverlayService.class);
+				final OverlaySettings settings = srv.getDefaultSettings();
 				fillColor = AWTColors.getColor(settings.getFillColor());
 			}
-			else
-				fillColor = AWTColors.getColor(c);
+			else fillColor = AWTColors.getColor(c);
 		}
-		
-		public void setLineColor(ColorRGB c) {
+
+		public void setLineColor(final ColorRGB c) {
 			if (c == null) {
-				OverlayService srv = getContext().getService(OverlayService.class);
-				OverlaySettings settings = srv.getDefaultSettings();
+				final OverlayService srv =
+					getContext().getService(OverlayService.class);
+				final OverlaySettings settings = srv.getDefaultSettings();
 				lineColor = AWTColors.getColor(settings.getLineColor());
 			}
-			else
-				lineColor = AWTColors.getColor(c);
+			else lineColor = AWTColors.getColor(c);
 		}
-		
+
 		public double getX() {
 			return bounds.x;
 		}
@@ -387,5 +389,7 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 			rect.height = (int) bounds.height;
 			return rect;
 		}
+
 	}
+
 }
