@@ -65,8 +65,20 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 
 		spinner = new Spinner();
 		spinner.setPreferredWidth(100);
-		spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
-			max.intValue(), stepSize.intValue()));
+		try {
+			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
+				max.intValue(), stepSize.intValue()));
+		}
+		catch (IllegalArgumentException exc) {
+			// HACK FIXME: Temporarily avoid case where there are more than
+			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
+			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
+		}
+		catch (NullPointerException exc) {
+			// HACK FIXME: Temporarily avoid case where there are more than
+			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
+			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
+		}
 		getComponent().add(spinner);
 
 		refreshWidget();
