@@ -171,6 +171,14 @@ public abstract class AbstractTool extends SortablePlugin implements Tool {
 		report("x=" + fx + ", y=" + fy + ", angle=" + fa + ", length=" + fl);
 	}
 
+	/** Publishes point location in the status bar. */
+	protected void reportPoint(final double x, final double y) {
+		final DecimalFormat f = new DecimalFormat("0.##");
+		final String fx = f.format(x);
+		final String fy = f.format(y);
+		report("x=" + fx + ", y=" + fy);
+	}
+
 	/** Reports the given message using the associated status service, if any. */
 	protected void report(final String message) {
 		final StatusService statusService =

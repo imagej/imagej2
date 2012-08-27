@@ -48,6 +48,7 @@ import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.util.ColorRGB;
+import imagej.util.RealCoords;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -129,9 +130,12 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay> {
 		overlay.setFillColor(fillColor);
 		overlay.setLineColor(lineColor);
 		// set location
-		pointOverlay.setPoint(point.getX(), 0);
-		pointOverlay.setPoint(point.getY(), 1);
+		final double x = point.getX();
+		final double y = point.getY();
+		pointOverlay.setPoint(x, 0);
+		pointOverlay.setPoint(y, 1);
 		overlay.update();
+		reportPoint(x, y);
 	}
 
 	@Override

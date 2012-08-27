@@ -205,6 +205,11 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 		reportLine(p1.x, p1.y, p2.x, p2.y);
 	}
 
+	/** Reports point statistics to the status bar. */
+	protected void reportPoint(final RealCoords p) {
+		reportPoint(p.x, p.y);
+	}
+
 	// -- Helper methods --
 
 	private double getDefaultLineWidth(final OverlaySettings settings) {
