@@ -53,6 +53,9 @@ import imagej.options.OptionsPlugin;
 	@Menu(label = "Misc...", weight = 17) })
 public class OptionsMisc extends OptionsPlugin {
 
+	private static final String MODE_LEGACY = "Legacy";
+	private static final String MODE_MODERN = "Modern";
+
 	// TODO - use double instead of string for divide by zero value?
 	@Parameter(label = "Divide by zero value")
 	private String divByZeroVal = "Infinity";
@@ -74,6 +77,9 @@ public class OptionsMisc extends OptionsPlugin {
 
 	@Parameter(label = "Debug mode")
 	private boolean debugMode = false;
+
+	@Parameter(label = "Compatibility mode", choices = {MODE_LEGACY, MODE_MODERN})
+	private String compatibilityMode = MODE_LEGACY;
 
 	// -- OptionsMisc methods --
 
@@ -109,6 +115,14 @@ public class OptionsMisc extends OptionsPlugin {
 		return debugMode;
 	}
 
+	public boolean isLegacyMode() {
+		return compatibilityMode.equals(MODE_LEGACY);
+	}
+	
+	public boolean isModernMode() {
+		return compatibilityMode.equals(MODE_MODERN);
+	}
+	
 	public void setDivByZeroVal(final String divByZeroVal) {
 		this.divByZeroVal = divByZeroVal;
 	}
@@ -139,4 +153,11 @@ public class OptionsMisc extends OptionsPlugin {
 		this.debugMode = debugMode;
 	}
 
+	public void setCompatibilityLegacy() {
+		compatibilityMode = MODE_LEGACY;
+	}
+
+	public void setCompatibilityModern() {
+		compatibilityMode = MODE_MODERN;
+	}
 }

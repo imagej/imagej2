@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.core.options.OptionsMisc;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
@@ -47,6 +48,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.options.OptionsService;
 import net.imglib2.Cursor;
 import net.imglib2.ops.operation.real.unary.RealInvert;
 import net.imglib2.type.numeric.RealType;
@@ -75,6 +77,9 @@ public class InvertDataValues<T extends RealType<T>> implements RunnablePlugin {
 	@Parameter
 	private ImageDisplayService imgDispService;
 
+	@Parameter
+	private OptionsService optionsService;
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
@@ -92,9 +97,9 @@ public class InvertDataValues<T extends RealType<T>> implements RunnablePlugin {
 		Dataset dataset = imgDispService.getActiveDataset(display);
 		Overlay overlay = overlayService.getActiveOverlay(display);
 		DatasetView view = imgDispService.getActiveDatasetView(display);
+		OptionsMisc options = optionsService.getOptions(OptionsMisc.class);
 		
-		// this is similar to IJ1
-		if (dataset.isInteger() && !dataset.isSigned() &&
+		if (options.isLegacyMode() && dataset.isInteger() && !dataset.isSigned() &&
 			dataset.getType().getBitsPerPixel() == 8)
 		{
 			min = 0;
