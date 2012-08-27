@@ -40,11 +40,11 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.ext.plugin.Plugin;
+import imagej.log.LogService;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.util.Log;
 
 import java.awt.Point;
 import java.awt.event.InputEvent;
@@ -64,7 +64,7 @@ import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.BezierPath.Node;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of polygon/freehand tool.
  * 
  * @author Lee Kamentsky
  * @author Barry DeZonia
@@ -72,26 +72,112 @@ import org.jhotdraw.geom.BezierPath.Node;
 @Plugin(type = JHotDrawAdapter.class, name = "Polygon",
 	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
 	priority = SwingPolygonTool.PRIORITY, enabled = true)
-public class SwingPolygonTool extends
-	AbstractJHotDrawAdapter<PolygonOverlay>
-{
+public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 
 	public static final double PRIORITY = SwingEllipseTool.PRIORITY - 1;
 
-	static private BezierFigure downcastFigure(final Figure figure) {
+	private static BezierFigure downcastFigure(final Figure figure) {
 		assert figure instanceof BezierFigure;
 		return (BezierFigure) figure;
 	}
 
-	static private PolygonOverlay downcastOverlay(final Overlay overlay) {
+	private static PolygonOverlay downcastOverlay(final Overlay overlay) {
 		assert overlay instanceof PolygonOverlay;
 		return (PolygonOverlay) overlay;
 	}
 
-	/*
+	// -- JHotDrawAdapter methods --
+
+	@Override
+	public boolean supports(final Overlay overlay, final Figure figure) {
+		if (figure != null && !(figure instanceof PolygonFigure)) return false;
+		return overlay instanceof PolygonOverlay;
+	}
+
+	@Override
+	public Overlay createNewOverlay() {
+		final PolygonOverlay o = new PolygonOverlay(getContext());
+		return o;
+	}
+
+	@Override
+	public Figure createDefaultFigure() {
+		final BezierFigure figure = new PolygonFigure();
+		initDefaultSettings(figure);
+		return figure;
+	}
+
+	@Override
+	public void updateOverlay(final Figure figure, final OverlayView view) {
+		super.updateOverlay(figure, view);
+		final BezierFigure b = downcastFigure(figure);
+		final PolygonOverlay poverlay = downcastOverlay(view.getData());
+		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
+		final int nodeCount = b.getNodeCount();
+		final LogService log = getContext().getService(LogService.class);
+		while (roi.getVertexCount() > nodeCount) {
+			roi.removeVertex(nodeCount);
+			if (log != null) log.debug("Removed node from overlay.");
+		}
+		for (int i = 0; i < nodeCount; i++) {
+			final Node node = b.getNode(i);
+			final double[] position = new double[] { node.x[0], node.y[0] };
+			if (roi.getVertexCount() == i) {
+				roi.addVertex(i, new RealPoint(position));
+				if (log != null) log.debug("Added node to overlay");
+			}
+			else {
+				if ((position[0] != roi.getVertex(i).getDoublePosition(0)) ||
+					(position[1] != roi.getVertex(i).getDoublePosition(1)))
+				{
+					if (log != null) {
+						log.debug(String.format("Vertex # %d moved to %f,%f", i + 1,
+							position[0], position[1]));
+					}
+				}
+				roi.setVertexPosition(i, position);
+			}
+		}
+		poverlay.update();
+	}
+
+	@Override
+	public void updateFigure(final OverlayView view, final Figure figure) {
+		super.updateFigure(view, figure);
+		final BezierFigure bezierFigure = downcastFigure(figure);
+		final PolygonOverlay polygonOverlay = downcastOverlay(view.getData());
+		final PolygonRegionOfInterest roi = polygonOverlay.getRegionOfInterest();
+		final int vertexCount = roi.getVertexCount();
+		while (bezierFigure.getNodeCount() > vertexCount) {
+			bezierFigure.removeNode(vertexCount);
+		}
+		for (int i = 0; i < vertexCount; i++) {
+			final RealLocalizable vertex = roi.getVertex(i);
+			final double x = vertex.getDoublePosition(0);
+			final double y = vertex.getDoublePosition(1);
+			if (bezierFigure.getNodeCount() == i) {
+				bezierFigure.addNode(new Node(x, y));
+			}
+			else {
+				final Node node = bezierFigure.getNode(i);
+				node.mask = 0;
+				Arrays.fill(node.x, x);
+				Arrays.fill(node.y, y);
+			}
+		}
+	}
+
+	@Override
+	public JHotDrawTool getCreationTool(final ImageDisplay display) {
+		return new IJBezierTool(display, this);
+	}
+
+	// -- Helper classes --
+
+	/**
 	 * The BezierFigure uses a BezierNodeHandle which can change the curve
-	 * connecting vertices from a line to a Bezier curve. We subclass both 
-	 * the figure and the node handle to defeat this.
+	 * connecting vertices from a line to a Bezier curve. We subclass both the
+	 * figure and the node handle to defeat this.
 	 */
 	public static class PolygonNodeHandle extends BezierNodeHandle {
 
@@ -139,86 +225,6 @@ public class SwingPolygonTool extends
 
 		private static final long serialVersionUID = 1L;
 
-	}
-
-	@Override
-	public boolean supports(final Overlay overlay, final Figure figure) {
-		if ((figure != null) && (!(figure instanceof PolygonFigure))) return false;
-		return overlay instanceof PolygonOverlay;
-	}
-
-	@Override
-	public Overlay createNewOverlay() {
-		final PolygonOverlay o = new PolygonOverlay(getContext());
-		return o;
-	}
-
-	@Override
-	public Figure createDefaultFigure() {
-		final BezierFigure figure = new PolygonFigure();
-		initDefaultSettings(figure);
-		return figure;
-	}
-
-	@Override
-	public void updateOverlay(final Figure figure, final OverlayView overlay) {
-		super.updateOverlay(figure, overlay);
-		final BezierFigure b = downcastFigure(figure);
-		final PolygonOverlay poverlay = downcastOverlay(overlay.getData());
-		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
-		final int nodeCount = b.getNodeCount();
-		while (roi.getVertexCount() > nodeCount) {
-			roi.removeVertex(nodeCount);
-			Log.debug("Removed node from overlay.");
-		}
-		for (int i = 0; i < nodeCount; i++) {
-			final Node node = b.getNode(i);
-			final double[] position = new double[] { node.x[0], node.y[0] };
-			if (roi.getVertexCount() == i) {
-				roi.addVertex(i, new RealPoint(position));
-				Log.debug("Added node to overlay");
-			}
-			else {
-				if ((position[0] != roi.getVertex(i).getDoublePosition(0)) ||
-					(position[1] != roi.getVertex(i).getDoublePosition(1)))
-				{
-					Log.debug(String.format("Vertex # %d moved to %f,%f", i + 1,
-						position[0], position[1]));
-				}
-				roi.setVertexPosition(i, position);
-			}
-		}
-		poverlay.update();
-	}
-
-	@Override
-	public void updateFigure(final OverlayView overlay, final Figure figure) {
-		super.updateFigure(overlay, figure);
-		final BezierFigure b = downcastFigure(figure);
-		final PolygonOverlay pOverlay = downcastOverlay(overlay.getData());
-		final PolygonRegionOfInterest roi = pOverlay.getRegionOfInterest();
-		final int vertexCount = roi.getVertexCount();
-		while (b.getNodeCount() > vertexCount)
-			b.removeNode(vertexCount);
-		for (int i = 0; i < vertexCount; i++) {
-			final RealLocalizable vertex = roi.getVertex(i);
-			if (b.getNodeCount() == i) {
-				final Node node =
-					new Node(vertex.getDoublePosition(0), vertex.getDoublePosition(1));
-				b.addNode(node);
-			}
-			else {
-				final Node node = b.getNode(i);
-				node.mask = 0;
-				Arrays.fill(node.x, vertex.getDoublePosition(0));
-				Arrays.fill(node.y, vertex.getDoublePosition(1));
-			}
-		}
-	}
-
-	@Override
-	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJBezierTool(display, this);
 	}
 
 }
