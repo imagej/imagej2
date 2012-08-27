@@ -119,8 +119,8 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	// -- constructor --
 
 	/**
-	 * Constructs the ImageMath object by initializing which binary operations are
-	 * available.
+	 * Constructs the RealImageCalculator object by initializing which binary
+	 * operations are available.
 	 */
 	public RealImageCalculator() {
 		operators =
