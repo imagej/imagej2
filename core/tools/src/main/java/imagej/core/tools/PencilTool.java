@@ -58,7 +58,7 @@ public class PencilTool extends AbstractLineTool {
 	public void configure() {
 		final PluginService pluginService =
 			getContext().getService(PluginService.class);
-		pluginService.run(PencilToolConfigPlugin.class, this);
+		pluginService.run(PencilToolConfigPlugin.class, "tool", this);
 	}
 
 }

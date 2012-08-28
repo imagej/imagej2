@@ -594,7 +594,7 @@ public class SwingOverlayManager
 		if (imageDisplay == null) return;
 		UIService uiService = context.getService(UIService.class);
 		PluginService ps = context.getService(PluginService.class);
-		ps.run(Flatten.class, uiService, imageDisplay);
+		ps.run(Flatten.class, "uiService", uiService, "display", imageDisplay);
 	}
 	
 	private void help() {
@@ -727,7 +727,7 @@ public class SwingOverlayManager
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
 		PluginService ps = context.getService(PluginService.class);
-		ps.run(SpecifyOverlay.class, context, imageDisplay);
+		ps.run(SpecifyOverlay.class, "context", context, "display", imageDisplay);
 	}
 	
 	/*

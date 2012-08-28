@@ -86,7 +86,7 @@ public class FloodFillTool extends AbstractTool {
 	public void configure() {
 		final PluginService pluginService =
 			getContext().getService(PluginService.class);
-		pluginService.run(FloodFillToolConfigPlugin.class, this);
+		pluginService.run(FloodFillToolConfigPlugin.class, "tool", this);
 	}
 
 	/** Run flood fill when mouse clicked */

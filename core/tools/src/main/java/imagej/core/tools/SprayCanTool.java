@@ -110,7 +110,7 @@ public class SprayCanTool extends AbstractTool {
 	public void configure() {
 		final PluginService pluginService =
 			getContext().getService(PluginService.class);
-		pluginService.run(SprayCanToolConfigPlugin.class, this);
+		pluginService.run(SprayCanToolConfigPlugin.class, "tool", this);
 	}
 
 	public void setWidth(int width) { this.width = width; }

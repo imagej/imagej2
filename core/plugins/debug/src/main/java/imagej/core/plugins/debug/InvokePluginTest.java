@@ -36,11 +36,10 @@
 package imagej.core.plugins.debug;
 
 import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleService;
@@ -52,9 +51,7 @@ import java.util.concurrent.Future;
 /**
  * A test of {@link PluginService#run}. The source code demonstrates two
  * different ways of invoking a plugin programmatically: with a list of
- * arguments, or by declaring them in a {@link Map}. The latter mechanism is
- * more flexible in that you can provide any subset of input values of your
- * choice, leaving the rest to be harvested in other ways.
+ * arguments, or by declaring them in a {@link Map}.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
@@ -80,16 +77,9 @@ public class InvokePluginTest implements RunnablePlugin {
 	}
 
 	public Future<Module> invokeWithArgs() {
-		final DatasetService datasetService = null; // will be autofilled
-		final String name = "Untitled";
-		final String bitDepth = "8-bit";
-		final boolean signed = false;
-		final boolean floating = false;
-		final String fillType = "Ramp";
-		final long width = 512;
-		final long height = 512;
-		return pluginService.run("imagej.io.plugins.NewImage", datasetService,
-			name, bitDepth, signed, floating, fillType, width, height);
+		return pluginService.run("imagej.io.plugins.NewImage", "name", "Untitled",
+			"bitDepth", "8-bit", "signed", false, "floating", false, "fillType",
+			"Ramp", "width", 512, "height", 512);
 	}
 
 	public Future<Module> invokeWithMap() {

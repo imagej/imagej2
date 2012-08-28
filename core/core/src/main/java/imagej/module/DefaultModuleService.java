@@ -143,18 +143,17 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	@Override
-	public Future<Module> run(final ModuleInfo info, final Object... inputValues)
-	{
-		return run(info, null, null, inputValues);
+	public Future<Module> run(final ModuleInfo info, final Object... inputs) {
+		return run(info, null, null, inputs);
 	}
 
 	@Override
 	public Future<Module>
 		run(final ModuleInfo info, final List<? extends ModulePreprocessor> pre,
 			final List<? extends ModulePostprocessor> post,
-			final Object... inputValues)
+			final Object... inputs)
 	{
-		return run(info, pre, post, createMap(info, inputValues));
+		return run(info, pre, post, createMap(inputs));
 	}
 
 	@Override
@@ -174,17 +173,17 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	@Override
-	public Future<Module> run(final Module module, final Object... inputValues) {
-		return run(module, null, null, inputValues);
+	public Future<Module> run(final Module module, final Object... inputs) {
+		return run(module, null, null, inputs);
 	}
 
 	@Override
 	public Future<Module>
 		run(final Module module, final List<? extends ModulePreprocessor> pre,
 			final List<? extends ModulePostprocessor> post,
-			final Object... inputValues)
+			final Object... inputs)
 	{
-		return run(module, pre, post, createMap(module.getInfo(), inputValues));
+		return run(module, pre, post, createMap(inputs));
 	}
 
 	@Override
@@ -232,29 +231,29 @@ public class DefaultModuleService extends AbstractService implements
 
 	// -- Helper methods --
 
-	/**
-	 * Converts the given list of values into an input map for use with a module
-	 * of the specified {@link ModuleInfo}.
-	 */
-	private Map<String, Object> createMap(final ModuleInfo info,
-		final Object[] values)
-	{
+	/** Converts the given list of name/value pairs into an input map. */
+	private Map<String, Object> createMap(final Object[] values) {
 		if (values == null || values.length == 0) return null;
 
 		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
-		int i = -1;
-		for (final ModuleItem<?> input : info.inputs()) {
-			i++;
-			if (i >= values.length) continue; // no more values
-			final String name = input.getName();
-			final Object value = values[i];
+
+		if (values.length % 2 != 0) {
+			log.error("Ignoring extraneous argument: " + values[values.length - 1]);
+		}
+
+		// loop over list of key/value pairs
+		int numPairs = values.length / 2;
+		for (int i = 0; i < numPairs; i++) {
+			final Object key = values[2 * i];
+			final Object value = values[2 * i + 1];
+			if (!(key instanceof String)) {
+				log.error("Invalid input name: " + key);
+				continue;
+			}
+			final String name = (String) key;
 			inputMap.put(name, value);
 		}
-		i++;
-		if (i != values.length) {
-			log.warn("Argument mismatch: " + values.length + " of " + i +
-				" inputs provided:");
-		}
+
 		return inputMap;
 	}
 

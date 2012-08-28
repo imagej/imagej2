@@ -203,16 +203,16 @@ public interface PluginService extends Service {
 	 * Executes the first runnable plugin of the given class name.
 	 * 
 	 * @param className Class name of the plugin to execute.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the plugin. Passing a number of values that differs
-	 *          from the number of input parameters is allowed, but will issue a
-	 *          warning. Passing a value of a type incompatible with the
-	 *          associated input parameter will issue an error and ignore that
-	 *          value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(String className, Object... inputValues);
+	Future<Module> run(String className, Object... inputs);
 
 	/**
 	 * Executes the first runnable plugin of the given class name.
@@ -232,17 +232,17 @@ public interface PluginService extends Service {
 	 * 
 	 * @param <R> Class of the plugin to execute.
 	 * @param pluginClass Class object of the plugin to execute.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the plugin. Passing a number of values that differs
-	 *          from the number of input parameters is allowed, but will issue a
-	 *          warning. Passing a value of a type incompatible with the
-	 *          associated input parameter will issue an error and ignore that
-	 *          value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
 	<R extends RunnablePlugin> Future<PluginModule<R>> run(Class<R> pluginClass,
-		Object... inputValues);
+		Object... inputs);
 
 	/**
 	 * Executes the first runnable plugin of the given class.
@@ -265,16 +265,16 @@ public interface PluginService extends Service {
 	 * the plugin index.
 	 * 
 	 * @param info The module to instantiate and run.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the {@link ModuleInfo}. Passing a number of values
-	 *          that differs from the number of input parameters is allowed, but
-	 *          will issue a warning. Passing a value of a type incompatible with
-	 *          the associated input parameter will issue an error and ignore that
-	 *          value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(ModuleInfo info, Object... inputValues);
+	Future<Module> run(ModuleInfo info, Object... inputs);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all
@@ -297,16 +297,16 @@ public interface PluginService extends Service {
 	 * the plugin index.
 	 * 
 	 * @param module The module to run.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the module's {@link ModuleInfo}. Passing a number of
-	 *          values that differs from the number of input parameters is
-	 *          allowed, but will issue a warning. Passing a value of a type
-	 *          incompatible with the associated input parameter will issue an
-	 *          error and ignore that value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<M extends Module> Future<M> run(M module, Object... inputValues);
+	<M extends Module> Future<M> run(M module, Object... inputs);
 
 	/**
 	 * Executes the given module, with pre- and postprocessing steps from all

@@ -129,7 +129,7 @@ public class PickerTool extends AbstractTool {
 		final PluginService pluginService =
 				getContext().getService(PluginService.class);
 		
-		pluginService.run(OptionsChannels.class, new Object[0]);
+		pluginService.run(OptionsChannels.class);
 	}
 	
 	// -- private interface --

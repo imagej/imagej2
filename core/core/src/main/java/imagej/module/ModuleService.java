@@ -100,16 +100,16 @@ public interface ModuleService extends Service {
 	 * Executes the given module, without any pre- or postprocessing.
 	 * 
 	 * @param info The module to instantiate and run.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the {@link ModuleInfo}. Passing a number of values
-	 *          that differs from the number of input parameters is allowed, but
-	 *          will issue a warning. Passing a value of a type incompatible with
-	 *          the associated input parameter will issue an error and ignore that
-	 *          value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the module, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(ModuleInfo info, Object... inputValues);
+	Future<Module> run(ModuleInfo info, Object... inputs);
 
 	/**
 	 * Executes the given module.
@@ -117,17 +117,17 @@ public interface ModuleService extends Service {
 	 * @param info The module to instantiate and run.
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the {@link ModuleInfo}. Passing a number of values
-	 *          that differs from the number of input parameters is allowed, but
-	 *          will issue a warning. Passing a value of a type incompatible with
-	 *          the associated input parameter will issue an error and ignore that
-	 *          value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the module, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
 	Future<Module> run(ModuleInfo info, List<? extends ModulePreprocessor> pre,
-		List<? extends ModulePostprocessor> post, Object... inputValues);
+		List<? extends ModulePostprocessor> post, Object... inputs);
 
 	/**
 	 * Executes the given module.
@@ -149,16 +149,16 @@ public interface ModuleService extends Service {
 	 * Executes the given module, without any pre- or postprocessing.
 	 * 
 	 * @param module The module to run.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the module's {@link ModuleInfo}. Passing a number of
-	 *          values that differs from the number of input parameters is
-	 *          allowed, but will issue a warning. Passing a value of a type
-	 *          incompatible with the associated input parameter will issue an
-	 *          error and ignore that value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the module, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(Module module, Object... inputValues);
+	Future<Module> run(Module module, Object... inputs);
 
 	/**
 	 * Executes the given module.
@@ -166,17 +166,17 @@ public interface ModuleService extends Service {
 	 * @param module The module to run.
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
-	 * @param inputValues List of input parameter values, in the same order
-	 *          declared by the module's {@link ModuleInfo}. Passing a number of
-	 *          values that differs from the number of input parameters is
-	 *          allowed, but will issue a warning. Passing a value of a type
-	 *          incompatible with the associated input parameter will issue an
-	 *          error and ignore that value.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the module, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
 	Future<Module> run(Module module, List<? extends ModulePreprocessor> pre,
-		List<? extends ModulePostprocessor> post, Object... inputValues);
+		List<? extends ModulePostprocessor> post, Object... inputs);
 
 	/**
 	 * Executes the given module.
