@@ -170,6 +170,9 @@ public class ImageJ {
 
 	// -- Fields --
 
+	/** Title of the application context. */
+	private String title = "ImageJ";
+
 	private final ServiceIndex serviceIndex;
 
 	private final PluginIndex pluginIndex;
@@ -183,6 +186,34 @@ public class ImageJ {
 	}
 
 	// -- ImageJ methods --
+
+	/**
+	 * Gets the title of the application context. The default value is "ImageJ"
+	 * but it can be overridden by calling {@link #setTitle(String)}.
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/** Overrides the title of the application context. */
+	public void setTitle(final String title) {
+		this.title = title;
+	}
+
+	/**
+	 * Gets the version of the application.
+	 * 
+	 * @return The application version, in <code>major.minor.micro</code> format.
+	 */
+	public String getVersion() {
+		// FIXME: Extract this information from the relevant Maven POM instead.
+		// If the application context class is on the file system, (e.g., when
+		// running from an IDE such as Eclipse), the POM is located in an ancestor
+		// directory of the .class file. If the application context class is inside
+		// of a JAR file (e.g., when running the deployed application bundle), the
+		// POM is located in the same JAR file's META-INF/maven subdirectory.
+		return VERSION;
+	}
 
 	public ServiceIndex getServiceIndex() {
 		return serviceIndex;
