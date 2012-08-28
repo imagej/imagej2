@@ -248,8 +248,14 @@ public final class ClassUtils {
 
 	/** Loads the class with the given name, or null if it cannot be loaded. */
 	public static Class<?> loadClass(final String className) {
+		return loadClass(className, null);
+	}
+
+	/** Loads the class with the given name, or null if it cannot be loaded. */
+	public static Class<?> loadClass(final String className, final ClassLoader classLoader) {
 		try {
-			return Class.forName(className);
+			if (classLoader == null) return Class.forName(className);
+			return classLoader.loadClass(className);
 		}
 		catch (final ClassNotFoundException e) {
 			Log.error("Could not load class: " + className, e);
@@ -259,8 +265,14 @@ public final class ClassUtils {
 
 	/** Checks whether a class with the given name exists. */
 	public static boolean hasClass(final String className) {
+		return hasClass(className, null);
+	}
+
+	/** Checks whether a class with the given name exists. */
+	public static boolean hasClass(final String className, final ClassLoader classLoader) {
 		try {
-			Class.forName(className);
+			if (classLoader == null) Class.forName(className);
+			else classLoader.loadClass(className);
 			return true;
 		}
 		catch (final ClassNotFoundException e) {
@@ -282,7 +294,24 @@ public final class ClassUtils {
 	 * </p>
 	 */
 	public static File getLocation(final String className) {
-		final Class<?> c = loadClass(className);
+		return getLocation(className, null);
+	}
+
+	/**
+	 * Gets the classpath component containing the class with the given name.
+	 * <p>
+	 * If the class is directly on the file system (e.g.,
+	 * "/path/to/my/package/MyClass.class") then it will return the base directory
+	 * (e.g., "/path/to").
+	 * </p>
+	 * <p>
+	 * If the class is within a JAR file (e.g.,
+	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
+	 * path to the JAR (e.g., "/path/to/my-jar.jar").
+	 * </p>
+	 */
+	public static File getLocation(final String className, final ClassLoader classLoader) {
+		final Class<?> c = loadClass(className, classLoader);
 		if (c == null) return null; // could not load the class
 
 		// get the class's raw resource path
