@@ -146,7 +146,7 @@ public class CheckSezpozTest {
 	/**
 	 * Create a temporary directory
 	 * 
-	 * @param prefix the prefix as for {@link File.createTempFile}
+	 * @param prefix the prefix as for {@link File#createTempFile}
 	 * @return the File object describing the directory
 	 * @throws IOException
 	 */
