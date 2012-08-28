@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.imglib;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
@@ -42,7 +43,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.ui.UIService;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
@@ -60,14 +60,10 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "NaN Background", weight = 18) }, headless = true)
-public class SetBackgroundToNaN implements RunnablePlugin {
+public class SetBackgroundToNaN implements RunnablePlugin, Cancelable {
 
 	// -- instance variables --
 
-	@Parameter
-	private UIService ui;
-	//private LogService log;
-	
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset input;
 
@@ -80,35 +76,50 @@ public class SetBackgroundToNaN implements RunnablePlugin {
 	private double hiThreshold;
 
 	private Img<? extends RealType<?>> inputImage;
+	private String err;
 
 	// -- public interface --
 
 	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+	
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+	
+	@Override
 	public void run() {
-		if (input.isInteger()) {
-			// TODO - decide whether to use UIService or LogService for report.
-			ui.showDialog("This plugin requires a floating point dataset");
-			//log.error("This plugin requires a floating point dataset");
-			return;
-		}
-		checkInput();
+		if (inputBad()) return;
 		setupWorkingData();
 		assignPixels();
-		cleanup();
 		input.update();
 	}
 
 	// -- private interface --
 
-	private void checkInput() {
-		if (input == null) throw new IllegalArgumentException(
-			"input Dataset is null");
+	private boolean inputBad() {
+		if (input.isInteger()) {
+			err = "This plugin requires a floating point dataset";
+			return true;
+		}
+		if (input == null) {
+			err = "Input dataset is null";
+			return true;
+		}
+		
+		if (input.getImgPlus() == null) {
+			err = "Input ImgPlus is null";
+			return true;
+		}
 
-		if (input.getImgPlus() == null) throw new IllegalArgumentException(
-			"input Image is null");
-
-		if (loThreshold > hiThreshold) throw new IllegalArgumentException(
-			"threshold values incorrectly specified (min > max)");
+		if (loThreshold > hiThreshold) {
+			err = "Threshold values incorrectly specified (min > max)";
+			return true;
+		}
+		return false;
 	}
 
 	private void setupWorkingData() {
@@ -128,7 +139,4 @@ public class SetBackgroundToNaN implements RunnablePlugin {
 		}
 	}
 
-	private void cleanup() {
-		// nothing to do
-	}
 }

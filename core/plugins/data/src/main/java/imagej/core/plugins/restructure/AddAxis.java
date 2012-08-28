@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.restructure;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -43,7 +44,6 @@ import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.DynamicPlugin;
-import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Add Axis...") },
 	headless = true, initializer = "initAll")
-public class AddAxis extends DynamicPlugin {
+public class AddAxis extends DynamicPlugin implements Cancelable {
 
 	// -- Constants --
 
@@ -70,9 +70,6 @@ public class AddAxis extends DynamicPlugin {
 	private static final String AXIS_SIZE = "axisSize";
 
 	// -- Parameters --
-
-	@Parameter
-	private UIService uiService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
@@ -82,6 +79,22 @@ public class AddAxis extends DynamicPlugin {
 
 	@Parameter(label = "Axis size", persist = false)
 	private long axisSize = 2;
+
+	// -- instance variables --
+	
+	private String err;
+
+	// -- Cancelable methods --
+	
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
 
 	// -- AddAxis methods --
 
@@ -119,10 +132,7 @@ public class AddAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) {
-			informUser();
-			return;
-		}
+		if (inputBad(axis)) return;
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axisSize);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -151,14 +161,23 @@ public class AddAxis extends DynamicPlugin {
 	 */
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
-		if (axis == null) return true;
+		if (axis == null) {
+			err = "Axis must not be null.";
+			return true;
+		}
 
 		// axis already present in Dataset
 		final int axisIndex = dataset.getAxisIndex(axis);
-		if (axisIndex >= 0) return true;
+		if (axisIndex >= 0) {
+			err = "Axis "+axis.getLabel()+" already present in dataset.";
+			return true;
+		}
 
 		// axis size invalid
-		if (axisSize <= 0) return true;
+		if (axisSize <= 0) {
+			err = "Axis size invalid: "+axisSize;
+			return true;
+		}
 
 		return false;
 	}
@@ -246,11 +265,6 @@ public class AddAxis extends DynamicPlugin {
 		final DefaultModuleItem<Long> axisSizeModuleItem =
 			(DefaultModuleItem<Long>) getInfo().getInput(AXIS_SIZE);
 		axisSizeModuleItem.setMinimumValue(2L);
-	}
-
-	private void informUser() {
-		uiService.showDialog("Data unchanged: bad combination of input parameters",
-			"Invalid parameter combination");
 	}
 
 }

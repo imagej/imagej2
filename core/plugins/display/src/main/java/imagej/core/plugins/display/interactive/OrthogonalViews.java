@@ -35,13 +35,13 @@
 
 package imagej.core.plugins.display.interactive;
 
+import imagej.Cancelable;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import imagej.ui.UIService;
 
 /**
  * TODO
@@ -53,25 +53,16 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks"),
 	@Menu(label = "Orthogonal Views", weight=5, accelerator="control shift H")})
-public class OrthogonalViews implements RunnablePlugin {
+public class OrthogonalViews implements RunnablePlugin, Cancelable {
 
+	private String err;
+	
 	// -- Parameters --
 	
-	@Parameter(required=true)
-	private UIService uiService;
-
 	@Parameter(required=true)
 	private ImageDisplay display;
 	
 	// -- accessors --
-	
-	public void setUIService(UIService srv) {
-		uiService = srv;
-	}
-	
-	public UIService getUIService() {
-		return uiService;
-	}
 	
 	public void setImageDisplay(ImageDisplay disp) {
 		display = disp;
@@ -86,7 +77,17 @@ public class OrthogonalViews implements RunnablePlugin {
 	@Override
 	public void run() {
 		// TODO
-		uiService.showDialog("This command is not yet implemented.");
+		err = "This command is not yet implemented.";
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
 	}
 
 }

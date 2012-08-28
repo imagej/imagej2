@@ -101,10 +101,7 @@ public class SaltAndPepper implements RunnablePlugin, Cancelable {
 
 	@Override
 	public void run() {
-		if (!inputOkay()) {
-			err = errorString();
-			return;
-		}
+		if (!inputOkay()) return;
 		setupWorkingData();
 		assignPixels();
 		cleanup();
@@ -125,9 +122,23 @@ public class SaltAndPepper implements RunnablePlugin, Cancelable {
 
 	private boolean inputOkay() {
 		input = imageDisplayService.getActiveDataset(display);
-		if (input == null) return false;
-		if (input.getImgPlus() == null) return false;
-		return input.isInteger() && !input.isRGBMerged();
+		if (input == null) {
+			err = "Input dataset must not be null.";
+			return false;
+		}
+		if (input.getImgPlus() == null) {
+			err = "Input Imgplus must not be null.";
+			return false;
+		}
+		if (!input.isInteger()) {
+			err = "Input dataset must be an integral type.";
+			return false;
+		}
+		if (input.isRGBMerged()) {
+			err = "Input dataset cannot be color.";
+			return false;
+		}
+		return true;
 	}
 
 	private void setupWorkingData() {
@@ -150,7 +161,7 @@ public class SaltAndPepper implements RunnablePlugin, Cancelable {
 		if (planeDims.length == 0) { // 2d only
 			assignPlanePixels(planePos, rng);
 		}
-		else { // 3 or more dimsensions
+		else { // 3 or more dimensions
 			while (planePos.hasNext()) {
 				planePos.fwd();
 				assignPlanePixels(planePos, rng);
@@ -204,10 +215,5 @@ public class SaltAndPepper implements RunnablePlugin, Cancelable {
 		position[1] = v;
 		accessor.setPosition(position);
 		accessor.get().setReal(value);
-	}
-
-	private String errorString() {
-		return
-			"This plugin does not work with merged color nor floating point datasets";
 	}
 }
