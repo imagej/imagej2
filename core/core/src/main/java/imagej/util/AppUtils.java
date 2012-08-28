@@ -107,6 +107,20 @@ public final class AppUtils {
 		final String baseSubdirectory)
 	{
 		final File classLocation = ClassUtils.getLocation(className);
+		return getBaseDirectory(classLocation, baseSubdirectory);
+	}
+
+	/**
+	 * Gets the base file system directory from the given known class location.
+	 * 
+	 * @param classLocation The location from which the base directory should be
+	 *          derived.
+	 * @param baseSubdirectory A hint for what to expect for a directory structure
+	 *          beneath the application base directory.
+	 */
+	public static File getBaseDirectory(final File classLocation,
+		final String baseSubdirectory)
+	{
 		String path = classLocation.getAbsolutePath();
 
 		if (path.contains("/.m2/repository/")) {
@@ -128,12 +142,13 @@ public final class AppUtils {
 		}
 
 		final Pattern pattern =
-			Pattern.compile(Pattern.quote(basePrefix + "target/") + "[^/]\\.jar$");
+			Pattern.compile(".*(" + Pattern.quote(basePrefix + "target/") +
+				"[^/]*\\.jar)");
 		final Matcher matcher = pattern.matcher(path);
 		if (matcher.matches()) {
 			// NB: The class is in the Maven build directory inside a JAR file
 			// ("target/[something].jar").
-			final int index = matcher.start();
+			final int index = matcher.start(1);
 			path = path.substring(0, index);
 			return new File(path);
 		}

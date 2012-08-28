@@ -288,7 +288,10 @@ public final class ClassUtils {
 		// get the class's raw resource path
 		String path = c.getResource(c.getSimpleName() + ".class").getPath();
 
-		// remove the "file:" prefix
+		// remove the "jar:" prefix, if present
+		if (path.startsWith("jar:")) path = path.substring(4);
+
+		// remove the "file:" prefix, if present
 		if (path.startsWith("file:")) path = path.substring(5);
 
 		// remove the fully qualified class suffix
