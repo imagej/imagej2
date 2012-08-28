@@ -235,8 +235,12 @@ public class ImageCalculator<T extends RealType<T>> implements
 
 	// TODO - due to generics is this too difficult to specify for real world use?
 	
-	public void setOperation(final BinaryOperation<T,T,DoubleType> op) {
-		this.operator = op;
+	@SuppressWarnings("unchecked")
+	public void setOperation(
+		BinaryOperation<? extends RealType<?>,? extends RealType<?>,DoubleType>
+			operation)
+	{
+		this.operator = (BinaryOperation<T,T,DoubleType>) operation;
 	}
 
 	public boolean isNewWindow() {
