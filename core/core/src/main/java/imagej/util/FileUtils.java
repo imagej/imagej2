@@ -216,78 +216,19 @@ public final class FileUtils {
 		return new String(shortPathArray);
 	}
 
-	/**
-	 * Gets the ImageJ root directory. If the <code>ij.dir</code> property is set,
-	 * it is used. Otherwise, we scan up the tree from this class for a suitable
-	 * directory.
-	 */
+	// -- Deprecated methods --
+
+	/** @deprecated Use {@link AppUtils#getBaseDirectory()} instead. */
+	@Deprecated
 	public static File getBaseDirectory() {
-		final String property = System.getProperty("ij.dir");
-		if (property != null) {
-			final File dir = new File(property);
-			if (dir.isDirectory()) return dir;
-		}
-
-		// look for valid base directory relative to this class
-		final String corePath = getBaseDirectory(FileUtils.class.getName());
-		if (corePath != null) return new File(corePath);
-
-		// HACK: look for valid base directory relative to ImageJ launcher class
-		final String appPath = getBaseDirectory("imagej.Main");
-		if (appPath != null) return new File(appPath);
-
-		// last resort: use current working directory
-		return new File(".").getAbsoluteFile();
+		return AppUtils.getBaseDirectory();
 	}
 
-	/** Gets the base file system directory containing the given class file. */
+	/** @deprecated Use {@link AppUtils#getBaseDirectory(String)} instead. */
+	@Deprecated
 	public static String getBaseDirectory(final String className) {
-		final Class<?> c;
-		try {
-			c = Class.forName(className);
-		}
-		catch (ClassNotFoundException exc) {
-			return null;
-		}
-		String path = c.getResource(c.getSimpleName() + ".class").getPath();
-		if (path.startsWith("file:")) path = path.substring(5);
-
-		final String suffix = c.getCanonicalName().replace('.', '/') + ".class";
-		if (path.endsWith(suffix)) {
-			path = path.substring(0, path.length() - suffix.length());
-		}
-		if (path.contains("/.m2/repository/")) {
-			// NB: The class is in a JAR in the Maven repository cache.
-			// We cannot find the base directory relative to this path.
-			return null;
-		}
-		else if (path.endsWith(".jar!/")) {
-			int slash = path.lastIndexOf('/', path.length() - 6);
-			// NB: We assume that the JAR resides one level below <BASEDIR>.
-			if (slash > 0) slash = path.lastIndexOf('/', slash - 1);
-			if (slash > 0) path = path.substring(0, slash + 1);
-			if (path.endsWith("/core/core/")) {
-				return findPomXml(new File(path), 2);
-			}
-		}
-		else if (path.endsWith("/core/core/target/classes/")) {
-			return findPomXml(new File(path), 4);
-		}
-		return path;
-	}
-
-	protected static String findPomXml(File directory, int cdUp) {
-		while (cdUp-- > 0) {
-			File up = directory.getParentFile();
-			if (up == null) return null;
-			directory = up;
-		}
-		for (;;) {
-			final File parent = directory.getParentFile();
-			if (parent == null || !new File(parent, "pom.xml").exists()) break;
-			directory = parent;
-		}
-		return directory.getAbsolutePath();
+		File baseDir = AppUtils.getBaseDirectory(className);
+		return baseDir == null ? null : baseDir.getAbsolutePath();
 	}
 
 	/** @deprecated Use {@link ProcessUtils#exec} instead. */
