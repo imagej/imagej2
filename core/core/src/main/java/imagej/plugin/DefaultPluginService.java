@@ -358,20 +358,6 @@ public class DefaultPluginService extends AbstractService implements
 		return moduleService.run(module, pre(), post(), inputMap);
 	}
 
-	@Override
-	public <R extends RunnablePlugin> Future<Module> run(R plugin,
-		Object... inputValues)
-	{
-		return run(wrapModule(plugin), inputValues);
-	}
-
-	@Override
-	public <R extends RunnablePlugin> Future<Module> run(R plugin,
-		Map<String, Object> inputMap)
-	{
-		return run(wrapModule(plugin), inputMap);
-	}
-
 	// -- Helper methods --
 
 	private <T extends PluginInfo<?>> void getPluginsOfClass(
@@ -391,6 +377,7 @@ public class DefaultPluginService extends AbstractService implements
 	private <T> T first(final List<T> list) {
 		if (list == null || list.size() == 0) return null;
 		return list.get(0);
+
 	}
 
 	private List<? extends PreprocessorPlugin> pre() {
@@ -409,14 +396,6 @@ public class DefaultPluginService extends AbstractService implements
 			return false;
 		}
 		return true;
-	}
-
-	/** Creates or wraps a module around the given plugin instance. */
-	private <R extends RunnablePlugin> Module wrapModule(final R plugin) {
-		@SuppressWarnings("unchecked")
-		final Class<R> pluginClass = (Class<R>) plugin.getClass();
-		final PluginModuleInfo<R> info = getRunnablePlugin(pluginClass);
-		return info.createModule(plugin);
 	}
 
 }
