@@ -323,4 +323,40 @@ public interface PluginService extends Service {
 	 */
 	<M extends Module> Future<M> run(M module, Map<String, Object> inputMap);
 
+	/**
+	 * Executes the given plugin, with pre- and postprocessing steps from all
+	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
+	 * the plugin index.
+	 * 
+	 * @param plugin The plugin to run.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the plugin. Passing a number of values that differs
+	 *          from the number of input parameters is allowed, but will issue a
+	 *          warning. Passing a value of a type incompatible with the
+	 *          associated input parameter will issue an error and ignore that
+	 *          value.
+	 * @return {@link Future} of a new module instance wrapping the plugin.
+	 *         Calling {@link Future#get()} will block until execution is
+	 *         complete.
+	 */
+	<R extends RunnablePlugin> Future<Module>
+		run(R plugin, Object... inputValues);
+
+	/**
+	 * Executes the given plugin, with pre- and postprocessing steps from all
+	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
+	 * the plugin index.
+	 * 
+	 * @param plugin The plugin to run.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 * @return {@link Future} of a new module instance wrapping the plugin.
+	 *         Calling {@link Future#get()} will block until execution is
+	 *         complete.
+	 */
+	<R extends RunnablePlugin> Future<Module> run(R plugin,
+		Map<String, Object> inputMap);
+
 }
