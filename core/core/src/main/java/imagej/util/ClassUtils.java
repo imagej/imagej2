@@ -317,7 +317,10 @@ public final class ClassUtils {
 		// get the class's raw resource path
 		String path = c.getResource(c.getSimpleName() + ".class").getPath();
 
-		// remove the "file:" prefix
+		// remove the "jar:" prefix, if present
+		if (path.startsWith("jar:")) path = path.substring(4);
+
+		// remove the "file:" prefix, if present
 		if (path.startsWith("file:")) path = path.substring(5);
 
 		// remove the fully qualified class suffix
@@ -337,9 +340,14 @@ public final class ClassUtils {
 	/**
 	 * Gets the specified field of the given class, or null if it does not exist.
 	 */
-	public static Field getField(final String className, final String fieldName)
-	{
-		final Class<?> c = loadClass(className);
+	public static Field getField(final String className, final String fieldName) {
+		return getField(loadClass(className), fieldName);
+	}
+
+	/**
+	 * Gets the specified field of the given class, or null if it does not exist.
+	 */
+	public static Field getField(final Class<?> c, final String fieldName) {
 		if (c == null) return null;
 		try {
 			return c.getDeclaredField(fieldName);

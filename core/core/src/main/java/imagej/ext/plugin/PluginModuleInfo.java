@@ -158,6 +158,14 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 		return factory;
 	}
 
+	/**
+	 * Instantiates the module described by this module info, around the specified
+	 * existing plugin instance.
+	 */
+	public Module createModule(final R pluginInstance) {
+		return factory.createModule(this, pluginInstance);
+	}
+
 	// -- Object methods --
 
 	@Override

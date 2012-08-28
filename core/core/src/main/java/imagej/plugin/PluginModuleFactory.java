@@ -51,4 +51,11 @@ public interface PluginModuleFactory {
 	<R extends RunnablePlugin> Module createModule(PluginModuleInfo<R> info)
 		throws ModuleException;
 
+	/**
+	 * Constructs a module to work with the given {@link PluginModuleInfo}, around
+	 * the specified {@link RunnablePlugin} instance.
+	 */
+	<R extends RunnablePlugin> Module createModule(PluginModuleInfo<R> info,
+		final R plugin);
+
 }

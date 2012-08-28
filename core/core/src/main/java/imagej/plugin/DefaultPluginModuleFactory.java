@@ -74,4 +74,17 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 		return new PluginModule<R>(info);
 	}
 
+	@Override
+	public <R extends RunnablePlugin> Module createModule(
+		PluginModuleInfo<R> info, R plugin)
+	{
+		// if the plugin implements Module, return the instance directly
+		if (plugin instanceof Module) {
+			return (Module) plugin;
+		}
+
+		// plugin does not implement Module; wrap it in a PluginModule instance
+		return new PluginModule<R>(info, plugin);
+	}
+
 }
