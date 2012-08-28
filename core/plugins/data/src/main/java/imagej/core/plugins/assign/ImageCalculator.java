@@ -229,7 +229,7 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 		return output;
 	}
 
-	public BinaryOperation<U,V,DoubleType> getOp() {
+	public BinaryOperation<U,V,DoubleType> getOperation() {
 		return operator;
 	}
 
