@@ -311,9 +311,14 @@ public final class ClassUtils {
 	/**
 	 * Gets the specified field of the given class, or null if it does not exist.
 	 */
-	public static Field getField(final String className, final String fieldName)
-	{
-		final Class<?> c = loadClass(className);
+	public static Field getField(final String className, final String fieldName) {
+		return getField(loadClass(className), fieldName);
+	}
+
+	/**
+	 * Gets the specified field of the given class, or null if it does not exist.
+	 */
+	public static Field getField(final Class<?> c, final String fieldName) {
 		if (c == null) return null;
 		try {
 			return c.getDeclaredField(fieldName);
