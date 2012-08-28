@@ -35,6 +35,7 @@
 
 package imagej.util;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
@@ -243,7 +244,7 @@ public final class ClassUtils {
 		return result;
 	}
 
-	// -- Class loading and reflection --
+	// -- Class loading, querying and reflection --
 
 	/** Loads the class with the given name, or null if it cannot be loaded. */
 	public static Class<?> loadClass(final String className) {
@@ -265,6 +266,43 @@ public final class ClassUtils {
 		catch (final ClassNotFoundException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Gets the classpath component containing the class with the given name.
+	 * <p>
+	 * If the class is directly on the file system (e.g.,
+	 * "/path/to/my/package/MyClass.class") then it will return the base directory
+	 * (e.g., "/path/to").
+	 * </p>
+	 * <p>
+	 * If the class is within a JAR file (e.g.,
+	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
+	 * path to the JAR (e.g., "/path/to/my-jar.jar").
+	 * </p>
+	 */
+	public static File getLocation(final String className) {
+		final Class<?> c = loadClass(className);
+		if (c == null) return null; // could not load the class
+
+		// get the class's raw resource path
+		String path = c.getResource(c.getSimpleName() + ".class").getPath();
+
+		// remove the "file:" prefix
+		if (path.startsWith("file:")) path = path.substring(5);
+
+		// remove the fully qualified class suffix
+		final String suffix = c.getCanonicalName().replace('.', '/') + ".class";
+		if (path.endsWith(suffix)) {
+			path = path.substring(0, path.length() - suffix.length());
+		}
+
+		// remove any remaining JAR-specific suffix
+		if (path.endsWith(".jar!/")) {
+			path = path.substring(0, path.length() - 2);
+		}
+
+		return new File(path);
 	}
 
 	/**
