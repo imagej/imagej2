@@ -111,7 +111,8 @@ public class CheckSezpozTest {
 			+ "}\n");
 		writer.close();
 
-		FileUtils.exec(sources, System.err, System.out, "javac", "-classpath", System.getProperty("java.class.path"), "Annotated.java");
+		ProcessUtils.exec(sources, System.err, System.out, "javac", "-classpath",
+			System.getProperty("java.class.path"), "Annotated.java");
 
 		// to make sure the annotation processor "has not run", we need to copy the
 		// .class file
