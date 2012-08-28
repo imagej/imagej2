@@ -44,6 +44,8 @@ import ij.gui.Roi;
 import ij.gui.TextRoi;
 import ij.gui.Toolbar;
 import ij.io.FileSaver;
+import ij.plugin.RectToolOptions;
+import ij.plugin.WandToolOptions;
 import ij.plugin.filter.Analyzer;
 import ij.process.ColorProcessor;
 import ij.process.FloatBlitter;
@@ -644,37 +646,33 @@ public class OptionsSynchronizer {
 
 	private void setIJ1DefaultStrokeWidth(final double width) {
 		final Field field =
-			ClassUtils.getField("ij.plugin.RectToolOptions", "defaultStrokeWidth");
+			ClassUtils.getField(RectToolOptions.class, "defaultStrokeWidth");
 		ClassUtils.setValue(field, null, width);
 	}
 
 	private double getIJ1DefaultStrokeWidth() {
 		final Field field =
-			ClassUtils.getField("ij.plugin.RectToolOptions", "defaultStrokeWidth");
+			ClassUtils.getField(RectToolOptions.class, "defaultStrokeWidth");
 		return (Double) ClassUtils.getValue(field, null);
 	}
 
 	private void setIJ1WandMode(final String mode) {
-		final Field field =
-			ClassUtils.getField("ij.plugin.WandToolOptions", "mode");
+		final Field field = ClassUtils.getField(WandToolOptions.class, "mode");
 		ClassUtils.setValue(field, null, mode);
 	}
 
 	private String getIJ1WandMode() {
-		final Field field =
-			ClassUtils.getField("ij.plugin.WandToolOptions", "mode");
+		final Field field = ClassUtils.getField(WandToolOptions.class, "mode");
 		return (String) ClassUtils.getValue(field, null);
 	}
 
 	private void setIJ1WandTolerance(final double tol) {
-		final Field field =
-			ClassUtils.getField("ij.plugin.WandToolOptions", "tolerance");
+		final Field field = ClassUtils.getField(WandToolOptions.class, "tolerance");
 		ClassUtils.setValue(field, null, tol);
 	}
 
 	private double getIJ1WandTolerance() {
-		final Field field =
-			ClassUtils.getField("ij.plugin.WandToolOptions", "tolerance");
+		final Field field = ClassUtils.getField(WandToolOptions.class, "tolerance");
 		return (Double) ClassUtils.getValue(field, null);
 	}
 
@@ -685,8 +683,9 @@ public class OptionsSynchronizer {
 	 * try to run the Compile/Run plugin. */
 	private Field getCompilerField(String fieldName) {
 		try {
-			return ClassUtils.getField("ij.plugin.Compiler", fieldName);
-		} catch (Throwable t) {
+			return ClassUtils.getField(ij.plugin.Compiler.class, fieldName);
+		}
+		catch (Throwable t) {
 			return null;
 		}
 	}
