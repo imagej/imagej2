@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.convolve;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -51,7 +52,6 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.input.KeyCode;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.util.RealRect;
 
@@ -71,7 +71,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Shadows", mnemonic = 's'),
 	@Menu(label = "Shadows Demo", weight = 200) }, headless = true)
-public class ShadowsDemo implements RunnablePlugin {
+public class ShadowsDemo implements RunnablePlugin, Cancelable {
 
 	private static final double[][] KERNELS = new double[][] {
 		ShadowsNorth.KERNEL, ShadowsNortheast.KERNEL, ShadowsEast.KERNEL,
@@ -79,9 +79,6 @@ public class ShadowsDemo implements RunnablePlugin {
 		ShadowsWest.KERNEL, ShadowsNorthwest.KERNEL };
 
 	// -- instance variables that are Parameters --
-
-	@Parameter
-	private LogService log;
 
 	@Parameter
 	private EventService eventService;
@@ -96,14 +93,15 @@ public class ShadowsDemo implements RunnablePlugin {
 	private OverlayService overlayService;
 
 	@Parameter
-	private Dataset input;
+	private ImageDisplay display;
 
 	// -- private instance variables --
 
 	private boolean userHasQuit = false;
-	private ImageDisplay currDisplay = null;
 
 	private List<EventSubscriber<?>> subscribers;
+	
+	private String err;
 
 	// -- public interface --
 
@@ -113,18 +111,15 @@ public class ShadowsDemo implements RunnablePlugin {
 	 */
 	@Override
 	public void run() {
-
-		final ImageDisplay display = imgDispService.getActiveImageDisplay();
-		if (display == null) return;
-		currDisplay = display;
-		if (unsupportedImage()) {
-			log.error("This command only works with a single plane of data");
+		if (unsupportedImage(display)) {
+			err = "This command only works with a single plane of data";
 			return;
 		}
 		subscribers = eventService.subscribe(this);
 		statusService.showStatus("Press ESC to terminate");
 
-		final RealRect selection = overlayService.getSelectionBounds(currDisplay);
+		final Dataset input = imgDispService.getActiveDataset(display);
+		final RealRect selection = overlayService.getSelectionBounds(display);
 		final Dataset originalData = input.duplicate();
 		userHasQuit = false;
 		while (!userHasQuit) {
@@ -149,11 +144,55 @@ public class ShadowsDemo implements RunnablePlugin {
 		eventService.unsubscribe(subscribers);
 	}
 
+
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+	
+	// -- event handlers --
+	
+	@EventHandler
+	protected void onEvent(final KyPressedEvent event) {
+		if (event.getCode() == KeyCode.ESCAPE) {
+			final Display<?> disp = event.getDisplay();
+			if (disp != null) {
+				if (disp == display) userHasQuit = true;
+			}
+			else { // disp == null : event from application bar
+				if (imgDispService.getActiveImageDisplay() == display) {
+					userHasQuit = true;
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent event) {
+		if (event.getObject() == display) userHasQuit = true;
+	}
+
+	// -- helpers --
+	
 	/**
 	 * Returns true if image cannot be represented as a single plane for display.
 	 * This mirrors IJ1's behavior.
 	 */
-	private boolean unsupportedImage() {
+	private boolean unsupportedImage(ImageDisplay disp) {
+		final Dataset input = imgDispService.getActiveDataset(disp);
 		final AxisType[] axes = input.getAxes();
 		final long[] dims = input.getDims();
 		for (int i = 0; i < axes.length; i++) {
@@ -164,26 +203,6 @@ public class ShadowsDemo implements RunnablePlugin {
 			if (dims[i] != 1) return true;
 		}
 		return false;
-	}
-
-	@EventHandler
-	protected void onEvent(final KyPressedEvent event) {
-		if (event.getCode() == KeyCode.ESCAPE) {
-			final Display<?> display = event.getDisplay();
-			if (display != null) {
-				if (display == currDisplay) userHasQuit = true;
-			}
-			else { // display == null : event from application bar
-				if (imgDispService.getActiveImageDisplay() == currDisplay) {
-					userHasQuit = true;
-				}
-			}
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(final DisplayDeletedEvent event) {
-		if (event.getObject() == currDisplay) userHasQuit = true;
 	}
 
 }

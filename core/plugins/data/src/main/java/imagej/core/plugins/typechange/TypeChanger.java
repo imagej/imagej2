@@ -72,10 +72,10 @@ public abstract class TypeChanger implements RunnablePlugin {
 	protected MenuService menuService;
 
 	@Parameter(type = ItemIO.BOTH)
-	protected Dataset input;
+	protected Dataset data;
 
 	protected <T extends RealType<T>> void changeType(final T newType) {
-		changeType(input, newType);
+		changeType(data, newType);
 		menuService.setSelected(this, true);
 	}
 
@@ -153,6 +153,17 @@ public abstract class TypeChanger implements RunnablePlugin {
 		return new ImgPlus<T>(outputImg, inputImg);
 	}
 
+	public void setDataset(Dataset ds) {
+		data = ds;
+	}
+	
+	public Dataset getDataset() {
+		return data;
+	}
+
+	
+	// -- private helpers --
+	
 	// TODO - make public?
 
 	/**

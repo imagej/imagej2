@@ -89,6 +89,14 @@ public class Rotate90DegreesLeft implements RunnablePlugin {
 		runner.run();
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
 	// -- private interface --
 
 	private class NinetyLeftTransformer implements FlipCoordinateTransformer {

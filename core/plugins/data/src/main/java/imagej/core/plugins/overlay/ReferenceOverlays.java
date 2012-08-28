@@ -87,14 +87,6 @@ public class ReferenceOverlays implements RunnablePlugin {
 	
 	// -- accessors --
 	
-	public OverlayService getOverlayService() {
-		return ovrSrv;
-	}
-	
-	public void setOverlayService(OverlayService os) {
-		ovrSrv = os;
-	}
-	
 	public ImageDisplay getImageDisplay() {
 		return display;
 	}

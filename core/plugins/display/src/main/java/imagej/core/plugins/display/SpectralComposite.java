@@ -36,6 +36,7 @@
 package imagej.core.plugins.display;
 
 import imagej.data.display.DatasetView;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -75,6 +76,30 @@ public class SpectralComposite implements RunnablePlugin {
 		spectralComposite();
 	}
 
+	public void setView(DatasetView view) {
+		datasetView = view;
+	}
+	
+	public DatasetView getView() {
+		return datasetView;
+	}
+
+	public void setStartingWavelength(int waveLength) {
+		startWave = waveLength;
+	}
+	
+	public int getStartingWavelength() {
+		return startWave;
+	}
+	
+	public void setEndingWavelength(int waveLength) {
+		endWave = waveLength;
+	}
+	
+	public int getEndingWavelength() {
+		return endWave;
+	}
+	
 	// -- Utility methods --
 
 	/**

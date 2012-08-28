@@ -78,4 +78,12 @@ public class ZoomIn implements RunnablePlugin {
 		}
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
 }

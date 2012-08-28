@@ -118,6 +118,30 @@ public class SaltAndPepper implements RunnablePlugin, Cancelable {
 		return err;
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+	
+	public void setSaltValue(double val) {
+		saltValue = val;
+	}
+	
+	public double getSaltValue() {
+		return saltValue;
+	}
+		
+	public void setPepperValue(double val) {
+		pepperValue = val;
+	}
+	
+	public double getPepperValue() {
+		return pepperValue;
+	}
+
 	// -- private interface --
 
 	private boolean inputOkay() {

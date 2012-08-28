@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
 public class FillDataValues<T extends RealType<T>>
 	implements RunnablePlugin, Cancelable
 {
-	// -- instance variables that are Parameters --
+	// -- Parameters --
 
 	@Parameter
 	private OverlayService overlayService;
@@ -70,10 +70,12 @@ public class FillDataValues<T extends RealType<T>>
 	@Parameter
 	private OptionsService optionsService;
 	
-	private String err;
-
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
+
+	// -- instance variables that are not Parameters --
+
+	private String err;
 
 	// -- public interface --
 

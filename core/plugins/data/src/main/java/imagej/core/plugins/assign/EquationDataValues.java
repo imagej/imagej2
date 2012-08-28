@@ -123,6 +123,7 @@ public class EquationDataValues<T extends RealType<T>>
 	@Override
 	public void run() {
 		err = setRegion(display, allPlanes);
+		if (err != null) return;
 		RealEquationFunctionParser parser = new RealEquationFunctionParser();
 		Tuple2<Function<long[],DoubleType>, String> result =
 				parser.parse(equationString, dataset.getImgPlus());

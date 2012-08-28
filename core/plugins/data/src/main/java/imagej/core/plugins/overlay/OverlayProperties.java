@@ -59,48 +59,48 @@ import java.util.List;
  */
 public class OverlayProperties implements RunnablePlugin, PreviewPlugin {
 
-	static final protected String solidLineStyle = "Solid";
-	static final protected String dashLineStyle = "Dash";
-	static final protected String dotLineStyle = "Dot";
-	static final protected String dotDashLineStyle = "Dot-dash";
-	static final protected String noLineStyle = "None";
-	static final protected String arrowLineDecoration = "Arrow";
-	static final protected String noLineDecoration = "None";
+	static final private String solidLineStyle = "Solid";
+	static final private String dashLineStyle = "Dash";
+	static final private String dotLineStyle = "Dot";
+	static final private String dotDashLineStyle = "Dot-dash";
+	static final private String noLineStyle = "None";
+	static final private String arrowLineDecoration = "Arrow";
+	static final private String noLineDecoration = "None";
 
 	@Parameter(label = "Line color", persist = false)
-	protected ColorRGB lineColor = Colors.YELLOW;
+	private ColorRGB lineColor = Colors.YELLOW;
 
 	@Parameter(label = "Line width", persist = false, min = "0.1")
-	protected double lineWidth = 1;
+	private double lineWidth = 1;
 
 	@Parameter(label = "Line style", persist = false, choices = { solidLineStyle,
 		dashLineStyle, dotLineStyle, dotDashLineStyle, noLineStyle })
-	protected String lineStyle = solidLineStyle;
+	private String lineStyle = solidLineStyle;
 
 	@Parameter(label = "Fill color", persist = false)
-	protected ColorRGB fillColor = null;
+	private ColorRGB fillColor = null;
 
 	@Parameter(label = "Alpha", description = "The opacity or alpha of the "
 		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-	protected int alpha = 0;
+	private int alpha = 0;
 
 	@Parameter(
 		label = "Line start arrow style",
 		description = "The arrow style at the starting point of a line or other path",
 		persist = false, choices = { noLineDecoration, arrowLineDecoration })
-	protected String startLineArrowStyle = noLineDecoration;
+	private String startLineArrowStyle = noLineDecoration;
 
 	@Parameter(label = "Line end arrow style",
 		description = "The arrow style at the end point of a line or other path",
 		persist = false, choices = { noLineDecoration, arrowLineDecoration })
-	protected String endLineArrowStyle = noLineDecoration;
+	private String endLineArrowStyle = noLineDecoration;
 
 	@Parameter(label = "Update default overlay settings", persist = false)
-	protected boolean updateDefaults = false;
+	private boolean updateDefaults = false;
 
 	@Parameter
-	protected OptionsService os;
+	private OptionsService os;
 
 	// -- instance variables --
 	

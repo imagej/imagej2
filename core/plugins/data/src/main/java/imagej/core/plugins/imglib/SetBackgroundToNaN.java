@@ -98,6 +98,14 @@ public class SetBackgroundToNaN implements RunnablePlugin, Cancelable {
 		input.update();
 	}
 
+	public void setDataset(Dataset data) {
+		this.input = data;
+	}
+	
+	public Dataset getDataset() {
+		return input;
+	}
+
 	// -- private interface --
 
 	private boolean inputBad() {

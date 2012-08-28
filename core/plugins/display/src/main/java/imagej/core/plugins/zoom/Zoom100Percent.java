@@ -64,4 +64,12 @@ public class Zoom100Percent implements RunnablePlugin {
 		display.getCanvas().setZoom(1);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+	
 }
