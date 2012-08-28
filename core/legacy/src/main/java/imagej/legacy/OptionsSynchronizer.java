@@ -676,11 +676,13 @@ public class OptionsSynchronizer {
 		return (Double) ClassUtils.getValue(field, null);
 	}
 
-	/** IJ1 directly refers to compiler that may not be loaded (since it may not
-	 * be on class path). Thus have a safe accessor that does not cause runtime
+	/**
+	 * IJ1 directly refers to compiler that may not be loaded (since it may not be
+	 * on class path). Thus have a safe accessor that does not cause runtime
 	 * exceptions when user misconfigures their java tools. Instead we should
 	 * avoid issues here and we should safely report the issue to the user if they
-	 * try to run the Compile/Run plugin. */
+	 * try to run the Compile/Run plugin.
+	 */
 	private Field getCompilerField(String fieldName) {
 		try {
 			return ClassUtils.getField(ij.plugin.Compiler.class, fieldName);
@@ -689,4 +691,5 @@ public class OptionsSynchronizer {
 			return null;
 		}
 	}
+
 }
