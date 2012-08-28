@@ -1433,7 +1433,7 @@ public class UpdaterTest {
 	/**
 	 * Create a temporary directory
 	 * 
-	 * @param prefix the prefix as for {@link File.createTempFile}
+	 * @param prefix the prefix as for {@link File#createTempFile(String, String)}
 	 * @return the File object describing the directory
 	 * @throws IOException
 	 */
