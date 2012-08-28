@@ -89,7 +89,7 @@ public class EditAxes extends DynamicPlugin {
 		this.dataset = dataset;
 	}
 
-	public AxisType getMapping(int axisNum) {
+	public AxisType getAxisMapping(int axisNum) {
 		String axisName = (String) getInput(name(axisNum));
 		return Axes.get(axisName);
 	}
@@ -147,7 +147,7 @@ public class EditAxes extends DynamicPlugin {
 	private AxisType[] getAxes() {
 		AxisType[] axes = new AxisType[dataset.getImgPlus().numDimensions()];
 		for (int i = 0; i < axes.length; i++) {
-			axes[i] = getMapping(i);
+			axes[i] = getAxisMapping(i);
 		}
 		return axes;
 	}

@@ -35,12 +35,11 @@
 
 package imagej.core.plugins.overlay;
 
+import imagej.Cancelable;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import imagej.ui.UIService;
 
 /**
  * TODO
@@ -52,15 +51,24 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
-public class OverlayLabelSettings implements RunnablePlugin {
+public class OverlayLabelSettings implements RunnablePlugin, Cancelable {
 
-	@Parameter
-	private UIService uiService;
+	private String err;
 	
 	@Override
 	public void run() {
 		// TODO - implement some interactive plugin
-		uiService.showDialog("This feature has not been implemented yet");
+		err = "This feature has not been implemented yet";
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
 	}
 
 }

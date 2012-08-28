@@ -201,7 +201,10 @@ public class Harmonizer {
 		// without this. When we change the update mechanism so that drawing only
 		// happens in the display code after it has collected all info about updates
 		// we should remove this. See bug #915
-		ds.update();
+		// Note BDZ 8-28-12. I've commented out the fix on next line. Note that it
+		// no longer seems necessary (after testing). But let's leave the comment
+		// here for a while in case it turns out to indeed be needed later. 
+		//ds.update();
 	}
 
 	/**

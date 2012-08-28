@@ -113,4 +113,12 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 		this.allPlanes = value;
 	}
 	
+	public double getStdDev() {
+		return stdDev;
+	}
+	
+	public void setStdDev(double stdDev) {
+		this.stdDev = stdDev;
+	}
+	
 }

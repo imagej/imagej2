@@ -69,4 +69,12 @@ public class ZoomToFitSelection implements RunnablePlugin {
 		display.getCanvas().zoomToFit(selection);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
 }

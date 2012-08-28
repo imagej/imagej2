@@ -112,7 +112,6 @@ public class ReorderData extends DynamicPlugin {
 	/**
 	 * Gets newAxes[index] which is the position within existing Dataset's axes.   
 	 * @param index The index within the new axis order
-	 * @return
 	 */
 	public int getNewAxisIndex(int index) {
 		String axisName = (String) getInput(name(index));

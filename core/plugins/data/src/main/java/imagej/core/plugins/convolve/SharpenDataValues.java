@@ -81,4 +81,12 @@ public class SharpenDataValues implements RunnablePlugin {
 			new Convolve3x3Operation(input, selection, kernel);
 		operation.run();
 	}
+	
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

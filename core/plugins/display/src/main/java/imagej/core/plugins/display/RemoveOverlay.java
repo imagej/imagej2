@@ -73,22 +73,6 @@ public class RemoveOverlay implements RunnablePlugin {
 	
 	// -- accessors --
 	
-	public void setUIService(UIService srv) {
-		uiService = srv;
-	}
-	
-	public UIService getUIService() {
-		return uiService;
-	}
-	
-	public void setOverlayService(OverlayService srv) {
-		oService = srv;
-	}
-	
-	public OverlayService getOverlayService() {
-		return oService;
-	}
-	
 	public void setImageDisplay(ImageDisplay disp) {
 		display = disp;
 	}

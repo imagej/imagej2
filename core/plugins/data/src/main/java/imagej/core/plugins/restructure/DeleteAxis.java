@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.restructure;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.Menu;
@@ -44,7 +45,6 @@ import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.DynamicPlugin;
-import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
@@ -63,7 +63,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Delete Axis...") },
 	headless = true, initializer = "initAll")
-public class DeleteAxis extends DynamicPlugin {
+public class DeleteAxis extends DynamicPlugin implements Cancelable {
 
 	// -- Constants --
 
@@ -71,9 +71,6 @@ public class DeleteAxis extends DynamicPlugin {
 	private static final String POSITION = "position";
 
 	// -- Parameters --
-
-	@Parameter
-	private UIService uiService;
 
 	@Parameter
 	private ImageDisplay display;
@@ -92,7 +89,20 @@ public class DeleteAxis extends DynamicPlugin {
 	// -- private members --
 
 	private int axisIndex;
+	private String err;
+	
+	// -- Cancelable methods --
 
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+	
 	// -- DeleteAxis methods --
 
 	public Dataset getDataset() {
@@ -129,10 +139,7 @@ public class DeleteAxis extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = getAxis();
-		if (inputBad(axis)) {
-			informUser();
-			return;
-		}
+		if (inputBad(axis)) return;
 		final AxisType[] newAxes = getNewAxes(dataset, axis);
 		final long[] newDimensions = getNewDimensions(dataset, axis);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -191,15 +198,24 @@ public class DeleteAxis extends DynamicPlugin {
 	 */
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
-		if (axis == null) return true;
+		if (axis == null) {
+			err = "Axis must not be null.";
+			return true;
+		}
 
 		// axis not already present in Dataset
 		axisIndex = dataset.getAxisIndex(axis);
-		if (axisIndex < 0) return true;
+		if (axisIndex < 0) {
+			err = "Axis " + axis.getLabel()+" is not present in input dataset.";
+			return true;
+		}
 
 		// hyperplane index out of range
 		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
-		if ((position < 1) || (position > axisSize)) return true;
+		if ((position < 1) || (position > axisSize)) {
+			err = "Position of plane to keep is out of bounds.";
+			return true;
+		}
 
 		return false;
 	}
@@ -342,11 +358,6 @@ public class DeleteAxis extends DynamicPlugin {
 		final AxisType axis = getAxis();
 		final int index = getDataset().getAxisIndex(axis);
 		return getDataset().getImgPlus().dimension(index);
-	}
-
-	private void informUser() {
-		uiService.showDialog("Data unchanged: bad combination of input parameters",
-			"Invalid parameter combination");
 	}
 
 }

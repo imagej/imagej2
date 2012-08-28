@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.imglib;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -47,7 +48,6 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.ui.UIService;
 import imagej.util.RealRect;
 
 import java.util.Random;
@@ -69,7 +69,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Salt and Pepper", weight = 3) }, headless = true)
-public class SaltAndPepper implements RunnablePlugin {
+public class SaltAndPepper implements RunnablePlugin, Cancelable {
 
 	// -- instance variables that are Parameters --
 
@@ -79,11 +79,14 @@ public class SaltAndPepper implements RunnablePlugin {
 	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter
-	private UIService uiService;
-
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
+	
+	@Parameter(label="Salt Value")
+	private double saltValue = 255;
+
+	@Parameter(label="Pepper Value")
+	private double pepperValue = 0;
 
 	// -- other instance variables --
 
@@ -92,36 +95,78 @@ public class SaltAndPepper implements RunnablePlugin {
 	private Img<? extends RealType<?>> inputImage;
 	private RandomAccess<? extends RealType<?>> accessor;
 	private long[] position;
-	private double minPixValue;
-	private double maxPixValue;
+	private String err;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		if (!inputOkay()) {
-			informUser();
-			return;
-		}
+		if (!inputOkay()) return;
 		setupWorkingData();
 		assignPixels();
 		cleanup();
 		input.update();
 	}
 
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+	
+	public void setSaltValue(double val) {
+		saltValue = val;
+	}
+	
+	public double getSaltValue() {
+		return saltValue;
+	}
+		
+	public void setPepperValue(double val) {
+		pepperValue = val;
+	}
+	
+	public double getPepperValue() {
+		return pepperValue;
+	}
+
 	// -- private interface --
 
 	private boolean inputOkay() {
 		input = imageDisplayService.getActiveDataset(display);
-		if (input == null) return false;
-		if (input.getImgPlus() == null) return false;
-		return input.isInteger() && !input.isRGBMerged();
+		if (input == null) {
+			err = "Input dataset must not be null.";
+			return false;
+		}
+		if (input.getImgPlus() == null) {
+			err = "Input Imgplus must not be null.";
+			return false;
+		}
+		if (!input.isInteger()) {
+			err = "Input dataset must be an integral type.";
+			return false;
+		}
+		if (input.isRGBMerged()) {
+			err = "Input dataset cannot be color.";
+			return false;
+		}
+		return true;
 	}
 
 	private void setupWorkingData() {
 		selection = overlayService.getSelectionBounds(display);
-		minPixValue = input.getType().getMinValue();
-		maxPixValue = input.getType().getMaxValue();
 		inputImage = input.getImgPlus();
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
@@ -140,7 +185,7 @@ public class SaltAndPepper implements RunnablePlugin {
 		if (planeDims.length == 0) { // 2d only
 			assignPlanePixels(planePos, rng);
 		}
-		else { // 3 or more dimsensions
+		else { // 3 or more dimensions
 			while (planePos.hasNext()) {
 				planePos.fwd();
 				assignPlanePixels(planePos, rng);
@@ -173,11 +218,11 @@ public class SaltAndPepper implements RunnablePlugin {
 
 			randomU = ou + nextLong(rng, w);
 			randomV = ov + nextLong(rng, h);
-			setPixel(randomU, randomV, maxPixValue);
+			setPixel(randomU, randomV, saltValue);
 
 			randomU = ou + nextLong(rng, w);
 			randomV = ov + nextLong(rng, h);
-			setPixel(randomU, randomV, minPixValue);
+			setPixel(randomU, randomV, pepperValue);
 		}
 	}
 
@@ -195,11 +240,4 @@ public class SaltAndPepper implements RunnablePlugin {
 		accessor.setPosition(position);
 		accessor.get().setReal(value);
 	}
-
-	private void informUser() {
-		uiService.showDialog(
-			"This plugin does not work with merged color nor floating point datasets",
-			"Unsupported image type");
-	}
-
 }

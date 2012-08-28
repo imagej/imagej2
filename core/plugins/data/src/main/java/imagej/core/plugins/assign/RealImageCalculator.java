@@ -51,6 +51,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.ops.img.ImageCombiner;
+import net.imglib2.ops.operation.BinaryOperation;
 import net.imglib2.ops.operation.real.binary.RealAdd;
 import net.imglib2.ops.operation.real.binary.RealAnd;
 import net.imglib2.ops.operation.real.binary.RealAvg;
@@ -84,7 +85,6 @@ import net.imglib2.type.numeric.real.DoubleType;
 public class RealImageCalculator<T extends RealType<T>> implements
 	RunnablePlugin, Cancelable
 {
-
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -102,7 +102,7 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	@Parameter(label = "Operation to do between the two input images",
 		choices = { "Add", "Subtract", "Multiply", "Divide", "AND", "OR", "XOR",
 			"Min", "Max", "Average", "Difference", "Copy", "Transparent-zero" })
-	private String opName;
+	private String opName = "Add";
 
 	@Parameter(label = "Create new window")
 	private boolean newWindow = true;
@@ -113,8 +113,10 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	// -- other instance variables --
 
 	private final HashMap<String, RealBinaryOperation<T, T, DoubleType>> operators;
+	
+	private BinaryOperation<T,T,DoubleType> operator = null;
 
-	private String cancelReason;
+	private String err;
 
 	// -- constructor --
 
@@ -155,6 +157,7 @@ public class RealImageCalculator<T extends RealType<T>> implements
 	 */
 	@Override
 	public void run() {
+		if (operator == null) operator = operators.get(opName);
 		Img<DoubleType> img = null;
 		try {
 			@SuppressWarnings("unchecked")
@@ -163,10 +166,10 @@ public class RealImageCalculator<T extends RealType<T>> implements
 			Img<T> img2 = (Img<T>) input2.getImgPlus();
 			// TODO - limited by ArrayImg size constraints
 			img =
-				ImageCombiner.applyOp(operators.get(opName), img1, img2, 
+				ImageCombiner.applyOp(operator, img1, img2, 
 													new ArrayImgFactory<DoubleType>(), new DoubleType());
 		} catch (IllegalArgumentException e) {
-			cancelReason = e.toString();
+			err = e.toString();
 			return;
 		}
 		long[] span = new long[img.numDimensions()];
@@ -198,12 +201,12 @@ public class RealImageCalculator<T extends RealType<T>> implements
 
 	@Override
 	public boolean isCanceled() {
-		return cancelReason != null;
+		return err != null;
 	}
 
 	@Override
 	public String getCancelReason() {
-		return cancelReason;
+		return err;
 	}
 
 	public Dataset getInput1() {
@@ -226,12 +229,14 @@ public class RealImageCalculator<T extends RealType<T>> implements
 		return output;
 	}
 
-	public String getOpName() {
-		return opName;
+	public BinaryOperation<T,T,DoubleType> getOp() {
+		return operator;
 	}
 
-	public void setOpName(final String opName) {
-		this.opName = opName;
+	// TODO - due to generics is this too difficult to specify for real world use?
+	
+	public void setOperation(final BinaryOperation<T,T,DoubleType> op) {
+		this.operator = op;
 	}
 
 	public boolean isNewWindow() {

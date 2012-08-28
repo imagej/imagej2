@@ -125,8 +125,10 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 		final FilesCollection files = new FilesCollection(imagejRoot);
 		final UpdaterFrame main = new UpdaterFrame(log, uploaderService, files);
 		if (new File(imagejRoot, "update").exists()) {
-			if (!UpdaterUserInterface.get().promptYesNo("ImageJ was not restarted after the previous update\n\n"
-					+ "Do you want to move the files into place without a restart (dangerous)?",
+			if (!UpdaterUserInterface.get().promptYesNo("It is suggested that you restart ImageJ, then continue the update.\n"
+					+ "Alternately, you can attempt to continue the upgrade without\n"
+					+ "restarting, but ImageJ might crash.\n\n"
+					+ "Do you want to try it?",
 					"Restart required to finalize update"))
 				return;
 			try {

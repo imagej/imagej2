@@ -71,6 +71,9 @@ import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;
 
+// TODO - decide whether to keep this plugin as part of distribution
+//   If we will then enhance with accessors to make headless use possible
+
 /**
  * TODO
  * 

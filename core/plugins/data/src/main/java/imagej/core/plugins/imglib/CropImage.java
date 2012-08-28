@@ -151,6 +151,14 @@ public class CropImage implements RunnablePlugin {
 		overlayService.addOverlays(display, newOverlays);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
 	// -- private interface --
 
 	/**

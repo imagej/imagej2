@@ -80,12 +80,16 @@ public class Flatten implements RunnablePlugin {
 		return uiService;
 	}
 	
-	public void setImageDisplay(ImageDisplay disp) {
+	public void setDisplay(ImageDisplay disp) {
 		display = disp;
 	}
 
-	public ImageDisplay getImageDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
+	}
+	
+	public Dataset getOutput() {
+		return dataset;
 	}
 	
 	// -- run() method --

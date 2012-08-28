@@ -37,6 +37,7 @@ package imagej.core.plugins.overlay;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.RunnablePlugin;
@@ -155,4 +156,31 @@ public class ImageToBinaryMask implements RunnablePlugin {
 		}
 	}
 
+	public void setInput(Dataset ds) {
+		input = ds;
+	}
+	
+	public Dataset getInput() {
+		return input;
+	}
+
+	public void setColor(ColorRGB val) {
+		color = val;
+	}
+	
+	public ColorRGB getColor() {
+		return color;
+	}
+
+	public void setAlpha(int val) {
+		alpha = val;
+	}
+	
+	public int getAlpha() {
+		return alpha;
+	}
+
+	public Overlay getOutput() {
+		return output;
+	}
 }

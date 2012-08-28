@@ -85,6 +85,14 @@ public class FindEdges implements RunnablePlugin {
 		operation.run();
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
 	// -- private interface --
 
 	private class FindEdgesWatcher implements Neighborhood3x3Watcher {

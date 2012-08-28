@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.restructure;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -43,7 +44,6 @@ import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.DynamicPlugin;
-import imagej.ui.UIService;
 
 import java.util.ArrayList;
 
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Data", mnemonic = 'd'), @Menu(label = "Add Data...") },
 	headless = true, initializer = "initAll")
-public class AddData extends DynamicPlugin {
+public class AddData extends DynamicPlugin implements Cancelable {
 
 	// -- Constants --
 
@@ -71,9 +71,6 @@ public class AddData extends DynamicPlugin {
 	private static final String QUANTITY = "quantity";
 
 	// -- Parameters --
-
-	@Parameter
-	private UIService uiService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
@@ -90,6 +87,21 @@ public class AddData extends DynamicPlugin {
 		callback = "parameterChanged")
 	private long quantity = 1;
 
+	// -- instance variables that are not Parameters --
+	private String err;
+
+	// -- Cancelable methods --
+
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+	
 	// -- AddData methods --
 
 	public Dataset getDataset() {
@@ -133,10 +145,7 @@ public class AddData extends DynamicPlugin {
 	@Override
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
-		if (inputBad(axis)) {
-			informUser();
-			return;
-		}
+		if (inputBad(axis)) return;
 		final AxisType[] axes = dataset.getAxes();
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, quantity);
@@ -183,20 +192,32 @@ public class AddData extends DynamicPlugin {
 	 */
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
-		if (axis == null) return true;
+		if (axis == null) {
+			err = "Axis must not be null.";
+			return true;
+		}
 
 		// setup some working variables
 		final int axisIndex = dataset.getAxisIndex(axis);
 		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
 
 		// axis not present in Dataset
-		if (axisIndex < 0) return true;
+		if (axisIndex < 0) {
+			err = "Axis "+axis.getLabel()+" is not present in input dataset.";
+			return true;
+		}
 
 		// bad value for startPosition
-		if (position < 1 || position > axisSize + 1) return true;
+		if (position < 1 || position > axisSize + 1) {
+			err = "Insertion position is out of bounds.";
+			return true;
+		}
 
 		// bad value for numAdding
-		if (quantity <= 0 || (quantity > Long.MAX_VALUE - axisSize)) return true;
+		if (quantity <= 0 || (quantity > Long.MAX_VALUE - axisSize)) {
+			err = "Insertion quantity is out of bounds.";
+			return true;
+		}
 
 		// if here everything is okay
 		return false;
@@ -349,11 +370,6 @@ public class AddData extends DynamicPlugin {
 		item.setMinimumValue(min);
 		// TODO - disable until we fix ticket #886
 		// item.setMaximumValue(max);
-	}
-
-	private void informUser() {
-		uiService.showDialog("Data unchanged: bad combination of input parameters",
-			"Invalid parameter combination");
 	}
 
 }

@@ -86,6 +86,14 @@ public class FlipHorizontally implements RunnablePlugin {
 		flipPixels(input, selection);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
 	// -- private interface --
 
 	private void flipPixels(final Dataset input, final RealRect selection) {

@@ -101,6 +101,18 @@ public class ShowLUT implements RunnablePlugin {
 		output = createDataset(colorTable);
 	}
 	
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
+	public Dataset getOutput() {
+		return output;
+	}
+
 	// -- private helpers --
 	
 	private Dataset createDataset(ColorTable8 lut) {

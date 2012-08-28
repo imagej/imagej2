@@ -37,6 +37,7 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
+import imagej.data.display.ImageDisplay;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -147,6 +148,14 @@ public class AutoContrast implements RunnablePlugin {
 		}
 		System.out.println("New min,max = " + min + ", " + max);
 		setMinMax(min, max);
+	}
+
+	public void setDatasetView(DatasetView view) {
+		this.view = view;
+	}
+	
+	public DatasetView getDatasetView() {
+		return view;
 	}
 
 	// -- Helper methods --

@@ -35,8 +35,8 @@
 
 package imagej.ui.swing.plugins;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
@@ -44,8 +44,6 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.RunnablePlugin;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 import imagej.util.RealRect;
 
 import java.awt.BasicStroke;
@@ -95,13 +93,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot implements RunnablePlugin {
-
-//	@Parameter(label = "Value (binary)")
-//	private long value;
-
-	@Parameter
-	private DatasetView view;
+public class HistogramPlot implements RunnablePlugin, Cancelable {
 
 	// -- instance variables that are Parameters --
 
@@ -112,13 +104,10 @@ public class HistogramPlot implements RunnablePlugin {
 	private OverlayService overlayService;
 
 	@Parameter
-	private UIService uiService;
-
-	@Parameter
 	private ImageDisplay display;
 
 	private Dataset dataset;
-	private RealRect bounds;
+	private RealRect bounds;  // TODO - will we need this kind of support?
 
 	// -- other instance variables --
 
@@ -135,20 +124,30 @@ public class HistogramPlot implements RunnablePlugin {
 	private final int BINS = 256;
 	private final boolean showBins = true;
 
+	private String err;
+	
 	// -- public interface --
 
 	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+
+	@Override
 	public void run() {
-		if (!inputOkay()) {
-			informUser();
-			return;
-		}
+		if (!inputOkay()) return;
 		dataset = displayService.getActiveDataset(display);
 		bounds = overlayService.getSelectionBounds(display);
 		// HistogramComputer histoComputer = new HistogramComputer(display, dataset,
 		// bounds);
 //		HistogramComputer histoComputer = new HistogramComputer(display, dataset, bounds, 0, 4095);
 //		int[] histogram = histoComputer.get();
+		@SuppressWarnings({"rawtypes","unchecked"})
 		final StatisticsComputer statComputer =
 			new StatisticsComputer(dataset.getImgPlus());
 		histMin = dataset.getType().getMinValue();
@@ -218,9 +217,9 @@ public class HistogramPlot implements RunnablePlugin {
 
 	// -- private interface --
 
-	private int countPixels(final int[] histogram) {
+	private int countPixels(final int[] hist) {
 		int sum = 0;
-		for (final int v : histogram) {
+		for (final int v : hist) {
 			sum += v;
 		}
 		return sum;
@@ -229,18 +228,22 @@ public class HistogramPlot implements RunnablePlugin {
 	private boolean inputOkay() {
 		input = displayService.getActiveDataset(display);
 		if (input == null) {
+			err = "Input dataset must not be null.";
 			return false;
 		}
 		if (input.getImgPlus() == null) {
+			err = "Input Imgplus must not be null.";
 			return false;
 		}
-		return input.isInteger() && !input.isRGBMerged();
-	}
-
-	private void informUser() {
-		uiService.showDialog("This plugin requires an integral dataset",
-			"Unsupported image type", DialogPrompt.MessageType.INFORMATION_MESSAGE,
-			DialogPrompt.OptionType.DEFAULT_OPTION);
+		if (!input.isInteger()) {
+			err = "Input dataset must be an integral type.";
+			return false;
+		}
+		if (input.isRGBMerged()) {
+			err = "Input dataset cannot be color.";
+			return false;
+		}
+		return true;
 	}
 
 	private JPanel makeValuePanel() {

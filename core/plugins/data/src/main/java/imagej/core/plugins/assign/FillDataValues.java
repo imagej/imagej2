@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.Cancelable;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.options.OptionsChannels;
@@ -46,7 +47,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.options.OptionsService;
-import imagej.ui.UIService;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -59,32 +59,43 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Fill", weight = 28, accelerator = "control F") },
 	headless = true)
-public class FillDataValues<T extends RealType<T>> implements RunnablePlugin {
-
-	// -- instance variables that are Parameters --
+public class FillDataValues<T extends RealType<T>>
+	implements RunnablePlugin, Cancelable
+{
+	// -- Parameters --
 
 	@Parameter
 	private OverlayService overlayService;
 
 	@Parameter
 	private OptionsService optionsService;
-
-	@Parameter
-	private UIService uiService;
-
+	
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
+
+	// -- instance variables that are not Parameters --
+
+	private String err;
 
 	// -- public interface --
 
 	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+	
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+	
+	@Override
 	public void run() {
 		final OptionsChannels opts =
 			optionsService.getOptions(OptionsChannels.class);
-		if (opts == null) return;
 		final Overlay overlay = overlayService.getActiveOverlay(display);
 		if (overlay == null) {
-			uiService.showDialog("This command requires a selection");
+			err = "This command requires a selection";
 		}
 		else
 			overlayService.fillOverlay(overlay, display, opts.getFgValues());

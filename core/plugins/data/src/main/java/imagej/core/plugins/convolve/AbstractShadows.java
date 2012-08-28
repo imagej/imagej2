@@ -75,4 +75,11 @@ public abstract class AbstractShadows implements RunnablePlugin {
 		operation.run();
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

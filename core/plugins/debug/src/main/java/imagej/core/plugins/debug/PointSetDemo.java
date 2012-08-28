@@ -35,14 +35,13 @@
 
 package imagej.core.plugins.debug;
 
-import imagej.ImageJ;
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.module.ItemIO;
-import imagej.ui.UIService;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -55,7 +54,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menuPath = "Plugins>Sandbox>PointSet Demo")
-public class PointSetDemo implements RunnablePlugin {
+public class PointSetDemo implements RunnablePlugin, Cancelable {
 
 	@Parameter(label="PointSet specification", type = ItemIO.INPUT)
 	private String specification;
@@ -64,19 +63,15 @@ public class PointSetDemo implements RunnablePlugin {
 	private Dataset output;
 	
 	@Parameter
-	ImageJ context;
+	private DatasetService ds;
 	
-	@Parameter
-	DatasetService ds;
-	
-	@Parameter
-	UIService uiService;
+	private String err;
 
 	@Override
 	public void run() {
 		TextSpecifiedPointSet pointSet = new TextSpecifiedPointSet(specification);
 		if (pointSet.getErrorString() != null) {
-			uiService.showDialog(pointSet.getErrorString());
+			err = pointSet.getErrorString();
 			return;
 		}
 		long[] minBound = pointSet.findBoundMin();
@@ -84,7 +79,7 @@ public class PointSetDemo implements RunnablePlugin {
 		
 		for (int i = 0; i < minBound.length; i++) {
 			if ((minBound[i] < 0) || (maxBound[i] < 0)) {
-				uiService.showDialog("For now won't handle negative space with this test plugin");
+				err = "For now won't handle negative space with this test plugin";
 				return;
 			}
 			// make a border around the maximum bound
@@ -105,6 +100,16 @@ public class PointSetDemo implements RunnablePlugin {
 			accessor.get().setReal(255);
 		}
 		
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
 	}
 
 }

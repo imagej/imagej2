@@ -65,4 +65,12 @@ public class ZoomOriginalScale implements RunnablePlugin {
 		display.getCanvas().panReset();
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
+
 }

@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DatasetView;
@@ -49,7 +50,6 @@ import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
-import imagej.ui.UIService;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
@@ -74,8 +74,9 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Equation...", weight = 20) },
 	headless = true)
-public class EquationDataValues<T extends RealType<T>> implements RunnablePlugin {
-
+public class EquationDataValues<T extends RealType<T>>
+	implements RunnablePlugin, Cancelable
+{
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -83,9 +84,6 @@ public class EquationDataValues<T extends RealType<T>> implements RunnablePlugin
 	
 	@Parameter
 	private ImageDisplayService imgDispService;
-	
-	@Parameter
-	private UIService uiService;
 	
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
@@ -101,22 +99,36 @@ public class EquationDataValues<T extends RealType<T>> implements RunnablePlugin
 
 	@Parameter(label = "Equation")
 	private String equationString;
+
+	// -- instance variables that are not Parameters --
 	
 	private Dataset dataset;
 	private long[] origin;
 	private long[] span;
 	private UVInsideRoiCondition condition;
+	private String err;
 
 	// -- public interface --
 
 	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+	
+	@Override
 	public void run() {
-		setRegion(display, allPlanes);
+		err = setRegion(display, allPlanes);
+		if (err != null) return;
 		RealEquationFunctionParser parser = new RealEquationFunctionParser();
 		Tuple2<Function<long[],DoubleType>, String> result =
 				parser.parse(equationString, dataset.getImgPlus());
 		if (result.get2() != null) {
-			uiService.showDialog(result.get2(), "Equation parsing error");
+			err = "Equation parsing error: "+result.get2();
 			return;
 		}
 		InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();
@@ -156,7 +168,7 @@ public class EquationDataValues<T extends RealType<T>> implements RunnablePlugin
 	
 	// -- private helpers --
 
-	private void setRegion(final ImageDisplay disp, boolean allPlanes) {
+	private String setRegion(final ImageDisplay disp, boolean allPlanes) {
 		dataset = imgDispService.getActiveDataset(disp);
 		final Overlay overlay = overlayService.getActiveOverlay(disp);
 		final DatasetView view = imgDispService.getActiveDatasetView(disp);
@@ -165,8 +177,7 @@ public class EquationDataValues<T extends RealType<T>> implements RunnablePlugin
 		final int xIndex = dataset.getAxisIndex(Axes.X);
 		final int yIndex = dataset.getAxisIndex(Axes.Y);
 		if ((xIndex < 0) || (yIndex < 0))
-			throw new IllegalArgumentException(
-				"display does not have XY planes");
+			return "display does not have XY planes";
 		
 		// calc XY outline boundary
 		final long[] dims = dataset.getDims();
@@ -211,5 +222,7 @@ public class EquationDataValues<T extends RealType<T>> implements RunnablePlugin
 		condition = null;
 		if (overlay != null)
 			condition = new UVInsideRoiCondition(overlay.getRegionOfInterest());
+		
+		return null;
 	}
 }
