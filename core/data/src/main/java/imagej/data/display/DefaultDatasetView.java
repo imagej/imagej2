@@ -71,8 +71,7 @@ import net.imglib2.view.Views;
  * @author Barry DeZonia
  */
 @Plugin(type = DataView.class)
-public class DefaultDatasetView extends AbstractDataView implements
-	DatasetView
+public class DefaultDatasetView extends AbstractDataView implements DatasetView
 {
 
 	/** The dimensional index representing channels, for compositing. */
@@ -114,21 +113,21 @@ public class DefaultDatasetView extends AbstractDataView implements
 	}
 
 	@Override
-	public double getChannelMin(int c) {
+	public double getChannelMin(final int c) {
 		if (!isInitialized()) return Double.NaN;
 
 		return converters.get(c).getMin();
 	}
 
 	@Override
-	public double getChannelMax(int c) {
+	public double getChannelMax(final int c) {
 		if (!isInitialized()) return Double.NaN;
 
 		return converters.get(c).getMax();
 	}
 
 	@Override
-	public void setChannelRange(int c, double min, double max) {
+	public void setChannelRange(final int c, final double min, final double max) {
 		if (!isInitialized()) return;
 
 		converters.get(c).setMin(min);
@@ -139,13 +138,15 @@ public class DefaultDatasetView extends AbstractDataView implements
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void autoscale(final int c) {
 		// get the channel min/max from metadata
-		ImgPlus<? extends RealType<?>> imgPlus = getData().getImgPlus();
+		final ImgPlus<? extends RealType<?>> imgPlus = getData().getImgPlus();
 		double min = imgPlus.getChannelMinimum(c);
 		double max = imgPlus.getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
-			RandomAccessibleInterval<RealType> interval =	channelData(getData(), c);
-			ComputeMinMax<? extends RealType<?>> cmm = new ComputeMinMax(interval);
+			final RandomAccessibleInterval<RealType> interval =
+				channelData(getData(), c);
+			final ComputeMinMax<? extends RealType<?>> cmm =
+				new ComputeMinMax(interval);
 			cmm.process();
 			min = cmm.getMin().getRealDouble();
 			max = cmm.getMax().getRealDouble();
@@ -224,30 +225,31 @@ public class DefaultDatasetView extends AbstractDataView implements
 
 	// TODO - add this kind of mapping code to the Imglib Projector classes. Here
 	// it is just a workaround to make IJ2/IJ1 color syncing happy. BDZ
-	
+
 	/**
 	 * Reason from a channel collection and internal state what the closest color
 	 * is. This is needed for color synchronization with IJ1.
 	 */
 	@Override
-	public ColorRGB getColor(ChannelCollection channels) {
+	public ColorRGB getColor(final ChannelCollection channels) {
 		if (!isInitialized()) return null;
 
-		final int r,g,b;
-		long channelCount = getChannelCount();
-		ColorMode mode = getColorMode();
+		final int r, g, b;
+		final long channelCount = getChannelCount();
+		final ColorMode mode = getColorMode();
 		if (mode == ColorMode.COMPOSITE) {
 			double rSum = 0, gSum = 0, bSum = 0;
 			for (int c = 0; c < channelCount; c++) {
-				double value = channels.getChannelValue(c);
-				RealLUTConverter<? extends RealType<?>> converter = converters.get(c);
-				double min = converter.getMin();
-				double max = converter.getMax();
+				final double value = channels.getChannelValue(c);
+				final RealLUTConverter<? extends RealType<?>> converter =
+					converters.get(c);
+				final double min = converter.getMin();
+				final double max = converter.getMax();
 				double relativeValue = (value - min) / (max - min);
 				if (relativeValue < 0) relativeValue = 0;
 				if (relativeValue > 1) relativeValue = 1;
-				int grayValue = (int) (relativeValue * 255);
-				ColorTable8 colorTable = converter.getLUT();
+				final int grayValue = (int) (relativeValue * 255);
+				final ColorTable8 colorTable = converter.getLUT();
 				rSum += colorTable.get(0, grayValue);
 				gSum += colorTable.get(1, grayValue);
 				bSum += colorTable.get(2, grayValue);
@@ -257,18 +259,18 @@ public class DefaultDatasetView extends AbstractDataView implements
 			b = (bSum > 255) ? 255 : (int) Math.round(bSum);
 		}
 		else { // grayscale or color
-			long currChannel = getLongPosition(Axes.CHANNEL);
-			double value = channels.getChannelValue(currChannel);
-			RealLUTConverter<? extends RealType<?>> converter =
-					converters.get((int) currChannel);
-			double min = converter.getMin();
-			double max = converter.getMax();
+			final long currChannel = getLongPosition(Axes.CHANNEL);
+			final double value = channels.getChannelValue(currChannel);
+			final RealLUTConverter<? extends RealType<?>> converter =
+				converters.get((int) currChannel);
+			final double min = converter.getMin();
+			final double max = converter.getMax();
 			double relativeValue = (value - min) / (max - min);
 			if (relativeValue < 0) relativeValue = 0;
 			if (relativeValue > 1) relativeValue = 1;
-			int grayValue = (int) Math.round(relativeValue * 255);
+			final int grayValue = (int) Math.round(relativeValue * 255);
 			if (mode == ColorMode.COLOR) {
-				ColorTable8 colorTable = converter.getLUT();
+				final ColorTable8 colorTable = converter.getLUT();
 				r = colorTable.get(0, grayValue);
 				g = colorTable.get(1, grayValue);
 				b = colorTable.get(2, grayValue);
@@ -281,7 +283,7 @@ public class DefaultDatasetView extends AbstractDataView implements
 		}
 		return new ColorRGB(r, g, b);
 	}
-	
+
 	// -- DataView methods --
 
 	@Override
@@ -432,15 +434,14 @@ public class DefaultDatasetView extends AbstractDataView implements
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
-			RealLUTConverter converter =
-				new RealLUTConverter(
-					getData().getImgPlus().getChannelMinimum(c),
-					getData().getImgPlus().getChannelMaximum(c), null); 
+			final RealLUTConverter converter =
+				new RealLUTConverter(getData().getImgPlus().getChannelMinimum(c),
+					getData().getImgPlus().getChannelMaximum(c), null);
 			converters.add(converter);
 		}
 		projector =
-			new CompositeXYProjector(
-				getData().getImgPlus(), screenImage, converters, channelDimIndex);
+			new CompositeXYProjector(getData().getImgPlus(), screenImage, converters,
+				channelDimIndex);
 		projector.setComposite(composite);
 	}
 
@@ -472,19 +473,24 @@ public class DefaultDatasetView extends AbstractDataView implements
 		return getData().getExtents().dimension(channelDimIndex);
 	}
 
-	@SuppressWarnings({"unchecked","rawtypes"})
-	private RandomAccessibleInterval<RealType> channelData(Dataset d, int c)
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private RandomAccessibleInterval<RealType> channelData(final Dataset d,
+		final int c)
 	{
-		ImgPlus<? extends RealType<?>> imgPlus = d.getImgPlus();
-		int chIndex = imgPlus.getAxisIndex(Axes.CHANNEL);
+		final ImgPlus<? extends RealType<?>> imgPlus = d.getImgPlus();
+		final int chIndex = imgPlus.getAxisIndex(Axes.CHANNEL);
 		if (chIndex < 0) {
-			return (RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus;
+			return (RandomAccessibleInterval) imgPlus;
 		}
-		long[] mn = new long[d.numDimensions()];
-		long[] mx = d.getDims();
-		for (int i = 0; i < mx.length; i++) { mx[i]--; }
+		final long[] mn = new long[d.numDimensions()];
+		final long[] mx = d.getDims();
+		for (int i = 0; i < mx.length; i++) {
+			mx[i]--;
+		}
 		mn[chIndex] = c;
 		mx[chIndex] = c;
-		return Views.interval((RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus, mn, mx);
+		return Views.interval(
+			(RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus,
+			mn, mx);
 	}
 }
