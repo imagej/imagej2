@@ -53,6 +53,7 @@ import imagej.util.RealRect;
 import java.util.Random;
 
 import net.imglib2.RandomAccess;
+import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
@@ -81,6 +82,9 @@ public class SaltAndPepper implements RunnablePlugin, Cancelable {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
+	
+	@Parameter(label="Use data min and max (ignore values below)")
+	private boolean autoCalcMinMax = false;
 	
 	@Parameter(label="Salt Value")
 	private double saltValue = 255;
@@ -170,6 +174,14 @@ public class SaltAndPepper implements RunnablePlugin, Cancelable {
 		inputImage = input.getImgPlus();
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
+		if (autoCalcMinMax) {
+			@SuppressWarnings({"unchecked","rawtypes"})
+			final ComputeMinMax<? extends RealType<?>> cmm =
+					new ComputeMinMax(inputImage);
+				cmm.process();
+				pepperValue = cmm.getMin().getRealDouble();
+				saltValue = cmm.getMax().getRealDouble();
+		}
 	}
 
 	private void assignPixels() {
