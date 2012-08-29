@@ -39,7 +39,7 @@ import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.module.ItemIO;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -76,7 +76,7 @@ public class ShowReadme implements RunnablePlugin {
 	// -- Helper methods --
 
 	private String loadReadmeFile() {
-		final File baseDir = FileUtils.getBaseDirectory();
+		final File baseDir = AppUtils.getBaseDirectory();
 		final File readmeFile = new File(baseDir, README_FILE);
 
 		try {

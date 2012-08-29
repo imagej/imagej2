@@ -51,9 +51,9 @@ import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import imagej.util.FileUtils;
 import imagej.util.MersenneTwisterFast;
 
 import java.io.BufferedReader;
@@ -199,7 +199,7 @@ public class AboutImageJ implements RunnablePlugin {
 	 * @return file path of the chosen image
 	 */
 	private File getRandomAboutImagePath() {
-		final File aboutDir = new File(FileUtils.getBaseDirectory(), "about");
+		final File aboutDir = new File(AppUtils.getBaseDirectory(), "about");
 		if (!aboutDir.exists()) {
 			// no "about" folder found
 			log.warn("About folder '" + aboutDir.getPath() + "' does not exist.");
