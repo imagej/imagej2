@@ -35,15 +35,17 @@
 
 package imagej.core.plugins.debug;
 
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.ImageJ;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.ItemIO;
+import imagej.util.Manifest;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Properties;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -51,52 +53,84 @@ import java.util.regex.Pattern;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>System Properties", headless = true)
-public class SysProps implements RunnablePlugin {
+@Plugin(menuPath = "Plugins>Debug>System Information", headless = true)
+public class SystemInformation implements RunnablePlugin {
+
+	// -- Constants --
+
+	private static final String NL = System.getProperty("line.separator");
 
 	// -- Parameters --
 
-	@Parameter(label = "System Properties", type = ItemIO.OUTPUT)
-	private String properties;
+	@Parameter
+	private ImageJ context;
+
+	@Parameter(label = "System Information", type = ItemIO.OUTPUT)
+	private String info;
 
 	// -- Runnable methods --
 
 	@Override
 	public void run() {
 		final StringBuilder sb = new StringBuilder();
-		final String nl = System.getProperty("line.separator");
 
-		final Properties props = System.getProperties();
-		final ArrayList<String> propKeys =
-			new ArrayList<String>(props.stringPropertyNames());
-		Collections.sort(propKeys);
+		sb.append(context.getInfo(false) + NL);
 
-		for (final String key : propKeys) {
+		final Manifest manifest = context.getManifest();
+		if (manifest != null) {
+			sb.append(NL);
+			sb.append("-- Manifest details --" + NL);
+			sb.append(getManifestData(manifest));
+		}
+
+		sb.append(NL);
+		sb.append("-- System properties --" + NL);
+		sb.append(getSystemProperties());
+
+		info = sb.toString();
+	}
+
+	// -- Utility methods --
+
+	public static String getSystemProperties() {
+		return mapToString(System.getProperties());
+	}
+	
+	public String getManifestData(final Manifest manifest) {
+		if (manifest == null) return null;
+		return mapToString(manifest.getAll());
+	}
+
+	public static String mapToString(final Map<Object, Object> map) {
+		final StringBuilder sb = new StringBuilder();
+
+		// sort keys
+		final ArrayList<String> keys = new ArrayList<String>();
+		for (Object key : map.keySet()) {
+			keys.add(key.toString());
+		}
+		Collections.sort(keys);
+
+		for (final String key : keys) {
 			if (key == null) continue;
-			final String value = props.getProperty(key);
-			if (value == null) continue;
+			final Object o = map.get(key);
+			final String value = o == null ? "(null)" : o.toString();
 
 			if (key.endsWith(".dirs") || key.endsWith(".path")) {
 				// split path and display values as a list
 				final String[] dirs = value.split(Pattern.quote(File.pathSeparator));
-				sb.append(key + " = {" + nl);
+				sb.append(key + " = {" + NL);
 				for (final String dir : dirs) {
-					sb.append("\t" + dir + nl);
+					sb.append("\t" + dir + NL);
 				}
-				sb.append("}" + nl);
+				sb.append("}" + NL);
 			}
 			else {
 				// display a single key/value pair
-				sb.append(key + " = " + props.get(key) + nl);
+				sb.append(key + " = " + value + NL);
 			}
 		}
-		properties = sb.toString();
-	}
-
-	// -- SysProps methods --
-
-	public String getProperties() {
-		return properties;
+		return sb.toString();
 	}
 
 }
