@@ -181,12 +181,17 @@ public class ImageJ {
 	/** Master index of all plugins known to the application context. */
 	private final PluginIndex pluginIndex;
 
+	/** Maven POM with metadata about ImageJ. */
+	private final POM pom;
+
 	/** Creates a new ImageJ context. */
 	public ImageJ() {
 		serviceIndex = new ServiceIndex();
 
 		pluginIndex = new PluginIndex();
 		pluginIndex.discover();
+
+		pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
 	}
 
 	// -- ImageJ methods --
@@ -210,7 +215,6 @@ public class ImageJ {
 	 * @return The application version, in <code>major.minor.micro</code> format.
 	 */
 	public String getVersion() {
-		final POM pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
 		return pom.getVersion();
 	}
 
