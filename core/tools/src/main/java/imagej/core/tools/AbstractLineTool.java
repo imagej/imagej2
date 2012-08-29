@@ -48,6 +48,7 @@ import imagej.display.event.input.MsDraggedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.options.OptionsService;
+import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -146,7 +147,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
 		// allocate drawing tool
-		drawingTool = new DrawingTool(dataset);
+		drawingTool = new DrawingTool(dataset, evt.getContext().getService(RenderingService.class));
 		drawingTool.setChannels(channels);
 
 		// set the position of tool to current display's position

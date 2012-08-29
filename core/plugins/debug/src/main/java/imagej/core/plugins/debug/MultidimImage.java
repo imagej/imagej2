@@ -40,11 +40,12 @@ import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
-import imagej.data.DrawingTool.TextJustification;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.module.ItemIO;
+import imagej.render.RenderingService;
+import imagej.render.RenderingService.TextRenderer.TextJustification;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +66,10 @@ public class MultidimImage implements RunnablePlugin {
 	private ImageJ context;
 
 	@Parameter
-	private DatasetService service;
+	private DatasetService datasetService;
+	
+	@Parameter
+	private RenderingService renderingService;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset ds;
@@ -80,9 +84,9 @@ public class MultidimImage implements RunnablePlugin {
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
-		ds = service.create(dims, name, axes, bitsPerPixel, signed, floating);
+		ds = datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 		final long[] pos = new long[dims.length];
-		final DrawingTool tool = new DrawingTool(ds);
+		final DrawingTool tool = new DrawingTool(ds, renderingService);
 		final List<Double> values =
 			Arrays.asList(new Double[] { 255.0, 255.0, 255.0, 255.0 });
 		final ChannelCollection channels = new ChannelCollection(values);

@@ -39,7 +39,6 @@ import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
-import imagej.data.DrawingTool.TextJustification;
 import imagej.data.display.ColorTables;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
@@ -50,6 +49,8 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.render.RenderingService;
+import imagej.render.RenderingService.TextRenderer.TextJustification;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 
@@ -79,16 +80,19 @@ public class ShowLUT implements RunnablePlugin {
 	// -- Parameters --
 	
 	@Parameter
-	ImageDisplayService imgDispService;
+	private ImageDisplayService imgDispService;
 
 	@Parameter
-	DatasetService datasetService;
+	private DatasetService datasetService;
+	
+	@Parameter
+	private RenderingService renderingService;
 
 	@Parameter
-	ImageDisplay display;
+	private ImageDisplay display;
 	
 	@Parameter(type = ItemIO.OUTPUT)
-	Dataset output;
+	private Dataset output;
 	
 	// -- public interface --
 	
@@ -129,7 +133,7 @@ public class ShowLUT implements RunnablePlugin {
 	}
 	
 	private void drawLutInfo(Dataset ds, ColorTable8 lut) {
-		DrawingTool tool = new DrawingTool(ds);
+		DrawingTool tool = new DrawingTool(ds, renderingService);
 		int xMargin = 35;
 		int yMargin = 20;
 		int width = 256;

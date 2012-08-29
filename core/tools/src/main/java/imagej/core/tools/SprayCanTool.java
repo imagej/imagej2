@@ -51,6 +51,7 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.options.OptionsService;
+import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
@@ -186,7 +187,7 @@ public class SprayCanTool extends AbstractTool {
 		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
 		// allocate drawing tool
-		drawingTool = new DrawingTool(dataset);
+		drawingTool = new DrawingTool(dataset, evt.getContext().getService(RenderingService.class));
 		drawingTool.setChannels(channels);
 
 		// set the position of tool to current display's position

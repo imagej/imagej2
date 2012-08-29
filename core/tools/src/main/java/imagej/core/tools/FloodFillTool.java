@@ -46,6 +46,7 @@ import imagej.display.event.input.MsClickedEvent;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.options.OptionsService;
+import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
@@ -99,7 +100,8 @@ public class FloodFillTool extends AbstractTool {
 				if (recorder.record(evt)) {
 					final DrawingTool drawingTool =
 							initDrawingTool(
-								recorder.wasAltKeyDown(), recorder.getDataset());
+								recorder.wasAltKeyDown(), recorder.getDataset(),
+								evt.getContext().getService(RenderingService.class));
 					final long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(recorder.getCX(), recorder.getCY(), currPos, connectivity, drawingTool);
 					evt.getDisplay().update();
@@ -112,14 +114,16 @@ public class FloodFillTool extends AbstractTool {
 	// -- private helpers --
 
 	/** Returns an initialized DrawingTool. */
-	private DrawingTool initDrawingTool(boolean altKeyDown, final Dataset ds) {
+	private DrawingTool initDrawingTool(boolean altKeyDown, final Dataset ds,
+		RenderingService renderingService)
+	{
 		final OptionsChannels opts = getChannelOptions();
 		ChannelCollection fillValues;
 		if (altKeyDown)
 			fillValues = opts.getBgValues();
 		else
 			fillValues = opts.getFgValues();
-		final DrawingTool tool = new DrawingTool(ds);
+		final DrawingTool tool = new DrawingTool(ds, renderingService);
 		tool.setChannels(fillValues);
 		// TODO - change here to support arbitrary UV axes
 		tool.setUAxis(0);

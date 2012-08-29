@@ -40,7 +40,6 @@ import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
-import imagej.data.DrawingTool.TextJustification;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.ext.plugin.RunnablePlugin;
@@ -51,6 +50,8 @@ import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.render.RenderingService;
+import imagej.render.RenderingService.TextRenderer.TextJustification;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.FileUtils;
@@ -112,7 +113,10 @@ public class AboutImageJ implements RunnablePlugin {
 
 	@Parameter
 	private IOService ioService;
-
+	
+	@Parameter
+	private RenderingService rendSrv;
+	
 	@Parameter(type = ItemIO.OUTPUT)
 	private Display<?> display;
 
@@ -228,7 +232,7 @@ public class AboutImageJ implements RunnablePlugin {
 	private void drawTextOverImage(final Dataset ds) {
 		textChannels = new ChannelCollection(textColor);
 		outlineChannels = new ChannelCollection(outlineColor);
-		final DrawingTool tool = new DrawingTool(ds);
+		final DrawingTool tool = new DrawingTool(ds, rendSrv);
 		tool.setUAxis(0);
 		tool.setVAxis(1);
 		final long width = ds.dimension(0);

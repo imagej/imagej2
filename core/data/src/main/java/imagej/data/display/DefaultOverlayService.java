@@ -51,6 +51,7 @@ import imagej.display.DisplayService;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.options.OptionsService;
+import imagej.render.RenderingService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.RealRect;
@@ -78,6 +79,7 @@ public final class DefaultOverlayService extends AbstractService implements
 	private final ObjectService objectService;
 	private final DisplayService displayService;
 	private final ImageDisplayService imageDisplayService;
+	private final RenderingService renderingService;
 
 	private final OverlaySettings defaultSettings;
 	private final OverlayInfoList overlayInfo;
@@ -93,12 +95,13 @@ public final class DefaultOverlayService extends AbstractService implements
 	public DefaultOverlayService(final ImageJ context,
 		final ObjectService objectService, final DisplayService displayService,
 		final ImageDisplayService imageDisplayService,
-		final OptionsService optionsService)
+		final OptionsService optionsService, final RenderingService renderingService)
 	{
 		super(context);
 		this.objectService = objectService;
 		this.displayService = displayService;
 		this.imageDisplayService = imageDisplayService;
+		this.renderingService = renderingService;
 
 		defaultSettings = new OverlaySettings();
 		final OptionsOverlay overlayOptions =
@@ -423,7 +426,7 @@ public final class DefaultOverlayService extends AbstractService implements
 	{
 		final Dataset ds = getDataset(display);
 		if (ds == null) return;
-		DrawingTool tool = new DrawingTool(ds);
+		DrawingTool tool = new DrawingTool(ds, renderingService);
 		final Position position = display.getActiveView().getPlanePosition();
 		final long[] pp = new long[position.numDimensions()];
 		position.localize(pp);
