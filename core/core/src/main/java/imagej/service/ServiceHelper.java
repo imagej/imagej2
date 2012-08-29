@@ -38,7 +38,6 @@ package imagej.service;
 import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
 import imagej.ext.plugin.PluginInfo;
 import imagej.log.LogService;
 import imagej.service.event.ServicesLoadedEvent;
