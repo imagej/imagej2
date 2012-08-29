@@ -39,6 +39,7 @@ import imagej.ImageJ;
 import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
+import imagej.service.Service;
 
 /**
  * No-op implementation of text rendering service. This default implementation
@@ -46,7 +47,7 @@ import imagej.service.AbstractService;
  * 
  * @author Barry DeZonia
  */
-@Plugin(priority = Priority.LOW_PRIORITY)
+@Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class DummyRenderingService extends AbstractService implements
 	RenderingService
 {
