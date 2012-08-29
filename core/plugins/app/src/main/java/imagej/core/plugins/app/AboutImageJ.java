@@ -42,19 +42,19 @@ import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
+import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import imagej.util.FileUtils;
 import imagej.util.MersenneTwisterFast;
 
 import java.io.BufferedReader;
@@ -103,6 +103,9 @@ public class AboutImageJ implements RunnablePlugin {
 	// -- parameters --
 
 	@Parameter
+	private ImageJ context;
+
+	@Parameter
 	private LogService log;
 
 	@Parameter
@@ -135,7 +138,8 @@ public class AboutImageJ implements RunnablePlugin {
 	public void run() {
 		final Dataset dataset = createDataset();
 		drawTextOverImage(dataset);
-		display = dispSrv.createDisplay("About ImageJ", dataset);
+		final String title = context.getTitle();
+		display = dispSrv.createDisplay("About " + title, dataset);
 	}
 
 	public Display<?> getDisplay() {
@@ -150,7 +154,7 @@ public class AboutImageJ implements RunnablePlugin {
 	private Dataset createDataset() {
 		final File imageFile = getRandomAboutImagePath();
 
-		final String title = "About ImageJ " + ImageJ.VERSION;
+		final String title = "About " + getAppString();
 
 		Dataset ds = null;
 		try {
@@ -203,7 +207,7 @@ public class AboutImageJ implements RunnablePlugin {
 	 * @return file path of the chosen image
 	 */
 	private File getRandomAboutImagePath() {
-		final File aboutDir = new File(FileUtils.getBaseDirectory(), "about");
+		final File aboutDir = new File(AppUtils.getBaseDirectory(), "about");
 		if (!aboutDir.exists()) {
 			// no "about" folder found
 			log.warn("About folder '" + aboutDir.getPath() + "' does not exist.");
@@ -241,7 +245,7 @@ public class AboutImageJ implements RunnablePlugin {
 		tool.setTextAntialiasing(true);
 		// tool.setTextOutlineWidth(5);
 		tool.setFontSize(largestFontSize);
-		drawOutlinedText(tool, x, y, "ImageJ " + ImageJ.VERSION,
+		drawOutlinedText(tool, x, y, getAppString(),
 			TextJustification.CENTER, textChannels, outlineChannels);
 		y += 5 * tool.getFontSize() / 4;
 		tool.setFontSize((int) Math.round(0.6 * largestFontSize));
@@ -325,9 +329,7 @@ public class AboutImageJ implements RunnablePlugin {
 		return inUseStr;
 	}
 
-	/**
-	 * Returns true if ImageJ is running a 64-bit version of Java.
-	 */
+	/** Returns true if ImageJ is running a 64-bit version of Java. */
 	private boolean is64Bit() {
 		final String osarch = System.getProperty("os.arch");
 		return osarch != null && osarch.indexOf("64") != -1;
@@ -390,6 +392,10 @@ public class AboutImageJ implements RunnablePlugin {
 				// do nothing
 			}
 		}
+	}
+
+	private String getAppString() {
+		return context.getTitle() + " " + context.getVersion();
 	}
 
 }

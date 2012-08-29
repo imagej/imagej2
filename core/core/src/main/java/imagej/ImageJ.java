@@ -41,6 +41,8 @@ import imagej.service.Service;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
 import imagej.util.CheckSezpoz;
+import imagej.util.Manifest;
+import imagej.util.POM;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,7 +59,8 @@ import java.util.List;
  */
 public class ImageJ {
 
-	/** Version of the ImageJ software. */
+	/** @deprecated Use {@link ImageJ#getVersion()} instead. */
+	@Deprecated
 	public static final String VERSION = "2.0.0-beta4-DEV";
 
 	/** Creates a new ImageJ application context with all available services. */
@@ -173,9 +176,17 @@ public class ImageJ {
 	/** Title of the application context. */
 	private String title = "ImageJ";
 
+	/** Index of the application context's services. */
 	private final ServiceIndex serviceIndex;
 
+	/** Master index of all plugins known to the application context. */
 	private final PluginIndex pluginIndex;
+
+	/** Maven POM with metadata about ImageJ. */
+	private final POM pom;
+
+	/** JAR manifest with metadata about ImageJ. */
+	private final Manifest manifest;
 
 	/** Creates a new ImageJ context. */
 	public ImageJ() {
@@ -183,6 +194,9 @@ public class ImageJ {
 
 		pluginIndex = new PluginIndex();
 		pluginIndex.discover();
+
+		pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
+		manifest = Manifest.getManifest(ImageJ.class);
 	}
 
 	// -- ImageJ methods --
@@ -206,13 +220,45 @@ public class ImageJ {
 	 * @return The application version, in <code>major.minor.micro</code> format.
 	 */
 	public String getVersion() {
-		// FIXME: Extract this information from the relevant Maven POM instead.
-		// If the application context class is on the file system, (e.g., when
-		// running from an IDE such as Eclipse), the POM is located in an ancestor
-		// directory of the .class file. If the application context class is inside
-		// of a JAR file (e.g., when running the deployed application bundle), the
-		// POM is located in the same JAR file's META-INF/maven subdirectory.
-		return VERSION;
+		return pom.getVersion();
+	}
+
+	/** Gets the Maven POM containing metadata about the application context. */
+	public POM getPOM() {
+		return pom;
+	}
+
+	/**
+	 * Gets the manifest containing metadata about the application context.
+	 * <p>
+	 * NB: This metadata may be null if run in a development environment.
+	 * </p>
+	 */
+	public Manifest getManifest() {
+		return manifest;
+	}
+
+	/**
+	 * Gets a string with information about the application context.
+	 * 
+	 * @param mem If true, memory usage information is included.
+	 */
+	public String getInfo(final boolean mem) {
+		final String appTitle = getTitle();
+		final String appVersion = getVersion();
+		final String javaVersion = System.getProperty("java.version");
+		final String osArch = System.getProperty("os.arch");
+		final long maxMem = Runtime.getRuntime().maxMemory();
+		final long totalMem = Runtime.getRuntime().totalMemory();
+		final long freeMem = Runtime.getRuntime().freeMemory();
+		final long usedMem = totalMem - freeMem;
+		final long usedMB = usedMem / 1048576;
+		final long maxMB = maxMem / 1048576;
+		final StringBuilder sb = new StringBuilder();
+		sb.append(appTitle + " " + appVersion);
+		sb.append("; Java " + javaVersion + " [" + osArch + "]");
+		if (mem) sb.append("; " + usedMB + "MB of " + maxMB + "MB");
+		return sb.toString();
 	}
 
 	public ServiceIndex getServiceIndex() {

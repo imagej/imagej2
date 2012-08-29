@@ -33,9 +33,6 @@
  * #L%
  */
 
-// File path shortening code adapted from:
-// from: http://www.rgagnon.com/javadetails/java-0661.html
-
 package imagej.util;
 
 import java.io.File;

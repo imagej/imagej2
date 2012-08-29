@@ -36,7 +36,7 @@
 package imagej.config;
 
 import imagej.ImageJ;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 import imagej.util.Log;
 
 import java.io.BufferedReader;
@@ -101,7 +101,7 @@ public class ConfigFileParameters {
 
 	/** Finds the default name/location of the launcher config file. */
 	public static String getCfgFileName() {
-		final File directory = FileUtils.getBaseDirectory();
+		final File directory = AppUtils.getBaseDirectory();
 		return new File(directory, CONFIG_FILE).getAbsolutePath();
 	}
 
