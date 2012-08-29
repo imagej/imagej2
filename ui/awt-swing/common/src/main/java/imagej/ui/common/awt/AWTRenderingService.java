@@ -53,6 +53,13 @@ import imagej.service.Service;
 @Plugin(type = Service.class)
 public class AWTRenderingService extends AbstractService implements RenderingService {
 
+	public AWTRenderingService() {
+		// NB - needed by Sezpoz
+		super(null);
+		throw new UnsupportedOperationException(
+			"this constructor not meant to be used");
+	}
+
 	public AWTRenderingService(ImageJ context) {
 		super(context);
 	}
