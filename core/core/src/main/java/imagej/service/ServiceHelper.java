@@ -243,7 +243,7 @@ public class ServiceHelper extends AbstractContextual {
 			return ctor;
 		}
 		throw new IllegalArgumentException(
-			"No appropriate constructor found for service class: " +
+			"No service implementation found for service class: " +
 				serviceClass.getName());
 	}
 
