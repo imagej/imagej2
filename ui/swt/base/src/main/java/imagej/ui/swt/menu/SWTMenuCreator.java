@@ -35,8 +35,6 @@
 
 package imagej.ui.swt.menu;
 
-import imagej.ImageJ;
-import imagej.ext.plugin.PluginService;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
 import imagej.module.ModuleInfo;
@@ -54,11 +52,12 @@ import org.eclipse.swt.widgets.MenuItem;
  */
 public class SWTMenuCreator extends AbstractMenuCreator<Menu, Menu> {
 
+	// -- Internal methods --
+
 	@Override
 	protected void addLeafToMenu(final ShadowMenu shadow, final Menu target) {
-		final MenuItem menuItem = new MenuItem(target, 0);
-		menuItem.setText(shadow.getMenuEntry().getName());
-		linkAction(shadow.getModuleInfo(), menuItem);
+		final MenuItem menuItem = createMenuItem(shadow, target, 0);
+		linkAction(shadow, menuItem);
 	}
 
 	@Override
@@ -69,8 +68,7 @@ public class SWTMenuCreator extends AbstractMenuCreator<Menu, Menu> {
 	@Override
 	protected Menu addNonLeafToMenu(final ShadowMenu shadow, final Menu target) {
 		final Menu menu = new Menu(target);
-		final MenuItem menuItem = new MenuItem(target, SWT.CASCADE);
-		menuItem.setText(shadow.getMenuEntry().getName());
+		final MenuItem menuItem = createMenuItem(shadow, target, SWT.CASCADE);
 		menuItem.setMenu(menu);
 		return menu;
 	}
@@ -92,12 +90,28 @@ public class SWTMenuCreator extends AbstractMenuCreator<Menu, Menu> {
 
 	// -- Helper methods --
 
-	private void linkAction(final ModuleInfo info, final MenuItem menuItem) {
+	private MenuItem createMenuItem(final ShadowMenu shadow, final Menu target,
+		final int style)
+	{
+		final MenuItem menuItem = new MenuItem(target, style);
+		menuItem.setText(shadow.getMenuEntry().getName());
+		assignProperties(shadow, menuItem);
+		return menuItem;
+	}
+
+	private void
+		assignProperties(final ShadowMenu shadow, final MenuItem menuItem)
+	{
+		final ModuleInfo info = shadow.getModuleInfo();
+		if (info != null) menuItem.setEnabled(info.isEnabled());
+	}
+
+	private void linkAction(final ShadowMenu shadow, final MenuItem menuItem) {
 		menuItem.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				ImageJ.get(PluginService.class).run(info);
+				shadow.run();
 			}
 		});
 	}

@@ -36,7 +36,6 @@
 package imagej.ui.swing.menu;
 
 import imagej.menu.ShadowMenu;
-import imagej.util.Log;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -78,7 +77,7 @@ public class SwingJMenuBarCreator extends AbstractSwingMenuCreator<JMenuBar> {
 
 	@Override
 	protected void addSeparatorToTop(final JMenuBar target) {
-		Log.debug("SwingJMenuBarCreator: Ignoring top-level separator");
+		// NB: Ignore top-level separator.
 	}
 
 }

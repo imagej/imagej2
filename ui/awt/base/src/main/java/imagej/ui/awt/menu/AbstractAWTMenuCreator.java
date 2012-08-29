@@ -35,8 +35,6 @@
 
 package imagej.ui.awt.menu;
 
-import imagej.ImageJ;
-import imagej.ext.plugin.PluginService;
 import imagej.input.Accelerator;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
@@ -65,6 +63,8 @@ public abstract class AbstractAWTMenuCreator<T> extends
 	AbstractMenuCreator<T, Menu>
 {
 
+	// -- Internal methods --
+
 	@Override
 	protected void addLeafToMenu(final ShadowMenu shadow, final Menu target) {
 		final MenuItem menuItem = createLeaf(shadow);
@@ -86,7 +86,7 @@ public abstract class AbstractAWTMenuCreator<T> extends
 	protected MenuItem createLeaf(final ShadowMenu shadow) {
 		final MenuItem menuItem = new MenuItem(shadow.getMenuEntry().getName());
 		assignProperties(menuItem, shadow);
-		linkAction(shadow.getModuleInfo(), menuItem);
+		linkAction(shadow, menuItem);
 		return menuItem;
 	}
 
@@ -108,14 +108,16 @@ public abstract class AbstractAWTMenuCreator<T> extends
 			final MenuShortcut shortcut = new MenuShortcut(code, shift);
 			menuItem.setShortcut(shortcut);
 		}
+		final ModuleInfo info = shadow.getModuleInfo();
+		if (info != null) menuItem.setEnabled(info.isEnabled());
 	}
 
-	private void linkAction(final ModuleInfo info, final MenuItem menuItem) {
+	private void linkAction(final ShadowMenu shadow, final MenuItem menuItem) {
 		menuItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				ImageJ.get(PluginService.class).run(info);
+				shadow.run();
 			}
 		});
 	}

@@ -35,7 +35,6 @@
 
 package imagej.ui.pivot.menu;
 
-import imagej.ext.plugin.PluginService;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
 import imagej.module.ModuleInfo;
@@ -56,6 +55,8 @@ import org.apache.pivot.wtk.PushButton;
  * @author Curtis Rueden
  */
 public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
+
+	// -- Internal methods --
 
 	@Override
 	protected void
@@ -111,6 +112,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
 		final Menu menu = new Menu();
 		button.setMenu(menu);
 		menu.getSections().add(new Menu.Section());
+		assignProperties(shadow, button);
 		return button;
 	}
 
@@ -119,20 +121,21 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton> {
 		return sections.get(sections.getLength() - 1);
 	}
 
-	private void linkAction(final ShadowMenu shadow, final Button button) {
+	private void
+		assignProperties(final ShadowMenu shadow, final MenuButton button)
+	{
 		final ModuleInfo info = shadow.getModuleInfo();
-		final PluginService pluginService =
-			shadow.getContext().getService(PluginService.class);
-		if (pluginService != null) {
-			button.setAction(new Action() {
+		if (info != null) button.setEnabled(info.isEnabled());
+	}
 
-				@Override
-				public void perform(final Component c) {
-					pluginService.run(info);
-				}
-			});
-		}
-		button.setEnabled(info.isEnabled());
+	private void linkAction(final ShadowMenu shadow, final Button button) {
+		button.setAction(new Action() {
+
+			@Override
+			public void perform(final Component c) {
+				shadow.run();
+			}
+		});
 	}
 
 }

@@ -36,7 +36,6 @@
 package imagej.ui.awt.menu;
 
 import imagej.menu.ShadowMenu;
-import imagej.util.Log;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -63,7 +62,7 @@ public class AWTMenuBarCreator extends AbstractAWTMenuCreator<MenuBar> {
 
 	@Override
 	protected void addLeafToTop(final ShadowMenu shadow, final MenuBar target) {
-		Log.warn("MenuBarCreator: Ignoring top-level leaf: " + shadow);
+		// NB: Ignore top-level leaf.
 	}
 
 	@Override
@@ -76,7 +75,7 @@ public class AWTMenuBarCreator extends AbstractAWTMenuCreator<MenuBar> {
 
 	@Override
 	protected void addSeparatorToTop(final MenuBar target) {
-		Log.warn("MenuBarCreator: Ignoring top-level separator");
+		// NB: Ignore top-level separator.
 	}
 
 }

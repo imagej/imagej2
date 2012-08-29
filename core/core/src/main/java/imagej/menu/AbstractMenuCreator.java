@@ -52,6 +52,8 @@ package imagej.menu;
  */
 public abstract class AbstractMenuCreator<T, M> implements MenuCreator<T> {
 
+	// -- MenuCreator methods --
+
 	@Override
 	public void createMenus(final ShadowMenu root, final T target) {
 		double lastWeight = Double.NaN;
@@ -70,6 +72,22 @@ public abstract class AbstractMenuCreator<T, M> implements MenuCreator<T> {
 		}
 	}
 
+	// -- Internal methods --
+
+	protected abstract void addLeafToMenu(ShadowMenu shadow, M target);
+
+	protected abstract void addLeafToTop(ShadowMenu shadow, T target);
+
+	protected abstract M addNonLeafToMenu(ShadowMenu shadow, M target);
+
+	protected abstract M addNonLeafToTop(ShadowMenu shadow, T target);
+
+	protected abstract void addSeparatorToMenu(M target);
+
+	protected abstract void addSeparatorToTop(T target);
+
+	// -- Helper methods --
+
 	private void populateMenu(final ShadowMenu shadow, final M target) {
 		double lastWeight = Double.NaN;
 		for (final ShadowMenu child : shadow.getChildren()) {
@@ -86,17 +104,5 @@ public abstract class AbstractMenuCreator<T, M> implements MenuCreator<T> {
 			}
 		}
 	}
-
-	protected abstract void addLeafToMenu(ShadowMenu shadow, M target);
-
-	protected abstract void addLeafToTop(ShadowMenu shadow, T target);
-
-	protected abstract M addNonLeafToMenu(ShadowMenu shadow, M target);
-
-	protected abstract M addNonLeafToTop(ShadowMenu shadow, T target);
-
-	protected abstract void addSeparatorToMenu(M target);
-
-	protected abstract void addSeparatorToTop(T target);
 
 }

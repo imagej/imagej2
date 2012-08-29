@@ -38,6 +38,7 @@ package imagej.ui.swing.menu;
 import imagej.input.Accelerator;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
+import imagej.module.ModuleInfo;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -71,11 +72,15 @@ public abstract class AbstractSwingMenuCreator<T> extends
 	private HashMap<String, ButtonGroup> buttonGroups =
 		new HashMap<String, ButtonGroup>();
 
+	// -- MenuCreator methods --
+
 	@Override
 	public void createMenus(final ShadowMenu root, final T target) {
 		buttonGroups = new HashMap<String, ButtonGroup>();
 		super.createMenus(root, target);
 	}
+
+	// -- Internal methods --
 
 	@Override
 	protected void addLeafToMenu(final ShadowMenu shadow, final JMenu target) {
@@ -157,6 +162,9 @@ public abstract class AbstractSwingMenuCreator<T> extends
 
 		final Icon icon = loadIcon(shadow);
 		if (icon != null) menuItem.setIcon(icon);
+
+		final ModuleInfo info = shadow.getModuleInfo();
+		if (info != null) menuItem.setEnabled(info.isEnabled());
 	}
 
 	private void linkAction(final ShadowMenu shadow, final JMenuItem menuItem) {
