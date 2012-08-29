@@ -43,10 +43,10 @@ import imagej.data.DrawingTool;
 import imagej.data.DrawingTool.TextJustification;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
@@ -321,9 +321,7 @@ public class AboutImageJ implements RunnablePlugin {
 		return inUseStr;
 	}
 
-	/**
-	 * Returns true if ImageJ is running a 64-bit version of Java.
-	 */
+	/** Returns true if ImageJ is running a 64-bit version of Java. */
 	private boolean is64Bit() {
 		final String osarch = System.getProperty("os.arch");
 		return osarch != null && osarch.indexOf("64") != -1;

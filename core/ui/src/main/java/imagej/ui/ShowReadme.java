@@ -35,9 +35,9 @@
 
 package imagej.ui;
 
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.ItemIO;
 import imagej.util.AppUtils;
 
