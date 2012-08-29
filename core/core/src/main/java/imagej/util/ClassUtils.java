@@ -273,7 +273,7 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Gets the classpath component containing the class with the given name.
+	 * Gets the classpath component containing the given class.
 	 * <p>
 	 * If the class is directly on the file system (e.g.,
 	 * "/path/to/my/package/MyClass.class") then it will return the base directory
@@ -284,13 +284,14 @@ public final class ClassUtils {
 	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
 	 * path to the JAR (e.g., "/path/to/my-jar.jar").
 	 * </p>
+	 * @param className The name of the class whose location is desired.
 	 */
 	public static File getLocation(final String className) {
 		return getLocation(className, null);
 	}
 
 	/**
-	 * Gets the classpath component containing the class with the given name.
+	 * Gets the classpath component containing the given class.
 	 * <p>
 	 * If the class is directly on the file system (e.g.,
 	 * "/path/to/my/package/MyClass.class") then it will return the base directory
@@ -301,9 +302,31 @@ public final class ClassUtils {
 	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
 	 * path to the JAR (e.g., "/path/to/my-jar.jar").
 	 * </p>
+	 * @param className The name of the class whose location is desired.
+	 * @param classLoader The class loader to use when loading the class.
 	 */
-	public static File getLocation(final String className, final ClassLoader classLoader) {
+	public static File getLocation(final String className,
+		final ClassLoader classLoader)
+	{
 		final Class<?> c = loadClass(className, classLoader);
+		return getLocation(c);
+	}
+
+	/**
+	 * Gets the classpath component containing the given class.
+	 * <p>
+	 * If the class is directly on the file system (e.g.,
+	 * "/path/to/my/package/MyClass.class") then it will return the base directory
+	 * (e.g., "/path/to").
+	 * </p>
+	 * <p>
+	 * If the class is within a JAR file (e.g.,
+	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
+	 * path to the JAR (e.g., "/path/to/my-jar.jar").
+	 * </p>
+	 * @param c The class whose location is desired.
+	 */
+	public static File getLocation(final Class<?> c) {
 		if (c == null) return null; // could not load the class
 
 		// get the class's raw resource path
