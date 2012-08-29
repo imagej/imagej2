@@ -105,12 +105,9 @@ public final class ClassUtils {
 			return ctor.newInstance(value);
 		}
 		catch (final Exception exc) {
-			// NB: Multiple types of exceptions; simpler to handle them all the same.
-			Log.warn("Cannot convert '" + value + "' to " + type.getName(), exc);
+			// no known way to convert
+			return null;
 		}
-
-		// no known way to convert
-		return null;
 	}
 
 	/**
@@ -141,13 +138,9 @@ public final class ClassUtils {
 			return true;
 		}
 		catch (final Exception exc) {
-			// NB: Multiple types of exceptions; simpler to handle them all the same.
-			Log.debug("No such constructor: " + saneType.getName() + "(" +
-				c.getName() + ")", exc);
+			// no known way to convert
+			return false;
 		}
-
-		// no known way to convert
-		return false;
 	}
 
 	/**
@@ -258,7 +251,6 @@ public final class ClassUtils {
 			return classLoader.loadClass(className);
 		}
 		catch (final ClassNotFoundException e) {
-			Log.error("Could not load class: " + className, e);
 			return null;
 		}
 	}
@@ -353,7 +345,6 @@ public final class ClassUtils {
 			return c.getDeclaredField(fieldName);
 		}
 		catch (final NoSuchFieldException e) {
-			Log.error("No such field: " + fieldName, e);
 			return null;
 		}
 	}
@@ -368,14 +359,14 @@ public final class ClassUtils {
 			return field.get(instance);
 		}
 		catch (final IllegalAccessException e) {
-			Log.error(e);
 			return null;
 		}
 	}
 
 	/**
-	 * Sets the given field's value of the specified object instance. Does nothing
-	 * if the value cannot be set.
+	 * Sets the given field's value of the specified object instance.
+	 * 
+	 * @throws IllegalArgumentException if the value cannot be set.
 	 */
 	public static void setValue(final Field field, final Object instance,
 		final Object value)
@@ -385,8 +376,8 @@ public final class ClassUtils {
 			field.set(instance, convert(value, field.getType()));
 		}
 		catch (final IllegalAccessException e) {
-			Log.error(e);
-			assert false;
+			throw new IllegalArgumentException("No access to field: " +
+				field.getName(), e);
 		}
 	}
 
