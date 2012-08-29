@@ -35,7 +35,6 @@
 
 package imagej.ui.swing;
 
-import imagej.ImageJ;
 import imagej.core.options.OptionsMemoryAndThreads;
 import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
@@ -71,7 +70,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	public SwingStatusBar(final UIService uiService) {
 		this.uiService = uiService;
-		statusText = new JLabel(getInfoString(false));
+		statusText = new JLabel(uiService.getContext().getInfo(false));
 		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		progressBar = new JProgressBar();
 		progressBar.setVisible(false);
@@ -131,7 +130,8 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 		final OptionsMemoryAndThreads options =
 			uiService.getOptionsService().getOptions(OptionsMemoryAndThreads.class);
 		if (options.isRunGcOnClick()) System.gc();
-		uiService.getStatusService().showStatus(getInfoString(true));
+		uiService.getStatusService().showStatus(
+			uiService.getContext().getInfo(true));
 	}
 
 	@Override
@@ -157,28 +157,6 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 			setStatus(message);
 			setProgress(val, max);
 		}
-	}
-
-	// -- Helper methods --
-
-	// TODO - refactor this code to a UI-agnostic location
-
-	private String getInfoString(final boolean mem) {
-		final String javaVersion = System.getProperty("java.version");
-		final String osArch = System.getProperty("os.arch");
-		final long maxMem = Runtime.getRuntime().maxMemory();
-		final long totalMem = Runtime.getRuntime().totalMemory();
-		final long freeMem = Runtime.getRuntime().freeMemory();
-		final long usedMem = totalMem - freeMem;
-		final long usedMB = usedMem / 1048576;
-		final long maxMB = maxMem / 1048576;
-		final StringBuilder sb = new StringBuilder();
-		sb.append("ImageJ " + ImageJ.VERSION + "; Java " + javaVersion + " [" +
-			osArch + "]");
-		if (mem) {
-			sb.append("; " + usedMB + "MB of " + maxMB + "MB");
-		}
-		return sb.toString();
 	}
 
 }

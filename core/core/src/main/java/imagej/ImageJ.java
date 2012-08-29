@@ -212,6 +212,29 @@ public class ImageJ {
 		return pom.getVersion();
 	}
 
+	/**
+	 * Gets a string with information about the application context.
+	 * 
+	 * @param mem If true, memory usage information is included.
+	 */
+	public String getInfo(final boolean mem) {
+		final String appTitle = getTitle();
+		final String appVersion = getVersion();
+		final String javaVersion = System.getProperty("java.version");
+		final String osArch = System.getProperty("os.arch");
+		final long maxMem = Runtime.getRuntime().maxMemory();
+		final long totalMem = Runtime.getRuntime().totalMemory();
+		final long freeMem = Runtime.getRuntime().freeMemory();
+		final long usedMem = totalMem - freeMem;
+		final long usedMB = usedMem / 1048576;
+		final long maxMB = maxMem / 1048576;
+		final StringBuilder sb = new StringBuilder();
+		sb.append(appTitle + " " + appVersion);
+		sb.append("; Java " + javaVersion + " [" + osArch + "]");
+		if (mem) sb.append("; " + usedMB + "MB of " + maxMB + "MB");
+		return sb.toString();
+	}
+
 	public ServiceIndex getServiceIndex() {
 		return serviceIndex;
 	}
