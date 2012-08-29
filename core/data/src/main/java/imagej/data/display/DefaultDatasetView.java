@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
@@ -60,6 +61,7 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 /**
  * A view into a {@link Dataset}, for use with a {@link ImageDisplay}.
@@ -134,23 +136,22 @@ public class DefaultDatasetView extends AbstractDataView implements
 	}
 
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void autoscale(final int c) {
 		// get the channel min/max from metadata
-		double min = getData().getImgPlus().getChannelMinimum(c);
-		double max = getData().getImgPlus().getChannelMaximum(c);
+		ImgPlus<? extends RealType<?>> imgPlus = getData().getImgPlus();
+		double min = imgPlus.getChannelMinimum(c);
+		double max = imgPlus.getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
-			// FIXME: This currently applies the global min/max to all channels.
-			// We need to enhance ComputeMinMax to find the min/max per channel.
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final ComputeMinMax<? extends RealType<?>> cmm =
-				new ComputeMinMax(getData().getImgPlus());
+			RandomAccessibleInterval<RealType> interval =	channelData(getData(), c);
+			ComputeMinMax<? extends RealType<?>> cmm = new ComputeMinMax(interval);
 			cmm.process();
 			min = cmm.getMin().getRealDouble();
 			max = cmm.getMax().getRealDouble();
 			// cache min/max in metadata for next time
-			getData().getImgPlus().setChannelMinimum(c, min);
-			getData().getImgPlus().setChannelMaximum(c, max);
+			imgPlus.setChannelMinimum(c, min);
+			imgPlus.setChannelMaximum(c, max);
 		}
 		setChannelRange(c, min, max);
 	}
@@ -471,4 +472,19 @@ public class DefaultDatasetView extends AbstractDataView implements
 		return getData().getExtents().dimension(channelDimIndex);
 	}
 
+	@SuppressWarnings({"unchecked","rawtypes"})
+	private RandomAccessibleInterval<RealType> channelData(Dataset d, int c)
+	{
+		ImgPlus<? extends RealType<?>> imgPlus = d.getImgPlus();
+		int chIndex = imgPlus.getAxisIndex(Axes.CHANNEL);
+		if (chIndex < 0) {
+			return (RandomAccessibleInterval<RealType>) imgPlus;
+		}
+		long[] mn = new long[d.numDimensions()];
+		long[] mx = d.getDims();
+		for (int i = 0; i < mx.length; i++) { mx[i]--; }
+		mn[chIndex] = c;
+		mx[chIndex] = c;
+		return Views.interval((RandomAccessibleInterval<RealType>) imgPlus, mn, mx);
+	}
 }
