@@ -478,13 +478,13 @@ public class DefaultDatasetView extends AbstractDataView implements
 		ImgPlus<? extends RealType<?>> imgPlus = d.getImgPlus();
 		int chIndex = imgPlus.getAxisIndex(Axes.CHANNEL);
 		if (chIndex < 0) {
-			return (RandomAccessibleInterval<RealType>) imgPlus;
+			return (RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus;
 		}
 		long[] mn = new long[d.numDimensions()];
 		long[] mx = d.getDims();
 		for (int i = 0; i < mx.length; i++) { mx[i]--; }
 		mn[chIndex] = c;
 		mx[chIndex] = c;
-		return Views.interval((RandomAccessibleInterval<RealType>) imgPlus, mn, mx);
+		return Views.interval((RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus, mn, mx);
 	}
 }
