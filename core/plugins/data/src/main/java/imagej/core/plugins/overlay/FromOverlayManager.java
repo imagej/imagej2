@@ -33,53 +33,66 @@
  * #L%
  */
 
-package imagej.core.plugins.display;
+package imagej.core.plugins.overlay;
 
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayInfoList;
+import imagej.data.display.OverlayService;
+import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Removes all selected views.
+ * After running this plugin the current display will now reference (and
+ * show) the overlays that are currently selected in the Overlay Manager.
  * 
- * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Remove Overlay Reference", weight = 2, mnemonic = 'r') },
+	@Menu(label = "From Overlay Manager", weight = 1, mnemonic = 'f') },
 	headless = true)
-public class RemoveReferences implements RunnablePlugin {
+public class FromOverlayManager implements RunnablePlugin {
 
-	@Parameter(type = ItemIO.BOTH)
+	// -- Parameters --
+	
+	@Parameter(required = true)
 	private ImageDisplay display;
-
+	
+	@Parameter
+	private OverlayService ovrSrv;
+	
+	// -- RunnablePlugin methods --
+	
 	@Override
 	public void run() {
-		final ArrayList<DataView> views = new ArrayList<DataView>(display);
-		for (final DataView view : views) {
-			if (view.isSelected()) {
-				display.remove(view);
-				view.dispose();
-				display.update();
-			}
+		OverlayInfoList overlayList = ovrSrv.getOverlayInfo();
+		List<Overlay> selectedRoiMgrOverlays = overlayList.selectedOverlays();
+		List<Overlay> currOverlays = ovrSrv.getOverlays(display);
+		boolean changes = false;
+		for (Overlay overlay : selectedRoiMgrOverlays) {
+			if (currOverlays.contains(overlay)) continue;
+			changes = true;
+			display.display(overlay);
 		}
+		if (changes) display.update();
 	}
-
-	public ImageDisplay getDisplay() {
+	
+	// -- accessors --
+	
+	public ImageDisplay getImageDisplay() {
 		return display;
 	}
-
-	public void setDisplay(final ImageDisplay display) {
-		this.display = display;
+	
+	public void setImageDisplay(ImageDisplay disp) {
+		display = disp;
 	}
 
 }

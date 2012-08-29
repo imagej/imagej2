@@ -33,32 +33,55 @@
  * #L%
  */
 
-package imagej.core.plugins.app;
+package imagej.core.plugins.assign;
 
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import imagej.util.Prefs;
+import net.imglib2.ops.operation.real.unary.RealPowerConstant;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Displays the ImageJ preferences.
+ * Fills an output Dataset by raising input Dataset values to a user defined
+ * constant value power.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-@Plugin(label = "Preferences", menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Preferences", weight = 30) }, headless = true)
-public class ShowPrefs implements RunnablePlugin {
+@Plugin(
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Math", mnemonic = 'm'),
+		@Menu(label = "Power...", weight = 5) }, headless = true)
+public class PowerDataValues<T extends RealType<T>>
+	extends AbstractAssignPlugin<T,DoubleType>
+{
 
-	@Parameter(label = "Clear all preferences")
-	private boolean clearAll = false;
+	// -- instance variables that are Parameters --
+
+	@Parameter(label = "Value")
+	private double value;
+
+	// -- public interface --
+
+	public PowerDataValues() {
+		super(new DoubleType());
+	}
 
 	@Override
-	public void run() {
-		if (clearAll) Prefs.clearAll();
+	public RealPowerConstant<DoubleType, DoubleType> getOperation() {
+		return new RealPowerConstant<DoubleType, DoubleType>(value);
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(final double value) {
+		this.value = value;
 	}
 
 }

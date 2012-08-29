@@ -33,55 +33,42 @@
  * #L%
  */
 
-package imagej.core.plugins.assign;
+package imagej.core.plugins.overlay;
 
+import imagej.Cancelable;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import net.imglib2.ops.operation.real.unary.RealPowerConstant;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Fills an output Dataset by raising input Dataset values to a user defined
- * constant value power.
+ * TODO
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = {
-		@Menu(label = MenuConstants.PROCESS_LABEL,
-			weight = MenuConstants.PROCESS_WEIGHT,
-			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Power...", weight = 5) }, headless = true)
-public class RaiseToPowerDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T,DoubleType>
-{
+@Plugin(iconPath = "/icons/bricks.png", menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
+	@Menu(label = "Overlay", mnemonic = 'o'),
+	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
+public class OverlayLabels implements RunnablePlugin, Cancelable {
 
-	// -- instance variables that are Parameters --
-
-	@Parameter(label = "Value")
-	private double value;
-
-	// -- public interface --
-
-	public RaiseToPowerDataValues() {
-		super(new DoubleType());
+	private String err;
+	
+	@Override
+	public void run() {
+		// TODO - implement some interactive plugin
+		err = "This feature has not been implemented yet";
 	}
 
 	@Override
-	public RealPowerConstant<DoubleType, DoubleType> getOperation() {
-		return new RealPowerConstant<DoubleType, DoubleType>(value);
+	public boolean isCanceled() {
+		return err != null;
 	}
 
-	public double getValue() {
-		return value;
-	}
-
-	public void setValue(final double value) {
-		this.value = value;
+	@Override
+	public String getCancelReason() {
+		return err;
 	}
 
 }

@@ -33,55 +33,53 @@
  * #L%
  */
 
-package imagej.core.plugins.assign;
+package imagej.core.plugins.display;
 
+import imagej.data.display.DataView;
+import imagej.data.display.ImageDisplay;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import net.imglib2.ops.operation.real.unary.RealMaxConstant;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
+import imagej.module.ItemIO;
+
+import java.util.ArrayList;
 
 /**
- * Fills an output Dataset by clamping an input Dataset such that no values are
- * greater than a user defined constant value.
+ * Removes all selected views.
  * 
- * @author Barry DeZonia
+ * @author Lee Kamentsky
  */
-@Plugin(
-	menu = {
-		@Menu(label = MenuConstants.PROCESS_LABEL,
-			weight = MenuConstants.PROCESS_WEIGHT,
-			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) },
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
+	@Menu(label = "Overlay", mnemonic = 'o'),
+	@Menu(label = "Remove Overlay References", weight = 2, mnemonic = 'r') },
 	headless = true)
-public class ClampMaxDataValues<T extends RealType<T>>
-	extends	AbstractAssignPlugin<T,DoubleType>
-{
+public class RemoveOverlayReferences implements RunnablePlugin {
 
-	// -- instance variables that are Parameters --
-
-	@Parameter(label = "Value")
-	private double value;
-
-	// -- public interface --
-
-	public ClampMaxDataValues() {
-		super(new DoubleType());
-	}
+	@Parameter(type = ItemIO.BOTH)
+	private ImageDisplay display;
 
 	@Override
-	public RealMaxConstant<DoubleType, DoubleType> getOperation() {
-		return new RealMaxConstant<DoubleType, DoubleType>(value);
+	public void run() {
+		final ArrayList<DataView> views = new ArrayList<DataView>(display);
+		for (final DataView view : views) {
+			if (view.isSelected()) {
+				display.remove(view);
+				view.dispose();
+				display.update();
+			}
+		}
 	}
 
-	public double getValue() {
-		return value;
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
-	public void setValue(final double value) {
-		this.value = value;
+	public void setDisplay(final ImageDisplay display) {
+		this.display = display;
 	}
 
 }

@@ -39,24 +39,25 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import net.imglib2.ops.operation.real.unary.RealMinConstant;
+import net.imglib2.ops.operation.real.unary.RealMaxConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Fills an output Dataset by clamping an input Dataset such that no values are
- * less than a user defined constant value.
+ * greater than a user defined constant value.
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PROCESS_LABEL,
-		weight = MenuConstants.PROCESS_WEIGHT,
-		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Min...", weight = 9) },
+@Plugin(
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) },
 	headless = true)
-public class ClampMinDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T,DoubleType>
+public class MaxDataValues<T extends RealType<T>>
+	extends	AbstractAssignPlugin<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
@@ -66,13 +67,13 @@ public class ClampMinDataValues<T extends RealType<T>>
 
 	// -- public interface --
 
-	public ClampMinDataValues() {
+	public MaxDataValues() {
 		super(new DoubleType());
 	}
 
 	@Override
-	public RealMinConstant<DoubleType, DoubleType> getOperation() {
-		return new RealMinConstant<DoubleType, DoubleType>(value);
+	public RealMaxConstant<DoubleType, DoubleType> getOperation() {
+		return new RealMaxConstant<DoubleType, DoubleType>(value);
 	}
 
 	public double getValue() {

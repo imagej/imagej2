@@ -73,7 +73,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'),
 	@Menu(label = "Convert to Mask", weight = 1) }, headless = true)
-public class ImageToBinaryMask implements RunnablePlugin {
+public class ConvertToMask implements RunnablePlugin {
 
 	@Parameter(label = "Threshold", description = "The threshold that "
 		+ "separates background (mask) from foreground (region of interest).")

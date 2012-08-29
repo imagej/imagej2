@@ -33,42 +33,31 @@
  * #L%
  */
 
-package imagej.core.plugins.overlay;
+package imagej.ui.swing.plugins;
 
-import imagej.Cancelable;
+import imagej.ImageJ;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.menu.MenuConstants;
+import imagej.ui.swing.SwingOverlayManager;
 
 /**
- * TODO
+ * Plugin to pop up the {@link SwingOverlayManager}.
  * 
- * @author Barry DeZonia
+ * @author Adam Fraser
  */
-@Plugin(iconPath = "/icons/bricks.png", menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
-public class OverlayLabelSettings implements RunnablePlugin, Cancelable {
+@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
+	@Menu(label = "Overlay Manager") })
+public class OverlayManagerPlugin implements RunnablePlugin {
 
-	private String err;
-	
+	@Parameter
+	private ImageJ context;
+
 	@Override
 	public void run() {
-		// TODO - implement some interactive plugin
-		err = "This feature has not been implemented yet";
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
+		final SwingOverlayManager overlaymgr = new SwingOverlayManager(context);
+		overlaymgr.setVisible(true);
 	}
 
 }

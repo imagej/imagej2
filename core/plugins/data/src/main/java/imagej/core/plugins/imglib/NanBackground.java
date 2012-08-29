@@ -33,26 +33,24 @@
  * #L%
  */
 
-package imagej.core.plugins.assign;
+package imagej.core.plugins.imglib;
 
+import imagej.Cancelable;
 import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import net.imglib2.Cursor;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Fills an output Dataset by applying a default amount of random noise to an
- * input Dataset.
+ * Fills an output Dataset with the values of an input Dataset. All the values
+ * in the input Dataset that are outside user defined thresholds are assigned
+ * NaN.
  * 
  * @author Barry DeZonia
  */
@@ -60,54 +58,93 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Noise", mnemonic = 'n'),
-	@Menu(label = "Add Noise...", weight = 1) }, headless = true)
-public class AddDefaultNoiseToDataValues<T extends RealType<T>> implements
-	RunnablePlugin
-{
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "NaN Background", weight = 18) }, headless = true)
+public class NanBackground implements RunnablePlugin, Cancelable {
 
-	// -- instance variables that are Parameters --
-
-	@Parameter
-	private ImageDisplayService displayService;
-
-	@Parameter
-	private OverlayService overlayService;
+	// -- instance variables --
 
 	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
+	private Dataset input;
 
-	@Parameter(label = "Apply to all planes")
-	private boolean allPlanes;
+	@Parameter(
+		label = "TODO - should use current threshold - for now ask - Low threshold")
+	private double loThreshold;
+
+	@Parameter(
+		label = "TODO - should use current threshold - for now ask - High threshold")
+	private double hiThreshold;
+
+	private Img<? extends RealType<?>> inputImage;
+	private String err;
 
 	// -- public interface --
 
 	@Override
+	public boolean isCanceled() {
+		return err != null;
+	}
+	
+	@Override
+	public String getCancelReason() {
+		return err;
+	}
+	
+	@Override
 	public void run() {
-		Dataset dataset = displayService.getActiveDataset(display);
-		Overlay overlay = overlayService.getActiveOverlay(display);
-		DatasetView view = displayService.getActiveDatasetView(display);
-		Position planePos = (allPlanes) ? null : view.getPlanePosition();
-		AddNoiseToDataValues<T> noiseAdder =
-			new AddNoiseToDataValues<T>(dataset, overlay, planePos);
-		noiseAdder.setStdDev(25.0);
-		noiseAdder.run();
+		if (inputBad()) return;
+		setupWorkingData();
+		assignPixels();
+		input.update();
 	}
 
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-
-	public void setDisplay(final ImageDisplay display) {
-		this.display = display;
-	}
-
-	public boolean isAllPlanes() {
-		return allPlanes;
+	public void setDataset(Dataset data) {
+		this.input = data;
 	}
 	
-	public void setAllPlanes(boolean value) {
-		this.allPlanes = value;
+	public Dataset getDataset() {
+		return input;
 	}
-	
+
+	// -- private interface --
+
+	private boolean inputBad() {
+		if (input.isInteger()) {
+			err = "This plugin requires a floating point dataset";
+			return true;
+		}
+		if (input == null) {
+			err = "Input dataset is null";
+			return true;
+		}
+		
+		if (input.getImgPlus() == null) {
+			err = "Input ImgPlus is null";
+			return true;
+		}
+
+		if (loThreshold > hiThreshold) {
+			err = "Threshold values incorrectly specified (min > max)";
+			return true;
+		}
+		return false;
+	}
+
+	private void setupWorkingData() {
+		inputImage = input.getImgPlus();
+	}
+
+	private void assignPixels() {
+		final Cursor<? extends RealType<?>> cursor = inputImage.cursor();
+
+		while (cursor.hasNext()) {
+			cursor.fwd();
+
+			final double inputValue = cursor.get().getRealDouble();
+
+			if ((inputValue < loThreshold) || (inputValue > hiThreshold))
+				cursor.get().setReal(Double.NaN);
+		}
+	}
+
 }

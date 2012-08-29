@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Add Specified Noise...", weight = 2) }, headless = true)
-public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
+public class AddSpecifiedNoiseToDataValues<T extends RealType<T>> implements
 	RunnablePlugin
 {
 
@@ -91,8 +91,8 @@ public class AddSpecificNoiseToDataValues<T extends RealType<T>> implements
 		Overlay overlay = overlayService.getActiveOverlay(display);
 		DatasetView view = displayService.getActiveDatasetView(display);
 		Position planePos = (allPlanes) ? null : view.getPlanePosition();
-		AddNoiseToDataValues<T> noiseAdder =
-			new AddNoiseToDataValues<T>(dataset, overlay, planePos);
+		NoiseAdder<T> noiseAdder =
+			new NoiseAdder<T>(dataset, overlay, planePos);
 		noiseAdder.setStdDev(stdDev);
 		noiseAdder.run();
 	}

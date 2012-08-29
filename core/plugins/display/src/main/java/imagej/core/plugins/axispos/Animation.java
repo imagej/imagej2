@@ -43,7 +43,7 @@ import net.imglib2.meta.AxisType;
 /**
  * The Animation class takes care of running an animation along an axis.
  * Multiple animations can be running concurrently. Each animation runs in its
- * own thread. Animations can be started or stopped using the {@link Animator}
+ * own thread. Animations can be started or stopped using the {@link StartAnimation}
  * plugin. Animation behavior can be modified through the
  * {@link AnimationOptions} plugin.
  * 

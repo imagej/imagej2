@@ -33,66 +33,32 @@
  * #L%
  */
 
-package imagej.core.plugins.overlay;
+package imagej.core.plugins.app;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayInfoList;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-
-import java.util.List;
+import imagej.util.Prefs;
 
 /**
- * After running this plugin the current display will now reference (and
- * show) the overlays that are currently selected in the Overlay Manager.
+ * Displays the ImageJ preferences.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "From Overlay Manager", weight = 1, mnemonic = 'f') },
-	headless = true)
-public class ReferenceOverlays implements RunnablePlugin {
+@Plugin(label = "Preferences", menu = {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Preferences", weight = 30) }, headless = true)
+public class Preferences implements RunnablePlugin {
 
-	// -- Parameters --
-	
-	@Parameter(required = true)
-	private ImageDisplay display;
-	
-	@Parameter
-	private OverlayService ovrSrv;
-	
-	// -- RunnablePlugin methods --
-	
+	@Parameter(label = "Clear all preferences")
+	private boolean clearAll = false;
+
 	@Override
 	public void run() {
-		OverlayInfoList overlayList = ovrSrv.getOverlayInfo();
-		List<Overlay> selectedRoiMgrOverlays = overlayList.selectedOverlays();
-		List<Overlay> currOverlays = ovrSrv.getOverlays(display);
-		boolean changes = false;
-		for (Overlay overlay : selectedRoiMgrOverlays) {
-			if (currOverlays.contains(overlay)) continue;
-			changes = true;
-			display.display(overlay);
-		}
-		if (changes) display.update();
-	}
-	
-	// -- accessors --
-	
-	public ImageDisplay getImageDisplay() {
-		return display;
-	}
-	
-	public void setImageDisplay(ImageDisplay disp) {
-		display = disp;
+		if (clearAll) Prefs.clearAll();
 	}
 
 }

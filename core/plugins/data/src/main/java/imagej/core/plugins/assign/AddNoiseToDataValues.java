@@ -37,93 +37,77 @@ package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
 import imagej.data.Position;
+import imagej.data.display.DatasetView;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import net.imglib2.ops.operation.real.unary.RealAddNoise;
+import imagej.ext.plugin.RunnablePlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Fills an output Dataset by applying random noise to an input Dataset. This
- * class is used by AddDefaultNoiseToDataValues and
- * AddSpecificNoiseToDataValues. They each manipulate setStdDev(). This class
- * can be used to implement simple (1 pixel neighborhood) gaussian noise
- * addition without requiring a plugin.
+ * Fills an output Dataset by applying a default amount of random noise to an
+ * input Dataset.
  * 
  * @author Barry DeZonia
  */
-public class AddNoiseToDataValues<T extends RealType<T>> {
+@Plugin(menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Noise", mnemonic = 'n'),
+	@Menu(label = "Add Noise...", weight = 1) }, headless = true)
+public class AddNoiseToDataValues<T extends RealType<T>> implements
+	RunnablePlugin
+{
 
-	// -- instance variables --
+	// -- instance variables that are Parameters --
 
-	private final Dataset dataset;
-	private final Overlay overlay;
-	private final Position planePos;
-	
-	/**
-	 * The stand deviation of the gaussian random value used to create perturbed
-	 * values
-	 */
-	private double rangeStdDev;
+	@Parameter
+	private ImageDisplayService displayService;
 
-	/**
-	 * Maximum allowable values - varies by underlying data type. For instance
-	 * (0,255) for 8 bit and (0,65535) for 16 bit. Used to make sure that returned
-	 * values do not leave the allowable range for the underlying data type.
-	 */
-	private double rangeMin, rangeMax;
+	@Parameter
+	private OverlayService overlayService;
 
-	// -- constructor --
+	@Parameter(type = ItemIO.BOTH)
+	private ImageDisplay display;
 
-	/**
-	 * Constructor - takes an input Dataset as the baseline data to compute
-	 * perturbed values from.
-	 */
-	public AddNoiseToDataValues(Dataset dataset, Overlay overlay, Position pos) {
-		this.dataset = dataset;
-		this.overlay = overlay;
-		this.planePos = pos;
-	}
+	@Parameter(label = "Apply to all planes")
+	private boolean allPlanes;
 
 	// -- public interface --
 
-	/**
-	 * Specify the standard deviation of the gaussian range desired. affects the
-	 * distance of perturbation of each data value.
-	 */
-	protected void setStdDev(final double stdDev) {
-		this.rangeStdDev = stdDev;
-	}
-
-	/**
-	 * Runs the operation and returns the Dataset that contains the output data
-	 */
+	@Override
 	public void run() {
-		calcTypeMinAndMax();
-
-		final RealAddNoise<DoubleType, DoubleType> op =
-			new RealAddNoise<DoubleType,DoubleType>(rangeMin, rangeMax, rangeStdDev);
-
-		final InplaceUnaryTransform<T,DoubleType> transform;
-		
-		if (planePos == null)
-			transform = 
-				new InplaceUnaryTransform<T,DoubleType>(op, new DoubleType(), dataset, overlay);
-		else
-			transform =
-				new InplaceUnaryTransform<T, DoubleType>(op, new DoubleType(), dataset, overlay, planePos);
-
-		transform.run();
+		Dataset dataset = displayService.getActiveDataset(display);
+		Overlay overlay = overlayService.getActiveOverlay(display);
+		DatasetView view = displayService.getActiveDatasetView(display);
+		Position planePos = (allPlanes) ? null : view.getPlanePosition();
+		NoiseAdder<T> noiseAdder =
+			new NoiseAdder<T>(dataset, overlay, planePos);
+		noiseAdder.setStdDev(25.0);
+		noiseAdder.run();
 	}
 
-	// -- private interface --
-
-	/**
-	 * Calculates the min and max allowable data range for the image : depends
-	 * upon its underlying data type
-	 */
-	private void calcTypeMinAndMax() {
-		rangeMin = dataset.getType().getMinValue();
-		rangeMax = dataset.getType().getMaxValue();
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
+	public void setDisplay(final ImageDisplay display) {
+		this.display = display;
+	}
+
+	public boolean isAllPlanes() {
+		return allPlanes;
+	}
+	
+	public void setAllPlanes(boolean value) {
+		this.allPlanes = value;
+	}
+	
 }

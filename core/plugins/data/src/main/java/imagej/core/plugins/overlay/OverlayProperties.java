@@ -35,245 +35,59 @@
 
 package imagej.core.plugins.overlay;
 
-import imagej.data.options.OptionsOverlay;
+import imagej.data.Data;
+import imagej.data.display.DataView;
+import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
-import imagej.data.overlay.Overlay.ArrowStyle;
-import imagej.data.overlay.Overlay.LineStyle;
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
-import imagej.options.OptionsService;
-import imagej.plugin.PreviewPlugin;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-import imagej.widget.WidgetStyle;
+import imagej.ext.plugin.Plugin;
+import imagej.menu.MenuConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A plugin to change the properties (e.g., line color, line width) of a given
- * set of overlays.
+ * A plugin to change the properties (e.g., line color, line width) of a set of
+ * overlays selected in an image display.
  * 
- * @author Curtis Rueden
- * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
-public class OverlayProperties implements RunnablePlugin, PreviewPlugin {
+@Plugin(label = "Overlay Properties...", menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
+	@Menu(label = "Overlay", mnemonic = 'o'),
+	@Menu(label = "Properties...", mnemonic = 'p', weight = 5) },
+		headless = true,
+		initializer = "initialize")
+public class OverlayProperties extends AbstractOverlayProperties {
 
-	static final private String solidLineStyle = "Solid";
-	static final private String dashLineStyle = "Dash";
-	static final private String dotLineStyle = "Dot";
-	static final private String dotDashLineStyle = "Dot-dash";
-	static final private String noLineStyle = "None";
-	static final private String arrowLineDecoration = "Arrow";
-	static final private String noLineDecoration = "None";
-
-	@Parameter(label = "Line color", persist = false)
-	private ColorRGB lineColor = Colors.YELLOW;
-
-	@Parameter(label = "Line width", persist = false, min = "0.1")
-	private double lineWidth = 1;
-
-	@Parameter(label = "Line style", persist = false, choices = { solidLineStyle,
-		dashLineStyle, dotLineStyle, dotDashLineStyle, noLineStyle })
-	private String lineStyle = solidLineStyle;
-
-	@Parameter(label = "Fill color", persist = false)
-	private ColorRGB fillColor = null;
-
-	@Parameter(label = "Alpha", description = "The opacity or alpha of the "
-		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-	private int alpha = 0;
-
-	@Parameter(
-		label = "Line start arrow style",
-		description = "The arrow style at the starting point of a line or other path",
-		persist = false, choices = { noLineDecoration, arrowLineDecoration })
-	private String startLineArrowStyle = noLineDecoration;
-
-	@Parameter(label = "Line end arrow style",
-		description = "The arrow style at the end point of a line or other path",
-		persist = false, choices = { noLineDecoration, arrowLineDecoration })
-	private String endLineArrowStyle = noLineDecoration;
-
-	@Parameter(label = "Update default overlay settings", persist = false)
-	private boolean updateDefaults = false;
+	// -- parameters --
 
 	@Parameter
-	private OptionsService os;
+	private ImageDisplay display;
 
-	// -- instance variables --
+	// -- initializers --
+
+	@SuppressWarnings("unused")
+	private void initialize() {
+		setOverlays(getSelectedOverlays());
+		updateValues();
+	}
+
+	// -- helpers --
 	
-	private List<Overlay> overlays = new ArrayList<Overlay>();
-
-	// -- protected helper interface --
-	
-	protected void setOverlays(List<Overlay> overlays) {
-		this.overlays = overlays;
-	}
-	
-	/**
-	 * Updates all elements from the first overlay within the list of overlays.
-	 */
-	protected void updateValues() {
-		// set default values to match the first overlay
-		if (overlays.size() > 0) {
-			final Overlay o = overlays.get(0);
-			lineColor = o.getLineColor();
-			lineWidth = o.getLineWidth();
-			fillColor = o.getFillColor();
-			alpha = o.getAlpha();
-			switch (o.getLineStyle()) {
-				case SOLID:
-					lineStyle = solidLineStyle;
-					break;
-				case DASH:
-					lineStyle = dashLineStyle;
-					break;
-				case DOT:
-					lineStyle = dotLineStyle;
-					break;
-				case DOT_DASH:
-					lineStyle = dotDashLineStyle;
-					break;
-				case NONE:
-					lineStyle = noLineStyle;
-					break;
-			}
-			switch (o.getLineStartArrowStyle()) {
-				case NONE:
-					startLineArrowStyle = noLineDecoration;
-					break;
-				case ARROW:
-					startLineArrowStyle = arrowLineDecoration;
-					break;
-			}
-			switch (o.getLineEndArrowStyle()) {
-				case NONE:
-					endLineArrowStyle = noLineDecoration;
-					break;
-				case ARROW:
-					endLineArrowStyle = arrowLineDecoration;
-					break;
-			}
+	private List<Overlay> getSelectedOverlays() {
+		final ArrayList<Overlay> result = new ArrayList<Overlay>();
+		if (display == null) return result;
+		for (final DataView view : display) {
+			if (!view.isSelected()) continue;
+			final Data data = view.getData();
+			if (!(data instanceof Overlay)) continue;
+			final Overlay o = (Overlay) data;
+			result.add(o);
 		}
+		return result;
 	}
 
-	// -- public interface --
-	
-	@Override
-	public void run() {
-		// change properties of all selected overlays
-		for (final Overlay o : overlays) {
-			o.setLineColor(getLineColor());
-			o.setLineWidth(getLineWidth());
-			o.setFillColor(getFillColor());
-			o.setAlpha(getAlpha());
-			o.setLineStyle(getLineStyle());
-			o.setLineStartArrowStyle(getStartLineArrowStyle());
-			o.setLineEndArrowStyle(getEndLineArrowStyle());
-			o.update();
-		}
-		if (updateDefaults) updateDefaults();
-	}
-
-	@Override
-	public void preview() {
-		run();
-	}
-
-	@Override
-	public void cancel() {
-		// TODO
-	}
-
-	public ColorRGB getLineColor() {
-		return lineColor;
-	}
-
-	public double getLineWidth() {
-		return lineWidth;
-	}
-
-	public ColorRGB getFillColor() {
-		return fillColor;
-	}
-
-	public int getAlpha() {
-		return alpha;
-	}
-
-	public Overlay.LineStyle getLineStyle() {
-		return decodeLineStyle(lineStyle);
-	}
-
-	public Overlay.ArrowStyle getStartLineArrowStyle() {
-		return decodeArrowStyle(startLineArrowStyle);
-	}
-
-	public Overlay.ArrowStyle getEndLineArrowStyle() {
-		return decodeArrowStyle(endLineArrowStyle);
-	}
-
-	public boolean isUpdateDefaults() {
-		return updateDefaults;
-	}
-
-	public void setUpdateDefaults(final boolean updateDefaults) {
-		this.updateDefaults = updateDefaults;
-	}
-
-	// -- private helpers --
-
-	private void updateDefaults() {
-		final OptionsOverlay options = os.getOptions(OptionsOverlay.class);
-		options.setLineWidth(getLineWidth());
-		options.setLineColor(getLineColor());
-		options.setLineStyle(getLineStyle());
-		options.setFillColor(getFillColor());
-		options.setAlpha(getAlpha());
-		options.setStartArrowStyle(getStartLineArrowStyle());
-		options.setEndArrowStyle(getEndLineArrowStyle());
-		options.run();
-	}
-
-	private Overlay.LineStyle decodeLineStyle(final String style) {
-		
-		if (style == null) return LineStyle.SOLID;
-		
-		if (style.equals(solidLineStyle)) {
-			return LineStyle.SOLID;
-		}
-		else if (style.equals(dashLineStyle)) {
-			return LineStyle.DASH;
-		}
-		else if (style.equals(dotLineStyle)) {
-			return LineStyle.DOT;
-		}
-		else if (style.equals(dotDashLineStyle)) {
-			return LineStyle.DOT_DASH;
-		}
-		else if (style.equals(noLineStyle)) {
-			return LineStyle.NONE;
-		}
-		else {
-			throw new UnsupportedOperationException("Unimplemented style: " + style);
-		}
-	}
-
-	private Overlay.ArrowStyle decodeArrowStyle(final String style) {
-		
-		if (style == null) return ArrowStyle.NONE;
-		
-		if (style.equals(arrowLineDecoration)) {
-			return ArrowStyle.ARROW;
-		}
-		else if (style.equals(noLineDecoration)) {
-			return ArrowStyle.NONE;
-		}
-		else {
-			throw new UnsupportedOperationException("Unimplemented style: " + style);
-		}
-	}
-	
 }

@@ -33,61 +33,44 @@
  * #L%
  */
 
-package imagej.core.plugins.overlay;
+package imagej.core.plugins.axispos;
 
-import imagej.data.Data;
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.Overlay;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * A plugin to change the properties (e.g., line color, line width) of a set of
- * overlays selected in an image display.
+ * Plugin for toggling an {@link ImageDisplay}'s running animation. Animation
+ * can be toggled via the backslash key, or stopped with ESC. The animation's
+ * behavior can be modified during execution by running the
+ * {@link AnimationOptions} plugin.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(label = "Overlay Properties...", menu = {
+@Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Properties...", mnemonic = 'p', weight = 5) },
-		headless = true,
-		initializer = "initialize")
-public class SelectedDisplayOverlaysProperties extends OverlayProperties {
+	@Menu(label = "Animation", mnemonic = 'a'),
+	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
+public class StartAnimation implements RunnablePlugin {
 
-	// -- parameters --
+	// -- Plugin parameters --
 
 	@Parameter
-	private ImageDisplay display;
+	private AnimationService animationService;
 
-	// -- initializers --
+	@Parameter
+	private ImageDisplay imageDisplay;
 
-	@SuppressWarnings("unused")
-	private void initialize() {
-		setOverlays(getSelectedOverlays());
-		updateValues();
-	}
+	// -- Runnable methods --
 
-	// -- helpers --
-	
-	private List<Overlay> getSelectedOverlays() {
-		final ArrayList<Overlay> result = new ArrayList<Overlay>();
-		if (display == null) return result;
-		for (final DataView view : display) {
-			if (!view.isSelected()) continue;
-			final Data data = view.getData();
-			if (!(data instanceof Overlay)) continue;
-			final Overlay o = (Overlay) data;
-			result.add(o);
-		}
-		return result;
+	@Override
+	public void run() {
+		animationService.toggle(imageDisplay);
 	}
 
 }

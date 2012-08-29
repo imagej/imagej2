@@ -63,7 +63,7 @@ import imagej.menu.MenuConstants;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Specify...", mnemonic = 's') }, headless = true)
-public class SpecifyOverlay implements RunnablePlugin {
+public class SelectionSpecify implements RunnablePlugin {
 
 	// -- Parameters --
 

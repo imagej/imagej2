@@ -38,7 +38,7 @@ package imagej.ui.swing;
 import imagej.ImageJ;
 import imagej.core.plugins.display.Flatten;
 import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
-import imagej.core.plugins.overlay.SpecifyOverlay;
+import imagej.core.plugins.overlay.SelectionSpecify;
 import imagej.data.ChannelCollection;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
@@ -727,7 +727,7 @@ public class SwingOverlayManager
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
 		PluginService ps = context.getService(PluginService.class);
-		ps.run(SpecifyOverlay.class, "context", context, "display", imageDisplay);
+		ps.run(SelectionSpecify.class, "context", context, "display", imageDisplay);
 	}
 	
 	/*

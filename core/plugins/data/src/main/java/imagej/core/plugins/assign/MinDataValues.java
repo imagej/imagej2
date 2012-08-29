@@ -33,44 +33,54 @@
  * #L%
  */
 
-package imagej.core.plugins.axispos;
+package imagej.core.plugins.assign;
 
-import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import net.imglib2.ops.operation.real.unary.RealMinConstant;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Plugin for toggling an {@link ImageDisplay}'s running animation. Animation
- * can be toggled via the backslash key, or stopped with ESC. The animation's
- * behavior can be modified during execution by running the
- * {@link AnimationOptions} plugin.
+ * Fills an output Dataset by clamping an input Dataset such that no values are
+ * less than a user defined constant value.
  * 
  * @author Barry DeZonia
- * @author Curtis Rueden
  */
 @Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Animation", mnemonic = 'a'),
-	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
-public class Animator implements RunnablePlugin {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Min...", weight = 9) },
+	headless = true)
+public class MinDataValues<T extends RealType<T>>
+	extends AbstractAssignPlugin<T,DoubleType>
+{
 
-	// -- Plugin parameters --
+	// -- instance variables that are Parameters --
 
-	@Parameter
-	private AnimationService animationService;
+	@Parameter(label = "Value")
+	private double value;
 
-	@Parameter
-	private ImageDisplay imageDisplay;
+	// -- public interface --
 
-	// -- Runnable methods --
+	public MinDataValues() {
+		super(new DoubleType());
+	}
 
 	@Override
-	public void run() {
-		animationService.toggle(imageDisplay);
+	public RealMinConstant<DoubleType, DoubleType> getOperation() {
+		return new RealMinConstant<DoubleType, DoubleType>(value);
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(final double value) {
+		this.value = value;
 	}
 
 }

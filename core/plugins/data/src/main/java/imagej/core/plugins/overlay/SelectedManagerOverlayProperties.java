@@ -50,7 +50,7 @@ import java.util.List;
  * @author Barry DeZonia
  */
 @Plugin(headless = true, initializer = "initialize")
-public class SelectedManagerOverlayProperties extends OverlayProperties {
+public class SelectedManagerOverlayProperties extends AbstractOverlayProperties {
 
 	// -- Parameters --
 	

@@ -59,7 +59,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) },
 	headless = true, initializer = "initAll")
-public class ZoomUserDefined extends DynamicPlugin {
+public class ZoomSet extends DynamicPlugin {
 
 	// -- Constants --
 

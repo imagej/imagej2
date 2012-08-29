@@ -61,7 +61,7 @@ public final class AppRegistrar extends AbstractService {
 	public AppRegistrar(final ImageJ context, final AppService appService) {
 		super(context);
 		appService.setAboutHandler(AboutImageJ.class);
-		appService.setPrefsHandler(ShowPrefs.class);
+		appService.setPrefsHandler(Preferences.class);
 		appService.setQuitHandler(QuitProgram.class);
 	}
 

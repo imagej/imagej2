@@ -33,31 +33,48 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.core.plugins.zoom;
 
-import imagej.ImageJ;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ui.swing.SwingOverlayManager;
+import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
+import imagej.util.RealRect;
 
 /**
- * Plugin to pop up the {@link SwingOverlayManager}.
+ * Zooms in on the currently selected region.
  * 
- * @author Adam Fraser
+ * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
-	@Menu(label = "Overlay Manager") })
-public class SwingOverlayManagerPlugin implements RunnablePlugin {
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
+	@Menu(label = "Zoom", mnemonic = 'z'),
+	@Menu(label = "To Selection", weight = 5) }, headless = true)
+public class ZoomToSelection implements RunnablePlugin {
 
 	@Parameter
-	private ImageJ context;
+	private OverlayService overlayService;
+
+	@Parameter(type = ItemIO.BOTH)
+	private ImageDisplay display;
 
 	@Override
 	public void run() {
-		final SwingOverlayManager overlaymgr = new SwingOverlayManager(context);
-		overlaymgr.setVisible(true);
+		final RealRect selection = overlayService.getSelectionBounds(display);
+		display.getCanvas().zoomToFit(selection);
+	}
+
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
 }
