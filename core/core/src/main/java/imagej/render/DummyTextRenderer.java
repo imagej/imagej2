@@ -45,76 +45,65 @@ package imagej.render;
  */
 public class DummyTextRenderer implements TextRenderer {
 
+	private static final String MSG = "Dummy text renderer is not functional";
+	
 	@Override
 	public void renderText(String text) {
-		throw new UnsupportedOperationException(
-			"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public int getPixelsWidth() {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public int getPixelsHeight() {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public int[] getPixels() {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public void setFontFamily(FontFamily family) {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public FontFamily getFontFamily() {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public void setFontStyle(FontStyle style) {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public FontStyle getFontStyle() {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public void setFontSize(int size) {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public int getFontSize() {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public void setAntialiasing(boolean val) {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
 
 	@Override
 	public boolean getAntialiasing() {
-		throw new UnsupportedOperationException(
-				"Dummy text renderer is not functional");
+		throw new UnsupportedOperationException(MSG);
 	}
-	
 }
