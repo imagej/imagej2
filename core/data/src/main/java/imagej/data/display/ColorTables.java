@@ -133,7 +133,6 @@ public final class ColorTables {
 	private static ColorTable8 spectrum() {
 		final byte[] r = new byte[256], g = new byte[256], b = new byte[256];
 		for (int i = 0; i < 256; i++) {
-			// TODO - eliminate AWT dependency
 			final ColorRGB c = ColorRGB.fromHSVColor(i / 255d, 1d, 1d);
 			r[i] = (byte) c.getRed();
 			g[i] = (byte) c.getGreen();
