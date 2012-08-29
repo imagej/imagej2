@@ -48,73 +48,73 @@ public class DummyTextRenderer implements TextRenderer {
 	@Override
 	public void renderText(String text) {
 		throw new UnsupportedOperationException(
-			"Headless text renderer is not functional");
+			"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public int getPixelsWidth() {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public int getPixelsHeight() {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public int[] getPixels() {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public void setFontFamily(FontFamily family) {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public FontFamily getFontFamily() {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public void setFontStyle(FontStyle style) {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public FontStyle getFontStyle() {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public void setFontSize(int size) {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public int getFontSize() {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public void setAntialiasing(boolean val) {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 
 	@Override
 	public boolean getAntialiasing() {
 		throw new UnsupportedOperationException(
-				"Headless text renderer is not functional");
+				"Dummy text renderer is not functional");
 	}
 	
 }
