@@ -174,12 +174,49 @@ public interface UIService extends Service {
 	OutputWindow createOutputWindow(String title);
 
 	/**
-	 * Displays a dialog prompt in the default user interface.
+	 * Displays a dialog prompt.
+	 * <p>
+	 * The prompt is displayed in the default user interface.
+	 * </p>
 	 * 
 	 * @param message The message in the dialog itself.
 	 * @return The choice selected by the user when dismissing the dialog.
 	 */
 	DialogPrompt.Result showDialog(String message);
+
+	/**
+	 * Displays a dialog prompt.
+	 * <p>
+	 * The prompt is displayed in the default user interface.
+	 * </p>
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @param messageType The type of message. This typically is rendered as an
+	 *          icon next to the message. For example,
+	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
+	 *          as an exclamation point.
+	 * @return The choice selected by the user when dismissing the dialog.
+	 */
+	DialogPrompt.Result showDialog(String message,
+		DialogPrompt.MessageType messageType);
+
+	/**
+	 * Displays a dialog prompt.
+	 * <p>
+	 * The prompt is displayed in the default user interface.
+	 * </p>
+	 * 
+	 * @param message The message in the dialog itself.
+	 * @param messageType The type of message. This typically is rendered as an
+	 *          icon next to the message. For example,
+	 *          {@link DialogPrompt.MessageType#WARNING_MESSAGE} typically appears
+	 *          as an exclamation point.
+	 * @param optionType The choices available when dismissing the dialog. These
+	 *          choices are typically rendered as buttons for the user to click.
+	 * @return The choice selected by the user when dismissing the dialog.
+	 */
+	DialogPrompt.Result showDialog(String message,
+		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
 
 	/**
 	 * Displays a dialog prompt.

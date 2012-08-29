@@ -60,6 +60,9 @@ import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
+import imagej.ui.DialogPrompt.MessageType;
+import imagej.ui.DialogPrompt.OptionType;
+import imagej.ui.DialogPrompt.Result;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.ImageDisplayViewer;
@@ -300,7 +303,19 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public DialogPrompt.Result showDialog(final String message) {
-		return showDialog(message, "ImageJ");
+		return showDialog(message, getContext().getTitle());
+	}
+
+	@Override
+	public Result showDialog(String message, MessageType messageType) {
+		return showDialog(message, getContext().getTitle(), messageType);
+	}
+
+	@Override
+	public Result showDialog(String message, MessageType messageType,
+		OptionType optionType)
+	{
+		return showDialog(message, getContext().getTitle(), messageType, optionType);
 	}
 
 	@Override
