@@ -39,6 +39,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -111,6 +113,46 @@ public class POM {
 		final String version = xpath("//project/version");
 		if (version != null) return version;
 		return xpath("//project/parent/version");
+	}
+
+	// -- Utility methods --
+
+	/**
+	 * Gets the Maven POM associated with the given class.
+	 * 
+	 * @param c The class to use as a base when searching for a pom.xml.
+	 * @param groupId The Maven groupId of the desired POM.
+	 * @param artifactId The Maven artifactId of the desired POM.
+	 */
+	public static POM getPOM(final Class<?> c, final String groupId,
+		final String artifactId)
+	{
+		try {
+			final File location = ClassUtils.getLocation(c);
+			if (location.getAbsolutePath().endsWith(".jar")) {
+				// look for pom.xml in JAR's META-INF/maven subdirectory
+				final JarFile jarFile = new JarFile(location);
+				final String pomPath =
+					"META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml";
+				final ZipEntry entry = jarFile.getEntry(pomPath);
+				if (entry == null) return null;
+				final InputStream pomStream = jarFile.getInputStream(entry);
+				return new POM(pomStream);
+			}
+			// look for the POM in the class's base directory
+			final File baseDir = AppUtils.getBaseDirectory(location, null);
+			final File pomFile = new File(baseDir, "pom.xml");
+			return new POM(pomFile);
+		}
+		catch (final IOException e) {
+			return null;
+		}
+		catch (final ParserConfigurationException e) {
+			return null;
+		}
+		catch (final SAXException e) {
+			return null;
+		}
 	}
 
 	// -- Helper methods --
