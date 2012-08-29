@@ -139,7 +139,7 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 
 		shell = new SWTApplicationFrame(swtDisplay);
 		shell.setLayout(new MigLayout("wrap 1"));
-		shell.setText("ImageJ");
+		shell.setText(getContext().getTitle());
 		toolBar = new SWTToolBar(swtDisplay, shell);
 		statusBar = new SWTStatusBar(shell, eventService);
 		createMenus();

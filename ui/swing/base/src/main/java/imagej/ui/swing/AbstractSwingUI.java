@@ -125,7 +125,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	protected void createUI() {
 		final JMenuBar menuBar = createMenus();
 
-		appFrame = new SwingApplicationFrame("ImageJ");
+		appFrame = new SwingApplicationFrame(getContext().getTitle());
 		if (menuBar != null) appFrame.setJMenuBar(menuBar);
 
 		toolBar = new SwingToolBar(getUIService());

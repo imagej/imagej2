@@ -41,6 +41,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
+import imagej.ui.DialogPrompt.MessageType;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -149,8 +150,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 		final boolean warning = event.isWarning();
 		if (warning) {
 			// report warning messages to the user in a dialog box
-			JOptionPane.showMessageDialog(this, message, "ImageJ",
-				JOptionPane.WARNING_MESSAGE);
+			uiService.showDialog(message, MessageType.WARNING_MESSAGE);
 		}
 		else {
 			// report status updates in the status bar

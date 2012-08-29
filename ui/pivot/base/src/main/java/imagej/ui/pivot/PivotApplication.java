@@ -89,7 +89,7 @@ public class PivotApplication extends AbstractContextual implements Application
 		contentPane.add(toolBar);
 		contentPane.add(statusBar);
 
-		frame.setTitle("ImageJ");
+		frame.setTitle(getContext().getTitle());
 		frame.setMaximized(true);
 		frame.open(display);
 	}

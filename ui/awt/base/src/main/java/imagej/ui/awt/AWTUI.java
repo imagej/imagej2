@@ -121,7 +121,7 @@ public class AWTUI extends AbstractUserInterface {
 
 	@Override
 	protected void createUI() {
-		frame = new AWTApplicationFrame("ImageJ");
+		frame = new AWTApplicationFrame(getContext().getTitle());
 		toolBar = new AWTToolBar(getUIService());
 		statusBar = new AWTStatusBar(getUIService());
 		systemClipboard = new AWTClipboard();

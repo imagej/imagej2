@@ -88,12 +88,12 @@ public class OpenImage implements RunnablePlugin {
 		}
 		catch (final ImgIOException e) {
 			log.error(e);
-			uiService.showDialog(e.getMessage(), "ImageJ",
+			uiService.showDialog(e.getMessage(),
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 		catch (final IncompatibleTypeException e) {
 			log.error(e);
-			uiService.showDialog(e.getMessage(), "ImageJ",
+			uiService.showDialog(e.getMessage(),
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 	}
