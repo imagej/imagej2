@@ -218,6 +218,11 @@ public class ImageJ {
 		return pom.getVersion();
 	}
 
+	/** Gets the Maven POM containing metadata about the application context. */
+	public POM getPOM() {
+		return pom;
+	}
+
 	/**
 	 * Gets a string with information about the application context.
 	 * 
