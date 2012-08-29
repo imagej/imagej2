@@ -40,21 +40,19 @@ import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 
-
 /**
- * A dummy implementation of the RenderingService interface. Necessary to allow
- * any UI that does not support rendering to still initialize correctly.
-
+ * No-op implementation of text rendering service. This default implementation
+ * is useful for headless operation.
+ * 
  * @author Barry DeZonia
- *
  */
-@Plugin(priority=Priority.LOW_PRIORITY)
-public class DummyRenderingService
-	extends AbstractService
-	implements RenderingService
+@Plugin(priority = Priority.LOW_PRIORITY)
+public class DummyRenderingService extends AbstractService implements
+	RenderingService
 {
+
 	private final TextRenderer textRenderer;
-	
+
 	public DummyRenderingService() {
 		// NB - needed by Sezpoz
 		super(null);
@@ -62,11 +60,11 @@ public class DummyRenderingService
 			"this constructor not meant to be used");
 	}
 
-	public DummyRenderingService(ImageJ context) {
+	public DummyRenderingService(final ImageJ context) {
 		super(context);
 		textRenderer = new DummyTextRenderer();
 	}
-	
+
 	@Override
 	public TextRenderer getTextRenderer() {
 		return textRenderer;

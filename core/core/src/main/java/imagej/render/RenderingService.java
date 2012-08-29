@@ -39,9 +39,9 @@ import imagej.service.Service;
 
 
 /**
+ * Interface for service that performs text rendering.
  * 
  * @author Barry DeZonia
- *
  */
 public interface RenderingService extends Service {
 

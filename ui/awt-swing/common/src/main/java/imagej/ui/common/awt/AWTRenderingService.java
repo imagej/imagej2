@@ -42,8 +42,15 @@ import imagej.render.TextRenderer;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
+/**
+ * AWT-based implementation of text rendering service.
+ * 
+ * @author Barry DeZonia
+ */
 @Plugin(type = Service.class)
-public class AWTRenderingService extends AbstractService implements RenderingService {
+public class AWTRenderingService extends AbstractService implements
+	RenderingService
+{
 
 	public AWTRenderingService() {
 		// NB - needed by Sezpoz
@@ -52,13 +59,13 @@ public class AWTRenderingService extends AbstractService implements RenderingSer
 			"this constructor not meant to be used");
 	}
 
-	public AWTRenderingService(ImageJ context) {
+	public AWTRenderingService(final ImageJ context) {
 		super(context);
 	}
-	
+
 	@Override
 	public TextRenderer getTextRenderer() {
 		return new AWTTextRenderer();
 	}
-	
+
 }
