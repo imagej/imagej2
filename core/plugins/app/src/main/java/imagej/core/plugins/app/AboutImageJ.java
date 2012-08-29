@@ -102,6 +102,9 @@ public class AboutImageJ implements RunnablePlugin {
 	// -- parameters --
 
 	@Parameter
+	private ImageJ context;
+
+	@Parameter
 	private LogService log;
 
 	@Parameter
@@ -131,7 +134,8 @@ public class AboutImageJ implements RunnablePlugin {
 	public void run() {
 		final Dataset dataset = createDataset();
 		drawTextOverImage(dataset);
-		display = dispSrv.createDisplay("About ImageJ", dataset);
+		final String title = context.getTitle();
+		display = dispSrv.createDisplay("About " + title, dataset);
 	}
 
 	public Display<?> getDisplay() {
@@ -146,7 +150,7 @@ public class AboutImageJ implements RunnablePlugin {
 	private Dataset createDataset() {
 		final File imageFile = getRandomAboutImagePath();
 
-		final String title = "About ImageJ " + ImageJ.VERSION;
+		final String title = "About " + getAppString();
 
 		Dataset ds = null;
 		try {
@@ -237,7 +241,7 @@ public class AboutImageJ implements RunnablePlugin {
 		tool.setTextAntialiasing(true);
 		// tool.setTextOutlineWidth(5);
 		tool.setFontSize(largestFontSize);
-		drawOutlinedText(tool, x, y, "ImageJ " + ImageJ.VERSION,
+		drawOutlinedText(tool, x, y, getAppString(),
 			TextJustification.CENTER, textChannels, outlineChannels);
 		y += 5 * tool.getFontSize() / 4;
 		tool.setFontSize((int) Math.round(0.6 * largestFontSize));
@@ -384,6 +388,10 @@ public class AboutImageJ implements RunnablePlugin {
 				// do nothing
 			}
 		}
+	}
+
+	private String getAppString() {
+		return context.getTitle() + " " + context.getVersion();
 	}
 
 }

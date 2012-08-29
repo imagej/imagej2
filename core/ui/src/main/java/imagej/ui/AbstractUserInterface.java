@@ -35,7 +35,6 @@
 
 package imagej.ui;
 
-import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.plugin.SortablePlugin;
@@ -52,7 +51,6 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	implements UserInterface
 {
 
-	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
 	private static final String LAST_X = "lastXLocation";
 	private static final String LAST_Y = "lastYLocation";
 
@@ -141,9 +139,10 @@ public abstract class AbstractUserInterface extends SortablePlugin
 
 	/** Shows the readme, if this is the first time ImageJ has run. */
 	private void displayReadme() {
-		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
+		final String prefFirstRun = "firstRun-" + getContext().getVersion();
+		final String firstRun = Prefs.get(getClass(), prefFirstRun);
 		if (firstRun != null) return;
-		Prefs.put(getClass(), PREF_FIRST_RUN, false);
+		Prefs.put(getClass(), prefFirstRun, false);
 		getUIService().getPluginService().run(ShowReadme.class);
 	}
 
