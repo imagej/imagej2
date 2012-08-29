@@ -36,15 +36,25 @@
 package imagej.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -113,6 +123,22 @@ public class POM {
 		final String version = xpath("//project/version");
 		if (version != null) return version;
 		return xpath("//project/parent/version");
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		try {
+			return dumpXML(doc);
+		}
+		catch (final TransformerException exc) {
+			// NB: Return the exception stack trace as the string.
+			// Although this is a bad idea, I find it somehow hilarious.
+			final ByteArrayOutputStream out = new ByteArrayOutputStream();
+			exc.printStackTrace(new PrintStream(out));
+			return out.toString();
+		}
 	}
 
 	// -- Utility methods --
@@ -209,6 +235,18 @@ public class POM {
 			return child.getNodeValue();
 		}
 		return null;
+	}
+
+	/** Converts the given DOM to a string. */
+	private static String dumpXML(final Document doc) throws TransformerException
+	{
+		final Source source = new DOMSource(doc);
+		final StringWriter stringWriter = new StringWriter();
+		final Result result = new StreamResult(stringWriter);
+		final TransformerFactory factory = TransformerFactory.newInstance();
+		final Transformer transformer = factory.newTransformer();
+		transformer.transform(source, result);
+		return stringWriter.getBuffer().toString();
 	}
 
 }
