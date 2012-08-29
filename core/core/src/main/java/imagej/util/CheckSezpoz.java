@@ -183,7 +183,7 @@ public class CheckSezpoz {
 	}
 
 	/**
-	 * Fake the check for <i>.jar</i> files a la {@link @getLatestCheck(File)}.
+	 * Fake the check for <i>.jar</i> files a la {@link #getLatestCheck(File)}.
 	 * 
 	 * @param jar the <i>.jar</i> file
 	 * @return -1 since we cannot really tell
