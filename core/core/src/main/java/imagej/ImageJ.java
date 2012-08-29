@@ -41,6 +41,7 @@ import imagej.service.Service;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
 import imagej.util.CheckSezpoz;
+import imagej.util.POM;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -206,13 +207,8 @@ public class ImageJ {
 	 * @return The application version, in <code>major.minor.micro</code> format.
 	 */
 	public String getVersion() {
-		// FIXME: Extract this information from the relevant Maven POM instead.
-		// If the application context class is on the file system, (e.g., when
-		// running from an IDE such as Eclipse), the POM is located in an ancestor
-		// directory of the .class file. If the application context class is inside
-		// of a JAR file (e.g., when running the deployed application bundle), the
-		// POM is located in the same JAR file's META-INF/maven subdirectory.
-		return VERSION;
+		final POM pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
+		return pom.getVersion();
 	}
 
 	public ServiceIndex getServiceIndex() {
