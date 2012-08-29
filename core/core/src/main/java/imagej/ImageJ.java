@@ -41,6 +41,7 @@ import imagej.service.Service;
 import imagej.service.ServiceHelper;
 import imagej.service.ServiceIndex;
 import imagej.util.CheckSezpoz;
+import imagej.util.Manifest;
 import imagej.util.POM;
 
 import java.io.IOException;
@@ -184,6 +185,9 @@ public class ImageJ {
 	/** Maven POM with metadata about ImageJ. */
 	private final POM pom;
 
+	/** JAR manifest with metadata about ImageJ. */
+	private final Manifest manifest;
+
 	/** Creates a new ImageJ context. */
 	public ImageJ() {
 		serviceIndex = new ServiceIndex();
@@ -192,6 +196,7 @@ public class ImageJ {
 		pluginIndex.discover();
 
 		pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
+		manifest = Manifest.getManifest(ImageJ.class);
 	}
 
 	// -- ImageJ methods --
@@ -221,6 +226,16 @@ public class ImageJ {
 	/** Gets the Maven POM containing metadata about the application context. */
 	public POM getPOM() {
 		return pom;
+	}
+
+	/**
+	 * Gets the manifest containing metadata about the application context.
+	 * <p>
+	 * NB: This metadata may be null if run in a development environment.
+	 * </p>
+	 */
+	public Manifest getManifest() {
+		return manifest;
 	}
 
 	/**
