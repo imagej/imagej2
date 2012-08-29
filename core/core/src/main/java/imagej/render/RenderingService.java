@@ -46,55 +46,5 @@ import imagej.service.Service;
 public interface RenderingService extends Service {
 
 	TextRenderer getTextRenderer();
-	
-	/**
-	 * Basic text renderer interface. Implementers render text into an int[]
-	 * buffer. Values range from 0 to 255 (for now) and represent grayscale
-	 * intensities. The buffer is then available afterwards including its
-	 * dimensions. Users can set font attributes before rendering.
-	 */
-	public interface TextRenderer {
-
-		void renderText(String text);
-
-		int getPixelsWidth();
-
-		int getPixelsHeight();
-
-		int[] getPixels();
-
-		void setFontFamily(FontFamily family);
-
-		FontFamily getFontFamily();
-
-		void setFontStyle(FontStyle style);
-
-		FontStyle getFontStyle();
-
-		void setFontSize(int size);
-
-		int getFontSize();
-
-		void setAntialiasing(boolean val);
-
-		boolean getAntialiasing();
-		
-		//void setTextOutlineWidth(float width);
-
-		//float getTextOutlineWidth();
-
-		public enum FontFamily {
-			MONOSPACED, SERIF, SANS_SERIF
-		}
-
-		public enum FontStyle {
-			PLAIN, BOLD, ITALIC, BOLD_ITALIC
-		}
-
-		public enum TextJustification {
-			LEFT, CENTER, RIGHT
-		}
-
-	}
 
 }

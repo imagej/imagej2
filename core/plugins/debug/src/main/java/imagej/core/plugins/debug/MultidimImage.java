@@ -35,7 +35,6 @@
 
 package imagej.core.plugins.debug;
 
-import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -45,7 +44,7 @@ import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.module.ItemIO;
 import imagej.render.RenderingService;
-import imagej.render.RenderingService.TextRenderer.TextJustification;
+import imagej.render.TextRenderer.TextJustification;
 
 import java.util.Arrays;
 import java.util.List;
@@ -61,9 +60,6 @@ import net.imglib2.meta.AxisType;
  */
 @Plugin(menuPath = "Plugins>Sandbox>Multidimensional Test Image")
 public class MultidimImage implements RunnablePlugin {
-
-	@Parameter
-	private ImageJ context;
 
 	@Parameter
 	private DatasetService datasetService;

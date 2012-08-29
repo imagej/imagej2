@@ -33,32 +33,57 @@
  * #L%
  */
 
-package imagej.ui.common.awt;
+package imagej.render;
 
-import imagej.ImageJ;
-import imagej.ext.plugin.Plugin;
-import imagej.render.RenderingService;
-import imagej.render.TextRenderer;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
-@Plugin(type = Service.class)
-public class AWTRenderingService extends AbstractService implements RenderingService {
+/**
+ * Basic text renderer interface. Implementers render text into an int[]
+ * buffer. Values range from 0 to 255 (for now) and represent grayscale
+ * intensities. The buffer is then available afterwards including its
+ * dimensions. Users can set font attributes before rendering.
+ * 
+ * @author Barry DeZonia
+ */
+public interface TextRenderer {
 
-	public AWTRenderingService() {
-		// NB - needed by Sezpoz
-		super(null);
-		throw new UnsupportedOperationException(
-			"this constructor not meant to be used");
-	}
+	void renderText(String text);
 
-	public AWTRenderingService(ImageJ context) {
-		super(context);
-	}
+	int getPixelsWidth();
+
+	int getPixelsHeight();
+
+	int[] getPixels();
+
+	void setFontFamily(FontFamily family);
+
+	FontFamily getFontFamily();
+
+	void setFontStyle(FontStyle style);
+
+	FontStyle getFontStyle();
+
+	void setFontSize(int size);
+
+	int getFontSize();
+
+	void setAntialiasing(boolean val);
+
+	boolean getAntialiasing();
 	
-	@Override
-	public TextRenderer getTextRenderer() {
-		return new AWTTextRenderer();
+	//void setTextOutlineWidth(float width);
+
+	//float getTextOutlineWidth();
+
+	public enum FontFamily {
+		MONOSPACED, SERIF, SANS_SERIF
 	}
-	
+
+	public enum FontStyle {
+		PLAIN, BOLD, ITALIC, BOLD_ITALIC
+	}
+
+	public enum TextJustification {
+		LEFT, CENTER, RIGHT
+	}
+
 }

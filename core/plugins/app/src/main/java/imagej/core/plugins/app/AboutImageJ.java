@@ -51,7 +51,7 @@ import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.render.RenderingService;
-import imagej.render.RenderingService.TextRenderer.TextJustification;
+import imagej.render.TextRenderer.TextJustification;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.FileUtils;
