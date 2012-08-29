@@ -175,8 +175,10 @@ public class ImageJ {
 	/** Title of the application context. */
 	private String title = "ImageJ";
 
+	/** Index of the application context's services. */
 	private final ServiceIndex serviceIndex;
 
+	/** Master index of all plugins known to the application context. */
 	private final PluginIndex pluginIndex;
 
 	/** Creates a new ImageJ context. */
