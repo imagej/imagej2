@@ -45,6 +45,7 @@ import imagej.util.Manifest;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -95,8 +96,8 @@ public class SystemInformation implements RunnablePlugin {
 	public static String getSystemProperties() {
 		return mapToString(System.getProperties());
 	}
-	
-	public String getManifestData(final Manifest manifest) {
+
+	public static String getManifestData(final Manifest manifest) {
 		if (manifest == null) return null;
 		return mapToString(manifest.getAll());
 	}
@@ -104,22 +105,30 @@ public class SystemInformation implements RunnablePlugin {
 	public static String mapToString(final Map<Object, Object> map) {
 		final StringBuilder sb = new StringBuilder();
 
-		// sort keys
-		final ArrayList<String> keys = new ArrayList<String>();
-		for (Object key : map.keySet()) {
-			keys.add(key.toString());
-		}
-		Collections.sort(keys);
+		// sort keys by string representation
+		final ArrayList<Object> keys = new ArrayList<Object>(map.keySet());
+		Collections.sort(keys, new Comparator<Object>() {
 
-		for (final String key : keys) {
+			@Override
+			public int compare(final Object o1, final Object o2) {
+				if (o1 == null && o2 == null) return 0;
+				if (o1 == null) return -1;
+				if (o2 == null) return 1;
+				return o1.toString().compareTo(o2.toString());
+			}
+
+		});
+
+		for (final Object key : keys) {
 			if (key == null) continue;
-			final Object o = map.get(key);
-			final String value = o == null ? "(null)" : o.toString();
+			final Object value = map.get(key);
+			final String sKey = key.toString();
+			final String sValue = value == null ? "(null)" : value.toString();
 
-			if (key.endsWith(".dirs") || key.endsWith(".path")) {
+			if (sKey.endsWith(".dirs") || sKey.endsWith(".path")) {
 				// split path and display values as a list
-				final String[] dirs = value.split(Pattern.quote(File.pathSeparator));
-				sb.append(key + " = {" + NL);
+				final String[] dirs = sValue.split(Pattern.quote(File.pathSeparator));
+				sb.append(sKey + " = {" + NL);
 				for (final String dir : dirs) {
 					sb.append("\t" + dir + NL);
 				}
@@ -127,7 +136,7 @@ public class SystemInformation implements RunnablePlugin {
 			}
 			else {
 				// display a single key/value pair
-				sb.append(key + " = " + value + NL);
+				sb.append(sKey + " = " + sValue + NL);
 			}
 		}
 		return sb.toString();
