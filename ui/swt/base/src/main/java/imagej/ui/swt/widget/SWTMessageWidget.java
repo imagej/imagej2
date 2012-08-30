@@ -35,6 +35,7 @@
 
 package imagej.ui.swt.widget;
 
+import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
@@ -48,7 +49,7 @@ import org.eclipse.swt.widgets.Label;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
+@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
 public class SWTMessageWidget extends SWTInputWidget<String> implements
 	MessageWidget<Composite>
 {

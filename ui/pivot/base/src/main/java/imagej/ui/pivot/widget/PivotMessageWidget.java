@@ -35,6 +35,7 @@
 
 package imagej.ui.pivot.widget;
 
+import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
@@ -48,7 +49,7 @@ import org.apache.pivot.wtk.Label;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
+@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
 public class PivotMessageWidget extends PivotInputWidget<String> implements
 	MessageWidget<BoxPane>
 {

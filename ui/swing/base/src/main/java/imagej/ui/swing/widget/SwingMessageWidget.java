@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.widget;
 
+import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
@@ -48,7 +49,7 @@ import javax.swing.JPanel;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
+@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
 public class SwingMessageWidget extends SwingInputWidget<String> implements
 	MessageWidget<JPanel>
 {

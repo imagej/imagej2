@@ -35,6 +35,7 @@
 
 package imagej.ui.awt.widget;
 
+import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
@@ -48,7 +49,7 @@ import java.awt.Panel;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
+@Plugin(type = InputWidget.class, priority = Priority.HIGH_PRIORITY)
 public class AWTMessageWidget extends AWTInputWidget<String> implements
 	MessageWidget<Panel>
 {
