@@ -117,7 +117,7 @@ public class WidgetModel {
 	/** Sets the current value of the module input. */
 	public void setValue(final Object value) {
 		final String name = item.getName();
-		if (objectsEqual(module.getInput(name), value)) return; // no change
+		if (objectsEqual(getValue(), value)) return; // no change
 		module.setInput(name, value);
 		if (initialized) {
 			item.callback(module);
