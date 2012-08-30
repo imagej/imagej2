@@ -36,6 +36,8 @@
 package imagej.core.plugins.typechange;
 
 import imagej.data.Dataset;
+import imagej.data.display.ColorMode;
+import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuService;
@@ -71,11 +73,14 @@ public abstract class TypeChanger implements RunnablePlugin {
 	@Parameter
 	protected MenuService menuService;
 
+	@Parameter
+	protected DatasetView view;
+	
 	@Parameter(type = ItemIO.BOTH)
 	protected Dataset data;
 
-	protected <T extends RealType<T>> void changeType(final T newType, boolean makeComposite) {
-		changeType(data, newType, makeComposite);
+	protected <T extends RealType<T>> void changeType(final T newType) {
+		changeType(data, newType, view.getColorMode() == ColorMode.COMPOSITE);
 		menuService.setSelected(this, true);
 	}
 
@@ -83,9 +88,20 @@ public abstract class TypeChanger implements RunnablePlugin {
 	 * Changes the given {@link Dataset}'s underlying {@link Img} data to the
 	 * specified type.
 	 */
+	@SuppressWarnings({"unchecked","rawtypes"})
 	public static <T extends RealType<T>> void changeType(final Dataset dataset,
 		final T newType, boolean makeComposite)
 	{
+		// see if input dataset is already typed correctly
+		if (dataset.getType().getClass() == newType.getClass()) {
+			if (dataset.isRGBMerged()) {
+				if (makeComposite) return;
+			}
+			else if (!makeComposite) return;
+			int chanIndex = dataset.getAxisIndex(Axes.CHANNEL);
+			if (chanIndex < 0) return;
+		}
+		// if here then a type change of some sort is needed
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
 		final ImgPlus<? extends RealType<?>> imgPlus;
 		if (makeComposite) {
@@ -150,15 +166,6 @@ public abstract class TypeChanger implements RunnablePlugin {
 		return new ImgPlus<T>(outputImg, inputImg);
 	}
 
-	public void setDataset(Dataset ds) {
-		data = ds;
-	}
-	
-	public Dataset getDataset() {
-		return data;
-	}
-
-	
 	// -- private helpers --
 	
 	// TODO - make public?

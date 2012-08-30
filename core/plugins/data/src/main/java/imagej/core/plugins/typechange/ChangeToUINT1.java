@@ -35,10 +35,7 @@
 
 package imagej.core.plugins.typechange;
 
-import imagej.data.display.ColorMode;
-import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.logic.BitType;
@@ -58,12 +55,9 @@ import net.imglib2.type.logic.BitType;
 		@Menu(label = "Unsigned 1-bit", weight = 201) }, headless = true)
 public class ChangeToUINT1 extends TypeChanger {
 
-	@Parameter
-	private DatasetView view;
-	
 	@Override
 	public void run() {
-		changeType(new BitType(), view.getColorMode() == ColorMode.COMPOSITE);
+		changeType(new BitType());
 	}
 
 }

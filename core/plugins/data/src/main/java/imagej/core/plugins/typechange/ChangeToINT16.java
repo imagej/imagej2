@@ -35,10 +35,7 @@
 
 package imagej.core.plugins.typechange;
 
-import imagej.data.display.ColorMode;
-import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.integer.ShortType;
@@ -58,12 +55,9 @@ import net.imglib2.type.numeric.integer.ShortType;
 		@Menu(label = "Signed 16-bit", weight = 209) }, headless = true)
 public class ChangeToINT16 extends TypeChanger {
 
-	@Parameter
-	private DatasetView view;
-	
 	@Override
 	public void run() {
-		changeType(new ShortType(), view.getColorMode() == ColorMode.COMPOSITE);
+		changeType(new ShortType());
 	}
 
 }
