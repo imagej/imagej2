@@ -35,7 +35,10 @@
 
 package imagej.core.plugins.typechange;
 
+import imagej.data.display.ColorMode;
+import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.integer.ByteType;
@@ -54,9 +57,12 @@ import net.imglib2.type.numeric.integer.ByteType;
 		@Menu(label = "Signed 8-bit", weight = 208) }, headless = true)
 public class ChangeToINT8 extends TypeChanger {
 
+	@Parameter
+	private DatasetView view;
+	
 	@Override
 	public void run() {
-		changeType(new ByteType());
+		changeType(new ByteType(), view.getColorMode() == ColorMode.COMPOSITE);
 	}
 
 }

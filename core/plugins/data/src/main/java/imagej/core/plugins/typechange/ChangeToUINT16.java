@@ -35,7 +35,10 @@
 
 package imagej.core.plugins.typechange;
 
+import imagej.data.display.ColorMode;
+import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -55,9 +58,11 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 		@Menu(label = "Unsigned 16-bit", weight = 204) }, headless = true)
 public class ChangeToUINT16 extends TypeChanger {
 
+	@Parameter
+	private DatasetView view;
+	
 	@Override
 	public void run() {
-		changeType(new UnsignedShortType());
+		changeType(new UnsignedShortType(), view.getColorMode() == ColorMode.COMPOSITE);
 	}
-
 }

@@ -35,7 +35,10 @@
 
 package imagej.core.plugins.typechange;
 
+import imagej.data.display.ColorMode;
+import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -54,9 +57,12 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Float 64-bit", weight = 207) }, headless = true)
 public class ChangeToFLOAT64 extends TypeChanger {
 
+	@Parameter
+	private DatasetView view;
+	
 	@Override
 	public void run() {
-		changeType(new DoubleType());
+		changeType(new DoubleType(), view.getColorMode() == ColorMode.COMPOSITE);
 	}
 
 }

@@ -35,7 +35,10 @@
 
 package imagej.core.plugins.typechange;
 
+import imagej.data.display.ColorMode;
+import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.real.FloatType;
@@ -54,9 +57,12 @@ import net.imglib2.type.numeric.real.FloatType;
 		@Menu(label = "Float 32-bit", weight = 206) }, headless = true)
 public class ChangeToFLOAT32 extends TypeChanger {
 
+	@Parameter
+	private DatasetView view;
+	
 	@Override
 	public void run() {
-		changeType(new FloatType());
+		changeType(new FloatType(), view.getColorMode() == ColorMode.COMPOSITE);
 	}
 
 }

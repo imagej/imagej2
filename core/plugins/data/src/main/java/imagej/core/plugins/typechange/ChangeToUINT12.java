@@ -35,7 +35,10 @@
 
 package imagej.core.plugins.typechange;
 
+import imagej.data.display.ColorMode;
+import imagej.data.display.DatasetView;
 import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.integer.Unsigned12BitType;
@@ -55,9 +58,12 @@ import net.imglib2.type.numeric.integer.Unsigned12BitType;
 		@Menu(label = "Unsigned 12-bit", weight = 203) }, headless = true)
 public class ChangeToUINT12 extends TypeChanger {
 
+	@Parameter
+	private DatasetView view;
+	
 	@Override
 	public void run() {
-		changeType(new Unsigned12BitType());
+		changeType(new Unsigned12BitType(), view.getColorMode() == ColorMode.COMPOSITE);
 	}
 
 }

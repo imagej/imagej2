@@ -74,8 +74,8 @@ public abstract class TypeChanger implements RunnablePlugin {
 	@Parameter(type = ItemIO.BOTH)
 	protected Dataset data;
 
-	protected <T extends RealType<T>> void changeType(final T newType) {
-		changeType(data, newType);
+	protected <T extends RealType<T>> void changeType(final T newType, boolean makeComposite) {
+		changeType(data, newType, makeComposite);
 		menuService.setSelected(this, true);
 	}
 
@@ -84,22 +84,19 @@ public abstract class TypeChanger implements RunnablePlugin {
 	 * specified type.
 	 */
 	public static <T extends RealType<T>> void changeType(final Dataset dataset,
-		final T newType)
+		final T newType, boolean makeComposite)
 	{
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
-		final Class<?> currTypeClass = dataset.getType().getClass();
-		final Class<?> newTypeClass = newType.getClass();
-		final int chanIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		final long numChannels = (chanIndex < 0) ? 1 : dataset.dimension(chanIndex);
-		final boolean isColor = dataset.getCompositeChannelCount() == numChannels;
-		if ((currTypeClass != newTypeClass) || isColor) {
-			ImgPlus<? extends RealType<?>> imgPlus;
-			if (isColor) imgPlus = colorToGrayscale((ImgPlus) inputImg, newType);
-			else imgPlus = copyToType(inputImg, newType);
-			dataset.setRGBMerged(false);  // event order requires this before setImgPlus()
-			dataset.setImgPlus(imgPlus);
-			dataset.setCompositeChannelCount(1);
+		final ImgPlus<? extends RealType<?>> imgPlus;
+		if (makeComposite) {
+			imgPlus = copyToCompositeGrayscale((ImgPlus) inputImg, newType);
 		}
+		else {
+			imgPlus = copyToType(inputImg, newType);
+		}
+		dataset.setRGBMerged(false);  // event order requires this before setImgPlus()
+		dataset.setImgPlus(imgPlus);
+		dataset.setCompositeChannelCount(1);
 	}
 
 	/**
@@ -171,7 +168,7 @@ public abstract class TypeChanger implements RunnablePlugin {
 	 * channel values of an input {@link ImgPlus}.
 	 */
 	private static <I extends RealType<I>, O extends RealType<O>> ImgPlus<O>
-		colorToGrayscale(final ImgPlus<I> inputImg, final O newType)
+		copyToCompositeGrayscale(final ImgPlus<I> inputImg, final O newType)
 	{
 		// determine the attributes of the output image
 		final String name = inputImg.getName();
