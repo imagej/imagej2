@@ -94,9 +94,8 @@ public class FloodFiller {
 		final ChannelCollection origValues = getValues(accessor, u0, v0);
 		final long maxU = ds.dimension(uAxis) - 1;
 		final long maxV = ds.dimension(vAxis) - 1;
-		uStack.clear();
-		vStack.clear();
-		push(u0, v0);
+		clearUV();
+		pushUV(u0, v0);
 		while (!uStack.isEmpty()) {
 			final long u = popU();
 			final long v = popV();
@@ -115,7 +114,7 @@ public class FloodFiller {
 			boolean inScanLine = false;
 			for (long i=u1; i<=u2; i++) {
 				if (!inScanLine && v>0 && matches(accessor,i,v-1,origValues))
-					{push(i, v-1); inScanLine = true;}
+					{pushUV(i, v-1); inScanLine = true;}
 				else if (inScanLine && v>0 &&
 									!matches(accessor,i,v-1,origValues))
 					inScanLine = false;
@@ -125,7 +124,7 @@ public class FloodFiller {
 			for (long i=u1; i<=u2; i++) {
 				if (!inScanLine && v<maxV &&
 							matches(accessor,i,v+1,origValues))
-					{push(i, v+1); inScanLine = true;}
+					{pushUV(i, v+1); inScanLine = true;}
 				else if (inScanLine && v<maxV &&
 									!matches(accessor,i,v+1,origValues))
 					inScanLine = false;
@@ -152,9 +151,8 @@ public class FloodFiller {
 		final ChannelCollection origValues = getValues(accessor, u0, v0);
 		final long maxU = ds.dimension(uAxis) - 1;
 		final long maxV = ds.dimension(vAxis) - 1;
-		uStack.clear();
-		vStack.clear();
-		push(u0, v0);
+		clearUV();
+		pushUV(u0, v0);
 		while(!uStack.isEmpty()) {
 			final long u = popU(); 
 			final long v = popV();
@@ -172,24 +170,24 @@ public class FloodFiller {
 			if (v > 0) {
 				if (u1 > 0) {
 					if (matches(accessor,u1-1,v-1,origValues)) {
-						push(u1-1, v-1);
+						pushUV(u1-1, v-1);
 					}
 				}
 				if (u2 < maxU) {
 					if (matches(accessor,u2+1,v-1,origValues)) {
-						push(u2+1, v-1);
+						pushUV(u2+1, v-1);
 					}
 				}
 			}
 			if (v < maxV) {
 				if (u1 > 0) {
 					if (matches(accessor,u1-1,v+1,origValues)) {
-						push(u1-1, v+1);
+						pushUV(u1-1, v+1);
 					}
 				}
 				if (u2 < maxU) {
 					if (matches(accessor,u2+1,v+1,origValues)) {
-						push(u2+1, v+1);
+						pushUV(u2+1, v+1);
 					}
 				}
 			}
@@ -197,7 +195,7 @@ public class FloodFiller {
 			boolean inScanLine = false;
 			for (long i=u1; i<=u2; i++) {
 				if (!inScanLine && v>0 && matches(accessor,i,v-1,origValues))
-					{push(i, v-1); inScanLine = true;}
+					{pushUV(i, v-1); inScanLine = true;}
 				else if (inScanLine && v>0 &&
 									!matches(accessor,i,v-1,origValues))
 					inScanLine = false;
@@ -207,7 +205,7 @@ public class FloodFiller {
 			for (long i=u1; i<=u2; i++) {
 				if (!inScanLine && v<maxV &&
 							matches(accessor,i,v+1,origValues))
-					{push(i, v+1); inScanLine = true;}
+					{pushUV(i, v+1); inScanLine = true;}
 				else if (inScanLine && v<maxV &&
 									!matches(accessor,i,v+1,origValues))
 					inScanLine = false;
@@ -246,9 +244,8 @@ public class FloodFiller {
 		// Decide between fill() or fill(RealRect)
 		maskTool.fill();
 		setValues(maskTool, numChan, 255);
-		uStack.clear();
-		vStack.clear();
-		push(u0, v0);
+		clearUV();
+		pushUV(u0, v0);
 		while(!uStack.isEmpty()) {   
 			long u = popU(); 
 			long v = popV();
@@ -272,14 +269,14 @@ public class FloodFiller {
 			if (u2<maxU) u2++;
 			for (long i=u1; i<=u2; i++) { // find scan-lines above this one
 				if (!inScanLine && v>0 && inParticle(acc,i,v-1,level1,level2))
-					{push(i, v-1); inScanLine = true;}
+					{pushUV(i, v-1); inScanLine = true;}
 				else if (inScanLine && v>0 && !inParticle(acc,i,v-1,level1,level2))
 					inScanLine = false;
 			}
 			inScanLine = false;
 			for (long i=u1; i<=u2; i++) { // find scan-lines below this one
 				if (!inScanLine && v<maxV && inParticle(acc,i,v+1,level1,level2))
-					{push(i, v+1); inScanLine = true;}
+					{pushUV(i, v+1); inScanLine = true;}
 				else if (inScanLine && v<maxV && !inParticle(acc,i,v+1,level1,level2))
 					inScanLine = false;
 			}
@@ -363,7 +360,7 @@ public class FloodFiller {
 	/**
 	 * Pushes the specified (u,v) point on the working stacks.
 	 */
-	private void push(final long u, final long v) {
+	private void pushUV(final long u, final long v) {
 		uStack.push(u);
 		vStack.push(v);
 	}
@@ -378,6 +375,12 @@ public class FloodFiller {
 		return vStack.pop();
 	}
 
+	/** Resets the U and V stacks, */
+	private void clearUV() {
+		uStack.clear();
+		vStack.clear();
+	}
+	
 	/** To minimize object creations/deletions we want a stack of primitives. */
 	private class StackOfLongs {
 
