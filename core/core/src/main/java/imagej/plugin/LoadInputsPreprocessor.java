@@ -47,7 +47,7 @@ import imagej.util.ClassUtils;
  * This preprocessor runs late in the chain, to give other preprocessors a
  * chance to populate the inputs first. However, its priority immediately
  * precedes the {@link imagej.widget.InputHarvester}'s, so that
- * user-specified values are populated from next time in the user dialog.
+ * user-specified values from last time are populated in the user dialog.
  * </p>
  * 
  * @author Curtis Rueden
