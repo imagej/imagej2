@@ -54,6 +54,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -151,7 +152,9 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	public ModuleInfo getCommand() {
 		Command command = (Command) commandsList.getSelectedValue();
 		if (command == null) {
-			command = (Command) commandsList.getModel().getElementAt(0);
+			final ListModel model = commandsList.getModel();
+			if (model.getSize() == 0) return null;
+			command = (Command) model.getElementAt(0);
 		}
 		return command == null ? null : command.getModuleInfo();
 	}
