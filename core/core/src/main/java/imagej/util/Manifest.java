@@ -37,6 +37,8 @@ package imagej.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.jar.JarFile;
 
 /**
@@ -118,6 +120,10 @@ public class Manifest {
 
 	public String get(final String key) {
 		return manifest.getMainAttributes().getValue(key);
+	}
+
+	public Map<Object, Object> getAll() {
+		return Collections.unmodifiableMap(manifest.getMainAttributes());
 	}
 
 	// -- Utility methods --
