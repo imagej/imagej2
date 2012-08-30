@@ -36,11 +36,11 @@
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 
 /**
  * Plugin for toggling an {@link ImageDisplay}'s running animation. Animation
@@ -56,7 +56,7 @@ import imagej.menu.MenuConstants;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),
 	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
-public class StartAnimation implements RunnablePlugin {
+public class StartAnimation extends ContextPlugin {
 
 	// -- Plugin parameters --
 
@@ -64,13 +64,20 @@ public class StartAnimation implements RunnablePlugin {
 	private AnimationService animationService;
 
 	@Parameter
-	private ImageDisplay imageDisplay;
+	private ImageDisplay display;
 
 	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		animationService.toggle(imageDisplay);
+		animationService.toggle(display);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

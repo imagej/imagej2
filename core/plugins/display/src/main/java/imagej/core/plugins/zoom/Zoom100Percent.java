@@ -36,12 +36,12 @@
 package imagej.core.plugins.zoom;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 
 /**
  * Zooms the currently displayed image to 100% resolution.
@@ -54,7 +54,7 @@ import imagej.module.ItemIO;
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "View 100%", accelerator = "control 5", weight = 4) },
 	headless = true)
-public class Zoom100Percent implements RunnablePlugin {
+public class Zoom100Percent extends ContextPlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;

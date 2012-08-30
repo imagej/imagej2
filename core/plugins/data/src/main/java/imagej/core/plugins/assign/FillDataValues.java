@@ -40,13 +40,13 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.options.OptionsService;
+import imagej.plugin.ContextPlugin;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -60,7 +60,8 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Fill", weight = 28, accelerator = "control F") },
 	headless = true)
 public class FillDataValues<T extends RealType<T>>
-	implements RunnablePlugin, Cancelable
+	extends ContextPlugin
+	implements Cancelable
 {
 	// -- Parameters --
 

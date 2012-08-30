@@ -42,8 +42,8 @@ import imagej.data.overlay.RectangleOverlay;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 
 // TODO - this needs to be an interactive plugin. Currently making it a regular
 // plugin as a placeholder. Crated because we need our own version callable from
@@ -63,7 +63,7 @@ import imagej.menu.MenuConstants;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Specify...", mnemonic = 's') }, headless = true)
-public class SelectionSpecify implements RunnablePlugin {
+public class SelectionSpecify extends ContextPlugin {
 
 	// -- Parameters --
 

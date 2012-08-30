@@ -44,8 +44,8 @@ import imagej.event.StatusService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 import imagej.ui.UserInterface;
 import imagej.util.ARGBPlane;
 
@@ -60,7 +60,7 @@ import imagej.util.ARGBPlane;
 		@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 			mnemonic = MenuConstants.EDIT_MNEMONIC),
 		@Menu(label = "Copy To System", weight = 12) })
-public class CopyToSystem implements RunnablePlugin {
+public class CopyToSystem extends ContextPlugin {
 
 	@Parameter
 	private UserInterface ui;
@@ -75,7 +75,7 @@ public class CopyToSystem implements RunnablePlugin {
 	private StatusService statusService;
 	
 	@Parameter
-	private ImageDisplay imageDisplay;
+	private ImageDisplay display;
 	
 	@Override
 	public void run() {
@@ -87,13 +87,17 @@ public class CopyToSystem implements RunnablePlugin {
 				" image copied to system clipboard";
 		statusService.showStatus(notice);
 	}
+
+	public void setDisplay(ImageDisplay display) {
+		this.display = display;
+	}
 	
 	private ARGBPlane getARGBPixels() {
 		final DatasetView view =
-				imageDisplayService.getActiveDatasetView(imageDisplay);
+				imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return null;
-		final Overlay overlay = overlayService.getActiveOverlay(imageDisplay);
-		final long[] dims = imageDisplay.getDims();
+		final Overlay overlay = overlayService.getActiveOverlay(display);
+		final long[] dims = display.getDims();
 		final int imageWidth = (int) dims[0];
 		final int imageHeight = (int) dims[1];
 		final int[] argbPixels = view.getScreenImage().getData();

@@ -36,12 +36,12 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 
 import java.io.File;
 import java.util.HashMap;
@@ -58,13 +58,13 @@ import net.imglib2.img.ImgPlus;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save", weight = 20, mnemonic = 's') })
-public class SaveImage implements RunnablePlugin {
+public class SaveImage extends ContextPlugin {
 
 	@Parameter
 	private PluginService pluginService;
 
 	@Parameter
-	Dataset dataset;
+	private Dataset dataset;
 
 	@Override
 	public void run() {
@@ -80,6 +80,14 @@ public class SaveImage implements RunnablePlugin {
 			inputMap.put("outputFile", new File(source));
 		}
 		pluginService.run(SaveAsImage.class, inputMap);
+	}
+	
+	public void setDataset(Dataset d) {
+		dataset = d;
+	}
+	
+	public Dataset getDataset() {
+		return dataset;
 	}
 
 }

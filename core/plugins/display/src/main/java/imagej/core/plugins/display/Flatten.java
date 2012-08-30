@@ -37,12 +37,12 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.ui.UIService;
 import imagej.ui.viewer.ImageDisplayViewer;
 
@@ -57,7 +57,7 @@ import imagej.ui.viewer.ImageDisplayViewer;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay"),
 	@Menu(label = "Flatten", weight = 4) })
-public class Flatten implements RunnablePlugin {
+public class Flatten extends ContextPlugin {
 
 	// -- Parameters --
 	
@@ -71,14 +71,6 @@ public class Flatten implements RunnablePlugin {
 	private Dataset dataset;
 
 	// -- accessors --
-	
-	public void setUIService(UIService srv) {
-		uiService = srv;
-	}
-	
-	public UIService getUIService() {
-		return uiService;
-	}
 	
 	public void setDisplay(ImageDisplay disp) {
 		display = disp;

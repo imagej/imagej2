@@ -41,9 +41,9 @@ import imagej.data.DatasetService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 
 import java.util.HashMap;
 
@@ -83,7 +83,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
 public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
-	implements RunnablePlugin, Cancelable
+	extends ContextPlugin
+	implements Cancelable
 {
 	// -- instance variables that are Parameters --
 

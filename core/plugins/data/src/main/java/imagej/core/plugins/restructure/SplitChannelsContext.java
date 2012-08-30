@@ -35,11 +35,11 @@
 
 package imagej.core.plugins.restructure;
 
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
+import imagej.plugin.ContextPlugin;
 
 import java.util.HashMap;
 
@@ -50,7 +50,7 @@ import java.util.HashMap;
  */
 @Plugin(menu = { @Menu(label = "Split Channels", mnemonic = 's') },
 	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
-public class SplitChannelsContext implements RunnablePlugin {
+public class SplitChannelsContext extends ContextPlugin {
 
 	// -- Plugin parameters --
 

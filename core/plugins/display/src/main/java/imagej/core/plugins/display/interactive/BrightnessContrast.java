@@ -37,13 +37,13 @@ package imagej.core.plugins.display.interactive;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.plugin.PreviewPlugin;
 import imagej.widget.WidgetStyle;
 
@@ -68,7 +68,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true,
 	initializer = "initValues")
-public class BrightnessContrast implements RunnablePlugin, PreviewPlugin {
+public class BrightnessContrast extends ContextPlugin implements PreviewPlugin {
 
 	private static final int SLIDER_MIN = 0;
 	private static final int SLIDER_MAX = 100;

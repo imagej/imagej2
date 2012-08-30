@@ -43,7 +43,7 @@ import imagej.data.display.OverlayService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.plugin.ContextPlugin;
 import imagej.util.RealRect;
 
 import java.awt.BasicStroke;
@@ -93,7 +93,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot implements RunnablePlugin, Cancelable {
+public class HistogramPlot extends ContextPlugin implements Cancelable {
 
 	// -- instance variables that are Parameters --
 
@@ -136,6 +136,14 @@ public class HistogramPlot implements RunnablePlugin, Cancelable {
 	@Override
 	public String getCancelReason() {
 		return err;
+	}
+	
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
 	@Override

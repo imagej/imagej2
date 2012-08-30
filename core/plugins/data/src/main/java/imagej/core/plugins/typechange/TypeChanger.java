@@ -84,6 +84,14 @@ public abstract class TypeChanger implements RunnablePlugin {
 		menuService.setSelected(this, true);
 	}
 
+	public void setDataset(Dataset d) {
+		data = d;
+	}
+	
+	public Dataset getDataset() {
+		return data;
+	}
+	
 	/**
 	 * Changes the given {@link Dataset}'s underlying {@link Img} data to the
 	 * specified type.

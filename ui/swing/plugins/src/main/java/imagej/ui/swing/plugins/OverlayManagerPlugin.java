@@ -36,10 +36,10 @@
 package imagej.ui.swing.plugins;
 
 import imagej.ImageJ;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.plugin.ContextPlugin;
 import imagej.ui.swing.SwingOverlayManager;
 
 /**
@@ -49,7 +49,7 @@ import imagej.ui.swing.SwingOverlayManager;
  */
 @Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
 	@Menu(label = "Overlay Manager") })
-public class OverlayManagerPlugin implements RunnablePlugin {
+public class OverlayManagerPlugin extends ContextPlugin {
 
 	@Parameter
 	private ImageJ context;

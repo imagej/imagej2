@@ -37,13 +37,12 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 
 import java.util.List;
 
@@ -74,7 +73,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Adjust"),
 	@Menu(label = "Auto-Contrast", accelerator = "control shift alt L",
 		weight = 0) }, headless = true)
-public class AutoContrast implements RunnablePlugin {
+public class AutoContrast extends ContextPlugin {
 
 	private static final int BINS = 256;
 	private static final int AUTO_THRESHOLD = 5000;

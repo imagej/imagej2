@@ -37,12 +37,12 @@ package imagej.core.plugins.imglib;
 
 import imagej.Cancelable;
 import imagej.data.Dataset;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
@@ -60,7 +60,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "NaN Background", weight = 18) }, headless = true)
-public class NanBackground implements RunnablePlugin, Cancelable {
+public class NanBackground extends ContextPlugin implements Cancelable {
 
 	// -- instance variables --
 

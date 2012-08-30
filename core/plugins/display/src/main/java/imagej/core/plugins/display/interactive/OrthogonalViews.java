@@ -37,11 +37,11 @@ package imagej.core.plugins.display.interactive;
 
 import imagej.Cancelable;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 
 /**
  * TODO
@@ -53,7 +53,7 @@ import imagej.menu.MenuConstants;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Stacks"),
 	@Menu(label = "Orthogonal Views", weight=5, accelerator="control shift H")})
-public class OrthogonalViews implements RunnablePlugin, Cancelable {
+public class OrthogonalViews extends ContextPlugin implements Cancelable {
 
 	private String err;
 	

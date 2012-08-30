@@ -37,12 +37,12 @@ package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.KeyboardService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import net.imglib2.meta.AxisType;
 
 // NB: The accelerator of "GREATER" does not actually trigger this plugin.
@@ -61,7 +61,7 @@ import net.imglib2.meta.AxisType;
 	@Menu(label = "Axes", mnemonic = 'a'),
 	@Menu(label = "Axis Position Forward", accelerator = "GREATER") },
 	headless = true)
-public class AxisPositionForward implements RunnablePlugin {
+public class AxisPositionForward extends ContextPlugin {
 
 	@Parameter
 	private AnimationService animationService;
@@ -82,4 +82,11 @@ public class AxisPositionForward implements RunnablePlugin {
 		display.setPosition(display.getLongPosition(axis) + increment, axis);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

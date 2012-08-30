@@ -41,12 +41,12 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import net.imglib2.ops.operation.real.unary.RealSqr;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -64,7 +64,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Square...", weight = 15) },
 	headless = true)
-public class SquareDataValues<T extends RealType<T>> implements RunnablePlugin {
+public class SquareDataValues<T extends RealType<T>> extends ContextPlugin {
 
 	// -- instance variables that are Parameters --
 

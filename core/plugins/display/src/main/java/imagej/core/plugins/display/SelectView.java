@@ -47,12 +47,12 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 
 /**
  * Selects an overlay that encompasses the current view. If no such overlay
@@ -66,7 +66,7 @@ import imagej.module.ItemIO;
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Select View", mnemonic = 'v', // TODO - accelerator
 		weight = 0) }, headless = true)
-public class SelectView implements RunnablePlugin {
+public class SelectView extends ContextPlugin {
 
 	@Parameter
 	private ImageJ context;

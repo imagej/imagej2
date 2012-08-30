@@ -40,12 +40,12 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Crop", accelerator = "shift control X") }, headless = true)
-public class CropImage implements RunnablePlugin {
+public class CropImage extends ContextPlugin {
 
 	// -- instance variables that are Parameters --
 

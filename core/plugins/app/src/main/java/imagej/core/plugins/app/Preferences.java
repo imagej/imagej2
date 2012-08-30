@@ -61,4 +61,11 @@ public class Preferences implements RunnablePlugin {
 		if (clearAll) Prefs.clearAll();
 	}
 
+	public void setClearAll(boolean val) {
+		clearAll = val;
+	}
+	
+	public boolean isClearAll() {
+		return clearAll;
+	}
 }

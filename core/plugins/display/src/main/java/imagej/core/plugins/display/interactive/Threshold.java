@@ -37,11 +37,11 @@ package imagej.core.plugins.display.interactive;
 
 import imagej.Cancelable;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 
 /**
  * TODO
@@ -53,7 +53,7 @@ import imagej.menu.MenuConstants;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") })
-public class Threshold implements RunnablePlugin, Cancelable {
+public class Threshold extends ContextPlugin implements Cancelable {
 
 	private String err;
 	

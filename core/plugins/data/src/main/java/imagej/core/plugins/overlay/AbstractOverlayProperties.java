@@ -39,9 +39,9 @@ import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.options.OptionsService;
+import imagej.plugin.ContextPlugin;
 import imagej.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
@@ -57,8 +57,9 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-public abstract class AbstractOverlayProperties implements RunnablePlugin, PreviewPlugin {
-
+public abstract class AbstractOverlayProperties
+	extends ContextPlugin implements PreviewPlugin
+{
 	static final private String solidLineStyle = "Solid";
 	static final private String dashLineStyle = "Dash";
 	static final private String dotLineStyle = "Dot";

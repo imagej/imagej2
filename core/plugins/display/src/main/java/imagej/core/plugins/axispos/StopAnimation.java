@@ -36,11 +36,11 @@
 package imagej.core.plugins.axispos;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 
 /**
  * Plugin for terminating an {@link ImageDisplay}'s running animation.
@@ -53,7 +53,7 @@ import imagej.menu.MenuConstants;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),
 	@Menu(label = "Stop Animation", weight = 2) }, headless = true)
-public class StopAnimation implements RunnablePlugin {
+public class StopAnimation extends ContextPlugin {
 
 	@Parameter
 	private AnimationService animationService;
@@ -66,4 +66,11 @@ public class StopAnimation implements RunnablePlugin {
 		animationService.stop(display);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

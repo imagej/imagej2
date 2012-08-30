@@ -47,12 +47,12 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.input.KeyCode;
 import imagej.menu.MenuConstants;
+import imagej.plugin.ContextPlugin;
 import imagej.util.RealRect;
 
 import java.util.List;
@@ -71,8 +71,8 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Shadows", mnemonic = 's'),
 	@Menu(label = "Shadows Demo", weight = 200) }, headless = true)
-public class ShadowsDemo implements RunnablePlugin, Cancelable {
-
+public class ShadowsDemo extends ContextPlugin implements Cancelable
+{
 	private static final double[][] KERNELS = new double[][] {
 		ShadowsNorth.KERNEL, ShadowsNortheast.KERNEL, ShadowsEast.KERNEL,
 		ShadowsSoutheast.KERNEL, ShadowsSouth.KERNEL, ShadowsSouthwest.KERNEL,

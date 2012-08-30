@@ -43,13 +43,13 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
+import imagej.plugin.ContextPlugin;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
@@ -75,7 +75,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Equation...", weight = 20) },
 	headless = true)
 public class EquationDataValues<T extends RealType<T>>
-	implements RunnablePlugin, Cancelable
+	extends ContextPlugin
+	implements Cancelable
 {
 	// -- instance variables that are Parameters --
 

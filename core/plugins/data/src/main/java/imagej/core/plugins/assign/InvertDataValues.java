@@ -42,13 +42,13 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.options.OptionsService;
+import imagej.plugin.ContextPlugin;
 import net.imglib2.Cursor;
 import net.imglib2.ops.operation.real.unary.RealInvert;
 import net.imglib2.type.numeric.RealType;
@@ -67,7 +67,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Invert...", weight = 30, accelerator = "shift control I") },
 	headless = true)
-public class InvertDataValues<T extends RealType<T>> implements RunnablePlugin {
+public class InvertDataValues<T extends RealType<T>> extends ContextPlugin {
 
 	// -- instance variables that are Parameters --
 

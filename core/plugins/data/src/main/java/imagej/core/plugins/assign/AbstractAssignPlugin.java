@@ -42,9 +42,9 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Parameter;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.plugin.PreviewPlugin;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
@@ -61,7 +61,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends ComplexType<O>>
-	implements RunnablePlugin, PreviewPlugin
+	extends ContextPlugin
+	implements PreviewPlugin
 {
 	// -- instance variables that are Parameters --
 

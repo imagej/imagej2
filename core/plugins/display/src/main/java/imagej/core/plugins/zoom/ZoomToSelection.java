@@ -37,12 +37,12 @@ package imagej.core.plugins.zoom;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.util.RealRect;
 
 /**
@@ -55,7 +55,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "To Selection", weight = 5) }, headless = true)
-public class ZoomToSelection implements RunnablePlugin {
+public class ZoomToSelection extends ContextPlugin {
 
 	@Parameter
 	private OverlayService overlayService;

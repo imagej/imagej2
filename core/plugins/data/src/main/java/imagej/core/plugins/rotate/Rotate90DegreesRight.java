@@ -41,12 +41,12 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.util.RealRect;
 
 //TODO - IJ1 updates the calibration so that pixel width & depth swap after this operation. Must implement here.
@@ -62,7 +62,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Rotate 90 Degrees Right", weight = 4) }, headless = true)
-public class Rotate90DegreesRight implements RunnablePlugin {
+public class Rotate90DegreesRight extends ContextPlugin {
 
 	// -- instance variables that are Parameters --
 

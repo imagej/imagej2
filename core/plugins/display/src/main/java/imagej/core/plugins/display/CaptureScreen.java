@@ -37,12 +37,12 @@ package imagej.core.plugins.display;
 
 import imagej.data.Dataset;
 import imagej.data.display.ScreenCaptureService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 
 
 /**
@@ -57,7 +57,7 @@ import imagej.module.ItemIO;
 	@Menu(label = "Utilities"),
 	@Menu(label = "Capture Screen", weight = 20, 
 				accelerator = "shift control G")})
-public class CaptureScreen implements RunnablePlugin {
+public class CaptureScreen extends ContextPlugin {
 
 	// -- Parameters --
 	

@@ -42,12 +42,12 @@ import imagej.data.Position;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.util.RealRect;
 
 import java.util.Random;
@@ -70,7 +70,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Salt and Pepper", weight = 3) }, headless = true)
-public class SaltAndPepper implements RunnablePlugin, Cancelable {
+public class SaltAndPepper extends ContextPlugin implements Cancelable {
 
 	// -- instance variables that are Parameters --
 

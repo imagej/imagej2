@@ -37,12 +37,12 @@ package imagej.core.plugins.display;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 
 import java.util.ArrayList;
 
@@ -57,7 +57,7 @@ import java.util.ArrayList;
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Remove Overlay References", weight = 2, mnemonic = 'r') },
 	headless = true)
-public class RemoveOverlayReferences implements RunnablePlugin {
+public class RemoveOverlayReferences extends ContextPlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;

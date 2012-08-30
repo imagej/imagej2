@@ -45,11 +45,11 @@ import imagej.display.DisplayService;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
 import imagej.util.AppUtils;
@@ -93,7 +93,7 @@ import net.imglib2.meta.AxisType;
 			weight = MenuConstants.HELP_WEIGHT,
 			mnemonic = MenuConstants.HELP_MNEMONIC),
 		@Menu(label = "About ImageJ...", weight = 43) }, headless = true)
-public class AboutImageJ implements RunnablePlugin {
+public class AboutImageJ extends ContextPlugin {
 
 	// -- constants --
 

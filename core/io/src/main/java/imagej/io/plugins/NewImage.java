@@ -37,12 +37,12 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -61,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 		@Menu(label = "New", mnemonic = 'n'),
 		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
 			accelerator = "control N") })
-public class NewImage implements RunnablePlugin {
+public class NewImage extends ContextPlugin {
 
 	public static final String DEPTH1 = "1-bit";
 	public static final String DEPTH8 = "8-bit";

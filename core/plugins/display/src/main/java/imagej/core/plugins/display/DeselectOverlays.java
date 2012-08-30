@@ -38,12 +38,12 @@ package imagej.core.plugins.display;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.ContextPlugin;
 
 /**
  * Deselects all the overlays linked to the given display.
@@ -56,7 +56,7 @@ import imagej.module.ItemIO;
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Deselect Overlays", mnemonic = 'd', weight = 2,
 	accelerator = "control shift a") }, headless = true)
-public class DeselectOverlays implements RunnablePlugin {
+public class DeselectOverlays extends ContextPlugin {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
