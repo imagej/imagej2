@@ -71,13 +71,13 @@ import net.imglib2.type.numeric.real.DoubleType;
 public abstract class TypeChanger implements RunnablePlugin {
 
 	@Parameter
-	protected MenuService menuService;
+	private MenuService menuService;
 
 	@Parameter
-	protected DatasetView view;
+	private DatasetView view;
 	
 	@Parameter(type = ItemIO.BOTH)
-	protected Dataset data;
+	private Dataset data;
 
 	protected <T extends RealType<T>> void changeType(final T newType) {
 		changeType(data, newType, view.getColorMode() == ColorMode.COMPOSITE);
@@ -90,21 +90,21 @@ public abstract class TypeChanger implements RunnablePlugin {
 	 */
 	@SuppressWarnings({"unchecked","rawtypes"})
 	public static <T extends RealType<T>> void changeType(final Dataset dataset,
-		final T newType, boolean makeComposite)
+		final T newType, boolean makeCompositeGray)
 	{
 		// see if input dataset is already typed correctly
-		if (dataset.getType().getClass() == newType.getClass()) {
-			if (dataset.isRGBMerged()) {
-				if (makeComposite) return;
-			}
-			else if (!makeComposite) return;
+		if (dataset.isRGBMerged()) {
+			// fall through
+		}
+		else if (dataset.getType().getClass() == newType.getClass()) {
+			if (!makeCompositeGray) return;
 			int chanIndex = dataset.getAxisIndex(Axes.CHANNEL);
 			if (chanIndex < 0) return;
 		}
 		// if here then a type change of some sort is needed
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
 		final ImgPlus<? extends RealType<?>> imgPlus;
-		if (makeComposite) {
+		if (makeCompositeGray) {
 			imgPlus = copyToCompositeGrayscale((ImgPlus) inputImg, newType);
 		}
 		else {
