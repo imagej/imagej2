@@ -127,6 +127,7 @@ public class CombineAnnotations {
 					if (!name.matches(Pattern.quote(PREFIX + "/") + ".+")) continue;
 					add(files, name);
 				}
+				zis.close();
 			}
 			else {
 				// read files from directory
