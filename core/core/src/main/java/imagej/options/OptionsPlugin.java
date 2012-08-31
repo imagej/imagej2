@@ -43,7 +43,7 @@ import imagej.plugin.Parameter;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 
-// 1. iterate over all inputs: array of PluginModuleItem?
+// 1. iterate over all inputs: array of CommandModuleItem?
 //     - or, split common logic into ParameterHelper class?
 // 2. for each input, call loadValue
 // 3. if loaded value is null, ignore; else set parameter to equal loaded value

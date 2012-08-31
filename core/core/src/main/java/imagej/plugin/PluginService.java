@@ -234,7 +234,7 @@ public interface PluginService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<C extends Command> Future<PluginModule<C>> run(Class<C> commandClass,
+	<C extends Command> Future<CommandModule<C>> run(Class<C> commandClass,
 		Object... inputs);
 
 	/**
@@ -249,7 +249,7 @@ public interface PluginService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<C extends Command> Future<PluginModule<C>> run(Class<C> commandClass,
+	<C extends Command> Future<CommandModule<C>> run(Class<C> commandClass,
 		Map<String, Object> inputMap);
 
 	/**

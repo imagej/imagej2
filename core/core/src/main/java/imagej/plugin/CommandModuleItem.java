@@ -49,20 +49,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link ModuleItem} implementation describing an input or output of a plugin.
+ * {@link ModuleItem} implementation describing an input or output of a command.
  * 
  * @author Curtis Rueden
  */
-public class PluginModuleItem<T> extends AbstractModuleItem<T> {
+public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 
 	private final Field field;
 
-	public PluginModuleItem(final ModuleInfo info, final Field field) {
+	public CommandModuleItem(final ModuleInfo info, final Field field) {
 		super(info);
 		this.field = field;
 	}
 
-	// -- PluginModuleItem methods --
+	// -- CommandModuleItem methods --
 
 	public Field getField() {
 		return field;

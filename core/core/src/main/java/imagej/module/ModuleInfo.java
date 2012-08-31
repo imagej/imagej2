@@ -72,7 +72,7 @@ public interface ModuleInfo extends UIDetails {
 	 * {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; for example, a
-	 * <code>PluginModule</code> will return the class name of its associated
+	 * <code>CommandModule</code> will return the class name of its associated
 	 * <code>Command</code>. For modules that are not plugins, the result
 	 * may be something else.
 	 * </p>

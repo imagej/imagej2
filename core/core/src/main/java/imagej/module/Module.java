@@ -91,7 +91,7 @@ public interface Module extends Runnable {
 	 * possess all callback methods specified by {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; e.g., a
-	 * <code>PluginModule</code> will return its associated
+	 * <code>CommandModule</code> will return its associated
 	 * <code>Command</code>. For modules that are not plugins, the result
 	 * may be something else. If you are implementing this interface directly, a
 	 * good rule of thumb is to return <code>this</code>.

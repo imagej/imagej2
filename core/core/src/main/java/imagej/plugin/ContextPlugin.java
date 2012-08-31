@@ -47,9 +47,9 @@ import imagej.ImageJ;
  * Here is an example plugin execution using {@link PluginService#run}:
  * </p>
  * <pre>
- * Future&lt;PluginModule&lt;FindEdges&gt;&gt; future =
+ * Future&lt;CommandModule&lt;FindEdges&gt;&gt; future =
  *   pluginService.run(findEdges.class, &quot;display&quot;, myDisplay);
- * PluginModule&lt;FindEdges&gt; module = future.get(); // block till complete
+ * CommandModule&lt;FindEdges&gt; module = future.get(); // block till complete
  * ImageDisplay outDisplay = (ImageDisplay) module.getOutput(&quot;display&quot;);
  * </pre>
  * <p>
@@ -106,7 +106,7 @@ public abstract class ContextPlugin extends AbstractContextual implements
 	{
 		@SuppressWarnings("unchecked")
 		final C typedCommand = (C) this;
-		final PluginModule<C> module = new PluginModule<C>(info, typedCommand);
+		final CommandModule<C> module = new CommandModule<C>(info, typedCommand);
 		final ServicePreprocessor servicePreprocessor = new ServicePreprocessor();
 		servicePreprocessor.setContext(getContext());
 		servicePreprocessor.process(module);

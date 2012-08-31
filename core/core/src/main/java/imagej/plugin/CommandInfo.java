@@ -65,7 +65,7 @@ import java.util.Map;
  * @author Johannes Schindelin
  * @author Grant Harris
  * @see ModuleInfo
- * @see PluginModule
+ * @see CommandModule
  * @see Command
  */
 public class CommandInfo<C extends Command> extends PluginInfo<C>
@@ -76,7 +76,7 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	private Map<String, Object> presets;
 
 	/** Factory used to create a module associated with the associated command. */
-	private PluginModuleFactory factory;
+	private CommandModuleFactory factory;
 
 	/**
 	 * Flag indicating whether the command parameters have been parsed. Parsing the
@@ -108,7 +108,7 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	public CommandInfo(final String className, final Class<C> commandType) {
 		super(className, commandType);
 		setPresets(null);
-		setPluginModuleFactory(null);
+		setCommandModuleFactory(null);
 	}
 
 	public CommandInfo(final String className, final Class<C> commandType,
@@ -116,7 +116,7 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	{
 		super(className, commandType, annotation);
 		setPresets(null);
-		setPluginModuleFactory(null);
+		setCommandModuleFactory(null);
 	}
 
 	// -- CommandInfo methods --
@@ -136,18 +136,18 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 		return presets;
 	}
 
-	/** Sets the factory used to construct {@link PluginModule} instances. */
-	public void setPluginModuleFactory(final PluginModuleFactory factory) {
+	/** Sets the factory used to construct {@link CommandModule} instances. */
+	public void setCommandModuleFactory(final CommandModuleFactory factory) {
 		if (factory == null) {
-			this.factory = new DefaultPluginModuleFactory();
+			this.factory = new DefaultCommandModuleFactory();
 		}
 		else {
 			this.factory = factory;
 		}
 	}
 
-	/** Gets the factory used to construct {@link PluginModule} instances. */
-	public PluginModuleFactory getPluginModuleFactory() {
+	/** Gets the factory used to construct {@link CommandModule} instances. */
+	public CommandModuleFactory getCommandModuleFactory() {
 		return factory;
 	}
 
@@ -174,15 +174,15 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	// -- ModuleInfo methods --
 
 	@Override
-	public PluginModuleItem<?> getInput(final String name) {
+	public CommandModuleItem<?> getInput(final String name) {
 		parseParams();
-		return (PluginModuleItem<?>) inputMap.get(name);
+		return (CommandModuleItem<?>) inputMap.get(name);
 	}
 
 	@Override
-	public PluginModuleItem<?> getOutput(final String name) {
+	public CommandModuleItem<?> getOutput(final String name) {
 		parseParams();
-		return (PluginModuleItem<?>) outputMap.get(name);
+		return (CommandModuleItem<?>) outputMap.get(name);
 	}
 
 	@Override
@@ -310,8 +310,8 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 			final boolean isPreset = presets.containsKey(name);
 
 			// add item to the relevant list (inputs or outputs)
-			final PluginModuleItem<Object> item =
-				new PluginModuleItem<Object>(this, f);
+			final CommandModuleItem<Object> item =
+				new CommandModuleItem<Object>(this, f);
 			if (item.isInput()) {
 				inputMap.put(name, item);
 				if (!isPreset) inputList.add(item);

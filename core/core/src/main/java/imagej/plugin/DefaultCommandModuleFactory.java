@@ -40,12 +40,12 @@ import imagej.module.Module;
 import imagej.module.ModuleException;
 
 /**
- * The default implementation of {@link PluginModuleFactory}, using a
- * {@link PluginModule}.
+ * The default implementation of {@link CommandModuleFactory}, using a
+ * {@link CommandModule}.
  * 
  * @author Curtis Rueden
  */
-public class DefaultPluginModuleFactory implements PluginModuleFactory {
+public class DefaultCommandModuleFactory implements CommandModuleFactory {
 
 	@Override
 	public <C extends Command> Module createModule(
@@ -68,8 +68,8 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 			throw new ModuleException(e);
 		}
 
-		// command does not implement Module; wrap it in a PluginModule instance
-		return new PluginModule<C>(info);
+		// command does not implement Module; wrap it in a CommandModule instance
+		return new CommandModule<C>(info);
 	}
 
 	@Override
@@ -81,8 +81,8 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 			return (Module) command;
 		}
 
-		// command does not implement Module; wrap it in a PluginModule instance
-		return new PluginModule<C>(info, command);
+		// command does not implement Module; wrap it in a CommandModule instance
+		return new CommandModule<C>(info, command);
 	}
 
 }

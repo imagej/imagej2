@@ -51,7 +51,7 @@ import java.util.Map;
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class PluginModule<C extends Command> extends AbstractModule
+public class CommandModule<C extends Command> extends AbstractModule
 	implements Cancelable
 {
 
@@ -61,8 +61,8 @@ public class PluginModule<C extends Command> extends AbstractModule
 	/** The command instance handled by this module. */
 	private final C command;
 
-	/** Creates a plugin module for the given {@link PluginInfo}. */
-	public PluginModule(final CommandInfo<C> info) throws ModuleException {
+	/** Creates a command module for the given {@link PluginInfo}. */
+	public CommandModule(final CommandInfo<C> info) throws ModuleException {
 		super();
 		this.info = info;
 		command = instantiateCommand();
@@ -70,17 +70,17 @@ public class PluginModule<C extends Command> extends AbstractModule
 	}
 
 	/**
-	 * Creates a plugin module for the given {@link PluginInfo}, around the
+	 * Creates a command module for the given {@link CommandInfo}, around the
 	 * specified {@link Command} instance.
 	 */
-	public PluginModule(final CommandInfo<C> info, final C command) {
+	public CommandModule(final CommandInfo<C> info, final C command) {
 		super();
 		this.info = info;
 		this.command = command;
 		assignPresets();
 	}
 
-	// -- PluginModule methods --
+	// -- CommandModule methods --
 
 	/** Gets the command instance handled by this module. */
 	public C getCommand() {
@@ -124,25 +124,25 @@ public class PluginModule<C extends Command> extends AbstractModule
 
 	@Override
 	public Object getInput(final String name) {
-		final PluginModuleItem<?> item = info.getInput(name);
+		final CommandModuleItem<?> item = info.getInput(name);
 		return ClassUtils.getValue(item.getField(), command);
 	}
 
 	@Override
 	public Object getOutput(final String name) {
-		final PluginModuleItem<?> item = info.getOutput(name);
+		final CommandModuleItem<?> item = info.getOutput(name);
 		return ClassUtils.getValue(item.getField(), command);
 	}
 
 	@Override
 	public void setInput(final String name, final Object value) {
-		final PluginModuleItem<?> item = info.getInput(name);
+		final CommandModuleItem<?> item = info.getInput(name);
 		ClassUtils.setValue(item.getField(), command, value);
 	}
 
 	@Override
 	public void setOutput(final String name, final Object value) {
-		final PluginModuleItem<?> item = info.getOutput(name);
+		final CommandModuleItem<?> item = info.getOutput(name);
 		ClassUtils.setValue(item.getField(), command, value);
 	}
 

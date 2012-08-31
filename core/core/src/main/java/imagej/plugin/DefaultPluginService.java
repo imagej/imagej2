@@ -285,24 +285,24 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <C extends Command> Future<PluginModule<C>> run(
+	public <C extends Command> Future<CommandModule<C>> run(
 		final Class<C> commandClass, final Object... inputs)
 	{
 		final CommandInfo<C> command = getCommand(commandClass);
 		if (!checkPlugin(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<PluginModule<C>> future = (Future) run(command, inputs);
+		final Future<CommandModule<C>> future = (Future) run(command, inputs);
 		return future;
 	}
 
 	@Override
-	public <C extends Command> Future<PluginModule<C>> run(
+	public <C extends Command> Future<CommandModule<C>> run(
 		final Class<C> commandClass, final Map<String, Object> inputMap)
 	{
 		final CommandInfo<C> command = getCommand(commandClass);
 		if (!checkPlugin(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<PluginModule<C>> future = (Future) run(command, inputMap);
+		final Future<CommandModule<C>> future = (Future) run(command, inputMap);
 		return future;
 	}
 

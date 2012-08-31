@@ -79,7 +79,7 @@ public class DynamicCommandInfo extends DefaultModuleInfo {
 	 * declared using the @{@link Parameter} mechanism.
 	 */
 	protected Field getInputField(final String name) {
-		final PluginModuleItem<?> item = info.getInput(name);
+		final CommandModuleItem<?> item = info.getInput(name);
 		return item == null ? null : item.getField();
 	}
 
@@ -89,7 +89,7 @@ public class DynamicCommandInfo extends DefaultModuleInfo {
 	 * declared using the @{@link Parameter} mechanism.
 	 */
 	protected Field getOutputField(final String name) {
-		final PluginModuleItem<?> item = info.getOutput(name);
+		final CommandModuleItem<?> item = info.getOutput(name);
 		return item == null ? null : item.getField();
 	}
 

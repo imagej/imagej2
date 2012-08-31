@@ -43,7 +43,7 @@ import imagej.module.ModuleException;
  * 
  * @author Curtis Rueden
  */
-public interface PluginModuleFactory {
+public interface CommandModuleFactory {
 
 	/** Constructs a module to work with the given {@link CommandInfo}. */
 	<C extends Command> Module createModule(CommandInfo<C> info)
