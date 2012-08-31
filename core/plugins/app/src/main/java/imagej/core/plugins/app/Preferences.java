@@ -35,11 +35,11 @@
 
 package imagej.core.plugins.app;
 
+import imagej.command.Command;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 import imagej.util.Prefs;
 
 /**

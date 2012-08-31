@@ -35,13 +35,13 @@
 
 package imagej.core.plugins.display;
 
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ScreenCaptureService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

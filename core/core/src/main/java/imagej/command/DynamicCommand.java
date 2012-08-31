@@ -33,27 +33,71 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
-import imagej.module.Module;
-import imagej.module.ModuleException;
+import imagej.module.DefaultModule;
+import imagej.plugin.Parameter;
+import imagej.util.ClassUtils;
+
+import java.lang.reflect.Field;
 
 /**
- * A factory for instantiating a module from a {@link CommandInfo}.
+ * A class which can be extended to provide an ImageJ command with a variable
+ * number of inputs and outputs. This class provides greater configurability,
+ * but also greater complexity, than implementing the {@link Command}
+ * interface and using only @{@link Parameter} annotations on instance fields.
  * 
  * @author Curtis Rueden
  */
-public interface CommandModuleFactory {
+public abstract class DynamicCommand extends DefaultModule implements
+	Command
+{
 
-	/** Constructs a module to work with the given {@link CommandInfo}. */
-	<C extends Command> Module createModule(CommandInfo<C> info)
-		throws ModuleException;
+	private final DynamicCommandInfo info;
 
-	/**
-	 * Constructs a module to work with the given {@link CommandInfo}, around
-	 * the specified {@link Command} instance.
-	 */
-	<C extends Command> Module createModule(CommandInfo<C> info,
-		final C command);
+	public DynamicCommand() {
+		this(new DynamicCommandInfo());
+	}
+
+	public DynamicCommand(final DynamicCommandInfo info) {
+		super(info);
+		this.info = info;
+		info.setCommandClass(getClass());
+	}
+
+	// -- Module methods --
+
+	@Override
+	public DynamicCommandInfo getInfo() {
+		return info;
+	}
+
+	@Override
+	public Object getInput(final String name) {
+		final Field field = info.getInputField(name);
+		if (field == null) return super.getInput(name);
+		return ClassUtils.getValue(field, this);
+	}
+
+	@Override
+	public Object getOutput(final String name) {
+		final Field field = info.getOutputField(name);
+		if (field == null) return super.getInput(name);
+		return ClassUtils.getValue(field, this);
+	}
+
+	@Override
+	public void setInput(final String name, final Object value) {
+		final Field field = info.getInputField(name);
+		if (field == null) super.setInput(name, value);
+		else ClassUtils.setValue(field, this, value);
+	}
+
+	@Override
+	public void setOutput(final String name, final Object value) {
+		final Field field = info.getOutputField(name);
+		if (field == null) super.setOutput(name, value);
+		else ClassUtils.setValue(field, this, value);
+	}
 
 }

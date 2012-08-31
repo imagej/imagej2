@@ -33,23 +33,27 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
 import imagej.module.Module;
+import imagej.module.ModuleException;
 
 /**
- * <code>Command</code> is a plugin that is executable. A <code>Command</code>
- * can be executed as a {@link Module} by wrapping it in a {@link CommandModule}.
- * <p>
- * Commands discoverable at runtime must implement this interface and be
- * annotated with @{@link Plugin}.
- * </p>
+ * A factory for instantiating a module from a {@link CommandInfo}.
  * 
  * @author Curtis Rueden
- * @see Plugin
- * @see PluginService
  */
-public interface Command extends IPlugin, Runnable {
-	// Command is a plugin that extends Runnable,
-	// discoverable via the plugin discovery mechanism.
+public interface CommandModuleFactory {
+
+	/** Constructs a module to work with the given {@link CommandInfo}. */
+	<C extends Command> Module createModule(CommandInfo<C> info)
+		throws ModuleException;
+
+	/**
+	 * Constructs a module to work with the given {@link CommandInfo}, around
+	 * the specified {@link Command} instance.
+	 */
+	<C extends Command> Module createModule(CommandInfo<C> info,
+		final C command);
+
 }

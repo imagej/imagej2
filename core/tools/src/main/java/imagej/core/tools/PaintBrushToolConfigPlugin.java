@@ -35,10 +35,10 @@
 
 package imagej.core.tools;
 
+import imagej.command.Command;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 /**
  * Implements the configuration code for {@link PaintBrushTool}.

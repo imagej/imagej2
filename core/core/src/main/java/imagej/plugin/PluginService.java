@@ -35,6 +35,9 @@
 
 package imagej.plugin;
 
+import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandModule;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
@@ -61,7 +64,7 @@ import java.util.concurrent.Future;
  * A <em>plugin</em> is distinct from a <em>module</em> in that plugins extend
  * ImageJ's functionality in some way, taking many forms, whereas modules are
  * always runnable code with typed inputs and outputs. There is a particular
- * type of plugin called a {@link imagej.plugin.Command} which is
+ * type of plugin called a {@link imagej.command.Command} which is
  * also a module, but many plugins (e.g., {@link imagej.tool.Tool}s and
  * {@link imagej.display.Display}s) are not modules.
  * </p>

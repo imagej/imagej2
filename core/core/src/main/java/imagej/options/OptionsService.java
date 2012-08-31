@@ -35,8 +35,8 @@
 
 package imagej.options;
 
+import imagej.command.CommandInfo;
 import imagej.event.EventService;
-import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.service.Service;
 

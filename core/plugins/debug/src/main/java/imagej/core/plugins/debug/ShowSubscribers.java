@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.debug;
 
+import imagej.command.Command;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.event.EventService;
@@ -46,7 +47,6 @@ import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsListEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 import java.util.List;
 

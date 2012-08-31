@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.plugins;
 
+import imagej.command.ContextCommand;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -44,7 +45,6 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModuleEvent;
 import imagej.module.event.ModuleExecutedEvent;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

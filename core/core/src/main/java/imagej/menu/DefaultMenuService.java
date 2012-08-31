@@ -35,6 +35,7 @@
 
 package imagej.menu;
 
+import imagej.command.Command;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.module.Module;
@@ -45,7 +46,6 @@ import imagej.module.event.ModulesUpdatedEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
-import imagej.plugin.Command;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

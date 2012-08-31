@@ -35,13 +35,13 @@
 
 package imagej.core.plugins.app;
 
+import imagej.command.Command;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.platform.PlatformService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 import java.io.IOException;
 import java.net.URL;

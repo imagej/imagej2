@@ -33,12 +33,14 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
 import imagej.Cancelable;
 import imagej.InstantiableException;
 import imagej.module.AbstractModule;
 import imagej.module.ModuleException;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PreviewPlugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 

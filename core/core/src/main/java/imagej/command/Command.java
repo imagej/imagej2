@@ -33,56 +33,26 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
-import imagej.InstantiableException;
 import imagej.module.Module;
-import imagej.module.ModuleException;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginService;
 
 /**
- * The default implementation of {@link CommandModuleFactory}, using a
- * {@link CommandModule}.
+ * <code>Command</code> is a plugin that is executable. A <code>Command</code>
+ * can be executed as a {@link Module} by wrapping it in a {@link CommandModule}.
+ * <p>
+ * Commands discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin}.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see Plugin
+ * @see PluginService
  */
-public class DefaultCommandModuleFactory implements CommandModuleFactory {
-
-	@Override
-	public <C extends Command> Module createModule(
-		final CommandInfo<C> info) throws ModuleException
-	{
-		// if the command implements Module, return a new instance directly
-		try {
-			final Class<C> commandClass = info.loadClass();
-			if (Module.class.isAssignableFrom(commandClass)) {
-				return (Module) commandClass.newInstance();
-			}
-		}
-		catch (final InstantiableException e) {
-			throw new ModuleException(e);
-		}
-		catch (final InstantiationException e) {
-			throw new ModuleException(e);
-		}
-		catch (final IllegalAccessException e) {
-			throw new ModuleException(e);
-		}
-
-		// command does not implement Module; wrap it in a CommandModule instance
-		return new CommandModule<C>(info);
-	}
-
-	@Override
-	public <C extends Command> Module createModule(
-		CommandInfo<C> info, C command)
-	{
-		// if the command implements Module, return the instance directly
-		if (command instanceof Module) {
-			return (Module) command;
-		}
-
-		// command does not implement Module; wrap it in a CommandModule instance
-		return new CommandModule<C>(info, command);
-	}
-
+public interface Command extends IPlugin, Runnable {
+	// Command is a plugin that extends Runnable,
+	// discoverable via the plugin discovery mechanism.
 }

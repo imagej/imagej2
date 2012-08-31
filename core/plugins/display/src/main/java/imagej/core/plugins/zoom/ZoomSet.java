@@ -35,13 +35,13 @@
 
 package imagej.core.plugins.zoom;
 
+import imagej.command.DynamicCommand;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
-import imagej.plugin.DynamicCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

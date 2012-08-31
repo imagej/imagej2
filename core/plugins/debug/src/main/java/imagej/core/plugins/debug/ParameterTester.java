@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.debug;
 
+import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.event.StatusService;
 import imagej.log.LogService;
@@ -43,7 +44,6 @@ import imagej.module.ItemVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
-import imagej.plugin.Command;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetStyle;
 

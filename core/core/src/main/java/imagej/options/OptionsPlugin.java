@@ -35,10 +35,10 @@
 
 package imagej.options;
 
+import imagej.command.DynamicCommand;
 import imagej.event.EventService;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
-import imagej.plugin.DynamicCommand;
 import imagej.plugin.Parameter;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)

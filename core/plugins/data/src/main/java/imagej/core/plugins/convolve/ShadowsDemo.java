@@ -36,6 +36,7 @@
 package imagej.core.plugins.convolve;
 
 import imagej.Cancelable;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -49,7 +50,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.StatusService;
 import imagej.input.KeyCode;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

@@ -36,6 +36,7 @@
 package imagej.core.plugins.imglib;
 
 import imagej.Cancelable;
+import imagej.command.DynamicCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.sampler.AxisSubrange;
 import imagej.data.sampler.SamplerService;
@@ -43,7 +44,6 @@ import imagej.data.sampler.SamplingDefinition;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
-import imagej.plugin.DynamicCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.app;
 
+import imagej.command.ContextCommand;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -42,7 +43,6 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.event.StatusService;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

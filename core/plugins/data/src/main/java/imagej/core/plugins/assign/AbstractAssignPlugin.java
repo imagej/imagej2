@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DatasetView;
@@ -43,7 +44,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Parameter;
 import imagej.plugin.PreviewPlugin;
 import net.imglib2.RandomAccess;

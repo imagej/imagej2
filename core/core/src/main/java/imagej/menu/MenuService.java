@@ -35,11 +35,11 @@
 
 package imagej.menu;
 
+import imagej.command.Command;
 import imagej.event.EventService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.plugin.PluginService;
-import imagej.plugin.Command;
 import imagej.service.Service;
 
 /**

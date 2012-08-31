@@ -35,9 +35,9 @@
 
 package imagej.script;
 
+import imagej.command.Command;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 import imagej.util.FileUtils;
 import imagej.util.Log;
 

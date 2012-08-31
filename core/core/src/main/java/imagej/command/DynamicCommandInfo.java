@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
 import imagej.ImageJ;
 import imagej.MenuPath;
@@ -42,6 +42,10 @@ import imagej.module.DefaultModuleInfo;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 
 import java.lang.reflect.Field;
 

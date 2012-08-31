@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.plugin.CommandInfo;
+import imagej.command.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;

@@ -35,7 +35,7 @@
 
 package imagej.platform;
 
-import imagej.plugin.Command;
+import imagej.command.Command;
 import imagej.service.Service;
 
 import java.util.List;

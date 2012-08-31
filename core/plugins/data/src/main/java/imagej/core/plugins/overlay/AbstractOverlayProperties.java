@@ -35,12 +35,12 @@
 
 package imagej.core.plugins.overlay;
 
+import imagej.command.ContextCommand;
 import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.options.OptionsService;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Parameter;
 import imagej.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;

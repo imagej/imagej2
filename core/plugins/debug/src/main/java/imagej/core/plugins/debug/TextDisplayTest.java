@@ -35,10 +35,10 @@
 
 package imagej.core.plugins.debug;
 
+import imagej.command.Command;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 /**
  * A test of text displays.

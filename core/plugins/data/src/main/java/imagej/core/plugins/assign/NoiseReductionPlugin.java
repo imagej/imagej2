@@ -36,6 +36,7 @@
 package imagej.core.plugins.assign;
 
 import imagej.ImageJ;
+import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
 import imagej.event.StatusService;
@@ -44,7 +45,6 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 import java.util.ArrayList;
 import java.util.List;

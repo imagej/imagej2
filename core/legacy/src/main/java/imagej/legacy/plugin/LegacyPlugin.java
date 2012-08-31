@@ -40,6 +40,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.Roi;
 import imagej.ImageJ;
+import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -53,7 +54,6 @@ import imagej.legacy.translate.LegacyUtils;
 import imagej.log.LogService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
-import imagej.plugin.Command;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 

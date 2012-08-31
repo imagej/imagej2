@@ -35,11 +35,11 @@
 
 package imagej.data.display;
 
+import imagej.command.Command;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 /**
  * Activates the chosen display. This operation sets the display as the active

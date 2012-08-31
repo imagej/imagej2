@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.plugins.debug;
 
+import imagej.command.Command;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.display.DataView;
@@ -50,7 +51,6 @@ import imagej.object.ObjectService;
 import imagej.object.event.ObjectsListEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 import imagej.ui.swing.SwingOutputWindow;
 
 import java.util.ArrayList;

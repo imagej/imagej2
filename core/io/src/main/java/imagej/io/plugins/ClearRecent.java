@@ -35,13 +35,13 @@
 
 package imagej.io.plugins;
 
+import imagej.command.Command;
 import imagej.io.RecentFileService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 /**
  * Clears the list of recently opened files.

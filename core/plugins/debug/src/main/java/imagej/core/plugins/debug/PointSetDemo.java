@@ -36,12 +36,12 @@
 package imagej.core.plugins.debug;
 
 import imagej.Cancelable;
+import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.pointset.PointSetIterator;

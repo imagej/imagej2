@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.debug;
 
+import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.log.LogService;
 import imagej.module.Module;
@@ -42,7 +43,6 @@ import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
-import imagej.plugin.Command;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -40,6 +40,7 @@ import imagej.Instantiable;
 import imagej.InstantiableException;
 import imagej.MenuEntry;
 import imagej.MenuPath;
+import imagej.command.Command;
 import imagej.input.Accelerator;
 import imagej.menu.ShadowMenu;
 import imagej.util.StringMaker;

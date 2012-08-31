@@ -37,6 +37,8 @@ package imagej.data.display;
 
 import imagej.MenuEntry;
 import imagej.MenuPath;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
@@ -49,8 +51,6 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.CommandInfo;
-import imagej.plugin.Command;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

@@ -35,6 +35,7 @@
 
 package imagej.plugin;
 
+import imagej.command.Command;
 import imagej.display.Display;
 import imagej.module.Module;
 import imagej.module.ModulePostprocessor;

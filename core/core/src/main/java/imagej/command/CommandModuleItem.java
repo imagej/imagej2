@@ -33,13 +33,14 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
 import imagej.module.AbstractModuleItem;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
+import imagej.plugin.Parameter;
 import imagej.util.ClassUtils;
 import imagej.util.NumberUtils;
 import imagej.widget.WidgetStyle;

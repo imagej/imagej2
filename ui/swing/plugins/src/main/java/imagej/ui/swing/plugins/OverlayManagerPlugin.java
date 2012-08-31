@@ -36,7 +36,7 @@
 package imagej.ui.swing.plugins;
 
 import imagej.ImageJ;
-import imagej.plugin.ContextCommand;
+import imagej.command.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

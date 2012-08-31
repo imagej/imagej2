@@ -35,10 +35,10 @@
 
 package imagej.ui;
 
+import imagej.command.Command;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 import imagej.util.AppUtils;
 
 import java.io.DataInputStream;

@@ -33,10 +33,12 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
 import imagej.AbstractContextual;
 import imagej.ImageJ;
+import imagej.plugin.PluginService;
+import imagej.plugin.ServicePreprocessor;
 
 /**
  * A command that knows its context. Its service parameters are

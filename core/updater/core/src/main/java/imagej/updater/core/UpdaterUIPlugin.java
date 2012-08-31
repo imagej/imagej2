@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.plugin.Command;
+import imagej.command.Command;
 
 /**
  * A placeholder interface for graphical user interfaces for the updater.

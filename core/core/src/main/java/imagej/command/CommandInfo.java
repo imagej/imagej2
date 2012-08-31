@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
 import imagej.InstantiableException;
 import imagej.event.EventService;
@@ -43,6 +43,10 @@ import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModulesUpdatedEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PreviewPlugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 import imagej.util.StringMaker;

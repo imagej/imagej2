@@ -35,8 +35,8 @@
 
 package imagej.script;
 
+import imagej.command.Command;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 import java.util.List;
 

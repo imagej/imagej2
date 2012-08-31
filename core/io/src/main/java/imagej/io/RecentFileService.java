@@ -37,6 +37,8 @@ package imagej.io;
 
 import imagej.MenuEntry;
 import imagej.MenuPath;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.io.event.FileOpenedEvent;
@@ -47,9 +49,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
-import imagej.plugin.Command;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.FileUtils;

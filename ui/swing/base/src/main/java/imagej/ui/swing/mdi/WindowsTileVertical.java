@@ -35,9 +35,9 @@
 
 package imagej.ui.swing.mdi;
 
+import imagej.command.Command;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 import imagej.ui.Arrangeable.Arrangement;
 import imagej.ui.Desktop;
 import imagej.ui.UserInterface;

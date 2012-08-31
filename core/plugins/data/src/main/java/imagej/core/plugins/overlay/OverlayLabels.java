@@ -36,8 +36,8 @@
 package imagej.core.plugins.overlay;
 
 import imagej.Cancelable;
+import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 

@@ -33,70 +33,56 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.command;
 
-import imagej.module.DefaultModule;
-import imagej.util.ClassUtils;
-
-import java.lang.reflect.Field;
+import imagej.InstantiableException;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 
 /**
- * A class which can be extended to provide an ImageJ command with a variable
- * number of inputs and outputs. This class provides greater configurability,
- * but also greater complexity, than implementing the {@link Command}
- * interface and using only @{@link Parameter} annotations on instance fields.
+ * The default implementation of {@link CommandModuleFactory}, using a
+ * {@link CommandModule}.
  * 
  * @author Curtis Rueden
  */
-public abstract class DynamicCommand extends DefaultModule implements
-	Command
-{
-
-	private final DynamicCommandInfo info;
-
-	public DynamicCommand() {
-		this(new DynamicCommandInfo());
-	}
-
-	public DynamicCommand(final DynamicCommandInfo info) {
-		super(info);
-		this.info = info;
-		info.setCommandClass(getClass());
-	}
-
-	// -- Module methods --
+public class DefaultCommandModuleFactory implements CommandModuleFactory {
 
 	@Override
-	public DynamicCommandInfo getInfo() {
-		return info;
-	}
+	public <C extends Command> Module createModule(
+		final CommandInfo<C> info) throws ModuleException
+	{
+		// if the command implements Module, return a new instance directly
+		try {
+			final Class<C> commandClass = info.loadClass();
+			if (Module.class.isAssignableFrom(commandClass)) {
+				return (Module) commandClass.newInstance();
+			}
+		}
+		catch (final InstantiableException e) {
+			throw new ModuleException(e);
+		}
+		catch (final InstantiationException e) {
+			throw new ModuleException(e);
+		}
+		catch (final IllegalAccessException e) {
+			throw new ModuleException(e);
+		}
 
-	@Override
-	public Object getInput(final String name) {
-		final Field field = info.getInputField(name);
-		if (field == null) return super.getInput(name);
-		return ClassUtils.getValue(field, this);
+		// command does not implement Module; wrap it in a CommandModule instance
+		return new CommandModule<C>(info);
 	}
 
 	@Override
-	public Object getOutput(final String name) {
-		final Field field = info.getOutputField(name);
-		if (field == null) return super.getInput(name);
-		return ClassUtils.getValue(field, this);
-	}
+	public <C extends Command> Module createModule(
+		CommandInfo<C> info, C command)
+	{
+		// if the command implements Module, return the instance directly
+		if (command instanceof Module) {
+			return (Module) command;
+		}
 
-	@Override
-	public void setInput(final String name, final Object value) {
-		final Field field = info.getInputField(name);
-		if (field == null) super.setInput(name, value);
-		else ClassUtils.setValue(field, this, value);
-	}
-
-	@Override
-	public void setOutput(final String name, final Object value) {
-		final Field field = info.getOutputField(name);
-		if (field == null) super.setOutput(name, value);
-		else ClassUtils.setValue(field, this, value);
+		// command does not implement Module; wrap it in a CommandModule instance
+		return new CommandModule<C>(info, command);
 	}
 
 }

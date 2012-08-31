@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.restructure;
 
+import imagej.command.CommandInfo;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.event.DataRestructuredEvent;
@@ -43,7 +44,6 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;

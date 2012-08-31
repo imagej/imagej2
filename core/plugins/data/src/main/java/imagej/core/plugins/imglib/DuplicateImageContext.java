@@ -35,11 +35,11 @@
 
 package imagej.core.plugins.imglib;
 
+import imagej.command.Command;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
-import imagej.plugin.Command;
 
 /**
  * Context menu plugin for Duplicate command.

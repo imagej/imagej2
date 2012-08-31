@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.typechange;
 
+import imagej.command.CommandInfo;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -45,7 +46,6 @@ import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;

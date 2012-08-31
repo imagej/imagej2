@@ -41,6 +41,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
 import imagej.ImageJ;
+import imagej.command.ContextCommand;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -49,7 +50,6 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

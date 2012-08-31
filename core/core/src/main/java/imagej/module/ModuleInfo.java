@@ -36,9 +36,9 @@
 package imagej.module;
 
 import imagej.UIDetails;
+import imagej.command.CommandInfo;
 import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
-import imagej.plugin.CommandInfo;
 
 import java.util.List;
 

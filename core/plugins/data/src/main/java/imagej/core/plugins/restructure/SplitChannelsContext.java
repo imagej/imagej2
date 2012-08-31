@@ -35,7 +35,7 @@
 
 package imagej.core.plugins.restructure;
 
-import imagej.plugin.ContextCommand;
+import imagej.command.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

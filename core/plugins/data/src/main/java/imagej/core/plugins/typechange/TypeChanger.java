@@ -35,13 +35,13 @@
 
 package imagej.core.plugins.typechange;
 
+import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
-import imagej.plugin.Command;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;

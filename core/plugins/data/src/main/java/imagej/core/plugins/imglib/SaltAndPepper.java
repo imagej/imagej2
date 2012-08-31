@@ -36,6 +36,7 @@
 package imagej.core.plugins.imglib;
 
 import imagej.Cancelable;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -44,7 +45,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;

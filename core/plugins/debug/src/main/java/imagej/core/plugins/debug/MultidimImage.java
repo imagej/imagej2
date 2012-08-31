@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.debug;
 
+import imagej.command.Command;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -42,7 +43,6 @@ import imagej.data.DrawingTool;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
 

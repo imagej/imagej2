@@ -37,10 +37,10 @@ package imagej.core.plugins.debug;
 
 import com.github.sbridges.objectinspector.Inspector;
 
+import imagej.command.Command;
 import imagej.data.display.DataView;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.Command;
 
 /**
  * TODO

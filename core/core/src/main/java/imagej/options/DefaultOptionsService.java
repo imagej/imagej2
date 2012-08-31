@@ -36,6 +36,7 @@
 package imagej.options;
 
 import imagej.InstantiableException;
+import imagej.command.CommandInfo;
 import imagej.event.EventService;
 import imagej.log.LogService;
 import imagej.module.Module;
@@ -45,7 +46,6 @@ import imagej.plugin.InitPreprocessor;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
-import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ServicePreprocessor;

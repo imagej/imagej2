@@ -35,6 +35,8 @@
 
 package imagej.plugin;
 
+import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.util.Log;
 
 import java.util.List;

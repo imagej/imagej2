@@ -39,14 +39,14 @@ import ij.IJ;
 import ij.Menus;
 import imagej.MenuEntry;
 import imagej.MenuPath;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.input.Accelerator;
 import imagej.input.InputModifiers;
 import imagej.input.KeyCode;
 import imagej.log.LogService;
 import imagej.menu.ShadowMenu;
 import imagej.plugin.PluginInfo;
-import imagej.plugin.CommandInfo;
-import imagej.plugin.Command;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
