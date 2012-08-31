@@ -38,16 +38,15 @@ package imagej.service;
 import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.PluginInfo;
 import imagej.log.LogService;
 import imagej.service.event.ServicesLoadedEvent;
+import imagej.util.ClassUtils;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,9 +114,9 @@ public class ServiceHelper extends AbstractContextual {
 		for (final Class<? extends Service> serviceClass : serviceClasses) {
 			loadService(serviceClass);
 		}
-		EventService eventService = getContext().getService(EventService.class);
-		if (eventService != null)
-			eventService.publish(new ServicesLoadedEvent());
+		final EventService eventService =
+			getContext().getService(EventService.class);
+		if (eventService != null) eventService.publish(new ServicesLoadedEvent());
 	}
 
 	/**
@@ -156,8 +155,7 @@ public class ServiceHelper extends AbstractContextual {
 		final LogService log = getContext().getService(LogService.class);
 		if (log != null) log.debug("Creating service: " + c.getName());
 		try {
-			final Constructor<S> ctor = getConstructor(c);
-			final S service = createService(ctor);
+			final S service = createService(c);
 			getContext().getServiceIndex().add(service);
 			if (log != null) log.info("Created service: " + c.getName());
 			return service;
@@ -171,80 +169,38 @@ public class ServiceHelper extends AbstractContextual {
 	// -- Helper methods --
 
 	/** Instantiates a service using the given constructor. */
-	private <S extends Service> S createService(final Constructor<S> ctor)
-		throws InstantiationException, IllegalAccessException,
-		InvocationTargetException
+	private <S extends Service> S createService(Class<S> c)
+		throws InstantiationException, IllegalAccessException
 	{
-		final Class<?>[] types = ctor.getParameterTypes();
-		final Object[] args = new Object[types.length];
-		for (int i = 0; i < types.length; i++) {
-			final Class<?> type = types[i];
-			if (Service.class.isAssignableFrom(type)) {
-				@SuppressWarnings("unchecked")
-				final Class<Service> c = (Class<Service>) type;
-				args[i] = getContext().getServiceIndex().getService(c);
-				if (args[i] == null) {
-					// recursively obtain needed services
-					args[i] = loadService(c);
-				}
-			}
-			else if (ImageJ.class.isAssignableFrom(type)) {
-				args[i] = getContext();
-			}
-			else throw new IllegalArgumentException("Invalid constructor: " + ctor);
-		}
-		final S service = ctor.newInstance(args);
+		final S service = c.newInstance();
+		service.setContext(getContext());
 
 		// propagate priority if known
-		final Double priority = classPoolMap.get(ctor.getDeclaringClass());
+		final Double priority = classPoolMap.get(c);
 		if (priority != null) service.setPriority(priority);
 
-		return service;
-	}
+		// populate service parameters
+		final List<Field> fields =
+			ClassUtils.getAnnotatedFields(c, Parameter.class);
+		for (final Field f : fields) {
+			f.setAccessible(true); // expose private fields
 
-	/**
-	 * Gets a compatible constructor for creating a service of the given type. A
-	 * constructor is compatible if all its arguments are assignable to
-	 * {@link ImageJ} and {@link Service}. The method uses a greedy approach to
-	 * choosing the best constructor, preferring constructors with a larger number
-	 * of arguments, to populate the maximum number of services.
-	 * 
-	 * @return the best constructor to use for instantiating the service
-	 * @throws IllegalArgumentException if no compatible constructors exist
-	 */
-	private <S extends Service> Constructor<S> getConstructor(
-		final Class<S> serviceClass)
-	{
-		final Constructor<?>[] ctors = serviceClass.getConstructors();
-
-		// sort constructors by number of parameters
-		Arrays.sort(ctors, new Comparator<Constructor<?>>() {
-
-			@Override
-			public int compare(final Constructor<?> c1, final Constructor<?> c2) {
-				return c2.getParameterTypes().length - c1.getParameterTypes().length;
+			final Class<?> type = f.getType();
+			if (!Service.class.isAssignableFrom(type)) {
+				throw new IllegalArgumentException("Invalid parameter: " + f.getName());
 			}
-
-		});
-
-		for (final Constructor<?> ctorUntyped : ctors) {
 			@SuppressWarnings("unchecked")
-			final Constructor<S> ctor = (Constructor<S>) ctorUntyped;
-
-			final Class<?>[] types = ctor.getParameterTypes();
-			for (final Class<?> type : types) {
-				if (!ImageJ.class.isAssignableFrom(type) &&
-					!Service.class.isAssignableFrom(type))
-				{
-					// constructor has an argument of unknown type
-					continue;
-				}
+			final Class<Service> serviceType = (Class<Service>) type;
+			Service s = getContext().getServiceIndex().getService(serviceType);
+			if (s == null) {
+				// recursively obtain needed service
+				s = loadService(serviceType);
 			}
-			return ctor;
+			ClassUtils.setValue(f, service, s);
 		}
-		throw new IllegalArgumentException(
-			"No service implementation found for service class: " +
-				serviceClass.getName());
+
+		service.initialize();
+		return service;
 	}
 
 	/** Asks the plugin index for all available service implementations. */
