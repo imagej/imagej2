@@ -164,7 +164,7 @@ public final class AppUtils {
 	 * <b>within JAR files in the local Maven repository cache</b>. But the
 	 * executed project itself will reside <b>in its Maven build directory</b>. So
 	 * as long as you ask for the base directory relative to a class
-	 * <em>of the executed project</code> it will be found.</li>
+	 * <em>of the executed project</em> it will be found.</li>
 	 * <li><b>Running the ImageJ application bundle.</b> Typically this means
 	 * downloading ImageJ from the web site, unpacking it and running the ImageJ
 	 * launcher (double-clicking ImageJ-win32.exe on Windows, double-clicking the
