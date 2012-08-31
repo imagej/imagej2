@@ -55,6 +55,8 @@ public final class AppUtils {
 	 * Gets the ImageJ root directory. If the <code>ij.dir</code> property is set,
 	 * it is used. Otherwise, we scan up the tree from this class for a suitable
 	 * directory.
+	 * 
+	 * @see #getBaseDirectory(File, String)
 	 */
 	public static File getBaseDirectory() {
 		final String property = System.getProperty("ij.dir");
@@ -87,6 +89,7 @@ public final class AppUtils {
 	 * 
 	 * @param className The fully qualified name of the class from which the base
 	 *          directory should be derived.
+	 * @see #getBaseDirectory(File, String)
 	 */
 	public static File getBaseDirectory(final String className) {
 		return getBaseDirectory(className, null);
@@ -99,6 +102,7 @@ public final class AppUtils {
 	 *          directory should be derived.
 	 * @param baseSubdirectory A hint for what to expect for a directory structure
 	 *          beneath the application base directory.
+	 * @see #getBaseDirectory(File, String)
 	 */
 	public static File getBaseDirectory(final String className,
 		final String baseSubdirectory)
@@ -109,6 +113,65 @@ public final class AppUtils {
 
 	/**
 	 * Gets the base file system directory from the given known class location.
+	 * <p>
+	 * This method uses heuristics to find the base directory in a variety of
+	 * situations. Depending on your execution environment, the class may be
+	 * located in one of several different places:
+	 * </p>
+	 * <ol>
+	 * <li><b>In the Maven build directory.</b> Typically this is the
+	 * <code>target/classes</code> folder of a given component. In this case, the
+	 * class files reside directly on the file system (not in a JAR file). The
+	 * base directory is defined as the toplevel Maven directory for the
+	 * multi-module project. For example, if your have checked out
+	 * <code>imagej.git</code> to <code>~/code/imagej</code>, the
+	 * <code>imagej.ImageJ</code> class will be located at
+	 * <code>~/code/imagej/core/core/target/classes/imagej/ImageJ.class</code>.
+	 * Asking for the base directory for that class will yield
+	 * <code>~/code/imagej</code>, as long as you correctly specify
+	 * <code>core/core</code> for the <code>baseSubdirectory</code>.</li>
+	 * <li><b>Within a JAR file in the Maven local repository cache.</b> Typically
+	 * this cache is located in <code>~/.m2/repository</code>. The location will
+	 * be <code>groupId/artifactId/version/artifactId-version.jar</code> where
+	 * <code>groupId</code>, <code>artifactId</code> and <code>version</code> are
+	 * the <a href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven GAV
+	 * coordinates</a>. Note that in this case, no base directory with respect to
+	 * the given class can be found, and this method will return null.</li>
+	 * <li><b>Within a JAR file beneath the base directory.</b> Common cases
+	 * include running the application from a standalone application bundle (e.g.,
+	 * the JARs may all be located within a <code>jars</code> folder of the
+	 * application distribution archive) or using a JAR packaged by Maven and
+	 * residing in the Maven build folder (typically
+	 * <code>target/artifactId-version.jar</code>). However, this could
+	 * potentially be anywhere beneath the base directory. This method assumes the
+	 * JAR will be nested exactly one level deep; i.e., it computes the base
+	 * directory as the parent directory of the one containing the JAR file.</li>
+	 * </ol>
+	 * <p>
+	 * As you can see, it is quite complicated to find the base directory properly
+	 * in all cases. The specific execution environments we have tested include:
+	 * </p>
+	 * <ol>
+	 * <li><b>Running from Eclipse.</b> How Eclipse structures the classpath
+	 * depends on which dependencies are open (i.e., project dependencies) versus
+	 * closed (i.e., JAR dependencies). Each project dependency has a classpath
+	 * entry <b>in its Maven build directory</b>. Each JAR dependency has a
+	 * classpath entry <b>within a JAR file in the Maven local repository
+	 * cache</b>.</li>
+	 * <li><b>Running via Maven.</b> If you execute the application using Maven
+	 * (e.g., <code>mvn exec:exec</code>, or with a fully Maven-compatible IDE
+	 * such as NetBeans or IntelliJ IDEA) then all dependencies will reside
+	 * <b>within JAR files in the local Maven repository cache</b>. But the
+	 * executed project itself will reside <b>in its Maven build directory</b>. So
+	 * as long as you ask for the base directory relative to a class
+	 * <em>of the executed project</code> it will be found.</li>
+	 * <li><b>Running the ImageJ application bundle.</b> Typically this means
+	 * downloading ImageJ from the web site, unpacking it and running the ImageJ
+	 * launcher (double-clicking ImageJ-win32.exe on Windows, double-clicking the
+	 * <code>ImageJ.app</code> on OS X, etc.). In this case, all components reside
+	 * in the <code>jars</code> folder of the application bundle, and the base
+	 * directory will be found one level above that.</li>
+	 * </ol>
 	 * 
 	 * @param classLocation The location from which the base directory should be
 	 *          derived.
