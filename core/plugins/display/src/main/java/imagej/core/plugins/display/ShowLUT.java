@@ -35,6 +35,8 @@
 
 package imagej.core.plugins.display;
 
+import java.util.List;
+
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -46,22 +48,23 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.ext.menu.MenuConstants;
 import imagej.ext.module.ItemIO;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 
-import java.util.List;
-
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 // TODO
 // this implementation does not support a "List" button which shows
 // the LUT in tabular form when clicked
+
+// TODO ARG
+// Displays ColorTable16 LUTs as only 256 colors.
 
 /**
  * This class adapted from IJ1's LutViewer class.
@@ -95,15 +98,15 @@ public class ShowLUT implements RunnablePlugin {
 	@Override
 	public void run() {
 		DatasetView view = imgDispService.getActiveDatasetView(display);
-		List<ColorTable8> colorTables = view.getColorTables();
+		List<ColorTable> colorTables = view.getColorTables();
 		int currChannel = display.getIntPosition(Axes.CHANNEL);
-		ColorTable8 colorTable = colorTables.get(currChannel);
+		ColorTable colorTable = colorTables.get(currChannel);
 		output = createDataset(colorTable);
 	}
 	
 	// -- private helpers --
 	
-	private Dataset createDataset(ColorTable8 lut) {
+	private Dataset createDataset(ColorTable lut) {
 		long[] dims = new long[]{326,188,3};
 		String name = "Look-Up Table";
 		AxisType[] axes = new AxisType[]{Axes.X, Axes.Y,Axes.CHANNEL};
@@ -116,15 +119,15 @@ public class ShowLUT implements RunnablePlugin {
 		return ds;
 	}
 	
-	private void drawLutInfo(Dataset ds, ColorTable8 lut) {
+	private void drawLutInfo(Dataset ds, ColorTable ct) {
 		DrawingTool tool = new DrawingTool(ds);
 		int xMargin = 35;
 		int yMargin = 20;
 		int width = 256;
 		int height = 128;
 		int barHeight = 12;
-		boolean isGray = ColorTables.isGrayColorTable(lut);
-		int mapSize = lut.getLength();
+		boolean isGray = ColorTables.isGrayColorTable(ct);
+		int mapSize = ct.getLength();
 		int x, y, x1, y1, x2, y2;
 		
 		int imageWidth = width + 2*xMargin;
@@ -138,10 +141,10 @@ public class ShowLUT implements RunnablePlugin {
 		double scale = 256.0/mapSize;
 		if (!isGray) tool.setChannels(new ChannelCollection(Colors.RED));
 		x1 = xMargin;
-		y1 = yMargin + height - lut.get(0, 0)/2;
+		y1 = yMargin + height - ct.getResampled(ColorTable.RED, 256, 0)/2;
 		for (int i = 1; i<256; i++) {
 			x2 = xMargin + i;
-			y2 = yMargin + height - lut.get(0, (int)(i/scale))/2;
+			y2 = yMargin + height - ct.getResampled(ColorTable.RED, 256, (int)(i/scale))/2;
 			tool.drawLine(x1, y1, x2, y2);
 			x1 = x2;
 			y1 = y2;
@@ -150,10 +153,10 @@ public class ShowLUT implements RunnablePlugin {
 		if (!isGray) {
 			tool.setChannels(new ChannelCollection(Colors.LIGHTGREEN));
 			x1 = xMargin;
-			y1 = yMargin + height - lut.get(1, 0)/2;
+			y1 = yMargin + height - ct.getResampled(ColorTable.GREEN, 256, 0)/2;
 			for (int i = 1; i<256; i++) {
 				x2 = xMargin + i;
-				y2 = yMargin + height - lut.get(1,(int)(i/scale))/2;
+				y2 = yMargin + height - ct.getResampled(ColorTable.GREEN, 256, (int)(i/scale))/2;
 				tool.drawLine(x1, y1, x2, y2);
 				x1 = x2;
 				y1 = y2;
@@ -163,10 +166,10 @@ public class ShowLUT implements RunnablePlugin {
 		if (!isGray) {
 			tool.setChannels(new ChannelCollection(Colors.BLUE));
 			x1 = xMargin;
-			y1 = yMargin + height - lut.get(2,0)/2;
+			y1 = yMargin + height - ct.getResampled(ColorTable.BLUE, 256, 0)/2;
 			for (int i = 1; i<255; i++) {
 				x2 = xMargin + i;
-				y2 = yMargin + height - lut.get(2, (int)(i/scale))/2;
+				y2 = yMargin + height - ct.getResampled(ColorTable.BLUE, 256, (int)(i/scale))/2;
 				tool.drawLine(x1, y1, x2, y2);
 				x1 = x2;
 				y1 = y2;
@@ -176,7 +179,7 @@ public class ShowLUT implements RunnablePlugin {
 		x = xMargin;
 		y = yMargin + height + 2;
 		
-		drawColorBar(tool, lut, x, y, 256, barHeight);
+		drawColorBar(tool, ct, x, y, 256, barHeight);
 		
 		y += barHeight + 15;
 		tool.setChannels(new ChannelCollection(Colors.BLACK));
@@ -185,13 +188,13 @@ public class ShowLUT implements RunnablePlugin {
 		tool.drawText(7, yMargin + 4, "255", TextJustification.LEFT);
 	}
 	
-	private void drawColorBar(DrawingTool tool, ColorTable8 lut, int x, int y, int width, int height) {
-		double scale = 256.0 / lut.getLength();
+	private void drawColorBar(DrawingTool tool, ColorTable ct, int x, int y, int width, int height) {
+		double scale = 256.0 / ct.getLength();
 		for (int i = 0; i<256; i++) {
 			int index = (int)(i/scale);
-			int r = lut.get(0, index);
-			int g = lut.get(1, index);
-			int b = lut.get(2, index);
+			int r = ct.getResampled(ColorTable.RED, 256, index);
+			int g = ct.getResampled(ColorTable.GREEN, 256, index);
+			int b = ct.getResampled(ColorTable.BLUE, 256, index);
 			ColorRGB color = new ColorRGB(r,g,b);
 			tool.setChannels(new ChannelCollection(color));
 			tool.moveTo(x+i,y);

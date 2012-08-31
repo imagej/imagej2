@@ -44,7 +44,7 @@ import java.util.List;
 
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.type.numeric.RealType;
@@ -116,9 +116,9 @@ public interface DatasetView extends DataView {
 
 	void setComposite(boolean composite);
 
-	List<ColorTable8> getColorTables();
+	List<ColorTable> getColorTables();
 
-	void setColorTable(ColorTable8 colorTable, int channel);
+	void setColorTable(ColorTable colorTable, int channel);
 
 	void resetColorTables(boolean grayscale);
 

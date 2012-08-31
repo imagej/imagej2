@@ -37,6 +37,7 @@ package imagej.data.display;
 
 import java.awt.Color;
 
+import net.imglib2.display.AbstractColorTable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -90,7 +91,8 @@ public final class ColorTables {
 	}
 
 	/** Tests whether a ColorTable is a gray ramp */
-	public static boolean isGrayColorTable(final ColorTable<?> table) {
+        //TODO ARG has to be linear gray to succeed; non-linear grays will fail
+	public static boolean isGrayColorTable(final ColorTable table) {
 		if (table == ColorTables.GRAYS) return true;
 		final int numChannels = table.getComponentCount();
 		final int tableLen = table.getLength();

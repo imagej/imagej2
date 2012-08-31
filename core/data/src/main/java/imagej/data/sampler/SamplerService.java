@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.RealLUTConverter;
@@ -273,11 +274,9 @@ public class SamplerService extends AbstractService {
 			
 			// keep dataset color tables in sync
 			final int inputPlaneNumber = planeNum(inputDims, inputPos);
-			final ColorTable8 lut8 = input.getColorTable8(inputPlaneNumber);
-			final ColorTable16 lut16 = input.getColorTable16(inputPlaneNumber);
+			final ColorTable colorTable = input.getColorTable(inputPlaneNumber);
 			final int outputPlaneNumber = planeNum(outputDims, outputPos);
-			output.setColorTable(lut8, outputPlaneNumber);
-			output.setColorTable(lut16, outputPlaneNumber);
+			output.setColorTable(colorTable, outputPlaneNumber);
 		}
 
 		// TODO - enable this code
@@ -347,9 +346,9 @@ public class SamplerService extends AbstractService {
 		// idea how to copy color tables. For now will assume 1 per channel
 		final DatasetView inView = imgDispService.getActiveDatasetView(input);
 		final DatasetView outView = imgDispService.getActiveDatasetView(output);
-		final List<ColorTable8> colorTables = inView.getColorTables();
+		final List<ColorTable> colorTables = inView.getColorTables();
 		for (int c = 0; c < colorTables.size(); c++) {
-			final ColorTable8 table = colorTables.get(c);
+			final ColorTable table = colorTables.get(c);
 			outView.setColorTable(table, c);
 		}
 	}

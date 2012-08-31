@@ -47,8 +47,7 @@ import net.imglib2.Cursor;
 import net.imglib2.Positionable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealPositionable;
-import net.imglib2.display.ColorTable16;
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -569,24 +568,12 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	}
 
 	@Override
-	public ColorTable8 getColorTable8(final int no) {
-		return imgPlus.getColorTable8(no);
+	public ColorTable getColorTable(final int no) {
+		return imgPlus.getColorTable(no);
 	}
 
 	@Override
-	public void setColorTable(final ColorTable8 lut, final int no) {
-		imgPlus.setColorTable(lut, no);
-		// TODO - ???
-		// update(false);
-	}
-
-	@Override
-	public ColorTable16 getColorTable16(final int no) {
-		return imgPlus.getColorTable16(no);
-	}
-
-	@Override
-	public void setColorTable(final ColorTable16 lut, final int no) {
+	public void setColorTable(final ColorTable lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 		// TODO - ???
 		// update(false);
