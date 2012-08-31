@@ -112,9 +112,9 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	}
 
 	public CommandInfo(final String className, final Class<C> commandType,
-		final Plugin plugin)
+		final Plugin annotation)
 	{
-		super(className, commandType, plugin);
+		super(className, commandType, annotation);
 		setPresets(null);
 		setPluginModuleFactory(null);
 	}
@@ -216,17 +216,17 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 
 	@Override
 	public boolean canCancel() {
-		return plugin == null ? false : plugin.cancelable();
+		return getAnnotation() == null ? false : getAnnotation().cancelable();
 	}
 
 	@Override
 	public boolean canRunHeadless() {
-		return plugin == null ? false : plugin.headless();
+		return getAnnotation() == null ? false : getAnnotation().headless();
 	}
 
 	@Override
 	public String getInitializer() {
-		return plugin == null ? null : plugin.initializer();
+		return getAnnotation() == null ? null : getAnnotation().initializer();
 	}
 
 	@Override

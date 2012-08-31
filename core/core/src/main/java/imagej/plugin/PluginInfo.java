@@ -73,7 +73,7 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 	private Class<P> pluginType;
 
 	/** Annotation describing the plugin. */
-	protected Plugin plugin;
+	private Plugin annotation;
 
 	/** TODO */
 	public PluginInfo(final String className, final Class<P> pluginType) {
@@ -85,10 +85,10 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 
 	/** TODO */
 	public PluginInfo(final String className, final Class<P> pluginType,
-		final Plugin plugin)
+		final Plugin annotation)
 	{
 		this(className, pluginType);
-		this.plugin = plugin;
+		this.annotation = annotation;
 		populateValues();
 	}
 
@@ -109,6 +109,11 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 		return pluginType;
 	}
 
+	/** Gets the associated @{@link Plugin} annotation. */
+	public Plugin getAnnotation() {
+		return annotation;
+	}
+
 	/**
 	 * Gets the URL corresponding to the icon resource path.
 	 * 
@@ -123,7 +128,7 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 
 	/** Gets whether tool is always active, rather than part of the toolbar. */
 	public boolean isAlwaysActive() {
-		return plugin.alwaysActive();
+		return getAnnotation().alwaysActive();
 	}
 
 	/**
@@ -131,7 +136,7 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 	 * has the focus.
 	 */
 	public boolean isActiveInAppFrame() {
-		return plugin.activeInAppFrame();
+		return getAnnotation().activeInAppFrame();
 	}
 
 	// -- Object methods --
@@ -190,29 +195,29 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 
 	/** Populates the entry to match the associated @{@link Plugin} annotation. */
 	private void populateValues() {
-		setName(plugin.name());
-		setLabel(plugin.label());
-		setDescription(plugin.description());
+		setName(getAnnotation().name());
+		setLabel(getAnnotation().label());
+		setDescription(getAnnotation().description());
 
 		final MenuPath menuPath;
-		final Menu[] menu = plugin.menu();
+		final Menu[] menu = getAnnotation().menu();
 		if (menu.length > 0) {
 			menuPath = parseMenuPath(menu);
 		}
 		else {
 			// parse menuPath attribute
-			menuPath = new MenuPath(plugin.menuPath());
+			menuPath = new MenuPath(getAnnotation().menuPath());
 		}
 		setMenuPath(menuPath);
 
-		setMenuRoot(plugin.menuRoot());
+		setMenuRoot(getAnnotation().menuRoot());
 
-		final String iconPath = plugin.iconPath();
+		final String iconPath = getAnnotation().iconPath();
 		setIconPath(iconPath);
-		setPriority(plugin.priority());
-		setEnabled(plugin.enabled());
-		setSelectable(plugin.selectable());
-		setSelectionGroup(plugin.selectionGroup());
+		setPriority(getAnnotation().priority());
+		setEnabled(getAnnotation().enabled());
+		setSelectable(getAnnotation().selectable());
+		setSelectionGroup(getAnnotation().selectionGroup());
 
 		// add default icon if none attached to leaf
 		final MenuEntry menuLeaf = menuPath.getLeaf();
