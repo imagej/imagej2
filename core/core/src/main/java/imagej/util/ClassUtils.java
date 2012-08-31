@@ -36,8 +36,11 @@
 package imagej.util;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Useful methods for working with {@link Class} objects and primitive types.
@@ -357,6 +360,58 @@ public final class ClassUtils {
 		}
 
 		return new File(path);
+	}
+
+	// -- Utility methods --
+
+	/**
+	 * Gets the given class's {@link Field}s marked with the annotation of the
+	 * specified class.
+	 * <p>
+	 * Unlike {@link Class#getFields()}, the result will include any non-public
+	 * fields, including fields defined in supertypes of the given class.
+	 * </p>
+	 * 
+	 * @param c The class to scan for annotated fields.
+	 * @param annotationClass The type of annotation for which to scan.
+	 * @return A new list containing all fields with the requested annotation.
+	 */
+	public static <A extends Annotation> List<Field> getAnnotatedFields(
+		final Class<?> c, final Class<A> annotationClass)
+	{
+		final ArrayList<Field> fields = new ArrayList<Field>();
+		getAnnotatedFields(c, annotationClass, fields);
+		return fields;
+	}
+
+	/**
+	 * Gets the given class's {@link Field}s marked with the annotation of the
+	 * specified class.
+	 * <p>
+	 * Unlike {@link Class#getFields()}, the result will include any non-public
+	 * fields, including fields defined in supertypes of the given class.
+	 * </p>
+	 * 
+	 * @param c The class to scan for annotated fields.
+	 * @param annotationClass The type of annotation for which to scan.
+	 * @param fields The list to which matching fields will be added.
+	 */
+	public static <A extends Annotation> void
+		getAnnotatedFields(final Class<?> c, final Class<A> annotationClass,
+			final List<Field> fields)
+	{
+		if (c == null) return;
+
+		// check supertypes for annotated fields first
+		getAnnotatedFields(c.getSuperclass(), annotationClass, fields);
+		for (final Class<?> iface : c.getInterfaces()) {
+			getAnnotatedFields(iface, annotationClass, fields);
+		}
+
+		for (final Field f : c.getDeclaredFields()) {
+			final A ann = f.getAnnotation(annotationClass);
+			if (ann != null) fields.add(f);
+		}
 	}
 
 	/**
