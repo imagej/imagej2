@@ -35,13 +35,13 @@
 
 package imagej.core.plugins.restructure;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
@@ -57,34 +57,20 @@ import net.imglib2.meta.Axes;
 @Plugin(type = Service.class)
 public class SplitChannelsContextMonitor extends AbstractService {
 
-	private final EventService eventService;
-	private final PluginService pluginService;
-	private final ImageDisplayService imageDisplayService;
+	@Parameter
+	private EventService eventService;
 
-	// -- Constructors --
+	@Parameter
+	private PluginService pluginService;
 
-	public SplitChannelsContextMonitor() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private ImageDisplayService imageDisplayService;
 
-	public SplitChannelsContextMonitor(final ImageJ context,
-		final EventService eventService, final PluginService pluginService,
-		final ImageDisplayService imageDisplayService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-		this.imageDisplayService = imageDisplayService;
+	// -- Service methods --
 
+	@Override
+	public void initialize() {
 		subscribeToEvents(eventService);
-	}
-
-	// -- AnimationService methods --
-
-	public EventService getEventService() {
-		return eventService;
 	}
 
 	// -- Event handlers --

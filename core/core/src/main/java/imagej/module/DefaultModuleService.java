@@ -35,9 +35,9 @@
 
 package imagej.module;
 
-import imagej.ImageJ;
 import imagej.MenuPath;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.input.Accelerator;
 import imagej.log.LogService;
@@ -68,29 +68,17 @@ public class DefaultModuleService extends AbstractService implements
 	ModuleService
 {
 
-	private final LogService log;
-	private final EventService eventService;
-	private final ThreadService threadService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private ThreadService threadService;
 
 	/** Index of registered modules. */
-	private final ModuleIndex moduleIndex = new ModuleIndex();
-
-	// -- Constructors --
-
-	public DefaultModuleService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultModuleService(final ImageJ context, final LogService log,
-		final EventService eventService, final ThreadService threadService)
-	{
-		super(context);
-		this.log = log;
-		this.eventService = eventService;
-		this.threadService = threadService;
-	}
+	private ModuleIndex moduleIndex;
 
 	// -- ModuleService methods --
 
@@ -227,6 +215,13 @@ public class DefaultModuleService extends AbstractService implements
 		final Class<T> type)
 	{
 		return getSingleItem(module, type, module.getInfo().outputs());
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		moduleIndex = new ModuleIndex();
 	}
 
 	// -- Helper methods --

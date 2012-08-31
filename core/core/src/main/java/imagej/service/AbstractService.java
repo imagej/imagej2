@@ -35,7 +35,6 @@
 
 package imagej.service;
 
-import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.plugin.SortablePlugin;
 
@@ -51,8 +50,11 @@ public abstract class AbstractService extends SortablePlugin implements Service
 	@SuppressWarnings("unused")
 	private Object eventSubscribers;
 
-	public AbstractService(final ImageJ context) {
-		setContext(context);
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		// NB: Do nothing by default.
 	}
 
 	// -- Object methods --

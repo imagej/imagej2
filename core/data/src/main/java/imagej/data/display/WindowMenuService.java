@@ -35,7 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.MenuEntry;
 import imagej.MenuPath;
 import imagej.display.Display;
@@ -44,9 +43,10 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
 import imagej.menu.MenuService;
 import imagej.module.ModuleInfo;
@@ -75,11 +75,14 @@ public final class WindowMenuService extends AbstractService {
 	private static final int MAX_LEADER_SIZE = 10;
 	private static final int MAX_TRAILER_SIZE = 26;
 
-	private final MenuService menuService;
+	@Parameter
+	private MenuService menuService;
 
-	private final ModuleService moduleService;
+	@Parameter
+	private ModuleService moduleService;
 
-	private final EventService eventService;
+	@Parameter
+	private EventService eventService;
 
 	private List<String> openWindows;
 
@@ -91,28 +94,7 @@ public final class WindowMenuService extends AbstractService {
 
 	private int order = 1000;
 
-	public WindowMenuService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public WindowMenuService(final ImageJ context,
-		final MenuService menuService, final ModuleService moduleService,
-		final EventService eventService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.menuService = menuService;
-		this.moduleService = moduleService;
-
-		openWindows = new ArrayList<String>();
-		windowModules = new HashMap<String, ModuleInfo>();
-
-		subscribeToEvents(eventService);
-	}
-
-	// -- WindowService methods --
+	// -- WindowMenuService methods --
 
 	public MenuService getMenuService() {
 		return menuService;
@@ -157,6 +139,16 @@ public final class WindowMenuService extends AbstractService {
 	/** Gets the list of window files. */
 	public List<String> getOpenWindows() {
 		return Collections.unmodifiableList(openWindows);
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		openWindows = new ArrayList<String>();
+		windowModules = new HashMap<String, ModuleInfo>();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

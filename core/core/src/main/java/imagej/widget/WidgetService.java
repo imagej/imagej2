@@ -35,8 +35,8 @@
 
 package imagej.widget;
 
-import imagej.ImageJ;
 import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -55,22 +55,13 @@ import java.util.List;
 @Plugin(type = Service.class)
 public class WidgetService extends AbstractService {
 
-	private final PluginService pluginService;
-	private final LogService log;
+	@Parameter
+	private LogService log;
 
-	public WidgetService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private PluginService pluginService;
 
-	public WidgetService(final ImageJ context, final PluginService pluginService,
-		final LogService log)
-	{
-		super(context);
-		this.pluginService = pluginService;
-		this.log = log;
-	}
+	// -- WidgetService methods --
 
 	/** Creates a widget that represents the given widget model. */
 	public InputWidget<?, ?> createWidget(final WidgetModel model) {

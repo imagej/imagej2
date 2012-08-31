@@ -35,11 +35,11 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -54,6 +54,7 @@ public class DefaultKeyboardService extends AbstractService implements
 	KeyboardService
 {
 
+	@Parameter
 	private EventService eventService;
 
 	private boolean altDown = false;
@@ -62,20 +63,7 @@ public class DefaultKeyboardService extends AbstractService implements
 	private boolean metaDown = false;
 	private boolean shiftDown = false;
 
-	public DefaultKeyboardService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultKeyboardService(final ImageJ context,
-		final EventService eventService)
-	{
-		super(context);
-		this.eventService = eventService;
-
-		subscribeToEvents(eventService);
-	}
+	// -- KeyboardService methods --
 
 	@Override
 	public EventService getEventService() {
@@ -105,6 +93,13 @@ public class DefaultKeyboardService extends AbstractService implements
 	@Override
 	public boolean isShiftDown() {
 		return shiftDown;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

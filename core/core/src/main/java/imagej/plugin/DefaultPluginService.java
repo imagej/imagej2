@@ -36,10 +36,10 @@
 package imagej.plugin;
 
 import imagej.Contextual;
-import imagej.ImageJ;
 import imagej.Prioritized;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.IPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -72,31 +72,14 @@ public class DefaultPluginService extends AbstractService implements
 	PluginService
 {
 
-	private final LogService log;
-	private final ModuleService moduleService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private ModuleService moduleService;
 
 	/** Index of registered plugins. */
-	private final PluginIndex pluginIndex;
-
-	// -- Constructors --
-
-	public DefaultPluginService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultPluginService(final ImageJ context, final LogService log,
-		final ModuleService moduleService)
-	{
-		super(context);
-		this.log = log;
-		this.moduleService = moduleService;
-		this.pluginIndex = context.getPluginIndex();
-
-		// inform the module service of available runnable plugins
-		moduleService.addModules(getRunnablePlugins());
-	}
+	private PluginIndex pluginIndex;
 
 	// -- PluginService methods --
 
@@ -352,6 +335,16 @@ public class DefaultPluginService extends AbstractService implements
 		final Map<String, Object> inputMap)
 	{
 		return moduleService.run(module, pre(), post(), inputMap);
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		pluginIndex = getContext().getPluginIndex();
+
+		// inform the module service of available runnable plugins
+		moduleService.addModules(getRunnablePlugins());
 	}
 
 	// -- Helper methods --

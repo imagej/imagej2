@@ -35,8 +35,8 @@
 
 package imagej.core.plugins.app;
 
-import imagej.ImageJ;
 import imagej.Priority;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.platform.AppService;
 import imagej.service.AbstractService;
@@ -50,16 +50,13 @@ import imagej.service.Service;
 @Plugin(type = Service.class, priority = Priority.HIGH_PRIORITY)
 public final class AppRegistrar extends AbstractService {
 
-	// -- Constructors --
+	@Parameter
+	private AppService appService;
 
-	public AppRegistrar() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	// -- Service methods --
 
-	public AppRegistrar(final ImageJ context, final AppService appService) {
-		super(context);
+	@Override
+	public void initialize() {
 		appService.setAboutHandler(AboutImageJ.class);
 		appService.setPrefsHandler(Preferences.class);
 		appService.setQuitHandler(QuitProgram.class);

@@ -35,7 +35,6 @@
 
 package imagej.thread;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -60,20 +59,6 @@ public final class DefaultThreadService extends AbstractService implements
 	private ExecutorService executor;
 
 	private int nextThread = 0;
-
-	// -- Constructors --
-
-	public DefaultThreadService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultThreadService(final ImageJ context) {
-		super(context);
-
-		executor = Executors.newCachedThreadPool(this);
-	}
 
 	// -- ThreadService methods --
 
@@ -109,6 +94,13 @@ public final class DefaultThreadService extends AbstractService implements
 	@Override
 	public void queue(final Runnable code) {
 		EventQueue.invokeLater(code);
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		executor = Executors.newCachedThreadPool(this);
 	}
 
 	// -- ThreadFactory methods --

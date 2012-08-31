@@ -35,7 +35,6 @@
 
 package imagej.data.sampler;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
@@ -44,6 +43,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.display.DisplayService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -88,32 +88,17 @@ public class SamplerService extends AbstractService {
 
 	// -- instance variables --
 
-	private final DisplayService displayService;
-	private final DatasetService datasetService;
-	private final OverlayService overlayService;
-	private final ImageDisplayService imgDispService;
+	@Parameter
+	private DisplayService displayService;
 
-	// -- default constructor that doesn't really do anything --
+	@Parameter
+	private DatasetService datasetService;
 
-	public SamplerService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private OverlayService overlayService;
 
-	// -- constructor --
-
-	/** Creates a SamplerService using references to other services. */
-	public SamplerService(final ImageJ context, final DisplayService dspSrv,
-		final DatasetService datSrv, final OverlayService ovrSrv,
-		final ImageDisplayService imgDispSrv)
-	{
-		super(context);
-		this.displayService = dspSrv;
-		this.datasetService = datSrv;
-		this.overlayService = ovrSrv;
-		this.imgDispService = imgDispSrv;
-	}
+	@Parameter
+	private ImageDisplayService imgDispService;
 
 	// -- public interface --
 

@@ -35,7 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
@@ -48,6 +47,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.options.OptionsService;
@@ -76,39 +76,23 @@ public final class DefaultOverlayService extends AbstractService implements
 	OverlayService
 {
 
-	private final ObjectService objectService;
-	private final DisplayService displayService;
-	private final ImageDisplayService imageDisplayService;
-	private final RenderingService renderingService;
+	@Parameter
+	private ObjectService objectService;
 
-	private final OverlaySettings defaultSettings;
-	private final OverlayInfoList overlayInfo;
+	@Parameter
+	private DisplayService displayService;
 
-	// -- Constructors --
+	@Parameter
+	private ImageDisplayService imageDisplayService;
 
-	public DefaultOverlayService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private OptionsService optionsService;
 
-	public DefaultOverlayService(final ImageJ context,
-		final ObjectService objectService, final DisplayService displayService,
-		final ImageDisplayService imageDisplayService,
-		final OptionsService optionsService, final RenderingService renderingService)
-	{
-		super(context);
-		this.objectService = objectService;
-		this.displayService = displayService;
-		this.imageDisplayService = imageDisplayService;
-		this.renderingService = renderingService;
+	@Parameter
+	private RenderingService renderingService;
 
-		defaultSettings = new OverlaySettings();
-		final OptionsOverlay overlayOptions =
-			optionsService.getOptions(OptionsOverlay.class);
-		overlayOptions.updateSettings(defaultSettings);
-		overlayInfo = new OverlayInfoList();
-	}
+	private OverlaySettings defaultSettings;
+	private OverlayInfoList overlayInfo;
 
 	// -- OverlayService methods --
 
@@ -337,6 +321,18 @@ public final class DefaultOverlayService extends AbstractService implements
 		// delete the composite overlay
 		removeOverlay(overlay);
 	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		defaultSettings = new OverlaySettings();
+		final OptionsOverlay overlayOptions =
+			optionsService.getOptions(OptionsOverlay.class);
+		overlayOptions.updateSettings(defaultSettings);
+		overlayInfo = new OverlayInfoList();
+	}
+
 	// -- helpers --
 
 	private interface Drawer {

@@ -35,7 +35,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer;
@@ -52,16 +51,7 @@ public class AWTRenderingService extends AbstractService implements
 	RenderingService
 {
 
-	public AWTRenderingService() {
-		// NB - needed by Sezpoz
-		super(null);
-		throw new UnsupportedOperationException(
-			"this constructor not meant to be used");
-	}
-
-	public AWTRenderingService(final ImageJ context) {
-		super(context);
-	}
+	// -- RenderingService methods --
 
 	@Override
 	public TextRenderer getTextRenderer() {

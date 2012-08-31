@@ -36,7 +36,6 @@ package imagej.data.display;
  * #L%
  */
 
-import imagej.ImageJ;
 import imagej.Priority;
 import imagej.data.Dataset;
 import imagej.ext.plugin.Plugin;
@@ -58,26 +57,6 @@ public class DummyScreenCaptureService extends AbstractService implements
 
 	private static final String MSG =
 		"Dummy screen capture service is not functional";
-
-	// -- constructor --
-
-	/**
-	 * Hobbled constructor. Needed for Sezpoz compatiblity and is not to be used.
-	 */
-	public DummyScreenCaptureService() {
-		// NB - needed by Sezpoz
-		super(null);
-		throw new UnsupportedOperationException(
-			"this constructor not meant to be used");
-	}
-
-	/**
-	 * Default constructor: creates a DummyScreenCaptureService from an ImageJ
-	 * context.
-	 */
-	public DummyScreenCaptureService(final ImageJ context) {
-		super(context);
-	}
 
 	// -- public api --
 

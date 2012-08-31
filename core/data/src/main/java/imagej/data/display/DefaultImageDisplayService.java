@@ -35,12 +35,12 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.service.AbstractService;
@@ -60,25 +60,14 @@ public final class DefaultImageDisplayService extends AbstractService
 	implements ImageDisplayService
 {
 
-	private final EventService eventService;
-	private final PluginService pluginService;
-	private final DisplayService displayService;
+	@Parameter
+	private EventService eventService;
 
-	public DefaultImageDisplayService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private PluginService pluginService;
 
-	public DefaultImageDisplayService(final ImageJ context,
-		final EventService eventService, final PluginService pluginService,
-		final DisplayService displayService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-		this.displayService = displayService;
-	}
+	@Parameter
+	private DisplayService displayService;
 
 	// -- ImageDisplayService methods --
 

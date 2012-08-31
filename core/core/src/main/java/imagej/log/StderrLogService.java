@@ -48,13 +48,7 @@ import imagej.service.Service;
 @Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class StderrLogService extends AbstractService implements LogService {
 
-	public StderrLogService() {
-		super(null);
-
-		// HACK: Dirty, because every time a new ImageJ context is created with a
-		// StderrLogService, it will "steal" the default exception handling.
-		DefaultUncaughtExceptionHandler.install(this);
-	}
+	// -- LogService methods --
 
 	@Override
 	public void debug(Object msg) {
@@ -165,6 +159,15 @@ public class StderrLogService extends AbstractService implements LogService {
 	@Override
 	public boolean isWarn() {
 		return false;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		// HACK: Dirty, because every time a new ImageJ context is created with a
+		// StderrLogService, it will "steal" the default exception handling.
+		DefaultUncaughtExceptionHandler.install(this);
 	}
 
 }

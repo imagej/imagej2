@@ -35,7 +35,7 @@
 
 package imagej.event;
 
-import imagej.ImageJ;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -51,26 +51,15 @@ import java.util.Set;
 @Plugin(type = Service.class)
 public class EventHistory extends AbstractService {
 
-	/** Event details that have been recorded. */
-	private final ArrayList<EventDetails> history = new ArrayList<EventDetails>();
+	@Parameter
+	private EventService eventService;
 
-	private final ArrayList<EventHistoryListener> listeners =
-		new ArrayList<EventHistoryListener>();
+	/** Event details that have been recorded. */
+	private ArrayList<EventDetails> history;
+
+	private ArrayList<EventHistoryListener> listeners;
 
 	private boolean active;
-
-	// -- Constructors --
-
-	public EventHistory() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public EventHistory(final ImageJ context, final EventService eventService) {
-		super(context);
-		subscribeToEvents(eventService);
-	}
 
 	// -- EventHistory methods --
 
@@ -126,6 +115,15 @@ public class EventHistory extends AbstractService {
 			// if no one is listening, stop recording
 			setActive(false);
 		}
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		history = new ArrayList<EventDetails>();
+		listeners = new ArrayList<EventHistoryListener>();
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

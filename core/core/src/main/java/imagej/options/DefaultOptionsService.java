@@ -35,9 +35,9 @@
 
 package imagej.options;
 
-import imagej.ImageJ;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
@@ -71,26 +71,14 @@ public class DefaultOptionsService extends AbstractService implements
 	OptionsService
 {
 
-	private final LogService log;
-	private final EventService eventService;
-	private final PluginService pluginService;
+	@Parameter
+	private LogService log;
 
-	// -- Constructors --
+	@Parameter
+	private EventService eventService;
 
-	public DefaultOptionsService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultOptionsService(final ImageJ context, final LogService log,
-		final EventService eventService, final PluginService pluginService)
-	{
-		super(context);
-		this.log = log;
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-	}
+	@Parameter
+	private PluginService pluginService;
 
 	// -- OptionsService methods --
 

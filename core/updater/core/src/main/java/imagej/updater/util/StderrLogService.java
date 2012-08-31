@@ -48,6 +48,7 @@ import imagej.log.LogService;
  * @deprecated
  */
 public class StderrLogService implements LogService {
+	@Override public void initialize() { }
 	@Override public ImageJ getContext() { return null; }
 	@Override public void setContext(ImageJ context) { }
 	@Override public double getPriority() { return 0; }

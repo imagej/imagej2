@@ -35,7 +35,7 @@
 
 package imagej.event;
 
-import imagej.ImageJ;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -50,27 +50,10 @@ public class DefaultStatusService extends AbstractService implements
 	StatusService
 {
 
-	// -- Fields --
-
+	@Parameter
 	private EventService eventService;
 
-	private String currStatusString;
-	
-	// -- Constructors --
-
-	public DefaultStatusService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultStatusService(final ImageJ context,
-		final EventService eventService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.currStatusString = "";
-	}
+	private String currStatusString = "";
 
 	// -- StatusService methods --
 

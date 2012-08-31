@@ -35,7 +35,6 @@
 
 package imagej.ui;
 
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayService;
@@ -47,6 +46,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -83,67 +83,52 @@ public final class DefaultUIService extends AbstractService implements
 	UIService
 {
 
-	private final LogService log;
-	private final EventService eventService;
-	private final StatusService statusService;
-	private final ThreadService threadService;
-	private final PlatformService platformService;
-	private final PluginService pluginService;
-	private final MenuService menuService;
-	private final ToolService toolService;
-	private final OptionsService optionsService;
-	private final AppService appService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
+	private PlatformService platformService;
+
+	@Parameter
+	private PluginService pluginService;
+
+	@Parameter
+	private MenuService menuService;
+
+	@Parameter
+	private ToolService toolService;
+
+	@Parameter
+	private OptionsService optionsService;
+
+	@Parameter
+	private AppService appService;
 
 	/**
 	 * A list of extant display viewers. It's needed in order to find the viewer
 	 * associated with a display.
 	 */
-	protected final List<DisplayViewer<?>> displayViewers =
-		new ArrayList<DisplayViewer<?>>();
+	private List<DisplayViewer<?>> displayViewers;
 
 	/** List of available user interfaces, ordered by priority. */
-	private final List<UserInterface> uiList = new ArrayList<UserInterface>();
+	private List<UserInterface> uiList;
 
 	/** Map of available user interfaces, keyed off their names. */
-	private final Map<String, UserInterface> uiMap =
-		new HashMap<String, UserInterface>();
+	private Map<String, UserInterface> uiMap;
 
 	/** The default user interface to use, if one is not explicitly specified. */
 	private UserInterface defaultUI;
 
 	private boolean activationInvocationPending = false;
-
-	// -- Constructors --
-
-	public DefaultUIService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultUIService(final ImageJ context, final LogService log,
-		final ThreadService threadService, final EventService eventService,
-		final StatusService statusService, final PlatformService platformService,
-		final PluginService pluginService, final MenuService menuService,
-		final ToolService toolService, final OptionsService optionsService,
-		final AppService appService)
-	{
-		super(context);
-		this.log = log;
-		this.threadService = threadService;
-		this.eventService = eventService;
-		this.statusService = statusService;
-		this.platformService = platformService;
-		this.pluginService = pluginService;
-		this.menuService = menuService;
-		this.toolService = toolService;
-		this.optionsService = optionsService;
-		this.appService = appService;
-
-		discoverUIs();
-
-		subscribeToEvents(eventService);
-	}
 
 	// -- UIService methods --
 
@@ -353,6 +338,19 @@ public final class DefaultUIService extends AbstractService implements
 		final UserInterface ui = getDefaultUI();
 		if (ui == null) return;
 		ui.showContextMenu(menuRoot, display, x, y);
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		displayViewers = new ArrayList<DisplayViewer<?>>();
+		uiList = new ArrayList<UserInterface>();
+		uiMap = new HashMap<String, UserInterface>();
+
+		discoverUIs();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --
