@@ -37,12 +37,12 @@ package imagej.module;
 
 import imagej.MenuPath;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.input.Accelerator;
 import imagej.log.LogService;
 import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;

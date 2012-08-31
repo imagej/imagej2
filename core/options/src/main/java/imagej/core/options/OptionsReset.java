@@ -35,13 +35,13 @@
 
 package imagej.core.options;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
 import imagej.options.OptionsService;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.util.Prefs;
 
 import java.util.List;

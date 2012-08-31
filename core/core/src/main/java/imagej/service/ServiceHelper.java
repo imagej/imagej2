@@ -38,9 +38,9 @@ package imagej.service;
 import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.PluginInfo;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.PluginInfo;
 import imagej.service.event.ServicesLoadedEvent;
 import imagej.util.ClassUtils;
 

@@ -43,8 +43,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
@@ -54,6 +52,8 @@ import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 import imagej.log.LogService;
 import imagej.module.ItemIO;
+import imagej.plugin.Parameter;
+import imagej.plugin.RunnablePlugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 

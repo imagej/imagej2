@@ -36,8 +36,8 @@
 package imagej.options;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
 
 import java.util.List;

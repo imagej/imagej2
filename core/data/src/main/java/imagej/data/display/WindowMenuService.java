@@ -43,14 +43,14 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
 import imagej.menu.MenuService;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.RunnablePlugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

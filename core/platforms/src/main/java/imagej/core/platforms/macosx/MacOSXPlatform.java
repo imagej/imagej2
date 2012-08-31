@@ -38,16 +38,16 @@ package imagej.core.platforms.macosx;
 import com.apple.eawt.Application;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.platform.AbstractPlatform;
 import imagej.platform.AppService;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.PluginService;
+import imagej.plugin.RunnablePlugin;
 
 import java.io.IOException;
 import java.net.URL;

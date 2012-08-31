@@ -40,12 +40,12 @@ import imagej.ImageJ;
 import imagej.MenuEntry;
 import imagej.MenuPath;
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.menu.event.MenusAddedEvent;
 import imagej.menu.event.MenusRemovedEvent;
 import imagej.menu.event.MenusUpdatedEvent;
 import imagej.module.ModuleInfo;
+import imagej.plugin.PluginService;
 import imagej.util.ClassUtils;
 
 import java.lang.reflect.Array;
@@ -215,9 +215,12 @@ public class ShadowMenu extends AbstractContextual implements
 		return selectionGroup != null && !selectionGroup.isEmpty();
 	}
 
-	/** Gets the URL of the icon associated with this node's {@link MenuEntry}. */
+	/**
+	 * Gets the URL of the icon associated with this node's {@link MenuEntry}.
+	 * 
+	 * @see imagej.plugin.PluginInfo#getIconURL()
+	 */
 	public URL getIconURL() {
-		// See also: imagej.ext.plugin.PluginInfo#getIconURL()
 		if (menuEntry == null) return null;
 		String iconPath = menuEntry.getIconPath();
 		if (iconPath == null || iconPath.isEmpty()) {

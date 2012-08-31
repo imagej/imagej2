@@ -35,6 +35,7 @@
 
 package imagej.tool;
 
+import imagej.InstantiableException;
 import imagej.display.event.DisplayEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
@@ -46,12 +47,11 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.tool.event.ToolActivatedEvent;

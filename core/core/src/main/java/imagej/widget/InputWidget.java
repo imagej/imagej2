@@ -35,9 +35,9 @@
 
 package imagej.widget;
 
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
 import imagej.module.ModuleItem;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
 
 /**
  * Interface for input widgets. An input widget is intended to harvest user

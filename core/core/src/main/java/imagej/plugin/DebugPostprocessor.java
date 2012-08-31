@@ -36,7 +36,6 @@
 package imagej.plugin;
 
 import imagej.Priority;
-import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.module.Module;
 

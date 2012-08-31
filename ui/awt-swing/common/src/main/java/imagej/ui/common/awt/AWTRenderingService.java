@@ -35,7 +35,7 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer;
 import imagej.service.AbstractService;

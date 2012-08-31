@@ -35,8 +35,8 @@
 
 package imagej.platform;
 
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
 
 import java.io.IOException;
 import java.net.URL;

@@ -36,9 +36,9 @@
 package imagej.core.plugins.app;
 
 import imagej.Priority;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.platform.AppService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

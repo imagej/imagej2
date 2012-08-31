@@ -35,8 +35,8 @@
 
 package imagej.updater.core;
 
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.PluginService;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Downloadable;

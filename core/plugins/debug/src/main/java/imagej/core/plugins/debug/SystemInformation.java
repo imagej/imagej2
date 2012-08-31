@@ -36,10 +36,10 @@
 package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.ItemIO;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.util.Manifest;
 
 import java.io.File;

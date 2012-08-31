@@ -37,11 +37,11 @@ package imagej.core.plugins.app;
 
 import imagej.data.display.WindowMenuService;
 import imagej.event.StatusService;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 

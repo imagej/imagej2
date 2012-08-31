@@ -46,11 +46,11 @@ import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.object.event.ObjectsListEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.ui.swing.SwingOutputWindow;
 
 import java.util.ArrayList;

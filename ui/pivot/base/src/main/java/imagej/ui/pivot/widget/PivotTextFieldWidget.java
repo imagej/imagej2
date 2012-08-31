@@ -35,7 +35,7 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.TextFieldWidget;
 import imagej.widget.WidgetModel;

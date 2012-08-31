@@ -35,7 +35,6 @@
 
 package imagej.plugin;
 
-import imagej.ext.plugin.Parameter;
 import imagej.module.AbstractModuleItem;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;

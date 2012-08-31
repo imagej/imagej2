@@ -35,18 +35,18 @@
 
 package imagej.options;
 
+import imagej.InstantiableException;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 import imagej.module.ModuleRunner;
 import imagej.plugin.InitPreprocessor;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.PluginService;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ServicePreprocessor;
 import imagej.plugin.ValidityPreprocessor;

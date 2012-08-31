@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.plugin.RunnablePlugin;
 
 /**
  * A placeholder interface for graphical user interfaces for the updater.

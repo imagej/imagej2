@@ -38,8 +38,8 @@ package imagej.ui;
 import imagej.Contextual;
 import imagej.Prioritized;
 import imagej.display.Display;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
 import imagej.ui.viewer.DisplayWindow;
 
 /**

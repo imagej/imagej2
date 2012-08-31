@@ -37,9 +37,6 @@ package imagej.plugin;
 
 import imagej.AbstractContextual;
 import imagej.ImageJ;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 
 /**
  * A runnable plugin that knows its context. Its service parameters are

@@ -48,7 +48,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 import java.util.List;

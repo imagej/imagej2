@@ -35,9 +35,9 @@
 
 package imagej.script;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.util.FileUtils;
 import imagej.util.Log;
 

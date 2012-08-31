@@ -38,7 +38,7 @@ package imagej.data.display;
 
 import imagej.Priority;
 import imagej.data.Dataset;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

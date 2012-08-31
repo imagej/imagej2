@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.updater.util.Util;
 
 import java.io.File;

@@ -35,11 +35,6 @@
 
 package imagej.plugin;
 
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.util.Log;
 
 import java.util.List;

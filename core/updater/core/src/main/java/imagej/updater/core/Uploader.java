@@ -35,8 +35,8 @@
 
 package imagej.updater.core;
 
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
 import imagej.updater.util.Progressable;
 
 import java.io.IOException;

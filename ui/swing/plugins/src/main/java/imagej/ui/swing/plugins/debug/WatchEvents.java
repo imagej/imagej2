@@ -38,10 +38,10 @@ package imagej.ui.swing.plugins.debug;
 import imagej.event.EventDetails;
 import imagej.event.EventHistory;
 import imagej.event.EventHistoryListener;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

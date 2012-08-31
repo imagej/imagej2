@@ -35,13 +35,13 @@
 
 package imagej.ui.swing.plugins;
 
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
 

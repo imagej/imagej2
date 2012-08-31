@@ -33,32 +33,49 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
-import imagej.ImageJ;
+import imagej.MenuEntry;
+import imagej.input.Accelerator;
 
-import java.util.List;
+import java.lang.annotation.Target;
 
 /**
- * A test of the plugin discovery mechanism.
+ * One item of a {@link Plugin}'s menu path. It can be a top-level menu such as
+ * File, a nested menu such as Open Recent, or a leaf item such as Exit. A
+ * sequential list of Menus defines a {@link Plugin}'s position in the menu
+ * structure.
+ * <p>
+ * Using a list of Menus to define menu position is more verbose than using
+ * {@link Plugin#menuPath}, but more powerful in that it allows specification of
+ * various menu attributes (e.g., {@link #weight}, {@link #mnemonic},
+ * {@link #accelerator} and {@link #iconPath}).
  * 
  * @author Curtis Rueden
  */
-public class PluginDiscovery {
+@Target({})
+public @interface Menu {
+
+	/** The human-readable label to use for the menu item. */
+	String label();
 
 	/**
-	 * Tests the plugin discovery mechanism, printing a list of all discovered
-	 * plugins.
+	 * Position within the menu structure. Items at each level are sorted in
+	 * ascending order by weight.
 	 */
-	public static void main(final String[] args) {
-		System.out.println("Scanning for plugins:");
-		final ImageJ context = ImageJ.createContext(PluginService.class);
-		final PluginService pluginService = context.getService(PluginService.class);
-		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
-		System.out.println("Discovered plugins:");
-		for (final PluginInfo<?> plugin : plugins) {
-			System.out.println("\t" + plugin);
-		}
-	}
+	double weight() default MenuEntry.DEFAULT_WEIGHT;
+
+	/** Mnemonic identifying underlined shortcut character. */
+	char mnemonic() default '\0';
+
+	/**
+	 * Keyboard shortcut to activate the menu item.
+	 * 
+	 * @see Accelerator#create(String) for information on the syntax.
+	 */
+	String accelerator() default "";
+
+	/** Path to the menu's icon (shown in the menu structure). */
+	String iconPath() default "";
 
 }

@@ -58,10 +58,10 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
+import imagej.plugin.PluginService;
 import imagej.ui.UIService;
 import imagej.util.Prefs;
 

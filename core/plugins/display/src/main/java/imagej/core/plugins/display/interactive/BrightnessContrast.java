@@ -37,13 +37,13 @@ package imagej.core.plugins.display.interactive;
 
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
 import imagej.widget.WidgetStyle;
 

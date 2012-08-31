@@ -41,8 +41,8 @@ import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
 
 /**
  * A display viewer is a UI widget that shows a display to a user.

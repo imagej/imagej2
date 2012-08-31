@@ -35,8 +35,8 @@
 
 package imagej.core.tools;
 
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginService;
 import imagej.tool.Tool;
 
 /**

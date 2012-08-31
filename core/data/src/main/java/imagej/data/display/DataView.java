@@ -41,8 +41,8 @@ import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
 import net.imglib2.meta.AxisType;
 
 /**

@@ -33,21 +33,16 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
+import imagej.InstantiableException;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
 import imagej.module.ItemVisibility;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModulesUpdatedEvent;
-import imagej.plugin.DefaultPluginModuleFactory;
-import imagej.plugin.PluginModule;
-import imagej.plugin.PluginModuleFactory;
-import imagej.plugin.PluginModuleItem;
-import imagej.plugin.PreviewPlugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 import imagej.util.StringMaker;
@@ -59,9 +54,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-// TODO - Migrate this class to imagej.plugin package, after an amount of time
-// has passed such that doing so will not affect the ImageJ updater too badly.
 
 /**
  * A collection of metadata about a particular {@link RunnablePlugin}. Unlike

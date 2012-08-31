@@ -36,15 +36,8 @@
 package imagej.plugin;
 
 import imagej.Contextual;
+import imagej.InstantiableException;
 import imagej.Prioritized;
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;

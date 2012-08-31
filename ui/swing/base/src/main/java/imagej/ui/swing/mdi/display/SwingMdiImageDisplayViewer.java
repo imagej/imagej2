@@ -36,7 +36,7 @@
 package imagej.ui.swing.mdi.display;
 
 import imagej.display.Display;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.display.SwingImageDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;

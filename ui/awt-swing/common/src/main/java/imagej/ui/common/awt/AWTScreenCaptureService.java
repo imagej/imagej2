@@ -38,8 +38,8 @@ package imagej.ui.common.awt;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ScreenCaptureService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

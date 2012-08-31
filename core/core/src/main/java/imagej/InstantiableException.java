@@ -33,28 +33,29 @@
  * #L%
  */
 
-package imagej.ext.plugin;
-
-import imagej.module.Module;
-import imagej.plugin.PluginModule;
-
-// TODO - Migrate this class to imagej.plugin package, after an amount of time
-// has passed such that doing so will not affect the ImageJ updater too badly.
+package imagej;
 
 /**
- * <code>RunnablePlugin</code> is a plugin that is executable. A
- * <code>RunnablePlugin</code> can be executed as a {@link Module} by wrapping
- * it in a {@link PluginModule}.
- * <p>
- * Runnable plugins discoverable at runtime must implement this interface
- * and be annotated with @{@link Plugin}.
- * </p>
+ * An exception thrown when an {@link Instantiable} cannot create an object.
  * 
  * @author Curtis Rueden
- * @see Plugin
- * @see PluginService
  */
-public interface RunnablePlugin extends IPlugin, Runnable {
-	// RunnablePlugin is a plugin that extends Runnable,
-	// discoverable via the plugin discovery mechanism.
+public class InstantiableException extends Exception {
+	
+	public InstantiableException() {
+		super();
+	}
+
+	public InstantiableException(final String s) {
+		super(s);
+	}
+
+	public InstantiableException(final String s, final Throwable cause) {
+		super(s, cause);
+	}
+
+	public InstantiableException(final Throwable cause) {
+		super(cause);
+	}
+
 }

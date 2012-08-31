@@ -35,7 +35,7 @@
 
 package imagej.platform;
 
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.service.Service;
 
 import java.util.List;

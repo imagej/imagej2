@@ -36,12 +36,12 @@
 package imagej.core.plugins.zoom;
 
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Zooms the currently displayed image at the scale it was originally viewed at.

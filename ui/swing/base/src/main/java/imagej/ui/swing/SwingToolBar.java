@@ -35,10 +35,10 @@
 
 package imagej.ui.swing;
 
+import imagej.InstantiableException;
 import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.PluginInfo;
+import imagej.plugin.PluginInfo;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;

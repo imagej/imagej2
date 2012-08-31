@@ -33,21 +33,17 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
 import imagej.module.ModuleInfo;
-import imagej.plugin.InitPreprocessor;
 import imagej.widget.WidgetStyle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-// TODO - Migrate this class to imagej.plugin package, after an amount of time
-// has passed such that doing so will not affect the ImageJ updater too badly.
 
 /**
  * An annotation for indicating a field is an input or output parameter. This

@@ -35,9 +35,9 @@
 
 package imagej.log.slf4j;
 
-import imagej.ext.plugin.Plugin;
 import imagej.log.DefaultUncaughtExceptionHandler;
 import imagej.log.LogService;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

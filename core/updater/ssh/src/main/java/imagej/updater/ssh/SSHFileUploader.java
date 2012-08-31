@@ -40,8 +40,8 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
+import imagej.plugin.Plugin;
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploader;

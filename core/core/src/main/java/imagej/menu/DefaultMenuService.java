@@ -37,15 +37,15 @@ package imagej.menu;
 
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
 import imagej.module.event.ModulesUpdatedEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginService;
+import imagej.plugin.RunnablePlugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

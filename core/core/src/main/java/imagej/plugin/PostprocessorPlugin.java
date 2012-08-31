@@ -36,8 +36,6 @@
 package imagej.plugin;
 
 import imagej.Contextual;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
 import imagej.module.ModulePostprocessor;
 
 /**

@@ -35,9 +35,7 @@
 
 package imagej.plugin;
 
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.InstantiableException;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 

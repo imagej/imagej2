@@ -35,6 +35,7 @@
 
 package imagej.ui;
 
+import imagej.InstantiableException;
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayService;
@@ -45,17 +46,16 @@ import imagej.display.event.DisplayUpdatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;

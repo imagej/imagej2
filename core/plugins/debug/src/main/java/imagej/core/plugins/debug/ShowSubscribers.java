@@ -40,13 +40,13 @@ import imagej.display.event.DisplayUpdatedEvent;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.module.ItemIO;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsListEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 
 import java.util.List;
 

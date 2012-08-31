@@ -36,8 +36,8 @@
 package imagej.core.plugins.overlay;
 
 import imagej.data.overlay.Overlay;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 import java.util.List;
 

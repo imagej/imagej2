@@ -47,9 +47,9 @@ public final class MenuConstants {
 	}
 
 	// TODO - Finalize the location of these constants. The potential confusion is
-	// that everything in imagej.ext is part of the general-purpose extensibility
-	// framework, which could be used by applications other than ImageJ, except
-	// for these constants, which are very specific to the ImageJ user interface.
+	// that ij-core supposedly provides a general-purpose extensibility framework,
+	// which could be used by applications other than ImageJ, except for these
+	// constants, which are very specific to the ImageJ user interface.
 
 	public static final String FILE_LABEL = "File";
 	public static final String EDIT_LABEL = "Edit";

@@ -35,9 +35,9 @@
 
 package imagej.ui.swing.plugins.debug;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 

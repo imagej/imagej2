@@ -33,14 +33,11 @@
  * #L%
  */
 
-package imagej.ext.plugin;
+package imagej.plugin;
 
 import imagej.Priority;
 import imagej.display.Display;
 import imagej.module.ModuleItem;
-import imagej.plugin.InitPreprocessor;
-import imagej.plugin.PostprocessorPlugin;
-import imagej.plugin.PreprocessorPlugin;
 import imagej.service.Service;
 
 import java.lang.annotation.ElementType;
@@ -49,9 +46,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.java.sezpoz.Indexable;
-
-// TODO - Migrate this class to imagej.plugin package, after an amount of time
-// has passed such that doing so will not affect the ImageJ updater too badly.
 
 /**
  * Annotation identifying a plugin, which gets loaded by ImageJ's dynamic

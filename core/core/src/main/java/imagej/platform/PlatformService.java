@@ -36,7 +36,7 @@
 package imagej.platform;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginService;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
 
 import java.io.IOException;

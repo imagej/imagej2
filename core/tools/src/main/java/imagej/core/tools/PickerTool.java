@@ -40,9 +40,9 @@ import imagej.data.options.OptionsChannels;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
 import imagej.event.StatusService;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.options.OptionsService;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 

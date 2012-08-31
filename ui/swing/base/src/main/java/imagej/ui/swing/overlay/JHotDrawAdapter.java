@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.display.Display;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.tool.Tool;
 import imagej.util.RealCoords;
 

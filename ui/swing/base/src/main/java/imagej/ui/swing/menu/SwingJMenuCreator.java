@@ -53,7 +53,7 @@ import javax.swing.JPopupMenu;
  * <p>
  * This class is called <code>SwingJMenuCreator</code> rather than simply
  * <code>JMenuCreator</code> for consistency with other UI implementations such
- * as <code>imagej.ext.ui.awt.AWTMenuCreator</code>.
+ * as <code>imagej.ui.awt.menu.AWTMenuCreator</code>.
  * </p>
  * 
  * @author Curtis Rueden

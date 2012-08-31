@@ -35,12 +35,12 @@
 
 package imagej.updater.ui;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.PluginService;
+import imagej.plugin.RunnablePlugin;
 import imagej.updater.core.UpToDate;
 import imagej.updater.core.UpdaterUIPlugin;
 import imagej.updater.util.Util;

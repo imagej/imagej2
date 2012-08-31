@@ -37,12 +37,12 @@ package imagej.console;
 
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import net.imglib2.exception.IncompatibleTypeException;

@@ -36,9 +36,9 @@
 package imagej.display;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.object.ObjectService;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
 
 import java.util.List;

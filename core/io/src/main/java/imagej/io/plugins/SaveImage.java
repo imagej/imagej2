@@ -36,12 +36,12 @@
 package imagej.io.plugins;
 
 import imagej.data.Dataset;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.menu.MenuConstants;
 import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginService;
 
 import java.io.File;
 import java.util.HashMap;

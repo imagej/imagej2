@@ -35,8 +35,6 @@
 
 package imagej.plugin;
 
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.DefaultModule;
 import imagej.util.ClassUtils;
 

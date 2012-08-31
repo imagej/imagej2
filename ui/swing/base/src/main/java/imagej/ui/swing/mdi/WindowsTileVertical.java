@@ -35,9 +35,9 @@
 
 package imagej.ui.swing.mdi;
 
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.ui.Arrangeable.Arrangement;
 import imagej.ui.Desktop;
 import imagej.ui.UserInterface;

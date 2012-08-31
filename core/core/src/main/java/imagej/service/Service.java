@@ -37,8 +37,8 @@ package imagej.service;
 
 import imagej.Contextual;
 import imagej.Prioritized;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Plugin;
 
 /**
  * An ImageJ service, for a particular area of functionality.
